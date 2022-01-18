@@ -1,6 +1,6 @@
 # Hello, Elektra
 
-This basic tutorial shows you how to compile and run a very basic Elektra application. For this tutorial we assume that you installed [Elektra](/doc/INSTALL.md) and [CMake](http://cmake.org) on your machine. We also assume that you work a Unix based OS like Linux or macOS.
+This basic tutorial shows you how to compile and run a very basic Elektra application. For this tutorial we assume that you installed [Elektra](/doc/INSTALL.md) and [CMake](https://cmake.org) on your machine. We also assume that you work a Unix based OS like Linux or macOS.
 
 1. Create a folder called `Hello` somewhere on your disk
 2. Copy the file `examples/helloElektra.c` to the folder `Hello` you just created
@@ -36,8 +36,8 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    . If everything worked until now, then CMake should print messages that look something like this:
 
    ```
-   -- The C compiler identification is AppleClang 8.1.0.8020042
-   -- The CXX compiler identification is AppleClang 8.1.0.8020042
+   -- The C compiler identification is Clang 12.0.0
+   -- The CXX compiler identification is Clang 12.0.0
    -- Check for working C compiler: usr/bin/cc
    -- Check for working C compiler: usr/bin/cc -- works
    -- Detecting C compiler ABI info
@@ -50,7 +50,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    -- Detecting CXX compiler ABI info - done
    -- Detecting CXX compile features
    -- Detecting CXX compile features - done
-   -- Elektra 0.9.1 found
+   -- Elektra 0.9.8 found
    -- Configuring done
    -- Generating done
    -- Build files have been written to: Hello/build
@@ -70,7 +70,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    Open key database
    Retrieve key set
    Number of key-value pairs: 0
-   Add key user/test/hello
+   Add key user:/test/hello
    Number of key-value pairs: 1
 
    hello, elektra

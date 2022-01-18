@@ -10,7 +10,7 @@ It complements the man pages found [here](/doc/help).
 
 ## Concepts
 
-- [Logging](logging.md)
+- [KDB Contracts](kdb-contracts.md)
 - [Error Handling](error-handling.md)
 - [Error Message](error-message.md)
 - [Error Categorization](error-categorization.md)

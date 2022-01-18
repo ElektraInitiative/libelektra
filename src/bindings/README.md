@@ -1,6 +1,6 @@
 # Bindings
 
-[Elektra’s API](https://doc.libelektra.org/api/latest/html/) is written in C,
+[Elektra’s API](https://doc.libelektra.org/api/master/html/) is written in C,
 but many different bindings allow _applications_ in different programming languages
 to use Elektra.
 
@@ -9,7 +9,7 @@ in the respective programming languages, but you additionally need an
 [Interpreter Plugin](/src/plugins/README.md). Nevertheless, bindings
 can be immediately used in applications without plugins.
 
-List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
+List of currently supported bindings (use `cmake -DBINDINGS=ALL;-EXPERIMENTAL;-DEPRECATED`):
 
 - [cpp](cpp/) C++11 bindings (included per default)
 - [glib](glib/) GLib bindings
@@ -17,10 +17,10 @@ List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
 - [lua](swig/lua/) Lua SWIG bindings
 - [python](swig/python/) Python 3 SWIG bindings
 - [ruby](swig/ruby/) Ruby bindings
-- [jna](jna/) A full java binding using JNA
-- [rust](rust/) Bindings for the low-level API in Rust
+- [jna](jna/) Java binding using JNA
+- [rust](rust/) Rust bindings
 
-Experimental bindings (included in `EXPERIMENTAL`):
+Experimental bindings (included in `cmake -DBINDINGS=EXPERIMENTAL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
 - [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
@@ -28,19 +28,29 @@ Experimental bindings (included in `EXPERIMENTAL`):
 - [io_ev](io/ev/) I/O binding for ev (experimental)
 - [io_glib](io/glib/) I/O binding for glib (experimental)
 
+External bindings (in a separate repo):
+
+- [go](https://github.com/ElektraInitiative/go-elektra) Go bindings (experimental)
+
 # I/O Bindings
 
 These bindings allow Elektra to integrate into different main loop APIs using a
 thin abstraction layer called "I/O binding".
-The build all available I/O bindings use `-DBINDINGS="IO"` when configuring `cmake`.
+To build all available I/O bindings use `cmake -DBINDINGS="IO"`.
 
 For more information please check out the
 [notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
 or the
-[API documentation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+[API documentation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
 The [doc](io/doc/) directory contains an example binding for a fictive
 asynchronous I/O management library.
 
+## Installation
+
+See [INSTALL](/doc/INSTALL.md).
+A few bindings are part of the core package `libelektra5`.
+The package that includes a binding which does not belong to the `libelektra5` package can be found in it's README.md.
+
 ## See Also
 
-- See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build, e.g. `ALL`.
+- See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build.

@@ -31,8 +31,9 @@ target_link_elektra (kdbopen elektra-kdb)
 target_link_elektra (kdbset elektra-kdb elektra-merge)
 target_link_elektra (set_key elektra-kdb)
 target_link_elektra (opts elektra-ease elektra-opts)
-target_link_elektra (optsSnippets elektra-opts)
-target_link_elektra (gopts elektra-ease elektra-opts elektra-kdb)
+target_link_elektra (optsCommands elektra-ease elektra-opts)
+target_link_elektra (gopts elektra-ease elektra-kdb)
+target_link_elektra (goptsCommands elektra-ease elektra-kdb)
 
 # Notification examples
 
@@ -88,6 +89,7 @@ if (FOUND_NAME GREATER -1)
 
 		set (SRC_FILES notificationReload.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
+		set_source_files_properties (${SRC_FILES} PROPERTIES COMPILE_FLAGS "-Wno-pedantic")
 
 		find_package (GLib QUIET)
 		include_directories (${GLib_INCLUDE_DIRS})

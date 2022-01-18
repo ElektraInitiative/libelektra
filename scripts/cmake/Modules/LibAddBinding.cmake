@@ -117,7 +117,7 @@ function (add_binding BINDING_NAME)
 			CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	endif ()
 
-	set (STATUS_MESSAGE "Include Binding ${BINDING_NAME}")
+	set (STATUS_MESSAGE "Include binding ${BINDING_NAME}")
 	if (ARG_ONLY_SHARED)
 		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
 	endif (ARG_ONLY_SHARED)
@@ -152,7 +152,7 @@ function (exclude_binding name reason)
 		${ARGN})
 
 	if (NOT ${reason} STREQUAL "silent")
-		message (STATUS "Exclude Binding ${name} because ${reason}")
+		message (STATUS "Exclude binding ${name} because ${reason}")
 	endif ()
 	if (ARG_REMOVE)
 		if (ADDED_BINDINGS)
@@ -173,7 +173,7 @@ endfunction (exclude_binding)
 
 # ~~~
 # - Check if a binding will be built.
-#   Can only be used run after bindins have been processed (e.g. in
+#   Can only be used run after bindings have been processed (e.g. in
 #   ADDTESTING_PHASE of plugins)
 #   This is function can be used anywhere.
 #

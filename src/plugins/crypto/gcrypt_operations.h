@@ -13,6 +13,10 @@
 #include <kdb.h>
 #include <kdbtypes.h>
 
+// gcrypt specific declarations
+#include <gcrypt.h>
+typedef gcry_cipher_hd_t elektraCryptoHandle;
+
 #define ELEKTRA_CRYPTO_GCRY_KEYSIZE (32)
 #define ELEKTRA_CRYPTO_GCRY_BLOCKSIZE (16)
 

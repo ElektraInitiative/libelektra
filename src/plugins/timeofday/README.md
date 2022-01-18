@@ -12,19 +12,24 @@
 This plugin is a logging plugin which prints a timestamp during
 all placements of backend.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 If you want to measure how long your storage plugin needs to do the read
 and write you mount the plugin using:
 
 ```sh
-kdb mount file.ysp user/trace_point your_storage_plugin timeofday
+kdb mount file.ysp user:/trace_point your_storage_plugin timeofday
 ```
 
 Then you can benchmark your storage plugin in the get path:
 
 ```sh
-kdb get user/benchmark
+kdb get user:/benchmark
 #> get     0000000356      di      0000000356      pos     pregetstorage
 #> get     0000000530      di      0000000174      pos     postgetstorage
 #> hello
@@ -33,7 +38,7 @@ kdb get user/benchmark
 and in the set path:
 
 ```sh
-kdb set user/benchmark
+kdb set user:/benchmark
 #> get     0000000342      di      0000000342      pos     pregetstorage
 #> get     0000000532      di      0000000190      pos     postgetstorage
 #> Set null value

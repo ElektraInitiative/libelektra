@@ -11,6 +11,37 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
+static int setupNotificationCallback (Plugin * handle)
+{
+	ELEKTRA_NOT_NULL (handle);
+	ElektraZeroMqRecvPluginData * pluginData = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (pluginData);
+
+	KeySet * global = elektraPluginGetGlobalKeySet (handle);
+
+	ElektraNotificationCallback callback;
+	Key * callbackKey = ksLookupByName (global, "system:/elektra/notification/callback", 0);
+	const void * callbackPtr = keyValue (callbackKey);
+
+	if (callbackPtr == NULL)
+	{
+		return -1;
+	}
+
+	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
+
+	ElektraNotificationCallbackContext * context;
+	Key * contextKey = ksLookupByName (global, "system:/elektra/notification/context", 0);
+	const void * contextPtr = keyValue (contextKey);
+	context = contextPtr == NULL ? NULL : *(ElektraNotificationCallbackContext **) contextPtr;
+
+
+	pluginData->notificationCallback = callback;
+	pluginData->notificationContext = context;
+
+	return 0;
+}
+
 /**
  * @internal
  * Called whenever the socket becomes readable.
@@ -22,7 +53,19 @@
  */
 static void zeroMqRecvSocketReadable (void * socket, void * context)
 {
-	ElektraZeroMqRecvPluginData * data = context;
+	Plugin * handle = (Plugin *) context;
+	ELEKTRA_NOT_NULL (handle);
+	ElektraZeroMqRecvPluginData * data = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (data);
+
+	if (data->notificationCallback == NULL)
+	{
+		if (setupNotificationCallback (handle) != 0)
+		{
+			ELEKTRA_LOG_WARNING ("notificationCallback not set up; aborting");
+			return;
+		}
+	}
 
 	char * changeType;
 	char * changedKeyName;
@@ -44,7 +87,7 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
 		return;
 	}
 	int length = zmq_msg_size (&message);
-	changeType = elektraStrNDup (zmq_msg_data (&message), length + 1);
+	changeType = elektraMemDup (zmq_msg_data (&message), length + 1);
 	changeType[length] = '\0';
 	ELEKTRA_LOG_DEBUG ("received change type %s", changeType);
 
@@ -57,7 +100,7 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
 		return;
 	}
 	length = zmq_msg_size (&message);
-	changedKeyName = elektraStrNDup (zmq_msg_data (&message), length + 1);
+	changedKeyName = elektraMemDup (zmq_msg_data (&message), length + 1);
 	changedKeyName[length] = '\0';
 	ELEKTRA_LOG_DEBUG ("received key name %s", changedKeyName);
 
@@ -74,10 +117,13 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
  * @internal
  * Setup ZeroMq for receiving notifications.
  *
- * @param data plugin data containing context, socket, etc.
+ * @param handle plugin handle
  */
-void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data)
+void elektraZeroMqRecvSetup (Plugin * handle)
 {
+	ElektraZeroMqRecvPluginData * data = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (data);
+
 	// create zmq context
 	if (!data->zmqContext)
 	{
@@ -122,7 +168,7 @@ void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data)
 	{
 		// attach ZeroMq adater and wait for socket to be writable
 		data->zmqAdapter = elektraIoAdapterZeroMqAttach (data->zmqSubscriber, data->ioBinding, ELEKTRA_IO_ADAPTER_ZEROMQCB_READ,
-								 zeroMqRecvSocketReadable, data);
+								 zeroMqRecvSocketReadable, handle);
 		if (!data->zmqAdapter)
 		{
 			ELEKTRA_LOG_WARNING ("could not attach zmq adapter");
@@ -137,10 +183,13 @@ void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data)
  * @internal
  * Cleanup ZeroMq.
  *
- * @param data plugin data
+ * @param handle plugin handle
  */
-void elektraZeroMqRecvTeardown (ElektraZeroMqRecvPluginData * data)
+void elektraZeroMqRecvTeardown (Plugin * handle)
 {
+	ElektraZeroMqRecvPluginData * data = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (data);
+
 	if (data->zmqAdapter)
 	{
 		elektraIoAdapterZeroMqDetach (data->zmqAdapter);

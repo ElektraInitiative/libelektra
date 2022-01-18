@@ -1,11 +1,11 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.4)
 
 # allows us to override platform specific variables
 set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/scripts/cmake/Platform.cmake")
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 9)
-set (KDB_VERSION_PATCH 1)
+set (KDB_VERSION_PATCH 8)
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_PATCH}")
 
 set (ELEKTRA_DESCRIPTION
@@ -31,8 +31,13 @@ endif (CMAKE_VERSION VERSION_LESS 3.9)
 set (CMAKE_MACOSX_RPATH 1)
 set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
+set (CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "elektra-misc")
+
 # additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/Modules/")
+
+file (REMOVE "${CMAKE_BINARY_DIR}/extra_install_manifest.txt")
+file (REMOVE "${CMAKE_BINARY_DIR}/external-links.txt")
 
 # needed by ifs below
 include (scripts/cmake/ElektraCache.cmake)
@@ -78,12 +83,9 @@ set (REVERSE_DOMAIN org.libelektra)
 
 message (STATUS "You are building Elektra ${KDB_VERSION}")
 
-set (SO_VERSION 4)
+set (SO_VERSION 5)
 set (SO_VERSION_TOOLS 2)
 set (SO_VERSION_GETENV 0)
-
-# needs version above
-include (scripts/cmake/ElektraPackaging.cmake)
 
 # ensure KDB_DB_SYSTEM is an absolute path
 if (NOT IS_ABSOLUTE "${KDB_DB_SYSTEM}")
@@ -122,4 +124,10 @@ if (BUILD_FULL
 	endif (BUILD_TESTING)
 endif ()
 
-install (FILES LICENSE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+install (
+	FILES LICENSE.md
+	DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+	COMPONENT libelektra${SO_VERSION})
+
+# needs to be included last to collect all install components
+include (scripts/cmake/ElektraPackaging.cmake)

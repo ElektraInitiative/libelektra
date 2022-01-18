@@ -16,7 +16,7 @@ $ mkdir data
 $ docker run --rm -v ${PWD}/data:/mnt/share -it buildelektra bash
 ```
 
-The container contains a script that pulls a specified snapshot of Elektra from Github and either installs it in the container or builds a .deb package from it.
+The container contains a script that pulls a specified snapshot of Elektra from GitHub and either installs it in the container or builds a .deb package from it.
 
 Try it out from within the container with
 

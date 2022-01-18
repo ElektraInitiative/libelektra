@@ -38,7 +38,7 @@ int ImportCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("need 1 to 3 arguments");
 	}
 
-	Key root = cl.createKey (0);
+	Key root = cl.createKey (0, false);
 	if (!root.isValid ())
 	{
 		throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");
@@ -73,37 +73,12 @@ int ImportCommand::execute (Cmdline const & cl)
 	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
 	printError (cerr, errorKey, cl.verbose, cl.debug);
 
-	if (cl.strategy == "validate")
-	{
-		KeySet toset = prependNamespace (importedKeys, cl.ns);
-		originalKeys.cut (prependNamespace (root, cl.ns));
-		originalKeys.append (toset);
-
-		PluginPtr specPlugin = modules.load ("spec", cl.getPluginsConfig ());
-		if (specPlugin->get (originalKeys, root) == -1)
-		{
-			printWarnings (cerr, root, cl.verbose, cl.debug);
-			printError (cerr, errorKey, cl.verbose, cl.debug);
-			return -1;
-		}
-
-		if (cl.verbose)
-		{
-			cout.setf (std::ios_base::showbase);
-			std::cout << originalKeys << std::endl;
-		}
-
-		kdb.set (originalKeys, root);
-		printWarnings (cerr, root, cl.verbose, cl.debug);
-		return 0;
-	}
-
 	KeySet base = originalKeys.cut (root);
 	importedKeys = importedKeys.cut (root);
 	if (cl.withoutElektra)
 	{
 		KeySet baseCopy = base.dup ();
-		Key systemElektra ("system/elektra", KEY_END);
+		Key systemElektra ("system:/elektra", KEY_END);
 		KeySet systemKeySet = baseCopy.cut (systemElektra);
 		importedKeys.append (systemKeySet);
 	}

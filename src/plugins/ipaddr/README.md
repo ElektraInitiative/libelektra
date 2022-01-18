@@ -15,37 +15,42 @@
 
 This plugin validates IP addresses using regular expressions.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 ```sh
 # Mount `ipaddr` plugin to cascading namespace `/tests/ipaddr`
 kdb mount config.dump /tests/ipaddr dump ipaddr
 
-# Check the validity of the IP stored in `/tests/ipaddr/ipv4`
-kdb meta-set /tests/ipaddr/ipv4 check/ipaddr ipv4
+# Check the validity of the IP stored in `system:/tests/ipaddr/ipv4`
+kdb meta-set spec:/tests/ipaddr/ipv4 check/ipaddr ipv4
 
 # Try to set an incorrect IP address
-kdb set /tests/ipaddr/ipv4 127.0.0.1337
+kdb set system:/tests/ipaddr/ipv4 127.0.0.1337
 # STDERR: .*Validation Semantic.*
 # ERROR:  C03200
 # RET:    5
 
 # Set a correct IPv4 address
-kdb set /tests/ipaddr/ipv4 127.0.0.1
-kdb get /tests/ipaddr/ipv4
+kdb set system:/tests/ipaddr/ipv4 127.0.0.1
+kdb get system:/tests/ipaddr/ipv4
 #> 127.0.0.1
 
 # By default the plugin allows both IPv4 and IPv6 addresses
-kdb meta-set /tests/ipaddr/address check/ipaddr ""
+kdb meta-set spec:/tests/ipaddr/address check/ipaddr ""
 
 # Set correct IP addresses
-kdb set /tests/ipaddr/address 1.2.3.4
-kdb set /tests/ipaddr/address ::1
+kdb set system:/tests/ipaddr/address 1.2.3.4
+kdb set system:/tests/ipaddr/address ::1
 
 # Try to set incorrect addresses
-kdb set /tests/ipaddr/address bad::ip
+kdb set system:/tests/ipaddr/address bad::ip
 # RET: 5
-kdb set /tests/ipaddr/address 1.2.-3.4
+kdb set system:/tests/ipaddr/address 1.2.-3.4
 # RET: 5
 
 # Undo modifications to the database

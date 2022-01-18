@@ -44,7 +44,7 @@ int MetaLsCommand::execute (Cmdline const & cl)
 		k.rewindMeta ();
 		while (const Key meta = k.nextMeta ())
 		{
-			cout << meta.getName ();
+			cout << meta.getName ().substr (sizeof ("meta:/") - 1);
 			if (cl.null)
 			{
 				cout << '\0' << std::flush;

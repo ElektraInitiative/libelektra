@@ -13,6 +13,9 @@
 #ignore all build directories of cmake
 build*/
 cmake-build*/
+!scripts/build/
+CMakeCache.txt
+**/CMakeFiles/**
 
 #ignore ctags + gdb history files
 .ctags
@@ -37,6 +40,7 @@ nbproject/
 
 #ignore pyc files
 *.pyc
+__pycache__
 
 #ignore CLion project files
 ## User-specific stuff
@@ -71,3 +75,7 @@ modules.xml
 
 # Vagrant directories
 .vagrant/
+
+# Files for testing with docker (c.f. https://www.libelektra.org/tutorials/run-all-tests-with-docker)
+elektra-build-docker/
+elektra-install/

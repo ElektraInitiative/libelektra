@@ -56,22 +56,22 @@ public:
 
 	/*XXX: Step 1: add your option here.
 	 * (please sort by getopt short name, small letters first)*/
-	bool debug;	 /*!< To debug the commands. */
-	bool force;	 /*!< Force the action. */
-	bool load;	  /*!< Load plugins instead of using system/elektra. */
+	bool debug;	    /*!< To debug the commands. */
+	bool force;	    /*!< Force the action. */
+	bool load;	    /*!< Load plugins instead of using system:/elektra. */
 	bool humanReadable; /*!< Human readable values are preferred. */
-	bool help;	  /*!< Display help instead of the normal action.. */
+	bool help;	    /*!< Display help instead of the normal action.. */
 	bool interactive;   /*!< Interactive mode. */
-	int minDepth;       /*!< minimum depth for completion suggestions */
-	int maxDepth;       /*!< maximum depth for completion suggestions */
-	bool noNewline;     /*!< Do not output a newline at the end. */
-	bool test;	  /*!< Run some self tests instead of the normal action. */
-	bool recursive;     /*!< Recursive mode. */
+	int minDepth;	    /*!< minimum depth for completion suggestions */
+	int maxDepth;	    /*!< maximum depth for completion suggestions */
+	bool noNewline;	    /*!< Do not output a newline at the end. */
+	bool test;	    /*!< Run some self tests instead of the normal action. */
+	bool recursive;	    /*!< Recursive mode. */
 	std::string resolver;
 	std::string strategy; /*!< A comma separated list of the used merging strategies. Their order is relevant. */
-	bool verbose;	 /*!< Be more verbose: explain what is happening */
-	bool quiet;	   /*!< Be quiet: suppress non-error messages */
-	bool version;	 /*!< Return version info instead of the normal action.. */
+	bool verbose;	      /*!< Be more verbose: explain what is happening */
+	bool quiet;	      /*!< Be quiet: suppress non-error messages */
+	bool version;	      /*!< Return version info instead of the normal action.. */
 	bool withoutElektra;
 	std::string inputFile;
 	bool null;
@@ -85,7 +85,6 @@ public:
 	std::string globalPlugins;
 	std::string pluginsConfig;
 	std::string color; /*!< colormode "never", "always" and "auto" to print color if output channel is a tty */
-	std::string ns;
 	std::string editor;
 
 	typedef std::map<std::string, std::string> map;
@@ -93,9 +92,10 @@ public:
 	std::string profile;
 
 	kdb::Key createKey (int pos, bool allowCascading = true) const;
+	kdb::Key getParentKey (kdb::Key const & key) const;
 	kdb::Key resolveBookmark (std::string name) const;
 
-	kdb::KeySet getPluginsConfig (std::string basepath = "user/") const;
+	kdb::KeySet getPluginsConfig (std::string basepath = "user:/") const;
 
 	/** The path to the kdb exectuable. */
 	std::string executable;

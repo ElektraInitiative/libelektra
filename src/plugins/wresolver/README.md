@@ -12,3 +12,8 @@
 Resolver for non-POSIX, e.g. w32/w64 systems.
 
 Uses SHGetFolderPath for w32/w64 to get the "home directory".
+
+## Limitation
+
+- Does not remove config files on empty configuration
+  (https://issues.libelektra.org/2531)

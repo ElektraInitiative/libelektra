@@ -10,4 +10,4 @@ add_plugin (
 	fstab
 	SOURCES fstab.c fstab.h
 	LINK_ELEKTRA elektra-meta
-	ADD_TEST INSTALL_TEST_DATA)
+	ADD_TEST INSTALL_TEST_DATA COMPONENT libelektra${SO_VERSION}-extra)

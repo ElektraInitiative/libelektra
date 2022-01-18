@@ -78,8 +78,8 @@
 typedef struct Ds_vector
 {
 	Ds_VECTOR_TYPE * buf; // the memory buffer
-	size_t num;	   // how many items in it
-	size_t cap;	   // how many items the buffer can hold
+	size_t num;	      // how many items in it
+	size_t cap;	      // how many items the buffer can hold
 
 } Ds_vector;
 #define Ds_VECTOR_INIT                                                                                                                     \

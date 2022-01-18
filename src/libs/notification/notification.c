@@ -21,53 +21,6 @@
 
 #include <stdio.h>
 
-static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
-{
-	ELEKTRA_NOT_NULL (kdb);
-	ELEKTRA_NOT_NULL (callback);
-
-	KeySet * parameters = ksNew (2, keyNew ("/callback", KEY_FUNC, callback, KEY_END),
-				     keyNew ("/context", KEY_BINARY, KEY_SIZE, sizeof (context), KEY_VALUE, &context, KEY_END), KS_END);
-
-	// iterate over global plugins
-	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
-	{
-		for (int subPositionIndex = 0; subPositionIndex < NR_GLOBAL_SUBPOSITIONS; subPositionIndex++)
-		{
-			Plugin * plugin = kdb->globalPlugins[positionIndex][subPositionIndex];
-			if (!plugin)
-			{
-				continue;
-			}
-
-
-			elektraDeferredCall (plugin, "openNotification", parameters);
-		}
-	}
-
-	ksDel (parameters);
-}
-
-static void pluginsCloseNotification (KDB * kdb)
-{
-	ELEKTRA_NOT_NULL (kdb);
-
-	// iterate over global plugins
-	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
-	{
-		for (int subPositionIndex = 0; subPositionIndex < NR_GLOBAL_SUBPOSITIONS; subPositionIndex++)
-		{
-			Plugin * plugin = kdb->globalPlugins[positionIndex][subPositionIndex];
-			if (!plugin)
-			{
-				continue;
-			}
-
-			elektraDeferredCall (plugin, "closeNotification", NULL);
-		}
-	}
-}
-
 /**
  * @see kdbnotificationinternal.h ::ElektraNotificationKdbUpdate
  */
@@ -78,112 +31,18 @@ static void elektraNotificationKdbUpdate (KDB * kdb, Key * changedKey)
 	ksDel (ks);
 }
 
-int elektraNotificationOpen (KDB * kdb)
+int elektraNotificationContract (KeySet * contract)
 {
-	// Make sure kdb is not null
-	if (!kdb)
-	{
-		ELEKTRA_LOG_WARNING ("kdb was not set");
-		return 0;
-	}
+	if (contract == NULL) return -1;
 
-	Plugin * notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
-	// Allow open only once
-	if (notificationPlugin)
-	{
-		ELEKTRA_LOG_WARNING ("elektraNotificationOpen already called for kdb");
-		return 0;
-	}
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/internalnotification", KEY_END));
 
-	// Create context for notification callback
 	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof (*context));
-	if (context == NULL)
-	{
-		return 0;
-	}
-	context->kdb = kdb;
 	context->kdbUpdate = &elektraNotificationKdbUpdate;
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/internalnotification/context", KEY_BINARY, KEY_SIZE,
+				       sizeof (context), KEY_VALUE, &context, KEY_END));
 
-	Key * parent = keyNew ("", KEY_END);
-	KeySet * contract = ksNew (2, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "mounted", KEY_END),
-				   keyNew ("system/elektra/ensure/plugins/global/internalnotification/config/context", KEY_BINARY, KEY_SIZE,
-					   sizeof (context), KEY_VALUE, &context, KEY_END),
-				   KS_END);
-	if (kdbEnsure (kdb, contract, parent) != 0)
-	{
-		keyDel (parent);
-		ELEKTRA_LOG_WARNING ("kdbEnsure failed");
-		return 0;
-	}
-
-	notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
-	if (notificationPlugin == NULL)
-	{
-		ELEKTRA_LOG_WARNING ("kdbEnsure failed");
-		return 0;
-	}
-
-	context->notificationPlugin = notificationPlugin;
-
-	// Get notification callback from notification plugin
-	size_t func = elektraPluginGetFunction (notificationPlugin, "notificationCallback");
-	if (!func)
-	{
-		// remove notification plugin again
-		contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END),
-				  KS_END);
-		if (kdbEnsure (kdb, contract, parent) != 0)
-		{
-			ELEKTRA_LOG_WARNING ("kdbEnsure failed");
-		}
-		keyDel (parent);
-		return 0;
-	}
-	ElektraNotificationCallback notificationCallback = (ElektraNotificationCallback) func;
-
-	keyDel (parent);
-
-	// Open notification for plugins
-	pluginsOpenNotification (kdb, notificationCallback, context);
-
-	return 1;
-}
-
-int elektraNotificationClose (KDB * kdb)
-{
-	// Make sure kdb is not null
-	if (!kdb)
-	{
-		ELEKTRA_LOG_WARNING ("kdb was not set");
-		return 0;
-	}
-
-	Plugin * notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
-	// Make sure open was called
-	if (notificationPlugin == NULL)
-	{
-		ELEKTRA_LOG_WARNING ("elektraNotificationOpen not called before elektraPluginClose");
-		return 0;
-	}
-
-	Key * contextKey = ksLookupByName (notificationPlugin->config, "user/context", 0);
-	ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
-	elektraFree (context);
-
-	// Unmount the plugin
-	Key * parent = keyNew ("", KEY_END);
-	KeySet * contract =
-		ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
-	if (kdbEnsure (kdb, contract, parent) != 0)
-	{
-		ELEKTRA_LOG_WARNING ("kdbEnsure failed");
-	}
-	keyDel (parent);
-
-	// Close notification for plugins
-	pluginsCloseNotification (kdb);
-
-	return 1;
+	return 0;
 }
 
 /**
@@ -206,7 +65,7 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 	{
 		ELEKTRA_LOG_WARNING (
 			"notificationPlugin not set. use "
-			"elektraNotificationOpen before calling other "
+			"elektraNotifiationContract before calling other "
 			"elektraNotification-functions");
 		return NULL;
 	}
@@ -230,7 +89,9 @@ ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_long_t, KdbLongLong)
 ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_unsigned_long_long_t, KdbUnsignedLongLong)
 ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_float_t, KdbFloat)
 ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_double_t, KdbDouble)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_double_t, KdbLongDouble)
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context)
 {

@@ -9,3 +9,8 @@
 Provides glib bindings for Elektra.
 
 Are used by gsettings and GI bindings.
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `glib-elektra`.

@@ -12,7 +12,7 @@
 
 void f (const Key * source)
 {
-	Key * dup = keyDup (source);
+	Key * dup = keyDup (source, KEY_CP_ALL);
 	printf ("\tin f\n");
 
 	keyDel (dup);
@@ -20,7 +20,7 @@ void f (const Key * source)
 
 void g (const Key * source, KeySet * ks)
 {
-	Key * dup = keyDup (source);
+	Key * dup = keyDup (source, KEY_CP_ALL);
 	printf ("\tin g\n");
 
 	ksAppendKey (ks, dup);
@@ -28,10 +28,10 @@ void g (const Key * source, KeySet * ks)
 
 void h (Key * k)
 {
-	Key * c = keyNew ("user/from/h", KEY_END);
+	Key * c = keyNew ("user:/from/h", KEY_END);
 	printf ("\tin h\n");
 
-	keyCopy (k, c);
+	keyCopy (k, c, KEY_CP_ALL);
 	keyDel (c);
 	/* the caller will see the changed key k */
 }
@@ -42,7 +42,7 @@ void simpleAppend (void)
 {
 //! [simple append]
 KeySet * ks = ksNew (1, KS_END);
-ksAppendKey (ks, keyNew ("user/my/new/key", KEY_END));
+ksAppendKey (ks, keyNew ("user:/my/new/key", KEY_END));
 ksDel (ks);
 // key deleted, too!
 //! [simple append]
@@ -53,7 +53,7 @@ void refAppend (void)
 {
 //! [ref append]
 KeySet * ks = ksNew (1, KS_END);
-Key * k = keyNew ("user/ref/key", KEY_END);
+Key * k = keyNew ("user:/ref/key", KEY_END);
 keyIncRef (k);
 ksAppendKey (ks, k);
 ksDel (ks);
@@ -67,8 +67,8 @@ void dupAppend (void)
 {
 //! [dup append]
 KeySet * ks = ksNew (1, KS_END);
-Key * k = keyNew ("user/ref/key", KEY_END);
-ksAppendKey (ks, keyDup (k));
+Key * k = keyNew ("user:/ref/key", KEY_END);
+ksAppendKey (ks, keyDup (k, KEY_CP_ALL));
 ksDel (ks);
 // now we still can work with the key k!
 keyDel (k);
@@ -80,7 +80,7 @@ int main (void)
 	Key * origKey;
 	KeySet * ks = ksNew (0, KS_END);
 
-	Key * key = keyNew ("user/test/name", KEY_VALUE, "myvalue", KEY_END);
+	Key * key = keyNew ("user:/test/name", KEY_VALUE, "myvalue", KEY_END);
 	printf ("Created key %s with value %s\n", keyName (key), keyString (key));
 
 	f (key);
@@ -101,7 +101,7 @@ int main (void)
 
 	ksRewind (ks);
 	origKey = ksNext (ks);
-	key = keyDup (origKey);
+	key = keyDup (origKey, KEY_CP_ALL);
 	printf ("A duplication of the key %s with value %s\n", keyName (key), keyString (key));
 
 	keyDel (key);

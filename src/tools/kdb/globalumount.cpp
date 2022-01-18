@@ -27,13 +27,13 @@ int GlobalUmountCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	// they are all mounted in that array
-	Key parentKey ("system/elektra/globalplugins/postcommit/user/plugins/", KEY_END);
+	Key parentKey ("system:/elektra/globalplugins/postcommit/user/plugins/", KEY_END);
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
 	const string name = cl.arguments[0];
 	auto it =
-		find_if (conf.begin (), conf.end (), [&](Key key) { return key.isDirectBelow (parentKey) && key.get<string> () == name; });
+		find_if (conf.begin (), conf.end (), [&] (Key key) { return key.isDirectBelow (parentKey) && key.get<string> () == name; });
 
 	if (it == conf.end ())
 	{

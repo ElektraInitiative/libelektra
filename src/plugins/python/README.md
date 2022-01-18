@@ -14,13 +14,18 @@ The plugin uses Python to do magic things. It allows plugins to be written in Py
 What a Python script can do is not really limited by design, so any kind of plugin may be
 implemented. The python plugin is especially useful to write filter and logging scripts.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-python`.
+
 ## Usage
 
 The python plugin requires the configuration parameter **script** holding the file path to a
 python script. The mount command would look like
 
 ```sh
-kdb mount file.ini /python python script=/path/to/filter_script.py
+sudo kdb mount file.ini /python python script=/path/to/filter_script.py
 ```
 
 if the **ini** plugin should be used for storage and the python plugin only serves to invoke the
@@ -29,7 +34,7 @@ filter script.
 For a Python script that serves as INI storage plugin itself, one uses
 
 ```sh
-kdb mount file.json /python python script=python_configparser.py
+sudo kdb mount file.json /python python script=python_configparser.py
 ```
 
 ### Plugin Configuration

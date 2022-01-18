@@ -19,7 +19,6 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbproposal.h>
 
 typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);
 
@@ -166,7 +165,7 @@ static char * parseAlias (KeySet * append, const Key * hostParent, char * tokenP
 	sret = elektraParseToken (&fieldBuffer, tokenPointer);
 	if (sret == 0) return 0;
 
-	Key * alias = keyDup (hostParent);
+	Key * alias = keyDup (hostParent, KEY_CP_ALL);
 	keyAddBaseName (alias, fieldBuffer);
 	elektraFree (fieldBuffer);
 
@@ -189,7 +188,7 @@ static int elektraKeySetMetaKeySet (Key * key, KeySet * metaKeySet)
 	if (!metaKeySet) return 0;
 
 	Key * currentMeta;
-	cursor_t initialCursor = ksGetCursor (metaKeySet);
+	elektraCursor initialCursor = ksGetCursor (metaKeySet);
 	ksRewind (metaKeySet);
 	while ((currentMeta = ksNext (metaKeySet)))
 	{
@@ -206,7 +205,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	int errnosave = errno;
 	char readBuffer[HOSTS_KDB_BUFFER_SIZE];
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/hosts"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hosts"))
 	{
 		KeySet * moduleConfig =
 #include "contract.h"
@@ -227,7 +226,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ksClear (returned);
 	KeySet * append = ksNew (ksGetSize (returned) * 2, KS_END);
 
-	Key * key = keyDup (parentKey);
+	Key * key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (append, key);
 
 	Key * currentKey = 0;
@@ -242,7 +241,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 		if (!currentKey)
 		{
-			currentKey = keyDup (parentKey);
+			currentKey = keyDup (parentKey, KEY_CP_ALL);
 		}
 
 		if (parseComment (comments, readBuffer, "#", &elektraAddLineComment)) continue;

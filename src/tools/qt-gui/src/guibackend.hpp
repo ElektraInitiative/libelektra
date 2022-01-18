@@ -32,15 +32,17 @@ public:
 	/**
 	 * @brief GUIBackend The mandatory copy constructor.
 	 */
-	GUIBackend (const GUIBackend & other)
-	: QObject (){ Q_UNUSED (other) }
+	GUIBackend (const GUIBackend & other) : QObject ()
+	{
+		Q_UNUSED (other)
+	}
 
-	  /**
-	   * @brief Creates a new backend on a mountpoint.
-	   *
-	   * @param mountpoint The mountpoint of the new backend.
-	   */
-	  Q_INVOKABLE void createBackend (const QString & mountpoint);
+	/**
+	 * @brief Creates a new backend on a mountpoint.
+	 *
+	 * @param mountpoint The mountpoint of the new backend.
+	 */
+	Q_INVOKABLE void createBackend (const QString & mountpoint);
 
 	/**
 	 * @brief Add path to a backend fallback file.

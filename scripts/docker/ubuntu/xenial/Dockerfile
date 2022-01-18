@@ -18,7 +18,6 @@ RUN apt-get update && apt-get -y install \
         libyajl-dev \
         git \
         libgit2-dev \
-        libboost-all-dev \
         libssl-dev \
         libdbus-1-dev \
         libpcre3-dev \
@@ -27,11 +26,15 @@ RUN apt-get update && apt-get -y install \
         valgrind \
         checkinstall \
         swig \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.10.0
+ARG GTEST_VER=release-1.11.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \

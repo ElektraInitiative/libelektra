@@ -22,15 +22,15 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 {
 	/* get all keys */
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/ni"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/ni"))
 	{
 		KeySet * moduleConfig =
-			ksNew (30, keyNew ("system/elektra/modules/ni", KEY_VALUE, "ni plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/ni/exports", KEY_END),
-			       keyNew ("system/elektra/modules/ni/exports/get", KEY_FUNC, elektraNiGet, KEY_END),
-			       keyNew ("system/elektra/modules/ni/exports/set", KEY_FUNC, elektraNiSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/ni", KEY_VALUE, "ni plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/ni/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/ni/exports/get", KEY_FUNC, elektraNiGet, KEY_END),
+			       keyNew ("system:/elektra/modules/ni/exports/set", KEY_FUNC, elektraNiSet, KEY_END),
 #include "readme_ni.c"
-			       keyNew ("system/elektra/modules/ni/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/ni/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;

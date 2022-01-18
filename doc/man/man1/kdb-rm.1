@@ -1,101 +1,71 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-RM" "1" "August 2019" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-RM" "1" "November 2020" ""
 .SH "NAME"
 \fBkdb\-rm\fR \- Remove key(s) from the key database
-.
 .SH "SYNOPSIS"
 \fBkdb rm <path>\fR
-.
 .P
 Where \fBpath\fR is the path of the key(s) you want to remove\. Note that when using the \fB\-r\fR flag, not only the key directly at \fBpath\fR will be removed, but all of the keys below the path as well\.
-.
 .SH "DESCRIPTION"
 This command removes key(s) from the Key database\.
-.
 .SH "RETURN VALUES"
 This command will return the following values as an exit status:
-.
 .TP
 0
 No errors\.
-.
 .TP
 1\-10
 standard exit codes, see kdb(1) \fIkdb\.md\fR
-.
 .TP
 11
 No key to remove found\.
-.
 .SH "OPTIONS"
-.
 .TP
 \fB\-H\fR, \fB\-\-help\fR
 Show the man page\.
-.
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
-.
 .TP
 \fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
-.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
-.
 .TP
 \fB\-r\fR, \fB\-\-recursive\fR
 Work in a recursive mode\.
-.
 .TP
 \fB\-E\fR, \fB\-\-without\-elektra\fR
-Omit the \fBsystem/elektra\fR directory\.
-.
+Omit the \fBsystem:/elektra\fR directory\.
 .TP
 \fB\-f\fR, \fB\-\-force\fR
 Do not fail on missing key, nor print if there was a key (\-v to still print)\.
-.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Explain what is happening\. Prints additional information in case of errors/warnings\.
-.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
-.
 .SH "EXAMPLES"
 To remove a single key:
-.
 .br
-\fBkdb rm user/example/key1\fR
-.
+\fBkdb rm user:/example/key1\fR
 .P
 To remove multiple keys:
-.
 .br
-\fBkdb rm \-r user/example\fR
-.
+\fBkdb rm \-r user:/example\fR
 .P
-To remove all keys in \fBsystem\fR except \fBsystem/elektra\fR:
-.
+To remove all keys in \fBsystem\fR except \fBsystem:/elektra\fR:
 .br
 \fBsudo kdb rm \-rE system\fR
-.
 .P
 To not fail when key is missing:
-.
 .br
-\fBkdb rm \-f user/maybe/missing\fR
-.
+\fBkdb rm \-f user:/maybe/missing\fR
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
-.
 .IP "" 0
 

@@ -114,9 +114,9 @@ void init (void)
 	char cwd[PATH_MAX];
 	getcwd (cwd, PATH_MAX);
 	KeySet * tmpKS = ksNew (0, KS_END);
-	Key * parentKey = keyNew (PRELOAD_PATH, KEY_CASCADING_NAME, KEY_END);
+	Key * parentKey = keyNew (PRELOAD_PATH, KEY_END);
 	Key * key;
-	KDB * handle = kdbOpen (parentKey);
+	KDB * handle = kdbOpen (NULL, parentKey);
 	kdbGet (handle, tmpKS, parentKey);
 	KeySet * ks = ksCut (tmpKS, parentKey);
 	ksRewind (ks);
@@ -134,7 +134,7 @@ void init (void)
 		else
 			tmp->value = createAbsolutePath (keyString (key), cwd);
 		tmp->oflags = (unsigned short) -1;
-		Key * lookupKey = keyDup (key);
+		Key * lookupKey = keyDup (key, KEY_CP_ALL);
 		keyAddBaseName (lookupKey, "readonly");
 		Key * found = ksLookup (ks, lookupKey, 0);
 		if (found)
@@ -250,7 +250,7 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf);
 static void exportConfiguration (Node * node)
 {
 	Key * key = keyNew (node->exportKey, KEY_END);
-	KDB * handle = kdbOpen (key);
+	KDB * handle = kdbOpen (NULL, key);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (handle, ks, key);
 	KeySet * exportKS;

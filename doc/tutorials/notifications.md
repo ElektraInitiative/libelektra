@@ -14,10 +14,10 @@ While sending and receiving notifications is implemented by plugins,
 applications use the notification API in order to use different plugins.
 
 The
-[notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+[notification API](https://doc.libelektra.org/api/latest/html/group__kdbnotification.html)
 implemented by the `elektra-notification` library allows receiving and handling
 notifications.
-An [I/O abstraction layer](https://doc.libelektra.org/api/current/html/group__kdbio.html)
+An [I/O abstraction layer](https://doc.libelektra.org/api/latest/html/group__kdbio.html)
 allows asynchronous notification processing by compatible plugins.
 The abstraction layer consists of an _interface_ used by transport plugins and
 different implementations of that interface called _I/O bindings_.
@@ -26,7 +26,7 @@ event loop API.
 Applications typically use one I/O binding but can also use none or multiple
 I/O bindings.
 For more on I/O bindings see the
-[API documenation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+[API documenation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
 
 Transport plugins exchange notifications via different protocols like D-Bus or
 ZeroMQ.
@@ -84,22 +84,21 @@ the initialization of an I/O binding.
 
 #include <uv.h>
 
-void main (void)
+int main (void)
 {
-	KDB* repo;
-
-	// Open KDB
-	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (key);
-
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();
 
 	// Initialize I/O binding tied to event loop
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-	// Use I/O binding for our kdb instance
-	elektraIoSetBinding (kdb, binding);
+	// Create contract that tells Elektra to use the I/O binding
+	KeySet * contract = ksNew (0, KS_END);
+	elektraIoContract (contract, binding);
+
+	// Open KDB (with contract)
+	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
+	KDB * kdb = kdbOpen (contract, key);
 
 	// Normal application setup code ...
 
@@ -107,11 +106,14 @@ void main (void)
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup
+	ksDel (contract);
 	kdbClose (kdb, key);
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
 }
 ```
+
+Make sure to compile/link with `pkg-config --libs --cflags elektra-io-uv`.
 
 ## How to receive notifications
 
@@ -154,30 +156,29 @@ static void printVariable (ElektraIoTimerOperation * timerOp)
 	printf ("\nMy integer value is %d\n", value);
 }
 
-void main (void)
+int main (void)
 {
-	KDB* repo;
-
-	// Open KDB
-	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (key);
-
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();
 
 	// Initialize I/O binding tied to event loop
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-	// Use I/O binding for our kdb instance
-	elektraIoSetBinding (kdb, binding);
+	// Create contract that tells Elektra to use the I/O binding
+	KeySet * contract = ksNew (0, KS_END);
+	elektraIoContract (contract, binding);
 
-	// Initialize notification wrapper
-	elektraNotificationOpen (kdb);
+	// Add notifications to the contract
+	elektraNotificationContract (contract);
+
+	// Open KDB
+	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
+	KDB * kdb = kdbOpen (contract, key);
 
 	// Register "value" for updates
 	Key * registeredKey = keyNew ("/sw/myorg/myapp/#0/current/value", KEY_END);
 	int value;
-	elektraNotificationRegisterInt (repo, registeredKey, &value);
+	elektraNotificationRegisterInt (kdb, registeredKey, &value);
 
 	// Create a timer to repeatedly print "value"
 	ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
@@ -192,7 +193,6 @@ void main (void)
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup
-	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
 	elektraIoBindingRemoveTimer (timer);
 	elektraIoBindingCleanup (binding);
@@ -287,14 +287,15 @@ void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 {
 	if (kdb != NULL)
 	{
-		// Cleanup notifications and close KDB
-		elektraNotificationClose (kdb);
+		// Cleanup and close KDB
 		kdbClose (kdb, parentKey);
 	}
 
+	KeySet * contract = ksNew (0, KS_END);
+	elektraIoContract (contract, binding);
+	elektraNotificationContract (contract);
+
 	kdb = kdbOpen (parentKey);
-	elektraIoSetBinding (kdb, binding);
-	elektraNotificationOpen (kdb);
 
 	// Code for registration from snippet before
 	Key * elektraKey = keyNew ("/elektra", KEY_END);
@@ -355,7 +356,6 @@ void initKdb (void)
 	if (kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-		elektraNotificationClose (kdb);
 		kdbClose (kdb, parentKey);
 	}
 
@@ -408,7 +408,7 @@ in an ant colony but it also has disadvantages.
 Systems that bear _unwanted_ emergent behavior are difficult to manage and
 experience failures in the worst case.
 This kind of unwanted emergent behavior is called
-[_emergent misbehavior_](http://www.hpl.hp.com/techreports/2006/HPL-2006-2.html).
+[_emergent misbehavior_](https://dl.acm.org/doi/10.1145/1217935.1217964).
 Examples of emergent misbehavior are traffic jams or the
 [Millenium Footbridge](https://researchcourse.pbworks.com/f/structural+engineering.pdf)
 [incident in London](https://www.sciencedaily.com/releases/2005/11/051103080801.htm).
@@ -483,7 +483,7 @@ are polled for changes by the application.
 
 This guideline limits the use of the notification API to notifications about
 configuration changes.
-There are better suited techiques for different use cases.
+There are better suited techniques for different use cases.
 Applications should not keep track of changes and change their behavior on
 certain conditions.
 
@@ -506,7 +506,7 @@ operate on current settings.
 ### Guideline 6: Be careful on what to call inside callbacks
 
 > Notification callbacks are called from within Elektra.
-> Calling `kdbClose()`, `elektraNotificationClose()` or `elektraSetIoBinding()` in a callback will lead to undefined behavior or an application crash.
+> Calling `kdbClose()` in a callback will lead to undefined behavior or an application crash.
 
 Closing and cleaning up the KDB handle will cause an application crash because
 the control flow returns from the callback to now removed code.
@@ -531,7 +531,7 @@ Developers can create their own bindings if the I/O management library of their
 choice is not supported by an existing I/O binding.
 
 For details on see the [example "doc" binding](/src/bindings/io/doc/) or the
-[API documentation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+[API documentation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
 Existing I/O bindings provide a good inspiration on how to implement a custom
 binding.
 Since a binding is generic and not application specific it is much appreciated

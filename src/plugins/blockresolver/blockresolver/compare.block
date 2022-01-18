@@ -1,8 +1,5 @@
-[section]
 key=outside start
 ### block config start
-[section]
 key=only the inside has changed
 ### block config stop
-[section]
 key=outside end

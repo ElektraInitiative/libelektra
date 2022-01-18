@@ -15,13 +15,12 @@
 
 void printError (Key * key);
 void printWarnings (Key * key);
-void removeMetaData (Key * key, const char * searchfor);
 
 int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
-	KDB * handle = kdbOpen (key);
+	Key * key = keyNew ("/sw/MyApp", KEY_END);
+	KDB * handle = kdbOpen (NULL, key);
 
 	if (!handle) printError (key);
 
@@ -44,7 +43,7 @@ int main (void)
 		// do something with the key
 		const char * key_name = keyName (result);
 		const char * key_value = keyString (result);
-		const char * key_comment = keyString (keyGetMeta (result, "comment"));
+		const char * key_comment = keyString (keyGetMeta (result, "comment/#0"));
 		printf ("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 	}
 
@@ -68,7 +67,9 @@ void printError (Key * key)
 	printf ("Error occurred: %s\n", keyString (keyGetMeta (key, "error/description")));
 
 	/*remove error*/
-	removeMetaData (key, "error");
+	Key * cutpoint = keyNew ("meta:/error", KEY_END);
+	ksDel (ksCut (keyMeta (key), cutpoint));
+	keyDel (cutpoint);
 }
 
 
@@ -81,29 +82,22 @@ void printError (Key * key)
  */
 void printWarnings (Key * key)
 {
-	if (!keyGetMeta (key, "warnings")) return;
-	char * end;
-	size_t warn_count = strtol (keyString (keyGetMeta (key, "warnings")), &end, 10);
-	if (*end)
+	Key * cutpoint = keyNew ("meta:/warnings", KEY_END);
+	KeySet * warnings = ksCut (keyMeta (key), cutpoint);
+
+	for (elektraCursor i = 1; i < ksGetSize (warnings); ++i)
 	{
-		printf ("strtol error\n");
-		return;
+		Key * cur = ksAtCursor (warnings, i);
+		if (keyIsDirectlyBelow (cutpoint, cur))
+		{
+			Key * lookup = keyNew (keyName (cur), KEY_END);
+			keyAddBaseName (cur, "description");
+			printf ("Warning occurred: %s\n", keyString (ksLookup (warnings, lookup, KDB_O_DEL)));
+		}
 	}
-	size_t warn_iter = 0;
 
-	char buffer[sizeof ("warnings/#00/description") + sizeof (ELEKTRA_STRINGIFY (SIZE_MAX))];
-
-	do
-	{
-		snprintf (&buffer[0], sizeof (buffer), "warnings/#%02zu/description", warn_iter);
-
-		const Key * warnkey = keyGetMeta (key, buffer);
-		printf ("Warning occurred: %s\n", keyString (warnkey));
-		++warn_iter;
-	} while (warn_iter <= warn_count);
-
-	/*remove all warnings*/
-	removeMetaData (key, "warnings");
+	keyDel (cutpoint);
+	ksDel (warnings);
 }
 
 

@@ -211,7 +211,7 @@ and these came close:
 #if (0)						       // not used here
 static uint32_t hashword (const uint32_t * restrict k, /* the key, an array of uint32_t values */
 			  size_t length,	       /* the length of the key, in uint32_ts */
-			  uint32_t initval)	    /* the previous hash, or an arbitrary value */
+			  uint32_t initval)	       /* the previous hash, or an arbitrary value */
 {
 	uint32_t a, b, c;
 
@@ -259,8 +259,8 @@ both be initialized with seeds.  If you pass in (*pb)==0, the output
 #if (0)						    // not used here
 static void hashword2 (const uint32_t * restrict k, /* the key, an array of uint32_t values */
 		       size_t length,		    /* the length of the key, in uint32_ts */
-		       uint32_t * restrict pc,      /* IN: seed OUT: primary hash value */
-		       uint32_t * restrict pb)      /* IN: more seed OUT: secondary hash value */
+		       uint32_t * restrict pc,	    /* IN: seed OUT: primary hash value */
+		       uint32_t * restrict pb)	    /* IN: more seed OUT: secondary hash value */
 {
 	uint32_t a, b, c;
 

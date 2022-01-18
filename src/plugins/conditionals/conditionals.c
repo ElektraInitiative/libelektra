@@ -506,13 +506,13 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		Key * lookupKey;
 		if (*firstPtr == '@')
 		{
-			lookupKey = keyDup (parentKey);
+			lookupKey = keyDup (parentKey, KEY_CP_ALL);
 			++firstPtr;
 			keyAddName (lookupKey, firstPtr);
 		}
 		else if (!strncmp (firstPtr, "..", 2) || !strncmp (firstPtr, ".", 1))
 		{
-			lookupKey = keyDup (key);
+			lookupKey = keyDup (key, KEY_CP_ALL);
 			keyAddName (lookupKey, firstPtr);
 		}
 		else
@@ -887,15 +887,16 @@ static CondResult evalMultipleConditions (Key * key, const Key * meta, const Key
 
 int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/conditionals"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/conditionals"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/conditionals", KEY_VALUE, "conditionals plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/conditionals/exports", KEY_END),
-			keyNew ("system/elektra/modules/conditionals/exports/get", KEY_FUNC, elektraConditionalsGet, KEY_END),
-			keyNew ("system/elektra/modules/conditionals/exports/set", KEY_FUNC, elektraConditionalsSet, KEY_END),
+			30,
+			keyNew ("system:/elektra/modules/conditionals", KEY_VALUE, "conditionals plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/conditionals/exports", KEY_END),
+			keyNew ("system:/elektra/modules/conditionals/exports/get", KEY_FUNC, elektraConditionalsGet, KEY_END),
+			keyNew ("system:/elektra/modules/conditionals/exports/set", KEY_FUNC, elektraConditionalsSet, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/conditionals/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/conditionals/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

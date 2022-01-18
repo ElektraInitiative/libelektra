@@ -13,6 +13,11 @@
 This plugin is a notification plugin, which sends a signal to D-Bus when
 the key database (KDB) has been modified.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-dbus`.
+
 ## Dependencies
 
 - `libdbus-1-dev`
@@ -94,7 +99,7 @@ kdb testmod_dbus receive_session
 We can trigger a message with:
 
 ```sh
-kdb set user/dbus/x b
+kdb set user:/dbus/x b
 ```
 
 Note that changes in `user` fire on the dbus `session`,
@@ -109,7 +114,7 @@ dbus-monitor --system type='signal',interface='org.libelektra',path='/org/libele
 And then fire it with:
 
 ```sh
-kdb set system/dbus/y a
+kdb set system:/dbus/y a
 ```
 
 ### C
@@ -234,7 +239,7 @@ Example output from `dbus-monitor`:
 
 ```
 signal time=1520805003.227723 sender=:1.8 -> destination=(null destination) serial=15 path=/org/libelektra/configuration; interface=org.libelektra; member=Commit
-   string "system/tests/foo"
+   string "system:/tests/foo"
 ```
 
 ## Problems

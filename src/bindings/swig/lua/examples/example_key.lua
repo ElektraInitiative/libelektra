@@ -5,7 +5,7 @@ print = function(s, ...)
   return orig_print(s:format(...))
 end
 
-local key1 = kdb.Key("user/key1", kdb.KEY_VALUE, "some_value")
+local key1 = kdb.Key("user:/key1", kdb.KEY_VALUE, "some_value")
 print("Key1 name=\"%s\" value=\"%s\"", key1.name, key1.value)
 print("")
 
@@ -25,7 +25,7 @@ local key2 = kdb.Key(key1:dup())
 print("Key2 is a copy of Key1. Do they match? %s", key1 == key2)
 print("")
 
-key1.name = "system/key1"
+key1.name = "system:/key1"
 print("We changed name of Key1. New name is \"%s\"", key1.name)
 print("Do they still match? %s", key1 == key2)
 print("")
@@ -36,7 +36,7 @@ print("")
 
 key1:setMeta("foo",     "bar")
 key1:setMeta("owner",   "manuel")
-key1:setMeta("comment", "this is my example key")
+key1:setMeta("comment/#0", "this is my example key")
 print("Keys can have metadata. We can iterate over or fetch them by name.")
 print("Meta data of Key1 with their value:")
 for meta in key1:getMeta() do

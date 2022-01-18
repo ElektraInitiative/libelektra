@@ -108,7 +108,7 @@ static int isExecutable (const char * file, Key * errorKey)
  * @param errorKey holds an error description in case of failure.
  * @param dir contains the path to a directory
  * @param file contains a file name
- * @returns an allocated string containing "dir/file" which must be freed by the caller or NULL in case of error.
+ * @returns an allocated string containing "dir:/file" which must be freed by the caller or NULL in case of error.
  */
 static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
 {
@@ -418,8 +418,8 @@ static int isValidGpgKey (KeySet * conf, const char * value)
 {
 	// NOTE it is save to discard the const modifier (although it is not pretty) - the value is not being modified
 	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *) value, NULL };
-	Key * errorKey = keyNew (0);
-	Key * msgKey = keyNew (0);
+	Key * errorKey = keyNew ("/", KEY_END);
+	Key * msgKey = keyNew ("/", KEY_END);
 
 	int status = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
 
@@ -506,8 +506,8 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * err
  */
 char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
 {
-	Key * msgKey = keyNew (0);
-	Key * errorKey = keyNew (0);
+	Key * msgKey = keyNew ("/", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 
 	char * errorBuffer;
 	size_t errorBufferLen = 0;

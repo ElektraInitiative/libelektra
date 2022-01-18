@@ -1,5 +1,4 @@
-Some enhanced ideas which (most likely) will not be part of 0.8
-but should be decided until 1.0
+Some ideas which should be decided until 1.0
 
 
 == API Changes ==
@@ -9,56 +8,17 @@ Avoid anything starting with _
 
 remove elektraInvokeInitialize compatibility layer
 
-ksClear/keyClear weg (can be done with *Copy(,0))
-	meta handling should be the same
-
 Single Interface: only get pointers, no memcopy (only one keyGetString, no
 	keyString)
 
-no "binary" metadata hack within API:
-	just provide keyGetValue and keyGetValueSize
-	no fixed strings when GetString on binary
-
-backslash:
-	allow \ at end of keynames?
-	Autoescape on addBaseName?
-
 remove old metadata get/set
 
-change key name of a key that was popped from all keysets?
-
-remove null ptr checks? (see decision)
-
-C++:
-	add getValueSize()?
-
-Start arrays with _ (and not with #)?
-
-make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
-sentinel, have a single way how to terminate vaargs
-
-remove key/keyset flags
-- that are obsolete/deprecated
-- KDB_O_NOCASE (because it needs POSIX-only elektraStrCaseCmp
-		and is not performant)
-
-_t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
-should be renamed to something elektra specific
-
-internal APIs: malloc, realloc should use 2 parameters and
-	check for multiplication overflow
-
 size_t, ssize_t are not fixed size, use uint32_t.. to have no
-problems on binary serialisation + unified behaviour (array sizes..)
--> remove SSIZE_T (only POSIX)
-
-empty/invalid keys should lead to an error in kdbGet
+	problems on binary serialisation + unified behaviour (array sizes..)
 
 KEY_* -> ELEKTRA_KEY_* to avoid clashes
 	e.g. clash with KEY_MODE in “linux/input-event-codes.h”
-consistently use singular (KEY_FLAGS -> KEY_FLAG)
-
-kdb.h -> elektra/kdb.h to avoid clashes
+	consistently use singular (KEY_FLAGS -> KEY_FLAG)
 
 Remove/Refactor/Rename obsolete/not needed methods:
 - keyClear
@@ -71,12 +31,9 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - keyIsBelow
 - keyIsBelowOrSame
 - keyIsDirectlyBelow
-- keyIsInactive
 - keyIsBinary
 - keyIsString
 - keyName
-- keyGetFullNameSize
-- keyGetFullName
 - keyGetBaseNameSize
 - keyGetBaseName
 - keyValue
@@ -86,7 +43,6 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - keyGetBinary
 - keySetBinary
 - ksClear
-- ksNeedSync
 - ksCut
 - ksPop
 - ksHead
@@ -94,23 +50,13 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - ksLookupByName
 
 
+== TOOLS ==
 
-== Compatibility ==
-
-1.* does not need to be compatible with 0.* version.
-
-- remove mountpoint name concept
- - system/elektra/mountpoints/system\/info\/uname/mountpoint key not needed (system/info/uname already in name present!)
-- remove numbers in backend mounting (placements only per name)
-- have consistent instantiate+backreferencing syntax for both backend+global mounting
-   (system/elektra/mountpoints and system/elektra/globalplugins)
-- remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
-- recursive backend=plugin (separate commit method)
-- remove legacy configuration of the `kdb` tool
-  (% profile and /sw/kdb/ in src/tools/kdb/cmdline.cpp line 290-300)
+remove legacy configuration of the `kdb` tool
+	(% profile and /sw/kdb/ in src/tools/kdb/cmdline.cpp line 290-300)
 
 
-== Methods ==
+= FINISH for 1.0.0 =
 
 all exported methods of elektra need to be:
 	useful in current state
@@ -121,208 +67,12 @@ all exported methods of elektra need to be:
 	having test cases for error cases
 	otherwise fix or mark it obsolete
 
-== Conventions ==
-
-conventions should be used everywhere
-
-Encode numbers /#222/ by adding _. (so not only convention)? (only unescaped name has #__)
-
-warnings should have array conventions #0, #_10...
-	also allow many errors? (for many validation/parse errors)
-
-
-== Libraries ==
-
-- remove libelektra.so (only have new split libraries)
-
-
-=== Plugin API Changes ===
-
-maybe kdbConstruct and kdbDestruct needed too?
-
-allow non-file/resolver based backends
-
-read function symbols from contract (and not duplicated)
-	have elektraPluginContract separated from elektraPluginGet?
-
-enhance API to: (next to get/set/error)
-	- contract? allows us to fetch contract without get hacks
-	- commit/rollback (so that plugin=backend)
-
-
-== Error handling ==
-
-translation of exceptions to different languages
-
-
-== Vision ==
-
-Configuration definitions:
-	provide definitions of known configuration trees
-	generate code
-	generate other schemas
-	generate docu of comments (see libcomment)
-	do mounting+preloading (generate config for type checkers)
-	provide definitions which metadata is available and how it is used ("columns" of Configuration definitions)
-
-community:
-	make place to share configuration
-	make place to share plugins
-
-Make Plugins 1st level citizen
-	plugins should be able to do everything the core can do
-	(mounting, exceptions, bootstrapping, user/system split)
-
-InternalDatabase: (only for frontend!)
-	for highlevel kdbGetString, kdbSetString
-
-Lazy+Bind Mounting
-	makes kdbOpen cheaper (with many plugins)
-	plugins can have global information bind mounted into their conf
-	(e.g. /etc/passwd into resolver)
-	kdbDup to copy current state (avoid multiple bootstrapping)
-	leaves architecture as is -> possibility for any frontend and caching strategy + plays nicely with recursive plugins
-
-Concurrent Plugin Processing:
-	The plugins must be processed in the correct sequence because
-	they change keys and have side effects.
-	The processing of backends is however
-	completely independent up to, and after, the commit step.
-	Each of these two parts can be implemented concurrently.
-	If any backend fails before commit, special care must be taken so
-	that no backend commits its changes.
-	The concurrent processing of the plugins
-	is possible for both |kdbGet()| and |kdbSet()|.
-
-non-file based storage plugins (backends):
-	nvram
-	sql
-	mmap
-	filesys
-
-cryptography:
-	sign modules and check them when kdbOpen
-	encrypted keys backend
-	sign+encrypt configurationn
-
-distributed elektra
-	automatical synchronisation of nodes
-
-typed elektra
-	typing system with subtyping
-	dynamic type checking
-
-notification: new notification api (only for frontend!)
-	for highlevel API
-	void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
-		KdbCallback *cb, void *userdata);
-	void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
-		KdbCallback *cb, void *userdata);
-	void kdbDeliverEvents(long iterations, int sleep);
-
-clause infos/needs could automatically imply ordering?
-
-libelektra-metadata:
-	multilanguage comments
-	type of key (list, int, bool,...)
-	validator of key (what is valid?)
-	important? (-20 for optional 20 for must have)
-	regexpr for keysets
-	version of key (full.major.minor)
-	user comments
-	without any field it will be taken as
-		comment for every language,
-		not especially specified
-	readonly?
-	dynamic?
-	persistent?
-	visibility (enum for groups)
-	default
-	type
-	description
-
-
-== Multiple Files per Backend ==
-
-The disadvantage of the current situation is that new files are not
-tracked automatically (explicit mounting needed).
-
-Storage plugins would need `KeySet` operations like difference to deduce which files to
-remove or create.
-The previously trivial test if an update is needed or a conflict occurred
-may become slow depending on the number
-of files involved.
-
-For example, KDE has many configuration files in the path
-`~/.kde/share/config`.
-In a KDE installation with many programs it
-can be up to one thousand individual files.
-
-
-== User Mount Point Configuration ==
-
-The mountpoint configuration resides only below
-system/elektra/mountpoints. We decided against
-providing \keyname{user/elektra/mountpoints} because of security concerns.
-This issue, however, is solved because of the specification.
-Now its possible to specify which namespaces should be used.
-
-Still it must be assured that the user only mounts backends where he or she is
-allowed to do so.
-The administrator may still want to enforce some user
-configuration. But this would be pointless if the user could circumvent
-it.
-
-Another open item is how, and if, user's own plugins can be used.
-Plugins provided by the user open a door for code injection. These
-problems have to be discussed and clarified before any attempts in this
-direction are made.
-
-
-== Distributing Configuration ==
-
-Elektra currently does not provide any distribution or decentralised
-features because it does not have any plugins communicating with a
-configuration daemon.
-These features are supposed to be on a higher level and not in backend
-code. Instead, software like Cfengine and Puppet can use Elektra to change local
-configuration.
-
-Still, for some setups fetching configuration from other places or even
-have a distributed key database is useful.
-
-
-== Internals ==
-
-BackendCtl:
-	set and get options dynamically of backends
-	readonly
-	transactions
-	locking (performance)
-	filesys optimistic lock
-
-support multiple owner at once for kdbGet()/kdbSet()? -> or just set USER env or uid?
-allow mounting for users?
-
-
-= FINISH for 1.0.0 =
-
 only exported symbols should be available
 Version info
 release
-minimize API -> (split core and convenience (e.g. libmetadata)?)
-
-== GOALS for 1.0.0 ==
+minimize API -> (split core and convenience like libmetadata)
 
 added API evolution for all parts+declare every API stable+METADATA+CONTRACT stable
-finished core plugins: INI, validation, notification
-nicely working front-ends+bindings for some projects
-
-
-
-== OVERVIEW ==
-
-draw a big picture
 
 make list of all symbols
 	exported symbols

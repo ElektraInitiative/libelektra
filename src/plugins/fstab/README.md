@@ -12,13 +12,18 @@
 
 This plugin is an implementation of a parser and generator of the /etc/fstab file.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Old fstab Entries
 
 (Deprecated, remove this section after it is reimplemented in the new way)
 
 For each device in fstab elektra will store the following keys:
 
-```sh
+```
 pseudoname/device
 pseudoname/mpoint
 pseudoname/type
@@ -87,13 +92,13 @@ would have a key name that is an array (so the value is the number of
 children, in this case 1):
 
 ```
-system/filesystems/\/media\/cdrom
+system:/filesystems/\/media\/cdrom
 ```
 
 with the array entry:
 
 ```
-system/filesystems/\/media\/cdrom0/#0/
+system:/filesystems/\/media\/cdrom0/#0/
 ```
 
 So when following line is added
@@ -119,5 +124,5 @@ Spaces in the names are replaced by \040 in the fstab.
 Mount the plugin:
 
 ```sh
-kdb mount /etc/fstab system/filesystems fstab struct type path
+sudo kdb mount /etc/fstab system:/filesystems fstab struct type path
 ```

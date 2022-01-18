@@ -70,11 +70,11 @@ TEST_F (MergingKDBTest, HandlesUnconflictingKeySets)
 	Key parent (testRoot, KEY_END);
 
 	first.get (firstReturned, parent);
-	firstReturned.append (Key ("system" + testRoot + "key", KEY_VALUE, "value", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value", KEY_END));
 	first.set (firstReturned, parent);
 
 	mergingKDB.get (secondReturned, parent);
-	secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
 	mergingKDB.synchronize (secondReturned, parent, merger);
 }
 
@@ -88,10 +88,10 @@ TEST_F (MergingKDBTest, ThrowsIfNoConflictStrategyRegistered)
 	mergingKDB.get (secondReturned, parent);
 	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
-	firstReturned.append (Key ("system" + testRoot + "key", KEY_VALUE, "value", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value", KEY_END));
 	first.set (firstReturned, parent);
 
-	secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
 	EXPECT_THROW (mergingKDB.synchronize (secondReturned, parent, merger), MergingKDBException);
 }
 
@@ -108,17 +108,17 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 	mergingKDB.get (secondReturned, parent);
 	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
-	Key key1 ("system" + testRoot + "key1", KEY_VALUE, "value", KEY_END);
+	Key key1 ("system:" + testRoot + "key1", KEY_VALUE, "value", KEY_END);
 	firstReturned.append (key1);
 	first.set (firstReturned, parent);
 
-	Key key2 ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END);
+	Key key2 ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END);
 	secondReturned.append (key2);
 	mergingKDB.synchronize (secondReturned, parent, merger);
 
 	first.get (firstReturned, parent);
-	Key resultKey1 = firstReturned.lookup ("system" + testRoot + "key1");
-	Key resultKey2 = firstReturned.lookup ("system" + testRoot + "key2");
+	Key resultKey1 = firstReturned.lookup ("system:" + testRoot + "key1");
+	Key resultKey2 = firstReturned.lookup ("system:" + testRoot + "key2");
 	EXPECT_EQ (2, firstReturned.size ()) << "Written KeySet has a wrong size";
 	ASSERT_TRUE (resultKey1);
 	EXPECT_EQ (key1, resultKey1) << "Key1 was not written correctly";
@@ -131,7 +131,7 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey)
 	Key parent (testRoot, KEY_END);
 
 	{
-		KeySet ks (3, *Key ("system" + testRoot + "key", KEY_VALUE, "value", KEY_END), KS_END);
+		KeySet ks (3, *Key ("system:" + testRoot + "key", KEY_VALUE, "value", KEY_END), KS_END);
 		EXPECT_EQ (1, ks.size ());
 		KDB keyAdder;
 		KeySet discard;
@@ -146,7 +146,7 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey)
 		KDB first;
 		first.get (firstReturned, parent);
 		EXPECT_EQ (1, firstReturned.size ());
-		firstReturned.lookup ("system" + testRoot + "key", KDB_O_POP);
+		firstReturned.lookup ("system:" + testRoot + "key", KDB_O_POP);
 		EXPECT_EQ (0, firstReturned.size ());
 		EXPECT_EQ (1, first.set (firstReturned, parent));
 	}
@@ -160,8 +160,8 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey2)
 	Key parent (testRoot, KEY_END);
 
 	{
-		KeySet ks (3, *Key ("system" + testRoot + "key1", KEY_VALUE, "value", KEY_END),
-			   *Key ("system" + testRoot + "key2", KEY_VALUE, "value", KEY_END), KS_END);
+		KeySet ks (3, *Key ("system:" + testRoot + "key1", KEY_VALUE, "value", KEY_END),
+			   *Key ("system:" + testRoot + "key2", KEY_VALUE, "value", KEY_END), KS_END);
 		EXPECT_EQ (1, ks.size ());
 		KDB keyAdder;
 		KeySet discard;
@@ -176,7 +176,7 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey2)
 		KDB first;
 		first.get (firstReturned, parent);
 		EXPECT_EQ (2, firstReturned.size ());
-		firstReturned.lookup ("system" + testRoot + "key2", KDB_O_POP);
+		firstReturned.lookup ("system:" + testRoot + "key2", KDB_O_POP);
 		EXPECT_EQ (1, firstReturned.size ());
 		EXPECT_EQ (1, first.set (firstReturned, parent));
 	}

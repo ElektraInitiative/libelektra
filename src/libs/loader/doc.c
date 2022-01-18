@@ -20,7 +20,7 @@
  * - to have a list of all loaded modules
  * - writing module loaders should be easy
  * - handle and report errors well
- * - avoid loading of modules multiple times (maybe OS can't handle that well)
+ * - avoid loading of modules multiple times (maybe the OS can't handle that well)
  * - hide the OS dependent handle inside a Key (handle is needed to
  *   close module afterwards)
  */
@@ -29,7 +29,7 @@
  * Initialises the module loading system.
  *
  * Most operating systems will have to do nothing here.
- * Anyway you are required to add the key system/elektra/modules
+ * Anyway you are required to add the key system:/elektra/modules
  * if it was successful.
  *
  * On error -1 is returned and if error != 0 error information
@@ -40,6 +40,7 @@
  * @return -1 on error
  * @return >=0 otherwise
  * @ingroup modules
+ * @post the key system:/elektra/modules is added in case of success
  */
 int elektraModulesInit (KeySet * modules, Key * error)
 {
@@ -62,14 +63,14 @@ int elektraModulesInit (KeySet * modules, Key * error)
  * If everything was successful append all information to the keyset modules
  * and return the pointer. Take care that you can close the module with that
  * information. All information needs to be stored within
- * system/elektra/modules/name
+ * system:/elektra/modules/name
  * You might want to use an struct and store it there as binary key.
  *
  * If anything goes wrong don't append anything to modules. Instead
  * report the error to the error key and return with 0.
  *
  * @pre the name is not null, empty and has at least one character
- *      different to /. It is suitable to be used as keyAddBaseName
+ *      different to '/'. It is suitable to be used as keyAddBaseName
  *      without any further error checking.
  *
  * @param modules where to get existing modules from
@@ -104,6 +105,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
  * @return -1 on error
  * @return >=0 otherwise
  * @ingroup modules
+ * @post all error information is stored in the key 'error'
  */
 int elektraModulesClose (KeySet * modules, Key * error)
 {

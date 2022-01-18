@@ -19,7 +19,16 @@ NewKeyCommand::NewKeyCommand (TreeViewModel * model, int index, DataContainer * 
 	QStringList newNameSplit = parentModel->getSplittedKeyname (newKey);
 	kdb::Key parentKey = m_parentNode->getKey ();
 
-	if (!parentKey) parentKey = kdb::Key (m_parentNode->getPath ().toStdString (), KEY_END);
+	if (!parentKey)
+	{
+		std::string parentPath = m_parentNode->getPath ().toStdString ();
+		if (parentPath.find ('/') == std::string::npos)
+		{
+			parentPath += "/";
+		}
+
+		parentKey = kdb::Key (parentPath, KEY_END);
+	}
 
 	QStringList parentNameSplit = parentModel->getSplittedKeyname (parentKey);
 

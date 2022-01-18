@@ -14,6 +14,11 @@
 This plugin checks whether the value of a key is a valid file system path and optionally if
 correct permissions are set for a certain user.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Purpose
 
 The motivation to write this plugin is given by the two paths that exist
@@ -56,49 +61,49 @@ check will be done if it is a directory or device file.
 An example on which the user should have no permission at all for the root directory.
 
 ```sh
-sudo kdb mount test.dump user/tests path dump
-sudo kdb set user/tests/path "$HOME"
-sudo kdb meta-set user/tests/path check/path ""
-sudo kdb meta-set user/tests/path check/path/user ""
-sudo kdb meta-set user/tests/path check/path/mode "rw"
+sudo kdb mount test.dump user:/tests path dump
+sudo kdb set user:/tests/path "$HOME"
+sudo kdb meta-set user:/tests/path check/path ""
+sudo kdb meta-set user:/tests/path check/path/user ""
+sudo kdb meta-set user:/tests/path check/path/mode "rw"
 
 # Standard users should not be able to read/write the root folder
-[ $(id -u) = 0 ] && printf >&2 'User is root\n' || kdb set user/tests/path "/root"
+[ $(id -u) = 0 ] && printf >&2 'User is root\n' || kdb set user:/tests/path "/root"
 # STDERR: User is root|.*C03200.*
 
 # Set something which the current user can access for sure
-kdb set user/tests/path "$HOME"
+kdb set user:/tests/path "$HOME"
 # STDOUT-REGEX: .*Set string to "/.*".*
 
 #cleanup
-sudo kdb rm -r user/tests
-sudo kdb umount user/tests
+sudo kdb rm -r user:/tests
+sudo kdb umount user:/tests
 ```
 
 An example where part of the permissions are missing for a tmp file
 
 ```sh
-sudo kdb mount test.dump user/tests path dump
-sudo kdb set user/tests/path "$HOME"
-sudo kdb meta-set user/tests/path check/path ""
-sudo kdb meta-set user/tests/path check/path/user ""
-sudo kdb meta-set user/tests/path check/path/mode "rwx"
+sudo kdb mount test.dump user:/tests path dump
+sudo kdb set user:/tests/path "$HOME"
+sudo kdb meta-set user:/tests/path check/path ""
+sudo kdb meta-set user:/tests/path check/path/user ""
+sudo kdb meta-set user:/tests/path check/path/mode "rwx"
 
 # Standard users should not be able to read/write the root folder
-kdb set user/tests/path/tempfile $(mktemp)
-chmod +rw `kdb get user/tests/path/tempfile`
-kdb set user/tests/path `kdb get user/tests/path/tempfile`
+kdb set user:/tests/path/tempfile $(mktemp)
+chmod +rw `kdb get user:/tests/path/tempfile`
+kdb set user:/tests/path `kdb get user:/tests/path/tempfile`
 # ERROR:C03200
 
 # Set something which the current user can access for sure
-chmod +x `kdb get user/tests/path/tempfile`
-kdb set user/tests/path `kdb get user/tests/path/tempfile`
+chmod +x `kdb get user:/tests/path/tempfile`
+kdb set user:/tests/path `kdb get user:/tests/path/tempfile`
 # STDOUT-REGEX: Set string to "/.*".*
 
 #cleanup
-sudo rm -rf `kdb get user/tests/path/tempfile`
-sudo kdb rm -r user/tests
-sudo kdb umount user/tests
+sudo rm -rf `kdb get user:/tests/path/tempfile`
+sudo kdb rm -r user:/tests
+sudo kdb umount user:/tests
 ```
 
 ## Future work

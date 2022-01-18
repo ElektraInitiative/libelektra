@@ -8,88 +8,157 @@ The graph below shows an (incomplete) list of available packages for Elektra.
 
 ## Linux
 
-For the following Linux distributions and package managers 0.8 packages are available:
+For the following Linux distributions and package managers 0.9 packages are available:
 
 - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
 - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
-- [OpenSuse](https://software.opensuse.org/package/elektra)
-- [Debian](https://packages.debian.org/de/jessie/libelektra4)
-- [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
-- [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
-- [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
 - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
-- [Alpine Linux](https://pkgs.alpinelinux.org/package/edge/testing/x86_64/elektra)
 
-For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
-Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
+### Debian/Ubuntu
 
-### Debian
+We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for following Debian-based distributions:
 
-To use the debian repository of the latest builds from master put following lines in
-`/etc/apt/sources.list`:
+- Debian Bullseye
+- Debian Buster
+- Ubuntu Focal
+- Ubuntu Bionic
 
-For Stretch:
+To use our stable repositories with our latest releases, following steps need to be made:
 
-```
-deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
-deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
-```
+1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839` to obtain the key.
 
-Which can also be done using:
+2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE> main` into `/etc/apt/sources.list`
+   where `<DISTRIBUTION>` and `<SUITE>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.
+
+   This can also be done using:
+
+   ```sh
+   # Example for Ubuntu Focal
+   sudo apt-get install software-properties-common apt-transport-https
+   echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
+   ```
+
+   Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+
+   ```sh
+   # Example for Ubuntu Focal
+   sudo apt-get install software-properties-common apt-transport-https
+   sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
+   ```
+
+   If you would like to use the latest builds of master, append `-unstable` to `<SUITE>`.
+
+   The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE>-unstable main`
+
+   E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
+
+3. Run `sudo apt-get update`.
+
+> NOTE: for Ubuntu Bionic the yamlcpp plugin is excluded due to missing dependencies and therefore the package `libelektra5-yamlcpp` is not available.
+
+### Fedora
+
+We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for Fedora 33 and Fedora 34
+
+For our stable repository with our latest releases:
 
 ```sh
-sudo apt-get install apt-transport-https
-echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
+wget https://rpms.libelektra.org/fedora-34/libelektra.repo -O libelektra.repo;
+sudo mv libelektra.repo /etc/yum.repos.d/;
+sudo yum update
 ```
 
-Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+Or alternatively you can use dnf to add this repo:
 
 ```sh
-sudo apt-get install software-properties-common apt-transport-https
-sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-34/libelektra.repo
 ```
 
-For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
+For our latest builds from master append `-unstable` to the suite name:
 
-```
-deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
-deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
+```sh
+wget https://rpms.libelektra.org/fedora-34-unstable/libelektra.repo -O libelektra.repo;
+sudo mv libelektra.repo /etc/yum.repos.d/;
+sudo yum update
 ```
 
-For Wheezy (not updated anymore, contains 0.8.19-8121 packages):
+Or alternatively you can use dnf to add this repo:
 
+```sh
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-34-unstable/libelektra.repo
 ```
-deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
-deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+
+### openSUSE
+
+We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for openSUSE Leap 15.3
+
+For our stable repository with our latest releases:
+
+> NOTE: stable packages will be available as of the `0.9.8` release.
+
+```sh
+sudo zypper ar -f https://rpms.libelektra.org/opensuse-leap-15.3 libelektra
+sudo zypper update
 ```
+
+For our latest builds from master append `-unstable` to the suite name:
+
+```sh
+sudo zypper ar -f https://rpms.libelektra.org/opensuse-leap-15.3-unstable libelektra-unstable
+sudo zypper update
+```
+
+### Install
 
 To get all packaged plugins, bindings and tools install:
 
 ```sh
-apt-get install libelektra4-all
+# For Debian based distributions
+apt-get install libelektra5-all
+# For Fedora based distributions
+dnf install libelektra5-all
+# For openSUSE
+zypper install libelektra5-all
 ```
 
 For a small installation with command-line tools available use:
 
 ```sh
+# For Debian based distributions
 apt-get install elektra-bin
+# For Fedora based distributions
+dnf install elektra-bin
+# For openSUSE
+zypper install elektra-bin
 ```
 
-If you want to rebuild Elektra from Debian unstable or
-our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
-and then run:
+To install all debugsym/debuginfo packages:
 
 ```sh
-apt-get source -b elektra
+# For Debian based distributions
+apt-get install elektra-dbg
+# For Fedora based distributions
+dnf install elektra-dbg
+# For openSUSE
+zypper install elektra-dbg
 ```
 
-To build Debian Packages from the source you might want to use:
+If you want to install individual debugsym/debuginfo packages:
 
 ```sh
-dpkg-buildpackage -us -uc -sa
+# For Debian based distributions
+apt-get install <packagename>-dbgsym # e.g. apt-get install libelektra5-dbgsym
+# For Fedora based distributions
+dnf debuginfo-install <packagename> # e.g. dnf debuginfo-install libelektra5
+# For openSUSE
+zypper install <packagename>-debuginfo # e.g. zypper install libelektra5-debuginfo
 ```
 
-(You need to be in the Debian branch, see [GIT](GIT.md))
+To build Debian/Ubuntu Packages from the source you might want to use:
+
+```sh
+make package # See CPack below
+```
 
 ## macOS
 
@@ -103,13 +172,67 @@ brew install elektra
 
 ## Windows
 
-Please refer to the section OS Independent below.
+Installation for WSL is described [here](tutorials/contributing-windows.md).
+
+If you prefer native but in functionality limited version you can download MinGW
+[32-bit](https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-i686/elektra.zip)
+and [64-bit](https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-x86_64/elektra.zip) builds.
+
+Otherwise please refer to the section `OS Independent` below.
 
 ## OS Independent
 
 First follow the steps in [COMPILE](COMPILE.md).
 
-After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or cPack tools.
+After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or CPack tools.
+We recommend using the packages from our build server or that you generate your own packages with CPack.
+
+### CPack
+
+The current supported systems are: Debian, Ubuntu and Fedora.
+
+Then use:
+
+```sh
+make package
+```
+
+which will create packages for distributions where a Generator is implemented.
+
+You can find the generated packages in the `package` directory of the build directory.
+
+> NOTE: If all plugins/bindings/tools a package includes are excluded, the package will not be generated.
+
+#### Debian/Ubuntu
+
+On Debian based distributions you will need to set LD_LIBRARY_PATH before generating the package.
+Simply `cd` into the build directory and run following command:
+
+```sh
+LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
+```
+
+To install the packages run this in the `package` directory:
+
+```sh
+sudo apt-get install ./*
+```
+
+If any dependency problems appear, run following command to install the missing dependencies:
+
+```sh
+sudo apt-get -f install
+```
+
+#### Fedora
+
+To install RPM packages we recommend using `yum localinstall` since installing with `rpm` doesn't resolve missing dependencies.
+
+Run following command in the `package` directory:
+
+```sh
+sudo yum localinstall *
+```
 
 ### make
 
@@ -131,20 +254,6 @@ or in the build directory (will not honor `DESTDIR`!):
 ```sh
 xargs rm < install_manifest.txt
 ```
-
-### CPack
-
-First follow the steps in [COMPILE](COMPILE.md).
-
-Then use:
-
-```sh
-cpack
-```
-
-which should create a package for distributions where a Generator is
-implemented. See [this cmake file](/scripts/cmake/ElektraPackaging.cmake) for available Generators
-and send a merge request for your system.
 
 ## Troubleshooting
 
@@ -176,7 +285,7 @@ and run `ldconfig` as root.
 
 ## Installation Manuals
 
-For some of the plugins and tools that ship with Elektra,
+For some plugins and tools that ship with Elektra,
 additional installation manuals have been written.
 You can find them in the [tutorial overview](tutorials/README.md).
 

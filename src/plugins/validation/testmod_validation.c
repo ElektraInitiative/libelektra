@@ -33,10 +33,10 @@
 
 void test_lookupre (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "a", KEY_META, "comment/#0", "does not match", KEY_END),
+			     keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_META, "comment/#0", "does not match", KEY_END),
+			     keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_META, "comment/#0", "match", KEY_END),
+			     keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_META, "comment/#0", "match", KEY_END), KS_END);
 
 	Key * match = 0;
 	regex_t regex;
@@ -48,10 +48,10 @@ void test_lookupre (void)
 
 	// show the key that match this string
 	match = ksLookupRE (ks, &regex);
-	succeed_if (!strcmp (keyName (match), "user/c"), "Key did not match");
+	succeed_if (!strcmp (keyName (match), "user:/c"), "Key did not match");
 
 	match = ksLookupRE (ks, &regex);
-	succeed_if (!strcmp (keyName (match), "user/d"), "Key did not match");
+	succeed_if (!strcmp (keyName (match), "user:/d"), "Key did not match");
 
 	regfree (&regex); // free regex resources
 	ksDel (ks);
@@ -59,10 +59,10 @@ void test_lookupre (void)
 
 void test_extended (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user/a", KEY_VALUE, "la", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user/b", KEY_VALUE, "lalala", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user/c", KEY_VALUE, "jump", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user/d", KEY_VALUE, "lalalala", KEY_COMMENT, "match", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "la", KEY_META, "comment/#0", "match", KEY_END),
+			     keyNew ("user:/b", KEY_VALUE, "lalala", KEY_META, "comment/#0", "match", KEY_END),
+			     keyNew ("user:/c", KEY_VALUE, "jump", KEY_META, "comment/#0", "does not match", KEY_END),
+			     keyNew ("user:/d", KEY_VALUE, "lalalala", KEY_META, "comment/#0", "match", KEY_END), KS_END);
 
 	Key * match = 0;
 	regex_t regex;
@@ -74,13 +74,13 @@ void test_extended (void)
 
 	// show the key that match this string
 	match = ksLookupRE (ks, &regex);
-	succeed_if (!strcmp (keyName (match), "user/a"), "Key did not match");
+	succeed_if (!strcmp (keyName (match), "user:/a"), "Key did not match");
 
 	match = ksLookupRE (ks, &regex);
-	succeed_if (!strcmp (keyName (match), "user/b"), "Key did not match");
+	succeed_if (!strcmp (keyName (match), "user:/b"), "Key did not match");
 
 	match = ksLookupRE (ks, &regex);
-	succeed_if (!strcmp (keyName (match), "user/d"), "Key did not match");
+	succeed_if (!strcmp (keyName (match), "user:/d"), "Key did not match");
 
 	regfree (&regex); // free regex resources
 	ksDel (ks);
@@ -88,15 +88,15 @@ void test_extended (void)
 
 void word_test (void)
 {
-	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
+	Key * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
 			   "check/validation/match", "word", KEY_END);
-	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
+	Key * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
 			   "check/validation/match", "word", KEY_END);
-	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
+	Key * k3 = keyNew ("user:/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
 			   "check/validation/match", "word", KEY_END);
-	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/match", "word", KEY_END);
+	Key * k4 = keyNew ("user:/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word",
+			   KEY_META, "check/validation/match", "word", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;
@@ -132,14 +132,14 @@ void word_test (void)
 
 void line_test (void)
 {
-	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "line", KEY_META, "check/validation", "line", KEY_META,
+	Key * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "line", KEY_META, "check/validation", "line", KEY_META,
 			   "check/validation/match", "line", KEY_END);
-	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line2",
+	Key * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line2",
 			   KEY_META, "check/validation/match", "line", KEY_END);
-	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "alinea", KEY_META, "check/validation", "line", KEY_META,
+	Key * k3 = keyNew ("user:/tests/validation/invalid1", KEY_VALUE, "alinea", KEY_META, "check/validation", "line", KEY_META,
 			   "check/validation/match", "line", KEY_END);
-	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line",
+	Key * k4 = keyNew ("user:/tests/validation/invalid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line",
 			   KEY_META, "check/validation/match", "line", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -176,15 +176,15 @@ void line_test (void)
 
 void invert_test (void)
 {
-	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
+	Key * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
 			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
-	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
+	Key * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
 			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
-	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
+	Key * k3 = keyNew ("user:/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
 			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
-	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
+	Key * k4 = keyNew ("user:/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word",
+			   KEY_META, "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;
@@ -220,10 +220,10 @@ void invert_test (void)
 
 void icase_test (void)
 {
-	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "WORD", KEY_META, "check/validation", "word", KEY_META,
+	Key * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "WORD", KEY_META, "check/validation", "word", KEY_META,
 			   "check/validation/word", "", KEY_META, "check/validation/ignorecase", "", KEY_END);
-	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "wORd2", KEY_META,
+	Key * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "wORd2", KEY_META,
 			   "check/validation/word", "", KEY_META, "check/validation/ignorecase", "", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);

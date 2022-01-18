@@ -12,19 +12,14 @@
 
 #include <kdbplugin.h>
 
-#include "directoryvalue_delegate.hpp"
-
-using ckdb::Key;
-using ckdb::KeySet;
-using ckdb::Plugin;
-
 extern "C" {
-int elektraDirectoryValueOpen (Plugin * handle, Key * errorKey);
-int elektraDirectoryValueClose (Plugin * handle, Key * errorKey);
-int elektraDirectoryValueGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDirectoryValueSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT;
+int elektraDirectoryValueOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int elektraDirectoryValueClose (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int elektraDirectoryValueGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraDirectoryValueSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 } // end extern "C"
 
 #endif

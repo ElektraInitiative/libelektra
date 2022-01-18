@@ -44,7 +44,7 @@ void GUIBackend::createBackend (const QString & mountpoint)
 
 	try
 	{
-		m_backend->setMountpoint (Key (mountpoint.toStdString (), KEY_CASCADING_NAME, KEY_END), m_mountConf);
+		m_backend->setMountpoint (Key (mountpoint.toStdString (), KEY_END), m_mountConf);
 	}
 	catch (MountpointInvalidException const & ex)
 	{
@@ -192,7 +192,7 @@ QString GUIBackend::mountPoints () const
 
 	Backends::BackendInfoVector vec = Backends::getBackendInfo (mountConf);
 	QStringList mPoints;
-	mPoints.append ("system/elektra");
+	mPoints.append ("system:/elektra");
 
 	foreach (BackendInfo info, vec)
 	{
@@ -226,7 +226,7 @@ QString GUIBackend::pluginInfo (QString pluginName) const
 	info = plugin->getInfo ();
 
 	Key root;
-	root.setName (std::string ("system/elektra/modules/") + plugin->name () + "/infos");
+	root.setName (std::string ("system:/elektra/modules/") + plugin->name () + "/infos");
 	Key k = info.lookup (root);
 
 	if (k)
@@ -261,8 +261,14 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 		{
 			ptr = modules.load (s);
 		}
+		catch (PluginNoContract const & ex)
+		{
+			cerr << "no contract: " << s << endl;
+			continue;
+		}
 		catch (NoPlugin const & ex)
 		{
+			cerr << "no plugin: " << s << endl;
 			continue;
 		}
 

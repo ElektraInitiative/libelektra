@@ -15,7 +15,6 @@
 #include <fcntl.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -183,7 +182,7 @@ static ElektraCurlProtocol isValidURL (const char * str)
 
 	const struct checkProtocolStruct urlPrefix[] = {
 		{ PROTO_HTTP, "http://" }, { PROTO_HTTPS, "https://" }, { PROTO_FTP, "ftp://" }, { PROTO_FTPS, "ftps://" },
-		{ PROTO_SFTP, "sftp://" }, { PROTO_SCP, "scp://" },     { PROTO_SMB, "smb://" }, { PROTO_INVALID, NULL },
+		{ PROTO_SFTP, "sftp://" }, { PROTO_SCP, "scp://" },	{ PROTO_SMB, "smb://" }, { PROTO_INVALID, NULL },
 	};
 	for (int i = 0; urlPrefix[i].proto != PROTO_INVALID; ++i)
 	{
@@ -581,20 +580,20 @@ static int moveFile (const char * source, const char * dest)
 
 int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/curlget"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/curlget"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/curlget", KEY_VALUE, "curlget plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports", KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports/get", KEY_FUNC, elektraCurlgetGet, KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports/set", KEY_FUNC, elektraCurlgetSet, KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports/commit", KEY_FUNC, elektraCurlgetCommit, KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports/open", KEY_FUNC, elektraCurlgetOpen, KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports/close", KEY_FUNC, elektraCurlgetClose, KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports/error", KEY_FUNC, elektraCurlgetError, KEY_END),
-			       keyNew ("system/elektra/modules/curlget/exports/checkfile", KEY_FUNC, elektraCurlgetCheckFile, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/curlget", KEY_VALUE, "curlget plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/get", KEY_FUNC, elektraCurlgetGet, KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/set", KEY_FUNC, elektraCurlgetSet, KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/commit", KEY_FUNC, elektraCurlgetCommit, KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/open", KEY_FUNC, elektraCurlgetOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/close", KEY_FUNC, elektraCurlgetClose, KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/error", KEY_FUNC, elektraCurlgetError, KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/checkfile", KEY_FUNC, elektraCurlgetCheckFile, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/curlget/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/curlget/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

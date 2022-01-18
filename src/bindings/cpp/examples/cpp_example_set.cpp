@@ -26,7 +26,7 @@ int main ()
 	else
 	{
 		Key n;
-		n.setName ("user/sw/MyApp/mykey");
+		n.setName ("user:/sw/MyApp/mykey");
 		n.set<int> (0);
 		config.append (n);
 	}

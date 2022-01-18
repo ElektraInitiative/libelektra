@@ -198,7 +198,7 @@ Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * conf
 		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Missing %s in plugin configuration", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
 		return NULL;
 	}
-	Key * msg = keyDup (master);
+	Key * msg = keyDup (master, KEY_CP_ALL);
 	if (ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (config, errorKey, msg) != 1)
 	{
 		keyDel (msg);

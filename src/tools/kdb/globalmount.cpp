@@ -29,10 +29,10 @@ GlobalMountCommand::GlobalMountCommand ()
 std::vector<std::string> GlobalMountCommand::getMtab ()
 {
 	std::vector<std::string> ret;
-	Key globalPluginsKey ("system/elektra/globalplugins/postcommit/user/plugins", KEY_END);
+	Key globalPluginsKey ("system:/elektra/globalplugins/postcommit/user/plugins", KEY_END);
 
 	mountConf.rewind ();
-	Key currentPluginConfig ("proc/notbelow", KEY_END);
+	Key currentPluginConfig ("proc:/notbelow", KEY_END);
 	for (auto const & key : mountConf)
 	{
 		if (key.isDirectBelow (globalPluginsKey))
@@ -98,7 +98,7 @@ void GlobalMountCommand::buildBackend (Cmdline const & cl)
 	GlobalPluginsBuilder backend;
 
 	// TODO: not yet implemented:
-	// backend.setBackendConfig(cl.getPluginsConfig("system/"));
+	// backend.setBackendConfig(cl.getPluginsConfig("system:/"));
 	backend.addPlugins (parseArguments (cl.globalPlugins));
 	backend.addPlugins (parseArguments (cl.arguments.begin (), cl.arguments.end ()));
 

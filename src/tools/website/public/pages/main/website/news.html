@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <ul class="nav nav-pills nav-stacked">
+                    <li ng-repeat="file in files"
+                        ng-class="{active: file.slug === currentFile.slug, 'section-title': file.type === 'section'}">
+                        <a ng-if="file.type === 'file'" class="listfiles file-link"
+                           ui-sref="{{ $state.current.name + '({file:\'' + file.slug + '\'})'}}">
+                            {{ file.title}}
+                        </a>
+                        <span ng-if="file.type === 'section'">{{ file.name}}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <a class="btn btn-default btn-sm pull-right" style="margin-bottom:5px;"
+                   ng-href="{{ githubRoot + currentFile.file }}"
+                   target="_blank" rel="noopener noreferrer">{{ 'APP.WEBSITE.LISTFILES.BUTTON.SHOWONGITHUB' | translate }}</a>
+                <div class="docu markdown" id="markdown-document">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

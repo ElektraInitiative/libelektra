@@ -13,7 +13,7 @@ For the full text see ./highlevel/LICENSE.txt
  *
  * @copyright BSD Zero Clause License
  *
- *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *     Copyright (c) Elektra Initiative (https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
@@ -44,6 +44,10 @@ extern "C" {
 #include "/*% . %*/"
 /*%/ more_headers %*/
 
+/*%# use_commands? %*/
+#include "/*% commands_header %*/"
+/*%/ use_commands? %*/
+
 /*%> partial.enum.decl.h %*/
 
 /*%> partial.union.decl.h %*/
@@ -54,9 +58,20 @@ extern "C" {
 
 /*%> partial.keys.fun.h %*/
 
-int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error);
+int /*%& init_function_name %*/ (Elektra ** elektra,
+				 /*%# init_with_pointers? %*/
+				 int argc, const char * const * argv, const char * const * envp,
+				 /*%/ init_with_pointers? %*/
+				 /*%^ init_with_pointers? %*/
+				 size_t argsSize, const char * args, size_t envSize, const char * envs,
+				 /*%/ init_with_pointers? %*/
+				 ElektraError ** error);
 void /*%& help_function_name %*/ (Elektra * elektra, const char * usage, const char * prefix);
-void /*%& specload_function_name %*/ (int argc, const char ** argv);
+void /*%& specload_function_name %*/ (int argc, const char * const * argv);
+
+/*%# use_commands? %*/
+int /*%& run_commands_function_name %*/ (Elektra * elektra, void * userData);
+/*%/ use_commands? %*/
 
 /*%={{ }}=%*/
 /**

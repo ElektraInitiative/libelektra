@@ -106,7 +106,7 @@ const RepStruct iso8601weekdate[] = {
 
 const RepStruct iso8601timeofday[] = {
 	{ .rep = COMPLETE, .basic = "%H%M%S", .extended = "%T" },     { .rep = COMPLETE, .basic = "%H%M%S,%Y", .extended = "%T,%Y" },
-	{ .rep = REDUCED, .basic = "%H%M", .extended = "%R" },	{ .rep = REDUCED, .basic = "%H", .extended = NULL },
+	{ .rep = REDUCED, .basic = "%H%M", .extended = "%R" },	      { .rep = REDUCED, .basic = "%H", .extended = NULL },
 	{ .rep = REDUCED, .basic = "%H%M,%Y", .extended = "%R,%Y" },  { .rep = REDUCED, .basic = "%H,%Y", .extended = NULL },
 	{ .rep = TRUNCATED, .basic = "-%M%S", .extended = "-%M:%S" }, { .rep = TRUNCATED, .basic = "-%M", .extended = NULL },
 	{ .rep = TRUNCATED, .basic = "--%S", .extended = NULL },      { .rep = TRUNCATED, .basic = "%H,%Y", .extended = NULL },
@@ -135,7 +135,7 @@ typedef enum
 	DATE = 6,
 	TIME = 7,
 	DATETIME = 8,			   // Date/Time combined
-	TYPEMASK = 8 | 4 | 2 | 1,	  // mask to split type from representation options
+	TYPEMASK = 8 | 4 | 2 | 1,	   // mask to split type from representation options
 	CMPLT = (1 << 4),		   // complete
 	RDCD = (2 << 4),		   // reduced
 	TRCT = (4 << 4),		   // truncated

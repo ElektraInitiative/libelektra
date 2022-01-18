@@ -1,92 +1,69 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-GET" "1" "October 2019" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-GET" "1" "August 2021" ""
 .SH "NAME"
 \fBkdb\-get\fR \- Get the value of a key stored in the key database
-.
 .SH "SYNOPSIS"
 \fBkdb get <key name>\fR
-.
 .P
 Where \fBkey name\fR is the name of the key\.
-.
 .SH "DESCRIPTION"
 This command is used to retrieve the value of a key\.
-.
 .P
 If you enter a \fBkey name\fR starting with a leading \fB/\fR, then a cascading lookup will be performed in order to attempt to locate the key\. In this case, using the \fB\-v\fR option allows the user to see the full key name of the key if it is found\.
-.
 .SH "LIMITATIONS"
 Only keys within the mount point or below the \fB<key name>\fR will be considered during a cascading lookup\. A workaround is to pass the \fB\-a\fR option\. Use the command \fBkdb get \-v <key name>\fR to see if an override or a fallback was considered by the lookup\.
-.
 .SH "RETURN VALUES"
 This command will return the following values as an exit status:
-.
 .TP
 0
 No errors\.
-.
 .TP
 1\-10
 standard exit codes, see kdb(1) \fIkdb\.md\fR
-.
 .TP
 11
 No key found\.
-.
 .SH "OPTIONS"
-.
 .TP
 \fB\-H\fR, \fB\-\-help\fR
 Show the man page\.
-.
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
-.
 .TP
 \fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
-.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
-.
 .TP
 \fB\-a\fR, \fB\-\-all\fR
 Consider all of the keys\.
-.
 .TP
 \fB\-n\fR, \fB\-\-no\-newline\fR
 Suppress the newline at the end of the output\.
-.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Explain what is happening\. Gives a complete trace of all tried keys\. Very useful to debug fallback and overrides\.
-.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
-.
 .SH "EXAMPLES"
-.
 .nf
-
-# Backup\-and\-Restore: user/tests/get/examples
+# Backup\-and\-Restore: user:/tests/get/examples
 
 # We use the `dump` plugin, since some storage plugins, e\.g\. INI,
 # create intermediate keys\.
-sudo kdb mount get\.ecf user/tests/get/examples/kdb\-get dump
-sudo kdb mount get\.ecf spec/tests/get/examples/kdb\-get dump
+sudo kdb mount get\.ecf user:/tests/get/examples/kdb\-get dump
+sudo kdb mount get\.ecf spec:/tests/get/examples/kdb\-get dump
 
 # Create the keys we use for the examples
-kdb set user/tests/get/examples/kdb\-get/key myKey
-kdb meta\-set /tests/get/examples/kdb\-get/anotherKey default defaultValue
+kdb set user:/tests/get/examples/kdb\-get/key myKey
+kdb meta\-set spec:/tests/get/examples/kdb\-get/anotherKey default defaultValue
 
 # To get the value of a key:
-kdb get user/tests/get/examples/kdb\-get/key
+kdb get user:/tests/get/examples/kdb\-get/key
 #> myKey
 
 # To get the value of a key using a cascading lookup:
@@ -100,52 +77,42 @@ kdb get \-n /tests/get/examples/kdb\-get/key
 # To explain why a specific key was used (for cascading keys):
 kdb get \-v /tests/get/examples/kdb\-get/key
 #> got 3 keys
-#> searching spec/tests/get/examples/kdb\-get/key, found: <nothing>, options: KDB_O_CALLBACK
-#>     searching proc/tests/get/examples/kdb\-get/key, found: <nothing>
-#>     searching dir/tests/get/examples/kdb\-get/key, found: <nothing>
-#>     searching user/tests/get/examples/kdb\-get/key, found: user/tests/get/examples/kdb\-get/key
-#> The resulting keyname is user/tests/get/examples/kdb\-get/key
+#> searching spec:/tests/get/examples/kdb\-get/key, found: <nothing>, options: KDB_O_CALLBACK
+#>     searching proc:/tests/get/examples/kdb\-get/key, found: <nothing>
+#>     searching dir:/tests/get/examples/kdb\-get/key, found: <nothing>
+#>     searching user:/tests/get/examples/kdb\-get/key, found: user:/tests/get/examples/kdb\-get/key
+#> The resulting keyname is user:/tests/get/examples/kdb\-get/key
 #> The resulting value size is 6
 #> myKey
 
 # Output if only a default value is set for a key:
 kdb get \-v /tests/get/examples/kdb\-get/anotherKey
 #> got 3 keys
-#> searching spec/tests/get/examples/kdb\-get/anotherKey, found: spec/tests/get/examples/kdb\-get/anotherKey, options: KDB_O_CALLBACK
-#> The key was not found in any other namespace, taking the default from the metadata
-#> The resulting keyname is /tests/get/examples/kdb\-get/anotherKey
+#> searching spec:/tests/get/examples/kdb\-get/anotherKey, found: spec:/tests/get/examples/kdb\-get/anotherKey, options: KDB_O_CALLBACK
+#> The key was not found in any other namespace, taking the default
+#> The resulting keyname is default:/tests/get/examples/kdb\-get/anotherKey
 #> The resulting value size is 13
 #> defaultValue
 
-kdb rm user/tests/get/examples/kdb\-get/key
-kdb rm spec/tests/get/examples/kdb\-get/anotherKey
-sudo kdb umount user/tests/get/examples/kdb\-get
-sudo kdb umount spec/tests/get/examples/kdb\-get
-.
+kdb rm user:/tests/get/examples/kdb\-get/key
+kdb rm spec:/tests/get/examples/kdb\-get/anotherKey
+sudo kdb umount user:/tests/get/examples/kdb\-get
+sudo kdb umount spec:/tests/get/examples/kdb\-get
 .fi
-.
 .P
 To use bookmarks:
-.
 .br
 \fBkdb get +kdb/format\fR
-.
 .P
-This command will actually get \fBuser/sw/elektra/kdb/#0/current/format\fR if the bookmarks commands from kdb\-set(1) \fIkdb\-set\.md\fR man pages are executed before\.
-.
+This command will actually get \fBuser:/sw/elektra/kdb/#0/current/format\fR if the bookmarks commands from kdb\-set(1) \fIkdb\-set\.md\fR man pages are executed before\.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 kdb(1) \fIkdb\.md\fR for how to configure the kdb utility and use the bookmarks\.
-.
 .IP "\(bu" 4
 For more about cascading keys see elektra\-cascading(7) \fIelektra\-cascading\.md\fR
-.
 .IP "\(bu" 4
 To get keys in shell scripts, you also can use kdb\-sget(1) \fIkdb\-sget\.md\fR
-.
 .IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
-.
 .IP "" 0
 

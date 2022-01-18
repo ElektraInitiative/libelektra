@@ -3,8 +3,15 @@
 ## Introduction
 
 - **Configuration settings**:
-  customize applications towards the users
-  needs.
+  customize applications towards the users'
+  needs. It fulfills following properties:
+
+  - It is provided by the execution environment.
+  - It can be changed by the maintainer, user, or system administrator of the software.
+  - It consists of a key name, a **configuration value**, and potentially **metadata**.
+
+- A **configuration file**:
+  is a file containing configuration settings.
 
 - **Configuration storage**:
   makes configuration settings persistent.
@@ -65,6 +72,20 @@
   To persistently and permanently include a **backend** in the **global key database**.
   The **mountpoint** is the key where the backend is mounted to.
   All keys of the backend are below that key.
+
+- [Key name](/doc/KEYNAMES.md):
+  All keys in the KDB have a name.
+  This name is the keys unique identifier and follows a particular structure.
+  For more information take look at the [keyname documentation](/doc/KEYNAMES.md).
+
+- [Key name part](/doc/KEYNAMES.md):
+  Key names consist of a series parts (and a namespace).
+
+- [Key base name](/doc/KEYNAMES.md):
+  The last part of a key name.
+
+- [Key dir name](/doc/KEYNAMES.md):
+  The key name obtained by omitting both namespace and base name from a key name.
 
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.

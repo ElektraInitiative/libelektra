@@ -12,7 +12,7 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdbio/uv.h>    // elektraIoUvNew()
+#include <kdbio/uv.h>	 // elektraIoUvNew()
 #include <kdbioplugin.h> // ElektraIoPluginSetBinding
 
 #include <tests.h>
@@ -48,7 +48,7 @@ static void * createTestSocket (void)
 	usleep (TIME_HOLDOFF);
 
 	void * pubSocket = zmq_socket (context, ZMQ_PUB);
-	int result = zmq_bind (pubSocket, "tcp://*:6001");
+	int result = zmq_bind (pubSocket, "tcp://127.0.0.1:6001");
 	if (result != 0)
 	{
 		yield_error ("zmq_bind failed");
@@ -125,27 +125,17 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 
 	void * pubSocket = createTestSocket ();
 
-	// set io binding
-	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
-	exit_if_fail (func, "could not get function setIoBinding");
-	KeySet * setIoBindingParams =
-		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END), KS_END);
-	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
-	setIoBinding (plugin, setIoBindingParams);
-	ksDel (setIoBindingParams);
-
-	// open notification
-	func = elektraPluginGetFunction (plugin, "openNotification");
-	exit_if_fail (func, "could not get function openNotification");
-	KeySet * openNotificationParams = ksNew (2, keyNew ("/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
-	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
-	openNotification (plugin, openNotificationParams);
-	ksDel (openNotificationParams);
+	ksDel (plugin->global);
+	plugin->global =
+		ksNew (5, keyNew ("system:/elektra/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
+		       keyNew ("system:/elektra/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	// call open again after correctly setting up global keyset
+	plugin->kdbOpen (plugin, NULL);
 
 	usleep (TIME_SETTLE_US);
 
 	char * changeType = "Commit";
-	char * expectedKeyName = "system/foo/bar";
+	char * expectedKeyName = "system:/foo/bar";
 	sendTestNotification (pubSocket, changeType, expectedKeyName);
 
 	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TEST_TIMEOUT * 1000, 1, test_timerCallback, NULL);
@@ -157,17 +147,12 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 
 	succeed_if_same_string (expectedKeyName, keyName (test_callbackKey));
 
-	// close notification
-	func = elektraPluginGetFunction (plugin, "closeNotification");
-	exit_if_fail (func, "could not get function closeNotification");
-	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
-	closeNotification (plugin, NULL);
-
 	zmq_close (pubSocket);
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
 	keyDel (test_callbackKey);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -180,27 +165,17 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 
 	void * pubSocket = createTestSocket ();
 
-	// set io binding
-	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
-	exit_if_fail (func, "could not get function setIoBinding");
-	KeySet * setIoBindingParams =
-		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END), KS_END);
-	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
-	setIoBinding (plugin, setIoBindingParams);
-	ksDel (setIoBindingParams);
-
-	// open notification
-	func = elektraPluginGetFunction (plugin, "openNotification");
-	exit_if_fail (func, "could not get function openNotification");
-	KeySet * openNotificationParams = ksNew (2, keyNew ("/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
-	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
-	openNotification (plugin, openNotificationParams);
-	ksDel (openNotificationParams);
+	ksDel (plugin->global);
+	plugin->global =
+		ksNew (5, keyNew ("system:/elektra/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
+		       keyNew ("system:/elektra/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	// call open again after correctly setting up global keyset
+	plugin->kdbOpen (plugin, NULL);
 
 	usleep (TIME_SETTLE_US);
 
 	char * changeType = "KeyChanged";
-	char * expectedKeyName = "system/foo/bar";
+	char * expectedKeyName = "system:/foo/bar";
 	// send message parts as standalone messages
 	succeed_if (zmq_send (pubSocket, changeType, elektraStrLen (changeType), 0 /* no ZMQ_SNDMORE here */) != -1,
 		    "failed to send change type");
@@ -217,16 +192,11 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 	succeed_if (test_incompleteMessageTimeout, "test did not timeout");
 	succeed_if (test_callbackKey == NULL, "should not receive key");
 
-	// close notification
-	func = elektraPluginGetFunction (plugin, "closeNotification");
-	exit_if_fail (func, "could not get function closeNotification");
-	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
-	closeNotification (plugin, NULL);
-
 	zmq_close (pubSocket);
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 

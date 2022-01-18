@@ -10,7 +10,7 @@
  *
  * @copyright BSD Zero Clause License
  *
- *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *     Copyright (c) Elektra Initiative (https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
@@ -35,13 +35,14 @@
 #include <kdbhelper.h>
 #include <kdbinvoke.h>
 #include <kdbopts.h>
+#include <kdbgopts.h>
 
 #include <elektra/conversion.h>
 
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (6,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
+	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
 	keyNew ("/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
 	keyNew ("/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
 	keyNew ("/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default", "blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
@@ -51,20 +52,21 @@ static KeySet * embeddedSpec (void)
 ;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_enum\n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_enum [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
-static int isHelpMode (void)
+static int isHelpMode (int argc, const char * const * argv)
 {
-	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+	for (int i = 0; i < argc; ++i)
+	{
+		if (strcmp (argv[i], "--help") == 0)
+		{
+			return 1;
+		}
+	}
 
-	typedef int (*func) (void);
-	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
-	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
-
-	elektraInvokeClose (gopts, NULL);
-	return ret == 1;
+	return 0;
 }
+
 
 
 /**
@@ -80,23 +82,33 @@ static int isHelpMode (void)
  * @retval 0  on success, @p elektra will contain a new Elektra instance coming from elektraOpen(),
  *            @p error will be unchanged
  * @retval -1 on error, @p elektra will be unchanged, @p error will be set
- * @retval 1  help mode, '-h' or '--help' was specified call printHelpMessage to display
+ * @retval 1  help mode, '--help' was specified call printHelpMessage to display
  *            the help message. @p elektra will contain a new Elektra instance. It has to be passed
  *            to printHelpMessage. You also need to elektraClose() it.
  *            @p error will be unchanged
  *
  * @see elektraOpen
  */// 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error)
+int loadConfiguration (Elektra ** elektra, 
+				 int argc, const char * const * argv, const char * const * envp,
+				 ElektraError ** error)
 {
 	KeySet * defaults = embeddedSpec ();
 	
 
-	KeySet * contract = ksNew (2,
-	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	KeySet * contract = ksNew (4,
+	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "056823c1e2aa0271dd64537180d02010d5e89b08e5804b6b25c92ce177507322", KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
+	Key * parentKey = keyNew ("/tests/script/gen/highlevel/enum", KEY_END);
+
+	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
+	
+
+	keyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/enum", defaults, contract, error);
 
@@ -105,20 +117,26 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		ksDel (defaults);
 	}
 
+	if (contract != NULL)
+	{
+		ksDel (contract);
+	}
+
 	if (e == NULL)
 	{
 		*elektra = NULL;
-		if (isHelpMode ())
+		if (isHelpMode (argc, argv))
 		{
 			elektraErrorReset (error);
 			return 1;
 		}
+		
 
 		return -1;
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -133,7 +151,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
  * @param argc pass the value of argc from main
  * @param argv pass the value of argv from main
  */
-void exitForSpecload (int argc, const char ** argv)
+void exitForSpecload (int argc, const char * const * argv)
 {
 	if (argc != 2 || strcmp (argv[1], "--elektra-spec") != 0)
 	{
@@ -142,9 +160,9 @@ void exitForSpecload (int argc, const char ** argv)
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/highlevel/enum", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("spec:/tests/script/gen/highlevel/enum", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
 
-	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+	KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
@@ -183,6 +201,8 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 	printf ("%s", help);
 	elektraFree (help);
 }
+
+
 
 // clang-format off
 

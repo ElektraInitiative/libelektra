@@ -1,0 +1,5 @@
+[product2]
+type.name = "Nail"
+type = { edible = false }  # INVALID
+
+

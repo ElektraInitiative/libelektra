@@ -36,32 +36,32 @@ This command will list the name of all keys below a given path.
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: user/tests/examples
+# Backup-and-Restore: user:/tests/examples
 
 # We use `dump` as storage format here, since storage plugins such as INI
-# automatically add keys between levels (e.g. `user/tests/examples/kdb-ls/test/foo`).
-sudo kdb mount ls.ecf user/tests/examples dump
+# automatically add keys between levels (e.g. `user:/tests/examples/kdb-ls/test/foo`).
+sudo kdb mount ls.ecf user:/tests/examples dump
 
 # Create the keys we use for the examples
-kdb set user/tests/examples/kdb-ls/test val1
-kdb set user/tests/examples/kdb-ls/test/foo/bar val2
-kdb set user/tests/examples/kdb-ls/test/fizz/buzz fizzbuzz
-kdb set user/tests/examples/kdb-ls/tost val3
-kdb set user/tests/examples/kdb-ls/tost/level lvl
+kdb set user:/tests/examples/kdb-ls/test val1
+kdb set user:/tests/examples/kdb-ls/test/foo/bar val2
+kdb set user:/tests/examples/kdb-ls/test/fizz/buzz fizzbuzz
+kdb set user:/tests/examples/kdb-ls/tost val3
+kdb set user:/tests/examples/kdb-ls/tost/level lvl
 
 # list all keys below /tests/examples/kdb-ls
 kdb ls /tests/examples/kdb-ls
-#> user/tests/examples/kdb-ls/test
-#> user/tests/examples/kdb-ls/test/fizz/buzz
-#> user/tests/examples/kdb-ls/test/foo/bar
-#> user/tests/examples/kdb-ls/tost
-#> user/tests/examples/kdb-ls/tost/level
+#> user:/tests/examples/kdb-ls/test
+#> user:/tests/examples/kdb-ls/test/fizz/buzz
+#> user:/tests/examples/kdb-ls/test/foo/bar
+#> user:/tests/examples/kdb-ls/tost
+#> user:/tests/examples/kdb-ls/tost/level
 
 # list the next level of keys below /tests/examples/kdb-ls
 # note that if the search key ends with a /, it lists the next level
 kdb ls /tests/examples/kdb-ls/ --max-depth=1
-#> user/tests/examples/kdb-ls/test
-#> user/tests/examples/kdb-ls/tost
+#> user:/tests/examples/kdb-ls/test
+#> user:/tests/examples/kdb-ls/tost
 
 # list the current level of keys below /tests/examples/kdb-ls
 # note the difference to the previous example
@@ -71,27 +71,27 @@ kdb ls /tests/examples/kdb-ls --max-depth=1
 # list all keys below /tests/examples/kdb-ls with are minimum 1 level (inclusive) away from that key
 # and maximum 2 levels away (exclusive)
 kdb ls /tests/examples/kdb-ls --min-depth=1 --max-depth=2
-#> user/tests/examples/kdb-ls/test
-#> user/tests/examples/kdb-ls/tost
+#> user:/tests/examples/kdb-ls/test
+#> user:/tests/examples/kdb-ls/tost
 
 # list all keys below /tests/examples/kdb-ls/test
 kdb ls /tests/examples/kdb-ls/test
-#> user/tests/examples/kdb-ls/test
-#> user/tests/examples/kdb-ls/test/fizz/buzz
-#> user/tests/examples/kdb-ls/test/foo/bar
+#> user:/tests/examples/kdb-ls/test
+#> user:/tests/examples/kdb-ls/test/fizz/buzz
+#> user:/tests/examples/kdb-ls/test/foo/bar
 
 # list all keys under /tests/examples/kdb-ls in verbose mode
 kdb ls /tests/examples/kdb-ls/ -v
 #> size of all keys in mount point: 5
 #> size of requested keys: 5
-#> user/tests/examples/kdb-ls/test
-#> user/tests/examples/kdb-ls/test/fizz/buzz
-#> user/tests/examples/kdb-ls/test/foo/bar
-#> user/tests/examples/kdb-ls/tost
-#> user/tests/examples/kdb-ls/tost/level
+#> user:/tests/examples/kdb-ls/test
+#> user:/tests/examples/kdb-ls/test/fizz/buzz
+#> user:/tests/examples/kdb-ls/test/foo/bar
+#> user:/tests/examples/kdb-ls/tost
+#> user:/tests/examples/kdb-ls/tost/level
 
-kdb rm -r user/tests/examples
-sudo kdb umount user/tests/examples
+kdb rm -r user:/tests/examples
+sudo kdb umount user:/tests/examples
 ```
 
 ## SEE ALSO

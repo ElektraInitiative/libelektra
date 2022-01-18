@@ -29,24 +29,25 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	}
 	string metaname = cl.arguments[1];
 
-	Key parentKey = cl.createKey (0);
-	string keyname = parentKey.getName ();
-	if (keyname[0] == '/')
-	{
-		// fix name for lookup
-		keyname = "spec" + keyname;
-		if (!cl.quiet) std::cout << "Using keyname " << keyname << std::endl;
+	Key k = cl.createKey (0);
+	string keyname = k.getName ();
 
-		// fix k for kdb.set later
-		parentKey.setName (keyname);
-	}
+	bool cascadingWrite = keyname[0] == '/';
+
+	Key parentKey = cl.getParentKey (k);
 
 	KeySet conf;
 	kdb.get (conf, parentKey);
-	Key k = conf.lookup (parentKey);
+	k = conf.lookup (k);
 
 	if (!k)
 	{
+		if (cascadingWrite)
+		{
+			cerr << "Aborting: A cascading write to a non-existent key is ambiguous." << endl;
+			return 2;
+		}
+
 		k = Key (keyname, KEY_END);
 		// k.setBinary(0, 0); // conceptually maybe better, but would have confusing "binary" metadata
 		conf.append (k);
@@ -79,6 +80,8 @@ int MetaSetCommand::execute (Cmdline const & cl)
 			k.setMeta<string> (metaname, metavalue);
 		}
 	}
+
+	if (!cl.quiet && cascadingWrite) std::cout << "Using name " << k.getName () << std::endl;
 
 	kdb.set (conf, parentKey);
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);

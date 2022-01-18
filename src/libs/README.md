@@ -17,7 +17,7 @@ See [also examples](/examples/highlevel).
 libelektra-notification.so
 ```
 
-**[notification](notification/)** provides the [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html).
+**[notification](notification/)** provides the [notification API](https://doc.libelektra.org/api/latest/html/group__kdbnotification.html).
 Usage examples:
 
 - [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
@@ -75,15 +75,6 @@ libelektra-plugin.so
 ```
 
 **[libplugin](plugin/)** contains `elektraPlugin*` symbols to be used by plugins.
-
-### Libproposal
-
-```
-libelektra-proposal.so
-```
-
-**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internals of libcore and as
-such must always fit to the exact same version.
 
 ### Libmeta
 
@@ -144,7 +135,7 @@ libelektra-io.so
 ```
 
 **[io](io/)** provides the
-[common API](https://doc.libelektra.org/api/current/html/group__kdbio.html) for
+[common API](https://doc.libelektra.org/api/latest/html/group__kdbio.html) for
 using asynchronous I/O bindings.
 
 ### Globbing

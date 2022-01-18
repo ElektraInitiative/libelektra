@@ -76,62 +76,6 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 	return true;
 }
 
-// for v1 and v2 reading
-static inline bool readUInt64 (FILE * file, kdb_unsigned_long_long_t * valuePtr, Key * errorKey)
-{
-	if (fread (valuePtr, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
-	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "Error while reading file");
-		return false;
-	}
-	*valuePtr = le64toh (*valuePtr);
-	return true;
-}
-
-// for v1 reading
-static inline char * readString (FILE * file, Key * errorKey)
-{
-	kdb_unsigned_long_long_t size;
-	if (!readUInt64 (file, &size, errorKey))
-	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
-		return NULL;
-	}
-
-	char * string = elektraMalloc (size + 1);
-	if (fread (string, sizeof (char), size, file) < size)
-	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
-		elektraFree (string);
-		return NULL;
-	}
-	string[size] = '\0';
-	return string;
-}
-
-// for v2 reading
-static inline bool readStringIntoBufferV2 (FILE * file, struct stringbuffer * buffer, Key * errorKey)
-{
-	kdb_unsigned_long_long_t size;
-	if (!readUInt64 (file, &size, errorKey))
-	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
-		return false;
-	}
-
-	size_t newSize = buffer->offset + size + 1;
-	ensureBufferSize (buffer, newSize);
-
-	if (fread (&buffer->string[buffer->offset], sizeof (char), size, file) < size)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, feof (file) ? "Premature end of file" : "Unknown error");
-		return false;
-	}
-	buffer->string[newSize - 1] = '\0';
-	return true;
-}
-
-// for v3 reading
 static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buffer, Key * errorKey)
 {
 	kdb_unsigned_long_long_t size = 0;
@@ -153,23 +97,17 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 	return true;
 }
 
-#include "readv1.c"
-
-#define readStringIntoBuffer readStringIntoBufferV2
-#include "readv2.c"
-#undef readStringIntoBuffer
-
 int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/quickdump"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/quickdump"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/quickdump", KEY_VALUE, "quickdump plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/quickdump/exports", KEY_END),
-			keyNew ("system/elektra/modules/quickdump/exports/get", KEY_FUNC, elektraQuickdumpGet, KEY_END),
-			keyNew ("system/elektra/modules/quickdump/exports/set", KEY_FUNC, elektraQuickdumpSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/quickdump", KEY_VALUE, "quickdump plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/quickdump/exports", KEY_END),
+			keyNew ("system:/elektra/modules/quickdump/exports/get", KEY_FUNC, elektraQuickdumpGet, KEY_END),
+			keyNew ("system:/elektra/modules/quickdump/exports/set", KEY_FUNC, elektraQuickdumpSet, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/quickdump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/quickdump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -204,9 +142,11 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	switch (magic)
 	{
 	case MAGIC_NUMBER_V1:
-		return readVersion1 (file, returned, parentKey);
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Quickdump v1 no longer supported");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	case MAGIC_NUMBER_V2:
-		return readVersion2 (file, returned, parentKey);
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, "Quickdump v2 no longer supported");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	case MAGIC_NUMBER_V3:
 		// break, current version implemented below
 		break;
@@ -231,12 +171,13 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	keyGetName (parentKey, nameBuffer.string, parentSize);
 	nameBuffer.string[parentSize - 1] = '/'; // replaces null terminator
-	nameBuffer.string[parentSize] = '\0';    // set new null terminator
+	nameBuffer.string[parentSize] = '\0';	 // set new null terminator
 	nameBuffer.offset = parentSize;		 // set offset to null terminator
 
-	char c;
-	while ((c = fgetc (file)) != EOF)
+	int fc;
+	while ((fc = fgetc (file)) != EOF)
 	{
+		char c = fc;
 		ungetc (c, file);
 
 		if (!readStringIntoBuffer (file, &nameBuffer, parentKey))
@@ -248,8 +189,8 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		char type = fgetc (file);
-		if (type == EOF)
+		int ftype = fgetc (file);
+		if (ftype == EOF)
 		{
 			elektraFree (nameBuffer.string);
 			elektraFree (metaNameBuffer.string);
@@ -259,12 +200,12 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
+		char type = ftype;
 		Key * k;
 
 		switch (type)
 		{
-		case 'b':
-		{
+		case 'b': {
 			// binary key value
 			kdb_unsigned_long_long_t valueSize = 0;
 			if (!varintRead (file, &valueSize))
@@ -297,8 +238,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			}
 			break;
 		}
-		case 's':
-		{
+		case 's': {
 			// string key value
 			if (!readStringIntoBuffer (file, &valueBuffer, parentKey))
 			{
@@ -320,20 +260,20 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		while ((c = fgetc (file)) != 0)
+		while ((fc = fgetc (file)) != 0)
 		{
-			if (c == EOF)
+			if (fc == EOF)
 			{
 				keyDel (k);
 				fclose (file);
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Missing key end");
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
+			c = fc;
 
 			switch (c)
 			{
-			case 'm':
-			{
+			case 'm': {
 				// meta key
 				if (!readStringIntoBuffer (file, &metaNameBuffer, parentKey))
 				{
@@ -359,8 +299,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				keySetMeta (k, metaNameBuffer.string, metaValue);
 				break;
 			}
-			case 'c':
-			{
+			case 'c': {
 				// copy meta
 				if (!readStringIntoBuffer (file, &nameBuffer, parentKey))
 				{
@@ -433,7 +372,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	cursor_t cursor = ksGetCursor (returned);
+	elektraCursor cursor = ksGetCursor (returned);
 	ksRewind (returned);
 
 	FILE * file;
@@ -554,8 +493,9 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1;
-				if (!writeData (file, keyName (meta), metaNameSize, parentKey))
+				// ignore meta namespace when writing to file
+				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
+				if (!writeData (file, keyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
 				{
 					fclose (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -585,8 +525,9 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1;
-				if (!writeData (file, keyName (meta), metaNameSize, parentKey))
+				// ignore meta namespace when writing to file
+				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
+				if (!writeData (file, keyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
 				{
 					fclose (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;

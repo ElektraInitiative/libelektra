@@ -18,7 +18,6 @@
 #include <kdbmacros.h>
 #include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
-#include <kdbproposal.h>
 #include <kdbtypes.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
@@ -48,6 +47,14 @@
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
 
+/** The maximum value of unsigned char+1, needed
+ *  for iteration over trie children/values:
+ *
+ *  for (i=0; i<KDB_MAX_UCHAR; ++i)
+ * */
+#define KDB_MAX_UCHAR (UCHAR_MAX + 1)
+
+
 /**The maximum of how many characters an integer
   needs as decimal number.*/
 #define MAX_LEN_INT 31
@@ -56,10 +63,10 @@
  *
  * This key directory tells you where each backend is mounted
  * to which mountpoint. */
-#define KDB_SYSTEM_ELEKTRA "system/elektra"
+#define KDB_SYSTEM_ELEKTRA "system:/elektra"
 
 /** All keys below this are used for cache metadata in the global keyset */
-#define KDB_CACHE_PREFIX "system/elektra/cache"
+#define KDB_CACHE_PREFIX "system:/elektra/cache"
 
 
 #ifdef __cplusplus
@@ -148,7 +155,7 @@ typedef enum {
 
 
 /**
- * Ks Flags.
+ * Advanced KS Flags.
  *
  * Store a synchronizer state so that the Elektra knows if something
  * has changed or not.
@@ -212,8 +219,8 @@ struct _Key
 	size_t dataSize;
 
 	/**
-	 * The name of the key.
-	 * @see keySetName(), keySetName()
+	 * The canonical (escaped) name of the key.
+	 * @see keyGetName(), keySetName()
 	 */
 	char * key;
 
@@ -224,10 +231,22 @@ struct _Key
 	size_t keySize;
 
 	/**
+	 * The unescaped name of the key.
+	 * Note: This is NOT a standard null-terminated string.
+	 * @see keyGetName(), keySetName()
+	 */
+	char * ukey;
+
+	/**
 	 * Size of the unescaped key name in bytes, including all NULL.
 	 * @see keyBaseName(), keyUnescapedName()
 	 */
 	size_t keyUSize;
+
+	/**
+	 * All the key's meta information.
+	 */
+	KeySet * meta;
 
 	/**
 	 * Some control and internal flags.
@@ -235,16 +254,14 @@ struct _Key
 	keyflag_t flags;
 
 	/**
-	 * In how many keysets the key resists.
-	 * keySetName() is only allowed if ksReference is 0.
-	 * @see ksPop(), ksAppendKey(), ksAppend()
+	 * Reference counter
 	 */
-	size_t ksReference;
+	uint16_t refs;
 
 	/**
-	 * All the key's meta information.
+	 * Reserved for future use
 	 */
-	KeySet * meta;
+	uint16_t reserved;
 };
 
 
@@ -275,6 +292,10 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+
+	uint16_t refs; /**< Reference counter */
+
+	uint16_t reserved; /**< Reserved for future use */
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
@@ -321,13 +342,11 @@ struct _KDB
 
 	Backend * initBackend; /*!< The init backend for bootstrapping.*/
 
-	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
-
-	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
-
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
+
+	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 };
 
 
@@ -341,7 +360,7 @@ struct _KDB
  * So this holds a list of set and get plugins.
  *
  * Backends are put together through the configuration
- * in system/elektra/mountpoints
+ * in system:/elektra/mountpoints
  *
  * See kdb mount tool to mount new backends.
  *
@@ -355,7 +374,9 @@ struct _Backend
 	Key * mountpoint; /*!< The mountpoint where the backend resides.
 	  The keyName() is the point where the backend was mounted.
 	  The keyValue() is the name of the backend without pre/postfix, e.g.
-	  filesys. */
+	  filesys.
+	  NOTE: This is NULL, if this is a default backend (created by backendOpenDefault).
+	  */
 
 	Plugin * setplugins[NR_OF_PLUGINS];
 	Plugin * getplugins[NR_OF_PLUGINS];
@@ -395,8 +416,8 @@ struct _Backend
 struct _Plugin
 {
 	KeySet * config; /*!< This keyset contains configuration for the plugin.
-	 Direct below system/ there is the configuration supplied for the backend.
-	 Direct below user/ there is the configuration supplied just for the
+	 Direct below system:/ there is the configuration supplied for the backend.
+	 Direct below user:/ there is the configuration supplied just for the
 	 plugin, which should be of course preferred to the backend configuration.
 	 The keys inside contain information like /path which path should be used
 	 to write configuration to or /host to which host packets should be send.
@@ -532,7 +553,7 @@ Plugin * elektraPluginVersion (void);
 
 /*Trie handling*/
 int trieClose (Trie * trie, Key * errorKey);
-Backend * trieLookup (Trie * trie, const Key * key);
+Backend * trieLookup (Trie * trie, const char * name);
 Trie * trieInsert (Trie * trie, const char * name, Backend * value);
 
 /*Mounting handling */
@@ -543,12 +564,14 @@ int mountVersion (KDB * kdb, Key * errorKey);
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
 int mountBackend (KDB * kdb, Backend * backend, Key * errorKey);
 
-Key * mountGetMountpoint (KDB * handle, const Key * where);
-Backend * mountGetBackend (KDB * handle, const Key * key);
+Key * mountGetMountpoint (KDB * handle, const char * where);
+Backend * mountGetBackend (KDB * handle, const char * where);
 
 void keyInit (Key * key);
 
 int keyClearSync (Key * key);
+
+int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
 /*Private helper for keyset*/
 int ksInit (KeySet * ks);
@@ -558,30 +581,21 @@ int ksResize (KeySet * ks, size_t size);
 size_t ksGetAlloc (const KeySet * ks);
 KeySet * ksDeepDup (const KeySet * source);
 
-Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos);
-
-ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
+Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos);
 
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
-ssize_t elektraFinalizeName (Key * key);
-ssize_t elektraFinalizeEmptyName (Key * key);
-
-char * elektraEscapeKeyNamePart (const char * source, char * dest);
-
-size_t elektraUnescapeKeyName (const char * source, char * dest);
-int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** dest);
-char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest);
-
-
 /*Internally used for array handling*/
-int elektraValidateKeyName (const char * name, size_t size);
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 
 KeySet * ksRenameKeys (KeySet * config, const char * name);
+
+ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
+
+elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
 
 
 /* Conveniences Methods for Making Tests */
@@ -592,11 +606,12 @@ int keyIsDir (const Key * key);
 int keyIsSystem (const Key * key);
 int keyIsUser (const Key * key);
 
-int keyNameIsSpec (const char * keyname);
-int keyNameIsProc (const char * keyname);
-int keyNameIsDir (const char * keyname);
-int keyNameIsSystem (const char * keyname);
-int keyNameIsUser (const char * keyname);
+elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
+
+bool elektraKeyNameValidate (const char * name, bool isComplete);
+void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t * canonicalSizePtr, size_t offset, size_t * usizePtr);
+void elektraKeyNameUnescape (const char * name, char * unescapedName);
+size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 
 /* global plugin calls */
 int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
@@ -604,11 +619,11 @@ int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, 
 int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
-#define test_bit(var, bit) ((var) & (bit))
+#define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
 /** Set a bit. @see clear_bit() */
-#define set_bit(var, bit) ((var) |= (bit))
+#define set_bit(var, bit) ((var) |= ((unsigned long long) (bit)))
 /** Clear a bit. @see set_bit() */
-#define clear_bit(var, bit) ((var) &= ~(bit))
+#define clear_bit(var, bit) ((var) &= ~((unsigned long long) (bit)))
 
 #ifdef __cplusplus
 }
@@ -634,11 +649,11 @@ struct _Elektra
 
 struct _ElektraError
 {
-	const char * code;
+	char * code;
 	char * codeFromKey;
 	char * description;
-	const char * module;
-	const char * file;
+	char * module;
+	char * file;
 	kdb_long_t line;
 	kdb_long_t warningCount;
 	kdb_long_t warningAlloc;
@@ -659,7 +674,6 @@ ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
 ElektraError * elektraErrorNullError (const char * function);
 ElektraError * elektraErrorEnsureFailed (const char * reason);
-ElektraError * elektraErrorMinimalValidationFailed (const char * function);
 
 #ifdef __cplusplus
 }

@@ -16,16 +16,16 @@ using namespace kdb;
 
 void foo1 (Coordinator & gc, KeySet & ks)
 {
-	Key specKey ("/hello", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/hello", KEY_END);
 
 	ThreadContext c1 (gc);
 	ThreadValue<int> v1 (ks, c1, specKey);
 	ASSERT_EQ (v1, 8);
-	ASSERT_EQ (ks.lookup ("user/hello").getString (), "8");
+	ASSERT_EQ (ks.lookup ("user:/hello").getString (), "8");
 
 	v1 = 5;
 	ASSERT_EQ (v1, 5);
-	ASSERT_EQ (ks.lookup ("user/hello").getString (), "5");
+	ASSERT_EQ (ks.lookup ("user:/hello").getString (), "5");
 
 	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 	ASSERT_EQ (v1, 5);
@@ -33,7 +33,7 @@ void foo1 (Coordinator & gc, KeySet & ks)
 
 void foo2 (Coordinator & gc, KeySet & ks)
 {
-	Key specKey ("/hello", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/hello", KEY_END);
 
 	ThreadContext c2 (gc);
 	ThreadValue<int> v2 (ks, c2, specKey);
@@ -49,29 +49,29 @@ void foo2 (Coordinator & gc, KeySet & ks)
 
 TEST (test_contextual_thread, instanciation)
 {
-	Key specKey ("/hello", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/hello", KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user/hello", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/hello", KEY_VALUE, "22", KEY_END));
 
 	Coordinator gc;
 	ThreadContext c (gc);
 	ThreadValue<int> v (ks, c, specKey);
 	ASSERT_EQ (v, 22);
-	ASSERT_EQ (ks.lookup ("user/hello").getString (), "22");
+	ASSERT_EQ (ks.lookup ("user:/hello").getString (), "22");
 
 	v = 8;
 	ASSERT_EQ (v, 8);
-	ASSERT_EQ (ks.lookup ("user/hello").getString (), "8");
+	ASSERT_EQ (ks.lookup ("user:/hello").getString (), "8");
 
 	std::thread t1 (foo1, std::ref (gc), std::ref (ks));
 
 	std::this_thread::sleep_for (std::chrono::milliseconds (50));
-	ASSERT_EQ (ks.lookup ("user/hello").getString (), "5");
+	ASSERT_EQ (ks.lookup ("user:/hello").getString (), "5");
 	c.syncLayers ();
-	ASSERT_TRUE (ks.lookup ("user/hello"));
-	ASSERT_EQ (ks.lookup ("user/hello").getString (), "5");
-	ASSERT_EQ (v.getName (), "user/hello");
+	ASSERT_TRUE (ks.lookup ("user:/hello"));
+	ASSERT_EQ (ks.lookup ("user:/hello").getString (), "5");
+	ASSERT_EQ (v.getName (), "user:/hello");
 	ASSERT_EQ (ks.size (), 1);
 	ASSERT_EQ (v, 5);
 
@@ -80,8 +80,8 @@ TEST (test_contextual_thread, instanciation)
 	t2.join ();
 
 	c.syncLayers ();
-	ASSERT_EQ (v.getName (), "user/hello");
-	ASSERT_EQ (ks.lookup ("user/hello").getString (), "12");
+	ASSERT_EQ (v.getName (), "user:/hello");
+	ASSERT_EQ (ks.lookup ("user:/hello").getString (), "12");
 	ASSERT_EQ (ks.size (), 1);
 	ASSERT_EQ (v, 12);
 }
@@ -127,12 +127,12 @@ void toggleOff ()
 
 void activate1 (Coordinator & gc, KeySet & ks)
 {
-	Key specKey ("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/act/%activate%", KEY_END);
 
 	ThreadContext c1 (gc);
 	ThreadValue<int> v1 (ks, c1, specKey);
-	gc.onLayerActivation<Activate> ([]() { toggleOn (); });
-	gc.onLayerDeactivation<Activate> ([]() { toggleOff (); });
+	gc.onLayerActivation<Activate> ([] () { toggleOn (); });
+	gc.onLayerDeactivation<Activate> ([] () { toggleOff (); });
 	ASSERT_EQ (v1, 10);
 	c1.activate<Activate> ();
 	ASSERT_TRUE (g_toggle);
@@ -150,11 +150,11 @@ TEST (DISABLED_test_contextual_thread, activate)
 TEST (test_contextual_thread, activate)
 #endif
 {
-	Key specKey ("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/act/%activate%", KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
 
 	Coordinator gc;
 	ThreadContext c (gc);
@@ -190,7 +190,7 @@ TEST (test_contextual_thread, ThreadNoContext)
 	ThreadNoContext c;
 	const char * name = "/%language%/%country%/%dialect%/test";
 	ASSERT_TRUE (!ks.lookup (name));
-	Value<int, ContextPolicyIs<ThreadNoContext>> i (ks, c, Key (name, KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<ThreadNoContext>> i (ks, c, Key (name, KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ (i, i_value);
 	ASSERT_TRUE (ks.lookup (name));
 	i = 5;
@@ -228,11 +228,11 @@ public:
 
 TEST (test_contextual_thread, activateNoDependency)
 {
-	Key specKey ("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/act/%activate%", KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -254,18 +254,18 @@ TEST (test_contextual_thread, activateNoDependency)
 	c1.syncLayers ();
 	ASSERT_EQ (c1["dep"], "10");
 	ASSERT_EQ (c2["activate"], "active");
-	ASSERT_EQ (v.getName (), "user/act/active");
+	ASSERT_EQ (v.getName (), "user:/act/active");
 	ASSERT_EQ (v, 22);
 }
 
 
 TEST (test_contextual_thread, activateWithDependency)
 {
-	Key specKey ("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/act/%activate%", KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -320,8 +320,8 @@ TEST (test_contextual_thread, activateWithDirectDependency)
 	Key specKey ("/act/%activate%", KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user/act/%", KEY_VALUE, "inactive", KEY_END));
-	ks.append (Key ("user/act/active", KEY_VALUE, "active", KEY_END));
+	ks.append (Key ("user:/act/%", KEY_VALUE, "inactive", KEY_END));
+	ks.append (Key ("user:/act/active", KEY_VALUE, "active", KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -347,11 +347,11 @@ TEST (test_contextual_thread, activateWithDirectDependency)
 
 TEST (test_contextual_thread, syncInWith)
 {
-	Key specKey ("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/act/%activate%", KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -366,11 +366,11 @@ TEST (test_contextual_thread, syncInWith)
 	ASSERT_EQ (c2.size (), 1);
 	ASSERT_EQ (c2["activate"], "active");
 
-	c1.with<Other> () ([&]() {
+	c1.with<Other> () ([&] () {
 		ASSERT_EQ (c1.size (), 1);
 		ASSERT_EQ (c1["other"], "notused");
 		ASSERT_EQ (c1["activate"], "");
-		ASSERT_EQ (v.getName (), "user/act/%");
+		ASSERT_EQ (v.getName (), "user:/act/%");
 		ASSERT_EQ (v, 10);
 
 		c1.syncLayers ();
@@ -378,25 +378,25 @@ TEST (test_contextual_thread, syncInWith)
 		ASSERT_EQ (c1.size (), 2);
 		ASSERT_EQ (c1["other"], "notused");
 		ASSERT_EQ (c1["activate"], "active");
-		ASSERT_EQ (v.getName (), "user/act/active");
+		ASSERT_EQ (v.getName (), "user:/act/active");
 		ASSERT_EQ (v, 22);
 	});
 
 	ASSERT_EQ (c1.size (), 1);
 	ASSERT_EQ (c1["other"], "");
 	ASSERT_EQ (c1["activate"], "active");
-	ASSERT_EQ (v.getName (), "user/act/active");
+	ASSERT_EQ (v.getName (), "user:/act/active");
 	ASSERT_EQ (v, 22);
 }
 
 
 TEST (test_contextual_thread, syncBeforeWith)
 {
-	Key specKey ("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
+	Key specKey ("/act/%activate%", KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -415,20 +415,20 @@ TEST (test_contextual_thread, syncBeforeWith)
 	ASSERT_EQ (c1.size (), 1);
 	ASSERT_EQ (c1["other"], "");
 	ASSERT_EQ (c1["activate"], "active");
-	ASSERT_EQ (v.getName (), "user/act/active");
+	ASSERT_EQ (v.getName (), "user:/act/active");
 	ASSERT_EQ (v, 22);
 
-	c1.with<Other> () ([&]() {
+	c1.with<Other> () ([&] () {
 		ASSERT_EQ (c1.size (), 2);
 		ASSERT_EQ (c1["other"], "notused");
 		ASSERT_EQ (c1["activate"], "active");
-		ASSERT_EQ (v.getName (), "user/act/active");
+		ASSERT_EQ (v.getName (), "user:/act/active");
 		ASSERT_EQ (v, 22);
 	});
 
 	ASSERT_EQ (c1.size (), 1);
 	ASSERT_EQ (c1["other"], "");
 	ASSERT_EQ (c1["activate"], "active");
-	ASSERT_EQ (v.getName (), "user/act/active");
+	ASSERT_EQ (v.getName (), "user:/act/active");
 	ASSERT_EQ (v, 22);
 }

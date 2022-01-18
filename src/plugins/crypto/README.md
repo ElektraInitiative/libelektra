@@ -21,76 +21,44 @@ It also needs to be decrypted whenever an admissible access (read) is being perf
 The users of Elektra should not be bothered too much with the internals of the cryptographic operations.
 Also the cryptographic keys must never be exposed to the outside of the crypto module.
 
-The crypto plugin supports different libraries as provider for the cryptographic operations.
-At the moment the following crypto APIs are supported:
+The crypto plugin uses libgcrypt as provider of cryptographic operations.
 
-- OpenSSL (`libcrypto`)
-- libgcrypt
-- Botan
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-crypto`.
 
 ## Dependencies
 
-#ifdef ELEKTRA_CRYPTO_API_GCRYPT
-
 - `libgcrypt20-dev` or `libgcrypt-devel`
-
-#endif
-
-#ifdef ELEKTRA_CRYPTO_API_OPENSSL
-
-- `libssl-dev` or `openssl-devel`
-
-#endif
-
-#ifdef ELEKTRA_CRYPTO_API_BOTAN
-
-- `libbotan1.10-dev` or `botan-devel`
-
-#endif
 
 ### GnuPG (GPG)
 
-GPG is a run-time dependency for all crypto plugin variants.
-Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
+GPG is a run-time dependency of the crypto plugin.
+Either the `gpg` or the `gpg2` binary must be installed when using the plugin.
 Note that `gpg2` will be preferred if both versions are available.
 The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
 If no such configuration is provided, the plugin will look at the PATH environment variable to find the GPG binaries.
 
 ## How to compile
 
-The following compilation variants are available:
-
-1. crypto_gcrypt
-2. crypto_openssl
-3. crypto_botan
-
-Add "crypto" and the variants, that you want (you can add one of them or all), to the `PLUGINS` variable in `CMakeCache.txt` and re-run `cmake`.
-
-In order to add all compile variants you can add "CRYPTO" to the `PLUGINS` variable.
+Add "crypto" to the `PLUGINS` variable in `CMakeCache.txt` and re-run `cmake`.
 
 An example `CMakeCache.txt` may contain the following variable:
 
 ```cmake
-PLUGINS=crypto;crypto_gcrypt;crypto_openssl;crypto_botan
-```
-
-or it may look like:
-
-```cmake
-PLUGINS=CRYPTO
+PLUGINS=crypto
 ```
 
 ### macOS
 
-All variants of the plugin work under macOS Sierra (Version 10.12.3 (16D32)).
+The crypto plugin works under macOS Sierra (Version 10.12.3 (16D32)).
 
 To set up the build environment on macOS Sierra we recommend using [Homebrew](http://brew.sh/).
 Follow these steps to get everything up and running:
 
-```sh
-brew install openssl botan libgcrypt pkg-config cmake
-# The next step is required for pkg-config to find the include files of OpenSSL
-ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
+```
+brew install libgcrypt pkg-config cmake
 ```
 
 Also a GPG installation is required. The [GPG Tools](https://gpgtools.org) work fine for us.
@@ -101,25 +69,31 @@ At the moment the plugin will only run on Unix/Linux-like systems, that provide 
 
 ## Examples
 
-To mount a backend with the gcrypt plugin variant that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
+To mount a backend with the crypto plugin that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
 
 ```sh
-kdb mount test.ecf user/t crypto_gcrypt "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
+sudo kdb mount test.ecf user:/tests/t crypto "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
 ```
 
-Now you can specify a key `user/t/a` and protect its content by using:
+Now you can specify a key `user:/t/a` and protect its content by using:
 
 ```sh
-kdb set user/t/a
-kdb meta-set user/t/a crypto/encrypt 1
-kdb set user/t/a "secret"
+kdb set user:/tests/t/a
+kdb meta-set user:/tests/t/a crypto/encrypt 1
+kdb set user:/tests/t/a "secret"
 ```
 
-The value of `user/t/a` will be stored encrypted.
+The value of `user:/t/a` will be stored encrypted.
 But you can still access the original value using `kdb get`:
 
 ```sh
-kdb get user/t/a
+kdb get user:/tests/t/a
+```
+
+To unmount it you can run:
+
+```sh
+sudo kdb umount user:/tests/t
 ```
 
 ## Configuration
@@ -148,7 +122,8 @@ If you are not sure which keys are available to you, the `kdb` program will give
 For example you can type:
 
 ```sh
-kdb mount test.ecf user/t crypto_gcrypt
+sudo kdb mount test.ecf user:/tests/t crypto
+# RET: 7
 ```
 
 In the error description you should see something like:
@@ -170,7 +145,13 @@ This means that the following keys are available:
 So the full mount command could look like this:
 
 ```sh
-kdb mount test.ecf user/t crypto_gcrypt "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
+sudo kdb mount test.ecf user:/tests/t crypto "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
+```
+
+To unmount it you can run:
+
+```sh
+sudo kdb umount user:/tests/t
 ```
 
 ### Cryptographic Operations
@@ -206,6 +187,4 @@ Shutdown is enabled in the unit tests to prevent memory leaks.
 
 ### Ciphers and Mode of Operation
 
-All of the plugin variants use the Advanced Encryption Standard (AES) in Cipher Block Chaining Mode (CBC) with a key size of 256 bit.
-
-The ciphers and modes of operations are defined in the corresponding `<plugin_variant>_operations.c` or `<plugin_variant>_operations.h` file.
+The crypto plugin uses the Advanced Encryption Standard (AES) in Cipher Block Chaining Mode (CBC) with a key size of 256 bit.

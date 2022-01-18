@@ -6,7 +6,7 @@ WORKDIR /home/elektra
 USER elektra
 
 # create start script
-RUN printf "#!/bin/bash\nkdb run-elektrad &\nkdb run-web" > start
+RUN printf "#!/bin/bash\nkdb run-elektrad &\nkdb run-webd" > start
 RUN chmod +x start
 
 # run elektrad and webd in one container

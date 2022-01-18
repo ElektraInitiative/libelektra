@@ -12,7 +12,6 @@
 #include <kdberrors.h>
 #include <kdbextension.h>
 #include <kdbplugin.h>
-#include <kdbproposal.h>
 
 #include <augeas.h>
 #include <errno.h>

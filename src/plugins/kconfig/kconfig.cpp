@@ -34,16 +34,16 @@ namespace
 CppKeySet getContract ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system/elektra/modules/kconfig", KEY_VALUE, "kconfig plugin waits for your orders", KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports", KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/open", KEY_FUNC, elektraKconfigOpen, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/close", KEY_FUNC, elektraKconfigClose, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/get", KEY_FUNC, elektraKconfigGet, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/set", KEY_FUNC, elektraKconfigSet, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/error", KEY_FUNC, elektraKconfigError, KEY_END),
-			  keyNew ("system/elektra/modules/kconfig/exports/checkconf", KEY_FUNC, elektraKconfigCheckConf, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig", KEY_VALUE, "kconfig plugin waits for your orders", KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports", KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/open", KEY_FUNC, elektraKconfigOpen, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/close", KEY_FUNC, elektraKconfigClose, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/get", KEY_FUNC, elektraKconfigGet, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/set", KEY_FUNC, elektraKconfigSet, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/error", KEY_FUNC, elektraKconfigError, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/checkconf", KEY_FUNC, elektraKconfigCheckConf, KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system/elektra/modules/kconfig/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
 
@@ -85,7 +85,7 @@ int elektraKconfigGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
 
-	if (parent.getName () == "system/elektra/modules/kconfig")
+	if (parent.getName () == "system:/elektra/modules/kconfig")
 	{
 		keys.append (getContract ());
 		parent.release ();
@@ -124,7 +124,7 @@ int elektraKconfigSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
 
-	ELEKTRA_LOG_DEBUG ("Save `%s` using the kconfig plugin", parent.getFullName ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Save `%s` using the kconfig plugin", parent.getName ().c_str ());
 	auto filePtr = new std::ofstream{ parent.getString () };
 	bool isFileOpen = filePtr->is_open ();
 	std::unique_ptr<std::ostream> file{ filePtr };
@@ -142,7 +142,7 @@ int elektraKconfigSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	KConfigSerializer serializer{ keys, parent, std::move (file) };
 	serializer.save ();
 
-	ELEKTRA_LOG_DEBUG ("Data succesfully stored into `%s`.", parent.getFullName ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Data succesfully stored into `%s`.", parent.getName ().c_str ());
 
 	parent.release ();
 	keys.release ();

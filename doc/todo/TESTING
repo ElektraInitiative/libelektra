@@ -6,13 +6,14 @@ src/plugins/python/CMakeLists.txt
 tests/shell/check_merge.sh   for INI
 tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
 doc/help/kdb-get.md   for INI
+src/bindings/swig/ruby/tests/CMakeLists.txt disabled testruby_tools_plugindatabase.rb in commit 87d1a4f1ec19a0cf86b877e6d2eb9e1d124d96ee
+
+scripts/jenkins/Jenkinsfile disabled buildint openwrt packages in c0ffb72e10e6e145989b61bad8a36e4a77450acf
 
 ### Jenkins
 
 We disabled the tests
 
-- `testmod_crypto_botan`,
-- `testmod_crypto_openssl`,
 - `testmod_dbus`,
 - `testmod_dbusrecv`,
 - `testmod_fcrypt`,
@@ -23,6 +24,8 @@ in the function `ctest` in the file `scripts/jenkins/Jenkinsfile`, since they ar
 [cause problems in high load scenarios](https://issues.libelektra.org/2439).
 
 We also disabled `testmod_zeromqsend` from `kdb run_all` in `tests/shell/run_all.sh`. (See commit 526f916d3c983d5310448c002510f06c4d4b43ac)
+
+We disabled `testmod_crypto` on `debian-unstable-full-clang` due to memory leaks.
 
 ## error
 
@@ -40,10 +43,10 @@ test error plugin when mounted at open
 array:
 	together with yajl
 	check if its a valid array via metadata
-	spec/array metadaten: array=1-10
-	user/array/#0 -> valid
-	user/array -> invalid
-	system/array/x -> invalid
+	spec:/array metadaten: array=1-10
+	user:/array/#0 -> valid
+	user:/array -> invalid
+	system:/array/x -> invalid
 
 ## mingw
 
@@ -98,8 +101,6 @@ ASAN disables the following parts during cmake as they throw errors:
   - SWIG
   - GLIB
   - IO (+async notification example)
-- plugins:
-  - crypto_botan
 
 Further kdb_check_internal skips tests that output sanitizer warnings during
 load as it would make the test fail.

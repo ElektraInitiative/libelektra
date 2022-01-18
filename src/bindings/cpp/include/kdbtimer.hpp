@@ -30,7 +30,7 @@ public:
 	{
 		raw_data_cerr, ///< print name,data\n (default!)
 		median_cerr,   ///< print name,median\n
-		quiet,	 ///< print nothing
+		quiet,	       ///< print nothing
 	};
 
 	// functions

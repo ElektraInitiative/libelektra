@@ -15,6 +15,12 @@ keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k)
 	it.rbegin = it.rend + keyGetNameSize (k);
 	it.current = it.rbegin;
 	it.size = 0;
+
+	if (keyGetUnescapedNameSize (k) == 3)
+	{
+		it.current -= 2;
+	}
+
 	return it;
 }
 
@@ -34,40 +40,30 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
 	}
 
 	const char * real = it->current - 1; // start at one position left
-	int endReached = 0;
 
-	// skip all repeating '/' in the "beginning" of string
-	while (*real == KDB_PATH_SEPARATOR)
+	while (real >= it->rend)
 	{
 		--real;
-	}
-
-	if (*real == KDB_PATH_ESCAPE)
-	{
-		++real; // we skipped too much
-	}
-
-	const char * currentEnd = real; // now we know where the string will end
-
-	// now see where this basename begins
-	// also handles escaped chars with '\'
-	while (real != it->rend && !endReached)
-	{
-		--real;
-		if (real != it->rend && *real == KDB_PATH_SEPARATOR)
+		while (real >= it->rend && *real != KDB_PATH_SEPARATOR)
 		{
-			// only decrement if we have not send the end
 			--real;
-			if (*real != KDB_PATH_ESCAPE)
-			{
-				endReached = 1;
-				real += 2; // fix for lookahead
-			}
+		}
+
+		size_t backslashes = 0;
+		while (real - backslashes > it->rend && *(real - backslashes - 1) == KDB_PATH_ESCAPE)
+		{
+			++backslashes;
+		}
+
+		if (backslashes % 2 == 0)
+		{
+			++real;
+			break;
 		}
 	}
 
 	// update iterator and return it
-	it->size = currentEnd - real + 1;
+	it->size = it->current - 1 - real;
 	it->current = real;
 	return 1;
 }
@@ -79,9 +75,9 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
  * ksCurrent() will point at the same key as the key which is returned.
  *
  * e.g.
- * user/sw/x
- * user/sw/x/y
- * user/sw/x/y/z1
+ * user:/sw/x
+ * user:/sw/x/y
+ * user:/sw/x/y/z1
  *
  * @retval last element if no other found.
  * @retval 0 if there is no other element afterwards (keyset will be
@@ -103,13 +99,13 @@ Key * elektraNextNotBelow (KeySet * ks)
 	}
 
 	// uninitialized variables are ok, because do{}while guarantees initialisation
-	cursor_t pos;			// always one before current
+	elektraCursor pos;		// always one before current
 	const Key * current = previous; // current is same as ksCurrent()
 	do
 	{
 		pos = ksGetCursor (ks); // remember candidate
-		previous = current;     // and remember last key
-		current = ksNext (ks);  // look forward to next key
+		previous = current;	// and remember last key
+		current = ksNext (ks);	// look forward to next key
 	} while (current && keyIsBelow (previous, current));
 
 	// jump to and return candidate, because next is known to be not

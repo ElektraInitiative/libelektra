@@ -105,16 +105,10 @@ endif ()
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (
 	XercesC
-	FOUND_VAR
-	XercesC_FOUND
-	REQUIRED_VARS
-	XercesC_LIBRARY
-	XercesC_INCLUDE_DIR
-	XercesC_VERSION
-	VERSION_VAR
-	XercesC_VERSION
-	FAIL_MESSAGE
-	"Failed to find XercesC")
+	FOUND_VAR XercesC_FOUND
+	REQUIRED_VARS XercesC_LIBRARY XercesC_INCLUDE_DIR XercesC_VERSION
+	VERSION_VAR XercesC_VERSION
+	FAIL_MESSAGE "Failed to find XercesC")
 
 if (XercesC_FOUND)
 	set (XercesC_INCLUDE_DIRS "${XercesC_INCLUDE_DIR}")
@@ -128,7 +122,7 @@ if (XercesC_FOUND)
 		endif ()
 		if (EXISTS "${XercesC_LIBRARY}")
 			set_target_properties (XercesC::XercesC PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" IMPORTED_LOCATION
-									   "${XercesC_LIBRARY}")
+														   "${XercesC_LIBRARY}")
 		endif ()
 		if (EXISTS "${XercesC_LIBRARY_DEBUG}")
 			set_property (

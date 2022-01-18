@@ -8,7 +8,7 @@
 
 %feature("autodoc", "3");
 /*
-%define CPPDOCURL "https://doc.libelektra.org/api/current/html" %enddef
+%define CPPDOCURL "https://doc.libelektra.org/api/latest/html" %enddef
 
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (https://www.libelektra.org),
@@ -31,6 +31,7 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 
 %module kdbtools
 
+#pragma SWIG nowarn=378 // Disable warning: operator!= ignored
 
 %include <attribute.i>
 %include <std_vector.i>

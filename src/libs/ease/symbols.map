@@ -41,6 +41,10 @@ libelektra_0.9 {
 	elektraKeyToUnsignedLong;
 	elektraKeyToUnsignedLongLong;
 	elektraKeyToUnsignedShort;
+
+	elektraKsToMemArray;
+
+	calculateSpecificationToken;
 };
 
 libelektraprivate_1.0 {

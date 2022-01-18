@@ -10,4 +10,4 @@ add_plugin (
 	SOURCES conditionals.h conditionals.c
 	LINK_ELEKTRA elektra-meta
 	ADD_TEST TEST_README
-	TEST_REQUIRED_PLUGINS dump ini ni)
+	TEST_REQUIRED_PLUGINS dump ini ni COMPONENT libelektra${SO_VERSION}-extra)

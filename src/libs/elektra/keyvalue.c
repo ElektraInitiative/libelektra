@@ -68,7 +68,7 @@
  * Return a pointer to the real internal @p key value.
  *
  * This is a much more efficient version of keyGetString()
- * keyGetBinary(), and you should use it if you are responsible enough to
+ * keyGetBinary(). You should use it if you are responsible enough to
  * not mess up things. You are not allowed to modify anything
  * in the returned string. If you need a copy of the Value, consider
  * to use keyGetString() or keyGetBinary() instead.
@@ -113,7 +113,7 @@ keyDel(key);
  * value. Use keySetString() or keySetBinary() instead.
  *
  * @warning Binary keys will return a NULL pointer when there is no data in contrast
- * to keyName(), keyBaseName(), keyOwner() and keyComment(). For string value the
+ * to keyName(), keyBaseName() and keyComment(). For string value the
  * behaviour is the same.
  *
  * @par Example:
@@ -122,13 +122,13 @@ KDB *handle = kdbOpen();
 KeySet *ks=ksNew(0, KS_END);
 Key *current=0;
 
-kdbGetByName(handle,ks,"system/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
+kdbGetByName(handle,ks,"system:/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
 
 ksRewind(ks);
 while (current=ksNext(ks)) {
 	size_t size=0;
 
-	if (keyIsBin(current)) {
+	if (keyIsBinary(current)) {
 		size=keyGetValueSize(current);
 		printf("Key %s has a value of size %d bytes. Value: <BINARY>\nComment: %s",
 			keyName(current),
@@ -148,13 +148,22 @@ ksDel (ks);
 kdbClose (handle);
  * @endcode
  *
- * @param key the key object to work with
- * @return a pointer to internal value
- * @retval "" when there is no data and key is not binary
- * @retval 0 where there is no data and key is binary
+ * @pre @p key is not NULL and has stored data
+ * @post returned pointer points to the stored internal value
+ * @post if the value is a string, the value is NULL terminated
+ *
+ * @param key the Key from which to get the value
+ *
+ * @return a pointer to the Key's internal value
+ * @retval "" when there is no value and Key is not binary
+ * @retval 0 where there is no value and Key is binary
  * @retval 0 on NULL pointer
- * @see keyGetValueSize(), keyGetString(), keyGetBinary()
+ *
+ * @since 1.0.0
  * @ingroup keyvalue
+ * @see keyGetValueSize() to get the size of the Key's value
+ * @see keyGetString() for getting the Key's value as string
+ * @see keyGetBinary() for getting the Key's value as binary
  */
 const void * keyValue (const Key * key)
 {
@@ -162,7 +171,6 @@ const void * keyValue (const Key * key)
 
 	if (!key->data.v)
 	{
-		/*errno=KDB_ERR_NOKEY;*/
 		if (keyIsBinary (key))
 			return 0;
 		else
@@ -174,21 +182,33 @@ const void * keyValue (const Key * key)
 
 
 /**
- * Get the c-string representing the value.
+ * Get a pointer to the c-string representing the value.
  *
- * Will return (null) on null pointers.
- * Will return (binary) on binary data not ended
+ * Will return "(null)" on null pointers.
+ * Will return "(binary)" on binary data not ended
  * with a null byte.
+ *
+ * @note You must not change or delete the returned value. Use the respective
+ * functions for that (keySetString(), keyGetString())
  *
  * It is not checked if it is actually a string,
  * only if it terminates for security reasons.
  *
- * @return the c-string of the value
- * @retval "(null)" on null keys
+ * @post returned pointer points to the real internal value
+ * @post value is NULL terminated
+ *
+ * @param key the Key object to get the string value from
+ *
+ * @return pointer to the c-string representing the Key's value
  * @retval "" if no data found
- * @retval "(binary)" on binary keys
+ * @retval "(null)" on null Key
+ * @retval "(binary)" on binary Key
+ *
+ * @since 1.0.0
  * @ingroup keyvalue
- * @param key the key object to get the string from
+ * @see keyGetString() for getting a copy of the Key's value as string
+ * @see keyGetBinary() for getting a copy of the Key's value as binary
+ * @see keyValue() for getting a pointer to the Key's value as binary
  */
 const char * keyString (const Key * key)
 {
@@ -213,17 +233,17 @@ const char * keyString (const Key * key)
  * NULL terminator.
  *
  * It returns the correct size, independent of the Key Type.
- * If it is a binary there might be '\\0' values in it.
+ * If the value is binary there might be '\\0' values in it.
  *
  * For an empty string you need one byte to store the ending NULL.
  * For that reason 1 is returned. This is not true for binary data,
- * so there might be returned 0 too.
+ * so 0 will be returned.
  *
- * A binary key has no '\\0' termination. String types have it, so to there
- * length will be added 1 to have enough space to store it.
+ * A binary key has no '\\0' termination. String types are null-terminated,
+ * and the terminator will be considered for the length.
  *
- * This method can be used with elektraMalloc() before keyGetString() or keyGetBinary()
- * is called.
+ * This method can be used with elektraMalloc() before
+ * keyGetString() or keyGetBinary() is called.
  *
  * @code
 char *buffer;
@@ -232,13 +252,21 @@ buffer = elektraMalloc (keyGetValueSize (key));
 // pass keyGetValueSize (key) for maxSize
  * @endcode
  *
- * @param key the key object to work with
- * @return the number of bytes needed to store the key value
- * @retval 1 when there is no data and type is not binary
+ * @post returns the exact amount of bytes needed to store @p key's value
+ * (including NULL terminators)
+ *
+ * @param key the Key object to get the size of the value from
+ *
+ * @return the number of bytes needed to store the Key's value
+ * @retval 1 when there is no data and type is a string
  * @retval 0 when there is no data and type is binary
  * @retval -1 on null pointer
- * @see keyGetString(), keyGetBinary(), keyValue()
+ *
+ * @since 1.0.0
  * @ingroup keyvalue
+ * @see keyGetString() for getting the Key's value as a string
+ * @see keyGetBinary() for getting the Key's value as a binary
+ * @see keyValue() for getting a pointer to the Key's value
  */
 ssize_t keyGetValueSize (const Key * key)
 {
@@ -246,7 +274,6 @@ ssize_t keyGetValueSize (const Key * key)
 
 	if (!key->data.v)
 	{
-		/*errno=KDB_ERR_NODATA;*/
 		if (keyIsBinary (key))
 			return 0;
 		else
@@ -258,18 +285,16 @@ ssize_t keyGetValueSize (const Key * key)
 
 
 /**
- * Get the value of a key as a string.
+ * Copy the string value of a Key into @p returnedString.
  *
  * When there is no value inside the string, 1 will
  * be returned and the returnedString will be empty
- * "" to avoid programming errors that old strings are
+ * ("") to avoid programming errors where old strings are
  * shown to the user.
- *
- * For binary values see keyGetBinary() and keyIsBinary().
  *
  * @par Example:
  * @code
-Key *key = keyNew ("user/keyname", KEY_END);
+Key *key = keyNew ("user:/keyname", KEY_END);
 char buffer[300];
 
 if (keyGetString(key,buffer,sizeof(buffer)) == -1)
@@ -280,20 +305,23 @@ if (keyGetString(key,buffer,sizeof(buffer)) == -1)
 }
  * @endcode
  *
- * @param key the object to gather the value from
- * @param returnedString pre-allocated memory to store a copy of the key value
+ * @param key the Key object to get the string from
+ * @param returnedString pre-allocated memory to store a copy of the Key's value
  * @param maxSize number of bytes of allocated memory in @p returnedString
+ *
  * @return the number of bytes actually copied to @p returnedString, including
  * 	final NULL
  * @retval 1 if the string is empty
  * @retval -1 on any NULL pointers
- * @retval -1 on type mismatch: string expected, but found binary
- * @retval -1 maxSize is 0
- * @retval -1 if maxSize is too small for string
- * @retval -1 if maxSize is larger than SSIZE_MAX
- * @see keyValue(), keyGetValueSize(), keySetString(), keyString()
- * @see keyGetBinary() for working with binary data
+ * @retval -1 if the Key's value is binary
+ * @retval -1 maxSize is 0, too small for the string or larger than SSIZE_MAX
+ *
+ * @since 1.0.0
  * @ingroup keyvalue
+ * @see keyGetValueSize() for getting the size of the Key's value
+ * @see keyValue() for getting a raw pointer to the Key's value
+ * @see keyString() for getting a raw char pointer to the Key's value
+ * @see keyGetBinary(), keyIsBinary() for working with binary data
  */
 ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
 {
@@ -305,7 +333,6 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
 
 	if (!keyIsString (key))
 	{
-		/*errno=KDB_ERR_TYPEMISMATCH;*/
 		return -1;
 	}
 
@@ -317,7 +344,6 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
 
 	if (key->dataSize > maxSize)
 	{
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 
@@ -333,23 +359,29 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
  * The function will allocate and save a private copy of @p newStringValue, so
  * the parameter can be freed after the call.
  *
- * String values will be saved in backend storage, when kdbSetKey() will be
- * called, in UTF-8 universal encoding, regardless of the program's current
- * encoding, when iconv plugin is present.
+ * String values will be saved in backend storage in UTF-8 universal encoding,
+ * regardless of the program's current encoding (if the iconv plugin is
+ * available).
  *
- * @note The type will be set to KEY_TYPE_STRING.
- * When the type of the key is already a string type it won't be changed.
+ * @pre @p newStringValue is a NULL terminated string
+ * @post Value of the Key is set to the UTF-8 encoded value of @p newStringValue
+ * @post Metakey `meta:/binary` is cleared
  *
- * @param key the key to set the string value
- * @param newStringValue NULL-terminated text string to be set as @p key's
+ * @param key the Key for which to set the string value
+ * @param newStringValue NULL-terminated string to be set as @p key's
  * 	value
+ *
  * @return the number of bytes actually saved in private struct including final
  * 	NULL
- * @retval 1 if newStringValue is a NULL pointer, this will make the
+ * @retval 1 if @p newStringValue is a NULL pointer, this will make the
  *           string empty (string only containing null termination)
- * @retval -1 if key is a NULL pointer
- * @see keyGetString(), keyValue(), keyString()
+ * @retval -1 if @p key is a NULL pointer
+ *
+ * @since 1.0.0
  * @ingroup keyvalue
+ * @see keyString() for getting a pointer to the Key's value
+ * @see keyGetString() for getting a copy of the Key's value
+ * @see keySetBinary() for setting binary data
  */
 ssize_t keySetString (Key * key, const char * newStringValue)
 {
@@ -371,22 +403,22 @@ ssize_t keySetString (Key * key, const char * newStringValue)
 
 
 /**
- * Get the value of a key as a binary.
+ * Copy the binary value of a Key into @p returnedBinary
  *
  * If the type is not binary -1 will be returned.
  *
  * When the binary data is empty (this is not the same as ""!)
- * 0 will be returned and the returnedBinary will not be changed.
+ * 0 will be returned and @p returnedBinary will not be changed.
  *
  * For string values see keyGetString() and keyIsString().
  *
- * When the returnedBinary is to small to hold the data
- * (its maximum size is given by maxSize),
+ * When @p returnedBinary is too small to hold the data
+ * (maximum size is given by maxSize),
  * the returnedBinary will not be changed and -1 is returned.
  *
  * @par Example:
  * @code
-Key *key = keyNew ("user/keyname", KEY_TYPE, KEY_TYPE_BINARY, KEY_END);
+Key *key = keyNew ("user:/keyname", KEY_BINARY, KEY_END);
 char buffer[300];
 
 if (keyGetBinary(key,buffer,sizeof(buffer)) == -1)
@@ -395,20 +427,23 @@ if (keyGetBinary(key,buffer,sizeof(buffer)) == -1)
 }
  * @endcode
  *
- * @param key the object to gather the value from
- * @param returnedBinary pre-allocated memory to store a copy of the key value
+ * @param key the Key object to get the binary value from
+ * @param returnedBinary pre-allocated memory to store a copy of the Key's value
  * @param maxSize number of bytes of pre-allocated memory in @p returnedBinary
- * @return the number of bytes actually copied to @p returnedBinary
+ *
+ * @return the number of bytes copied to @p returnedBinary
  * @retval 0 if the binary is empty
  * @retval -1 on NULL pointers
- * @retval -1 if maxSize is 0
- * @retval -1 if maxSize is too small for string
- * @retval -1 if maxSize is larger than SSIZE_MAX
- * @retval -1 on type mismatch: binary expected, but found string
- * @see keyValue(), keyGetValueSize(), keySetBinary()
- * @see keyGetString() and keySetString() as preferred alternative to binary
- * @see keyIsBinary() to see how to check for binary type
+ * @retval -1 if maxSize is 0, too small for the value or larger than SSIZE_MAX
+ * @retval -1 if the Key's value is a string
+ *
+ * @since 1.0.0
  * @ingroup keyvalue
+ * @see keyValue() for getting a raw pointer to the Key's value
+ * @see keyGetValueSize() for getting the size of the Key's value
+ * @see keySetBinary() for setting the binary value of a Key
+ * @see keyIsBinary() for checking whether a Key's value is binary
+ * @see keyGetString(), keySetString() for working with string values
  */
 ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 {
@@ -420,7 +455,6 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 
 	if (!keyIsBinary (key))
 	{
-		/*errno=KDB_ERR_TYPEMISMATCH;*/
 		return -1;
 	}
 
@@ -431,7 +465,6 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 
 	if (key->dataSize > maxSize)
 	{
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 
@@ -441,35 +474,47 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 
 
 /**
- * Set the value of a key as a binary.
+ * Set the value of a Key to the binary value @p newBinary
  *
- * A private copy of @p newBinary will allocated and saved inside @p key,
+ * A private copy of @p newBinary will be allocated and saved inside @p key,
  * so the parameter can be deallocated after the call.
  *
- * Binary values might be encoded in another way then string values
+ * Binary values might be encoded in another way than string values
  * depending on the plugin. Typically character encodings should not take
  * place on binary data.
- * Consider using a string key instead.
+ * Consider using a string Key instead, if encoding should occur.
  *
- * When newBinary is a NULL pointer the binary will be freed and 0 will
+ * When @p newBinary is a NULL pointer the value will be freed and 0 will
  * be returned.
  *
+ * Read-only keys will stay unchanged after calling this function.
+ *
  * @note The metadata "binary" will be set to mark that the key is
- * binary from now on. When the key is already binary the metadata
+ * binary from now on. When the Key is already binary the metadata
  * won't be changed. This will only happen in the successful case,
  * but not when -1 is returned.
  *
- * @param key the object on which to set the value
- * @param newBinary is a pointer to any binary data or NULL to free the previous set data
+ * @pre @p dataSize matches the length of @p newBinary
+ * @pre @p newBinary is not NULL and @p dataSize > 0
+ * @pre @p key is not read-only
+ * @post @p key's value set exactly to the data in @p newBinary
+ * @post "binary" key set in @p key's metadata
+ *
+ * @param key the Key object where the value should be set
+ * @param newBinary a pointer to any binary data or NULL (to clear the stored value)
  * @param dataSize number of bytes to copy from @p newBinary
+ *
  * @return the number of bytes actually copied to internal struct storage
  * @retval 0 when the internal binary was freed and is now a null pointer
- * @retval -1 if key is a NULL pointer
- * @retval -1 when dataSize is 0 (but newBinary not NULL) or larger than SSIZE_MAX
- * @see keyGetBinary()
- * @see keyIsBinary() to check if the type is binary
- * @see keyGetString() and keySetString() as preferred alternative to binary
+ * @retval -1 if @p key is NULL
+ * @retval -1 when @p dataSize is 0 (and newBinary not NULL) or larger than SSIZE_MAX
+ * @retval -1 if @p key is read-only
+ *
+ * @since 1.0.0
  * @ingroup keyvalue
+ * @see keyGetBinary() for getting a Key's value as binary
+ * @see keyIsBinary() to check if the Key's value is binary
+ * @see keyGetString() and keySetString() for working with string values
  */
 ssize_t keySetBinary (Key * key, const void * newBinary, size_t dataSize)
 {

@@ -1,483 +1,66 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "November 2019" "" ""
-\fIan API and web user interface to remotely manage Elektra instances\fR
+.TH "README" "" "March 2020" "" ""
+The instance management server for elektra\-web, built using express \fIhttps://expressjs\.com/\fR\. It accesses the API of multiple \fBelektrad\fR \fI\.\./elektrad/\fR instances and provides an API to manage instances\.
 .
-.P
-The configuration view of elektra\-web is similar to the tree view of the qt\-gui \fIhttps://master\.libelektra\.org/src/tools/qt\-gui\fR, but with dynamic fields rendered via key metadata\.
-.
-.SH "Dependencies"
-Elektra\-web requires:
+.SH "Installation"
 .
 .IP "\(bu" 4
-Elektra \fIhttps://libelektra\.org/\fR with the \fByajl\fR plugin \fIhttps://master\.libelektra\.org/src/plugins/yajl/\fR installed
+first, install libelektra \fIhttps://libelektra\.org/\fR with the \fByajl\fR plugin \fIhttps://master\.libelektra\.org/src/plugins/yajl/\fR
 .
 .IP "\(bu" 4
-A recent node\.js \fIhttps://nodejs\.org/en/\fR installation (at least 6\.x)
+now run \fBnpm install\fR
 .
 .IP "" 0
 .
-.SH "Building with elektra\-web Tool"
-To build Elektra with the elektra\-web tool:
+.SH "Running"
 .
-.IP "\(bu" 4
-Install Node\.js and dependencies for \fByajl\fR plugin (see links above)
-.
-.IP "\(bu" 4
-Configure libelektra build with the elektra\-web tool, e\.g\. \fBcmake \.\. \-DTOOLS="kdb;web"\fR
-.
-.IP "\(bu" 4
-Build libelektra: \fBmake\fR
-.
-.IP "\(bu" 4
-Install libelektra: \fBsudo make install\fR
-.
-.IP "" 0
-.
-.SH "Getting Started"
-.
-.IP "\(bu" 4
-Start an elektrad instance: \fBkdb run\-elektrad\fR
-.
-.IP "\(bu" 4
-Start the client: \fBkdb run\-web\fR
-.
-.IP "\(bu" 4
-You can now access the client on: \fIhttp://localhost:33334\fR
-.
-.IP "" 0
-.
-.SH "Getting Started (docker)"
-.
-.IP "\(bu" 4
-Create and run a new docker container: \fBdocker run \-d \-it \-p 33333:33333 \-p 33334:33334 elektra/web\fR
-.
-.IP "\(bu" 4
-You can now access the client on: \fIhttp://localhost:33334\fR
-.
-.IP "" 0
-.
-.SH "Running from source"
-.
-.IP "\(bu" 4
-Install dependencies (see above)
-.
-.IP "\(bu" 4
-Clone libelektra repo and \fBcd libelektra/src/tools/web\fR
-.
-.IP "\(bu" 4
-Install and start an elektrad instance:
-.
-.IP "\(bu" 4
-\fBcd elektrad\fR
-.
-.IP "\(bu" 4
-\fBnpm install\fR
-.
-.IP "\(bu" 4
-\fBnpm start\fR (replaces \fBkdb run\-elektrad\fR)
-.
-.IP "" 0
+.nf
 
+npm start
 .
-.IP "\(bu" 4
-Install and start the client (connects to the elektrad instance):
-.
-.IP "\(bu" 4
-\fBcd client\fR
-.
-.IP "\(bu" 4
-\fBnpm install\fR
-.
-.IP "\(bu" 4
-\fBnpm start\fR (replaces \fBkdb run\-web\fR)
-.
-.IP "" 0
-
-.
-.IP "\(bu" 4
-You can now access the client on: \fIhttp://localhost:33334\fR
-.
-.IP "" 0
-.
-.SH "Use\-cases"
-.
-.SS "Running elektra\-web on a Single Instance"
-If you do not want to configure multiple instances, you can set the \fBINSTANCE\fR environment variable to the server you want to configure\. You can also set \fBuser/sw/elektra/web/#0/current/instance\fR to the host\. Make sure to enter a full HTTP URL, e\.g\. \fBhttp://localhost:33333\fR\.
+.fi
 .
 .P
-If this configuration option is set, elektra\-web will load the configuration page for that instance instead of the main overview page\.
-.
-.P
-If you want to host elektra\-web with the client and elektrad on the same instance, after starting elektrad via \fBkdb run\-elektrad\fR, you can run start the client as follows:
+to run in verbose mode (full logs):
 .
 .IP "" 4
 .
 .nf
 
-INSTANCE="http://localhost:33333" kdb run\-web
+npm run start:verbose
 .
 .fi
 .
 .IP "" 0
 .
 .P
-It is also possible to set visibility by prefixing the host with \fBVISIBILITY@\fR\.
-.
-.P
-For example (\fBadvanced\fR visibility, \fBuser\fR is default):
+to run in development mode (full logs & running from source):
 .
 .IP "" 4
 .
 .nf
 
-INSTANCE="advanced@http://localhost:33333" kdb run\-web
+npm run start:dev
 .
 .fi
 .
 .IP "" 0
 .
-.P
-Now, when you open \fIhttp://localhost:33334\fR in your browser, the configuration page for the instance will be opened immediately\.
-.
-.SS "Using a Different <code>kdb</code> Executable"
-It is possible to change the \fBkdb\fR executable that elektra\-web uses by setting the \fBKDB\fR environment variable\. Please ensure to use the same \fBKDB\fR executable when starting \fBelektrad\fR and the \fBclient\fR\.
+.SH "Client"
+By default, \fBwebd\fR serves its API and the elektra\-web client on \fIhttp://localhost:33334\fR
 .
 .P
-For example:
-.
-.IP "" 4
-.
-.nf
-
-KDB="/usr/local/custom/bin/kdb" kdb run\-elektrad
-KDB="/usr/local/custom/bin/kdb" kdb run\-web
-.
-.fi
-.
-.IP "" 0
-.
-.SH "Overview"
-Elektra web consists of multiple components:
-.
-.IP "\(bu" 4
-(multiple) servers running an elektra daemon (\fBelektrad\fR \fIelektrad/\fR)
-.
-.IP "\(bu" 4
-a single server to communicate with the elektra daemons and serve the client (\fBwebd\fR \fIwebd/\fR)
-.
-.IP "\(bu" 4
-a web browser that accesses the client (Web UI) on the \fBwebd\fR \fIwebd/\fR server (\fBclient\fR \fIclient/\fR)
-.
-.IP "" 0
-.
-.P
+If you want to use the \fBwebd\fR in combination with the client in development mode, start the client via \fBnpm run start:dev\fR, it will also start \fBwebd\fR\.
 .
 .SH "API"
 .
-.P
-API blueprints \fIhttps://apiblueprint\.org/\fR are available for both APIs:
+.IP "\(bu" 4
+API documentation: https://elektrawebd\.docs\.apiary\.io/
 .
 .IP "\(bu" 4
-elektrad \fIhttps://master\.libelektra\.org/doc/api_blueprints/elektrad\.apib\fR, documentation: https://elektrad\.docs\.apiary\.io/
-.
-.IP "\(bu" 4
-webd \fIhttps://master\.libelektra\.org/doc/api_blueprints/webd\.apib\fR, documentation: https://elektrawebd\.docs\.apiary\.io/
-.
-.IP "" 0
-.
-.SH "Test REST API on localhost"
-In order to test API on localhost, you have to start elektrad instance\. You can do it in two ways:
-.
-.IP "\(bu" 4
-run manually (if you would like to start it manually or you don\'t have eletrad\-web tool installed)
-.
-.IP "\(bu" 4
-\fBcd libelektra/src/tools/web\fR
-.
-.IP "\(bu" 4
-\fBcd elektrad\fR
-.
-.IP "\(bu" 4
-\fBnpm install\fR
-.
-.IP "\(bu" 4
-\fBnpm start\fR
-.
-.IP "" 0
-
-.
-.IP "\(bu" 4
-by installing elektrad tool together with Elektra and run it
-.
-.IP "\(bu" 4
-please see the section \fBBuilding with elektra\-web Tool\fR
-.
-.IP "" 0
-
-.
-.IP "" 0
-.
-.P
-Now the server is runing on \fIhttp://localhost:33333\fR\. After that you can test API with help of Postman or other tool, which allows to send REST API requests\.
-.
-.P
-Additional note\. It is recommended to install the elektrad tool than starting the server manually\. When Elektra is installed, the \fBkdb\fR command together with its tools is installed globally\. For instance, whenever you would like to write any shell script, which has to start a REST API server, you can just add the following line \fBkdb run\-elektrad\fR inside your file and save it\. After that, the created shell script can be executed from any directory\.
-.
-.P
-Examples:
-.
-.P
-let\'s create the new key\-value pair \fBuser/test\fR and set its value to 5\. You can do it next way:
-.
-.IP "\(bu" 4
-through the command terminal \fBsh kdb set user/test 5\fR
-.
-.IP "\(bu" 4
-through the rest api using curl \fBsh curl \-X PUT \-H "Content\-Type: text/plain" \-\-data "5" http://localhost:33333/kdb/user/test\fR
-.
-.IP "" 0
-.
-.P
-The output of any of two commands will be: \fBSet string to "5"\fR\. If the specified key didn\'t exist before, then the output will be \fBCreate a new key user/test with string "5"\fR\.
-.
-.P
-Now, the command
-.
-.IP "" 4
-.
-.nf
-
-curl http://localhost:33333/kdb/user/test
-.
-.fi
-.
-.IP "" 0
-.
-.P
-will return us the value of the specified key \fBuser/test\fR, which is stored in the database right now
-.
-.P
-\fI!\-\- prettier\-ignore\-start \-\-\fR
-.
-.IP "" 4
-.
-.nf
-
-{
-    "exists": true,
-    "name": "test",
-    "path": "user/test",
-    "ls": [
-        "user/test"
-    ],
-    "value": "5",
-    "meta": ""
-}
-.
-.fi
-.
-.IP "" 0
-.
-.P
-\fI!\-\- prettier\-ignore\-end \-\-\fR
-.
-.SH "Auth"
-Currently, webd does not support authentication\. The best way to work around this is to use a reverse proxy (e\.g\. nginx reverse proxy \fIhttps://www\.nginx\.com/resources/admin\-guide/reverse\-proxy/\fR)\.
-.
-.P
-Once you set up a reverse proxy on your web server, you can use it to authenticate users, e\.g\. by username/password auth \fIhttps://www\.digitalocean\.com/community/tutorials/how\-to\-set\-up\-password\-authentication\-with\-nginx\-on\-ubuntu\-14\-04\fR
-.
-.SH "Code Structure"
-.
-.IP "\(bu" 4
-\fBelektrad/\fR \- contains the daemon to interact with a single elektra instance
-.
-.IP "\(bu" 4
-\fBwebd/\fR \- contains a daemon to serve the client and interact with multiple elektra instances
-.
-.IP "\(bu" 4
-\fBclient/\fR \- contains the elektra\-web client (Web UI)
-.
-.IP "\(bu" 4
-\fBsrc/actions/\fR \- Redux actions to access the KDB or display notifications in the UI
-.
-.IP "\(bu" 4
-\fBsrc/components/\fR \- React components
-.
-.IP "\(bu" 4
-\fBpages/\fR \- pages in the app
-.
-.IP "\(bu" 4
-\fBHome\.jsx\fR \- the main page (overview of all instances)
-.
-.IP "\(bu" 4
-\fBConfiguration\.jsx\fR \- configuration page (single instance)
-.
-.IP "" 0
-
-.
-.IP "\(bu" 4
-\fBTreeItem/\fR \- contains all UI components related to a single item in the tree view
-.
-.IP "\(bu" 4
-\fBdialogs/\fR \- these dialogs are opened when certain actions are pressed (icons next to the tree items)
-.
-.IP "\(bu" 4
-\fBAddDialog\.jsx\fR \- dialog to create a new (sub\-)key
-.
-.IP "\(bu" 4
-\fBDuplicateDialog\.jsx\fR \- dialog to duplicate a key
-.
-.IP "\(bu" 4
-\fBEditDialog\.jsx\fR \- dialog to edit a key value
-.
-.IP "\(bu" 4
-\fBRemoveDialog\.jsx\fR \- dialog to confirm the removal of a key
-.
-.IP "\(bu" 4
-\fBSettingsDialog\.jsx\fR \- dialog to edit metadata (new metadata can be implemented here)
-.
-.IP "\(bu" 4
-\fB*SubDialog\.jsx\fR \- sub\-dialogs of the SettingsDialog
-.
-.IP "" 0
-
-.
-.IP "\(bu" 4
-\fBfields/\fR \- special input fields to display various values
-.
-.IP "" 0
-
-.
-.IP "\(bu" 4
-\fBApp\.jsx\fR \- defines app structure and routes
-.
-.IP "" 0
-
-.
-.IP "\(bu" 4
-\fBsrc/index\.js\fR \- main entry point of the app (fetches instances and renders UI)
-.
-.IP "\(bu" 4
-\fBsrc/containers/\fR \- contains components that are connected to Redux
-.
-.IP "\(bu" 4
-\fBsrc/css/\fR \- contains CSS styles
-.
-.IP "\(bu" 4
-\fBsrc/reducers/\fR \- contains Redux reducers (used to process actions)
-.
-.IP "" 0
-
-.
-.IP "" 0
-.
-.SH "Development Guides"
-.
-.SS "Updating Dependencies"
-Lockfiles (\fBpackage\-lock\.json\fR) can be updated by simply deleting the current lock file and running \fBnpm install\fR, which creates a new lock file\.
-.
-.P
-Check for outdated dependencies via \fBnpm outdated\fR\. Dependencies can then be updated by running \fBnpm update\fR\.
-.
-.SS "Building Docker Image"
-Run the following command in the \fBscripts/docker/web/\fR directory, replacing \fB1\.5\.0\fR with the latest version:
-.
-.IP "" 4
-.
-.nf
-
-docker build \-t elektra/web:1\.5\.0 \-t elektra/web:latest \.
-.
-.fi
-.
-.IP "" 0
-.
-.P
-Test the image:
-.
-.IP "" 4
-.
-.nf
-
-docker run \-d \-it \-p 33333:33333 \-p 33334:33334 elektra/web:1\.5\.0
-.
-.fi
-.
-.IP "" 0
-.
-.P
-Publish it to the docker registry:
-.
-.IP "" 4
-.
-.nf
-
-docker push elektra/web:1\.5\.0
-.
-.fi
-.
-.IP "" 0
-.
-.SS "Adding Support for New Metadata"
-.
-.IP "\(bu" 4
-Create a new sub dialog by, for example, copying the \fBNumberSubDialog\.jsx\fR file (or similar) to a new file in the \fBclient/src/components/TreeItem/dialogs\fR folder\.
-.
-.IP "\(bu" 4
-Include the sub dialog by adding it to the \fBSettingsDialog\.jsx\fR file in the same folder\. For example, it could be added before the AdditionalMetakeysSubDialog at the end of the file:
-.
-.IP "" 0
-.
-.IP "" 4
-.
-.nf
-
-+     <NewSubDialog
-+       onChange={this\.handleEdit(\'check/something\')}
-+       value={this\.getMeta(\'check/something\', \'\')}
-+       saved={this\.getSaved(\'check/something\')}
-+     />
-      <AdditionalMetakeysSubDialog
-        handleEdit={this\.handleEdit\.bind(this)}
-        getMeta={this\.getMeta\.bind(this)}
-        getSaved={this\.getSaved\.bind(this)}
-        meta={this\.props\.meta}
-        deleteMeta={this\.props\.deleteMeta}
-      />
-    </FocusTrapDialog>
-.
-.fi
-.
-.IP "" 0
-.
-.IP "\(bu" 4
-Mark the meta keys as handled by adding them to the \fBHANDLED_METADATA\fR array in \fBclient/src/components/TreeItem/dialogs/utils\.js\fR:
-.
-.IP "" 0
-.
-.IP "" 4
-.
-.nf
-
-export const HANDLED_METADATA = [
-  \.\.\.,
-  \'visibility\',
-  \'binary\',
-+ \'check/something\',
-]
-.
-.fi
-.
-.IP "" 0
-.
-.IP "\(bu" 4
-Validation can then be added by handling metadata in the \fBclient/src/components/TreeItem/fields/validateType\.js\fR file to the \fBvalidateType\fR function\.
-.
-.IP "\(bu" 4
-Rendering fields in a special way when certain metakeys are present can be done by adjusting the \fBrenderSpecialValue\fR function in the \fBclient/src/components/TreeItem/index\.js\fR file\.
+API blueprint: webd\.apib \fIhttps://master\.libelektra\.org/doc/api_blueprints/webd\.apib\fR
 .
 .IP "" 0
 

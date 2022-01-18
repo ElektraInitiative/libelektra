@@ -20,8 +20,8 @@ static void test_basics (void)
 	printf ("test basics\n");
 	fflush (stdout);
 
-	Key * parentKey = keyNew ("system/elektra/modules/xerces", KEY_END);
-	Key * invalidKey = keyNew (0, KEY_END);
+	Key * parentKey = keyNew ("system:/elektra/modules/xerces", KEY_END);
+	Key * invalidKey = keyNew ("/", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
@@ -71,6 +71,18 @@ static void test_simple_read (void)
 
 	output_keyset (ks);
 
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz", 0), "base key fizz not found");
+	if (current)
+	{
+		const Key * meta;
+		succeed_if (meta = keyGetMeta (current, "array"), "no metadata exists");
+		if (meta)
+		{
+			succeed_if (strcmp (keyName (meta), "meta:/array") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyValue (meta), "#2") == 0, "wrong metadata value");
+		}
+	}
+
 	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#0", 0), "first fizz key not found");
 	if (current)
 	{
@@ -78,7 +90,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "buzz"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "buzz") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/buzz") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "fizzBuzz") == 0, "wrong metadata value");
 		}
 	}
@@ -97,7 +109,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "without"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "without") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/without") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "buzz") == 0, "wrong metadata value");
 		}
 	}
@@ -112,7 +124,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "user"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "user") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/user") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "key") == 0, "wrong metadata value");
 		}
 	}
@@ -127,13 +139,13 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "attr"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "attr") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/attr") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "\"") == 0, "wrong metadata value");
 		}
 		succeed_if (meta = keyGetMeta (current, "attr2"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "attr2") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/attr2") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "$%(){}``äüö²[/\\'>\"<'&") == 0, "wrong metadata value");
 		}
 	}
@@ -149,7 +161,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "more-s_päcials"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "more-s_päcials") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/more-s_päcials") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "1 & 2 are < 3 \n") == 0, "wrong metadata value");
 		}
 	}
@@ -231,8 +243,7 @@ static void test_maven_pom (void)
 	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, keyString (serializationParentKey), KEY_END);
 	KeySet * result = ksNew (64, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
-
-	succeed_if (64 == ksGetSize (ks), "pom file is expected to contain 64 keys");
+	succeed_if (66 == ksGetSize (ks), "pom file is expected to contain 66 keys");
 
 	compare_keyset (ks, result); // Should be the same
 
@@ -280,7 +291,7 @@ static void test_jenkins_config (void)
 	succeed_if (strcmp (keyValue (current), "bee4ahGhOqua3ahzsai2Eef5quie5ohK/eiSe4eav+JhVlerBftAil8Ow5AejahBe9oiksKAlla/kk1/1=") == 0,
 		    "api token is wrong");
 
-	succeed_if (86 == ksGetSize (ks), "pom file is expected to contain 86 keys");
+	succeed_if (89 == ksGetSize (ks), "pom file is expected to contain 89 keys");
 
 	compare_keyset (ks, result); // Should be the same
 

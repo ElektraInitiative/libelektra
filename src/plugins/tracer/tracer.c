@@ -73,18 +73,18 @@ int elektraTracerGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ssize_t nr_keys = 0;
 	Key * k = 0;
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/tracer"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/tracer"))
 	{
 		KeySet * info =
-			ksNew (50, keyNew ("system/elektra/modules/tracer", KEY_VALUE, "tracer plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/tracer/exports", KEY_END),
-			       keyNew ("system/elektra/modules/tracer/exports/open", KEY_FUNC, elektraTracerOpen, KEY_END),
-			       keyNew ("system/elektra/modules/tracer/exports/close", KEY_FUNC, elektraTracerClose, KEY_END),
-			       keyNew ("system/elektra/modules/tracer/exports/get", KEY_FUNC, elektraTracerGet, KEY_END),
-			       keyNew ("system/elektra/modules/tracer/exports/set", KEY_FUNC, elektraTracerSet, KEY_END),
-			       keyNew ("system/elektra/modules/tracer/exports/error", KEY_FUNC, elektraTracerError, KEY_END),
+			ksNew (50, keyNew ("system:/elektra/modules/tracer", KEY_VALUE, "tracer plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/open", KEY_FUNC, elektraTracerOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/close", KEY_FUNC, elektraTracerClose, KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/get", KEY_FUNC, elektraTracerGet, KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/set", KEY_FUNC, elektraTracerSet, KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/error", KEY_FUNC, elektraTracerError, KEY_END),
 #include "readme_tracer.c"
-			       keyNew ("system/elektra/modules/tracer/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/tracer/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, info);
 		ksDel (info);
 		return 1;

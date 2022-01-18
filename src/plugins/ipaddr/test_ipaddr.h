@@ -34,9 +34,9 @@
 
 static void testIP (char const * const ip, const int ret, char const * const version)
 {
-	Key * parentKey = keyNew ("user/tests/ipaddr", KEY_VALUE, "", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/ipaddr", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user:/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];
@@ -97,17 +97,19 @@ static void testIPAll (void)
 		testIPv6 (":0db8:85a3:0000:0000:8a2e:0370:7334", -1); // Invalid
 		testIPv6 ("::", 1);				      // Valid
 		testIPAny ("should_not_exist", -1);
+// The following test leaks memory on macOS 10.15
+// See also: https://cirrus-ci.com/task/4740944293527552
+#if !(defined(__APPLE__) && defined(ENABLE_ASAN))
 		testIPAny ("www.google.com", 1);
-		testIPAny ("should_not_exist", -1);
-		testIPAny ("www.google.com", 1);
+#endif
 		testIPv6 ("", -1);				   // empty string
 		testIPv6 ("::1", 1);				   // loopback, compressed, non-routable
 		testIPv6 ("::", 1);				   // unspecified, compressed, non-routable
 		testIPv6 ("0:0:0:0:0:0:0:1", 1);		   // loopback, full
 		testIPv6 ("0:0:0:0:0:0:0:0", 1);		   // unspecified, full
-		testIPv6 ("2001:DB8:0:0:8:800:200C:417A", 1);      // unicast, full
+		testIPv6 ("2001:DB8:0:0:8:800:200C:417A", 1);	   // unicast, full
 		testIPv6 ("FF01:0:0:0:0:0:0:101", 1);		   // multicast, full
-		testIPv6 ("2001:DB8::8:800:200C:417A", 1);	 // unicast, compressed
+		testIPv6 ("2001:DB8::8:800:200C:417A", 1);	   // unicast, compressed
 		testIPv6 ("FF01::101", 1);			   // multicast, compressed
 		testIPv6 ("2001:DB8:0:0:8:800:200C:417A:221", -1); // unicast, full
 		testIPv6 ("FF01::101::2", -1);			   // multicast, compressed
@@ -130,10 +132,10 @@ static void testIPAll (void)
 		testIPv6 ("2001:0000:1234:0000:0000:C1C0:ABCD:0876  0", -1); // junk after valid address
 		testIPv6 ("2001:0000:1234: 0000:0000:C1C0:ABCD:0876", -1);   // internal space
 
-		testIPv6 ("3ffe:0b00:0000:0001:0000:0000:000a", -1);	   // seven segments
+		testIPv6 ("3ffe:0b00:0000:0001:0000:0000:000a", -1);	       // seven segments
 		testIPv6 ("FF02:0000:0000:0000:0000:0000:0000:0000:0001", -1); // nine segments
 		testIPv6 ("3ffe:b00::1::a", -1);			       // double "::"
-		testIPv6 ("::1111:2222:3333:4444:5555:6666::", -1);	    // double "::"
+		testIPv6 ("::1111:2222:3333:4444:5555:6666::", -1);	       // double "::"
 		testIPv6 ("2::10", 1);
 		testIPv6 ("ff02::1", 1);
 		testIPv6 ("fe80::", 1);
@@ -241,10 +243,10 @@ static void testIPAll (void)
 		testIPv6 ("2001:1:1:1:1:1:255Z255X255Y255", -1); // garbage instead of "." in IPv4
 		testIPv6 ("::ffff:192x168.1.26", -1);		 // ditto
 		testIPv6 ("::ffff:192.168.1.1", 1);
-		testIPv6 ("0:0:0:0:0:0:13.1.68.3", 1);	// IPv4-compatible IPv6 address, full, deprecated
+		testIPv6 ("0:0:0:0:0:0:13.1.68.3", 1);	      // IPv4-compatible IPv6 address, full, deprecated
 		testIPv6 ("0:0:0:0:0:FFFF:129.144.52.38", 1); // IPv4-mapped IPv6 address, full
 		testIPv6 ("::13.1.68.3", 1);		      // IPv4-compatible IPv6 address, compressed, deprecated
-		testIPv6 ("::FFFF:129.144.52.38", 1);	 // IPv4-mapped IPv6 address, compressed
+		testIPv6 ("::FFFF:129.144.52.38", 1);	      // IPv4-mapped IPv6 address, compressed
 		testIPv6 ("fe80:0:0:0:204:61ff:254.157.241.86", 1);
 		testIPv6 ("fe80::204:61ff:254.157.241.86", 1);
 		testIPv6 ("::ffff:12.34.56.78", 1);

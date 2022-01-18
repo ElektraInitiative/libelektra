@@ -16,7 +16,7 @@
 
 /* -- Macros & Test Configuration ------------------------------------------------------------------------------------------------------- */
 
-#define TEST_ROOT_KEY "user/tests/storage"
+#define TEST_ROOT_KEY "user:/tests/storage"
 
 // below are the plugins suggested for testing, but only compiled plugins are tested
 #define NUM_PLUGINS_SUGGESTED 4
@@ -41,16 +41,17 @@ static const char * pluginNames[NUM_PLUGINS_SUGGESTED];
 
 static KeySet * simpleTestKeySet (void)
 {
-	return ksNew (10, keyNew ("user/tests/storage/simpleKey", KEY_VALUE, "root key", KEY_END),
-		      keyNew ("user/tests/storage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
-		      keyNew ("user/tests/storage/simpleKey/b", KEY_VALUE, "b value", KEY_END), KS_END);
+	return ksNew (10, keyNew ("user:/tests/storage/simpleKey", KEY_VALUE, "root key", KEY_END),
+		      keyNew ("user:/tests/storage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
+		      keyNew ("user:/tests/storage/simpleKey/b", KEY_VALUE, "b value", KEY_END), KS_END);
 }
 
 static KeySet * metaTestKeySet (void)
 {
-	return ksNew (10, keyNew ("user/tests/storage", KEY_VALUE, "root key", KEY_META, "a", "some metadata for root key", KEY_END),
-		      keyNew ("user/tests/storage/a", KEY_VALUE, "a value", KEY_META, "ab", "other metadata for a key", KEY_END),
-		      keyNew ("user/tests/storage/b", KEY_VALUE, "b value", KEY_META, "longer val", "metadata for key b", KEY_END), KS_END);
+	return ksNew (10, keyNew ("user:/tests/storage", KEY_VALUE, "root key", KEY_META, "a", "some metadata for root key", KEY_END),
+		      keyNew ("user:/tests/storage/a", KEY_VALUE, "a value", KEY_META, "ab", "other metadata for a key", KEY_END),
+		      keyNew ("user:/tests/storage/b", KEY_VALUE, "b value", KEY_META, "longer val", "metadata for key b", KEY_END),
+		      KS_END);
 }
 
 /* -- Test helpers ---------------------------------------------------------------------------------------------------------------------- */
@@ -77,7 +78,7 @@ static int openStoragePlugin (const size_t storagePlugin)
 	modules[storagePlugin] = ksNew (0, KS_END);
 	elektraModulesInit (modules[storagePlugin], 0);
 	KeySet * conf = ksNew (0, KS_END);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (pluginNames[storagePlugin], modules[storagePlugin], conf, errorKey);
 
 	const Key * metaWarnings = keyGetMeta (errorKey, "warnings");
@@ -255,9 +256,9 @@ static void test_ksAppend (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	KeySet * toAppend = ksNew (10, keyNew ("user/tests/storage/zzzz", KEY_VALUE, "root key", KEY_END),
-				   keyNew ("user/tests/storage/simpleKey/c", KEY_VALUE, "c value", KEY_END),
-				   keyNew ("user/tests/storage/simpleKey/d", KEY_VALUE, "d value", KEY_END), KS_END);
+	KeySet * toAppend = ksNew (10, keyNew ("user:/tests/storage/zzzz", KEY_VALUE, "root key", KEY_END),
+				   keyNew ("user:/tests/storage/simpleKey/c", KEY_VALUE, "c value", KEY_END),
+				   keyNew ("user:/tests/storage/simpleKey/d", KEY_VALUE, "d value", KEY_END), KS_END);
 	if (ksAppend (ks, toAppend) == -1)
 	{
 		yield_error ("ksAppend failed");
@@ -282,9 +283,9 @@ static void test_ksCut (const size_t storagePlugin, const char * tmpFile)
 
 	// create keyset with some folder 'other' that we will then cut
 	KeySet * ks = simpleTestKeySet ();
-	KeySet * other = ksNew (10, keyNew ("user/tests/storage/other", KEY_VALUE, "other key", KEY_END),
-				keyNew ("user/tests/storage/other/a", KEY_VALUE, "other a value", KEY_END),
-				keyNew ("user/tests/storage/other/b", KEY_VALUE, "other b value", KEY_END), KS_END);
+	KeySet * other = ksNew (10, keyNew ("user:/tests/storage/other", KEY_VALUE, "other key", KEY_END),
+				keyNew ("user:/tests/storage/other/a", KEY_VALUE, "other a value", KEY_END),
+				keyNew ("user:/tests/storage/other/b", KEY_VALUE, "other b value", KEY_END), KS_END);
 	if (ksAppend (ks, other) == -1)
 	{
 		yield_error ("ksAppend failed");
@@ -294,7 +295,7 @@ static void test_ksCut (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	// now cut the 'other' folder
-	Key * cutKey = keyNew ("user/tests/storage/other", KEY_END);
+	Key * cutKey = keyNew ("user:/tests/storage/other", KEY_END);
 	KeySet * returned = ksCut (ks, cutKey);
 	succeed_if (returned, "keyset is empty (does not contain the cut keyset)");
 
@@ -340,7 +341,7 @@ static void test_ksPop (const size_t storagePlugin, const char * tmpFile)
 	closeStoragePlugin (storagePlugin);
 }
 
-static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, option_t options)
+static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, elektraLookupFlags options)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	open_storage_plugin (storagePlugin);
@@ -350,7 +351,7 @@ static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, opt
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * lookup = keyNew ("user/tests/storage/simpleKey/a", KEY_END);
+	Key * lookup = keyNew ("user:/tests/storage/simpleKey/a", KEY_END);
 	Key * found = ksLookup (ks, lookup, options);
 	succeed_if (found, "did not find key");
 	if (options == KDB_O_POP)
@@ -362,7 +363,7 @@ static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, opt
 	}
 	keyDel (lookup);
 
-	lookup = keyNew ("user/tests/storage/simpleKey/foo", KEY_END);
+	lookup = keyNew ("user:/tests/storage/simpleKey/foo", KEY_END);
 	found = ksLookup (ks, lookup, options);
 	succeed_if (!found, "found key that should not exist");
 	keyDel (lookup);
@@ -372,7 +373,7 @@ static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, opt
 	closeStoragePlugin (storagePlugin);
 }
 
-static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFile, option_t options)
+static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFile, elektraLookupFlags options)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	open_storage_plugin (storagePlugin);
@@ -382,7 +383,7 @@ static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFil
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	const char * name = "user/tests/storage/simpleKey/a";
+	const char * name = "user:/tests/storage/simpleKey/a";
 	Key * found = ksLookupByName (ks, name, options);
 	succeed_if (found, "did not find key");
 	if (options == KDB_O_POP)
@@ -393,7 +394,7 @@ static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFil
 		succeed_if (!found, "found key that should not exist");
 	}
 
-	name = "user/tests/storage/simpleKey/foo";
+	name = "user:/tests/storage/simpleKey/foo";
 	found = ksLookupByName (ks, name, options);
 	succeed_if (!found, "found key that should not exist");
 
@@ -410,11 +411,11 @@ static void test_keyFlags (const size_t storagePlugin, const char * tmpFile)
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
-	KeySet * ks = ksNew (10, keyNew ("user/tests/storage/testKey", KEY_FLAGS, KEY_BINARY, KEY_VALUE, "test key", KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user:/tests/storage/testKey", KEY_FLAGS, KEY_BINARY, KEY_VALUE, "test key", KEY_END), KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * found = ksLookupByName (ks, "user/tests/storage/testKey", 0);
+	Key * found = ksLookupByName (ks, "user:/tests/storage/testKey", 0);
 	succeed_if (found, "did not find key");
 	succeed_if (keyIsBinary (found) == 1, "Key is not binary.");
 
@@ -433,10 +434,10 @@ static void test_keyDup (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * found = ksLookupByName (ks, "user/tests/storage/b", 0);
+	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * duplicate = keyDup (found);
+	Key * duplicate = keyDup (found, KEY_CP_ALL);
 
 	// check that keyDup has not changed KeySet
 	KeySet * expected = metaTestKeySet ();
@@ -462,11 +463,11 @@ static void test_keyCopy_newKey (const size_t storagePlugin, const char * tmpFil
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * found = ksLookupByName (ks, "user/tests/storage/b", 0);
+	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * copy = keyNew (0, KEY_END);
-	succeed_if (keyCopy (copy, found) != -1, "keyCopy failed");
+	Key * copy = keyNew ("/", KEY_END);
+	succeed_if (keyCopy (copy, found, KEY_CP_ALL) != NULL, "keyCopy failed");
 
 	compare_key (found, copy);
 
@@ -494,9 +495,9 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * toCopy = keyNew ("user/tests/storage/newnewkey", KEY_VALUE, "new key", KEY_END);
+	Key * toCopy = keyNew ("user:/tests/storage/newnewkey", KEY_VALUE, "new key", KEY_END);
 
-	Key * found = ksLookupByName (ks, "user/tests/storage/b", KDB_O_POP);
+	Key * found = ksLookupByName (ks, "user:/tests/storage/b", KDB_O_POP);
 	succeed_if (found, "did not find key");
 
 	// currently, KDB_O_POP doest not clear the readonly name flag
@@ -506,8 +507,8 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 	}
 
 	// overwrite Key
-	succeed_if (keyCopy (found, 0) == 0, "keyCopy: clear destination failed");
-	succeed_if (keyCopy (found, toCopy) == 1, "keyCopy failed");
+	succeed_if (keyCopy (found, 0, KEY_CP_ALL) != NULL, "keyCopy: clear destination failed");
+	succeed_if (keyCopy (found, toCopy, KEY_CP_ALL) != NULL, "keyCopy failed");
 	compare_key (found, toCopy);
 	keyDel (toCopy);
 
@@ -518,7 +519,7 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	found = ksLookupByName (ks, "user/tests/storage/newnewkey", 0);
+	found = ksLookupByName (ks, "user:/tests/storage/newnewkey", 0);
 	succeed_if (found, "did not find key");
 
 	keyDel (parentKey);
@@ -536,7 +537,7 @@ static void test_keyDel (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * found = ksLookupByName (ks, "user/tests/storage/b", 0);
+	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
 	succeed_if (keyDel (found) > 0, "Key was NULL or free()'d unexpectedly");
@@ -561,12 +562,12 @@ static void test_keyClear (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * found = ksLookupByName (ks, "user/tests/storage/a", 0);
+	Key * found = ksLookupByName (ks, "user:/tests/storage/a", 0);
 	succeed_if (found, "did not find key");
 
 	succeed_if (keyClear (found) == 0, "Key was NULL, keyClear failed");
 
-	keySetName (found, "user/tests/storage/foo");
+	keySetName (found, "user:/tests/storage/foo");
 	keySetString (found, "new key value");
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
@@ -589,7 +590,7 @@ static void test_keyName (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	const char * name = "user/tests/storage/a";
+	const char * name = "user:/tests/storage/a";
 	Key * found = ksLookupByName (ks, name, 0);
 	succeed_if (found, "did not find key");
 
@@ -611,11 +612,11 @@ static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * found = ksLookupByName (ks, "user/tests/storage/b", 0);
+	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * duplicate = keyDup (found);
-	keySetName (duplicate, "user/tests/storage/z");
+	Key * duplicate = keyDup (found, KEY_CP_ALL);
+	keySetName (duplicate, "user:/tests/storage/z");
 	keySetString (duplicate, "zzz");
 
 	KeySet * expected = metaTestKeySet ();
@@ -623,38 +624,6 @@ static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 
 	ksDel (expected);
 	keyDel (duplicate);
-	keyDel (parentKey);
-	ksDel (ks);
-	closeStoragePlugin (storagePlugin);
-}
-
-static void test_keyGetFullName (const size_t storagePlugin, const char * tmpFile)
-{
-	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
-	open_storage_plugin (storagePlugin);
-	Plugin * plugin = plugins[storagePlugin];
-
-	KeySet * ks = metaTestKeySet ();
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-
-	const char * name = "user/tests/storage/a";
-	Key * found = ksLookupByName (ks, name, 0);
-	succeed_if (found, "did not find key");
-
-	ssize_t fullNameSize = keyGetFullNameSize (found);
-	char * fullName = elektraMalloc (fullNameSize);
-	ssize_t ret = keyGetFullName (found, fullName, fullNameSize);
-	if (ret < 1)
-	{
-		yield_error ("Key full name NULL or size error");
-	}
-	else
-	{
-		succeed_if ((size_t) ret >= elektraStrLen (name), "Key full name size too small");
-	}
-
-	elektraFree (fullName);
 	keyDel (parentKey);
 	ksDel (ks);
 	closeStoragePlugin (storagePlugin);
@@ -670,13 +639,13 @@ static void test_keyGetBaseName (const size_t storagePlugin, const char * tmpFil
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	const char * name = "user/tests/storage/a";
+	const char * name = "user:/tests/storage/a";
 	Key * found = ksLookupByName (ks, name, 0);
 	succeed_if (found, "did not find key");
 
 	const char * constBaseName = "a";
 	size_t constBaseNameSize = elektraStrLen (constBaseName);
-	ssize_t baseNameSize = keyGetFullNameSize (found);
+	ssize_t baseNameSize = keyGetBaseNameSize (found);
 	char * baseName = elektraMalloc (baseNameSize);
 	ssize_t ret = keyGetBaseName (found, baseName, baseNameSize);
 	if (ret < 1)
@@ -705,14 +674,14 @@ static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 	Plugin * plugin = plugins[storagePlugin];
 
 	KeySet * ks = metaTestKeySet ();
-	const char * name = "user/tests/storage/specialkey";
+	const char * name = "user:/tests/storage/specialkey";
 	size_t valueSize = 42;
 	void * value = elektraMalloc (valueSize);
 	memset (value, 42, valueSize);
 
 	Key * key = keyNew (name, KEY_END);
 	keySetBinary (key, value, valueSize);
-	ksAppendKey (ks, keyDup (key));
+	ksAppendKey (ks, keyDup (key, KEY_CP_ALL));
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
@@ -734,7 +703,7 @@ static void test_keyString (const size_t storagePlugin, const char * tmpFile)
 	Plugin * plugin = plugins[storagePlugin];
 
 	KeySet * ks = metaTestKeySet ();
-	const char * name = "user/tests/storage/specialkey";
+	const char * name = "user:/tests/storage/specialkey";
 	const char * value = "special value";
 	size_t valueSize = elektraStrLen (value);
 	Key * key = keyNew (name, KEY_VALUE, value, KEY_END);
@@ -759,7 +728,7 @@ static void test_keyGetBinary (const size_t storagePlugin, const char * tmpFile)
 	Plugin * plugin = plugins[storagePlugin];
 
 	KeySet * ks = metaTestKeySet ();
-	const char * name = "user/tests/storage/specialkey";
+	const char * name = "user:/tests/storage/specialkey";
 	size_t realValueSize = 42;
 	void * value = elektraMalloc (realValueSize);
 	memset (value, 42, realValueSize);
@@ -793,7 +762,7 @@ static void test_keyGetString (const size_t storagePlugin, const char * tmpFile)
 	Plugin * plugin = plugins[storagePlugin];
 
 	KeySet * ks = metaTestKeySet ();
-	const char * name = "user/tests/storage/specialkey";
+	const char * name = "user:/tests/storage/specialkey";
 	const char * value = "special value";
 	size_t realValueSize = elektraStrLen (value);
 	Key * key = keyNew (name, KEY_VALUE, value, KEY_END);
@@ -823,7 +792,7 @@ static void test_keySetBinary (const size_t storagePlugin, const char * tmpFile)
 	Plugin * plugin = plugins[storagePlugin];
 
 	KeySet * ks = metaTestKeySet ();
-	const char * name = "user/tests/storage/specialkey";
+	const char * name = "user:/tests/storage/specialkey";
 	size_t realValueSize = 42;
 	void * value = elektraMalloc (realValueSize);
 	memset (value, 42, realValueSize);
@@ -873,7 +842,7 @@ static void test_keySetString (const size_t storagePlugin, const char * tmpFile)
 	Plugin * plugin = plugins[storagePlugin];
 
 	KeySet * ks = metaTestKeySet ();
-	const char * name = "user/tests/storage/specialkey";
+	const char * name = "user:/tests/storage/specialkey";
 	const char * value = "special value";
 	size_t realValueSize = elektraStrLen (value);
 	Key * key = keyNew (name, KEY_VALUE, value, KEY_END);
@@ -1009,9 +978,6 @@ int main (int argc, char ** argv)
 
 		clearStorage (plugin, tmpFile);
 		test_keySetName (plugin, tmpFile);
-
-		clearStorage (plugin, tmpFile);
-		test_keyGetFullName (plugin, tmpFile);
 
 		clearStorage (plugin, tmpFile);
 		test_keyGetBaseName (plugin, tmpFile);

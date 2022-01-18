@@ -13,6 +13,11 @@
 
 This plugin uses if-then-else like conditions. It also works as global plugin.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Check Syntax
 
 Stored in the metakey `check/condition` to validate data is:
@@ -49,7 +54,7 @@ The `condition/validsuffix` can be used to define a list of valid suffixes to nu
 
 ### Keynames
 
-Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system/key`).
+Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system:/key`).
 
 ### Multiple Statements
 
@@ -67,18 +72,18 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 Another full example:
 
 ```sh
-#Backup-and-Restore:user/tests/conditionals
+#Backup-and-Restore:user:/tests/conditionals
 
-sudo kdb mount conditionals.dump user/tests/conditionals conditionals dump
+sudo kdb mount conditionals.dump user:/tests/conditionals conditionals dump
 
-kdb set user/tests/conditionals/fkey 3.0
-kdb set user/tests/conditionals/hkey hello
+kdb set user:/tests/conditionals/fkey 3.0
+kdb set user:/tests/conditionals/hkey hello
 
 # will succeed
-kdb meta-set user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
+kdb meta-set user:/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
 
 # will fail
-kdb meta-set user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
+kdb meta-set user:/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
 # ERROR:C03200
 ```
@@ -86,51 +91,48 @@ kdb meta-set user/tests/conditionals/key check/condition "(../hkey == 'hello') ?
 Assignment example:
 
 ```sh
-kdb set user/tests/conditionals/hkey Hello
-kdb meta-set user/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
+kdb set user:/tests/conditionals/hkey Hello
+kdb meta-set user:/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
 # alternative syntax: "(../hkey == 'Hello') ? ('World')
 
-kdb get user/tests/conditionals/hkey
+kdb get user:/tests/conditionals/hkey
 #> World
 
 # cleanup
-kdb rm -r user/tests/conditionals
-sudo kdb umount user/tests/conditionals
+kdb rm -r user:/tests/conditionals
+sudo kdb umount user:/tests/conditionals
 ```
 
 Global plugin example:
 
 ```sh
 # Backup old list of global plugins
-kdb set user/tests/msr $(mktemp)
-kdb export system/elektra/globalplugins > $(kdb get user/tests/msr)
+kdb set user:/tests/msr $(mktemp)
+kdb export system:/elektra/globalplugins > $(kdb get user:/tests/msr)
 
 sudo kdb mount main.ini /tests/conditionals ni
-sudo kdb mount sub.ini /tests/conditionals/sub ini
+sudo kdb mount sub.ini /tests/conditionals/sub ni
 
 # mount conditionals as global plugin
 sudo kdb global-mount conditionals || $(exit 0)
 
 # create testfiles
-echo 'key1=val1'                                               >  `kdb file /tests/conditionals`
-echo '[key1]'                                                    >> `kdb file /tests/conditionals`
-echo "check/condition=(./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /tests/conditionals`
+echo 'key1=val1'                                               >  `kdb file system:/tests/conditionals`
+echo '[key1]'                                                    >> `kdb file system:/tests/conditionals`
+echo "check/condition=(./ == 'val1') ? (../sub/key == 'true')" >> `kdb file system:/tests/conditionals`
 
-echo "key=false" > `kdb file /tests/conditionals/sub`
+echo "key=false" > `kdb file system:/tests/conditionals/sub`
 
 # should fail and yield an error
-kdb export /tests/conditionals ini
+kdb export system:/tests/conditionals ni
 # ERROR:C03200
 # Sorry, module conditionals issued the error C03200:
 # Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
 
-kdb set /tests/conditionals/sub/key true
+kdb set system:/tests/conditionals/sub/key true
 
 # should succeed
-kdb export /tests/conditionals ini
-#> sub/key=true
-#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
-#> key1=val1
+kdb export system:/tests/conditionals ni
 
 # cleanup
 kdb rm -r /tests/conditionals
@@ -139,8 +141,8 @@ sudo kdb umount /tests/conditionals
 
 sudo kdb global-umount conditionals
 
-kdb rm -r system/elektra/globalplugins
-kdb import system/elektra/globalplugins < $(kdb get user/tests/msr)
-rm $(kdb get user/tests/msr)
-kdb rm user/tests/msr
+kdb rm -r system:/elektra/globalplugins
+kdb import system:/elektra/globalplugins < $(kdb get user:/tests/msr)
+rm $(kdb get user:/tests/msr)
+kdb rm user:/tests/msr
 ```

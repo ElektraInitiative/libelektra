@@ -1,0 +1,31 @@
+#!/usr/bin/env groovy
+
+stage("Trigger monthly libelektra/master build") {
+  build job: "libelektra/master", wait: false
+}
+
+stage("Maintain docker nodes") {
+    parallel generateDockerMaintanenceStages()
+}
+
+/* cleanup temp docker files on all docker nodes */
+def generateDockerMaintanenceStages() {
+    def nodes = nodesByLabel label:"docker"
+    def tasks = [:]
+
+    nodes.each { targetNode ->
+        tasks << cleanupDocker(targetNode)
+    }
+    return tasks
+}
+
+def cleanupDocker(targetNode) {
+    def taskname = "cleanupDocker/${targetNode}"
+    return [(taskname): {
+        stage(taskname) {
+            node(targetNode) {
+                sh "docker system prune -af"
+            }
+        }
+    }]
+}

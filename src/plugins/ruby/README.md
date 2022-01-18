@@ -13,6 +13,11 @@
 This plugin is an Elektra to Ruby bridge and makes is possible to implement Elektra plugins with Ruby.
 This plugin requires the `ruby` binding.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-ruby`.
+
 ## Configuration Options
 
 The plugin has the following configuration options:
@@ -24,9 +29,9 @@ The plugin has the following configuration options:
 Mount a configuration file using this plugin, which specifying the concrete Ruby Elektra plugin:
 
 ```sh
-kdb mount /.ssh/authorized_keys user/ssh/authorized_keys ruby script=<path to elektra
+kdb mount /.ssh/authorized_keys user:/ssh/authorized_keys ruby script=<path to elektra
 source>/src/plugins/ruby/ruby/ssh_authorized_keys.rb
-kdb ls user/ssh/authorized_keys
+kdb ls user:/ssh/authorized_keys
 ```
 
 ## Implementing Ruby Plugins

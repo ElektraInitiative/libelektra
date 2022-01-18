@@ -17,14 +17,18 @@
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
-TEST (cpptemplate, basics)
+TEST (cpptemplate, basics) //! OCLint (avoid private static members)
+#ifdef __llvm__
+__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[high ncss method]"),
+		annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
 {
 	CppKeySet modules{ 0, KS_END };
 	CppKeySet config{ 0, KS_END };
 	CppKeySet keys{ 0, KS_END };
 	elektraModulesInit (modules.getKeySet (), 0);
 
-	CppKey parent{ "system/elektra/modules/cpptemplate", KEY_END };
+	CppKey parent{ "system:/elektra/modules/cpptemplate", KEY_END };
 	Plugin * plugin = elektraPluginOpen ("cpptemplate", modules.getKeySet (), config.getKeySet (), *parent);
 	exit_if_fail (plugin != NULL, "Could not open cpptemplate plugin"); //! OCLint (empty if, too few branches switch)
 

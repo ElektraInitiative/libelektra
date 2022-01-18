@@ -38,7 +38,7 @@ int PluginListCommand::execute (Cmdline const & cl)
 		std::vector<PluginSpec> pluginspecs = db.lookupAllProvides (cl.arguments[0]);
 		plugins.resize (pluginspecs.size ());
 		std::transform (pluginspecs.begin (), pluginspecs.end (), plugins.begin (),
-				[](PluginSpec const & ps) { return ps.getName (); });
+				[] (PluginSpec const & ps) { return ps.getName (); });
 	}
 	else
 	{
@@ -53,7 +53,7 @@ int PluginListCommand::execute (Cmdline const & cl)
 			int s = db.calculateStatus (db.lookupInfo (
 				PluginSpec (plugin,
 					    KeySet (5,
-						    *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
+						    *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
 						    KS_END)),
 				"status"));
 			statusPlugins.insert (std::make_pair (s, plugin));

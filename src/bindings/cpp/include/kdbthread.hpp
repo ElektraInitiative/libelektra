@@ -43,7 +43,7 @@ struct LayerAction
 
 /// A vector of layers
 typedef std::unordered_map<std::string, LayerAction> LayerMap;
-typedef std::unordered_map<std::string, std::vector<std::function<void()>>> FunctionMap;
+typedef std::unordered_map<std::string, std::vector<std::function<void ()>>> FunctionMap;
 
 /// A data structure that is stored by context inside the Coordinator
 struct PerContext
@@ -75,7 +75,7 @@ public:
 	}
 
 	std::string evaluate (std::string const & key_name,
-			      std::function<bool(std::string const &, std::string &, bool in_group)> const &) const
+			      std::function<bool (std::string const &, std::string &, bool in_group)> const &) const
 	{
 		return key_name;
 	}
@@ -106,7 +106,7 @@ class Coordinator
 {
 public:
 	template <typename T>
-	void onLayerActivation (std::function<void()> f)
+	void onLayerActivation (std::function<void ()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
 		std::shared_ptr<Layer> layer = std::make_shared<T> ();
@@ -114,20 +114,20 @@ public:
 	}
 
 	template <typename T>
-	void onLayerDeactivation (std::function<void()> f)
+	void onLayerDeactivation (std::function<void ()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
 		std::shared_ptr<Layer> layer = std::make_shared<T> ();
 		m_onDeactivate[layer->id ()].push_back (f);
 	}
 
-	void onLayerActivation (std::string layerid, std::function<void()> f)
+	void onLayerActivation (std::string layerid, std::function<void ()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
 		m_onActivate[layerid].push_back (f);
 	}
 
-	void onLayerDeactivation (std::string layerid, std::function<void()> f)
+	void onLayerDeactivation (std::string layerid, std::function<void ()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
 		m_onDeactivate[layerid].push_back (f);
@@ -212,7 +212,7 @@ private:
 		{
 			for (auto & i : m_updates)
 			{
-				i.second.toUpdate.append (Key (c.newKey, KEY_CASCADING_NAME, KEY_END));
+				i.second.toUpdate.append (Key (c.newKey, KEY_END));
 			}
 		}
 	}

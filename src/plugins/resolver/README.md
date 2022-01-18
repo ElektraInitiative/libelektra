@@ -21,14 +21,14 @@ kdb file <Elektra path you are interested in>
 See the constants of this plugin for further information, they are:
 
 ```
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_SYSTEM
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_USER
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_HOME
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SYSTEM
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_USER
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SPEC
-system/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_DIR
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_SYSTEM
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants/ELEKTRA_VARIANT_USER
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_HOME
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SYSTEM
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_USER
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_SPEC
+system:/elektra/modules/@PLUGIN_SHORT_NAME@/constants/KDB_DB_DIR
 ```
 
 The built-in resolving considers following cases:
@@ -77,6 +77,11 @@ non-root to modify keys in `system`.
 
 See [COMPILE.md](/doc/COMPILE.md) for a documentation of possible
 variants.
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The default variant of this plugin `resolver_fm_hpu_b` is part of the `libelektra5` package. All other variants are part of the `libelektra5-extra` package.
 
 ### XDG Compatibility
 
@@ -169,6 +174,9 @@ where `handle` is the handle returned by `filename`.
 
 ## Limitations
 
-If none of the resolving techniques work, the resolver will fail during `kdbOpen`.
-This happens, for example, with the default resolver (ELEKTRA_VARIANT_USER `hpu`)
-if neither: `$HOME`, `$USER`, nor any home directory in `/etc/passwd` is set.
+- If none of the resolving techniques work, the resolver will fail during `kdbOpen`.
+  This happens, for example, with the default resolver (ELEKTRA_VARIANT_USER `hpu`)
+  if neither: `$HOME`, `$USER`, nor any home directory in `/etc/passwd` is set.
+- Conflicts with removed files are not handled.
+- Links are not handled.
+- uid/gid from files are not restored.

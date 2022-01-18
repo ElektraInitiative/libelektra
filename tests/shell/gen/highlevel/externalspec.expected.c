@@ -10,7 +10,7 @@
  *
  * @copyright BSD Zero Clause License
  *
- *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *     Copyright (c) Elektra Initiative (https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
@@ -35,25 +35,27 @@
 #include <kdbhelper.h>
 #include <kdbinvoke.h>
 #include <kdbopts.h>
+#include <kdbgopts.h>
 
 #include <elektra/conversion.h>
 
 
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalspec\n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalspec [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
-static int isHelpMode (void)
+static int isHelpMode (int argc, const char * const * argv)
 {
-	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+	for (int i = 0; i < argc; ++i)
+	{
+		if (strcmp (argv[i], "--help") == 0)
+		{
+			return 1;
+		}
+	}
 
-	typedef int (*func) (void);
-	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
-	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
-
-	elektraInvokeClose (gopts, NULL);
-	return ret == 1;
+	return 0;
 }
+
 
 
 /**
@@ -69,24 +71,34 @@ static int isHelpMode (void)
  * @retval 0  on success, @p elektra will contain a new Elektra instance coming from elektraOpen(),
  *            @p error will be unchanged
  * @retval -1 on error, @p elektra will be unchanged, @p error will be set
- * @retval 1  help mode, '-h' or '--help' was specified call printHelpMessage to display
+ * @retval 1  help mode, '--help' was specified call printHelpMessage to display
  *            the help message. @p elektra will contain a new Elektra instance. It has to be passed
  *            to printHelpMessage. You also need to elektraClose() it.
  *            @p error will be unchanged
  *
  * @see elektraOpen
  */// 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error)
+int loadConfiguration (Elektra ** elektra, 
+				 int argc, const char * const * argv, const char * const * envp,
+				 ElektraError ** error)
 {
 	
 	
 	KeySet * defaults = NULL;
 
-	KeySet * contract = ksNew (2,
-	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	KeySet * contract = ksNew (4,
+	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "1f56a956f8d2714d272945529a986f5c9eeb0a00ee9211f0e5a4628ea1d02063", KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
+	Key * parentKey = keyNew ("/tests/script/gen/highlevel/externalspec", KEY_END);
+
+	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
+	
+
+	keyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/externalspec", defaults, contract, error);
 
@@ -95,20 +107,26 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		ksDel (defaults);
 	}
 
+	if (contract != NULL)
+	{
+		ksDel (contract);
+	}
+
 	if (e == NULL)
 	{
 		*elektra = NULL;
-		if (isHelpMode ())
+		if (isHelpMode (argc, argv))
 		{
 			elektraErrorReset (error);
 			return 1;
 		}
+		
 
 		return -1;
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -123,7 +141,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
  * @param argc pass the value of argc from main
  * @param argv pass the value of argv from main
  */
-void exitForSpecload (int argc, const char ** argv)
+void exitForSpecload (int argc, const char * const * argv)
 {
 	
 }
@@ -154,6 +172,8 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 	printf ("%s", help);
 	elektraFree (help);
 }
+
+
 
 // clang-format off
 

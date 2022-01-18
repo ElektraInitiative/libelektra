@@ -1,7 +1,10 @@
 # Whitelist for the linkchecker
 #
-# Any lines starting with '#' will be stripped out.
-# If a link equals any other line, it will not be checked.
+# Empty lines and lines starting with '#' will be stripped out.
+# If a link equals any other (even partial) line, it will not be checked.
+# This enables us to simply write example.com to exclude all partial URL matches
+# containing the given string. Keep in mind that http://libelektra.org/example.com
+# would also match the example exclusion pattern.
 #
 # The following link only works if you are logged into the build server
 # See also: https://github.com/ElektraInitiative/libelektra/issues/2674
@@ -10,11 +13,29 @@ https://build.libelektra.org/job/libelektra/pipeline-syntax
 # see https://github.com/ElektraInitiative/libelektra/issues/2913
 http://webdemo.libelektra.org
 https://webdemo.libelektra.org
-https://debian-stretch-repo.libelektra.org
+
+# Localhost links
+http://localhost:33333
+http://localhost:33334
+
+# Currently broken GitHub links
+git.libelektra.org
+github.com
+master.libelektra.org
+puppet.libelektra.org
+issues.libelektra.org
+
+# Currently broken links
+https://cgit.kde.org/kconfig.git
+https://doc.libelektra.org/coverage/master/debian-buster-full
+
+# Wrongly detected as broken, even though its online
 https://crates.io/crates/elektra
 https://crates.io/crates/elektra-sys
-https://wiki.jenkins-ci.org/display/JENKINS/GitHub%2BPR+Comment+Build+Plugin
-https://wiki.jenkins.io/display/JENKINS/Pipeline%2BMultibranch+Plugin
-https://build.libelektra.org/job/libelektra-monthly
-http://www.snmp.com/protocol
-http://redis.io/topics/pubsub
+https://www.sciencedaily.com/releases/2005/11/051103080801.htm
+
+# Certificate issues
+https://oyranos.org
+https://www.openicc.info/index.php%3Ftitle=OpenICC_Configuration_0.1.html
+https://cfp.linuxwochen.at/de/LWW18/public/events/798
+https://debian-stretch-repo.libelektra.org

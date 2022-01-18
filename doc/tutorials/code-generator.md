@@ -40,11 +40,11 @@ In this guide we will create a basic template, that generates a single file cont
 example output from running `kdb gen` with our to-be-developed template would be:
 
 ```
-user/sw/myapp/#0/current
-user/sw/myapp/#0/current/dir0
-user/sw/myapp/#0/current/dir0/subdir0/key0
-user/sw/myapp/#0/current/dir0/subdir0/key1
-user/sw/myapp/#0/current/dir1
+user:/sw/myapp/#0/current
+user:/sw/myapp/#0/current/dir0
+user:/sw/myapp/#0/current/dir0/subdir0/key0
+user:/sw/myapp/#0/current/dir0/subdir0/key1
+user:/sw/myapp/#0/current/dir1
 ```
 
 As you can see, the result matches that of redirecting the stdout of `kdb ls` into a file.
@@ -66,7 +66,7 @@ For our simple example we create the file `src/tools/kdb/gen/templates/example.t
 ```
 
 Note: we will not go into detail on how mustache templates work, for more information see e.g.
-[here](https://mustache.github.io/mustache.5.html). All of features supported by the kainjow library should be supported by our framework
+[here](https://mustache.github.io/mustache.5.html). All features supported by the kainjow library should be supported by our framework
 as well.
 
 Our CMake script will collect all `.mustache` files in `src/tools/kdb/gen/templates` into a header containing a `static const char *` field
@@ -189,7 +189,7 @@ Now you should be able to use the new template by running (after compiling/insta
 kdb gen example user userkeys
 ```
 
-This should produce the file `userkeys.txt`. The file should be the same, as if we had called `kdb ls user > userkeys.txt`.
+This should produce the file `userkeys.txt`. The file should be the same, as if we had called `kdb ls user:/ > userkeys.txt`.
 
 ## Advanced concepts
 
@@ -235,8 +235,8 @@ kdb gen ccode <parentKey> <outputName> function_name=foo
 
 ### Using partials
 
-The use of partials is bit more involved than in other mustache frameworks. All the partial files for template `X` must be placed in the
-folder `src/tools/kdb/gen/templates/X` and must use the file extension `.mustache`. Apart from the the filename can be chosen arbitrarily.
+The use of partials is a bit more involved than in other mustache frameworks. All the partial files for template `X` must be placed in the
+folder `src/tools/kdb/gen/templates/X` and must use the file extension `.mustache`. Apart from that, the filename can be chosen arbitrarily.
 
 To use the partial named `Y` (i.e. the file `src/tools/kdb/gen/templates/X/Y.mustache`) you must use this mustache command:
 
@@ -248,7 +248,7 @@ The prefix `partial.` is required by the framework, if you omit it, there will b
 
 ### Custom escape functions
 
-By default mustache escapes values for use in HTML (unless `{{{ name }}}` or `{{& name }}` is used). Since most of our templates are not
+By default, mustache escapes values for use in HTML (unless `{{{ name }}}` or `{{& name }}` is used). Since most of our templates are not
 HTML, the escape function can be customised. You simply have to override `GenTemplate::escapeFunction`. For an example see
 `HighlevelGenTemplate::escapeFunction` in [`src/tools/kdb/gen/highlevel/highlevel.hpp`](/src/tools/kdb/gen/highlevel/highlevel.hpp), it is
 designed for C code instead of HTML.

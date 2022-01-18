@@ -177,7 +177,7 @@ class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 	Key mountpoint;
 
 	/**
-	 * Contains the keys of system/elektra/mountpoints.
+	 * Contains the keys of system:/elektra/mountpoints.
 	 * It is needed to detect if a mountpoint already exists.
 	 */
 	KeySet mountConf;

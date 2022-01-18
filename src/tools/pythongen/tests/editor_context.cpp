@@ -12,7 +12,7 @@
 #include <iostream>
 
 
-int main()
+int main ()
 {
 	using namespace kdb;
 
@@ -20,16 +20,13 @@ int main()
 	KeySet ks;
 	Context c;
 	// some predefined values (for convenience):
-	ks.append(Key("user/kate/quit",
-				   KEY_VALUE,
-				   "Ctrl+k",
-				   KEY_END));
+	ks.append (Key ("user:/kate/quit", KEY_VALUE, "Ctrl+k", KEY_END));
 	KeySet ks2;
-	kdb.get(ks2, "/myapp");
+	kdb.get (ks2, "/myapp");
 	// overwrite them if something is available in config files:
-	ks.append(ks2);
+	ks.append (ks2);
 
-	Parameters par(ks,c);
+	Parameters par (ks, c);
 
 	std::cout << par.myapp.shortcut.quitMyapp << std::endl;
 

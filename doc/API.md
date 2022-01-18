@@ -28,11 +28,11 @@ developers using Elektra, on the
 other hand it gives an informal description what methods must and may provide
 to allow an alternative implementation of the API.
 
-The current version (for stable releases) of this document can be found at
-https://doc.libelektra.org/api/current/html
-
-The latest version (from git master) of this document can be found at
+The latest released version (for stable releases) of this document can be found at
 https://doc.libelektra.org/api/latest/html
+
+The git master version of this document can be found at
+https://doc.libelektra.org/api/master/html
 
 **Important:** On GitHub links to API functions are broken, so it is recommended that you continue
 reading in one of these links above.
@@ -100,7 +100,7 @@ Some general things you can do with each class are:
 - [Create](@ref keyNew) and [Delete](@ref keyDel)
 - Get and Set key the [name](@ref keySetName)
 - Get and Set [string](@ref keySetString) or [binary](@ref keySetBinary) values
-- Get and Set [Meta Data](@ref keymeta)
+- Get and Set [Metadata](@ref keymeta)
 - See [class documentation](@ref key) for more
 
 [KeySet](@ref keyset)

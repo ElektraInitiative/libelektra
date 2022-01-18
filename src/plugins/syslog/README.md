@@ -14,3 +14,8 @@ commit and rollback of the configuration.
 
 Configure the plugin with `log/get=1` to enable logging when configuration is
 loaded. For example, `kdb gmount syslog log/get=1`.
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.

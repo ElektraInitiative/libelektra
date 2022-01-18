@@ -6,7 +6,7 @@ The three main points relevant for most people are:
    that allows _read- and write access_ of every single
    parameter _for any application_ in an integrated fashion,
    configuration files stay human read- and writable.
-2. Flexible adoption on how the configuration is accessed
+2. Flexible adoption on how the configuration settings are accessed
    via plugins: you can run arbitrary code in multiple
    languages or notify others when configuration files
    are changed. [Plugins](/src/plugins) allow us to
@@ -27,15 +27,16 @@ The answer is:
 
 1. If we would only implement a configuration file library for
    applications, we would hinder the work of administrators and
-   would not provide **external access** to configuration.
+   would not provide **external access** to configuration
+   settings or specifications.
 2. If we only implement an administrator tool that can parse
    and generate configuration files, but is not used by the
    applications themselves, we create a gap that leads to
-   inconsistent understanding of the configuration **syntax**.
-3. If we only specify the meaning of configuration within
+   inconsistent understanding of the configuration file **syntax**.
+3. If we only specify the meaning of configuration settings within
    applications but not in a form accessible for administrators,
    we would create a gap that leads to inconsistent understanding
-   of the configuration **semantics**.
+   of the configuration settings' **semantics**.
 
 For common understanding of syntax and semantics of configuration files
 a full-stack solution like Elektra is required. We acknowledge, however,
@@ -52,19 +53,6 @@ three issues, and then users can easily **externally** manipulate
 `listener-threads`, without caring about the concrete **syntax** of the
 file and getting feedback of the **semantics** (you might get validation
 errors and you can receive the value exactly as the application will get it).
-
-## Who Should use Elektra?
-
-Elektra targets different kinds of users:
-
-1. Developers to develop a better integrated free software ecosystem and
-   plugins for better validation/notification.
-   If you have an application that reads or writes configuration files,
-   you are in the target group.
-2. System administrators to have a higher-level view of their configuration
-   and enable them to better consider context.
-   If you want to specify or automate configuration tasks, you are in the
-   target group.
 
 ## Unique Features
 
@@ -88,9 +76,9 @@ Features that rarely can be found elsewhere (at least in this combination):
   configuration values for different applications but
   you can comfortably link between them which makes
   many inconsistencies impossible.
-- Allows us to easily create GUIs and web-UIs for the whole configuration
+- Allows us to easily create GUIs and web-UIs for the whole configuration settings
   on the system.
-- Allows you to import/export all parts of the configuration.
+- Allows you to import/export all parts of the configuration settings.
 - Syntax independence: you can consistently use your favorite syntax.
 - Configuration Management (such as Puppet) can be used on top of it
   without having to fiddle with specifics of every configuration file.

@@ -71,7 +71,7 @@ int elektraInvoke1Arg (ElektraInvokeHandle * handle, const char * elektraPluginF
 
 static int isContractKey (Key * key)
 {
-	return !elektraStrCmp (keyName (key), "system/elektra/modules/process");
+	return !elektraStrCmp (keyName (key), "system:/elektra/modules/process");
 }
 
 int elektraProcessOpen (Plugin * handle, Key * errorKey)
@@ -151,7 +151,7 @@ static void adjustContract (KeySet * pluginContract, KeySet * contract)
 	Key * cur;
 	while ((cur = ksNext (pluginContract)) != NULL)
 	{
-		Key * cpy = keyDup (cur);
+		Key * cpy = keyDup (cur, KEY_CP_ALL);
 		keySetBaseName (cpy, NULL);
 		if (!elektraStrCmp ("infos", keyBaseName (cpy)))
 		{
@@ -181,22 +181,22 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		Key * pluginName = ksLookupByName (processConfig, "/plugin", KDB_O_NONE);
 
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/process", KEY_VALUE, "process plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/process/exports", KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/error", KEY_FUNC, elektraProcessError, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConf, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/process", KEY_VALUE, "process plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/error", KEY_FUNC, elektraProcessError, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConf, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
 		if (!validPluginName (pluginName, parentKey) || !process->plugin) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-		Key * pluginParentKey = keyDup (parentKey);
+		Key * pluginParentKey = keyDup (parentKey, KEY_CP_ALL);
 		keySetBaseName (pluginParentKey, keyString (pluginName));
 
 		KeySet * pluginContract = ksNew (30, KS_END);

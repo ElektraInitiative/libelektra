@@ -1,7 +1,7 @@
 #
-# SPDX-License-Identifier: BSD-2-Clause-FreeBSD
+# SPDX-License-Identifier: BSD-2-Clause-Views
 #
-# Copyright (C) 2019 Elektra Initiative.
+# Copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 # Copyright (C) 2006 Daniel M. Eischen.  All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,6 +24,8 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
+#
+# The views and conclusions contained in the software and documentation are those of the authors and should not be interpreted as representing official policies, either expressed or implied, of the copyright holders or contributors.
 #
 # $FreeBSD$
 #

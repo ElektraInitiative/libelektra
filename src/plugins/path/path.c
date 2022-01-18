@@ -69,6 +69,7 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + keyGetNameSize (key) + keyGetValueSize (key) +
 					       sizeof ("name:  value:  message: "));
+		if (!errmsg) return -1;
 		if (strerror_r (errno, errmsg, ERRORMSG_LENGTH) != 0)
 		{
 			strcpy (errmsg, "Unknown error");
@@ -348,15 +349,15 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 {
 	/* contract only */
 	KeySet * n;
-	ksAppend (returned, n = ksNew (30, keyNew ("system/elektra/modules/path", KEY_VALUE, "path plugin waits for your orders", KEY_END),
-				       keyNew ("system/elektra/modules/path/exports", KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
+	ksAppend (returned, n = ksNew (30, keyNew ("system:/elektra/modules/path", KEY_VALUE, "path plugin waits for your orders", KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports", KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 
 #include "readme_path.c"
 
-				       keyNew ("system/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				       keyNew ("system:/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
 
 	return 1; /* success */

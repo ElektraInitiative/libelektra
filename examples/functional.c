@@ -34,7 +34,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != 0)
 	{
@@ -71,7 +71,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	cursor_t cursor = ksGetCursor (input);
+	elektraCursor cursor = ksGetCursor (input);
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{
@@ -81,7 +81,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 		else if (rc != 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current));
+			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
 		}
 	}
 	ksSetCursor (input, cursor);
@@ -97,7 +97,7 @@ int add_string (Key * check)
 }
 int add_comment (Key * check)
 {
-	return keySetMeta (check, "comment", "comment");
+	return keySetMeta (check, "comment/#0", "comment");
 }
 int has_a (Key * check)
 {
@@ -129,13 +129,13 @@ int find_80 (Key * check)
 int main (void)
 {
 	KeySet * out;
-	KeySet * ks = ksNew (64, keyNew ("user/a/1", KEY_END), keyNew ("user/a/2", KEY_END), keyNew ("user/a/b/1", KEY_END),
-			     keyNew ("user/a/b/2", KEY_END), keyNew ("user/ab/2", KEY_END), keyNew ("user/b/1", KEY_END),
-			     keyNew ("user/b/2", KEY_END), KS_END);
+	KeySet * ks = ksNew (64, keyNew ("user:/a/1", KEY_END), keyNew ("user:/a/2", KEY_END), keyNew ("user:/a/b/1", KEY_END),
+			     keyNew ("user:/a/b/2", KEY_END), keyNew ("user:/ab/2", KEY_END), keyNew ("user:/b/1", KEY_END),
+			     keyNew ("user:/b/2", KEY_END), KS_END);
 	KeySet * values = 0;
 	KeySet * values_below_30 = 0;
 
-	global_a = keyNew ("user/a", KEY_END);
+	global_a = keyNew ("user:/a", KEY_END);
 
 	ksForEach (ks, add_string);
 	ksForEach (ks, add_comment);
@@ -156,10 +156,10 @@ int main (void)
 	keyDel (global_a);
 	global_a = 0;
 
-	values = ksNew (64, keyNew ("user/a", KEY_VALUE, "40", KEY_END), keyNew ("user/b", KEY_VALUE, "20", KEY_END),
-			keyNew ("user/c", KEY_VALUE, "80", KEY_END), keyNew ("user/d", KEY_VALUE, "24", KEY_END),
-			keyNew ("user/e", KEY_VALUE, "32", KEY_END), keyNew ("user/f", KEY_VALUE, "12", KEY_END),
-			keyNew ("user/g", KEY_VALUE, "43", KEY_END), KS_END);
+	values = ksNew (64, keyNew ("user:/a", KEY_VALUE, "40", KEY_END), keyNew ("user:/b", KEY_VALUE, "20", KEY_END),
+			keyNew ("user:/c", KEY_VALUE, "80", KEY_END), keyNew ("user:/d", KEY_VALUE, "24", KEY_END),
+			keyNew ("user:/e", KEY_VALUE, "32", KEY_END), keyNew ("user:/f", KEY_VALUE, "12", KEY_END),
+			keyNew ("user:/g", KEY_VALUE, "43", KEY_END), KS_END);
 
 	/* add together */
 	ksForEach (values, sum_helper);
@@ -169,8 +169,8 @@ int main (void)
 	ksForEach (values_below_30, sum_helper);
 
 	ksForEach (values, find_80);
-	ksCurrent (values);		      /* here is user/c */
-	ksLookupByName (values, "user/c", 0); /* should find the same */
+	ksCurrent (values);		       /* here is user:/c */
+	ksLookupByName (values, "user:/c", 0); /* should find the same */
 	ksDel (values);
 	ksDel (values_below_30);
 }

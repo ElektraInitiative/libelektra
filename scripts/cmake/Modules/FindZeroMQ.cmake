@@ -47,7 +47,10 @@ if (EXISTS ${ZeroMQ_VERSION_HEADER})
 endif (EXISTS ${ZeroMQ_VERSION_HEADER})
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (ZeroMQ REQUIRED_VARS ZeroMQ_LIBRARY ZeroMQ_INCLUDE_DIR VERSION_VAR ZeroMQ_VERSION)
+find_package_handle_standard_args (
+	ZeroMQ
+	REQUIRED_VARS ZeroMQ_LIBRARY ZeroMQ_INCLUDE_DIR
+	VERSION_VAR ZeroMQ_VERSION)
 
 mark_as_advanced (ZeroMQ_INCLUDE_DIR ZeroMQ_LIBRARY ZeroMQ_VERSION)
 

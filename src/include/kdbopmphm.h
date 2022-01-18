@@ -43,7 +43,7 @@
  */
 typedef struct
 {
-	uint32_t order;      /*!< desired hash map return value */
+	uint32_t order;	     /*!< desired hash map return value */
 	uint32_t * nextEdge; /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
 	uint32_t * vertices; /*!< array with Opmphm->rUniPar indices of vertices that the edge connects */
 } OpmphmEdge;
@@ -56,10 +56,10 @@ typedef struct
 
 typedef struct
 {
-	OpmphmEdge * edges;	/*!< array of all edges */
+	OpmphmEdge * edges;	   /*!< array of all edges */
 	OpmphmVertex * vertices;   /*!< array of all vertices */
 	uint32_t * removeSequence; /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
-	uint32_t removeIndex;      /*!< the index used for insertion in removeSequence */
+	uint32_t removeIndex;	   /*!< the index used for insertion in removeSequence */
 } OpmphmGraph;
 
 /**
@@ -90,10 +90,10 @@ typedef struct
 {
 	int32_t * hashFunctionSeeds; /*!< arary with Opmphm->rUniPar seeds for the hash function calls */
 	uint8_t rUniPar;	     /*! < number of components in the r-uniform r-partite hypergraph */
-	size_t componentSize;	/*!< the number of vertices in one part of the r-uniform r-partite hypergraph */
-	uint32_t * graph;	    /*!< array containing the final OPMPHM */
+	size_t componentSize;	     /*!< the number of vertices in one part of the r-uniform r-partite hypergraph */
+	uint32_t * graph;	     /*!< array containing the final OPMPHM */
 	size_t size;		     /*!< size of g in bytes */
-	opmphmflag_t flags;	  /*!< internal flags */
+	opmphmflag_t flags;	     /*!< internal flags */
 } Opmphm;
 
 /**
@@ -117,7 +117,7 @@ typedef const char * (*opmphmGetName) (void *);
 typedef struct
 {
 	opmphmGetName getName; /*!< function pointer used to extract the key name from the data. */
-	void ** data;	  /*!< the data */
+	void ** data;	       /*!< the data */
 	int32_t initSeed;      /*!< seed used to determine opmphmHashFunctionSeeds */
 } OpmphmInit;
 

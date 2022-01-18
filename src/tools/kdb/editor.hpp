@@ -20,7 +20,7 @@ public:
 
 	virtual std::string getShortOptions ()
 	{
-		return "sieN";
+		return "sie";
 	}
 
 	virtual std::string getSynopsis ()

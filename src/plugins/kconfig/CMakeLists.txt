@@ -7,4 +7,6 @@ add_plugin (
 		kconfig_parser.cpp
 		kconfig_parser_exception.cpp
 		kconfig_serializer.cpp
-		file_utility.cpp)
+		file_utility.cpp
+		COMPONENT
+		libelektra${SO_VERSION})

@@ -44,13 +44,15 @@ void callAll (Elektra * elektra)
 	ELEKTRA_STRUCT_FREE (StructPerson) (&p0);
 }
 
-int main (int argc, const char ** argv)
+extern const char * const * environ;
+
+int main (int argc, const char * const * argv)
 {
 	exitForSpecload (argc, argv);
 
 	ElektraError * error = NULL;
 	Elektra * elektra = NULL;
-	int rc = loadConfiguration (&elektra, &error);
+	int rc = loadConfiguration (&elektra, argc, argv, environ, &error);
 
 	if (rc == -1)
 	{
@@ -101,9 +103,9 @@ if [ "$res" = "0" ]; then
 	res=$?
 	echo "dummy exited with: $res"
 
-	if command -v valgrind; then
-		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		echo "valgrind dummy exited with: $res"
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
+		echo "valgrind dummy exited with: $?"
 	fi
 fi
 

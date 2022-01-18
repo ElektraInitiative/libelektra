@@ -3,15 +3,21 @@
 FROM ubuntu:16.04
 
 # elektra deps
+RUN apt-get update
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:longsleep/golang-backports
 RUN apt-get update -y && apt-get install -y cmake git build-essential libyajl-dev curl nodejs-legacy npm
+
+ENV GO111MODULE=on
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # elektra web deps
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get install -y nodejs golang-go
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.10.0
+ARG GTEST_VER=release-1.11.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -25,7 +31,7 @@ WORKDIR /home/elektra/libelektra
 ADD . /home/elektra/libelektra/
 
 # build & install libelektra
-RUN mkdir /home/elektra/libelektra/build
+RUN mkdir -p /home/elektra/libelektra/build
 WORKDIR /home/elektra/libelektra/build
 RUN cmake .. -DTOOLS="kdb;web" && make -j ${PARALLEL} && make install
 

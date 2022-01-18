@@ -546,10 +546,18 @@ cleanup:
 	return returnValue;
 }
 
-int elektraGpgmeOpen (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED Key * errorKey)
+int elektraGpgmeOpen (Plugin * handle, Key * errorKey)
 {
 	gpgme_error_t err;
 
+	// if the plugin is used by the unit test, initialization of libgpgme is done by the test code
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	if (inTestMode (pluginConfig))
+	{
+		return 1; // success
+	}
+
+	// initialize libgpgme
 	gpgme_check_version (NULL);
 	// NOTE the code below is recommended by the gpgme manual
 	//	gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
@@ -575,7 +583,7 @@ int elektraGpgmeClose (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED Key * erro
 int elektraGpgmeGet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// publish the module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"

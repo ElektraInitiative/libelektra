@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 generate_random_string() {
-	cat /dev/urandom | LC_ALL=C tr -dc 'a-z' | fold -w 6 | head -n 1
+	# While this command might not produce 6 pseudo random lower case letters, depending on the content of `/dev/urandom`, it should
+	# do so most of the time. Even if the output is a shorter string, this should not matter for the purpose of this script.
+	head /dev/urandom | LC_ALL=C tr -dc 'a-z' | head -c 6
 }
 
 if [ -z "$KDB" ]; then

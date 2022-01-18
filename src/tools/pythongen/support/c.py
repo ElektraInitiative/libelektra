@@ -5,9 +5,9 @@ class CSupport(Support):
 	def funcname(self, key):
 		if key.startswith('/'):
 			return self.funcpretty(key[1:])
-		elif key.startswith('user/'):
+		elif key.startswith('user:/'):
 			return self.funcpretty(key[5:])
-		elif key.startswith('system/'):
+		elif key.startswith('system:/'):
 			return self.funcpretty(key[7:])
 		else:
 			raise Exception("invalid keyname " + key)
@@ -22,12 +22,12 @@ class CSupport(Support):
 		return key.replace('/','_').replace('#','')
 
 	def userkey(self, key):
-		"""Return the key name within user/"""
+		"""Return the key name within user:/"""
 		if key.startswith('/'):
 			return "user"+key
-		elif key.startswith('user/'):
+		elif key.startswith('user:/'):
 			return key
-		elif key.startswith('system/'):
+		elif key.startswith('system:/'):
 			return "user"+key[6:]
 		else:
 			raise Exception("invalid keyname " + key)

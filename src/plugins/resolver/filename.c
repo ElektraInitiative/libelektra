@@ -40,14 +40,14 @@ int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 	if (filename[0] == '0') return -1;
 
 	size_t size = strlen (filename);
-	char * buffer = elektraMalloc (size + sizeof ("system/"));
-	strcpy (buffer, "system/");
+	char * buffer = elektraMalloc (size + sizeof ("system:/"));
+	strcpy (buffer, "system:/");
 	strcat (buffer, filename);
 
 	/* Because of the outbreak bugs these tests are not enough */
 	Key * check = keyNew (buffer, KEY_END);
-	if (!strcmp (keyName (check), "")) goto error;
-	if (!strcmp (keyName (check), "system")) goto error;
+	if (!check) goto error;
+	if (!strcmp (keyName (check), "system:/")) goto error;
 	keyDel (check);
 	elektraFree (buffer);
 
@@ -73,19 +73,19 @@ static void elektraGenTempFilename (ElektraResolved * handle, ElektraResolveTemp
 	{
 		tmpFilenameSize = strlen (handle->fullPath) + POSTFIX_SIZE;
 		tmpFile = elektraCalloc (tmpFilenameSize);
-		len = sprintf (tmpFile, "%s", handle->fullPath);
+		len = snprintf (tmpFile, tmpFilenameSize, "%s", handle->fullPath);
 	}
 	else if (tmpDir == ELEKTRA_RESOLVER_TEMPFILE_TMPDIR)
 	{
 		tmpFilenameSize = sizeof ("/tmp/") + strlen (handle->fullPath) + POSTFIX_SIZE;
 		tmpFile = elektraCalloc (tmpFilenameSize);
-		len = sprintf (tmpFile, "/tmp/%s", handle->fullPath);
+		len = snprintf (tmpFile, tmpFilenameSize, "/tmp/%s", handle->fullPath);
 	}
 
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
 	gettimeofday (&tv, 0);
-	snprintf (tmpFile + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	snprintf (tmpFile + len, tmpFilenameSize - len, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 	handle->tmpFile = tmpFile;
 }
 
@@ -113,13 +113,13 @@ static void elektraResolveFinishByFilename (ElektraResolved * handle, ElektraRes
 
 static void elektraResolveUsingHome (ElektraResolved * handle, const char * home, short addPostfix)
 {
-	Key * canonify = keyNew ("user", KEY_END);
+	Key * canonify = keyNew ("user:/", KEY_END);
 	keyAddName (canonify, home);
 
 	size_t dirnameSize = keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 	char * dir = elektraMalloc (dirnameSize);
 
-	strcpy (dir, keyName (canonify) + 4); // cut user, leave slash
+	strcpy (dir, keyName (canonify) + sizeof ("user:") - 1);
 	if (addPostfix && handle->relPath[0] != '/')
 	{
 		strcat (dir, "/" KDB_DB_USER);
@@ -228,13 +228,13 @@ static int elektraResolveEnvUser (ElektraResolved * handle)
 		return 0;
 	}
 
-	Key * canonify = keyNew ("user", KEY_END);
+	Key * canonify = keyNew ("user:/", KEY_END);
 	keyAddName (canonify, user);
 	size_t homeSize = sizeof (KDB_DB_HOME "/") + keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 
 	char * homeBuf = elektraMalloc (homeSize);
 	strcpy (homeBuf, KDB_DB_HOME "/");
-	strcat (homeBuf, keyName (canonify) + 5); // cut user/
+	strcat (homeBuf, keyName (canonify) + 6); // cut user:/
 	if (handle->relPath[0] != '/')
 	{
 		strcat (homeBuf, "/" KDB_DB_USER);
@@ -579,7 +579,7 @@ static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile t
 	{
 		// now put together the filename
 		filename = handle->relPath[0] == '/' ? elektraFormat ("%s%s", dn, handle->relPath) :
-						       elektraFormat ("%s/" KDB_DB_DIR "/%s", dn, handle->relPath);
+							     elektraFormat ("%s/" KDB_DB_DIR "/%s", dn, handle->relPath);
 
 		struct stat buf;
 		if (stat (filename, &buf) == 0)
@@ -603,7 +603,7 @@ static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile t
 		// nothing found, so we use most specific
 		elektraFree (filename);
 		filename = handle->relPath[0] == '/' ? elektraFormat ("%s%s", cwd, handle->relPath) :
-						       elektraFormat ("%s/" KDB_DB_DIR "/%s", cwd, handle->relPath);
+							     elektraFormat ("%s/" KDB_DB_DIR "/%s", cwd, handle->relPath);
 	}
 
 	elektraFree (cwd);
@@ -651,10 +651,6 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve proc");
 		rc = -1;
 		break;
-	case KEY_NS_EMPTY:
-		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve empty");
-		rc = -1;
-		break;
 	case KEY_NS_NONE:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve none");
 		rc = -1;
@@ -665,6 +661,10 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace
 		break;
 	case KEY_NS_CASCADING:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve cascading");
+		rc = -1;
+		break;
+	case KEY_NS_DEFAULT:
+		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve default");
 		rc = -1;
 		break;
 	}

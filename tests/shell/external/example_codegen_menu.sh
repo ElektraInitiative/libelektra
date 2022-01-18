@@ -20,8 +20,8 @@ EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/codegen/menu"
 
 do_tests() {
 	KEY="/sw/example/menu/#0/current"
-	UKEY="user$KEY"
-	SPECKEY="spec$KEY"
+	UKEY="user:$KEY"
+	SPECKEY="spec:$KEY"
 
 	"$KDB" umount "$SPECKEY"
 	"$KDB" umount "$KEY"
@@ -41,35 +41,35 @@ do_tests() {
 	EXPECTED_MENU=$(mktemp)
 	cat > "$EXPECTED_MENU" <<- 'EOF'
 		Main Menu:
-		
+
 		  [1] Menu 1
 		  [2] Menu 2
-		
+
 		Please select what to do (Ctrl-D = quit): 
-		
+
 	EOF
 
-	"$KDB" meta-set "user/sw/example/menu/#0/current/menu" "array" "#4"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#0/name" "Main Menu"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#1/name" "Menu 1"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#2/name" "Menu 2"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#3/name" "Menu 2.1"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#4/name" "Menu 2.2"
+	"$KDB" meta-set -f "user:/sw/example/menu/#0/current/menu" "array" "#4"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#0/name" "Main Menu"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#1/name" "Menu 1"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#2/name" "Menu 2"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#3/name" "Menu 2.1"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#4/name" "Menu 2.2"
 
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#1/command" 'echo "Hello from Menu 1"'
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#2/command" 'echo "Hello from Menu 2"'
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#3/command" 'echo "Hello from Menu 2.1"'
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#4/command" 'echo "Hello from Menu 2.2"'
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#1/command" 'echo "Hello from Menu 1"'
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#2/command" 'echo "Hello from Menu 2"'
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#3/command" 'echo "Hello from Menu 2.1"'
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#4/command" 'echo "Hello from Menu 2.2"'
 
-	"$KDB" meta-set "user/sw/example/menu/#0/current/menu/#0/children" "array" "#1"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#0/children/#0" "@/menu/#1"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#0/children/#1" "@/menu/#2"
+	"$KDB" meta-set -f "user:/sw/example/menu/#0/current/menu/#0/children" "array" "#1"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#0/children/#0" "@/menu/#1"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#0/children/#1" "@/menu/#2"
 
-	"$KDB" meta-set "user/sw/example/menu/#0/current/menu/#2/children" "array" "#1"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#2/children/#0" "@/menu/#3"
-	"$KDB" set -N user "/sw/example/menu/#0/current/menu/#2/children/#1" "@/menu/#4"
+	"$KDB" meta-set -f "user:/sw/example/menu/#0/current/menu/#2/children" "array" "#1"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#2/children/#0" "@/menu/#3"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#2/children/#1" "@/menu/#4"
 
-	"$KDB" set "user/sw/example/menu/#0/current/main" "@/menu/#0"
+	"$KDB" set -f "user:/sw/example/menu/#0/current/main" "@/menu/#0"
 
 	ACTUAL_MENU=$(mktemp)
 

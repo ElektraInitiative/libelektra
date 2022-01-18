@@ -45,6 +45,8 @@ extern gid_t nbGid;
 extern char * tempHome;
 extern int tempHomeLen;
 
+extern char * tmpfilename;
+
 int init (int argc, char ** argv);
 
 #ifndef __cplusplus
@@ -70,12 +72,27 @@ int init (int argc, char ** argv);
 		printf ("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __func__, message);                                                \
 	}
 
+#define yield_error_fmt(message_fmt, ...)                                                                                                  \
+	{                                                                                                                                  \
+		nbError++;                                                                                                                 \
+		printf ("%s:%d: error in %s: " message_fmt "\n", __FILE__, __LINE__, __func__, __VA_ARGS__);                               \
+	}
+
 #define succeed_if(expression, message)                                                                                                    \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
 		if (!(expression))                                                                                                         \
 		{                                                                                                                          \
 			yield_error (message);                                                                                             \
+		}                                                                                                                          \
+	}
+
+#define succeed_if_fmt(expression, message_fmt, ...)                                                                                       \
+	{                                                                                                                                  \
+		nbTest++;                                                                                                                  \
+		if (!(expression))                                                                                                         \
+		{                                                                                                                          \
+			yield_error_fmt (message_fmt, __VA_ARGS__);                                                                        \
 		}                                                                                                                          \
 	}
 
@@ -229,20 +246,18 @@ int init (int argc, char ** argv);
 		ELEKTRA_DIAG_STORE                                                                                                         \
 		ELEKTRA_DIAG_OFF (-Waddress)                                                                                               \
 		if (!s1)                                                                                                                   \
-			yield_error ("left hand side is null pointer") else if (!s2)                                                       \
-				yield_error ("right hand side is null pointer") else if (strcmp (s1, s2) != 0)                             \
-			{                                                                                                                  \
-				char errorMsg[BUFFER_LENGTH];                                                                              \
-                                                                                                                                           \
-				strcpy (errorMsg, "string \"");                                                                            \
-				strcat (errorMsg, s1);                                                                                     \
-				strcat (errorMsg, "\" is not equal to \"");                                                                \
-				strcat (errorMsg, s2);                                                                                     \
-				strcat (errorMsg, "\"");                                                                                   \
-                                                                                                                                           \
-				yield_error (errorMsg);                                                                                    \
-				printf ("%s", "\tcompared: " #ps1 " and " #ps2 "\n");                                                      \
-			}                                                                                                                  \
+		{                                                                                                                          \
+			yield_error ("left hand side is null pointer")                                                                     \
+		}                                                                                                                          \
+		else if (!s2)                                                                                                              \
+		{                                                                                                                          \
+			yield_error ("right hand side is null pointer")                                                                    \
+		}                                                                                                                          \
+		else                                                                                                                       \
+		{                                                                                                                          \
+			succeed_if_fmt (strcmp (s1, s2) == 0, "string \"%s\" is not equal to \"%s\"\n\tcompared: %s and %s", s1, s2, #ps1, \
+					#ps2)                                                                                              \
+		}                                                                                                                          \
 		ELEKTRA_DIAG_RESTORE                                                                                                       \
 	}
 
@@ -270,11 +285,24 @@ int init (int argc, char ** argv);
  *
  */
 #define compare_key(pk1, pk2)                                                                                                              \
+	do                                                                                                                                 \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
 		Key * mmk1 = (Key *) pk1;                                                                                                  \
 		Key * mmk2 = (Key *) pk2;                                                                                                  \
-		if (mmk1 != mmk2)                                                                                                          \
+		if (mmk1 == mmk2)                                                                                                          \
+		{                                                                                                                          \
+			break; /* same pointer */                                                                                          \
+		}                                                                                                                          \
+		else if (mmk1 == NULL)                                                                                                     \
+		{                                                                                                                          \
+			yield_error ("first key is null, but second is not")                                                               \
+		}                                                                                                                          \
+		else if (mmk2 == NULL)                                                                                                     \
+		{                                                                                                                          \
+			yield_error ("second key is null, but first is not")                                                               \
+		}                                                                                                                          \
+		else if (mmk1 != mmk2)                                                                                                     \
 		{                                                                                                                          \
 			compare_key_name (mmk1, mmk2);                                                                                     \
                                                                                                                                            \
@@ -320,7 +348,7 @@ int init (int argc, char ** argv);
 					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2));                         \
 			}                                                                                                                  \
 		}                                                                                                                          \
-	}
+	} while (0)
 
 
 /**Compare two keysets.
@@ -382,6 +410,7 @@ int compare_line_files (const char * filename, const char * genfilename);
 int compare_regex_to_line_files (const char * filename, const char * genfilename);
 
 char * srcdir_file (const char * fileName);
+char * bindir_file (const char * fileName);
 const char * elektraFilename (void);
 void elektraUnlink (const char * filename);
 

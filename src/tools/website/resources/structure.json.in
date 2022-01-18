@@ -1,0 +1,460 @@
+[
+    {
+        "name": "Documentation",
+        "type": "submenu",
+        "ref": "documentation",
+        "dev-comment": "Top-level menu button, children are buttons of dropdown.",
+        "children": [
+            {
+                "name": "About Elektra",
+                "type": "staticlist",
+                "ref": "docgettingstarted",
+                "dev-comment": "A list of documentation files that are important for new users. Could be replaced by 'parsereadme' type in future.",
+                "children": [
+                    {
+                        "name": "Github Main Page",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "README.md"
+                        }
+                    },
+                    {
+                        "name": "Goals",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/GOALS.md"
+                        }
+                    },
+                    {
+                        "name": "Who",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/WHO.md"
+                        }
+                    },
+                    {
+                        "name": "Why Elektra?",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/WHY.md"
+                        }
+                    },
+                    {
+                        "name": "Vision",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/VISION.md"
+                        }
+                    },
+                    {
+                        "name": "Big Picture",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/BIGPICTURE.md"
+                        }
+                    },
+                    {
+                        "name": "Meta-Specification",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/METADATA.ini"
+                        }
+                    },
+                    {
+                        "name": "FAQ",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/help/elektra-faq.md"
+                        }
+                    }
+                ]
+            },
+			{
+				"name": "Get Started",
+				"type": "staticlist",
+				"ref": "getstarted",
+				"dev-comment": "",
+				"children": [{
+					"name": "guide",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/GETSTARTED.md"
+				  }
+				}]
+			},
+			{
+				"name": "Keynames",
+				"type": "staticlist",
+				"ref": "keynames",
+				"dev-comment": "",
+				"children": [{
+					"name": "keynames",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/KEYNAMES.md"
+				  }
+				}]
+			},
+			{
+                "name": "Compiling",
+                "type": "staticlist",
+                "ref": "compiling",
+				"children": [{
+					"name": "compile",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/COMPILE.md"
+				  }
+				 }],
+
+                "dev-comment": ""
+            },
+			{
+                "name": "Installation",
+                "type": "staticlist",
+                "ref": "installation",
+				"children": [{
+					"name": "Installation",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/INSTALL.md"
+				  }
+
+                }],
+                "dev-comment": ""
+            },
+			{
+                "name": "Testing",
+                "type": "parsereadme",
+                "ref": "testing",
+                "options": {
+                    "path": "doc/TESTING.md",
+                    "target_file": [],
+                    "parsing": {
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": ""
+            },
+            {
+                "name": "Tutorials",
+                "type": "parsereadme",
+                "ref": "tutorials",
+                "options": {
+                    "path": "doc/tutorials/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "Names are already pretty in the linked readme, we do not have to change them."
+            },
+            {
+                "name": "Plugins",
+                "type": "parsereadme",
+                "ref": "plugins",
+                "options": {
+                    "path": "src/plugins/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "start_regex": "## Plugins",
+                        "stop_regex": "####### UNUSED",
+                        "section_regex": "### ([^#]+)",
+                        "entry_regex": "^- \\[([^\\]]+)\\]\\(([^)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "Plugin names should be kept naturally, so the users can match them with what is used in the system."
+            },
+            {
+                "name": "Tools",
+                "type": "listdirs",
+                "ref": "tools",
+                "options": {
+                    "path": "src/tools",
+                    "target_file": ["README.md", "README", "readme.md", "readme"]
+                },
+                "dev-comment": "This could be changed to the more powerful 'parsereadme' type in future."
+            },
+            {
+                "name": "Manpages",
+                "type": "listfiles",
+                "ref": "manpages",
+                "options": {
+                    "path": "doc/help",
+                    "blacklist": ["CMakeLists.txt"]
+                },
+                "dev-comment": "We don't want the CMakeLists.txt to be in the output."
+            },
+            {
+				"name": "Citations",
+				"type": "staticlist",
+				"ref": "citations",
+				"dev-comment": "",
+				"children": [{
+					"name": "citations",
+					"type": "staticfile",
+					"options": {
+					    "path": "doc/paper/README.md"
+				    }
+				}]
+			}
+        ]
+    },
+    {
+        "name": "Development",
+        "type": "submenu",
+        "ref": "development",
+        "dev-comment": "This is another top-level menu point.",
+        "children": [
+            {
+                "name": "Contribute to Elektra",
+                "type": "staticlist",
+                "ref": "devgettingstarted",
+                "dev-comment": "Here we have some important documentation files for users that want start to develop with Elektra.",
+                "children": [
+                    {
+                        "name": "Ideas",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/IDEAS.md"
+                        }
+                    },
+                    {
+                        "name": "Contributing",
+                        "type": "staticfile",
+                        "options": {
+                            "path": ".github/CONTRIBUTING.md"
+                        }
+                    },
+                    {
+                        "name": "Code of Conduct",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "CODE_OF_CONDUCT.md"
+                        }
+                    },
+                    {
+                        "name": "Coding",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/CODING.md"
+                        }
+                    },
+                    {
+                        "name": "Design",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/DESIGN.md"
+                        }
+                    },
+                    {
+                        "name": "GIT",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/GIT.md"
+                        }
+                    },
+                    {
+                        "name": "Release Procedure",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/todo/RELEASE.md"
+                        }
+                    },
+                    {
+                        "name": "Security",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/SECURITY.md"
+                        }
+                    },
+                    {
+                        "name": "License",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "LICENSE.md"
+                        }
+                    },
+                    {
+                        "name": "Testing",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/TESTING.md"
+                        }
+                    },
+                    {
+                        "name": "Testing of Tutorials",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "tests/shell/shell_recorder/tutorial_wrapper/README.md"
+                        }
+                    },
+                    {
+                        "name": "Contract",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/CONTRACT.ini"
+                        }
+                    },
+                    {
+                        "name": "Version",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/VERSION.md"
+                        }
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "staticref",
+                        "options": {
+                            "path": "tutorials"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Examples",
+                "type": "listfiles",
+                "ref": "examples",
+                "options": {
+                    "path": "examples",
+                    "blacklist": ["CMakeLists.txt"]
+                },
+                "dev-comment": "We don't want the CMakeLists.txt to be part of the output."
+            },
+            {
+                "name": "Bindings",
+                "type": "parsereadme",
+                "ref": "bindings",
+                "options": {
+                    "path": "src/bindings/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "The names of the bindings should be kept naturally, so the users can match them with what is used in the system."
+            },
+            {
+                "name": "Libraries",
+                "type": "parsereadme",
+                "ref": "libraries",
+                "options": {
+                    "path": "src/libs/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "Library names should be kept naturally, so the users can match them with what is used in the system."
+            },
+            {
+                "name": "Decisions",
+                "type": "parsereadme",
+                "ref": "decisions",
+                "options": {
+                    "path": "doc/decisions/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "stop_regex": "####### UNUSED",
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "The readme does already contain nicely formatted decision titles."
+            },
+            {
+                "name": "Developer Docu",
+                "type": "parsereadme",
+                "ref": "devdocu",
+                "options": {
+                    "path": "doc/dev/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "stop_regex": "####### UNUSED",
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "The readme does already contain nicely formatted titles."
+            },
+            {
+                "name": "Build Server Docu",
+                "type": "staticlist",
+                "ref": "buildserverdoc",
+                "dev-comment": "We need to use an own section to be able to display the buildserver file.",
+                "children": [
+                    {
+                        "name": "Build Server Docu",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/BUILDSERVER.md"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Authors",
+                "type": "staticlist",
+                "ref": "developers",
+                "dev-comment": "We need to use an own section to be able to display the authors file.",
+                "children": [
+                    {
+                        "name": "Authors",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/AUTHORS.md"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Build Server",
+                "type": "link",
+                "ref": "buildserver",
+                "options": {
+                    "path": "https://build.libelektra.org/"
+                }
+            },
+            {
+                "name": "API Documentation",
+                "type": "link",
+                "ref": "apidocumentation",
+                "options": {
+                    "path": "https://doc.libelektra.org/api/latest/html/"
+                }
+            },
+            {
+                "name": "GitHub",
+                "type": "link",
+                "ref": "github",
+                "options": {
+                    "path": "https://git.libelektra.org"
+                }
+            }
+        ]
+    }
+]

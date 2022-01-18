@@ -11,7 +11,7 @@
 static void test_basic (void)
 {
 	Key * key;
-	key = keyNew ("user/key_with_meta", KEY_END);
+	key = keyNew ("user:/key_with_meta", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyGetMeta (key, "hello") == 0, "hello was not set up to now");
 	succeed_if (keyGetMeta (key, "error") == 0, "hello was not set up to now");
@@ -59,11 +59,39 @@ static void test_basic (void)
 	keyDel (key);
 }
 
+static void test_null_pointer (void)
+{
+	Key * key;
+
+	key = keyNew ("user:/test1", KEY_END);
+	exit_if_fail (key, "could not create new key");
+
+	succeed_if (keyRewindMeta (0) == -1, "Could rewind NULL Key");
+
+	succeed_if (keyGetMeta (0, "test") == 0, "Could get meta of NULL Key");
+	succeed_if (keyGetMeta (key, 0) == 0, "Could get meta of NULL metaName");
+
+	succeed_if (keyMeta (0) == 0, "Could get metadata of NULL Key");
+	succeed_if (keyCurrentMeta (0) == 0, "Could get current meta Key of NULL key");
+	succeed_if (keyNextMeta (0) == 0, "Could get next meta Key of NULL key");
+
+	succeed_if (keyCopyMeta (0, key, "test") == -1, "Could copy metadata to NULL Key");
+	succeed_if (keyCopyMeta (key, 0, "test") == -1, "Could copy metadata from NULL Key");
+
+	succeed_if (keyCopyAllMeta (0, key) == -1, "Could copy all metadata to NULL Key");
+	succeed_if (keyCopyAllMeta (key, 0) == -1, "Could copy all metadata from NULL Key");
+
+	succeed_if (keySetMeta (0, "test", "test"), "Could set metadata to NULL Key");
+	succeed_if (keySetMeta (key, 0, "test"), "Could set metadata with NULL metaName");
+
+	keyDel (key);
+}
+
 static void test_iterate (void)
 {
 	Key * key;
 
-	key = keyNew ("user/test", KEY_END);
+	key = keyNew ("user:/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyRewindMeta (key) == 0, "Could not rewind empty key");
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty");
@@ -71,7 +99,7 @@ static void test_iterate (void)
 
 	keySetMeta (key, "meta1", "meta_value");
 	succeed_if (keyRewindMeta (key) == 0, "Could not rewind key");
-	succeed_if_same_string (keyName (keyNextMeta (key)), "meta1");
+	succeed_if_same_string (keyName (keyNextMeta (key)), "meta:/meta1");
 	succeed_if_same_string (keyValue (keyCurrentMeta (key)), "meta_value");
 
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 2. iteration");
@@ -91,7 +119,7 @@ static void test_size (void)
 	Key * key;
 	char * buffer;
 
-	key = keyNew ("user/test", KEY_END);
+	key = keyNew ("user:/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyValue (keyGetMeta (key, "hello")) == 0, "hello was not set up to now");
 	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == -1, "got wrong size for empty metavalue");
@@ -176,11 +204,11 @@ static void test_dup (void)
 	Key * key;
 	Key * dup;
 
-	key = keyNew ("user/orig", KEY_END);
+	key = keyNew ("user:/orig", KEY_END);
 	succeed_if (keySetMeta (key, "test", "some_meta_test") == sizeof ("some_meta_test"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "test")), "some_meta_test");
 
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyValue (keyGetMeta (dup, "test")), "some_meta_test");
 	succeed_if (keySetMeta (dup, "test", "some_other_meta_test") == sizeof ("some_other_meta_test"), "sizeof meta test wrong");
 	succeed_if_same_string (keyValue (keyGetMeta (dup, "test")), "some_other_meta_test");
@@ -200,7 +228,7 @@ static void j (Key * k)
 
 	// receive key g_c
 	memcpy (value, keyValue (k), size);
-	keyCopy (k, g_c);
+	keyCopy (k, g_c, KEY_CP_ALL);
 	if (bstring)
 		keySetString (k, value);
 	else
@@ -221,11 +249,11 @@ static void l (Key * k)
 static void test_examples (void)
 {
 	Key * key;
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetMeta (key, "def", "abc");
 	keySetMeta (key, "nop", "cup");
 
-	g_c = keyNew (0);
+	g_c = keyNew ("/", KEY_END);
 	keySetMeta (g_c, "xef", "ybc");
 	keySetMeta (g_c, "xop", "yup");
 
@@ -239,11 +267,11 @@ static void test_examples (void)
 	keyDel (key);
 	keyDel (g_c);
 
-	key = keyNew (0);
+	key = keyNew ("/", KEY_END);
 	keySetMeta (key, "def", "abc");
 	keySetMeta (key, "nop", "cup");
 
-	g_c = keyNew (0);
+	g_c = keyNew ("/", KEY_END);
 	keySetMeta (g_c, "type", "boolean");
 	keySetMeta (g_c, "xop", "yup");
 
@@ -265,8 +293,8 @@ static void test_copy (void)
 	Key * key1;
 	Key * key2;
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keyCopyMeta (key2, key1, "nonexist") == 0, "could not do anything");
 
@@ -275,9 +303,8 @@ static void test_copy (void)
 	keyDel (key1);
 	keyDel (key2);
 
-
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
@@ -294,8 +321,8 @@ static void test_copy (void)
 	keyDel (key2);
 
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
@@ -320,14 +347,14 @@ static void test_copy (void)
 	Key * c;
 
 	// clang-format off
-	k=keyNew ("user/metakey",
+	k=keyNew ("user:/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the metadata later",
 		KEY_META, "mode", "0775",
 		KEY_END);
 	// clang-format on
-	c = keyNew ("user/metacopy", KEY_END);
+	c = keyNew ("user:/metacopy", KEY_END);
 
 	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
 	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
@@ -346,13 +373,13 @@ static void test_copy (void)
 
 
 	// clang-format off
-	k=keyNew ("user/metakey",
+	k=keyNew ("user:/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the metadata later",
 		KEY_META, "mode", "0775",
 		KEY_END);
-	c=keyNew ("user/metacopy",
+	c=keyNew ("user:/metacopy",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "wrong",
 		KEY_META, "old", "will stay",
@@ -378,13 +405,27 @@ static void test_copy (void)
 
 	keyDel (k);
 	keyDel (c);
+
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
+
+	succeed_if (keySetMeta (key2, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
+
+	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 0, "could not copy metavalue");
+
+	succeed_if (keyGetMeta (key1, "mymeta") == 0, "value of mymeta is not NULL");
+	succeed_if (keyGetMeta (key2, "mymeta") == 0, "value of mymeta has not been cleared");
+
+	keyDel (key1);
+	keyDel (key2);
 }
 
 static void test_new (void)
 {
 	Key * key;
 	// clang-format off
-	key = keyNew ("user/test",
+	key = keyNew ("user:/test",
 		KEY_META, "hello", "hello_world",
 		KEY_META, "mode", "0644",
 		KEY_META, "time", "1271234264",
@@ -408,7 +449,7 @@ static void test_new (void)
 	keyDel (key);
 
 	// clang-format off
-	key = keyNew ("user/test",
+	key = keyNew ("user:/test",
 		KEY_META, "hello", "goodbye",
 		KEY_META, "mode", "0775",
 		KEY_META, "time", "1271939923",
@@ -440,8 +481,8 @@ static void test_copyall (void)
 	Key * key1;
 	Key * key2;
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keyCopyAllMeta (key2, key1) == 0, "could not do anything");
 
@@ -451,8 +492,8 @@ static void test_copyall (void)
 	keyDel (key2);
 
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
@@ -469,8 +510,8 @@ static void test_copyall (void)
 	keyDel (key2);
 
 
-	succeed_if (key1 = keyNew (0), "could not create key");
-	succeed_if (key2 = keyNew (0), "could not create key");
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
 	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
 	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
@@ -495,14 +536,14 @@ static void test_copyall (void)
 	Key * c;
 
 	// clang-format off
-	k=keyNew ("user/metakey",
+	k=keyNew ("user:/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the metadata later",
 		KEY_META, "mode", "0775",
 		KEY_END);
 	// clang-format on
-	c = keyNew ("user/metacopy", KEY_END);
+	c = keyNew ("user:/metacopy", KEY_END);
 
 	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
 	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
@@ -534,7 +575,7 @@ static void test_type (void)
 {
 	Key * key;
 
-	succeed_if (key = keyNew (0), "could not create a new key");
+	succeed_if (key = keyNew ("/", KEY_END), "could not create a new key");
 	succeed_if (keyValue (keyGetMeta (key, "binary")) == 0, "wrong type after key creation");
 	succeed_if (keySetString (key, "mystring") == sizeof ("mystring"), "could not set string");
 	succeed_if (keyValue (keyGetMeta (key, "binary")) == 0, "wrong type after setting string");
@@ -546,7 +587,7 @@ static void test_type (void)
 
 static void test_keyMeta (void)
 {
-	Key * key = keyNew (0, KEY_END);
+	Key * key = keyNew ("/", KEY_END);
 
 	KeySet * meta = keyMeta (key);
 
@@ -555,7 +596,7 @@ static void test_keyMeta (void)
 	keyDel (key);
 
 	// clang-format off
-	key = keyNew ("user/test",
+	key = keyNew ("user:/test",
 		KEY_META, "hello", "hello_world",
 		KEY_META, "mode", "0644",
 		KEY_META, "time", "1271234264",
@@ -566,19 +607,19 @@ static void test_keyMeta (void)
 
 	meta = keyMeta (key);
 
-	const char * value = keyString (ksLookupByName (meta, "hello", 0));
+	const char * value = keyString (ksLookupByName (meta, "meta:/hello", 0));
 	succeed_if (!strcmp (value, "hello_world"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "mode", 0));
+	value = keyString (ksLookupByName (meta, "meta:/mode", 0));
 	succeed_if (!strcmp (value, "0644"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "time", 0));
+	value = keyString (ksLookupByName (meta, "meta:/time", 0));
 	succeed_if (!strcmp (value, "1271234264"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "empty", 0));
+	value = keyString (ksLookupByName (meta, "meta:/empty", 0));
 	succeed_if (!strcmp (value, ""), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "", 0));
+	value = keyString (ksLookupByName (meta, "meta:/", 0));
 	succeed_if (!strcmp (value, "empty"), "unexpected value");
 
 	succeed_if (ksGetSize (meta) == 5, "unexpected meta keyset size");
@@ -594,6 +635,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basic ();
+	test_null_pointer ();
 	test_iterate ();
 	test_size ();
 	test_dup ();

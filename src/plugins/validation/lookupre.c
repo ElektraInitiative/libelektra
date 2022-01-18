@@ -15,6 +15,7 @@
  * TODO: Does not work (no example, no test case)
  *
  * @deprecated Does not work
+ * @deprecated Remove references to deprecated and removed KEY_COMMENT flag, use KEY_META instead
  * @param ks the KeySet to lookup into
  * @param where any of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  *        @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.
@@ -24,17 +25,17 @@
  *         @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
  *         indicate @p where the @p regex matched.
  *
- * @see ksLookupByName(), ksLookupByString(), keyCompare() for other types of
+ * @see ksLookupByName(), ksLookupByString() for other types of
  * 	lookups.
  * @see kdbGetByName()
  *
  * @par Example:
  * @code
 KeySet *ks = ksNew (5,
-		keyNew ("user/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
-		keyNew ("user/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
-		keyNew ("user/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
-		keyNew ("user/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END),
+		keyNew ("user:/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
+		keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
+		keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
+		keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END),
 		KS_END);
 
 Key *match = 0;
@@ -69,12 +70,12 @@ regcomp(&regex,
 regfree(&regex);
 
 regcomp(&regex,
-	"^system/folder/.* /basename$", // match real system/ keys that end with 'basename'
+	"^system:/folder/.* /basename$", // match real system:/ keys that end with 'basename'
 	REG_NOSUB);       // always use REG_NOSUB to increase performance
 regfree(&regex);
 
 regcomp(&regex,
-	"^system/sw/xorg/.* /Screen[0-9]* /Displays/[0-9]* /Depth$", // we want all X.org's depths of all displays of all screens
+	"^system:/sw/xorg/.* /Screen[0-9]* /Displays/[0-9]* /Depth$", // we want all X.org's depths of all displays of all screens
 	REG_ICASE | REG_NOSUB);   // we don't care about the case
 regfree(&regex);        // don't forget to free resources
 

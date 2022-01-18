@@ -1,17 +1,17 @@
-- infos = Information about SIMPLEINI plugin is in keys below
+- infos = Information about simpleini plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage/ini
-- infos/needs = code null
+- infos/provides = storage/properties
+- infos/needs = code binary
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep concept obsolete 3000
-- infos/description = Very simple storage which writes out in a basic ini format.
+- infos/description = Very simple storage plugin which stores data in a basic properties file format
 
 ## Introduction
 
 This plugin reads and writes files written in a basic line-oriented ini-like format.
-It is very simplistic without sections, the [ini](../ini/) plugin and for specifications
-the [ni](../ni/) plugin should be preferred in most cases. Since the `simpleini` plugin requires
+It is very simplistic without sections, the [toml](../toml/) plugin and for specifications
+the [ni](../ni/) plugin should be preferred. Since the `simpleini` plugin requires
 the GNU C library it **will not work** on operating systems that use another C library
 such as macOS.
 
@@ -22,7 +22,7 @@ without sections or metadata.
 (Thus +3000 in status)
 
 ```sh
-kdb export system/samba simpleini
+kdb export system:/samba simpleini
 ```
 
 ## Configuration
@@ -40,7 +40,7 @@ The default is `% = %`.
 For example, if you want every key to be marked `%:key value` you would use:
 
 ```sh
-kdb export -c "format=%%:% %" system/samba simpleini
+kdb export -c "format=%%:% %" system:/samba simpleini
 #> %:key value
 #> %:key2 value2
 ```
@@ -53,16 +53,16 @@ kdb export -c "format=%%:% %" system/samba simpleini
 - Delimiting symbols cannot be part of the key.
 - The last occurrence of the same key wins (others are discarded).
 - The parent Key cannot be used.
-- This plugin needs the code and null plugins.
+- This plugin needs the code and binary plugins.
   A code plugin is used for the escape character for some symbols (but does not respect user-defined `format`)
-  and the null plugin is used to handle null values.
+  and the binary plugin is used to handle binary values.
 
 ## Examples
 
 Mount the plugin:
 
 ```sh
-kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini
+kdb mount -d /etc/samba/smb.conf system:/samba ccode simpleini
 ```
 
 ## Limitations

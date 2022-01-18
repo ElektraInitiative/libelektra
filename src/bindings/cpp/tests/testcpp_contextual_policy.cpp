@@ -16,7 +16,7 @@ class MyStaticGetPolicy
 public:
 	static kdb::Key get (ELEKTRA_UNUSED kdb::KeySet & ks, ELEKTRA_UNUSED kdb::Key const & spec)
 	{
-		return kdb::Key ("user/something", KEY_VALUE, "23", KEY_END);
+		return kdb::Key ("user:/something", KEY_VALUE, "23", KEY_END);
 	}
 };
 
@@ -29,7 +29,6 @@ TEST (test_contextual_policy, staticGetPolicy)
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
@@ -63,7 +62,7 @@ public:
 
 	kdb::ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5> value;
 
-	using kdb::ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5>::operator= ;
+	using kdb::ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5>::operator=;
 };
 
 TEST (test_contextual_policy, ValueWrapper)
@@ -74,7 +73,6 @@ TEST (test_contextual_policy, ValueWrapper)
 	// clang-format off
 	ValueWrapper<int, WritePolicyIs<DefaultWritePolicy>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
@@ -97,7 +95,7 @@ public:
 	typedef T type;
 	static kdb::Key set (kdb::KeySet & ks, kdb::Key const & spec)
 	{
-		return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir");
+		return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir:");
 	}
 };
 
@@ -109,7 +107,6 @@ TEST (test_contextual_policy, setPolicy)
 	// clang-format off
 	ContextualValue<int, SetPolicyIs<MySetPolicy<int>>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
@@ -117,13 +114,13 @@ TEST (test_contextual_policy, setPolicy)
 	EXPECT_EQ (cv, 88);
 	EXPECT_EQ (cv, 88);
 	EXPECT_TRUE (ks.lookup ("/test")) << "did not find /test";
-	EXPECT_FALSE (ks.lookup ("dir/test")) << "found dir/test wrongly";
+	EXPECT_FALSE (ks.lookup ("dir:/test")) << "found dir:/test wrongly";
 	cv = 40;
 	EXPECT_EQ (cv, 40);
 	cv.syncKeySet ();
 	EXPECT_EQ (cv, 40);
 	EXPECT_TRUE (ks.lookup ("/test")) << "did not find /test";
-	EXPECT_TRUE (ks.lookup ("dir/test")) << "could not find dir/test";
+	EXPECT_TRUE (ks.lookup ("dir:/test")) << "could not find dir:/test";
 }
 
 TEST (test_contextual_policy, readonlyPolicy)
@@ -131,8 +128,8 @@ TEST (test_contextual_policy, readonlyPolicy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
-	ContextualValue<int, WritePolicyIs<ReadOnlyPolicy>> cv (
-		ks, c, Key ("/test", KEY_CASCADING_NAME, KEY_VALUE, "/test", KEY_META, "default", "88", KEY_END));
+	ContextualValue<int, WritePolicyIs<ReadOnlyPolicy>> cv (ks, c,
+								Key ("/test", KEY_VALUE, "/test", KEY_META, "default", "88", KEY_END));
 	EXPECT_EQ (cv, 88);
 	EXPECT_EQ (cv, 88);
 	// cv = 40; // read only, so this is a compile error
@@ -152,14 +149,13 @@ TEST (test_contextual_policy, dynamicGetPolicy)
 {
 	using namespace kdb;
 	KeySet ks;
-	ks.append (Key ("user/available", KEY_VALUE, "12", KEY_END));
+	ks.append (Key ("user:/available", KEY_VALUE, "12", KEY_END));
 	Context c;
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
-			KEY_META, "override/#0", "user/available",
+			KEY_META, "override/#0", "user:/available",
 			KEY_END));
 	// clang-format on
 
@@ -188,14 +184,13 @@ TEST (test_contextual_policy, root)
 {
 	using namespace kdb;
 	KeySet ks;
-	ks.append (Key ("user/available", KEY_VALUE, "12", KEY_END));
+	ks.append (Key ("user:/available", KEY_VALUE, "12", KEY_END));
 	Context c;
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/",
-			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
-			KEY_META, "override/#0", "user/available",
+			KEY_META, "override/#0", "user:/available",
 			KEY_END));
 	// clang-format on
 
@@ -215,8 +210,7 @@ template <typename T, typename P = kdb::GetPolicyIs<MyStaticGetPolicy>>
 class MyCV : public kdb::ContextualValue<T, P>
 {
 public:
-	MyCV<T, P> (kdb::KeySet & ks_, kdb::Context & context_)
-	: kdb::ContextualValue<T, P> (ks_, context_, kdb::Key ("/", KEY_CASCADING_NAME, KEY_END))
+	MyCV<T, P> (kdb::KeySet & ks_, kdb::Context & context_) : kdb::ContextualValue<T, P> (ks_, context_, kdb::Key ("/", KEY_END))
 	{
 	}
 };
@@ -245,8 +239,7 @@ class MyCV2 : public kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGe
 {
 public:
 	MyCV2 (kdb::KeySet & ks_, kdb::Context & context_)
-	: kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGetPolicy>> (ks_, context_, kdb::Key ("/", KEY_CASCADING_NAME, KEY_END)),
-	  m_m (ks_, context_)
+	: kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGetPolicy>> (ks_, context_, kdb::Key ("/", KEY_END)), m_m (ks_, context_)
 	{
 	}
 

@@ -207,7 +207,7 @@ public:
 	void attachByName (std::string const & key_name, ValueObserver & observer)
 	{
 		this->attachObserver (observer);
-		evaluate (key_name, [&](std::string const & current_id, std::string &, bool) {
+		evaluate (key_name, [&] (std::string const & current_id, std::string &, bool) {
 			this->attachObserverByEvent (current_id, observer);
 			return false;
 		});
@@ -221,7 +221,7 @@ public:
 	 */
 	std::string evaluate (std::string const & key_name) const
 	{
-		return evaluate (key_name, [&](std::string const & current_id, std::string & ret, bool in_group) {
+		return evaluate (key_name, [&] (std::string const & current_id, std::string & ret, bool in_group) {
 			auto f = m_active_layers.find (current_id);
 			bool left_group = true;
 			if (f != m_active_layers.end ())
@@ -262,7 +262,7 @@ public:
 	 * @return the evaluated string
 	 */
 	std::string evaluate (std::string const & key_name,
-			      std::function<bool(std::string const &, std::string &, bool in_group)> const & on_layer) const
+			      std::function<bool (std::string const &, std::string &, bool in_group)> const & on_layer) const
 	{
 		size_t const & s = key_name.size ();
 		std::string ret;
@@ -492,14 +492,14 @@ public:
 		return *this;
 	}
 
-	Context & operator() (std::function<void()> const & f)
+	Context & operator() (std::function<void ()> const & f)
 	{
 		execHelper (f);
 
 		return *this;
 	}
 
-	Context & withl (std::shared_ptr<Layer> & l, std::function<void()> const & f)
+	Context & withl (std::shared_ptr<Layer> & l, std::function<void ()> const & f)
 	{
 		lazyActivateLayer (l);
 		execHelper (f);
@@ -510,7 +510,7 @@ public:
 private:
 	typedef std::vector<std::pair<std::string, std::shared_ptr<Layer>>> WithStack;
 
-	void execHelper (std::function<void()> const & f)
+	void execHelper (std::function<void ()> const & f)
 	{
 		WithStack with_stack = m_with_stack;
 		m_with_stack.clear (); // allow with to be called recursively

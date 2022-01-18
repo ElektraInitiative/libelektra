@@ -2,13 +2,20 @@
 - infos/author = Gabriel Rauter <rauter.gabriel@gmail.com>
 - infos/status = experimental
 - infos/provides =
-- infos/description =
+- infos/description = Elektra GSettings Backend
 
-# elektrasettings
+# ElektraSettings
 
 **Warning !!!** This binding is unstable and could destroy your Elektra Configuration. Only use in testing environments.
 
-Implementation of Elektra as GSettingsBackend
+A GSettings backend implementation based on Elektra.
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+This binding is currently **not** part of a released package.
+
+To quickly test the **experimental** ElektraSettings on a test system _[see Quick Start below](#hl-1)_.
 
 ## What is Working:
 
@@ -117,7 +124,20 @@ import settings again
 rm tmp
 ```
 
-If you want notifications to work you have to mount /sw with the dbus plugin.
+If you want change notifications to work you have to mount /sw with the dbus plugin. Not mounting the dbus plugin is discouraged, because configuration changes will not propagate correctly.
+
+<a id="hl-1"></a>
+
+## Quick Start
+
+If want to test Elektra's GSettings backend as default on your system, you can use the commands below to do so. These commands will compile Elektra with the GSettings backend. Note that this will replace the default backend (usually `dconf`). The ElektraSettings backend is currently **experimental**, so use it with caution and back up your date before doing this.
+
+```sh
+cmake -GNinja -DBINDINGS="ALL;glib;gsettings;-jna" -DBUILD_SHARED=ON -DBUILD_STATIC=ON -DBUILD_FULL=ON -DENABLE_COVERAGE=OFF -DENABLE_OPTIMIZATIONS=ON -DBUILD_STATIC=ON -DPLUGINS="ALL" -DTOOLS="ALL" -DINSTALL_SYSTEM_FILES=ON -DGSETTINGS_MODULE_PRIORITY=200 ..
+ninja
+(sudo) ninja install
+(sudo) kdb gmount dbus
+```
 
 # Debugging
 

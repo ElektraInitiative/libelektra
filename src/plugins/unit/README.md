@@ -5,9 +5,14 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest tested libc final
+- infos/status = maintained reviewed conformant compatible coverage specific unittest tested libc final
 - infos/metadata = check/unit
 - infos/description = validates units of memory and normalizes to bytes
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
 
 ## Validation options
 

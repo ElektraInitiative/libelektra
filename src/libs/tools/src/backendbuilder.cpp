@@ -182,11 +182,20 @@ void BackendBuilder::needMetadata (std::string addMetadata)
 	std::string md;
 	while (is >> md)
 	{
+		if (md.substr (0, sizeof ("meta:/") - 1) != "meta:/")
+		{
+			md = "meta:/" + md;
+		}
+
 		std::string nd;
-		Key k (md.c_str (), KEY_META_NAME, KEY_END);
+		Key k (md.c_str (), KEY_END);
 		for (auto && elem : k)
 		{
-			if (!elem.empty () && elem[0] == '#')
+			if (elem[0] == KEY_NS_META)
+			{
+				continue;
+			}
+			else if (!elem.empty () && elem[0] == '#')
 			{
 				// reduce array entries to #
 				nd += '#';
@@ -440,7 +449,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	checkConfPtr checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
 	if (checkConfFunction)
 	{
-		ckdb::Key * errorKey = ckdb::keyNew (nullptr);
+		ckdb::Key * errorKey = ckdb::keyNew ("/", KEY_END);
 
 		// merge plugin config and backend config together
 		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
@@ -456,7 +465,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		else if (checkResult == 1)
 		{
 			// separate plugin config from the backend config
-			ckdb::Key * backendParent = ckdb::keyNew ("system/", KEY_END);
+			ckdb::Key * backendParent = ckdb::keyNew ("system:/", KEY_END);
 			ckdb::KeySet * newBackendConfig = ckdb::ksCut (pluginConfig, backendParent);
 
 			// take over the new configuration
@@ -518,7 +527,7 @@ void GlobalPluginsBuilder::serialize (kdb::KeySet & ret)
 /**
  * @brief Below this path is the configuration for global plugins
  */
-const char * GlobalPluginsBuilder::globalPluginsPath = "system/elektra/globalplugins";
+const char * GlobalPluginsBuilder::globalPluginsPath = "system:/elektra/globalplugins";
 
 
 void MountBackendBuilder::status (std::ostream & os) const

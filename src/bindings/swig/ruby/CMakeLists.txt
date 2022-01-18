@@ -5,7 +5,7 @@ if (APPLE)
 	set (CMAKE_FIND_FRAMEWORK "LAST") # try user environment first, then search for system libs  required on OSX under rvm
 
 	# Prefer Ruby versions installed via Homebrew
-	set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.5" "/usr/local/opt/ruby")
+	set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.6" "/usr/local/opt/ruby")
 	foreach (directory ${RUBY_DIRECTORIES})
 		if (EXISTS ${directory})
 			list (APPEND CMAKE_PREFIX_PATH ${directory})
@@ -17,6 +17,8 @@ find_package (Ruby QUIET)
 
 if (NOT RUBY_FOUND)
 	exclude_binding (ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
+elseif (SWIG_VERSION VERSION_LESS "4.0.2" AND (RUBY_VERSION VERSION_GREATER "2.7.0" OR RUBY_VERSION VERSION_EQUAL "2.7.0"))
+	exclude_binding (ruby "SWIG <= 4.0.1 incompatible with Ruby >= 2.7")
 elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])$")
 	exclude_binding (ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
 else ()
@@ -89,6 +91,7 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-gnu-zero-variadic-macro-arguments")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-zero-length-array")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -fdeclspec")
 	endif ()
 
 	# add 'kdb' module
@@ -97,12 +100,9 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (
 			swig-ruby
-			LANGUAGE
-			ruby
-			SOURCES
-			kdb.i
-			TYPE
-			MODULE)
+			LANGUAGE ruby
+			SOURCES kdb.i
+			TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8) # set the compiler settings for the generated file  (has to be done for each module
 	# separately)
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
@@ -113,12 +113,9 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (
 			swig-ruby-tools
-			LANGUAGE
-			ruby
-			SOURCES
-			kdbtools.i
-			TYPE
-			MODULE)
+			LANGUAGE ruby
+			SOURCES kdbtools.i
+			TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
@@ -149,8 +146,11 @@ else ()
 		message (STATUS "Ruby module install path: ${RUBY_MODULE_INSTALL_DIR}")
 	endif ()
 
-	install (TARGETS swig-ruby swig-ruby-tools LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR})
-	install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb DESTINATION ${RUBY_MODULE_INSTALL_DIR})
+	install (TARGETS swig-ruby swig-ruby-tools LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR} COMPONENT ruby-elektra)
+	install (
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb
+		DESTINATION ${RUBY_MODULE_INSTALL_DIR}
+		COMPONENT ruby-elektra)
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 	if (BUILD_TESTING)

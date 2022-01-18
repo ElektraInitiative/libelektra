@@ -193,7 +193,6 @@ static int copyFile (int sourceFd, int destFd)
 				return -1;
 		}
 
-		char * pos = buf;
 		ssize_t writtenBytes = 0;
 		while (readBytes > 0)
 		{
@@ -206,7 +205,6 @@ static int copyFile (int sourceFd, int destFd)
 					return -1;
 			}
 			readBytes -= writtenBytes;
-			pos += writtenBytes;
 		}
 	}
 
@@ -407,6 +405,8 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.cursor = (Key *) ~magicNumber;
 	magicKeySet.current = SIZE_MAX / 2;
 	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
+	magicKeySet.refs = UINT16_MAX;
+	magicKeySet.reserved = 0;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
 	magicKeySet.opmphmPredictor = 0;
@@ -424,10 +424,12 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.dataSize = SIZE_MAX;
 	magicKey.key = (char *) magicNumber;
 	magicKey.keySize = UINT16_MAX;
+	magicKey.ukey = 0;
 	magicKey.keyUSize = 0;
-	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
-	magicKey.ksReference = SIZE_MAX / 2;
 	magicKey.meta = (KeySet *) ELEKTRA_MMAP_MAGIC_BOM;
+	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
+	magicKey.refs = UINT16_MAX / 2;
+	magicKey.reserved = UINT16_MAX;
 }
 
 /**
@@ -741,7 +743,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 	// write the meta keys into place
 	for (size_t i = 0; i < dynArray->size; ++i)
 	{
-		Key * curMeta = dynArray->keyArray[i];	// old key location
+		Key * curMeta = dynArray->keyArray[i];	      // old key location
 		Key * mmapMetaKey = (Key *) mmapAddr->keyPtr; // new key location
 		*mmapMetaKey = *curMeta;
 		mmapAddr->keyPtr += SIZEOF_KEY;
@@ -749,10 +751,18 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 		// move Key name
 		if (curMeta->key)
 		{
-			size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
-			memcpy (mmapAddr->dataPtr, curMeta->key, keyNameSize);
+			memcpy (mmapAddr->dataPtr, curMeta->key, curMeta->keySize);
 			mmapMetaKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
-			mmapAddr->dataPtr += keyNameSize;
+			mmapAddr->dataPtr += curMeta->keySize;
+			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
+		}
+
+		// move Key unescaped name
+		if (curMeta->ukey)
+		{
+			memcpy (mmapAddr->dataPtr, curMeta->ukey, curMeta->keyUSize);
+			mmapMetaKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
+			mmapAddr->dataPtr += curMeta->keyUSize;
 			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 
@@ -768,7 +778,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 		// move Key itself
 		mmapMetaKey->flags |= KEY_FLAG_MMAP_STRUCT;
 		mmapMetaKey->meta = 0;
-		mmapMetaKey->ksReference = 0;
+		mmapMetaKey->refs = 0;
 
 		dynArray->mappedKeyArray[i] = mmapMetaKey;
 	}
@@ -804,9 +814,9 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 		// get address of mapped key and store it in the new array
 		mappedMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) ((Key *) metaKey, dynArray)];
 		newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
-		if (mappedMetaKey->ksReference < SSIZE_MAX)
+		if (mappedMetaKey->refs < UINT16_MAX - 1)
 		{
-			++(mappedMetaKey->ksReference);
+			++(mappedMetaKey->refs);
 		}
 		++metaKeyIndex;
 	}
@@ -853,10 +863,18 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		// move Key name
 		if (cur->key)
 		{
-			size_t keyNameSize = cur->keySize + cur->keyUSize;
-			memcpy (mmapAddr->dataPtr, cur->key, keyNameSize);
+			memcpy (mmapAddr->dataPtr, cur->key, cur->keySize);
 			mmapKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
-			mmapAddr->dataPtr += keyNameSize;
+			mmapAddr->dataPtr += cur->keySize;
+			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
+		}
+
+		// move Key unescaped name
+		if (cur->ukey)
+		{
+			memcpy (mmapAddr->dataPtr, cur->ukey, cur->keyUSize);
+			mmapKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
+			mmapAddr->dataPtr += cur->keyUSize;
 			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 
@@ -879,7 +897,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 
 		// move Key itself
 		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT;
-		mmapKey->ksReference = 1;
+		mmapKey->refs = 1;
 
 		// write the relative Key pointer into the KeySet array
 		ksArray[keyIndex] = (Key *) ((char *) mmapKey - mmapAddr->mmapAddrInt);
@@ -1082,6 +1100,27 @@ static void mmapOpmphmPredictorDel (OpmphmPredictor * op)
 #endif
 
 /**
+ * @brief Replaces contents of dest with the keyset from src.
+ *
+ * The keyset members of dest are replaced with data from src.
+ *
+ * @param dest destination keyset
+ * @param src source keyset
+ */
+static void mmapFastReplace (KeySet * dest, KeySet * src)
+{
+	ksClose (dest);
+	dest->array = src->array;
+	dest->size = src->size;
+	dest->alloc = src->alloc;
+	// to be able to free() the returned KeySet, just set the array flag here
+	dest->flags = KS_FLAG_MMAP_ARRAY;
+	// we intentionally do not change the KeySet->opmphm here!
+	// also do not change the reference counter on purpose,
+	// we only want to change the contents
+}
+
+/**
  * @brief Replaces contents of a keyset with the keyset from the mapped region.
  *
  * The keyset members are replaced with data from a mapped keyset. The keyset
@@ -1093,12 +1132,7 @@ static void mmapOpmphmPredictorDel (OpmphmPredictor * op)
 static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returned, PluginMode mode)
 {
 	KeySet * keySet = (KeySet *) (mappedRegion + OFFSET_KEYSET);
-	ksClose (returned);
-	returned->array = keySet->array;
-	returned->size = keySet->size;
-	returned->alloc = keySet->alloc;
-	// to be able to free() the returned KeySet, just set the array flag here
-	returned->flags = KS_FLAG_MMAP_ARRAY;
+	mmapFastReplace (returned, keySet);
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (keySet->opmphm)
@@ -1113,17 +1147,21 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	}
 #endif
 
-	if (test_bit (mode, MODE_GLOBALCACHE)) // TODO: remove code duplication here
+	if (test_bit (mode, MODE_GLOBALCACHE))
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
-		ksClose (global); // TODO: if we have a global keyset, maybe use ksAppend?
 		KeySet * mmapTimeStamps = (KeySet *) (mappedRegion + OFFSET_GLOBAL_KEYSET);
-		global->array = mmapTimeStamps->array;
-		global->size = mmapTimeStamps->size;
-		global->alloc = mmapTimeStamps->alloc;
-		// to be able to free() the timeStamps KeySet, just set the array flag here
-		global->flags = KS_FLAG_MMAP_ARRAY;
-		// we intentionally do not change the KeySet->opmphm here!
+
+		if (ksGetSize (global) == 0)
+		{
+			// fast replace KeySet, if Global KeySet was empty
+			mmapFastReplace (global, mmapTimeStamps);
+		}
+		else
+		{
+			// do not overwrite, but append Keys to existing Global KeySet
+			ksAppend (global, mmapTimeStamps);
+		}
 	}
 }
 
@@ -1196,6 +1234,10 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 		if (key->key)
 		{
 			key->key = key->key + destInt;
+		}
+		if (key->ukey)
+		{
+			key->ukey = key->ukey + destInt;
 		}
 		if (key->meta)
 		{
@@ -1292,7 +1334,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		mode = MODE_GLOBALCACHE;
 	}
 
-	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	Key * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
@@ -1306,7 +1348,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	if (elektraStrCmp (keyString (parentKey), STDIN_FILENAME) == 0)
 	{
@@ -1483,7 +1525,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	if (elektraStrCmp (keyString (parentKey), STDOUT_FILENAME) == 0)
 	{

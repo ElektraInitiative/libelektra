@@ -1,5 +1,5 @@
 //! Raw bindings for libelektra.
-//! For documentation on the functions, see the [C API documentation](https://doc.libelektra.org/api/current/html/index.html).
+//! For documentation on the functions, see the [C API documentation](https://doc.libelektra.org/api/latest/html/index.html).
 
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
@@ -7,6 +7,9 @@
 
 // Include the created bindings
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
+pub const KEY_END: *const std::ffi::c_void = std::ptr::null();
+pub const KS_END: *const std::ffi::c_void = std::ptr::null();
 
 #[cfg(test)]
 mod tests {
@@ -18,7 +21,7 @@ mod tests {
 
     #[test]
     fn can_write_read_key() {
-        let key_name = CString::new("user/test/key").unwrap();
+        let key_name = CString::new("user:/test/key").unwrap();
         let key_val = CString::new("rust-bindings").unwrap();
         let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
         let ret_val_str = unsafe { CStr::from_ptr(keyString(key)) };
@@ -28,8 +31,8 @@ mod tests {
 
     #[test]
     fn can_iterate_keyset() {
-        let key_name = CString::new("user/test/key").unwrap();
-        let key_name2 = CString::new("user/test/key2").unwrap();
+        let key_name = CString::new("user:/test/key").unwrap();
+        let key_name2 = CString::new("user:/test/key2").unwrap();
 
         let key = unsafe { keyNew(key_name.as_ptr(), KEY_END) };
         let key2 = unsafe { keyNew(key_name2.as_ptr(), KEY_END) };

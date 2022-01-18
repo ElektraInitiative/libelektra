@@ -70,7 +70,7 @@ Thus please use following techniques (in order of preference):
 
    `ELEKTRA_LOG ("formatted text to be printed according to log filters", ...)`
 
-   Read [HERE](/doc/dev/logging.md) for how to enable the logger.
+   Read [HERE](/doc/tutorials/logger.md) for how to enable the logger.
 
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
    comments. Use `TODO` to indicate that something is not yet done.
@@ -133,21 +133,19 @@ ensure that you have the correct version of all our reformatting tools at hand.
 
 #### Clang Format
 
-To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `6.0` or version `7.0`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
+To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `12`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
 
 To find out which version of `clang-format` a certain build server uses please check:
 
 - the [Debian sid Docker image](../scripts/docker/debian/sid/Dockerfile),
-- the [Travis configuration file ](../.travis.yml), and
+- the [GitHub Actions configuration files](../.github/workflows), and
 - the [Cirrus configuration file](../.cirrus.yml)
 
-and search for the relevant packages (`clang-format`, `llvm`). Currently we use
+and search for the relevant packages (`clang-format`, `llvm`). Currently we use clang-format `12`
 
-- clang-format `6.0` in the [Debian sid image](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server,
-- clang-format `7.0` in the [Travis configuration file ](../.travis.yml), and
-- clang-format `7.0` in the [Cirrus macOS](../.cirrus.yml) build jobs
-
-.
+- in the [GitHub Actions configuration files](../.github/workflows),
+- in the [Debian sid Docker container](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server, and
+- in the [Cirrus macOS](../.cirrus.yml) build jobs.
 
 ##### Installation
 
@@ -165,44 +163,38 @@ or by installing the whole [LLVM](http://llvm.org) infrastructure:
 brew install llvm
 ```
 
-. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `6.0` in certain edge cases. If you want you can also install Clang-Format `7.0` using LLVM `7.0`:
+Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `12` in certain edge cases. If you want you can also install a specific version of LLVM and Clang-Format: e.g. Clang-Format `11` using LLVM `11`:
 
 ```
-brew install llvm@7
+brew install llvm@11
 ```
-
-.
 
 [homebrew]: https://brew.sh
 
 ###### Debian
 
-In Debian the package for Clang-Format `6.0` is called `clang-format-6.0`:
+In Debian (Sid) the package for Clang-Format `12` is called `clang-format-12`:
 
 ```sh
-apt-get install clang-format-6.0
+apt-get install clang-format-12
 ```
-
-.
 
 ##### Usage
 
 For the basic use cases you can use `clang-format` directly. To do that, just call the tool using the option `-i` and specify the name of the files you want to reformat. For example, if you want to reformat the file `src/bindings/cpp/include/kdb.hpp` you can use the following command:
 
 ```sh
-# On some systems such as Debian the `cmake-format` executable also contains
+# On some systems such as Debian the `clang-format` executable also contains
 # the version number. For those systems, please replace `clang-format`,
-# with `clang-format-6.0` or `clang-format-7` in the command below.
+# with `clang-format-12` in the command below.
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
-. While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-c`](../scripts/dev/reformat-c) that reformats all C and C++ code in Elektra’s code base
+While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-c`](../scripts/dev/reformat-c) that reformats all C and C++ code in Elektra’s code base
 
 ```sh
 scripts/dev/reformat-c # This script will probably take some seconds to execute
 ```
-
-.
 
 ##### Tool Integration
 
@@ -217,7 +209,7 @@ While [TextMate][] supports `clang-format` for the current file directly via the
 3. insert `callback.document.will-save` into the field “Semantic Class”, and
 4. change the menu option for the field “Save” to “Nothing”
 
-. After that change TextMate will reformat C and C++ code with `clang-format` every time you save a file.
+After that change TextMate will reformat C and C++ code with `clang-format` every time you save a file.
 
 [textmate]: https://macromates.com
 
@@ -257,25 +249,23 @@ file `CMakeLists.txt` in the root folder of the repository we use the following 
 cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 ```
 
-.
-
 ##### Installation
 
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
 
 ```sh
-# Install cmake format `0.6` with support for YAML config files
-pip install cmake-format[yaml]==0.6
+# Install cmakelang `0.6.13` with support for YAML config files
+pip install cmakelang[yaml]==0.6.13
 ```
 
-. Please make sure, that you install the correct version (`0.6.0`) of cmake format:
+Please make sure, that you install the correct version (`0.6.13`) of cmake format:
 
 ```sh
 cmake-format --version
-#> 0.6.0
+#> 0.6.13
 ```
 
-, since otherwise the formatted code might look quite different.
+since otherwise the formatted code might look quite different.
 
 We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/dev/reformat-cmake), which you can install on macOS using [Homebrew][]:
 
@@ -289,8 +279,6 @@ and on Debian using `apt-get`:
 apt-get install moreutils
 ```
 
-.
-
 ##### Usage
 
 If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/dev/reformat-cmake):
@@ -299,14 +287,12 @@ If you want to reformat the whole codebase you can use the script [`reformat-cma
 scripts/dev/reformat-cmake # Running this script for the whole code base takes some time.
 ```
 
-. To reformat specific files add a list of file paths after the command:
+To reformat specific files add a list of file paths after the command:
 
 ```sh
 # The command below reformats the file `cmake/CMakeLists.txt`.
 scripts/dev/reformat-cmake cmake/CMakeLists.txt
 ```
-
-.
 
 ##### Tool Integration
 
@@ -353,11 +339,10 @@ While TextMate does not support cmake format directly, you can quickly create a 
 
    in a file called [`.tm_properties`](https://macromates.com/blog/2011/git-style-configuration) in the root of Elektra’s repository.
 
-### Groovy Guidelines
+### Java & Groovy Guidelines
 
-Please follow
-[Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
-for Groovy (used by Jenkins) files.
+Please follow [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
+for Groovy (used by Jenkins) and Java files.
 
 Most notably use:
 
@@ -365,13 +350,7 @@ Most notably use:
 - Variable and function names in lowerCamelCase
 - K & R style brackets
 
-### Java
-
-We use a similar style for Java and C/C++ code. This means we also use `clang-format` to format Java code. For more information on how to install `clang-format`, please take a look at the subheading “Clang Format” of the **“C Guidelines”**.
-
-#### Clang Format
-
-##### Usage
+#### Usage
 
 If you want to reformat all Java files in the repository you can use the script [`reformat-java`](../scripts/dev/reformat-java):
 
@@ -379,47 +358,12 @@ If you want to reformat all Java files in the repository you can use the script 
 scripts/dev/reformat-java
 ```
 
-. To reformat specific files add a list of file paths after the command:
+To reformat specific files add a list of file paths after the command:
 
 ```sh
-# The command below reformats the file `cmake/CMakeLists.txt`.
-scripts/dev/reformat-java src/bindings/jna/libelektra4j/src/main/java/org/libelektra/KDB.java
+# The command below reformats the file `src/bindings/jna/libelektra/src/main/java/org/libelektra/KDB.java`.
+scripts/dev/reformat-java src/bindings/jna/libelektra/src/main/java/org/libelektra/KDB.java
 ```
-
-.
-
-###### TextMate
-
-The steps below show you how to create a [TextMate][] command that formats a documents with [`clang-format`][] every time you save it.
-
-1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
-2. Create a new command:
-   1. Press <kbd>⌘</kbd> + <kbd>N</kbd>
-   2. Select “Command”
-   3. Press the button “Create”
-3. Configure your new command
-
-   1. Use “Reformat Document” or a similar text as “Name”
-   2. Enter `source.java` in the field “Scope Selector”
-   3. Use <kbd>^</kbd> + <kbd>⇧</kbd> + <kbd>H</kbd> as “Key Equivalent”
-   4. Copy the text `callback.document.will-save` into the field “Semantic Class”
-   5. Select “Document” as “Input”
-   6. Select “Replace Input” in the dropdown menu for the option “Output”
-   7. Select “Line Interpolation” in the menu “Caret Placement”
-   8. Copy the following code into the text field:
-
-      ```sh
-      #!/bin/bash
-
-      if ! "${TM_CLANG_FORMAT:-clang-format}" \
-      	-style="${TM_CLANG_FORMAT_STYLE:-file}" \
-      	-assume-filename="${TM_FILEPATH}"; then
-      	. "$TM_SUPPORT_PATH/lib/bash_init.sh"
-      	exit_show_tool_tip
-      fi
-      ```
-
-   9. Save your new command: <kbd>⌘</kbd> + <kbd>S</kbd>
 
 ### JavaScript Guidelines
 
@@ -437,17 +381,13 @@ On macOS you can install [`prettier`][] using [Homebrew][]:
 brew install prettier
 ```
 
-.
-
 ###### General
 
 To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
 
 ```sh
-npm install --global prettier@1.19.1
+npm install --global prettier@2.3.2
 ```
-
-.
 
 ##### Usage
 
@@ -457,13 +397,11 @@ To format all JavaScript files in the repository you can use the script [`reform
 scripts/dev/reformat-javascript
 ```
 
-. To format only some files, please specify a list of filenames after the command:
+To format only some files, please specify a list of filenames after the command:
 
 ```sh
 scripts/dev/reformat-markdown src/tools/qt-gui/qml/ErrorDialogCreator.js # Reformat this file
 ```
-
-.
 
 ### Markdown Guidelines
 
@@ -487,8 +425,6 @@ that you can
 - enclose the Markdown code in `<!-- prettier-ignore-start -->` and `<!-- prettier-ignore-end -->` tags, or
 - use `<!-- prettier-ignore -->` to disable formatting till the end of a file
 
-.
-
 [`prettier`]: https://prettier.io
 
 ##### Installation
@@ -503,13 +439,11 @@ You can format all Markdown files in the repository using the script [`reformat-
 scripts/dev/reformat-markdown
 ```
 
-. To format only some files, please specify a list of filenames after the command:
+To format only some files, please specify a list of filenames after the command:
 
 ```sh
 scripts/dev/reformat-markdown doc/CODING.md # Reformat this file
 ```
-
-.
 
 ##### Tool Integration
 
@@ -567,25 +501,21 @@ You can install [`shfmt`] on macOS using [Homebrew][]:
 brew install shfmt
 ```
 
-.
-
 ###### General
 
 [shfmt’s GitHub release page](https://github.com/mvdan/sh/releases) offers binaries for various operating systems. For example, to install the binary for the current user on Linux you can use the following command:
 
 ```sh
 mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
-  curl -L "https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_linux_amd64" -o shfmt && \
+  curl -L "https://github.com/mvdan/sh/releases/download/v3.3.1/shfmt_v3.3.1_linux_amd64" -o shfmt && \
   chmod u+x shfmt
 ```
 
-. Please note that you have to make sure, that your `PATH` includes `$HOME/bin`, if you use the command above:
+Please note that you have to make sure, that your `PATH` includes `$HOME/bin`, if you use the command above:
 
 ```sh
 export PATH=$PATH:"$HOME/bin"
 ```
-
-.
 
 ##### Usage
 
@@ -595,13 +525,11 @@ We provide the script [`reformat-shell`](../scripts/dev/reformat-shell) that for
 scripts/dev/reformat-shell
 ```
 
-. You can also reformat specific files by listing filenames after the script:
+You can also reformat specific files by listing filenames after the script:
 
 ```sh
 scripts/dev/reformat-shell scripts/dev/reformat-shell # Reformat the source of `reformat-shell`
 ```
-
-.
 
 ##### Tool Integration
 
@@ -643,7 +571,7 @@ The steps below show you how to create a [TextMate][] command that formats a doc
 `doxygen` is used to document the API and to build the html and pdf output.
 We also support the import of Markdown pages. Doxygen 1.8.8 or later
 is required for this feature (Anyways you can find the
-[API Doc](https://doc.libelektra.org/api/latest/html/) online).
+[API Doc](https://doc.libelektra.org/api/master/html/) online).
 Links between Markdown files will be converted with the
 [Markdown Link Converter](/doc/markdownlinkconverter/README.md).
 **Markdown pages are used in the pdf, therefore watch which characters you use and
@@ -671,7 +599,7 @@ Note:
 
 - `@` `file` has _no_ parameters.
 - `@` `brief` should contain a short statement about the content of the file and is needed
-  so that your file gets listed at https://doc.libelektra.org/api/latest/html/files.html
+  so that your file gets listed at https://doc.libelektra.org/api/master/html/files.html
 
 The duplication of the filename, author and date is not needed, because
 this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.

@@ -5,10 +5,10 @@
 # @date 2019-08-20
 # @tags creator
 
-ourpath="user/elektra/merge/our"
-theirpath="user/elektra-cmerge/their"
-basepath="user/elektra-cmerge/base"
-resultpath="user/elektra-cmerge/result"
+ourpath="user:/elektra/merge/our"
+theirpath="user:/elektra-cmerge/their"
+basepath="user:/elektra-cmerge/base"
+resultpath="user:/elektra-cmerge/result"
 resultfile="elektra-cmerge_result"
 
 if [ "$#" -ne 4 ]; then

@@ -95,7 +95,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 {
 	MountBackendBuilder backend;
 
-	Key mpk (mp, KEY_CASCADING_NAME, KEY_END);
+	Key mpk (mp, KEY_END);
 
 	if (!mpk.isValid ())
 	{
@@ -113,7 +113,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 
 	backend.setMountpoint (mpk, mountConf);
 
-	backend.setBackendConfig (cl.getPluginsConfig ("system/"));
+	backend.setBackendConfig (cl.getPluginsConfig ("system:/"));
 
 	PluginSpec resolver (cl.resolver);
 	if (cl.debug)
@@ -215,7 +215,7 @@ void MountCommand::readPluginConfig (KeySet & pluginConfig)
 		cout << "Enter the Key value: ";
 		cin >> value;
 
-		pluginConfig.append (Key ("user/" + keyName, KEY_VALUE, value.c_str (), KEY_END));
+		pluginConfig.append (Key ("user:/" + keyName, KEY_VALUE, value.c_str (), KEY_END));
 	}
 }
 

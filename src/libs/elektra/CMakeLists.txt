@@ -65,7 +65,8 @@ if (BUILD_SHARED)
 		mount.c
 		split.c
 		trie.c
-		plugin.c)
+		plugin.c
+		contracts.c)
 	set (CORE_FILES ${SOURCES})
 	list (REMOVE_ITEM CORE_FILES ${KDB_FILES})
 	set (KDB_FILES ${KDB_FILES} ${HDR_FILES})
@@ -89,16 +90,11 @@ if (BUILD_SHARED)
 	set (elektra-all_LIBRARIES elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
 	set_target_properties (
 		${elektra-all_LIBRARIES}
-		PROPERTIES COMPILE_DEFINITIONS
-			   "HAVE_KDBCONFIG_H"
-			   VERSION
-			   ${KDB_VERSION}
-			   SOVERSION
-			   ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT
-			   1
-			   LINK_DEPENDS
-			   "${__symbols_file}")
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
+			   VERSION ${KDB_VERSION}
+			   SOVERSION ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT 1
+			   LINK_DEPENDS "${__symbols_file}")
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
@@ -113,7 +109,11 @@ if (BUILD_SHARED)
 	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 	set_target_properties (${elektra-all_LIBRARIES} PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
-	install (TARGETS elektra-core elektra-kdb DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+	install (
+		TARGETS elektra-core elektra-kdb
+		DESTINATION lib${LIB_SUFFIX}
+		EXPORT ElektraTargetsLibelektra
+		COMPONENT libelektra${SO_VERSION})
 
 	list (APPEND targets_built ${elektra-all_LIBRARIES})
 endif (BUILD_SHARED)
@@ -143,23 +143,21 @@ if (BUILD_FULL)
 
 	set_target_properties (
 		elektra-full
-		PROPERTIES COMPILE_DEFINITIONS
-			   "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-			   VERSION
-			   ${KDB_VERSION}
-			   SOVERSION
-			   ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT
-			   1
-			   LINKER_LANGUAGE
-			   CXX
-			   LINK_DEPENDS
-			   "${__symbols_file}")
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+			   VERSION ${KDB_VERSION}
+			   SOVERSION ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT 1
+			   LINKER_LANGUAGE CXX
+			   LINK_DEPENDS "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
-	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+	install (
+		TARGETS elektra-full
+		DESTINATION lib${LIB_SUFFIX}
+		EXPORT ElektraTargetsLibelektra
+		COMPONENT libelektra${SO_VERSION}-full)
 
 	list (APPEND targets_built elektra-full)
 endif (BUILD_FULL)
@@ -173,29 +171,30 @@ if (BUILD_STATIC)
 
 	set_target_properties (
 		elektra-static
-		PROPERTIES COMPILE_DEFINITIONS
-			   "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-			   VERSION
-			   ${KDB_VERSION}
-			   SOVERSION
-			   ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT
-			   1
-			   LINKER_LANGUAGE
-			   CXX
-			   LINK_DEPENDS
-			   "${__symbols_file}")
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+			   VERSION ${KDB_VERSION}
+			   SOVERSION ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT 1
+			   LINKER_LANGUAGE CXX
+			   LINK_DEPENDS "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
-	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+	install (
+		TARGETS elektra-static
+		DESTINATION lib${LIB_SUFFIX}
+		EXPORT ElektraTargetsLibelektra
+		COMPONENT libelektra${SO_VERSION})
 
 	list (APPEND targets_built elektra-static)
 endif (BUILD_STATIC)
 
 export (TARGETS ${targets_built} FILE "${CMAKE_CURRENT_BINARY_DIR}/ElektraTargetsLibelektra.cmake")
-install (EXPORT ElektraTargetsLibelektra DESTINATION "${TARGET_CMAKE_FOLDER}")
+install (
+	EXPORT ElektraTargetsLibelektra
+	DESTINATION "${TARGET_CMAKE_FOLDER}"
+	COMPONENT libelektra-dev)
 
 # if you want the same name for those 3 libraries, here is how to do it:
 # http://www.itk.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F

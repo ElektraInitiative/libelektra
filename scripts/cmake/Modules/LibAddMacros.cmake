@@ -10,15 +10,18 @@ endmacro (copy_file)
 # ~~~
 # Create a symlink for a plugin both in lib and at installation
 #
-# Parameter: PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+# Parameters:
+# - PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+# - JAVA: install symlink for Java in share/java
+# - otherwise: install symlink for normal libraries
 #
-# create_lib_symlink src dest - create a symbolic link from src -> dest
+# create_lib_symlink src dest component - create a symbolic link from src -> dest
 # ~~~
-macro (create_lib_symlink src dest)
+macro (create_lib_symlink src dest component)
 
 	cmake_parse_arguments (
 		ARG
-		"PLUGIN" # optional keywords
+		"PLUGIN;JAVA" # optional keywords
 		"" # one value keywords
 		"" # multi value keywords
 		${ARGN})
@@ -32,6 +35,8 @@ macro (create_lib_symlink src dest)
 
 	if (ARG_PLUGIN)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	elseif (ARG_JAVA)
+		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/java")
 	else ()
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
 	endif ()
@@ -52,11 +57,67 @@ macro (create_lib_symlink src dest)
 			WORKING_DIRECTORY \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}\"
 			RESULT_VARIABLE RET
 			)
+
+		# for uninstall:
+		file (APPEND \"${CMAKE_BINARY_DIR}/extra_install_manifest.txt\" \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest}\\n\")
+
 		if (RET)
 			message (WARNING \"Could not install symlink\")
 		endif ()
-		")
-endmacro (create_lib_symlink src dest)
+		"
+		COMPONENT "${component}")
+endmacro (
+	create_lib_symlink
+	src
+	dest
+	component)
+
+# ~~~
+# Create a symlink for man1 files at installation
+#
+# create_lib_symlink src dest component - create a symbolic link from src -> dest
+# ~~~
+macro (create_doc_symlink src dest component)
+
+	cmake_parse_arguments (
+		ARG
+		"" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN})
+
+	set (DOC_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/man/man1")
+
+	install (
+		CODE "
+		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${DOC_INSTALL_DIR}/${dest} -> ${src}\")
+		execute_process (COMMAND \"${CMAKE_COMMAND}\" -E make_directory
+			\"\$ENV{DESTDIR}${DOC_INSTALL_DIR}\"
+			RESULT_VARIABLE RET
+			)
+		if (RET)
+			message (WARNING \"Could not create directory\")
+		endif ()
+		execute_process (COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+			\"${src}\"
+			\"${dest}\"
+			WORKING_DIRECTORY \"\$ENV{DESTDIR}${DOC_INSTALL_DIR}\"
+			RESULT_VARIABLE RET
+			)
+
+		# for uninstall:
+		file (APPEND \"${CMAKE_BINARY_DIR}/extra_install_manifest.txt\" \"\$ENV{DESTDIR}${DOC_INSTALL_DIR}/${dest}\\n\")
+
+		if (RET)
+			message (WARNING \"Could not install symlink\")
+		endif ()
+		"
+		COMPONENT "${component}")
+endmacro (
+	create_doc_symlink
+	src
+	dest
+	component)
 
 # ~~~
 # Make a directory
@@ -136,9 +197,12 @@ macro (find_swig)
 			cmake_policy (SET CMP0078 OLD)
 		endif (POLICY CMP0078)
 
-		find_package (SWIG 3 QUIET)
+		find_package (SWIG 4 QUIET)
 		if (NOT SWIG_FOUND)
-			message (STATUS "Search for swig2 instead")
+			find_package (SWIG 3 QUIET)
+		endif ()
+
+		if (NOT SWIG_FOUND)
 			find_package (SWIG 2 QUIET)
 		endif ()
 
@@ -196,7 +260,10 @@ function (find_util util output_loc output_arg)
 		${output_arg}
 		${ARG_LOC}
 		PARENT_SCOPE)
-endfunction (find_util util output)
+endfunction (
+	find_util
+	util
+	output)
 
 # ~~~
 # - Adds all headerfiles of global include path to the given variable
@@ -263,8 +330,8 @@ endmacro (add_toolheaders)
 #
 # ~~~
 macro (remove_plugin name reason)
-	if (NOT ${reason} STREQUAL "silent")
-		message (STATUS "Exclude Plugin ${name} because ${reason}")
+	if (NOT "${reason}" STREQUAL "silent")
+		message (STATUS "Exclude plugin ${name} because ${reason}")
 	endif ()
 
 	if (ADDED_PLUGINS)
@@ -549,7 +616,7 @@ function (generate_manpage NAME)
 		cmake_parse_arguments (
 			ARG
 			"" # optional keywords
-			"SECTION;FILENAME" # one value keywords
+			"SECTION;FILENAME;COMPONENT;GENERATED_FROM" # one value keywords
 			"" # multi value keywords
 			${ARGN})
 
@@ -565,25 +632,43 @@ function (generate_manpage NAME)
 			set (MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
 		endif ()
 
-		set (MAN_PAGE_LOCATION "doc/man/man${SECTION}/${NAME}.${SECTION}")
+		if (ARG_GENERATED_FROM)
+			set (SOURCE_FILE ${ARG_GENERATED_FROM})
+		else ()
+			set (SOURCE_FILE ${MDFILE})
+		endif ()
+
+		if (ARG_COMPONENT)
+			set (HAS_COMPONENT ${ARG_COMPONENT})
+		else ()
+			set (HAS_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+		endif ()
+
+		set (MAN_PAGE_DIR "doc/man/man${SECTION}")
+		set (MAN_PAGE_LOCATION "${MAN_PAGE_DIR}/${NAME}.${SECTION}")
 		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
-		if (RONN_LOC)
+		find_program (RONN_LOC ronn)
+		find_package (Git)
+
+		if (RONN_LOC AND GIT_EXECUTABLE)
 			add_custom_command (
 				OUTPUT ${OUTFILE}
 				DEPENDS ${MDFILE}
 				COMMAND
-					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DIFF_COMMAND=${DIFF_COMMAND} -D
-					MDFILE=${MDFILE} -D MANPAGE=${OUTFILE} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
+					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D GIT_COMMAND=${GIT_EXECUTABLE} -D
+					MDFILE=${MDFILE} -D SOURCE_FILE=${SOURCE_FILE} -D MANPAGE=${OUTFILE} -P
+					${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake
+				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
-		endif (RONN_LOC)
+		endif (RONN_LOC AND GIT_EXECUTABLE)
 
 		if (NOT EXISTS "${OUTFILE}")
 			message (
 				WARNING
 					"\nThe file “${MAN_PAGE_LOCATION}” does currently not exist. \
-If you have not done so already, please install `ronn`. \
+If you have not done so already, please install `ronn-ng` and `git`. \
 Afterwards make sure you set the CMake option `BUILD_DOCUMENTATION` to ON, \
 and generate “${NAME}.${SECTION}” using the current build system (${CMAKE_GENERATOR}). \
 After that please commit the file ${MAN_PAGE_LOCATION}. \
@@ -591,7 +676,16 @@ If you do not add this file, then installing Elektra will fail!\n")
 		endif (NOT EXISTS "${OUTFILE}")
 
 		if (INSTALL_DOCUMENTATION)
-			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION})
+			install (
+				FILES ${OUTFILE}
+				DESTINATION share/man/man${SECTION}
+				COMPONENT "${HAS_COMPONENT}")
+
+			if (BUILD_STATIC)
+				if (SECTION EQUAL 1)
+					create_doc_symlink ("kdb.${SECTION}" "kdb-static.${SECTION}" "${HAS_COMPONENT}")
+				endif ()
+			endif ()
 		endif ()
 	endif (BUILD_DOCUMENTATION)
 endfunction ()
@@ -629,11 +723,12 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	string (REGEX REPLACE "\"" "\\\\\"" contents "${contents}")
 	string (REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
 	string (REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			      "keyNew(\"system:/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX
+		REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\""
+			"keyNew(\"system:/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX REPLACE "\"- +infos/author *= *([^\\\\]*)\\\\n\""
-			      "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			      "keyNew(\"system:/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 
 	string (REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
 	string (REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")
@@ -643,44 +738,45 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	string (
 		REGEX
 		REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END)," contents
+			"keyNew(\"system:/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END)," contents
 			"${contents}")
 
 	string (REGEX
 		REPLACE "\"- +infos/placements *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/stacking *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/stacking\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/stacking\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			      "keyNew(\"system:/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	if (p STREQUAL ${KDB_DEFAULT_STORAGE} OR p STREQUAL KDB_DEFAULT_RESOLVER)
 		string (
 			REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
-				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END)," contents
+				"keyNew(\"system:/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END)," contents
 				"${contents}")
 	else ()
 		string (
 			REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
-				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1\", KEY_END)," contents
+				"keyNew(\"system:/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1\", KEY_END)," contents
 				"${contents}")
 	endif ()
 	string (REGEX
 		REPLACE "\"- +infos/metadata *= *([/#a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	string (REGEX
+		REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\""
+			"keyNew(\"system:/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\""
-			"keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}"
+			"keyNew(\"system:/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}"
 	)# allow macros:
 	string (REGEX REPLACE "\" *#ifdef ([^\\]*)\\\\n\"" "#ifdef \\1" contents "${contents}")
 	string (REGEX REPLACE "\" *#ifndef ([^\\]*)\\\\n\"" "#ifndef \\1" contents "${contents}")

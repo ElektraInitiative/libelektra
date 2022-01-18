@@ -1,2 +1,3 @@
 file (GLOB SOURCES *.c)
-add_lib (ease SOURCES ${SOURCES})
+file (GLOB HEADERS *.h)
+add_lib (ease SOURCES ${SOURCES} ${HEADERS} COMPONENT libelektra${SO_VERSION})

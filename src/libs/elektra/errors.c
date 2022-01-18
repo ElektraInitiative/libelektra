@@ -41,48 +41,46 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 		return;
 	}
 
-	char buffer[25] = "warnings/#00";
-	buffer[12] = '\0';
+	char buffer[64] = "warnings/#0\0\0\0";
 	const Key * meta = keyGetMeta (key, "warnings");
-	if (meta)
+	const char * old = meta == NULL ? NULL : keyString (meta);
+	char * end = &buffer[11];
+	if (old && strcmp (old, "#_99") < 0)
 	{
-		buffer[10] = keyString (meta)[0];
-		buffer[11] = keyString (meta)[1];
-		buffer[11]++;
-		if (buffer[11] > '9')
+		int i = old[1] == '_' ? ((old[2] - '0') * 10 + (old[3] - '0')) : (old[1] - '0');
+		i = (i + 1) % 100;
+
+		if (i < 10)
 		{
-			buffer[11] = '0';
-			buffer[10]++;
-			if (buffer[10] > '9') buffer[10] = '0';
+			buffer[10] = '0' + i;
+			end = &buffer[11];
 		}
-		keySetMeta (key, "warnings", &buffer[10]);
+		else
+		{
+			buffer[10] = '_';
+			buffer[11] = '0' + (i / 10);
+			buffer[12] = '0' + (i % 10);
+			end = &buffer[13];
+		}
 	}
-	else
-		keySetMeta (key, "warnings", "00");
+	keySetMeta (key, "warnings", &buffer[9]);
 
 	keySetMeta (key, buffer, "number description  module file line mountpoint configfile reason");
-	strcat (buffer, "/number");
+	strcpy (end, "/number");
 	keySetMeta (key, buffer, code);
-	buffer[12] = '\0';
-	strcat (buffer, "/description");
+	strcpy (end, "/description");
 	keySetMeta (key, buffer, name);
-	buffer[12] = '\0';
-	strcat (buffer, "/module");
+	strcpy (end, "/module");
 	keySetMeta (key, buffer, module);
-	buffer[12] = '\0';
-	strcat (buffer, "/file");
+	strcpy (end, "/file");
 	keySetMeta (key, buffer, file);
-	buffer[12] = '\0';
-	strcat (buffer, "/line");
+	strcpy (end, "/line");
 	keySetMeta (key, buffer, line);
-	buffer[12] = '\0';
-	strcat (buffer, "/mountpoint");
+	strcpy (end, "/mountpoint");
 	keySetMeta (key, buffer, keyName (key));
-	buffer[12] = '\0';
-	strcat (buffer, "/configfile");
+	strcpy (end, "/configfile");
 	keySetMeta (key, buffer, keyString (key));
-	buffer[12] = '\0';
-	strcat (buffer, "/reason");
+	strcpy (end, "/reason");
 	char * reason = elektraVFormat (reasonFmt, va);
 	keySetMeta (key, buffer, reason);
 	elektraFree (reason);
@@ -150,33 +148,34 @@ DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
 
 KeySet * elektraErrorSpecification (void)
 {
-	return ksNew (30, keyNew ("system/elektra/modules/error/specification", KEY_VALUE, "the specification of all error codes", KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_RESOURCE, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_RESOURCE "/description", KEY_VALUE,
+	return ksNew (30,
+		      keyNew ("system:/elektra/modules/error/specification", KEY_VALUE, "the specification of all error codes", KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_RESOURCE, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_RESOURCE "/description", KEY_VALUE,
 			      ELEKTRA_ERROR_CODE_RESOURCE_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_OUT_OF_MEMORY, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_OUT_OF_MEMORY "/description", KEY_VALUE,
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_OUT_OF_MEMORY, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_OUT_OF_MEMORY "/description", KEY_VALUE,
 			      ELEKTRA_ERROR_CODE_OUT_OF_MEMORY_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INSTALLATION, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INSTALLATION "/description", KEY_VALUE,
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INSTALLATION, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INSTALLATION "/description", KEY_VALUE,
 			      ELEKTRA_ERROR_CODE_INSTALLATION_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERNAL, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERNAL "/description", KEY_VALUE,
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERNAL, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERNAL "/description", KEY_VALUE,
 			      ELEKTRA_ERROR_CODE_INTERNAL_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERFACE, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERFACE "/description", KEY_VALUE,
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERFACE, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERFACE "/description", KEY_VALUE,
 			      ELEKTRA_ERROR_CODE_INTERFACE_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR "/description", KEY_VALUE,
-			      ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_CONFLICTING_STATE, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_CONFLICTING_STATE "/description", KEY_VALUE,
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR "/description",
+			      KEY_VALUE, ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR_NAME, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_CONFLICTING_STATE, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_CONFLICTING_STATE "/description", KEY_VALUE,
 			      ELEKTRA_ERROR_CODE_CONFLICTING_STATE_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC "/description",
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC "/description",
 			      KEY_VALUE, ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC_NAME, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC, KEY_END),
-		      keyNew ("system/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC "/description",
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC, KEY_END),
+		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC "/description",
 			      KEY_VALUE, ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME, KEY_END),
 		      KS_END);
 }

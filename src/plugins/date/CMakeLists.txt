@@ -11,4 +11,4 @@ endif (DEPENDENCY_PHASE)
 add_plugin (
 	date
 	SOURCES date.h date.c
-	ADD_TEST)
+	ADD_TEST COMPONENT libelektra${SO_VERSION}-extra)

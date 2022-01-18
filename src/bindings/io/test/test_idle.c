@@ -23,21 +23,21 @@
 #define IDLE_DIFF_WARNING_THRESHOLD 5
 #define IDLE_DIFF_ERROR_THRESHOLD (IDLE_DIFF_WARNING_THRESHOLD * 100)
 
-ElektraIoTestSuiteStop testStop;
+static ElektraIoTestSuiteStop testStop;
 
-int testCallbackCalled;
-struct timespec testCallbackTimeStarted;
-struct timespec testCallbackTimeCalled;
+static int testCallbackCalled;
+static struct timespec testCallbackTimeStarted;
+static struct timespec testCallbackTimeCalled;
 
-int testUpdateEnabledControlCalled;
-int testUpdateEnabledProbeCalled;
-ElektraIoIdleOperation * testUpdateEnabledIdleProbe;
-ElektraIoInterface * testUpdateEnabledBinding;
+static int testUpdateEnabledControlCalled;
+static int testUpdateEnabledProbeCalled;
+static ElektraIoIdleOperation * testUpdateEnabledIdleProbe;
+static ElektraIoInterface * testUpdateEnabledBinding;
 
-int testRemoveControlCalled;
-int testRemoveProbeCalled;
-ElektraIoIdleOperation * testRemoveIdleProbe;
-ElektraIoInterface * testRemoveBinding;
+static int testRemoveControlCalled;
+static int testRemoveProbeCalled;
+static ElektraIoIdleOperation * testRemoveIdleProbe;
+static ElektraIoInterface * testRemoveBinding;
 
 static void testIdleBasicsCallback (ElektraIoIdleOperation * idleOp ELEKTRA_UNUSED)
 {

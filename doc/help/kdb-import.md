@@ -23,14 +23,7 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
 Conflicts can occur when importing a configuration to a part of the database where keys already exist.
 Conflicts when importing can be resolved using a strategy with the `-s` argument.
 
-Specific to `kdb import` the following strategy exists:
-
-- `validate`:
-  apply metadata as received from base, and then cut+append all keys as imported.
-  If the appended keys do not have a namespace, the namespace given by `-N`
-  is added.
-
-The other strategies are implemented by the merge framework and are documented in
+The strategies implemented by the merge framework are documented in
 [elektra-merge-strategy(7)](elektra-merge-strategy.md).
 
 ## OPTIONS
@@ -51,9 +44,6 @@ The other strategies are implemented by the merge framework and are documented i
   Give debug information. Prints additional debug information in case of errors/warnings.
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
-- `-N`, `--namespace <namespace>`:
-  Specify the namespace to use when writing cascading keys (`validate` strategy only).
-  See [below in KDB](#KDB).
 
 ## KDB
 
@@ -63,52 +53,47 @@ The other strategies are implemented by the merge framework and are documented i
 - `/sw/elektra/kdb/#0/current/format`
   Change default format (if none is given at commandline) and built-in default is not your preferred format.
 
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is user, except `kdb` is used as root, then `system`
-  is the default (`validate` strategy only).
-
 ## EXAMPLES
 
-To import a configuration stored in the XML format in a file called `example.xml` below `user/keyset`:<br>
-`kdb import user/keyset xmltool < example.xml`
+To import a configuration stored in the XML format in a file called `example.xml` below `user:/keyset`:<br>
+`kdb import user:/keyset xmltool < example.xml`
 
-To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` replacing any previous keys stored there:<br>
-`cat example.ini | kdb import -s cut user/keyset ini`
+To import a configuration stored in the `ini` format in a file called `example.ini` below `user:/keyset` replacing any previous keys stored there:<br>
+`cat example.ini | kdb import -s cut user:/keyset ini`
 
-To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` keeping any previous keys stored there that aren't present in the newly imported configuration:<br>
-`cat example.ini | kdb import -s import user/keyset ini`
+To import a configuration stored in the `ini` format in a file called `example.ini` below `user:/keyset` keeping any previous keys stored there that aren't present in the newly imported configuration:<br>
+`cat example.ini | kdb import -s import user:/keyset ini`
 
-To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:<br>
-`cat sw.ecf | kdb import system/sw`
+To restore a backup (stored as `sw.ecf`) of a user's configuration below `system:/sw`:<br>
+`cat sw.ecf | kdb import system:/sw`
 
 To import a sample `xml` content with the `xerces` plugin:
 
 ```sh
 # import two keys from a xml string
-kdb import user/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+kdb import user:/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb-import/one
+kdb get user:/tests/kdb-import/one
 #> one
-kdb get user/tests/kdb-import/two
+kdb get user:/tests/kdb-import/two
 #> two
-kdb rm -r user/tests/kdb-import
+kdb rm -r user:/tests/kdb-import
 ```
 
 To import a sample `xml` content via specifying the file format directly:
 
 ```sh
 # import two keys from a xml string
-kdb import user/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+kdb import user:/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb-import/one
+kdb get user:/tests/kdb-import/one
 #> one
-kdb get user/tests/kdb-import/two
+kdb get user:/tests/kdb-import/two
 #> two
 
-kdb rm -r user/tests/kdb-import
+kdb rm -r user:/tests/kdb-import
 ```
 
 ## SEE ALSO

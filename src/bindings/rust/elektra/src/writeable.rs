@@ -21,10 +21,10 @@ pub trait WriteableKey: ReadableKey {
     /// # use elektra_sys;
     /// # use std::ffi::CString;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = StringKey::new("user/test/key")?;
+    /// let mut key = StringKey::new("user:/test/key")?;
     /// let cstr = CString::new("newbasename").unwrap();
     /// let ret_val = unsafe { elektra_sys::keySetBaseName(key.as_ptr(), cstr.as_ptr()) };
-    /// assert_eq!(key.name(), "user/test/newbasename");
+    /// assert_eq!(key.name(), "user:/test/newbasename");
     /// #
     /// #     Ok(())
     /// # }
@@ -61,7 +61,7 @@ pub trait WriteableKey: ReadableKey {
         Ok(key)
     }
 
-    /// Construct a new nameless key.
+    /// Construct a new key with name "/".
     /// 
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
@@ -69,7 +69,8 @@ pub trait WriteableKey: ReadableKey {
     where
         Self: Sized,
     {
-        let key_ptr = unsafe { elektra_sys::keyNew(std::ptr::null()) };
+        let cstr = CString::new("/").unwrap();
+        let key_ptr = unsafe { elektra_sys::keyNew(cstr.as_ptr(), elektra_sys::KEY_END) };
         unsafe { Self::from_ptr(key_ptr) }
     }
 
@@ -87,23 +88,23 @@ pub trait WriteableKey: ReadableKey {
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key2;
     /// {
-    ///     let mut key = StringKey::new("user/test/language")?;
+    ///     let mut key = StringKey::new("user:/test/language")?;
     ///     unsafe { key.inc_ref(); }
     ///     key2 = unsafe { StringKey::from_ptr(key.as_ptr()) };
     /// } // <- key is dropped here, but key2 can still be used
-    /// assert_eq!(key2.name(), "user/test/language");
+    /// assert_eq!(key2.name(), "user:/test/language");
     /// // Forgetting to call this method would leak memory.
     /// unsafe { key2.dec_ref(); }
     /// #     Ok(())
     /// # }
     /// ```
-    unsafe fn inc_ref(&mut self) -> isize {
+    unsafe fn inc_ref(&mut self) -> u16 {
         elektra_sys::keyIncRef(self.as_ptr())
     }
 
     /// Decrement the viability of a key object.
     /// Returns the value of the new reference counter.
-    unsafe fn dec_ref(&mut self) -> isize {
+    unsafe fn dec_ref(&mut self) -> u16 {
         elektra_sys::keyDecRef(self.as_ptr())
     }
 
@@ -125,8 +126,8 @@ pub trait WriteableKey: ReadableKey {
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut key = StringKey::new_empty();
-    /// key.set_name("user/test/rust")?;
-    /// assert_eq!(key.name(), "user/test/rust");
+    /// key.set_name("user:/test/rust")?;
+    /// assert_eq!(key.name(), "user:/test/rust");
     /// #
     /// #     Ok(())
     /// # }
@@ -153,9 +154,9 @@ pub trait WriteableKey: ReadableKey {
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = StringKey::new("user/test/key")?;
+    /// let mut key = StringKey::new("user:/test/key")?;
     /// key.set_basename("rust")?;
-    /// assert_eq!(key.name(), "user/test/rust");
+    /// assert_eq!(key.name(), "user:/test/rust");
     /// #
     /// #     Ok(())
     /// # }
@@ -180,9 +181,9 @@ pub trait WriteableKey: ReadableKey {
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = StringKey::new("user/test/key")?;
+    /// let mut key = StringKey::new("user:/test/key")?;
     /// key.add_basename("rust")?;
-    /// assert_eq!(key.name(), "user/test/key/rust");
+    /// assert_eq!(key.name(), "user:/test/key/rust");
     /// #
     /// #     Ok(())
     /// # }
@@ -207,9 +208,9 @@ pub trait WriteableKey: ReadableKey {
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = StringKey::new("user/x/r").unwrap();
+    /// let mut key = StringKey::new("user:/x/r").unwrap();
     /// key.add_name("../y/a//././z").unwrap();
-    /// assert_eq!(key.name(), "user/x/y/a/z");
+    /// assert_eq!(key.name(), "user:/x/y/a/z");
     /// #
     /// #     Ok(())
     /// # }
@@ -234,8 +235,8 @@ pub trait WriteableKey: ReadableKey {
     /// # use std::error::Error;
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = StringKey::new("user/test/mykey")?;
-    /// let mut key2 = StringKey::new("user/test/mykey")?;
+    /// let mut key = StringKey::new("user:/test/mykey")?;
+    /// let mut key2 = StringKey::new("user:/test/mykey")?;
     /// key.set_meta("rusty", "metal");
     /// key2.copy_all_meta(&key);
     /// assert_eq!(key.meta("rusty")?.value(), "metal");

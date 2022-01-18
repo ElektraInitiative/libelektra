@@ -14,21 +14,21 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
+using ckdb::Key;
+using ckdb::KeySet;
+using ckdb::Plugin;
 #include <tests.h>
 #include <tests.hpp>
 
 using ckdb::keyNew;
 
-using CppKeySet = kdb::KeySet;
-using CppKey = kdb::Key;
-
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
-	CppKeySet modules{ 0, KS_END };                                                                                                    \
-	CppKeySet config{ 0, KS_END };                                                                                                     \
+	kdb::KeySet modules{ 0, KS_END };                                                                                                  \
+	kdb::KeySet config{ 0, KS_END };                                                                                                   \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
+	kdb::Key parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                       \
 	Plugin * plugin = elektraPluginOpen ("yamlcpp", modules.getKeySet (), config.getKeySet (), *parent);                               \
 	exit_if_fail (plugin != NULL, "Could not open yamlcpp plugin")
 
@@ -39,57 +39,46 @@ using CppKey = kdb::Key;
 	config.release ()
 
 /* We use this prefix in all header files that contain test data. */
-#define PREFIX "user/examples/yamlcpp/"
+#define PREFIX "user:/examples/yamlcpp/"
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-TEST (yamlcpp, contract)
+TEST (yamlcpp, contract) //! OCLint (avoid private static members)
+#ifdef __llvm__
+__attribute__ ((annotate ("oclint:suppress[too few branches in switch statement]"), annotate ("oclint:suppress[empty if statement]")))
+#endif
 {
-	OPEN_PLUGIN ("system/elektra/modules/yamlcpp", "file/path");
+	OPEN_PLUGIN ("system:/elektra/modules/yamlcpp", "file/path");
 
-	CppKeySet keys;
+	kdb::KeySet keys;
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 "Unable to retrieve plugin contract");
 
 	CLOSE_PLUGIN ();
 }
 
-void update_parent (CppKeySet expected, string const filepath)
-{
-	// We replace the value of the parent key of expected keyset, if the header file specifies the value @CONFIG_FILEPATH@.
-	// We could also do that via CMake, but the current solution should be easier for now.
-	CppKey root = expected.lookup (PREFIX, KDB_O_POP);
-	if (root)
-	{
-		if (root.getString () == "@CONFIG_FILEPATH@") root.setString (filepath);
-		expected.append (root);
-	}
-}
-
-static void test_read (string const & filename, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+static void test_read (string const & filename, kdb::KeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
 	string filepath = srcdir_file (filename.c_str ());
-	update_parent (expected, filepath);
 
 	OPEN_PLUGIN (PREFIX, filepath.c_str ());
 
-	CppKeySet keys;
+	kdb::KeySet keys;
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, parent.getMeta<string> ("error/reason"));
 	compare_keyset (keys, expected);
 
 	CLOSE_PLUGIN ();
 }
 
-static void test_write_read (CppKeySet expected)
+static void test_write_read (kdb::KeySet expected)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
 	string filepath = elektraFilename ();
-	update_parent (expected, filepath);
 
 	OPEN_PLUGIN (PREFIX, filepath.c_str ());
 
@@ -98,7 +87,7 @@ static void test_write_read (CppKeySet expected)
 			 parent.getMeta<string> ("error/reason"));
 
 	// Read written data
-	CppKeySet keySetRead;
+	kdb::KeySet keySetRead;
 	succeed_if_same (plugin->kdbGet (plugin, keySetRead.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 parent.getMeta<string> ("error/reason"));
 
@@ -109,59 +98,59 @@ static void test_write_read (CppKeySet expected)
 	CLOSE_PLUGIN ();
 }
 
-TEST (yamlcpp, flat)
+TEST (yamlcpp, flat) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/flat_block_mapping.yaml",
-#include "yamlcpp/flat_block_mapping.h"
+#include "yamlcpp/flat_block_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/flat_block_mapping.h"
+#include "yamlcpp/flat_block_mapping.hpp"
 	);
 
 	test_read ("yamlcpp/flat_flow_mapping.yaml",
-#include "yamlcpp/flat_flow_mapping.h"
+#include "yamlcpp/flat_flow_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/flat_flow_mapping.h"
+#include "yamlcpp/flat_flow_mapping.hpp"
 	);
 }
 
-TEST (yamlcpp, nested)
+TEST (yamlcpp, nested) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/nested_block_mapping.yaml",
-#include "yamlcpp/nested_block_mapping.h"
+#include "yamlcpp/nested_block_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/nested_block_mapping.h"
+#include "yamlcpp/nested_block_mapping.hpp"
 	);
 	test_read ("yamlcpp/nested_mixed_mapping.yaml",
-#include "yamlcpp/nested_mixed_mapping.h"
+#include "yamlcpp/nested_mixed_mapping.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/nested_mixed_mapping.h"
+#include "yamlcpp/nested_mixed_mapping.hpp"
 	);
 }
 
-TEST (yamlcpp, array)
+TEST (yamlcpp, array) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/simple_sequence.yaml",
-#include "yamlcpp/simple_sequence.h"
+#include "yamlcpp/simple_sequence.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/simple_sequence.h"
+#include "yamlcpp/simple_sequence.hpp"
 	);
 
 	test_read ("yamlcpp/nested_sequences.yaml",
-#include "yamlcpp/nested_sequences.h"
+#include "yamlcpp/nested_sequences.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/nested_sequences.h"
+#include "yamlcpp/nested_sequences.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/mapping_with_array_key.h"
+#include "yamlcpp/mapping_with_array_key.hpp"
 	);
 	test_write_read (
-#include "yamlcpp/mixed.h"
+#include "yamlcpp/mixed.hpp"
 	);
 }
 

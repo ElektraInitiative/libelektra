@@ -64,7 +64,7 @@
  *
  * - *handle*, as returned by kdbOpen(), need to be passed to every call
  * - *parentKey* is used for every call to add warnings and set an
- *   error. For kdbGet() / kdbSet() it is used to give an hint which keys
+ *   error. For kdbGet() / kdbSet() it is used to specify which keys
  *   should be retrieved/stored.
  *
  * @note The parentKey is an obligation for you, but only an hint for KDB.
@@ -171,7 +171,7 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 
 	while ((cur = ksPop (config)) != 0)
 	{
-		Key * dupKey = keyDup (cur);
+		Key * dupKey = keyDup (cur, KEY_CP_ALL);
 		keySetName (dupKey, name);
 		keyAddName (dupKey, keyName (cur) + rootSize - 1);
 		ksAppendKey (newConfig, dupKey);
@@ -206,66 +206,187 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 	keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
 	keySetString (errorKey, "kdbOpen(): get");
 
-	int funret = 1;
-	int ret = kdbGet (handle, keys, errorKey);
-	int fallbackret = 0;
-	if (ret == 0 || ret == -1)
-	{
-		// could not get KDB_DB_INIT, try KDB_DB_FILE
-		// first cleanup:
-		ksClear (keys);
-		backendClose (handle->defaultBackend, errorKey);
-		splitDel (handle->split);
-
-		// then create new setup:
-		handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_FILE, errorKey);
-		if (!handle->defaultBackend)
-		{
-			elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
-			return -1;
-		}
-		handle->split = splitNew ();
-		splitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
-
-		keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
-		keySetString (errorKey, "kdbOpen(): get fallback");
-		fallbackret = kdbGet (handle, keys, errorKey);
-		keySetName (errorKey, "system/elektra/mountpoints");
-
-		KeySet * cutKeys = ksCut (keys, errorKey);
-		if (fallbackret == 1 && ksGetSize (cutKeys) != 0)
-		{
-			funret = 2;
-		}
-		ksAppend (keys, cutKeys);
-		ksDel (cutKeys);
-	}
-
-	if (ret == -1 && fallbackret == -1)
-	{
-		funret = 0;
-	}
-
+	int funret = kdbGet (handle, keys, errorKey) != -1;
 	elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
 	return funret;
 }
 
+/**
+ * Checks whether the same instance of the list plugin is mounted in the global (maxonce) positions:
+ *
+ * pregetstorage, procgetstorage, postgetstorage, postgetcleanup,
+ * presetstorage, presetcleanup, precommit, postcommit,
+ * prerollback and postrollback
+ *
+ * @param handle the KDB handle to check
+ * @param errorKey used for error reporting
+ *
+ * @retval 1 if list is mounted everywhere
+ * @retval 0 otherwise
+ */
+static int ensureListPluginMountedEverywhere (KDB * handle, Key * errorKey)
+{
+	GlobalpluginPositions expectedPositions[] = { PREGETSTORAGE,
+						      PROCGETSTORAGE,
+						      POSTGETSTORAGE,
+						      POSTGETCLEANUP,
+						      PRESETSTORAGE,
+						      PRESETCLEANUP,
+						      PRECOMMIT,
+						      POSTCOMMIT,
+						      PREROLLBACK,
+						      POSTROLLBACK,
+						      -1 };
+
+	Plugin * list = handle->globalPlugins[expectedPositions[0]][MAXONCE];
+	if (list == NULL || elektraStrCmp (list->name, "list") != 0)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "list plugin not mounted at position %s/maxonce",
+						 GlobalpluginPositionsStr[expectedPositions[0]]);
+		return 0;
+	}
+
+	for (int i = 1; expectedPositions[i] > 0; ++i)
+	{
+		Plugin * plugin = handle->globalPlugins[expectedPositions[i]][MAXONCE];
+		if (plugin != list)
+		{
+			// must always be the same instance
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "list plugin not mounted at position %s/maxonce",
+							 GlobalpluginPositionsStr[expectedPositions[i]]);
+			return 0;
+		}
+	}
+
+	return 1;
+}
 
 /**
- * @brief Opens the session with the Key database.
+ * Handles the system:/elektra/contract/globalkeyset part of kdbOpen() contracts
+ *
+ * NOTE: @p contract will be modified
+ *
+ * @see kdbOpen()
+ */
+static void ensureContractGlobalKs (KDB * handle, KeySet * contract)
+{
+	Key * globalKsContractRoot = keyNew ("system:/elektra/contract/globalkeyset", KEY_END);
+	Key * globalKsRoot = keyNew ("system:/elektra", KEY_END);
+
+	KeySet * globalKs = ksCut (contract, globalKsContractRoot);
+
+	ksRename (globalKs, globalKsContractRoot, globalKsRoot);
+
+	ksAppend (handle->global, globalKs);
+
+	ksDel (globalKs);
+	keyDel (globalKsContractRoot);
+	keyDel (globalKsRoot);
+}
+
+/**
+ * Handles the system:/elektra/contract/mountglobal part of kdbOpen() contracts
+ *
+ * NOTE: @p contract will be modified
+ *
+ * @see kdbOpen()
+ */
+static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * parentKey)
+{
+	if (!ensureListPluginMountedEverywhere (handle, parentKey))
+	{
+		return -1;
+	}
+
+	Plugin * listPlugin = handle->globalPlugins[PREGETSTORAGE][MAXONCE];
+	typedef int (*mountPluginFun) (Plugin *, const char *, KeySet *, Key *);
+	mountPluginFun listAddPlugin = (mountPluginFun) elektraPluginGetFunction (listPlugin, "mountplugin");
+	typedef int (*unmountPluginFun) (Plugin *, const char *, Key *);
+	unmountPluginFun listRemovePlugin = (unmountPluginFun) elektraPluginGetFunction (listPlugin, "unmountplugin");
+
+
+	Key * mountContractRoot = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
+	Key * pluginConfigRoot = keyNew ("user:/", KEY_END);
+
+	for (elektraCursor it = ksFindHierarchy (contract, mountContractRoot, NULL); it < ksGetSize (contract); it++)
+	{
+		Key * cur = ksAtCursor (contract, it);
+		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
+		{
+			const char * pluginName = keyBaseName (cur);
+			KeySet * pluginConfig = ksCut (contract, cur);
+
+			// increment ref count, because cur is part of pluginConfig and
+			// we hold a reference to cur that is still needed (via pluginName)
+			keyIncRef (cur);
+			ksRename (pluginConfig, cur, pluginConfigRoot);
+
+			int ret = listRemovePlugin (listPlugin, pluginName, parentKey);
+			if (ret != ELEKTRA_PLUGIN_STATUS_ERROR)
+			{
+				ret = listAddPlugin (listPlugin, pluginName, pluginConfig, parentKey);
+			}
+
+			// we ned to delete cur separately, because it was ksCut() from contract
+			// we also need to decrement the ref count, because it was incremented above
+			keyDecRef (cur);
+			keyDel (cur);
+
+			if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
+			{
+				ELEKTRA_SET_INSTALLATION_ERRORF (
+					parentKey, "The plugin '%s' couldn't be mounted globally (via the 'list' plugin).", pluginName);
+				return -1;
+			}
+
+			// adjust cursor, because we removed the current key
+			--it;
+		}
+	}
+
+	keyDel (mountContractRoot);
+	keyDel (pluginConfigRoot);
+
+	return 0;
+}
+
+/**
+ * Handles the @p contract argument of kdbOpen().
+ *
+ * @see kdbOpen()
+ */
+static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
+{
+	// TODO: tests
+	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
+	KeySet * dup = ksDeepDup (contract);
+
+	ensureContractGlobalKs (handle, dup);
+	int ret = ensureContractMountGlobal (handle, dup, parentKey);
+
+	ksDel (dup);
+
+	return ret;
+}
+
+
+/**
+ * Opens the session with the Key database.
  *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
- * The method will bootstrap itself the following way.
- * The first step is to open the default backend. With it
- * system/elektra/mountpoints will be loaded and all needed
- * libraries and mountpoints will be determined.
- * These libraries for backends will be loaded and with it the
- * @p KDB data structure will be initialized.
- *
  * You must always call this method before retrieving or committing any
- * keys to the database. In the end of the program,
- * after using the key database, you must not forget to kdbClose().
+ * keys to the database. At the end of a program, after using the Key database (KDB),
+ * you must not forget to call kdbClose() to free resources.
+ *
+ * The method will bootstrap itself in the following way.
+ * The first step is to open the default backend. With it
+ * `system:/elektra/mountpoints` will be loaded and all needed
+ * libraries and mountpoints will be determined.
+ * Then the global plugins and global keyset data from the @p contract
+ * is processed.
+ * Finally, the libraries for backends will be loaded and with it the
+ * @p KDB data structure will be initialized.
  *
  * The pointer to the @p KDB structure returned will be initialized
  * like described above, and it must be passed along on any kdb*()
@@ -281,17 +402,23 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
  *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
+ * @param contract the contract that should be ensured before opening the KDB
+ *                 all data is copied and the KeySet can safely be used for
+ *                 e.g. kdbGet() later
  * @param errorKey the key which holds errors and warnings which were issued
- * @see kdbGet(), kdbClose() to end all affairs to the key database.
- * @retval handle on success
+ *
+ * @return handle to the newly created KDB on success
  * @retval NULL on failure
+ *
+ * @since 1.0.0
  * @ingroup kdb
+ * @see kdbClose() to close the session of a Key database opened by kdbOpen()
  */
-KDB * kdbOpen (Key * errorKey)
+KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 {
 	if (!errorKey)
 	{
-		ELEKTRA_LOG ("no error key passed");
+		ELEKTRA_LOG ("no parent key passed");
 		return 0;
 	}
 
@@ -299,9 +426,10 @@ KDB * kdbOpen (Key * errorKey)
 
 	int errnosave = errno;
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
-	Key * initialParent = keyDup (errorKey);
+	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 
 	handle->global = ksNew (0, KS_END);
+	ksAppendKey (handle->global, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END));
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, errorKey) == -1)
 	{
@@ -358,6 +486,7 @@ KDB * kdbOpen (Key * errorKey)
 
 	backendClose (handle->defaultBackend, errorKey);
 	splitDel (handle->split);
+	handle->split = 0;
 	handle->defaultBackend = 0;
 	handle->trie = 0;
 
@@ -372,6 +501,24 @@ KDB * kdbOpen (Key * errorKey)
 		ELEKTRA_LOG_DEBUG ("config for createTrie name: %s value: %s", keyName (key), keyString (key));
 	}
 #endif
+
+	if (contract != NULL)
+	{
+		keySetString (errorKey, "kdbOpen(): ensureContract");
+
+		if (ensureContract (handle, contract, errorKey) != 0)
+		{
+			// error is set by ensureContract
+			keySetString (errorKey, "kdbOpen(): close");
+			kdbClose (handle, errorKey);
+
+			keySetName (errorKey, keyName (initialParent));
+			keySetString (errorKey, keyString (initialParent));
+			keyDel (initialParent);
+			errno = errnosave;
+			return 0;
+		}
+	}
 
 	handle->split = splitNew ();
 
@@ -409,6 +556,7 @@ KDB * kdbOpen (Key * errorKey)
 	keySetString (errorKey, keyString (initialParent));
 	keyDel (initialParent);
 	errno = errnosave;
+
 	return handle;
 }
 
@@ -417,12 +565,11 @@ KDB * kdbOpen (Key * errorKey)
  * Closes the session with the Key database.
  *
  * @pre The handle must be a valid handle as returned from kdbOpen()
- *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * This is the counterpart of kdbOpen().
  *
- * You must call this method when you finished your affairs with the key
+ * You must call this method when you are finished working with the Key
  * database. You can manipulate Key and KeySet objects also after
  * kdbClose(), but you must not use any kdb*() call afterwards.
  *
@@ -432,9 +579,13 @@ KDB * kdbOpen (Key * errorKey)
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
  * @param errorKey the key which holds error/warning information
+ *
  * @retval 0 on success
  * @retval -1 on NULL pointer
+ *
+ * @since 1.0.0
  * @ingroup kdb
+ * @see kdbOpen() for opening a session with a Key database
  */
 int kdbClose (KDB * handle, Key * errorKey)
 {
@@ -443,9 +594,13 @@ int kdbClose (KDB * handle, Key * errorKey)
 		return -1;
 	}
 
-	Key * initialParent = keyDup (errorKey);
+	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 	int errnosave = errno;
-	splitDel (handle->split);
+
+	if (handle->split)
+	{
+		splitDel (handle->split);
+	}
 
 	trieClose (handle->trie, errorKey);
 
@@ -522,7 +677,11 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 
 			backendUpdateSize (backend, split->parents[i], 0);
 		}
-		// TODO: set error in else case!
+		else
+		{
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "kdbGet was missing in the resolver plugin. Keyname: %s");
+			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 
 		switch (ret)
 		{
@@ -607,10 +766,10 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 {
 	ksRewind (ks);
-	Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	Key * cutKey = keyNew ("/", KEY_END);
 	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
 	KeySet * cutKS = ksCut (ks, cutKey);
-	Key * specCutKey = keyNew ("spec", KEY_END);
+	Key * specCutKey = keyNew ("spec:/", KEY_END);
 	KeySet * specCut = ksCut (cutKS, specCutKey);
 	ksRewind (specCut);
 	Key * cur;
@@ -639,13 +798,25 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	{
 	case FIRST:
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE);
+		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
 		break;
 	case LAST:
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
+		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
 		elektraGlobalError (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
 		break;
 	default:
@@ -770,16 +941,20 @@ static void clearError (Key * key)
 
 static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * initialParent)
 {
+	const char * cacheName = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "" : keyName (cacheParent);
+
 	// first check if parentkey matches
 	Key * lastParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (cacheParent));
-	if (!lastParentName || elektraStrCmp (keyString (lastParentName), keyName (cacheParent))) return -1;
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", cacheName);
+	if (!lastParentName || elektraStrCmp (keyString (lastParentName), cacheName)) return -1;
+
+	const char * cacheValue = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "default" : keyString (cacheParent);
 
 	Key * lastParentValue = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (cacheParent));
-	if (!lastParentValue || elektraStrCmp (keyString (lastParentValue), keyString (cacheParent))) return -1;
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", cacheValue);
+	if (!lastParentValue || elektraStrCmp (keyString (lastParentValue), cacheValue)) return -1;
 
 	Key * lastInitalParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastInitialParentName", KDB_O_NONE);
 	Key * lastInitialParent = keyNew (keyString (lastInitalParentName), KEY_END);
@@ -806,7 +981,7 @@ static void elektraCacheCutMeta (KDB * handle)
 
 KeySet * elektraCutProc (KeySet * ks)
 {
-	Key * parentKey = keyNew ("proc", KEY_END);
+	Key * parentKey = keyNew ("proc:/", KEY_END);
 	KeySet * ret = ksCut (ks, parentKey);
 	keyDel (parentKey);
 	return ret;
@@ -829,7 +1004,14 @@ static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key
 		elektraCacheCutMeta (handle);
 		return;
 	}
-	ELEKTRA_ASSERT (elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0, "parentKey name differs from initial");
+
+	keySetName (parentKey, keyName (initialParent));
+	if (!(elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0))
+	{
+		ELEKTRA_LOG_WARNING ("parentKey name (%s) differs from initial (%s)", keyName (parentKey), keyName (initialParent));
+	}
+	ELEKTRA_ASSERT (elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0, "parentKey name (%s) differs from initial (%s)",
+			keyName (parentKey), keyName (initialParent));
 	if (elektraCacheCheckParent (handle->global, cacheParent, parentKey) != 0)
 	{
 		// parentKey in cache does not match, needs rebuild
@@ -949,36 +1131,39 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 
 
 /**
- * @brief Retrieve keys in an atomic and universal way.
+ * Retrieve Keys from a Key database in an atomic and universal way.
  *
  * @pre The @p handle must be passed as returned from kdbOpen().
- *
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
- *
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *     keyNew().
  *
- * If you pass NULL on any parameter kdbGet() will fail immediately without doing anything.
+ * If you pass NULL on any parameter, kdbGet() will fail immediately without doing anything.
  *
- * The @p returned KeySet may already contain some keys, e.g. from previous
- * kdbGet() calls. The new retrieved keys will be appended using
+ * The returned KeySet @p ks may already contain some keys, e.g. from previous
+ * kdbGet() calls. The newly retrieved Keys will be appended using
  * ksAppendKey().
  *
- * If not done earlier kdbGet() will fully retrieve all keys under the @p parentKey
+ * If not done earlier, kdbGet() will fully retrieve all keys under the @p parentKey
  * folder recursively (See Optimization below when it will not be done).
+ * Cascading Keys (starting with /) will retrieve the same path in all namespaces.
+ * `/` will retrieve all Keys in @p handle.
  *
- * @note kdbGet() might retrieve more keys than requested (that are not
- *     below parentKey). These keys must be passed to calls of kdbSet(),
+ * It is recommended to use the most specific @p parentKey possible. (e.g. using `system:/` is rarely the most specific)
+ *
+ * @note kdbGet() might retrieve more Keys than requested which are not
+ *     below parentKey or even in a different namespace.
+ *     These keys, except of `proc:/` keys, must be passed to calls of kdbSet(),
  *     otherwise they will be lost. This stems from the fact that the
  *     user has the only copy of the whole configuration and backends
  *     only write configuration that was passed to them.
- *     For example, if you kdbGet() "system/mountpoint/interest"
- *     you will not only get all keys below system/mountpoint/interest,
- *     but also all keys below system/mountpoint (if system/mountpoint
+ *     For example, if you kdbGet() "system:/mountpoint/interest"
+ *     you will not only get all Keys below system:/mountpoint/interest,
+ *     but also all Keys below system:/mountpoint (if system:/mountpoint
  *     is a mountpoint as the name suggests, but
- *     system/mountpoint/interest is not a mountpoint).
- *     Make sure to not touch or remove keys outside the keys of interest,
+ *     system:/mountpoint/interest is not a mountpoint).
+ *     Make sure to not touch or remove Keys outside the Keys of interest,
  *     because others may need them!
  *
  * @par Example:
@@ -992,34 +1177,36 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  * The parameter @p returned will not be changed.
  *
  * @par Optimization:
- * In the first run of kdbGet all requested (or more) keys are retrieved. On subsequent
- * calls only the keys are retrieved where something was changed
- * inside the key database. The other keys stay in the
+ * In the first run of kdbGet all requested (or more) Keys are retrieved. On subsequent
+ * calls only the Keys are retrieved where something was changed
+ * inside the Key database. The other Keys stay in the
  * KeySet returned as passed.
  *
- * It is your responsibility to save the original keyset if you
+ * It is your responsibility to save the original KeySet if you
  * need it afterwards.
  *
- * If you want to be sure to get a fresh keyset again, you need to open a
- * second handle to the key database using kdbOpen().
+ * If you want to be sure to get a fresh KeySet again, you need to open a
+ * second handle to the Key database using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param parentKey is used to add warnings and set an error
- *         information. Additionally, its name is a hint which keys
- *         should be retrieved (it is possible that more are retrieved, see Note above).
- *           - cascading keys (starting with /) will retrieve the same path in all namespaces
- *           - / will retrieve all keys
+ * @param parentKey Keys below @p parentKey will be retrieved from @p handle.
+ * It is also used to add warnings and set error information.
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
- * @see ksLookup(), ksLookupByName() for powerful
- * 	lookups after the KeySet was retrieved
- * @see kdbOpen() which needs to be called before
- * @see kdbSet() to save the configuration afterwards and kdbClose() to
- * 	finish affairs with the key database.
- * @retval 1 if the keys were retrieved successfully
- * @retval 0 if there was no update - no changes are made to the keyset then
- * @retval -1 on failure - no changes are made to the keyset then
+ *
+ * @retval 1 if the Keys were retrieved successfully. There might be warnings attached to the parentKey! Depending on your use case, you
+ * might need to treat them as errors!
+ * @retval 0 if there was no update - no changes are made to the KeySet then. There might be warnings attached to the parentKey! Depending
+ * on your use case, you might need to treat them as erorrs!
+ * @retval -1 on failure - no changes are made to the KeySet then
+ *
+ * @since 1.0.0
  * @ingroup kdb
+ * @see ksLookup(), ksLookupByName() for powerful lookups after the KeySet was
+ * retrieved
+ * @see kdbOpen() which needs to be called before
+ * @see kdbSet() to save the configuration afterwards
+ * @see kdbClose() to finish affairs with the key database.
  */
 int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 {
@@ -1040,13 +1227,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (ns == KEY_NS_EMPTY)
-	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Empty namespace passed to kdbGet. Please use the cascading key / instead");
-	}
-
 	int errnosave = errno;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -1063,10 +1245,17 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 #endif
 
-	if (!handle || !ks)
+	if (!handle)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or KeySet null pointer passed");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for handle");
+		goto error;
+	}
+
+	if (!ks)
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for KeySet");
 		goto error;
 	}
 
@@ -1077,19 +1266,30 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	keySetName (parentKey, keyName (initialParent));
 	cache = ksNew (0, KS_END);
-	cacheParent = keyDup (mountGetMountpoint (handle, initialParent));
+	cacheParent = keyDup (mountGetMountpoint (handle, keyName (parentKey)), KEY_CP_ALL);
+	if (cacheParent == NULL)
+	{
+		cacheParent = keyNew ("default:/", KEY_VALUE, "default", KEY_END);
+	}
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
+	keySetName (parentKey, keyName (initialParent));
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
-		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent);
+		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent); // parentkey different from initialParent
 	}
+
+	int hasProcGetStorage = handle->globalPlugins[PROCGETSTORAGE][INIT] || handle->globalPlugins[PROCGETSTORAGE][MAXONCE] ||
+				handle->globalPlugins[PROCGETSTORAGE][DEINIT];
 
 	// Check if a update is needed at all
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
+		// TODO: cache breaks procgetstorage
+		if (hasProcGetStorage ||
+		    elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
 		{
 			goto cachemiss;
 		}
@@ -1194,8 +1394,7 @@ cachemiss:
 	}
 
 	if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH] ||
-	    handle->globalPlugins[PROCGETSTORAGE][FOREACH] || handle->globalPlugins[PROCGETSTORAGE][INIT] ||
-	    handle->globalPlugins[PROCGETSTORAGE][MAXONCE] || handle->globalPlugins[PROCGETSTORAGE][DEINIT])
+	    handle->globalPlugins[PROCGETSTORAGE][FOREACH] || hasProcGetStorage)
 	{
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, FIRST) == -1)
@@ -1216,6 +1415,19 @@ cachemiss:
 		}
 		ksClear (ks);
 		splitMergeBackends (split, ks);
+
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
 
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
@@ -1252,22 +1464,24 @@ cachemiss:
 
 		ksClear (ks);
 		splitMergeBackends (split, ks);
+
+		keySetName (parentKey, keyName (initialParent));
+
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
 
 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
@@ -1493,30 +1707,35 @@ static void elektraSetRollback (Split * split, Key * parentKey)
 }
 
 
-/** @brief Set keys in an atomic and universal way.
+/**
+ * Set Keys to a Key database in an atomic and universal way.
  *
  * @pre kdbGet() must be called before kdbSet():
  *    - initially (after kdbOpen())
  *    - after conflict errors in kdbSet().
- *
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
- *
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
- *     keyNew().
+ *     keyNew(). It must not have read-only name, value or metadata.
  *
- * If you pass NULL on any parameter kdbSet() will fail immediately without doing anything.
+ * If you pass NULL on any parameter, kdbSet() will fail immediately without doing anything.
  *
- * With @p parentKey you can give an hint which part of the given keyset
+ * With @p parentKey you can specify which part of the given keyset
  * is of interest for you. Then you promise to only modify or
  * remove keys below this key. All others would be passed back
  * as they were retrieved by kdbGet().
+ * Cascading keys (starting with /) will set the path in all namespaces.
+ * `/` will commit all keys.
+ * This parameter is an optimization toonly save keys of mountpoints affected by the specified @p parentKey. This does not necessarily mean
+ * that only changes to keys below that @p parentKey are saved. Meta-names in @p parentKey will be rejected (error C01320). Empty/Invalid
+ * Keys will also be rejected (error C01320).
  *
  * @par Errors
- * If some error occurs:
+ * If `parentKey == NULL` or @p parentKey has read-only metadata, kdbSet() will
+ * immediately return the error code -1. In all other error cases the following happens:
  * - kdbSet() will leave the KeySet's * internal cursor on the key that generated the error.
  * - Error information will be written into the metadata of
- *   the parent key.
+ *   the parent key, if possible.
  * - None of the keys are actually committed in this situation, i.e. no
  *   configuration file will be modified.
  *
@@ -1547,30 +1766,67 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
- * @param parentKey is used to add warnings and set an error
- *         information. Additionally, its name is an hint which keys
- *         should be committed (it is possible that more are changed).
- *           - cascading keys (starting with /) will set the path in all namespaces
- *           - / will commit all keys
- *           - metanames will be rejected (error C01320)
- *           - empty/invalid (error C01320)
+ * @param parentKey Keys below @p parentKey will be set to @p handle.
+ * It is also used to add warnings and set error information.
+ *
  * @retval 1 on success
  * @retval 0 if nothing had to be done, no changes in KDB
- * @retval -1 on failure, no changes in KDB
- * @see keyNeedSync()
- * @see ksCurrent() contains the error key
- * @see kdbOpen() and kdbGet() that must be called first
- * @see kdbClose() that must be called afterwards
+ * @retval -1 on failure, no changes in KDB, an error will be set on
+ * @p parentKey if possible (see "Errors" above)
+ *
+ * @since 1.0.0
  * @ingroup kdb
+ * @see kdbOpen() for getting @p handle
+ * @see kdbClose() that must be called afterwards
+ * @see ksCurrent() contains the error Key
  */
 int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
-	elektraNamespace ns = keyGetNamespace (parentKey);
-	if (ns == KEY_NS_NONE)
+	if (parentKey == NULL)
 	{
-		ELEKTRA_LOG ("ns == KEY_NS_NONE");
+		ELEKTRA_LOG ("parentKey == NULL");
 		return -1;
 	}
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
+	{
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_META");
+		return -1;
+	}
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
+		return -1;
+	}
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");
+		return -1;
+	}
+
+	if (handle == NULL)
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "KDB handle null pointer passed");
+		ELEKTRA_LOG ("handle == NULL");
+		return -1;
+	}
+
+	if (ks == NULL)
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "KeySet null pointer passed");
+		ELEKTRA_LOG ("ks == NULL");
+		return -1;
+	}
+
+	elektraNamespace ns = keyGetNamespace (parentKey);
 	Key * oldError = keyNew (keyName (parentKey), KEY_END);
 	copyError (oldError, parentKey);
 
@@ -1583,23 +1839,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (ns == KEY_NS_EMPTY)
-	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Invalid key name passed to kdbSet");
-		ELEKTRA_LOG ("ns == KEY_NS_EMPTY");
-	}
-
-	if (!handle || !ks)
-	{
-		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or KeySet null pointer passed");
-		keyDel (oldError);
-		ELEKTRA_LOG ("!handle || !ks");
-		return -1;
-	}
-
 	int errnosave = errno;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
@@ -1741,468 +1982,6 @@ error:
 	errno = errnosave;
 	keyDel (oldError);
 	return -1;
-}
-
-/**
- * Checks whether the same instance of the list plugin is mounted in the global (maxonce) positions:
- *
- * pregetstorage, procgetstorage, postgetstorage, postgetcleanup,
- * presetstorage, presetcleanup, precommit, postcommit,
- * prerollback and postrollback
- *
- * @param handle the KDB to check
- *
- * @retval 1 if list is mounted everywhere
- * @retval 0 otherwise
- */
-static int ensureListPluginMountedEverywhere (KDB * handle)
-{
-	GlobalpluginPositions expectedPositions[] = { PREGETSTORAGE,
-						      PROCGETSTORAGE,
-						      POSTGETSTORAGE,
-						      POSTGETCLEANUP,
-						      PRESETSTORAGE,
-						      PRESETCLEANUP,
-						      PRECOMMIT,
-						      POSTCOMMIT,
-						      PREROLLBACK,
-						      POSTROLLBACK,
-						      -1 };
-
-	Plugin * list = handle->globalPlugins[expectedPositions[0]][MAXONCE];
-	if (list == NULL || elektraStrCmp (list->name, "list") != 0)
-	{
-		ELEKTRA_LOG_WARNING ("list plugin not mounted at position %s/maxonce", GlobalpluginPositionsStr[expectedPositions[0]]);
-		return 0;
-	}
-
-	for (int i = 1; expectedPositions[i] > 0; ++i)
-	{
-		Plugin * plugin = handle->globalPlugins[expectedPositions[i]][MAXONCE];
-		if (plugin != list)
-		{
-			// must always be the same instance
-			ELEKTRA_LOG_WARNING ("list plugin not mounted at position %s/maxonce",
-					     GlobalpluginPositionsStr[expectedPositions[i]]);
-			return 0;
-		}
-	}
-
-	return 1;
-}
-
-/**
- * Finds the global placements in which a plugin should be mounted and mounts the plugin there, if it isn't already.
- *
- * @post The plugin is mounted globally in all placements defined in its infos/placements key.
- *
- * @param handle        the KDB handle to use
- * @param pluginName    the name of the plugin to mount
- * @param pluginConfig  the configuration to use, if the plugin has to be mounted
- * @param errorKey      used for error reporting
- *
- * @retval  0 on success
- * @retval -1 on error in list plugin
- * @retval -2 on other errors, warnings will be logged
- */
-static int ensureGlobalPluginMounted (KDB * handle, const char * pluginName, KeySet * pluginConfig, Key * errorKey)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ELEKTRA_NOT_NULL (pluginName);
-
-	if (!ensureListPluginMountedEverywhere (handle))
-	{
-		ELEKTRA_LOG_WARNING ("the list plugin MUST be mounted in all global positions, or kdbEnsure will not work");
-		return -2;
-	}
-
-	Plugin * listPlugin = handle->globalPlugins[PREROLLBACK][MAXONCE]; // take any position
-	typedef int (*mountPluginFun) (Plugin *, const char *, KeySet *, Key *);
-	mountPluginFun listAddPlugin = (mountPluginFun) elektraPluginGetFunction (listPlugin, "mountplugin");
-
-	int result = listAddPlugin (listPlugin, pluginName, pluginConfig, errorKey);
-	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		ELEKTRA_LOG_WARNING ("could not add plugin %s to list plugin", pluginName);
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The global plugin %s couldn't be mounted (via the list plugin)",
-							pluginName);
-		return -1;
-	}
-
-	return 0;
-}
-
-/**
- * Finds the global placements in which a plugin should be mounted and removes the plugin from these, if it is present.
- *
- * @post The plugin is not mounted globally in any of the placements defined in its infos/placements key.
- *
- * @param handle        the KDB handle to use
- * @param pluginName    the name of the plugin to mount
- * @param errorKey      used for error reporting
- *
- * @retval  0 on success
- * @retval -1 on error in list plugin
- * @retval -2 on other errors, warnings will be logged
- */
-static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, Key * errorKey)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ELEKTRA_NOT_NULL (pluginName);
-
-	if (!ensureListPluginMountedEverywhere (handle))
-	{
-		ELEKTRA_LOG_WARNING ("the list plugin MUST be mounted in all global positions, or kdbEnsure will not work");
-		return -2;
-	}
-
-	Plugin * listPlugin = handle->globalPlugins[PREROLLBACK][MAXONCE]; // take any position
-	typedef int (*unmountPluginFun) (Plugin *, const char *, Key *);
-	unmountPluginFun listRemovePlugin = (unmountPluginFun) elektraPluginGetFunction (listPlugin, "unmountplugin");
-
-	int result = listRemovePlugin (listPlugin, pluginName, errorKey);
-	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		ELEKTRA_LOG_WARNING ("could not remove %s from list plugin", pluginName);
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The global plugin %s couldn't be unmounted (via the list plugin)",
-							pluginName);
-		return -1;
-	}
-
-	return 0;
-}
-
-/**
- * Finds the placements in which a plugin should be mounted and removes the plugin from these, if it is present.
- * The functions only affects the mountpoint given in @p mountpoint.
- *
- * @post For mountpoint @p mountpoint, the plugin is not mounted in any of the placements defined in its infos/placements key.
- *
- * @param handle        the KDB handle to use
- * @param mountpoint    the mountpoint to modify
- * @param pluginName    the name of the plugin to mount
- * @param errorKey      used for error reporting
- *
- * @retval 0 on error, warnings will be logged
- * @retval 1 on success
- */
-static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const char * pluginName, Key * errorKey)
-{
-	Key * mountpointKey = keyNew (mountpoint, KEY_END);
-	Backend * backend = mountGetBackend (handle, mountpointKey);
-
-	int ret = 1;
-	for (int i = 0; i < NR_OF_PLUGINS; ++i)
-	{
-		Plugin * getPlugin = backend->getplugins[i];
-		Plugin * setPlugin = backend->setplugins[i];
-		Plugin * errorPlugin = backend->errorplugins[i];
-
-		if (setPlugin != NULL && elektraStrCmp (setPlugin->name, pluginName) == 0)
-		{
-			if (elektraPluginClose (setPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					errorKey, "The plugin %s couldn't be closed (set, position: %d, mountpoint: %s)", pluginName, i,
-					mountpoint);
-				ret = 0;
-			}
-			backend->setplugins[i] = NULL;
-		}
-
-		if (getPlugin != NULL && elektraStrCmp (getPlugin->name, pluginName) == 0)
-		{
-			if (elektraPluginClose (getPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					errorKey, "The plugin %s couldn't be closed (get, position: %d, mountpoint: %s)", pluginName, i,
-					mountpoint);
-				ret = 0;
-			}
-			backend->getplugins[i] = NULL;
-		}
-
-		if (errorPlugin != NULL && elektraStrCmp (errorPlugin->name, pluginName) == 0)
-		{
-			if (elektraPluginClose (errorPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					errorKey, "The plugin %s couldn't be closed (error, position: %d, mountpoint: %s)", pluginName, i,
-					mountpoint);
-				ret = 0;
-			}
-			backend->errorplugins[i] = NULL;
-		}
-	}
-
-	keyDel (mountpointKey);
-	return ret;
-}
-
-enum PluginContractState
-{
-	PLUGIN_STATE_UNMOUNTED,
-	PLUGIN_STATE_MOUNTED,
-	PLUGIN_STATE_REMOUNT,
-};
-
-/**
- * Ensures a kdbEnsure() contract clause for a global plugin.
- *
- * @see kdbEnsure()
- *
- * @param handle       the KDB handle
- * @param pluginName   the name of the plugin
- * @param pluginState  the intended clause for the plugin
- * @param pluginConfig the config KeySet for the plugin; is always consumed, i.e. you shouldn't ksDel() it after calling this
- * @param errorKey     used for error reporting
- *
- * @retval  0 on success
- * @retval -1 on error in list plugin
- * @retval -2 on other errors
- */
-static int ensureGlobalPluginState (KDB * handle, const char * pluginName, enum PluginContractState pluginState, KeySet * pluginConfig,
-				    Key * errorKey)
-{
-	switch (pluginState)
-	{
-	case PLUGIN_STATE_UNMOUNTED:
-		ksDel (pluginConfig);
-		return ensureGlobalPluginUnmounted (handle, pluginName, errorKey);
-	case PLUGIN_STATE_MOUNTED:
-		return ensureGlobalPluginMounted (handle, pluginName, pluginConfig, errorKey);
-	case PLUGIN_STATE_REMOUNT:
-	{
-		int ret = ensureGlobalPluginUnmounted (handle, pluginName, errorKey);
-		if (ret != 0)
-		{
-			return ret;
-		}
-		return ensureGlobalPluginMounted (handle, pluginName, pluginConfig, errorKey);
-	}
-	default:
-		ELEKTRA_ASSERT (0, "missing switch case");
-		return -2;
-	}
-}
-
-/**
- * Ensures a kdbEnsure() contract clause for a plugin under a certain mountpoint.
- *
- * @see kdbEnsure()
- *
- * @param handle       the KDB handle
- * @param mountpoint   the mountpoint to use
- * @param pluginName   the name of the plugin
- * @param pluginState  the intended clause for the plugin
- * @param pluginConfig the config KeySet for the plugin; is always consumed, i.e. you shouldn't ksDel() it after calling this
- * @param errorKey     used for error reporting
- *
- * @retval 1 on success
- * @retval 0 otherwise
- */
-static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoint ELEKTRA_UNUSED, const char * pluginName ELEKTRA_UNUSED,
-			      enum PluginContractState pluginState, KeySet * pluginConfig ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	switch (pluginState)
-	{
-	case PLUGIN_STATE_UNMOUNTED:
-		ksDel (pluginConfig);
-		return ensurePluginUnmounted (handle, mountpoint, pluginName, errorKey);
-	case PLUGIN_STATE_MOUNTED:
-		ELEKTRA_ASSERT (0, "not supported");
-		return 0; // TODO: ensurePluginMounted (handle, mountpoint, pluginName, pluginConfig, errorKey);
-	case PLUGIN_STATE_REMOUNT:
-		ELEKTRA_ASSERT (0, "not supported");
-		return 0; // TODO: ensurePluginUnmounted (handle, mountpoint, pluginName, errorKey) && ensurePluginMounted (handle,
-			  // mountpoint, pluginName, pluginConfig, errorKey);
-	default:
-		ELEKTRA_ASSERT (0, "missing switch case");
-		return 0;
-	}
-}
-
-/**
- * This function can be used to ensure the given KDB @p handle meets certain clauses,
- * specified in @p contract. Currently the following clauses are supported:
- *
- * - `system/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
- *   `<pluginname>` for the mountpoint `<mountpoint>`:
- * 	- The value `unmounted` ensures the plugin is not mounted, at this mountpoint.
- * 	- The value `mounted` ensures the plugin is mounted, at this mountpoint.
- * 	  If the plugin is not mounted, we will try to mount it.
- * 	- The value `remount` always mounts the plugin, at this mountpoint.
- * 	  If it was already mounted, it will me unmounted and mounted again.
- * 	  This can be used to ensure the plugin is mounted with a certain configuration.
- * - Keys below `system/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
- *   as the plugins config KeySet during mounting. `system/elektra/ensure/plugins/<mountpoint>/<pluginname>`
- *   will be replaced by `user` in the keynames. If no keys are given, an empty KeySet is used.
- *
- * There are a few special values for `<mountpoint>`:
- * - `global` is used to indicate the plugin should (un)mounted as a global plugin.
- *   Currently this only supports (un)mounting plugins from/to the subposition `maxonce`.
- * - `parent` is used to indicate the keyname of @p parentKey shall be used as the mountpoint.
- *
- * If `<mountpoint>` is none of those values, it has to be valid keyname with the slashes escaped.
- * That means it has to start with `/`, `user`, `system`, `dir` or `spec`.
- *
- * If `<mountpoint>` is NOT `global`, currently only `unmounted` is supported (not `mounted` and `remounted`).
- *
- * NOTE: This function only works properly, if the list plugin is mounted in all global positions.
- * If this is not the case, 1 will be returned, because this is seen as an implicit clause in the contract.
- * Additionally any contract that specifies clauses for the list plugin is rejected as malformed.
- *
- * @param handle    contains internal information of @link kdbOpen() opened @endlink key database
- * @param contract  KeySet containing the contract described above.
- *                  This will always be `ksDel()`ed. **Even in error cases.**
- * @param parentKey The parentKey used if the `parent` special value is used,
- *                  otherwise only used for error reporting.
- *
- * @retval  0 on success
- * @retval  1 if clauses of the contract are unmet
- * @retval -1 on NULL pointers, or malformed contract
- */
-int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
-{
-	if (contract == NULL)
-	{
-		return -1;
-	}
-
-	if (handle == NULL || parentKey == NULL)
-	{
-		ksDel (contract);
-		return -1;
-	}
-
-	Key * cutpoint = keyNew ("system/elektra/ensure/plugins", KEY_END);
-	KeySet * pluginsContract = ksCut (contract, cutpoint);
-
-	// delete unused part of contract immediately
-	ksDel (contract);
-
-	ksRewind (pluginsContract);
-	Key * clause = NULL;
-	while ((clause = ksNext (pluginsContract)) != NULL)
-	{
-		// only handle 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
-		const char * condUNameBase = keyUnescapedName (clause);
-		const char * condUName = condUNameBase;
-		condUName += sizeof ("system\0elektra\0ensure\0plugins"); // skip known common part
-
-		size_t condUSize = keyGetUnescapedNameSize (clause);
-		if (condUNameBase + condUSize <= condUName)
-		{
-			continue; // base key
-		}
-
-		condUName += strlen (condUName) + 1; // skip mountpoint
-		if (condUNameBase + condUSize <= condUName)
-		{
-			continue; // mountpoint key
-		}
-
-		condUName += strlen (condUName) + 1; // skip pluginname
-		if (condUNameBase + condUSize > condUName)
-		{
-			continue; // key below 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>'
-		}
-
-		const char * mountpoint = keyUnescapedName (clause);
-		mountpoint += sizeof ("system\0elektra\0ensure\0plugins");
-		const char * pluginName = keyBaseName (clause);
-		const char * pluginStateString = keyString (clause);
-
-		if (elektraStrCmp (pluginName, "list") == 0)
-		{
-			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Cannot specify clauses for the list plugin");
-			keyDel (cutpoint);
-			ksDel (pluginsContract);
-			return -1;
-		}
-
-		enum PluginContractState pluginState;
-		if (elektraStrCmp (pluginStateString, "unmounted") == 0)
-		{
-			pluginState = PLUGIN_STATE_UNMOUNTED;
-		}
-		else if (elektraStrCmp (pluginStateString, "mounted") == 0)
-		{
-			pluginState = PLUGIN_STATE_MOUNTED;
-		}
-		else if (elektraStrCmp (pluginStateString, "remount") == 0)
-		{
-			pluginState = PLUGIN_STATE_REMOUNT;
-		}
-		else
-		{
-			ELEKTRA_SET_INTERFACE_ERRORF (
-				parentKey,
-				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used",
-				keyName (clause), pluginStateString);
-			keyDel (cutpoint);
-			ksDel (pluginsContract);
-			return -1;
-		}
-
-		Key * pluginCutpoint = keyNew (keyName (clause), KEY_END);
-		keyAddBaseName (pluginCutpoint, "config");
-		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
-		ksAppendKey (pluginConfig, pluginCutpoint);
-		{
-			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user");
-			ksDel (pluginConfig);
-			pluginConfig = newPluginConfig;
-		}
-
-		if (elektraStrCmp (mountpoint, "global") == 0)
-		{
-			int ret = ensureGlobalPluginState (handle, pluginName, pluginState, pluginConfig, parentKey);
-			if (ret != 0)
-			{
-				keyDel (cutpoint);
-				ksDel (pluginsContract);
-
-				if (ret != -1)
-				{
-					ksDel (pluginConfig);
-				}
-
-				return 1;
-			}
-		}
-		else
-		{
-			if (pluginState != PLUGIN_STATE_UNMOUNTED)
-			{
-				ELEKTRA_SET_INTERFACE_ERRORF (
-					parentKey,
-					"The key '%s' contained the value '%s', but only 'unmounted' is supported for "
-					"non-global clauses at the moment",
-					keyName (clause), pluginStateString);
-				keyDel (cutpoint);
-				ksDel (pluginConfig);
-				ksDel (pluginsContract);
-				return -1;
-			}
-
-			if (elektraStrCmp (mountpoint, "parent") == 0)
-			{
-				mountpoint = keyName (parentKey);
-			}
-
-			if (!ensurePluginState (handle, mountpoint, pluginName, pluginState, pluginConfig, parentKey))
-			{
-				keyDel (cutpoint);
-				ksDel (pluginsContract);
-				return 1;
-			}
-		}
-	}
-	keyDel (cutpoint);
-	ksDel (pluginsContract);
-
-	return 0;
 }
 
 /**

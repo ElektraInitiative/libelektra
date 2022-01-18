@@ -1,0 +1,7 @@
+// set root project name
+rootProject.name = 'Elektra Java binding'
+
+// include sub projects to mulit-project build
+include 'hello'
+include 'libelektra'
+include 'plugins:whitelist'

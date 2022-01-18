@@ -14,7 +14,7 @@ function (add_lib name)
 	cmake_parse_arguments (
 		ARG
 		"CPP" # optional keywords
-		"" # one value keywords
+		"COMPONENT" # one value keywords
 		"SOURCES;LINK_LIBRARIES;LINK_ELEKTRA;INCLUDE_DIRECTORIES;INCLUDE_SYSTEM_DIRECTORIES;COMPILE_DEFINITIONS" # multi value
 		# keywords
 		${ARGN})
@@ -22,6 +22,12 @@ function (add_lib name)
 	if (ARG_CPP)
 		add_cppheaders (ARG_SOURCES)
 	endif (ARG_CPP)
+
+	if (ARG_COMPONENT)
+		set (HAS_COMPONENT ${ARG_COMPONENT})
+	else ()
+		set (HAS_COMPONENT "${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}")
+	endif ()
 
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})
 	add_dependencies (elektra-${name}-objects generate_version_script)
@@ -55,7 +61,11 @@ function (add_lib name)
 									  "-Wl,--version-script='${CMAKE_BINARY_DIR}/src/libs/symbols.map'")
 		endif ()
 
-		install (TARGETS elektra-${name} DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+		install (
+			TARGETS elektra-${name}
+			DESTINATION lib${LIB_SUFFIX}
+			COMPONENT "${HAS_COMPONENT}"
+			EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
 
 endfunction ()

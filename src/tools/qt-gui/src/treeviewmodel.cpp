@@ -11,7 +11,6 @@
 #include <backends.hpp>
 #include <kdbconfig.h> // for DEBUG and VERBOSE
 #include <kdbease.h>
-#include <kdbproposal.h> // for namespaces
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>
@@ -82,7 +81,17 @@ QVariant TreeViewModel::data (const QModelIndex & idx, int role) const
 
 	// TODO: document fallthrough if it was desired
 	case NameRole:
-		return QVariant::fromValue (node->getName ());
+		if (node->isNamespaceRoot ())
+		{
+			kdb::Key k;
+			k.setNamespace (static_cast<ElektraNamespace> (node->getName ().at (0).unicode ()));
+			std::string name = k.getName ();
+			return QVariant::fromValue (QString::fromStdString (name.substr (0, name.length () - 1)));
+		}
+		else
+		{
+			return QVariant::fromValue (node->getName ());
+		}
 
 	case PathRole:
 		return QVariant::fromValue (node->getPath ());
@@ -111,8 +120,7 @@ QVariant TreeViewModel::data (const QModelIndex & idx, int role) const
 	case IndexRole:
 		return QVariant::fromValue (idx.row ());
 
-	case IsNullRole:
-	{
+	case IsNullRole: {
 		if (node->getKey ())
 			return QVariant::fromValue (false);
 		else
@@ -121,6 +129,9 @@ QVariant TreeViewModel::data (const QModelIndex & idx, int role) const
 
 	case IsExpandedRole:
 		return QVariant::fromValue (node->isExpanded ());
+
+	case IsNamespaceRootRole:
+		return QVariant::fromValue (node->isNamespaceRoot ());
 
 	default:
 		emit showMessage (tr ("Error"), tr ("Unknown role: %1").arg (role), "TreeViewModel::data");
@@ -157,8 +168,7 @@ bool TreeViewModel::setData (const QModelIndex & idx, const QVariant & modelData
 		}
 		break;
 
-	case MetaValueRole:
-	{
+	case MetaValueRole: {
 		QVariantList valueList = modelData.toList ();
 		node->setMeta (valueList.at (0).toString (), valueList.at (1));
 		break;
@@ -440,7 +450,7 @@ void TreeViewModel::insertMetaRow (int row, Key key, const QString & name)
 		QString keyName;
 
 		if (key)
-			keyName = QString::fromStdString (key.getFullName ());
+			keyName = QString::fromStdString (key.getName ());
 		else
 			keyName = name;
 
@@ -496,38 +506,18 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 {
 	m_model.clear ();
 
-	using namespace ckdb; // for namespaces
-	for (int i = KEY_NS_FIRST; i <= KEY_NS_LAST; ++i)
+	auto nsToShow = { ElektraNamespace::SPEC, ElektraNamespace::DIR, ElektraNamespace::USER, ElektraNamespace::SYSTEM };
+
+	for (auto & ns : nsToShow)
 	{
-		elektraNamespace ns = static_cast<elektraNamespace> (i);
-		ConfigNodePtr toAdd;
-		switch (ns)
-		{
-		case KEY_NS_SPEC:
-			toAdd = ConfigNodePtr (new ConfigNode ("spec", "spec", nullptr, this));
-			break;
-		case KEY_NS_PROC:
-			// TODO: add generic commandline parsing
-			break;
-		case KEY_NS_DIR:
-			toAdd = ConfigNodePtr (new ConfigNode ("dir", "dir", nullptr, this));
-			break;
-		case KEY_NS_USER:
-			toAdd = ConfigNodePtr (new ConfigNode ("user", "user", nullptr, this));
-			break;
-		case KEY_NS_SYSTEM:
-			toAdd = ConfigNodePtr (new ConfigNode ("system", "system", nullptr, this));
-			break;
-		case KEY_NS_EMPTY:
-			break;
-		case KEY_NS_NONE:
-			break;
-		case KEY_NS_META:
-			break;
-		case KEY_NS_CASCADING:
-			break;
-		}
-		if (toAdd) m_model << toAdd;
+		kdb::Key k;
+		k.setNamespace (ns);
+
+		auto name = k.getName ();
+		name = name.substr (0, name.length () - 1);
+
+		m_model << ConfigNodePtr (new ConfigNode (QString::fromStdString (std::string{ static_cast<char> (ns) }),
+							  QString::fromStdString (name), nullptr, this));
 	}
 
 	createNewNodes (keySet);
@@ -545,7 +535,10 @@ void TreeViewModel::createNewNodes (KeySet keySet)
 
 		for (int i = 0; i < m_model.count (); i++)
 		{
-			if (root == m_model.at (i)->getName ()) sink (m_model.at (i), keys, k);
+			if (root == m_model.at (i)->getName ())
+			{
+				sink (m_model.at (i), keys, k);
+			}
 		}
 	}
 }
@@ -594,7 +587,7 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 	base.rewind ();
 	for (Key o : ours)
 	{
-		std::string prefix ("user/guitest");
+		std::string prefix ("user:/guitest");
 		Key t = theirs.next ();
 		Key b = base.next ();
 		if (!((o && !o.getName ().compare (0, prefix.size (), prefix)) &&
@@ -873,6 +866,7 @@ QHash<int, QByteArray> TreeViewModel::roleNames () const
 	roles[IndexRole] = "index";
 	roles[IsNullRole] = "isNull";
 	roles[IsExpandedRole] = "isExpanded";
+	roles[IsNamespaceRootRole] = "isNamespaceRoot";
 
 	return roles;
 }

@@ -52,8 +52,8 @@ std::vector<std::shared_ptr<kdb::ThreadInteger>> createCV (kdb::KeySet & ks, kdb
 		*/
 		os << "/" << i;
 		// std::cout << os.str().c_str() << std::endl;
-		vi.push_back (std::make_shared<kdb::ThreadInteger> (
-			ks, tc, kdb::Key (os.str ().c_str (), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
+		vi.push_back (std::make_shared<kdb::ThreadInteger> (ks, tc,
+								    kdb::Key (os.str ().c_str (), KEY_META, "default", s_value, KEY_END)));
 	}
 	return vi;
 }
@@ -64,7 +64,7 @@ __attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -101,12 +101,12 @@ __attribute__ ((noinline)) void benchmark_kdb_reloadN (long long N)
 
 	kdb.get (ks, "/test");
 	kdb2.get (ks, "/test");
-	ks.append (kdb::Key ("system/test/key", KEY_VALUE, "value", KEY_END));
+	ks.append (kdb::Key ("system:/test/key", KEY_VALUE, "value", KEY_END));
 	kdb.set (ks, "/test");
-	ks.append (kdb::Key ("system/test/key2", KEY_VALUE, "value2", KEY_END));
+	ks.append (kdb::Key ("system:/test/key2", KEY_VALUE, "value2", KEY_END));
 	// kdb2.set (ks, "/test");
 
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -164,7 +164,7 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (long long N)
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -202,7 +202,7 @@ __attribute__ ((noinline)) void benchmark_cv_switchN (long long N)
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -274,12 +274,12 @@ int main (int argc, char ** argv)
 		KDB first;
 		KeySet firstReturned;
 		first.get (firstReturned, parent);
-		firstReturned.append (Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+		firstReturned.append (Key ("system:/" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
 
 		KDB second;
 		KeySet secondReturned;
 		second.get (secondReturned, parent);
-		secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+		secondReturned.append (Key ("system:/" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
 
 		second.set (secondReturned, parent);
 		// first.set(firstReturned, parent); // exception expected

@@ -14,7 +14,6 @@
 #endif
 
 #include <kdbextension.h>
-#include <kdbproposal.h>
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
@@ -59,9 +58,8 @@ static const char * getMetaValue (Key * key, const char * metaName)
 
 static void writeLineComments (Key * key, FILE * fp)
 {
-	// TODO: this is really inefficient
-	KeySet * metaKeys = elektraKeyGetMetaKeySet (key);
-	Key * commentParent = keyNew ("comment", KEY_META_NAME, KEY_END);
+	KeySet * metaKeys = keyMeta (key);
+	Key * commentParent = keyNew ("meta:/comment", KEY_END);
 	KeySet * comments = elektraArrayGet (commentParent, metaKeys);
 	keyDel (commentParent);
 
@@ -69,11 +67,11 @@ static void writeLineComments (Key * key, FILE * fp)
 	Key * current;
 	while ((current = ksNext (comments)))
 	{
-		if (strcmp (keyName (current), "comment/#0"))
+		if (strcmp (keyName (current), "meta:/comment/#0") != 0)
 		{
-			Key * spaceKey = keyDup (current);
+			Key * spaceKey = keyDup (current, KEY_CP_ALL);
 			keyAddBaseName (spaceKey, "space");
-			Key * startKey = keyDup (current);
+			Key * startKey = keyDup (current, KEY_CP_ALL);
 			keyAddBaseName (startKey, "start");
 			const char * spaces = getMetaValue (key, keyName (spaceKey));
 			const char * start = getMetaValue (key, keyName (startKey));
@@ -85,7 +83,6 @@ static void writeLineComments (Key * key, FILE * fp)
 		}
 	}
 
-	ksDel (metaKeys);
 	ksDel (comments);
 }
 
@@ -146,9 +143,9 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
 
-	Key * ipv4Base = keyDup (parentKey);
+	Key * ipv4Base = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (ipv4Base, "ipv4");
-	Key * ipv6Base = keyDup (parentKey);
+	Key * ipv6Base = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (ipv6Base, "ipv6");
 
 	/* now write the hosts file */

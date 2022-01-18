@@ -1,6 +1,6 @@
 # How-To: Write a Plugin
 
-This file serves as a tutorial on how to write a storage plugin (which includes all information to write filter plugins).
+This file serves as a tutorial on how to write a plugin.
 
 ## Types of Plugins
 
@@ -11,7 +11,10 @@ This file serves as a tutorial on how to write a storage plugin (which includes 
 - Filter plugins are simpler than storage plugins.
   They receive configuration settings in the same way as storage plugins but they do not have the responsibility to serialize the configuration
   settings to configuration files.
+  For example, `checker` plugins which validate configuration are filter plugins.
 - Resolver plugins are more complicated and not covered by this tutorial.
+
+This tutorial mostly uses storage plugins as example but also explains differences to filter plugins.
 
 ## Basics
 
@@ -22,16 +25,16 @@ and what various methods exists within one.
 
 All plugins use the same basic interface. This interface consists of five basic functions:
 
-- [`elektraPluginOpen`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
-- [`elektraPluginGet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
-- [`elektraPluginSet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
-- [`elektraPluginError`](https://doc.libelektra.org/api/current/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
-- [`elektraPluginClose`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29)
+- [`elektraPluginOpen`](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
+- [`elektraPluginGet`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
+- [`elektraPluginSet`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
+- [`elektraPluginError`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
+- [`elektraPluginClose`](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29)
 
 . The developer replaces `Plugin` with the name of their plugin. So in the case of the line plugin, the names of these functions would be
 `elektraLineOpen()`, `elektraLineGet()`, `elektraLineSet()`, `elektraLineError()`, and `elektraLineClose()`.
 Additionally, there is one more function called
-[ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/current/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
+[ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
 where once again `Plugin` should be replaced with the name of the plugin, this time in uppercase. So for the line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 The developer may also define `elektraPluginCheckConf()` if configuration validation at mount-time is desired.
@@ -82,7 +85,7 @@ In Elektra, multiple plugins form a backend. If every plugin would do
 whatever it likes to do, there would be chaos and backends would be
 unpredictable.
 
-To avoid this situation, plugins export a so called _contract_. In this
+To avoid this situation, plugins export a so-called _contract_. In this
 contract the plugin states how nicely it will behave and what other
 plugins can depend on.
 
@@ -141,13 +144,15 @@ Only for the description an unlimited amount of lines can be
 used (until the end of the file).
 
 For the meaning (semantics) of these clauses, please refer to [contract specification](/doc/CONTRACT.ini).
-The only difference for filter plugins is that their `infos/provides` and `infos/placements` are different.
+For details of how plugins are ordered [look here](/doc/dev/plugins-ordering.md)
+The only difference for filter plugins to storage plugins is that their `infos/provides` and `infos/placements` are different,
+e.g., for checker plugins `presetstorage` usually is enough.
 
 The already mentioned `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
 
 ```c
-keyNew ("system/elektra/modules/yajl/infos/licence",
+keyNew ("system:/elektra/modules/yajl/infos/licence",
         KEY_VALUE, "BSD", KEY_END);
 ```
 
@@ -155,10 +160,10 @@ keyNew ("system/elektra/modules/yajl/infos/licence",
 
 In your plugin, specifically in your `elektraPluginGet()`
 implementation, you have to return the contract whenever configuration
-below `system/elektra/modules/plugin` is requested:
+below `system:/elektra/modules/plugin` is requested:
 
 ```c
-if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
+if (!strcmp (keyName(parentKey), "system:/elektra/modules/plugin"))
 {
 	KeySet *moduleConf = elektraPluginContract();
 	ksAppend(returned, moduleConf);
@@ -175,23 +180,23 @@ An example of this function (taken from the [`yajl`](/src/plugins/yajl/) plugin)
 static inline KeySet *elektraYajlContract()
 {
 	return ksNew (30,
-	keyNew ("system/elektra/modules/yajl",
+	keyNew ("system:/elektra/modules/yajl",
 		KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
-	keyNew ("system/elektra/modules/yajl/exports", KEY_END),
-	keyNew ("system/elektra/modules/yajl/exports/get",
+	keyNew ("system:/elektra/modules/yajl/exports", KEY_END),
+	keyNew ("system:/elektra/modules/yajl/exports/get",
 		KEY_FUNC, elektraYajlGet,
 		KEY_END),
-	keyNew ("system/elektra/modules/yajl/exports/set",
+	keyNew ("system:/elektra/modules/yajl/exports/set",
 		KEY_FUNC, elektraYajlSet,
 		KEY_END),
 #include "readme_yourplugin.c"
-	keyNew ("system/elektra/modules/yajl/infos/version",
+	keyNew ("system:/elektra/modules/yajl/infos/version",
 		KEY_VALUE, PLUGINVERSION, KEY_END),
-	keyNew ("system/elektra/modules/yajl/config", KEY_END),
-	keyNew ("system/elektra/modules/yajl/config/",
+	keyNew ("system:/elektra/modules/yajl/config", KEY_END),
+	keyNew ("system:/elektra/modules/yajl/config/",
 		KEY_VALUE, "system",
 		KEY_END),
-	keyNew ("system/elektra/modules/yajl/config/below",
+	keyNew ("system:/elektra/modules/yajl/config/below",
 		KEY_VALUE, "user",
 		KEY_END),
 	KS_END);
@@ -293,7 +298,7 @@ This function usually differs pretty greatly between each plugin. This function 
 - `0`: The function was successful and the given keyset/configuration was **not changed** (`ELEKTRA_PLUGIN_STATUS_NO_UPDATE`).
 
 Any other return value indicates an error (`ELEKTRA_PLUGIN_STATUS_ERROR`). The function will take in a `Key`, usually called `parentKey` which contains a string containing the path
-to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system/linetest line` then `keyString(parentKey)`
+to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system:/linetest line` then `keyString(parentKey)`
 should be equal to `/etc/linetest`. At this point, you generally want to open the file so you can begin saving it into keys.
 Here is the trickier part to explain. Basically, at this point you will want to iterate through the file and create keys and store string values
 inside of them according to what your plugin is supposed to do. I will give a few examples of different plugins to better explain.
@@ -303,7 +308,7 @@ number such as `#1`, `#2`, .. `#_22` for a file with 22 lines. So once I open th
 let's call it `new_key` using `dupKey(parentKey)`. Then I set `new_key`'s name to `lineNN` (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the `KeySet` that was passed into the
 `elektraPluginGet` function, let's call it `returned` for now, using `ksAppendKey(returned, new_key)`. Now the `KeySet` will contain `new_key` with the
-name `#N` properly saved where it should be according to the `kdb mount` command (in this case, `system/linetest/#N`), and a string value
+name `#N` properly saved where it should be according to the `kdb mount` command (in this case, `system:/linetest/#N`), and a string value
 equal to the contents of that line in the file. The line plugin repeats these steps as long as it hasn't reached end of file, thus saving the whole file
 into a `KeySet` line by line.
 
@@ -328,7 +333,7 @@ First have a look at the signature of `elektraLineSet`:
 int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKey);
 ```
 
-Lets start with the most important parameters, the `KeySet` and the `parentKey`. The `KeySet` supplied is the `KeySet` that is going to be persisted in
+Let's start with the most important parameters, the `KeySet` and the `parentKey`. The `KeySet` supplied is the `KeySet` that is going to be persisted in
 the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost `Key` of the `KeySet` and serves several purposes.
 First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the `parentKey`. We will discuss
 error handling in more detail later. The Plugin handle can be used to persist state information in a thread-safe way with `elektraPluginSetData`.
@@ -420,7 +425,7 @@ int elektraLineCheckConf (Key * errorKey, KeySet * conf)
 The `elektraPluginCheckConf` function is exported via the plugin's contract. The following example demonstrates how to export the `checkconf` function (see section [Contract](#contract) for further details):
 
 ```c
-keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConf, KEY_END);
+keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", KEY_FUNC, elektraLineCheckConf, KEY_END);
 ```
 
 Within the `checkconf` function all of the plugin configuration values should be validated.
@@ -444,7 +449,7 @@ Plugin *ELEKTRA_PLUGIN_EXPORT
 }
 ```
 
-For further information see [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
+For further information see [the API documentation](https://doc.libelektra.org/api/latest/html/group__plugin.html).
 
 ### `elektraPluginGetGlobalKeySet`
 
@@ -456,9 +461,23 @@ It can be accessed by calling the `elektraPluginGetGlobalKeySet` function, which
 
 Plugins using the global keyset are responsible for cleaning up the parts of the keyset they no longer need.
 
+To make sure there is no collision between plugins, each plugin should use a unique prefix for its keys, e.g. `system:/elektra/<plugin>` for `<plugin>`.
+
+To improve performance, the `cache` plugin also caches parts of the global keyset.
+If your plugin uses non-cacheable data, you don't have to do anything special.
+However, if you want your plugin's keys to be cached you should put them below `system:/elektra/cached` (to avoid collisions, use e.g. `system:/elektra/cached/<plugin>` for `<plugin>`).
+The `cache` plugin also caches keys below `system:/elektra/cache`, but those are reserved for use by the plugin itself.
+
 ## Note on Direct Method Calls via External Integrations
 
 Some applications want to call Elektra methods directly via native access.
 A `KeySet` is a data structure over which functions can iterate. If you want to start again from to first element,
 you have to explicitly call `rewind()` to set the internal pointer to the start.
 Any plugin expects the passed `KeySet` to be **rewinded**.
+
+## Further Readings
+
+Read more about:
+
+- [contracts](/doc/help/elektra-contracts.md)
+- [of how to write a storage plugin](storage-plugins.md)

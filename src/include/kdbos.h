@@ -10,26 +10,14 @@
  * size_t   size of array or string 0, SIZE_MAX
  * ssize_t  size with error cond.   -1, SSIZE_MAX(<SIZE_MAX)
  * time_t   Seconds since 1970      0,.. recommended: 64 bit
- * uid_t    User identification     0,..
- * gid_t    Group identification    0,..
  *
- *
- * Following Elektra specific types must be defined with at least 32 bit:
- *
- * Type     Purpose
- * keyswitch_t For keyNew
- * option_t    For kdbGet, kdbSet and ksLookup*
- * cursor_t stores information to find a position in a keyset
  *
  * Following constants must be defined:
  *
- * KDB_PATH_SEPARATOR  how to delimit pathnames
  * KDB_FILE_MODE       the standard mode for keys
  * KDB_DIR_MODE        the mode to add (|=) for key directories
- * KDB_MAX_UCHAR       the maximum value of unsigned char
  *
- * Following limits must be defined (in addition to limits mentioned
- * above for types):
+ * Following limits must be defined:
  *
  * KDB_MAX_PATH_LENGTH the maximum length for a pathname
  *
@@ -149,9 +137,11 @@
 /* Avoid the most crazy things */
 #ifndef NOMINMAX
 #define NOMINMAX
-#endif
-
 #include <windows.h>
+#undef NOMINMAX
+#else
+#include <windows.h>
+#endif
 
 #include <limits.h>
 #include <sys/types.h>
@@ -161,12 +151,8 @@
 #undef ssize_t
 typedef SSIZE_T ssize_t;
 #endif
-// # define usleep(x) Sleep(x)
-// # define ssize_t int
-// # define snprintf _snprintf
 
 #define KDB_MAX_PATH_LENGTH 4096
-
 
 #endif /* _WIN32 */
 
@@ -177,38 +163,5 @@ typedef SSIZE_T ssize_t;
 
 /* Include essential headers used in kdb.h */
 #include <stdarg.h>
-
-/*Type to point to every position within the keyset
- * (note that for windows ssize_t is already redefined
- * as int) */
-typedef ssize_t cursor_t;
-
-/*Integer types*/
-typedef int option_t;
-
-typedef int keyswitch_t;
-
-typedef int elektraNamespace;
-
-/**@brief Separator for key names.
- *
- * This character will be used to separate key names
- *
- * @see @link keyname here @endlink.
- * */
-#define KDB_PATH_SEPARATOR '/'
-
-/**@brief Escape symbol for special characters in the key name.
- *
- * @see @link keyname here @endlink.
- * */
-#define KDB_PATH_ESCAPE '\\'
-
-/**For iteration over trie children/values
- *
- * for (i=0; i<KDB_MAX_UCHAR; ++i)
- * */
-#define KDB_MAX_UCHAR (UCHAR_MAX + 1)
-
 
 #endif /* KDBOS_H */

@@ -1,0 +1,27 @@
+kdbOpen 2
+$key binary 27 0
+system:/elektra/mountpoints
+
+$meta 6 0
+binary
+
+$meta 10 27
+comment/#0
+Below are the mount points.
+$key string 32 18
+system:/elektra/mountpoints/dbus
+serialized Backend
+$key string 39 0
+system:/elektra/mountpoints/dbus/config
+
+$meta 10 71
+comment/#0
+This is a configuration for a backend,
+see subkeys for more information
+$key string 40 0
+system:/elektra/mountpoints/fstab/config
+
+$copymeta 39 10
+system:/elektra/mountpoints/dbus/config
+comment/#0
+$end

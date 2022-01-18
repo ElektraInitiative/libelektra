@@ -72,7 +72,7 @@ static Backend * elektraBackendAllocate (void)
 int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key * errorKey)
 {
 	Key * root = ksCurrent (elektraConfig);
-	Key * searchMountpoint = keyDup (root);
+	Key * searchMountpoint = keyDup (root, KEY_CP_NAME);
 	keyAddBaseName (searchMountpoint, "mountpoint");
 	Key * foundMountpoint = ksLookup (elektraConfig, searchMountpoint, 0);
 	keyDel (searchMountpoint);
@@ -84,9 +84,7 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 		return -1;
 	}
 
-	backend->mountpoint = keyNew ("", KEY_VALUE, keyBaseName (root), KEY_END);
-	elektraKeySetName (backend->mountpoint, keyString (foundMountpoint), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
-
+	backend->mountpoint = keyNew (keyString (foundMountpoint), KEY_VALUE, keyBaseName (root), KEY_END);
 	keySetName (errorKey, keyName (backend->mountpoint));
 
 	if (!backend->mountpoint)
@@ -136,7 +134,7 @@ static Backend * backendOpenMissing (KeySet * global, Key * mp)
  * from:
  *
 @verbatim
-system/elektra/mountpoints/<name>
+system:/elektra/mountpoints/<name>
 @endverbatim
  *
  * The root key must be like the above example. You do
@@ -193,7 +191,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			KeySet * cut = ksCut (elektraConfig, cur);
 			if (!strcmp (keyBaseName (cur), "config"))
 			{
-				systemConfig = ksRenameKeys (cut, "system");
+				systemConfig = ksRenameKeys (cut, "system:/");
 				ksDel (cut);
 			}
 			else if (!strcmp (keyBaseName (cur), "errorplugins"))
@@ -275,9 +273,9 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 {
 	Backend * backend = elektraBackendAllocate ();
 
-	KeySet * resolverConfig = ksNew (5, keyNew ("system/path", KEY_VALUE, file, KEY_END), KS_END);
+	KeySet * resolverConfig = ksNew (5, keyNew ("system:/path", KEY_VALUE, file, KEY_END), KS_END);
 
-	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	keySetName (errorKey, "/");
 
 	Plugin * resolver = elektraPluginOpen (KDB_RESOLVER, modules, resolverConfig, errorKey);
 	if (!resolver)
@@ -290,8 +288,8 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 
 #ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (5,
-				       // does not matter because it is mounted differently in system/elektra/modules:
-				       // keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
+				       // does not matter because it is mounted differently in system:/elektra/modules:
+				       // keyNew("system:/logmodule", KEY_VALUE, "1", KEY_END),
 				       KS_END);
 	Plugin * tracer = elektraPluginOpen ("tracer", modules, tracerConfig, errorKey);
 	if (tracer)
@@ -326,10 +324,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
 	backend->setplugins[STORAGE_PLUGIN] = storage;
 	storage->refcounter = 2;
 
-	Key * mp = keyNew ("", KEY_VALUE, "default", KEY_END);
-	backend->mountpoint = mp;
-	keyIncRef (backend->mountpoint);
-
+	backend->mountpoint = NULL;
 	return backend;
 }
 
@@ -344,12 +339,12 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
-	cursor_t save = ksGetCursor (modules);
+	elektraCursor save = ksGetCursor (modules);
 	KeySet * defaultConfig =
-		ksNew (5, keyNew ("system/module", KEY_VALUE, "1", KEY_END), keyNew ("user/module", KEY_VALUE, "1", KEY_END), KS_END);
+		ksNew (5, keyNew ("system:/module", KEY_VALUE, "1", KEY_END), keyNew ("user:/module", KEY_VALUE, "1", KEY_END), KS_END);
 	Key * cur = ksCurrent (modules);
 
-	elektraKeySetName (errorKey, keyName (cur), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	keySetName (errorKey, keyName (cur));
 
 	Plugin * plugin = elektraPluginOpen (keyBaseName (cur), modules, defaultConfig, errorKey);
 	if (!plugin)
@@ -361,7 +356,7 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 	plugin->global = global;
 
 
-	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
+	Key * mp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
 
 	// for "virtual" plugins the keyBaseName (cur) would be "resolver" or "storage"
 	// thus we use plugin->name here, which must be handled by kdbGet() of every
@@ -399,7 +394,7 @@ Backend * backendOpenVersion (KeySet * global, Key * errorKey ELEKTRA_UNUSED)
 	}
 	plugin->global = global;
 
-	Key * mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
+	Key * mp = keyNew ("system:/elektra/version", KEY_VALUE, "version", KEY_END);
 
 	backend->getplugins[0] = plugin;
 	backend->setplugins[0] = plugin;
@@ -441,10 +436,10 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 		backend->systemsize = size;
 		break;
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
 	case KEY_NS_NONE:
+	case KEY_NS_DEFAULT:
 		ELEKTRA_ASSERT (0, "invalid namespace %d", keyGetNamespace (parent));
 		return -1;
 	}
@@ -468,9 +463,12 @@ int backendClose (Backend * backend, Key * errorKey)
 	/* Check if we have the last reference on the backend (unsigned!) */
 	if (backend->refcounter > 0) return 0;
 
-	keyDecRef (backend->mountpoint);
-	keySetName (errorKey, keyName (backend->mountpoint));
-	keyDel (backend->mountpoint);
+	if (backend->mountpoint)
+	{
+		keySetName (errorKey, keyName (backend->mountpoint));
+		keyDecRef (backend->mountpoint);
+		keyDel (backend->mountpoint);
+	}
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{

@@ -28,9 +28,9 @@ MOUNTPOINT="/tests/script"
 
 NAMESPACES="user system"
 
-USER_ROOT="user/tests/script"
-SYSTEM_ROOT="system/tests/script"
-SPEC_ROOT="spec/tests/script"
+USER_ROOT="user:/tests/script"
+SYSTEM_ROOT="system:/tests/script"
+SPEC_ROOT="spec:/tests/script"
 
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]; then
@@ -67,9 +67,6 @@ KDB_GETENV=$("$KDB" elektrify-getenv getenv KDB 2> /dev/null)
 if [ $? = 0 ]; then
 	KDB=${KDB_GETENV}
 fi
-
-# Do not overwriting existing KDB_EXEC_PATH
-export KDB_EXEC_PATH="@CMAKE_BINARY_DIR@/bin:$KDB_EXEC_PATH"
 
 # ensure ruby plugin finds Ruby bindings without installation
 # (require both the src and the build dir)
@@ -145,11 +142,11 @@ check_version() {
 		return 0
 	fi
 
-	REAL_KDB_VERSION="$("$KDB" get system/elektra/version/constants/KDB_VERSION 2> /dev/null)"
+	REAL_KDB_VERSION="$("$KDB" get system:/elektra/version/constants/KDB_VERSION 2> /dev/null)"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
 	exit_if_fail "Script was not compiled ($KDB_VERSION) with this Elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 
-	REAL_SO_VERSION="$("$KDB" get system/elektra/version/constants/SO_VERSION 2> /dev/null)"
+	REAL_SO_VERSION="$("$KDB" get system:/elektra/version/constants/SO_VERSION 2> /dev/null)"
 	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
 	exit_if_fail "Script was not compiled ($SO_VERSION) with this Elektra version ($REAL_SO_VERSION): SO_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 }
@@ -206,8 +203,12 @@ check_set_mv_rm() {
 #
 
 is_not_rw_storage() {
-	test ! "x$("$KDB" plugin-info $PLUGIN provides 2> /dev/null)" = "xstorage" \
-		-o "x$PLUGIN" = "xhosts" \
+	echo $("$KDB" plugin-info $PLUGIN provides 2> /dev/null) | fgrep -qw "storage"
+	if [ $? != 0 ]; then
+		return 0
+	fi
+
+	test "x$PLUGIN" = "xhosts" \
 		-o "x$PLUGIN" = "xfstab" \
 		-o "x$PLUGIN" = "xline" \
 		-o "x$PLUGIN" = "xuname" \
@@ -215,12 +216,22 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xaugeas" \
 		-o "x$PLUGIN" = "xcsvstorage" \
 		-o "x$PLUGIN" = "xdpkg" \
-		-o "x$PLUGIN" = "xregexstore" \
 		-o "x$PLUGIN" = "xpasswd" \
-		-o "x$PLUGIN" = "xsimplespeclang" \
 		-o "x$PLUGIN" = "xmozprefs" \
 		-o "x$PLUGIN" = "xfile" \
-		-o "x$PLUGIN" = "xruby"
+		-o "x$PLUGIN" = "xruby" \
+		-o "x$PLUGIN" = "xdesktop" \
+		-o "x$PLUGIN" = "xc" \
+		-o "x$PLUGIN" = "xcpptemplate" \
+		-o "x$PLUGIN" = "xspecload" \
+		-o "x$PLUGIN" = "xmmapstorage" \
+		-o "x$PLUGIN" = "xmmapstorage_crc" \
+		-o "x$PLUGIN" = "xmultifile" \
+		-o "x$PLUGIN" = "xsimpleini" \
+		-o "x$PLUGIN" = "xmini" \
+		-o "x$PLUGIN" = "xyamlcpp" \
+		-o "x$PLUGIN" = "xkconfig" \
+		-o "x$PLUGIN" = "xtoml"
 }
 
 is_plugin_available() {
@@ -281,19 +292,19 @@ export_config() {
 	SYSTEMEXPORT="$EXPORTS/system.export.dump"
 	MOUNTEXPORT="$EXPORTS/mount.export.dump"
 
-	"$KDB" export spec dump > "$SPECEXPORT"
+	"$KDB" export spec:/ dump > "$SPECEXPORT"
 	exit_if_fail "Could not export spec config"
 
-	"$KDB" export dir dump > "$DIREXPORT"
+	"$KDB" export dir:/ dump > "$DIREXPORT"
 	exit_if_fail "Could not export dir config"
 
-	"$KDB" export user dump > "$USEREXPORT"
+	"$KDB" export user:/ dump > "$USEREXPORT"
 	exit_if_fail "Could not export user config"
 
-	"$KDB" export system --without-elektra dump > "$SYSTEMEXPORT"
+	"$KDB" export system:/ --without-elektra dump > "$SYSTEMEXPORT"
 	exit_if_fail "Could not export system config"
 
-	"$KDB" export system/elektra/mountpoints dump > "$MOUNTEXPORT"
+	"$KDB" export system:/elektra/mountpoints dump > "$MOUNTEXPORT"
 	exit_if_fail "Could not export mount config"
 }
 
@@ -317,35 +328,35 @@ export_check() {
 	MOUNTEXPORT="$EXPORTS/mount.export.dump"
 	MOUNTCHECK="$EXPORTS/mount.check.dump"
 
-	"$KDB" export spec dump > "$SPECCHECK"
+	"$KDB" export spec:/ dump > "$SPECCHECK"
 	exit_if_fail "Could not export spec config"
 
-	"$KDB" export dir dump > "$DIRCHECK"
+	"$KDB" export dir:/ dump > "$DIRCHECK"
 	exit_if_fail "Could not export dir config"
 
-	"$KDB" export user dump > "$USERCHECK"
+	"$KDB" export user:/ dump > "$USERCHECK"
 	exit_if_fail "Could not export user config"
 
-	"$KDB" export system --without-elektra dump > "$SYSTEMCHECK"
+	"$KDB" export system:/ --without-elektra dump > "$SYSTEMCHECK"
 	exit_if_fail "Could not export system config"
 
-	"$KDB" export system/elektra/mountpoints dump > "$MOUNTCHECK"
+	"$KDB" export system:/elektra/mountpoints dump > "$MOUNTCHECK"
 	exit_if_fail "Could not export mount config"
 
 	if [ "$IMPORTCONFIG" = 'true' ]; then
-		"$KDB" import spec dump < "$SPECEXPORT"
+		"$KDB" import spec:/ dump < "$SPECEXPORT"
 		exit_if_fail "Could not import spec config"
 
-		"$KDB" import dir dump < "$DIREXPORT"
+		"$KDB" import dir:/ dump < "$DIREXPORT"
 		exit_if_fail "Could not import dir config"
 
-		"$KDB" import user dump < "$USEREXPORT"
+		"$KDB" import user:/ dump < "$USEREXPORT"
 		exit_if_fail "Could not import user config"
 
-		"$KDB" import system --without-elektra dump < "$SYSTEMEXPORT"
+		"$KDB" import system:/ --without-elektra dump < "$SYSTEMEXPORT"
 		exit_if_fail "Could not import system config"
 
-		"$KDB" import system/elektra/mountpoints dump < "$MOUNTEXPORT"
+		"$KDB" import system:/elektra/mountpoints dump < "$MOUNTEXPORT"
 		exit_if_fail "Could not import mount config"
 	fi
 
@@ -376,17 +387,6 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 #
 #
 #

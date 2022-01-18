@@ -832,7 +832,7 @@ private:
 
 		current_text.reserve (input_size);
 
-		const auto process_current_text = [&current_text, &current_text_position, &sections]() {
+		const auto process_current_text = [&current_text, &current_text_position, &sections] () {
 			if (!current_text.empty ())
 			{
 				const component<string_type> comp{ current_text, current_text_position };
@@ -903,7 +903,7 @@ private:
 			const bool tag_is_unescaped_var{ current_delimiter_is_brace && tag_location_start != (input_size - 2) &&
 							 input.at (tag_contents_location) == ctx.delim_set.begin.at (0) };
 			const string_type & current_tag_delimiter_end{ tag_is_unescaped_var ? brace_delimiter_end_unescaped :
-											      ctx.delim_set.end };
+												    ctx.delim_set.end };
 			const auto current_tag_delimiter_end_size = current_tag_delimiter_end.size ();
 			if (tag_is_unescaped_var)
 			{
@@ -970,7 +970,7 @@ private:
 		process_current_text ();
 
 		// Check for sections without an ending tag
-		root_component.walk_children ([&error_message](component<string_type> & comp) ->
+		root_component.walk_children ([&error_message] (component<string_type> & comp) ->
 					      typename component<string_type>::walk_control {
 						      if (!comp.tag.is_section_begin ())
 						      {
@@ -1120,7 +1120,7 @@ public:
 	template <typename stream_type>
 	stream_type & render (const basic_data<string_type> & data, stream_type & stream)
 	{
-		render (data, [&stream](const string_type & str) { stream << str; });
+		render (data, [&stream] (const string_type & str) { stream << str; });
 		return stream;
 	}
 
@@ -1134,7 +1134,7 @@ public:
 	stream_type & render (basic_context<string_type> & ctx, stream_type & stream)
 	{
 		context_internal<string_type> context{ ctx };
-		render ([&stream](const string_type & str) { stream << str; }, context);
+		render ([&stream] (const string_type & str) { stream << str; }, context);
 		return stream;
 	}
 
@@ -1144,7 +1144,7 @@ public:
 		return render (ctx, ss).str ();
 	}
 
-	using render_handler = std::function<void(const string_type &)>;
+	using render_handler = std::function<void (const string_type &)>;
 	void render (const basic_data<string_type> & data, const render_handler & handler)
 	{
 		if (!is_valid ())
@@ -1171,14 +1171,14 @@ private:
 	string_type render (context_internal<string_type> & ctx)
 	{
 		std::basic_ostringstream<typename string_type::value_type> ss;
-		render ([&ss](const string_type & str) { ss << str; }, ctx);
+		render ([&ss] (const string_type & str) { ss << str; }, ctx);
 		return ss.str ();
 	}
 
 	void render (const render_handler & handler, context_internal<string_type> & ctx)
 	{
 		root_component_.walk_children (
-			[&handler, &ctx, this](component<string_type> & comp) ->
+			[&handler, &ctx, this] (component<string_type> & comp) ->
 			typename component<string_type>::walk_control { return render_component (handler, ctx, comp); });
 		// process the last line
 		render_current_line (handler, ctx, nullptr);
@@ -1309,8 +1309,8 @@ private:
 			    render_lambda_escape escape, const string_type & text, bool parse_with_same_context)
 	{
 		const typename basic_renderer<string_type>::type2 render2 = [this, &ctx, parse_with_same_context,
-									     escape](const string_type & text, bool escaped) {
-			const auto process_template = [this, &ctx, escape, escaped](basic_mustache & tmpl) -> string_type {
+									     escape] (const string_type & text, bool escaped) {
+			const auto process_template = [this, &ctx, escape, escaped] (basic_mustache & tmpl) -> string_type {
 				if (!tmpl.is_valid ())
 				{
 					error_message_ = tmpl.error_message ();
@@ -1347,7 +1347,7 @@ private:
 			tmpl.set_custom_escape (escape_);
 			return process_template (tmpl);
 		};
-		const typename basic_renderer<string_type>::type1 render = [&render2](const string_type & text) {
+		const typename basic_renderer<string_type>::type1 render = [&render2] (const string_type & text) {
 			return render2 (text, false);
 		};
 		if (var->is_lambda2 ())
@@ -1390,10 +1390,8 @@ private:
 	void render_section (const render_handler & handler, context_internal<string_type> & ctx, component<string_type> & incomp,
 			     const basic_data<string_type> * var)
 	{
-		const auto callback = [&handler, &ctx, this](component<string_type> & comp) -> typename component<string_type>::walk_control
-		{
-			return render_component (handler, ctx, comp);
-		};
+		const auto callback = [&handler, &ctx, this] (component<string_type> & comp) ->
+			typename component<string_type>::walk_control { return render_component (handler, ctx, comp); };
 		if (var && var->is_non_empty_list ())
 		{
 			for (const auto & item : var->list_value ())

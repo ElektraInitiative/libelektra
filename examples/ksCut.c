@@ -23,8 +23,8 @@ int main (void)
 {
 	// clang-format off
 	//! [cut]
-	Key * parentKey = keyNew ("system/mountpoint/interest", KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	Key * parentKey = keyNew ("system:/mountpoint/interest", KEY_END);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 	KeySet * returned = ksCut (ks, parentKey);

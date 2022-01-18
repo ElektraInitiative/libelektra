@@ -6,7 +6,7 @@
 
 ## DESCRIPTION
 
-This command will print information about the version, default resolver and default storage plugin. When a mount point is given as argument additional informations about the mount point (e.g. configuration) is printed.
+This command will print information about the version, default resolver and default storage plugin. When a mount point is given as argument additional information about the mount point (e.g. configuration) is printed.
 
 ## EXAMPLES
 
@@ -16,13 +16,13 @@ kdb mountpoint-info
 #> Default resolver: resolver_fm_hpu_b
 #> Default storage: ini
 
-kdb mount /tmp/test.ini system/test ini hello=ini -c hello=world
+kdb mount /tmp/test.ini system:/test ini hello=ini -c hello=world
 
-kdb mountpoint-info system/test
+kdb mountpoint-info system:/test
 #> Version: 0.8.19
 #> Default resolver: resolver_fm_hpu_b
 #> Default storage: ini
-#> Mountpoint: system/test
+#> Mountpoint: system:/test
 #> File: /tmp/test.ini
 #>	   config:
 #>         hello = world

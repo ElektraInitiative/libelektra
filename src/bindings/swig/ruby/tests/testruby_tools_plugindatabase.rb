@@ -47,7 +47,7 @@ class KdbtoolsPluginDatabaseTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       db = Kdbtools::ModulesPluginDatabase.new
 
-      ps = db.lookup_provides "ini"
+      ps = db.lookup_provides "mini"
 
       assert_instance_of Kdbtools::PluginSpec, ps
       ps.fullname
@@ -58,7 +58,7 @@ class KdbtoolsPluginDatabaseTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       db = Kdbtools::ModulesPluginDatabase.new
 
-      ps = db.lookup_all_provides "ini"
+      ps = db.lookup_all_provides "mini"
 
       assert_instance_of Array, ps
       ps.each do |p|
@@ -72,7 +72,7 @@ class KdbtoolsPluginDatabaseTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       db = Kdbtools::ModulesPluginDatabase.new
 
-      ps = db.lookup_all_provides_with_status "ini"
+      ps = db.lookup_all_provides_with_status "mini"
 
       assert_instance_of Kdbtools::IntPluginSpecMap, ps
       assert ps.respond_to? :each

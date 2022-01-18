@@ -19,11 +19,12 @@
 #include <string.h>
 #endif
 
+#include "keymetaformatting.h"
 #include <tests_plugin.h>
 
 void test_readHostsSimple (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
@@ -31,23 +32,23 @@ void test_readHostsSimple (char * fileName)
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", 0);
+	Key * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", 0);
 	exit_if_fail (key, "hostname localhost not found");
 	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv4/gateway.markus-raab.org", 0);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/gateway.markus-raab.org", 0);
 	exit_if_fail (key, "hostname gateway.markus-raab.org not found");
 	succeed_if (strcmp ("192.168.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv4/kirabyte.markus-raab.org/kira", 0);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/kirabyte.markus-raab.org/kira", 0);
 	exit_if_fail (key, "hostname alias kira not found");
 	succeed_if (strcmp ("192.168.0.5", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv6/wikipedia-sample", 0);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/wikipedia-sample", 0);
 	exit_if_fail (key, "hostname wikipedia-sample not found");
 	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv6/wikipedia-sample/wikipedia-alias", 0);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/wikipedia-sample/wikipedia-alias", 0);
 	exit_if_fail (key, "hostname alias wikipedia-alias not found");
 	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", keyValue (key)) == 0, "address not correct");
 
@@ -60,14 +61,14 @@ void test_readHostsSimple (char * fileName)
 
 void test_readInvalidIpAddress (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", KDB_O_NONE);
+	Key * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
 	succeed_if (strcmp ("noipaddress", keyValue (key)) == 0, "address not correct");
 
@@ -79,7 +80,7 @@ void test_readInvalidIpAddress (char * fileName)
 
 void test_mixedAddresses (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
@@ -87,22 +88,22 @@ void test_mixedAddresses (char * fileName)
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/ipv4host", KDB_O_NONE);
+	Key * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host", KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv4host not found");
 	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv4/ipv4host/ipv4alias1", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias1", KDB_O_NONE);
 	succeed_if (key, "ipv4alias1 not found");
-	key = ksLookupByName (ks, "user/tests/hosts/ipv4/ipv4host/ipv4alias2", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias2", KDB_O_NONE);
 	succeed_if (key, "ipv4alias2 not found");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv6/ipv6host", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host", KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv6host not found");
 	succeed_if (strcmp ("::1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv6/ipv6host/ipv6alias1", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias1", KDB_O_NONE);
 	succeed_if (key, "ipv6alias1 not found");
-	key = ksLookupByName (ks, "user/tests/hosts/ipv6/ipv6host/ipv6alias2", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias2", KDB_O_NONE);
 	succeed_if (key, "ipv6alias2 not found");
 
 	ksDel (ks);
@@ -113,7 +114,7 @@ void test_mixedAddresses (char * fileName)
 
 void test_duplicateEntries (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
@@ -121,17 +122,17 @@ void test_duplicateEntries (char * fileName)
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", KDB_O_NONE);
+	Key * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
 	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv4/host", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host", KDB_O_NONE);
 	exit_if_fail (key, "hostname host not found");
 	succeed_if (strcmp ("192.168.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user/tests/hosts/ipv4/host/alias1", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias1", KDB_O_NONE);
 	succeed_if (key, "alias1 not found");
-	key = ksLookupByName (ks, "user/tests/hosts/ipv4/host/alias2", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias2", KDB_O_NONE);
 	succeed_if (key, "alias2 not found");
 
 	ksDel (ks);
@@ -142,21 +143,21 @@ void test_duplicateEntries (char * fileName)
 
 void test_duplicateOrder (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
 	KeySet *ks = ksNew (20,
-			keyNew ("user/tests/hosts/ipv4/host1",
+			keyNew ("user:/tests/hosts/ipv4/host1",
 					KEY_VALUE, "192.168.0.1",
 					KEY_META, "order", "10",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv4/host2",
+			keyNew ("user:/tests/hosts/ipv4/host2",
 					KEY_VALUE, "192.168.0.2",
 					KEY_META, "order", "20",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv4/host3",
+			keyNew ("user:/tests/hosts/ipv4/host3",
 					KEY_VALUE, "192.168.0.3",
 					KEY_META, "order", "20",
 					KEY_END),
@@ -179,37 +180,37 @@ void test_duplicateOrder (char * fileName)
 
 void test_writeHostsSimple (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
 	KeySet *ks = ksNew (20,
-			keyNew ("user/tests/hosts/ipv4/localhost",
+			keyNew ("user:/tests/hosts/ipv4/localhost",
 					KEY_VALUE, "127.0.0.1",
 					KEY_META, "order", "10",
 					KEY_META, "comment/#0", "",
 					KEY_META, "comment/#1", " these are for ipv4",
 					KEY_META, "comment/#1/start", "#",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv4/testhost",
+			keyNew ("user:/tests/hosts/ipv4/testhost",
 					KEY_VALUE, "127.0.1.1",
 					KEY_META, "order", "20",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv4/testhost/testhostalias",
+			keyNew ("user:/tests/hosts/ipv4/testhost/testhostalias",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv6/localhost",
+			keyNew ("user:/tests/hosts/ipv6/localhost",
 					KEY_VALUE, "::1",
 					KEY_META, "order", "30",
 					KEY_META, "comment/#0", "",
 					KEY_META, "comment/#1", " The following lines are desirable for IPv6 capable hosts",
 					KEY_META, "comment/#1/start", "#",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv6/localhost/ip6-localhost",
+			keyNew ("user:/tests/hosts/ipv6/localhost/ip6-localhost",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv6/localhost/ip6-loopback",
+			keyNew ("user:/tests/hosts/ipv6/localhost/ip6-loopback",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv6/ip6-allnodes",
+			keyNew ("user:/tests/hosts/ipv6/ip6-allnodes",
 					KEY_VALUE, "ff02::1",
 					KEY_META, "order", "40",
 					KEY_END),
@@ -232,7 +233,7 @@ void test_writeHostsSimple (char * fileName)
 
 void test_readHostsComments (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
@@ -241,7 +242,7 @@ void test_readHostsComments (char * fileName)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
 	/* FIRST ENTRY */
-	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", 0);
+	Key * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", 0);
 	exit_if_fail (key, "hostname localhost not found");
 
 	/* inline comment */
@@ -286,7 +287,7 @@ void test_readHostsComments (char * fileName)
 	succeed_if (!strcmp ("", keyString (emptyLine)), "line comment key contains data although it shouldn't")
 
 		/* SECOND ENTRY */
-		Key * key2 = ksLookupByName (ks, "user/tests/hosts/ipv4/testentry", 0);
+		Key * key2 = ksLookupByName (ks, "user:/tests/hosts/ipv4/testentry", 0);
 	exit_if_fail (key2, "hostname localhost not found");
 
 	/* inline comment */
@@ -356,13 +357,13 @@ void test_readHostsComments (char * fileName)
 
 void test_writeHostsComments (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
 	KeySet *ks = ksNew (20,
-			keyNew ("user/tests/hosts/ipv4/localhost",
+			keyNew ("user:/tests/hosts/ipv4/localhost",
 					KEY_VALUE, "127.0.0.1",
 					KEY_META, "order", "10",
 					KEY_META, "comment/#0", "inline comment0",
@@ -374,7 +375,7 @@ void test_writeHostsComments (char * fileName)
 					KEY_META, "comment/#3/start", "#",
 					KEY_META, "comment/#4", "",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv4/testentry",
+			keyNew ("user:/tests/hosts/ipv4/testentry",
 					KEY_VALUE, "192.168.0.1",
 					KEY_META, "order", "20",
 					KEY_META, "comment/#0", " inline comment1",
@@ -386,9 +387,9 @@ void test_writeHostsComments (char * fileName)
 					KEY_META, "comment/#2/space", "2",
 					KEY_META, "comment/#2/start", "#",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv4/testentry/alias1",
+			keyNew ("user:/tests/hosts/ipv4/testentry/alias1",
 					KEY_END),
-			keyNew ("user/tests/hosts/ipv4/testentry/alias2",
+			keyNew ("user:/tests/hosts/ipv4/testentry/alias2",
 					KEY_END),
 			KS_END);
 	// clang-format on
@@ -411,6 +412,78 @@ void test_writeHostsComments (char * fileName)
 	PLUGIN_CLOSE ();
 }
 
+static void test_format (void)
+{
+	printf ("Test key format\n");
+
+	Key * k = keyNew ("/", KEY_END);
+	keySetString (k, "huhu");
+	succeed_if_same_string (keyString (k), "huhu");
+
+	keySetStringF (k, "huhu");
+	succeed_if_same_string (keyString (k), "huhu");
+
+	keySetStringF (k, "huhu %d", 20);
+	succeed_if_same_string (keyString (k), "huhu 20");
+
+	char c1[] = "huhu %d something";
+	keySetStringF (k, c1, 20);
+	c1[5] = '2';
+	c1[6] = '0';
+	succeed_if_same_string (keyString (k), c1);
+	succeed_if (keyGetValueSize (k) == sizeof (c1), "size wrong");
+
+
+	char c2[] =
+		"An extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something!";
+	keySetStringF (k, c2);
+	succeed_if_same_string (keyString (k), c2);
+	succeed_if (keyGetValueSize (k) == sizeof (c2), "size wrong");
+
+
+	char c3[] =
+		"%s extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something!";
+	keySetStringF (k, c3, "AN");
+	c3[0] = 'A';
+	c3[1] = 'N';
+	succeed_if_same_string (keyString (k), c3);
+	// printf ("%s\n\nXXX\n%s\n", keyString(k), c3);
+	// printf ("%d - %d\n", keyGetValueSize(k), sizeof(c3));
+	succeed_if (keyGetValueSize (k) == sizeof (c3), "size wrong");
+
+
+	char c4[] =
+		"%d extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something."
+		"an extremely long string that is way longer then default capture size of 512 or something!";
+	keySetStringF (k, c4, 20);
+	c4[0] = '2';
+	c4[1] = '0';
+	succeed_if_same_string (keyString (k), c4);
+	succeed_if (keyGetValueSize (k) == sizeof (c4), "size wrong");
+
+	keyDel (k);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("MOUNT       TESTS\n");
@@ -426,6 +499,8 @@ int main (int argc, char ** argv)
 	test_writeHostsSimple ("hosts/hosts-write-simple");
 	test_readHostsComments ("hosts/hosts-comments");
 	test_writeHostsComments ("hosts/hosts-comments");
+
+	test_format ();
 
 	print_result ("test_hosts");
 

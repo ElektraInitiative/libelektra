@@ -1,18 +1,44 @@
-restylers_version: '20191031'
+restylers_version: stable
 auto: true
+pull_requests: false
 restylers:
 
-  # TODO: Uncomment the lines below, when we switch to `clang-format` 9.
-  # - clang-format:
-  #     image: restyled/restyler-clang-format:v9.0.0
-
-  # TODO: Enable `prettier` again, after Restyled offers Prettier 1.19
-  # See also: https://github.com/restyled-io/restylers/blob/master/prettier/Dockerfile
-  # - prettier
-
+  - clang-format:
+      image: restyled/restyler-clang-format:13.0.1
+      include:
+        - "**/*.c"
+        - "**/*.cc"
+        - "**/*.cpp"
+        - "**/*.cxx"
+        - "**/*.c++"
+        - "**/*.C"
+        - "**/*.cs"
+        - "**/*.h"
+        - "**/*.hh"
+        - "**/*.hpp"
+        - "**/*.hxx"
+        - "**/*.h++"
+        - "**/*.H"
+        - "!tests/shell/gen/**/*"
+        - "!**/*.js"
+      command:
+        - clang-format
+        - "-i"
+        - "--style=file"
+  - prettier:
+      image: restyled/restyler-prettier:v2.3.2
   - prettier-markdown:
+      image: restyled/restyler-prettier:v2.3.2
       arguments: []
   - shfmt:
+      image: restyled/restyler-shfmt:v3.3.1
       arguments:
         - -s
         - -sr
+  - google-java-format:
+      image: 'restyled/restyler-google-java-format:v1.9'
+      command:
+        - google-java-format
+        - '--replace'
+      include:
+        - '**/*.java'

@@ -28,7 +28,7 @@ GetCommand::GetCommand ()
 namespace
 {
 
-void printOptions (option_t options)
+void printOptions (elektraLookupFlags options)
 {
 	// :'<,'>s/\(.*\)/^Iif(options \& \1) std::cout << "\1 ";
 	if (options & ckdb::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
@@ -40,9 +40,9 @@ void printOptions (option_t options)
 }
 
 
-ckdb::Key * warnOnMeta (ELEKTRA_UNUSED ckdb::KeySet * ks, ELEKTRA_UNUSED ckdb::Key * key, ckdb::Key * found, option_t options)
+ckdb::Key * warnOnMeta (ELEKTRA_UNUSED ckdb::KeySet * ks, ELEKTRA_UNUSED ckdb::Key * key, ckdb::Key * found, elektraLookupFlags options)
 {
-	if (found && !strncmp (keyName (found), "spec/", 5) && options == ckdb::KDB_O_CALLBACK)
+	if (found && !strncmp (keyName (found), "spec:/", 5) && options == ckdb::KDB_O_CALLBACK)
 	{
 		const ckdb::Key * meta = keyGetMeta (found, "context");
 		if (meta)
@@ -62,7 +62,7 @@ std::string getCascadingName (std::string name)
 }
 } // namespace
 
-ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, option_t options)
+ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, elektraLookupFlags options)
 {
 	warnOnMeta (ks, key, found, options);
 
@@ -85,7 +85,7 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 	}
 	std::cout << std::endl;
 
-	if (k.getName ().substr (0, 5) == "spec/" && (options & ckdb::KDB_O_CALLBACK))
+	if (k.getName ().substr (0, 6) == "spec:/" && (options & ckdb::KDB_O_CALLBACK))
 	{
 		depth += 4;
 		k.setMeta<int> ("callback/print_trace/depth", depth);
@@ -116,21 +116,13 @@ int GetCommand::execute (Cmdline const & cl)
 	KeySet conf;
 
 	kdb::Key root = cl.createKey (0);
+	string parentKeyName = cl.all ? "/" : cl.getParentKey (root).getName ();
 	kdb::KDB kdb (root);
 
-	std::string n;
-	if (cl.all)
-	{
-		n = root.getName ();
-		root.setName ("/");
-	}
-
+	std::string originalName = root.getName ();
+	root.setName (parentKeyName);
 	kdb.get (conf, root);
-
-	if (cl.all)
-	{
-		root.setName (n);
-	}
+	root.setName (originalName);
 
 	// do a lookup without tracer to warm up default cache
 	conf.lookup (root);
@@ -149,9 +141,9 @@ int GetCommand::execute (Cmdline const & cl)
 	{
 		if (cl.verbose)
 		{
-			if (k.getName ()[0] == '/')
+			if (k.getNamespace () == ElektraNamespace::DEFAULT)
 			{
-				cout << "The key was not found in any other namespace, taking the default from the metadata" << std::endl;
+				cout << "The key was not found in any other namespace, taking the default" << std::endl;
 			}
 			cout << "The resulting keyname is " << k.getName () << std::endl;
 			cout << "The resulting value size is " << k.getStringSize () << std::endl;
@@ -174,7 +166,7 @@ int GetCommand::execute (Cmdline const & cl)
 			const uint8_t * data = static_cast<const uint8_t *> (k.getValue ());
 			for (auto position = 0; position < k.getBinarySize (); position++)
 			{
-				cout << "\\x" << unsigned(data[position]);
+				cout << "\\x" << unsigned (data[position]);
 			}
 			cout << std::dec;
 		}

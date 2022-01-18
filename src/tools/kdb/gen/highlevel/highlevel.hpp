@@ -18,32 +18,36 @@ class HighlevelGenTemplate : public GenTemplate
 		static const char * InitFunctionName;
 		static const char * HelpFunctionName;
 		static const char * SpecloadFunctionName;
+		static const char * RunCommandsFunctionName;
 		static const char * TagPrefix;
 		static const char * EnumConversion;
 		static const char * AdditionalHeaders;
 		static const char * GenerateSetters;
 		static const char * EmbeddedSpec;
-		static const char * SpecValidation;
 		static const char * InstallPrefix;
 		static const char * EmbedHelpFallback;
+		static const char * UseCommands;
+		static const char * InitWithPointers;
 	};
 
 public:
 	HighlevelGenTemplate ()
-	: GenTemplate ("highlevel", { ".c", ".h", ".spec.eqd", ".mount.sh" },
+	: GenTemplate ("highlevel", { ".c", ".h", ".spec.eqd", ".mount.sh", ".commands.h" },
 		       { "enum.c", "union.c", "struct.c", "struct.alloc.fields.c", "enum.decl.h", "struct.decl.h", "union.decl.h",
 			 "keys.fun.h", "keys.fun.struct.h", "keys.fun.structref.h", "keys.tags.h", "context.fun.h", "context.tags.h" },
-		       {
-			       { Params::InitFunctionName, false },
-			       { Params::HelpFunctionName, false },
-			       { Params::SpecloadFunctionName, false },
-			       { Params::TagPrefix, false },
-			       { Params::EnumConversion, false },
-			       { Params::GenerateSetters, false },
-			       { Params::AdditionalHeaders, false },
-			       { Params::EmbeddedSpec, false },
-			       { Params::SpecValidation, false },
-		       })
+		       { { Params::InitFunctionName, false },
+			 { Params::HelpFunctionName, false },
+			 { Params::SpecloadFunctionName, false },
+			 { Params::RunCommandsFunctionName, false },
+			 { Params::TagPrefix, false },
+			 { Params::EnumConversion, false },
+			 { Params::AdditionalHeaders, false },
+			 { Params::GenerateSetters, false },
+			 { Params::EmbeddedSpec, false },
+			 { Params::InstallPrefix, false },
+			 { Params::EmbedHelpFallback, false },
+			 { Params::UseCommands, false },
+			 { Params::InitWithPointers, false } })
 	{
 	}
 

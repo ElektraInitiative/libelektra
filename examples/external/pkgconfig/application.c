@@ -13,12 +13,12 @@
 int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("system/test/myapp", KEY_END);
-	KDB * handle = kdbOpen (key);
+	Key * key = keyNew ("system:/test/myapp", KEY_END);
+	KDB * handle = kdbOpen (NULL, key);
 
 	kdbGet (handle, myConfig, key);
 
-	keySetName (key, "user/test/myapp");
+	keySetName (key, "user:/test/myapp");
 	kdbGet (handle, myConfig, key);
 
 	// check for errors in key

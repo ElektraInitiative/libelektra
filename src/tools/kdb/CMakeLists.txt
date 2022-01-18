@@ -21,9 +21,20 @@ if (BUILD_SHARED)
 	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
 	add_dependencies (kdb kdb_gen_templates_generated)
 
-	target_link_libraries (kdb elektra-core elektra-kdb elektratools elektra-opts elektra-merge)
+	find_package (Threads)
+	target_link_libraries (
+		kdb
+		${CMAKE_THREAD_LIBS_INIT}
+		elektra-core
+		elektra-kdb
+		elektratools
+		elektra-opts
+		elektra-merge)
 
-	install (TARGETS kdb DESTINATION bin)
+	install (
+		TARGETS kdb
+		DESTINATION bin
+		COMPONENT elektra-bin)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL)
@@ -32,7 +43,10 @@ if (BUILD_FULL)
 
 	target_link_libraries (kdb-full elektra-full elektratools-full)
 
-	install (TARGETS kdb-full DESTINATION bin)
+	install (
+		TARGETS kdb-full
+		DESTINATION bin
+		COMPONENT libelektra${SO_VERSION}-full)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
@@ -50,5 +64,8 @@ if (BUILD_STATIC)
 		set_target_properties (kdb-static PROPERTIES LINK_FLAGS ${CMAKE_STATIC_FLAGS})
 	endif ()
 
-	install (TARGETS kdb-static DESTINATION bin)
+	install (
+		TARGETS kdb-static
+		DESTINATION bin
+		COMPONENT elektra-bin)
 endif (BUILD_STATIC)

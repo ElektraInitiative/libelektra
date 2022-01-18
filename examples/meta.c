@@ -15,8 +15,8 @@ int main (void)
 	Key * k;
 	Key * c;
 	const Key * meta;
-	k = keyNew ("user/metakey", KEY_END);
-	c = keyNew ("user/metacopy", KEY_END);
+	k = keyNew ("user:/metakey", KEY_END);
+	c = keyNew ("user:/metacopy", KEY_END);
 
 	keySetMeta (k, "hello", "hello_world");
 

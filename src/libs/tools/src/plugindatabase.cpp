@@ -104,24 +104,38 @@ namespace
 bool hasProvides (PluginDatabase const & pd, std::string which)
 {
 	std::vector<std::string> allPlugins = pd.listAllPlugins ();
+	std::string errors;
 
 	for (auto const & plugin : allPlugins)
 	{
-		std::istringstream ss (pd.lookupInfo (
-			PluginSpec (
-				plugin,
-				KeySet (5, *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
-			"provides"));
-		std::string provide;
-		while (ss >> provide)
+		try
 		{
-			if (provide == which)
+			std::istringstream ss (pd.lookupInfo (
+				PluginSpec (plugin,
+					    KeySet (5,
+						    *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
+						    KS_END)),
+				"provides"));
+			std::string provide;
+			while (ss >> provide)
 			{
-				return true;
+				if (provide == which)
+				{
+					return true;
+				}
 			}
 		}
+		catch (std::exception const & e)
+		{
+			errors += e.what ();
+			errors += ",";
+		}
 	}
-	return false;
+
+	if (errors.empty ())
+		return false;
+	else
+		throw NoPlugin ("No plugin that provides " + which + " could be found, got errors: " + errors);
 }
 } // namespace
 
@@ -198,7 +212,7 @@ PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) c
 	try
 	{
 		KeySet conf = spec.getConfig ();
-		conf.append (Key ("system/module", KEY_VALUE, "this plugin was loaded for the status", KEY_END));
+		conf.append (Key ("system:/module", KEY_VALUE, "this plugin was loaded for the status", KEY_END));
 		plugin = impl->modules.load (spec.getName (), conf);
 		return real;
 	}
@@ -249,7 +263,7 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 			std::istringstream ss (lookupInfo (
 				PluginSpec (plugin,
 					    KeySet (5,
-						    *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
+						    *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
 						    KS_END)),
 				"metadata"));
 			std::string metadata;
@@ -259,7 +273,7 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 				{
 					int s = calculateStatus (lookupInfo (
 						PluginSpec (plugin, KeySet (5,
-									    *Key ("system/module", KEY_VALUE,
+									    *Key ("system:/module", KEY_VALUE,
 										  "this plugin was loaded without a config", KEY_END),
 									    KS_END)),
 						"status"));
@@ -278,9 +292,9 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 	if (foundPlugins.empty ())
 	{
 		if (!errors.empty ())
-			throw NoPlugin ("No plugin that provides " + which + " could be found, got errors: " + errors);
+			throw NoPlugin ("No plugin that provides metadata " + which + " could be found, got errors: " + errors);
 		else
-			throw NoPlugin ("No plugin that provides " + which + " could be found");
+			throw NoPlugin ("No plugin that provides metadata " + which + " could be found");
 	}
 
 	// the largest element of the map contains the best-suited plugin:
@@ -321,7 +335,7 @@ std::map<int, PluginSpec> ModulesPluginDatabase::lookupAllProvidesWithStatus (st
 		{
 			PluginSpec spec = PluginSpec (
 				plugin,
-				KeySet (5, *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END));
+				KeySet (5, *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END));
 
 			// lets see if there is a plugin named after the required provider
 			if (plugin == which)
@@ -371,7 +385,7 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 		std::vector<PluginSpec> plugins;
 		plugins.reserve (foundPlugins.size ());
 		std::for_each (foundPlugins.begin (), foundPlugins.end (),
-			       [&plugins](const std::map<int, PluginSpec>::value_type & elem) { plugins.push_back (elem.second); });
+			       [&plugins] (const std::map<int, PluginSpec>::value_type & elem) { plugins.push_back (elem.second); });
 		return plugins;
 	}
 	catch (kdb::tools::NoPlugin const & e)
@@ -407,8 +421,8 @@ std::vector<std::string> PluginVariantDatabase::listAllPlugins () const
 {
 	std::vector<std::string> plugins (ModulesPluginDatabase::listAllPlugins ());
 	plugins.erase (std::remove_if (plugins.begin (), plugins.end (),
-				       [this](const std::string & elem) {
-					       Key k ("system/elektra/plugins", KEY_END);
+				       [this] (const std::string & elem) {
+					       Key k ("system:/elektra/plugins", KEY_END);
 					       k.addBaseName (elem);
 					       k.addBaseName ("disable");
 					       Key res = this->variantImpl->pluginconf.lookup (k);
@@ -449,7 +463,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromSysconf (Plu
 	KeySet ksSysconf (sysconf);
 
 	// first find possible variants
-	Key kVariantBase ("system/elektra/plugins", KEY_END);
+	Key kVariantBase ("system:/elektra/plugins", KEY_END);
 	kVariantBase.addBaseName (whichplugin.getName ());
 	kVariantBase.addBaseName ("variants");
 
@@ -465,13 +479,13 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromSysconf (Plu
 			KeySet ksVariantConfToAdd;
 
 			// new base for plugin conf
-			Key kVariantPluginConf ("system/", KEY_END);
+			Key kVariantPluginConf ("system:/", KEY_END);
 
 			// add system conf for plugin variant
 			Key kVariantSysconf (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "config"));
 			this->addKeysBelowKeyToConf (kVariantSysconf, ksPluginVariantSysconf, kVariantPluginConf, ksVariantConfToAdd);
 
-			// check if the variant was disabled : system/elektra/plugins/simpleini/variants/space/disable
+			// check if the variant was disabled : system:/elektra/plugins/simpleini/variants/space/disable
 			Key kDisable = sysconf.lookup (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "disable"));
 			if (kDisable && kDisable.getString () == "1")
 			{
@@ -508,32 +522,33 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 	KeySet ksToIterate (genconf);
 	for (auto kCurrent : ksToIterate)
 	{
-		Key kCurrentTest (kCurrent.getNamespace () + "/", KEY_END);
-		kCurrentTest.addBaseName (kCurrent.getBaseName ()); // e.g. system/space
+		Key kCurrentTest ("/", KEY_END);
+		kCurrentTest.setNamespace (kCurrent.getNamespace ());
+		kCurrentTest.addBaseName (kCurrent.getBaseName ()); // e.g. system:/space
 		if (kCurrentTest == kCurrent)
 		{
 			PluginSpec variant (whichplugin);
 			KeySet ksVariantConfToAdd;
 
 			// new base for plugin conf
-			Key kVariantPluginConf ("system/", KEY_END);
+			Key kVariantPluginConf ("system:/", KEY_END);
 
 			// take variant config from genconf and transform it to proper plugin conf,
-			// e.g. system/space/config/format -> system/format
+			// e.g. system:/space/config/format -> system:/format
 			Key kVariantConf (kCurrentTest);
-			kVariantConf.addBaseName ("config"); // e.g. system/space/config
+			kVariantConf.addBaseName ("config"); // e.g. system:/space/config
 			this->addKeysBelowKeyToConf (kVariantConf, genconf, kVariantPluginConf, ksVariantConfToAdd);
 
 			// TODO plugin infos
 
-			// check if the variant was disabled : system/elektra/plugins/simpleini/variants/space/disable
+			// check if the variant was disabled : system:/elektra/plugins/simpleini/variants/space/disable
 			Key kDisable = sysconf.lookup (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "disable"));
 			if (kDisable && kDisable.getString () == "1")
 			{
 				continue; // skip this variant
 			}
 
-			// check if an override is available : system/elektra/plugins/simpleini/variants/space/override
+			// check if an override is available : system:/elektra/plugins/simpleini/variants/space/override
 			Key kOverride = sysconf.lookup (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "override"));
 			if (kOverride && kOverride.getString () == "1")
 			{
@@ -562,7 +577,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 Key PluginVariantDatabase::buildVariantSysconfKey (PluginSpec const & whichplugin, std::string const & variant,
 						   const std::string attr) const
 {
-	Key result ("system/elektra/plugins", KEY_END);
+	Key result ("system:/elektra/plugins", KEY_END);
 	result.addBaseName (whichplugin.getName ());
 	result.addBaseName ("variants");
 	result.addBaseName (variant);

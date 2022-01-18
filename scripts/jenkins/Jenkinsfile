@@ -3,7 +3,7 @@
  * This file describes how the elektra-jenkinsfile buildjob should be
  * executed.
  *
- * 1. imports and global variables are set
+ * 1. libraries and global variables are set
  * 2. define the main stages of the pipeline
  * 3. describe sub stages. This is where you will want to add new builds
  * 4. helper section to help write build scripts
@@ -14,15 +14,15 @@
  * A Snippet generator is available to the public at
  * https://qa.nuxeo.org/jenkins/pipeline-syntax/.
  * A list of available commands on the build server can be found after a login at
- * https://build.libelektra.org/job/elektra-jenkinsfile/pipeline-syntax/.
+ * https://build.libelektra.org/job/libelektra/pipeline-syntax/.
  */
 
 // TODO have a per plugin/binding deps in Dockerfile for easier maintenance
 // TODO add warnings plugins to scan for compiler warnings
 //      Does appear to be not working for multiple runs in one job
 
-// Imports
-import java.text.SimpleDateFormat
+// Libraries
+@Library('libelektra-shared') _
 
 // Buildjob properties
 properties([
@@ -40,9 +40,12 @@ properties([
 // code from the `master` branch.
 abortPreviousRunUnlessMaster()
 
-// Globals
-DOCKER_NODE_LABEL = 'docker'
-REGISTRY = 'hub.libelektra.org'
+pipelineConfig {
+// uncomment if you you want to overwrite these values
+// dockerNodeLabel = 'docker'
+// registry = 'hub.libelektra.org'
+  now = new Date()
+}
 
 /* Define reusable cmake Flag globals
  *
@@ -69,14 +72,8 @@ CMAKE_FLAGS_BUILD_ALL = [
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
-  'CMAKE_C_COMPILER': 'clang-6.0',
-  'CMAKE_CXX_COMPILER': 'clang++-6.0'
-]
-
-CMAKE_FLAGS_INI = [
-  'KDB_DB_FILE': 'default.ini',
-  'KDB_DB_INIT': 'elektra.ini',
-  'KDB_DEFAULT_STORAGE': 'ini'
+  'CMAKE_C_COMPILER': 'clang',
+  'CMAKE_CXX_COMPILER': 'clang++'
 ]
 
 CMAKE_FLAGS_MMAP = [
@@ -94,6 +91,7 @@ CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
+CMAKE_FLAGS_BUILD_TESTING_OFF = ['BUILD_TESTING': 'OFF']
 
 // CMAKE_FLAGS_BUILD_SHARED = ['BUILD_SHARED': 'ON']  is ON per default
 CMAKE_FLAGS_BUILD_FULL = ['BUILD_FULL': 'ON']
@@ -104,18 +102,11 @@ enum TEST {
   MEM,        // Test for memoryleaks via valgrind
   NOKDB,      // Only run tests that do not write to disk
   ALL,        // Run all tests
-  INSTALL     // Run all tests on an installed version of Elektra
+  INSTALL,    // Run all tests on an installed version of Elektra
+  CRYPTOS     // Test crypto, fcrypt and gpgme for memory leaks (quite unstable)
   public TEST() {}  // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
 }
 
-// Define DOCKER_OPTS enum which is used in withDockerEnv
-enum DOCKER_OPTS {
-  MOUNT_MIRROR,       // Mount the git repository mirror into the container
-  PTRACE              // Allow ptraces in the container
-  public DOCKER_OPTS()  {} // WORKAROUND see TEST
-}
-
-NOW = new Date()
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
 
@@ -136,13 +127,18 @@ def main() {
   }
 
   stage("Pull docker images") {
-    parallel generateDockerPullStages()
+    parallel dockerUtils.generateDockerPullStages(DOCKER_IMAGES)
   }
 
   maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) {
     lock('docker-images') {
-        parallel generateDockerBuildStages()
+        parallel dockerUtils.generateDockerBuildStages(DOCKER_IMAGES)
     }
+  }
+
+  stage("Basic checks") {
+    milestone label: "Basic checks"
+    parallel generateBasicCheckStages()
   }
 
   stage("Main builds") {
@@ -156,13 +152,14 @@ def main() {
   }
 
   stage("Build artifacts") {
-    milestone label: "artifacts"
+    milestone label: "Build artifacts"
     parallel generateArtifactStages()
   }
 
-  // maybeStage("Deploy Website", isMaster()) {
-  //   deployWebsite()
-  // }
+  maybeStage("Deploy Website", isMaster()) {
+    milestone label: "Deploy Website"
+    parallel deployWebsite()
+  }
 
   // maybeStage("Deploy Web UI", isMaster()) {
   //   deployWebUI()
@@ -226,10 +223,46 @@ def dockerInit() {
      * Additionally we use it for tests with Clang-6.0 and for source
      * formatting checks (as they depend on Clang-6.0).
      */
-    DOCKER_IMAGES.sid = createDockerImageDesc(
-      "debian-sid", this.&idTesting,
+    DOCKER_IMAGES.sid = dockerUtils.createDockerImageDesc(
+      "debian-sid", dockerUtils.&idTesting,
       "./scripts/docker/debian/sid",
       "./scripts/docker/debian/sid/Dockerfile"
+    )
+
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.sid_doc = dockerUtils.createDockerImageDesc(
+      "debian-sid-doc", dockerUtils.&idTesting,
+      "./scripts/docker/debian/sid",
+      "./scripts/docker/debian/sid/doc.Dockerfile"
+    )
+
+    /*
+     * Debian Bullseye. Used for testing and packaging.
+     */
+    DOCKER_IMAGES.bullseye = dockerUtils.createDockerImageDesc(
+      "debian-bullseye", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/Dockerfile"
+    )
+
+    /* A minimal Debian Bullseye image used to test Elektra without any
+     * additional requirements introduced by optional plugins, bindings,
+     * ...
+     */
+    DOCKER_IMAGES.bullseye_minimal = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-minimal", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/minimal.Dockerfile"
+    )
+
+    /* A Docker image for crossbuilding i386
+     */
+    DOCKER_IMAGES.bullseye_i386 = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-i386", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/i386.Dockerfile"
     )
 
     /* Our main target for compatibility is Debian stable
@@ -239,8 +272,8 @@ def dockerInit() {
      * Especially noteworthy is that this image is also used for Debian
      * package building
      */
-    DOCKER_IMAGES.buster = createDockerImageDesc(
-      "debian-buster", this.&idTesting,
+    DOCKER_IMAGES.buster = dockerUtils.createDockerImageDesc(
+      "debian-buster", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/Dockerfile"
     )
@@ -249,33 +282,24 @@ def dockerInit() {
      * additional requirements introduced by optional plugins, bindings,
      * ...
      */
-    DOCKER_IMAGES.buster_minimal = createDockerImageDesc(
-      "debian-buster-minimal", this.&idTesting,
+    DOCKER_IMAGES.buster_minimal = dockerUtils.createDockerImageDesc(
+      "debian-buster-minimal", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/minimal.Dockerfile"
     )
 
     /* A Docker image for crossbuilding i386
      */
-    DOCKER_IMAGES.buster_i386 = createDockerImageDesc(
-      "debian-buster-i386", this.&idTesting,
+    DOCKER_IMAGES.buster_i386 = dockerUtils.createDockerImageDesc(
+      "debian-buster-i386", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/i386.Dockerfile"
     )
 
-    /* Build Elektra's documentation with this image.
-     * Also contains latex for pdf creation.
-     */
-    DOCKER_IMAGES.buster_doc = createDockerImageDesc(
-      "debian-buster-doc", this.&idTesting,
-      "./scripts/docker/debian/buster",
-      "./scripts/docker/debian/buster/doc.Dockerfile"
-    )
-
     /* A Debian oldstable image used for testing backwards compatibility.
      */
-    DOCKER_IMAGES.stretch = createDockerImageDesc(
-      "debian-stretch", this.&idTesting,
+    DOCKER_IMAGES.stretch = dockerUtils.createDockerImageDesc(
+      "debian-stretch", dockerUtils.&idTesting,
       "./scripts/docker/debian/stretch",
       "./scripts/docker/debian/stretch/Dockerfile"
     )
@@ -284,182 +308,207 @@ def dockerInit() {
      * additional requirements introduced by optional plugins, bindings,
      * ...
      */
-    DOCKER_IMAGES.stretch_minimal = createDockerImageDesc(
-      "debian-stretch-minimal", this.&idTesting,
+    DOCKER_IMAGES.stretch_minimal = dockerUtils.createDockerImageDesc(
+      "debian-stretch-minimal", dockerUtils.&idTesting,
       "./scripts/docker/debian/stretch",
       "./scripts/docker/debian/stretch/minimal.Dockerfile"
     )
 
     /* A Docker image for crossbuilding i386
      */
-    DOCKER_IMAGES.stretch_i386 = createDockerImageDesc(
-      "debian-stretch-i386", this.&idTesting,
+    DOCKER_IMAGES.stretch_i386 = dockerUtils.createDockerImageDesc(
+      "debian-stretch-i386", dockerUtils.&idTesting,
       "./scripts/docker/debian/stretch",
       "./scripts/docker/debian/stretch/i386.Dockerfile"
     )
 
-    /* Build Elektra's documentation with this image.
-     * Also contains latex for pdf creation.
-     */
-    DOCKER_IMAGES.stretch_doc = createDockerImageDesc(
-      "debian-stretch-doc", this.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/doc.Dockerfile"
-    )
-
-    /* A Debian oldoldstable image used for testing backwards compatibility.
-       (will be removed on problems)
-     */
-    DOCKER_IMAGES.jessie = createDockerImageDesc(
-      "debian-jessie", this.&idTesting,
-      "./scripts/docker/debian/jessie",
-      "./scripts/docker/debian/jessie/Dockerfile"
-    )
-
     /* Ubuntu xenial image used to test compatibility with Ubuntu.
      */
-    DOCKER_IMAGES.xenial = createDockerImageDesc(
-      "ubuntu-xenial", this.&idTesting,
+    DOCKER_IMAGES.xenial = dockerUtils.createDockerImageDesc(
+      "ubuntu-xenial", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/xenial",
       "./scripts/docker/ubuntu/xenial/Dockerfile"
     )
 
     /* Alpine: used to compile against musl and uses ash as shell
      */
-    DOCKER_IMAGES.alpine = createDockerImageDesc(
-      "alpine", this.&idTesting,
-      "./scripts/docker/alpine/3.10",
-      "./scripts/docker/alpine/3.10/Dockerfile"
+    DOCKER_IMAGES.alpine = dockerUtils.createDockerImageDesc(
+      "alpine", dockerUtils.&idTesting,
+      "./scripts/docker/alpine/3.14",
+      "./scripts/docker/alpine/3.14/Dockerfile"
     )
 
     /* Ubuntu bionic image*/
-    DOCKER_IMAGES.bionic = createDockerImageDesc(
-      "bionic", this.&idTesting,
+    DOCKER_IMAGES.bionic = dockerUtils.createDockerImageDesc(
+      "bionic", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/bionic",
       "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
-    /* Image building the libelektra.org frontend */
-    DOCKER_IMAGES.website_frontend = createDockerImageDesc(
-      "website-frontend", this.&idWebsite,
-      ".",
-      "./scripts/docker/website/frontend/Dockerfile",
-      false
+    /* Ubuntu bionic image*/
+    DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
+      "focal", dockerUtils.&idTesting,
+      "./scripts/docker/ubuntu/focal",
+      "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
-    /* Image building the libelektra.org backend */
-    DOCKER_IMAGES.website_backend = createDockerImageDesc(
-      "website-backend", this.&idWebsite,
+    /* Fedora 33 image*/
+    DOCKER_IMAGES.fedora_33 = dockerUtils.createDockerImageDesc(
+      "fedora-33", dockerUtils.&idTesting,
+      "./scripts/docker/fedora/33",
+      "./scripts/docker/fedora/33/Dockerfile"
+    )
+
+    /* Fedora 34 image*/
+    DOCKER_IMAGES.fedora_34 = dockerUtils.createDockerImageDesc(
+      "fedora-34", dockerUtils.&idTesting,
+      "./scripts/docker/fedora/34",
+      "./scripts/docker/fedora/34/Dockerfile"
+    )
+
+    /* openSUSE Leap 15.3 image*/
+    DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
+      "opensuse-15-3", dockerUtils.&idTesting,
+      "./scripts/docker/opensuse/15.3",
+      "./scripts/docker/opensuse/15.3/Dockerfile"
+    )
+
+    /* CentOS Stream 8 image*/
+    DOCKER_IMAGES.centos_stream8 = dockerUtils.createDockerImageDesc(
+      "centos-stream-8", dockerUtils.&idTesting,
+      "./scripts/docker/centos/stream8",
+      "./scripts/docker/centos/stream8/Dockerfile"
+    )
+
+    /* Image building the libelektra.org website */
+    DOCKER_IMAGES.website = dockerUtils.createDockerImageDesc(
+      "website", dockerUtils.&idArtifact,
       ".",
-      "./scripts/docker/website/backend/Dockerfile",
+      "./scripts/docker/website/Dockerfile",
       false
     )
 
     /* Image building elektra web base image */
-    DOCKER_IMAGES.webui_base = createDockerImageDesc(
-      "web-base", this.&idWebsite,
+    DOCKER_IMAGES.webui_base = dockerUtils.createDockerImageDesc(
+      "web-base", dockerUtils.&idArtifact,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
       false
     )
 
     /* Image building elektrad */
-    DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
-      "elektrad-demo", this.&idWebsite,
+    DOCKER_IMAGES.webui_elektrad = dockerUtils.createDockerImageDesc(
+      "elektrad-demo", dockerUtils.&idArtifact,
       "./scripts/docker/webui/elektrad-demo/",
       "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
     )
 
     /* Image building webd */
-    DOCKER_IMAGES.webui_webd = createDockerImageDesc(
-      "webd-demo", this.&idWebsite,
+    DOCKER_IMAGES.webui_webd = dockerUtils.createDockerImageDesc(
+      "webd-demo", dockerUtils.&idArtifact,
       "./scripts/docker/webui/webd-demo/",
       "./scripts/docker/webui/webd-demo/Dockerfile",
       false
     )
+
+    /* Debian buster image used to install previously built packages */
+    DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
+      "debian-buster-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/debian/buster/release.Dockerfile",
+      false
+    )
+
+    /* Debian bullseye image used to install previously built packages */
+    DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/debian/bullseye/release.Dockerfile",
+      false
+    )
+
+    /* Ubuntu focal image used to install previously built packages */
+    DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-focal-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/ubuntu/focal/release.Dockerfile",
+      false
+    )
+
+    /* Ubuntu bionic image used to install previously built packages */
+    DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-bionic-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/ubuntu/bionic/release.Dockerfile",
+      false
+    )
+
+    /* Fedora 33 image used to install previously built packages */
+    DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
+      "fedora-33-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/fedora/33/release.Dockerfile",
+      false
+    )
+
+    /* Fedora 34 image used to install previously built packages */
+    DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
+      "fedora-34-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/fedora/34/release.Dockerfile",
+      false
+    )
+
+    /* openSuse Leap 15.3 image used to install previously built packages */
+    DOCKER_IMAGES.opensuse_15_3_installed = dockerUtils.createDockerImageDesc(
+      "opensuse-15-3-installed", dockerUtils.&idTesting,
+      "./build/package",
+      "./scripts/docker/opensuse/15.3/release.Dockerfile",
+      false
+    )
+
+    /* Image to build openwrt package */
+    DOCKER_IMAGES.openwrt_sdk = dockerUtils.createDockerImageDesc(
+      'openwrt-sdk', dockerUtils.&idTesting,
+      './scripts/docker/openwrt/sdk',
+      './scripts/docker/openwrt/sdk/Dockerfile'
+    )
   }
 }
 
-/* Generate Stages to pull all docker images */
-def generateDockerPullStages() {
-  def tasks = [:]
-  DOCKER_IMAGES.each { key, image ->
-    if(image.autobuild) {
-      tasks << pullImageStage(image)
-    }
-  }
-  return tasks
-}
-
-/* Returns a stage that tries to pull an image
- *
- * Also sets IMAGES_TO_BUILD to true if an image can not be found
- * to indicated that rebuilds are needed
- * @param image Map identifying which image to pull
+/* Generate basic check stages
+ * 
+ * Runs basic checks that do not to build the code
  */
-def pullImageStage(image) {
-  def taskname = "pull/${image.id}/"
-  return [(taskname): {
-    stage(taskname) {
-      node(DOCKER_NODE_LABEL) {
-        echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
-        docker.withRegistry("https://${REGISTRY}",
-                            'docker-hub-elektra-jenkins') {
-          try {
-            docker.image(image.id).pull()
-            echo "Found existing image"
-            image.exists = true
-          } catch(e) {
-            echo "Detected changes"
-            image.exists = false
-          }
-        }
-      }
-    }
-  }]
-}
-
-def generateDockerBuildStages() {
+def generateBasicCheckStages() {
   def tasks = [:]
-  DOCKER_IMAGES.each { key, image ->
-    if(image.autobuild && !image.exists) {
-      tasks << buildImageStage(image)
-    }
-  }
-  return tasks
-}
 
-/* Returns a map with a closure that builds image
- *
- * @param image Image that needs to be build
- */
-def buildImageStage(image) {
-  def taskname = "build/${image.id}/"
-  return [(taskname): {
-    stage(taskname) {
-      node(DOCKER_NODE_LABEL) {
-        echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
-        docker.withRegistry("https://${REGISTRY}",
-                          'docker-hub-elektra-jenkins') {
-          checkout scm
-          def uid = getUid()
-          def gid = getGid()
-          def cpus = cpuCount()
-          def i = docker.build(
-            image.id,"""\
---pull \
---build-arg JENKINS_GROUPID=${gid} \
---build-arg JENKINS_USERID=${uid} \
---build-arg PARALLEL=${cpus} \
---build-arg BASE_IMG=${DOCKER_IMAGES.webui_base.id} \
--f ${image.file} ${image.context}"""
-          )
-          i.push()
-        }
-      }
-    }
-  }]
+  // Do not abort parallel stages if any fail, so we can see the output of all stages
+  tasks.failFast = false
+
+  // Check the ABI and API compatibility of Elektra
+  tasks << buildIcheck()
+
+  // Check if release notes have been updated
+  tasks << buildCheckReleaseNotes()
+
+  // Check if all file names comply with the file name convention
+  tasks << buildCheckFileNames()
+
+  // Check for reuse compliancy
+  tasks << buildCheckReuseCompliant()
+
+  // Check formatting of c and CMake files
+  tasks << buildFormatChecks()
+
+  // Run the open tasks plugin and sloccount
+  tasks << buildTodo()
+
+  // Build doc and upload
+  tasks << buildDoc()
+
+  return tasks
 }
 
 /* Generate Main stages
@@ -472,11 +521,21 @@ def generateMainBuildStages() {
   // We want fo fail fast (i.e. abort parallel stages if one fails
   tasks.failFast = true
 
+  tasks << buildAndTest(
+    "fedora-34-full",
+    DOCKER_IMAGES.fedora_34,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
+
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
   tasks << buildAndTest(
-    "debian-stretch-full",
-    DOCKER_IMAGES.stretch,
+    "debian-bullseye-full",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -484,6 +543,48 @@ def generateMainBuildStages() {
       CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
+
+  return tasks
+}
+
+/* Generate Test stages for full test coverage
+ */
+def generateFullBuildStages() {
+  def tasks = [:]
+
+  tasks << buildAndTest(
+    "fedora-33-full",
+    DOCKER_IMAGES.fedora_33,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
+
+  // Build Elektra with clang and ASAN
+  // Detects memory leaks via ASAN
+  tasks << buildAndTestAsan(
+    "fedora-34-asan",
+    DOCKER_IMAGES.fedora_34,
+    CMAKE_FLAGS_BUILD_ALL
+  )
+
+  tasks << buildAndTest(
+    "opensuse-15-3",
+    DOCKER_IMAGES.opensuse_15_3,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
+  )
+
+  tasks << buildAndTest(
+    "centos-stream-8",
+    DOCKER_IMAGES.centos_stream8,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
   // Add a task that should build the whole project to catch all test errors
@@ -500,34 +601,24 @@ def generateMainBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
-  // Check the ABI and API compatibility of Elektra
-  tasks << buildIcheck()
+  tasks << buildAndTest(
+    "debian-stretch-full",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
 
-  // Check if release notes have been updated
-  tasks << buildCheckReleaseNotes()
-
-  // Check formatting of c and CMake files
-  tasks << buildFormatChecks()
-
-  return tasks
-}
-
-/* Generate Test stages for full test coverage
- */
-def generateFullBuildStages() {
-  def tasks = [:]
-
-  // Run the open tasks plugin and sloccount
-  tasks << buildTodo()
-
-  // Build doc and upload
-  tasks << buildDoc()
 
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "debian-stretch-asan",
-    DOCKER_IMAGES.stretch,
+    "debian-buster-asan",
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL
   )
 
@@ -540,18 +631,6 @@ def generateFullBuildStages() {
       CMAKE_FLAGS_CLANG
   )
 
-  // Build Elektra on jessie to see if we are backwards compatible
-  // Can be removed if it fails
-  tasks << buildAndTest(
-    "debian-jessie-full",
-    DOCKER_IMAGES.jessie,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      ['COMMON_FLAGS': ''] // The build system can not compile Elektra on Debian Jessie, if we specify the compiler switch `-Werror`.
-    ,
-    [TEST.ALL, TEST.MEM, TEST.INSTALL]
-  )
-
   // Build Elektra on debian-unstable for compatibility tests
   tasks << buildAndTest(
     "debian-unstable-full",
@@ -559,6 +638,24 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
+  )
+
+  // Build Elektra on debian bullseye
+  tasks << buildAndTest(
+    "debian-bullseye-full",
+    DOCKER_IMAGES.bullseye,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
+  )
+
+  tasks << buildAndTest(
+    "debian-bullseye-full-i386",
+    DOCKER_IMAGES.bullseye_i386,
+    CMAKE_FLAGS_I386 + [
+      'PLUGINS': 'NODEP'
+    ] + CMAKE_FLAGS_BUILD_ALL,
+    [TEST.ALL]
   )
 
   tasks << buildAndTest(
@@ -570,29 +667,20 @@ def generateFullBuildStages() {
     [TEST.ALL]
   )
 
-  tasks << buildAndTest(
-    "debian-stretch-full-i386",
-    DOCKER_IMAGES.stretch_i386,
-    CMAKE_FLAGS_I386 + [
-      'PLUGINS': 'NODEP'
-    ] + CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
-  )
-
-  // Build Elektra with clang. We use unstable for easy access to clang-6.0
+  // Build Elektra with clang. We use unstable for easy access to clang-9.0
   // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_CLANG
-    ,
+      CMAKE_FLAGS_CLANG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
   // Build Elektra via mingw for Windows
-  tasks << buildAndTestMingwW64()
+  tasks << buildAndTestMingwW64_x86_64()
+  tasks << buildAndTestMingwW64_i686()
 
   // Build Elektra on alpine
   tasks << buildAndTest(
@@ -615,47 +703,33 @@ def generateFullBuildStages() {
 
   // Build Elektra on a minimal Debian stretch Docker image
   tasks << buildAndTest(
-    "debian-stretch-minimal",
-    DOCKER_IMAGES.stretch_minimal,
-    [:],
-    [TEST.ALL]
-  )
-
-  // Build Elektra on a minimal Debian buster Docker image
-  tasks << buildAndTest(
     "debian-buster-minimal",
     DOCKER_IMAGES.buster_minimal,
     [:],
     [TEST.ALL]
   )
 
-  // Build Elektra on a minimal Debian buster Docker image
+  // Build Elektra on a minimal Debian Bullseye Docker image
+  tasks << buildAndTest(
+    "debian-bullseye-minimal",
+    DOCKER_IMAGES.bullseye_minimal,
+    [:],
+    [TEST.ALL]
+  )
+
+  // Build Elektra on a minimal Debian Bullseye Docker image
   // specify NODEP and see if plugins are properly included/excluded
   tasks << buildAndTest(
-    "debian-buster-minimal-nodep",
-    DOCKER_IMAGES.buster_minimal,
+    "debian-bullseye-minimal-nodep",
+    DOCKER_IMAGES.bullseye_minimal,
     ['PLUGINS': 'NODEP'],
     [TEST.ALL]
   )
 
-  // Build Elektra with the ini backend instead of the default
-  // Cache disabled because of bug with ini https://github.com/ElektraInitiative/libelektra/issues/2592
+  // Build Elektra without the cache plugin
   tasks << buildAndTest(
-    "debian-stretch-full-ini",
-    DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_INI +
-      CMAKE_FLAGS_COVERAGE + [
-      'PLUGINS': 'ALL;-DEPRECATED;-cache',
-      ],
-    [TEST.ALL, TEST.MEM]
-  )
-
-  // Build Elektra with the mmap backend instead of the default
-  tasks << buildAndTest(
-    "debian-stretch-full-mmap",
-    DOCKER_IMAGES.stretch,
+    "debian-bullseye-full-nocache",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_COVERAGE + [
@@ -665,8 +739,8 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTestAsan(
-    "debian-stretch-full-mmap-asan",
-    DOCKER_IMAGES.stretch,
+    "debian-bullseye-full-mmap-asan",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_MMAP
@@ -675,19 +749,29 @@ def generateFullBuildStages() {
   // Build Elektra with xdg resolver to see if we are compliant
   def xdgResolver = 'resolver_mf_xp_x'
   tasks << buildAndTest(
-    "debian-buster-full-xdg",
-    DOCKER_IMAGES.buster,
+    "debian-bullseye-full-xdg",
+    DOCKER_IMAGES.bullseye,
     [
-      'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
+      'PLUGINS': "${xdgResolver};dump;sync;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
     ],
     [TEST.ALL, TEST.MEM]
   )
 
+  // Build Elektra without tests
+  tasks << buildAndTest(
+    "debian-bullseye-full-build-testing-off",
+    DOCKER_IMAGES.bullseye,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_BUILD_TESTING_OFF
+    ,
+    []
+  )
+
   // Build Elektra without optimizations
   tasks << buildAndTest(
-    "debian-stretch-full-optimizations-off",
-    DOCKER_IMAGES.stretch,
+    "debian-bullseye-full-optimizations-off",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_OPTIMIZATIONS_OFF +
       CMAKE_FLAGS_DEBUG +
@@ -696,8 +780,33 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM]
   )
 
+  // Run memory analysis of the crypto plugins in separate environment as theses tests are quite unstable
+  tasks << buildAndTest(
+    "debian-buster-cryptoplugins",
+    DOCKER_IMAGES.buster,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
+      'TOOLS': 'kdb;gen-gpg-testkey',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
+  tasks << buildAndTest(
+    "debian-bullseye-cryptoplugins",
+    DOCKER_IMAGES.bullseye,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
+      'TOOLS': 'kdb;gen-gpg-testkey',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
   // We need the webui_base image to build webui images later
-  tasks << buildImageStage(DOCKER_IMAGES.webui_base)
+  tasks << dockerUtils.buildImageStage(DOCKER_IMAGES.webui_base)
 
   return tasks
 }
@@ -711,12 +820,11 @@ def buildTodo() {
 '''
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
-        openTasks pattern: openTaskPatterns,
-                  low: 'TODO'
-        archive(["sloccount.sc"])
+        recordIssues(tools: [taskScanner(ignoreCase: true, includePattern: openTaskPatterns, lowTags: 'TODO,FIXME')])
+        utils.archive(["sloccount.sc"])
         deleteDir()
       }
     }
@@ -728,8 +836,34 @@ def buildCheckReleaseNotes() {
   def stageName = "check-release-notes"
   return [(stageName): {
     maybeStage(stageName, !isMaster()) {
-      withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_check_release_notes"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if release notes have been updated */
+def buildCheckFileNames() {
+  def stageName = "check-file-names"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "scripts/dev/filename-checker"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if for reuse compliancy */
+def buildCheckReuseCompliant() {
+  def stageName = "check-reuse-compliant"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "reuse lint"
         deleteDir()
       }
     }
@@ -741,7 +875,7 @@ def buildIcheck() {
   def stageName = "icheck"
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_icheck"
         deleteDir()
       }
@@ -753,10 +887,10 @@ def buildFormatChecks() {
   def stageName = "formatting-check"
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      withDockerEnv(DOCKER_IMAGES.sid, [DockerOpts.MOUNT_MIRROR]) {
         dir('build') {
           deleteDir()
-          cmake(env.WORKSPACE, [:])
+          utils.cmake(env.WORKSPACE, [:])
           ctest("Test -R testscr_check_formatting")
         }
       }
@@ -776,10 +910,10 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         dir('build') {
           deleteDir()
-          cmake(env.WORKSPACE, cmakeFlags)
+          utils.cmake(env.WORKSPACE, cmakeFlags)
           sh "make html latex man pdf"
         }
 
@@ -792,63 +926,37 @@ def buildDoc() {
           sh "ln -s ${VERSION} current"
         }
 
-        warnings parserConfigurations: [
-          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
-        ]
+        recordIssues(tools: [doxygen(pattern: 'build/doc/doxygen.log')])
 
-        if (isMaster()) {
-          sshPublisher(
-            publishers: [
-              sshPublisherDesc(
-                configName: 'doc.libelektra.org',
-                transfers: [
-                  sshTransfer(
-                    sourceFiles: 'build/doc/latex/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/latest'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/html/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/latest'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/man/man3elektra/*',
-                    removePrefix: 'build/doc/man/man3elektra/',
-                    remoteDirectory: 'api/latest/man'
-                  )
-                ]
-              )
-            ],
-            verbose: true
-          )
-        } else {
-          sshPublisher(
-            publishers: [
-              sshPublisherDesc(
-                configName: 'doc.libelektra.org',
-                transfers: [
-                  sshTransfer(
-                    sourceFiles: 'build/doc/latex/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/pr'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/html/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/pr'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/man/man3elektra/*',
-                    removePrefix: 'build/doc/man/man3elektra/',
-                    remoteDirectory: 'api/pr/man'
-                  )
-                ]
-              )
-            ],
-            verbose: true
-          )
+        def uploadDir = "api/${env.BRANCH_NAME}"
+        if (!isMaster()) {
+          uploadDir = "api/pr/${env.BRANCH_NAME}"
         }
+        sshPublisher(
+          publishers: [
+            sshPublisherDesc(
+              verbose: true,
+              configName: 'doc.libelektra.org',
+              transfers: [
+                sshTransfer(
+                  sourceFiles: 'build/doc/latex/*',
+                  removePrefix: 'build/doc/',
+                  remoteDirectory: "${uploadDir}"
+                ),
+                sshTransfer(
+                  sourceFiles: 'build/doc/html/*',
+                  removePrefix: 'build/doc/',
+                  remoteDirectory: "${uploadDir}"
+                ),
+                sshTransfer(
+                  sourceFiles: 'build/doc/man/man3elektra/*',
+                  removePrefix: 'build/doc/man/man3elektra/',
+                  remoteDirectory: "${uploadDir}/man"
+                )
+              ]
+            )
+          ]
+        )
         deleteDir()
       }
     }
@@ -860,13 +968,13 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
   def cmakeFlags = CMAKE_FLAGS_BASE +
                    CMAKE_FLAGS_ASAN +
                    extraCmakeFlags
-  def dockerOpts = [DOCKER_OPTS.MOUNT_MIRROR, DOCKER_OPTS.PTRACE]
+  def dockerOpts = [DockerOpts.MOUNT_MIRROR, DockerOpts.PTRACE]
   return [(testName): {
     stage(testName) {
       withDockerEnv(image, dockerOpts) {
         dir('build') {
           deleteDir()
-          cmake(env.WORKSPACE, cmakeFlags)
+          utils.cmake(env.WORKSPACE, cmakeFlags)
           sh "make"
           def llvm_symbolizer = sh(returnStdout: true,
                                    script: 'which llvm-symbolizer').trim()
@@ -880,22 +988,44 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
   }]
 }
 
-/* Helper to generate mingw test */
-def buildAndTestMingwW64() {
-  def testName = "debian-buster-mingw-w64"
+/* Helper to generate mingw x86_64 test */
+def buildAndTestMingwW64_x86_64() {
+  def testName = "debian-bullseye-mingw-w64-x86_64"
   return [(testName): {
     stage(testName) {
-      withDockerEnv(DOCKER_IMAGES.buster) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
         dir('build') {
           deleteDir()
-          sh '../scripts/dev/configure-mingw-w64 ..'
+          sh '../scripts/dev/configure-mingw-w64-x86_64 ..'
           sh 'make'
           def destdir='elektra'
           withEnv(["DESTDIR=${destdir}"]){
               sh 'make install'
           }
           sh "zip -r elektra.zip ${destdir}"
-          archive(['elektra.zip'])
+          utils.archive(['elektra.zip'])
+        }
+      }
+    }
+  }]
+}
+
+/* Helper to generate mingw i686 test */
+def buildAndTestMingwW64_i686() {
+  def testName = "debian-bullseye-mingw-w64-i686"
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
+        dir('build') {
+          deleteDir()
+          sh '../scripts/dev/configure-mingw-w64-i686 ..'
+          sh 'make'
+          def destdir='elektra'
+          withEnv(["DESTDIR=${destdir}"]){
+              sh 'make install'
+          }
+          sh "zip -r elektra.zip ${destdir}"
+          utils.archive(['elektra.zip'])
         }
       }
     }
@@ -918,12 +1048,13 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
   def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                 .equals(CMAKE_FLAGS_COVERAGE)
-  def updateCoveralls = testName == 'debian-buster-full'
+  def updateCoveralls = testName == 'debian-bullseye-full'
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
+  def testCryptos = tests.contains(TEST.CRYPTOS)
   def install = tests.contains(TEST.INSTALL)
-  def dockerOpts = [DOCKER_OPTS.MOUNT_MIRROR]
+  def dockerOpts = [DockerOpts.MOUNT_MIRROR]
   return [(testName): {
     stage(testName) {
       withDockerEnv(image, dockerOpts) {
@@ -940,7 +1071,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
           dir(buildDir) {
             deleteDir()
-            cmake(env.WORKSPACE, cmakeFlags)
+            utils.cmake(env.WORKSPACE, cmakeFlags)
             sh "make"
             trackCoverage(testCoverage) {
               if(testAll) {
@@ -957,6 +1088,9 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                   }
                 }
               }
+              if(testCryptos) {
+                ctestcryptoplugins()
+              }
             }
             if(install) {
               sh 'make install'
@@ -972,7 +1106,7 @@ export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 env
 
 kdb run_all
-kill `pidof dbus-daemon`
+kill `pidof dbus-daemon` || echo "No dbus-daemon to kill."
 '''
           }
         } catch(e) {
@@ -985,7 +1119,7 @@ kill `pidof dbus-daemon`
             [parserName: 'GNU Make + GNU C Compiler (gcc)']
           ]
           */
-          archive(artifacts)
+          utils.archive(artifacts)
           if(testCoverage) {
             publishCoverage("${buildDir}/coverage")
           }
@@ -1004,9 +1138,7 @@ coveralls -b '${buildDir}' \
           -E '.*${buildDir}/src/plugins/\
 (?!\
 constants/constants\\.c|\
-(lua|ruby)/runtime\\.h|\
-yambi/(location\\.hh|parser\\.[ch]pp|position\\.hh)|\
-yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
+(lua|ruby)/runtime\\.h
 ).*' \
           -E '.*/src/error/.*' \
 """)
@@ -1023,61 +1155,166 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
   }]
 }
 
-/* Generate Stages that build and deploy artifacts
+/**
+ *  Generate Stages that build, test and deploy artifacts
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
-  // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
+
+  tasks << buildPackage(
+    "buildPackage/debian/buster",
+    DOCKER_IMAGES.buster,
+    "buster-unstable",
+    "buster",
+    DOCKER_IMAGES.buster_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/debian/bullseye",
+    DOCKER_IMAGES.bullseye,
+    "bullseye-unstable",
+    "bullseye",
+    DOCKER_IMAGES.bullseye_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/ubuntu/bionic",
+    DOCKER_IMAGES.bionic,
+    "bionic-unstable",
+    "bionic",
+    DOCKER_IMAGES.bionic_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/ubuntu/focal",
+    DOCKER_IMAGES.focal,
+    "focal-unstable",
+    "focal",
+    DOCKER_IMAGES.focal_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/fedora/33",
+    DOCKER_IMAGES.fedora_33,
+    "fedora-33-unstable",
+    "fedora-33-unstable",
+    DOCKER_IMAGES.fedora_33_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
+  tasks << buildPackage(
+    "buildPackage/fedora/34",
+    DOCKER_IMAGES.fedora_34,
+    "fedora-34-unstable",
+    "fedora-34-unstable",
+    DOCKER_IMAGES.fedora_34_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
+  tasks << buildPackage(
+    "buildPackage/opensuse/leap/15.3",
+    DOCKER_IMAGES.opensuse_15_3,
+    "opensuse-leap-15.3",
+    "opensuse-leap-15.3",
+    DOCKER_IMAGES.opensuse_15_3_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
+
+  // tasks << buildOpenwrtPackage(DOCKER_IMAGES.openwrt_sdk)
+
   tasks << buildWebsite()
   // tasks << buildWebUI()
+
   return tasks
 }
 
-/* Merges into debian branch and runs gbp buildpackage
+
+/**
+ *  Runs the packaging script, tests packages and publishes to unstable repo.
  *
- * stageName: e.g. buildPackage/debian/<codename>
- * image: must be one of DOCKER_IMAGES */
-def buildDebianPackage(stageName, image) {
+ * `withDockerEnv` accepts a second closure that builds the test image,
+ * tests packages and publishes them. This is necessary to ensure that
+ * these steps are run on the same node with the same working directory.
+ *
+ * @param stageName e.g. buildPackage/debian/<codename>
+ * @param image must be one of DOCKER_IMAGES
+ * @param repoName name of the package repository
+ * @param repoPrefix prefix of the package repository
+ * @param installImage image which should be build containing the built packages
+ * @param publishPackagesFun Closure that publishes packages to a repository
+ * @param updateChangelogFun Closure that updates the changelog
+ * @param placeholderDir Bool that describes if placeholder dirs need to be created
+ */
+def buildPackage(stageName, image, repoName, repoPrefix, installImage,
+                 publishPackagesFun, updateChangelogFun,
+                 placeholderDir=false) {
   return [(stageName): {
     stage(stageName) {
-      return withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      def packageRevision = ''
+      def targetDir=""
+      if (placeholderDir) {
+        // necessary because libelektra path must be longer than
+        // CPACK_RPM_<component>_BUILD_SOURCE_DIRS_PREFIX for debuginfo generation
+        // of RPM packages.
+        targetDir = "./placeholder/placeholder/placeholder/placeholder/libelektra"
+      } else {
+        targetDir = "./libelektra"
+      }
+      // Closure that builds the image with the previously generated packages,
+      // tests these packages and publishes them.
+      def postCl = {
+        dir(targetDir) {
+          // during the buildImage step the packages are installed and kdb run_all is executed
+          dockerUtils.buildImage(installImage)
+          dir("build/package") {
+            if (isMaster()) {
+              publishPackagesFun(
+                'doc.libelektra.org',
+                "/packaging/incoming/${repoName}/",
+                repoName,
+                repoPrefix,
+                "$VERSION",
+                packageRevision,
+                targetDir
+              )
+            }
+          }
+        }
+      }
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR, DockerOpts.NO_CHECKOUT], postCl) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
           sh "gpg --import $SKEY"
-          withEnv(["DEBSIGN_PROGRAM=gpg",
-                 "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
-                 "DEBEMAIL=autobuilder@libelektra.org"]) {
-            sh "rm -R ./*"
-            def targetDir="./libelektra"
-            checkout scm: [
-              $class: 'GitSCM',
-              branches: scm.branches,
-              extensions: scm.extensions + [
-                [$class: 'PerBuildTag'],
-                [$class: 'RelativeTargetDirectory',
-                 relativeTargetDir: targetDir]
-              ],
-              userRemoteConfigs: scm.userRemoteConfigs
-            ]
-            dir(targetDir) {
-              sh "git config --global user.name jenkins-builder"
-              sh "git config --global user.email jenkins@libelektra.org"
+          checkout scm: [
+            $class: 'GitSCM',
+            branches: scm.branches,
+            extensions: scm.extensions + [
+              [$class: 'PerBuildTag'],
+              [$class: 'RelativeTargetDirectory',
+               relativeTargetDir: targetDir]
+            ],
+            userRemoteConfigs: scm.userRemoteConfigs
+          ]
+          dir(targetDir) {
+            sh "git config --global user.name jenkins-builder"
+            sh "git config --global user.email jenkins@libelektra.org"
 
-              sh "git checkout -B temp"
-              sh "git tag -f $VERSION"
-
-              sh "git checkout -B debian origin/debian"
-              sh "git merge --no-ff -m 'merge $VERSION' temp"
-
-              sh "dch -l '.$BUILD_NUMBER' 'auto build'"
-              sh "git commit -am 'auto build $VERSION'"
-
-              sh "gbp buildpackage -sa"
+            dir('scripts/packaging') {
+              packageRevision = updateChangelogFun()
             }
-            if(isMaster()) {
-              publishDebianPackages()
+
+            dir("build") {
+              sh "../scripts/packaging/package.sh ${packageRevision}"
+              sh "../scripts/release/sign-packages.sh ./package"
             }
           }
         }
@@ -1086,9 +1323,56 @@ def buildDebianPackage(stageName, image) {
   }]
 }
 
+/**
+ * Updates the fedora changelog for the unstable build
+ * @return revision number of the package
+ */
+def updateFedoraChangelog() {
+  dir ("fedora") {
+    sh "./update-rpm-changelog.sh -l '.$BUILD_NUMBER' -m 'auto build'"
+    sh "git commit -am 'auto build $VERSION'"
+    return sh(
+      returnStdout: true,
+      script: './update-rpm-changelog.sh -p | cut -d "-" -f2'
+    ).trim()
+  }
+}
+
+/**
+ * Updates the ubuntu changelog for the unstable build
+ * @return revision number of the package
+ */
+def updateDebianChangelog() {
+  sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+  sh "git commit -am 'auto build $VERSION'"
+  return sh(
+    returnStdout: true,
+    script: 'dpkg-parsechangelog --show-field Version -l ./debian/changelog | cut -d "-" -f2'
+  ).trim()
+}
+
+/**
+ * Build OpenWrt packages with the current current git master state.
+ *
+ * @param image which docker image should be used
+ */
+def buildOpenwrtPackage(image) {
+  def stageName = 'build-openwrt-package'
+  return [(stageName): {
+    maybeStage(stageName, isMaster()) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
+        checkout scm
+        sh "./scripts/release/prepare-openwrt-makefile.sh /home/build/openwrt/package/feeds/packages/elektra/Makefile"
+        sh "cd /home/build/openwrt && make package/feeds/packages/elektra/compile || make -j1 package/feeds/packages/elektra/compile V=sc"
+        deleteDir()
+      }
+    }
+  }]
+}
+
 def deployDockerContainer(name, imageDesc, hostName) {
   node("frontend") {
-    docker.withRegistry("https://${REGISTRY}",
+    docker.withRegistry("https://${PipelineConfig.instance.registry}",
                         'docker-hub-elektra-jenkins') {
       def img = docker.image(imageDesc.id)
       img.pull()
@@ -1107,24 +1391,16 @@ def deployDockerContainer(name, imageDesc, hostName) {
   }
 }
 
-def deployWebsite() {
-  deployDockerContainer(
-    "elektra-backend",
-    DOCKER_IMAGES.website_backend,
-    "restapi.libelektra.org"
-  )
-  deployDockerContainer(
-    "elektra-frontend",
-    DOCKER_IMAGES.website_frontend,
-    "www.libelektra.org"
-  )
-}
-
 def buildWebsite() {
   def websiteTasks = [:]
-  websiteTasks << buildImageStage(DOCKER_IMAGES.website_frontend)
-  websiteTasks << buildImageStage(DOCKER_IMAGES.website_backend)
+  websiteTasks << dockerUtils.buildImageStage(DOCKER_IMAGES.website)
   return websiteTasks
+}
+
+def deployWebsite() {
+  def deployTasks = [:]
+  deployTasks << release.deployWebsite(DOCKER_IMAGES.website)
+  return deployTasks
 }
 
 def deployWebUI() {
@@ -1142,51 +1418,14 @@ def deployWebUI() {
 
 def buildWebUI() {
   def webuiTasks = [:]
-  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_elektrad)
-  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_webd)
+  webuiTasks << dockerUtils.buildImageStage(DOCKER_IMAGES.webui_elektrad)
+  webuiTasks << dockerUtils.buildImageStage(DOCKER_IMAGES.webui_webd)
   return webuiTasks
 }
 
 /*****************************************************************************
  * Define helper functions
  *****************************************************************************/
-
-/* Archives files located in paths
- *
- * Automatically prefixes with the current STAGE_NAME to identify where the
- * file was created.
- * @param paths List of paths to be archived
- */
-def archive(paths) {
-  echo "Start archivation"
-  if (paths) {
-    def prefix = "artifacts/"
-    def dest = "${prefix}${env.STAGE_NAME}/"
-    sh "mkdir -p ${dest}"
-    paths.each { path ->
-        sh "cp -v ${path} ${dest} || true"
-    }
-    archiveArtifacts artifacts: "${prefix}**",
-                     fingerprint: true,
-                     allowEmptyArchive: true
-  } else {
-    echo "No Artifacts to archive"
-  }
-  echo "Finish archivation"
-}
-
-
-/* Run cmake
- * @param directory Basedir for cmake
- * @param argsMap Map of arguments for cmake
- */
-def cmake(String directory, Map argsMap) {
-  def argsStr = ""
-  argsMap.each { key, value ->
-    argsStr += "-D$key=\"$value\" "
-  }
-  sh("cmake $argsStr $directory")
-}
 
 /* Publishes coverage reports
  * @param source dir where coverage reports are located
@@ -1203,6 +1442,7 @@ def publishCoverage(source = 'build/coverage') {
   sshPublisher(
     publishers: [
       sshPublisherDesc(
+        verbose: true,
         configName: 'doc.libelektra.org',
         transfers: [
           sshTransfer(
@@ -1211,23 +1451,9 @@ def publishCoverage(source = 'build/coverage') {
           )
         ]
       )
-    ],
-    verbose: true
+    ]
   )
   echo "Finish publication of coverage data"
-}
-
-/* Get the current users uid
- */
-def getUid() {
-  return sh(returnStdout: true, script: 'id -u').trim()
-}
-
-
-/* Get the current users gid
- */
-def getGid() {
-  return sh(returnStdout: true, script: 'id -g').trim()
 }
 
 /* Track coverage
@@ -1248,49 +1474,6 @@ def trackCoverage(doTrack, cl) {
   }
 }
 
-/* Run the passed closure in a docker environment
- *
- * Automatically takes care of docker registry authentication,
- * selecting a docker capable node,
- * checkout of scm and setting of useful Environment variables
- * @param image Docker image that should be used
- * @param opts List of DOCKER_OPTS that should be passed to docker
- * @param cl A closure that should be run inside the docker image
- */
-def withDockerEnv(image, opts=[], cl) {
-  node(DOCKER_NODE_LABEL) {
-    def dockerArgs = ""
-    if (opts.contains(DOCKER_OPTS.MOUNT_MIRROR)) {
-      dockerArgs += "-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors "
-    }
-    if (opts.contains(DOCKER_OPTS.PTRACE)) {
-      dockerArgs += "--cap-add SYS_PTRACE "
-    }
-    docker.withRegistry("https://${REGISTRY}",
-                        'docker-hub-elektra-jenkins') {
-      timeout(activity: true, time: 15, unit: 'MINUTES') {
-        def cpu_count = cpuCount()
-        withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
-                 "CTEST_PARALLEL_LEVEL='${cpu_count+2}'",
-                 "XDG_CONFIG_HOME=${WORKSPACE}/xdg/user",
-                 "XDG_CONFIG_DIRS=${WORKSPACE}/xdg/system"]) {
-          echo "Starting ${STAGE_NAME} on ${NODE_NAME} using ${image.id}"
-          checkout scm
-          docker.image(image.id)
-                .inside(dockerArgs) { cl() }
-        }
-      }
-    }
-  }
-}
-
-/* Get cpu count
- */
-def cpuCount() {
-  return sh(returnStdout: true,
-            script: 'grep -c ^processor /proc/cpuinfo').trim() as Integer
-}
-
 /* Run ctest with appropriate env variables
  * @param target What target to pass to ctest
  */
@@ -1298,12 +1481,8 @@ def ctest(target = "Test") {
   /*
      We disable the tests:
 
-     - `testmod_crypto_botan`,
-     - `testmod_crypto_openssl`,
      - `testmod_dbus`,
-     - `testmod_dbusrecv`,
-     - `testmod_fcrypt`,
-     - `testmod_gpgme`, and
+     - `testmod_dbusrecv`,and
      - `testmod_zeromqsend`
 
      , since they are known to fail in scenarios with high load.
@@ -1311,7 +1490,16 @@ def ctest(target = "Test") {
   */
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
-          -E 'testmod_(crypto_(botan|openssl)|dbus(recv)?|fcrypt|gpgme|zeromqsend)'"""
+          -E 'testmod_(dbus(recv)?|zeromqsend)'"""
+}
+
+/* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
+ * tests, which cause trouble when run in parallel or under high server load.
+ */
+def ctestcryptoplugins(target = "MemCheck") {
+  sh """ctest --force-new-ctest-process \
+        --output-on-failure --no-compress-output -T ${target} \
+        -R 'testmod_(crypto|fcrypt|gpgme)'"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
@@ -1346,144 +1534,10 @@ def xunitUpload(p = 'build/Testing/**/*.xml') {
   ])
 }
 
-/* Create a new Docker Image description
- *
- * @param name Name of the image, will be extended with registry, a common
- *             prefix and a tag
- * @param idFun Closure describing how the image id should be formatted
- *                      (see idTesting() / idWebsite())
- * @param context Build context for the docker build (base directory that will
- *                be sent to the docker agent). Relative to the current working
- *                directory.
- * @param file Path to Dockerfile relative to the current working directory.
- * @param autobuild If it should be automatically build at the start of the
- *                  Jenkins run. If false it can be build manually
- *                  (see buildImageStage()).
- */
-def createDockerImageDesc(name, idFun, context, file, autobuild=true) {
-  def prefix = 'build-elektra'
-  def fullName = "${REGISTRY}/${prefix}-${name}"
-  def map = [
-    name: fullName,
-    context: context,
-    file: file,
-    autobuild: autobuild,
-    exists: false
-  ]
-  return idFun(map)
-}
-
-/* Build image ID of docker images used for tests
- *
- * We use identifiers in the form of name:yyyyMM-hash
- * The hash is build from reading the Dockerfile. Hence it needs to be
- * checked out before it can be calculated.
- * @param imageMap Map identifying an docker image (see DOCKER_IMAGES)
- */
-def idTesting(imageMap) {
-  def cs = checksum(imageMap.file)
-  def dateString = dateFormatter(NOW)
-  imageMap.id = "${imageMap.name}:${dateString}-${cs}"
-  return imageMap
-}
-
-/* Build id for website
- *
- * @param imageMap Map identifying an docker image
- */
-def idWebsite(imageMap) {
-  imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
-  return imageMap
-}
-
-/* Generate the checksum of a file
- * @param file File to generate a checksum for
- */
-def checksum(file) {
-  // Used to identify if a Dockerfile changed
-  // TODO expand to use more than one file if Dockerfile ever depends on
-  //      external files
-  return sh(returnStdout: true,
-            script: "cat $file | sha256sum | dd bs=1 count=64 status=none")
-         .trim()
-}
-
-/* Generate a Stage
- *
- * If `expression` evaluates to TRUE, a stage(`name`) with `body` is run
- * @param name Name of the stage
- * @param expression If True, run body
- * @param body Closure representing stage body
- */
-def maybeStage(String name, boolean expression, Closure body) {
-  if(expression) {
-    stage(name, body)
-  } else {
-    stage(name) {
-      echo "Stage skipped: ${name}"
-    }
-  }
-}
-
-/* Format the date input
- * @param date Date to format
- */
-def dateFormatter(date) {
-  df = new SimpleDateFormat("yyyyMM")
-  return df.format(date)
-}
-
 /* Returns True if we are on the master branch
  */
 def isMaster() {
   return env.BRANCH_NAME=="master"
-}
-
-/* Publishes all files necessary for hosting a debian package
- * @param remote where the repository is located
- */
-def publishDebianPackages(remote="a7") {
-  // This path must coincide with the incoming dir on a7
-  def remotedir = 'compose/frontend/volumes/incoming'
-  sshPublisher(
-    publishers: [
-      sshPublisherDesc(
-        configName: remote,
-        transfers: [
-          sshTransfer(
-            sourceFiles: '*.deb',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.build',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.buildinfo',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.dsc',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.tar.xz',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.tar.gz',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.changes',
-            remoteDirectory: remotedir
-          )
-        ]
-      )
-    ],
-    verbose: true,
-    failOnError: true
-  )
 }
 
 /* Run apiary

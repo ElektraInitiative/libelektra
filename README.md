@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/release/ElektraInitiative/libelektra.svg)](https://github.com/ElektraInitiative/libelektra/releases/latest)
 [![Jenkins Build Status](https://img.shields.io/jenkins/t/https/build.libelektra.org/job/libelektra/job/master.svg)](https://build.libelektra.org/job/libelektra/job/master/lastBuild)
-[![Travis Build Status](https://travis-ci.org/ElektraInitiative/libelektra.svg?branch=master)](https://travis-ci.org/ElektraInitiative/libelektra)
+[![macOS Build Status](https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml/badge.svg)](https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml)
 [![Cirrus Build Status](https://api.cirrus-ci.com/github/ElektraInitiative/libelektra.svg)](https://cirrus-ci.com/github/ElektraInitiative/libelektra)
 [![Coverage Status](https://img.shields.io/coveralls/github/ElektraInitiative/libelektra.svg)](https://coveralls.io/github/ElektraInitiative/libelektra)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/ElektraInitiative/libelektra.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ElektraInitiative/libelektra/alerts)
@@ -20,9 +20,10 @@ applications' configurations, leveraging easy application integration.
 
 ## Often Used Links
 
+- If you are new, start reading [Get Started](doc/GETSTARTED.md)
 - [Build server](https://build.libelektra.org/)
 - [Website](https://www.libelektra.org)
-- [API documentation](https://doc.libelektra.org/api/latest/html/)
+- [API documentation](https://doc.libelektra.org/api/master/html/)
 
 ## Overview
 
@@ -86,7 +87,7 @@ Now that we have Elektra installed, we can start:
 
 - using the [kdb command](/doc/help/kdb.md),
 - using [qt-gui](/src/tools/qt-gui/) for people preferring graphical user interfaces, and
-- using [web-ui](/src/tools/web/) for people preferring web user interfaces.
+- using [web-ui](/src/tools/webui/) for people preferring web user interfaces.
 
 ### Documentation
 
@@ -102,8 +103,8 @@ In the GitHub repository the full documentation is available, including:
 
 You can read the documentation for the kdb tool, either
 
-- [on the Website](https://www.libelektra.org)
-- [in the API docu](https://doc.libelektra.org/api/latest/html/doc_help_kdb_md.html)
+- [on the Website](https://www.libelektra.org/manpages/kdb)
+- [in the API docu](https://doc.libelektra.org/api/master/html/doc_help_kdb_md.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`
 - [on GitHub](https://master.libelektra.org/doc/help/kdb.md)
@@ -115,7 +116,7 @@ You can read the documentation for the kdb tool, either
 
 - Elektra uses simple key-value pairs.
 - Elektra uses the [BSD licence](LICENSE.md).
-- Elektra implements an [API](https://doc.libelektra.org/api/latest/html/) to fully access a global key database.
+- Elektra implements an [API](https://doc.libelektra.org/api/master/html/) to fully access a global key database.
 - Elektra can be thought of a [virtual file system for configuration](/doc/BIGPICTURE.md).
 - Elektra supports mounting of existing configuration files into a global key database.
 - Elektra has dozens of [Plugins](src/plugins/) that make it possible

@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = check apply
 - infos/placements = postgetstorage presetstorage
-- infos/status = recommended productive maintained nodep configurable global unfinished
+- infos/status = recommended productive nodep configurable global unfinished
 - infos/description = allows to give specifications for keys
 
 ## Introduction
@@ -139,41 +139,48 @@ not individual keys' metakeys. It also applies to `kdbGet` and `kdbSet` calls.
 
 ## Examples
 
-Ini files can be found in [/examples/spec](/examples/spec) which should be PWD
+Ni files can be found in [/examples/spec](/examples/spec) which should be PWD
 so that the example works:
 
 ```sh
-cd ~e/examples/spec
-kdb global-mount        # mounts spec plugin by default
-kdb mount $PWD/spec.ini spec ni
-kdb mount $PWD/spectest.ini /testkey ni
+cd ../../../examples/spec
+#sudo kdb global-mount        # spec plugin should be mounted by default
+sudo kdb mount $PWD/spec.ini spec:/ ni
+sudo kdb mount $PWD/spectest.ini /testkey ni
 kdb export /testkey ni     # note: spec can only applied on cascading access
 ```
 
 With spec mount one can use (in this case battery.ini needs to be installed in
-`kdb file spec` (this should be preferred on non-development machines so that
+`kdb file spec:/` (this should be preferred on non-development machines so that
 everything still works after the source is removed):
 
 ```sh
-cp battery.ini $(dirname $(kdb file spec))
-kdb mount battery.ini spec/example/battery ni
-kdb spec-mount /example/battery
+sudo cp battery.ini $(dirname $(kdb file spec:/))/
+sudo kdb mount battery.ini spec:/example/battery ni
+sudo kdb spec-mount /example/battery
 kdb meta-ls /example/battery/level    # we see it has a check/enum
 kdb meta-get /example/battery/level check/enum    # now we know allowed values
 kdb set /example/battery/level low   # success, low is ok!
 kdb set /example/battery/level x     # fails, not one of the allowed values!
+```
 
-cp openicc.ini $(dirname $(kdb file spec))
-kdb mount openicc.ini spec/freedesktop/openicc ni
-kdb spec-mount /freedesktop/openicc
+```sh
+cp openicc.ini $(dirname $(kdb file spec:/))/
+sudo kdb mount openicc.ini spec:/freedesktop/openicc ni
+sudo kdb spec-mount /freedesktop/openicc
 
+kdb meta-set /freedesktop/openicc/device/camera/ array "#1"
 kdb ls /freedesktop/openicc # lets see the whole configuration
-kdb export spec/freedesktop/openicc ni   # give us details about the specification
-kdb meta-ls /freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
+kdb export spec:/freedesktop/openicc ni   # give us details about the specification
+kdb meta-ls spec:/freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
 ```
 
 ## Known Issues
 
-Added metadata is not correctly removed during `kdbSet`, if the corresponding spec key was modified.
+- In MINGW32 builds, there is no globbing and therefore no support for key names with # and \_.
+- Added metadata is not correctly removed during `kdbSet`, if the corresponding spec key was modified.
+- Default values do not work if globbing is involved.
+- By default, keys tagged with `require` do not emit errors even if not present
+  (https://issues.libelektra.org/1024)

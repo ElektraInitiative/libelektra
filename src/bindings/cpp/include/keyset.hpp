@@ -69,7 +69,6 @@ public:
 	ckdb::KeySet * release ();
 
 	ckdb::KeySet * getKeySet () const;
-	void setKeySet (ckdb::KeySet * k);
 
 	KeySet & operator= (KeySet const & other);
 
@@ -90,18 +89,18 @@ public:
 	Key next () const;
 	Key current () const;
 
-	void setCursor (cursor_t cursor) const;
-	cursor_t getCursor () const;
+	void setCursor (elektraCursor cursor) const;
+	elektraCursor getCursor () const;
 
 	Key pop ();
-	Key at (cursor_t pos) const;
+	Key at (elektraCursor pos) const;
 
 	KeySet cut (Key k);
 
-	Key lookup (const Key & k, const option_t options = KDB_O_NONE) const;
-	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
+	Key lookup (const Key & k, const elektraLookupFlags options = KDB_O_NONE) const;
+	Key lookup (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
 	template <typename T>
-	T get (std::string const & name, const option_t options = KDB_O_NONE) const;
+	T get (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
 
 	// operators
 	inline bool operator== (const KeySet & ks) const;
@@ -148,20 +147,20 @@ class KeySetIterator
 {
 public:
 	typedef Key value_type;
-	typedef cursor_t difference_type;
+	typedef elektraCursor difference_type;
 	typedef Key pointer;
 	typedef Key reference;
 	typedef std::random_access_iterator_tag iterator_category;
 
 	KeySetIterator (KeySet const & k) : ks (k), current (){};
-	KeySetIterator (KeySet const & k, const cursor_t c) : ks (k), current (c){};
+	KeySetIterator (KeySet const & k, const elektraCursor c) : ks (k), current (c){};
 	// conversion to const iterator?
 
 	Key get () const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
 	}
-	Key get (cursor_t pos) const
+	Key get (elektraCursor pos) const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
 	}
@@ -224,14 +223,14 @@ public:
 	{
 		return KeySetIterator (ks, current - pos);
 	}
-	const cursor_t & base () const
+	const elektraCursor & base () const
 	{
 		return current;
 	}
 
 private:
 	KeySet const & ks;
-	cursor_t current;
+	elektraCursor current;
 };
 
 
@@ -289,20 +288,20 @@ class KeySetReverseIterator
 {
 public:
 	typedef Key value_type;
-	typedef cursor_t difference_type;
+	typedef elektraCursor difference_type;
 	typedef Key pointer;
 	typedef Key reference;
 	typedef std::random_access_iterator_tag iterator_category;
 
 	KeySetReverseIterator (KeySet const & k) : ks (k), current (){};
-	KeySetReverseIterator (KeySet const & k, const cursor_t c) : ks (k), current (c){};
+	KeySetReverseIterator (KeySet const & k, const elektraCursor c) : ks (k), current (c){};
 	// conversion to const iterator?
 
 	Key get () const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
 	}
-	Key get (cursor_t pos) const
+	Key get (elektraCursor pos) const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
 	}
@@ -365,14 +364,14 @@ public:
 	{
 		return KeySetReverseIterator (ks, current + pos);
 	}
-	const cursor_t & base () const
+	const elektraCursor & base () const
 	{
 		return current;
 	}
 
 private:
 	KeySet const & ks;
-	cursor_t current;
+	elektraCursor current;
 };
 
 
@@ -492,18 +491,14 @@ inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
 }
 
 /**
- * Takes ownership of keyset!
+ * Take ownership of a `ckdb::KeySet *`.
  *
- * Keyset will be destroyed at destructor
- * you cant continue to use keyset afterwards!
+ * // TODO: use ksIncRef/ksDecRef
  *
- * Use KeySet::release() to avoid destruction.
- *
- * @param k the keyset to take the ownership from
+ * @param keyset the `KeySet *` to take the ownership of
  * @see release()
- * @see setKeySet()
  */
-inline KeySet::KeySet (ckdb::KeySet * k) : ks (k)
+inline KeySet::KeySet (ckdb::KeySet * keyset) : ks (keyset)
 {
 }
 
@@ -576,6 +571,7 @@ inline KeySet::~KeySet ()
  * If you don't want destruction of keyset at
  * the end you can release the pointer.
  * */
+// TODO (kodebach): remove?
 inline ckdb::KeySet * KeySet::release ()
 {
 	ckdb::KeySet * ret = ks;
@@ -586,27 +582,14 @@ inline ckdb::KeySet * KeySet::release ()
 /**
  * @brief Passes out the raw keyset pointer
  *
- * @return pointer to internal ckdb KeySet
+ * This function exists so that pure C functions that do not
+ * have a C++ binding can be called.
  *
- * @see release()
- * @see setKeySet()
+ * @return pointer to internal ckdb KeySet
  */
 inline ckdb::KeySet * KeySet::getKeySet () const
 {
 	return ks;
-}
-
-/**
- * @brief Take ownership of passed keyset
- *
- * @param k the keyset to take ownership from
- * @see release()
- * @see getKeySet()
- */
-inline void KeySet::setKeySet (ckdb::KeySet * k)
-{
-	ckdb::ksDel (ks);
-	ks = k;
 }
 
 /**
@@ -656,10 +639,11 @@ inline ckdb::KeySet * KeySet::dup () const
 /**
  * @brief Copy a keyset
  *
- * @param other other keyset to copy
+ * Replaces all keys in `this` with the ones from `other`.
+ * This is only a shallow copy. For a deep copy you need to manually
+ * Key::dup every key.
  *
- * This is only a shallow copy. For a deep copy you need to dup every
- * key.
+ * @param other other keyset to copy
  *
  * @copydoc ksCopy()
  */
@@ -671,11 +655,11 @@ inline void KeySet::copy (const KeySet & other)
 /**
  * @brief Clear the keyset
  *
- * Keyset will have no keys afterwards.
+ * Keyset will be empty afterwards.
  */
 inline void KeySet::clear ()
 {
-	ckdb::ksCopy (ks, nullptr);
+	ckdb::ksClear (ks);
 }
 
 /**
@@ -755,7 +739,7 @@ inline Key KeySet::current () const
 /**
  * @copydoc ksSetCursor()
  */
-inline void KeySet::setCursor (cursor_t cursor) const
+inline void KeySet::setCursor (elektraCursor cursor) const
 {
 	ckdb::ksSetCursor (ks, cursor);
 }
@@ -763,7 +747,7 @@ inline void KeySet::setCursor (cursor_t cursor) const
 /**
  * @copydoc ksGetCursor()
  */
-inline cursor_t KeySet::getCursor () const
+inline elektraCursor KeySet::getCursor () const
 {
 	return ckdb::ksGetCursor (ks);
 }
@@ -785,7 +769,7 @@ inline Key KeySet::pop ()
  *
  * @return the found key
  */
-inline Key KeySet::at (cursor_t pos) const
+inline Key KeySet::at (elektraCursor pos) const
 {
 	if (pos < 0) pos += size ();
 	return Key (ckdb::ksAtCursor (ks, pos));
@@ -804,7 +788,7 @@ inline KeySet KeySet::cut (Key k)
  *
  * @note That the internal key cursor will point to the found key
  */
-inline Key KeySet::lookup (const Key & key, const option_t options) const
+inline Key KeySet::lookup (const Key & key, const elektraLookupFlags options) const
 {
 	ckdb::Key * k = ckdb::ksLookup (ks, key.getKey (), options);
 	return Key (k);
@@ -817,11 +801,11 @@ inline Key KeySet::lookup (const Key & key, const option_t options) const
  * @param options some options to pass
  *
  * @return the found key
- * @see lookup (const Key &key, const option_t options)
+ * @see lookup (const Key &key, const elektraLookupFlags options)
  *
  * @note That the internal key cursor will point to the found key
  */
-inline Key KeySet::lookup (std::string const & name, option_t const options) const
+inline Key KeySet::lookup (std::string const & name, elektraLookupFlags const options) const
 {
 	ckdb::Key * k = ckdb::ksLookupByName (ks, name.c_str (), options);
 	return Key (k);
@@ -833,7 +817,7 @@ struct KeySetTypeWrapper;
 template <typename T>
 struct KeySetTypeWrapper
 {
-	T operator() (KeySet const & ks, std::string const & name, option_t const options) const
+	T operator() (KeySet const & ks, std::string const & name, elektraLookupFlags const options) const
 	{
 		Key k = ks.lookup (name, options);
 		if (!k) throw kdb::KeyNotFoundException ("key " + name + " was not found");
@@ -861,7 +845,7 @@ struct KeySetTypeWrapper
  * @return the requested type
  */
 template <typename T>
-inline T KeySet::get (std::string const & name, option_t const options) const
+inline T KeySet::get (std::string const & name, elektraLookupFlags const options) const
 {
 	KeySetTypeWrapper<T> typeWrapper;
 	return typeWrapper (*this, name, options);

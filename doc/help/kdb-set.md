@@ -2,14 +2,14 @@
 
 ## SYNOPSIS
 
-`kdb set <key name> [<value>]`
+`kdb set <key name> <value>`
 
 Where `key name` is the name of the key you wish to set the value of (or create) and `value` is the value you would like to set the key to.
-If the `value` argument is not passed, the key will be set to a value of `null`.
 
 ## DESCRIPTION
 
 This command allows the user to set the value of an individual key.
+If a cascading key is used that does not resolve to an existing key, the operation is aborted as it is ambiguous.
 
 ## EMPTY VALUES
 
@@ -31,15 +31,14 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   Print never/auto(default)/always colored output.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-N`, `--namespace=NS`:
-  Specify the namespace to use when writing cascading keys.
-  See [below in KDB](#KDB).
 - `--`:
   Do not process any following arguments starting with `-` as options.
 - `-v`, `--verbose`:
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
+- `-f`, `--force`:
+  Do not perform a cascading lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
 ## KDB
 
@@ -49,30 +48,22 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 - `/sw/elektra/kdb/#0/current/quiet`:
   Same as `-q`: Suppress default messages.
 
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is user, except `kdb` is used as root, then `system`
-  is the default.
-
 ## EXAMPLES
 
 To set a Key to the value `Hello World!`:<br>
-`kdb set user/example/key "Hello World!"`
-
-To create a new key with a null value:<br>
-`kdb set user/example/key`
+`kdb set user:/example/key "Hello World!"`
 
 To set a key to an empty value:<br>
-`kdb set user/example/key ""`
+`kdb set user:/example/key ""`
 
 To set a key to a negative value:<br>
 `kdb set -- /tests/neg -3`
 
 To create bookmarks:<br>
-`kdb set user/sw/elektra/kdb/#0/current/bookmarks`
+`kdb set user:/sw/elektra/kdb/#0/current/bookmarks ""`
 
 Followed by:<br>
-`kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
+`kdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current`
 
 ## SEE ALSO
 

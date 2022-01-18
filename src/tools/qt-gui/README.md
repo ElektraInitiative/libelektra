@@ -56,6 +56,7 @@ Note: If you install qt5 manually, you must either:
 ### Installing
 
 You can now install Elektra as you normally would or as described in the [install documentation](/doc/INSTALL.md).
+The package is called `elektra-qt-gui`.
 
 ## To Run
 

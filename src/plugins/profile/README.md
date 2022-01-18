@@ -25,6 +25,11 @@ preferences (next to the namespace preferences):
 2. Usage of key in the profile set with `profile`
 3. Usage of key in the `%` fallback profile
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Example
 
 Suppose we have the configuration file `profile.ini` in `~/.config`:
@@ -62,18 +67,18 @@ Then we can access `/sw/org/myapp/#0` in a profile-aware way:
 
 ```sh
 kdb ls /sw
-#> spec/sw/org/myapp/#0/current/key1
-#> spec/sw/org/myapp/#0/current/key3
-#> user/sw/org/myapp/#0
-#> user/sw/org/myapp/#0/%
-#> user/sw/org/myapp/#0/%/key2
-#> user/sw/org/myapp/#0/%/key3
-#> user/sw/org/myapp/#0/current
-#> user/sw/org/myapp/#0/current/key2
-#> user/sw/org/myapp/#0/profile
-#> user/sw/org/myapp/#0/myprofile
-#> user/sw/org/myapp/#0/myprofile/key1
-#> user/sw/org/myapp/#0/myprofile/key2
+#> spec:/sw/org/myapp/#0/current/key1
+#> spec:/sw/org/myapp/#0/current/key3
+#> user:/sw/org/myapp/#0
+#> user:/sw/org/myapp/#0/%
+#> user:/sw/org/myapp/#0/%/key2
+#> user:/sw/org/myapp/#0/%/key3
+#> user:/sw/org/myapp/#0/current
+#> user:/sw/org/myapp/#0/current/key2
+#> user:/sw/org/myapp/#0/profile
+#> user:/sw/org/myapp/#0/myprofile
+#> user:/sw/org/myapp/#0/myprofile/key1
+#> user:/sw/org/myapp/#0/myprofile/key2
 ```
 
 As we can see with the `-v` option, we will fetch keys from our `myprofile` even though we request `current`:
@@ -81,15 +86,15 @@ As we can see with the `-v` option, we will fetch keys from our `myprofile` even
 ```sh
 kdb get -v /sw/org/myapp/#0/current/key1
 #> got 25 keys
-#> searching spec/sw/org/myapp/#0/current/key1, found: spec/sw/org/myapp/#0/current/key1, options: KDB_O_CALLBACK
-#> The resulting keyname is user/sw/org/myapp/#0/myprofile/key1
+#> searching spec:/sw/org/myapp/#0/current/key1, found: spec:/sw/org/myapp/#0/current/key1, options: KDB_O_CALLBACK
+#> The resulting keyname is user:/sw/org/myapp/#0/myprofile/key1
 #> test1
 ```
 
 To switch profile we simply have to set one key:
 
 ```sh
-kdb set user/sw/org/myapp/#0/profile newprofile
+kdb set user:/sw/org/myapp/#0/profile newprofile
 ```
 
-Usually, this will be done via commandline by setting `proc/sw/org/myapp/#0/profile`.
+Usually, this will be done via commandline by setting `proc:/sw/org/myapp/#0/profile`.

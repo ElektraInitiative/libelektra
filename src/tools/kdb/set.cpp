@@ -24,60 +24,41 @@ SetCommand::SetCommand ()
 int SetCommand::execute (Cmdline const & cl)
 {
 	int argc = cl.arguments.size ();
-	if (argc != 1 && argc != 2)
+	if (argc != 2)
 	{
-		throw invalid_argument ("1 or 2 arguments needed");
+		throw invalid_argument ("2 arguments needed");
 	}
 
-	bool nullValue;
-	std::string value;
-
-	if (argc == 2)
-	{
-		nullValue = false;
-		value = cl.arguments[1];
-	}
-	else
-	{
-		nullValue = true;
-	}
+	std::string value = cl.arguments[1];
 
 	KeySet conf;
 	Key k = cl.createKey (0);
 	std::string name = k.getName ();
+	Key parentKey = cl.getParentKey (k);
 
 	// do not resume on any get errors
 	// otherwise the user might break
 	// the config
-	kdb.get (conf, k);
+	kdb.get (conf, parentKey);
 
-	if (name[0] == '/')
-	{
-		// fix name for lookup
-		name = cl.ns + name;
-		if (!cl.quiet) std::cout << "Using name " << name << std::endl;
-
-		// fix k for kdb.set later
-		k.setName (name);
-	}
+	bool cascadingWrite = name[0] == '/';
 
 	Key key = conf.lookup (name);
 
 	std::ostringstream toprint;
+
+	if (!key && cascadingWrite)
+	{
+		cerr << "Aborting: A cascading write to a non-existent key is ambiguous." << endl;
+		return 2;
+	}
 	if (!key)
 	{
 		toprint << "Create a new key " << name;
 		key = Key (name, KEY_END);
-		if (!nullValue)
-		{
-			toprint << " with string \"" << value << '"' << endl;
-			key.setString (value);
-		}
-		else
-		{
-			toprint << " with null value" << endl;
-			key.setBinary (nullptr, 0);
-		}
+		toprint << " with string \"" << value << '"' << endl;
+		key.setString (value);
+
 		if (!key.isValid ())
 		{
 			cerr << "no valid name supplied" << endl;
@@ -87,21 +68,14 @@ int SetCommand::execute (Cmdline const & cl)
 	}
 	else
 	{
-		if (!nullValue)
-		{
-			toprint << "Set string to \"" << value << '"' << endl;
-			key.setString (value);
-		}
-		else
-		{
-			toprint << "Set null value" << endl;
-			key.setBinary (nullptr, 0);
-		}
+		toprint << "Set string to \"" << value << '"' << endl;
+		key.setString (value);
 	}
-	kdb.set (conf, k);
-	printWarnings (cerr, k, cl.verbose, cl.debug);
-	printError (cerr, k, cl.verbose, cl.debug);
+	kdb.set (conf, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
+	printError (cerr, parentKey, cl.verbose, cl.debug);
 
+	if (cascadingWrite) toprint << "Using name " << key.getName () << std::endl;
 	if (!cl.quiet) cout << toprint.str ();
 
 	return 0;

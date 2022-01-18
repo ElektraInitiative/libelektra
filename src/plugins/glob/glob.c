@@ -62,7 +62,7 @@ enum GlobDirection
 
 static const char * getGlobFlags (KeySet * keys, Key * globKey)
 {
-	Key * flagKey = keyDup (globKey);
+	Key * flagKey = keyDup (globKey, KEY_CP_ALL);
 	keyAddBaseName (flagKey, "flags");
 	Key * flagResult = ksLookup (keys, flagKey, KDB_O_NONE);
 	keyDel (flagKey);
@@ -86,17 +86,17 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 	Key * userDirGlobConfig = 0;
 	Key * systemDirGlobConfig = 0;
 
-	userGlobConfig = keyNew ("user/glob", KEY_END);
-	systemGlobConfig = keyNew ("system/glob", KEY_END);
+	userGlobConfig = keyNew ("user:/glob", KEY_END);
+	systemGlobConfig = keyNew ("system:/glob", KEY_END);
 	switch (direction)
 	{
 	case GET:
-		userDirGlobConfig = keyNew ("user/glob/get", KEY_END);
-		systemDirGlobConfig = keyNew ("system/glob/get", KEY_END);
+		userDirGlobConfig = keyNew ("user:/glob/get", KEY_END);
+		systemDirGlobConfig = keyNew ("system:/glob/get", KEY_END);
 		break;
 	case SET:
-		userDirGlobConfig = keyNew ("user/glob/set", KEY_END);
-		systemDirGlobConfig = keyNew ("system/glob/set", KEY_END);
+		userDirGlobConfig = keyNew ("user:/glob/set", KEY_END);
+		systemDirGlobConfig = keyNew ("system:/glob/set", KEY_END);
 		break;
 	}
 
@@ -114,7 +114,7 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 
 			/* We now know we want that key.
 			 Dup it to not change the configuration. */
-			Key * ins = keyDup (k);
+			Key * ins = keyDup (k, KEY_CP_ALL);
 			/* Now look if we want cascading for the key */
 			if (keyString (k)[0] == '/')
 			{
@@ -186,7 +186,7 @@ int elektraGlobClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNU
 
 int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/glob"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/glob"))
 	{
 		// TODO: improve plugin contract
 		KeySet * config =

@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-%include "attribute.i"
-%include "std_string.i"
-%include "stdint.i"
-%include "exception.i"
+%include <attribute.i>
+%include <std_string.i>
+%include <stdint.i>
+%include <exception.i>
 
 %{
   extern "C" {
@@ -39,6 +39,8 @@
 /*
  * kdb.h
  */
+// Lua doesn't like the void* type of KEY_END for some reason
+%constant unsigned long long KEY_END = 0;
 %constant void *KS_END = KS_END;
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
@@ -60,6 +62,7 @@
     KDB_CATCH_EX(kdb, Exception)
 
   #define KDB_EXCEPTIONS \
+    KDB_CATCH_EX(kdb, ContractException) \
     KDB_CATCH_EX(kdb, KDBException) \
     KDB_CATCH_EX(kdb, Exception)
 %}
@@ -108,7 +111,6 @@
 // name manipulation
 %rename("_%s") kdb::Key::getNameSize;
 %rename("_%s") kdb::Key::getBaseNameSize;
-%rename("_%s") kdb::Key::getFullNameSize;
 
 // value operations
 %rename("_%s") kdb::Key::getString;
@@ -129,7 +131,7 @@
 /*
  * keyset.hpp
  */
-%apply ssize_t { cursor_t }
+%apply ssize_t { elektraCursor }
 
 %ignore kdb::VaAlloc;
 %ignore kdb::KeySet::KeySet (VaAlloc va, va_list ap);

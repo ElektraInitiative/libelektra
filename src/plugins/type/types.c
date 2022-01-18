@@ -58,7 +58,7 @@ bool elektraTypeCheckWChar (const Key * key)
 
 bool elektraTypeCheckString (const Key * key)
 {
-	return strlen (keyString (key)) != 0;
+	return keyIsString (key) == 1;
 }
 
 bool elektraTypeCheckWString (const Key * key)
@@ -272,8 +272,9 @@ static bool enumValidValues (const Key * key, KeySet * validValues, char * delim
 		if (strlen (name) > 0)
 		{
 			kdb_unsigned_long_long_t val = index;
-			ksAppendKey (validValues, keyNew (name, KEY_META_NAME, KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t),
-							  KEY_VALUE, &val, KEY_END));
+			Key * k = keyNew ("user:/", KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t), KEY_VALUE, &val, KEY_END);
+			keyAddName (k, name);
+			ksAppendKey (validValues, k);
 		}
 
 		++index;
@@ -305,22 +306,23 @@ static char * calculateStringValue (KeySet * validValues, char delimiter, kdb_un
 	while ((cur = ksNext (validValues)) != NULL)
 	{
 		const kdb_unsigned_long_long_t * val = keyValue (cur);
+		const char * name = keyName (cur) + sizeof ("user:/") - 1;
 		if (delimiter == 0 && *val == value)
 		{
 			elektraFree (stringValue);
-			return elektraStrDup (keyName (cur));
+			return elektraStrDup (name);
 		}
 		else if (delimiter != 0)
 		{
 			if (*val == 0 && value == 0 && stringValue[0] == '\0')
 			{
 				elektraFree (stringValue);
-				return elektraStrDup (keyName (cur));
+				return elektraStrDup (name);
 			}
 			else if (*val != 0 && (*val & value) == *val)
 			{
-				char * tmp = stringValue[0] == '\0' ? elektraFormat ("%s", keyName (cur)) :
-								      elektraFormat ("%s%c%s", stringValue, delimiter, keyName (cur));
+				char * tmp = stringValue[0] == '\0' ? elektraFormat ("%s", name) :
+									    elektraFormat ("%s%c%s", stringValue, delimiter, name);
 				elektraFree (stringValue);
 				stringValue = tmp;
 
@@ -370,15 +372,19 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
 		return true;
 	}
 
+	Key * valueKey = keyNew ("user:/0", KEY_END);
+
 	kdb_unsigned_long_long_t normalized = 0;
 	if (delim != 0)
 	{
 		while ((next = strchr (value, delim)) != NULL)
 		{
 			*next = '\0';
-			Key * cur = ksLookupByName (validValues, value, 0);
+			keySetBaseName (valueKey, value);
+			Key * cur = ksLookup (validValues, valueKey, 0);
 			if (cur == NULL)
 			{
+				keyDel (valueKey);
 				ksDel (validValues);
 				elektraFree (values);
 				return false;
@@ -390,7 +396,9 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
 		}
 	}
 
-	Key * cur = ksLookupByName (validValues, value, 0);
+	keySetBaseName (valueKey, value);
+	Key * cur = ksLookup (validValues, valueKey, 0);
+	keyDel (valueKey);
 	if (cur == NULL)
 	{
 		ksDel (validValues);
@@ -444,13 +452,17 @@ bool elektraTypeCheckEnum (const Key * key)
 	char * value = values;
 	char * next;
 
+	Key * valueKey = keyNew ("user:/0", KEY_END);
+
 	if (delim != 0)
 	{
 		while ((next = strchr (value, delim)) != NULL)
 		{
 			*next = '\0';
-			if (ksLookupByName (validValues, value, 0) == NULL)
+			keySetBaseName (valueKey, value);
+			if (ksLookup (validValues, valueKey, 0) == NULL)
 			{
+				keyDel (valueKey);
 				ksDel (validValues);
 				elektraFree (values);
 				return false;
@@ -459,14 +471,17 @@ bool elektraTypeCheckEnum (const Key * key)
 		}
 	}
 
-	if (ksLookupByName (validValues, value, 0) == NULL)
+	keySetBaseName (valueKey, value);
+	if (ksLookup (validValues, valueKey, 0) == NULL)
 	{
+		keyDel (valueKey);
 		ksDel (validValues);
 		elektraFree (values);
 		return false;
 	}
 
 
+	keyDel (valueKey);
 	ksDel (validValues);
 	elektraFree (values);
 

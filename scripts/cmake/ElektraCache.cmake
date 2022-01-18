@@ -66,21 +66,37 @@ set (TOOLS_LIST_DEFAULT kdb)
 
 if (TOOLS MATCHES "DEFAULT")
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS DEFAULT)
 endif ()
 
 if (TOOLS MATCHES "NODEP")
-	set (TOOLS_LIST)
+	set (TOOLS_LIST race)
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS NODEP)
 endif ()
 
 if (TOOLS MATCHES "ALL")
-	set (TOOLS_LIST pythongen race qt-gui gen-gpg-testkey)
+	set (
+		TOOLS_LIST
+		elektrad
+		fuse
+		gen-gpg-testkey
+		hub-zeromq
+		kdb
+		pythongen
+		qt-gui
+		race
+		webd
+		website
+		webui)
 	set (TOOLS_FORCE FORCE)
 	list (REMOVE_ITEM TOOLS ALL)
 endif ()
 
-set (TOOLS_DOC
-     "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
+set (
+	TOOLS_DOC
+	"Which TOOLS should be added? Either list individual tools or ALL for all available (including website!), NODEP for TOOLS without additional dependencies, DEFAULT is only kdb."
+)
 
 set (
 	TOOLS
@@ -232,7 +248,12 @@ option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed"
 # Developer builds
 #
 
-option (ENABLE_ASAN "Activate sanitizers, see doc/TESTING.md.")
+option (ENABLE_ASAN "Activate sanitizers and force RTLD_NODELETE, see doc/TESTING.md.")
+if (ENABLE_ASAN)
+	set (ASAN "1")
+else (ENABLE_ASAN)
+	set (ASAN "0")
+endif (ENABLE_ASAN)
 
 set (
 	ENABLE_COVERAGE
@@ -243,7 +264,7 @@ set (
 	"${PROJECT_SOURCE_DIR}"
 	CACHE FILEPATH "Full path to common prefix of build+source directory")
 
-option (ENABLE_DEBUG "Build with assertions and optimize for developing with Elektra.")
+option (ENABLE_DEBUG "Build with assertions and use RTLD_NODELETE. Intended for developing and debugging Elektra.")
 if (ENABLE_DEBUG)
 	set (DEBUG "1")
 else (ENABLE_DEBUG)
@@ -300,6 +321,11 @@ set (
 	TARGET_DOCUMENTATION_LATEX_FOLDER
 	"share/doc/elektra-api/latex"
 	CACHE STRING "The folder (below prefix) where to install latex api documentation files.")
+
+set (
+	TARGET_DOCUMENTATION_DOC-BASE_FOLDER
+	"share/doc-base/"
+	CACHE STRING "The folder (below prefix) where to install doc-base documentation files for debian packaging.")
 
 set (
 	TARGET_TOOL_EXEC_FOLDER
@@ -372,8 +398,13 @@ set (
 
 mark_as_advanced (
 	FORCE # The following settings might be relevant to a few users:
+	DISCOUNT_DIR
+	DREDD_EXECUTABLE
+	GO_EXECUTABLE
+	Qt5QmlModels_DIR
+	TARGET_LUA_CMOD_FOLDER
+	TARGET_LUA_LMOD_FOLDER
 	GTEST_ROOT
-	ANTLR4CPP_DIR
 	BUILD_GMOCK
 	BUILD_GTEST
 	INSTALL_GMOCK
@@ -385,15 +416,43 @@ mark_as_advanced (
 	CMAKE_PIC_FLAGS
 	CMAKE_STATIC_FLAGS
 	SWIG_EXECUTABLE
-	MAVEN_EXECUTABLE
+	GRADLE_EXECUTABLE
 	NPM_EXECUTABLE
 	RONN_LOC
-	Boost_DIR
-	BOTAN_INCLUDE_DIRS
+	GIT_EXECUTABLE
 	LIBGCRYPT_INCLUDE_DIR
 	XercesC_DIR
-	OPENSSL_INCLUDE_DIR
+	OPENSSL_INCLUDE_DIR)
+mark_as_advanced (
 	LUA_EXECUTABLE # The following settings are internal (not to be changed by users):
+	FEDORA
+	CARGO_EXECUTABLE
+	DIFF_COMMAND
+	GLib_CONFIG_INCLUDE_DIR
+	GLib_INCLUDE_DIRS
+	pkgcfg_lib_GIO_gio-2.0
+	pkgcfg_lib_GIO_glib-2.0
+	pkgcfg_lib_GIO_gobject-2.0
+	pkgcfg_lib_GLIB_glib-2.0
+	pkgcfg_lib_GLib_PKG_glib-2.0
+	pkgcfg_lib_GMODULE_glib-2.0
+	pkgcfg_lib_GMODULE_gmodule-2.0
+	pkgcfg_lib_GOBJECT_glib-2.0
+	pkgcfg_lib_GOBJECT_gobject-2.0
+	pkgcfg_lib_PC_LIBXML_xml2
+	pkgcfg_lib_PC_ZeroMQ_zmq
+	pkgcfg_lib_PC_libuv_dl
+	pkgcfg_lib_PC_libuv_nsl
+	pkgcfg_lib_PC_libuv_pthread
+	pkgcfg_lib_PC_libuv_rt
+	pkgcfg_lib_PC_libuv_uv
+	pkgcfg_lib_PC_yaml-cpp_yaml-cp
+	pkgcfg_lib__DBUS_PC_dbus-1
+	pkgcfg_lib__LIBSYSTEMD_PC_syst
+	pkgcfg_lib__OPENSSL_crypto
+	pkgcfg_lib__OPENSSL_ssl
+	pkgcfg_lib_PC_yaml-cpp_yaml-cpp
+	pkgcfg_lib__LIBSYSTEMD_PC_systemd
 	SWIG_DIR
 	SWIG_VERSION
 	gtest_build_samples
@@ -401,10 +460,10 @@ mark_as_advanced (
 	gtest_disable_pthreads
 	gtest_force_shared_crt
 	BUILD_SHARED_LIBS
-	BOOST_THREAD_LIBRARY
 	ADDED_DIRECTORIES
 	ADDED_PLUGINS
 	REMOVED_PLUGINS
+	REMOVED_TOOLS
 	ADDED_BINDINGS
 	LIBGCRYPTCONFIG_EXECUTABLE
 	jna

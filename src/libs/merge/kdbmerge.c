@@ -261,7 +261,7 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 		{
 			strcat (newName, keyName (key));
 		}
-		Key * duplicateKey = keyDup (key); // keySetName returns -1 if key was inserted to a keyset before
+		Key * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
 		int status = keySetName (duplicateKey, newName);
 		elektraFree (newName);
 		if (status < 0)
@@ -284,7 +284,7 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
  * @param informationKey will contain information if an error occurs
  * @returns a new key set without the root
  *
- * Example: If root is user/example and the KeySet contains a key with the name user/example/something then
+ * Example: If root is user:/example and the KeySet contains a key with the name user:/example/something then
  * the returned KeySet will contain the key /something.
  */
 static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
@@ -305,7 +305,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		};
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * duplicateKey = keyDup (currentKey);
+			Key * duplicateKey = keyDup (currentKey, KEY_CP_ALL);
 			int retVal;
 			if (keyIsBelow (root, currentKey))
 			{
@@ -687,7 +687,7 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 	 *  The elektraArrayIncName would then change the name of the real key.
 	 *  We don't want that as we only increase the name to loop over all keys.
 	 */
-	Key * iterator = keyDup (arrayStart);
+	Key * iterator = keyDup (arrayStart, KEY_CP_NAME);
 	if (iterator == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not duplicate key to iterate.");
@@ -868,6 +868,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `their` KeySet into char[] for LibGit.");
 				elektraFree (ourArray);
 				elektraFree (baseArray);
+				ELEKTRA_ASSERT (keyGetRef (checkedKey) > 0, "WTF 3");
 				keyDel (checkedKey);
 				ksDel (toAppend);
 				return -1;

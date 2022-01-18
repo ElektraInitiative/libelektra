@@ -41,7 +41,7 @@ END {
 }' > "$LINKFILE"
 
 WHITELIST=$(mktemp)
-grep -v '^#' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
+grep -Ev '^(#|[[:space:]]*$)' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
 
 NUMTHREADS=10
 TIMEOUT=20
@@ -51,7 +51,7 @@ check() {
 	link=$(echo "$1" | grep -oE "(https|http|ftp):[^|]*")
 	files=$(echo "$1" | grep -oE "\|.*" | sed 's/|/ /g')
 
-	if grep -Fxq "$link" "$WHITELIST"; then
+	if echo "$link" | grep -Eqf "$WHITELIST"; then
 		echo "whitelisted: $link"
 		printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
 		return
@@ -80,8 +80,8 @@ while read -r line; do
 	check "$line" &
 	PIDS="$PIDS $!"
 	THREADCOUNT=$((THREADCOUNT + 1))
-	printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
 	COUNTLINKS=$((COUNTLINKS + 1))
+	printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
 	if [ "$THREADCOUNT" -eq "$NUMTHREADS" ]; then
 		for pid in $PIDS; do
 			wait "$pid"

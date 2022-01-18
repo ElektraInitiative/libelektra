@@ -9,17 +9,22 @@
 - infos/metadata = check/date check/date/format
 - infos/description = validates date and time strings
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Validation options
 
 The following representation standards of dates and times are currently supported and can be use by setting `check/date` to:
 
 - `POSIX`
 
-  see `STRPTIME(3)` for more information. a valid format has to be specified in `check/date/format`
+  see `STRPTIME(3)` for more information. A valid format has to be specified in `check/date/format`
 
 - `ISO8601`
 
-  see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). possible format strings specified in `check/date/format`, default: `datetime complete+truncated`:
+  see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). Possible format strings specified in `check/date/format`, default: `datetime complete+truncated`:
 
   - Dates/Time:
 
@@ -53,13 +58,13 @@ The following representation standards of dates and times are currently supporte
     if no representation is specified, `complete+reduced+truncated` is used as default.
 
     - `complete`
-      complete representation, dates are separated by hyphens, times by colon. e.g. YYYY-MM-DD or hh:mm:ss
+      complete representation, dates are separated by hyphens, times by colon, e.g. YYYY-MM-DD or hh:mm:ss
 
     - `reduced`
       reduced precision, e.g. YYYY-MM, or hh
 
     - `truncated`
-      truncated representation, hyphens used to indicate omitted components. e.g. --MM-DD or --ss
+      truncated representation, hyphens used to indicate omitted components, e.g. --MM-DD or --ss
 
     - `complete+reduced+truncated`
       allow all 3 representations
@@ -77,7 +82,7 @@ The following representation standards of dates and times are currently supporte
     if no format is specified both `basic` and `extended` are treated as valid.
 
     - `basic`
-      no separating character between individual components of a `date`, `time` or `datetime` expressen
+      no separating character between individual components of a `date`, `time` or `datetime` expression.
 
     - `extended`
       separating characters between components. `date` components separated by hyphen, `time` components by colon.

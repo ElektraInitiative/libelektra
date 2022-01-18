@@ -61,7 +61,7 @@ last transformation to be applied to all keys on kdbSet.
 
 The cut operation can be used to strip parts of a key’s name. The cut operation is able to cut anything below the path
 of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the
-parent key `user/config`. If the KeySet contained a key with the name `user/config/with/long/path/key1`, the cut operation
+parent key `user:/config`. If the KeySet contained a key with the name `user:/config/with/long/path/key1`, the cut operation
 would be able to strip the following key name parts:
 
 - with
@@ -77,21 +77,21 @@ If both options are given, the MetaKey takes precedence. For example, consider t
 
 ```
 config/cut = will/be
-parent key = user/config
+parent key = user:/config
 
-user/config/will/be/stripped/key1		<- meta rename/cut = will/be/stripped
-user/config/will/be/stripped/key2		<- meta rename/cut = will/be/stripped
-user/config/will/be/stripped/key3
-user/config/will/not/be/stripped/key4
+user:/config/will/be/stripped/key1		<- meta rename/cut = will/be/stripped
+user:/config/will/be/stripped/key2		<- meta rename/cut = will/be/stripped
+user:/config/will/be/stripped/key3
+user:/config/will/not/be/stripped/key4
 ```
 
 The result of the cut operation would be the following KeySet:
 
 ```
-user/config/key1
-user/config/key2
-user/config/stripped/key3
-user/config/will/not/be/stripped/key4
+user:/config/key1
+user:/config/key2
+user:/config/stripped/key3
+user:/config/will/not/be/stripped/key4
 ```
 
 The cut operation is agnostic to a single trailing slash in the configuration. This means that it makes no difference whether `cut = will/be/stripped`
@@ -125,51 +125,51 @@ you can use `tolower=0` to get the keys `key` and `other/key`.
 #### Examples
 
 ```sh
-sudo kdb mount caseconversion.ini user/tests/rename mini rename toupper=1,tolower=3
+sudo kdb mount caseconversion.ini user:/tests/rename mini rename toupper=1,tolower=3
 
-kdb set user/tests/rename/MIXED/CASE/conversion 1
+kdb set user:/tests/rename/MIXED/CASE/conversion 1
 
-kdb ls user/tests/rename
-#> user/tests/rename/mixed/case/CONVERSION
+kdb ls user:/tests/rename
+#> user:/tests/rename/mixed/case/CONVERSION
 
 # Undo modifications
-kdb rm -r user/tests/rename
-sudo kdb umount user/tests/rename
+kdb rm -r user:/tests/rename
+sudo kdb umount user:/tests/rename
 ```
 
 ```sh
-sudo kdb mount renameTest.ini user/tests/rename mini rename get/case=toupper,set/case=keyname,/cut=REMOVED
+sudo kdb mount renameTest.ini user:/tests/rename mini rename get/case=toupper,set/case=keyname,/cut=REMOVED
 
-printf 'removed/key=test' > `kdb file user/tests/rename`
+printf 'removed/key=test' > `kdb file user:/tests/rename`
 
-kdb ls user/tests/rename
-#> user/tests/rename/KEY
+kdb ls user:/tests/rename
+#> user:/tests/rename/KEY
 
-kdb set user/tests/rename
+kdb set user:/tests/rename ""
 
-cat "`kdb file user/tests/rename`" | tail -n1
+cat "`kdb file user:/tests/rename`" | tail -n1
 #> KEY=test
 
 # Undo modifications
-kdb rm -r user/tests/rename
-sudo kdb umount user/tests/rename
+kdb rm -r user:/tests/rename
+sudo kdb umount user:/tests/rename
 ```
 
 ```sh
 # If you always want the keys in the configuration file upper case,
 # but for your application lower case you would use:
-sudo kdb mount caseconversion.ini user/tests/rename mini rename get/case=tolower,set/case=toupper
+sudo kdb mount caseconversion.ini user:/tests/rename mini rename get/case=tolower,set/case=toupper
 
-kdb set user/tests/rename/section/key value
-kdb get user/tests/rename/section/key
+kdb set user:/tests/rename/section/key value
+kdb get user:/tests/rename/section/key
 #> value
 
-cat "`kdb file user/tests/rename`"
+cat "`kdb file user:/tests/rename`"
 #> SECTION/KEY=value
 
 # Undo modifications
-kdb rm -r user/tests/rename
-sudo kdb umount user/tests/rename
+kdb rm -r user:/tests/rename
+sudo kdb umount user:/tests/rename
 ```
 
 ## Planned Operations

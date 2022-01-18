@@ -81,28 +81,27 @@
 			Key * c = ksNext (info);                                                                                           \
 			if (!c)                                                                                                            \
 			{                                                                                                                  \
-				ELEKTRA_SET_INTERFACE_ERRORF (                                                                             \
-					error, "Read only plugin, 'kdbSet' not supported but the key %s (value %s) tried to be added",     \
-					keyName (k), keyString (k));                                                                       \
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (error,                                                             \
+									"Read only plugin, adding the key %s (value %s) is not allowed",   \
+									keyName (k), keyString (k));                                       \
 				ksDel (info);                                                                                              \
 				return -1;                                                                                                 \
 			}                                                                                                                  \
 			if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))                                    \
 			{                                                                                                                  \
-				ELEKTRA_SET_INTERFACE_ERRORF (error,                                                                       \
-							      "Read only plugin, 'kdbSet' not supported but the key %s (expected %s) was " \
-							      "tried to be modified to "                                                   \
-							      "'%s' (expected '%s')",                                                      \
-							      keyName (k), keyName (c), keyString (k), keyString (c));                     \
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (error,                                                             \
+									"Read only plugin, changing the key %s (expected %s) "             \
+									"with value "                                                      \
+									"'%s' (expected '%s') is not allowed",                             \
+									keyName (k), keyName (c), keyString (k), keyString (c));           \
 				ksDel (info);                                                                                              \
 				return -1;                                                                                                 \
 			}                                                                                                                  \
 		}                                                                                                                          \
 		if ((k = ksNext (info)) != 0)                                                                                              \
 		{                                                                                                                          \
-			ELEKTRA_SET_INTERFACE_ERRORF (                                                                                     \
-				error, "Read only plugin, 'kdbSet' not supported but the key %s (value %s) tried to be removed",           \
-				keyName (k), keyString (k));                                                                               \
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (error, "Read only plugin, removing the key %s (value %s) is not allowed",  \
+								keyName (k), keyString (k));                                               \
 			ksDel (info);                                                                                                      \
 			return -1;                                                                                                         \
 		}                                                                                                                          \

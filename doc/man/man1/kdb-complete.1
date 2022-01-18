@@ -1,83 +1,65 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-COMPLETE" "1" "August 2019" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-COMPLETE" "1" "November 2021" ""
 .SH "NAME"
 \fBkdb\-complete\fR \- Show suggestions how to complete a given path
-.
 .SH "SYNOPSIS"
 \fBkdb complete [path]\fR
-.
 .P
-Where \fBpath\fR is the path for which the user would like to receive completion suggestion\. If \fBpath\fR is not specified, it will show every possible completion\. Its synonymous to calling \fBkdb complete ""\fR\.
-.
+Where \fBpath\fR is the path for which the user would like to receive completion suggestion\. If \fBpath\fR is not specified, it will show every possible completion\. It's synonymous to calling \fBkdb complete ""\fR\.
 .SH "DESCRIPTION"
-Show suggestions how the current name could be completed\. Suggestions will include existing key names, path segments of existing key names, namespaces and mount points\. Additionally, the output will indicate whether the given path is a node or a leaf in the hierarchy of keys, nodes end with \'/\' as opposed to leaves\. It will also work for cascading keys, and will additionally display a cascading key\'s namespace in the output to indicate from which namespace this suggestion originates from\.
-.
+Show suggestions how the current name could be completed\. Suggestions will include existing key names, path segments of existing key names, namespaces and mount points\. Additionally, the output will indicate whether the given path is a node or a leaf in the hierarchy of keys, nodes end with '/' as opposed to leaves\. It will also work for cascading keys, and will additionally display a cascading key's namespace in the output to indicate from which namespace this suggestion originates from\.
 .SH "OPTIONS"
-.
 .TP
 \fB\-H\fR, \fB\-\-help\fR
 Show the man page\.
-.
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
-.
 .TP
 \fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
-.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
-.
 .TP
 \fB\-m\fR, \fB\-\-min\-depth <min\-depth>\fR
 Specify the minimum depth of completion suggestions (0 by default), exclusive and relative to the name to complete\.
-.
 .TP
 \fB\-M\fR, \fB\-\-max\-depth <max\-depth>\fR
 Specify the maximum depth of completion suggestions (unlimited by default, 1 to show only the next level), inclusive and relative to the name to complete\.
-.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Give a more detailed output, showing the number of child nodes and the depth level\. Prints additional information in case of errors/warnings\.
-.
 .TP
 \fB\-0\fR, \fB\-\-null\fR
 Use binary 0 termination\.
-.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
-.
 .SH "EXAMPLES"
-.
 .nf
-
-# Backup\-and\-Restore: user/tests/complete/examples
+# Backup\-and\-Restore: user:/tests/complete/examples
 
 # Create the keys we use for the examples
-kdb set user/tests/complete/examples/kdb\-complete/level1 foo
-kdb set user/tests/complete/examples/kdb\-complete/lvl1/lvl2 bar
-kdb set user/tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
-kdb set user/tests/complete/examples/kdb\-complete/buzz fizzBuzz
-kdb set user/tests/complete/examples/kdb\-complete/#array_1 asdf
-kdb set user/tests/complete/examples/kdb\-complete/% nothing
+kdb set user:/tests/complete/examples/kdb\-complete/level1 foo
+kdb set user:/tests/complete/examples/kdb\-complete/lvl1/lvl2 bar
+kdb set user:/tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
+kdb set user:/tests/complete/examples/kdb\-complete/buzz fizzBuzz
+kdb set user:/tests/complete/examples/kdb\-complete/#1 asdf
+kdb set user:/tests/complete/examples/kdb\-complete/% nothing
 
 # list suggestions for namespaces starting with us, only the current level
 kdb complete us \-\-max\-depth=1
-#> user/
+#> user:/
 
 # list suggestions for namespaces starting with user, only the current level
 kdb complete user \-\-max\-depth=1
-#> user/
+#> user:/
 
 # list suggestions for the namespace user, only the next level as it ends with /
 # note the difference to the previous example, which uses no trailing /
-kdb complete user/ \-\-max\-depth=1
+kdb complete user:/ \-\-max\-depth=1
 # STDOUT\-REGEX: \.+
 
 # list all possible namespaces or mount points, only the current level
@@ -86,34 +68,29 @@ kdb complete \-\-max\-depth=1
 
 # list suggestions for /tests/complete/examples/kdb\-complete, only the current level
 kdb complete /tests/complete/examples/kdb\-complete \-\-max\-depth=1
-#> user/tests/complete/examples/kdb\-complete/
+#> user:/tests/complete/examples/kdb\-complete/
 
 # list suggestions for /tests/complete/examples/kdb\-complete/, only the next level
 # again, note the difference to the previous example which has no trailing /
 kdb complete /tests/complete/examples/kdb\-complete/ \-\-max\-depth=1
-#> user/tests/complete/examples/kdb\-complete/%
-#> user/tests/complete/examples/kdb\-complete/#array_1
-#> user/tests/complete/examples/kdb\-complete/buzz
-#> user/tests/complete/examples/kdb\-complete/level1
-#> user/tests/complete/examples/kdb\-complete/lvl1/
+#> user:/tests/complete/examples/kdb\-complete/%
+#> user:/tests/complete/examples/kdb\-complete/#1
+#> user:/tests/complete/examples/kdb\-complete/buzz
+#> user:/tests/complete/examples/kdb\-complete/level1
+#> user:/tests/complete/examples/kdb\-complete/lvl1/
 
 # list suggestions for /tests/complete/examples/kdb\-complete which are minimum 2 levels
 # away from that key, and maximum 4 levels away
 kdb complete /tests/complete/examples/kdb\-complete/ \-\-min\-depth=2 \-\-max\-depth=4
-#> user/tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/
-#> user/tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/lvl4/
+#> user:/tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/
+#> user:/tests/complete/examples/kdb\-complete/lvl1/lvl2/lvl3/lvl4/
 
-kdb rm \-r user/tests/complete/examples/kdb\-complete
-.
+kdb rm \-r user:/tests/complete/examples/kdb\-complete
 .fi
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 If you would only like to see existing keys under a given path, consider using the kdb\-ls(1) \fIkdb\-ls\.md\fR command\.
-.
 .IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
-.
 .IP "" 0
 

@@ -31,10 +31,10 @@ struct _resolverHandle
 	mode_t filemode;		///< The mode to set (from previous file)
 	mode_t dirmode;			///< The mode to set for new directories
 	unsigned int removalNeeded : 1; ///< Error on freshly created files need removal
-	unsigned int isMissing : 1;     ///< when doing kdbGet(), no file was there
+	unsigned int isMissing : 1;	///< when doing kdbGet(), no file was there
 	int timeFix;			///< time increment to use for fixing the time
 
-	char * dirname;  ///< directory where real+temp file is
+	char * dirname;	 ///< directory where real+temp file is
 	char * filename; ///< the full path to the configuration file
 	char * tempfile; ///< temporary file storages write to
 

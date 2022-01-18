@@ -19,7 +19,7 @@ namespace kdb
 template <typename T>
 struct KeySetTypeWrapper<std::map<std::string, T>>
 {
-	std::map<std::string, T> operator() (KeySet const & ks, std::string const & name, option_t const options) const
+	std::map<std::string, T> operator() (KeySet const & ks, std::string const & name, elektraLookupFlags const options) const
 	{
 		std::map<std::string, T> ret;
 		for (int i = 0; i < 5; ++i)
@@ -34,16 +34,16 @@ struct KeySetTypeWrapper<std::map<std::string, T>>
 				switch (i)
 				{
 				case 0:
-					n = "proc" + name;
+					n = "proc:" + name;
 					break;
 				case 1:
-					n = "dir" + name;
+					n = "dir:" + name;
 					break;
 				case 2:
-					n = "user" + name;
+					n = "user:" + name;
 					break;
 				case 3:
-					n = "system" + name;
+					n = "system:" + name;
 					break;
 				}
 			Key b = ks.lookup (n, options);

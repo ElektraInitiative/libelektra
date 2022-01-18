@@ -5,9 +5,9 @@ libelektra_0.8 {
 	elektraModulesLoad;
 
 	# plugin loading:
-	elektraPluginOpen;
 	elektraPluginClose;
 	elektraPluginGetFunction;
+	elektraPluginOpen;
 
 	# kdbhelper.h
 	elektraCalloc;
@@ -15,6 +15,7 @@ libelektra_0.8 {
 	elektraFree;
 	elektraMalloc;
 	elektraMemCaseCmp;
+	elektraMemDup;
 	elektraRealloc;
 	elektraStrCaseCmp;
 	elektraStrCmp;
@@ -22,15 +23,8 @@ libelektra_0.8 {
 	elektraStrLen;
 	elektraStrNCaseCmp;
 	elektraStrNCmp;
-	elektraStrNDup;
 	elektraVFormat;
 	elektraWriteArrayNumber;
-
-	# kdbmeta.h
-	keyGetOwner;
-	keyGetOwnerSize;
-	keyOwner;
-	keySetOwner;
 
 	# kdbease.h
 	keyCompare;
@@ -39,7 +33,6 @@ libelektra_0.8 {
 	# kdb.h
 	## KDB functions
 	kdbClose;
-	kdbEnsure;
 	kdbGet;
 	kdbOpen;
 	kdbSet;
@@ -50,7 +43,6 @@ libelektra_0.8 {
 	keyBaseName;
 	keyClear;
 	keyCmp;
-
 	keyCopy;
 	keyCopyAllMeta;
 	keyCopyMeta;
@@ -61,8 +53,6 @@ libelektra_0.8 {
 	keyGetBaseName;
 	keyGetBaseNameSize;
 	keyGetBinary;
-	keyGetFullName;
-	keyGetFullNameSize;
 	keyGetMeta;
 	keyGetName;
 	keyGetNameSize;
@@ -76,7 +66,6 @@ libelektra_0.8 {
 	keyIsBelowOrSame;
 	keyIsBinary;
 	keyIsDirectlyBelow;
-	keyIsInactive;
 	keyIsString;
 	keyName;
 	keyNeedSync;
@@ -113,80 +102,85 @@ libelektra_0.8 {
 	ksInit;
 	ksLookup;
 	ksLookupByName;
-	ksNeedSync;
 	ksNew;
 	ksNext;
 	ksPop;
 	ksResize;
 	ksRewind;
-	ksSearchInternal;
 	ksSetCursor;
 	ksTail;
 	ksVNew;
-
-	# kdbobsolete.h
-	keyNameGetOneLevel;
-
-	# kdbproposal.h
-	elektraKeySetName;
 };
 
 libelektra_1.0 {
 	# kdberrors.h
-	ELEKTRA_ERROR_RESOURCE;
-	ELEKTRA_ERROR_OUT_OF_MEMORY;
-	ELEKTRA_ERROR_INSTALLATION;
-	ELEKTRA_ERROR_INTERNAL;
-	ELEKTRA_ERROR_INTERFACE;
-	ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR;
 	ELEKTRA_ERROR_CONFLICTING_STATE;
-	ELEKTRA_ERROR_VALIDATION_SYNTACTIC;
+	ELEKTRA_ERROR_INSTALLATION;
+	ELEKTRA_ERROR_INTERFACE;
+	ELEKTRA_ERROR_INTERNAL;
+	ELEKTRA_ERROR_OUT_OF_MEMORY;
+	ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR;
+	ELEKTRA_ERROR_RESOURCE;
 	ELEKTRA_ERROR_VALIDATION_SEMANTIC;
+	ELEKTRA_ERROR_VALIDATION_SYNTACTIC;
 
-	ELEKTRA_WARNING_RESOURCE;
-	ELEKTRA_WARNING_OUT_OF_MEMORY;
-	ELEKTRA_WARNING_INSTALLATION;
-	ELEKTRA_WARNING_INTERNAL;
-	ELEKTRA_WARNING_INTERFACE;
-	ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR;
 	ELEKTRA_WARNING_CONFLICTING_STATE;
-	ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
+	ELEKTRA_WARNING_INSTALLATION;
+	ELEKTRA_WARNING_INTERFACE;
+	ELEKTRA_WARNING_INTERNAL;
+	ELEKTRA_WARNING_OUT_OF_MEMORY;
+	ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR;
+	ELEKTRA_WARNING_RESOURCE;
 	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
+	ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
 
-	keyMeta;
-	keyLock;
+	# kdb.h
+	elektraGOptsContract;
+	elektraGOptsContractFromStrings;
+
+	## Key functions
 	keyIsLocked;
+	keyLock;
+	keyMeta;
+
+	## KeySet functions
+	ksSearch;
+	ksIncRef;
+	ksDecRef;
+	ksGetRef;
 };
 
 libelektraprivate_1.0 {
 	# kdbprivate.h
 	elektraAbort;
-	elektraEscapeKeyNamePart;
 	elektraGlobalError;
 	elektraGlobalGet;
 	elektraGlobalSet;
+	elektraKeyNameCanonicalize;
+	elektraKeyNameEscapePart;
+	elektraKeyNameUnescape;
+	elektraKeyNameValidate;
 	elektraKsPopAtCursor;
-	elektraUnescapeKeyName;
-	elektraUnescapeKeyNamePart;
-	elektraValidateKeyName;
-	ksRenameKeys;
+	elektraPluginFindGlobal;
+	elektraPluginMissing;
+	elektraPluginVersion;
+	elektraProcessPlugin;
+	elektraProcessPlugins;
+	elektraRenameKeys;
 	keyClearSync;
 	keyIsDir;
 	keyIsProc;
 	keyIsSpec;
 	keyIsSystem;
 	keyIsUser;
-	keyNameIsDir;
-	keyNameIsProc;
-	keyNameIsSpec;
-	keyNameIsSystem;
-	keyNameIsUser;
+	keySetNamespace;
 	keySetRaw;
-	elektraPluginFindGlobal;
-	elektraPluginMissing;
-	elektraPluginVersion;
-	elektraProcessPlugin;
-	elektraProcessPlugins;
+	ksRenameKeys;
+	ksSearchInternal;
+
+	ksRename;
+	keyReplacePrefix;
+	ksFindHierarchy;
 
 	# kdblogger.h
 	elektraLog;
@@ -195,26 +189,26 @@ libelektraprivate_1.0 {
 	elektraRand;
 	elektraRandGetInitSeed;
 
-	#kdberrors.h
-	elektraSetErrorRESOURCE;
-	elektraSetErrorOUT_OF_MEMORY;
-	elektraSetErrorINSTALLATION;
-	elektraSetErrorINTERNAL;
-	elektraSetErrorINTERFACE;
-	elektraSetErrorPLUGIN_MISBEHAVIOR;
+	# kdberrors.h
 	elektraSetErrorCONFLICTING_STATE;
-	elektraSetErrorVALIDATION_SYNTACTIC;
+	elektraSetErrorINSTALLATION;
+	elektraSetErrorINTERFACE;
+	elektraSetErrorINTERNAL;
+	elektraSetErrorOUT_OF_MEMORY;
+	elektraSetErrorPLUGIN_MISBEHAVIOR;
+	elektraSetErrorRESOURCE;
 	elektraSetErrorVALIDATION_SEMANTIC;
+	elektraSetErrorVALIDATION_SYNTACTIC;
 
-	elektraAddWarningRESOURCE;
-	elektraAddWarningOUT_OF_MEMORY;
-	elektraAddWarningINSTALLATION;
-	elektraAddWarningINTERNAL;
-	elektraAddWarningINTERFACE;
-	elektraAddWarningPLUGIN_MISBEHAVIOR;
 	elektraAddWarningCONFLICTING_STATE;
-	elektraAddWarningVALIDATION_SYNTACTIC;
+	elektraAddWarningINSTALLATION;
+	elektraAddWarningINTERFACE;
+	elektraAddWarningINTERNAL;
+	elektraAddWarningOUT_OF_MEMORY;
+	elektraAddWarningPLUGIN_MISBEHAVIOR;
+	elektraAddWarningRESOURCE;
 	elektraAddWarningVALIDATION_SEMANTIC;
+	elektraAddWarningVALIDATION_SYNTACTIC;
 
 	elektraErrorSpecification;
 	elektraTriggerError;

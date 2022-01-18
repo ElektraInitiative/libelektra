@@ -14,12 +14,17 @@
 
 ## Introduction
 
-This plugin enables file based encryption and decryption using GPG.
+This plugin enables file-based encryption and decryption using GPG.
 Also an option for signing and verifying files using GPG is provided.
 
 This plugin encrypts backend files before the commit is executed (thus `precommit`).
 The plugin decrypts the backend files before the getstorage opens it (thus `pregetstorage`).
 After the getstorage plugin has read the backend file, the plugin decrypts the backend file again (thus `postgetstorage`).
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
 
 ## Security Considerations
 
@@ -55,7 +60,7 @@ you might want to consider disabling the sync plugin by entering:
 
 ```sh
 kdb set /sw/elektra/kdb/#0/current/plugins ""
-kdb set system/sw/elektra/kdb/#0/current/plugins ""
+kdb set system:/sw/elektra/kdb/#0/current/plugins ""
 ```
 
 Please note that this is a workaround until a more sustainable solution is found.

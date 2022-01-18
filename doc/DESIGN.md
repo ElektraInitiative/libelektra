@@ -1,44 +1,33 @@
 # DESIGN
 
-This document describes the design of the C-API and provides hints for
+This document describes the design of Elektra's C-API and provides hints for
 binding writers. It is not aimed at plugin writers, since it does not
 talk about the implementation details of Elektra.
 
-Elektra follows two design principles:
+Elektra [aims](GOALS.md) to fulfill the following design principles:
 
-1. Make it hard to use the API the wrong way, and
-2. aim towards an easy to use API for programmers reading and writing
+1. To make the API future-proof so that it can remain compatible and stable
+   over a long period of time,
+2. to make it hard to use the API the wrong way by making it simple & robust, and
+3. to make the API easy to use for programmers reading and writing
    configuration.
 
-Elektra’s data structures are optimized to get, set and lookup values
-easily and fast.
-
-The idea is, that the KDB API is not only implemented by Elektra.
-Elektra provides a full blown architecture to really support modern
-Linux Systems, but comes with some overhead. This document describes
-the `KDB` API. It also contains some hints about Elektra-specific
-conventions.
+The C-API is suitable to be reimplemented, also in non-C-languages, like Rust.
+Elektra provides a full-blown architecture to support configuring systems, and
+the C-API is the core of this endeavour.
 
 ## Data Structures
 
 The `Key`, `KeySet` and `KDB` data structures are defined in
-`kdbprivate.h` to remain ABI compatible when one of them is changed.
+`kdbprivate.h` to allow ABI compatibility.
 This means, it is not possible to put one of Elektra’s data structures
 on the stack. You must use the memory management facilities mentioned
 in the next section.
 
 ## Memory Management
 
-Elektra manages memory itself. This means, a programmer is not allowed
-to use free on data, which was not allocated by himself. This avoids
-situation where the programmer forgets to free data, and makes the API
-more beginner-friendly. In addition to that, `elektraMalloc` and `free`
-must use the same libc version: `elektraMalloc` in a library linked
-against another libc, but freed by the application could lead to hard
-to find bugs.
-
-Some calls that create data, have an opposite call that frees this
-data. For example after you call:
+Elektra provides functions that create and free data.
+For example after you call:
 
 ```c
 KDB * kdbOpen();
@@ -51,8 +40,7 @@ int kdbClose(KDB *handle);
 ```
 
 to get rid of the resources again. The second function may also shut
-down connections. Therefore it really must be called at the end of a
-program.
+down connections. Therefore, it must be called before the end of a program.
 
 ```c
 Key *keyNew(const char *keyName, ...);
@@ -62,22 +50,21 @@ KeySet *ksNew(int alloc, ...);
 int ksDel(KeySet *ks);
 ```
 
-In the above pairs, the first function uses `elektraMalloc` to reserve
-the necessary amount of memory. The second function frees the allocated
-data segment. There are more occurrences of `elektraMalloc`, but they
-are invisible to the user of the API and happen implicitly within any
-of these 3 classes: `KDB`, `Key` and `KeySet`.
+In the above pairs, the first function reserves the necessary amount
+of memory. The second function frees the allocated data segment. There
+are more allocations happening, but they are invisible to the user of
+the API and happen implicitly within any of these 3 classes:
+`KDB`, `Key` and `KeySet`.
 
-Names, values, and comments cannot be handled as easy, because Elektra
+Key names and values cannot be handled as easy, because Elektra
 does not provide a string library. There are 2 ways to access the
-mentioned attributes. We show these methods here, using the comment
-attribute as an example. The function
+mentioned attributes. The function
 
 ```c
-char *keyString(const Key *key);
+const char *keyString(const Key *key);
 ```
 
-just returns a string. Your are not allowed to change the returned string.
+returns a string. You are not allowed to change the returned string.
 The function
 
 ```c
@@ -86,8 +73,7 @@ ssize_t keyGetValueSize(const Key *key);
 
 shows how long the string is for the specified key. The returned value
 also specifies the minimum buffer size that `keyGetString` will
-reserve for the copy of the key. The return value can be directly
-passed to `elektraMalloc`.
+reserve for the copy of the key.
 
 ```c
 ssize_t keyGetString(const Key *key, char *returnedValue, size_t maxSize);
@@ -106,7 +92,7 @@ programmatically by the plugin `c`.
 To just retrieve a key, use
 
 ```c
-Key *k = keyNew(0);
+Key *k = keyNew("/", KEY_END);
 ```
 
 To obtain a `keyset`, use
@@ -115,12 +101,14 @@ To obtain a `keyset`, use
 KeySet *k = ksNew(0, KS_END);
 ```
 
-The macros `va_start` and `va_end` will not be used then. Alternatively
-pass a list as described in the documentation.
+Alternatively pass a list as described in the documentation.
+The idea of these variable arguments is, that one function call
+can create any `KeySet`. For binding writers `keyVNew` might be
+useful.
 
 ## Off-by-one
 
-We avoid Off-by-one errors by starting all indizes with 0, as
+We avoid off-by-one errors by starting all indices with 0, as
 usual in C. The size returned by the `*GetSize` functions
 (`keyGetValueSize`, `keyGetCommentSize` and `keyGetOwnerSize`) is
 exactly the size you need to allocate. So if you add 1 to it, too much
@@ -133,6 +121,8 @@ null byte included.
 
 `kdb.h` contains a minimal set of functions to fully work with a key
 database. The functions are implemented in `src/libs/elektra` in ANSI C.
+
+Useful extensions are available in [further libraries](/src/libs).
 
 ## Value, String or Binary
 
@@ -196,31 +186,26 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 sets the binary data which might contain `'\0'`. The length is given
 by `dataSize`.
 
-## Return Value
+## Return Values
 
 Elektra’s function share common error codes. Every function must return
 `-1` on error, if its return type is integer (like `int`, `ssize_t`). If
 the function returns a pointer, `0` (`NULL`) will indicate an error.
-This behavior can't be used for functions that return integers, since
-`0` is a valid size and can also be used to represent the boolean value
-`false`.
 
 Elektra uses integers for the length of C strings, reference counting, `KeySet` length and internal `KeySet` allocations.
 
-The interface always accepts `size_t` and internally uses `size_t`,
+The interface always accepts `ssize_t` and internally uses `size_t`,
 which is able to store larger numbers than `ssize_t`.
 
-The real size of C strings and buffers is limited to `SSIZE_MAX` which
-must be checked in every function. When a string exceeds that limit
-`-1` or a `NULL` pointer (see above) must be returned.
+The real size of C strings and buffers is limited to `SSIZE_MAX`.
+When a string exceeds that limit `-1` or a `NULL` pointer (see above)
+must be returned.
 
 The following functions return an internal string:
 
 ```c
 const char *keyName(const Key *key);
 const char *keyBaseName(const Key *key);
-const char *keyOwner(const Key *key);
-const char *keyComment(const Key *key);
 ```
 
 and in the case that `keyIsBinary(key)==0`:
@@ -229,7 +214,7 @@ and in the case that `keyIsBinary(key)==0`:
 const void *keyValue(const Key *key);
 ```
 
-does so too. If in any of the functions above `key` is a `NULL`
+does so, too. If in any of the functions above `key` is a `NULL`
 pointer, then they also return `NULL`.
 
 If there is no string you will get back `""`, that is a pointer to the
@@ -243,11 +228,17 @@ value `'\0'` in the first byte is perfectly legal binary data.
 
 ## Error Handling
 
+For `KDB` functions the user does not only get the return value but
+also a more elaborate error information, including an error message,
+in the metadata of the `parentKey` or `errorKey`. Furthermore, it is
+also possible to get warnings, even if the calls succeeded.
+
+Using different error categories, the user of the API can have suitable
+reactions on specific error situations. Additional information about
+error handling is available [here](/doc/dev/error-handling.md).
+
 Elektra does not set `errno`. If a function you call sets `errno`, make
 sure to set it back to the old value again.
-
-Additional information about error handling is available
-[here](/doc/dev/error-handling.md).
 
 ## Naming
 
@@ -261,9 +252,8 @@ about a flag or state and _Needs_ to ask about state related to
 databases. For allocation/deallocation we use C++ styled names (e.g
 `*New`, `*Del`).
 
-Macros and Enums are written in capital letters. Options start with
-`KDB_O`, errors with `KDB_ERR`, namespaces with `KEY_NS` and key types
-with `KEY_TYPE`.
+Macros and Enums are written in capital letters. Flags start with
+`KDB_`, namespaces with `KEY_NS_` and macros with `ELEKTRA_`.
 
 Data structures start with a capital letter for every part of the word:
 
@@ -273,21 +263,18 @@ Data structures start with a capital letter for every part of the word:
 
 We use singular for all names.
 
-Function names not belonging to one of the three classes are Elektra
-specific. They use the prefix `elektra*`. They will always be Elektra
-specific and won't be implemented by other KDB implementations.
+Function names not belonging to one of the three classes use the
+prefix `elektra*`.
 
 ## const
 
 Wherever possible functions should use the keyword `const` for
 parameters. The API uses this keyword for parameters, to show that a
-function does not modify a `Key` or a `KeySet`. We do not use `const`
-for return values, except for the following functions:
+function does not modify a `Key` or a `KeySet`, e.g.:
 
 ```c
 const char *keyName(const Key *key);
 const char *keyBaseName(const Key *key);
-const char *keyComment(const Key *key);
 const void *keyValue(const Key *key);
 const char *keyString(const Key *key);
 const Key  *keyGetMeta(const Key *key, const char* metaName);
@@ -296,3 +283,41 @@ const Key  *keyGetMeta(const Key *key, const char* metaName);
 The reason behind this is, that the above functions – as their name
 suggest – only retrieve values. The returned value must not be modified
 directly.
+
+## Design Guidelines Checklist
+
+On potential changes of the API/ABI as detected by the
+[`build server`](https://build.libelektra.org/job/libelektra/job/master/),
+please make sure the API has been reviewed according to the
+following 2 checklists:
+
+## Checklist for overall API
+
+### Consistency
+
+- [ ] Consistent naming schemes for enums, macros, typedefs and functions
+- [ ] Same things are named the same and included in [Glossary](/doc/help/elektra-glossary.md)
+- [ ] Different things are named differently
+- [ ] The order of arguments should be consistent across similar functions
+
+### Structural Clarity
+
+- [ ] Functions with similar functionality have the same prefix
+
+### Compatibility
+
+- [ ] All bindings have been updated to reflect the new API and work properly
+
+### Extensibility
+
+- [ ] New API is easily extensible with additional functionality
+- [ ] Components only depend on each other if needed
+
+## Checklist for each function
+
+There are several checklists for functions, depending on the language in which
+the function is written:
+
+- [C](/scripts/api_review/template.c.md)
+- [Rust](/scripts/api_review/template.rs.md)
+- [Java](/scripts/api_review/template.java.md)

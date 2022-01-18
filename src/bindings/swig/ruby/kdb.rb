@@ -65,7 +65,7 @@ module Kdb
       if meta.size > 0
         puts "  meta data keys: #{meta.size}"
         meta.each do |k|
-          puts "    " + k.to_s
+          puts "    " + k.to_s.sub(/^meta:\//, "")
         end
       else
         puts "  key has no meta data"

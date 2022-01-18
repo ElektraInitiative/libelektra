@@ -51,7 +51,7 @@ static Key * findNearestParent (Key * key, KeySet * ks)
 	Key * current;
 	ksSetCursor (ks, ksGetSize (ks) - 1);
 
-	for (cursor_t cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
+	for (elektraCursor cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
 	{
 		if (keyIsBelow (current, key))
 		{
@@ -120,8 +120,7 @@ void removeKeyFromResult (Key * convertKey, Key * target, KeySet * orig)
 	 * before removing it from the result
 	 */
 	keySetMeta (convertKey, CONVERT_TARGET, keyName (target));
-	Key * key = ksLookup (orig, convertKey, KDB_O_POP);
-	keyDel (key);
+	keyDel (ksLookup (orig, convertKey, KDB_O_POP));
 }
 
 static void flushConvertedKeys (Key * target, KeySet * converted, KeySet * orig)
@@ -136,8 +135,8 @@ static void flushConvertedKeys (Key * target, KeySet * converted, KeySet * orig)
 		Key * appendTarget = target;
 		const char * metaName = keyString (keyGetMeta (current, CONVERT_METANAME));
 
-		Key * currentDup = keyDup (current);
-		Key * targetDup = keyDup (appendTarget);
+		Key * currentDup = keyDup (current, KEY_CP_ALL);
+		Key * targetDup = keyDup (appendTarget, KEY_CP_ALL);
 		keySetBaseName (currentDup, 0);
 		keySetBaseName (targetDup, 0);
 
@@ -238,7 +237,7 @@ int elektraKeyToMetaGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	int errnosave = errno;
 
 	/* configuration only */
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/keytometa"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/keytometa"))
 	{
 		KeySet * info =
 #include "contract.h"

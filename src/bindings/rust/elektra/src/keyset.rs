@@ -1,29 +1,29 @@
 //! A `KeySet` is a set of `StringKey`s.
-//! 
+//!
 //! You can think of it as a specialized version of `Vec`.
-//! 
+//!
 //! While you can also store Keys in a `Vec`, you will need to
 //! use the `KeySet` to interact with the key database.
-//! 
+//!
 //! # Example
 //! You can use the [`keyset!`](../macro.keyset.html) macro to create a KeySet. It works just like `vec!`.
 //! ```
 //! # use elektra::{KeyBuilder, keyset, KeySet, StringKey, WriteableKey, ReadableKey};
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! let keyset = keyset![
-//!     KeyBuilder::<StringKey>::new("user/sw/app/#1/host")?
+//!     KeyBuilder::<StringKey>::new("user:/sw/app/#1/host")?
 //!         .value("localhost")
 //!         .build(),
-//!     KeyBuilder::<StringKey>::new("user/sw/app/#1/port")?
+//!     KeyBuilder::<StringKey>::new("user:/sw/app/#1/port")?
 //!         .value("8080")
 //!         .build(),
 //! ];
 //! # Ok(())
 //! # }
 //! ```
-//! 
+//!
 //! ## BinaryKeys
-//! 
+//!
 //! A KeySet only holds `StringKey`s because they are by far the most
 //! common type of key when interacting with the key database. In a typical
 //! setup where you read configuration values from the kdb, you will not
@@ -33,12 +33,12 @@
 //! memory-wise, but can be unsafe if you cast a `BinaryKey` holding arbitrary
 //! bytes to a `StringKey`. You can use `is_string` or `is_binary` to find out
 //! if the cast is safe.
-//! 
+//!
 //! ## Example
 //! ```
 //! # use elektra::{BinaryKey, StringKey, WriteableKey, ReadableKey};
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! # let mut s_key = StringKey::new("user/test/language")?;
+//! # let mut s_key = StringKey::new("user:/test/language")?;
 //! # s_key.set_value("rust".into());
 //! # let key = BinaryKey::from(s_key);
 //! // Assume we have an arbitrary key that is actually a StringKey
@@ -64,16 +64,16 @@ pub struct KeySet {
 }
 
 /// The internal cursor for the KeySet.
-pub type Cursor = elektra_sys::cursor_t;
+pub type Cursor = elektra_sys::elektraCursor;
 
 bitflags! {
     /// Bitflags to be passed to [`lookup`](struct.KeySet.html#method.lookup) and [`lookup_by_name`](struct.KeySet.html#method.lookup_by_name).
     #[derive(Default)]
-    pub struct LookupOption: elektra_sys::option_t {
+    pub struct LookupOption: elektra_sys::elektraLookupFlags {
         /// No Option set.
-        const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::option_t;
+        const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::elektraLookupFlags;
         /// The found key will be popped from the keyset.
-        const KDB_O_POP = elektra_sys::KDB_O_POP as elektra_sys::option_t;
+        const KDB_O_POP = elektra_sys::KDB_O_POP as elektra_sys::elektraLookupFlags;
     }
 }
 
@@ -100,12 +100,12 @@ macro_rules! count_exprs {
 /// # use elektra::{KeySet, StringKey, WriteableKey, KeyBuilder, keyset};
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// let ks = keyset![
-///     StringKey::new("user/test/key1")?,
-///     KeyBuilder::<StringKey>::new("user/test/key2")?
+///     StringKey::new("user:/test/key1")?,
+///     KeyBuilder::<StringKey>::new("user:/test/key2")?
 ///                .meta("metakey1", "metavalue1")?
 ///                .meta("metakey2", "metavalue2")?
 ///                .build(),
-///     StringKey::new("user/test/key3")?,
+///     StringKey::new("user:/test/key3")?,
 /// ];
 /// assert_eq!(ks.size(), 3);
 /// # Ok(())
@@ -164,7 +164,7 @@ impl KeySet {
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn new() -> Self {
-        let ks_ptr = unsafe { elektra_sys::ksNew(0, elektra_sys::KEY_END) };
+        let ks_ptr = unsafe { elektra_sys::ksNew(0, elektra_sys::KS_END) };
         unsafe { KeySet::from_ptr(ks_ptr) }
     }
 
@@ -174,7 +174,7 @@ impl KeySet {
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn with_capacity(capacity: usize) -> Self {
-        let ks_ptr = unsafe { elektra_sys::ksNew(capacity, elektra_sys::KEY_END) };
+        let ks_ptr = unsafe { elektra_sys::ksNew(capacity, elektra_sys::KS_END) };
         unsafe { Self::from_ptr(ks_ptr) }
     }
 
@@ -236,7 +236,7 @@ impl KeySet {
     /// ```
     /// # use elektra::{KeySet, StringKey, WriteableKey, ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/key/elektra")?;
+    /// let key = StringKey::new("user:/key/elektra")?;
     /// let mut keyset = KeySet::with_capacity(1);
     /// keyset.append_key(key);
     /// if let Some(popped_key) = keyset.pop() {
@@ -267,16 +267,16 @@ impl KeySet {
     /// # use std::iter::FromIterator;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut keyset = keyset![
-    ///     StringKey::new("user/key/parent")?,
-    ///     StringKey::new("user/key/parent/below")?,
-    ///     StringKey::new("user/key/other")?,
+    ///     StringKey::new("user:/key/parent")?,
+    ///     StringKey::new("user:/key/parent/below")?,
+    ///     StringKey::new("user:/key/other")?,
     /// ];
-    /// let cut_key = StringKey::new("user/key/parent")?;
+    /// let cut_key = StringKey::new("user:/key/parent")?;
     /// let cut_keyset = keyset.cut(&cut_key);
     /// assert_eq!(keyset.size(), 1);
     /// assert_eq!(cut_keyset.size(), 2);
-    /// assert_eq!(cut_keyset.head().unwrap().name(), "user/key/parent");
-    /// assert_eq!(cut_keyset.tail().unwrap().name(), "user/key/parent/below");
+    /// assert_eq!(cut_keyset.head().unwrap().name(), "user:/key/parent");
+    /// assert_eq!(cut_keyset.tail().unwrap().name(), "user:/key/parent/below");
     /// #
     /// #     Ok(())
     /// # }
@@ -359,11 +359,11 @@ impl KeySet {
     /// # use elektra::{KeySet, StringKey, LookupOption, WriteableKey, ReadableKey};
     /// # use std::iter::FromIterator;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/key/elektra")?;
+    /// let key = StringKey::new("user:/key/elektra")?;
     /// let mut ks = KeySet::with_capacity(1);
     /// ks.append_key(key);
     ///
-    /// let lookup_key = StringKey::new("user/key/elektra")?;
+    /// let lookup_key = StringKey::new("user:/key/elektra")?;
     /// if let Some(mut key) = ks.lookup(lookup_key, LookupOption::KDB_O_NONE) {
     ///     key.set_value("newvalue");
     /// } else {
@@ -379,7 +379,7 @@ impl KeySet {
             elektra_sys::ksLookup(
                 self.as_ptr(),
                 key.as_ptr(),
-                options.bits() as elektra_sys::option_t,
+                options.bits() as elektra_sys::elektraLookupFlags,
             )
         };
 
@@ -494,14 +494,14 @@ impl<'a> Iterator for StringKeyIter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{KeyBuilder, KeyNameInvalidError};
+    use crate::{KeyBuilder, KeyNameInvalidError, CopyOption};
     use std::iter::FromIterator;
 
     #[test]
     fn can_build_simple_keyset() -> Result<(), KeyNameInvalidError> {
         let mut ks = KeySet::new();
         ks.append_key(
-            KeyBuilder::<StringKey>::new("user/sw/org/app/bool")?
+            KeyBuilder::<StringKey>::new("user:/sw/org/app/bool")?
                 .value("true")
                 .build(),
         );
@@ -520,7 +520,7 @@ mod tests {
 
     #[test]
     fn can_iterate_simple_keyset() -> Result<(), KeyNameInvalidError> {
-        let names = ["user/test/key1", "user/test/key2", "user/test/key3"];
+        let names = ["user:/test/key1", "user:/test/key2", "user:/test/key3"];
         let values = ["value1", "value2", "value3"];
 
         let mut ks = KeySet::from_iter(vec![
@@ -560,7 +560,7 @@ mod tests {
     fn can_use_popped_key_after_keyset_freed() {
         let popped_key;
         {
-            let key = StringKey::new("user/key/k2").unwrap();
+            let key = StringKey::new("user:/key/k2").unwrap();
             let mut keyset = KeySet::with_capacity(1);
             keyset.append_key(key);
             popped_key = keyset.pop().unwrap();
@@ -577,7 +577,7 @@ mod tests {
     }
 
     fn setup_keyset() -> KeySet {
-        let names = ["system/test/key", "user/test/key"];
+        let names = ["system:/test/key", "user:/test/key"];
         let values = ["value1", "value2"];
 
         KeySet::from_iter(vec![
@@ -607,22 +607,22 @@ mod tests {
     fn extend_keyset_and_append_are_equal() {
         let mut ks = setup_keyset();
         let mut ks2 = KeySet::with_capacity(1);
-        let k = StringKey::new("user/test/key").unwrap();
+        let k = StringKey::new("user:/test/key").unwrap();
         ks2.append_key(k);
 
         // Test append
         ks.append(&ks2);
         assert_eq!(ks.size(), 2);
-        assert_eq!(ks.tail().unwrap().name(), "user/test/key");
-        assert_eq!(ks.tail().unwrap().value(), "");
+        assert_eq!(ks.head().unwrap().name(), "user:/test/key");
+        assert_eq!(ks.head().unwrap().value(), "");
 
         // Test extend from the Extend trait
         let mut ksext = setup_keyset();
         ksext.extend(ks2.iter_mut());
 
         assert_eq!(ksext.size(), 2);
-        assert_eq!(ksext.tail().unwrap().name(), "user/test/key");
-        assert_eq!(ksext.tail().unwrap().value(), "");
+        assert_eq!(ksext.head().unwrap().name(), "user:/test/key");
+        assert_eq!(ksext.head().unwrap().value(), "");
     }
 
     #[test]
@@ -630,9 +630,10 @@ mod tests {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
         let ret_val = ks.lookup(lookup_key, LookupOption::KDB_O_NONE);
-        assert_eq!(ret_val.unwrap().name(), "user/test/key");
+        assert_eq!(ret_val.unwrap().name(), "user:/test/key");
         assert_eq!(ks.size(), 2);
-        assert_eq!(ks.tail().unwrap().name(), "user/test/key");
+        assert_eq!(ks.head().unwrap().name(), "user:/test/key");
+        assert_eq!(ks.tail().unwrap().name(), "system:/test/key");
     }
 
     #[test]
@@ -640,9 +641,9 @@ mod tests {
         let mut ks = setup_keyset();
         let lookup_key = StringKey::new("/test/key").unwrap();
         let key = ks.lookup(lookup_key, LookupOption::KDB_O_POP);
-        assert_eq!(key.unwrap().name(), "user/test/key");
+        assert_eq!(key.unwrap().name(), "user:/test/key");
         assert_eq!(ks.size(), 1);
-        assert_eq!(ks.head().unwrap().name(), "system/test/key");
+        assert_eq!(ks.head().unwrap().name(), "system:/test/key");
     }
 
     #[test]
@@ -655,11 +656,12 @@ mod tests {
             key = ks
                 .lookup_by_name("/test/key", LookupOption::KDB_O_NONE)
                 .unwrap()
-                .duplicate();
+                .duplicate(CopyOption::KEY_CP_ALL);
             assert_eq!(ks.size(), 2);
-            assert_eq!(ks.head().unwrap().name(), "system/test/key");
+            assert_eq!(ks.head().unwrap().name(), "user:/test/key");
+            assert_eq!(ks.tail().unwrap().name(), "system:/test/key");
         }
-        assert_eq!(key.name(), "user/test/key");
+        assert_eq!(key.name(), "user:/test/key");
         Ok(())
     }
 
@@ -669,17 +671,17 @@ mod tests {
         assert_eq!(0, ks.size());
 
         let ks = keyset![
-            StringKey::new("user/test1").unwrap(),
-            StringKey::new("user/test2").unwrap(),
-            StringKey::new("user/test3").unwrap(),
-            StringKey::new("user/test4").unwrap()
+            StringKey::new("user:/test1").unwrap(),
+            StringKey::new("user:/test2").unwrap(),
+            StringKey::new("user:/test3").unwrap(),
+            StringKey::new("user:/test4").unwrap()
         ];
         assert_eq!(4, ks.size());
-        assert_eq!("user/test1", ks.head().unwrap().name());
-        assert_eq!("user/test4", ks.tail().unwrap().name());
+        assert_eq!("user:/test1", ks.head().unwrap().name());
+        assert_eq!("user:/test4", ks.tail().unwrap().name());
 
         let ks = keyset![
-            KeyBuilder::<StringKey>::new("user/test1")
+            KeyBuilder::<StringKey>::new("user:/test1")
                 .unwrap()
                 .meta("metakey1", "metavalue1")
                 .unwrap()
@@ -687,10 +689,10 @@ mod tests {
                 .unwrap()
                 .build(),
             // Macro invocation also works with a trailing comma
-            StringKey::new("user/test2").unwrap(),
+            StringKey::new("user:/test2").unwrap(),
         ];
         assert_eq!(2, ks.size());
-        assert_eq!("user/test1", ks.head().unwrap().name());
+        assert_eq!("user:/test1", ks.head().unwrap().name());
         assert_eq!(
             "metavalue2",
             ks.head().unwrap().meta("metakey2").unwrap().value()

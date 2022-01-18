@@ -12,13 +12,20 @@
 The purpose of this plugin is to demonstrate how one can
 be notified of every removed, added or changed key easily.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 Prints every added, changed or deleted key on the console.
 To use it, add it during mounting:
 
 ```sh
-kdb mount logchange.dump user/logchange dump logchange
+sudo kdb mount logchange.dump user:/tests/logchange dump logchange
+# And to unmount it
+sudo kdb umount user:/tests/logchange
 ```
 
 Configure the plugin with `log/get=1` to enable printing when configuration is

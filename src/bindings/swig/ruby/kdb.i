@@ -8,7 +8,7 @@
 
 %feature("autodoc", "3");
 
-%define CPPDOCURL "https://doc.libelektra.org/api/current/html" %enddef
+%define CPPDOCURL "https://doc.libelektra.org/api/latest/html" %enddef
 
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (https://www.libelektra.org),
@@ -29,7 +29,7 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 /* docstring for module implemented for swig >= 3.0.18 */
 %module(docstring=DOCSTRING) kdb
 #pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
-
+#pragma SWIG nowarn=378 // Disable warning: operator!= ignored
 
 
 %include "attribute.i"
@@ -66,6 +66,7 @@ namespace std {
  *
  ****************************************************************************/
 
+%constant void *KEY_END = KEY_END;
 %constant void *KS_END = KS_END;
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
@@ -114,7 +115,6 @@ the original C++ class in the following aspects:
 
 /* define which methods are throwing which exceptions */
 %catches (kdb::KeyException) kdb::Key::getName;
-%catches (kdb::KeyException) kdb::Key::getFullName;
 
 %catches (kdb::KeyInvalidName) kdb::Key::setName;
 %catches (kdb::KeyInvalidName) kdb::Key::addName;
@@ -124,7 +124,7 @@ the original C++ class in the following aspects:
 %catches (kdb::KeyTypeMismatch, kdb::KeyException) kdb::Key::getString;
 %catches (kdb::KeyTypeMismatch, kdb::KeyException) kdb::Key::getBinary;
 
-%catches (std::bad_alloc) kdb::Key::Key;
+%catches (kdb::KeyInvalidName) kdb::Key::Key;
 
 
 /* ignore certain methods */
@@ -139,7 +139,7 @@ The following variants are available:
 
   k = Kdb::Key.new
 
-  k = Kdb::Key.new('user/myapp/config1',
+  k = Kdb::Key.new('user:/myapp/config1',
                    value: 'hello',
                    owner: 'me',
                    meta-data1: 'meta')
@@ -170,7 +170,6 @@ The following variants are available:
  * (size + 1) size info */
 %ignore kdb::Key::getNameSize;
 %ignore kdb::Key::getBaseNameSize;
-%ignore kdb::Key::getFullNameSize;
 %ignore kdb::Key::getStringSize;
 /* kdb::Key::getBinarySize could be useful */
 
@@ -185,7 +184,6 @@ The following variants are available:
 %predicate kdb::Key::isDir;
 %predicate kdb::Key::isString;
 %predicate kdb::Key::isBinary;
-%predicate kdb::Key::isInactive;
 %predicate kdb::Key::isBelow;
 %predicate kdb::Key::isBelowOrSame;
 %predicate kdb::Key::isDirectBelow;
@@ -219,8 +217,6 @@ namespace kdb {
 %rename("basename=") kdb::Key::setBaseName;
 
 %rename("add_basename") kdb::Key::addBaseName;
-
-%rename("fullname") kdb::Key::getFullName;
 
 %rename("namespace") kdb::Key::getNamespace;
 
@@ -492,8 +488,6 @@ aliased to '<=>', implemented for sorting operations.
 
 /* ignore raw ckdb::KeySet methods */
 %ignore kdb::KeySet::getKeySet;
-%ignore kdb::KeySet::setKeySet;
-%ignore kdb::KeySet::release;
 
 /* ignore unused operators */
 %ignore kdb::KeySet::operator=;
@@ -567,7 +561,7 @@ aliased to '<=>', implemented for sorting operations.
 %extend kdb::KeySet {
   void each() {
     if (rb_block_given_p()) {
-      cursor_t cur_pos = $self->getCursor();
+      elektraCursor cur_pos = $self->getCursor();
 
       for ( $self->rewind(); $self->next(); ) {
         VALUE cur;
@@ -631,7 +625,7 @@ aliased to '<=>', implemented for sorting operations.
 /*
  * cursor operations
  */
-%apply long { cursor_t }
+%apply long { elektraCursor }
 %rename("cursor") kdb::KeySet::getCursor;
 %rename("cursor=") kdb::KeySet::setCursor;
 
@@ -655,7 +649,7 @@ aliased to '<=>', implemented for sorting operations.
 /*
  * lookup
  */
-%apply int { option_t }
+%apply int { elektraLookupFlags }
 
 /*
  * delete
@@ -666,7 +660,7 @@ aliased to '<=>', implemented for sorting operations.
 %rename("delete") kdb::KeySet::delete_;
 
 %extend kdb::KeySet {
-  Key delete_at(cursor_t pos) {
+  Key delete_at(elektraCursor pos) {
     Key k = $self->at(pos);
     if (!k.isNull()) {
       $self->lookup(k, KDB_O_POP);
@@ -732,5 +726,12 @@ aliased to '<=>', implemented for sorting operations.
 %catches (kdb::KDBException) kdb::KDB::open;
 %catches (kdb::KDBException) kdb::KDB::get;
 %catches (kdb::KDBException) kdb::KDB::set;
+
+%include "std_vector.i"
+%include "std_string.i"
+
+namespace std {
+  %template(StringVector) vector<string>;
+}
 
 %include "kdb.hpp"

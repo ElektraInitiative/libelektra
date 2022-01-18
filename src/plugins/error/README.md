@@ -17,6 +17,11 @@ behavior is difficult to produce for tests.
 
 This plugin tackles this issue by yielding error/warnings on request.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 ### By metadata
@@ -25,7 +30,7 @@ Mount this plugin additionally with a working resolver and a storage
 e.g.:
 
 ```sh
-kdb mount error.dump /error error dump
+sudo kdb mount error.dump /error error dump
 ```
 
 When following metakey is present during storing (`kdbSet()`) the keyset:
@@ -50,14 +55,21 @@ So an error and warnings can be injected directly with the kdb tool.
 E.g. the warning number C01330:
 
 ```sh
-kdb meta-set system/error/key trigger/warnings C01330
+kdb meta-set system:/error/key trigger/warnings C01330
 ```
 
 or the error number C01200 (will not modify the KDB because `kdbSet()` will
 fail for the error plugin then):
 
 ```sh
-kdb meta-set user/error/key trigger/error C01200
+kdb meta-set user:/error/key trigger/error C01200
+# RET:5
+```
+
+When you are finished you can unmount it with:
+
+```sh
+sudo kdb umount /error
 ```
 
 ### By config
@@ -75,21 +87,27 @@ on_open/error
 E.g. you can use:
 
 ```sh
-kdb mount error.dump /error error on_open/error=C03100 dump
+sudo kdb mount error.dump /error error on_open/error=C03100 dump
 ```
 
 Then you get an error on any access, e.g.:
 
 ```sh
-kdb ls system/error
+kdb ls system:/error
 ```
 
 Will yield error C01200:
 
 ```
 Description: Tried to get a key from a missing backend
-Mountpoint: system/error
+Mountpoint: system:/error
 ```
 
 because the opening of the plugin failed (resulting to a missing
 backend).
+
+When you are finished you can unmount it with:
+
+```sh
+sudo kdb umount /error
+```

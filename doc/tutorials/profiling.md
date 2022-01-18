@@ -4,7 +4,7 @@
 
 One of the primary resources in computing is execution time. To keep usage of this resource type low, it makes sense to profile code and check which code paths in a progamm take the longest time to execute. There exist various tools to handle this kind of profiling. For this tutorial we will use
 
-1. [Callgrind](http://valgrind.org/docs/manual/cl-manual.html) and the graphical frontend [KCacheGrind/QCacheGrind](https://kcachegrind.github.io/html/Home.html), and
+1. [Callgrind](https://valgrind.org/docs/manual/cl-manual.html) and the graphical frontend [KCacheGrind/QCacheGrind](https://kcachegrind.github.io/html/Home.html), and
 2. [XRay][] and [FlameGraph][] to visualize the data produced by [XRay][]
 
 .
@@ -124,7 +124,7 @@ export CC=clang-8
 export CXX=clang++-8
 ```
 
-. We enable the static build (`BUILD_STATIC=ON`) and disable the dynamic build (`BUILD_SHARED=OFF`), since [XRay currently does not support dynamic libraries](http://clang-developers.42468.n3.nabble.com/Xray-with-shared-libraries-td4061859.html). To enable Xray we use the compiler switch `-fxray-instrument`. To instrument every function we set the instruction threshold to `1` with `-fxray-instruction-threshold=1`.
+. We enable the static build (`BUILD_STATIC=ON`) and disable the dynamic build (`BUILD_SHARED=OFF`), since [XRay currently does not support dynamic libraries](https://lists.llvm.org/pipermail/cfe-dev/2018-August/059147.html). To enable Xray we use the compiler switch `-fxray-instrument`. To instrument every function we set the instruction threshold to `1` with `-fxray-instruction-threshold=1`.
 
 ```sh
 export REPOSITORY_DIRECTORY="$PWD"
@@ -143,7 +143,7 @@ We will analyze the [YAJL plugin][yajl] below. Please make sure that the CMake c
 
 ```
 …
--- Include Plugin yajl
+-- Include plugin yajl
 …
 ```
 

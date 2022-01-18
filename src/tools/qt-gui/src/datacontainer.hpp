@@ -32,14 +32,16 @@ public:
 	/**
 	 * @brief The mandatory copy construcor-
 	 */
-	DataContainer (const DataContainer & otherContainer)
-	: QObject (){ Q_UNUSED (otherContainer) }
+	DataContainer (const DataContainer & otherContainer) : QObject ()
+	{
+		Q_UNUSED (otherContainer)
+	}
 
-	  /**
-	   * @brief The old name of a ConfigNode. Used when creating EditKeyCommands.
-	   * @return The old name of a ConfigNode.
-	   */
-	  Q_INVOKABLE QString oldName () const;
+	/**
+	 * @brief The old name of a ConfigNode. Used when creating EditKeyCommands.
+	 * @return The old name of a ConfigNode.
+	 */
+	Q_INVOKABLE QString oldName () const;
 
 	/**
 	 * @brief Sets the old name of a ConfigNode. Used when creating EditKeyCommands.

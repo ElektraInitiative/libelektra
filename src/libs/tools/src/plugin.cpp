@@ -47,7 +47,7 @@ Plugin::Plugin (PluginSpec const & spec_, KeySet & modules) : spec (spec_), firs
 	if (spec.getName () != plugin->name)
 	{
 		spec.setRefName (spec.getName ()); // save virtual name as refname
-		spec.setName (plugin->name);       // use actual name
+		spec.setName (plugin->name);	   // use actual name
 	}
 }
 
@@ -102,7 +102,7 @@ void Plugin::loadInfo ()
 	__attribute__ ((no_sanitize ("undefined")))
 #endif
 {
-	Key infoKey ("system/elektra/modules", KEY_END);
+	Key infoKey ("system:/elektra/modules", KEY_END);
 	infoKey.addBaseName (spec.getName ());
 
 	if (!plugin->kdbGet)
@@ -114,7 +114,7 @@ void Plugin::loadInfo ()
 
 void Plugin::parse ()
 {
-	Key root (std::string ("system/elektra/modules/") + spec.getName (), KEY_END);
+	Key root (std::string ("system:/elektra/modules/") + spec.getName (), KEY_END);
 
 	Key k = info.lookup (root);
 	if (!k)
@@ -122,7 +122,7 @@ void Plugin::parse ()
 		throw PluginNoContract ();
 	}
 
-	root.setName (std::string ("system/elektra/modules/") + spec.getName () + "/exports");
+	root.setName (std::string ("system:/elektra/modules/") + spec.getName () + "/exports");
 
 	k = info.lookup (root);
 
@@ -134,7 +134,7 @@ void Plugin::parse ()
 		}
 	}
 
-	root.setName (std::string ("system/elektra/modules/") + spec.getName () + "/infos");
+	root.setName (std::string ("system:/elektra/modules/") + spec.getName () + "/infos");
 	k = info.lookup (root);
 
 	if (k)
@@ -344,7 +344,7 @@ ckdb::Plugin * Plugin::operator-> ()
 
 std::string Plugin::lookupInfo (std::string item, std::string section)
 {
-	Key k ("system/elektra/modules", KEY_END);
+	Key k ("system:/elektra/modules", KEY_END);
 	k.addBaseName (spec.getName ());
 	k.addBaseName (section);
 	k.addBaseName (item);
@@ -371,7 +371,7 @@ bool Plugin::findInfo (std::string compare, std::string item, std::string sectio
 
 kdb::KeySet Plugin::getNeededConfig ()
 {
-	Key neededConfigKey ("system/elektra/modules", KEY_END);
+	Key neededConfigKey ("system:/elektra/modules", KEY_END);
 	neededConfigKey.addName (spec.getName ());
 	neededConfigKey.addName ("config/needs");
 
@@ -380,7 +380,7 @@ kdb::KeySet Plugin::getNeededConfig ()
 
 	KeySet ret;
 	Key oldParent = neededConfigKey;
-	Key newParent ("system", KEY_END);
+	Key newParent ("system:/", KEY_END);
 	for (KeySet::iterator i = config.begin (); i != config.end (); ++i)
 	{
 		Key k (i->dup ());

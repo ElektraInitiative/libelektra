@@ -1,4 +1,4 @@
-- infos =
+- infos = Information about Python bindings below
 - infos/author = Manuel Mausz <manuel-elektra@mausz.at>
 - infos/status = maintained
 - infos/provides = swig
@@ -10,6 +10,11 @@ Python bindings for Elektra.
 
 If you have the Python bindings already installed,
 you get started by reading the [tutorial](/doc/tutorials/python-kdb.md).
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `python3-elektra`.
 
 ## CMake Variables
 

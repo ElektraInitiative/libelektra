@@ -13,7 +13,7 @@
    Memcheck:Leak
    match-leak-kinds: all
    ...
-   obj:*libbotan*
+   obj:*libgcrypt*
    ...
 }
 {
@@ -21,7 +21,7 @@
    Memcheck:Leak
    match-leak-kinds: all
    ...
-   obj:*libgcrypt*
+   obj:*libgpgme*
    ...
 }
 {
@@ -219,6 +219,23 @@
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: reachable
+   fun:calloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
    ...
    fun:calloc
    fun:_dlerror_run
@@ -246,18 +263,6 @@
    fun:_dl_init
    ...
    obj:*/ld-2.19.so
-}
-{
-   website-backend loadEnabledFormats jni plugin
-   Memcheck:Leak
-   match-leak-kinds: all
-   fun:malloc
-   fun:elektraMalloc
-   fun:elektraJniOpen
-   fun:elektraPluginOpen
-   ...
-   fun:_ZN61kdbrestServicesConvertengineTest_FindSuitablePluginCheck_Test8TestBodyEv
-   ...
 }
 {
    testmod_range setlocale memleak
@@ -387,6 +392,15 @@
    fun:(below main)
 }
 {
+   gpg-agent
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   obj:/usr/bin/gpg-agent
+   obj:/usr/bin/gpg-agent
+   fun:(below main)
+}
+{
    PluginProcess child dies keyDup
    Memcheck:Leak
    match-leak-kinds: definite
@@ -412,4 +426,3 @@
    fun:test_childDies
    fun:main
 }
-

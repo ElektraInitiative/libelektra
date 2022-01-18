@@ -28,16 +28,16 @@ int main ()
 	KeySet base;
 
 	// the root of the subtree containing our keys (i.e. our side of the merge)
-	Key oursRoot ("user/ours", KEY_END);
+	Key oursRoot ("user:/ours", KEY_END);
 
 	// the root of the subtree containing their keys (i.e. their side of the merge)
-	Key theirsRoot ("user/theirs", KEY_END);
+	Key theirsRoot ("user:/theirs", KEY_END);
 
 	// the root of the subtree containing the base keys (i.e. the common ancestor of the merge)
-	Key baseRoot ("user/base", KEY_END);
+	Key baseRoot ("user:/base", KEY_END);
 
 	// the root of the subtree that will contain the merge result
-	Key resultRoot ("user/result", KEY_END);
+	Key resultRoot ("user:/result", KEY_END);
 
 	// Step 1: retrieve clean KeySets containing only those
 	// keys that should be merged. This is a bit trickier than
@@ -49,7 +49,7 @@ int main ()
 	//   * remove the root key itself from the result KeySet because it usually
 	//     contains the mounted filename and cannot be merged anyway
 	// Also have a look at the documentation of kdbSet()
-	// (https://doc.libelektra.org/api/latest/html/group__kdb.html#ga11436b058408f83d303ca5e996832bcf).
+	// (https://doc.libelektra.org/api/master/html/group__kdb.html#ga11436b058408f83d303ca5e996832bcf).
 	// The merging framework can also be used to resolve conflicts resulting from
 	// concurrent calls to kdbSet() as described in the example of kdbSet().
 	{

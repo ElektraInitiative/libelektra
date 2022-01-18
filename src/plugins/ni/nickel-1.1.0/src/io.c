@@ -62,7 +62,7 @@
 #define T_OQ '"'   // open quote sign, starts off a quoted value
 #define T_CQ '"'   // close quote, ends a quoted value
 #define T_ESC '\\' // introduces escape sequence
-#define T_X 'x'    // after \, introduces a hex sequence
+#define T_X 'x'	   // after \, introduces a hex sequence
 #define T_CMT ';'  // introduces a comment
 
 
@@ -92,23 +92,23 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
 elektraNi_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_out, int * restrict len_out, int * restrict level_out)
 {
 // State values for the FSM.
-#define ST_DONE 0	 // stop parsing
-#define ST_START 1	// at start of line, skipping whitespace
-#define ST_COMMENT 2      // invalid character, ignore whole line
-#define ST_SKIP 3	 // valid line found, skip rest of line
-#define ST_IN_BRACKET 4   // found [, look for section name identifier
-#define ST_IN_SEC_ID 5    // found identifier after [, put it into idfr_out
+#define ST_DONE 0	  // stop parsing
+#define ST_START 1	  // at start of line, skipping whitespace
+#define ST_COMMENT 2	  // invalid character, ignore whole line
+#define ST_SKIP 3	  // valid line found, skip rest of line
+#define ST_IN_BRACKET 4	  // found [, look for section name identifier
+#define ST_IN_SEC_ID 5	  // found identifier after [, put it into idfr_out
 #define ST_IN_Q_SEC_ID 6  // found quotes inside [
 #define ST_AFTER_Q_SEC 7  // after ["" before ]
-#define ST_IN_KEY_ID 8    // found key identifier as first non-space char, put it into idfr_out
+#define ST_IN_KEY_ID 8	  // found key identifier as first non-space char, put it into idfr_out
 #define ST_IN_Q_KEY_ID 9  // found quotes on the beginning of the line
 #define ST_AFTER_Q_KEY 10 // after "" before =
 
 	int rc = 0; // return code, initially set to "we got nothing"
 
-	int len = 0;       // length of output
+	int len = 0;	   // length of output
 	int graph_len = 0; // length of the string up to last graphical character (so we can skip trailing spaces)
-	int level = 0;     // how many ['s we catch at the beginning of this identifier
+	int level = 0;	   // how many ['s we catch at the beginning of this identifier
 	int c;		   // current character
 
 // Macro to conserve space in code below--updates graph_len if the input
@@ -125,7 +125,7 @@ elektraNi_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict
 // already had in the output.
 #define invalid() (len = 0, graph_len = 0)
 
-	int state = ST_START;    // holds current state for FSM, duh
+	int state = ST_START;	 // holds current state for FSM, duh
 	while (state != ST_DONE) // do this until we're done
 	{
 		// Get char into c; if it's eof, dip out.
@@ -709,7 +709,7 @@ elektraNi_PRIVATE int PutEntry (FILE * restrict f, const char * restrict key, in
 static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
 {
 	int c;		   // current character
-	int esc = -1;      // value of escape sequence
+	int esc = -1;	   // value of escape sequence
 	int line_cont = 0; // whether the line-continue escape is what we just parsed
 
 	switch (c = BufGetC (fb))
@@ -768,7 +768,7 @@ static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
 			BufSeekBack (fb, 1); // just go back one so it'll come out next
 			break;
 		}
-		esc <<= 4;	    // otherwise, shift previous char over by 4
+		esc <<= 4;	      // otherwise, shift previous char over by 4
 		esc += ascii2hex (c); // and add this char's value
 		break;
 
@@ -783,7 +783,7 @@ static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
 				BufSeekBack (fb, 1); // put it back, dip out
 				break;
 			}
-			esc <<= 3;	    // if it is octal, shift previous value over 3
+			esc <<= 3;	      // if it is octal, shift previous value over 3
 			esc += ascii2oct (c); // and add it
 			c = BufGetC (fb);     // look at third character
 			if (!isoctal (c))     // and do the exact same thing
@@ -797,7 +797,7 @@ static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
 		} // or, if we should parse for line-contine escape
 		else if (eol_valid && (c == EOF || isspace (c)))
 		{
-			size_t n = 0;    // how many chars we've gone past initial space
+			size_t n = 0;	 // how many chars we've gone past initial space
 			int comment = 0; // whether we found a comment
 
 			while (1)
@@ -825,7 +825,7 @@ static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
 	// If we didn't get a valid sequence, we gotta put back the backslash.
 	if (esc < 0)
 	{
-		esc = T_ESC;	 // set it
+		esc = T_ESC;	     // set it
 		BufSeekBack (fb, 1); // and go back so we haven't gotten any other chars after backslash
 	}
 	if (out)
@@ -841,10 +841,10 @@ static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
  */
 static int PutString (FILE * restrict f, const char * restrict str, int str_len, int is_key, int is_section)
 {
-	int quote = 0;   // whether to quote the string
+	int quote = 0;	 // whether to quote the string
 	int success = 1; // return value
-	int first = 1;   // whether we're processing the first character
-	int advance;     // how many bytes to advance
+	int first = 1;	 // whether we're processing the first character
+	int advance;	 // how many bytes to advance
 	int c;
 
 	if (str_len > 0)

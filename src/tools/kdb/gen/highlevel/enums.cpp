@@ -237,7 +237,7 @@ size_t EnumTrie::getDepth ()
 
 	std::vector<size_t> childDepths;
 	std::transform (children.begin (), children.end (), std::back_inserter (childDepths),
-			[](const std::pair<const char, std::unique_ptr<EnumTrie>> & p) { return p.second->getDepth (); });
+			[] (const std::pair<const char, std::unique_ptr<EnumTrie>> & p) { return p.second->getDepth (); });
 
 	return *std::max_element (childDepths.begin (), childDepths.end ()) + 1;
 }

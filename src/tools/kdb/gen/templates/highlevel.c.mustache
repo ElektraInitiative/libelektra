@@ -13,7 +13,7 @@ For the full text see ./highlevel/LICENSE.txt
  *
  * @copyright BSD Zero Clause License
  *
- *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *     Copyright (c) Elektra Initiative (https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
@@ -40,6 +40,7 @@ For the full text see ./highlevel/LICENSE.txt
 #include <kdbhelper.h>
 #include <kdbinvoke.h>
 #include <kdbopts.h>
+#include <kdbgopts.h>
 
 #include <elektra/conversion.h>
 
@@ -53,18 +54,38 @@ static KeySet * embeddedSpec (void)
 /*%# embed_help_fallback? %*/
 static const char * helpFallback = "/*% help_fallback %*/";
 
-static int isHelpMode (void)
+/*%# init_with_pointers? %*/
+static int isHelpMode (int argc, const char * const * argv)
 {
-	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+	for (int i = 0; i < argc; ++i)
+	{
+		if (strcmp (argv[i], "--help") == 0)
+		{
+			return 1;
+		}
+	}
 
-	typedef int (*func) (void);
-	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
-	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
-
-	elektraInvokeClose (gopts, NULL);
-	return ret == 1;
+	return 0;
 }
+/*%/ init_with_pointers? %*/
+/*%^ init_with_pointers? %*/
+static int isHelpMode (size_t argsSize, const char * args)
+{
+	const char * argPtr = args;
+
+	while (argPtr < args + argsSize)
+	{
+		if (strcmp (argPtr, "--help") == 0)
+		{
+			return 1;
+		}
+
+		argPtr += strlen (argPtr) + 1;
+	}
+
+	return 0;
+}
+/*%/ init_with_pointers? %*/
 /*%/ embed_help_fallback? %*/
 
 /*%={{ }}=%*/
@@ -81,14 +102,19 @@ static int isHelpMode (void)
  * @retval 0  on success, @p elektra will contain a new Elektra instance coming from elektraOpen(),
  *            @p error will be unchanged
  * @retval -1 on error, @p elektra will be unchanged, @p error will be set
- * @retval 1  help mode, '-h' or '--help' was specified call {{{ help_function_name }}} to display
+ * @retval 1  help mode, '--help' was specified call {{{ help_function_name }}} to display
  *            the help message. @p elektra will contain a new Elektra instance. It has to be passed
  *            to {{{ help_function_name }}}. You also need to elektraClose() it.
  *            @p error will be unchanged
  *
  * @see elektraOpen
  */// {{=/*% %*/=}}
-int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
+int /*%& init_function_name %*/ (Elektra ** elektra, /*%# init_with_pointers? %*/
+				 int argc, const char * const * argv, const char * const * envp,
+				 /*%/ init_with_pointers? %*/ /*%^ init_with_pointers? %*/
+				 size_t argsSize, const char * args, size_t envSize, const char * envs,
+				 /*%/ init_with_pointers? %*/
+				 ElektraError ** error)
 {
 	/*%# spec_as_defaults? %*/
 	KeySet * defaults = embeddedSpec ();
@@ -103,6 +129,16 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 	/*%/ spec_as_defaults? %*/
 
 	KeySet * contract = /*%& contract %*/;
+	Key * parentKey = keyNew ("/*% parent_key %*/", KEY_END);
+
+	/*%# init_with_pointers? %*/
+	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
+	/*%/ init_with_pointers? %*/
+	/*%^ init_with_pointers? %*/
+	elektraGOptsContract (contract, argsSize, args, envSize, env, parentKey, NULL);
+	/*%/ init_with_pointers? %*/
+
+	keyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/*% parent_key %*/", defaults, contract, error);
 
@@ -111,22 +147,36 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
 		ksDel (defaults);
 	}
 
+	if (contract != NULL)
+	{
+		ksDel (contract);
+	}
+
 	if (e == NULL)
 	{
 		*elektra = NULL;
 		/*%# embed_help_fallback? %*/
-		if (isHelpMode ())
+		/*%# init_with_pointers? %*/
+		if (isHelpMode (argc, argv))
 		{
 			elektraErrorReset (error);
 			return 1;
 		}
+		/*%/ init_with_pointers? %*/
+		/*%^ init_with_pointers? %*/
+		if (isHelpMode (argsSize, args))
+		{
+			elektraErrorReset (error);
+			return 1;
+		}
+		/*%/ init_with_pointers? %*/
 		/*%/ embed_help_fallback? %*/
 
 		return -1;
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -141,7 +191,7 @@ int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error)
  * @param argc pass the value of argc from main
  * @param argv pass the value of argv from main
  */
-void /*%& specload_function_name %*/ (int argc, const char ** argv)
+void /*%& specload_function_name %*/ (int argc, const char * const * argv)
 {
 	/*%# embed_spec? %*/
 	if (argc != 2 || strcmp (argv[1], "/*% specload_arg %*/") != 0)
@@ -151,9 +201,9 @@ void /*%& specload_function_name %*/ (int argc, const char ** argv)
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("/*% spec_parent_key %*/", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("/*% spec_parent_key %*/", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
 
-	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+	KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
@@ -195,6 +245,65 @@ void /*%& help_function_name %*/ (Elektra * elektra, const char * usage, const c
 	printf ("%s", help);
 	elektraFree (help);
 }
+
+/*%# use_commands? %*/
+/*%={{ }}=%*/
+/**
+ * Determines which sub-commands (according to `elektraGetOpts`) have been invoked and calls the associated functions in
+ * order. The parameters @p elektra and @p userData will be passed through. In addition, the `terminal` parameter will be
+ * set to `true` for the last command function that is called.
+ *
+ * @param elektra  The Elektra instance produced by {{{ init_function_name }}}.
+ * @param usage	   Custom applicationd defined data. Will be passed untouched to the invoked command functions. Maybe NULL.
+ *
+ * @return If @p elektra is NULL -1 is returned.
+ *         If one of the invoked command functions returns a non-zero value, that value is returned.
+ *         Otherwise the return value of the terminal command function is returned.
+ */// {{=/*% %*/=}}
+int /*%& run_commands_function_name %*/ (Elektra * elektra, void * userData)
+{
+	if (elektra == NULL)
+	{
+		return -1;
+	}
+
+	KeySet * commands = ksNew (/*%& commands_count %*/,
+				   /*%# commands %*/
+				   keyNew ("//*% name %*/", KEY_FUNC, /*%& function_name %*/, KEY_END),
+				   /*%/ commands %*/
+				   KS_END);
+
+	typedef int (*commandFunction) (Elektra *, kdb_boolean_t, void *);
+
+	Key * lastCommand = keyNew ("/", KEY_END);
+	const char * command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
+	while (strlen (command) > 0)
+	{
+		Key * commandKey = ksLookup (commands, lastCommand, 0);
+		const void * rawFunc = keyValue (commandKey);
+		commandFunction func = *(commandFunction *) rawFunc;
+		int result = func (elektra, false, userData);
+		if (result != 0)
+		{
+			keyDel (lastCommand);
+			ksDel (commands);
+			return result;
+		}
+
+		keyAddBaseName (lastCommand, command);
+		command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
+	}
+
+	Key * commandKey = ksLookup (commands, lastCommand, 0);
+	const void * rawFunc = keyValue (commandKey);
+	commandFunction func = *(commandFunction *) rawFunc;
+	int result = func (elektra, true, userData);
+
+	keyDel (lastCommand);
+	ksDel (commands);
+	return result;
+}
+/*%/ use_commands? %*/
 
 /*%> partial.enum.c %*/
 

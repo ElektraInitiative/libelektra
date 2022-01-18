@@ -4,16 +4,21 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = unittest final memleak unfinished old nodoc
-- infos/description = Storage using libelektratools XML format.
+- infos/status = unittest final memleak unfinished old nodoc discouraged
+- infos/description = Storage using legacy XML format.
 
 ## Introduction
 
 This plugin is a storage plugin allowing Elektra to read and write XML
-formatted files. It uses the `libelektratools` 0.7 XML format.
+formatted files. It uses the legacy Elektra 0.7 XML format.
 
 This plugin can be used for migration of Key Databases
 from 0.7 -> 0.8. It should not be used otherwise.
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-xmltool`.
 
 ## Dependencies
 
@@ -31,12 +36,12 @@ from 0.7 -> 0.8. It should not be used otherwise.
 After you have upgraded Elektra, you can import XML files from Elektra 0.7:
 
 ```sh
-kdb import system xmltool < system.xml
-kdb import user xmltool < user.xml
+kdb import system:/ xmltool < system.xml
+kdb import user:/ xmltool < user.xml
 ```
 
 Or you can also mount an XML file using `xmltool` (not recommended):
 
 ```sh
-kdb mount /etc/example.xml system/example xmltool
+kdb mount /etc/example.xml system:/example xmltool
 ```

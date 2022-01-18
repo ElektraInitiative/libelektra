@@ -151,15 +151,15 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	ksRewind (returned);
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/iconv"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/iconv"))
 	{
 		KeySet * pluginConfig =
-			ksNew (30, keyNew ("system/elektra/modules/iconv", KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/iconv/exports", KEY_END),
-			       keyNew ("system/elektra/modules/iconv/exports/get", KEY_FUNC, elektraIconvGet, KEY_END),
-			       keyNew ("system/elektra/modules/iconv/exports/set", KEY_FUNC, elektraIconvSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/iconv", KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/iconv/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/iconv/exports/get", KEY_FUNC, elektraIconvGet, KEY_END),
+			       keyNew ("system:/elektra/modules/iconv/exports/set", KEY_FUNC, elektraIconvSet, KEY_END),
 #include "readme_iconv.c"
-			       keyNew ("system/elektra/modules/iconv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/iconv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return 1;
@@ -187,7 +187,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		const Key * meta = keyGetMeta (cur, "comment");
+		const Key * meta = keyGetMeta (cur, "comment/#0");
 		if (meta)
 		{
 			/* String or similar type of value */
@@ -203,7 +203,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetMeta (cur, "comment", convertedData);
+			keySetMeta (cur, "comment/#0", convertedData);
 			elektraFree (convertedData);
 		}
 	}
@@ -240,7 +240,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		const Key * meta = keyGetMeta (cur, "comment");
+		const Key * meta = keyGetMeta (cur, "comment/#0");
 		if (meta)
 		{
 			/* String or similar type of value */
@@ -257,7 +257,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetMeta (cur, "comment", convertedData);
+			keySetMeta (cur, "comment/#0", convertedData);
 			elektraFree (convertedData);
 		}
 	}

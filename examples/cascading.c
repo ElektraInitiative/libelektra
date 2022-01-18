@@ -18,21 +18,21 @@ void printError (char * what, Key const * parentKey)
 
 int main (void)
 {
-	Key * parentKey = keyNew ("", KEY_CASCADING_NAME, KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	Key * parentKey = keyNew ("/", KEY_END);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
 	}
 	keyDel (parentKey);
-	parentKey = keyNew ("meta", KEY_META_NAME, KEY_END);
+	parentKey = keyNew ("meta:/", KEY_END);
 	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
 	}
 	keyDel (parentKey);
-	parentKey = keyNew ("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
+	parentKey = keyNew ("/test/shell/somewhere", KEY_END);
 	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
@@ -47,24 +47,24 @@ int main (void)
 	}
 
 	/*
-	k = keyNew("user/test/shell/somewhere/key", KEY_VALUE, "value", KEY_END);
+	k = keyNew("user:/test/shell/somewhere/key", KEY_VALUE, "value", KEY_END);
 	ksAppendKey(ks, k);
 	keyDel(k);
 	*/
 
-	parentKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	parentKey = keyNew ("/", KEY_END);
 	if (kdbSet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbSet", parentKey);
 	}
 	keyDel (parentKey);
-	parentKey = keyNew ("meta", KEY_META_NAME, KEY_END);
+	parentKey = keyNew ("meta:/", KEY_END);
 	if (kdbSet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbSet", parentKey);
 	}
 	keyDel (parentKey);
-	parentKey = keyNew ("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
+	parentKey = keyNew ("/test/shell/somewhere", KEY_END);
 	if (kdbSet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbSet", parentKey);

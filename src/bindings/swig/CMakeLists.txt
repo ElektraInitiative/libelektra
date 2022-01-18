@@ -1,6 +1,6 @@
 function (swig_checks BINDING_NAME SUBDIRECTORY)
 	if (NOT SWIG_FOUND)
-		exclude_binding ("${BINDING_NAME}" "neither swig2/3 found. Please install swig3.0 and set -DSWIG_EXECUTABLE=")
+		exclude_binding ("${BINDING_NAME}" "neither swig2/3/4 found. Please install swig 2/3/4 and set -DSWIG_EXECUTABLE=")
 		return ()
 	endif ()
 
@@ -14,7 +14,7 @@ function (swig_checks BINDING_NAME SUBDIRECTORY)
 	endif ()
 endfunction (swig_checks)
 
-set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
+set (SWIG_COMPILE_FLAGS "-Wno-error -Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 find_swig ()
 
 check_binding_included ("python" IS_INCLUDED SUBDIRECTORY "swig/python")

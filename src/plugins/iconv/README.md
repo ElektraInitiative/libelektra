@@ -11,6 +11,11 @@
 
 This plugin is a filter plugin that converts between different character encodings.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Purpose
 
 Consider a user insisting on a `latin1` character encoding because
@@ -46,21 +51,21 @@ For example `iconv/iconv.ini` should be `latin1`, but all users
 have `UTF-8` settings:
 
 ```sh
-# Mount the file `iconv/iconv.ini` using the `ini` plugin together with `iconv`
-sudo kdb mount "$PWD/src/plugins/iconv/iconv/iconv.ini" system/tests/iconv ini iconv from=UTF-8,to=ISO-8859-1
+# Mount the file `iconv/iconv.ini` using the `mini` plugin together with `iconv`
+sudo kdb mount "$PWD/src/plugins/iconv/iconv/iconv.ini" system:/tests/iconv mini iconv from=UTF-8,to=ISO-8859-1
 
 # Check the file type of the mounted file
-file -b "`kdb file system/tests/iconv`"
+file -b "`kdb file system:/tests/iconv`"
 #> ISO-8859 text
 
-kdb get system/tests/iconv/a         # converts ISO-8859 to UTF-8
+kdb get system:/tests/iconv/a         # converts ISO-8859 to UTF-8
 #> hellö
 
-kdb set system/tests/iconv/a öäß     # converts UTF-8 to ISO-8859
-kdb get system/tests/iconv/a
+kdb set system:/tests/iconv/a öäß     # converts UTF-8 to ISO-8859
+kdb get system:/tests/iconv/a
 #> öäß
 
 # Cleanup
-kdb set system/tests/iconv/a hellö
-sudo kdb umount system/tests/iconv
+kdb set system:/tests/iconv/a hellö
+sudo kdb umount system:/tests/iconv
 ```

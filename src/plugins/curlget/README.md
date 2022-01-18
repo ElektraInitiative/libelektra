@@ -13,6 +13,11 @@
 
 The `curlget` plugin is a resolver using libcurl to upload and download files from/to remote hosts. When mounted with a `URL` as configuration file there will be no changes to the file system. When mounted with a (local) path to a configuration a copy of the remote configuration is kept and used as fallback in `kdbGet()` if fetching the remote file from the server fails.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-curl`.
+
 ## Configuration
 
 ### definitions
@@ -96,14 +101,14 @@ if the filename is an `URL` the plugin operates on temporary files only and keep
 
 ```sh
 rm /tmp/curltest.ini || $(exit 0)
-sudo kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini
-kdb ls system/curl
-#> system/curl/section1
-#> system/curl/section1/key1
+sudo kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system:/curl ini
+kdb ls system:/curl
+#> system:/curl/section1
+#> system:/curl/section1/key1
 stat /tmp/curltest.ini
 # RET:0
-kdb set system/curl/section1/key2 val2
-sudo kdb umount system/curl
+kdb set system:/curl/section1/key2 val2
+sudo kdb umount system:/curl
 stat /tmp/curltest.ini
 # RET:0
 cat /tmp/curltest.ini
@@ -111,19 +116,19 @@ cat /tmp/curltest.ini
 #> key1=val1
 #> key2=val2
 rm /tmp/curltest.ini || $(exit 0)
-sudo kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system/curl ini
-kdb ls system/curl
-#> system/curl/section1
-#> system/curl/section1/key1
-#> system/curl/section1/key2
+sudo kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system:/curl ini
+kdb ls system:/curl
+#> system:/curl/section1
+#> system:/curl/section1/key1
+#> system:/curl/section1/key2
 stat /tmp/curltest.ini
 # RET:1
 mv /tmp/httproot/curltest.ini /tmp/httproot/curltest.ini_moved
-kdb ls system/curl
+kdb ls system:/curl
 # RET:5
 mv /tmp/httproot/curltest.ini_moved /tmp/httproot/curltest.ini
-kdb rm system/curl/section1/key2
-sudo kdb umount system/curl
+kdb rm system:/curl/section1/key2
+sudo kdb umount system:/curl
 cat /tmp/httproot/curltest.ini
 #> [section1]
 #> key1=val1
@@ -132,17 +137,17 @@ cat /tmp/httproot/curltest.ini
 ### Mount with HTTP GET + POST and keep local copy
 
 ```
-kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini
+kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system:/curl ini
 ```
 
 ### Mount with HTTP GET + POST and keep no local copys
 
 ```
-kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system/curl ini
+kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system:/curl ini
 ```
 
 ### Mount with FTP GET + PUT and keep local copy
 
 ```
-kdb mount -R curlget -c url/get="ftp://127.0.0.1:21/test.ini",url/put="ftp://127.0.0.1:21/test.ini",user="thomas",password="pass",upload/method="FTP" /tmp/curltest.ini system/curl ini
+kdb mount -R curlget -c url/get="ftp://127.0.0.1:21/test.ini",url/put="ftp://127.0.0.1:21/test.ini",user="thomas",password="pass",upload/method="FTP" /tmp/curltest.ini system:/curl ini
 ```

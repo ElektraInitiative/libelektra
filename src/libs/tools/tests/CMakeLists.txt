@@ -21,8 +21,8 @@ file (GLOB TESTS testtool_*.cpp)
 # - https://github.com/ElektraInitiative/libelektra/commit/15d67328
 # ~~~
 if (CMAKE_C_COMPILER_ID MATCHES "Clang")
-	set_source_files_properties (testtool_specreader.cpp testtool_backendbuilder.cpp testtool_backendparser.cpp PROPERTIES
-				     COMPILE_FLAGS -Wno-delete-non-virtual-dtor)
+	set_source_files_properties (testtool_specreader.cpp testtool_backendbuilder.cpp testtool_backendparser.cpp
+				     PROPERTIES COMPILE_FLAGS -Wno-delete-non-virtual-dtor)
 endif (CMAKE_C_COMPILER_ID MATCHES "Clang")
 
 foreach (file ${TESTS})

@@ -24,9 +24,6 @@ const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey);
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys);
 Key * elektraArrayGetNextKey (KeySet * arrayKeys);
 
-keyswitch_t keyCompare (const Key * key1, const Key * key2);
-keyswitch_t keyCompareMeta (const Key * key1, const Key * key2);
-
 int elektraIsReferenceRedundant (const char * reference);
 char * elektraResolveReference (const char * reference, const Key * baseKey, const Key * parentKey);
 
@@ -62,6 +59,8 @@ int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
 char * elektraLongDoubleToString (kdb_long_double_t value);
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
+
+kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Key * parentKey);
 
 #ifdef __cplusplus
 }

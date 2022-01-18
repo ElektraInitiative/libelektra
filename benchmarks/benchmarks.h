@@ -22,7 +22,7 @@
 
 #include <time.h>
 
-#define KEY_ROOT "user/benchmark"
+#define KEY_ROOT "user:/benchmark"
 
 #define KEY_NAME_LENGTH 1000
 #define NUM_DIR 200
@@ -137,11 +137,11 @@ typedef struct
 {
 	unsigned int minWordLength; /*!< min Length of a string between two '/' */
 	unsigned int maxWordLength; /*!< max Length of a string between two '/' */
-	unsigned int parent;	/*!< defines the parent behaviour */
-	unsigned int special;       /*!< defines the special char behaviour */
-	KsShapeFunction shapef;     /*!< function pointer for the KeySet shape */
-	KsShapeInit shapeInit;      /*!< function pointer for the KeySet shape data initialization */
-	KsShapeDel shapeDel;	/*!< function pointer for the KeySet shape data deletion */
+	unsigned int parent;	    /*!< defines the parent behaviour */
+	unsigned int special;	    /*!< defines the special char behaviour */
+	KsShapeFunction shapef;	    /*!< function pointer for the KeySet shape */
+	KsShapeInit shapeInit;	    /*!< function pointer for the KeySet shape data initialization */
+	KsShapeDel shapeDel;	    /*!< function pointer for the KeySet shape data deletion */
 } KeySetShape;
 
 KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape);

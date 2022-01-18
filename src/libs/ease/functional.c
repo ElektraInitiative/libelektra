@@ -48,7 +48,7 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 	int ret = 0;
 	Key * current;
 
-	cursor_t cursor = ksGetCursor (input);
+	elektraCursor cursor = ksGetCursor (input);
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{
@@ -92,7 +92,7 @@ int elektraKsToMemArray (KeySet * ks, Key ** buffer)
 	/* clear the received buffer */
 	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
 
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	size_t idx = 0;
 

@@ -5,8 +5,8 @@ SCRIPTS_DIR=$(dirname "$0")
 
 WorkingDir="@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@/"
 TriggerPort=65432
-MountPoint="user/prefs"
-PrefsSetupMountPoint="system/firefox/prefs"
+MountPoint="user:/prefs"
+PrefsSetupMountPoint="system:/firefox/prefs"
 ConfigFile="myPrefs.js"
 Decoy="/tmp/imnotreal.js"
 AutoConfigScript="elektra.cfg"

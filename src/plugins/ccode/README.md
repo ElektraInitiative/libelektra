@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep libc configurable
+- infos/status = unittest nodep libc configurable discouraged
 - infos/description = Decoding/Encoding engine which escapes unwanted characters.
 
 # CCode
@@ -23,61 +23,10 @@ CCode provides a reasonable default configuration, using the usual escape sequen
 for C strings (e.g. `\n` for newline, `\t` for tab). You can also configure the escape character
 (`/escape`) and the mapping for special characters (`chars`).
 
-## Examples
+## Installation
 
-### Default Configuration
-
-```sh
-# Mount `tcl` storage plugin together with the required `base64` plugin.
-# We use the `ccode` plugin to escape special characters.
-sudo kdb mount config.tcl user/tests/ccode tcl ccode base64
-
-# Add a key value containing newline characters
-kdb set user/tests/ccode/multiline "`printf 'one\ntwo\nthree'`"
-# By default the plugin uses `\n` to escape newline characters
-grep 'multiline' `kdb file user/tests/ccode` | sed 's/[[:space:]]*//'
-#> multiline = one\ntwo\nthree
-
-# The `ccode` plugin escapes and unescapes the data. The `tcl` plugin
-# returns the unescaped values.
-kdb get user/tests/ccode/multiline
-#> one
-#> two
-#> three
-
-# Write and read a key value containing a tab character
-kdb set user/tests/ccode/tab 'Tab	Fabulous'
-kdb get user/tests/ccode/tab
-#> Tab	Fabulous
-
-# The plugin also escapes special characters inside key names
-kdb set 'user/tests/ccode/tab/t\ta	b' 'Escaped Tabs'
-grep 'tab/' `kdb file user/tests/ccode` | sed 's/[[:space:]]*//'
-#> tab/t\\ta\tb = Escaped Tabs
-
-# Undo modifications to database
-kdb rm -r user/tests/ccode
-sudo kdb umount user/tests/ccode
-```
-
-### Custom Configuration
-
-```sh
-# We use `%` as escape character and map the space character (hex: `20`) to the character `_`.
-sudo kdb mount config.tcl user/tests/ccode tcl base64 ccode escape=`bash -c 'printf %x \"%'` chars/20=`bash -c 'printf %x \"_'`
-
-kdb set user/tests/ccode/spaces 'one two three'
-
-grep 'space' `kdb file user/tests/ccode/spaces` | sed 's/[[:space:]]*//'
-#> spaces = one%_two%_three
-
-kdb get user/tests/ccode/spaces
-#> one two three
-
-# Undo modifications to database
-kdb rm -r user/tests/ccode
-sudo kdb umount user/tests/ccode
-```
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
 
 ## Restrictions
 

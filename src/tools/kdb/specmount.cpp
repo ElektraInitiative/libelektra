@@ -46,8 +46,8 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 	SpecReader sr;
 
 	kdb::KeySet specToRead;
-	kdb.get (specToRead, "spec" + mp);
-	specToRead = specToRead.cut (Key ("spec" + mp, KEY_END));
+	kdb.get (specToRead, "spec:" + mp);
+	specToRead = specToRead.cut (Key ("spec:" + mp, KEY_END));
 
 	sr.readSpecification (specToRead);
 
@@ -63,7 +63,7 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 				  << std::endl;
 		}
 
-		backend.setBackendConfig (cl.getPluginsConfig ("system/"));
+		backend.setBackendConfig (cl.getPluginsConfig ("system:/"));
 		backend.needPlugin (cl.resolver);
 		backend.needPlugin ("storage");
 
@@ -83,7 +83,7 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 
 	if (!cl.quiet && backends.empty ())
 	{
-		std::cout << "No metadata \"mountpoint\" found below spec" << mp << std::endl;
+		std::cout << "No metadata \"mountpoint\" found on key \"spec:" << mp << "\"" << std::endl;
 	}
 }
 

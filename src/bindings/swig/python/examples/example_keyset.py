@@ -1,12 +1,26 @@
 import kdb
 
 ks1 = kdb.KeySet(100,
-	kdb.Key("user/key1"),
-	kdb.Key("user/key2"),
-	kdb.Key("user/key3")
+	kdb.Key("user:/key1"),
+	kdb.Key("user:/key2"),
+	kdb.Key("user:/key3")
 	)
 
 print("KeySet1 has {0} keys".format(len(ks1)))
+print("")
+
+print("We can add a key at runtime")
+new_key = kdb.Key("user:/key4", "key_value")
+ks1.append(new_key)
+print("or even a list of keys")
+list_of_keys = [kdb.Key("user:/key5", "key_value"), kdb.Key("user:/key6", "key_value")]
+ks1.extend(list_of_keys)
+print("")
+
+print("If you want to remove some keys")
+ks1.remove("user:/key4")
+ks1.remove("user:/key5")
+ks1.remove("user:/key6")
 print("")
 
 print("We can easily iterate over the keyset to check out its content:")
@@ -20,15 +34,15 @@ for k in reversed(ks1):
 print("")
 
 print("We can check if a key is in a keyset:")
-print("  Is user/key1 in KeySet1? {0}".format("user/key1" in ks1))
+print("  Is user:/key1 in KeySet1? {0}".format("user:/key1" in ks1))
 print("This works with Key objects too:")
-print("  Is Key(system/key1) in KeySet1? {0}".format("system/key1" in ks1))
+print("  Is Key(system:/key1) in KeySet1? {0}".format("system:/key1" in ks1))
 print("")
 
 print("Index access is supported as well:")
 print("  KeySet1[1]={0}".format(ks1[1]))
 print("  KeySet1[-1]={0}".format(ks1[-1]))
-print("  KeySet1['user/key1']={0}".format(ks1["user/key1"]))
+print("  KeySet1['user:/key1']={0}".format(ks1["user:/key1"]))
 try:
 	print("  KeySet1['doesnt_exist']={0}".format(ks1["doesnt_exist"]))
 except KeyError:

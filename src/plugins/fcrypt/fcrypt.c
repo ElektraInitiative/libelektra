@@ -220,8 +220,13 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 
 static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
 {
+	ssize_t readCount;
+	ssize_t writeCount;
+	kdb_octet_t buffer[512];
 	int parentKeyFd = -1;
 	int result = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
+	int manualCopy = 0;
+	int transferErrno = 0;
 
 	if (result == 1)
 	{
@@ -230,22 +235,59 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		// gpg call returned success, overwrite the original file with the gpg payload data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Renaming file %s to %s failed. Reason: %s", tmpFile, keyString (parentKey),
-						     strerror (errno));
-			result = -1;
+			// if rename failed we can still try to copy the file content manually
+			if (lseek (tmpFileFd, 0, SEEK_SET))
+			{
+				transferErrno = errno;
+				result = -1;
+			}
+			if (lseek (parentKeyFd, 0, SEEK_SET))
+			{
+				transferErrno = errno;
+				result = -1;
+			}
+			readCount = read (tmpFileFd, buffer, sizeof (buffer));
+			if (readCount < 0)
+			{
+				transferErrno = errno;
+				result = -1;
+			}
+			while (result == 1 && readCount > 0)
+			{
+				writeCount = write (parentKeyFd, buffer, readCount);
+				if (writeCount < 0)
+				{
+					transferErrno = errno;
+					result = -1;
+					break;
+				}
+				readCount = read (tmpFileFd, buffer, sizeof (buffer));
+				if (readCount < 0)
+				{
+					transferErrno = errno;
+					result = -1;
+				}
+			}
+			manualCopy = 1;
 		}
 	}
 
-	if (result == 1)
+	if (result == -1)
 	{
-		if (parentKeyFd >= 0)
-		{
-			shredTemporaryFile (parentKeyFd, parentKey);
-		}
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
+					     "Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s",
+					     tmpFile, keyString (parentKey), strerror (transferErrno));
 	}
-	else
+
+	if (result == 1 && parentKeyFd >= 0 && !manualCopy)
+	{
+		shredTemporaryFile (parentKeyFd, parentKey);
+	}
+
+	if (result == -1 || manualCopy)
 	{
 		// if anything went wrong above the temporary file is shredded and removed
+		// in case of manual copy tmpFile was NOT renamed so it still floats around in TMPDIR
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
@@ -562,7 +604,7 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"

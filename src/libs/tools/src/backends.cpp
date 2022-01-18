@@ -94,7 +94,7 @@ BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountCo
 	// it will never happen if something desired is present.
 	std::string soldMountpoint = mountPath;
 	std::replace (soldMountpoint.begin (), soldMountpoint.end (), '_', '/');
-	Key koldMountpoint ("user/" + soldMountpoint, KEY_END);
+	Key koldMountpoint ("user:/" + soldMountpoint, KEY_END);
 	std::string omp = koldMountpoint.getName ();
 	std::string oldMountpoint (omp.begin () + 4, omp.end ());
 	if (soldMountpoint.at (0) != '/') oldMountpoint.erase (0, 1); // fix non-cascading
@@ -137,7 +137,7 @@ bool Backends::umount (std::string const & mountPath, KeySet & mountConf)
 
 /**
  * @brief returns the base path of a mounted backend
- * below system/elektra/mountpoints
+ * below system:/elektra/mountpoints
  *
  * @param mp the mountpoint (name will be derived from it)
  *
@@ -146,14 +146,14 @@ bool Backends::umount (std::string const & mountPath, KeySet & mountConf)
 std::string Backends::getBasePath (std::string mp)
 {
 	Key k (Backends::mountpointsPath, KEY_END);
-	Key kmp (mp, KEY_CASCADING_NAME, KEY_END); // canonify name
-	k.addBaseName (kmp.getName ());		   // escape name
+	Key kmp (mp, KEY_END);		// canonify name
+	k.addBaseName (kmp.getName ()); // escape name
 	return k.getName ();
 }
 
 /**
  * @brief Below this path is the mountConf
  */
-const char * Backends::mountpointsPath = "system/elektra/mountpoints";
+const char * Backends::mountpointsPath = "system:/elektra/mountpoints";
 } // namespace tools
 } // namespace kdb

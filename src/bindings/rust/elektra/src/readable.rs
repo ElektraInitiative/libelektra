@@ -12,7 +12,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = StringKey::new("user/sw/app")?;
+    /// let mut key = StringKey::new("user:/sw/app")?;
     /// key.set_value("myvalue");
     /// assert_eq!(key.value(), "myvalue");
     /// #
@@ -43,17 +43,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
         unsafe { elektra_sys::keyGetBaseNameSize(self.as_ref()) }
     }
 
-    /// Bytes needed to store the key name including user domain and ending NULL.
-    fn fullname_size(&self) -> usize {
-        unsafe {
-            elektra_sys::keyGetFullNameSize(self.as_ref())
-                .try_into()
-                .unwrap()
-        }
-    }
-
     /// Return how many references the key has.
-    fn get_ref(&self) -> isize {
+    fn get_ref(&self) -> u16 {
         unsafe { elektra_sys::keyGetRef(self.as_ref()) }
     }
 
@@ -61,27 +52,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     fn current_meta(&self) -> ReadOnly<StringKey> {
         let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
         unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) }
-    }
-
-    /// Get key full name, including the user domain name.
-    fn fullname(&self) -> String {
-        let mut vec: Vec<u8> = Vec::with_capacity(self.fullname_size());
-
-        let ret_val = unsafe {
-            elektra_sys::keyGetFullName(
-                self.as_ref(),
-                vec.as_mut_ptr() as *mut std::os::raw::c_char,
-                vec.capacity(),
-            )
-        };
-        unsafe { vec.set_len(ret_val.try_into().unwrap()) };
-        // Elektra strings are guaranteed not to contain NUL bytes
-        unsafe {
-            CStr::from_bytes_with_nul_unchecked(&vec)
-                .to_string_lossy()
-                .to_owned()
-                .to_string()
-        }
     }
 
     /// Returns the namespace of the name of this key.
@@ -92,7 +62,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # use elektra_sys;
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let mut key = BinaryKey::new("user:/sw/app")?;
     /// assert_eq!(key.namespace(), elektra_sys::KEY_NS_USER);
     /// #
     /// #     Ok(())
@@ -139,7 +109,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let mut key = BinaryKey::new("user:/sw/app")?;
     /// key.set_value(b"12345");
     /// assert_eq!(key.value_size(), 5);
     /// #
@@ -164,7 +134,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{BinaryKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut key = BinaryKey::new("user/sw/app")?;
+    /// let mut key = BinaryKey::new("user:/sw/app")?;
     /// key.set_value(b"");
     /// assert!(key.is_binary());
     /// #
@@ -181,7 +151,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/sw/app")?;
+    /// let key = StringKey::new("user:/sw/app")?;
     /// assert!(key.is_string());
     /// #
     /// #     Ok(())
@@ -197,8 +167,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/sw/app")?;
-    /// let key2 = StringKey::new("user/sw/app/folder/key")?;
+    /// let key = StringKey::new("user:/sw/app")?;
+    /// let key2 = StringKey::new("user:/sw/app/folder/key")?;
     /// assert!(key2.is_below(&key));
     /// #
     /// #     Ok(())
@@ -217,8 +187,8 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     /// ```
     /// # use elektra::{StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/sw/app")?;
-    /// let key2 = StringKey::new("user/sw/app/key")?;
+    /// let key = StringKey::new("user:/sw/app")?;
+    /// let key2 = StringKey::new("user:/sw/app/key")?;
     /// assert!(key2.is_directly_below(&key));
     /// #
     /// #     Ok(())
@@ -229,25 +199,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
         Self: Sized,
     {
         unsafe { elektra_sys::keyIsDirectlyBelow(other.as_ref(), self.as_ref()) == 1 }
-    }
-
-    /// Returns true if the key is inactive.
-    ///
-    /// In Elektra terminology a hierarchy of keys is inactive if the
-    /// rootkey's basename starts with '.'. So a key is also inactive
-    /// if it is below an inactive key.
-    /// # Examples
-    /// ```
-    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user/key/.hidden")?;
-    /// assert!(key.is_inactive());
-    /// #
-    /// #     Ok(())
-    /// # }
-    /// ```
-    fn is_inactive(&self) -> bool {
-        unsafe { elektra_sys::keyIsInactive(self.as_ref()) == 1 }
     }
 
     /// Returns the metadata with the given metaname

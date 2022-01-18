@@ -58,8 +58,7 @@ public:
 	}
 
 private:
-	/**This function avoid that every return path need to release the
-	 * configuration. */
+	/** This function avoids that every return path needs to release the configuration. */
 	inline static int openHelper (ckdb::Plugin * handle, kdb::KeySet & config, ckdb::Key * errorKey, Builder builder)
 	{
 		if (config.lookup ("/module"))

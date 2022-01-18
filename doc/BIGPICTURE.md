@@ -27,9 +27,9 @@ be interpreted.
 For file systems, the API is `open`, `read`, `write`, and then `close`.
 For configuration key-value access is more suitable because values are
 so small that a single read/write always suffices. Thus Elektra [has a
-key-value API](https://doc.libelektra.org/api/current/html) with `kdbOpen`,
+key-value API](https://doc.libelektra.org/api/latest/html) with `kdbOpen`,
 `kdbGet`, `kdbSet` and `kdbClose`. Not every application is written in C,
-thus many `bindings` where written to access file systems. For example,
+thus many `bindings` were written to access file systems. For example,
 in C++ you have `fstream`, and in Java `FileReader`. Also Elektra provides
 different [bindings](/src/bindings/README.md): In C++ you have a class
 `KDB` and can use `kdb.get` or `kdb.set`. Furthermore, every language
@@ -46,18 +46,18 @@ There is not one file system satisfying every need, e.g., `proc`, `tmpfs`,
 `nfs` and `ext4` have quite different use cases and are needed at the
 same time in parallel. In analogy, different configuration file format
 (parsers) have different advantages and disadvantages. For example,
-`/etc/passwd` or `/etc/hosts` are structured and very compact, while
+`/etc/passwd` or `/etc/hosts` are structured, while
 many other configuration files are semi-structured.
 
 To have multiple file systems present at the same time a virtual
-file system is able to mount (2) concrete file systems and thus give
+file system is able to `mount (2)` concrete file systems and thus give
 applications a way to uniformly access them. Similarly, Elektra also
 implements a [mount](/doc/help/elektra-mounting.md) functionality in
 its core. In Elektra a [contract](/doc/CONTRACT.ini) specifies the
 obligations between plugins.
 
 Sometimes, it is even useful to have multiple file systems at
-the same mount point, so called `stacked` file systems. They allow
+the same mount point, so-called `stacked` file systems. They allow
 you to combine features of different file systems. For example,
 [eCryptfs](https://wiki.archlinux.org/index.php/ECryptfs) allows you
 to encrypt directories or files. In Elektra, stacking plugins is a core
@@ -84,7 +84,7 @@ to also write plugins in different languages. Furthermore,
 
 Of course not every feature of virtual file systems or Elektra has
 an analogy in the other system. If they would solve the same problem,
-one of them would be useless. Main differences are:
+one of them would be useless. The main differences are:
 
 - API (get/set vs. read/write)
 - commit semantics: one `kdbSet` can change many configuration files atomically.

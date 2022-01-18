@@ -19,9 +19,9 @@
  */
 
 #include <kdb.h>
-#include <kdbhelper.h>       // elektraFree
-#include <kdbio.h>	   // I/O binding functions (elektraIo*)
-#include <kdbio/glib.h>      // I/O binding constructor for glib (elektraIoGlibNew)
+#include <kdbhelper.h>	     // elektraFree
+#include <kdbio.h>	     // I/O binding functions (elektraIo*)
+#include <kdbio/glib.h>	     // I/O binding constructor for glib (elektraIoGlibNew)
 #include <kdbnotification.h> // notification functions
 
 #include <glib-unix.h> // g_unix_signal_add()
@@ -74,28 +74,22 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	if (data->kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-		elektraNotificationClose (data->kdb);
 		kdbClose (data->kdb, data->parentKey);
 		didReload = 1;
 	}
 
-	data->kdb = kdbOpen (data->parentKey);
+	KeySet * contract = ksNew (0, KS_END);
+	elektraIoContract (contract, data->binding);
+	elektraNotificationContract (contract);
+
+	data->kdb = kdbOpen (contract, data->parentKey);
 	if (data->kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
 		exit (1);
 	}
 
-	elektraIoSetBinding (data->kdb, data->binding);
-
-	int result = elektraNotificationOpen (data->kdb);
-	if (!result)
-	{
-		printf ("could not init notification, aborting\n");
-		exit (1);
-	}
-
-	result = elektraNotificationRegisterInt (data->kdb, data->intKeyToWatch, &data->valueToPrint);
+	int result = elektraNotificationRegisterInt (data->kdb, data->intKeyToWatch, &data->valueToPrint);
 	if (!result)
 	{
 		printf ("could not register variable, aborting\n");
@@ -127,7 +121,6 @@ static gboolean onSIGNAL (gpointer user_data)
 	elektraFree (data->timer);
 	elektraIoBindingRemoveTimer (data->reload);
 	elektraFree (data->reload);
-	elektraNotificationClose (data->kdb);
 	kdbClose (data->kdb, data->parentKey);
 	elektraIoBindingCleanup (data->binding);
 
@@ -137,8 +130,6 @@ static gboolean onSIGNAL (gpointer user_data)
 
 /**
  * This function is called whenever Elektra's configuration has changed.
- * Since cannot call elektraNotificationClose() here we start a timer operation
- * which allows us to reload KDB in the next main loop iteration.
  *
  * @param changedKey unused
  * @param context unused

@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 
-Copyright (c) 2018 [Elektra Initiative](/doc/AUTHORS.md). All rights reserved.
+Copyright (c) 2004-2021 [Elektra Initiative](/doc/AUTHORS.md). All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -12,7 +12,7 @@ modification, are permitted provided that the following conditions are met:
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
 
-- Neither the name of Elektra nor the names of its contributors may
+- Neither the name of Elektra or libelektra nor the names of its contributors may
   be used to endorse or promote products derived from this software without
   specific prior written permission.
 

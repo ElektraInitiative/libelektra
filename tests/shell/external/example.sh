@@ -19,8 +19,8 @@ check_version
 EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/external"
 
 do_tests() {
-	SKEY=system/test/myapp/key
-	UKEY=user/test/myapp/key
+	SKEY=system:/test/myapp/key
+	UKEY=user:/test/myapp/key
 
 	"$KDB" rm "$SKEY"
 	"$KDB" rm "$UKEY"
@@ -75,4 +75,4 @@ do_tests
 
 rm application
 
-end_script gen
+end_script example

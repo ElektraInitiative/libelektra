@@ -16,8 +16,8 @@
 
 KeySet * set_pluginconf (void)
 {
-	return ksNew (10, keyNew ("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END), keyNew ("user/path", KEY_VALUE, "elektra.ecf", KEY_END),
-		      KS_END);
+	return ksNew (10, keyNew ("system:/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+		      keyNew ("user:/path", KEY_VALUE, "elektra.ecf", KEY_END), KS_END);
 }
 
 
@@ -33,7 +33,7 @@ void test_resolve (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
 
@@ -124,7 +124,7 @@ void test_name (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (KDB_DB_SYSTEM[0] == '~')
 	{
@@ -172,7 +172,7 @@ void test_lockname (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
@@ -222,7 +222,7 @@ void test_tempname (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
@@ -254,7 +254,7 @@ void test_checkfile (void)
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
 	exit_if_fail (plugin, "did not find a resolver");
 
-	Key * root = keyNew ("system/elektra/modules", KEY_END);
+	Key * root = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (root, plugin->name);
 
 	KeySet * contract = ksNew (5, KS_END);

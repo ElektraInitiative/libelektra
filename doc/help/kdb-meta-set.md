@@ -12,11 +12,10 @@ If no `metavalue` is given, the metakey will be removed.
 ## DESCRIPTION
 
 This command allows the user to set the value of an individual metakey.
-If a key does not already exist and the user tries setting a metakey associated with it, the key will be created with a null value.
-There is some special handling for the metadata atime, mtime and ctime. They will be converted to time_t.
+If a (non-cascading) key does not already exist and the user tries setting a metakey associated with it, the key will be created with a null value.
+If a cascading key is given that does not resolve to an actual key, the operation is aborted.
 
-For cascading keys, the namespace will default to `spec`, because
-that is the place where you usually want to set metadata.
+There is some special handling for the metadata atime, mtime and ctime. They will be converted to time_t.
 
 ## OPTIONS
 
@@ -34,6 +33,8 @@ that is the place where you usually want to set metadata.
   Give debug information. Prints additional debug information in case of errors/warnings.
 - `-q`, `--quiet`:
   Suppress non-error messages.
+- `-f`, `--force`:
+  Do not perform cascading KDB operations if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
 ## KDB
 
@@ -43,17 +44,12 @@ that is the place where you usually want to set metadata.
 - `/sw/elektra/kdb/#0/current/quiet`:
   Same as `-q`: Suppress default messages.
 
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is `user`, except `kdb` is used as root, then `system`
-  is the default.
-
 ## EXAMPLES
 
-To set a metakey called `description` associated with the key `user/example/key` to the value `Hello World!`:<br>
-`kdb meta-set spec/example/key description "Hello World!"`
+To set a metakey called `description` associated with the key `user:/example/key` to the value `Hello World!`:<br>
+`kdb meta-set spec:/example/key description "Hello World!"`
 
-To create a new key `spec/example/newkey` with a null value (if it did not exist before)
+To create a new key `spec:/example/newkey` with a null value (if it did not exist before)
 and a metakey `namespace/#0` associated with it to the value `system`:<br>
 `kdb meta-set /example/newkey "namespace/#0" system`
 
@@ -61,13 +57,13 @@ To create an override link for a `/test` key:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb meta-set spec/test override/#0 /overrides/test
+sudo kdb meta-set spec:/test override/#0 /overrides/test
 ```
 
 To remove it:
 
 ```sh
-sudo kdb meta-set spec/test override/#0
+sudo kdb meta-set spec:/test override/#0
 ```
 
 ## SEE ALSO

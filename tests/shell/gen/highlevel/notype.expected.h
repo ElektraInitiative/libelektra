@@ -10,7 +10,7 @@
  *
  * @copyright BSD Zero Clause License
  *
- *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *     Copyright (c) Elektra Initiative (https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
@@ -36,6 +36,8 @@ extern "C" {
 
 #include <kdbhelper.h>
 #include <string.h>
+
+
 
 
 
@@ -148,9 +150,14 @@ extern "C" {
 #undef elektra_len
 
 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+int loadConfiguration (Elektra ** elektra,
+				 int argc, const char * const * argv, const char * const * envp,
+				 
+				 ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
-void exitForSpecload (int argc, const char ** argv);
+void exitForSpecload (int argc, const char * const * argv);
+
+
 
 
 /**

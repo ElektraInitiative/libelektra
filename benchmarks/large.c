@@ -10,11 +10,10 @@
 
 KDB * kdb;
 Key * key;
-KeySet * large;
 
 void benchmarkOpen (void)
 {
-	kdb = kdbOpen (key);
+	kdb = kdbOpen (NULL, key);
 }
 
 void benchmarkInread (void)

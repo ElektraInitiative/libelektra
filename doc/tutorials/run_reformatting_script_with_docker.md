@@ -5,7 +5,7 @@ you can easily build a Docker image and run the script inside a Docker container
 
 ## Who Is This Guide For?
 
-Do you want to run the reformat-all script easily and without any hassle? You've come to the right place.
+Do you want to run the reformat-all and the fix-spelling script easily and without any hassle? You've come to the right place.
 
 This is a step-by-step guide. Just follow the steps and you are good to go!
 
@@ -57,7 +57,15 @@ After starting the container, you should be automatically inside it in the worki
 Now run the script:
 
 ```sh
-scripts/reformat-all
+scripts/dev/reformat-all
 ```
 
 All your files should be reformatted afterwards.
+
+To also fix spelling errors in your files, run the script:
+
+```sh
+scripts/dev/fix-spelling
+```
+
+All your spelling errors should be fixed afterwards.

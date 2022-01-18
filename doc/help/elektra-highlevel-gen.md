@@ -8,7 +8,6 @@ with the basic features explained in [`kdb-gen-highlevel(1)`](kdb-gen-highlevel.
 The parameters that are relevant to the concepts described here are (for the rest see [`kdb-gen-highlevel(1)](kdb-gen-highlevel.md)):
 
 - `embeddedSpec`: allowed values: `full` (default), `defaults`, `none`
-- `specValidation`: allowed values: `none` (default), `minimal`
 - `enumConv`: allowed values: `strcmp`, `switch`, `auto` (default)
 
 Using `embeddedSpec` you can configure how much of the specification is embedded into your application. By default we use `full`. This means
@@ -25,9 +24,8 @@ Setting `embeddedSpec=none` is only recommended, if you must have the minimal bi
 defaults are passed to `elektraOpen` and defaults are only handled via the `spec` plugin. If the specification/configuration isn't mounted,
 the getter functions may fail.
 
-To avoid this case of a misconfigured mountpoint, you can use `specValidation=minimal`. It is by far not a perfect solution, but it will
-cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected
-mountpoint or if the specification was not `spec-mount`ed.
+The case of a misconfigured mountpoint will be detected automatically and reported as an error. It will
+cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected mountpoint or if the specification was not `spec-mount`ed.
 
 ## Enums
 
@@ -111,7 +109,7 @@ case 'r': /* red */
 }
 ```
 
-Of course this version also has its own problems. Take for example the the enum with the values: `blue`, `blueish` and `brown`. With
+Of course this version also has its own problems. Take for example the enum with the values: `blue`, `blueish` and `brown`. With
 `enumConv=switch` this would generate the following code:
 
 ```c
@@ -190,7 +188,7 @@ Similar to enums, you can customise the generated struct via additional metadata
     Don't forget to include the needed header in the `headers` parameter.
   - `gen/struct/alloc` (values `0`, `1`) sets whether the struct is _allocating_. This changes how the getter works and also has some other
     implications. By default structs are non-allocating.
-  - `gen/struct/depth` sets the how many levels below the `type=struct` key, we will include in the generated struct. Note that keys ending
+  - `gen/struct/depth` sets at how many levels below the `type=struct` key, we will include in the generated struct. Note that keys ending
     in `/#` (i.e. array keys) count as one level above. So `mystruct/x/#` would be included with the default `gen/struct/depth=1`.
 - Metadata for keys corresponding to fields of the struct:
   - `gen/struct/field` sets the name of the field in the generated struct.

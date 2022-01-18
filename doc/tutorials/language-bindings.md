@@ -89,7 +89,7 @@ To invoke our tests through CMake, we have to follow similar steps as in the bui
 add_test (NAME test_our_binding COMMAND ${BUILD_TOOL_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 ```
 
-We may have to specify an additonal environment variable to tell the test command, where `libelektra.so` resides, so that the dynamic linker can find it.
+We may have to specify an additional environment variable to tell the test command, where `libelektra.so` resides, so that the dynamic linker can find it.
 
 ```cmake
 set_property (TEST test_our_binding PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
@@ -150,5 +150,5 @@ getReason()
 ```
 
 Please also keep the wording identical for consistency.
-Take a look how the Java Binding implemented it in the
-[KDBException](../../src/bindings/jna/libelektra4j/src/main/java/org/libelektra/exception/KDBException.java)
+Take a look how the Java binding implemented it in the
+[KDBException](../../src/bindings/jna/libelektra/src/main/java/org/libelektra/KDBException.java)

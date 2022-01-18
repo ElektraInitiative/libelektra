@@ -13,9 +13,11 @@
 #include <kdbconfig.h>
 #include <keysetget.hpp>
 #include <keysetio.hpp>
+#include <mergehelper.hpp>
 
 #include <cstdio>
 #include <iostream>
+#include <limits>
 #include <set>
 #include <vector>
 
@@ -39,7 +41,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
   debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
   noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
   inputFile (""), null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins (""),
-  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
+  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -86,7 +88,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	{
 		option o = { "load", no_argument, nullptr, 'f' };
 		long_options.push_back (o);
-		helpText += "-l --load                Load plugin even if system/elektra is available.\n";
+		helpText += "-l --load                Load plugin even if system:/elektra is available.\n";
 	}
 	if (acceptedOptions.find ('h') != string::npos)
 	{
@@ -234,14 +236,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		long_options.push_back (o);
 		helpText += "-3 --third               Suppress the third column.\n";
 	}
-	optionPos = acceptedOptions.find ('N');
-	if (acceptedOptions.find ('N') != string::npos)
-	{
-		acceptedOptions.insert (optionPos + 1, ":");
-		option o = { "namespace", required_argument, nullptr, 'N' };
-		long_options.push_back (o);
-		helpText += "-N --namespace <ns>      Specify the namespace to use for cascading keys.\n";
-	}
 	optionPos = acceptedOptions.find ('c');
 	if (optionPos != string::npos)
 	{
@@ -320,9 +314,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
 				k = conf.lookup (dirname + "plugins/global");
 				if (k) globalPlugins = k.get<string> ();
-
-				k = conf.lookup (dirname + "namespace");
-				if (k) ns = k.get<string> ();
 
 				k = conf.lookup (dirname + "verbose");
 				if (k) verbose = k.get<bool> ();
@@ -473,9 +464,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		case '3':
 			third = false;
 			break;
-		case 'N':
-			ns = optarg;
-			break;
 		case 'c':
 			pluginsConfig = optarg;
 			break;
@@ -489,22 +477,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	if (quiet && verbose)
 	{
 		std::cout << "Both quiet and verbose is active: will suppress default messages, but print verbose messages" << std::endl;
-	}
-
-	if (ns.empty ())
-	{
-#ifndef _WIN32
-		if (getuid () == 0 || geteuid () == 0)
-		{
-			ns = "system";
-		}
-		else
-		{
-			ns = "user";
-		}
-#else
-		ns = "user";
-#endif
 	}
 
 	optind++; // skip the command name
@@ -549,7 +521,7 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 		kdb::Key bookmark = resolveBookmark (name);
 		if (!bookmark.isValid ())
 		{
-			throw invalid_argument ("cannot find bookmark " + bookmark.getFullName ());
+			throw invalid_argument ("cannot find bookmark " + bookmark.getName ());
 		}
 		root = bookmark;
 	}
@@ -560,7 +532,7 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 					"For absolute keys (starting without '/'), please note that only one of the predefined namespaces "
 					"can be used (see 'man elektra-namespaces').\n" +
 					"Please also ensure that the path is separated by a '/'.\n" +
-					"An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key.");
+					"An example for a valid absolute key is user:/a/key, and for a valid cascading key /a/key.");
 	}
 
 	if (!allowCascading && root.isCascading ())
@@ -570,6 +542,27 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 	}
 
 	return root;
+}
+
+
+/**
+ * @brief return a parent key to use with kdbGet/kdbSet
+ *
+ * @param key the key of interest
+ *
+ * @return a newly created key to use with kdbGet/kdbSet. If -f was specified, a simple copy will be returned, otherwise a copy without a
+ * namespace will be returned.
+ */
+kdb::Key Cmdline::getParentKey (kdb::Key const & key) const
+{
+	if (force)
+	{
+		return key.dup ();
+	}
+	else
+	{
+		return removeNamespace (key);
+	}
 }
 
 /**

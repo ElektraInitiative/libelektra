@@ -44,7 +44,7 @@ else (ELEKTRA_SYMVER_SUPPORTED)
 	set (ELEKTRA_SYMVER_COMMAND "")
 
 	try_compile (ELEKTRA_VERSION_SCRIPT_SUPPORTED ${CMAKE_BINARY_DIR}/src/symvertest/build ${CMAKE_SOURCE_DIR}/src/symvertest
-		     symvertest basic)
+											       symvertest basic)
 	if (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
 		set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
 	else (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
@@ -137,7 +137,7 @@ if (ENABLE_ASAN)
 
 		# In case the ubsan library exists, link it otherwise some tests will fail due to missing symbols on Linux
 		if (CMAKE_SYSTEM_NAME MATCHES Linux)
-			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan")
+			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan -fsanitize=address")
 		endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 	endif ()
 

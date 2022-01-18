@@ -19,8 +19,9 @@ application, that means, you want your application
 to participate in the global key database Elektra
 provides.
 
-- [Integration of your Application](application-integration.md)
-- [Hello, Elektra](hello-elektra.md)
+- [Hello, Elektra in C](hello-elektra.md)
+- [Integration of your C Application](application-integration.md)
+- [Writing a specification for your configuration](specification.md)
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
@@ -53,16 +54,18 @@ These tutorials are for persons that want to contribute to
 Elektra:
 
 - [Contributing with CLion](contributing-clion.md)
-- [Benchmarking](benchmarking.md)
-- [Profiling](profiling.md)
+- [Contributing with Visual Studio (Windows)](contributing-windows.md)
 - [Run all Tests with Docker](run_all_tests_with_docker.md)
 - [Run Reformatting with Docker](run_reformatting_script_with_docker.md)
 - [Language Bindings](language-bindings.md)
-- [Code generator](code-generator.md)
+- [Code Generator](code-generator.md)
+- [Benchmarking](benchmarking.md)
+- [Profiling](profiling.md)
+- [Logging](logger.md)
 
 ## Installation Manuals
 
 These tutorials provide additional information on how to
-install and set up specific plugins and tools.
+install and set up specific tools.
 
-- [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
+- [Webui](install-webui.md)

@@ -11,27 +11,29 @@ RUN apt-get update && apt-get -y install \
         bison \
         build-essential \
         checkinstall \
-        clang-6.0 \
-        clang-format-6.0 \
+        clang-13 \
+        clang-format-13 \
         cmake \
         curl \
-        default-jdk \
         dh-lua \
         ed \
+        flex \
         gawk \
         git \
+        gnupg2 \
         gobject-introspection \
         icheck \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
-        libboost-all-dev \
-        libbotan-2-dev \
+        libc6-dbg \
         libdbus-1-dev \
         libev-dev \
+        libgcrypt20-dev \
         libgirepository1.0-dev \
         libgit2-dev \
         libglib2.0-dev \
+        libgpgme-dev \
         liblua5.3-dev \
         libpcre++-dev \
         libpcre3-dev \
@@ -43,31 +45,39 @@ RUN apt-get update && apt-get -y install \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \
-        llvm \
-        maven \
+        llvm-13 \
         moreutils \
         ninja-build \
         npm \
+        openjdk-11-jdk \
         pkg-config \
-        python-dev \
-        python-pip \
         python3-dev \
+        python3-pip \
+        ruby \
         ruby-dev \
         sloccount \
-        swig3.0 \
+        swig4.0 \
         systemd \
         tclcl-dev \
+        unzip \
         valgrind \
+        wget \
     && rm -rf /var/lib/apt/lists/*
+
+# Add Clang 13 to path
+ENV PATH="/usr/lib/llvm-13/bin:$PATH"
 
 # Update cache for shared libraries
 RUN ldconfig
 
-RUN pip install cmake-format[yaml]==0.6
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
+
+RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.10.0
+ARG GTEST_VER=release-1.11.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -76,7 +86,12 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # Prettier
-RUN npm install --global prettier@1.19.1
+RUN npm install --global prettier@2.3.2
+
+# Google Java formatter
+RUN cd /opt \
+    && curl -o google-java-format.jar \
+      -L https://github.com/google/google-java-format/releases/download/v1.11.0/google-java-format-1.11.0-all-deps.jar
 
 # hyperfine
 ARG HYPERFINE_VERSION=1.5.0
@@ -103,13 +118,23 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.2-bin.zip && unzip gradle-7.2-bin.zip && rm gradle-7.2-bin.zip && mv gradle-7.2 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
 USER ${JENKINS_USERID}
+
+
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v2.6.3
+ENV SHFMT_VERSION=v3.3.1
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
     && curl -L "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" -o shfmt \
     && chmod a+x shfmt
+
+# Ronn-NG
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/2.7.0/bin"
+RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version

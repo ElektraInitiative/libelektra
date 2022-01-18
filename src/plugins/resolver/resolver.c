@@ -10,9 +10,8 @@
 
 #include <kdbassert.h>
 #include <kdbconfig.h>
-#include <kdbhelper.h>  // elektraStrDup
+#include <kdbhelper.h>	// elektraStrDup
 #include <kdbprivate.h> // KDB_CACHE_PREFIX
-#include <kdbproposal.h>
 
 #include "kdbos.h"
 
@@ -92,10 +91,10 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_SYSTEM:
 		return &pks->system;
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		return 0;
 	}
 
@@ -142,7 +141,7 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 #ifdef ELEKTRA_LOCK_FILE
 	struct flock l;
 	l.l_type = F_WRLCK; /*Do exclusive Lock*/
-	l.l_start = 0;      /*Start at begin*/
+	l.l_start = 0;	    /*Start at begin*/
 	l.l_whence = SEEK_SET;
 	l.l_len = 0; /*Do it with whole file*/
 	int ret = fcntl (fd, F_SETLK, &l);
@@ -182,7 +181,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNU
 #ifdef ELEKTRA_LOCK_FILE
 	struct flock l;
 	l.l_type = F_UNLCK; /*Give Lock away*/
-	l.l_start = 0;      /*Start at begin*/
+	l.l_start = 0;	    /*Start at begin*/
 	l.l_whence = SEEK_SET;
 	l.l_len = 0; /*Do it with whole file*/
 	int ret = fcntl (fd, F_SETLK, &l);
@@ -210,7 +209,7 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 	int ret = pthread_mutex_trylock (&elektraResolverMutex);
 	if (ret != 0)
 	{
-		if (errno == EBUSY       // for trylock
+		if (errno == EBUSY	 // for trylock
 		    || errno == EDEADLK) // for error checking mutex, if enabled
 		{
 			ELEKTRA_SET_CONFLICTING_STATE_ERROR (
@@ -298,7 +297,6 @@ static int needsMapping (Key * testKey, Key * errorKey)
 	elektraNamespace ns = keyGetNamespace (errorKey);
 
 	if (ns == KEY_NS_NONE) return 1;      // for unit tests
-	if (ns == KEY_NS_EMPTY) return 1;     // for default backend
 	if (ns == KEY_NS_CASCADING) return 1; // init all namespaces for cascading
 
 	return ns == keyGetNamespace (testKey); // otherwise only init if same ns
@@ -306,7 +304,7 @@ static int needsMapping (Key * testKey, Key * errorKey)
 
 static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 {
-	Key * testKey = keyNew ("", KEY_END);
+	Key * testKey = keyNew ("/", KEY_END);
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:
@@ -314,7 +312,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	switch (KEY_NS_SPEC)
 	{
 	case KEY_NS_SPEC:
-		keySetName (testKey, "spec");
+		keySetName (testKey, "spec:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SPEC, (p->spec).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -336,7 +334,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		// FALLTHROUGH
 
 	case KEY_NS_DIR:
-		keySetName (testKey, "dir");
+		keySetName (testKey, "dir:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_DIR, (p->dir).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -357,7 +355,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_USER:
-		keySetName (testKey, "user");
+		keySetName (testKey, "user:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_USER, (p->user).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -379,7 +377,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
-		keySetName (testKey, "system");
+		keySetName (testKey, "system:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SYSTEM, (p->system).path,
@@ -401,10 +399,10 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		break;
 	}
 	keyDel (testKey);
@@ -518,7 +516,7 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNU
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	Key * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
@@ -569,12 +567,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 
 	/* Check if cache update needed */
 	KeySet * global;
-	char * name = 0;
+	char * name = elektraCacheKeyName (pk->filename);
 
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
-		name = elektraCacheKeyName (pk->filename);
-
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
 		Key * time = ksLookupByName (global, name, KDB_O_NONE);
 		if (time && keyGetValueSize (time) == sizeof (struct timespec))
@@ -605,7 +601,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	/* Persist modification times for cache */
 	if (global != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
-		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
+		ELEKTRA_LOG_DEBUG ("global-cache: adding file modification times");
 		Key * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
 		ksAppendKey (global, time);
 	}
@@ -778,8 +774,7 @@ static int elektraMkdirParents (resolverHandle * pk, const char * pathname, Key 
 
 	return 0;
 
-error:
-{
+error : {
 	ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 				     "Could not create directory '%s'. Reason: %s. Identity: uid: %u, euid: %u, gid: %u, egid: %u",
 				     pathname, elektraAddErrnoText (), getuid (), geteuid (), getgid (), getegid ());
@@ -942,7 +937,7 @@ static void elektraModifyFileTime (resolverHandle * pk)
 static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 {
 #ifdef HAVE_FUTIMENS
-	const struct timespec times[2] = { pk->mtime,   // atime
+	const struct timespec times[2] = { pk->mtime,	// atime
 					   pk->mtime }; // mtime
 
 	if (futimens (fd, times) == -1)

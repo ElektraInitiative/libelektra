@@ -14,6 +14,11 @@
 Copy this template if you want to start a new
 plugin written in C.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 You can use `scripts/copy-template`
@@ -42,10 +47,10 @@ None.
 ## Examples
 
 ```sh
-# Backup-and-Restore: user/tests/template
+# Backup-and-Restore: user:/tests/template
 
-kdb set user/tests/template/key value
-#> Create a new key user/tests/template/key with string "value"
+kdb set user:/tests/template/key value
+#> Create a new key user:/tests/template/key with string "value"
 
 kdb get /tests/template/key
 #> value

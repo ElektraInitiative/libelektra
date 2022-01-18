@@ -10,6 +10,11 @@
 For the purpose of I/O bindings please read the
 [bindings readme](https://www.libelektra.org/bindings/readme#i-o-bindings).
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `io-uv-elektra`.
+
 ## Requirements
 
 - [libuv](http://libuv.org/) (version 1.x is recommended; 0.10 is supported)

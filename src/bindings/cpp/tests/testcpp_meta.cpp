@@ -78,7 +78,7 @@ TEST (meta, basic)
 TEST (meta, iter)
 {
 	// clang-format off
-	Key k ("user/metakey",
+	Key k ("user:/metakey",
 		KEY_META, "a", "meta",
 		KEY_META, "b", "my",
 		KEY_META, "c", "other",
@@ -112,7 +112,7 @@ TEST (test, copy)
 {
 	// cout << "testing copy meta" << std::endl;
 
-	Key k ("user/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	Key k ("user:/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
 	       "c metavalue", KEY_END);
 	Key c;
 
@@ -160,7 +160,7 @@ TEST (test, copy)
 
 TEST (meta, string)
 {
-	Key k ("user/anything", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	Key k ("user:/anything", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
 	       "c metavalue", KEY_END);
 
 	succeed_if (k.getMeta<string> ("a") == "a metavalue", "could not get metavalue");
@@ -175,7 +175,7 @@ TEST (meta, string)
 
 TEST (meta, copyAll)
 {
-	Key k ("user/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	Key k ("user:/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
 	       "c metavalue", KEY_META, "i", "420", KEY_END);
 	Key c;
 
@@ -202,4 +202,48 @@ TEST (meta, copyAll)
 
 	succeed_if (d.getMeta<std::string> ("c") == "c metavalue", "did not copy metavalue in the loop");
 	succeed_if (k.getMeta<const ckdb::Key *> ("c") == d.getMeta<const ckdb::Key *> ("c"), "copy meta did not work in the loop");
+}
+
+/* check the wrappers for underlying c-functions with a metakey
+ * exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (meta, cErrorsMetaKeys)
+{
+	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
+	Key m;
+
+	k.setMeta ("metaKey", "metaValue");
+	m = k.currentMeta ();
+
+	EXPECT_THROW (m.addName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.setName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.addBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.setBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.delBaseName (), KeyInvalidName);
+
+	EXPECT_THROW (m.setMeta ("metaKey2", "metaValue2"), KeyException);
+	EXPECT_THROW (m.delMeta ("metaKey2"), KeyException);
+
+	/* c-function 'int keyRewindMeta (Key * key)' in keymeta.c should return 0 (no error) */
+	EXPECT_NO_THROW (m.rewindMeta ());
+
+	EXPECT_THROW (m.set ("Test"), KeyException);
+
+	/* m should be read-only */
+	EXPECT_THROW (m.copy (k), KeyException);
+	EXPECT_NE (k, m);
+	/* copying m to k should work */
+	EXPECT_NO_THROW (k.copy (m));
+	EXPECT_EQ (k, m);
+
+	EXPECT_THROW (m.setCallback (nullptr), KeyException);
+	EXPECT_THROW (m.setString ("changedMetaValue"), KeyException);
+	EXPECT_EQ (m.getString (), "metaValue");
+	EXPECT_EQ (m.getReferenceCounter (), 1);
+
+	/* should only fail on null key */
+	EXPECT_NO_THROW (m--);
+	EXPECT_EQ (m.getReferenceCounter (), 0);
+
+	/* should only fail on null key */
+	EXPECT_NO_THROW (m.clear ());
 }

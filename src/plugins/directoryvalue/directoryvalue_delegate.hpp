@@ -10,33 +10,17 @@
 #ifndef ELEKTRA_CPP_DIRECTORY_VALUE_DELEGATE_HPP
 #define ELEKTRA_CPP_DIRECTORY_VALUE_DELEGATE_HPP
 
-#include <kdberrors.h>
-#include <kdbplugin.hpp>
+#include <kdb.hpp>
 
 #define DIRECTORY_POSTFIX "___dirdata"
 #define ARRAY_VALUE_PREFIX "___dirdata:"
 
-namespace elektra
-{
-using std::pair;
-using std::string;
-
-using CppKeySet = kdb::KeySet;
-
 constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
 
-typedef pair<CppKeySet, CppKeySet> KeySetPair;
+namespace elektra
+{
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
-
-/**
- * @brief Split `keys` into two key sets, one for array parents and one for all other keys.
- *
- * @param keys This parameter contains the key set this function splits.
- *
- * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
- */
-KeySetPair splitArrayParentsOther (CppKeySet const & keys);
 
 /**
  * @brief Increase the array index of array elements by one.
@@ -49,7 +33,7 @@ KeySetPair splitArrayParentsOther (CppKeySet const & keys);
  *
  * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
  */
-KeySetPair increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays);
+std::pair<kdb::KeySet, kdb::KeySet> increaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const & arrays);
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +45,7 @@ public:
 	 *
 	 * @param config This key set contains configuration values provided by the `directoryvalue` plugin
 	 */
-	explicit DirectoryValueDelegate (CppKeySet config);
+	explicit DirectoryValueDelegate (kdb::KeySet config);
 
 	/**
 	 * @brief This method converts all leaf keys in the given key set to directory keys.
@@ -71,7 +55,7 @@ public:
 	 * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
 	 * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
 	 */
-	int convertToDirectories (CppKeySet & keys);
+	int convertToDirectories (kdb::KeySet & keys);
 
 	/**
 	 * @brief This method converts all directory keys in the given key set to leaf keys.
@@ -81,7 +65,7 @@ public:
 	 * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
 	 * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
 	 */
-	int convertToLeaves (CppKeySet & keys);
+	int convertToLeaves (kdb::KeySet & keys);
 };
 
 } // end namespace elektra

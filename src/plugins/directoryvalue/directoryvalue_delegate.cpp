@@ -11,11 +11,14 @@
 
 #include <kdbassert.h>
 #include <kdbease.h>
+#include <kdberrors.h>
 #include <kdblogger.h>
 
-#include "directoryvalue_delegate.hpp"
+#include <kdbplugin.hpp>
 
-using ckdb::elektraArrayValidateBaseNameString;
+#include "directoryvalue_delegate.hpp"
+#include "log.hpp"
+
 using std::accumulate;
 using std::ignore;
 using std::make_pair;
@@ -24,11 +27,14 @@ using std::range_error;
 using std::string;
 using std::tie;
 
+using ckdb::elektraArrayValidateBaseNameString;
+
+using KeySetPair = pair<kdb::KeySet, kdb::KeySet>;
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-namespace elektra
+namespace
 {
-using CppKey = kdb::Key;
 
 /**
  * @brief This function splits the given keyset into directory leaves (marked with `DIRECTORY_POSTFIX`) and other keys.
@@ -37,10 +43,10 @@ using CppKey = kdb::Key;
  *
  * @return A pair of key sets, where the first key set contains all directory leaves and the second key set contains all other keys
  */
-KeySetPair splitDirectoryLeavesOther (CppKeySet const & input)
+KeySetPair splitDirectoryLeavesOther (kdb::KeySet const & input)
 {
-	CppKeySet directoryLeaves;
-	CppKeySet other;
+	kdb::KeySet directoryLeaves;
+	kdb::KeySet other;
 
 	for (auto key : input)
 	{
@@ -63,11 +69,11 @@ KeySetPair splitDirectoryLeavesOther (CppKeySet const & input)
  *
  * @return A pair of key sets, where the first key set contains all array leaves and the second key set contains all other keys
  */
-KeySetPair splitArrayLeavesOther (CppKeySet const & arrayParents, CppKeySet const & keys)
+KeySetPair splitArrayLeavesOther (kdb::KeySet const & arrayParents, kdb::KeySet const & keys)
 {
 	bool isFirstElement = false;
-	CppKeySet firstElements;
-	CppKeySet others;
+	kdb::KeySet firstElements;
+	kdb::KeySet others;
 
 	for (auto key : keys)
 	{
@@ -87,15 +93,17 @@ KeySetPair splitArrayLeavesOther (CppKeySet const & arrayParents, CppKeySet cons
  *
  * @return A copy of the input, where the last level of each key was removed
  */
-CppKeySet removeBaseName (CppKeySet const & keys)
+kdb::KeySet removeBaseName (kdb::KeySet const & keys)
 {
-	CppKeySet directories;
+	kdb::KeySet directories;
 
 	for (auto key : keys)
 	{
 		ELEKTRA_LOG_DEBUG ("Remove basename from “%s”: “%s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
-		CppKey directory = key.dup ();
+				   key.getBinarySize () == 0 ? "NULL" :
+				   key.isBinary ()	     ? "binary value!" :
+								     key.getString ().c_str ());
+		kdb::Key directory = key.dup ();
 		directory.delBaseName ();
 		directories.append (directory);
 	}
@@ -110,9 +118,9 @@ CppKeySet removeBaseName (CppKeySet const & keys)
  * @return A copy of `arrayLeaves`, where key values does not start with `ARRAY_VALUE_PREFIX` any more and the baseName of each key (`#0`)
  *         was removed
  */
-CppKeySet convertArrayLeaves (CppKeySet const & arrayLeaves)
+kdb::KeySet convertArrayLeaves (kdb::KeySet const & arrayLeaves)
 {
-	CppKeySet directories = removeBaseName (arrayLeaves);
+	kdb::KeySet directories = removeBaseName (arrayLeaves);
 	for (auto key : directories)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert array leaf “%s”", key.getName ().c_str ());
@@ -133,8 +141,8 @@ CppKeySet convertArrayLeaves (CppKeySet const & arrayLeaves)
 /**
  * @brief This function returns a modified copy of `child`, where child is directly below `parent`.
  *
- * For example, if `child` has the name `user/parent/level1/level2/level3` and parent has the name `user/parent`, then the function will
- * return a key with the name `user/parent/level1`.
+ * For example, if `child` has the name `user:/parent/level1/level2/level3` and parent has the name `user:/parent`, then the function will
+ * return a key with the name `user:/parent/level1`.
  *
  * @pre The key `child` has to be below `parent`.
  *
@@ -143,11 +151,11 @@ CppKeySet convertArrayLeaves (CppKeySet const & arrayLeaves)
  *
  * @return A copy of `child` that is directly below `parent`
  */
-CppKey convertToDirectChild (CppKey const & parent, CppKey const & child)
+kdb::Key convertToDirectChild (kdb::Key const & parent, kdb::Key const & child)
 {
 	ELEKTRA_ASSERT (child.isBelow (parent), "The key `child` is not located below `parent`");
 
-	CppKey directChild = child.dup ();
+	kdb::Key directChild = child.dup ();
 	while (!directChild.isDirectBelow (parent))
 	{
 		keySetBaseName (*directChild, 0);
@@ -156,78 +164,27 @@ CppKey convertToDirectChild (CppKey const & parent, CppKey const & child)
 }
 
 /**
- * @brief This function checks if `element` is an array element of `parent`.
+ * @brief Return all array parents of the given key set.
  *
- * @pre The key `child` must be below `parent`.
+ * @param keys This parameter contains the key set for which this function determines all array parent keys.
  *
- * @param parent This parameter specifies a parent key.
- * @param keys This variable stores a direct or indirect child of `parent`.
- *
- * @retval true If `element` is an array element
- * @retval false Otherwise
+ * @return A key set containing all array parents of `keys`
  */
-bool inline isArrayElementOf (CppKey const & parent, CppKey const & child)
+kdb::KeySet getArrayParents (kdb::KeySet const & keys)
 {
-	char const * relative = elektraKeyGetRelativeName (*child, *parent);
-	auto offsetIndex = elektraArrayValidateBaseNameString (relative);
-	if (offsetIndex <= 0) return false;
-	// Skip `#`, underscores and digits
-	relative += 2 * offsetIndex;
-	// The next character has to be the separation char (`/`) or end of string
-	if (relative[0] != '\0' && relative[0] != '/') return false;
+	kdb::KeySet arrayParents;
 
-	return true;
-}
-
-/**
- * @brief This function determines if the given key is an array parent.
- *
- * @param parent This parameter specifies a possible array parent.
- * @param keys This variable stores the key set of `parent`.
- *
- * @retval true If `parent` is the parent key of an array
- * @retval false Otherwise
- */
-bool isArrayParent (CppKey const & parent, CppKeySet const & keys)
-{
 	for (auto const & key : keys)
 	{
-		if (!key.isBelow (parent)) continue;
-		if (!isArrayElementOf (parent, key)) return false;
+		if (key.hasMeta ("array")) arrayParents.append (key);
 	}
 
-	return true;
-}
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Array parents:");
+	logKeySet (arrayParents);
+#endif
 
-/**
- * @brief Split `keys` into two key sets, one for array parents and one for all other keys.
- *
- * @param keys This parameter contains the key set this function splits.
- *
- * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
- */
-KeySetPair splitArrayParentsOther (CppKeySet const & keys)
-{
-	CppKeySet arrayParents;
-	CppKeySet others;
-
-	keys.rewind ();
-	CppKey previous;
-	for (previous = keys.next (); keys.next (); previous = keys.current ())
-	{
-		bool const previousIsArray =
-			previous.hasMeta ("array") || (keys.current ().isDirectBelow (previous) &&
-						       keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
-
-		(previousIsArray ? arrayParents : others).append (previous);
-	}
-	(previous.hasMeta ("array") ? arrayParents : others).append (previous);
-
-	ELEKTRA_ASSERT (arrayParents.size () + others.size () == keys.size (),
-			"Number of keys in split key sets: %zu ≠ number in given key set %zu", arrayParents.size () + others.size (),
-			keys.size ());
-
-	return make_pair (arrayParents, others);
+	return arrayParents;
 }
 
 /**
@@ -239,10 +196,10 @@ KeySetPair splitArrayParentsOther (CppKeySet const & keys)
  * @return A pair of key sets, where the first key set contains all array parents and elements,
  *         and the second key set contains all other keys
  */
-KeySetPair splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & keys)
+KeySetPair splitArrayOther (kdb::KeySet const & arrayParents, kdb::KeySet const & keys)
 {
-	CppKeySet others = keys.dup ();
-	CppKeySet arrays;
+	kdb::KeySet others = keys.dup ();
+	kdb::KeySet arrays;
 
 	for (auto parent : arrayParents)
 	{
@@ -260,14 +217,14 @@ KeySetPair splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & ke
  * @return A pair of key sets, where the first key set contains all array parents without values, and the second key set contains all other
  *         keys
  */
-KeySetPair splitEmptyArrayParents (CppKeySet const & arrayParents)
+KeySetPair splitEmptyArrayParents (kdb::KeySet const & arrayParents)
 {
-	CppKeySet emptyParents;
-	CppKeySet nonEmptyParents;
+	kdb::KeySet emptyParents;
+	kdb::KeySet nonEmptyParents;
 
 	for (auto arrayParent : arrayParents)
 	{
-		CppKey parent = arrayParent.dup ();
+		kdb::Key parent = arrayParent.dup ();
 
 		parent.rewindMeta ();
 		size_t metaSize = 0;
@@ -282,23 +239,28 @@ KeySetPair splitEmptyArrayParents (CppKeySet const & arrayParents)
 		}
 		(isEmpty ? emptyParents : nonEmptyParents).append (arrayParent);
 	}
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Empty array parents:");
+	logKeySet (emptyParents);
+#endif
+
 	return make_pair (emptyParents, nonEmptyParents);
 }
 
 /**
  * @brief This function changes an array index of the given array element by one.
  *
- * @param parent This key set stores an array parent of `element`. The function will change the index of `element` that is directly below
- *               this key.
+ * @param parent This key stores an array parent of `element`. The function will change the index of the `element` that is directly below
+ *		 this key.
  * @param element This parameter stores an array element.
  * @param increment This boolean parameter specifies if the function should increase or decrease the index by one.
  *
  * @return A key containing a copy of `element`, where the index below `parent` was increased or decreased by one and the value of the
  *         updated index (e.g. `#_10`)
  */
-pair<CppKey, string> changeArrayIndexByOne (CppKey const & parent, CppKey const & element, bool increment = true)
+pair<kdb::Key, string> changeArrayIndexByOne (kdb::Key const & parent, kdb::Key const & element, bool increment = true)
 {
-	CppKey elementNewIndex = convertToDirectChild (parent, element);
+	kdb::Key elementNewIndex = convertToDirectChild (parent, element);
 	string postfix = elektraKeyGetRelativeName (*element, *elementNewIndex);
 
 	if (increment ? elektraArrayIncName (*elementNewIndex) : elektraArrayDecName (*elementNewIndex))
@@ -322,20 +284,20 @@ pair<CppKey, string> changeArrayIndexByOne (CppKey const & parent, CppKey const 
  *
  * @return A copy of `arrays`, where all indices specified by `parents` are decreased by one
  */
-CppKeySet decreaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
+kdb::KeySet decreaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const & arrays)
 {
-	CppKeySet arraysIndexDecreased = arrays.dup ();
-	CppKeySet arrayParents = parents.dup ();
+	kdb::KeySet arraysIndexDecreased = arrays.dup ();
+	kdb::KeySet arrayParents = parents.dup ();
 
-	while (CppKey parent = arrayParents.pop ())
+	while (kdb::Key parent = arrayParents.pop ())
 	{
 		ELEKTRA_LOG_DEBUG ("Decrease indices for array parent “%s”", parent.getName ().c_str ());
 
 		parent.setMeta ("array", ""); // Set meta key for empty arrays
 
 		arraysIndexDecreased =
-			accumulate (arraysIndexDecreased.begin (), arraysIndexDecreased.end (), CppKeySet{},
-				    [&parent](CppKeySet collected, CppKey key) {
+			accumulate (arraysIndexDecreased.begin (), arraysIndexDecreased.end (), kdb::KeySet{},
+				    [&parent] (kdb::KeySet collected, kdb::Key key) {
 					    if (key.isBelow (parent))
 					    {
 						    string newIndex;
@@ -355,61 +317,19 @@ CppKeySet decreaseArrayIndices (CppKeySet const & parents, CppKeySet const & arr
 }
 
 /**
- * @brief Increase the array index of array elements by one.
- *
- * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given
- * array parents.
- *
- * @param parents This parameter contains the array parents for which this function increases the index by one.
- * @param arrays This variable stores the arrays elements this function updates.
- *
- * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
- */
-KeySetPair increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
-{
-	CppKeySet arraysIncreasedIndex = arrays.dup ();
-	CppKeySet arrayParents = parents.dup ();
-	CppKeySet updatedParents = parents.dup ();
-
-	while (CppKey parent = arrayParents.pop ())
-	{
-		ELEKTRA_LOG_DEBUG ("Increase indices for array parent “%s”", parent.getName ().c_str ());
-
-		CppKeySet newArrays;
-		for (auto key : arraysIncreasedIndex)
-		{
-			if (key.isBelow (parent))
-			{
-				CppKey updated;
-				tie (updated, ignore) = changeArrayIndexByOne (parent, key);
-				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
-				newArrays.append (updated);
-			}
-			else
-			{
-				newArrays.append (key);
-			}
-		}
-		arraysIncreasedIndex = newArrays;
-	}
-
-	return make_pair (updatedParents, arraysIncreasedIndex);
-}
-
-/**
  * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
  *
  * @param keys This parameter contains the key set this function splits.
  *
  * @return A pair of key sets, where the first key set contains all directories and the second key set contains all leaves
  */
-KeySetPair splitDirectoriesLeaves (CppKeySet const & keys)
+KeySetPair splitDirectoriesLeaves (kdb::KeySet const & keys)
 {
-	CppKeySet leaves;
-	CppKeySet directories;
+	kdb::KeySet leaves;
+	kdb::KeySet directories;
 
 	keys.rewind ();
-	CppKey previous;
+	kdb::Key previous;
 	for (previous = keys.next (); keys.next (); previous = keys.current ())
 	{
 		(keys.current ().isBelow (previous) ? directories : leaves).append (previous);
@@ -426,20 +346,35 @@ KeySetPair splitDirectoriesLeaves (CppKeySet const & keys)
  *
  * @return A key set containing only empty array parents and corresponding array elements storing the values of the old array parent
  */
-CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
+kdb::KeySet convertArrayParentsToLeaves (kdb::KeySet const & parents)
 {
-	CppKeySet converted;
+	kdb::KeySet converted;
+
+	ELEKTRA_LOG_DEBUG ("Convert array parents to leaves");
 
 	for (auto parent : parents)
 	{
-		CppKey directory{ parent.getName (), KS_END };
-		CppKey leaf = parent.dup ();
+		kdb::Key directory{ parent.getName (), KEY_END };
+		// The plugin still stores the `array` metadata in the parent and not the first child. Otherwise storage plugins pick up
+		// the wrong key as parent.
+		kdb::Key lastElement{ parent.getName (), KEY_END };
+		auto secondToLastIndex = parent.getMeta<string> ("array");
+		if (secondToLastIndex.empty ()) secondToLastIndex += "#";
+		lastElement.addBaseName (secondToLastIndex);
+		elektraArrayIncName (*lastElement);
+		directory.setMeta ("array", lastElement.getBaseName ());
+		kdb::Key leaf = parent.dup ();
 		leaf.delMeta ("array");
 		leaf.addBaseName ("#0");
 		leaf.setString (ARRAY_VALUE_PREFIX + (parent.isBinary () ? "" : (" " + parent.getString ())));
 		converted.append (directory);
 		converted.append (leaf);
 	}
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Converted keys:");
+	logKeySet (converted);
+#endif
 
 	return converted;
 }
@@ -451,20 +386,67 @@ CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
  *
  * @return A key set containing only empty directory keys and corresponding leaf keys storing the values of the old directory keys
  */
-CppKeySet convertDirectoriesToLeaves (CppKeySet const & directories)
+kdb::KeySet convertDirectoriesToLeaves (kdb::KeySet const & directories)
 {
-	CppKeySet directoryLeaves;
+	kdb::KeySet directoryLeaves;
 
 	for (auto directory : directories)
 	{
-		CppKey emptyDirectory{ directory.getName (), KS_END };
-		CppKey leaf = directory.dup ();
+		kdb::Key emptyDirectory{ directory.getName (), KEY_END };
+		kdb::Key leaf = directory.dup ();
 		leaf.addBaseName (DIRECTORY_POSTFIX);
 		directoryLeaves.append (leaf);
 		directoryLeaves.append (emptyDirectory);
 	}
 
 	return directoryLeaves;
+}
+
+} // end namespace
+
+namespace elektra
+{
+
+/**
+ * @brief Increase the array index of array elements by one.
+ *
+ * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given
+ * array parents.
+ *
+ * @param parents This parameter contains the array parents for which this function increases the index by one.
+ * @param arrays This variable stores the arrays elements this function updates.
+ *
+ * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
+ */
+KeySetPair increaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const & arrays)
+{
+	kdb::KeySet arraysIncreasedIndex = arrays.dup ();
+	kdb::KeySet arrayParents = parents.dup ();
+	kdb::KeySet updatedParents = parents.dup ();
+
+	while (kdb::Key parent = arrayParents.pop ())
+	{
+		ELEKTRA_LOG_DEBUG ("Increase indices for array parent “%s”", parent.getName ().c_str ());
+
+		kdb::KeySet newArrays;
+		for (auto key : arraysIncreasedIndex)
+		{
+			if (key.isBelow (parent))
+			{
+				kdb::Key updated;
+				tie (updated, ignore) = changeArrayIndexByOne (parent, key);
+				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
+				newArrays.append (updated);
+			}
+			else
+			{
+				newArrays.append (key);
+			}
+		}
+		arraysIncreasedIndex = newArrays;
+	}
+
+	return make_pair (updatedParents, arraysIncreasedIndex);
 }
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
@@ -474,7 +456,7 @@ CppKeySet convertDirectoriesToLeaves (CppKeySet const & directories)
  *
  * @param config This key set contains configuration values provided by the `directoryvalue` plugin
  */
-DirectoryValueDelegate::DirectoryValueDelegate (CppKeySet config ELEKTRA_UNUSED)
+DirectoryValueDelegate::DirectoryValueDelegate (kdb::KeySet config ELEKTRA_UNUSED)
 {
 }
 
@@ -486,15 +468,17 @@ DirectoryValueDelegate::DirectoryValueDelegate (CppKeySet config ELEKTRA_UNUSED)
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS If the plugin converted any value in the given key set
  * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE If the plugin did not update `keys`
  */
-int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
+int DirectoryValueDelegate::convertToDirectories (kdb::KeySet & keys)
 {
-	CppKeySet directoryLeaves;
-	CppKeySet nonDirectoryLeaves;
-	CppKeySet arrayParents;
-	CppKeySet notArrayParents;
-	CppKeySet arrays;
-	CppKeySet arrayLeaves;
-	CppKeySet maps;
+	kdb::KeySet directoryLeaves;
+	kdb::KeySet nonDirectoryLeaves;
+	kdb::KeySet arrayParents;
+	kdb::KeySet notArrayParents;
+	kdb::KeySet arrays;
+	kdb::KeySet arrayLeaves;
+	kdb::KeySet maps;
+
+	ELEKTRA_LOG_DEBUG ("Convert (special) leaf keys to directory keys");
 
 	/**
 	 * - Split array parents
@@ -504,7 +488,7 @@ int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
 	 * - Merge everything back together and convert directories to leaves
 	 */
 
-	tie (arrayParents, ignore) = splitArrayParentsOther (keys);
+	arrayParents = getArrayParents (keys);
 	tie (arrays, maps) = splitArrayOther (arrayParents, keys);
 	tie (arrayLeaves, arrays) = splitArrayLeavesOther (arrayParents, arrays);
 
@@ -534,17 +518,26 @@ int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS If the plugin converted any value in the given key set
  * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE If the plugin did not update `keys`
  */
-int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
+int DirectoryValueDelegate::convertToLeaves (kdb::KeySet & keys)
 {
-	CppKeySet notArrayParents;
-	CppKeySet arrayParents;
-	CppKeySet emptyArrayParents;
-	CppKeySet arrays;
-	CppKeySet nonArrays;
-	CppKeySet directories;
-	CppKeySet leaves;
+	kdb::KeySet notArrayParents;
+	kdb::KeySet arrayParents;
+	kdb::KeySet emptyArrayParents;
+	kdb::KeySet arrays;
+	kdb::KeySet nonArrays;
+	kdb::KeySet directories;
+	kdb::KeySet leaves;
 
-	tie (arrayParents, ignore) = splitArrayParentsOther (keys);
+	ELEKTRA_LOG_DEBUG ("Convert directory keys to leaf keys");
+
+	/*
+	 * - Determine array parents
+	 * - Split array keys and other keys
+	 * - Split empty arrays
+	 * - Increase array indices
+	 */
+
+	arrayParents = getArrayParents (keys);
 	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
 
 	tie (emptyArrayParents, arrayParents) = splitEmptyArrayParents (arrayParents);
@@ -552,8 +545,8 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 
 	notArrayParents.append (arrays);
 	notArrayParents.append (nonArrays);
-	notArrayParents = accumulate (notArrayParents.begin (), notArrayParents.end (), CppKeySet{},
-				      [&arrayParents, &emptyArrayParents](CppKeySet collected, CppKey key) {
+	notArrayParents = accumulate (notArrayParents.begin (), notArrayParents.end (), kdb::KeySet{},
+				      [&arrayParents, &emptyArrayParents] (kdb::KeySet collected, kdb::Key key) {
 					      if (!arrayParents.lookup (key) && !emptyArrayParents.lookup (key)) collected.append (key);
 					      return collected;
 				      });

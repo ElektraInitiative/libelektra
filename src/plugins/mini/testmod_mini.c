@@ -21,7 +21,7 @@ static void test_basics (void)
 {
 	printf ("• Test basic functionality of plugin\n");
 
-	Key * parentKey = keyNew ("system/elektra/modules/mini", KEY_END);
+	Key * parentKey = keyNew ("system:/elektra/modules/mini", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
 
@@ -38,7 +38,7 @@ static void test_get (void)
 	char const * const fileName = "mini/read.ini";
 	printf ("• Parse file “%s”\n", fileName);
 
-	char const * const prefix = "user/mini/tests/read";
+	char const * const prefix = "user:/mini/tests/read";
 	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
@@ -81,7 +81,7 @@ static void test_set (void)
 	printf ("• Write configuration data\n");
 
 	char const * const fileName = "mini/write.ini";
-	char const * const prefix = "user/mini/tests/write";
+	char const * const prefix = "user:/mini/tests/write";
 
 	Key * parentKey = keyNew (prefix, KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);

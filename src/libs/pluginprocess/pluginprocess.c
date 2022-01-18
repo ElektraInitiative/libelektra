@@ -160,7 +160,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		Key * commandKey = ksLookupByName (commandKeySet, "/pluginprocess/command", KDB_O_NONE);
 		Key * parentNameKey = ksLookupByName (commandKeySet, "/pluginprocess/parent/name", KDB_O_NONE);
 		Key * parentKey = ksLookupByName (commandKeySet, "/pluginprocess/parent", KDB_O_POP);
-		Key * key = keyDup (parentKey);
+		Key * key = keyDup (parentKey, KEY_CP_ALL);
 		keySetName (key, keyString (parentNameKey));
 		int result = ELEKTRA_PLUGIN_STATUS_ERROR;
 
@@ -273,7 +273,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	// Construct the command set that controls the pluginprocess communication
 	KeySet * commandKeySet = ksNew (6, KS_END);
 	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/parent/name", KEY_VALUE, keyName (key), KEY_END));
-	Key * parentKey = keyDup (key);
+	Key * parentKey = keyDup (key, KEY_CP_ALL);
 	keySetName (parentKey, "/pluginprocess/parent");
 	ksAppendKey (commandKeySet, parentKey);
 	char * commandStr = longToStr (command);
@@ -474,7 +474,10 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	pp->childCommandPipeKey = NULL;
 	pp->childPayloadPipeKey = NULL;
 
-	pp->dump = elektraInvokeOpen ("dump", 0, errorKey);
+	KeySet * config = ksNew (1, keyNew ("user:/fullname", KEY_END), KS_END);
+	pp->dump = elektraInvokeOpen ("dump", config, errorKey);
+	ksDel (config);
+
 	if (!pp->dump)
 	{
 		cleanupPluginData (pp, errorKey, 0);

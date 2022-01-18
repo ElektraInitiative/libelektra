@@ -69,7 +69,7 @@ std::string snakeCaseToCamelCase (const std::string & s, bool upper)
 	std::string result;
 	result.resize (s.size ());
 	auto upcase = upper;
-	std::transform (s.begin (), s.end (), result.begin (), [&upcase](char c) {
+	std::transform (s.begin (), s.end (), result.begin (), [&upcase] (char c) {
 		int x = upcase ? toupper (c) : c;
 		upcase = c == '_';
 		return x;
@@ -94,7 +94,7 @@ std::string snakeCaseToMacroCase (const std::string & s)
 std::string camelCaseToMacroCase (const std::string & s)
 {
 	std::stringstream ss;
-	std::for_each (s.begin (), s.end (), [&ss](char c) {
+	std::for_each (s.begin (), s.end (), [&ss] (char c) {
 		if (ss.tellp () != std::stringstream::beg && isupper (c))
 		{
 			ss << '_';

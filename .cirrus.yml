@@ -2,11 +2,10 @@ env:
   BUILD_DIR: build
 
 container:
-  memory: 12
+  greedy: true
 
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
-  - &create_build_dir mkdir "$BUILD_DIR"
   - &print_cmake_options |
       printf '—— CMake Config ——\n'
       for option; do printf '%s\n' "$option"; done
@@ -24,20 +23,26 @@ commands:
       cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
     fi
 
-bsd_task:
+task:
   matrix:
-
-    - name: 😈 FreeBSD 11
-      freebsd_instance:
-        image: freebsd-11-2-release-amd64
 
     - name: 😈 FreeBSD 12
       freebsd_instance:
-        image: freebsd-12-0-release-amd64
+        cpu: 4
+        memory: 8G
+        image_family: freebsd-12-2
+
+    - name: 😈 FreeBSD 13
+      freebsd_instance:
+        cpu: 4
+        memory: 8G
+        image_family: freebsd-13-0
 
     - name: 😈 ASAN
       freebsd_instance:
-        image: freebsd-12-0-release-amd64
+        cpu: 8
+        memory: 8G
+        image_family: freebsd-13-0
       env:
         ENABLE_ASAN: ON
 
@@ -46,23 +51,26 @@ bsd_task:
       pkg install -y
       bison
       cmake
+      flex
       git
       libgit2
+      llvm12
       ninja
       yajl
       yaml-cpp
 
   script:
-    - *create_build_dir
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       set --
+      -DCMAKE_C_COMPILER=clang12
+      -DCMAKE_CXX_COMPILER=clang++12
       -DBINDINGS='ALL;-io_glib'
       -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
       -DCOMMON_FLAGS=-Werror
       -DC_STD=-std=c11
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DPLUGINS=ALL
+      -DPLUGINS='ALL'
       -DTARGET_PLUGIN_FOLDER=''
     - *print_cmake_options
     - *generate
@@ -74,107 +82,93 @@ bsd_task:
     - sudo mount -t fdescfs fdesc /dev/fd
     - *run_tests
 
-mac_task:
+task:
   env:
     INSTALL_DIR: install
+    HOMEBREW_NO_INSTALL_CLEANUP: 1
 
   matrix:
 
-    - name: 🍎 Clang
-      osx_instance:
-        image: mojave-xcode-11.2.1
-      env:
-        ENABLE_LOGGER: ON
-
-    - name: 🍎 Clang ASAN
-      osx_instance:
-        image: mojave-xcode-11.2.1
-      env:
-        ASAN_OPTIONS: 'detect_leaks=1'
-        BINDINGS: cpp
-        ENABLE_ASAN: ON
-        TOOLS: kdb
-
     - name: 🍎 FULL
       osx_instance:
-        image: mojave-xcode-11.2.1
+        image: monterey-base
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
-
-    - name: 🍎 MMap
-      osx_instance:
-        image: mojave-xcode-11.2.1
-      env:
-        KDB_DEFAULT_STORAGE: mmapstorage
-        KDB_DB_FILE: default.mmap
-        KDB_DB_INIT: elektra.mmap
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
   install_script:
-    - > # Install Homebrew casks
-      brew cask install java oclint
-    - > # Install Homebrew formulas
-      brew install
-      antlr
-      antlr4-cpp-runtime
-      augeas
-      bison
-      boost
-      botan
-      cmake
-      dbus
-      discount
-      doxygen
-      glib
-      gpgme
-      graphviz
-      libev
-      libgcrypt
-      libgit2
-      libuv
-      llvm
-      lua
-      maven
-      moreutils
-      ninja
-      openssl
-      pkg-config
-      prettier
-      qt
-      shfmt
-      swig
-      tree
-      xerces-c
-      yajl
-      zeromq
-    - | # We install yaml-cpp manually, since Homebrew currently does not install the shared version of the library.
-      git clone --branch yaml-cpp-0.6.3 --depth 1 https://github.com/jbeder/yaml-cpp.git
-      cd yaml-cpp
-      mkdir build
-      cmake -GNinja -DYAML_BUILD_SHARED_LIBS=ON -DYAML_CPP_BUILD_TESTS=OFF -Bbuild
-      cmake --build build
-      sudo cmake --build build --target install
-      cd ..
-      rm -r yaml-cpp
+    - | # Install Homebrew formulas
+      brew update
+      brew config
+      brew install openjdk \
+        antlr \
+        antlr4-cpp-runtime \
+        augeas \
+        bison \
+        clang-format \
+        dbus \
+        discount \
+        doxygen \
+        flex \
+        glib \
+        go \
+        gpgme \
+        gradle \
+        graphviz \
+        libev \
+        libgcrypt \
+        libgit2 \
+        libuv \
+        llvm \
+        lua \
+        moreutils \
+        ninja \
+        npm \
+        openssl \
+        pkg-config \
+        qt \
+        shfmt \
+        swig \
+        tree \
+        xerces-c \
+        yajl \
+        yaml-cpp \
+        zeromq
+      brew install --cask oclint
+
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
-    - > # Start D-Bus session bus
-      brew services start dbus
+    - | # Start D-Bus session bus
+      brew tap homebrew/services
+      brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
+      brew postinstall dbus
+      brew services stop dbus; brew services start dbus # Workaround for dbus socket issues on cirrus
+      # export DBUS_LAUNCHD_SESSION_BUS_SOCKET=$(find /private/tmp/com.apple.launchd*/unix_domain_listener | xargs ls -Art | tail -n1) # workaround for cirrus
+      # launchctl setenv DBUS_LAUNCHD_SESSION_BUS_SOCKET $DBUS_LAUNCHD_SESSION_BUS_SOCKET
+      echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
+      launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
     - | # Install Python
-      brew install python@2; brew link --overwrite python@2
-      brew install python || brew upgrade python
+      brew install python@3.9 || brew upgrade python@3.9
+      export PATH="/usr/local/opt/python@3.9/bin:$PATH"
     - | # Install Python packages
-      pip install cmake-format[yaml]==0.6
-    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
-      brew install ruby@2.6
-      export PATH="/usr/local/opt/ruby@2.6/bin:/usr/local/lib/ruby/gems/2.6.0/bin:$PATH"
+      pip3 install cmakelang[yaml]==0.6.13
+    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn-ng` fails with the macOs version of Ruby.)
+      brew install ruby
+      export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
     - | # Install Ruby gems
-      sudo gem install ronn test-unit --no-document
+      sudo gem install ronn-ng -v 0.10.1.pre1
+      sudo gem install test-unit --no-document
+    - | # Install JavaScript packages
+      npm install dredd --global
+      npm install --global prettier@2.3.2
 
   script:
-    - > # Use latest version of LLVM to translate Elektra
-      export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-    - *create_build_dir
+    - | # Use latest version of LLVM to translate Elektra
+      export CC="/usr/local/opt/llvm/bin/clang" CXX="/usr/local/opt/llvm/bin/clang++"
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-I/usr/local/opt/llvm/include"
+      export PATH="/usr/local/opt/llvm/bin:$PATH"
     - >
       set --
       -DBINDINGS="${BINDINGS:-ALL}"
@@ -191,14 +185,14 @@ mac_task:
       -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
       -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
       -DPLUGINS="${PLUGINS:-ALL}"
-      -DTOOLS="${TOOLS:-ALL}"
+      -DTOOLS="${TOOLS:-NODEP}"
     - *print_cmake_options
     - *generate
     - *build
     - *install
 
   tests_script:
-    # Remove files produced by `ronn`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
+    # Remove files produced by `ronn-ng`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
     - git checkout .
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/$INSTALL_DIR/bin:/usr/local/opt/llvm/bin"
     - *run_tests
@@ -212,27 +206,45 @@ mac_task:
         false
       fi
 
-linux_task:
+task:
   matrix:
 
-    - name: 🐧 Fedora
+    - name: 🐧 Fedora amd64
       container:
+          cpu: 8
+          memory: 16G
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
   script:
-    - *create_build_dir
+    - >
+      set --
+      -DBUILD_FULL=ON
+      -DBUILD_SHARED=ON
+      -DBUILD_STATIC=ON
+      -DENABLE_LOGGER=ON
+      -DENABLE_DEBUG=ON
+      -DBINDINGS='ALL'
+      -DPLUGINS='ALL'
+      -DTOOLS='ALL'
+      -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
+      -DCMAKE_INSTALL_PREFIX="$CIRRUS_WORKING_DIR/install"
+    - *print_cmake_options
     - *generate
     - *build
     - *install
 
   tests_script:
+    - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
+    - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - *run_tests
 
-link_task:
+task:
   matrix:
 
     - name: 🔗 Check
       container:
+          cpu: 2
+          memory: 4G
           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   clone_script: |
@@ -249,7 +261,6 @@ link_task:
     fi
 
   script:
-    - *create_build_dir
     - >
       set --
       -DBUILD_FULL=OFF
@@ -270,20 +281,57 @@ link_task:
         false
       fi
 
-docu_task:
+task:
+  matrix:
+
+    - name: 📄 Check
+      container:
+        cpu: 2
+        memory: 4G
+        dockerfile: scripts/docker/cirrus/arch/Dockerfile
+
+  clone_script: |
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git \
+                $CIRRUS_WORKING_DIR
+      git reset --hard $CIRRUS_CHANGE_IN_REPO
+    else
+      git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+      git config user.email "nobody@example.com"
+      git config user.name "nobody"
+      git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
+    fi
+
+  script:
+    - *generate
+    - scripts/dev/filename-checker 2> bad_file_names.txt > /dev/null
+
+  tests_script:
+    - |
+      if test -s bad_file_names.txt; then
+        printf >&2 '—————————————\n'
+        cat >&2 bad_file_names.txt
+        printf >&2 '—————————————\n'
+        false
+      fi
+
+
+task:
   matrix:
 
     - name: 📚 Check
       container:
+          cpu: 6
+          memory: 8G
           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   script:
-    - *create_build_dir
     - >
       set --
       -DBUILD_PDF=ON
       -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
-      -DTOOLS='ALL;web;website-frontend;website-backend'
+      -DTOOLS='ALL'
     - *generate
     - *build
 
@@ -293,7 +341,7 @@ docu_task:
       if [ -n "$git_diff_output" ]; then
         printf >&2 -- 'It looks like you modified a source file of a man page, but did not commit the updated man page.\n'
         printf >&2 -- 'Please either:\n\n'
-        printf >&2 -- '- build the man pages with `ronn` and commit the result, or\n'
+        printf >&2 -- '- build the man pages with `ronn-ng` and commit the result, or\n'
         printf >&2 -- '- use the `patch` command after this message to update the man pages.\n\n'
         printf >&2 -- 'For the second option, please\n\n'
         printf >&2 -- '1. copy the lines between the long dashes (`—`), and\n'
@@ -306,4 +354,3 @@ docu_task:
         printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
         false
       fi
-

@@ -56,9 +56,23 @@ should play together with recode plugins nicely
 
 ## Plugin nesting
 
-lazy loading of plugins
+Lazy+Bind Mounting
+	makes kdbOpen cheaper (with many plugins)
+	plugins can have global information bind mounted into their conf
+	(e.g. /etc/passwd into resolver)
+	kdbDup to copy current state (avoid multiple bootstrapping)
+	leaves architecture as is -> possibility for any frontend and caching strategy + plays nicely with recursive plugins
 
-execute plugin within a separate process
+Concurrent Plugin Processing:
+	The plugins must be processed in the correct sequence because
+	they change keys and have side effects.
+	The processing of backends is however
+	completely independent up to, and after, the commit step.
+	Each of these two parts can be implemented concurrently.
+	If any backend fails before commit, special care must be taken so
+	that no backend commits its changes.
+	The concurrent processing of the plugins
+	is possible for both |kdbGet()| and |kdbSet()|.
 
 
 
@@ -74,7 +88,7 @@ logging API:
 implement semlock plugin, see commit bc8b5d66bd4babba6bc8c34804b966daf6878a1d
 
 inherit/copy metadata/bind mounts:
-	kdb meta-set spec/something inherit/override/# '"/elsewhere/key/" + basename'
+	kdb meta-set spec:/something inherit/override/# '"/elsewhere/key/" + basename'
 	und ein inherit-Plugin kopiert dann automatisch ein override /elsewhere/key/ (mit dem richtigen basename dran) in alle Subkeys (die nicht ein anderes inherit/override haben).
 
 werror plugin:
@@ -244,8 +258,8 @@ folder:
 
 add to/remove from array and map support
 	e.g. for ssh PubkeyAcceptedKeyTypes individual options should be added/removed
-	system/../PubkeyAcceptedKeyTypes/ssh-dsa = 0 # off from admin
-	user/../PubkeyAcceptedKeyTypes/ssh-dsa = 1 # user sets on
+	system:/../PubkeyAcceptedKeyTypes/ssh-dsa = 0 # off from admin
+	user:/../PubkeyAcceptedKeyTypes/ssh-dsa = 1 # user sets on
 	(remove via null keys?)
 
 
@@ -335,7 +349,7 @@ advanced:
 	hash sum
 	binding
 
-infer links between configuration (user/a=@user/b)
+infer links between configuration (user:/a=@user:/b)
 	and copy values
 
 

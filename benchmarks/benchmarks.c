@@ -91,7 +91,7 @@ struct _KsTreeVertex
 	struct hsearch_data * htab; /*!< stores the Hash Map, containing the children names */
 #endif
 	size_t numberofChildren; /*!< number of the stored children */
-	size_t mallocSize;       /*!< size malloced for the children */
+	size_t mallocSize;	 /*!< size malloced for the children */
 };
 
 /**
@@ -455,7 +455,7 @@ static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
 	// add if Key
 	if (vertex->isKey)
 	{
-		Key * dupKey = keyDup (key);
+		Key * dupKey = keyDup (key, KEY_CP_ALL);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");
@@ -473,7 +473,7 @@ static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
 	// go to children
 	for (size_t i = 0; i < vertex->numberofChildren; ++i)
 	{
-		Key * dupKey = keyDup (key);
+		Key * dupKey = keyDup (key, KEY_CP_ALL);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");
@@ -598,7 +598,7 @@ KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape)
 	}
 	for (size_t i = 0; i < root->numberofChildren; ++i)
 	{
-		Key * key = keyNew ("", KEY_END);
+		Key * key = keyNew ("/", KEY_END);
 		if (!key)
 		{
 			printExit ("generateKeySet: Can not create Key");

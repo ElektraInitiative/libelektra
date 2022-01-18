@@ -83,11 +83,12 @@ function (add_plugintest testname)
 			LINK_PLUGIN
 			ENVIRONMENT
 			TIMEOUT
-			WORKING_DIRECTORY)
+			WORKING_DIRECTORY
+			EXTRA_EXECUTABLES)
 
 		cmake_parse_arguments (
 			ARG
-			"MEMLEAK;INSTALL_TEST_DATA;CPP" # optional keywords
+			"MEMLEAK;INSTALL_TEST_DATA;CPP;USE_LINK_RPATH;NO_INSTALL" # optional keywords
 			"" # one value keywords
 			"${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			${ARGN})
@@ -125,6 +126,9 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
 		restore_variable (${PLUGIN_NAME} ARG_TIMEOUT)
+		restore_variable (${PLUGIN_NAME} ARG_EXTRA_EXECUTABLES)
+		restore_variable (${PLUGIN_NAME} ARG_USE_LINK_RPATH)
+		restore_variable (${PLUGIN_NAME} ARG_NO_INSTALL)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
@@ -174,12 +178,25 @@ function (add_plugintest testname)
 		# get_target_property(TARGET_COMPILE_DEFINITIONS PLUGIN_TARGET_OBJS COMPILE_DEFINITIONS)
 		# ~~~
 
-		if (INSTALL_TESTING)
-			install (TARGETS ${testexename} DESTINATION "${TARGET_TOOL_EXEC_FOLDER}")
+		if (INSTALL_TESTING AND NOT ARG_NO_INSTALL)
+			install (
+				TARGETS ${testexename}
+				DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
+				COMPONENT elektra-tests)
+			foreach (ee ${ARG_EXTRA_EXECUTABLES})
+				install (
+					TARGETS ${ee}
+					DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
+					COMPONENT elektra-tests)
+			endforeach (ee ${ARG_EXTRA_EXECUTABLES})
+
 			if (ARG_INSTALL_TEST_DATA)
-				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}" DESTINATION "${TARGET_TEST_DATA_FOLDER}")
+				install (
+					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}"
+					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
+					COMPONENT elektra-tests)
 			endif ()
-		endif (INSTALL_TESTING)
+		endif (INSTALL_TESTING AND NOT ARG_NO_INSTALL)
 
 		target_link_elektra (${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA} ${ARG_TEST_LINK_ELEKTRA})
 
@@ -198,7 +215,10 @@ function (add_plugintest testname)
 			TARGET ${testexename}
 			APPEND
 			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
-
+		# do not strip rpath during install
+		if (ARG_USE_LINK_RPATH)
+			set_target_properties (${testexename} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+		endif ()
 		unset (ADDITIONAL_COMPILE_DEFINITIONS)
 
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
@@ -226,7 +246,8 @@ function (add_plugintest testname)
 			set_tests_properties (${testexename} PROPERTIES TIMEOUT "${ARG_TIMEOUT}")
 		endif (ARG_TIMEOUT)
 
-		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "${ARG_ENVIRONMENT}")
+		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+							   "KDB_TEST_BIN_DIR=${CMAKE_BINARY_DIR}/bin" "${ARG_ENVIRONMENT}")
 
 		if (ARG_MEMLEAK)
 			set_property (TEST ${testexename} PROPERTY LABELS memleak)
@@ -401,8 +422,8 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (
 		ARG
-		"CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED" # optional keywords
-		"" # one value keywords
+		"CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED;USE_LINK_RPATH" # optional keywords
+		"COMPONENT" # one value keywords
 		"${MULTI_VALUE_KEYWORDS}" # multi value keywords
 		${ARGN})
 
@@ -424,16 +445,26 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_REQUIRED_PLUGINS)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 	restore_variable (${PLUGIN_NAME} ARG_ONLY_SHARED)
+	restore_variable (${PLUGIN_NAME} ARG_USE_LINK_RPATH)
+	restore_variable (${PLUGIN_NAME} ARG_COMPONENT)
 
 	if (ARG_UNPARSED_ARGUMENTS)
 		message (FATAL_ERROR "Parsed a wrong argument to plugin ${PLUGIN_SHORT_NAME}: ${ARG_UNPARSED_ARGUMENTS}")
 	endif ()
 
+	if (ARG_COMPONENT)
+		set (HAS_COMPONENT ${ARG_COMPONENT})
+	else ()
+		set (HAS_COMPONENT "${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}")
+	endif ()
+
 	if (ADDTESTING_PHASE)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
-				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
-					 DESTINATION "${TARGET_TEST_DATA_FOLDER}")
+				install (
+					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
+					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
+					COMPONENT elektra-tests)
 			endif (INSTALL_TESTING)
 		endif ()
 
@@ -547,7 +578,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		return ()
 	endif (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
 
-	set (STATUS_MESSAGE "Include Plugin ${PLUGIN_SHORT_NAME}")
+	set (STATUS_MESSAGE "Include plugin ${PLUGIN_SHORT_NAME}")
 	if (ARG_ONLY_SHARED)
 
 		# also add it to the list of ONLY_SHARED plugins for exportsymbols.c configuration
@@ -616,7 +647,10 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			target_link_libraries (${PLUGIN_NAME} elektra-plugin)
 		endif ()
 		target_link_libraries (${PLUGIN_NAME} ${ARG_LINK_LIBRARIES})
-		install (TARGETS ${PLUGIN_NAME} DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+		install (
+			TARGETS ${PLUGIN_NAME}
+			DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}
+			COMPONENT "${HAS_COMPONENT}")
 		set_property (
 			TARGET ${PLUGIN_NAME}
 			APPEND
@@ -627,6 +661,10 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			APPEND
 			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR} # for readme
 		)
+		# do not strip rpath during install
+		if (ARG_USE_LINK_RPATH)
+			set_target_properties (${PLUGIN_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+		endif ()
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 			if (DIR AND NOT DIR STREQUAL "/usr/include")
 				set_property (

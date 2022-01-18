@@ -223,7 +223,7 @@ static kdb_long_long_t readBooleanRestore (KeySet * config)
 		return -3;
 	}
 
-	Key * restoreKey = keyNew ("", KEY_VALUE, &restoreString[digitStart], KEY_END);
+	Key * restoreKey = keyNew ("/", KEY_VALUE, &restoreString[digitStart], KEY_END);
 
 	kdb_long_long_t size;
 	if (!elektraKeyToLongLong (restoreKey, &size))
@@ -279,26 +279,26 @@ int elektraTypeOpen (Plugin * handle, Key * errorKey)
 
 int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/type"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/type"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/type", KEY_VALUE, "type plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/type/exports", KEY_END),
-			       keyNew ("system/elektra/modules/type/exports/open", KEY_FUNC, elektraTypeOpen, KEY_END),
-			       keyNew ("system/elektra/modules/type/exports/get", KEY_FUNC, elektraTypeGet, KEY_END),
-			       keyNew ("system/elektra/modules/type/exports/set", KEY_FUNC, elektraTypeSet, KEY_END),
-			       keyNew ("system/elektra/modules/type/exports/close", KEY_FUNC, elektraTypeClose, KEY_END),
-			       keyNew ("system/elektra/modules/type/exports/checkconf", KEY_FUNC, elektraTypeCheckConf, KEY_END),
-			       keyNew ("system/elektra/modules/type/exports/validateKey", KEY_FUNC, elektraTypeValidateKey, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/type", KEY_VALUE, "type plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/open", KEY_FUNC, elektraTypeOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/get", KEY_FUNC, elektraTypeGet, KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/set", KEY_FUNC, elektraTypeSet, KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/close", KEY_FUNC, elektraTypeClose, KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/checkconf", KEY_FUNC, elektraTypeCheckConf, KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/validateKey", KEY_FUNC, elektraTypeValidateKey, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/type/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/type/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	cursor_t cursor = ksGetCursor (returned);
+	elektraCursor cursor = ksGetCursor (returned);
 
 	ksRewind (returned);
 
@@ -358,7 +358,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	cursor_t cursor = ksGetCursor (returned);
+	elektraCursor cursor = ksGetCursor (returned);
 
 	ksRewind (returned);
 

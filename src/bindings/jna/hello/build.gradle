@@ -1,0 +1,9 @@
+// apply project configuration for java libraries
+apply from: "$rootProject.projectDir/java-app.gradle"
+
+// apply project dependencies
+apply from: 'dependencies.gradle'
+
+application {
+    mainClassName = 'HelloElektra'
+}

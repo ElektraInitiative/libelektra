@@ -1,0 +1,237 @@
+<div class="row home">
+    <div class="col-md-12">
+        <!-- Slogan & Headline -->
+        <h1 class="slogan-master text-center sm-mt-50">
+            <span>{{ 'APP.HOME.HEADLINE.SLOGAN.FIRST' | translate }}</span>
+            <span typewrite text="slogan.adjectives" initial-delay="1500" type-delay="175"
+                  erase-delay="160" blink-cursor="false" blink-delay="200"></span>
+            <span style="margin-left:-10px">.</span>
+        </h1>
+        <h2 class="slogan-slave text-center">
+            <small>{{ 'APP.HOME.HEADLINE.SLOGAN.SECOND' | translate }}</small>
+        </h2>
+        <div class="text-center md-pt-10">
+            <button class="btn btn-logo-green" ui-sref="main.dyn.getstarted">
+                <i class="fa fa-play-circle"></i>
+                <span>{{ 'APP.HOME.BUTTON.GETSTARTED' | translate }}</span>
+            </button>
+            <button class="btn btn-logo-blue" ui-sref="main.dyn.tutorials">
+                <i class="fa fa-book"></i>
+                <span>{{ 'APP.HOME.BUTTON.TUTORIALS' | translate }}</span>
+            </button>
+            <a class="btn btn-logo-yellow" href="https://github.com/ElektraInitiative/libelektra">
+                <i class="fa fa-github"></i>
+                <span>{{ 'APP.HOME.BUTTON.GITHUB' | translate }}</span>
+            </a>
+        </div>
+        <h4 class="slogan-slave text-center sm-mt-15">
+            <small translate="APP.HOME.HEADLINE.SLOGAN.THIRD"></small>
+        </h4>
+        <hr class="hr-mb-0 sm-mt-50" />
+        <!-- Selling points -->
+        <div class="key-container sm-pt-40 sm-pb-40">
+          <div class="row">
+              <div class="col-md-4">
+                  <div class="md-pl-15 md-pr-15">
+                      <div class="media">
+                          <div class="media-left">
+                              <i class="media-icon fa fa-sitemap"></i>
+                          </div>
+                          <div class="media-right media-middle">
+                              <h4 class="media-heading" translate="APP.HOME.LABEL.KEYFACT.1.HEADLINE" translate-compile></h4>
+                          </div>
+                      </div>
+                      <p class="key-fact-details text-justify" translate="APP.HOME.LABEL.KEYFACT.1.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+              <div class="col-md-4 lg-mt-0 sm-mt-20">
+                  <div class="md-pl-15 md-pr-15">
+                      <div class="media">
+                          <div class="media-left">
+                              <i class="media-icon fa fa-puzzle-piece"></i>
+                          </div>
+                          <div class="media-right media-middle">
+                              <h4 class="media-heading" translate="APP.HOME.LABEL.KEYFACT.2.HEADLINE" translate-compile></h4>
+                          </div>
+                      </div>
+                      <p class="key-fact-details text-justify" translate="APP.HOME.LABEL.KEYFACT.2.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+              <div class="col-md-4 lg-mt-0 sm-mt-20">
+                  <div class="md-pl-15 md-pr-15">
+                      <div class="media">
+                          <div class="media-left">
+                              <i class="media-icon fa fa-book"></i>
+                          </div>
+                          <div class="media-right media-middle">
+                              <h4 class="media-heading" translate="APP.HOME.LABEL.KEYFACT.3.HEADLINE" translate-compile></h4>
+                          </div>
+                      </div>
+                      <p class="key-fact-details text-justify" translate="APP.HOME.LABEL.KEYFACT.3.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+          </div>
+          <div class="row lg-mt-30 sm-mt-20">
+              <div class="col-md-4">
+                  <div class="md-pl-15 md-pr-15">
+                      <div class="media">
+                          <div class="media-left">
+                              <i class="media-icon fa fa-battery-full"></i>
+                          </div>
+                          <div class="media-right media-middle">
+                              <h4 class="media-heading" translate="APP.HOME.LABEL.KEYFACT.4.HEADLINE" translate-compile></h4>
+                          </div>
+                      </div>
+                      <p class="key-fact-details text-justify" translate="APP.HOME.LABEL.KEYFACT.4.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+              <div class="col-md-4 lg-mt-0 sm-mt-20">
+                  <div class="md-pl-15 md-pr-15">
+                      <div class="media">
+                          <div class="media-left">
+                              <i class="media-icon fa fa-check"></i>
+                          </div>
+                          <div class="media-right media-middle">
+                              <h4 class="media-heading" translate="APP.HOME.LABEL.KEYFACT.5.HEADLINE" translate-compile></h4>
+                          </div>
+                      </div>
+                      <p class="key-fact-details text-justify" translate="APP.HOME.LABEL.KEYFACT.5.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+              <div class="col-md-4 lg-mt-0 sm-mt-20">
+                  <div class="md-pl-15 md-pr-15">
+                      <div class="media">
+                          <div class="media-left">
+                              <i class="media-icon fa fa-bolt"></i>
+                          </div>
+                          <div class="media-right media-middle">
+                              <h4 class="media-heading" translate="APP.HOME.LABEL.KEYFACT.6.HEADLINE" translate-compile></h4>
+                          </div>
+                      </div>
+                      <p class="key-fact-details text-justify" translate="APP.HOME.LABEL.KEYFACT.6.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+          </div>
+        </div>
+        <hr class="sm-mb-15 hr-mt-0" />
+        <div class="row">
+            <!-- Introduction video -->
+            <div class="col-md-8">
+                <h3 class="text-center">{{ 'APP.HOME.HEADLINE.HOWITWORKS' | translate }}</h3>
+                <div class="text-center">
+                    <asciinema-player src="vendor/asciinema/asciinema-demo.json"
+                                      cols="100" poster="npt:49"></asciinema-player>
+                </div>
+            </div>
+            <!-- Recent news -->
+            <div class="col-md-4">
+                <h3 class="text-center">{{ 'APP.HOME.HEADLINE.WHATSNEW' | translate }}</h3>
+                <div class="list-group md-mt-20">
+                    <a ng-repeat="post in news" ui-sref="main.news({file: post.slug})" class="list-group-item"
+                       ng-class="{active: $first}">
+                        <div class="clearfix">
+                            <h4 class="list-group-item-heading pull-left">{{ post.title}}</h4>
+                            <p class="list-group-item-text pull-right">{{ post.date}}</p>
+                        </div>
+                        <p class="list-group-item-text">{{ post.shortDesc}}</p>
+                    </a>
+                </div>
+                <p><a href="https://github.com/ElektraInitiative/libelektra/releases/latest"><img src="https://img.shields.io/github/release/ElektraInitiative/libelektra.svg" alt="Release" /></a>
+                <a href="https://build.libelektra.org/job/libelektra/job/master/lastBuild"><img src="https://img.shields.io/jenkins/t/https/build.libelektra.org/job/libelektra/job/master.svg" alt="Jenkins Build Status" /></a>
+                <a href="https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml"><img src="https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml/badge.svg" alt="macOS Build Status" /></a>
+                <a href="https://cirrus-ci.com/github/ElektraInitiative/libelektra"><img src="https://api.cirrus-ci.com/github/ElektraInitiative/libelektra.svg" alt="Cirrus Build Status" /></a>
+                <a href="https://coveralls.io/github/ElektraInitiative/libelektra"><img src="https://img.shields.io/coveralls/github/ElektraInitiative/libelektra.svg" alt="Coverage Status" /></a>
+                <a href="https://lgtm.com/projects/g/ElektraInitiative/libelektra/alerts"><img src="https://img.shields.io/lgtm/alerts/g/ElektraInitiative/libelektra.svg?logo=lgtm&amp;logoWidth=18" alt="Total alerts" /></a></p>
+            </div>
+        </div>
+        <hr class="hr-mb-0 hr-blue" />
+        <!-- Orientation helper -->
+        <div class="key-container sm-pt-30 sm-pb-30">
+          <div class="row">
+              <div class="col-md-4">
+                  <div class="md-pl-15 md-pr-15">
+                      <h4>
+                          <i class="fa fa-plug"></i>
+                          <span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.1.HEADLINE' | translate }}</span>
+                      </h4>
+                      <p class="text-justify" translate="APP.HOME.LABEL.ORIENTATION.1.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+              <div class="col-md-4 lg-mt-0 sm-mt-20">
+                  <div class="md-pl-15 md-pr-15">
+                      <h4>
+                          <i class="fa fa-code"></i>
+                          <span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.2.HEADLINE' | translate }}</span>
+                      </h4>
+                      <p class="text-justify" translate="APP.HOME.LABEL.ORIENTATION.2.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+              <div class="col-md-4 lg-mt-0 sm-mt-20">
+                  <div class="md-pl-15 md-pr-15">
+                      <h4>
+                          <i class="fa fa-question-circle-o"></i>
+                          <span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.3.HEADLINE' | translate }}</span>
+                      </h4>
+                      <p class="text-justify" translate="APP.HOME.LABEL.ORIENTATION.3.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+          </div>
+          <div class="row lg-mt-30 sm-mt-10">
+              <div class="col-md-8">
+                  <div class="md-pl-15 md-pr-15">
+                      <h4>
+                          <i class="fa fa-share-alt"></i>
+                          <span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.4.HEADLINE' | translate }}</span>
+                      </h4>
+                      <p class="text-justify" translate="APP.HOME.LABEL.ORIENTATION.4.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+              <div class="col-md-4 lg-mt-0 sm-mt-20">
+                  <div class="md-pl-15 md-pr-15">
+                      <h4>
+                          <i class="fa fa-cogs"></i>
+                          <span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.5.HEADLINE' | translate }}</span>
+                      </h4>
+                      <p class="text-justify" translate="APP.HOME.LABEL.ORIENTATION.5.DETAILS" translate-compile></p>
+                  </div>
+              </div>
+          </div>
+        </div>
+        <hr class="sm-mb-30 hr-mt-0 hr-blue" />
+        <div class="row">
+            <div class="col-md-8">
+                <img src="website/img/qtgui.png" style="width:100%" />
+            </div>
+            <div class="col-md-4 lg-mt-0 sm-mt-20">
+                <h4>{{ 'APP.HOME.LABEL.TOOL.QTGUI.HEADLINE' | translate }}</h4>
+                <p class="text-justify" translate="APP.HOME.LABEL.TOOL.QTGUI.DETAILS" translate-compile></p>
+            </div>
+        </div>
+        <hr class="sm-mt-20 lg-mt-30 hr-mb-0">
+        <div class="key-container sm-pt-20 lg-pt-30 sm-pb-20 lg-pb-30 xs-pl-10 xs-pr-10">
+          <div class="row">
+              <div class="col-md-4 sm-mb-30 lg-mb-0">
+                  <h4>{{ 'APP.HOME.LABEL.TOOL.OTHERS.HEADLINE' | translate }}</h4>
+                  <p class="text-justify" translate="APP.HOME.LABEL.TOOL.OTHERS.DETAILS" translate-compile></p>
+                  <p class="text-center sm-mt-30 lg-mt-50 sm-mb-30">
+                      <img src="website/img/oyranos-km-logo.svg" />
+                  </p>
+              </div>
+              <div class="col-md-8">
+                  <img src="website/img/oyranos-kolor-manager.png" style="width:100%;margin:-15px 0px;" />
+              </div>
+          </div>
+        </div>
+        <hr class="sm-mb-30 hr-mt-0">
+        <div class="row sm-mb-20">
+            <div class="col-md-8 sm-mb-30 lg-mb-0">
+                <img src="website/img/web-gui-kdb.png" style="width:100%" />
+            </div>
+            <div class="col-md-4">
+                <h4>{{ 'APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE' | translate }}</h4>
+                <p class="text-justify" translate="APP.HOME.LABEL.TOOL.WEBGUI.DETAILS" translate-compile></p>
+            </div>
+        </div>
+        <hr class="sm-mt-20 sm-mb-20 hr-yellow">
+    </div>
+</div>

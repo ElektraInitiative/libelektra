@@ -7,8 +7,7 @@ You might want to read
 
 ## Introduction
 
-Data structures define the common layer in Elektra. They are used to
-transfer configuration between Elektra and applications, but also
+Data structures define the common layer in Elektra. They are used for transferring configuration between Elektra and applications, but also
 between plugins.
 
 ### ADT
@@ -56,7 +55,7 @@ only using the public header file `<kdb.h>`. The functions `keyDel()`,
 `ksDel()` and `kdbClose()` free the resources after use. Using the C++
 binding deallocation is done automatically.
 
-## Meta Data
+## Metadata
 
 Read [here](metadata.md).
 
@@ -68,8 +67,7 @@ some general implementation issues.
 ### Operations
 
 `KeySet` resembles the classical mathematical
-set. Operations like union, intersection or difference are well
-defined. In mathematics typically every operation
+set. Operations like union, intersection or difference are well-defined. In mathematics typically every operation
 yields a new set.
 Instead, we try to reuse sets in the following ways:
 
@@ -121,21 +119,21 @@ can append a key to a key set.
 For example, the key set with the keys
 
 ```
-system
-system/elektra
-system/elektra/mountpoints
+system:/
+system:/elektra
+system:/elektra/mountpoints
 ```
 
 would allow the
-key `system/elektra/mountpoints/tcl` to be added,
+key `system:/elektra/mountpoints/tcl` to be added,
 but not the key
-`system/apps/abc` because `system/apps` is missing.
+`system:/apps/abc` because `system:/apps` is missing.
 File systems enforce this kind of consistency.
 
 These semantics are however not useful for configurations.
 Especially for
 user configurations often only some keys need to be overwritten.
-It is not a good idea to copy all parent keys to the users configuration.
+It is not a good idea to copy all parent keys to the users' configuration.
 For this reason we use a less strict definition of consistency supporting
 such holes.
 
@@ -157,19 +155,19 @@ without a parent key.
 For example, with the keys
 
 ```
-user/sw/apps/abc/current/bindings
-user/sw/apps/abc/current/bindings/key1
-user/sw/apps/abc/current/bindings/key2
+user:/sw/apps/abc/current/bindings
+user:/sw/apps/abc/current/bindings/key1
+user:/sw/apps/abc/current/bindings/key2
 ```
 
 the weak consistency would allow inserting
-`user/sw/apps/abc/current/bindings/key3`
+`user:/sw/apps/abc/current/bindings/key3`
 because it is directly below an existing key.
 It would also allow adding
-`user/sw/apps/xyz/current`
+`user:/sw/apps/xyz/current`
 because it does not have any parent key.
 But it would not allow
-`user/sw/apps/abc/current/bindings/dir/key1`
+`user:/sw/apps/abc/current/bindings/dir/key1`
 to add.
 The worst-case complexity was
 found to be too expensive, and hence `KeySet` has
@@ -384,9 +382,9 @@ elements, once the OPMPHM is build, every:
 
 leads to an invalid OPMPHM and forces a rebuild. A build consists of two steps the mapping step and the assignment step.
 
-During the mapping step the OPMPHM maps each element to an edge in an random acyclic r-uniform r-partite hypergraph.
+During the mapping step the OPMPHM maps each element to an edge in a random acyclic r-uniform r-partite hypergraph.
 In a r-uniform r-partite hypergraph each edge connects `r` vertices, each vertex in a different component.
-The probability of being acyclic and the number of mapping step invocations depends on the the following variables:
+The probability of being acyclic and the number of mapping step invocations depends on the following variables:
 
 - `r`: The `r` variable defines the number of components in the random r-uniform r-partite hypergraph.
   Use the `opmphmOptR (n)` function to get an optimal value for your number of elements (`n`).
@@ -396,7 +394,7 @@ The probability of being acyclic and the number of mapping step invocations depe
   and `r` is the variable from above.
   The `c` variable must have a minimal value to ensure a success probability, use the `opmphmMinC (r)` function,
   with your `r` from above.
-  The ensure an optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
+  To ensure an optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
   function, where `n` is the number of elements.
 
 - `initSeed`: The initial seed set in `OpmphmInit->initSeed`.

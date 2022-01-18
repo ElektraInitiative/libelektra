@@ -36,8 +36,11 @@ type = float
 default = 1.1
 ```
 
-In Elektra a specification is defined through the metadata of keys in the `spec` namespace. The specification above contains metadata for
-three keys the parent key (`@`), `@/mydouble` and `@/myfloatarray/#`. The `#` at the end of `myfloatarray/#` indicates that it is an array.
+In Elektra a specification is defined through the metadata of keys in the `spec` namespace. The specification above contains metadata for three keys:
+
+1. the parent key (`@`)
+2. `@/mydouble`
+3. `@/myfloatarray/#` (The `#` at the end of `myfloatarray/#` indicates that it is an array)
 
 The `mountpoint` metadata on the parent key sets the name of our application's config file (the location is defined by Elektra), it should
 be unique.
@@ -58,7 +61,7 @@ resort, but still preserves the guarantee that `elektraGet*` calls won't fail. I
 
 ## Invoking the code-generator
 
-The code-generator is a very powerful and flexible tool and has many options to tweak its output. If you want to know more about how to setup
+The code-generator is a very powerful and flexible tool and has many options to tweak its output. If you want to know more about how to set up
 everything just the way you want to, take a look at the man-pages [`kdb-gen(1)`](../help/kdb-gen.md) and
 [`kdb-gen-highlevel(1)`](../help/kdb-gen-highlevel.md).
 
@@ -109,12 +112,12 @@ First there is some boilerplate, including the copyright header, include stateme
 * Tag name for 'myfloatarray/#'
 *
 * Required arguments:
-* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
+* - kdb_long_long_t index1: Replaces occurrence no. 1 of # in the keyname.
 */
 #define ELEKTRA_TAG_MYFLOATARRAY Myfloatarray
 ```
 
-Next we see all of the 'tag macros' used to refer to config values. These are essentially just aliases, but they allow for some flexibility
+Next we see all the 'tag macros' used to refer to config values. These are essentially just aliases, but they allow for some flexibility
 in how we generate the names of the `static inline` functions further down. You should always refer to your config values via these macros,
 even if they are just aliases. This is because we might have to change the naming scheme for the functions, but we will try to keep the tag
 macros unchanged.
@@ -149,7 +152,7 @@ line.
 /* local macros ... */
 #undef elektra_len
 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+int loadConfiguration (Elektra ** elektra, int argc, const char * const * argv, const char * const * envp, ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
 void exitForSpecload (int argc, const char ** argv);
 ```
@@ -178,7 +181,7 @@ You only need to know, that `exitForSpecload` should be called immediately at th
 your application is not in specload mode.
 
 ```c
-int main (int argc, const char ** argv) {
+int main (int argc, const char * const * argv, const char * const * envp) {
     exitForSpecload (argc, argv);
     // ...
 }
@@ -190,7 +193,7 @@ a snippet that is more or less the same for all applications:
 ```c
 ElektraError * error = NULL;
 Elektra * elektra = NULL;
-int rc = loadConfiguration (&elektra, &error);
+int rc = loadConfiguration (&elektra, argc, argv, envp, &error);
 
 if (rc == -1)
 {
@@ -201,7 +204,7 @@ if (rc == -1)
 
 if (rc == 1)
 {
-    // help mode - application was called with '-h' or '--help'
+    // help mode - application was called with '--help'
     // for more information see "Command line options" below
     printHelpMessage (elektra, NULL, NULL);
     elektraClose (elektra);
@@ -209,7 +212,7 @@ if (rc == 1)
 }
 ```
 
-Next it is recommended, you change the default handler for fatal errors. By default we just call `exit (EXIT_FAILURE)`, since we don't know
+Next it is recommended, you change the default handler for fatal errors. By default, we just call `exit (EXIT_FAILURE)`, since we don't know
 how you log your errors and what cleanup may be needed.
 
 ```c
@@ -288,7 +291,7 @@ elektraSetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 2.718282f, &error, 2);
 Note that `elektraSetV` takes the `ElektraError` argument before the variable arguments, while in `ELEKTA_SET` the error is always the last
 argument. This is because of limitations in the C macro system.
 
-There is not setter for array sizes. Since Elektra's low-level part supports discontinuous arrays, we simply change the array size whenever
+There is no setter for array sizes. Since Elektra's low-level part supports discontinuous arrays, we simply change the array size whenever
 necessary, if an array element setter is called. However, the high-level API has no support for discontinuous arrays, so take care not to
 create holes in your arrays, if you want to iterate over them. Remember, accessing non-existent keys (and this includes array elements) is a
 fatal error.
@@ -340,13 +343,13 @@ First you need to mount your specification itself into the KDB. Mounting is basi
 the KDB, similar to how mounting an external hard drive informs the OS about a new part of the file system.
 
 ```sh
-sudo kdb mount -R noresolver /etc/myapp_spec.eqd "spec/sw/example/myapp/#0/current" specload app="$PWD/myapp"
+sudo kdb mount -R noresolver /etc/myapp_spec.eqd "spec:/sw/example/myapp/#0/current" specload app="$PWD/myapp"
 ```
 
 The command above assumes that you also used the `kdb gen` command from [above](#invoking-the-code-generator) and that the `myapp` executable
 is located in `$PWD`.
 
-> **Note:** Because of a limitation in `specload`, we have to use the `noresolver` resolver. This also means that the the path to the config
+> **Note:** Because of a limitation in `specload`, we have to use the `noresolver` resolver. This also means that the path to the config
 > file (here `/etc/myapp_spec.eqd`) has to be absolute. Otherwise it will always be relative to the current working directory in which `kdb`
 > or your application was executed. The file _should not_ exist when calling `kdb mount`. `specload` works different to other plugins. The
 > given config file is only used, if the user makes changes to the specification via `kdb set`.
@@ -371,10 +374,10 @@ To configure your application you can use `kdb`:
 kdb set "/sw/example/myapp/#0/current/mydouble" 15.4
 ```
 
-If you want to set a value system-wide (not just for your user) you can use `-N system`:
+If you want to set a value system-wide (not just for your user) you can use the system namespace:
 
 ```sh
-kdb set -N system "/sw/example/myapp/#0/current/mydouble" 15.4
+kdb set "system:/sw/example/myapp/#0/current/mydouble" 15.4
 ```
 
 Always use the cascading version of `kdb set` (i.e. the keyname begins with a slash `/`), otherwise type checking and other plugins might not

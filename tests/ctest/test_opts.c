@@ -11,19 +11,15 @@
 
 #include "tests.h"
 
-#define PROC_BASE_KEY "proc/tests/opts"
-#define SPEC_BASE_KEY "spec/tests/opts"
+#define PROC_BASE_KEY "proc:/tests/opts"
+#define SPEC_BASE_KEY "spec:/tests/opts"
 
-// version 6 and 7 of clang-format don't agree whether it is supposed to be *[] or * [] so disable it here
-// TODO: re-enable clang-format once version 7 is used on build server
-// clang-format off
 #define NUMARGS(...) (sizeof ((void *[]){ __VA_ARGS__ }) / sizeof (void *))
 #define ARGS(...) NUMARGS ("prog", __VA_ARGS__), ((const char *[]){ "prog", __VA_ARGS__, NULL })
 #define NO_ARGS 1, ((const char *[]){ "prog" })
 
 #define ENVP(...) ((const char *[]){ __VA_ARGS__, NULL })
 #define NO_ENVP ((const char *[]){ NULL })
-// clang-format on
 
 #define xstr(a) str (a)
 #define str(a) #a
@@ -117,7 +113,7 @@ static bool checkError (Key * errorKey, const char * expectedNumber, const char 
 
 static void clearValues (KeySet * ks)
 {
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 
 	ksRewind (ks);
 	Key * cur;
@@ -497,7 +493,6 @@ static void test_illegal_spec (void)
 				"(key: " SPEC_BASE_KEY "/apple)"),
 		    "flagvalue should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -512,7 +507,6 @@ static void test_illegal_spec (void)
 				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
 		    "duplicate short option should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -528,7 +522,21 @@ static void test_illegal_spec (void)
 				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
 		    "duplicate long option should be illegal");
 	clearValues (ks);
+	ksDel (ks);
 
+	// ---
+	// duplicate envrionment variable
+	//
+
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), keyWithOpt (SPEC_BASE_KEY "/banana", 0, NULL, "APPLE"),
+		    KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The environment variable 'APPLE' has already been specified for the key '" SPEC_BASE_KEY
+				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
+		    "duplicate env-var option should be illegal");
+	clearValues (ks);
 	ksDel (ks);
 
 	// ---
@@ -544,7 +552,6 @@ static void test_illegal_spec (void)
 				"'args=remaining' can only be set on array keys (basename = '#'). Offending key: " SPEC_BASE_KEY "/apple"),
 		    "non-array remaining args should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -561,7 +568,6 @@ static void test_illegal_spec (void)
 				"special string '--'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'-' option should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -578,7 +584,246 @@ static void test_illegal_spec (void)
 				"help option '--help'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'help' option should be illegal");
 	clearValues (ks);
+	ksDel (ks);
 
+	// ---
+	// args indexed without index
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args=indexed' must be accompanied by 'args/index'. Offending key: " SPEC_BASE_KEY "/apple"),
+		    "args=indexed without args/index should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// args indexed array
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args=indexed' can only be set on non-array keys (basename != '#'). Offending key: " SPEC_BASE_KEY
+				"/apple/#"),
+		    "args=indexed on an array key should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// args indexed missing index
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "3");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The values of 'args/index' must be continuous, but index 0 is missing in keys below: " SPEC_BASE_KEY),
+		    "args=indexed with non-continuous indicies should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+
+	// ---
+	// args duplicate remaining
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	keySetMeta (k, "args", "remaining");
+	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args=remaining' is already used on key '" SPEC_BASE_KEY "/apple/#'. Offending key: " SPEC_BASE_KEY
+				"/banana/#"),
+		    "args=remaining duplicate should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// args duplicate index
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END), KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args/index=0' is already used by '" SPEC_BASE_KEY "/apple'. Offending Key: " SPEC_BASE_KEY "/banana"),
+		    "args=indexed duplicate index should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command non-empty root meta
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY, KEY_END);
+	keySetMeta (k, "command", "abc");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"On the parent key 'command' can only be set to an empty string. Offending key: " SPEC_BASE_KEY),
+		    "command set to non-empty string on parent key should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command sub without root
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'command' can only be used, if it is set on the parent key as well. Offending key: " SPEC_BASE_KEY "/cmd"),
+		    "sub-commands without command metakey on parent key should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command sub without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/sub", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/sub) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "sub-commands without direct parent should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command sub parent without command
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/sub", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (3, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), keyNew (SPEC_BASE_KEY "/cmd", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/sub) must have the 'command' metakey set. Offending key: " SPEC_BASE_KEY "/cmd"),
+		    "sub-commands without command metakey on direct parent should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command short option without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/opt", KEY_END);
+	keySetMeta (k, "opt", "a");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/opt) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode short options without command metakey on direct parent should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command long option without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/opt", KEY_END);
+	keySetMeta (k, "opt/long", "apple");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/opt) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode long options without command metakey on direct parent should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command args remaining without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/arg/#", KEY_END);
+	keySetMeta (k, "args", "remaining");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/arg/#) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode args=remaining without command metakey on direct parent should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command args indexed without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/arg", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/arg) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode args=indexed without command metakey on direct parent should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command sub empty
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd", KEY_END);
+	keySetMeta (k, "command", "");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'command' must be set to a non-empty string (except on the parent key). Offending key: " SPEC_BASE_KEY
+				"/cmd"),
+		    "sub-command with empty command metadata should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// command duplicate sub
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd2", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (3, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/cmd", KEY_META, "command", "sub", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"Duplicate sub-command 'sub'. Offending key: " SPEC_BASE_KEY "/cmd2"),
+		    "duplicate sub-commands should be illegal");
+	clearValues (ks);
 	ksDel (ks);
 }
 
@@ -677,6 +922,37 @@ static void test_illegal_use (void)
 	clearValues (ks);
 
 	ksDel (ks);
+
+	// ---
+	// missing indexed arg
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Expected at least 1 non-option arguments, but only got 0"),
+		    "missing indexed argument should not be allowed");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// unknown sub-command
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY, KEY_END);
+	keySetMeta (k, "command", "");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("sub"), NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown sub-command: sub"),
+		    "unknown sub-command should not be allowed");
+	clearValues (ks);
+
+	ksDel (ks);
 }
 
 static void test_help (void)
@@ -689,10 +965,16 @@ static void test_help (void)
 
 	Key * errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
+	const char * expectedHelpBase =
+		"Usage: prog [OPTION...]\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n";
+
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, "Usage: prog\n");
+	checkHelpMessage (errorKey, expectedHelpBase);
 	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, "Usage: prog\n");
+	checkHelpMessage (errorKey, expectedHelpBase);
 
 	keyDel (errorKey);
 
@@ -707,12 +989,22 @@ static void test_help (void)
 	// with options
 	// ---
 
-	const char * expectedHelp =
-		"Usage: prog [OPTION]... [ARG]...\n"
+	const char * expectedHelpOpts =
+		"Usage: prog [OPTION...] <param1> <param2> [<other>...]\n"
+		"\n"
 		"OPTIONS\n"
+		"  --help                      Print this help message\n"
 		"  -a, -b BANANA, -C, --apple, --banana=BANANA, --cherry=[ARG]\n"
 		"                                Apple/Banana/Cherry description\n"
-		"  -p ARG                      A pear is not an apple, nor a banana, nor a cherry.\n";
+		"  -p ARG                      A pear is not an apple, nor a banana, nor a cherry.\n"
+		"\n"
+		"PARAMETERS\n"
+		"  other...                    Other parameters\n"
+		"  param1                      First parameter\n"
+		"  param2                      Second parameter\n"
+		"\n"
+		"ENVIRONMENT VARIABLES\n"
+		"  APPLE, BANANA, CHERRY       Apple/Banana/Cherry description\n";
 
 	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "#3");
@@ -727,19 +1019,125 @@ static void test_help (void)
 	keySetMeta (k, "opt/#2/arg", "optional");
 	keySetMeta (k, "opt/#3", "d");
 	keySetMeta (k, "opt/#3/hidden", "1");
+	keySetMeta (k, "env", "#2");
+	keySetMeta (k, "env/#0", "APPLE");
+	keySetMeta (k, "env/#1", "BANANA");
+	keySetMeta (k, "env/#2", "CHERRY");
 	keySetMeta (k, "description", "Apple/Banana/Cherry description");
 	ks = ksNew (4, k,
 		    keyNew (SPEC_BASE_KEY "/pear", KEY_META, "opt", "p", KEY_META, "description",
 			    "A pear is not an apple, nor a banana, nor a cherry.", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/args/#", KEY_META, "args", "remaining", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/param1", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "description",
+			    "First parameter", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/param2", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_META, "description",
+			    "Second parameter", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/other/#", KEY_META, "args", "remaining", KEY_META, "description", "Other parameters", KEY_END),
 		    keyNew (SPEC_BASE_KEY "/none", KEY_META, "opt", "n", KEY_META, "opt/hidden", "1", KEY_END), KS_END);
 	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, expectedHelp);
+	checkHelpMessage (errorKey, expectedHelpOpts);
 	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, expectedHelp);
+	checkHelpMessage (errorKey, expectedHelpOpts);
+	clearValues (ks);
+	keyDel (errorKey);
 
+	ksDel (ks);
+
+
+	// ---
+	// with option keys nested deeply
+	// --
+
+	const char * expectedHelpMainDeep =
+		"Usage: prog [OPTION...] [<dynamic>...]\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -x, --notdirectlybelow      \n"
+		"  -v, --version               \n"
+		"\n"
+		"PARAMETERS\n"
+		"  dynamic...                  \n";
+
+	ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_END),
+		    keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/", KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown",
+			    KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown/notdirectlybelow", KEY_META, "opt", "x", KEY_META, "opt/long",
+			    "notdirectlybelow", KEY_META, "opt/arg", "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+
+	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpMainDeep);
+	keyDel (errorKey);
+
+	ksDel (ks);
+
+
+	// ---
+	// with commands
+	// --
+
+	const char * expectedHelpMain =
+		"Usage: prog [OPTION...] [COMMAND [...]|[<dynamic>...]]\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -v, --version               \n"
+		"\n"
+		"COMMANDS\n"
+		"  get                         \n"
+		"  set                         \n"
+		"\n"
+		"PARAMETERS\n"
+		"  dynamic...                  \n";
+
+	const char * expectedHelpGet =
+		"Usage: prog get [OPTION...] <keyname>\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -v, --verbose               \n"
+		"\n"
+		"PARAMETERS\n"
+		"  keyname                     \n";
+
+	const char * expectedHelpSet =
+		"Usage: prog set [OPTION...] <keyname> <value>\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -v, --verbose               \n"
+		"\n"
+		"PARAMETERS\n"
+		"  keyname                     \n"
+		"  value                       \n";
+
+	ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get", KEY_META, "command", "get", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1", KEY_META, "command", "set", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/value", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+
+	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpMain);
+	succeed_if (elektraGetOpts (ks, ARGS ("get", "--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpGet);
+	succeed_if (elektraGetOpts (ks, ARGS ("set", "--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpSet);
 	keyDel (errorKey);
 
 	ksDel (ks);
@@ -752,32 +1150,32 @@ static void test_stop (void)
 
 	RUN_TEST (ks, ARGS ("--", "-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "should have stopped");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#1"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short"), "rest has wrong value (#1)");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("-ashort", "--", "-a", "short2"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "should have stopped after short option");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#1"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short2"), "rest has wrong value (#1)");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("--apple", "long", "--", "-a", "short2"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "hould have stopped after long option");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#1"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short2"), "rest has wrong value (#1)");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("--"), ENVP ("APPLE=env"));
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "env"), "env-var failed (stopped options)");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", NULL), "rest has wrong count");
 	clearValues (ks);
 
 
-	Key * errorKey = keyNew ("spec/tests/opts", KEY_META, "posixly", "1", KEY_END);
+	Key * errorKey = keyNew ("spec:/tests/opts", KEY_META, "posixly", "1", KEY_END);
 	if (elektraGetOpts (ks, ARGS ("-ashort", "other", "-a", "short2"), NO_ENVP, errorKey) != 0)
 	{
 		yield_error ("error found");
@@ -785,7 +1183,7 @@ static void test_stop (void)
 	}
 	keyDel (errorKey);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "should have stopped after short option");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#2"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#2"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "other"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "-a"), "rest has wrong value (#1)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#2", "short2"), "rest has wrong value (#2)");
@@ -832,6 +1230,162 @@ static void test_mixed_config (void)
 	ksDel (ks);
 }
 
+static void test_args_remaining (void)
+{
+	KeySet * ks = ksNew (1, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#4"), "args remaining (wrong count)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "short0"), "args remaining (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short1"), "args remaining (#1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#2", "long0"), "args remaining (#2)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#3", "long2"), "args remaining (#3)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#4", "test"), "args remaining (#4)");
+	clearValues (ks);
+
+	RUN_TEST (ks, NO_ARGS, NO_ENVP);
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", NULL), "args remaining (wrong count)");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
+static void test_args_indexed (void)
+{
+	KeySet * ks = ksNew (5, keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest3", KEY_META, "args", "indexed", KEY_META, "args/index", "3", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest4", KEY_META, "args", "indexed", KEY_META, "args/index", "4", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest0", "short0"), "args indexed (0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest1", "short1"), "args indexed (1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest2", "long0"), "args indexed (2)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest3", "long2"), "args indexed (3)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest4", "test"), "args indexed (4)");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
+static void test_args_indexed_and_remaining (void)
+{
+	KeySet * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest0", "short0"), "args indexed and remaining (index 0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest1", "short1"), "args indexed and remaining (index 1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest2", "long0"), "args indexed and remaining (index 2)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "long2"), "args indexed and remaining (remaining #0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "test"), "args indexed and remaining (remaining #1)");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
+static void test_commands (void)
+{
+	KeySet * ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META,
+				     "opt/arg", "none", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get", KEY_META, "command", "get", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META,
+				     "opt/arg", "none", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1", KEY_META, "command", "set", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META,
+				     "opt/arg", "none", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/value", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("-v"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, ""), "command failed: {kdb} -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/printversion", "1"), "command failed: kdb {-v}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb -v [get]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb -v [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-v", "get", "x"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "get"), "command failed: {kdb} -v get x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/printversion", "1"), "command failed: kdb {-v} get x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb -v {get} x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/keyname", "x"), "command failed: kdb -v get {x}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb -v get x [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb -v get x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb -v get x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb -v get x[dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("get", "-v", "x"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "get"), "command failed: {kdb} get -v x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb {get} -v x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/verbose", "1"), "command failed: kdb get {-v} x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/keyname", "x"), "command failed: kdb get -v {x}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb get -v x [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb get -v x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb get -v x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb get -v x [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-v", "get", "-v", "abc"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "get"), "command failed: {kdb} -v get -v abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/printversion", "1"), "command failed: kdb {-v} get -v abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb -v {get} -v abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/verbose", "1"), "command failed: kdb -v get {-v} abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/keyname", "abc"), "command failed: kdb -v get -v {abc}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb -v get -v abc [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb -v get -v abc [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb -v get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb -v get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", NULL), "command failed: kdb -v get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#3", NULL), "command failed: kdb -v get -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("set", "get", "-v"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "set1"), "command failed: {kdb} set get -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb {set} get -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/keyname", "get"), "command failed: kdb set {get} -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/value", "-v"), "command failed: kdb set get {-v}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb set get -v [get]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", NULL), "command failed: kdb set get -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("set", "-v", "a", "b"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "set1"), "command failed: {kdb} set -v a b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb {set} -v a b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/verbose", "1"), "command failed: kdb set {-v} a b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/keyname", "a"), "command failed: kdb set -v {a} b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/value", "b"), "command failed: kdb set -v a {b}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb set get -v [get]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", NULL), "command failed: kdb set get -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("abc", "-v", "def"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, ""), "command failed: {kdb} abc -v def");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb abc -v def [get]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb abc -v def [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", "#2"), "command failed: kdb {abc -v def}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", "abc"), "command failed: kdb {abc} -v def");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", "-v"), "command failed: kdb abc {-v} def");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", "def"), "command failed: kdb abc -v {def}");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf (" OPTS   TESTS\n");
@@ -856,6 +1410,10 @@ int main (int argc, char ** argv)
 	test_help ();
 	test_stop ();
 	test_mixed_config ();
+	test_args_remaining ();
+	test_args_indexed ();
+	test_args_indexed_and_remaining ();
+	test_commands ();
 
 	print_result ("test_opts");
 

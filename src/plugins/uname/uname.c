@@ -23,34 +23,34 @@
 static void elektraAddUname (KeySet * returned, Key * parentKey)
 {
 	Key * dir;
-	Key * key = keyDup (parentKey);
+	Key * key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (returned, key);
 
 	struct utsname buf;
 
 	uname (&buf); // TODO: handle error
 
-	dir = keyDup (parentKey);
+	dir = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (dir, "sysname");
 	keySetString (dir, buf.sysname);
 	ksAppendKey (returned, dir);
 
-	dir = keyDup (parentKey);
+	dir = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (dir, "nodename");
 	keySetString (dir, buf.nodename);
 	ksAppendKey (returned, dir);
 
-	dir = keyDup (parentKey);
+	dir = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (dir, "release");
 	keySetString (dir, buf.release);
 	ksAppendKey (returned, dir);
 
-	dir = keyDup (parentKey);
+	dir = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (dir, "version");
 	keySetString (dir, buf.version);
 	ksAppendKey (returned, dir);
 
-	dir = keyDup (parentKey);
+	dir = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (dir, "machine");
 	keySetString (dir, buf.machine);
 	ksAppendKey (returned, dir);
@@ -61,15 +61,15 @@ int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	int errnosave = errno;
 	ELEKTRA_LOG ("get uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/uname"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/uname"))
 	{
 		KeySet * moduleConfig =
-			ksNew (50, keyNew ("system/elektra/modules/uname", KEY_VALUE, "uname plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/uname/exports", KEY_END),
-			       keyNew ("system/elektra/modules/uname/exports/get", KEY_FUNC, elektraUnameGet, KEY_END),
-			       keyNew ("system/elektra/modules/uname/exports/set", KEY_FUNC, elektraUnameSet, KEY_END),
+			ksNew (50, keyNew ("system:/elektra/modules/uname", KEY_VALUE, "uname plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/uname/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/uname/exports/get", KEY_FUNC, elektraUnameGet, KEY_END),
+			       keyNew ("system:/elektra/modules/uname/exports/set", KEY_FUNC, elektraUnameSet, KEY_END),
 #include "readme_uname.c"
-			       keyNew ("system/elektra/modules/uname/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/uname/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -94,10 +94,11 @@ int elektraUnameSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-	return elektraPluginExport("uname",
+	return elektraPluginExport ("uname",
 		ELEKTRA_PLUGIN_GET,            &elektraUnameGet,
 		ELEKTRA_PLUGIN_SET,            &elektraUnameSet,
-		ELEKTRA_PLUGIN_END);
+		ELEKTRA_PLUGIN_END
+	);
 }
 
 

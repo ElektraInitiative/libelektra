@@ -103,8 +103,8 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 /**
  * @brief Returns the configuration of that plugin.
  *
- * - The user/ config holds plugin specific configuration
- * - The system/ config holds backend specific configuration
+ * - The user:/ config holds plugin specific configuration
+ * - The system:/ config holds backend specific configuration
  *
  * So prefer cascading lookups to honor both.
  *
@@ -118,7 +118,9 @@ KeySet * elektraPluginGetConfig (Plugin * handle)
 }
 
 /**
- * @brief Store a pointer to any plugin related data.
+ * @brief Store a pointer to plugin specific data.
+ *
+ * This data is private to one instance of a plugin.
  *
  * @see elektraPluginGetData
  * @param plugin a pointer to the plugin
@@ -131,9 +133,11 @@ void elektraPluginSetData (Plugin * plugin, void * data)
 }
 
 /**
- * @brief Get a pointer to any plugin related data stored before.
+ * @brief Get a pointer to the plugin specific data stored before.
  *
  * If elektraPluginSetData() was not called earlier, NULL will be returned.
+ *
+ * This data is private to one instance of a plugin.
  *
  * @see elektraPluginSetData
  * @param plugin a pointer to the plugin

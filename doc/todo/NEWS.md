@@ -21,7 +21,15 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
+You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release).
+
+You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
+This is the quickest way to get started with Elektra without compiling and other obstacles, simply run:
+
+```sh
+docker pull elektra/elektra
+docker run -it elektra/elektra
+```
 
 ## Highlights
 
@@ -37,7 +45,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### <<Plugin1>>
 
@@ -94,7 +102,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ## Bindings
 
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
-you up to date with the multi-language support provided by Elektra.
+you up-to-date with the multi-language support provided by Elektra.
 
 ### <<Binding1>>
 
@@ -126,6 +134,12 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+## Packaging
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ## Build
 
 ### CMake
@@ -142,19 +156,19 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Infrastructure
 
-### Cirrus
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Jenkins
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### Travis
+### Cirrus
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### GitHub Actions
 
 - <<TODO>>
 - <<TODO>>
@@ -163,7 +177,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Website
 
 The website is generated from the repository, so all information about
-plugins, bindings and tools are always up to date. Furthermore, we changed:
+plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
 - <<TODO>>
 - <<TODO>>
@@ -179,7 +193,11 @@ We are currently working on following topics:
 
 ## Statistics
 
+We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+
+Thanks to all authors for making this release possible!
 
 ## Join the Initiative!
 
@@ -198,9 +216,11 @@ The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/release
 
 <<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
 
-The release tarball is also available signed by Markus Raab using GnuPG from
+The release tarball is also available signed using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
 [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
+
+The following GPG Key was used to sign this release: 12CC44541E1B8AD9B66AFAD55262E7353324914A
 
 Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/)
 or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
@@ -216,7 +236,7 @@ please contact us via our issue tracker [on GitHub](http://issues.libelektra.org
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
-For more information, see [https://libelektra.org](https://libelektra.org)
+For more information, see [https://libelektra.org](https://libelektra.org).
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)

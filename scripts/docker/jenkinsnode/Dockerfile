@@ -6,44 +6,55 @@ RUN apt-get -y install \
   build-essential \
   clang \
   cmake \
-  ruby-dev \
-  python-dev \
-  libaugeas-dev \
-  libyajl-dev \
-  libgit2-dev \
-  libboost-all-dev \
-  libssl-dev \
-  libdbus-1-dev \
-  libpcre3-dev \
-  libpcre++-dev \
-  libglib2.0-dev \
-  libxerces-c-dev \
-  swig \
-  valgrind \
-  libmarkdown2-dev \
-  discount \
+  curl \
   dh-lua \
-  python-all \
-  python3-all \
-  libgtest-dev \
-  ruby-ronn \
-  libgcrypt20-dev \
-  libgpgme-dev \
-  libbotan1.10-dev \
+  discount \
+  git \
+  libaugeas-dev \
+  libcurl4-gnutls-dev \
+  libdbus-1-dev \
   libev-dev \
-  libuv1-dev \
+  libgcrypt20-dev \
+  libgit2-dev \
+  libglib2.0-dev \
+  libgpgme-dev \
+  libmarkdown2-dev \
+  libpcre++-dev \
+  libpcre3-dev \
+  libssl-dev \
   libsystemd-dev \
   libuv1-dev \
-	libzmq3-dev \
+  libuv1-dev \
+  libxerces-c-dev \
+  libyajl-dev \
+  libzmq3-dev \
   openjdk-8-jdk-headless \
   openssh-server \
-  maven \
-  git \
-  libcurl4-gnutls-dev
-RUN apt-get clean && \
+  python3-dev \
+  python3-all \
+  ruby-dev \
+  swig \
+  unzip \
+  valgrind \
+  wget \
+  python3-pip \
+&& apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
+
 # TODO use Elektra for the configuration steps below
+
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=release-1.11.0
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 # setup the ssh server
 RUN sed --in-place 's/^\(PermitRootLogin\|UsePAM\|UseDNS\)/#\1/' /etc/ssh/sshd_config && \
@@ -72,3 +83,11 @@ RUN chmod a+x /usr/local/bin/run-*
 EXPOSE 22
 RUN service ssh start
 CMD ["/usr/sbin/sshd", "-D", "-e"]
+
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.2-bin.zip && unzip gradle-7.2-bin.zip && rm gradle-7.2-bin.zip && mv gradle-7.2 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
+USER jenkins:jenkins
+
+USER root:root

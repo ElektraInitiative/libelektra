@@ -46,8 +46,8 @@ typedef struct
 
 } ElektraZeroMqRecvPluginData;
 
-void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data);
-void elektraZeroMqRecvTeardown (ElektraZeroMqRecvPluginData * data);
+void elektraZeroMqRecvSetup (Plugin * handle);
+void elektraZeroMqRecvTeardown (Plugin * handle);
 
 int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey);
 int elektraZeroMqRecvClose (Plugin * handle, Key * errorKey);

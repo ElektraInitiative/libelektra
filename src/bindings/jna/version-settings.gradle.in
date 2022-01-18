@@ -1,0 +1,4 @@
+// override artifact version
+allprojects {
+	version = '@KDB_VERSION@'
+}

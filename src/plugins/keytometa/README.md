@@ -23,7 +23,7 @@ The keys to be converted are identified by metakeys below `convert` (e.g. `conve
 The keys receiving the resulting metadata are identified by append strategies.
 The plugin currently supports the following metakeys for controlling the conversion:
 
-- `convert/metaname` specifies the name of the resulting metakey. For example tagging the key `user/config/key1` with `convert/metaname = comment` means that the key will be converted to a metakey with the name `comment`.
+- `convert/metaname` specifies the name of the resulting metakey. For example tagging the key `user:/config/key1` with `convert/metaname = comment` means that the key will be converted to a metakey with the name `comment`.
 - `convert/append` specifies the append strategy (see below)
 - `convert/append/samelevel` specifies that the key should only be written to the metadata of a key with the same hierarchy level (see below).
 
@@ -35,6 +35,11 @@ to the corresponding key (see merging for more details).
 
 The keys are ordered by the "order" metadata. If two keys are equal according to the order metadata,
 they are ordered by name instead.
+
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
 
 ## Append Strategies
 
@@ -49,11 +54,11 @@ the first key in a sorted keyset will receive the metadata (this is usually the 
 For example consider the following keyset:
 
 ```
-user/config/key1
-user/config/key1/child1
-user/config/key2
-user/config/key2/deeper/child2
-user/config/child3
+user:/config/key1
+user:/config/key1/child1
+user:/config/key2
+user:/config/key2/deeper/child2
+user:/config/child3
 ```
 
 If child1, child2 and child3 were tagged with `convert/append = parent`, key1 would receive
@@ -66,10 +71,10 @@ If no such key is found (for example because the key to be converted is the last
 the strategy is reverted to parent. For example consider the following keyset:
 
 ```
-user/config/deeper/key1
-user/config/key2
-user/config/key3
-user/config/key4
+user:/config/deeper/key1
+user:/config/key2
+user:/config/key3
+user:/config/key4
 ```
 
 If key1 and key3 were tagged with `convert/append = next`, key2 would receive the metadata
@@ -82,10 +87,10 @@ If no such key is found (for example because the key to be converted is the firs
 the strategy is reverted to parent. For example consider the following keyset:
 
 ```
-user/config/key1
-user/config/deeper/key2
-user/config/key3
-user/config/key4
+user:/config/key1
+user:/config/deeper/key2
+user:/config/key3
+user:/config/key4
 ```
 
 If key2 and key4 were tagged with `convert/append = previous`, key1 would receive the metadata
@@ -102,12 +107,12 @@ or the target key is found. The keys are always processed in the order of an ord
 For example consider the following keyset:
 
 ```
-user/config/key0
-user/config/key1 = value1
-user/config/key2 = value2
-user/config/key3 = value3
-user/config/key4 = value4
-user/config/key5
+user:/config/key0
+user:/config/key1 = value1
+user:/config/key2 = value2
+user:/config/key3 = value3
+user:/config/key4 = value4
+user:/config/key5
 ```
 
 If key1 and key2 were tagged with `convert/append = next` and key3 and key4 were tagged with `convert/append = previous` the following would happen:
@@ -120,13 +125,13 @@ If key1 and key2 were tagged with `convert/append = next` and key3 and key4 were
 The option `convert/append/samelevel` can be used to force that the metadata is only appended to a key on the same hierarchy level. If no such key is found, the strategy is reverted to parent. Note, that the value of the samelevel key does not matter. Only its existence is relevant. For example consider the following keyset:
 
 ```
-user/config/key0
-user/config/key1/child1
-user/config/key2
-user/config/key3/child2
-user/config/key4
-user/config/key5
-user/config/key6
+user:/config/key0
+user:/config/key1/child1
+user:/config/key2
+user:/config/key3/child2
+user:/config/key4
+user:/config/key5
+user:/config/key6
 ```
 
 If child1, child2 and key4 were each tagged with `convert/append = next` and child2 and key4 were tagged with `convert/append/samelevel`, key2 would receive the metadata resulting from child1.
@@ -141,12 +146,12 @@ by adding the following to the Augeas plugin contract.
 
 ```c
 // ...
-keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1",
+keyNew ("system:/elektra/modules/augeas/config/needs/glob/get/#1",
     KEY_VALUE, "*#comment*",
-    KEY_META, "convert/metaname", "comment",
+    KEY_META, "convert/metaname", "comment/#0",
     KEY_META, "convert/append", "next",
     KEY_END),
-keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1/flags",
+keyNew ("system:/elektra/modules/augeas/config/needs/glob/get/#1/flags",
     KEY_VALUE, "", /* disable the path matching mode */
     KEY_END)
 // ...

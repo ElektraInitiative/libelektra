@@ -17,6 +17,11 @@ This is useful for runtimes or libraries that cannot be reinitialized in the sam
 after they have been used.
 It is also useful for plugins which cause memory leaks to be isolated in an own process.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 Mount this plugin and specify the plugin configuration parameter `plugin` to a plugin that exists on
@@ -30,18 +35,18 @@ The `pluginprocess` library, which is only available on POSIX environments curre
 ## Examples
 
 ```sh
-# Mount the dump plugin a separate process via the process plugin to `user/examples/process`
-sudo kdb mount config.file user/tests/process process plugin=dump
+# Mount the dump plugin a separate process via the process plugin to `user:/examples/process`
+sudo kdb mount config.file user:/tests/process process plugin=dump
 
-kdb set user/tests/process/key value
-#> Create a new key user/tests/process/key with string "value"
+kdb set user:/tests/process/key value
+#> Create a new key user:/tests/process/key with string "value"
 
-kdb get user/tests/process/key
+kdb get user:/tests/process/key
 #> value
 
 # Undo modifications
-kdb rm -r user/tests/process
-sudo kdb umount user/tests/process
+kdb rm -r user:/tests/process
+sudo kdb umount user:/tests/process
 ```
 
 ## Limitations

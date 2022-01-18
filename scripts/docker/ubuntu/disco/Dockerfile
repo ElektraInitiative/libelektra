@@ -8,6 +8,7 @@ RUN apt-get update && apt-get -y install \
         cmake \
         curl \
         ed \
+        flex \
         git \
         googletest \
         libantlr4-runtime-dev \
@@ -22,7 +23,11 @@ RUN apt-get update && apt-get -y install \
         python3-dev \
         ruby-dev \
         valgrind \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/usr/src/googletest

@@ -12,7 +12,7 @@ To sum up, besides system configuration, users have their own key
 databases that can override the settings according to their preferences.
 
 Thus when a key starts with `/` such cascading will automatically
-performed.
+be performed.
 
 ## SPEC
 
@@ -35,7 +35,7 @@ They can be used like this:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb meta-set spec/test override/#0 /overrides/test
+sudo kdb meta-set spec:/test override/#0 /overrides/test
 ```
 
 ## CASCADING

@@ -60,8 +60,8 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 		test_params=$(cat "$test_folder/$test_name.params")
 
 		cascading_parent="$MOUNTPOINT/gen/$template/$test_name"
-		spec_parent="spec$cascading_parent"
-		user_parent="user$cascading_parent"
+		spec_parent="spec:$cascading_parent"
+		user_parent="user:$cascading_parent"
 
 		echo "running test $test_name with parent key $spec_parent"
 

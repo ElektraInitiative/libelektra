@@ -60,14 +60,25 @@ foreach (plugin ${RESOLVERS})
 
 		set (SOURCES resolver.h resolver.c filename.c)
 
+		if (plugin MATCHES "resolver_fm_hpu_b")
+			set (HAS_COMPONENT "libelektra${SO_VERSION}")
+		else ()
+			set (HAS_COMPONENT "libelektra${SO_VERSION}-extra")
+		endif ()
+
 		add_plugin (
 			${plugin}
 			SOURCES ${SOURCES}
 			LINK_LIBRARIES ${FURTHER_LIBRARIES}
 			COMPILE_DEFINITIONS
-				ELEKTRA_VARIANT_BASE=\"${variant_base}\" ELEKTRA_VARIANT_USER=\"${variant_user}\"
-				ELEKTRA_VARIANT_SYSTEM=\"${variant_system}\" ELEKTRA_VARIANT=${variant} ELEKTRA_PLUGIN_NAME=\"${plugin}\"
-				${FURTHER_DEFINITIONS})
+				ELEKTRA_VARIANT_BASE=\"${variant_base}\"
+				ELEKTRA_VARIANT_USER=\"${variant_user}\"
+				ELEKTRA_VARIANT_SYSTEM=\"${variant_system}\"
+				ELEKTRA_VARIANT=${variant}
+				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
+				${FURTHER_DEFINITIONS}
+				COMPONENT
+				"${HAS_COMPONENT}")
 
 		if (variant MATCHES "fm_hpu_b")
 			add_plugintest (

@@ -1,0 +1,100 @@
+<header id="top">
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header col-md-3">
+                <a ui-sref="main.home">
+                  <img alt="{{ 'APP.GLOBAL.TITLE' | translate}}"
+                  src="assets/img/logo.svg"
+                  class="navbar-brand-logo navbar-brand"
+                  ui-sref="main.home"/>
+                </a>
+            </div>
+            <div class="navbar-left col-md-6"  style="text-align:center;margin-top:10px;">
+                <div style="clear: both;width: 100%;">
+                    <input style="width: 100%" id="searchboxdocsearch" type="text" class="form-control focus-logo-blue"
+                    placeholder="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}" >
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <nav class="navbar navbar-default navbar-second" style="margin-top:-5px;">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li ng-class="{active: $state.includes('main.home')}">
+                        <a ui-sref="main.home">{{ 'APP.NAV.BUTTON.MAIN.HOME' | translate }}</a>
+                    </li>
+                    <li ng-class="{active: $state.includes('main.news')}">
+                        <a ui-sref="main.news">{{ 'APP.NAV.BUTTON.MAIN.NEWS' | translate }}</a>
+                    </li>
+                    <li ng-repeat="entry in menu"
+                        ng-class="{active: $state.includes('main.dyn.' + entry.ref), dropdown: entry.type === 'submenu'}"
+                        ng-attr-uib-dropdown="{{ entry.type === 'submenu' && '' || undefined }}">
+                        <a ng-if="entry.type === 'listfiles'" ui-sref="{{ 'main.dyn.' + entry.ref}}">{{ entry.name}}</a>
+                        <a ng-if="entry.type === 'link'" ng-href="{{ entry.options.path}}" target="_blank" rel="noopener noreferrer">
+                            <i class="fa fa-external-link"></i> {{ entry.name}}
+                        </a>
+                        <a ng-if="entry.type === 'submenu'" href="#" uib-dropdown-toggle>
+                            {{ entry.name}} <span class="caret"></span>
+                        </a>
+                        <ul ng-if="entry.type === 'submenu'" uib-dropdown-menu>
+                            <li ng-repeat="subentry in entry.children">
+                                <a ng-if="subentry.type === 'listfiles'" ui-sref="{{ 'main.dyn.' + subentry.ref}}">{{ subentry.name}}</a>
+                                <a ng-if="subentry.type === 'link'" ng-href="{{ subentry.options.path}}" target="_blank" rel="noopener noreferrer">
+                                    <i class="fa fa-external-link"></i> {{ subentry.name}}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section id="main-section">
+    <div class="container">
+
+        <div ui-view></div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div ncy-breadcrumb></div>
+        <p class="text-right copyright">
+            <span>
+                {{ 'APP.GLOBAL.FOOTER.LABEL.LASTUPDATE' | translate:builddate }}
+            </span>
+            <span class="md-ml-10 md-mr-10">
+                &diams;
+            </span>
+            <span>
+                <a href="news/feed.rss" type="application/atom+xml" target="_self"
+                   class="label label-warning rss-icon">
+                    <i class="fa fa-rss"></i>
+                </a>
+            </span>
+            <span class="md-ml-10 md-mr-10">
+                &diams;
+            </span>
+            <span>
+                <a href="https://github.com/ElektraInitiative/libelektra/issues/new">
+                    {{ 'APP.GLOBAL.FOOTER.LINK.TITLE.FEEDBACK' | translate }}
+                </a>
+            </span>
+            <span class="md-ml-10 md-mr-10">
+                &diams;
+            </span>
+            <span date-now="yyyy"></span>
+            <a href="/devgettingstarted/license">&copy;</a>
+            <a href="/developers/authors">Elektra Initiative</a>
+            <a class="scroll-to-top" ng-click="ctrl.scrollToTop()"
+               title="{{ 'APP.GLOBAL.FOOTER.LINK.TITLE.SCROLLTOTOP' | translate }}">
+                <i class="fa fa-arrow-up"></i>
+            </a>
+        </p>
+    </div>
+</footer>

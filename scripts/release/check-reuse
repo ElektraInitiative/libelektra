@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for i in $(grep -oP "(?<=Files: |\s{7})([^\*].*/.*)" .reuse/dep5); do
+	echo -n "$i "
+	eval ls -d "$i" 2> /dev/null | wc -l
+done

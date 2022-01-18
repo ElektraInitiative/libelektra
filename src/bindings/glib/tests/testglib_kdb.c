@@ -10,7 +10,7 @@
 #include <glib-object.h>
 #include <tests.h>
 
-#define TEST_NS "user/tests/glib"
+#define TEST_NS "user:/tests/glib"
 
 static void test_open_close (void)
 {
@@ -18,17 +18,17 @@ static void test_open_close (void)
 	GElektraKey * error = gelektra_key_new (NULL);
 
 	/* open */
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 	succeed_if (kdb != NULL, "unable to open kdb");
-	succeed_if (!gelektra_key_isvalid (error), "unexpected error");
+	succeed_if (!gelektra_key_hasmeta (error, "error"), "unexpected error");
 
 	/* close */
 	gelektra_kdb_close (kdb, error);
-	succeed_if (!gelektra_key_isvalid (error), "unexpected error");
+	succeed_if (!gelektra_key_hasmeta (error, "error"), "unexpected error");
 	g_object_unref (kdb);
 
 	/* open + close */
-	KDB * ckdb = kdbOpen (error->key);
+	KDB * ckdb = kdbOpen (NULL, error->key);
 	kdb = gelektra_kdb_make (ckdb);
 	succeed_if (kdb->handle == ckdb, "handle not wrapped");
 	g_object_unref (kdb);
@@ -46,15 +46,15 @@ static void test_get_set (void)
 	/*** set ***/
 	/* open kdb */
 	error = gelektra_key_new (NULL);
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 
 	ks = gelektra_keyset_new (100, GELEKTRA_KEYSET_END);
 
-	/* fetch keys below user/MyApp */
+	/* fetch keys below user:/MyApp */
 	base = gelektra_key_new (TEST_NS, GELEKTRA_KEY_END);
 	gelektra_kdb_get (kdb, ks, base);
 
-	/* search for user/MyApp/mykey */
+	/* search for user:/MyApp/mykey */
 	key = gelektra_keyset_lookup_byname (ks, TEST_NS "/mykey", GELEKTRA_KDB_O_NONE);
 	if (!key)
 	{
@@ -78,7 +78,7 @@ static void test_get_set (void)
 
 	/*** get ***/
 	/* open kdb again */
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 
 	/* check if the value is stored */
 	gelektra_keyset_clear (ks);
@@ -91,7 +91,7 @@ static void test_get_set (void)
 	g_object_unref (kdb);
 
 	/*** cleanup ***/
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 	gelektra_keyset_clear (ks);
 	gelektra_kdb_get (kdb, ks, base);
 	gelektra_keyset_cut (ks, base);

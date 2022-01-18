@@ -118,7 +118,7 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet 
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew (0, KEY_END);
+		errorKey = keyNew ("/", KEY_END);
 	}
 
 	Plugin * plugin = elektraPluginOpen (elektraPluginName, modules, config, errorKey);
@@ -167,7 +167,7 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 	Plugin * plugin = handle->plugin;
 	KeySet * exports = NULL;
 
-	Key * exportParent = keyNew ("system/elektra/modules", KEY_END);
+	Key * exportParent = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (exportParent, plugin->name);
 
 	if (handle->exports)
@@ -324,7 +324,7 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew (0, KEY_END);
+		errorKey = keyNew ("/", KEY_END);
 	}
 	elektraPluginClose (handle->plugin, errorKey);
 	if (errorKeyMissing)
@@ -377,7 +377,7 @@ void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDef
 }
 
 /**
- * Call a deferable function on a plugin handle.
+ * Call a deferrable function on a plugin handle.
  * If the function is exported by the plugin it is directly invoked,
  * if the plugin supports deferring calls, the call is deferred.
  * If both is possible (function is exported and deferred calls are supported),

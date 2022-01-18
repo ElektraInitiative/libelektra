@@ -1,126 +1,80 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "ELEKTRA\-KEY\-NAMES" "7" "October 2019" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "ELEKTRA\-KEY\-NAMES" "7" "November 2021" ""
 .SH "NAME"
 \fBelektra\-key\-names\fR \- the names of keys
-.
 .P
 Every \fBKey\fR object with the same name will receive the very same information from the global key database\. The name locates a \fBunique key\fR in the key database\. Key names are always absolute; so no parent or other information is needed\. That makes a \fBKey\fR self\-contained and independent both in memory and storage\.
-.
 .P
 Every key name starts with a namespace \fIelektra\-namespaces\.md\fR, for example \fBuser\fR or \fBsystem\fR\. These prefixes spawn key hierarchies each\.
-.
 .P
 The shared \fIsystem configuration\fR is identical for every user\. It contains, for example, information about system daemons, network related preferences and default settings for software\. These keys are created when software is installed, and removed when software is purged\. Only the administrator can change system configuration\.
-.
 .P
 Examples of valid system key names:
-.
 .IP "" 4
-.
 .nf
-
-system
-system/hosts/hostname
-system/sw/apache/httpd/#0/current/num_processes
-system/sw/apps/abc/#0/current/default\-setting
-.
+system:/
+system:/hosts/hostname
+system:/sw/apache/httpd/#0/current/num_processes
+system:/sw/apps/abc/#0/current/default\-setting
 .fi
-.
 .IP "" 0
-.
 .P
-user configuration is empty until the user changes some preferences\. User configuration affects only a single user\. The user\'s settings can contain information about the user\'s environment, preferred applications and anything not useful for the rest of the system\.
-.
+user configuration is empty until the user changes some preferences\. User configuration affects only a single user\. The user's settings can contain information about the user's environment, preferred applications and anything not useful for the rest of the system\.
 .P
 Examples of valid user key names:
-.
 .IP "" 4
-.
 .nf
-
-user
-user/env/#1/LD_LIBRARY_PATH
-user/sw/apps/abc/#0/current/default\-setting
-user/sw/kde/kicker/#0/current/preferred_applications/#0
-.
+user:/
+user:/env/#1/LD_LIBRARY_PATH
+user:/sw/apps/abc/#0/current/default\-setting
+user:/sw/kde/kicker/#0/current/preferred_applications/#0
 .fi
-.
 .IP "" 0
-.
 .P
-The slash (\fB/\fR) separates key names and structures them hierarchically\. If two keys start with the same key names, but one key name continues after a slash, this key is \fBbelow\fR the other and is called a \fIsubkey\fR\. For example \fBuser/sw/apps/abc/current\fR is a subkey of the key \fBuser/sw/apps\fR\. The key is not directly below but, for example, \fBuser/sw/apps/abc\fR is\. Various functions in \fBkeytest\fR implement ways to determine the relationship between two keys\.
-.
+The slash (\fB/\fR) separates key names and structures them hierarchically\. If two keys start with the same key names, but one key name continues after a slash, this key is \fBbelow\fR the other and is called a \fIsubkey\fR\. For example \fBuser:/sw/apps/abc/current\fR is a subkey of the key \fBuser:/sw/apps\fR\. The key is not directly below but, for example, \fBuser:/sw/apps/abc\fR is\. Various functions in \fBkeytest\fR implement ways to determine the relationship between two keys\.
 .SH "Conventions"
 For computers Elektra would work without any conventions, because it is possible to rename keys with plugins and link and transform any key\-value to any other key\-value\. Obviously, for humans such chaos would be confusing and harder to use, thus we encourage everyone to use the following conventions:
-.
 .SS "Arrays"
-If you want to denote an array, i\.e\. many unnamed subkeys, use the syntax \fB#0\fR, \.\.\., \fB#_10\fR\. Then simple string comparisons will yield correct results and the names are still very compact\.
-.
+If you want to denote an array, i\.e\. many unnamed subkeys, use the syntax \fB#0\fR, \|\.\|\.\|\., \fB#_10\fR\. Then simple string comparisons will yield correct results and the names are still very compact\.
 .SS "Application Base Name"
 As decided here \fIhttps://github\.com/ElektraInitiative/libelektra/issues/302\fR, the key names of software\-applications should always start with:
-.
 .IP "" 4
-.
 .nf
-
 /sw/org/myapp/#0/current/name/full
-.
 .fi
-.
 .IP "" 0
-.
 .IP "\(bu" 4
 \fBsw\fR is for software, \fBhw\fR for hardware, \fBelektra\fR for internals
-.
 .IP "\(bu" 4
 \fBorg\fR is a URL/organization name to avoid name clashes with other application names\. Use only one part of the URL/organization, so e\.g\. \fBkde\fR is enough\.
-.
 .IP "\(bu" 4
 \fBmyapp\fR is the name of the most specific component that has its own configuration
-.
 .IP "\(bu" 4
 \fB#0\fR is the major version number of the configuration (to be incremented if you need to introduce incompatible changes)\. (Rationale: it is possible to start the old version of the app, using \fB/sw/org/myapp/#X\fR, where \fBX\fR refers to the previous version number\.)
-.
 .IP "\(bu" 4
 \fBcurrent\fR is the profile to be used\. This is needed by administrators if they want to start up multiple applications with different configurations\.
-.
 .IP "" 0
-.
 .SH "Further Recommendations"
-.
 .IP "\(bu" 4
-Avoid to have your applications root right under @p system or @p user\. (rationale: it would make the hierarchy too flat\.) See \fBApplication Base Name\fR above\.
-.
+Avoid having your applications root right under @p system or @p user\. (rationale: it would make the hierarchy too flat\.) See \fBApplication Base Name\fR above\.
 .IP "\(bu" 4
 Avoid the usage of characters other than \fB/\fR, a\-z and 0\-9\. (rationale: it would allow too many similar, confusing names\.) (exceptions: if the user or a technology, decide about parts of the key name, this restriction does not apply, e\.g\. if the wlan essid is used as part of the key name)
-.
 .IP "\(bu" 4
 The only way to separate names is using \fB/\fR (no A\-Z, no \fB_\fR, no whitespaces) (rationale: there are many different opinions about this topic and having a choice which separator to choose will certainly lead to inconsistencies)
-.
 .IP "\(bu" 4
-It is suggested to make your application look for default keys under \fB/sw/org/myapp/#/%/\fR where \fB#\fR is a major version number, e\.g\. \fB#3\fR for the 4th version and \fB%\fR is a profile (\fB%\fR for default profile)\. This way, from a sysadmin perspective, it will be possible to copy the \fBsystem/sw/myapp/#3/%/\fR tree to something like \fBsystem/sw/myapp/#3/old/\fR and keep system clean and organized\.
-.
+It is suggested to make your application look for default keys under \fB/sw/org/myapp/#/%/\fR where \fB#\fR is a major version number, e\.g\. \fB#3\fR for the 4th version and \fB%\fR is a profile (\fB%\fR for default profile)\. This way, from a sysadmin perspective, it will be possible to copy the \fBsystem:/sw/myapp/#3/%/\fR tree to something like \fBsystem:/sw/myapp/#3/old/\fR and keep system clean and organized\.
 .IP "" 0
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 see application integration tutorial \fI/doc/tutorials/application\-integration\.md\fR
-.
 .IP "\(bu" 4
 see namespaces tutorial \fI/doc/tutorials/namespaces\.md\fR
-.
 .IP "\(bu" 4
-key name source file \fI/src/libs/elektra/keyname\.c\fR or its rendered API documentation \fIhttps://doc\.libelektra\.org/api/latest/html/group__keyname\.html#details\fR
-.
+key name source file \fI/src/libs/elektra/keyname\.c\fR or its rendered API documentation \fIhttps://doc\.libelektra\.org/api/master/html/group__keyname\.html#details\fR
 .IP "\(bu" 4
 elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR
-.
 .IP "\(bu" 4
 elektra\-cascading(7) \fIelektra\-cascading\.md\fR
-.
 .IP "" 0
 

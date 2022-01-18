@@ -23,7 +23,7 @@ GenTemplate::GenTemplate (std::string templateBaseName, std::vector<std::string>
 : _templateBaseName (std::move (templateBaseName)), _allParts (std::move (allParts)), _parts (), _partials (std::move (partials)),
   _parameters (), _requiredParameters ()
 {
-	std::for_each (parameters.begin (), parameters.end (), [this](const std::pair<std::string, bool> & p) {
+	std::for_each (parameters.begin (), parameters.end (), [this] (const std::pair<std::string, bool> & p) {
 		_parameters[p.first] = "";
 		if (p.second)
 		{
@@ -38,7 +38,7 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	using namespace kainjow::mustache;
 
 	auto missingParam = std::find_if (_requiredParameters.begin (), _requiredParameters.end (),
-					  [this](const std::string & p) { return getParameter (p).empty (); });
+					  [this] (const std::string & p) { return getParameter (p).empty (); });
 
 	if (missingParam != _requiredParameters.end ())
 	{
@@ -61,7 +61,7 @@ void GenTemplate::render (std::ostream & output, const std::string & outputName,
 	}
 
 	auto tmpl = mustache (kdbgenTemplates.at (name));
-	std::function<std::string (const std::string &)> escapeFunction = [this](const std::string & str) {
+	std::function<std::string (const std::string &)> escapeFunction = [this] (const std::string & str) {
 		return this->escapeFunction (str);
 	};
 	tmpl.set_custom_escape (escapeFunction);
@@ -107,7 +107,7 @@ void GenTemplate::setParameter (const std::string & name, const std::string & va
 void GenTemplate::clearParameters ()
 {
 	std::for_each (_parameters.begin (), _parameters.end (),
-		       [this](const std::pair<std::string, std::string> & param) { _parameters[param.first] = ""; });
+		       [this] (const std::pair<std::string, std::string> & param) { _parameters[param.first] = ""; });
 }
 
 std::vector<std::string> GenTemplate::getActualParts () const
@@ -133,7 +133,7 @@ std::unordered_map<std::string, kainjow::mustache::partial> GenTemplate::getPart
 
 	for (const auto & partialFile : _partials)
 	{
-		partials["partial." + partialFile] = [&]() {
+		partials["partial." + partialFile] = [&] () {
 			auto name = _templateBaseName + "/" + partialFile;
 			std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 			return kdbgenTemplates.at (name);
@@ -162,7 +162,7 @@ const GenTemplate * GenTemplateList::getTemplate (const std::string & name,
 	auto tmpl = search->second.get ();
 	tmpl->clearParameters ();
 	std::for_each (parameters.begin (), parameters.end (),
-		       [tmpl](const std::pair<std::string, std::string> & param) { tmpl->setParameter (param.first, param.second); });
+		       [tmpl] (const std::pair<std::string, std::string> & param) { tmpl->setParameter (param.first, param.second); });
 	tmpl->loadParts ();
 	return tmpl;
 }

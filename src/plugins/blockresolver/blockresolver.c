@@ -11,7 +11,6 @@
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -190,7 +189,7 @@ static long getBlockEnd (FILE * fp, const char * identifier, long offset)
 		{
 			if (!strcmp (buffer + strlen (identifier) + 1, "stop\n"))
 			{
-				position = ftell (fp) - strlen (buffer);
+				position = ftell (fp) - (long) strlen (buffer);
 				break;
 			}
 			else
@@ -206,7 +205,7 @@ static const char * getBlock (FILE * fp, const long startPos, const long endPos)
 {
 	fseek (fp, startPos, SEEK_SET);
 	if (endPos <= startPos) return NULL;
-	size_t blockSize = endPos - startPos;
+	size_t blockSize = (size_t) (endPos - startPos);
 	if (blockSize <= 0) return NULL;
 	char * block = elektraMalloc (blockSize + 1);
 	if (!block) return NULL;
@@ -222,20 +221,21 @@ static const char * getBlock (FILE * fp, const long startPos, const long endPos)
 
 int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/blockresolver"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/blockresolver"))
 	{
 		KeySet * contract = ksNew (
 			30,
-			keyNew ("system/elektra/modules/blockresolver", KEY_VALUE, "blockresolver plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/close", KEY_FUNC, elektraBlockresolverClose, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver", KEY_VALUE, "blockresolver plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports", KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/close", KEY_FUNC, elektraBlockresolverClose, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile,
+				KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -294,7 +294,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
-	size_t blockSize = data->endPos - data->startPos;
+	size_t blockSize = (size_t) (data->endPos - data->startPos);
 	fwrite (block, 1, blockSize, fout);
 	retVal = 1;
 	++(data->getPass);
@@ -355,11 +355,11 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Failed to extract block before %s\n", data->identifier);
 			goto SET_CLEANUP;
 		}
-		fwrite (block, 1, data->startPos, fout);
+		fwrite (block, 1, (size_t) data->startPos, fout);
 		fseek (fin, 0, SEEK_END);
 		elektraFree (block);
 		block = NULL;
-		size_t blockSize = ftell (fin) - data->endPos;
+		size_t blockSize = (size_t) (ftell (fin) - data->endPos);
 		block = (char *) getBlock (fin, data->endPos, ftell (fin));
 		if (!block)
 		{

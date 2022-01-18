@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # @tags mount
 
@@ -6,8 +6,8 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-MOUNTPOINTS=$(kdb complete system/elektra/mountpoints/ --max-depth=1)
-MOUNTPOINTS=$(echo "$MOUNTPOINTS" | sed 's:system/elektra/mountpoints/::' | sed 's:\\/:/:g')
+MOUNTPOINTS=$(kdb complete system:/elektra/mountpoints/ --max-depth=1)
+MOUNTPOINTS=$(echo "$MOUNTPOINTS" | sed 's#system:/elektra/mountpoints/##' | sed 's:\\/:/:g')
 FILES=
 OLD_IFS="$IFS"
 IFS="$(printf '\n+')"

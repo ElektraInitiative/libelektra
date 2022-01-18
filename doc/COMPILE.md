@@ -5,28 +5,30 @@
 For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
 [git](https://git-scm.com/), a C99 compiler and essential build tools
 (make and some standard Unix tools; alternatively ninja and
-clang are also supported but not described here):
+clang are also supported but not described here). Those can be installed as follows:
 
-```sh
-sudo apt-get install cmake git build-essential
-```
+- on APT-based systems (Ubuntu, Debian):
 
-Or on RPM based systems (CentOS):
+  ```sh
+  sudo apt-get install cmake git build-essential
+  ```
 
-```sh
-sudo dnf install -y cmake git gcc-c++ make
-```
+- on RPM-based systems (CentOS, Red Hat Enterprise Linux, Oracle Linux):
 
-Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+  ```sh
+  sudo yum install -y cmake git gcc-c++ make
+  ```
 
-```sh
-brew install cmake git
-```
+- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake and git in order to complete the basic requirements:
+
+  ```sh
+  brew install cmake git
+  ```
 
 ## Quick Guide
 
 Run the following commands to compile Elektra with non-experimental
-parts where your system happens to fulfil the dependences (continue
+parts where your system happens to fulfill the dependencies (continue
 reading the rest of the document for details about these steps):
 
 ```sh
@@ -40,56 +42,77 @@ cmake --build build -- -j5
 cmake --build build --target run_nokdbtests # optional: run tests
 ```
 
-The last line only runs tests not writing into your system.
+The last line only runs tests without writing onto your system.
 See [TESTING](/doc/TESTING.md) for how to run more tests.
 Afterwards you can use `sudo make install && sudo ldconfig` to install Elektra.
 See [INSTALL](/doc/INSTALL.md) for more information about
 installation of self-compiled Elektra (such as how to uninstall it).
 
-## Optional Dependences
+## Optional Dependencies
 
 > Note: You do not need to install the dependencies listed here.
 > If they are not available, some of the functionality gets disabled automatically.
 > The core of Elektra never depends on other libraries.
 
-To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
+### Documentation dependencies
 
-```sh
-apt-get install doxygen graphviz ruby-ronn
-```
+To build the documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md). These can be installed as follows:
 
-Or on RPM based systems:
+- on APT-based systems (Ubuntu, Debian):
 
-```sh
-sudo yum install -y doxygen docbook-style-xsl graphviz ruby
-gem install ronn
-```
+  ```sh
+  apt-get install doxygen graphviz
+  gem install ronn-ng -v 0.10.1.pre1
+  ```
 
-Or on macOS Sierra using brew:
+- on RPM-based systems (CentOS, Red Hat Enterprise Linux, Oracle Linux):
 
-```sh
-brew install doxygen graphviz
-brew install ruby # in case ruby is not already installed
-gem install ronn
-```
+  ```sh
+  sudo yum install -y doxygen docbook-style-xsl graphviz ruby
+  gem install ronn-ng -v 0.10.1.pre1
+  ```
 
-To build PDF documentation you need `pdflatex` with
+- on macOS using brew:
 
-```sh
-apt-get install pdflatex texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra
-```
+  ```sh
+  brew install doxygen graphviz
+  brew install ruby # in case ruby is not already installed
+  gem install ronn-ng -v 0.10.1.pre1
+  ```
 
-For the plugins, please refer to the README.md of the respective plugin.
-For example, for CentOS:
+To build PDF documentation you need `pdflatex`.
+You can install it as follows:
 
-```sh
-sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
-libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
-java-1.8.0-openjdk-devel jna ruby-devel byacc
-```
+- on APT-based systems (Ubuntu, Debian):
 
-For the Debian package, please refer to debian/control (in the debian
-branch).
+  ```sh
+  apt-get install pdflatex \
+          texlive-fonts-recommended texlive-fonts-extra \
+          texlive-latex-recommended texlive-latex-extra \
+          texlive-math-extra
+  ```
+
+### Plugin dependencies
+
+For dependencies of plugins, please refer to the [README.md](https://www.libelektra.org/plugins/readme) of the respective plugin.
+
+A small subset of build dependencies to get you started:
+
+- on RPM-based systems (CentOS, Red Hat Enterprise Linux, Oracle Linux):
+
+  ```sh
+  sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+  libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
+  java-1.8.0-openjdk-devel jna ruby-devel byacc
+  ```
+
+- on APT-based systems (Ubuntu, Debian):
+
+  ```sh
+  sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
+  libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
+  dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
+  ```
 
 ## Preparation
 
@@ -130,25 +153,18 @@ For a list of compilers we test with have a look at:
 - our [Docker containers](/scripts/docker) orchestrated
   by our [Jenkinsfile](/scripts/jenkins/Jenkinsfile) being built
   on [our build server](https://build.libelektra.org/)
-- [Travis](/.travis.yml)
 - [Cirrus](/.cirrus.yml)
+- [GitHub Actions](/.github/workflows)
 
-Here is a list of compilers used by developers or build servers:
+Here is an additional list of compilers used by developers (for build servers, see links above):
 
-| Compiler | Version                     | Target              |
-| -------- | --------------------------- | ------------------- |
-| gcc      | gcc (Debian 6.3.0-18) 6.3.0 | amd64               |
-| gcc      | gcc 4.8                     | amd64               |
-| gcc      | gcc 4.9                     | amd64               |
-| clang    | 3.8                         | x86_64-pc-linux-gnu |
-| clang    | 5.0                         | x86_64-pc-linux-gnu |
-| clang    | 6.0                         | x86_64-pc-linux-gnu |
-| clang    | 8.0                         | macOS               |
-| gcc      | 9.1                         | macOS               |
-| gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
-| mingw    | 6.0.0-3                     | amd64               |
-| clang    | 6.0.0                       | freebsd 11          |
-| clang    | 6.0.1                       | freebsd 12          |
+| Compiler | Version                                           | Target                    |
+| -------- | ------------------------------------------------- | ------------------------- |
+| gcc      | gcc (Debian 8.3.0-6) 8.3.0                        | x86_64-linux-gnu          |
+| gcc      | gcc (GCC) 11.1.1 20210531 (Red Hat 11.1.1-3)      | x86_64-redhat-linux       |
+| gcc      | gcc-11 (Homebrew GCC 11.1.0_1) 11.1.0             | x86_64-apple-darwin20     |
+| clang    | clang version 12.0.0 (Fedora 12.0.0-0.3.rc1.fc34) | x86_64-unknown-linux-gnu  |
+| clang    | Apple clang version 12.0.5 (clang-1205.0.22.9)    | x86_64-apple-darwin20.5.0 |
 
 > (¹) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD
@@ -185,7 +201,7 @@ same fashion for `BINDINGS` and `TOOLS`.
 
 Read about available plugins [here](/src/plugins/).
 
-Because the core of elektra is minimal, plugins are needed to
+Because the core of Elektra is minimal, plugins are needed to
 actually read and write to configuration files (_storage plugins_),
 commit the changes (_resolver plugins_, also takes care about how
 the configuration files are named) and also do many other
@@ -223,7 +239,7 @@ To add also experimental plugins, you can use:
 -DPLUGINS=ALL
 ```
 
-> Note that plugins are excluded automatically if dependences are not satisfied.
+> Note that plugins are only built if their dependencies are satisfied.
 > So make sure to install all dependencies you need before you run `cmake`.
 > For example, to include the plugin `yajl`, make sure `libyajl-dev` is installed.
 
@@ -300,7 +316,7 @@ The resolver for example distinguish between 3 different kind of flags:
 -DPLUGINS="resolver_baseflags_userflags_systemflags"
 ```
 
-Following baseflags are available:
+The following base flags are available:
 
 - `c` for debugging conflicts
 - `f` for enabling file locking
@@ -434,9 +450,9 @@ cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 
 #### BUILD_DOCUMENTATION
 
-Build documentation with doxygen (API) and ronn (man pages).
+Build documentation with doxygen (API) and ronn-ng (man pages).
 
-If ronn is not found, already compiled man pages will be
+If ronn-ng is not found, already compiled man pages will be
 used instead.
 
 > Note: Turning off building the documentation, also turns off
@@ -460,7 +476,7 @@ Continue reading [testing](/doc/TESTING.md) for more information about testing.
 #### `CMAKE_INSTALL_PREFIX`
 
 `CMAKE_INSTALL_PREFIX` defaults to `/usr/local`.
-So by default most files will installed below `/usr/local`.
+So by default most files will be installed below `/usr/local`.
 Exceptions to this are files handled by [INSTALL_SYSTEM_FILES](#install_system_files).
 
 Edit that cache entry to change that behavior.
@@ -507,7 +523,7 @@ If both options are provided the value passed via CMake takes precedence.
 
 [google test]: https://github.com/google/googletest
 
-It is recommended that you browse through all of the options using `ccmake`.
+It is recommended that you browse through all the options using `ccmake`.
 Afterwards press `c` again (maybe multiple times until all variables are
 resolved) and then `g` to generate. Finally press `e` to exit.
 
@@ -540,7 +556,7 @@ Currently the installed system files are as following:
 
 #### `ENABLE_OPTIMIZATIONS`
 
-In order to keep the binaries as small as possible this flag allows to trade memory for speed.
+In order to keep the binaries as small as possible this flag allows trading memory for speed.
 
 ## Building
 
@@ -587,7 +603,7 @@ For Unix if you have nCurses install you can run `ccmake` to set important optio
 running cmake like to enable debug symbol.
 
 **Note 3:**
-for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
+For Gentoo it's recommended to emerge sys-apps/lsb-release to name the package
 right even thou not required.
 
 ## Maintainer's Guide
@@ -621,7 +637,7 @@ using `TARGET_PLUGIN_FOLDER` and is `elektra` by default. You might
 want to encode Elektra’s `SOVERSION` into the folders name, if you want
 different major versions of Elektra be co-installable.
 
-Elektra’s use case for `RPATH` is considered acceptable, so we recommend to use it
+Elektra’s use case for `RPATH` is considered acceptable, so we recommend using it
 because:
 
 - plugins do not clutter the library folder nor the `ld.so.cache`
@@ -678,10 +694,10 @@ sudo make install
 cd ..
 ```
 
-Also, no ronn was available, thus you need to do:
+Also, no ronn-ng was available, thus you need to do:
 
 ```sh
-gem install ronn
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 ### Cross Compiling

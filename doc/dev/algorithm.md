@@ -147,39 +147,39 @@ following keys. (A) and (B) indicate from which backend the
 key comes from.
 
 ```
-user/sw/generator/akey (A)
-user/sw/generator/dir (A)
-user/sw/generator/dir/outside1 (A)
-user/sw/generator/dir/outside2 (A)
+user:/sw/generator/akey (A)
+user:/sw/generator/dir (A)
+user:/sw/generator/dir/outside1 (A)
+user:/sw/generator/dir/outside2 (A)
 ```
 
 It will still
 return these keys even if the plugin is not responsible for some
 of them anymore. This can happen if another backend B is mounted
-to `user/sw/generator/dir`. In the example it yields the
+to `user:/sw/generator/dir`. In the example it yields the
 following keys:
 
 ```
-user/sw/generator/dir (B)
-user/sw/generator/dir/new (B)
-user/sw/generator/dir/outside1 (B)
-user/sw/generator/outside (B)
+user:/sw/generator/dir (B)
+user:/sw/generator/dir/new (B)
+user:/sw/generator/dir/outside1 (B)
+user:/sw/generator/outside (B)
 ```
 
 In this situation `kdbGet()` is responsible to pop all three keys at,
-and below, `user/sw/generator/dir` of backend (A) and the key
-`user/sw/generator/outside` of backend (B). The user will get the
+and below, `user:/sw/generator/dir` of backend (A) and the key
+`user:/sw/generator/outside` of backend (B). The user will get the
 resulting key set:
 
 ```
-user/sw/generator/akey (A)
-user/sw/generator/dir (B)
-user/sw/generator/dir/new (B)
-user/sw/generator/dir/outside1 (B)
+user:/sw/generator/akey (A)
+user:/sw/generator/dir (B)
+user:/sw/generator/dir/new (B)
+user:/sw/generator/dir/outside1 (B)
 ```
 
 Note that the key exactly at the mount point comes from the backend mounted
-at `user/sw/generator/dir`.
+at `user:/sw/generator/dir`.
 
 ### Sequence
 
@@ -187,8 +187,8 @@ at `user/sw/generator/dir`.
 tree. In this object, `kdbOpen()` will append a list of all backends
 available. A specific `kdbGet()` request usually includes only a part
 of the configuration. For example, the user is only interested in
-keys below `user/sw/apps/userapp`. All backends that cannot
-contribute to configuration below `user/sw/apps/userapp` will be
+keys below `user:/sw/apps/userapp`. All backends that cannot
+contribute to configuration below `user:/sw/apps/userapp` will be
 omitted for that request. To achieve this, parts of the `Split` object
 are filtered out. After this step we know the list of backends involved.
 The `Split` object allocates a key set for each of these backends.
@@ -234,7 +234,7 @@ algorithm finally finishes.
 ### Updating Configuration
 
 The user can call `kdbGet()` often even if the configuration or parts
-of it are already up to date. This can happen when applications reread
+of it are already up-to-date. This can happen when applications reread
 configuration in some events. Examples are signals (SIGHUP is
 the signal used for that on Unix systems. It is sent when the program's
 controlling terminal is closed. Daemons do not have a terminal so
@@ -259,12 +259,12 @@ work is done.
 
 Because Elektra provides self-contained configuration, `kdbOpen()`
 has to retrieve settings in the _bootstrapping_ process below
-`system/elektra` as explained in `bootstrapping`.
+`system:/elektra` as explained in `bootstrapping`.
 Because of the new way to keep track of removed keys, the internally
 executed `kdbGet()` creates a problem. Without countermeasures even
 the first `kdbGet()` of a user requesting the configuration below
-`system/elektra` fails, because the resolver finds out that the
-configuration is already up to date. The configuration delivered by the
+`system:/elektra` fails, because the resolver finds out that the
+configuration is already up-to-date. The configuration delivered by the
 user is empty at this point. As a result, the empty configuration will
 be appointed and returned to the user.
 
@@ -303,8 +303,8 @@ int kdbSet(KDB *handle, KeySet *returned, Key * parentKey);
 The user passes the configuration using the `KeySet` `returned`. The key
 set will not be changed by `kdbSet()`. The `parentKey` provides a way
 to limit which part of the configuration is written out. For example,
-the `parentKey` `user/sw/org/app/#0/current` will induce `kdbSet()` to
-only modify the key databases below `user/sw/org/app` even
+the `parentKey` `user:/sw/org/app/#0/current` will induce `kdbSet()` to
+only modify the key databases below `user:/sw/org/app` even
 if the `KeySet` `returned` also contains more configuration. Note that
 all backends with no keys in `returned` but that are below `parentKey`
 will completely wipe out their key database. The `KDB` handle contains
@@ -377,7 +377,7 @@ during executions of `kdbGet()` and `kdbSet()` another program has changed
 the key database. In order not to lose any data, `kdbSet()` fails without
 doing anything. In conflict situations Elektra leaves the programmer
 no choice. The programmer has to retrieve the configuration using
-`kdbGet()` again to be up to date with the key database. Afterwards it
+`kdbGet()` again to be up-to-date with the key database. Afterwards it
 is up to the application to decide which configuration to use. In this
 situation it is the best to ask the user, by showing him the description
 and reason of the error, how to continue:
@@ -385,7 +385,7 @@ and reason of the error, how to continue:
 1. Save the configuration again. The changes of the other program
    will be lost in this case.
 2. The key database can also be left unchanged as the other program
-   wrote it. After using `kdbGet()` the application is already up to date
+   wrote it. After using `kdbGet()` the application is already up-to-date
    with the new configuration. All configuration changes the user made
    before will be lost.
 3. The application can try to merge the key sets to get the best

@@ -29,16 +29,17 @@ static KeySet * elektraContract (void)
 {
 	return ksNew (
 		30,
-		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME, KEY_VALUE, "hexnumber plugin waits for your orders",
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME, KEY_VALUE, "hexnumber plugin waits for your orders",
 			KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports", KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraHexnumberGet, KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraHexnumberSet, KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/close", KEY_FUNC, elektraHexnumberClose, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports", KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraHexnumberGet, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraHexnumberSet, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/close", KEY_FUNC, elektraHexnumberClose,
+			KEY_END),
 
 #include ELEKTRA_README
 
-		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END);
 }
 
@@ -301,7 +302,7 @@ int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
  */
 int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME))
 	{
 		KeySet * contract = elektraContract ();
 		ksAppend (returned, contract);
@@ -326,13 +327,13 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * cur;
 	ksRewind (returned);
 
-	KeySet * defaultIntegerTypes = ksNew (7, keyNew ("system/accept/type/#0", KEY_VALUE, "byte", KEY_END),
-					      keyNew ("system/accept/type/#1", KEY_VALUE, "short", KEY_END),
-					      keyNew ("system/accept/type/#2", KEY_VALUE, "long", KEY_END),
-					      keyNew ("system/accept/type/#3", KEY_VALUE, "long_long", KEY_END),
-					      keyNew ("system/accept/type/#4", KEY_VALUE, "unsigned_short", KEY_END),
-					      keyNew ("system/accept/type/#5", KEY_VALUE, "unsigned_long", KEY_END),
-					      keyNew ("system/accept/type/#6", KEY_VALUE, "unsigned_long_long", KEY_END), KS_END);
+	KeySet * defaultIntegerTypes = ksNew (7, keyNew ("system:/accept/type/#0", KEY_VALUE, "byte", KEY_END),
+					      keyNew ("system:/accept/type/#1", KEY_VALUE, "short", KEY_END),
+					      keyNew ("system:/accept/type/#2", KEY_VALUE, "long", KEY_END),
+					      keyNew ("system:/accept/type/#3", KEY_VALUE, "long_long", KEY_END),
+					      keyNew ("system:/accept/type/#4", KEY_VALUE, "unsigned_short", KEY_END),
+					      keyNew ("system:/accept/type/#5", KEY_VALUE, "unsigned_long", KEY_END),
+					      keyNew ("system:/accept/type/#6", KEY_VALUE, "unsigned_long_long", KEY_END), KS_END);
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	while ((cur = ksNext (returned)) != NULL)

@@ -18,9 +18,9 @@
  */
 
 #include <kdb.h>
-#include <kdbhelper.h>       // elektraFree
-#include <kdbio.h>	   // I/O binding functions (elektraIo*)
-#include <kdbio/uv.h>	// I/O binding constructor for uv (elektraIoUvNew)
+#include <kdbhelper.h>	     // elektraFree
+#include <kdbio.h>	     // I/O binding functions (elektraIo*)
+#include <kdbio/uv.h>	     // I/O binding constructor for uv (elektraIoUvNew)
 #include <kdbnotification.h> // notification functions
 
 #include <uv.h> // uv functions
@@ -95,28 +95,24 @@ int main (void)
 
 	KeySet * config = ksNew (20, KS_END);
 
+	uv_loop_t * loop = uv_default_loop ();
+	ElektraIoInterface * binding = elektraIoUvNew (loop);
+
+	KeySet * contract = ksNew (0, KS_END);
+	elektraIoContract (contract, binding);
+	elektraNotificationContract (contract);
+
 	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (key);
+	KDB * kdb = kdbOpen (contract, key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
 		return -1;
 	}
 
-	uv_loop_t * loop = uv_default_loop ();
-	ElektraIoInterface * binding = elektraIoUvNew (loop);
-	elektraIoSetBinding (kdb, binding);
-
-	int result = elektraNotificationOpen (kdb);
-	if (!result)
-	{
-		printf ("could not init notification, aborting\n");
-		return -1;
-	}
-
 	int value = 0;
 	Key * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", KEY_END);
-	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
+	int result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
 		printf ("could not register variable, aborting\n");
@@ -159,7 +155,6 @@ int main (void)
 	resetTerminalColor ();
 	elektraIoBindingRemoveTimer (timer);
 	elektraFree (timer);
-	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
 
 	elektraIoBindingCleanup (binding);

@@ -11,6 +11,9 @@
 
 #ifndef USER_DEFINED_EXCEPTIONS
 
+#include <stdexcept>
+#include <string>
+
 namespace kdb
 {
 
@@ -74,11 +77,20 @@ public:
 
 class KeyInvalidName : public KeyException
 {
+private:
+	std::string msg;
+
 public:
+	KeyInvalidName (const std::string & name, const std::string & more)
+	{
+		msg = "Invalid Keyname: keyname needs to start with /, meta:/, default:/, spec:/, proc:/, dir:/, user:/ or system:/ "
+		      "or maybe you tried to change a key that is already in a KeySet. Name was: '" +
+		      name + "' " + more;
+	}
+
 	virtual const char * what () const throw ()
 	{
-		return "Invalid Keyname: keyname needs to start with /, spec/, proc/, dir/, user/ or system/ "
-		       "or maybe you tried to change a key that is already in a KeySet.";
+		return msg.c_str ();
 	}
 };
 } // namespace kdb

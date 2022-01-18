@@ -14,7 +14,7 @@ int main (void)
 {
 
 	//! [Basic keyMeta]
-	Key * key = keyNew ("user/test/key", KEY_END);
+	Key * key = keyNew ("user:/test/key", KEY_END);
 
 	keySetMeta (key, "meta1", "value1");
 	keySetMeta (key, "meta2", "value2");

@@ -596,17 +596,18 @@ void * elektraIoIdleGetData (ElektraIoIdleOperation * idleOp);
 ElektraIoIdleCallback elektraIoIdleGetCallback (ElektraIoIdleOperation * idleOp);
 
 /**
- * Set I/O binding for asynchronous I/O operations for KDB instance.
+ * Creates a contract for use with kdbOpen() that sets up an I/O binding.
  *
- * All global plugins that export a "setIoBinding" function get the binding
- * passed through this function.
+ * When you call kdbOpen() with this contract, the KDB instance will use
+ * @p ioBinding as its I/O binding.
  *
- * @ingroup kdbio
+ * @param contract  The keyset into which the contract is written.
+ * @param ioBinding The ioBinding to use.
  *
- * @param  kdb       KDB instance
- * @param  ioBinding I/O binding
+ * @retval -1 if @p contract or @p ioBinding are NULL
+ * @retval  0 on success
  */
-void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding);
+int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding);
 
 /**
  * Get I/O binding for asynchronous I/O operations for KDB instance.

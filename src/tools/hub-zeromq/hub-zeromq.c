@@ -43,11 +43,11 @@ int main (void)
 	KeySet * config = ksNew (2, KS_END);
 
 	Key * parentKey = keyNew ("/sw/elektra/hub-zeromq/#0/current", KEY_END);
-	Key * configXSubEndpoint = keyDup (parentKey);
+	Key * configXSubEndpoint = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (configXSubEndpoint, "bind_xsub");
-	Key * configXPubEndpoint = keyDup (parentKey);
+	Key * configXPubEndpoint = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (configXPubEndpoint, "bind_xpub");
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB. aborting\n");

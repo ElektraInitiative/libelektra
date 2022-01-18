@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc configurable limited
+- infos/status = unittest nodep libc configurable limited
 - infos/description = parses CSV files
 
 ## Introduction
@@ -61,120 +61,70 @@ kdb mount test.csv /csv csvstorage \
 The example below shows how you can use this plugin to read and write CSV files.
 
 ```sh
-# Mount plugin to `user/tests/csv`
+# Mount plugin to `user:/tests/csv`
 # We use the column names from the first line of the
 # config file as key names
-sudo kdb mount config.csv user/tests/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
+sudo kdb mount config.csv user:/tests/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
 # Add some data
-printf 'band,album\n'                           >> `kdb file user/tests/csv`
-printf 'Converge,All We Love We Leave Behind\n' >> `kdb file user/tests/csv`
-printf 'mewithoutYou,Pale Horses\n'             >> `kdb file user/tests/csv`
-printf 'Kate Tempest,Everybody Down\n'          >> `kdb file user/tests/csv`
+printf 'band,album\n'                           >> `kdb file user:/tests/csv`
+printf 'Converge,All We Love We Leave Behind\n' >> `kdb file user:/tests/csv`
+printf 'mewithoutYou,Pale Horses\n'             >> `kdb file user:/tests/csv`
+printf 'Kate Tempest,Everybody Down\n'          >> `kdb file user:/tests/csv`
 
-kdb ls user/tests/csv
-#> user/tests/csv/#0
-#> user/tests/csv/#0/album
-#> user/tests/csv/#0/band
-#> user/tests/csv/#1
-#> user/tests/csv/#1/album
-#> user/tests/csv/#1/band
-#> user/tests/csv/#2
-#> user/tests/csv/#2/album
-#> user/tests/csv/#2/band
-#> user/tests/csv/#3
-#> user/tests/csv/#3/album
-#> user/tests/csv/#3/band
+kdb ls user:/tests/csv
+#> user:/tests/csv/#0
+#> user:/tests/csv/#0/album
+#> user:/tests/csv/#0/band
+#> user:/tests/csv/#1
+#> user:/tests/csv/#1/album
+#> user:/tests/csv/#1/band
+#> user:/tests/csv/#2
+#> user:/tests/csv/#2/album
+#> user:/tests/csv/#2/band
+#> user:/tests/csv/#3
+#> user:/tests/csv/#3/album
+#> user:/tests/csv/#3/band
 
 # The first array element contains the column names
-kdb get user/tests/csv/#0/band
+kdb get user:/tests/csv/#0/band
 #> band
-kdb get user/tests/csv/#0/album
+kdb get user:/tests/csv/#0/album
 #> album
 
 # Retrieve data from the last entry
-kdb get user/tests/csv/#3/album
+kdb get user:/tests/csv/#3/album
 #> Everybody Down
-kdb get user/tests/csv/#3/band
+kdb get user:/tests/csv/#3/band
 #> Kate Tempest
 
 # Change an existing item
-kdb set user/tests/csv/#1/album 'You Fail Me'
+kdb set user:/tests/csv/#1/album 'You Fail Me'
 # Retrieve the new item
-kdb get user/tests/csv/#1/album
+kdb get user:/tests/csv/#1/album
 #> You Fail Me
 
 # The plugin stores the index of the last column
 # in all of the parent keys.
-kdb get user/tests/csv/#0
+kdb get user:/tests/csv/#0
 #> #1
-kdb get user/tests/csv/#1
+kdb get user:/tests/csv/#1
 #> #1
-kdb get user/tests/csv/#2
+kdb get user:/tests/csv/#2
 #> #1
-kdb get user/tests/csv/#3
+kdb get user:/tests/csv/#3
 #> #1
 
 # The configuration file reflects the changes
-kdb file user/tests/csv | xargs cat
+kdb file user:/tests/csv | xargs cat
 #> album,band
 #> You Fail Me,Converge
 #> Pale Horses,mewithoutYou
 #> Everybody Down,Kate Tempest
 
 # Undo changes to the key database
-kdb rm -r user/tests/csv
-sudo kdb umount user/tests/csv
-```
-
-# Directory Values
-
-By default the `csvstorage` plugin saves the name of the last column in each parent key. If you want to store a different value, you can do
-so using the [Directory Value](../directoryvalue/) plugin.
-
-```sh
-# Mount plugin together with `directoryvalue` to `user/tests/csv`
-kdb mount config.csv user/tests/csv csvstorage directoryvalue
-
-# Add some data
-printf 'Schindler’s List,1993,8.9\n'       >> `kdb file user/tests/csv`
-printf 'Léon: The Professional,1994,8.5\n' >> `kdb file user/tests/csv`
-
-# Retrieve data
-kdb ls user/tests/csv
-#> user/tests/csv/#0
-#> user/tests/csv/#0/#0
-#> user/tests/csv/#0/#1
-#> user/tests/csv/#0/#2
-#> user/tests/csv/#1
-#> user/tests/csv/#1/#0
-#> user/tests/csv/#1/#1
-#> user/tests/csv/#1/#2
-
-kdb get user/tests/csv/#0/#0
-#> Schindler’s List
-kdb get user/tests/csv/#1/#2
-#> 8.5
-
-# The plugin stores the index of the last column in the parent keys
-kdb get user/tests/csv/#0
-#> #2
-kdb get user/tests/csv/#1
-#> #2
-
-# Since we use the Directory Value plugin we can also change the data in a parent key
-kdb set user/tests/csv/#0 'Movie – Year – Rating'
-kdb set user/tests/csv/#1 'It’s a Me.'
-
-# Retrieve data stored in parent keys
-kdb get user/tests/csv/#0
-#> Movie – Year – Rating
-kdb get user/tests/csv/#1
-#> It’s a Me.
-
-# Undo changes to the key database
-kdb rm -r user/tests/csv
-sudo kdb umount user/tests/csv
+kdb rm -r user:/tests/csv
+sudo kdb umount user:/tests/csv
 ```
 
 # Column as index
@@ -187,14 +137,14 @@ printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /tests/csv`
 printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /tests/csv`
 
 kdb ls /tests/csv
-#> user/tests/csv/tt0108052
-#> user/tests/csv/tt0108052/IMDB
-#> user/tests/csv/tt0108052/Title
-#> user/tests/csv/tt0108052/Year
-#> user/tests/csv/tt0110413
-#> user/tests/csv/tt0110413/IMDB
-#> user/tests/csv/tt0110413/Title
-#> user/tests/csv/tt0110413/Year
+#> user:/tests/csv/tt0108052
+#> user:/tests/csv/tt0108052/IMDB
+#> user:/tests/csv/tt0108052/Title
+#> user:/tests/csv/tt0108052/Year
+#> user:/tests/csv/tt0110413
+#> user:/tests/csv/tt0110413/IMDB
+#> user:/tests/csv/tt0110413/Title
+#> user:/tests/csv/tt0110413/Year
 
 kdb get /tests/csv/tt0108052/Title
 #> Schindler´s List
@@ -230,6 +180,35 @@ sudo kdb umount /tests/csv
 
 ```
 
+## Array metakey
+
+```sh
+kdb mount config.csv user:/tests/csvstorage csvstorage
+
+kdb set user:/tests/csvstorage/test test
+
+printf 'one,two,three\nfour,five,six\n' > `kdb file user:/tests/csvstorage`
+
+kdb ls user:/tests/csvstorage
+#> user:/tests/csvstorage/#0
+#> user:/tests/csvstorage/#0/#0
+#> user:/tests/csvstorage/#0/#1
+#> user:/tests/csvstorage/#0/#2
+#> user:/tests/csvstorage/#1
+#> user:/tests/csvstorage/#1/#0
+#> user:/tests/csvstorage/#1/#1
+#> user:/tests/csvstorage/#1/#2
+
+kdb meta-get user:/tests/csvstorage/#0 array
+#> #2
+
+kdb rm -r user:/tests/csvstorage
+
+kdb umount user:/tests/csvstorage
+```
+
 ## Limitations
 
 - Does not work on file streams (e.g. `kdb import` without file)
+- When using csvstorage for exporting, all parent keys must be present
+  (see https://issues.libelektra.org/2304)

@@ -81,7 +81,13 @@ static int Python_AppendToSysPath (const char * path)
 
 	PyObject * sysPath = PySys_GetObject ((char *) "path");
 	PyObject * pyPath = PyUnicode_FromString (path);
-	PyList_Append (sysPath, pyPath);
+
+	if (PyList_Append (sysPath, pyPath) == -1)
+	{
+		Py_DECREF (pyPath);
+		return 0;
+	}
+
 	Py_DECREF (pyPath);
 	return 1;
 }
@@ -265,6 +271,10 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		const char * mname = keyString (ksLookupByName (elektraPluginGetConfig (handle), "/python/path", 0));
 		if (!Python_AppendToSysPath (mname))
 		{
+			if (!mname)
+			{
+				mname = "<nullptr>";
+			}
 			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Unable to extend sys.path with user-defined /python/path '%s'", mname);
 			goto error;
 		}
@@ -291,6 +301,10 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		const char * dname = dirname (tmpScript);
 		if (!Python_AppendToSysPath (dname))
 		{
+			if (!dname)
+			{
+				dname = "<nullptr>";
+			}
 			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Unable to extend sys.path with script dirname '%s'", dname);
 			elektraFree (tmpScript);
 			goto error;
@@ -374,7 +388,7 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 
 int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
-#define _MODULE_CONFIG_PATH "system/elektra/modules/" PYTHON_PLUGIN_NAME_STR
+#define _MODULE_CONFIG_PATH "system:/elektra/modules/" PYTHON_PLUGIN_NAME_STR
 	if (!strcmp (keyName (parentKey), _MODULE_CONFIG_PATH))
 	{
 		KeySet * n;

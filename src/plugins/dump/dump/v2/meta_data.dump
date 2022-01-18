@@ -1,0 +1,14 @@
+kdbOpen 2
+$key string 0 4
+
+root
+$meta 4 9
+meta
+metavalue
+$key string 3 0
+key
+
+$copymeta 0 4
+
+meta
+$end

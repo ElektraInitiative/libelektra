@@ -82,7 +82,14 @@ def cleanupDocker(targetNode) {
         stage(taskname) {
             node(targetNode) {
                 dockerImages().each {
-                    retainNewestImages(it, 5)
+                    if (it ==~ /^hub.libelektra.org.*-release$/) {
+                        // keep latest release and master image
+                        retainNewestImages(it, 5, '', 'master\\|release')
+                        retainNewestImages(it, 1, 'release', 'none')
+                        retainNewestImages(it, 1, 'master', 'none')
+                    } else {
+                        retainNewestImages(it, 5)
+                    }
                 }
                 sh "docker system prune -f"
             }
@@ -108,15 +115,18 @@ def cleanupDockerRegistry(targetNode) {
             node(targetNode) {
                 withCredentials([usernameColonPassword(credentialsId:
                 'docker-hub-elektra-jenkins', variable: 'AUTH')]) {
-                    // Remove all but the latest 15 versions of each image in
+                    // Remove all but the latest 10 versions of each image in
                     // the registry
                     docker.image('anoxis/registry-cli')
                           .run('--rm', '-l $AUTH -r https://hub.libelektra.org --delete')
+                    // remove all images with Elektra packages installed in the registry
+                    docker.image('anoxis/registry-cli')
+                          .run('--rm', '-l $AUTH -r https://hub.libelektra.org --delete-all --images-like ".*-installed$"')
                 }
                 def frontendFolder = "${env.HOME}/compose/frontend"
                 dir(frontendFolder){
                     // Run garbage collect on the registry
-                    sh 'docker-compose run --rm registry bin/registry garbage-collect /etc/docker/registry/config.yml'
+                    sh 'COMPOSE_INTERACTIVE_NO_CLI=1 docker-compose run -T --rm registry bin/registry garbage-collect /etc/docker/registry/config.yml'
                 }
             }
         }
@@ -125,13 +135,15 @@ def cleanupDockerRegistry(targetNode) {
 
 def generateFileCleanupStages() {
     def tasks = [:]
-    tasks << cleanupCoverage()
+    tasks << cleanupDoc('coverage/')
+    tasks << cleanupDoc('api/pr/')
+    tasks << cleanupAptlyDb()
     return tasks
 }
 
-def cleanupCoverage() {
+def cleanupDoc(path) {
     def cleanupCommand = """
-find /srv/libelektra/coverage/ \
+find /srv/libelektra/${path} \
     -mindepth 1 \
     -maxdepth 1 \
     -type d \
@@ -139,17 +151,13 @@ find /srv/libelektra/coverage/ \
     -print0 \
     | xargs -r -0 rm -R
 """
-    def taskname = "cleanup-coverage"
-    return [(taskname): {
-        stage(taskname) {
-            node("master") {
-                sshExec(
-                    'doc.libelektra.org',
-                    cleanupCommand
-                )
-            }
-        }
-    }]
+    def taskname = "cleanup-${path}"
+    return runCommandOnCommunity(taskname, cleanupCommand)
+}
+
+def cleanupAptlyDb() {
+    def cleanupCommand = 'aptly db cleanup -verbose'
+    return runCommandOnCommunity('cleanupAptlyDb', cleanupCommand)
 }
 
 /***********/
@@ -169,15 +177,29 @@ def sshExec(remoteConfig, command) {
     ])
 }
 
+def runCommandOnCommunity(taskname, cleanupCommand) {
+    return [(taskname): {
+        stage(taskname) {
+            node("master") {
+                sshExec(
+                    'doc.libelektra.org',
+                    cleanupCommand
+                )
+            }
+        }
+    }]
+}
+
 def dockerImages() {
     def s = /docker images --format "{{.Repository}}" | awk '!seen[$0]++'/
     def r = sh returnStdout: true, script: s
     return r.tokenize('\n')
 }
 
-def retainNewestImages(image, n) {
+def retainNewestImages(image, n, withTag='', excludeTag='none') {
   sh """docker images ${image} --format \"{{.Repository}} {{.Tag}}\" \
-| grep -v \"none\" \
+| grep -v \"${excludeTag}\" \
+| grep \"${withTag}\" \
 | sort -k 2,2 \
 | head -n -${n} \
 | awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' \

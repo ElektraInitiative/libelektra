@@ -13,6 +13,7 @@
 #include <kdb.hpp>
 
 #include <fstream>
+#include <kdbease.h>
 #include <kdbplugin.h>
 #include <modules.hpp>
 
@@ -28,14 +29,14 @@ int GenCommand::execute (Cmdline const & cl)
 	}
 
 	auto templateName = cl.arguments[0];
-	auto parentKey = cl.arguments[1];
+	auto parentKeyName = cl.arguments[1];
 	auto outputName = cl.arguments[2];
 
 	std::unordered_map<std::string, std::string> parameters;
 	if (cl.arguments.size () > 3)
 	{
 		std::transform (cl.arguments.begin () + 3, cl.arguments.end (), std::inserter (parameters, parameters.end ()),
-				[](const std::string & param) {
+				[] (const std::string & param) {
 					auto search = param.find ('=');
 					if (search == std::string::npos)
 					{
@@ -56,7 +57,7 @@ int GenCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("couldn't find template '" + templateName + "'");
 	}
 
-	if (parentKey == "-")
+	if (parentKeyName == "-")
 	{
 		for (const auto & part : tmpl->getParts ())
 		{
@@ -65,11 +66,30 @@ int GenCommand::execute (Cmdline const & cl)
 		return 0;
 	}
 
+	/**
+	 * The parentKeyForTokenCalculation will be used to find the spec keys within the ks.
+	 * Because the token does not take into account metadata from other namespaces, it is only concerned with the spec: namespace.
+	 * Changes to the specification that was done in other namespaces is not the goal of the token mechanism.
+	 *
+	 * To really only take into account spec keys, the namespace of parentKeyForTokenCalculation is important!
+	 * There are 2 cases:
+	 *
+	 * 1. Keys loaded via plugin from file: Here, all keys within the ks will be in the cascading namespace.
+	 * Also, the ks will only contain keys from that file.
+	 * Thus, the parentKeyForTokenCalculation must be in cascading namespace as well.
+	 *
+	 * 2. Keys loaded from KDB: Here, the ks will contain keys from all namespaces (user:, spec: , ...)
+	 * For token calculation, only keys from the spec namespace are relevant.
+	 * Thus, the parentKeyForTokenCalculation must be in spec namespace.
+	 */
+	Key parentKeyForTokenCalculation (parentKeyName, KEY_END);
+
 	KeySet ks;
 
+	// When no inputFile was specified, load specification keys from the KDB.
 	if (cl.inputFile.empty ())
 	{
-		Key getKey (parentKey, KEY_END);
+		Key getKey (parentKeyName, KEY_END);
 
 		KDB kdb;
 		kdb.get (ks, getKey);
@@ -81,7 +101,11 @@ int GenCommand::execute (Cmdline const & cl)
 		{
 			throw CommandAbortException ("Error loading from KDB");
 		}
+
+		// Set namespace to spec (see comments above for details)
+		parentKeyForTokenCalculation.setNamespace (kdb::ElektraNamespace::SPEC);
 	}
+	// Otherwise, don't use any keys from KDB. Instead load the specification from the specified file via the specified plugin.
 	else
 	{
 		auto pos = cl.inputFile.find ('=');
@@ -101,7 +125,7 @@ int GenCommand::execute (Cmdline const & cl)
 			throw invalid_argument ("plugin '" + pluginName + "' given to -F/--input-file could not be loaded");
 		}
 
-		Key getKey (parentKey, KEY_VALUE, file.c_str (), KEY_END);
+		Key getKey (parentKeyName, KEY_VALUE, file.c_str (), KEY_END);
 		if (plugin->get (ks, getKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			printWarnings (cerr, getKey, cl.verbose, cl.debug);
@@ -111,12 +135,12 @@ int GenCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	auto inputKs = ks.cut (Key (parentKey, KEY_END));
+	auto inputKs = ks.cut (Key (parentKeyForTokenCalculation.getName (), KEY_END));
 
 	for (const auto & part : tmpl->getParts ())
 	{
 		std::ofstream output (outputName + part);
-		tmpl->render (output, outputName, part, inputKs, parentKey);
+		tmpl->render (output, outputName, part, inputKs, parentKeyForTokenCalculation.getName ());
 	}
 
 	return 0;

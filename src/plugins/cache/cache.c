@@ -24,8 +24,8 @@
 #include <fcntl.h>     // access()
 #include <ftw.h>       // nftw()
 #include <stdint.h>    // nftw()
-#include <stdio.h>     // rename(), sprintf()
-#include <stdlib.h>    // nftw()
+#include <stdio.h>     // rename(), snprintf()
+#include <stdlib.h>    // nftw(), getenv()
 #include <string.h>    // nftw()
 #include <sys/stat.h>  // elektraMkdirParents
 #include <sys/time.h>  // gettimeofday()
@@ -52,9 +52,32 @@ struct _cacheHandle
 	Plugin * cacheStorage;
 };
 
+static char * elektraStrConcat (const char * a, const char * b)
+{
+	size_t len = strlen (a) + strlen (b) + 1;
+	char * ret = elektraMalloc (len);
+	ret = strcpy (ret, a);
+	ret = strcat (ret, b);
+	return ret;
+}
+
 static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * errorKey)
 {
-	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
+	KeySet * resolverConfig;
+	char * cacheDir = getenv ("XDG_CACHE_HOME");
+	if (cacheDir)
+	{
+		cacheDir = elektraStrConcat (cacheDir, "/elektra");
+		ch->cachePath = keyNew ("system:/elektracache", KEY_END);
+		resolverConfig = ksNew (5, keyNew ("system:/path", KEY_VALUE, cacheDir, KEY_END), KS_END);
+		elektraFree (cacheDir);
+	}
+	else
+	{
+		ch->cachePath = keyNew ("user:/elektracache", KEY_END);
+		resolverConfig = ksNew (5, keyNew ("user:/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
+	}
+
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
 	if (!ch->resolver)
 	{
@@ -146,30 +169,21 @@ static int elektraMkdirParents (const char * pathname)
 	return 0;
 }
 
-static char * elektraStrConcat (const char * a, const char * b)
-{
-	size_t len = strlen (a) + strlen (b) + 1;
-	char * ret = elektraMalloc (len);
-	ret = strcpy (ret, a);
-	ret = strcat (ret, b);
-	return ret;
-}
-
 static char * elektraGenTempFilename (char * cacheFileName)
 {
 	char * tmpFile = NULL;
-	size_t len = 0;
 	size_t tmpFilenameSize = 0;
 
 	size_t cacheFileNameSize = strlen (cacheFileName);
 	tmpFilenameSize = cacheFileNameSize + POSTFIX_SIZE;
 	tmpFile = elektraCalloc (tmpFilenameSize);
-	len = snprintf (tmpFile, cacheFileNameSize + 1, "%s", cacheFileName);
+	strncpy (tmpFile, cacheFileName, cacheFileNameSize + 1);
 
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
 	gettimeofday (&tv, 0);
-	snprintf (tmpFile + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	snprintf (tmpFile + cacheFileNameSize, tmpFilenameSize - cacheFileNameSize, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (),
+		  tv.tv_sec, tv.tv_usec);
 	return tmpFile;
 }
 
@@ -181,23 +195,23 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey, PathMode mode
 	if (mode == modeDirectory) return elektraStrDup (directory);
 
 	const char * name = keyName (parentKey);
-	const char * value = keyString (parentKey);
+	elektraNamespace ns = keyGetNamespace (parentKey);
 	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
-	if (strlen (name) != 0)
+	if (ns != KEY_NS_DEFAULT)
 	{
-		cacheFileName = elektraStrConcat (directory, "/backend/");
+		cacheFileName = elektraStrConcat (directory, "/backend");
 		char * tmp = cacheFileName;
 		cacheFileName = elektraStrConcat (cacheFileName, name);
 		elektraFree (tmp);
 	}
-	else if (elektraStrCmp (value, "default") == 0)
+	else if (elektraStrCmp (keyString (parentKey), "default") == 0)
 	{
-		cacheFileName = elektraStrConcat (directory, "/default/");
+		cacheFileName = elektraStrConcat (directory, "/default");
 	}
 	else
 	{
-		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
-		ELEKTRA_ASSERT (0 != 0, "mountpoint empty, invalid cache file name");
+		ELEKTRA_LOG_WARNING ("invalid mountpoint for caching: %s", name);
+		ELEKTRA_ASSERT (0 != 0, "invalid mountpoint for caching");
 	}
 
 	if (cacheFileName)
@@ -240,7 +254,6 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey)
 
 	ch->modules = ksNew (0, KS_END);
 	elektraModulesInit (ch->modules, 0);
-	ch->cachePath = keyNew ("user/elektracache", KEY_END);
 
 	if (resolveCacheDirectory (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	if (loadCacheStoragePlugin (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -272,17 +285,17 @@ int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/cache"))
+	if (elektraStrCmp (keyName (parentKey), "system:/elektra/modules/cache") == 0)
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/cache", KEY_VALUE, "cache plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports", KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/open", KEY_FUNC, elektraCacheOpen, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/close", KEY_FUNC, elektraCacheClose, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/get", KEY_FUNC, elektraCacheGet, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/cache", KEY_VALUE, "cache plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/open", KEY_FUNC, elektraCacheOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/close", KEY_FUNC, elektraCacheClose, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/get", KEY_FUNC, elektraCacheGet, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -298,7 +311,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	if (!elektraStrCmp (keyString (keyGetMeta (parentKey, "cache/clear")), "1"))
 	{
 		// clear all caches
-		Key * cacheFile = keyDup (parentKey);
+		Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 		char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeDirectory);
 		ELEKTRA_LOG_DEBUG ("CLEAR CACHES path: %s", cacheFileName);
 
@@ -310,7 +323,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
-	Key * cacheFile = keyDup (parentKey);
+	Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
 	ELEKTRA_LOG_DEBUG ("CACHE get cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
@@ -318,7 +331,38 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	// load cache from storage
 	keySetString (cacheFile, cacheFileName);
 	elektraFree (cacheFileName);
-	if (ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+
+	// not the whole global keyset is cached
+	// -> backup existing data
+	KeySet * global = ch->cacheStorage->global;
+	ch->cacheStorage->global = ksNew (0, KS_END);
+
+	// now we load the cache
+	int result = ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile);
+
+	// extract the cached parts from the cache result
+	Key * cacheCutpoint = keyNew ("system:/elektra/cache", KEY_END);   // internal cache data
+	Key * cachedCutpoint = keyNew ("system:/elektra/cached", KEY_END); // other data that requests caching
+
+	if (global != NULL)
+	{
+		KeySet * cut = ksCut (ch->cacheStorage->global, cacheCutpoint);
+		ksAppend (global, cut);
+		ksDel (cut);
+
+		cut = ksCut (ch->cacheStorage->global, cachedCutpoint);
+		ksAppend (global, cut);
+		ksDel (cut);
+	}
+
+	keyDel (cacheCutpoint);
+	keyDel (cachedCutpoint);
+
+	// delete the rest and restore global keyset
+	ksDel (ch->cacheStorage->global);
+	ch->cacheStorage->global = global;
+
+	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		keyDel (cacheFile);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -344,7 +388,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
-	Key * cacheFile = keyDup (parentKey);
+	Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
 	ELEKTRA_LOG_DEBUG ("CACHE set cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
@@ -355,7 +399,31 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// write cache to temp file
 	keySetString (cacheFile, tmpFile);
-	if (ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+
+	// don't cache the whole global keyset
+	Key * cacheCutpoint = keyNew ("system:/elektra/cache", KEY_END);   // internal cache data
+	Key * cachedCutpoint = keyNew ("system:/elektra/cached", KEY_END); // other data that requests caching
+
+	KeySet * global = ch->cacheStorage->global;
+
+	ch->cacheStorage->global = ksCut (global, cacheCutpoint);
+
+	KeySet * cut = ksCut (global, cachedCutpoint);
+	ksAppend (ch->cacheStorage->global, cut);
+	ksDel (cut);
+
+	keyDel (cacheCutpoint);
+	keyDel (cachedCutpoint);
+
+	// now we can store the cache
+	int result = ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile);
+
+	// restore global keyset
+	ksAppend (global, ch->cacheStorage->global);
+	ksDel (ch->cacheStorage->global);
+	ch->cacheStorage->global = global;
+
+	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		if (rename (tmpFile, cacheFileName) == -1)
 		{

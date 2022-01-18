@@ -8,10 +8,10 @@ numbers for the publicly announced versions.
 The version can also be retrieved at run-time from KDB:
 
 ```
-system/elektra/version/constants/KDB_VERSION
-system/elektra/version/constants/KDB_VERSION_MAJOR
-system/elektra/version/constants/KDB_VERSION_MINOR
-system/elektra/version/constants/KDB_VERSION_PATCH
+system:/elektra/version/constants/KDB_VERSION
+system:/elektra/version/constants/KDB_VERSION_MAJOR
+system:/elektra/version/constants/KDB_VERSION_MINOR
+system:/elektra/version/constants/KDB_VERSION_PATCH
 ```
 
 ## Scope
@@ -37,16 +37,16 @@ The version applies to following parts of Elektra:
 
 ## Behavior
 
-The following order defines the behavior of Elektra:
+The behavior of Elektra is defined by (in that order):
 
 1. [ABI](/tests/abi) test cases
 2. Non-ABI test cases (including Shell Recorder)
-3. The [API documentation](https://doc.libelektra.org/api/latest/html/)
+3. The [API documentation](https://doc.libelektra.org/api/master/html/)
 4. The [man pages](/doc/help)
 5. Tutorials (excluding Shell Recorder)
 6. Examples
 
-Any inconsistency within this artifacts within each other
+Any inconsistency within these artifacts within each other
 or with the implementation constitutes a bug.
 
 ## Compatibility
@@ -136,7 +136,7 @@ know about which bug fixes are included.
 
 The patch level might also be used to fix bugs within bindings.
 This means that applications can only introspect the patch
-level of Elektra by getting `system/elektra/version/constants/KDB_VERSION_PATCH`
+level of Elektra by getting `system:/elektra/version/constants/KDB_VERSION_PATCH`
 but not by static patch levels the binding might provide.
 This should be no problem, as the patch level is supposed
 to not change the behavior.

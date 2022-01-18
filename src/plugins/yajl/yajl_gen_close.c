@@ -8,6 +8,50 @@
 
 #include "yajl_gen.h"
 
+// TODO: use unesacped names instead
+static char * keyNameGetOneLevel (const char * name, size_t * size)
+{
+	char * real = (char *) name;
+	size_t cursor = 0;
+	int end = 0;	     // bool to check for end of level
+	int escapeCount = 0; // counter to check if / was escaped
+
+	/* skip all repeating '/' in the beginning */
+	while (*real && *real == KDB_PATH_SEPARATOR)
+	{
+		++real;
+	}
+
+	/* now see where this basename ends handling escaped chars with '\' */
+	while (real[cursor] && !end)
+	{
+		switch (real[cursor])
+		{
+		case KDB_PATH_ESCAPE:
+			++escapeCount;
+			break;
+		case KDB_PATH_SEPARATOR:
+			if (!(escapeCount % 2))
+			{
+				end = 1;
+			}
+		// fallthrough
+		default:
+			escapeCount = 0;
+		}
+		++cursor;
+	}
+
+	/* if a '/' stopped our loop, balance the counter */
+	if (end)
+	{
+		--cursor;
+	}
+
+	*size = cursor;
+	return real;
+}
+
 /**
  * @brief fixes elektraGenCloseIterate for the special handling of
  * arrays at very last position.
@@ -22,7 +66,7 @@ static void elektraGenCloseLast (yajl_gen g, const Key * key)
 
 	ELEKTRA_LOG_DEBUG ("last startup entry: \"%.*s\"", (int) last.size, last.current);
 
-	if (last.current[0] == '#' && strcmp (last.current, "###empty_array"))
+	if (last.current[0] == '#' && strcmp (last.current, "###empty_array") != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("GEN array close last");
 		yajl_gen_array_close (g);
@@ -212,34 +256,34 @@ static void elektraGenCloseFirst (yajl_gen g, const char * pcur, size_t csize, c
  *
  * @example
  *
- * cur:  user/sw/org/deeper
- * next: user/sw/org/other/deeper/below
+ * cur:  user:/sw/org/deeper
+ * next: user:/sw/org/other/deeper/below
  * -> nothing will be done ("deeper" is value)
  * [eq: 3, cur: 4, next: 6, gen: 0]
  *
- * cur:  user/sw/org/other/deeper/below
- * next: user/no
+ * cur:  user:/sw/org/other/deeper/below
+ * next: user:/no
  * -> "deeper", "other", "org" and "sw" maps will be closed ("below" is value)
  * [eq: 1, cur: 6, next: 2, gen: 4]
  *
- * cur:  user/no
- * next: user/oops/it/is/below
+ * cur:  user:/no
+ * next: user:/oops/it/is/below
  * -> nothing will be done ("no" is value)
  * [eq: 1, cur: 2, next: 5, gen: 0]
  *
- * cur:  user/oops/it/is/below
- * next: user/x/t/s/x
+ * cur:  user:/oops/it/is/below
+ * next: user:/x/t/s/x
  * -> close "is", "it", "oops"
  * [eq: 1, cur: 5, next: 5, gen: 3]
  *
  * last iteration (e.g. close down to root)
- * cur:  user/x/t/s/x
+ * cur:  user:/x/t/s/x
  * next: user
  * -> close "s", "t" and "x" maps
  * [eq: 1, cur: 5, next: 1, gen: 3]
  *
- * cur:  user/#0/1/1/1
- * next: user/#1/1/1/1
+ * cur:  user:/#0/1/1/1
+ * next: user:/#1/1/1/1
  * -> close "1", "1", "1", but not array
  * [eq: 1, cur: 5, next: 5, gen: 3]
  *

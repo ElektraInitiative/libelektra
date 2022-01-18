@@ -19,12 +19,6 @@ namespace ckdb
 extern "C" {
 #endif
 
-// this might become the new keySetName
-ssize_t elektraKeySetName (Key * key, const char * newName, option_t options);
-
-KeySet * elektraKeyGetMetaKeySet (const Key * key);
-
-Key * ksPopAtCursor (KeySet * ks, cursor_t c);
 
 #ifdef __cplusplus
 }

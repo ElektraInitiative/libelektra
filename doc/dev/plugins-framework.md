@@ -3,7 +3,7 @@
 Many component systems pass information between the various components
 by calling methods of each other. This is not the way Elektra’s plugin
 system works. Instead, the core passes a `KeySet` object in one direction
-from plugin to plugin. So they form a so called pipes-and-filter. Each of
+from plugin to plugin. So they form a so-called pipes-and-filter. Each of
 the plugins can modify the configuration or add any other information
 using metakeys. While this approach is in general less flexible, this
 information flow still allows powerful chaining. Because plugins do
@@ -71,10 +71,10 @@ and placement information makes the system reliable and robust. With that
 information, plugins can be placed into a backend in an automatic and
 secure way.
 
-`system/elektra/modules` provides for every module the information
+`system:/elektra/modules` provides for every module the information
 described above. The entry exists once a plugin of that module is loaded.
 For each module a special _module backend_ is generated and mounted at
-`system/elektra/modules/<pluginname>`. The `elektraPluginGet()` function
+`system:/elektra/modules/<pluginname>`. The `elektraPluginGet()` function
 generates this described contract on requests.
 
 For example, the ccode plugin, implements:
@@ -82,12 +82,12 @@ For example, the ccode plugin, implements:
 ```c
 int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/ccode"))
+	if (!strcmp (keyName(parentKey), "system:/elektra/modules/ccode"))
 	{
 		KeySet *contract = ksNew (30,
-			keyNew ("system/elektra/modules/ccode",
+			keyNew ("system:/elektra/modules/ccode",
 				KEY_END),
-			keyNew ("system/elektra/modules/ccode/exports",
+			keyNew ("system:/elektra/modules/ccode/exports",
 				KEY_END),
 			//...
 			KS_END);
@@ -101,8 +101,8 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 We see in the listing above that the plugin generates and returns
 the contract if, and only if, the name of the `parentKey` is
-`system/elektra/modules/ccode`. The user and the contract checker can
-access the contract of ccode below the key `system/elektra/modules/ccode`
+`system:/elektra/modules/ccode`. The user and the contract checker can
+access the contract of ccode below the key `system:/elektra/modules/ccode`
 in the same way other configuration is accessed. Note that we also
 have to `return 1` at the end of the contract to not execute the regular
 functionality of the plugin.
@@ -114,7 +114,7 @@ To export it, simply add another `exports` symbol to
 the contract:
 
 ```c
-keyNew ("system/elektra/modules/dump/exports/checkconf", KEY_FUNC,
+keyNew ("system:/elektra/modules/dump/exports/checkconf", KEY_FUNC,
 	elektraCcodeCheckConf, KEY_END);
 ```
 

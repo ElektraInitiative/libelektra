@@ -16,9 +16,14 @@ How the values are compared is specified at the beginning of the metakey using t
 `:=` is used to set key values.
 All values are interpreted as `double` floating point values.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ### Keynames
 
-Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system/key`).
+Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system:/key`).
 
 ## Examples
 
@@ -28,17 +33,17 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 Full example:
 
 ```sh
-# Backup-and-Restore:user/tests/mathcheck
+# Backup-and-Restore:user:/tests/mathcheck
 
-sudo kdb mount mathcheck.dump user/tests/mathcheck mathcheck
+sudo kdb mount mathcheck.dump user:/tests/mathcheck mathcheck
 
-kdb set user/tests/mathcheck/a 3.1
-kdb set user/tests/mathcheck/b 4.5
-kdb set user/tests/mathcheck/k 7.6
-kdb meta-set user/tests/mathcheck/k check/math "== + ../a ../b"
+kdb set user:/tests/mathcheck/a 3.1
+kdb set user:/tests/mathcheck/b 4.5
+kdb set user:/tests/mathcheck/k 7.6
+kdb meta-set user:/tests/mathcheck/k check/math "== + ../a ../b"
 
 # should fail
-kdb set user/tests/mathcheck/k 7.7
+kdb set user:/tests/mathcheck/k 7.7
 # RET:5
 # ERROR:C03200
 # Set string to "7.7"
@@ -49,34 +54,34 @@ kdb set user/tests/mathcheck/k 7.7
 To calculate values on-demand you can use:
 
 ```sh
-kdb meta-set user/tests/mathcheck/k check/math ":= + @/a @/b"
-kdb set user/tests/mathcheck/a 8.0
-kdb set user/tests/mathcheck/b 4.5
+kdb meta-set user:/tests/mathcheck/k check/math ":= + @/a @/b"
+kdb set user:/tests/mathcheck/a 8.0
+kdb set user:/tests/mathcheck/b 4.5
 
-kdb get user/tests/mathcheck/k
+kdb get user:/tests/mathcheck/k
 #> 12.5
 
-kdb set user/tests/mathcheck/a 5.5
+kdb set user:/tests/mathcheck/a 5.5
 
-kdb get user/tests/mathcheck/k
+kdb get user:/tests/mathcheck/k
 #> 10
 ```
 
 It also works with constants:
 
 ```sh
-kdb meta-set user/tests/mathcheck/k check/math ":= + ../a '5'"
-kdb set user/tests/mathcheck/a 5.5
+kdb meta-set user:/tests/mathcheck/k check/math ":= + ../a '5'"
+kdb set user:/tests/mathcheck/a 5.5
 
-kdb get user/tests/mathcheck/k
+kdb get user:/tests/mathcheck/k
 #> 10.5
 
-kdb set user/tests/mathcheck/a 8.0
+kdb set user:/tests/mathcheck/a 8.0
 
-kdb get user/tests/mathcheck/k
+kdb get user:/tests/mathcheck/k
 #> 13
 
 #cleanup
-kdb rm -r user/tests/mathcheck
-sudo kdb umount user/tests/mathcheck
+kdb rm -r user:/tests/mathcheck
+sudo kdb umount user:/tests/mathcheck
 ```

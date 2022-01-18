@@ -144,14 +144,14 @@ int base64Decode (const char * input, kdb_octet_t ** output, size_t * outputLeng
 			return -1;
 		}
 
-		(*output)[outputIndex++] = (kdb_octet_t) (byte0 << 2) + (kdb_octet_t) (byte1 >> 4);
+		(*output)[outputIndex++] = (kdb_octet_t) ((byte0 << 2) + (byte1 >> 4));
 		if (input[position + 2] != padding)
 		{
-			(*output)[outputIndex++] = (kdb_octet_t) (byte1 << 4) + (kdb_octet_t) (byte2 >> 2);
+			(*output)[outputIndex++] = (kdb_octet_t) ((byte1 << 4) + (byte2 >> 2));
 		}
 		if (input[position + 3] != padding)
 		{
-			(*output)[outputIndex++] = (kdb_octet_t) (byte2 << 6) + (kdb_octet_t) byte3;
+			(*output)[outputIndex++] = (kdb_octet_t) ((byte2 << 6) + byte3);
 		}
 	}
 	return 1;

@@ -92,11 +92,10 @@ static char * escapeString (char ** str)
  *
  * @param key the key object to work with
  * @param stream the file pointer where to send the stream
- * @param options KDB_O_SHOWINDICES, KDB_O_IGNORE_COMMENT, KDB_O_SHOWINFO
  * @retval 1 on success
  * @ingroup stream
  */
-int keyGenerate (const Key * key, FILE * stream, option_t options)
+int keyGenerate (const Key * key, FILE * stream)
 {
 	size_t n = keyGetNameSize (key);
 	if (n > 1)
@@ -131,21 +130,19 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	}
 
 	const Key * meta;
-	Key * dup = keyDup (key);
+	Key * dup = keyDup (key, KEY_CP_ALL);
 	keyRewindMeta (dup);
 	while ((meta = keyNextMeta (dup)))
 	{
-		char * metaNam = elektraStrDup (keyName (meta));
+		char * metaName = elektraStrDup (keyName (meta) + sizeof ("meta:/") - 1);
 		char * metaStr = elektraStrDup (keyString (meta));
-		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaNam), escapeString (&metaStr));
-		elektraFree (metaNam);
+		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaName), escapeString (&metaStr));
+		elektraFree (metaName);
 		elektraFree (metaStr);
 	}
 	keyDel (dup);
 
 	fprintf (stream, ", KEY_END)");
-
-	if (options == 0) return 1; /* dummy to make icc happy */
 	return 1;
 }
 
@@ -156,16 +153,12 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
  * This keyset can be used to include as c-code for
  * applikations using elektra.
  *
- * The options takes the same options as kdbGet()
- * and kdbSet().
- *
  * @param ks the keyset to work with
  * @param stream the file pointer where to send the stream
- * @param options which keys not to output
  * @retval 1 on success
  * @ingroup stream
  */
-int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
+int ksGenerate (const KeySet * ks, FILE * stream)
 {
 	Key * key;
 	KeySet * cks = ksDup (ks);
@@ -175,7 +168,7 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (cks));
 	while ((key = ksNext (cks)) != 0)
 	{
-		keyGenerate (key, stream, options);
+		keyGenerate (key, stream);
 		fprintf (stream, ",\n");
 	}
 	fprintf (stream, "\tKS_END);\n");
@@ -186,15 +179,15 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 
 int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/c"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/c"))
 	{
-		KeySet * contract = ksNew (30, keyNew ("system/elektra/modules/c", KEY_VALUE, "c plugin waits for your orders", KEY_END),
-					   keyNew ("system/elektra/modules/c/exports", KEY_END),
-					   keyNew ("system/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
-					   keyNew ("system/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
-					   keyNew ("system/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConf, KEY_END),
+		KeySet * contract = ksNew (30, keyNew ("system:/elektra/modules/c", KEY_VALUE, "c plugin waits for your orders", KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports", KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConf, KEY_END),
 #include ELEKTRA_README
-					   keyNew ("system/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+					   keyNew ("system:/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -215,7 +208,7 @@ int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 		return -1;
 	}
 
-	ksGenerate (returned, fp, 0);
+	ksGenerate (returned, fp);
 
 	fclose (fp);
 	return 1; // success

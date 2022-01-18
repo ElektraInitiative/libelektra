@@ -7,6 +7,7 @@
  */
 
 
+#include "kdblogger.h"
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -28,7 +29,6 @@
 #include "kdb.h"
 #include "kdbprivate.h"
 #include <kdbassert.h>
-
 
 /**
  * @defgroup key Key
@@ -77,19 +77,10 @@
  *
  * To just get a key object, simple do:
  *
- * @snippet keyNew.c Simple
+ * @snippet keyNew.c With Name
  *
  * keyNew() allocates memory for a key object and keyDel() cleans
  * everything up.
- *
- * We can also give an empty key name and a KEY_END tag with the same
- * effect as before:
- *
- * @snippet keyNew.c Alternative
- *
- * But we can also give the key a proper name right from the start:
- *
- * @snippet keyNew.c With Name
  *
  * If you want the key object to contain a name, value, comment and other
  * meta info read on.
@@ -98,7 +89,7 @@
  * easier to keyDup() the key.
  *
  * You can call keyNew() in many different ways depending on the attribute tags you
- * pass as parameters. Tags are represented as #keyswitch_t values, and
+ * pass as parameters. Tags are represented as #elektraKeyFlags values, and
  * tell keyNew() which Key attribute comes next.
  * The Key attribute tags are the following:
  * - ::KEY_VALUE \n
@@ -126,94 +117,34 @@
  *   So this flag toggle from keySetString() to keySetBinary().
  *   If no value (nor size) is given, it will be a NULL key.
  *   @snippet keyNew.c With Binary
- * - ::KEY_CASCADING_NAME allow the name to start with /
- *   useful for ksLookup() and kdbGet() parent/lookup keys
- * - ::KEY_META_NAME allow the name to start with arbitrary namespaces
- *   useful to compare with metakeys
  *
  *
- *
- * @deprecated The flags below are deprecated and ::KEY_META should be
- * preferred. They remain some time, however, for compatibility:
- * - ::KEY_DIR \n
- *   Define that the key is a directory rather than an ordinary key.
- *   This means its executable bits in its mode are set.
- *   But even without this option the key can have subkeys.
- *   See keySetDir().
- * - ::KEY_OWNER \n
- *   Next parameter is the owner. See keySetOwner().
- * - ::KEY_UID, ::KEY_GID \n
- *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
- *   be defined on the key.
- *   See keySetUID() and keySetGID().
- * - ::KEY_MODE \n
- *   Next parameter is taken as mode permissions (int) to the key.
- *   See keySetMode().
- *   @snippet keyNew.c With Mode
- * - ::KEY_COMMENT \n
- *   Next parameter is a comment. See keySetComment().
  *   @snippet keyNew.c With Everything
  *
+ * @pre @p name is a valid Key name
+ * @pre Variable arguments are a valid combination
+ * @post returns a new, fully initialized Key object with the valid Key name and all data given by variable arguments
  *
+ * @param name a valid name to the key (see keySetName())
  *
- * @param name a valid name to the key, or NULL to get a simple
- * 	initialized, but really empty, object
- * @see keyDel()
  * @return a pointer to a new allocated and initialized Key object.
  * @retval NULL on allocation error or if an invalid @p name was passed (see keySetName()).
- * @ingroup key
  *
+ * @since 1.0.0
+ * @ingroup key
+ * @see keyDel() for deallocating a created Key object
+ * @see keySetName() for rules about which names are considered valid
  */
 Key * keyNew (const char * name, ...)
 {
-	Key * k;
+	if (!name) return NULL;
 
-	if (!name)
-	{
-		k = elektraCalloc (sizeof (Key));
-	}
-	else
-	{
-		va_list va;
-		va_start (va, name);
-		k = keyVNew (name, va);
-		va_end (va);
-	}
+	va_list va;
+	va_start (va, name);
+	Key * k = keyVNew (name, va);
+	va_end (va);
 
 	return k;
-}
-
-
-/**
- * @internal
- */
-static int elektraSetMetaInt (Key * key, const char * meta, int value)
-{
-	char * str = 0;
-	if ((str = elektraFormat ("%d", value)) == 0)
-	{
-		return -1;
-	}
-
-	keySetMeta (key, meta, str);
-	elektraFree (str);
-	return 0;
-}
-
-// duplicate of keySetMode in meta/meta.c
-static int elektraSetMode (Key * key, mode_t mode)
-{
-	char str[MAX_LEN_INT];
-	if (!key) return -1;
-
-	if (snprintf (str, MAX_LEN_INT - 1, "%o", mode) < 0)
-	{
-		return -1;
-	}
-
-	keySetMeta (key, "mode", str);
-
-	return 0;
 }
 
 /**
@@ -224,361 +155,345 @@ static int elektraSetMode (Key * key, mode_t mode)
  */
 Key * keyVNew (const char * name, va_list va)
 {
+	if (!name) return NULL;
+
 	Key * key = elektraCalloc (sizeof (Key));
 
-	keyInit (key);
-	if (name)
+	elektraKeyFlags action = 0;
+	size_t value_size = 0;
+	void * value = 0;
+	void (*func) (void) = 0;
+	int flags = 0;
+
+	// flags that can be set via KEY_FLAGS
+	int allFlags = KEY_BINARY | KEY_LOCK_META | KEY_LOCK_NAME | KEY_LOCK_VALUE;
+
+	while ((action = va_arg (va, elektraKeyFlags)))
 	{
-		keyswitch_t action = 0;
-		size_t value_size = 0;
-		void * value = 0;
-		void (*func) (void) = 0;
-		int flags = 0;
-		char * owner = 0;
-		int mode = 0;
-		int hasMode = 0;
-
-		while ((action = va_arg (va, keyswitch_t)))
+		switch (action)
 		{
-			switch (action)
-			{
-			/* flags with an argument */
-			case KEY_SIZE:
-				value_size = va_arg (va, size_t);
-				break;
-			case KEY_VALUE:
-				value = va_arg (va, void *);
-				if (value_size && keyIsBinary (key))
-					keySetBinary (key, value, value_size);
-				else if (keyIsBinary (key))
-					keySetBinary (key, value, elektraStrLen (value));
-				else
-					keySetString (key, value);
-				break;
-			case KEY_FUNC:
-				func = va_arg (va, void (*) (void));
-				keySetBinary (key, &func, sizeof (func));
-				break;
-			case KEY_META:
-				value = va_arg (va, char *);
-				/* First parameter is name */
-				keySetMeta (key, value, va_arg (va, char *));
-				break;
+		/* flags with an argument */
+		case KEY_SIZE:
+			value_size = va_arg (va, size_t);
+			break;
+		case KEY_VALUE:
+			value = va_arg (va, void *);
+			if (value_size && keyIsBinary (key))
+				keySetBinary (key, value, value_size);
+			else if (keyIsBinary (key))
+				keySetBinary (key, value, elektraStrLen (value));
+			else
+				keySetString (key, value);
+			break;
+		case KEY_FUNC:
+			func = va_arg (va, void (*) (void));
+			keySetBinary (key, &func, sizeof (func));
+			break;
+		case KEY_META:
+			value = va_arg (va, char *);
+			/* First parameter is name */
+			keySetMeta (key, value, va_arg (va, char *));
+			break;
 
-			/* flags without an argument */
-			case KEY_FLAGS:
-				flags |= va_arg (va, int); // FALLTHROUGH
-			case KEY_BINARY:
-			case KEY_LOCK_NAME:
-			case KEY_LOCK_VALUE:
-			case KEY_LOCK_META:
-			case KEY_CASCADING_NAME:
-			case KEY_META_NAME:
-			case KEY_EMPTY_NAME:
-				if (action != KEY_FLAGS) flags |= action;
-				if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
-				break;
-
-			/* deprecated flags */
-			case KEY_NAME:
-				name = va_arg (va, char *);
-				break;
-			case KEY_OWNER:
-				owner = va_arg (va, char *);
-				break;
-			case KEY_COMMENT:
-				keySetMeta (key, "comment", va_arg (va, char *));
-				break;
-			case KEY_UID:
-				elektraSetMetaInt (key, "uid", va_arg (va, int));
-				break;
-			case KEY_GID:
-				elektraSetMetaInt (key, "gid", va_arg (va, int));
-				break;
-			case KEY_DIR:
-				mode |= KDB_DIR_MODE;
-				break;
-			case KEY_MODE:
-				hasMode = 1;
-				mode |= va_arg (va, int);
-				break;
-			case KEY_ATIME:
-				elektraSetMetaInt (key, "atime", va_arg (va, time_t));
-				break;
-			case KEY_MTIME:
-				elektraSetMetaInt (key, "mtime", va_arg (va, time_t));
-				break;
-			case KEY_CTIME:
-				elektraSetMetaInt (key, "ctime", va_arg (va, time_t));
-				break;
-
-			default:
-				ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew",
-						(kdb_unsigned_long_long_t) action);
-				break;
-			}
+		/* flags without an argument */
+		case KEY_FLAGS:
+			flags |= (va_arg (va, int) & allFlags);
+			if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
+			break;
+		case KEY_BINARY:
+			keySetMeta (key, "binary", ""); // FALLTHROUGH
+		case KEY_LOCK_NAME:
+		case KEY_LOCK_VALUE:
+		case KEY_LOCK_META:
+			flags |= action;
+			break;
+		default:
+			ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew", (kdb_unsigned_long_long_t) action);
+			break;
 		}
-
-		option_t name_options = flags & (KEY_CASCADING_NAME | KEY_META_NAME | KEY_EMPTY_NAME);
-		elektraKeySetName (key, name, name_options);
-
-		if (!hasMode && mode == KDB_DIR_MODE)
-			elektraSetMode (key, KDB_FILE_MODE | KDB_DIR_MODE);
-		else if (mode != 0)
-			elektraSetMode (key, mode);
-
-		if (owner) keySetOwner (key, owner);
-
-		(void) keyLock (key, flags);
 	}
+
+	if (keySetName (key, name) < 0)
+	{
+		ELEKTRA_LOG_WARNING ("Invalid name: %s", name);
+		elektraFree (key);
+		return NULL;
+	}
+
+	keyLock (key, flags);
 	return key;
 }
 
 /**
- * Return a duplicate of a key.
+ * Copy or clear a key.
  *
- * Memory will be allocated as needed for dynamic properties.
+ * Depending on the chosen @p flags keyCopy() only copies
+ * certain parts of @p source into @p dest.
  *
- * The new key will not be member of any KeySet and
- * will start with a new reference counter at 0. A
- * subsequent keyDel() will delete the key.
+ * * If #KEY_CP_NAME is set, the key name will be copied
+ *   from @p source to @p dest.
+ * * If #KEY_CP_META is set, the meta keys will be copied
+ *   from @p source to @p dest.
+ * * If #KEY_CP_VALUE is set, the key value will be copied
+ *   from @p source to @p dest.
+ *   Additionally, if @p source is a binary key (keyIsBinary()),
+ *   @p dest will also be
+ *   marked as binary. This means that even if #KEY_CP_META is
+ *   not set, the `binary` meta key will be copied with
+ *   #KEY_CP_VALUE.
+ * * If #KEY_CP_STRING is set, the key value will be copied
+ *   from @p source to @p dest, but only, if @p source is
+ *   _not_ a binary key (keyIsBinary()). If @p source is binary,
+ *   keyCopy() fails. If @p dest is binary, it will still be
+ *   marked as binary after the copy.
+ *   This cannot be used together with #KEY_CP_VALUE.
+ *   The main purpose of #KEY_CP_STRING is for copying _into_
+ *   known string keys. It ensure that you don't accidentally
+ *   convert string keys into binary keys.
  *
- * @code
-int f (const Key * source)
-{
-	Key * dup = keyDup (source);
-	// work with duplicate
-	keyDel (dup);
-	// everything related to dup is freed
-	// and source is unchanged
-}
- * @endcode
+ * There is also the shorthand #KEY_CP_ALL. It is equivalent
+ * to `KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META`,
+ * i.e. all key data supported by keyCopy() will be copied
+ * from @p source to @p dest.
  *
- * Like for a new key after keyNew() a subsequent ksAppendKey()
- * makes a KeySet take care of the lifecycle of the key.
- *
- * @code
-int g (const Key * source, KeySet * ks)
-{
-	Key * dup = keyDup (source);
-	// work with duplicate
-	ksAppendKey (ks, dup);
-	// ksDel(ks) will also free the duplicate
-	// source remains unchanged.
-}
- * @endcode
- *
- * Duplication of keys should be preferred to keyNew(),
- * because data like owner can be filled with a copy
- * of the key instead of asking the environment.
- * It can also be optimized in the checks, because the keyname
- * is known to be valid.
- *
- * @param source has to be an initialized source Key
- * @retval 0 failure or on NULL pointer
- * @return a fully copy of source on success
- * @see ksAppendKey(), keyDel(), keyNew()
- * @ingroup key
- */
-Key * keyDup (const Key * source)
-{
-	Key * dest = 0;
-
-	if (!source) return 0;
-
-	dest = keyNew (0, KEY_END);
-	if (!dest) return 0;
-
-	/* Copy the struct data */
-	*dest = *source;
-
-	/* get rid of properties bound to old key */
-	dest->ksReference = 0;
-	dest->flags = KEY_FLAG_SYNC;
-
-	/* prepare to set dynamic properties */
-	dest->key = dest->data.v = dest->meta = 0;
-
-	/* copy dynamic properties */
-	if (keyCopy (dest, source) == -1)
-	{
-		keyDel (dest);
-		return 0;
-	}
-
-	return dest;
-}
-
-
-/**
- * Copy or Clear a key.
- *
- * Most often you may prefer keyDup() which allocates
- * a new key and returns a duplication of another key.
- *
- * But when you need to copy into an existing key, e.g.
+ * Use this function when you need to copy into an existing key, e.g.
  * because it was passed by a pointer in a function
  * you can do so:
  *
  * @snippet keyCopy.c Basic Usage
  *
- * The reference counter will not be changed for
- * both keys. Affiliation to keysets
- * are also not affected.
+ * Most often you will want to duplicate an existing key.
+ * For this purpose the alias keyDup() exists. Calling
  *
- * The metadata will be duplicated for the destination
- * key. So it will not take much additional space, even
- * with lots of metadata.
+ * @snippet keyCopy.c Dup Key
  *
- * When you pass a NULL-pointer as source the
- * data of dest will be cleaned completely
- * (except reference counter, see keyClear()) and
- * you get a fresh dest key:
+ * is equivalent to
+ *
+ * @snippet keyCopy.c Duplicate Key
+ *
+ * The reference counter will not be changed for both keys.
+ * Affiliation to keysets are also not affected.
+ *
+ * Since metadata uses copy-on-write semantics there is only a
+ * constant memory cost to copying metadata.
+ *
+ * When you pass a NULL-pointer as @p source the pieces of @p dest
+ * specified by @p flags will be cleared.
+ *
+ * Calling `keyCopy (dest, NULL, KEY_CP_ALL)` is different from calling keyClear().
+ * The key will not be fully reset, the reference counter and internal flags
+ * will remain unchanged. Additionally, keyCopy() respects keyLock() state,
+ * while keyClear() always works.
  *
  * @snippet keyCopy.c Clear
  *
- * If you want to copy everything, except e.g. the value
- * you can use keyCopy() too:
- *
- * @snippet keyCopy.c Copy Without Value
- *
- * Restrain from coping everything yourself, because it will lead to
- * wrong metadata and is not able to copy empty or cascading names:
- *
- * @snippet keyCopy.c Individual Copy
- *
+ * @pre @p dest must be a valid Key (created with keyNew)
+ * @pre @p dest must not have read-only flags set
+ * @pre @p source must be a valid Key or NULL
+ * @invariant Key name stays valid until delete
+ * @post Value from Key source is written to Key dest
  *
  * @param dest the key which will be written to
  * @param source the key which should be copied
- *     or NULL to clean the destination key
+ *     or NULL to clear the data of @p dest
+ * @param flags specifies which parts of the key should be copied
+ *
+ * @return @p dest
+ * @retval NULL on memory allocation problems
+ * @retval NULL when a part of @p dest that should be modified (e.g. name, value) was marked read-only,
+ *              e.g. the name of @p dest will be read-only if @p dest is part of a KeySet
+ * @retval NULL when @p dest is NULL
+ * @retval NULL when both #KEY_CP_VALUE and #KEY_CP_STRING are set in @p flags
+ * @retval NULL when both #KEY_CP_STRING is set in @p flags and @p source is a binary key (keyIsBinary())
+ *
+ * @since 0.9.5
  * @ingroup key
- * @retval -1 on failure when a NULL pointer
- *     was passed for dest or a dynamic property could not
- *     be written. The content will be unmodified then.
- * @retval 0 when dest was cleaned
- * @retval 1 when source was successfully copied
- * @see keyDup() to get a duplication of a key
+ * @see keyDup() for duplicating an existing Key
  */
-int keyCopy (Key * dest, const Key * source)
+Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 {
-	if (!dest) return -1;
+	if (dest == NULL) return NULL;
 
-	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) || test_bit (dest->flags, KEY_FLAG_RO_VALUE) ||
-	    test_bit (dest->flags, KEY_FLAG_RO_META))
+	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) && test_bit (flags, KEY_CP_NAME)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_CP_VALUE)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_CP_META)) return NULL;
+
+	if (test_bit (flags, KEY_CP_STRING) && test_bit (flags, KEY_CP_VALUE)) return NULL;
+
+	if (source == NULL)
 	{
-		return -1;
+		if (test_bit (flags, KEY_CP_NAME))
+		{
+			keySetName (dest, "/");
+		}
+		if (test_bit (flags, KEY_CP_VALUE))
+		{
+			keySetRaw (dest, NULL, 0);
+		}
+		if (test_bit (flags, KEY_CP_META))
+		{
+			ksClear (dest->meta);
+		}
+		return dest;
 	}
 
-	if (!source)
-	{
-		keyClear (dest);
-		return 0;
-	}
+	if (test_bit (flags, KEY_CP_STRING) && keyIsBinary (source)) return NULL;
 
-	// remember dynamic memory to be removed
-	char * destKey = dest->key;
-	void * destData = dest->data.c;
-	KeySet * destMeta = dest->meta;
+	if (source == dest) return dest;
+
+	// remember original data of dest
+	Key orig = *dest;
 
 	// duplicate dynamic properties
-	if (source->key)
+	if (test_bit (flags, KEY_CP_NAME))
 	{
-		dest->key = elektraStrNDup (source->key, source->keySize + source->keyUSize);
-		if (!dest->key) goto memerror;
-	}
-	else
-	{
-		dest->key = 0;
+		if (source->key != NULL)
+		{
+			dest->key = elektraMemDup (source->key, source->keySize);
+			if (!dest->key) goto memerror;
+			dest->keySize = source->keySize;
+
+			ELEKTRA_ASSERT (source->ukey != NULL, "key != NULL but ukey == NULL");
+			dest->ukey = elektraMemDup (source->ukey, source->keyUSize);
+			if (!dest->ukey) goto memerror;
+			dest->keyUSize = source->keyUSize;
+		}
+		else
+		{
+			dest->key = elektraStrDup ("/");
+			dest->keySize = 2;
+
+			dest->ukey = elektraMalloc (3);
+			dest->ukey[0] = KEY_NS_CASCADING;
+			dest->ukey[1] = '\0';
+			dest->ukey[2] = '\0';
+			dest->keyUSize = 3;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_KEY);
 	}
 
-	if (source->data.v)
+	if (test_bit (flags, KEY_CP_STRING))
 	{
-		dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
-		if (!dest->data.v) goto memerror;
-	}
-	else
-	{
-		dest->data.v = 0;
+		if (source->data.v != NULL)
+		{
+			dest->data.v = elektraMemDup (source->data.v, source->dataSize);
+			if (!dest->data.v) goto memerror;
+			dest->dataSize = source->dataSize;
+
+			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
+			{
+				keySetMeta (dest, "binary", "");
+			}
+		}
+		else
+		{
+			dest->data.v = NULL;
+			dest->dataSize = 0;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
 
-	if (source->meta)
+	if (test_bit (flags, KEY_CP_VALUE))
 	{
-		dest->meta = ksDup (source->meta);
-		if (!dest->meta) goto memerror;
+		if (source->data.v != NULL)
+		{
+			dest->data.v = elektraMemDup (source->data.v, source->dataSize);
+			if (!dest->data.v) goto memerror;
+			dest->dataSize = source->dataSize;
+
+			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
+			{
+				keySetMeta (dest, "binary", "");
+			}
+		}
+		else
+		{
+			dest->data.v = NULL;
+			dest->dataSize = 0;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
-	else
+
+	if (test_bit (flags, KEY_CP_META))
 	{
-		dest->meta = 0;
+		if (source->meta != NULL)
+		{
+			dest->meta = ksDup (source->meta);
+			if (!dest->meta) goto memerror;
+		}
+		else
+		{
+			dest->meta = 0;
+		}
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
 	set_bit (dest->flags, KEY_FLAG_SYNC);
 
-	// copy sizes accordingly
-	dest->keySize = source->keySize;
-	dest->keyUSize = source->keyUSize;
-	dest->dataSize = source->dataSize;
-
 	// free old resources of destination
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destKey);
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (destData);
-	ksDel (destMeta);
+	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
+	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
+	if (test_bit (flags, KEY_CP_VALUE) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
+	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
 
-	return 1;
+	return dest;
 
 memerror:
 	elektraFree (dest->key);
 	elektraFree (dest->data.v);
 	ksDel (dest->meta);
 
-	dest->key = destKey;
-	dest->data.v = destData;
-	dest->meta = destMeta;
-	return -1;
+	*dest = orig;
+	return NULL;
+}
+
+static void keyClearNameValue (Key * key)
+{
+	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
+	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 }
 
 
 /**
  * A destructor for Key objects.
  *
- * Every key created by keyNew() must be
- * deleted with keyDel().
+ * Every Key created by keyNew() must be deleted with keyDel().
  *
- * It is safe to delete keys which are
- * in a keyset, the number of references
- * will be returned then.
+ * When the reference counter of @p key is non-zero, this function
+ * will do nothing and simply return the current value of the
+ * reference counter.
  *
- * It is save to delete a nullpointer,
- * -1 will be returned then.
+ * It is therefore safe to call `keyDel (k)` on any `Key * k`.
  *
- * It is also save to delete a multiple
- * referenced key, nothing will happen
- * then and the reference counter will
- * be returned.
+ * @post all memory related to @p key will be freed
  *
- * @param key the key object to delete
- * @see keyNew(), keyIncRef(), keyGetRef()
- * @return the value of the reference counter
- *         if the key is within keyset(s)
- * @retval 0 when the key was freed
- * @retval -1 on null pointers
+ * @param key the Key object to delete
+ *
+ * @retval 0 when the Key was freed
+ * @retval -1 on NULL pointers
+ * @return the value of the reference counter, if it was non-zero
+ *
+ * @since 1.0.0
  * @ingroup key
- *
+ * @see keyNew()    for creating a new Key
+ * @see keyIncRef() for more information about the reference counter
  */
 int keyDel (Key * key)
 {
-	int rc;
-
-	if (!key) return -1;
-
-	if (key->ksReference > 0)
+	if (key == NULL)
 	{
-		return key->ksReference;
+		return -1;
+	}
+
+	if (key->refs > 0)
+	{
+		return key->refs;
 	}
 
 	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
-	rc = keyClear (key);
+	keyClearNameValue (key);
 
 	ksDel (key->meta);
 
@@ -587,16 +502,14 @@ int keyDel (Key * key)
 		elektraFree (key);
 	}
 
-	return rc;
+	return 0;
 }
 
 /**
- * Key Object Cleaner.
- *
- * Will reset all internal data.
+ * Will clear all internal data of a Key.
  *
  * After this call you will receive a fresh
- * key.
+ * Key - with no value, metadata or name.
  *
  * The reference counter will stay unmodified.
  *
@@ -607,17 +520,23 @@ int keyDel (Key * key)
 int f (Key *k)
 {
 	keyClear (k);
-	// you have a fresh key k here
+	// you have a fresh Key k here
 	keySetString (k, "value");
-	// the caller will get an empty key k with an value
+	// the caller will get an empty Key k with an value
 }
  * @endcode
  *
- * @retval returns 0 on success
- * @retval -1 on null pointer
+ * @post @p key's name is "/"
+ * @post @p key's metadata is empty
  *
- * @param key the key object to work with
+ * @param key the Key that should be cleared
+ *
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyDel() for completely deleting a Key
  */
 int keyClear (Key * key)
 {
@@ -628,166 +547,173 @@ int keyClear (Key * key)
 
 	size_t ref = 0;
 
-	ref = key->ksReference;
+	ref = key->refs;
 
 	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
-	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
-	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
+	keyClearNameValue (key);
 
 	ksDel (key->meta);
 
 	keyInit (key);
-
 	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
 
+	keySetName (key, "/");
+
 	/* Set reference properties */
-	key->ksReference = ref;
+	key->refs = ref;
 
 	return 0;
 }
 
 
 /**
- * Increment the viability of a key object.
+ * Increment the reference counter of a Key object.
  *
- * This function is intended for applications
- * using their own reference counter for
- * key objects. With it you can increment
- * the reference and thus avoid destruction
- * of the object in a subsequent keyDel().
+ * As long as the reference counter is non-zero, `keyDel()` operations on @p key
+ * will be a no-op and return an error code.
  *
- * The reference counter can't be incremented
- * once it reached SSIZE_MAX. In that situation
- * nothing will happen and SSIZE_MAX will be
- * returned.
+ * Elektra's system for reference counting is not based on a concept
+ * of shared ownership. It is more similar to a shared lock, where the counter
+ * is used to keep track of how many clients hold the lock.
  *
- * @note keyDup() will reset the references for dupped key.
+ * Initially, the reference counter will be 0. This is can be interpreted as
+ * the lock being unlocked. When you increment the reference counter, the lock
+ * becomes locked and `keyDel()` is blocked and fails. Only when the reference
+ * counter is fully decremented back down to 0 again, will `keyDel()` work again.
  *
- * @return the value of the new reference counter
- * @retval -1 on null pointer
- * @retval SSIZE_MAX when maximum exceeded
- * @param key the key object to work with
- * @see keyGetRef() for longer explanation, keyDecRef(), keyDel()
+ * @note The reference counter can never exceed `UINT16_MAX - 1`. `UINT16_MAX` is
+ * reserved as an error code.
+ *
+ * @post @p key's reference counter is > 0
+ * @post @p key's reference counter is <= UINT16_MAX - 1
+ *
+ * @param key the Key object whose reference counter should be increased
+ *
+ * @return the updated value of the reference counter
+ * @retval UINT16_MAX on NULL pointer
+ * @retval UINT16_MAX when the reference counter already was the maximum value `UINT16_MAX - 1`,
+ *         the reference counter will not be modified in this case
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyGetRef() to retrieve the current reference count
+ * @see keyDecRef() for decreasing the reference counter
+ * @see keyDel()    for deleting a Key
  */
-ssize_t keyIncRef (Key * key)
+uint16_t keyIncRef (Key * key)
 {
-	if (!key) return -1;
+	if (key == NULL)
+	{
+		return UINT16_MAX;
+	}
 
-	if (key->ksReference < SSIZE_MAX)
-		return ++key->ksReference;
-	else
-		return SSIZE_MAX;
+	if (key->refs == UINT16_MAX - 1)
+	{
+		return UINT16_MAX;
+	}
+
+	return ++key->refs;
 }
 
 
 /**
- * Decrement the viability of a key object.
+ * Decrement the reference counter of a Key object.
  *
- * The references will be decremented for ksPop() or successful calls
- * of ksLookup() with the option KDB_O_POP.
- * It will also be decremented with an following keyDel() in
- * the case that an old key is replaced with another key with
- * the same name.
+ * As long as the reference counter is non-zero, `keyDel()` operations on @p key
+ * will be a no-op and return an error code.
  *
- * The reference counter can't be decremented
- * once it reached 0. In that situation
- * nothing will happen and 0 will be
- * returned.
+ * @post @p key's reference counter is >= 0
+ * @post @p key's reference counter is < SSIZE_MAX
  *
- * @note keyDup() will reset the references for dupped key.
+ * @param key the Key object whose reference counter should get decreased
  *
- * @return the value of the new reference counter
- * @retval -1 on null pointer
- * @retval 0 when the key is ready to be freed
- * @param key the key object to work with
- * @see keyGetRef() for longer explanation, keyDel(), keyIncRef()
+ * @return the updated value of the reference counter
+ * @retval UINT16_MAX on NULL pointer
+ * @retval 0 when the reference counter already was the minimum value 0,
+ *         the reference counter will not be modified in this case
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyGetRef() to retrieve the current reference count
+ * @see keyIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see keyDel()    for deleting a Key
  */
-ssize_t keyDecRef (Key * key)
+uint16_t keyDecRef (Key * key)
 {
-	if (!key) return -1;
+	if (key == NULL)
+	{
+		return UINT16_MAX;
+	}
 
-	if (key->ksReference > 0)
-		return --key->ksReference;
-	else
+	if (key->refs == 0)
+	{
 		return 0;
+	}
+
+	return --key->refs;
 }
 
 
 /**
- * Return how many references the key has.
+ * Return the current reference counter value of a Key object.
  *
- * The reference counting is the essential property of keys to make sure
- * that they can be put safely into data structures. E.g. if you put
- * a Key into a KeySet:
+ * @param key the Key whose reference counter to retrieve
  *
- * @snippet keyNew.c Ref in KeySet
+ * @return the value of the @p key's reference counter
+ * @retval -1 on NULL pointer
  *
- * You can even add the key to more KeySets:
- *
- * @snippet keyNew.c Ref in multiple KeySets
- *
- * If you increment only by one with keyIncRef() the same as said above
- * is valid:
- *
- * @snippet keyNew.c Ref
- *
- * or use keyIncRef() more than once:
- *
- * @snippet keyNew.c Multi Ref
- *
- * The key won't be deleted by a keyDel() as long refcounter is not 0.
- *
- * The references will be incremented on successful calls to
- * ksAppendKey() or ksAppend().
- *
- * @note keyDup() will reset the references for dupped key.
- *
- * For your own applications you can use
- * keyIncRef() and keyDecRef() for reference
- * counting, too.
- *
- * @param key the key object to work with
- * @return the number of references
- * @retval -1 on null pointer
- * @see keyIncRef() and keyDecRef()
+ * @since 1.0.0
  * @ingroup key
+ * @see keyIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see keyDecRef() for decreasing the reference counter
  **/
-ssize_t keyGetRef (const Key * key)
+uint16_t keyGetRef (const Key * key)
 {
-	if (!key) return -1;
+	if (key == NULL)
+	{
+		return UINT16_MAX;
+	}
 
-	return key->ksReference;
+	return key->refs;
 }
 
 
 /**
- * @brief Permanently locks a part of the key
+ * Permanently lock parts of a Key.
  *
  * This can be:
  * - KEY_LOCK_NAME to lock the name
  * - KEY_LOCK_VALUE to lock the value
  * - KEY_LOCK_META to lock the metadata
  *
- * To unlock the key, duplicate it.
+ * To unlock the Key, duplicate it.
  *
- * It is also possible to lock when the key is created with
+ * It is also possible to lock the Key when it is created with
  * keyNew().
  *
- * Some data structures need to lock the key (most likely
+ * Some data structures need to lock the Key (most likely
  * its name), so that the ordering does not get confused.
  *
- * @param key which name should be locked
+ * @post keyIsLocked(key, what) == what
  *
- * @see keyNew(), keyDup(), ksAppendKey()
- * @retval >0 the bits that were successfully locked
+ * @param key the Key that should be locked
+ * @param what the parts of the Key that should be locked (see above)
+ *
+ * @return the bits that were successfully locked
  * @retval 0 if everything was locked before
- * @retval -1 if it could not be locked (nullpointer)
+ * @retval -1 if it could not be locked (NULL pointer)
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyIsLocked() for checking whether a Key is locked
+ * @see keyNew() for creating a new Key
+ * @see keyDup() for duplicating an existing Key
+ * @see ksAppendKey() appends a Key to a keyset (and locks it)
  */
-int keyLock (Key * key, option_t what)
+int keyLock (Key * key, elektraLockFlags what)
 {
 	if (!key) return -1;
 	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
@@ -798,15 +724,20 @@ int keyLock (Key * key, option_t what)
 }
 
 /**
- * @brief Tests if a part of a key is locked
+ * Checks which parts of a Key are locked.
  *
- * @see keyLock() for more details
- * @retval >0 the bits that are locked
- * @retval 0 if everything is unlocked
- * @retval -1 on error (nullpointer)
+ * @param key the Key that should be checked for locks
+ * @param what the parts of the Key that should checked for locks
+ *
+ * @return the bits that are locked
+ * @retval 0 if nothing is locked
+ * @retval -1 on error (NULL pointer)
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyLock() for locking a Key
  */
-int keyIsLocked (const Key * key, option_t what)
+int keyIsLocked (const Key * key, elektraLockFlags what)
 {
 	if (!key) return -1;
 	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);

@@ -1,0 +1,14 @@
+'use strict';
+
+var angular = require ('angular');
+
+angular.module('elektra.rest.angular')
+       .constant('config', /* @echo CONFIGURATION */)
+       .constant('webStructure', /* @echo WEBSTRUCTURE */)
+       .constant('news', /* @echo NEWS */)
+       .config(require('./breadcrumbs'))
+       .config(require('./http'))
+       .config(require('./marked'))
+       .config(require('./notifications'))
+       .config(require('./routes'))
+       .config(require('./translations'));

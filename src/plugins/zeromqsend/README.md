@@ -14,6 +14,11 @@ This plugin is a notification plugin, which sends notifications using ZeroMq
 publish (`ZMQ_PUB`) sockets when the key database (KDB) has been modified.
 It is compatible with the sending zeromqrecv plugin.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-zeromq`.
+
 ## Dependencies
 
 - `libzmq3-dev` (ZeroMQ C bindings > 3.2)

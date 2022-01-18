@@ -30,19 +30,19 @@
 #define MIX_READ_END 0
 #define MIX_WRITE_END 1
 
-ElektraIoTestSuiteStop testStop;
+static ElektraIoTestSuiteStop testStop;
 
-int testIdleNotStarveTimerTimerCalled;
-int testIdleNotStarveTimerIdleCalled;
-struct timespec testIdleNotStarveTimerTimeStarted;
-struct timespec testIdleNotStarveTimerTimeCalled;
+static int testIdleNotStarveTimerTimerCalled;
+static int testIdleNotStarveTimerIdleCalled;
+static struct timespec testIdleNotStarveTimerTimeStarted;
+static struct timespec testIdleNotStarveTimerTimeCalled;
 
-int testIdleNotStarveFdStep;
-int testIdleNotStarveFdFdCalled;
-int testIdleNotStarveFdIdleCalled;
-int testIdleNotStarveFdWriteFd;
-struct timespec testIdleNotStarveFdTimeReadable;
-struct timespec testIdleNotStarveFdTimeWrite;
+static int testIdleNotStarveFdStep;
+static int testIdleNotStarveFdFdCalled;
+static int testIdleNotStarveFdIdleCalled;
+static int testIdleNotStarveFdWriteFd;
+static struct timespec testIdleNotStarveFdTimeReadable;
+static struct timespec testIdleNotStarveFdTimeWrite;
 
 static void testMixIdleShouldNotStarveTimerTimer (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 {

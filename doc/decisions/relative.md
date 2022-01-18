@@ -39,12 +39,6 @@ experience between different plugins.
 Plugins must be adapted to be relative as tracked
 [here](https://github.com/ElektraInitiative/libelektra/issues/51).
 
-plugins should use relative paths so that import/export/remount works
-
-- dump
-- xmltool (also supports relative)
-- tcl
-
 ## Related Decisions
 
 None

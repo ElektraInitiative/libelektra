@@ -19,16 +19,18 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define BUFFER_SIZE 4096
+
 pthread_barrier_t * bar;
 
 void * writer (void * pV_data ELEKTRA_UNUSED)
 {
-	Key * parent = keyNew ("user/test/race", KEY_END);
-	KDB * h = kdbOpen (parent);
-	char buffer[4096];
+	Key * parent = keyNew ("user:/test/race", KEY_END);
+	KDB * h = kdbOpen (NULL, parent);
+	char buffer[BUFFER_SIZE];
 	unsigned long tid = (unsigned long) pthread_self ();
 	int pid = getpid ();
-	sprintf (buffer, "user/test/race/keys/%d/%lu", pid, tid);
+	snprintf (buffer, BUFFER_SIZE - 1, "user:/test/race/keys/%d/%lu", pid, tid);
 	KeySet * ks = ksNew (20, KS_END);
 
 	int retg = kdbGet (h, ks, parent);

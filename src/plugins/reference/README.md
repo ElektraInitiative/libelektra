@@ -27,6 +27,11 @@ In this reference graph each node corresponds to a key in the KDB, while each ed
 represents a reference between to keys. The plugin will produce an error, if this graph
 is not a directed acyclic graph or contains any invalid references.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ### Resolution of References
 
 The plugin will try to resolve all keys marked with the metakey `check/reference` as references.
@@ -46,9 +51,9 @@ The resolution of the references into key names goes as follows:
   after a path segment other than `..` itself, will result in a warning. This is because these
   use cases are redundant and might be (or result in) mistakes. Here are a few examples of what
   results in warnings, and what doesn't:
-  - `./system/key` no warning
-  - `system/key` no warning
-  - `system/./key` warning, redundant use of `.`
+  - `./system:/key` no warning
+  - `system:/key` no warning
+  - `system:/./key` warning, redundant use of `.`
   - `../../../key` no warning
   - `../key/../otherkey`warning, redundant use of `.`
 
@@ -103,30 +108,30 @@ and therefore cannot have a value (other than the empty string `""`).
 
 ```sh
 # Mount the plugin
-sudo kdb mount referencetest.dump user/tests/reference dump reference
+sudo kdb mount referencetest.dump user:/tests/reference dump reference
 
 # Mark a key as a single reference
-kdb meta-set user/tests/reference/singleref check/reference single
+kdb meta-set user:/tests/reference/singleref check/reference single
 
 # Try setting an invalid reference
-kdb set user/tests/reference/singleref user/tests/reference/referred1
+kdb set user:/tests/reference/singleref user:/tests/reference/referred1
 # RET: 5
-# STDERR: .*Reference 'user/tests/reference/referred1', set in key 'user/tests/reference/singleref', does not reference an existing key.*
+# STDERR: .*Reference 'user:/tests/reference/referred1', set in key 'user:/tests/reference/singleref', does not reference an existing key.*
 
 # Create referred key ...
-kdb set user/tests/reference/referred1 ""
-#> Create a new key user/tests/reference/referred1 with string ""
+kdb set user:/tests/reference/referred1 ""
+#> Create a new key user:/tests/reference/referred1 with string ""
 
 # ... and try again
-kdb set user/tests/reference/singleref user/tests/reference/referred1
-#> Set string to "user/tests/reference/referred1"
+kdb set user:/tests/reference/singleref user:/tests/reference/referred1
+#> Set string to "user:/tests/reference/referred1"
 
 # Cleanup
-kdb rm user/tests/reference/singleref
-kdb rm user/tests/reference/referred1
+kdb rm user:/tests/reference/singleref
+kdb rm user:/tests/reference/referred1
 
 # Unmount the plugin
-sudo kdb umount user/tests/reference
+sudo kdb umount user:/tests/reference
 ```
 
 ## Examples

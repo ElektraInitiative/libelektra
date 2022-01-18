@@ -119,7 +119,7 @@ Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 
 The key name is standardized to make it easier to locate configuration.
 
-- [Read more about key-functions in API doc.](https://doc.libelektra.org/api/current/html/group__key.html)
+- [Read more about key-functions in API doc.](https://doc.libelektra.org/api/latest/html/group__key.html)
 - [Read more about key names here.](/doc/help/elektra-key-names.md)
 
 Now we have the `Key` we will use to pass as argument.
@@ -194,7 +194,7 @@ To do this manually has severe drawbacks:
 - hard coded names might have typos or might be inconsistent
 - tedious handling if key or value might be absent
 - always calling `ksLookup` which gets tiresome for arrays
-- converting to needed data type is error prone
+- converting to needed data type is error-prone
 
 So (larger) applications should not directly use `KeySet`, but
 instead use code generation to provide a type-safe frontend.
@@ -209,7 +209,7 @@ information (such as configuration files). We already gained something.
 But, we did not discuss how we can actually achieve application integration,
 the goal of Elektra.
 
-Elektra 0.8.11 introduces the so called specification for the
+Elektra 0.8.11 introduces the so-called specification for the
 application's configuration, located below its own [namespace](/doc/help/elektra-namespaces.md)
 `spec`. The specification itself also consists of (meta) key-value pairs.
 
@@ -236,7 +236,7 @@ You can use those features like following:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb meta-set spec/test override/#0 /overrides/test
+sudo kdb meta-set spec:/test override/#0 /overrides/test
 ```
 
 This technique provides complete transparency how a program will fetch a
@@ -260,7 +260,7 @@ we want to use `/sw/otherorg/otherapp/#0/current/section/subsection/key`.
 So we specify:
 
 ```sh
-kdb meta-set spec/sw/org/myapp/#0/current/section/subsection/key \
+kdb meta-set spec:/sw/org/myapp/#0/current/section/subsection/key \
     "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
 ```
 
@@ -283,9 +283,12 @@ Particularly a _Specfile_ contains metadata that defines
 - the plugins to load and
 - the behavior of these plugins.
 
+(note that the `\\` are due to [Markdown Shell Recorder][], do not copy them to your shell)
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+
 ```sh
-sudo kdb mount tutorial.ecf spec/sw/org/myapp/#0/current"
-cat << HERE | kdb import spec/sw/org/myapp/#0/current ni  \
+sudo kdb mount tutorial.ecf spec:/sw/org/myapp/#0/current"
+cat << HERE | kdb import spec:/sw/org/myapp/#0/current ni  \
 []                                         \
  mountpoint = my-config-file.ini           \
  infos/plugins = ini validation            \
@@ -294,7 +297,7 @@ cat << HERE | kdb import spec/sw/org/myapp/#0/current ni  \
 fallback/#0=/sw/otherorg/otherapp/#0/current/section/subsection/key  \
 description = A description of the key     \
 HERE
-kdb meta-ls spec/sw/org/myapp/#0/current # verify if specification is present now
+kdb meta-ls spec:/sw/org/myapp/#0/current # verify if specification is present now
 #> infos/plugins
 #> mountpoint
 ```

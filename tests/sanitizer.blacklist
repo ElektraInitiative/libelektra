@@ -3,13 +3,17 @@
 # We ignore warnings about member calls on addresses, which do not point to an object of type `_Sp_counted_base`.
 # It looks like this problem is caused by `libstdc++`.
 src:.*include/c\+\+/.+/bits/shared_ptr_base.h
+# Ignore warnings about member calls on addresses, which do not point to an object of type `std::__1::__shared(_weak)_count`
+src:.*include/c\+\+/v1/memory
+src:.*include/c\+\+/v1/__memory/shared_ptr.h
+
+# Ignore warnings about left shift by `n` places cannot be represented in type `T`
+src:.*include/c\+\+/v1/utility
+src:.*include/c\+\+/v1/__functional/hash.h
 
 # memory leaks reported by asan due to xerces interfaces, no issue according to valgrind
 src:*xerces/*.cpp
 src:*xerces/*.hpp
-# memory leaks reported by asan in botan, no issue according to valgrind
-src:*crypto/botan_operations.cpp
-src:*botan/*.h
 # Memory leaks in `libstdc++`
 src:*4.*/bits/stl_tree.h
 # Ignore undefined behavior caused by implicit conversion in `stringstream`’s `>>` operator

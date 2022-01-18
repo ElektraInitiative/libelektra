@@ -21,8 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbobsolete.h> // for keyNameGetOneLevel
-#include <kdbprivate.h>  // for access to sync bit (keyClearSync)
+#include <kdbprivate.h> // for access to sync bit (keyClearSync)
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)
@@ -85,10 +84,10 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	char * newName = elektraCalloc (maxNewLength + 1);
 	short replace = 0;
 
-	char * parentKeyName = elektraMalloc (keyGetFullNameSize (parentKey));
-	keyGetFullName (parentKey, parentKeyName, keyGetFullNameSize (parentKey));
-	char * curKeyName = elektraMalloc (keyGetFullNameSize (key));
-	keyGetFullName (key, curKeyName, keyGetFullNameSize (key));
+	char * parentKeyName = elektraMalloc (keyGetNameSize (parentKey));
+	keyGetName (parentKey, parentKeyName, keyGetNameSize (parentKey));
+	char * curKeyName = elektraMalloc (keyGetNameSize (key));
+	keyGetName (key, curKeyName, keyGetNameSize (key));
 
 	char * afterParentString = curKeyName + (strlen (parentKeyName));
 	char * ptr;
@@ -147,7 +146,7 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	elektraFree (curKeyName);
 	if (replace)
 	{
-		Key * result = keyDup (key);
+		Key * result = keyDup (key, KEY_CP_ALL);
 		keySetName (result, keyName (parentKey));
 		keyAddName (result, newName);
 		elektraFree (newName);
@@ -155,21 +154,6 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	}
 	elektraFree (newName);
 	return 0;
-}
-
-static void keyAddUnescapedBasePath (Key * key, const char * path)
-{
-	size_t size = 0;
-	char * p = keyNameGetOneLevel (path + size, &size);
-	while (*p)
-	{
-		char * buffer = elektraMalloc (size + 1);
-		strncpy (buffer, p, size);
-		buffer[size] = 0;
-		keyAddBaseName (key, buffer);
-		elektraFree (buffer);
-		p = keyNameGetOneLevel (p + size, &size);
-	}
 }
 
 static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * replaceWithConfig, Key * toUpperConfig, Key * toLowerConfig,
@@ -230,7 +214,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 		if (strcmp (keyString (origNameKey), keyName (key)))
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			Key * result = keyDup (key);
+			Key * result = keyDup (key, KEY_CP_ALL);
 			keySetName (result, keyString (origNameKey));
 			keySetMeta (result, ELEKTRA_ORIGINAL_NAME_META, 0);
 
@@ -246,15 +230,15 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 		if (configKey)
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			Key * result = keyDup (key);
+			Key * result = keyDup (key, KEY_CP_ALL);
 			keySetName (result, keyName (parentKey));
-			keyAddUnescapedBasePath (result, keyString (configKey));
+			keyAddName (result, keyString (configKey));
 
 			if (keyGetNameSize (key) > keyGetNameSize (parentKey))
 			{
 				/* this calculation does not work for the parent key but is also not needed */
 				const char * relativePath = keyName (key) + keyGetNameSize (parentKey);
-				keyAddUnescapedBasePath (result, relativePath);
+				keyAddName (result, relativePath);
 			}
 
 			if (!hasSync)
@@ -271,7 +255,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	/* configuration only */
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/rename"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/rename"))
 	{
 		KeySet * info =
 #include "contract.h"
@@ -370,8 +354,8 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	ksRewind (iterateKs);
 	Key * key;
-	char * parentKeyName = elektraMalloc (keyGetFullNameSize (parentKey));
-	keyGetFullName (parentKey, parentKeyName, keyGetFullNameSize (parentKey));
+	char * parentKeyName = elektraMalloc (keyGetNameSize (parentKey));
+	keyGetName (parentKey, parentKeyName, keyGetNameSize (parentKey));
 	while ((key = ksNext (iterateKs)) != 0)
 	{
 		Key * renamedKey = NULL;
@@ -379,11 +363,11 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			renamedKey = restoreKeyName (key, parentKey, cutConfig);
 
-			if (!renamedKey) renamedKey = keyDup (key);
+			if (!renamedKey) renamedKey = keyDup (key, KEY_CP_ALL);
 			if (writeConversion == TOUPPER || writeConversion == TOLOWER)
 			{
-				char * curKeyName = elektraMalloc (keyGetFullNameSize (renamedKey));
-				keyGetFullName (renamedKey, curKeyName, keyGetFullNameSize (renamedKey));
+				char * curKeyName = elektraMalloc (keyGetNameSize (renamedKey));
+				keyGetName (renamedKey, curKeyName, keyGetNameSize (renamedKey));
 
 				char * afterParentString = curKeyName + (strlen (parentKeyName));
 
@@ -401,7 +385,6 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				keyDel (ksLookup (returned, key, KDB_O_POP));
 			}
 			ksAppendKey (returned, renamedKey);
-			keyDel (renamedKey);
 		}
 		else
 		{

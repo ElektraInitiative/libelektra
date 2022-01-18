@@ -82,16 +82,16 @@ You have some options to avoid running them as root:
    First load the required information and verify the paths:
 
    ```sh
-   kdb mount-info
-   echo `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
-   echo `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
+   sudo kdb mount-info
+   echo `kdb sget system:/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .`
+   echo `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
 
    Then change the permissions:
 
    ```sh
-   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
-   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
+   sudo chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .`
+   sudo chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
 
    After that all test cases should run successfully as described above.
@@ -153,9 +153,9 @@ and `make run_all` (test cases executed from the build directory).
 For `make run_all` following development tools enable even more tests:
 
 - The script `checkbashisms` is needed to check for bashism (`tests/shell/check_bashisms.sh`),
-  it is part of [`devscripts`](https://packages.debian.org/jessie/devscripts).
+  it is part of [`devscripts`](https://packages.debian.org/devscripts).
 - The [POSIX compatibility test for shell scripts](../tests/shell/check_posix.sh) requires the tool [`shfmt`](https://github.com/mvdan/sh).
-- `git`, `clang-format` (version 6 up to version 7), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
+- `git`, `clang-format` (version 12), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
 - `pkg-config` must be available (`check_external.sh` and `check_gen.sh`).
 - A build environment including gcc (`check_gen.sh`).
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
@@ -175,7 +175,7 @@ These tests use the [gtest](https://github.com/google/googletest) test framework
 
 If the tests should not always be executed, the CMake function
 `add_plugintest` can be used instead.
-See cmake/Modules/LibAddPlugin.cmake for more information.
+See `scripts/cmake/Modules/LibAddPlugin.cmake` for more information.
 
 By using `TEST_README` in `add_plugin` (also enabled by default),
 [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
@@ -185,8 +185,8 @@ are expected to be in the README.md of the plugin.
 
 - All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
-- All tests that access system/spec namespaces (e.g. mount something):
-- should be tagged with `kdbtests`:
+- All tests that write to `system:` or `spec:` namespaces (e.g. with `kdbSet` or by mounting):
+  should be tagged with `kdbtests`:
 
   ```cmake
   set_property(TEST testname PROPERTY LABELS kdbtests)
@@ -195,7 +195,7 @@ are expected to be in the README.md of the plugin.
 - should not run, if `ENABLE_KDB_TESTING` is OFF.
 - should only write below
   - `/tests/<testname>` (e.g. `/tests/ruby`) and
-  - `system/elektra` (e.g. for mounts or globalplugins).
+  - `system:/elektra` (e.g. for mounts or globalplugins).
 - Before executing tests, no keys must be present below `/tests`.
   The test cases need to clean up everything they wrote.
   (Including temporary files)
@@ -249,7 +249,7 @@ C Unit Tests are written in plain C with the help of `cframework`.
 It is used to test internal data structures of libelektra that are not
 ABI relevant.
 
-ABI tests can be done on theses tests, too. But by nature from time to
+ABI tests can be done on these tests, too. But by nature from time to
 time these tests will fail.
 
 They are located [here](/tests/ctest).
@@ -298,7 +298,7 @@ See [here](/tests/shell).
 
 ### Shell Recorder
 
-The more elegant way to specify script tests are via the so called Shell Recorder
+The more elegant way to specify script tests are via the so-called Shell Recorder
 using Markdown Syntax.
 
 See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
@@ -310,26 +310,27 @@ build directory. First compile Elektra with afl
 (~e is source-dir of Elektra):
 
 ```sh
-~e/scripts/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/afl-2.52b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/afl-2.52b/afl-g++ ~e
+~e/scripts/dev/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/AFL-2.57b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/AFL-2.57b/afl-g++ ~e
+make -j 5
 ```
 
 Copy some import files to `testcase_dir`, for example:
 
 ```sh
 mkdir -p testcase_dir
-cp ~e/src/plugins/ini/ini/* testcase_dir
+cp ~e/src/plugins/toml/toml/* testcase_dir
 ```
 
 Fewer files is better. Then run, for example:
 
 ```sh
-LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests ini
+LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/AFL-2.57b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user:/tests toml
 ```
 
 Check if something is happening with:
 
 ```sh
-watch kdb export user/tests
+watch kdb export user:/tests
 ```
 
 ### ASAN
@@ -362,7 +363,7 @@ If you use macOS you might want to use the `clang` versions provided by Homebrew
 brew install llvm
 ```
 
-. After that change the `CC` and `CXX` environment variables to point to the the clang tools provided by LLVM:
+. After that change the `CC` and `CXX` environment variables to point to the clang tools provided by LLVM:
 
 ```sh
 export CC=/usr/local/opt/llvm/bin/clang
@@ -437,7 +438,7 @@ of the issues found in the whole project.
 
    ```sh
    cd ..
-   oclint -p build -no-analytics -enable-global-analysis -enable-clang-static-analyzer src/plugins/ini/*.c
+   oclint -p build -no-analytics -enable-global-analysis -enable-clang-static-analyzer src/plugins/toml/*.c
    ```
 
 #### scan-build

@@ -8,7 +8,8 @@ rewind not clearly defined:
 	rewind after plugins?
 	rewind after get()?
 	rewind after set()?
-	-> write pre+postconditions
+	-> needs to be done within plugins
+	as internal iterator should disappear
 
 not clearly defined how config file is opened
 	(temporary file needs to be opened write+create)
@@ -21,5 +22,3 @@ relative key names not explained
 == pictures ==
 
 BIGPICTURE.md should actually have a picture!
-
-generate up-to-date graphic for overview of plugins

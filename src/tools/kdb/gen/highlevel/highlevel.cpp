@@ -15,6 +15,7 @@
 #include <command.hpp>
 #include <modules.hpp>
 
+#include <coloredkdbio.hpp>
 #include <kdb.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
@@ -23,6 +24,7 @@
 #include <kdbtypes.h>
 
 #include <fstream>
+#include <key.hpp>
 #include <memory>
 #include <regex>
 #include <set>
@@ -32,27 +34,22 @@
 const char * HighlevelGenTemplate::Params::InitFunctionName = "initFn";
 const char * HighlevelGenTemplate::Params::HelpFunctionName = "helpFn";
 const char * HighlevelGenTemplate::Params::SpecloadFunctionName = "specloadFn";
+const char * HighlevelGenTemplate::Params::RunCommandsFunctionName = "runCmdFn";
 const char * HighlevelGenTemplate::Params::TagPrefix = "tagPrefix";
 const char * HighlevelGenTemplate::Params::EnumConversion = "enumConv";
 const char * HighlevelGenTemplate::Params::AdditionalHeaders = "headers";
 const char * HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
 const char * HighlevelGenTemplate::Params::EmbeddedSpec = "embeddedSpec";
-const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
 const char * HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
 const char * HighlevelGenTemplate::Params::EmbedHelpFallback = "embedHelpFallback";
+const char * HighlevelGenTemplate::Params::UseCommands = "useCommands";
+const char * HighlevelGenTemplate::Params::InitWithPointers = "initWithPointers";
 
 enum class EmbeddedSpec
 {
 	Full,
 	Defaults,
 	None
-};
-
-enum class SpecValidation
-{
-	None,
-	Minimal,
-	Full // TODO: implement?
 };
 
 static std::string createIncludeGuard (const std::string & fileName)
@@ -76,7 +73,7 @@ static inline std::string getArgDescription (const kdb::Key & key, kdb_long_long
 	auto indexStr = std::to_string (index);
 	auto metaName = "gen/arg/description/#" + std::string (indexStr.length () - 1, '_') + indexStr;
 	return key.hasMeta (metaName) ? key.getMeta<std::string> (metaName) :
-					"Replaces occurence no. " + indexStr + " of " + kind + " in the keyname.";
+					      "Replaces occurrence no. " + indexStr + " of " + kind + " in the keyname.";
 }
 
 static void getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, kainjow::mustache::list & args, std::string & fmtString)
@@ -153,7 +150,7 @@ static std::string keySetToCCode (kdb::KeySet & set)
 	PluginPtr plugin = modules.load ("c", KeySet ());
 
 	auto file = "/tmp/elektra.highlevelgen." + std::to_string (std::time (nullptr));
-	Key errorKey ("", KEY_VALUE, file.c_str (), KEY_END);
+	Key errorKey ("/", KEY_VALUE, file.c_str (), KEY_END);
 	if (plugin->set (set, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		throw CommandAbortException ("c (plugin) failed");
@@ -178,7 +175,7 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 
 	Modules modules;
 	KeySet config;
-	config.append (Key ("system/noparent", KEY_END));
+	config.append (Key ("system:/noparent", KEY_END));
 	PluginPtr plugin = modules.load ("quickdump", config);
 
 	Key parentKey (parent.c_str (), KEY_VALUE, path.c_str (), KEY_END);
@@ -196,7 +193,7 @@ static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 		if (it->isCascading ())
 		{
 			auto specKey = kdb::Key (it->dup ());
-			specKey.setName ("spec" + specKey.getName ());
+			specKey.setName ("spec:" + specKey.getName ());
 			result.append (specKey);
 		}
 		if (it->isSpec ())
@@ -232,10 +229,13 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	using namespace kainjow::mustache;
 
 	auto headerFile = outputName + ".h";
+	auto commandHeader = outputName + ".commands.h";
 	auto includeGuard = createIncludeGuard (headerFile);
+	auto commandIncludeGuard = createIncludeGuard (commandHeader);
 	auto initFunctionName = getParameter (Params::InitFunctionName, "loadConfiguration");
 	auto helpFunctionName = getParameter (Params::HelpFunctionName, "printHelpMessage");
 	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "exitForSpecload");
+	auto runCommandsFunctionName = getParameter (Params::RunCommandsFunctionName, "runCommands");
 	auto tagPrefix = getParameter (Params::TagPrefix, "ELEKTRA_TAG_");
 	auto installPrefix = getParameter (Params::InstallPrefix, "/usr/local");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
@@ -246,14 +246,12 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 										{ "full", EmbeddedSpec::Full },
 										{ "defaults", EmbeddedSpec::Defaults },
 										{ "none", EmbeddedSpec::None } });
-	auto specValidation = getParameter<SpecValidation> (
-		Params::SpecValidation,
-		{ { "", SpecValidation::None }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
-
 	auto enumConversion = getParameter<EnumConversion> (Params::EnumConversion, { { "", EnumConversion::Auto },
 										      { "auto", EnumConversion::Auto },
 										      { "switch", EnumConversion::Trie },
 										      { "strcmp", EnumConversion::Strcmp } });
+	auto useCommands = getBoolParameter (Params::UseCommands, false);
+	auto initWithPointers = getBoolParameter (Params::InitWithPointers, true);
 
 
 	std::string cascadingParent;
@@ -263,38 +261,44 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	if (parentKey[0] == '/')
 	{
 		cascadingParent = parentKey;
-		specParentName = "spec" + parentKey;
+		specParentName = "spec:" + parentKey;
 		ks = cascadingToSpec (keySet);
 	}
-	else if (parentKey.substr (0, 5) == "spec/")
+	else if (parentKey.substr (0, 6) == "spec:/")
 	{
-		cascadingParent = parentKey.substr (4);
+		cascadingParent = parentKey.substr (5);
 		specParentName = parentKey;
 		ks = keySet;
 	}
 	else
 	{
-		throw CommandAbortException ("parentKey has to start with spec/ or /");
+		throw CommandAbortException ("parentKey has to start with spec:/ or /");
 	}
 
 	auto data = object{ { "header_file", headerFile },
+			    { "commands_header", commandHeader },
 			    { "include_guard", includeGuard },
+			    { "commands_include_guard", commandIncludeGuard },
 			    { "spec_parent_key", specParentName },
 			    { "parent_key", cascadingParent },
 			    { "init_function_name", initFunctionName },
 			    { "help_function_name", helpFunctionName },
 			    { "specload_function_name", specloadFunctionName },
+			    { "run_commands_function_name", runCommandsFunctionName },
 			    { "generate_setters?", generateSetters },
+			    { "use_commands?", useCommands },
 			    { "embed_help_fallback?", embedHelpFallback },
 			    { "embed_spec?", specHandling == EmbeddedSpec::Full },
 			    { "embed_defaults?", specHandling == EmbeddedSpec::Defaults },
 			    { "spec_as_defaults?", specHandling == EmbeddedSpec::Full },
-			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
+			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) },
+			    { "init_with_pointers?", initWithPointers } };
 
 	list enums;
 	list structs;
 	list keys;
 	list unions;
+	list commands;
 
 	auto specParent = kdb::Key (specParentName, KEY_END);
 
@@ -307,9 +311,39 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	kdb::KeySet specWithParent;
 	kdb::KeySet defaults;
 
+	specWithParent.append (ks.lookup (specParent));
+
 	kdb::Key parent = ks.lookup (specParent).dup ();
-	parent.setName ("");
+	parent.setName ("/");
 	spec.append (parent);
+
+	if (useCommands)
+	{
+		if (!parent.hasMeta ("command") || parent.getMeta<std::string> ("command") != "")
+		{
+			throw CommandAbortException (
+				"With 'useCommands' enabled, the parent key of the specification must "
+				"have the metakey 'command' set to an empty string.");
+		}
+
+		if (getType (parent) != "string")
+		{
+			throw CommandAbortException (
+				"With 'useCommands' enabled, the parent key of the specification must have 'type=string'.");
+		}
+
+		if (!parent.hasMeta ("gen/command/function"))
+		{
+			throw CommandAbortException ("The key " + parent.getName () +
+						     " must have the 'gen/command/function' metakey, "
+						     "because it has the 'command' metakey.");
+		}
+
+		object command = { { "name", "" }, // + 2 to remove slash
+				   { "function_name", parent.getMeta<std::string> ("gen/command/function") } };
+
+		commands.emplace_back (command);
+	}
 
 	auto parentKeyParts = getKeyParts (specParent);
 
@@ -359,14 +393,42 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 
 		specWithParent.append (key);
 
-		if (!hasType (key))
+		if (!useCommands && !hasType (key))
 		{
 			continue;
 		}
 
 		auto type = getType (key);
 		auto name = key.getName ();
-		name.erase (0, sizeof ("spec") - 1);
+		name.erase (0, sizeof ("spec:") - 1);
+
+		if (useCommands && key.hasMeta ("command"))
+		{
+			if (type != "string")
+			{
+				throw CommandAbortException ("The key " + name +
+							     " must have 'type=string', because it has the 'command' metakey.");
+			}
+
+			if (!key.hasMeta ("gen/command/function"))
+			{
+				throw CommandAbortException ("The key " + name +
+							     " must have the 'gen/command/function' metakey, "
+							     "because it has the 'command' metakey.");
+			}
+
+			auto functionName = key.getMeta<std::string> ("gen/command/function");
+
+			object command = { { "name", name.substr (cascadingParent.size () + 1) }, // + 2 to remove slash
+					   { "function_name", functionName } };
+
+			commands.emplace_back (command);
+		}
+
+		if (!hasType (key))
+		{
+			continue;
+		}
 
 		std::string fmtString;
 		list args;
@@ -513,7 +575,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 					if (parts.size () <= baseDepth + maxDepth)
 					{
 						if (std::any_of (parts.begin () + baseDepth, parts.end () - 1,
-								 [](const std::string & s) { return s == "_" || s == "#"; }) ||
+								 [] (const std::string & s) { return s == "_" || s == "#"; }) ||
 						    parts.back () == "_")
 						{
 							throw CommandAbortException ("struct cannot contain globbed keys (_, #).");
@@ -556,21 +618,34 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	}
 
 	kdb::KeySet contract;
-	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/mountglobal/gopts", KEY_END));
 
 	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
-	contract.append (kdb::Key ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
 
-	if (specValidation == SpecValidation::Minimal)
+	// enable check for properly mounted specification
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END));
+
+	// calculate specification token
+	char token[65];
+	kdb::Key parentKeyMaybeWithErrors = kdb::Key (specParentName, KEY_END);
+	kdb_boolean_t success = ckdb::calculateSpecificationToken (token, ks.getKeySet (), parentKeyMaybeWithErrors.getKey ());
+	if (!success)
 	{
-		contract.append (kdb::Key ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
+		kdb::printWarnings (std::cerr, parentKeyMaybeWithErrors, false, false);
+		kdb::printError (std::cerr, parentKeyMaybeWithErrors, false, false);
+		throw CommandAbortException ("Error during calculation of specification token.");
 	}
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, token, KEY_END));
+
 
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
 	data["unions"] = unions;
 	data["structs"] = structs;
+	data["commands"] = commands;
+	data["commands_count"] = std::to_string (commands.size ());
 	data["spec"] = keySetToCCode (spec);
 	data["defaults"] = keySetToCCode (defaults);
 	data["contract"] = keySetToCCode (contract);
@@ -644,6 +719,10 @@ std::vector<std::string> HighlevelGenTemplate::getActualParts () const
 	if (getParameter (Params::EmbeddedSpec, "full") == "full")
 	{
 		parts.erase (std::remove (parts.begin (), parts.end (), ".spec.eqd"), parts.end ());
+	}
+	if (!getBoolParameter (Params::UseCommands, false))
+	{
+		parts.erase (std::remove (parts.begin (), parts.end (), ".commands.h"), parts.end ());
 	}
 	return parts;
 }

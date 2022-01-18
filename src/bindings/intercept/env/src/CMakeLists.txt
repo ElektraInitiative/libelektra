@@ -14,19 +14,17 @@ target_link_libraries (elektraintercept-env elektra-kdb elektra-meta) # must be 
 
 set_target_properties (
 	elektraintercept-env
-	PROPERTIES COMPILE_DEFINITIONS
-		   "HAVE_KDBCONFIG_H"
-		   VERSION
-		   ${KDB_VERSION}
-		   SOVERSION
-		   ${SO_VERSION_GETENV}
-		   CLEAN_DIRECT_OUTPUT
-		   1
-		   LINKER_LANGUAGE
-		   CXX)
+	PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
+		   VERSION ${KDB_VERSION}
+		   SOVERSION ${SO_VERSION_GETENV}
+		   CLEAN_DIRECT_OUTPUT 1
+		   LINKER_LANGUAGE CXX)
 
-install (TARGETS elektraintercept-env DESTINATION lib${LIB_SUFFIX})
+install (
+	TARGETS elektraintercept-env
+	DESTINATION lib${LIB_SUFFIX}
+	COMPONENT libelektra${SO_VERSION})
 
 mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-create_lib_symlink (libelektraintercept-env.so libelektragetenv.so)
-create_lib_symlink (libelektraintercept-env.so libelektragetenv.so.0)
+create_lib_symlink (libelektraintercept-env.so libelektragetenv.so libelektra${SO_VERSION})
+create_lib_symlink (libelektraintercept-env.so libelektragetenv.so.0 libelektra${SO_VERSION})

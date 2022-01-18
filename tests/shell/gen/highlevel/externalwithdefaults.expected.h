@@ -10,7 +10,7 @@
  *
  * @copyright BSD Zero Clause License
  *
- *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *     Copyright (c) Elektra Initiative (https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
@@ -36,6 +36,8 @@ extern "C" {
 
 #include <kdbhelper.h>
 #include <string.h>
+
+
 
 
 
@@ -102,7 +104,7 @@ extern "C" {
 * 
 * Required arguments:
 * 
-* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
+* - kdb_long_long_t index1: Replaces occurrence no. 1 of # in the keyname.
 * 
 * 
 */// 
@@ -199,7 +201,7 @@ static inline void ELEKTRA_SET (ELEKTRA_TAG_MYDOUBLE) (Elektra * elektra,
  * Get the value of key 'myfloatarray/#' (tag #ELEKTRA_TAG_MYFLOATARRAY).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param index1 Replaces occurence no. 1 of # in the keyname.
+ * @param index1 Replaces occurrence no. 1 of # in the keyname.
  *
  * @return the value of 'myfloatarray/#'.
 
@@ -220,7 +222,7 @@ static inline kdb_float_t ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (Elektra * elek
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'myfloatarray/#'.
- * @param index1 Replaces occurence no. 1 of # in the keyname.
+ * @param index1 Replaces occurrence no. 1 of # in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
@@ -376,9 +378,14 @@ static inline void ELEKTRA_SET (ELEKTRA_TAG_PRINT) (Elektra * elektra,
 #undef elektra_len
 
 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+int loadConfiguration (Elektra ** elektra,
+				 int argc, const char * const * argv, const char * const * envp,
+				 
+				 ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
-void exitForSpecload (int argc, const char ** argv);
+void exitForSpecload (int argc, const char * const * argv);
+
+
 
 
 /**

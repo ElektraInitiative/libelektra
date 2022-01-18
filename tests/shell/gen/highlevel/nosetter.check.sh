@@ -41,13 +41,15 @@ void callAll (Elektra * elektra)
 	VALUE_CHECK (elektraGet (elektra, ELEKTRA_TAG_MYDOUBLE), 0.0);
 }
 
-int main (int argc, const char ** argv)
+extern const char * const * environ;
+
+int main (int argc, const char * const * argv)
 {
 	exitForSpecload (argc, argv);
 
 	ElektraError * error = NULL;
 	Elektra * elektra = NULL;
-	int rc = loadConfiguration (&elektra, &error);
+	int rc = loadConfiguration (&elektra, argc, argv, environ, &error);
 
 	if (rc == -1)
 	{
@@ -92,19 +94,19 @@ cmake .. -DCMAKE_C_COMPILER="@CMAKE_C_COMPILER@" && cmake --build .
 res=$?
 
 if [ "$res" = "0" ]; then
-	"$KDB" meta-set "user$MOUNTPOINT/myfloatarray" "array" "#0"
+	"$KDB" meta-set "user:$MOUNTPOINT/myfloatarray" "array" "#0"
 
 	./dummy
 	res=$?
 	echo "dummy exited with: $res"
 
 	"$KDB" export "$MOUNTPOINT" ni > ~/export.casc.ini
-	"$KDB" export "spec$MOUNTPOINT" ni > ~/export.spec.ini
-	"$KDB" export "user$MOUNTPOINT" ni > ~/export.user.ini
+	"$KDB" export "spec:$MOUNTPOINT" ni > ~/export.spec.ini
+	"$KDB" export "user:$MOUNTPOINT" ni > ~/export.user.ini
 
-	if command -v valgrind; then
-		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		echo "valgrind dummy exited with: $res"
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
+		echo "valgrind dummy exited with: $?"
 	fi
 fi
 

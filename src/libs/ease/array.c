@@ -49,10 +49,18 @@ int elektraArrayValidateName (const Key * key)
 int elektraArrayValidateBaseNameString (const char * baseName)
 {
 	const char * current = baseName;
-	if (!current || *current != '#') return -1;
-	if (!strcmp (current, "#")) return 0;
+	if (current == NULL || *current != '#')
+	{
+		return -1;
+	}
 
 	current++;
+
+	if (*current == '\0')
+	{
+		return 0;
+	}
+
 	int underscores = 0;
 	int digits = 0;
 
@@ -68,13 +76,16 @@ int elektraArrayValidateBaseNameString (const char * baseName)
 		digits++;
 	}
 
-	if (underscores != digits - 1) return -1;
-	if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
+	bool underscoresCorrect = underscores == digits - 1;
+	bool totalLengthCorrect = underscores + digits <= ELEKTRA_MAX_ARRAY_SIZE - 2;
+	bool reachedEnd = *current == '\0' || *current == '/';
+
+	if (underscoresCorrect && totalLengthCorrect && reachedEnd)
 	{
-		return -1;
+		return underscores + 1;
 	}
 
-	return underscores + 1;
+	return -1;
 }
 
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
@@ -115,13 +126,13 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
  *
  * Alphabetical order will remain
  *
- * e.g. user/abc/\#9 will be changed to
- *      user/abc/\#_10
+ * e.g. user:/abc/\#9 will be changed to
+ *      user:/abc/\#_10
  *
  * For the start:
- *      user/abc/\#
+ *      user:/abc/\#
  * will be changed to
- *      user/abc/\#0
+ *      user:/abc/\#0
  *
  * @param key which base name will be incremented
  *
@@ -140,7 +151,7 @@ int elektraArrayIncName (Key * key)
 
 	kdb_long_long_t oldIndex = 0;
 	if (offsetIndex && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
-	kdb_long_long_t newIndex = offsetIndex ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
+	kdb_long_long_t newIndex = offsetIndex == 0 ? 0 : oldIndex + 1; // we increment by one or use 0 if the name contains no index yet
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
@@ -154,7 +165,7 @@ int elektraArrayIncName (Key * key)
  * @brief Decrement the name of an array key by one.
  *
  * The alphabetical order will remain intact. For example,
- * `user/abc/\#_10` will be changed to `user/abc/\#9`.
+ * `user:/abc/\#_10` will be changed to `user:/abc/\#9`.
  *
  * @param This parameter determines the key name this function decrements.
  *
@@ -210,11 +221,11 @@ static int arrayFilter (const Key * key, void * argument)
  * @brief Return all the array keys below the given array parent
  *
  * The array parent itself is not returned.
- * For example, if `user/config/#` is an array,
- * `user/config` is the array parent.
+ * For example, if `user:/config/#` is an array,
+ * `user:/config` is the array parent.
  * Only the direct array keys will be returned. This means
- * that for example `user/config/#1/key` will not be included,
- * but only `user/config/#1`.
+ * that for example `user:/config/#1/key` will not be included,
+ * but only `user:/config/#1`.
  *
  * A new keyset will be allocated for the resulting keys.
  * This means that the caller must `ksDel` the resulting keyset.
@@ -261,8 +272,7 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 	if (!last) return 0;
 
 	ksAppendKey (arrayKeys, last);
-	Key * newKey = keyDup (last);
-	keySetBinary (newKey, 0, 0);
+	Key * newKey = keyDup (last, KEY_CP_NAME);
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)

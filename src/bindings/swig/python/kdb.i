@@ -9,7 +9,7 @@
 %module kdb
 #pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
 
-%include "stl.i"
+%include <stl.i>
 %include "../common.i"
 %feature("autodoc", "3");
 
@@ -105,12 +105,10 @@
 // properties. thus we rename and create them using pure python code below
 //%attributestring(kdb::Key, std::string, name,     getName, setName);
 //%attributestring(kdb::Key, std::string, basename, getBaseName, setBaseName);
-//%attributestring(kdb::Key, std::string, fullname, getFullName);
 %rename("_%s") kdb::Key::getName;
 %rename("_%s") kdb::Key::setName;
 %rename("_%s") kdb::Key::getBaseName;
 %rename("_%s") kdb::Key::setBaseName;
-%rename("_%s") kdb::Key::getFullName;
 
 // only accept binary data in binary functions
 %typemap(out) std::string kdb::Key::getBinary {
@@ -189,7 +187,6 @@
     name     = property(_kdb.Key__getName, _kdb.Key__setName)
     value    = property(get, set, None, "Key value")
     basename = property(_kdb.Key__getBaseName, _kdb.Key__setBaseName)
-    fullname = property(_kdb.Key__getFullName)
 
     def __hash__(self):
       if not self.isNameLocked():
@@ -243,6 +240,11 @@
 /*
  * keyset.hpp
  */
+// exception handling for kdb::KeySet
+%exception {
+  KDB_CATCH(KEY_EXCEPTIONS)
+}
+
 %pythonprepend kdb::KeySet::KeySet %{
   orig = []
   if len(args):
@@ -276,7 +278,7 @@
     (void) PyDict_Check(memo);
     ssize_t size = $self->size();
     kdb::KeySet *ks = new kdb::KeySet(size, KS_END);
-    for (cursor_t cursor = 0; cursor < size; ++cursor)
+    for (elektraCursor cursor = 0; cursor < size; ++cursor)
       ks->append($self->at(cursor)->dup());
     return ks;
   }
@@ -291,6 +293,8 @@
       return key if key else None
 
     def append(self, *args):
+      """Add a key to the keyset. Argument can be either Key, string or bytes.
+      """
       if isinstance(args[0], (str, bytes)):
         args = [ Key(*args) ]
       ret = 0
@@ -299,7 +303,17 @@
       return ret
 
     def extend(self, list):
+      """Extend the keyset by appending all the items from the iterable"""
       return self.append(*list)
+
+    def remove(self, name):
+      """Removes a key from the keyset. Argument can be either string or Key.
+      It raises a ValueError if there is no such item.
+      """
+      key = self._lookup(name, KDB_O_POP)
+      if not key:
+        raise ValueError("ks.remove(x): x not in list")
+      return key
 
     def __getitem__(self, key):
       """See lookup(...) for details.
@@ -368,6 +382,9 @@
 
 %include "keyset.hpp"
 
+// clear exception handler
+%exception;
+
 
 /*
  * kdb.hpp
@@ -392,6 +409,13 @@
       except:
         pass
   %}
+}
+
+%include "std_vector.i"
+%include "std_string.i"
+
+namespace std {
+  %template(StringVector) vector<string>;
 }
 
 %include "kdb.hpp"

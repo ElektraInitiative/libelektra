@@ -21,7 +21,7 @@
 static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
 {
 	// Update array length in array key
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	Key * arrayKey = keyNew (keyName (current), KEY_END);
 	keySetBaseName (arrayKey, 0);
 	Key * foundKey = ksLookup (ks, arrayKey, 0);
@@ -261,11 +261,11 @@ static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
 	Key * cur = ksNext (returned);
 	while (cur != NULL)
 	{
-		cursor_t cursor = ksGetCursor (returned);
+		elektraCursor cursor = ksGetCursor (returned);
 
 		if (ksNext (returned) == NULL) break;
 
-		Key * peekDup = keyDup (ksCurrent (returned));
+		Key * peekDup = keyDup (ksCurrent (returned), KEY_CP_ALL);
 		keySetBaseName (peekDup, 0);
 
 		if (!strcmp (keyName (peekDup), keyName (cur)))
@@ -301,7 +301,7 @@ static void elektraYajlParseSuppressEmptyMap (KeySet * returned, Key * parentKey
 
 	if (ksGetSize (returned) == 2)
 	{
-		Key * lookupKey = keyDup (parentKey);
+		Key * lookupKey = keyDup (parentKey, KEY_CP_ALL);
 		keyAddBaseName (lookupKey, "___empty_map");
 		Key * toRemove = ksLookup (returned, lookupKey, KDB_O_POP);
 
@@ -333,21 +333,21 @@ static void elektraYajlParseSuppressEmptyMap (KeySet * returned, Key * parentKey
 
 static inline KeySet * elektraGetModuleConfig (void)
 {
-	return ksNew (30, keyNew ("system/elektra/modules/yajl", KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/yajl/exports", KEY_END),
-		      keyNew ("system/elektra/modules/yajl/exports/get", KEY_FUNC, elektraYajlGet, KEY_END),
-		      keyNew ("system/elektra/modules/yajl/exports/set", KEY_FUNC, elektraYajlSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/yajl", KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/exports", KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/exports/get", KEY_FUNC, elektraYajlGet, KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/exports/set", KEY_FUNC, elektraYajlSet, KEY_END),
 #include "readme_yajl.c"
-		      keyNew ("system/elektra/modules/yajl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		      keyNew ("system/elektra/modules/yajl/config", KEY_END),
-		      keyNew ("system/elektra/modules/yajl/config/", KEY_VALUE, "system", KEY_END),
-		      keyNew ("system/elektra/modules/yajl/config/below", KEY_VALUE, "user", KEY_END),
-		      keyNew ("system/elektra/modules/yajl/config/needs/boolean/restoreas", KEY_VALUE, "none", KEY_END), KS_END);
+		      keyNew ("system:/elektra/modules/yajl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config", KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config/", KEY_VALUE, "system", KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config/below", KEY_VALUE, "user", KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config/needs/boolean/restoreas", KEY_VALUE, "none", KEY_END), KS_END);
 }
 
 int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/yajl"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/yajl"))
 	{
 		KeySet * moduleConfig = elektraGetModuleConfig ();
 		ksAppend (returned, moduleConfig);

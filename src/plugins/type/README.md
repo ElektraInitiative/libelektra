@@ -20,7 +20,7 @@ The type checker plugin supports these types:
 `any`, `enum`, `string`, `wstring` and `octet`.
 
 - Checking `any` will always be successful, regardless of the content.
-- `string` matches any non-empty key value.
+- `string` matches any string key value.
 - `octet` and `char` are equivalent to each other.
 - `enum` will do enum checking as described below.
 - `boolean` only allows the values `1` and `0`. See also [Normalization](#normalization).
@@ -86,7 +86,7 @@ Note: If normalization is used, often times you will get a normalization error i
 The values that are accepted as `boolean`s are configured during mounting:
 
 ```
-sudo kdb mount typetest.dump user/tests/type dump type booleans=#1 booleans/#0/true=a booleans/#0/false=b booleans/#1/true=t booleans/#1/false=f
+sudo kdb mount typetest.dump user:/tests/type dump type booleans=#1 booleans/#0/true=a booleans/#0/false=b booleans/#1/true=t booleans/#1/false=f
 ```
 
 The above line defines that the array of allowed boolean pairs. `booleans=#1` defines the last element of the array as `#1`. For each
@@ -112,7 +112,7 @@ _Boolean always come in pairs!_
 You can also change how values shall be restored in `kdbSet`:
 
 ```
-sudo kdb mount typetest.dump user/tests/type dump type booleans=#0 booleans/#0/true=true booleans/#0/false=false boolean/restoreas=#0
+sudo kdb mount typetest.dump user:/tests/type dump type booleans=#0 booleans/#0/true=true booleans/#0/false=false boolean/restoreas=#0
 ```
 
 The config key `boolean/restoreas` must be a valid index of the `booleans` array or the special value `none`. If
@@ -180,31 +180,31 @@ breaks normalization! Indices are differentiated from string value by whether th
 
 ```sh
 #Mount the plugin
-sudo kdb mount typetest.dump user/tests/type dump type
+sudo kdb mount typetest.dump user:/tests/type dump type
 
 #Store a character value
-kdb set user/tests/type/key a
+kdb set user:/tests/type/key a
 
 #Only allow character values
-kdb meta-set user/tests/type/key type char
-kdb get user/tests/type/key
+kdb meta-set user:/tests/type/key type char
+kdb get user:/tests/type/key
 #> a
 
 #If we store another character everything works fine
-kdb set user/tests/type/key b
-kdb get user/tests/type/key
+kdb set user:/tests/type/key b
+kdb get user:/tests/type/key
 #> b
 
 #If we try to store a string Elektra will not change the value
-kdb set user/tests/type/key 'Not a char'
+kdb set user:/tests/type/key 'Not a char'
 # RET:5
 # ERROR:C03200
-kdb get user/tests/type/key
+kdb get user:/tests/type/key
 #> b
 
 #Undo modifications to the database
-kdb rm user/tests/type/key
-sudo kdb umount user/tests/type
+kdb rm user:/tests/type/key
+sudo kdb umount user:/tests/type
 ```
 
 For enums:
@@ -212,21 +212,21 @@ For enums:
 ```sh
 # Backup-and-Restore:/tests/enum
 
-sudo kdb mount typeenum.ecf user/tests/type dump type
+sudo kdb mount typeenum.ecf user:/tests/type dump type
 
 # valid initial value + setup valid enum list
-kdb set user/tests/type/value middle
-kdb meta-set user/tests/type/value check/enum '#2'
-kdb meta-set user/tests/type/value 'check/enum/#0' 'low'
-kdb meta-set user/tests/type/value 'check/enum/#1' 'middle'
-kdb meta-set user/tests/type/value 'check/enum/#2' 'high'
-kdb meta-set user/tests/type/value type enum
+kdb set user:/tests/type/value middle
+kdb meta-set user:/tests/type/value check/enum '#2'
+kdb meta-set user:/tests/type/value 'check/enum/#0' 'low'
+kdb meta-set user:/tests/type/value 'check/enum/#1' 'middle'
+kdb meta-set user:/tests/type/value 'check/enum/#2' 'high'
+kdb meta-set user:/tests/type/value type enum
 
 # should succeed
-kdb set user/tests/type/value low
+kdb set user:/tests/type/value low
 
 # should fail with error C03200
-kdb set user/tests/type/value no
+kdb set user:/tests/type/value no
 # RET:5
 # ERROR:C03200
 ```
@@ -235,59 +235,59 @@ Or with multi-enums:
 
 ```sh
 # valid initial value + setup array with valid enums
-kdb set user/tests/type/multivalue middle_small
-kdb meta-set user/tests/type/multivalue check/enum/#0 small
-kdb meta-set user/tests/type/multivalue check/enum/#1 middle
-kdb meta-set user/tests/type/multivalue check/enum/#2 large
-kdb meta-set user/tests/type/multivalue check/enum/#3 huge
-kdb meta-set user/tests/type/multivalue check/enum/delimiter _
-kdb meta-set user/tests/type/multivalue check/enum "#3"
-kdb meta-set user/tests/type/multivalue type enum
+kdb set user:/tests/type/multivalue middle_small
+kdb meta-set user:/tests/type/multivalue check/enum/#0 small
+kdb meta-set user:/tests/type/multivalue check/enum/#1 middle
+kdb meta-set user:/tests/type/multivalue check/enum/#2 large
+kdb meta-set user:/tests/type/multivalue check/enum/#3 huge
+kdb meta-set user:/tests/type/multivalue check/enum/delimiter _
+kdb meta-set user:/tests/type/multivalue check/enum "#3"
+kdb meta-set user:/tests/type/multivalue type enum
 
 # should succeed
-kdb set user/tests/type/multivalue small_middle
+kdb set user:/tests/type/multivalue small_middle
 
 # should fail with error C03200
-kdb set user/tests/type/multivalue all_small
+kdb set user:/tests/type/multivalue all_small
 # RET:5
 # ERROR:C03200
 
 # cleanup
-kdb rm -r user/tests/type
-sudo kdb umount user/tests/type
+kdb rm -r user:/tests/type
+sudo kdb umount user:/tests/type
 ```
 
 For booleans:
 
 ```sh
 # Mount plugin
-sudo kdb mount config.ecf user/tests/type dump type
+sudo kdb mount config.ecf user:/tests/type dump type
 
 # By default the plugin uses `1` (true) and `0` (false) to represent boolean values
-kdb set user/tests/type/truthiness false
-kdb meta-set user/tests/type/truthiness type boolean
-kdb get user/tests/type/truthiness
+kdb set user:/tests/type/truthiness false
+kdb meta-set user:/tests/type/truthiness type boolean
+kdb get user:/tests/type/truthiness
 #> 0
 
 # The plugin does not change ordinary values
-kdb set user/tests/type/key value
-kdb get user/tests/type/key
+kdb set user:/tests/type/key value
+kdb get user:/tests/type/key
 #> value
 
 # Undo changes
-kdb rm -r user/tests/type
-sudo kdb umount user/tests/type
+kdb rm -r user:/tests/type
+sudo kdb umount user:/tests/type
 ```
 
 ```sh
-sudo kdb mount config.ecf user/tests/type dump type
-kdb set user/tests/type/truthiness 0
-kdb meta-set user/tests/type/truthiness type boolean
- kdb set user/tests/type/truthiness yes
+sudo kdb mount config.ecf user:/tests/type dump type
+kdb set user:/tests/type/truthiness 0
+kdb meta-set user:/tests/type/truthiness type boolean
+ kdb set user:/tests/type/truthiness yes
 # RET: 0
  # Undo changes
-kdb rm -r user/tests/type
-sudo kdb umount user/tests/type
+kdb rm -r user:/tests/type
+sudo kdb umount user:/tests/type
 ```
 
 ## Limitations

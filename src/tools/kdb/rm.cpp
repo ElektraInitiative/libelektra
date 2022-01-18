@@ -35,14 +35,15 @@ int RemoveCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	Key x = cl.createKey (0);
+	Key parentKey = cl.getParentKey (x);
 
-	kdb.get (conf, x);
+	kdb.get (conf, parentKey);
 
 	KeySet savedKeys;
 
 	if (cl.withoutElektra)
 	{
-		Key systemElektra ("system/elektra", KEY_END);
+		Key systemElektra ("system:/elektra", KEY_END);
 		savedKeys = conf.cut (systemElektra);
 	}
 
@@ -68,7 +69,7 @@ int RemoveCommand::execute (Cmdline const & cl)
 
 	conf.append (savedKeys);
 
-	kdb.set (conf, x);
+	kdb.set (conf, parentKey);
 
 	return 0;
 }

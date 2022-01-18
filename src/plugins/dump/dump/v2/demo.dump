@@ -1,0 +1,27 @@
+kdbOpen 2
+$key binary 0 0
+
+
+$meta 6 0
+binary
+
+$meta 10 27
+comment/#0
+Below are the mount points.
+$key string 4 18
+dbus
+serialized Backend
+$key string 11 0
+dbus/config
+
+$meta 10 71
+comment/#0
+This is a configuration for a backend,
+see subkeys for more information
+$key string 12 0
+fstab/config
+
+$copymeta 11 10
+dbus/config
+comment/#0
+$end

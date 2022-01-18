@@ -1,0 +1,107 @@
+apply plugin: 'eclipse'
+apply plugin: 'com.github.ben-manes.versions'
+
+// confugure java plugin
+java {
+	// set target platform version
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
+
+	// generate sources and javadoc jars
+	withJavadocJar()
+	withSourcesJar()
+}
+
+
+// declare repositories
+repositories {
+	mavenCentral()
+}
+
+task listRepos {
+	description 'Prints all repositories used for dependency resolution'
+	doLast {
+		println 'Repositories used for dependency resolution:'
+		rootProject.repositories.each { println "Name: ${it.name}; Url: ${it.url}" }
+	}
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+// javadoc
+tasks.named('javadoc').configure {
+	source = sourceSets.main.allJava
+	title = "$project.name - $parent.name"
+
+	options {
+		windowTitle = "$project.name - $parent.name"
+		// level PRIVATE is used to validate javadoc on private members
+		// level PROTECTED would be sufficient for documentation purposes
+		//memberLevel = JavadocMemberLevel.PROTECTED
+		memberLevel = JavadocMemberLevel.PRIVATE
+		linkSource = true
+		encoding = 'UTF-8'
+		charSet = 'UTF-8'
+		docEncoding = 'UTF-8'
+		tags += [
+			'formatter'
+		]
+		exclude '**/*.md'
+		tags(
+			'apiNote:a:"API Note:"',
+			'implSpec:a:"Implementation Requirements:"',
+			'implNote:a:"Implementation Note:"'
+		)
+	}
+
+	// TODO #3754 reactivate: fail on warnings and warn about non-compliant javadoc syntax
+	//options.addStringOption('Xwerror', '-quiet')
+	//options.addStringOption('Xdoclint:all', '-quiet')
+	options.addStringOption('Xdoclint:-missing', '-quiet')
+	options.addStringOption('Xdoclint:all', '-quiet')
+}
+
+javadoc {
+	if (JavaVersion.current().isJava9Compatible()) {
+		options.addBooleanOption('html5', true)
+	}
+}
+
+tasks.named('build').configure {
+	dependsOn javadoc
+}
+
+// apply global testing configuration
+tasks.named('test').configure {
+	testLogging {
+		showStandardStreams = false
+		showExceptions = true
+		showCauses = true
+		showStackTraces = true
+	}
+	beforeSuite { descriptor ->
+		if (descriptor.className != null) {
+			logger.lifecycle("Testing ${descriptor.className}")
+		}
+	}
+	afterTest { descriptor, event ->
+		def msg = "${descriptor.className}.${descriptor.name} finished with ${event.resultType} (${event.endTime - event.startTime}ms)"
+		if (event.resultType == TestResult.ResultType.FAILURE) {
+			logger.error(msg, event.exception)
+		} else if (event.resultType == TestResult.ResultType.SKIPPED) {
+			logger.warn(msg)
+		} else {
+			logger.lifecycle(msg)
+		}
+	}
+}
+
+// eclipse IDE integration
+eclipse {
+	classpath {
+		downloadJavadoc true
+		downloadSources true
+	}
+}

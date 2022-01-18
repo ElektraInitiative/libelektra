@@ -9,8 +9,6 @@
 # Distributed under the BSD license. See COPYING-CMAKE-SCRIPTS for details.
 # ~~~
 
-include (LibFindMacros)
-
 if (LIBAUGEAS_INCLUDE_DIR
     AND LIBAUGEAS_LIBRARIES
     AND LIBAUGEAS_PREFIX) # in cache already

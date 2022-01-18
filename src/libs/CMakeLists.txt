@@ -5,7 +5,6 @@ set (
 	loader
 	ease
 	globbing
-	proposal
 	meta
 	plugin
 	pluginprocess
@@ -30,8 +29,7 @@ list (INSERT SUBDIRS 0 tools)
 
 add_custom_command (
 	OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/symbols.map"
-	COMMAND
-		awk 1 ${SYM_MAPS} | awk -v vfile=versions.def -f version_gen.awk > "${CMAKE_CURRENT_BINARY_DIR}/symbols.map"
+	COMMAND awk 1 ${SYM_MAPS} | awk -v vfile=versions.def -f version_gen.awk > "${CMAKE_CURRENT_BINARY_DIR}/symbols.map"
 	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 	DEPENDS version_gen.awk versions.def ${SYM_MAPS}
 	COMMENT "Creating version script"
@@ -42,4 +40,11 @@ foreach (subdir ${SUBDIRS})
 	add_subdirectory ("${subdir}")
 endforeach (subdir)
 
-generate_manpage (elektra-libs FILENAME "${CMAKE_CURRENT_SOURCE_DIR}/README.md" SECTION 7)
+generate_manpage (
+	elektra-libs
+	FILENAME
+	"${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+	SECTION
+	7
+	COMPONENT
+	elektra-doc)

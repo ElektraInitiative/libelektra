@@ -21,7 +21,7 @@ bool StructFieldsProcessor::shouldGenerateUnion (const kdb::Key & key)
 std::string StructFieldsProcessor::discriminatorField (const kdb::Key & key, const std::string & refFieldName)
 {
 	auto result = key.hasMeta ("gen/reference/discriminator") ? key.getMeta<std::string> ("gen/reference/discriminator") :
-								    refFieldName + "Discriminator";
+									  refFieldName + "Discriminator";
 	escapeNonAlphaNum (result);
 	return result;
 }
@@ -29,7 +29,7 @@ std::string StructFieldsProcessor::discriminatorField (const kdb::Key & key, con
 std::string StructFieldsProcessor::arraySizeName (const kdb::Key & key, const std::string & arrayFieldName)
 {
 	auto result = key.hasMeta ("gen/struct/array/sizefield") ? key.getMeta<std::string> ("gen/struct/array/sizefield") :
-								   arrayFieldName + "Size";
+									 arrayFieldName + "Size";
 	escapeNonAlphaNum (result);
 	return result;
 }
@@ -44,7 +44,7 @@ std::string StructFieldsProcessor::getName (const kdb::Key & key, const std::str
 std::string StructFieldsProcessor::discriminatorKey (const kdb::Key & key)
 {
 	auto result = key.hasMeta ("gen/reference/discriminator/key") ? key.getMeta<std::string> ("gen/reference/discriminator/key") :
-									"discriminator";
+									      "discriminator";
 	escapeNonAlphaNum (result);
 	return result;
 }
@@ -154,8 +154,8 @@ kainjow::mustache::object StructFieldsProcessor::processArrayStructRef (const kd
 	fields.emplace_back (kainjow::mustache::object{
 		{ "name", sizeName }, { "is_array_size?", true }, { "array_key", fieldKeyName }, { "native_type", "kdb_long_long_t" } });
 
-	return kainjow::mustache::object{ { "name", name },	  { "key_name", keyName },   { "native_type", nativeType },
-					  { "type_name", typeName }, { "alloc?", alloc },       { "is_array?", true },
+	return kainjow::mustache::object{ { "name", name },	     { "key_name", keyName },	{ "native_type", nativeType },
+					  { "type_name", typeName }, { "alloc?", alloc },	{ "is_array?", true },
 					  { "is_struct?", true },    { "size_field", sizeName } };
 }
 
@@ -379,7 +379,7 @@ kainjow::mustache::object StructFieldsProcessor::processStructRef (const kdb::Ke
 
 	auto name = getName (key, fieldKeyName);
 
-	return kainjow::mustache::object{ { "name", name },	  { "key_name", keyName }, { "native_type", nativeType },
+	return kainjow::mustache::object{ { "name", name },	     { "key_name", keyName }, { "native_type", nativeType },
 					  { "type_name", typeName }, { "alloc?", alloc },     { "is_array?", false },
 					  { "is_struct?", true } };
 }
@@ -497,7 +497,7 @@ void StructFieldsProcessor::processAll ()
 		{
 
 			auto field = object{ { "name", name },		{ "key_name", keyName }, { "native_type", nativeType },
-					     { "type_name", typeName }, { "alloc?", true },      { "is_array?", isArray },
+					     { "type_name", typeName }, { "alloc?", true },	 { "is_array?", isArray },
 					     { "is_struct?", false } };
 
 			if (isArray)
@@ -547,7 +547,7 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 	using namespace kainjow::mustache;
 
 	auto name = key.getName ();
-	name.erase (0, sizeof ("spec") - 1);
+	name.erase (0, sizeof ("spec:") - 1);
 
 	bool genType;
 	auto structType = getType (key, tagName, genType);

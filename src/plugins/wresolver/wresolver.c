@@ -10,7 +10,6 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbproposal.h>
 
 #include <kdbassert.h>
 #include <kdberrors.h>
@@ -78,10 +77,10 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_SYSTEM:
 		return &pks->system;
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		break;
 	}
 	ELEKTRA_ASSERT (0, "namespace %d not valid for resolving", keyGetNamespace (parentKey));
@@ -288,10 +287,10 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 		elektraResolveSystem (&p->system, errorKey);
 	// FALLTHROUGH
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		break;
 	}
 
@@ -317,10 +316,10 @@ int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		case KEY_NS_SYSTEM:
 			resolverClose (&ps->system); // FALLTHROUGH
 		case KEY_NS_PROC:
-		case KEY_NS_EMPTY:
 		case KEY_NS_NONE:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
+		case KEY_NS_DEFAULT:
 			break;
 		}
 
@@ -333,19 +332,20 @@ int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/wresolver"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/wresolver"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/wresolver", KEY_VALUE, "wresolver plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/wresolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/wresolver/exports/open", KEY_FUNC, elektraWresolverOpen, KEY_END),
-			keyNew ("system/elektra/modules/wresolver/exports/close", KEY_FUNC, elektraWresolverClose, KEY_END),
-			keyNew ("system/elektra/modules/wresolver/exports/get", KEY_FUNC, elektraWresolverGet, KEY_END),
-			keyNew ("system/elektra/modules/wresolver/exports/set", KEY_FUNC, elektraWresolverSet, KEY_END),
-			keyNew ("system/elektra/modules/wresolver/exports/error", KEY_FUNC, elektraWresolverError, KEY_END),
-			keyNew ("system/elektra/modules/wresolver/exports/checkfile", KEY_FUNC, elektraWresolverCheckFile, KEY_END),
+			30, keyNew ("system:/elektra/modules/wresolver", KEY_VALUE, "wresolver plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports", KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/open", KEY_FUNC, elektraWresolverOpen, KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/close", KEY_FUNC, elektraWresolverClose, KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/get", KEY_FUNC, elektraWresolverGet, KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/set", KEY_FUNC, elektraWresolverSet, KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/commit", KEY_FUNC, elektraWresolverCommit, KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/error", KEY_FUNC, elektraWresolverError, KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/checkfile", KEY_FUNC, elektraWresolverCheckFile, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/wresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/wresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -433,6 +433,11 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	return 1; /* success */
 }
 
+int elektraWresolverCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+{
+	return elektraWresolverSet (handle, returned, parentKey);
+}
+
 int elektraWresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
@@ -451,6 +456,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraWresolverGet,
 		ELEKTRA_PLUGIN_SET,	&elektraWresolverSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraWresolverError,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraWresolverCommit,
 		ELEKTRA_PLUGIN_END);
 }
 

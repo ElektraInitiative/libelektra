@@ -27,13 +27,13 @@ as desired.
 Either by either invoking [command-line tools](/doc/help/kdb.md):
 
 ```sh
-kdb set system/sw/samba/#0/current/global/workgroup MYGROUP
+kdb set system:/sw/samba/#0/current/global/workgroup MYGROUP
 ```
 
 Also by importing an INI file with the information:
 
 ```ini
-kdb import system/sw/samba/#0/current ini << HERE
+kdb import system:/sw/samba/#0/current ini << HERE
 [global]
 workgroup=MYGROUP
 HERE
@@ -49,7 +49,7 @@ with neither code generation nor error handling):
 int main ()
 {
 	ElektraError* error;
-	Elektra * elektra = elektraOpen ("system/sw/samba/#0/current", 0, &error);
+	Elektra * elektra = elektraOpen ("system:/sw/samba/#0/current", 0, &error);
 	elektraSetString (elektra, "global/workgroup", "MYGROUP", &error);
 	elektraClose (elektra);
 }
@@ -62,7 +62,7 @@ Or using some interpreted language like Python
 import kdb
 k = kdb.KDB()
 ks = kdb.KeySet()
-s = "system/sw/samba/#0/current"
+s = "system:/sw/samba/#0/current"
 k.get (ks, s)
 ks.append(kdb.Key(s+"/global/workgroup", kdb.KEY_VALUE, "MYGROUP"))
 k.set (ks, s)
@@ -75,7 +75,7 @@ change a configuration value.
 Key-value access in [puppet-libelektra](https://puppet.libelektra.org):
 
 ```
-kdbkey {'system/sw/samba/#0/current/global/workgroup':
+kdbkey {'system:/sw/samba/#0/current/global/workgroup':
 	ensure => 'present',
 	value => 'MYGROUP'
 }
@@ -84,7 +84,7 @@ kdbkey {'system/sw/samba/#0/current/global/workgroup':
 Key-value access in Chef:
 
 ```
-kdbset 'system/sw/samba/#0/current/global/workgroup' do
+kdbset 'system:/sw/samba/#0/current/global/workgroup' do
 	value 'MYGROUP'
 	action :create
 end
@@ -99,12 +99,12 @@ Key-value access in Ansible:
   tasks:
     - name: set workgroup
       elektra:
-        key: "system/sw/samba/#0/current/global/workgroup"
+        key: "system:/sw/samba/#0/current/global/workgroup"
         value: "MYGROUP"
 ```
 
 In all these examples, we have set
-`system/sw/samba/#0/current/global/workgroup` to `MYGROUP`.
+`system:/sw/samba/#0/current/global/workgroup` to `MYGROUP`.
 
 ## Application Integration
 
@@ -112,7 +112,7 @@ Different to other solutions, in Elektra
 [applications itself can be integrated](/doc/tutorials/application-integration.md),
 too.
 In Samba we would simply replace the configuration file parser
-with code like ([low-level C code](https://doc.libelektra.org/api/current/html/group__key.html),
+with code like ([low-level C code](https://doc.libelektra.org/api/latest/html/group__key.html),
 no error-handling and no cleanup):
 
 ```c
@@ -122,8 +122,8 @@ no error-handling and no cleanup):
 int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("/sw/samba/#0/current", KEY_CASCADING_NAME, KEY_END);
-	KDB * handle = kdbOpen (key);
+	Key * key = keyNew ("/sw/samba/#0/current", KEY_END);
+	KDB * handle = kdbOpen (NULL, key);
 	kdbGet (handle, myConfig, key);
 
 	Key * result = ksLookupByName (myConfig, "/sw/samba/#0/current/global/workgroup", 0);
@@ -148,7 +148,7 @@ shown above can be used. To make mounting more simple, we introduced an
 extra tool:
 
 ```sh
-kdb mount /etc/samba/smb.conf system/sw/samba/#0/current ini
+kdb mount /etc/samba/smb.conf system:/sw/samba/#0/current ini
 ```
 
 Mounting can also be done via configuration management
@@ -157,12 +157,12 @@ tools.
 Mounting in puppet-libelektra:
 
 ```
-kdbmount {'system/sw/samba/#0/current':
+kdbmount {'system:/sw/samba/#0/current':
 	ensure => 'present',
 	file => '/etc/samba/smb.conf',
 	plugins => 'ini'
 }
-kdbkey {'system/sw/samba/global/log level':
+kdbkey {'system:/sw/samba/global/log level':
 	ensure => 'absent'
 }
 ```
@@ -176,7 +176,7 @@ Mounting in Ansible:
   tasks:
     - name: set workgroup
     elektra:
-      mountpoint: system/sw/samba
+      mountpoint: system:/sw/samba
       file: /etc/samba/smb.conf
       plugins: ini
 ```
@@ -190,7 +190,7 @@ Then administrators do not need to guess.
 
 Next to the documentation for humans, specifications
 also provide information for software.
-For example, the [Web UI](/src/tools/web) automatically
+For example, the [Web UI](/src/tools/webui) automatically
 gives input fields according to the type of
 the configuration setting. For example, a boolean
 configuration setting gets a checkbox.
@@ -209,7 +209,7 @@ kdb set-meta /sw/samba/#0/current/global/workgroup description "This controls wh
 Key-value specifications in [puppet-libelektra](https://puppet.libelektra.org):
 
 ```
-kdbkey {'system/sw/samba/#0/current/global/workgroup':
+kdbkey {'system:/sw/samba/#0/current/global/workgroup':
 	ensure => 'present',
 	check => {
 		'type' => 'string',
@@ -224,7 +224,7 @@ kdbkey {'system/sw/samba/#0/current/global/workgroup':
 ```
 
 Note, that the specification (in both examples above) actually lands up in
-`spec/sw/samba/#0/current/global/workgroup`. The unique path to the
+`spec:/sw/samba/#0/current/global/workgroup`. The unique path to the
 configuration setting is `/sw/samba/#0/current/global/workgroup`, but
 the specification gets written to the [namespace](/doc/tutorials/namespaces.md)
 `spec`, while the system-configuration gets written to the namespace `system`.

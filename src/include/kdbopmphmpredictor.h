@@ -56,12 +56,12 @@ typedef enum
 
 typedef struct
 {
-	uint16_t history;       /*!< the global history register */
+	uint16_t history;	/*!< the global history register */
 	uint8_t * patternTable; /*!< the global pattern history table */
 	size_t size;		/*!< size of patternTable in bytes */
-	size_t lookupCount;     /*!< number of lookups made without alteration of the KeySet */
+	size_t lookupCount;	/*!< number of lookups made without alteration of the KeySet */
 	size_t ksSize;		/*!< number of keys in the KeySet */
-	predictorflag_t flags;  /*!< internal flags */
+	predictorflag_t flags;	/*!< internal flags */
 } OpmphmPredictor;
 
 /**

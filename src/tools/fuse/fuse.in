@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# @author Alexander Firbas <alexander.firbas@gmail.com>
+# @brief Mount the kdb as a FUSE-filesystem
+# @date 04.07.2021
+# @tags fuse
+
+# filled in by cmake; used to make python3 find our module "elektra_fuse"
+export PYTHONPATH="${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_DATA_FOLDER}/fuse"
+
+# call the modules main method, pass allong all arguments given to this wrapper
+python3 -c "import elektra_fuse;elektra_fuse.main()" "$@"

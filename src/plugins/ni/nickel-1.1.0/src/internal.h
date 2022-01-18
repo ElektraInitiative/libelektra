@@ -47,9 +47,9 @@ typedef struct elektraNi_node_struct * elektraNi_node;
 // A wrapper around FILE.
 typedef struct file_buf
 {
-	FILE * stream;       // the FILE
+	FILE * stream;	     // the FILE
 	Ds_vector_uc buffer; // the buffer
-	size_t pos;	  // current position for reading
+	size_t pos;	     // current position for reading
 
 } file_buf;
 #define FILE_BUF_INIT                                                                                                                      \

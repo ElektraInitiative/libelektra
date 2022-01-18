@@ -56,11 +56,12 @@ void key2xml (DOMDocument & doc, DOMElement & elem, string const & name ELEKTRA_
 	itKey.rewindMeta ();
 	while (Key const & meta = itKey.nextMeta ())
 	{
-		if (meta.getName () != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME)
+		auto metaName = meta.getName ().substr (sizeof ("meta:/") - 1);
+		if (metaName != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME && metaName != "array")
 		{
-			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", meta.getName ().c_str (), name.c_str (),
+			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", metaName.c_str (), name.c_str (),
 					   meta.get<string> ().c_str ());
-			elem.setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
+			elem.setAttribute (asXMLCh (metaName), asXMLCh (meta.get<string> ()));
 		}
 	}
 }
@@ -82,7 +83,7 @@ DOMElement * prepareArrayNodes (DOMDocument & doc, KeySet const & ks, Key & curr
 		KeySet arrayKeys = ckdb::elektraArrayGet (currentPathKey.getKey (), ks.getKeySet ());
 		for (auto ak : arrayKeys)
 		{
-			ELEKTRA_LOG_DEBUG ("Precreating array node %s", ak->getFullName ().c_str ());
+			ELEKTRA_LOG_DEBUG ("Precreating array node %s", ak->getName ().c_str ());
 			DOMElement * arrayNode = doc.createElement (asXMLCh (actualName));
 			arrays[ak] = arrayNode;
 			current->appendChild (arrayNode);
@@ -97,7 +98,7 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 	DOMNode * current = &doc;
 
 	// Find the key's insertion point, creating the path if non existent
-	ELEKTRA_LOG_DEBUG ("serializing key %s", key.getFullName ().c_str ());
+	ELEKTRA_LOG_DEBUG ("serializing key %s", key.getName ().c_str ());
 
 	// Strip the parentKey, as we use relative paths
 	auto parentName = parentKey.begin ();
@@ -108,7 +109,7 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 		name++;
 	}
 
-	if (name == key.end ()) throw XercesPluginException ("Key " + key.getFullName () + " is not under " + parentKey.getFullName ());
+	if (name == key.end ()) throw XercesPluginException ("Key " + key.getName () + " is not under " + parentKey.getName ());
 
 	// restore original root element name if present
 	const auto rootPos = name;
@@ -155,7 +156,7 @@ void xerces::serialize (Key const & parentKey, KeySet const & ks)
 	if (!parentKey.isValid ()) throw XercesPluginException ("Parent key is invalid");
 	if (parentKey.get<string> ().empty ()) throw XercesPluginException ("No destination file specified as key value");
 
-	ELEKTRA_LOG_DEBUG ("serializing relative to %s to file %s", parentKey.getFullName ().c_str (), parentKey.get<string> ().c_str ());
+	ELEKTRA_LOG_DEBUG ("serializing relative to %s to file %s", parentKey.getName ().c_str (), parentKey.get<string> ().c_str ());
 	DOMImplementation * impl = DOMImplementationRegistry::getDOMImplementation (asXMLCh ("Core"));
 	if (impl != NULL)
 	{
