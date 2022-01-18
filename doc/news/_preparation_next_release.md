@@ -188,6 +188,7 @@ _(Michael Tucek)_
 - Added verification to the "Validation" tutorial _(Ivaylo Ivanov)_
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added debian buster tutorial to python bindings tutorial _(@4ydan)_
+- made the debian tutorial a bit more precise and removed sudo command _(@4ydan)_
 - Fixed some typos in the "namespaces.md" documentation _(@muskater)_
 - Fix an error and some overmatching problems in scripts/sed and fix errors in documentation
   (by running the scripts/dev/fix-spelling script) _(Florian Lindner @flo91)_

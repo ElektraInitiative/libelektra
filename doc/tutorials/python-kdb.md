@@ -42,16 +42,12 @@ apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra
 docker run -it debian:buster
 apt-get update
 apt-get install ca-certificates
-apt-get install vim
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
+apt-get install vim gnupg
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
 vim /etc/apt/sources.list
 ```
 
-Add 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
-
-```sh
-vim /etc/apt/sources.list
-```
+Append 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
 
 ```sh
 apt-get update
