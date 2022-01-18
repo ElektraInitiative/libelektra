@@ -58,3 +58,10 @@ add_msr_test (cache_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/cache/shelltests
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_msr_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
 # ~~~
+
+# ==========
+# = Tutorials =
+# ==========
+
+# tutorials get added by TEST_README in add_plugin to test if all tutorials work (also the ones not yet included) uncomment: foreach (PLUGIN
+# ${ADDED_DIRECTORIES}) add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md") endforeach (PLUGIN)
