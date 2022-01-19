@@ -22,8 +22,9 @@ using namespace kdb;
  * @brief Validate key database subtree
  *
  * Validate the part of the database that is rooted by the key given in the first argument.
- * This is done by reading all key values, writing a different value, rewriting the original value and then re-setting the values
+ * This is done by reading all string key values, writing a different value, rewriting the original value and then re-setting the values
  * in the key database. All loaded validation plugins are hereby triggered and their warnings are returned.
+ * Only string keys are validated! Binary keys will be skipped!
  *
  * @param cl the command line
  *
