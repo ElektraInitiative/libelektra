@@ -14,19 +14,19 @@ their specifications.
 For keys to be validated, they must contain the 'check'-metakeys
 and the respective plugins for validation must be loaded
 for the backend that was used while mounting.
-If a validation is done while using 'kdb set'
-the same validation is also done by 'kdb validate'
+If a validation is done while using `kdb set` or `kdb get`
+the same validation is also done by `kdb validate`
 Only string keys are validated! Binary keys are skipped!
 
-Use -f to do a write test even if the previous read
+Use `-f` to do a write-test even if the previous read
 from the key database has issued warnings.
 
 ## OPTIONS
 
 - `-d`,`--debug`:
-  Give debug information or ask debug questions (in interactive mode).
+  Give debug information.
 - `-f`, `--force`:
-  Force the action to be done.
+Force writing the configuration even on warnings.
 - `-H`, `--help`:
   Show the man page.
 - `-p <name>`, `--profile <name>`:

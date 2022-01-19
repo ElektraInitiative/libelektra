@@ -100,9 +100,10 @@ int ValidateCommand::execute (Cmdline const & cl)
 		/* do lookup (needed for resolving cascading keys) */
 		Key lookupKey = ksPart.lookup (curKey);
 
-		if (lookupKey.isBinary ()) continue; // only validate string keys
+		/* only validate string keys */
+		if (lookupKey.isBinary ()) continue;
 
-		/* change value (to enable sync flag */
+		/* change value to enable sync flag */
 		lookupKey.setString (lookupKey.getString () + "^");
 
 		/* change value back to original */

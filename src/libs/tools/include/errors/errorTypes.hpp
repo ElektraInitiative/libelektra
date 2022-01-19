@@ -11,7 +11,10 @@ namespace tools
 namespace errors
 {
 
-/* Not an error by itself, but a container for multiple warnings */
+/* Not an Error by itself, but a container for multiple Warnings,
+ * like keys in the C-API have at most one error, but 0 to n warnings.
+ * This way the content of such a key can be stored in a single Error object,
+ * even if the key doesn't contain an actual error. */
 class PureWarningError : public Error
 {
 public:

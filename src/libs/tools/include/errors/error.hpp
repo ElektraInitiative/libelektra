@@ -23,10 +23,13 @@ public:
 	/**
 	 * @brief Add a warning to an error
 	 *
-	 * The warning is copied to make it independent from the source object. This way the same warning added to two different errors can be
+	 * The warning is copied to make it independent from the source object.
+	 * This way the same warning added to two different errors can be
 	 * changed independently.
 	 *
-	 * An Error can contain 0 to n warnings.
+	 * An object of type `Error` can contain 0 to n warnings,
+	 * like Keys in the C-API can contain one error,
+	 * but multiple warnings.
 	 *
 	 * @param warning the warning to add
 	 */

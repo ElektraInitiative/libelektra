@@ -12,9 +12,11 @@ namespace tools
 {
 namespace errors
 {
-/* common abstract class for warnings and errors */
-/* Because warning and errors share the same data members, a method can accept a ErrBase argument and the caller
- * can create an Error or a Warning based on the provided object. */
+/* Common abstract class for warnings and errors.
+ * Because warning and errors share the same data members,
+ * a method can accept a BaseNotification argument and
+ * the caller can create an Error or a Warning
+ * based on the provided object. */
 class BaseNotification
 {
 public:
@@ -46,7 +48,6 @@ public:
 
 	/* string representation */
 	friend std::ostream& operator<< (std::ostream& outputStream, const BaseNotification& eb);
-	/* compare */
 
 	/**
 	 * @brief Compare fields of notification objects
