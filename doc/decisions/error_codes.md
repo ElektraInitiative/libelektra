@@ -58,7 +58,7 @@ Various projects and standards:
   Currently they have 43 classes which all come from SQLSTATE. Postgres also throws additional errors but have to subclass it to one of the current 43 classes and have a special naming convention which have to start with a `P` in the subclass.
 - [etcd](https://github.com/etcd-io/etcd):
   Etcd's approach for errors are tightly coupled to the programming language Go as well as the [gRPC](https://grpc.io/) standard which currently has
-  [16 codes](https://godoc.org/google.golang.org/grpc/codes) defined. Some of these errors are similar or identical to those which will be used in elektra.
+  [16 codes](https://pkg.go.dev/google.golang.org/grpc/codes?utm_source=godoc) defined. Some of these errors are similar or identical to those which will be used in elektra.
   Every error of etcd is associated with one of these categories and gets its own error message which is specified in [this](https://github.com/etcd-io/etcd/blob/master/etcdserver/api/v3rpc/rpctypes/error.go) file. This concept though does not allow easy subclassing which might be useful (eg. further split FailedPrecondition into more specific errors like semantic and syntactic errors)
 - [Windows Registry](https://docs.microsoft.com/en-us/windows/desktop/sysinfo/registry):
   The registry does not use any specific error concept but takes the standard [Win32 Error Codes](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/18d8fbe8-a967-4f1c-ae50-99ca8e491d2d). These are neither hierarchical nor have any special ordering. Basically it is the same as elektra has now except for no duplicated

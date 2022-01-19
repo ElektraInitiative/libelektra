@@ -56,7 +56,7 @@ direct mapping, significantly simplifies the generated code (and maybe also the 
 
 ### Bindings for the `lowlevel` Library
 
-Your programming language of choice must provide a way to call into C code (like [cgo](https://golang.org/cmd/cgo/)).
+Your programming language of choice must provide a way to call into C code (like [cgo](https://pkg.go.dev/cmd/cgo/)).
 
 In general we prefer (in this order):
 

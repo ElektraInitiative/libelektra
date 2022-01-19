@@ -12,7 +12,7 @@ Elektra-web requires:
 
 - [Elektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/) installed
 - A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
-- [Go](https://golang.org/) with version > 1.13
+- [Go](https://go.dev/) with version > 1.13
 
 ## Building with elektra-web Tool
 
