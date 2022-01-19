@@ -39,6 +39,7 @@ opt_arg = 'none'
 def get_command_line_arguments():
 	global mount_point, root, typed, start_of_current_input, last_command, last_option, last_option_meta, command_or_option, opt_arg
 	wipe()
+	s = None
 	try:
 		opts, args = getopt.getopt(sys.argv[1:],'s:m:')
 	except getopt.GetoptError:
@@ -65,6 +66,9 @@ def get_command_line_arguments():
 			get_complete = i.getMeta(name='complete')
 			if get_complete and get_complete.value == 'command':
 				command_or_option = True
+	if s:
+		if "-" in s:
+			command_or_option = False
 	if len(args) > 0:
 		typed = args[0].split()
 		if command_or_option:
