@@ -1,5 +1,7 @@
 # Get Started
 
+This document is intended for developers who want to get started with developing with Elektra.
+
 ## Skill requirements
 
 - Operating system
