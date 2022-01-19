@@ -6,7 +6,7 @@
 
 ## DESCRIPTION
 
-Validate the values of keys below a given name using the loaded validation plugins (eg. range or validation) by reading all values, making them dirty by changing to another value, changing back to original and then writing that back to the key database.
+Validate the values of string keys below a given name using the loaded validation plugins (eg. range or validation) by reading all values, making them dirty by changing to another value, changing back to original and then writing that back to the key database.
 
 This command is useful for validating configuration files against
 their specifications.
@@ -16,6 +16,7 @@ and the respective plugins for validation must be loaded
 for the backend that was used while mounting.
 If a validation is done while using 'kdb set'
 the same validation is also done by 'kdb validate'
+Only string keys are validated! Binary keys are skipped!
 
 Use -f to do a write test even if the previous read
 from the key database has issued warnings.

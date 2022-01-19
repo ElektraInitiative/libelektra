@@ -33,7 +33,7 @@ public:
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Validate the values of keys below a given name.";
+		return "Validate the values of string keys below a given name.";
 	}
 
 	virtual std::string getLongHelpText () override
@@ -45,6 +45,7 @@ public:
 		       "for the backend that was used while mounting.\n"
 		       "If a validation is done while using 'kdb set'\n"
 		       "the same validation is also done by 'kdb validate'\n"
+		       "Only string keys are validated!\n"
 		       "\n"
 		       "Use -f to do a write test even if the previous read\n"
 		       "from the key database has issued warnings.";

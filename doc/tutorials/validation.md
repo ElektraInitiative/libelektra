@@ -304,7 +304,9 @@ kdb rm system:/tests/userbackup
 
 ## Validate Existing Keys
 
-To check if an existing set of keys can be read and written with the current validation rules `kdb validate` should be used. Validate will read the values of all keys under the point defined as argument in the command line, sets the key value to something different, then back to the original and finally writes that original value back to the key database. All loaded [validation plugins](/src/plugins/README.md) are now used to validate the values of keys with the necessary meta-keys (see above).
+To check if an existing set of keys can be read and written with the current validation rules `kdb validate` should be used. Validate will read the values of all string keys under the point defined as argument in the command line, sets the key value to something different, then back to the original and finally writes that original value back to the key database. All loaded [validation plugins](/src/plugins/README.md) are now used to validate the values of keys with the necessary meta-keys (see above).
+
+Only string keys are validated! Binary keys are skipped!
 
 ```sh
 # mount test config file and set a value
