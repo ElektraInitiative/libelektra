@@ -1,19 +1,18 @@
 #/usr/bin/env bash
 IFS=$'\n'
 
-_erm_find_completions() {
+_kdb_find_completions() {
 	COMPREPLY=()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 	local cur_str=""
-	local run=false
 	if ! [ -z "${cur}" ]; then
 		cur_str="-s ${cur}"
 	fi
-	local in=" "
+	in=" "
 	for ((i = 1; i < COMP_CWORD; i++)); do
 		in+=" ${COMP_WORDS[i]}"
 	done
-	output="$(python3 find_autocompletion_options.py -m spec/tests/autocomplete/erm ${cur_str} ${in})" 
+	output="$(python3 -m src -m system:/spec/autocomplete/kdb ${cur_str} ${in})"
 	COMPREPLY=($(compgen -W "${output}"))
 }
-complete -F _erm_find_completions erm
+complete -F _kdb_find_completions kdb

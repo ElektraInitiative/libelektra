@@ -2,13 +2,25 @@
 To get autocompletion to run you need to have python3 installed and the kdb-python Module up and running.
 For the kdb-python Module to run, the `~/.bashrc` needs to contain `export PYTHONPATH=${PYTHONPATH}:/PATH/TO/PYTHON`.
 
-## Bash
-### How to get it to run
-Assuming you are in the folder in which the spec file is located, you can run `sudo kdb mount $(pwd)/spec spec/autocomplete/name_of_program -f ni` to mount the file to `spec/autocomplete/name_of_program`.
-If a program has multiple commands, there needs to be one file for each command at the location `spec/autocomplete/name_of_program/name_of_command` mounted at the location `$(pwd)/spec spec/autocomplete/name_of_program/name_of_command`.
-To get the bash completion to run you need to run `source find_autocompletion_options.sh`. The specifiaction File that should be used needs to be mounted
-After that in your console you should be able to type `kdb <TAB><TAB>` and have completion options show up.
+## Setup environment with docker
+```
+docker run -it debian:buster
+apt-get update
+apt-get install ca-certificates
+apt-get install vim gnupg
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
+vim /etc/apt/sources.list
+```
+add the line deb https://debs.libelektra.org/buster buster main
+```
+apt-get update
+apt-get install elektra-bin
+apt-get install python3-elektra
+```
 
-### How to Run Tests
-Currently it is necessary to call the test-script from the folder the `find_autocompletion_options.py` is located.
-From this folder call `python3 test_SOME_TEST.py`.
+## Bash
+### Installation
+First mount your specfile to kdb
+```
+root@1b2868b1bac4:/libelektra/src/tools/autocompletion# ./install_bash.sh
+```

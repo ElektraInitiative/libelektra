@@ -1,4 +1,4 @@
-from find_autocompletion_options import *
+from autocompletion import *
 import string
 
 # option -s, run silent, only see if passed or not
@@ -15,7 +15,7 @@ def run_test(start_of_input, last_word, name_of_test_case):
 	global passed, failed, tests_run
 	tests_run+=1
 	# get the result from executing autocompletion
-	result = sorted(set_input_and_run('spec/tests/autocomplete/kdb', 'kdb', start_of_input, last_word, [], True, 'none', None, None).split())
+	result = sorted(set_input_and_run('system:/spec/autocomplete/kdb', 'kdb', start_of_input, last_word, [], True, 'none', None, None).split())
 	if not silent:
 		print('TESTCASE: ' + name_of_test_case)
 		print('RESULTS:')
@@ -69,4 +69,3 @@ if __name__ == "__main__":
 		print('SUCCESSES: ' + str(passed))
 	else:
 		print('ALL TESTS SUCCEEDED')
-
