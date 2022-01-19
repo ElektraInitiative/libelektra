@@ -64,9 +64,6 @@ public:
 protected:
 	BaseNotification () = default;
 
-	/* Can be overwritten by subclasses to change the text representation */
-	std::ostream& toString (std::ostream& outputStream) const;
-
 	/**
 	 * @brief Compare to another notification object
 	 *
@@ -79,6 +76,21 @@ protected:
 	 * @return true if objects are equal
 	 */
 	virtual bool compare(const BaseNotification& other) const;
+
+	/* Can be overwritten by subclasses to change the text representation */
+
+	/**
+	 * @brief Get a text representation of the notification.
+	 *
+	 * Is used in operator<<.
+	 * Can be overloaded by subclasses to append additional text.
+	 *
+	 * @param outputStream The stream to append the text to,
+	 * used by the operator `<<`
+	 *
+	 * @return The given stream with additional text appended.
+	 */
+	virtual std::ostream& toString (std::ostream& outputStream) const;
 
 private:
 	std::string m_reason;

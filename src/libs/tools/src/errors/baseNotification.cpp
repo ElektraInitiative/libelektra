@@ -30,14 +30,14 @@ void BaseNotification::setData (const std::string & reason, const std::string & 
 /* String representation */
 std::ostream& BaseNotification::toString (std::ostream & outputStream) const
 {
-	return outputStream << "Code: " << code()
-	        << "\nDescription: " << description()
-		<< "\nReason: " << m_reason
-		<< "\nModule: " << m_module
-		<< "\nFile: " << m_file
-		<< "\nMount point: " << m_mountPoint
-		<< "\nConfig file: " << m_configFile
-		<< "\nLine: " << std::to_string (m_line);
+	return outputStream << "Code: " << code () << std::endl
+			    << "Description: " << description () << std::endl
+			    << "Reason: " << m_reason << std::endl
+			    << "Module: " << m_module << std::endl
+			    << "File: " << m_file << std::endl
+			    << "Mount point: " << m_mountPoint << std::endl
+			    << "Config file: " << m_configFile << std::endl
+			    << "Line: " << std::to_string (m_line);
 }
 
 std::ostream& operator <<(std::ostream& outputStream, const BaseNotification& eb)
@@ -53,15 +53,15 @@ bool BaseNotification::compare(const BaseNotification& other ELEKTRA_UNUSED) con
 
 bool BaseNotification::operator== (const BaseNotification& other) const
 {
-	return code() == other.code()
-	       && description() == other.description()
-	       && reason() == other.reason()
-	       && module() == other.module()
-	       && file() == other.file()
-	       && mountPoint() == other.mountPoint()
-	       && configFile() == other.configFile()
-	       && line() == other.line()
-	       && this->compare(other);
+	return code () == other.code ()
+	       && description () == other.description ()
+	       && reason () == other.reason ()
+	       && module () == other.module ()
+	       && file () == other.file ()
+	       && mountPoint () == other.mountPoint ()
+	       && configFile () == other.configFile ()
+	       && line () == other.line ()
+	       && this->compare (other);
 }
 
 bool BaseNotification::operator!= (const BaseNotification& other) const
@@ -70,12 +70,12 @@ bool BaseNotification::operator!= (const BaseNotification& other) const
 }
 
 /* setters */
-std::string& BaseNotification::reason() { return m_reason; }
-std::string& BaseNotification::module() { return m_module; }
-std::string& BaseNotification::file() { return m_file; }
-std::string& BaseNotification::mountPoint() { return m_mountPoint; }
-std::string& BaseNotification::configFile() { return m_configFile; }
-kdb::long_t& BaseNotification::line() { return m_line; }
+std::string & BaseNotification::reason() { return m_reason; }
+std::string & BaseNotification::module() { return m_module; }
+std::string & BaseNotification::file() { return m_file; }
+std::string & BaseNotification::mountPoint() { return m_mountPoint; }
+std::string & BaseNotification::configFile() { return m_configFile; }
+kdb::long_t & BaseNotification::line() { return m_line; }
 
 /* getters */
 const std::string & BaseNotification::reason () const { return m_reason; }

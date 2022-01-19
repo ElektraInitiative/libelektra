@@ -7,12 +7,11 @@
  */
 
 #include <validate.hpp>
-
 #include <cmdline.hpp>
 #include <kdb.hpp>
-#include <kdbio.hpp>
 #include <errors/errorFactory.hpp>
 #include <iostream>
+#include <mergehelper.hpp> /* for removeNamespace (Key) */
 
 using namespace std;
 using namespace kdb;
@@ -39,37 +38,38 @@ int ValidateCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("1 argument needed");
 	}
 
-	cout << "The given path was: " << cl.arguments[0] << endl;
-
 	KeySet ksUnfiltered;
+
 	/* use the given cmd line argument as the start key */
 	Key root = cl.createKey (0);
 
-	/* if -f (force) was given, the namespace is kept
-	 * and check-constraints in the spec:/ namespace
-	 * are not considered --> the key can be set to a
-	 * value that does not pass the validation criteria,
-	 * otherwise a cascading key is created for the
-	 * following kdb.get() */
-	// Key parentKey = cl.getParentKey (root);
+	if (cl.verbose)
+	{
+		cout << "The name of the root key is: " + root.getName() << endl;
+	}
+
+	 /* Remove namespace -> create cascading key, so that
+	  * check-constraints in the spec:/ namespace are considered. */
+	Key parentKey = removeNamespace (root);
 
 	// do not resume on any get errors
 	// otherwise the user might break
 	// the config
 	kdb.get (ksUnfiltered, root);
 
-	stringstream streamWarnings;
-	//printWarnings (streamWarnings, root, cl.verbose, cl.debug);
+	/* Convert result of kdb.get to Error object of the C++ errors/warnings API */
+	tools::errors::Error *result =  tools::errors::ErrorFactory::fromKey (root);
 
-	string strWarnings = streamWarnings.str ();
-	if (strWarnings.empty ()) //TODO: currently not working (always as with -f) because of disabled printWarnings above
+	/* If no warnings or errors occurred, the ErrorFactory returns a nullptr. */
+	if (result)
 	{
-		cout << getFormattedSuccessString ("No warnings were issued! :)") << endl;
-	}
-	else
-	{
-		cerr << strWarnings;
-		root.clear ();
+		cout << getFormattedInfoString ("The following warnings were issued while"
+				" trying to get the values of the keys: ") << endl << endl;
+
+		cerr << *result << endl << endl;
+
+		/* After printing the Warnings, the object is no longer needed. */
+		delete result;
 
 		if (cl.force)
 		{
@@ -77,9 +77,6 @@ int ValidateCommand::execute (Cmdline const & cl)
 					"Because -f was given, we now try to set the values "
 					"despite warnings during getting them...")
 			     << endl;
-
-			// TODO: Check how to handle, printWarnings consumed the warnings
-			//root = cl.createKey (0);
 		}
 		else
 		{
@@ -87,9 +84,12 @@ int ValidateCommand::execute (Cmdline const & cl)
 					"The validation was stopped because of warnings "
 					"while getting the values!")
 			     << endl;
-			kdb.close ();
 			return 1;
 		}
+	}
+	else
+	{
+		cout << getFormattedSuccessString ("No warnings were issued! :)") << endl;
 	}
 
 	KeySet ksPart (ksUnfiltered.cut (root));
@@ -118,36 +118,36 @@ int ValidateCommand::execute (Cmdline const & cl)
 	try
 	{
 		kdb.set (ksPart, root);
-	}catch (KDBException & k) {
-		/* TODO: remove test code & refactor to use new c++ classes for whole function (instead of printWarnigns and printError) */
-		std::cout << std::endl << "################" << std::endl << "TEST NEW C++ CLASS:" << std::endl;
-		tools::errors::Error *err = tools::errors::ErrorFactory::fromKey (root);
-		std::cout << *err << std::endl << "INCLUDED WARNINGS: " << std::endl;
-		for (tools::errors::Warning *w : *err)
-			std::cout << *w << std::endl << "---------------" << std::endl;
-		delete err;
-		std::cout << "err deleted!" << std::endl << "################" << std::endl << std::endl;
+		return 0;
 	}
-
-	printWarnings (streamWarnings, root, cl.verbose, cl.debug);
-	printError (cerr, root, cl.verbose, cl.debug);
-
-	kdb.close ();
-	return 0;
+	catch (KDBException & k)
+	{
+		cout << getFormattedInfoString ("The following error was issued while trying to set the values back: ") << endl << endl;
+		result = tools::errors::ErrorFactory::fromKey (root);
+		cerr << *result << endl;
+		delete result;
+		return 1;
+	}
 }
 
 
 std::string ValidateCommand::getFormattedErrorString (const std::string & str)
 {
-	return getErrorColor (ANSI_COLOR::BOLD) + getErrorColor (ANSI_COLOR::MAGENTA) + str + getErrorColor (ANSI_COLOR::RESET);
+	return getErrorColor (ANSI_COLOR::BOLD)
+		+ getErrorColor (ANSI_COLOR::MAGENTA) + str
+		+ getErrorColor (ANSI_COLOR::RESET);
 }
 
 std::string ValidateCommand::getFormattedSuccessString (const std::string & str)
 {
-	return getStdColor (ANSI_COLOR::BOLD) + getStdColor (ANSI_COLOR::GREEN) + str + getStdColor (ANSI_COLOR::RESET);
+	return getStdColor (ANSI_COLOR::BOLD)
+		+ getStdColor (ANSI_COLOR::GREEN) + str
+		+ getStdColor (ANSI_COLOR::RESET);
 }
 
 std::string ValidateCommand::getFormattedInfoString (const std::string & str)
 {
-	return getStdColor (ANSI_COLOR::BOLD) + getStdColor (ANSI_COLOR::YELLOW) + str + getStdColor (ANSI_COLOR::RESET);
+	return getStdColor (ANSI_COLOR::BOLD)
+		+ getStdColor (ANSI_COLOR::YELLOW) + str
+		+ getStdColor (ANSI_COLOR::RESET);
 }

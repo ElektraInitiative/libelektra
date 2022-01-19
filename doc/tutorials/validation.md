@@ -310,26 +310,26 @@ Only string keys are validated! Binary keys are skipped!
 
 ```sh
 # mount test config file and set a value
-sudo kdb mount testvalidate.ini /tests/validate range dump
-kdb set user:/tests/validate/x 10
+sudo kdb mount range.ecf /tests/range range dump
 
-# add range check to value
-kdb meta-set spec:/tests/validate/x check/range "1-10"
+# set value
+kdb set user:/tests/range/value 5
+
+# add range check to all keys under /tests/range/
+kdb meta-set spec:/tests/range/_ check/range "1-10"
 
 # check if validate passes
-kdb validate /tests/validate
+kdb validate /tests/range
 
-# change allowed range
-kdb meta-set -f spec:/tests/validate/x check/range "1-5"
+# set new key to invalid value (with kdb set -f)
+kdb set -f user:/tests/range/value2 11
 
 # validation fails now
-kdb validate /tests/validate
+kdb validate /tests/range
 # RET:1
 
 # clean up
-kdb rm -r /tests/validate
-sudo kdb umount /tests/validate
-
-$end
+kdb rm -r /tests/range/
+sudo kdb umount /tests/range
 
 ```

@@ -1,7 +1,6 @@
 
 #ifndef ELEKTRA_ERRORTYPES_HPP
 #define ELEKTRA_ERRORTYPES_HPP
-
 #include "error.hpp"
 
 namespace kdb

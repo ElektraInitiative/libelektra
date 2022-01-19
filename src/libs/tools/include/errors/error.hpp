@@ -65,6 +65,22 @@ protected:
 	 * @return true if objects are equal
 	 */
 	bool compare(const BaseNotification& other) const override;
+
+	/**
+	 * @brief Create a text representation of the Error
+	 *
+	 * A string that contains the text representation
+	 * defined by baseNotification.cpp as well as the
+	 * text representation of all warnings that the
+	 * Error object contains appended to the given stream.
+	 *
+	 * @param outputStream The stream were the string representations
+	 * should be appended.
+	 *
+	 * @return The given stream with the created string
+	 * written to it.
+	 */
+	std::ostream & toString (std::ostream & outputStream) const override;
 };
 } // namespace errors
 } // namespace tools
