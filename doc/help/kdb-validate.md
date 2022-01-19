@@ -26,7 +26,7 @@ from the key database has issued warnings.
 - `-d`,`--debug`:
   Give debug information.
 - `-f`, `--force`:
-Force writing the configuration even on warnings.
+  Force writing the configuration even on warnings.
 - `-H`, `--help`:
   Show the man page.
 - `-p <name>`, `--profile <name>`:
@@ -37,4 +37,3 @@ Force writing the configuration even on warnings.
   Print version info.
 - `-C <when>`, `--color <when>`:
   Print `never/auto(default)/always` colored output.
-

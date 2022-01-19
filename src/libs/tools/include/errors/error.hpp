@@ -1,8 +1,8 @@
 #ifndef ELEKTRA_ERROR_HPP
 #define ELEKTRA_ERROR_HPP
 
-#include <vector>
 #include "errors/warning.hpp"
+#include <vector>
 
 namespace kdb
 {
@@ -15,10 +15,9 @@ namespace errors
 class Error : public BaseNotification
 {
 public:
-
 	/* inherit constructors */
 	using BaseNotification::BaseNotification;
-	virtual ~Error();
+	virtual ~Error ();
 
 	/**
 	 * @brief Add a warning to an error
@@ -39,21 +38,38 @@ public:
 	kdb::long_t warningCount ();
 
 	/* iterator functionality */
-	std::vector<Warning*>::iterator begin() { return warnings.begin(); }
-	std::vector<Warning*>::iterator end() { return warnings.end(); }
-	std::vector<Warning*>::const_iterator begin() const { return warnings.begin(); }
-	std::vector<Warning*>::const_iterator end() const { return warnings.begin(); }
-	std::vector<Warning*>::const_iterator cbegin() const { return warnings.cbegin(); }
-	std::vector<Warning*>::const_iterator cend() const { return warnings.cend(); }
+	std::vector<Warning *>::iterator begin ()
+	{
+		return warnings.begin ();
+	}
+	std::vector<Warning *>::iterator end ()
+	{
+		return warnings.end ();
+	}
+	std::vector<Warning *>::const_iterator begin () const
+	{
+		return warnings.begin ();
+	}
+	std::vector<Warning *>::const_iterator end () const
+	{
+		return warnings.begin ();
+	}
+	std::vector<Warning *>::const_iterator cbegin () const
+	{
+		return warnings.cbegin ();
+	}
+	std::vector<Warning *>::const_iterator cend () const
+	{
+		return warnings.cend ();
+	}
 
 	/* get warning by index */
-	Warning& operator[](int index);
+	Warning & operator[] (int index);
 
 private:
-	std::vector<Warning*> warnings;
+	std::vector<Warning *> warnings;
 
 protected:
-
 	/**
 	 * @brief Compare errors
 	 *
@@ -64,7 +80,7 @@ protected:
 	 *
 	 * @return true if objects are equal
 	 */
-	bool compare(const BaseNotification& other) const override;
+	bool compare (const BaseNotification & other) const override;
 
 	/**
 	 * @brief Create a text representation of the Error

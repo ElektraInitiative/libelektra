@@ -24,7 +24,7 @@ public:
 				 const std::string & mountPoint, const std::string & configFile, kdb::long_t line);
 
 	/* checks if a code and description fit together */
-	static bool checkWarningCodeDesc(const std::string & code, const std::string & description);
+	static bool checkWarningCodeDesc (const std::string & code, const std::string & description);
 };
 
 } // namespace errors

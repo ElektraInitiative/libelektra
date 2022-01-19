@@ -6,12 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <validate.hpp>
 #include <cmdline.hpp>
-#include <kdb.hpp>
 #include <errors/errorFactory.hpp>
 #include <iostream>
+#include <kdb.hpp>
 #include <mergehelper.hpp> /* for removeNamespace (Key) */
+#include <validate.hpp>
 
 using namespace std;
 using namespace kdb;
@@ -45,11 +45,11 @@ int ValidateCommand::execute (Cmdline const & cl)
 
 	if (cl.verbose)
 	{
-		cout << "The name of the root key is: " + root.getName() << endl;
+		cout << "The name of the root key is: " + root.getName () << endl;
 	}
 
-	 /* Remove namespace -> create cascading key, so that
-	  * check-constraints in the spec:/ namespace are considered. */
+	/* Remove namespace -> create cascading key, so that
+	 * check-constraints in the spec:/ namespace are considered. */
 	Key parentKey = removeNamespace (root);
 
 	// do not resume on any get errors
@@ -58,13 +58,16 @@ int ValidateCommand::execute (Cmdline const & cl)
 	kdb.get (ksUnfiltered, root);
 
 	/* Convert result of kdb.get to Error object of the C++ errors/warnings API */
-	tools::errors::Error *result =  tools::errors::ErrorFactory::fromKey (root);
+	tools::errors::Error * result = tools::errors::ErrorFactory::fromKey (root);
 
 	/* If no warnings or errors occurred, the ErrorFactory returns a nullptr. */
 	if (result)
 	{
-		cout << getFormattedInfoString ("The following warnings were issued while"
-				" trying to get the values of the keys: ") << endl << endl;
+		cout << getFormattedInfoString (
+				"The following warnings were issued while"
+				" trying to get the values of the keys: ")
+		     << endl
+		     << endl;
 
 		cerr << *result << endl << endl;
 
@@ -133,21 +136,15 @@ int ValidateCommand::execute (Cmdline const & cl)
 
 std::string ValidateCommand::getFormattedErrorString (const std::string & str)
 {
-	return getErrorColor (ANSI_COLOR::BOLD)
-		+ getErrorColor (ANSI_COLOR::MAGENTA) + str
-		+ getErrorColor (ANSI_COLOR::RESET);
+	return getErrorColor (ANSI_COLOR::BOLD) + getErrorColor (ANSI_COLOR::MAGENTA) + str + getErrorColor (ANSI_COLOR::RESET);
 }
 
 std::string ValidateCommand::getFormattedSuccessString (const std::string & str)
 {
-	return getStdColor (ANSI_COLOR::BOLD)
-		+ getStdColor (ANSI_COLOR::GREEN) + str
-		+ getStdColor (ANSI_COLOR::RESET);
+	return getStdColor (ANSI_COLOR::BOLD) + getStdColor (ANSI_COLOR::GREEN) + str + getStdColor (ANSI_COLOR::RESET);
 }
 
 std::string ValidateCommand::getFormattedInfoString (const std::string & str)
 {
-	return getStdColor (ANSI_COLOR::BOLD)
-		+ getStdColor (ANSI_COLOR::YELLOW) + str
-		+ getStdColor (ANSI_COLOR::RESET);
+	return getStdColor (ANSI_COLOR::BOLD) + getStdColor (ANSI_COLOR::YELLOW) + str + getStdColor (ANSI_COLOR::RESET);
 }

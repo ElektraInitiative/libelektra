@@ -1,6 +1,6 @@
 
-#include "iostream"
 #include "errors/error.hpp"
+#include "iostream"
 
 
 namespace kdb
@@ -14,41 +14,40 @@ namespace errors
 void Error::addWarning (Warning & warning)
 {
 	/* TODO: Decide if we should create copies or store the original warnings */
-	warnings.push_back (warning.clone());
+	warnings.push_back (warning.clone ());
 }
 
 /* getters */
 kdb::long_t Error::warningCount ()
 {
-	return warnings.size();
+	return warnings.size ();
 }
 
-Warning& Error::operator[](int index)
+Warning & Error::operator[] (int index)
 {
-	if(index >= warningCount())
+	if (index >= warningCount ())
 	{
-		throw std::out_of_range ("The warning with index " + std::to_string (index) + " was accessed, but there are only "
-					 + std::to_string(warningCount()) + " warnings stored in the Error-object!");
+		throw std::out_of_range ("The warning with index " + std::to_string (index) + " was accessed, but there are only " +
+					 std::to_string (warningCount ()) + " warnings stored in the Error-object!");
 	}
 	else
 	{
 		return (*(warnings[index]));
 	}
-
 }
 
-bool Error::compare(const BaseNotification& other) const
+bool Error::compare (const BaseNotification & other) const
 {
 	/* comparison of data fields is done by operator== in BaseNotification class */
-	const Error* pOtherError = dynamic_cast<const Error*> (&other);
-	if(!pOtherError || warnings.size() != pOtherError->warnings.size())
+	const Error * pOtherError = dynamic_cast<const Error *> (&other);
+	if (!pOtherError || warnings.size () != pOtherError->warnings.size ())
 	{
 		return false;
 	}
 	else
 	{
 		/* compare warnings */
-		for (const Warning *w : warnings)
+		for (const Warning * w : warnings)
 		{
 			/* Two errors are equal if they contain the same warnings (compared by member values),
 			 * even if they have different orders in the internal vector. */
@@ -58,7 +57,7 @@ bool Error::compare(const BaseNotification& other) const
 			 * two different Warnings (not the same address in mem) are considered equal
 			 * if the member values are equal. */
 			bool equalWarningFound = false;
-			for (const Warning *ow : pOtherError->warnings)
+			for (const Warning * ow : pOtherError->warnings)
 			{
 				if (*w == *ow)
 				{
@@ -74,23 +73,21 @@ bool Error::compare(const BaseNotification& other) const
 		}
 		return true;
 	}
-
 }
 Error::~Error ()
 {
-	for (Warning *w : warnings)
+	for (Warning * w : warnings)
 		delete w;
-
 }
 std::ostream & Error::toString (std::ostream & outputStream) const
 {
 	BaseNotification::toString (outputStream);
 
 	kdb::long_t i = 0;
-	if (warnings.size() > 0)
+	if (warnings.size () > 0)
 	{
 		outputStream << std::endl << std::endl << "The following warnings were attachted to the Error: " << std::endl << std::endl;
-		for (const Warning *w : warnings)
+		for (const Warning * w : warnings)
 			outputStream << "Warning " << ++i << ": " << std::endl << *w << std::endl;
 	}
 

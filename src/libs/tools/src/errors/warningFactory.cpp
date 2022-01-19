@@ -1,7 +1,7 @@
 
-#include <kdberrors.h> // for code and description constants
 #include "errors/warningFactory.hpp"
 #include "errors/warningTypes.hpp"
+#include <kdberrors.h> // for code and description constants
 
 namespace kdb
 {
@@ -10,8 +10,9 @@ namespace tools
 namespace errors
 {
 
-Warning* WarningFactory::create(const std::string & type, const std::string & reason, const std::string & module,
-				  const std::string & file, const std::string & mountPoint, const std::string & configFile, kdb::long_t line)
+Warning * WarningFactory::create (const std::string & type, const std::string & reason, const std::string & module,
+				  const std::string & file, const std::string & mountPoint, const std::string & configFile,
+				  kdb::long_t line)
 {
 	if (type == ELEKTRA_WARNING_RESOURCE || type == ELEKTRA_WARNING_RESOURCE_NAME)
 		return new ResourceWarning (reason, module, file, mountPoint, configFile, line);
@@ -35,7 +36,7 @@ Warning* WarningFactory::create(const std::string & type, const std::string & re
 		return nullptr;
 }
 
-bool WarningFactory::checkWarningCodeDesc(const std::string & code, const std::string & description)
+bool WarningFactory::checkWarningCodeDesc (const std::string & code, const std::string & description)
 {
 	if (code == ELEKTRA_WARNING_RESOURCE)
 		return (description == ELEKTRA_WARNING_RESOURCE_NAME);

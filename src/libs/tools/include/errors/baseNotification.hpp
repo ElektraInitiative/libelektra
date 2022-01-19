@@ -1,10 +1,10 @@
 #ifndef ELEKTRA_BASENOTIFICATION_HPP
 #define ELEKTRA_BASENOTIFICATION_HPP
 
-#include <string>
-#include <key.hpp>
-#include <utility>
 #include <kdbtypes.h>
+#include <key.hpp>
+#include <string>
+#include <utility>
 
 namespace kdb
 {
@@ -21,20 +21,20 @@ class BaseNotification
 {
 public:
 	/* constructor */
-	BaseNotification (std::string  reason, std::string  module, std::string  file, std::string mountPoint,
-			  std::string configFile, kdb::long_t line);
+	BaseNotification (std::string reason, std::string module, std::string file, std::string mountPoint, std::string configFile,
+			  kdb::long_t line);
 
 	/* setters */
-	void setData (const std::string & reason, const std::string & module, const std::string & file,
-		      const std::string & mountPoint, const std::string & configFile, kdb::long_t line);
+	void setData (const std::string & reason, const std::string & module, const std::string & file, const std::string & mountPoint,
+		      const std::string & configFile, kdb::long_t line);
 
 	/* get references (for setting and getting member values) */
-	std::string & reason();
-	std::string & module();
-	std::string & file();
-	std::string & mountPoint();
-	std::string & configFile();
-	kdb::long_t & line();
+	std::string & reason ();
+	std::string & module ();
+	std::string & file ();
+	std::string & mountPoint ();
+	std::string & configFile ();
+	kdb::long_t & line ();
 	const std::string & reason () const;
 	const std::string & module () const;
 	const std::string & file () const;
@@ -43,11 +43,11 @@ public:
 	const kdb::long_t & line () const;
 
 	/* fixed values per Class, taken from C-makro definitions in /src/include/kdberrors.h */
-	virtual std::string code() const = 0;
-	virtual std::string description() const = 0;
+	virtual std::string code () const = 0;
+	virtual std::string description () const = 0;
 
 	/* string representation */
-	friend std::ostream& operator<< (std::ostream& outputStream, const BaseNotification& eb);
+	friend std::ostream & operator<< (std::ostream & outputStream, const BaseNotification & eb);
 
 	/**
 	 * @brief Compare fields of notification objects
@@ -58,8 +58,8 @@ public:
 	 *
 	 * @return true if objects are equal
 	 */
-	bool operator== (const BaseNotification& other) const;
-	bool operator!= (const BaseNotification& other) const;
+	bool operator== (const BaseNotification & other) const;
+	bool operator!= (const BaseNotification & other) const;
 
 protected:
 	BaseNotification () = default;
@@ -75,7 +75,7 @@ protected:
 	 *
 	 * @return true if objects are equal
 	 */
-	virtual bool compare(const BaseNotification& other) const;
+	virtual bool compare (const BaseNotification & other) const;
 
 	/* Can be overwritten by subclasses to change the text representation */
 
@@ -90,7 +90,7 @@ protected:
 	 *
 	 * @return The given stream with additional text appended.
 	 */
-	virtual std::ostream& toString (std::ostream& outputStream) const;
+	virtual std::ostream & toString (std::ostream & outputStream) const;
 
 private:
 	std::string m_reason;

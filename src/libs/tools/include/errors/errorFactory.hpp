@@ -20,23 +20,23 @@ class ErrorFactory
 public:
 	/* takes one of the ELEKTRA_ERROR_* constants (e.g. ELEKTRA_ERROR_OUT_OF_MEMORY)
 	 * from /src/include/kdberrors.h as a parameter */
-	static Error * create (const std::string & type, const std::string & reason, const std::string & module,
-			       const std::string & file, const std::string & mountPoint, const std::string & configFile, kdb::long_t line);
+	static Error * create (const std::string & type, const std::string & reason, const std::string & module, const std::string & file,
+			       const std::string & mountPoint, const std::string & configFile, kdb::long_t line);
 
 	/**
 	 * @brief Create an error from a given key
 	 *
-	 * Reads meta-keys of given key to find error and warnings meta-keys. If no error exists a PureWarningError is created that contains the
-	 * key's warnings.
+	 * Reads meta-keys of given key to find error and warnings meta-keys. If no error exists a PureWarningError is created that contains
+	 * the key's warnings.
 	 *
 	 * @param key the key that has the error and warnings
 	 *
 	 * @return the error with warnings
 	 */
-	static Error * fromKey(kdb::Key key);
+	static Error * fromKey (kdb::Key key);
 
 	/* checks if a code and description fit together */
-	static bool checkErrorCodeDesc(const std::string & code, const std::string & description);
+	static bool checkErrorCodeDesc (const std::string & code, const std::string & description);
 };
 
 } // namespace errors

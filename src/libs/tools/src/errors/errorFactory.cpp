@@ -1,9 +1,9 @@
 
-#include <keyset.hpp>
-#include <kdberrors.h> // for code and description constants
 #include "errors/errorFactory.hpp"
-#include "errors/warningFactory.hpp"
 #include "errors/errorTypes.hpp"
+#include "errors/warningFactory.hpp"
+#include <kdberrors.h> // for code and description constants
+#include <keyset.hpp>
 
 namespace kdb
 {
@@ -12,8 +12,8 @@ namespace tools
 namespace errors
 {
 
-Error* ErrorFactory::create(const std::string & type, const std::string & reason, const std::string & module,
-				  const std::string & file, const std::string & mountPoint, const std::string & configFile, kdb::long_t line)
+Error * ErrorFactory::create (const std::string & type, const std::string & reason, const std::string & module, const std::string & file,
+			      const std::string & mountPoint, const std::string & configFile, kdb::long_t line)
 {
 	if (type == ELEKTRA_ERROR_RESOURCE || type == ELEKTRA_ERROR_RESOURCE_NAME)
 		return new ResourceError (reason, module, file, mountPoint, configFile, line);
@@ -41,20 +41,20 @@ Error* ErrorFactory::create(const std::string & type, const std::string & reason
 /* TODO: Test method */
 Error * ErrorFactory::fromKey (kdb::Key key)
 {
-	Error *err = nullptr;
-	if (key.isNull() || !key.isValid() || key.isBinary() || (!key.hasMeta("error") && !key.hasMeta("warnings")))
+	Error * err = nullptr;
+	if (key.isNull () || !key.isValid () || key.isBinary () || (!key.hasMeta ("error") && !key.hasMeta ("warnings")))
 	{
 		return nullptr;
 	}
 
 	if (!key.hasMeta ("error"))
 	{
-		err = new PureWarningError();
+		err = new PureWarningError ();
 	}
 	else
 	{
-		std::string errCode = key.getMeta<std::string>("error/number");
-		std::string errDesc = key.getMeta<std::string>("error/description");
+		std::string errCode = key.getMeta<std::string> ("error/number");
+		std::string errDesc = key.getMeta<std::string> ("error/description");
 
 		if (!checkErrorCodeDesc (errCode, errDesc))
 		{
@@ -63,12 +63,12 @@ Error * ErrorFactory::fromKey (kdb::Key key)
 		}
 		else
 		{
-			std::string module = key.getMeta<std::string>("error/module");
-			std::string file = key.getMeta<std::string>("error/file");
-			std::string reason = key.getMeta<std::string>("error/reason");
-			std::string mountPoint = key.getMeta<std::string>("error/mountpoint");
-			std::string configFile = key.getMeta<std::string>("error/configfile");
-			kdb::long_t line = key.getMeta<kdb::long_t>("error/line");
+			std::string module = key.getMeta<std::string> ("error/module");
+			std::string file = key.getMeta<std::string> ("error/file");
+			std::string reason = key.getMeta<std::string> ("error/reason");
+			std::string mountPoint = key.getMeta<std::string> ("error/mountpoint");
+			std::string configFile = key.getMeta<std::string> ("error/configfile");
+			kdb::long_t line = key.getMeta<kdb::long_t> ("error/line");
 
 			err = create (errCode, reason, module, file, mountPoint, configFile, line);
 		}
@@ -78,20 +78,20 @@ Error * ErrorFactory::fromKey (kdb::Key key)
 	 * Code for extracting warnings was adapted from src/libs/highlevel/elektra_error.c:elektraErrorFromKey (Key * key)
 	 * and /src/tools/kdb/coloredkdbio.h:printWarnings()
 	// TODO: use C++ binding version of keyMeta */
-	KeySet metaKeys (ckdb::ksDup (ckdb::keyMeta (key.getKey())));
+	KeySet metaKeys (ckdb::ksDup (ckdb::keyMeta (key.getKey ())));
 	Key warningsParent ("meta:/warnings", KEY_END);
 	KeySet warningKeys = metaKeys.cut (warningsParent);
 
-	if (warningKeys.size() > 0)
+	if (warningKeys.size () > 0)
 	{
-		for(auto it = warningKeys.begin() + 1; it != warningKeys.end (); ++it)
+		for (auto it = warningKeys.begin () + 1; it != warningKeys.end (); ++it)
 		{
-			if (it->isDirectBelow(warningsParent))
+			if (it->isDirectBelow (warningsParent))
 			{
 				auto name = it->getName ();
 
-				std::string warnCode = warningKeys.get<std::string>(name + "/number");
-				std::string warnDescription = warningKeys.get<std::string>(name + "/description");
+				std::string warnCode = warningKeys.get<std::string> (name + "/number");
+				std::string warnDescription = warningKeys.get<std::string> (name + "/description");
 
 				if (!WarningFactory::checkWarningCodeDesc (warnCode, warnDescription))
 				{
@@ -99,17 +99,17 @@ Error * ErrorFactory::fromKey (kdb::Key key)
 					return nullptr;
 				}
 
-				std::string warnReason = warningKeys.get<std::string>(name + "/reason");
-				std::string warnModule = warningKeys.get<std::string>(name + "/module");
-				std::string warnFile = warningKeys.get<std::string>(name + "/file");
+				std::string warnReason = warningKeys.get<std::string> (name + "/reason");
+				std::string warnModule = warningKeys.get<std::string> (name + "/module");
+				std::string warnFile = warningKeys.get<std::string> (name + "/file");
 
-				std::string warnMountPoint = warningKeys.get<std::string>(name + "/mountpoint");
-				std::string warnConfigFile = warningKeys.get<std::string>(name + "/configfile");
+				std::string warnMountPoint = warningKeys.get<std::string> (name + "/mountpoint");
+				std::string warnConfigFile = warningKeys.get<std::string> (name + "/configfile");
 
-				kdb::long_t warnLine = warningKeys.get<kdb::long_t>(name + "/line");
+				kdb::long_t warnLine = warningKeys.get<kdb::long_t> (name + "/line");
 
-				Warning *w = WarningFactory::create (warnCode, warnReason, warnModule, warnFile,
-								      warnMountPoint, warnConfigFile, warnLine);
+				Warning * w = WarningFactory::create (warnCode, warnReason, warnModule, warnFile, warnMountPoint,
+								      warnConfigFile, warnLine);
 				err->addWarning (*w);
 
 				/* Warning gets copied by addWarning(Warning &) */
@@ -121,7 +121,7 @@ Error * ErrorFactory::fromKey (kdb::Key key)
 	return err;
 }
 
-bool ErrorFactory::checkErrorCodeDesc(const std::string & code, const std::string & description)
+bool ErrorFactory::checkErrorCodeDesc (const std::string & code, const std::string & description)
 {
 	if (code == ELEKTRA_ERROR_RESOURCE)
 		return (description == ELEKTRA_ERROR_RESOURCE_NAME);
