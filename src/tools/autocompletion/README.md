@@ -31,7 +31,9 @@ source kdb_bash.sh
 kdb mount $(pwd)/spec/kdb-spec system:/spec/autocomplete/kdb -f ni
 ```
 
-### Fish
+## Fish
+
+### Installation
 
 ```
 # install the fish shell
