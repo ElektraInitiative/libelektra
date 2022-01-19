@@ -12,7 +12,7 @@ _kdb_find_completions() {
 	for ((i = 1; i < COMP_CWORD; i++)); do
 		in+=" ${COMP_WORDS[i]}"
 	done
-	output="$(python3 -m src -m system:/spec/autocomplete/kdb ${cur_str} ${in})"
+	output="$(python3 src/autocompletion.py -m system:/spec/autocomplete/kdb ${cur_str} ${in})"
 	COMPREPLY=($(compgen -W "${output}"))
 }
 complete -F _kdb_find_completions kdb

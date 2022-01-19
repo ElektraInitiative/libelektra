@@ -395,3 +395,8 @@ def wipe():
 	start_of_current_input = ''
 	command_or_option = False
 	opt_arg = 'none'
+
+if __name__ == '__main__':
+	get_command_line_arguments()
+	result = find_auto_completion_options()
+	print(result)

@@ -20,7 +20,7 @@ apt-get install python3-elektra
 
 ## Bash
 ### Installation
-First mount your specfile to kdb
 ```
-root@1b2868b1bac4:/libelektra/src/tools/autocompletion# ./install_bash.sh
+source kdb_bash.sh
+kdb mount $(pwd)/spec/kdb-spec system:/spec/autocomplete/kdb -f ni
 ```
