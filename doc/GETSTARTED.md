@@ -82,15 +82,6 @@
   kdb run_nokdbtests
   ```
 
-## Docker
-
-  In order to ease the above process, we also provide [up-to-date docker images](https://hub.docker.com/r/elektra/elektra) which you can use to try docker without having to install and run docker on your local machine.
-
-  More detailed tutorials on running specific taks or tools:
-- [General Docker readme](../../scripts/docker/README.md)
-- [Testing](run_all_tests_with_docker.md)
-- [WebUI](install-webui.md##-Getting-Started-(docker))
-- [Developing in python](python-kdb.md###-Debian-buster)
 
 ## Hello World!
 
