@@ -287,6 +287,7 @@ We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra
 ## Autocompletion
 
 - First prototype for bash-completion in the folder, currently completing for commands and options [autocompletion](/src/tools/autocompletion). _(Ulrike Schaefer)_
+- Added some proof of concept implementations for bash, fish and zsh. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 
 ## Finished Thesis
 
@@ -296,7 +297,7 @@ We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra
   with the low-level API and one with the high-level API. Then we did some benchmarks to compare them.
   Our results indicate, that Elektra is very much usable in real-world projects. However, we also found
   that there is still potential for further optimizations.
-Thanks to all authors for making this release possible!
+  Thanks to all authors for making this release possible!
 
 ## Join the Initiative!
 
