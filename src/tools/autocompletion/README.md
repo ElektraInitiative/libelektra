@@ -24,3 +24,15 @@ apt-get install python3-elektra
 source kdb_bash.sh
 kdb mount $(pwd)/spec/kdb-spec system:/spec/autocomplete/kdb -f ni
 ```
+
+### Fish
+
+```
+# install the fish shell
+apt install fish
+# run the fish shell
+fish
+kdb mount $(pwd)/spec/kdb-spec system:/spec/autocomplete/kdb -f ni
+# create a symbolic link for the shell completion
+ln -s src/tools/autocompletion/kdb.fish ~/.config/fish/completions/kdb.fish
+```
