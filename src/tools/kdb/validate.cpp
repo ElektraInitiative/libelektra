@@ -74,7 +74,7 @@ int ValidateCommand::execute (Cmdline const & cl)
 		/* After printing the Warnings, the object is no longer needed. */
 		delete result;
 
-		if (cl.force)
+		if (cl.force && cl.verbose)
 		{
 			cout << getFormattedInfoString (
 					"Because -f was given, we now try to set the values "
