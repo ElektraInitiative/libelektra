@@ -198,6 +198,7 @@ _(Michael Tucek)_
 - Added some improvements to the core api documentation _(@muskater)_
 - Update and improve the CLion tutorial (doc/tutorials/contributing-clion.md), add screenshots _(@flo91)_
 - Improve documentation for storage plugins _(@lawli3t)_
+- Add list of sources mentioning or linking to Elektra _(@JakobWonisch)_
 
 ## Tests
 
