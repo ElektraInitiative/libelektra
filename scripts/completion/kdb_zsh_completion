@@ -5,17 +5,53 @@
 #
 # ZSH completion file for KDB
 #
+#
+
+_kdb_paths () {
+    # Function to complete a KDB path by using `kdb complete`
+
+    typeset -a paths
+    # The current user input is saved in $PREFIX
+    # we can use kdb complete -M 1 $PREFIX to look up new paths
+    #
+    # as the _values function already completes with a seperator,
+    # we need to remove trailing slashes from the list.
+    paths=($(kdb complete -M 1 $PREFIX | sed 's#/$##'))
+
+    # Check if kdb complete got any result at all
+    if [ $#paths -eq 0 ]; then
+        _message "No key to complete"
+        return
+    fi
+
+    # Check if the supplied path completes to a leaf:
+    kdb complete $PREFIX | grep -q -e '/$'
+    if [ $? -eq 1 ] && [ $#paths -eq 1 ]; then
+        # Leaf
+        _message "$PREFIX is a leaf."
+        # If we have a leaf, we do not add the / seperator but a whitespace
+        _values 'kdb path' $paths
+        return
+    else
+        # Otherwise we add a / seperator
+        _values -s '/' 'kdb path' $paths
+    fi
+}
 
 _kdb() {
     local line state
 
     _arguments -C \
         "1: :->cmds" \
+        "*: :->path"
 
     case "$state" in
         cmds)
             _values "kdb command" \
                 $(python3 /home/jenkins/workspace/src/tools/autocompletion/src/autocompletion.py -m system:/spec/autocomplete/kdb -s "${line[1]}" | tr '\n' ' ')
+            ;;
+        *)
+            _kdb_paths
             ;;
     esac
 
