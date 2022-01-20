@@ -17,6 +17,9 @@ namespace errors
 class WarningFactory
 {
 public:
+	WarningFactory () = delete;
+	~WarningFactory () = delete;
+
 	/* takes one of the ELEKTRA_WARNING_* constants (e.g. ELEKTRA_WARNING_OUT_OF_MEMORY)
 	 * from /src/include/kdberrors.h as a parameter */
 	/* You must delete the object that is returned by this function! */

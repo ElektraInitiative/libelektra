@@ -48,7 +48,7 @@ public:
 		       "Only string keys are validated!\n"
 		       "\n"
 		       "Use -f to do a write test even if the previous read\n"
-		       "from the key database has issued warnings.";
+		       "from the key database has issued warnings.\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

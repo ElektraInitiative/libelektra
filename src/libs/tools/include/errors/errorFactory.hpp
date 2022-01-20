@@ -18,6 +18,9 @@ namespace errors
 class ErrorFactory
 {
 public:
+	ErrorFactory () = delete;
+	~ErrorFactory () = delete;
+
 	/* takes one of the ELEKTRA_ERROR_* constants (e.g. ELEKTRA_ERROR_OUT_OF_MEMORY)
 	 * from /src/include/kdberrors.h as a parameter */
 	static Error * create (const std::string & type, const std::string & reason, const std::string & module, const std::string & file,

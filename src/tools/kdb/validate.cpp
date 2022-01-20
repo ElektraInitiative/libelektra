@@ -50,7 +50,7 @@ int ValidateCommand::execute (Cmdline const & cl)
 
 	/* Remove namespace -> create cascading key, so that
 	 * check-constraints in the spec:/ namespace are considered. */
-	Key parentKey = removeNamespace (root);
+	root = removeNamespace (root);
 
 	// do not resume on any get errors
 	// otherwise the user might break
@@ -74,20 +74,20 @@ int ValidateCommand::execute (Cmdline const & cl)
 		/* After printing the Warnings, the object is no longer needed. */
 		delete result;
 
-		if (cl.force && cl.verbose)
-		{
-			cout << getFormattedInfoString (
-					"Because -f was given, we now try to set the values "
-					"despite warnings during getting them...")
-			     << endl;
-		}
-		else
+		if (!cl.force)
 		{
 			cerr << getFormattedErrorString (
 					"The validation was stopped because of warnings "
 					"while getting the values!")
 			     << endl;
 			return 1;
+		}
+		else if (cl.verbose)
+		{
+			cout << getFormattedInfoString (
+					"Because -f was given, we now try to set the values "
+					"despite warnings during getting them...")
+			     << endl;
 		}
 	}
 	else
@@ -127,7 +127,7 @@ int ValidateCommand::execute (Cmdline const & cl)
 	{
 		cout << getFormattedInfoString ("The following error was issued while trying to set the values back: ") << endl << endl;
 		result = tools::errors::ErrorFactory::fromKey (root);
-		cerr << *result << endl;
+		cerr << *result << endl << endl;
 		delete result;
 		return 1;
 	}
