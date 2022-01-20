@@ -101,7 +101,6 @@ Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for metadata):
 
 - [ni](ni/) parses INI files based on (including metadata)
-  [ni](https://lab.burn.capital/chaz-attic/bohr/-/blob/main/include/bohr/ni.h).
 
 Only suited for import/export:
 
