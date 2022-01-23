@@ -44,3 +44,6 @@ kdb mount $(pwd)/spec/kdb-spec system:/spec/autocomplete/kdb -f ni
 # create a symbolic link for the shell completion
 ln -s src/tools/autocompletion/kdb.fish ~/.config/fish/completions/kdb.fish
 ```
+
+Now you are able to have a basic command completion. The most important commands and the completion of keys are supported.
+If you change something in the _kdb.fish_ file, the shell will auto-refresh.
