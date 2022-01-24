@@ -1,88 +1,90 @@
 # Get Started
 
-- Skill requirements
+This document is intended for developers who want to get started with developing with Elektra.
 
-  - Operating system
+## Skill requirements
 
-    We recommend a Unix-based operating system to run Elektra (Linux, BSD, macOS) but it's also possible to use Windows which is supported but not yet fully tested.
+- Operating system
 
-  - Using command-line interface and commands
+  We recommend a Unix-based operating system to run Elektra (Linux, BSD, macOS) but it's also possible to use Windows which is supported but not yet fully tested.
 
-    The easiest way to compile, install and use Elektra is by using the terminal. We will introduce the basic commands which you will need to run Elektra for the very first time.
+- Using command-line interface and commands
 
-  - Basic knowledge about git
+  The easiest way to compile, install and use Elektra is by using the terminal. We will introduce the basic commands which you will need to run Elektra for the very first time.
 
-    Don't panic! [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
-    the source code of Elektra.
+- Basic knowledge about git
 
-  - Basic knowledge about make/cmake
+  Don't panic! [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
+  the source code of Elektra.
 
-    [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code. If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
+- Basic knowledge about make/cmake
 
-  - We also need your skill set to improve Elektra
+  [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code. If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
 
-    You can contribute to Elektra to improve the source code, website, documentation, translation etc.
+- We also need your skill set to improve Elektra
 
-- Software requirements
+  You can contribute to Elektra to improve the source code, website, documentation, translation etc.
 
-  We need to install some basic tools to run Elektra: cmake, git and essential build tools (make, gcc, and some standard Unix tools; alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here). Depending on your Linux distribution use the following commands to install these tools:
+## Software requirements
 
-  ```sh
-  sudo apt-get install cmake git build-essential
-  ```
+We need to install some basic tools to run Elektra: cmake, git and essential build tools (make, gcc, and some standard Unix tools; alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here). Depending on your Linux distribution use the following commands to install these tools:
 
-  Or on RPM (Red Hat Package Manager) based systems (like Fedora, openSUSE, CentOS etc.):
+```sh
+sudo apt-get install cmake git build-essential
+```
 
-  ```sh
-  sudo yum install -y cmake git gcc-c++
-  ```
+Or on RPM (Red Hat Package Manager) based systems (like Fedora, openSUSE, CentOS etc.):
 
-  Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew](https://brew.sh/). First, install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+```sh
+sudo yum install -y cmake git gcc-c++
+```
 
-  ```sh
-  brew install cmake git
-  ```
+Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew](https://brew.sh/). First, install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
-- Installation
+```sh
+brew install cmake git
+```
 
-  If you meet all the software requirements you can get the source code of Elektra by using this command:
+## Installation
 
-  ```sh
-  git clone https://github.com/ElektraInitiative/libelektra.git
-  ```
+If you meet all the software requirements you can get the source code of Elektra by using this command:
 
-  Run the following commands to compile Elektra with non-experimental plugins where your system happens to fulfill the dependencies:
+```sh
+git clone https://github.com/ElektraInitiative/libelektra.git
+```
 
-  ```sh
-  cd libelektra  #navigate to libelektra
-  mkdir build  && cd build  #create and navigate to the build directory
-  cmake ..  # watch output to see if everything needed is included
-  #  optionally run "ccmake .." to get an overview of the available build settings (needs cmake-curses-gui)
-  cmake --build . -- -j5
-  ```
+Run the following commands to compile Elektra with non-experimental plugins where your system happens to fulfill the dependencies:
 
-  Optionally you can also run tests, see [here for more information](/doc/TESTING.md):
+```sh
+cd libelektra  #navigate to libelektra
+mkdir build  && cd build  #create and navigate to the build directory
+cmake ..  # watch output to see if everything needed is included
+#  optionally run "ccmake .." to get an overview of the available build settings (needs cmake-curses-gui)
+cmake --build . -- -j5
+```
 
-  ```sh
-  cmake --build . --target run_nokdbtests
-  ```
+Optionally you can also run tests, see [here for more information](/doc/TESTING.md):
 
-  With these commands you will be able to run the "Hello World!" example, but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra. Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra (please check the [installation documentation](/doc/INSTALL.md) for the many available packages):
+```sh
+cmake --build . --target run_nokdbtests
+```
 
-  ```sh
-  sudo make install
-  sudo ldconfig #optional: check installation documentation for more information
-  ```
+With these commands you will be able to run the "Hello World!" example, but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra. Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra (please check the [installation documentation](/doc/INSTALL.md) for the many available packages):
 
-  [Installation documentation](/doc/INSTALL.md) contains further information about available packages.
+```sh
+sudo make install
+sudo ldconfig #optional: check installation documentation for more information
+```
 
-  Optionally you can also run tests to verify the installed Elektra, see [here for more information](/doc/TESTING.md):
+[Installation documentation](/doc/INSTALL.md) contains further information about available packages.
 
-  ```sh
-  kdb run_nokdbtests
-  ```
+Optionally you can also run tests to verify the installed Elektra, see [here for more information](/doc/TESTING.md):
 
-- Hello World!
+```sh
+kdb run_nokdbtests
+```
 
-  Start with your very first Elektra application in C and follow these steps:
-  [Hello World!](/doc/tutorials/hello-elektra.md)
+## Hello World!
+
+Start with your very first Elektra application in C and follow these steps:
+[Hello World!](/doc/tutorials/hello-elektra.md)

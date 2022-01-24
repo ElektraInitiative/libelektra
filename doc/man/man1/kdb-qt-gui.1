@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "README" "" "April 2021" ""
+.TH "README" "" "January 2022" ""
 .SH "Introduction"
 The tool \fBqt\-gui\fR offers a graphical interface for users of Elektra\. It allows users to create, manage, edit, and delete keys stored in the global key database (KDB)\.
 .SH "Compiling and Installation"
@@ -25,7 +25,20 @@ Optional dependencies are (are automatically deactivated if dependencies are not
 \fBQt5DBus\fR so that \fBqt\-gui\fR will be notified on changes\.
 .IP "" 0
 .P
-I was able to install the correct dependencies on my system, running Kubuntu 14\.10 using the command: \fBsudo apt\-get install qt5\-default qml\-module\-qtquick\-controls qml\-module\-qtquick\-dialogs qml\-module\-qtquick\-layouts qml\-module\-qtgraphicaleffects libdrm\-dev libmarkdown2\-dev libqt5svg5\-dev\fR
+On Ubuntu (tested on 14\.10 and 20\.04) you can install the dependencies with
+.IP "" 4
+.nf
+sudo apt\-get install \e
+    qt5\-default \e
+    qml\-module\-qtquick\-controls \e
+    qml\-module\-qtquick\-dialogs \e
+    qml\-module\-qtquick\-layouts \e
+    qml\-module\-qtgraphicaleffects \e
+    libdrm\-dev \e
+    libmarkdown2\-dev \e
+    libqt5svg5\-dev
+.fi
+.IP "" 0
 .SS "Change Notification"
 It is recommended to use the viewer mode if DBus notifications are expected\. Use "Settings \-> Viewermode" to activate the viewermode\.
 .P
@@ -56,4 +69,24 @@ The following command will launch the Qt\-GUI:
 kdb qt\-gui
 .fi
 .IP "" 0
+.P
+After that a window will open that looks something like that:
+.P
+.P
+You can mount a backend by going to \fIDatabase\fR \-\-> \fIMount Backend\|\.\|\.\|\.\fR
+.P
+.P
+This will open the mounting wizard where you can add a path:
+.P
+.P
+Next you can browse through the available backends and read their documentation\.
+.P
+.P
+After you are done reading the documentation you can close the window again\.
+.P
+If you want to add a new key to the database you can choose a namespace in the left panel then click on Edit \-\-> New \-\-> Key\. This will open a new window that looks like this:
+.P
+.P
+After entering the key information, you can view it in the list view\. Just click on the namespace you chose and select the key\.
+.P
 
