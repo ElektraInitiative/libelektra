@@ -34,7 +34,7 @@ int printProblems (Key const & k, std::string const & action, int off)
 	return (wo + eo * 2) << off;
 }
 
-int doKDBcheck (bool force)
+int doKDBcheck ()
 {
 	Key x;
 	try
@@ -54,18 +54,7 @@ int doKDBcheck (bool force)
 		}
 		ret += printProblems (a, "getting", 2);
 
-		if (force)
-		{
-			Key b ("/", KEY_END);
-			try
-			{
-				kdb.set (ks, b);
-			}
-			catch (...)
-			{
-			}
-			ret += printProblems (b, "setting", 4);
-		}
+		/* write checks now handled by 'kdb validate <key>*/
 
 		Key y;
 		kdb.close (y);
@@ -83,7 +72,7 @@ int PluginCheckCommand::execute (Cmdline const & cl)
 {
 	if (cl.arguments.size () == 0)
 	{
-		return doKDBcheck (cl.force);
+		return doKDBcheck ();
 	}
 
 	std::string name = cl.arguments[0];

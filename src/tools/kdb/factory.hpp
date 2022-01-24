@@ -62,6 +62,7 @@
 #include <specmount.hpp>
 #include <test.hpp>
 #include <umount.hpp>
+#include <validate.hpp>
 
 class Instancer
 {
@@ -130,6 +131,7 @@ public:
 		m_factory.insert (std::make_pair ("namespace", std::make_shared<Cnstancer<NamespaceCommand>> ()));
 		m_factory.insert (std::make_pair ("basename", std::make_shared<Cnstancer<BasenameCommand>> ()));
 		m_factory.insert (std::make_pair ("dirname", std::make_shared<Cnstancer<DirnameCommand>> ()));
+		m_factory.insert (std::make_pair ("validate", std::make_shared<Cnstancer<ValidateCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const
