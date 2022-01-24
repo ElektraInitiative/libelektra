@@ -204,6 +204,10 @@ _(Michael Tucek)_
 - Linked to the installation instruction of the webui in its README file and added references to Docker in the get-started-guide. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 - Added screenshots and a quick walk through in the Qt-GUI README. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 - Improve example for kdb-restore man page and fix typos _(@JakobWonisch)_
+- Improve example for kdb-restore man page and fix typos _(@JakobWonisch)_
+- <<TODO>>
+- Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
+- Added some improvements to the core api documentation _(@muskater)_
 
 ## Tests
 
