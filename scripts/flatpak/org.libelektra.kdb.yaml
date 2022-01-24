@@ -1,0 +1,53 @@
+app-id: org.libelektra.kdb
+runtime: org.kde.Platform
+runtime-version: '5.15'
+sdk: org.kde.Sdk
+command: /app/bin/kdb
+finish-args:
+  # allow X11 and wayland for running the GUI
+  - --socket=wayland
+  - --socket=x11
+  # allow host filesystem for actually saving key-value pairs
+  - --filesystem=host
+  - --env=LUA_CPATH="/app/lib/lua/5.2/?.so;"
+build-options:
+  build-args:
+    - --share=network
+modules:
+  - name: discount
+    sources:
+      - type: archive
+        url: http://www.pell.portland.or.us/~orc/Code/discount/discount-2.2.7.tar.bz2
+        sha256: b1262be5d7b04f3c4e2cee3a0937369b12786af18f65f599f334eefbc0ee9508
+    buildsystem: simple
+    cleanup:
+      - '*'
+    build-commands:
+      - ./configure.sh --prefix /app
+      - make
+      - make install
+
+  - name: libelektra
+    buildsystem: simple
+    cleanup:
+      - build
+    build-commands:
+      - mkdir build
+      - cd build && cmake .. -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=/app
+      - cmake --build build -- -j5
+      - cd build && make install
+      # Icon, desktop entry, metadata
+      - cp org.libelektra.kdb.svg /app/share/icons/hicolor/scalable/apps/
+      - cp org.libelektra.kdb.desktop /app/share/applications/
+      - mkdir /app/share/metainfo
+      - cp org.libelektra.kdb.appdata.xml /app/share/metainfo/
+    sources:
+      - type: git
+        url: https://github.com/ElektraInitiative/libelektra.git
+        tag: 0.9.8
+      - type: file
+        path: org.libelektra.kdb.desktop
+      - type: file
+        path: org.libelektra.kdb.svg
+      - type: file
+        path: org.libelektra.kdb.appdata.xml

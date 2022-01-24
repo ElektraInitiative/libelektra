@@ -220,7 +220,7 @@ _(Michael Tucek)_
 
 ## Packaging
 
-- <<TODO>>
+- add flatpak package. See `scripts/flatpak/README.md` and `scripts/flatpak/org.libelektra.kdb.yaml`for more info _(Ivaylo Ivanov)_
 - <<TODO>>
 - <<TODO>>
 

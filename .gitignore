@@ -79,3 +79,7 @@ modules.xml
 # Files for testing with docker (c.f. https://www.libelektra.org/tutorials/run-all-tests-with-docker)
 elektra-build-docker/
 elektra-install/
+
+# Flatpak directories
+.flatpak-builder/
+.flatpak-app/

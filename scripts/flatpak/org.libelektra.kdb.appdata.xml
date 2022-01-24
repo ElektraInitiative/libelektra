@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+  <id type="desktop">org.libelektra.kdb.desktop</id>
+  <metadata_license>CC0</metadata_license>
+  <project_license>BSD-3-Clause</project_license>
+  <description>
+    <p>
+      The Elektra Qt Editor offers a graphical interface for users of Elektra. It allows users to create, manage, edit, and delete keys stored in KDB.
+    </p>
+  </description>
+  <kudos>
+    <kudo>HiDpiIcon</kudo>
+    <kudo>HighContrast</kudo>
+    <kudo>ModernToolkit</kudo>
+    <kudo>UserDocs</kudo>
+  </kudos>
+  <screenshots>
+    <screenshot type="default">https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/doc/images/screenshot.png</screenshot>
+  </screenshots>
+  <url type="homepage">https://libelektra.org</url>
+  <updatecontact>elektra@markus-raab.org</updatecontact>
+</application>
