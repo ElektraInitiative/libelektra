@@ -276,7 +276,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - <<TODO>>
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
-- <<TODO>>
+- Update npm dependencies. _(Mihael Pranjić)_
 
 ## Other
 
