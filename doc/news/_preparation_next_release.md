@@ -111,6 +111,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Fix check for valid namespace in keyname creation _(@JakobWonisch)_
 - Fix `keyCopyMeta` not deleting non existant keys in destination (see #3981) _(@JakobWonisch)_
 
+- The `ELEKTRA_ERROR_*_NAME` and `ELEKTRA_WARNING_*_NAME` constants have been removed from the public API. Use `ELEKTRA_ERROR_*` and `ELEKTRA_WARNING_*` instead. _(Klemens Böswirth @kodebach)_
+
 ### <<Library1>>
 
 - <<TODO>>

@@ -19,7 +19,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	ResourceWarning * clone () const override;
 
 private:
@@ -32,7 +31,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	OutOfMemoryWarning * clone () const override;
 
 private:
@@ -45,7 +43,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	InstallationWarning * clone () const override;
 
 private:
@@ -58,7 +55,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	InternalWarning * clone () const override;
 
 private:
@@ -71,7 +67,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	InterfaceWarning * clone () const override;
 
 private:
@@ -84,7 +79,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	PluginMisbehaviorWarning * clone () const override;
 
 private:
@@ -97,7 +91,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	ConflictingStateWarning * clone () const override;
 
 private:
@@ -110,7 +103,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	ValidationSyntacticWarning * clone () const override;
 
 private:
@@ -123,7 +115,6 @@ public:
 	using Warning::Warning;
 
 	std::string code () const override;
-	std::string description () const override;
 	ValidationSemanticWarning * clone () const override;
 
 private:

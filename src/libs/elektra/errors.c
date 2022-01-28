@@ -116,15 +116,13 @@ static void setError (Key * key, const char * code, const char * name, const cha
 
 #define DEFINE_ERROR_AND_WARNING(cname)                                                                                                    \
 	const char * ELEKTRA_ERROR_##cname = ELEKTRA_ERROR_CODE_##cname;                                                                   \
-	const char * ELEKTRA_ERROR_##cname##_NAME = ELEKTRA_ERROR_CODE_##cname##_NAME;                                                     \
 	const char * ELEKTRA_WARNING_##cname = ELEKTRA_ERROR_CODE_##cname;                                                                 \
-	const char * ELEKTRA_WARNING_##cname##_NAME = ELEKTRA_ERROR_CODE_##cname##_NAME;                                                   \
                                                                                                                                            \
 	void elektraSetError##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...)       \
 	{                                                                                                                                  \
 		va_list va;                                                                                                                \
 		va_start (va, reason);                                                                                                     \
-		setError (key, ELEKTRA_ERROR_##cname, ELEKTRA_ERROR_##cname##_NAME, file, line, module, reason, va);                       \
+		setError (key, ELEKTRA_ERROR_CODE_##cname, ELEKTRA_ERROR_CODE_##cname##_NAME, file, line, module, reason, va);             \
 		va_end (va);                                                                                                               \
 	}                                                                                                                                  \
                                                                                                                                            \
@@ -132,7 +130,7 @@ static void setError (Key * key, const char * code, const char * name, const cha
 	{                                                                                                                                  \
 		va_list va;                                                                                                                \
 		va_start (va, reason);                                                                                                     \
-		addWarning (key, ELEKTRA_WARNING_##cname, ELEKTRA_WARNING_##cname##_NAME, file, line, module, reason, va);                 \
+		addWarning (key, ELEKTRA_ERROR_CODE_##cname, ELEKTRA_ERROR_CODE_##cname##_NAME, file, line, module, reason, va);           \
 		va_end (va);                                                                                                               \
 	}
 
@@ -146,136 +144,85 @@ DEFINE_ERROR_AND_WARNING (CONFLICTING_STATE)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SYNTACTIC)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
 
+#define ERROR_SPEC_KEYS(cname)                                                                                                             \
+	keyNew ("system:/elektra/modules/error/specification", KEY_VALUE, "the specification of all error codes", KEY_END),                \
+		keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_##cname, KEY_END),                               \
+		keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_##cname "/description", KEY_VALUE,               \
+			ELEKTRA_ERROR_CODE_##cname##_NAME, KEY_END)
+
 KeySet * elektraErrorSpecification (void)
 {
 	return ksNew (30,
-		      keyNew ("system:/elektra/modules/error/specification", KEY_VALUE, "the specification of all error codes", KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_RESOURCE, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_RESOURCE "/description", KEY_VALUE,
-			      ELEKTRA_ERROR_CODE_RESOURCE_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_OUT_OF_MEMORY, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_OUT_OF_MEMORY "/description", KEY_VALUE,
-			      ELEKTRA_ERROR_CODE_OUT_OF_MEMORY_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INSTALLATION, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INSTALLATION "/description", KEY_VALUE,
-			      ELEKTRA_ERROR_CODE_INSTALLATION_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERNAL, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERNAL "/description", KEY_VALUE,
-			      ELEKTRA_ERROR_CODE_INTERNAL_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERFACE, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_INTERFACE "/description", KEY_VALUE,
-			      ELEKTRA_ERROR_CODE_INTERFACE_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR "/description",
-			      KEY_VALUE, ELEKTRA_ERROR_CODE_PLUGIN_MISBEHAVIOR_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_CONFLICTING_STATE, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_CONFLICTING_STATE "/description", KEY_VALUE,
-			      ELEKTRA_ERROR_CODE_CONFLICTING_STATE_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC "/description",
-			      KEY_VALUE, ELEKTRA_ERROR_CODE_VALIDATION_SYNTACTIC_NAME, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC, KEY_END),
-		      keyNew ("system:/elektra/modules/error/specification/" ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC "/description",
-			      KEY_VALUE, ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME, KEY_END),
+		      // clang-format off
+		      ERROR_SPEC_KEYS (RESOURCE),
+		      ERROR_SPEC_KEYS (OUT_OF_MEMORY),
+		      ERROR_SPEC_KEYS (INSTALLATION),
+		      ERROR_SPEC_KEYS (INTERNAL),
+		      ERROR_SPEC_KEYS (INTERFACE),
+		      ERROR_SPEC_KEYS (PLUGIN_MISBEHAVIOR),
+		      ERROR_SPEC_KEYS (CONFLICTING_STATE),
+		      ERROR_SPEC_KEYS (VALIDATION_SYNTACTIC),
+		      ERROR_SPEC_KEYS (VALIDATION_SEMANTIC),
+		      // clang-format on
 		      KS_END);
 }
 
+#define MAYBE_TRIGGER_WARNING(cname, code, pk, msg)                                                                                        \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		if (strcmp (code, ELEKTRA_ERROR_CODE_##cname) == 0)                                                                        \
+		{                                                                                                                          \
+			ELEKTRA_ADD_##cname##_WARNING (pk, msg);                                                                           \
+			return;                                                                                                            \
+		}                                                                                                                          \
+	} while (0)
+
 void elektraTriggerWarnings (const char * nr, Key * parentKey, const char * message)
 {
-	if (strcmp (nr, ELEKTRA_WARNING_RESOURCE) == 0)
-	{
-		ELEKTRA_ADD_RESOURCE_WARNING (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_WARNING_OUT_OF_MEMORY) == 0)
+	// OOM error is different, so check that one first
+	if (strcmp (nr, ELEKTRA_ERROR_CODE_OUT_OF_MEMORY) == 0)
 	{
 		ELEKTRA_ADD_OUT_OF_MEMORY_WARNING (parentKey);
 		return;
 	}
-	if (strcmp (nr, ELEKTRA_WARNING_INSTALLATION) == 0)
-	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_WARNING_INTERNAL) == 0)
-	{
-		ELEKTRA_ADD_INTERNAL_WARNING (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_WARNING_INTERFACE) == 0)
-	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_WARNING_PLUGIN_MISBEHAVIOR) == 0)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_WARNING_CONFLICTING_STATE) == 0)
-	{
-		ELEKTRA_ADD_CONFLICTING_STATE_WARNING (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_WARNING_VALIDATION_SYNTACTIC) == 0)
-	{
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNING (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_WARNING_VALIDATION_SEMANTIC) == 0)
-	{
-		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNING (parentKey, message);
-		return;
-	}
+
+	MAYBE_TRIGGER_WARNING (RESOURCE, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (INSTALLATION, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (INTERNAL, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (INTERFACE, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (PLUGIN_MISBEHAVIOR, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (CONFLICTING_STATE, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (VALIDATION_SYNTACTIC, nr, parentKey, message);
+	MAYBE_TRIGGER_WARNING (VALIDATION_SEMANTIC, nr, parentKey, message);
 	ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Unkown warning code %s", nr);
 }
 
+#define MAYBE_TRIGGER_ERROR(cname, code, pk, msg)                                                                                          \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		if (strcmp (code, ELEKTRA_ERROR_CODE_##cname) == 0)                                                                        \
+		{                                                                                                                          \
+			ELEKTRA_SET_##cname##_ERROR (pk, msg);                                                                             \
+			return;                                                                                                            \
+		}                                                                                                                          \
+	} while (0)
+
 void elektraTriggerError (const char * nr, Key * parentKey, const char * message)
 {
-	if (strcmp (nr, ELEKTRA_ERROR_RESOURCE) == 0)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_ERROR_OUT_OF_MEMORY) == 0)
+	// OOM error is different, so check that one first
+	if (strcmp (nr, ELEKTRA_ERROR_CODE_OUT_OF_MEMORY) == 0)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		return;
 	}
-	if (strcmp (nr, ELEKTRA_ERROR_INSTALLATION) == 0)
-	{
-		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_ERROR_INTERNAL) == 0)
-	{
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_ERROR_INTERFACE) == 0)
-	{
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_ERROR_PLUGIN_MISBEHAVIOR) == 0)
-	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_ERROR_CONFLICTING_STATE) == 0)
-	{
-		ELEKTRA_SET_CONFLICTING_STATE_ERROR (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_ERROR_VALIDATION_SYNTACTIC) == 0)
-	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, message);
-		return;
-	}
-	if (strcmp (nr, ELEKTRA_ERROR_VALIDATION_SEMANTIC) == 0)
-	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, message);
-		return;
-	}
+
+	MAYBE_TRIGGER_ERROR (RESOURCE, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (INSTALLATION, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (INTERNAL, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (INTERFACE, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (PLUGIN_MISBEHAVIOR, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (CONFLICTING_STATE, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (VALIDATION_SYNTACTIC, nr, parentKey, message);
+	MAYBE_TRIGGER_ERROR (VALIDATION_SEMANTIC, nr, parentKey, message);
 	ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Unkown error code %s", nr);
 }

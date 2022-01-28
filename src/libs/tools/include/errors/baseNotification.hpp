@@ -21,12 +21,12 @@ class BaseNotification
 {
 public:
 	/* constructor */
-	BaseNotification (std::string reason, std::string module, std::string file, std::string mountPoint, std::string configFile,
-			  kdb::long_t line);
+	BaseNotification (std::string description, std::string reason, std::string module, std::string file, std::string mountPoint,
+			  std::string configFile, kdb::long_t line);
 
 	/* setters */
-	void setData (const std::string & reason, const std::string & module, const std::string & file, const std::string & mountPoint,
-		      const std::string & configFile, kdb::long_t line);
+	void setData (const std::string & description, const std::string & reason, const std::string & module, const std::string & file,
+		      const std::string & mountPoint, const std::string & configFile, kdb::long_t line);
 
 	/* get references (for setting and getting member values) */
 	std::string & reason ();
@@ -35,6 +35,7 @@ public:
 	std::string & mountPoint ();
 	std::string & configFile ();
 	kdb::long_t & line ();
+	const std::string & description () const;
 	const std::string & reason () const;
 	const std::string & module () const;
 	const std::string & file () const;
@@ -44,7 +45,6 @@ public:
 
 	/* fixed values per Class, taken from C-makro definitions in /src/include/kdberrors.h */
 	virtual std::string code () const = 0;
-	virtual std::string description () const = 0;
 
 	/* string representation */
 	friend std::ostream & operator<< (std::ostream & outputStream, const BaseNotification & eb);
@@ -93,6 +93,7 @@ protected:
 	virtual std::ostream & toString (std::ostream & outputStream) const;
 
 private:
+	std::string m_description;
 	std::string m_reason;
 	std::string m_module;
 	std::string m_file;
