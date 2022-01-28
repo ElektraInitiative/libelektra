@@ -16,7 +16,6 @@ section here.
 
 - [Unit Testing](unit_testing.md)
 - [Script Testing](script_testing.md)
-- [Library Split](library_split.md)
 - [Bootstrap](bootstrap.md)
 - [Empty Files](empty_files.md)
 - [CMake Plugins](cmake_plugins.md)
@@ -30,44 +29,60 @@ section here.
 - [High-level API Help Message](highlevel_help_message.md)
 - [Global KeySet](global_keyset.md)
 - [Rest API Documentation](rest_api_documentation.md)
-- [Ingroup Removal](ingroup_removal.md)
 - [Commit Function](commit_function.md)
-- [Error Message Format](error_message_format.md)
-- [Default Values](default_values.md)
-- [High Level API](high_level_api.md)
 - [Error codes](error_codes.md)
+- [Error Message Format](error_message_format.md)
 - [Error code implementation](error_code_implementation.md)
+- [Default Values](default_values.md)
 - [Semantics for Name](semantics_name.md)
 - [Base Name](base_name.md)
 - [Lookup every key](lookup_every_key.md)
 - [Holes and Non-leaf values](holes.md)
 - [Multiple File Backends](multiple_file_backends.md)
-- [Boolean](boolean.md)
-
-## In Progress
-
-- [Global Plugins](global_plugins.md) (@mpranj)
 - [Ensure](ensure.md) (@kodebach)
-- [Capabilities](capabilities.md) (@markus2330)
-- [Error Semantics](error_semantics.md) (API)
-- [Error Handling](error_handling.md)
-- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
-- [Functions copying into buffer](functions_with_buffers.md)
+- [Null](null.md)
+- [Memory Layout](memory_layout.md)
 
-## Decided
+## Mostly Implemented
 
 - [Array for Warnings](warning_array.md)
 - [Array](array.md)
-- [Iterators](iterators.md)
-- [keyString() return value](key_string_return_value.md)
+- [Boolean](boolean.md)
 - [Reference Counting](reference_counting.md)
+
+## Decided
+
+- [Capabilities](capabilities.md) (@markus2330)
+- [Make elektraMalloc et al. private](elektra_malloc.md)
+
+## In Progress
+
+- [Iterators](iterators.md)
+- Replace all internal iterators
+- Binary
+- keyName rename
+- [Simplify API](simplify_api.md) (@lawli3t will make proposal of new API)
 
 ## In Discussion
 
-- [Escaped Name](escaped_name.md) merge with:
+- [Binary](binary.md)
 - [Store the escaped and/or unescaped key name](store_name.md)
+- [keyString() return value](key_string_return_value.md)
+- [Global Plugins](global_plugins.md) (@mpranj)
+- [Error Semantics](error_semantics.md) (API)
+- [Error Handling](error_handling.md)
+- [Remove functions copying into buffer](functions_with_buffers.md)
+- [Escaped Name](escaped_name.md) merge with:
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
+- [Elektra Prefix](elektra_prefix.md)
+- [Library Split](library_split.md)
+
+## Drafts
+
+- [Notifications](notifications.md)
+- [Library Directory Structure](library_directory_structure.md)
+- [Header File Structure](header_file_structure.md)
 
 ## Delayed
 
@@ -76,6 +91,7 @@ section here.
 
 ## Rejected
 
+- [Key Name as separate class](separate_key_name.md)
 - [CMake spec](cmake_spec.md)
 - [Null Pointer Checks](null_pointer_checks.md)
 - [Elektra Web Publish Subscribe](elektra_web_pubsub.md)

@@ -180,7 +180,7 @@ _(Michael Tucek)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
 - Improve wording and formatting of DESIGN.md _(@lawli3t)_
 - Correct various typing-, spelling- and grammar-errors in the .md-files in the directory doc and its subdirectories. _(Florian Lindner @flo91)_
-- Added documentation for decision meeting from 15.07.2021 _(@lawli3t)_
+- Continue 1.0 decisions. _(Markus Raab and @lawli3t)_
 - <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
 - Add a new example on how to use keyCopy. _(@muskater)_

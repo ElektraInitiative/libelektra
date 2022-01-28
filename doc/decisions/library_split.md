@@ -2,15 +2,19 @@
 
 ## Problem
 
-libelektra.so contains KDB and Key(Set) but plugins only need Key(Set) but not KDB.
+Only libelektra-core is supposed to access private data but this contradicts the goal to keep the library minimal.
+`kdbprivate.h` was too generic, it contained many other parts next to the struct definitions of Key/KeySet.
 
 ## Constraints
 
-- full and static libraries remain unchanged
+- The [C99 standard, section 5.2.4.1](http://www.open-std.org/jtc1/sc22/wg14/) gives following limit:
+  4095 external identifiers in one translation unit
+- Some parts of Elektra, like `mmapstorage` need access to private data structure.
+- Elektra does not support several different struct definitions of Key/KeySet.
+  Alternative implementations that want to coexist (e.g. `mmapstorage` should still work)
+  must use the same struct definitions of Key/KeySet.
 
 ## Assumptions
-
-- linker overhead of less than a dozen libraries is not measurable
 
 ## Considered Alternatives
 
@@ -18,44 +22,23 @@ libelektra.so contains KDB and Key(Set) but plugins only need Key(Set) but not K
 
 ## Decision
 
-- [split library](/src/libs)
+Also allow `libelektra-operations` library to access private Key/KeySet.
+Put struct definitions of Key/KeySet in a separate header file, which gets
+included by parts that need it
 
 ## Rationale
 
-- allows various users (plugins, applications) to link to exactly what they need
+- allows various users (plugins, applications) to link to (more or less) exactly what they need
 - allows symbol versioning on different levels (for different evolving libraries)
-- allows alternative implementation of parts of Elektra, e.g. a new libkdb which still uses libcore
-- easier to navigate in source tree
+- allows alternative implementation of parts of Elektra, e.g. a libcore written in Rust
 - facilitates code reuse between plugins
-- easier entrance to create commonly used libs (less fear of "changes in the core" for some helper functionality)
 
 ## Implications
 
-- bindings need to decide which parts to link against
-- plugins and applications need changes
-- we need to get rid of the legacy library
+- we need to clearly communicate which plugins/libraries must be exactly in the version of the libelektra-core
 
 ## Related Decisions
 
 - none
 
 ## Notes
-
-- was discussed in a meeting, all were in favor (or did not say anything)
-
-Sizes of libelektra.so
-
-- 0.8.14 unmodified 128K
-- 0.8.14 w/o meta.c 120K
-- 0.8.14 w/o array 126K
-
-So the removal of the non-core functionality is actually relevant.
-And kdb/core is now nearly half-split:
-
-- 52K lib/libelektra-core.so.0.8.14
-- 7,5K lib/libelektra-ease.so.0.8.14
-- 1,3M lib/libelektra-full.so.0.8.14
-- 76K lib/libelektra-kdb.so.0.8.14
-- 9,3K lib/libelektra-meta.so.0.8.14
-- 5,1K lib/libelektra-plugin.so.0.8.14
-- 7,6K lib/libelektra-proposal.so.0.8.14

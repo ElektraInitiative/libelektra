@@ -40,7 +40,7 @@ None.
 
 ## Decision
 
-Develop shell recorder and tutorial wrapper.
+Develop [shell recorder](tests/shell/shell_recorder) and [tutorial wrapper](tests/shell/shell_recorder/tutorial_wrapper).
 
 ## Rationale
 

@@ -5,17 +5,13 @@
 Currently, the default backend (default.ecf) will also be used for bootstrapping. There are two problems with this approach:
 
 1. Thus the default backend first will be read with parentKey `system:/elektra` and later with parentKey `system:/`, it needs to store absolute paths and thus won't work with most of the plugins (except dump).
-2. When `system` is large without mount points, everything is reread twice during bootstrapping.
+2. When `system:` is large without mount points, everything is reread twice during bootstrapping.
 
 ## Constraints
 
-- be compatible to mount points stored in `defaults.ecf`
-- nice migration phase
-- new setups should never bother about the compatibility mode
+- Bootstrap should be fast and not unnecessarily read large files
 
 ## Assumptions
-
-- Bootstrap should be fast and not unnecessarily read large files
 
 ## Considered Alternatives
 
@@ -34,22 +30,17 @@ The default backend reading `default.ecf` is only relevant as long as no root ba
 Algorithm:
 
 1. try to get system:/elektra using the file elektra.ecf (KDB_DB_INIT)
-2. if it works, mount the init backend to system:/elektra
+2. mount the init backend to system:/elektra
 
 ## Rationale
 
-- Solves both problems
-- Is fully compatible with any existing setup
-- People can decide if and how to migrate
-
 ## Implications
-
-- added scripts/upgrade-bootstrap
 
 ## Related Decisions
 
 ## Notes
 
+Added scripts/upgrade-bootstrap to migrate from previous setups
 to upgrade to new system, either:
 
 - touch /etc/kdb/elektra.ecf (loses old mount points)

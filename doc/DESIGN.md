@@ -56,30 +56,22 @@ are more allocations happening, but they are invisible to the user of
 the API and happen implicitly within any of these 3 classes:
 `KDB`, `Key` and `KeySet`.
 
-Key names and values cannot be handled as easy, because Elektra
-does not provide a string library. There are 2 ways to access the
-mentioned attributes. The function
+Key names and values cannot be handled as easy without helper libraries,
+because Elektra does not provide a string library. The function
 
 ```c
-const char *keyString(const Key *key);
+const void *keyValue(const Key *key);
 ```
 
-returns a string. You are not allowed to change the returned string.
+returns a value. You are not allowed to change the returned value.
+The life time is bound to the `Key`.
 The function
 
 ```c
-ssize_t keyGetValueSize(const Key *key);
+ssize_t keyValueSize(const Key *key);
 ```
 
-shows how long the string is for the specified key. The returned value
-also specifies the minimum buffer size that `keyGetString` will
-reserve for the copy of the key.
-
-```c
-ssize_t keyGetString(const Key *key, char *returnedValue, size_t maxSize);
-```
-
-writes the comment in a buffer maintained by you.
+gives the length of the value in bytes.
 
 ## Variable Arguments
 
@@ -123,68 +115,6 @@ null byte included.
 database. The functions are implemented in `src/libs/elektra` in ANSI C.
 
 Useful extensions are available in [further libraries](/src/libs).
-
-## Value, String or Binary
-
-Sometimes people confuse the terms “value”, “string” and “binary”:
-
-- Value is just a name which does not specify if data is stored as
-  string or in binary form.
-
-- A string is a char array, with a terminating `'\0'`.
-
-- Binary data is stored in an array of type void, and not terminated by
-  `'\0'`.
-
-See also [the glossary](/doc/help/elektra-glossary.md) for further
-terminology.
-
-In Elektra `char*` are used as null-terminated strings, while `void*`
-might contain `0`-bytes:
-
-```c
-const void *keyValue(const Key *key);
-```
-
-does not specify whether the returned value is binary or a string. The
-function just returns the pointer to the value. When `key` is a string
-(check with `keyIsString`) at least `""` will be returned. See section
-“Return Values” to learn more about common values returned by Elektra’s
-functions. For binary data a `NULL` pointer is also possible to
-distinguish between no data and `'\0'`.
-
-```c
-ssize_t keyGetValueSize(const Key *key);
-```
-
-does not specify whether the key type is binary or string. The function
-just returns the size which can be passed to `elektraMalloc` to hold
-the entire value.
-
-```c
-ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
-```
-
-stores the string into a buffer maintained by you.
-
-```c
-ssize_t keySetString(Key *key, const char *newString);
-```
-
-sets the null terminated string value for a certain key.
-
-```c
-ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
-```
-
-retrieves binary data which might contain `'\0'`.
-
-```c
-ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
-```
-
-sets the binary data which might contain `'\0'`. The length is given
-by `dataSize`.
 
 ## Return Values
 

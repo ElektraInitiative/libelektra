@@ -20,35 +20,6 @@ KEY_* -> ELEKTRA_KEY_* to avoid clashes
 	e.g. clash with KEY_MODE in “linux/input-event-codes.h”
 	consistently use singular (KEY_FLAGS -> KEY_FLAG)
 
-Remove/Refactor/Rename obsolete/not needed methods:
-- keyClear
-- keyGetRef
-- keyRewindMeta
-- keyNextMeta
-- keyCurrentMeta
-- keyCmp
-- keyNeedSync
-- keyIsBelow
-- keyIsBelowOrSame
-- keyIsDirectlyBelow
-- keyIsBinary
-- keyIsString
-- keyName
-- keyGetBaseNameSize
-- keyGetBaseName
-- keyValue
-- keyString
-- keyGetString
-- keySetString
-- keyGetBinary
-- keySetBinary
-- ksClear
-- ksCut
-- ksPop
-- ksHead
-- ksTail
-- ksLookupByName
-
 
 == TOOLS ==
 

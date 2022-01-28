@@ -84,5 +84,9 @@ invocations. Contract `KeySet`s only contain `Key`s below
 ## Related Decisions
 
 - [Global Plugins](global_plugins.md)
+- [Notifications](notifications.md)
 
 ## Notes
+
+- Issue [#2764](https://issues.libelektra.org/2764)
+- Implemented in #3651

@@ -205,11 +205,19 @@ You can find the generated packages in the `package` directory of the build dire
 
 #### Debian/Ubuntu
 
-On Debian based distributions you will need to set LD_LIBRARY_PATH before generating the package.
+First make sure you have debhelper and d-shlibs installed:
+
+```sh
+apt-get install debhelper d-shlibs
+```
+
+(Otherwise you'll see an error file utility is not available, breaking CPACK_DEBIAN_PACKAGE_SHLIBDEPS and CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS.)
+
+On Debian-based distributions you will need to set LD_LIBRARY_PATH before generating the package.
 Simply `cd` into the build directory and run following command:
 
 ```sh
-LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
+LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package -j2
 ```
 
 To install the packages run this in the `package` directory:
