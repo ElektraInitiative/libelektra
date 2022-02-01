@@ -40,6 +40,6 @@ key2 = ""
 
 ## Related Decisions
 
-- [Key Name](key_name.md)
+- [Key Name](separate_key_name.md)
 
 ## Notes
