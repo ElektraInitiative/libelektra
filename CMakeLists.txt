@@ -30,8 +30,17 @@ endif (CMAKE_VERSION VERSION_LESS 3.9)
 # fix macOS RPATH issues
 if (APPLE)
 	set (CMAKE_MACOSX_RPATH 1)
-	set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif (APPLE)
+
+# always use full RPATH: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set(CMAKE_INSTALL_RPATH "")
+#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+#list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+#if("${isSystemDir}" STREQUAL "-1")
+#    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#endif("${isSystemDir}" STREQUAL "-1")
+
 
 set (CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "elektra-misc")
 
