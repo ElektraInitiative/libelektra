@@ -38,7 +38,7 @@ set (
 	discount, gawk, gcc-c++, GConf2-devel, graphviz, libcurl-devel, libdb-devel,
 	libdrm-devel, libgit2-devel, libxml2-devel, lua-devel, python3-devel, python-devel,
 	qt5-qtdeclarative-devel, qt5-qtsvg-devel, swig, systemd-devel, yajl-devel,
-	java-1.8.0-openjdk-devel, jna, ruby-devel, zeromq-devel")
+	java-11-openjdk-devel, jna, ruby-devel, zeromq-devel")
 
 if (CPACK_PACKAGE_ARCHITECTURE MATCHES "x86_64")
 	# workaround because rpm autoprov doesn't include symlinks
