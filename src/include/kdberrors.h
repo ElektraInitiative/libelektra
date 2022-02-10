@@ -268,10 +268,7 @@ using KeySet = ckdb::KeySet;
 
 #define DECLARE_ERROR_CODE(cname)                                                                                                          \
 	extern const char * ELEKTRA_ERROR_##cname;                                                                                         \
-	extern const char * ELEKTRA_ERROR_##cname##_NAME;                                                                                  \
-                                                                                                                                           \
 	extern const char * ELEKTRA_WARNING_##cname;                                                                                       \
-	extern const char * ELEKTRA_WARNING_##cname##_NAME;                                                                                \
                                                                                                                                            \
 	void elektraSetError##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...);      \
 	void elektraAddWarning##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...);

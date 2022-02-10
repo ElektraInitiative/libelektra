@@ -17,12 +17,11 @@ namespace errors
 class PureWarningError : public Error
 {
 public:
-	PureWarningError () : Error{ "No error, only warnings.", "", "", "", "", 0 }
+	PureWarningError () : Error{ "Warnings", "No error, only warnings.", "", "", "", "", 0 }
 	{
 	}
 
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -35,7 +34,6 @@ class ResourceError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -46,7 +44,6 @@ class OutOfMemoryError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -57,7 +54,6 @@ class InstallationError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -69,7 +65,6 @@ class InternalError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -80,7 +75,6 @@ class InterfaceError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -91,7 +85,6 @@ class PluginMisbehaviorError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -102,7 +95,6 @@ class ConflictingStateError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -113,7 +105,6 @@ class ValidationSyntacticError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;
@@ -124,7 +115,6 @@ class ValidationSemanticError : public Error
 public:
 	using Error::Error;
 	std::string code () const override;
-	std::string description () const override;
 
 private:
 	bool compare (const BaseNotification & other) const final;

@@ -11,16 +11,17 @@ namespace tools
 namespace errors
 {
 
-BaseNotification::BaseNotification (std::string reason, std::string module, std::string file, std::string mountPoint,
-				    std::string configFile, kdb::long_t line)
-: m_reason (std::move (reason)), m_module (std::move (module)), m_file (std::move (file)), m_mountPoint (std::move (mountPoint)),
-  m_configFile (std::move (configFile)), m_line (line)
+BaseNotification::BaseNotification (std::string description, std::string reason, std::string module, std::string file,
+				    std::string mountPoint, std::string configFile, kdb::long_t line)
+: m_description (std::move (description)), m_reason (std::move (reason)), m_module (std::move (module)), m_file (std::move (file)),
+  m_mountPoint (std::move (mountPoint)), m_configFile (std::move (configFile)), m_line (line)
 {
 }
 
-void BaseNotification::setData (const std::string & reason, const std::string & module, const std::string & file,
-				const std::string & mountPoint, const std::string & configFile, kdb::long_t line)
+void BaseNotification::setData (const std::string & description, const std::string & reason, const std::string & module,
+				const std::string & file, const std::string & mountPoint, const std::string & configFile, kdb::long_t line)
 {
+	this->m_description = description;
 	this->m_reason = reason;
 	this->m_module = module;
 	this->m_file = file;
@@ -33,7 +34,7 @@ void BaseNotification::setData (const std::string & reason, const std::string & 
 std::ostream & BaseNotification::toString (std::ostream & outputStream) const
 {
 	return outputStream << "Code: " << code () << std::endl
-			    << "Description: " << description () << std::endl
+			    << "Description: " << m_description << std::endl
 			    << "Reason: " << m_reason << std::endl
 			    << "Module: " << m_module << std::endl
 			    << "File: " << m_file << std::endl
@@ -92,6 +93,10 @@ kdb::long_t & BaseNotification::line ()
 }
 
 /* getters */
+const std::string & BaseNotification::description () const
+{
+	return m_description;
+}
 const std::string & BaseNotification::reason () const
 {
 	return m_reason;
