@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-TEST" "1" "November 2020" ""
+.TH "KDB\-TEST" "1" "December 2021" ""
 .SH "NAME"
 \fBkdb\-test\fR \- Run test(s) on the key database
 .SH "SYNOPSIS"
@@ -33,15 +33,22 @@ Use a different kdb profile\.
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
 .SH "EXAMPLES"
-To run all tests below the \fBuser:/example/tests\fR key:
+To run all tests below the \fBuser:/tests/example\fR key:
 .br
-\fBkdb test user:/example/tests\fR
+\fBkdb test user:/tests/example\fR
 .br
 .P
 To run the \fBbinary\fR and \fBnaming\fR tests:
 .br
-\fBkdb test user:/example/tests binary naming\fR
-.br
+.IP "" 4
+.nf
+kdb test user:/tests/example binary naming
+# RET: 0
+
+# clean\-up
+kdb rm \-r user:/tests/example
+.fi
+.IP "" 0
 .SH "SEE ALSO"
 .IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
