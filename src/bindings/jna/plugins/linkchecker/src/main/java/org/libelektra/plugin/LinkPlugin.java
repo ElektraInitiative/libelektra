@@ -7,7 +7,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
@@ -89,9 +88,7 @@ public class LinkPlugin implements Plugin {
     if (invalidKeys.isEmpty()) {
       return didUpdate ? STATUS_SUCCESS : STATUS_NO_UPDATE;
     } else {
-      parentKey.setError(
-          "Found invalid or unreachable links: "
-              + String.join(",", invalidKeys));
+      parentKey.setError("Found invalid or unreachable links: " + String.join(",", invalidKeys));
       return STATUS_ERROR;
     }
   }
