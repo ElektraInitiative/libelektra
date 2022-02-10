@@ -1,8 +1,6 @@
-# JNA Plugins
+# Link Checker Java JNI Plugin
 
-### Link Checker
-
-Found in [LinkPlugin.java](LinkPlugin.java).
+Found in [LinkPlugin.java](src/main/java/org/libelektra/plugin/LinkPlugin.java).
 
 This class can be used to validate link via the `check/link` meta key.
 

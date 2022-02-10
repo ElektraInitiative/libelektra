@@ -2,6 +2,7 @@ dependencies {
     api project(':libelektra')
     api project(':process')
 
-    // test dependencies
-    testImplementation "junit:junit:$junitVersion"
+	// test dependencies
+	testImplementation "junit:junit:$junitVersion"
+	testImplementation "org.mockito:mockito-core:$mockitoVersion"
 }

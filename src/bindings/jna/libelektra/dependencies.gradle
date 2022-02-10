@@ -5,5 +5,4 @@ dependencies {
 
 	// test dependencies
 	testImplementation "junit:junit:$junitVersion"
-	testImplementation "org.mockito:mockito-core:$mockitoVersion"
 }
