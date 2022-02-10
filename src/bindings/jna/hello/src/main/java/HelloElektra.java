@@ -47,13 +47,12 @@ public class HelloElektra {
     n.keyNameIterator().forEachRemaining(s -> System.out.println("itername: " + s));
 
     Key cutpoint = Key.create("user:/cutpoint"),
-    	ka = Key.create("user:/cutpoint/hello", "hiback"),
-     	kb = Key.create("user:/cutpoint/hello2", "hellotoo"),
-     	kc = Key.create("user:/different/hello", "hellothere");
-	KeySet whole = KeySet.create(ka, kb, kc),
-		cut = whole.cut(cutpoint);
+        ka = Key.create("user:/cutpoint/hello", "hiback"),
+        kb = Key.create("user:/cutpoint/hello2", "hellotoo"),
+        kc = Key.create("user:/different/hello", "hellothere");
+    KeySet whole = KeySet.create(ka, kb, kc), cut = whole.cut(cutpoint);
 
-	ka.setString("hibackagain");
-	kb.setBoolean(false);
+    ka.setString("hibackagain");
+    kb.setBoolean(false);
   }
 }
