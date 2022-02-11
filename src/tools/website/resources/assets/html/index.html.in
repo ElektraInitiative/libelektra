@@ -38,8 +38,6 @@
         </script>
         <script type="text/javascript" src="vendor/docsearch.min.js"></script>
         <link rel="stylesheet" href="assets/skin/docsearch.min.css" />
-        <link rel="stylesheet" type="text/css" href="vendor/pace.min.css">
-        <script src="vendor/pace.min.js"></script>
 
         <!-- Theme CSS -->
         <link rel="stylesheet" type="text/css" href="assets/skin/default/css/theme.min.css">
