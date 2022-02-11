@@ -30,7 +30,7 @@ module.exports = [
     $scope.files = files;
     $scope.currentFile = currentFile;
 
-    var doc = marked($scope.currentFile.content);
+    var doc = marked.parse($scope.currentFile.content);
     doc = $compile(doc)($scope);
     angular.element(document.getElementById("markdown-document")).html(doc);
 
