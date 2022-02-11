@@ -13,7 +13,7 @@
   "dependencies": {
     "@bosket/core": "^0.4.2",
     "@bosket/tools": "^0.4.2",
-    "ajv": "^6.4.0",
+    "ajv": "^6.12.3",
     "bosket-react": "^0.4.6",
     "focus-trap-react": "^3.1.2",
     "material-ui": "^0.20.0",
