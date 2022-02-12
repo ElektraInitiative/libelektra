@@ -11,8 +11,7 @@ Since Elektra 0.8 a backend is composed of many plugins.
 
 ## MULTIPLE PLUGINS
 
-It's clear that too many features in one backend is
-problematic. It introduces unwanted external dependences and leads to
+It's clear that too many features in one backend are problematic. It introduces unwanted external dependencies and leads to
 less portable backends. Many different aspects clutter the code making
 the backends unmaintainable. Features of other backends cannot be taken
 with ease because they are interwoven with other code.
