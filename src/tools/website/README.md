@@ -35,8 +35,7 @@ As next step, you can build the website:
 To run the application, basically two options are available:
 
 - Use the built-in webserver of `grunt`, which can be configured in the
-  [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory `@CMAKE_INSTALL_PREFIX@/share/elektra/tool_data/website
-`)
+  [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory `@CMAKE_INSTALL_PREFIX@/share/elektra/tool_data/website`)
   or `kdb run-@tool@` from anywhere.
   To stop the `@tool@`, run `kdb stop-@tool@`.
 - Use an own webserver to distribute the application.
