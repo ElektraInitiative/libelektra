@@ -2,7 +2,7 @@
 
 Found in [LinkPlugin.java](src/main/java/org/libelektra/plugin/LinkPlugin.java).
 
-This class can be used to validate link via the `check/link` meta key.
+This class can be used to validate link via the `check/link` metakey.
 
 Initially it uses a Java standard library function (`URLConnection`) to check if the link is reachable.
 
