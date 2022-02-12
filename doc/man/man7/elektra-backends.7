@@ -12,7 +12,7 @@ It's clear that too many features in one backend is problematic\. It introduces 
 .P
 To support the reuse of functionality, they must be useful in different situations\. Separation of concerns is required for that\. Each backend needs to have a specific purpose rather than implementing the full semantics of Elektra\.
 .P
-It was impossible to implement powerful and feature\-rich backends so far because of the lack of modularity\. Desirable features like notification and type checking have always been in the developers' heads, but there was no place where it would fit in without making the system unmaintainable, complex and full of unwanted external dependences\.
+It was impossible to implement powerful and feature\-rich backends so far because of the lack of modularity\. Desirable features like notification and type checking have always been in the developers' heads, but there was no place where it would fit in without making the system unmaintainable, complex and full of unwanted external dependencies\.
 .P
 To solve this dilemma, Elektra uses \fBmultiple plugins\fR together to build up a backend\. The key set processed by one plugin will be passed to the next\. This approach allows us to implement separate features in separate plugins\. Plugins concerned with reading from and writing to permanent storage are called \fBstorage plugins\fR\. We cleaned existing backends from other tasks so that their only job now is related to the storage\. Using this approach, the plugins provide the desired separation of concerns inside a backend\.
 .P

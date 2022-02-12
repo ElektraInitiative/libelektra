@@ -26,7 +26,7 @@ It was impossible to implement powerful and feature-rich backends so far
 because of the lack of modularity. Desirable features like notification
 and type checking have always been in the developers' heads, but there was
 no place where it would fit in without making the system unmaintainable,
-complex and full of unwanted external dependences.
+complex and full of unwanted external dependencies.
 
 To solve this dilemma, Elektra uses **multiple plugins** together to
 build up a backend. The key set processed by one plugin will be passed
