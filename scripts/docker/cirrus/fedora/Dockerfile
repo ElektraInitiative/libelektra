@@ -61,5 +61,5 @@ RUN mkdir -p ${GTEST_ROOT} \
 # download and install gradle
 RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip && unzip gradle-7.3.3-bin.zip && rm gradle-7.3.3-bin.zip && mv gradle-7.3.3 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
-ENV JAVA_HOME=/etc/alternatives/jre
 RUN alternatives --auto java && alternatives --auto javac
+ENV JAVA_HOME=`readlink -f /etc/alternatives/jre`
