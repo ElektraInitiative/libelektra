@@ -14,9 +14,11 @@ webserver are handled by the nodeJS based task runner [grunt](http://gruntjs.com
 
 ## Run and Configure
 
-To install the website, make sure `website` is included in TOOLS. `npm` is the only dependency.
+To install the website, make sure `website` is included in TOOLS. You can use [this guide](https://github.com/ElektraInitiative/libelektra/blob/master/doc/COMPILE.md) to add the required website tool.
+`npm` is the only dependency.
 Then use `make install` to install the website.
 It will be installed in `@CMAKE_INSTALL_PREFIX@/share/elektra/tool_data/website/public`.
+Default values for `CMAKE_INSTALL_PREFIX` can be found [here](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html).
 
 As next step, the website configuration needs to be copied and mounted:
 `@CMAKE_INSTALL_PREFIX@/lib/elektra/tool_exec/mount-website-config`
@@ -33,7 +35,7 @@ As next step, you can build the website:
 To run the application, basically two options are available:
 
 - Use the built-in webserver of `grunt`, which can be configured in the
-  [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory)
+  [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory `@CMAKE_INSTALL_PREFIX@/share/elektra/tool_data/website`)
   or `kdb run-@tool@` from anywhere.
   To stop the `@tool@`, run `kdb stop-@tool@`.
 - Use an own webserver to distribute the application.
