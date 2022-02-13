@@ -102,12 +102,9 @@ set (CPACK_GENERATOR "TBZ2")
 # use all available threads
 set (CPACK_THREADS 0)
 
-# needed because otherwise files would be written to system during creating the package
-# set (CPACK_SET_DESTDIR "ON")
+# needed because otherwise files would be written to system during creating the package set (CPACK_SET_DESTDIR "ON")
 
-# package is not relocatable:
-# unset (CPACK_RPM_PACKAGE_RELOCATABLE)
-# unset (CPACK_RPM_PACKAGE_RELOCATABLE CACHE)
+# package is not relocatable: unset (CPACK_RPM_PACKAGE_RELOCATABLE) unset (CPACK_RPM_PACKAGE_RELOCATABLE CACHE)
 
 if ("${CMAKE_BUILD_TYPE}" MATCHES "Release")
 	set (CPACK_STRIP_FILES TRUE)

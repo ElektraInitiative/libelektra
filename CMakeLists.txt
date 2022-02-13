@@ -33,15 +33,13 @@ if (APPLE)
 endif (APPLE)
 
 # use build RPATH for tests
-set(CMAKE_BUILD_RPATH "${CMAKE_BINARY_DIR}/lib")
+set (CMAKE_BUILD_RPATH "${CMAKE_BINARY_DIR}/lib")
 
-# when building, don't use the install RPATH already
-# (but later on when installing)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+# when building, don't use the install RPATH already (but later on when installing)
+set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# add the automatically determined parts of the RPATH which point to directories outside the build tree to the install RPATH
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 set (CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "elektra-misc")
 
