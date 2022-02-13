@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage procgetstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
+- infos/placements = pregetstorage getstorage procgetstorage postgetstorage presetstorage setstorage
 - infos/status = maintained unittest shelltest experimental
 - infos/metadata =
 - infos/description = one-line description of stdioproc
@@ -18,7 +18,7 @@ This plugin spawns a new process with a user-defined executable and delegates al
 Set the config key `app` and the arrays `args/#`, `env/#` to the path of an executable, the arguments that shall be passed and the environment variables to be set.
 
 ```
-kdb mount test.dump /tests/stdioproc specload 'app=/usr/bin/pluginproc' 'args/#0=--load-plugin' 'args/#1=myplugin'
+kdb mount test.dump /tests/stdioproc specload 'app=/usr/bin/pluginproc' 'args=#1' 'args/#0=--load-plugin' 'args/#1=myplugin'
 ```
 
 During `elektraStdprocioOpen` the plugin will collect the `args/#` and `env/#` values into two arrays `argv` and `envp`.
@@ -29,11 +29,13 @@ If communication can be established, the child-process will be kept running unti
 
 ## Protocol
 
-The entire protocol is text-based and request-response-based, and happens over `stdin`/`stdout`.
+The entire protocol is text-based (apart from binary key values) and request-response-based, and happens over `stdin`/`stdout`.
 The parent process sends request to the child process.
 The child then processes the request and sends a response back.
 
 To encode keysets and keys we use the format of the `dump` plugin.
+It is important to note that the `dump` plugin is instructed to write the full keynames (normally it removes the parent prefix).
+There is, however, an exception during initialization, which is described in the appropriate section.
 The child-process may also delegate directly to the `dump` plugin, or re-implement the encoding.
 
 The communications protocol used by the plugin has 3 phases:
@@ -97,18 +99,18 @@ ELEKTRA_STDIOPROC ACK v1
 
 Here `(name)` is the module name the child uses.
 This will be used to replace `stdioproc` in the contract of the plugin.
-The `contract` keyset must contain the `infos` keys that will be used replace the ones at the top of this README and the ones in `stdioproc.c`.
-The `contract` keyset must also contain keys for every operation that is implemented by the child.
-A child that implements all operations should include the keys:
+The `[contract]` keyset must contain the `infos` keys, which will be used replace the ones at the top of this README and the ones in `stdioproc.c`.
+It must also contain `exports/_` keys for every operation that is implemented by the child.
+All keys in `[contract]` should be below `system:/elektra/modules/stdioproc`.
+The parent will rename these keys appropriately.
+
+A child that implements all operations should include these keys (in addition to the relevant `infos` keys):
 
 ```
-exports/open = 1
-exports/close = 1
-exports/get = 1
-exports/set = 1
-exports/commit = 1
-exports/error = 1
-exports/checkconf = 1
+system:/elektra/modules/stdioproc/exports/open = 1
+system:/elektra/modules/stdioproc/exports/close = 1
+system:/elektra/modules/stdioproc/exports/get = 1
+system:/elektra/modules/stdioproc/exports/set = 1
 ```
 
 After this initial handshake, the child should simply wait for further requests from the parent.
@@ -127,14 +129,15 @@ Parent > Child
 [data]
 ```
 
-Here `(opname)` is one of `open`, `get`, `set`, `close`, `error`, `commit`, `checkconf` and describes the operation that shall be performed by the child.
+Here `(opname)` is one of `open`, `get`, `set` or `close` and describes the operation that shall be performed by the child.
 The keyset `[parent]` always consists of a single key, namely the `parentKey` (or `errorKey`) that was passed to the plugin.
 Finally, `[data]` is the keyset that was passed to the plugin.
+The `[data]` keyset is not present in `open` and `close` operations, since those don't receive a `KeySet` in the C API.
 
 The child should then perform the requested operation and respond with
 
 ```
-Parent > Child
+Child > Parent
 
 (result)
 [parent]
@@ -168,4 +171,5 @@ TODO
 
 ## Limitations
 
-TODO
+- The `error` and `commit` functions are currently not supported. Therefore, implementing a resolver is not supported.
+- Exporting additional functions (e.g. `checkconf`) is currently not supported.

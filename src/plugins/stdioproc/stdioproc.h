@@ -17,9 +17,6 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey);
 int elektraStdioprocClose (Plugin * handle, Key * errorKey);
 int elektraStdioprocGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraStdioprocSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraStdioprocError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraStdioprocCommit (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraStdioprocCheckConf (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
