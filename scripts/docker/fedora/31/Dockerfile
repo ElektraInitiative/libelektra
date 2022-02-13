@@ -91,8 +91,7 @@ RUN useradd \
 RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 # Pipe in 1 as Java 11 is first in the list
-RUN echo 1 | alternatives --config java && alternatives --auto javac
-ENV JAVA_HOME=`readlink -f /etc/alternatives/jre`
+RUN echo 1 | alternatives --config java && alternatives --auto javac && && export JAVA_HOME=`readlink -f /etc/alternatives/jre`
 
 USER ${JENKINS_USERID}
 
