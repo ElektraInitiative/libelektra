@@ -1,0 +1,11 @@
+apply from: "$rootProject.projectDir/java-app.gradle"
+
+apply from: 'dependencies.gradle'
+
+application {
+    mainClassName = 'org.libelektra.stdioproc.StdIoProcApp'
+}
+
+run {
+    standardInput = System.in
+}

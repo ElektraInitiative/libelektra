@@ -14,6 +14,7 @@
 
 #include <tests_plugin.h>
 
+// TODO: check contract
 static void test_success (void)
 {
 	printf ("test success\n");
@@ -160,10 +161,13 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_success ();
-	test_error ();
-	test_noupdate ();
-
+	if (false)
+	{
+		test_success ();
+		test_error ();
+		test_noupdate ();
+	}
+	test_java ();
 	print_result ("testmod_stdioproc");
 
 	return nbError;

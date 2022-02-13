@@ -23,44 +23,6 @@ using namespace ckdb;
 
 namespace dump
 {
-class FileStreamBuf : public std::streambuf
-{
-public:
-	FileStreamBuf (FILE * file) : file_ (file)
-	{
-	}
-
-protected:
-	std::streamsize xsputn (const char_type * s, std::streamsize n) override
-	{
-		return fwrite (s, 1, n, file_);
-	};
-
-	int_type overflow (int_type ch) override
-	{
-		return fwrite (&ch, 1, 1, file_);
-	}
-
-	int_type underflow () override
-	{
-		int c = fgetc (file_);
-		if (c == EOF)
-		{
-			this->setg (nullptr, nullptr, nullptr);
-		}
-		else
-		{
-			buf_ = c;
-			this->setg (&buf_, &buf_, &buf_ + 1);
-		}
-		return this->gptr () == this->egptr () ? std::char_traits<char>::eof () :
-							       std::char_traits<char>::to_int_type (*this->gptr ());
-	}
-
-private:
-	FILE * file_;
-	char buf_;
-};
 
 int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
 {
@@ -513,6 +475,49 @@ int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bo
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
+
+class FileStreamBuf : public std::streambuf
+{
+public:
+	FileStreamBuf (FILE * file) : file_ (file)
+	{
+	}
+
+protected:
+	std::streamsize xsputn (const char_type * s, std::streamsize n) override
+	{
+		int r = fwrite (s, 1, n, file_);
+		fflush (file_);
+		return r;
+	};
+
+	int_type overflow (int_type ch) override
+	{
+		int r = fwrite (&ch, 1, 1, file_);
+		fflush (file_);
+		return r;
+	}
+
+	int_type underflow () override
+	{
+		int c = fgetc (file_);
+		if (c == EOF)
+		{
+			this->setg (nullptr, nullptr, nullptr);
+		}
+		else
+		{
+			buf_ = c;
+			this->setg (&buf_, &buf_, &buf_ + 1);
+		}
+		return this->gptr () == this->egptr () ? std::char_traits<char>::eof () :
+							       std::char_traits<char>::to_int_type (*this->gptr ());
+	}
+
+private:
+	FILE * file_;
+	char buf_;
+};
 
 int freadks (KeySet * ks, FILE * file, Key * errorKey)
 {
