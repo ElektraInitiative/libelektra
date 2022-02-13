@@ -95,9 +95,11 @@ RUN useradd \
 # download and install gradle
 RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
-RUN alternatives --auto java && alternatives --auto javac && export JAVA_HOME=`readlink -f /etc/alternatives/jre`
+RUN alternatives --auto java && alternatives --auto javac
 
 USER ${JENKINS_USERID}
+
+RUN export JAVA_HOME=`readlink -f /etc/alternatives/jre`
 
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
