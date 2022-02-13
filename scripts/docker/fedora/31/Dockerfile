@@ -89,13 +89,12 @@ RUN useradd \
 
 # download and install gradle
 RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
-ENV PATH "${PATH}:/opt/gradle/bin"
 # Pipe in 1 as Java 11 is first in the list
 RUN echo 1 | alternatives --config java && alternatives --auto javac
+RUN echo "PATH=${PATH}:/opt/gradle/bin" >> /etc/bashrc \
+    && echo "JAVA_HOME=`readlink -f /etc/alternatives/jre`" >> /etc/bashrc
 
 USER ${JENKINS_USERID}
-
-RUN export JAVA_HOME=`readlink -f /etc/alternatives/jre`
 
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
