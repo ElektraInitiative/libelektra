@@ -60,5 +60,6 @@ RUN mkdir -p ${GTEST_ROOT} \
 
 # download and install gradle
 RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
-ENV PATH "${PATH}:/opt/gradle/bin"
-RUN alternatives --auto java && alternatives --auto javac && export JAVA_HOME=`readlink -f /etc/alternatives/jre`
+RUN alternatives --auto java && alternatives --auto javac
+RUN echo "PATH=${PATH}:/opt/gradle/bin" >> /etc/bashrc \
+    && echo "JAVA_HOME=`readlink -f /etc/alternatives/jre`" >> /etc/bashrc
