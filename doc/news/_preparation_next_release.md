@@ -103,7 +103,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   The reference counting is very useful for bindings (especially with automatic garbage collection). _(Klemens Böswirth)_
 - Clarified that our reference counting mechanism is more related to a shared lock than to the concept of shared ownership. _(Klemens Böswirth)_
 - Both the reference count for `Key` and for `KeySet` now use `uint16_t` to reduce memory usage. `Key` previously used `size_t`. _(Klemens Böswirth)_
-- Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić)_
+- Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić @mpranj)_
 - Improve `keyReplacePrefix` by using new `keyCopy` function instead of manually copying the name of the `Key` _(@lawli3t)_
 - Added else error to core for elektraGetCheckUpdateNeeded _(Aydan Ghazani @4ydan)_
 - Include NULL terminators in hashing to avoid collisions _(@lawli3t)_
@@ -142,7 +142,7 @@ you up to date with the multi-language support provided by Elektra.
 - Integrated the `HelloElektra` example as Gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
 - Extend `HelloElektra` example with cutpoint and value setting example _(@JakobWonisch)_
 - Integrated the `HelloElektra` example as gradel sub-project to allow it to directly depend on the current binding. _(Michael Tucek)_
-- Updated Gradle to 7.3.3. _(Mihael Pranjić @mpranj)_
+- Updated Gradle to 7.4. _(Mihael Pranjić @mpranj)_
 
 ### FUSE Binding
 
@@ -290,6 +290,8 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
 - Update npm dependencies, add forked and update angular-marked module. _(Mihael Pranjić)_
 - Update npm dependencies. _(Mihael Pranjić)_
+- Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
+- Update npm dependencies. _(Mihael Pranjić @mpranj)_
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 
