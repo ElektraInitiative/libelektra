@@ -3,7 +3,7 @@ include (LibAddBinding)
 include (SafeCheckSymbolExists)
 
 if (DEPENDENCY_PHASE)
-	if ($ENV{JAVA_HOME})
+	if (DEFINED ENV{JAVA_HOME} AND NOT $ENV{JAVA_HOME} STREQUAL "")
 		# resolve full path to avoid invalid RPATH (e.g. on Fedora 35)
 		get_filename_component (JAVA_HOME $ENV{JAVA_HOME} REALPATH)
 	endif ()
