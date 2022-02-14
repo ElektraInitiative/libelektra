@@ -3,7 +3,10 @@ include (LibAddBinding)
 include (SafeCheckSymbolExists)
 
 if (DEPENDENCY_PHASE)
-	set (JAVA_HOME $ENV{JAVA_HOME})
+	# resolve full path to avoid invalid RPATH (e.g. on Fedora 35)
+	set (JAVA_HOME_TEMP $ENV{JAVA_HOME})
+	get_filename_component (JAVA_HOME ${JAVA_HOME_TEMP} REALPATH)
+
 	if (APPLE)
 		if (NOT DEFINED JAVA_HOME)
 			execute_process (
