@@ -17,6 +17,12 @@ set (CPACK_RPM_PACKAGE_AUTOREQ 1)
 set (CPACK_RPM_PACKAGE_AUTOPROV 1)
 set (CPACK_RPM_PACKAGE_AUTOREQPROV 1)
 
+# package is not relocatable:
+unset (CPACK_RPM_PACKAGE_RELOCATABLE)
+unset (CPACK_RPM_PACKAGE_RELOCATABLE CACHE)
+
+set (CPACK_RPM_SPEC_MORE_DEFINE "%define ignore \#")
+
 set (CPACK_RPM_CHANGELOG_FILE "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/changelog")
 
 execute_process (COMMAND bash "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/map_licenses.sh" "${CMAKE_SOURCE_DIR}/.reuse/dep5"
