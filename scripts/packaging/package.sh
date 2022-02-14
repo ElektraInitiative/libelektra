@@ -6,7 +6,6 @@ ELEKTRA_PLUGINS='ALL;mozprefs;multifile;gitresolver;jni;ruby;yamlcpp;toml'
 ELEKTRA_TOOLS='ALL'
 ELEKTRA_BINDINGS='cpp;lua;python;ruby;jna;glib;IO;INTERCEPT'
 
-PARALLEL=${PARALLEL:-1}
 PACKAGE_REVISION=${1:-1}
 DIST_NAME=${2:-$(grep "^NAME=" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g')}
 
@@ -68,4 +67,4 @@ else
 fi
 
 cmake $CMAKE_ARGS_BASE $CMAKE_ARGS_SPECIFIC ..
-LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make -j ${PARALLEL} package
+LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
