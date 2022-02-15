@@ -142,7 +142,7 @@ ElektraKeySet * elektraKeyMeta (ElektraKey * key);
 int elektraKeySetMeta (ElektraKey * key, ElektraKeySet * meta);
 
 /* Relations */
-int elektraKeyNameCmp (const ElektraKey * k1, const ElektraKey * k2);
+int elektraKeyCompareName (const ElektraKey * k1, const ElektraKey * k2);
 
 int elektraKeyIsBelow (const ElektraKey * key, const ElektraKey * check);
 int elektraKeyIsBelowOrSame (const ElektraKey * key, const ElektraKey * check);
@@ -188,31 +188,31 @@ static inline ElektraKey * elektraKeyDup (const ElektraKey * source, elektraCopy
  *
  **************************************/
 
-ElektraKeySet * elektraKeySetNew (size_t alloc, ...) ELEKTRA_SENTINEL;
-ElektraKeySet * elektraKeySetVNew (size_t alloc, va_list ap);
+ElektraKeySet * elektraKeysetNew (size_t alloc, ...) ELEKTRA_SENTINEL;
+ElektraKeySet * elektraKeysetVNew (size_t alloc, va_list ap);
 
-ElektraKeySet * elektraKeySetDup (const ElektraKeySet * source);
-int elektraKeySetCopy (ElektraKeySet * dest, const ElektraKeySet * source);
+ElektraKeySet * elektraKeysetDup (const ElektraKeySet * source);
+int elektraKeysetCopy (ElektraKeySet * dest, const ElektraKeySet * source);
 
-uint16_t elektraKeySetIncRef (ElektraKeySet * ks);
-uint16_t elektraKeySetDecRef (ElektraKeySet * ks);
-uint16_t elektraKeySetGetRef (const ElektraKeySet * ks);
+uint16_t elektraKeysetIncRef (ElektraKeySet * ks);
+uint16_t elektraKeysetDecRef (ElektraKeySet * ks);
+uint16_t elektraKeysetGetRef (const ElektraKeySet * ks);
 
-int elektraKeySetClear (ElektraKeySet * ks);
-int elektraKeySetDel (ElektraKeySet * ks);
+int elektraKeysetClear (ElektraKeySet * ks);
+int elektraKeysetDel (ElektraKeySet * ks);
 
-ssize_t elektraKeySetSize (const ElektraKeySet * ks);
+ssize_t elektraKeysetSize (const ElektraKeySet * ks);
 
-ssize_t elektraKeySetAdd (ElektraKeySet * ks, ElektraKey * k);
-ElektraKey * elektraKeySetGet (ElektraKeySet * ks, elektraCursor cursor);
-ElektraKey * elektraKeySetRemove (ElektraKeySet * ks, elektraCursor cursor);
+ssize_t elektraKeysetAdd (ElektraKeySet * ks, ElektraKey * k);
+ElektraKey * elektraKeysetGet (ElektraKeySet * ks, elektraCursor cursor);
+ElektraKey * elektraKeysetRemove (ElektraKeySet * ks, elektraCursor cursor);
 
-ssize_t elektraKeySetAddAll (ElektraKeySet * ks, const ElektraKeySet * other);
+ssize_t elektraKeysetAddAll (ElektraKeySet * ks, const ElektraKeySet * other);
 
-ElektraKey * elektraKeySetLookup (ElektraKeySet * ks, const ElektraKey * k);
-ElektraKey * elektraKeySetLookupByName (ElektraKeySet * ks, const char *name);
+ElektraKey * elektraKeysetLookup (ElektraKeySet * ks, const ElektraKey * k);
+ElektraKey * elektraKeysetLookupByName (ElektraKeySet * ks, const char *name);
 
-ssize_t elektraKeySetSearch (const ElektraKeySet * ks, const ElektraKey * k);
+ssize_t elektraKeysetSearch (const ElektraKeySet * ks, const ElektraKey * k);
 
 #ifdef __cplusplus
 }
