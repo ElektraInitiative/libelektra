@@ -156,6 +156,7 @@ ssize_t elektraKeySetName (ElektraKey * key, const char * newname);
 ssize_t elektraKeyAddName (ElektraKey * key, const char * addName);
 
 const char * elektraKeyEscapedName (const ElektraKey * key);
+ssize_t elektraKeyEscapedNameSize (const ElektraKey * key);
 
 const char * elektraKeyBaseName (const ElektraKey * key);
 ssize_t elektraKeyBaseNameSize (const ElektraKey * key);
