@@ -17,6 +17,14 @@ trait Key {
 
 In Rust it is possible to access the length of a `&[u8]` (otherwise similar to a `uint8_t *`), therefore the issue of separate `size` arguments doesn't come up.
 
+Similarly, for keysets we could provide:
+
+```rust
+trait KeySet {
+    fn new (keys: &[Key]) -> Self;
+}
+```
+
 ## C
 
 For C it is a bit more complicated.
