@@ -100,7 +100,7 @@ namespace ckdb {
 extern "C" {
 #endif
 
-typedef struct _KDB	KDB;
+typedef struct _KDB	ElektraKDB;
 typedef struct _Key	ElektraKey;
 typedef struct _KeySet	ElektraKeySet;
 
@@ -111,12 +111,12 @@ typedef struct _KeySet	ElektraKeySet;
  *
  **************************************/
 
-KDB * elektraKdbOpen (const ElektraKeySet * contract, ElektraKey * parentKey);
+ElektraKDB * elektraKdbOpen (const ElektraKeySet * contract, ElektraKey * parentKey);
 
-int elektraKdbClose (KDB * handle, ElektraKey * errorKey);
+int elektraKdbClose (ElektraKDB * handle, ElektraKey * errorKey);
 
-int elektraKdbGet (KDB * handle, ElektraKeySet * ks, ElektraKey * parentKey);
-int elektraKdbSet (KDB * handle, ElektraKeySet * ks, ElektraKey * parentKey);
+int elektraKdbGet (ElektraKDB * handle, ElektraKeySet * ks, ElektraKey * parentKey);
+int elektraKdbSet (ElektraKDB * handle, ElektraKeySet * ks, ElektraKey * parentKey);
 
 /**************************************
  *
