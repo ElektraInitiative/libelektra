@@ -33,15 +33,19 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- 1.0 decisions
+- Bug fixing in FLOSS course
 
-### <<HIGHLIGHT1>>
+### 1.0 Decisions
 
-### <<HIGHLIGHT2>>
+With this release we finalized our [decisions](/doc/decisions/) for the 1.0 release.
+This brings us one big step closer to 1.0.
 
-### <<HIGHLIGHT2>>
+### Bug fixing in FLOSS course
+
+As you will read in this release notes, a massive amount of bugs were fixed within this release.
+Many of them were resolved from students participating in a course about FLOSS.
+This demonstrates that homework of students can be very useful and in public service.
 
 ## Plugins
 
