@@ -54,6 +54,7 @@ section here.
 
 - [Capabilities](capabilities.md)
 - [Make elektraMalloc et al. private](elektra_malloc.md)
+- [Elektra Prefix](elektra_prefix.md)
 
 ## In Progress
 
@@ -62,7 +63,6 @@ section here.
 - [Binary](binary.md)
 - [Store the escaped and/or unescaped key name](store_name.md)
 - [Remove functions copying into buffer](functions_with_buffers.md)
-- [Elektra Prefix](elektra_prefix.md)
 
 ## In Discussion
 

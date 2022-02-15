@@ -18,6 +18,8 @@
 
 ## Decision
 
+TODO @kodebach: update decision as implemented
+
 - add second reference counter to Key
 - One counter is for locking references, the other one for general references. A locking reference automatically locks/unlocks the keyname.
 - introduce reference counter for KeySets (for external keyset references)
@@ -33,6 +35,10 @@
   tradeoff for the gained functionality.
 
 ## Implications
+
+Missing:
+
+- C++ API update
 
 ## Related Decisions
 

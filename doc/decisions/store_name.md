@@ -26,6 +26,7 @@ Only store the unescaped key name, suitable for comparing/searching/iterating ov
 - Remove the escaped name from `struct _Key` and use it only when necessary.
 - Clarify and reduce [terminology](/doc/help/elektra-glossary.md).
 - API Changes:
+  - `keyNew (const char*, size_t)`
   - `keyName` returns the unescaped name
   - remove `keyUnescapedName`, `keyGetUnescapedNameSize`.
   - reverse terminology: with "key name" we will refer to the unescaped (base) name,

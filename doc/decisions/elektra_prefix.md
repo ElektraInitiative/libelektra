@@ -24,6 +24,8 @@ Rename all functions to start with elektra.
 ## Rationale
 
 - This makes it clear which functions come from Elektra.
+- Unifies all function names within Elektra (including core).
+- Avoids collisions with other libs.
 
 ## Implications
 

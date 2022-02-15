@@ -60,8 +60,8 @@ Remove:
 
 Change:
 
-- keyMeta might return null or a keyset that contains at least one meta:/ key
-- keySetMeta sets a keyset that only contains meta:/ keys and at least one
+- keyMeta might return null or a keyset that contains only meta:/ key
+- keySetMeta sets a keyset that only contains meta:/ keys
 
 Rename:
 
