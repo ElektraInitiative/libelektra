@@ -34,16 +34,15 @@ functions, but it seems unlikely this will be accepted.
 ## Considered Alternatives
 
 - Completely replace `elektraMalloc` / `elektraCalloc` with simple calls to malloc
+- Fix all places where non-Elektra functions get used
 
 ## Decision
 
-- keep current state with the custom functions
-- make it optional for plugin developers to use c builtins or the custom Elektra
-  functions
-- Fix places where non-Elektra functions get used
-- Remove everything except `elektraFree` from public API
-- Remove all functions that don't actually involve any memory allocations (e.g. `elektraStrLen`, `elektraStrCmp`)
-- Add `elektraStrNDup` and other `stdlib` equivalents that do memory allocation.
+- keep current state with the custom functions (allocators)
+- make it optional for plugin developers to use language specific allocators or our custom allocators
+- remove everything except `elektraFree` from public API
+- remove all functions that don't actually involve any memory allocations (e.g. `elektraStrLen`, `elektraStrCmp`)
+- add `elektraStrNDup` and other `stdlib` equivalents that do memory allocation.
 
 ## Rationale
 
