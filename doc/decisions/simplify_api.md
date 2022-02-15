@@ -33,7 +33,7 @@ Binary data is not a core feature, if needed the plugin system can also work wit
 
 Remove:
 
-- keyGetMeta 
+- keyGetMeta
 - keyRewindMeta
 - keyNextMeta
 - keyCurrentMeta
