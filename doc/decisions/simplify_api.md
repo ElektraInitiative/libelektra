@@ -33,8 +33,7 @@ Binary data is not a core feature, if needed the plugin system can also work wit
 
 Remove:
 
-- keyGetMeta (@kodebach)
-- keySetMeta (@kodebach)
+- keyGetMeta 
 - keyRewindMeta
 - keyNextMeta
 - keyCurrentMeta
@@ -58,6 +57,11 @@ Remove:
 - keyGetBinary ([Binary](binary.md))
 - keySetBinary ([Binary](binary.md))
 - ksCut (maybe later introduce ksFindHierarchy, ksRemoveRange, ksCopyRange)
+
+Change:
+
+- keyMeta might return null or a keyset that contains at least one meta:/ key
+- keySetMeta sets a keyset that only contains meta:/ keys and at least one
 
 Rename:
 
