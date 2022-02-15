@@ -2,7 +2,7 @@
 
 ## Problem
 
-binary
+Binary
 
 - is the only metadata that allows more values (instead of making the validation stricter)
 - is the only API that modifies metadata
@@ -14,7 +14,8 @@ binary
 
 ## Assumptions
 
-byte-array values are a rarely used feature in configuration settings
+- byte-array values are a rarely used feature in configuration settings
+- absence of values, i.e., [null keys](null.md) however, is quite common
 
 ## Considered Alternatives
 
@@ -38,5 +39,7 @@ byte-array values are a rarely used feature in configuration settings
 - binary types would be possible (e.g. nullable-string)
 
 ## Related Decisions
+
+- [null](null.md))
 
 ## Notes

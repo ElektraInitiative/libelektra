@@ -31,66 +31,22 @@ Binary data is not a core feature, if needed the plugin system can also work wit
 
 ## Decision
 
-Remove:
+The exact API changes are not listed here, because it would just a long list that could just as easily be found in the git history.
 
-- keyGetMeta (@kodebach)
-- keySetMeta (@kodebach)
-- keyRewindMeta
-- keyNextMeta
-- keyCurrentMeta
-- keyCopyAllMeta
-- keyCopyMeta
-- keyGetBaseName
-- keyGetBaseNameSize
-- keyGetBinary (\*buffers.md)
-- keyGetName
-- keyGetNameSize
-- ksHead
-- ksTail
-- ksCopyInternal
-- keyClear (clarification with keyCopy needed)
-- keyCompare (done)
-- keyCompareMeta (done)
-- keyIsBinary ([Binary](binary.md))
-- keyIsString ([Binary](binary.md))
-- keyGetString ([Binary](binary.md))
-- keySetString ([Binary](binary.md))
-- keyGetBinary ([Binary](binary.md))
-- keySetBinary ([Binary](binary.md))
-- ksCut (maybe later introduce ksFindHierarchy, ksRemoveRange, ksCopyRange)
+However, the API changes follow these rules:
 
-Rename:
+- _Remove_ all functions related to key metadata, except those listed below
+- _Remove_ all functions related to keyset cursors, as well as `ksHead` and `ksTail`
+- _Remove_/_Change_ all functions related to (binary) key values as described in ([Binary](binary.md))
+- _Remove_ all functions that use a user-provided buffer to return keyname/value/etc.
+- _Change_/_Add_ `keyMeta`/`keySetMeta` to directly read/write the metadata KeySet of a Key
+- _Rename_ `keyGet*Size` to `key*Size`
+- _Add_ `ksRemove` function to remove a Key at a specific index
+- _Remove from public API_ all the helper functions that use `elektraMalloc` (e.g. `elektraFormat`), as well as all the helper functions that only enhance standard APIs with additional error checks (e.g. `elektraStrCmp`)
+- _Remove from public API_ `ksCut`, `ksDeepDup`, `ksCopyInternal` and other functions that should never have been public
 
-- keyGetValueSize -> keyValueSize
-- keyGetBaseNameSize -> keyBaseNameSize
-- keyGetNameSize -> keyNameSize
-
-Make private:
-
-- elektraStrCaseCmp;
-- elektraStrCmp;
-- elektraStrDup;
-- elektraStrLen;
-- elektraStrNCaseCmp;
-- elektraStrNCmp;
-- elektraVFormat;
-- ksDeepDup
-- ksGetAlloc
-- ksInit
-- keyGetRef
-
-Unclear:
-
-- keyCmp
-- ksPop
-- keyNeedSync
-- keyIsBelow
-- keyIsBelowOrSame
-- keyIsDirectlyBelow
-- keyName
-- keyGetBaseName
-- ksClear
-- keyGetUnescapedNameSize
+- _Remove_ all functions that can be replaced by others (e.g. `ksPop`)
+- _Rename_ all functions to start with `elektra` as described in [Elektra Prefix](elektra_prefix.md), and use `KeySet` instead of `ks` (also applies to names above)
 
 ## Rationale
 
@@ -99,6 +55,7 @@ Unclear:
 ## Related Decisions
 
 - [Binary](binary.md)
+- [Elektra Prefix](elektra_prefix.md)
 
 ## Notes
 

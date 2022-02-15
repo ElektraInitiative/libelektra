@@ -52,30 +52,26 @@ section here.
 
 ## Decided
 
-- [Capabilities](capabilities.md) (@markus2330)
+- [Capabilities](capabilities.md)
 - [Make elektraMalloc et al. private](elektra_malloc.md)
+- [Elektra Prefix](elektra_prefix.md)
 
 ## In Progress
 
 - [Iterators](iterators.md)
-- Replace all internal iterators
-- Binary
-- keyName rename
 - [Simplify API](simplify_api.md) (@lawli3t will make proposal of new API)
+- [Binary](binary.md)
+- [Store the escaped and/or unescaped key name](store_name.md)
+- [Remove functions copying into buffer](functions_with_buffers.md)
 
 ## In Discussion
 
-- [Binary](binary.md)
-- [Store the escaped and/or unescaped key name](store_name.md)
 - [keyString() return value](key_string_return_value.md)
 - [Global Plugins](global_plugins.md) (@mpranj)
 - [Error Semantics](error_semantics.md) (API)
 - [Error Handling](error_handling.md)
-- [Remove functions copying into buffer](functions_with_buffers.md)
-- [Escaped Name](escaped_name.md) merge with:
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
-- [Elektra Prefix](elektra_prefix.md)
 - [Library Split](library_split.md)
 
 ## Drafts

@@ -4,12 +4,13 @@ This release did not happen yet.
 
 Please update this file within PRs accordingly.
 For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
+part of the highlighted changes.
 
 Please add your name at the end of every contribution.
 **Syntax:** _(your name)_
+
+Pick a random line to write your changes to minimize
+the chances of conflicts in this file.
 
 <<`scripts/generate-news-entry`>>
 
@@ -33,33 +34,51 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
 
-### <<HIGHLIGHT1>>
+### <<HIGHLIGHT>>
 
-### <<HIGHLIGHT2>>
+### <<HIGHLIGHT>>
 
-### <<HIGHLIGHT2>>
+### <<HIGHLIGHT>>
 
 ## Plugins
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### <<Plugin>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### <<Plugin>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin3>>
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
 
 - <<TODO>>
 - <<TODO>>
@@ -74,26 +93,38 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Core
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
-### <<Library1>>
-
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Library2>>
+### <<Library>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Library3>>
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
 
 - <<TODO>>
 - <<TODO>>
@@ -104,13 +135,39 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up-to-date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### <<Binding>>
 
-### <<Binding2>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### <<Binding3>>
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Tools
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
 
 - <<TODO>>
 - <<TODO>>
@@ -121,9 +178,66 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Documentation
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Tutorials
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Man Pages
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -133,9 +247,51 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Shell Recorder
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C++
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Packaging
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -147,9 +303,15 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Docker
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -161,9 +323,15 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Cirrus
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -173,12 +341,18 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
