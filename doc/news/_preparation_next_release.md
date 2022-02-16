@@ -289,9 +289,7 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - <<TODO>>
-- Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
-- Update npm dependencies, add forked and update angular-marked module. _(Mihael Pranjić)_
-- Update npm dependencies. _(Mihael Pranjić @mpranj)_
+- Update npm dependencies, add forked and update angular-marked module. _(Mihael Pranjić @mpranj)_
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 
