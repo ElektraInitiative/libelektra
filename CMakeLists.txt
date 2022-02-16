@@ -30,6 +30,7 @@ endif (CMAKE_VERSION VERSION_LESS 3.9)
 # fix macOS RPATH issues
 if (APPLE)
 	set (CMAKE_MACOSX_RPATH 1)
+	set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif (APPLE)
 
 # use build RPATH for tests
