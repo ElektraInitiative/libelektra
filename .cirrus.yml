@@ -195,6 +195,7 @@ task:
     # Remove files produced by `ronn-ng`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
     - git checkout .
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/$INSTALL_DIR/bin:/usr/local/opt/llvm/bin"
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$CIRRUS_WORKING_DIR/install/lib"
     - *run_tests
     - | # Uninstall Elektra
       output="$(cmake --build "$BUILD_DIR" --target uninstall 2>&1)" || printf '%s' "$output"
