@@ -114,7 +114,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - Fix check for valid namespace in keyname creation _(@JakobWonisch)_
 - Fix `keyCopyMeta` not deleting non existant keys in destination (see #3981) _(@JakobWonisch)_
-- Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić @mpranj)_
 
 - The `ELEKTRA_ERROR_*_NAME` and `ELEKTRA_WARNING_*_NAME` constants have been removed from the public API. Use `ELEKTRA_ERROR_*` and `ELEKTRA_WARNING_*` instead. _(Klemens Böswirth @kodebach)_
 
@@ -145,7 +144,6 @@ you up to date with the multi-language support provided by Elektra.
 
 - Integrated the `HelloElektra` example as Gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
 - Extend `HelloElektra` example with cutpoint and value setting example _(@JakobWonisch)_
-- Integrated the `HelloElektra` example as gradel sub-project to allow it to directly depend on the current binding. _(Michael Tucek)_
 - Updated Gradle to 7.4. _(Mihael Pranjić @mpranj)_
 
 ### FUSE Binding
@@ -293,8 +291,6 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - <<TODO>>
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
 - Update npm dependencies, add forked and update angular-marked module. _(Mihael Pranjić)_
-- Update npm dependencies. _(Mihael Pranjić)_
-- Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
 - Update npm dependencies. _(Mihael Pranjić @mpranj)_
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
 - <<TODO>>
