@@ -236,6 +236,7 @@ task:
   tests_script:
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$CIRRUS_WORKING_DIR/install/lib"
     - *run_tests
 
 task:

@@ -3,7 +3,11 @@ include (LibAddBinding)
 include (SafeCheckSymbolExists)
 
 if (DEPENDENCY_PHASE)
-	set (JAVA_HOME $ENV{JAVA_HOME})
+	if (DEFINED ENV{JAVA_HOME} AND NOT $ENV{JAVA_HOME} STREQUAL "")
+		# resolve full path to avoid invalid RPATH (e.g. on Fedora 35)
+		get_filename_component (JAVA_HOME $ENV{JAVA_HOME} REALPATH)
+	endif ()
+
 	if (APPLE)
 		if (NOT DEFINED JAVA_HOME)
 			execute_process (
@@ -39,8 +43,7 @@ add_plugin (
 	jni
 	SOURCES jni.c
 	INCLUDE_DIRECTORIES ${DIRS}
-	LINK_LIBRARIES ${LIBS} COMPONENT libelektra${SO_VERSION}-java
-	ONLY_SHARED USE_LINK_RPATH)
+	LINK_LIBRARIES ${LIBS} COMPONENT libelektra${SO_VERSION}-java)
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)

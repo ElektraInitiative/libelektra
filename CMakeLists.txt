@@ -28,8 +28,19 @@ else (CMAKE_VERSION VERSION_LESS 3.12)
 endif (CMAKE_VERSION VERSION_LESS 3.9)
 
 # fix macOS RPATH issues
-set (CMAKE_MACOSX_RPATH 1)
-set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+if (APPLE)
+	set (CMAKE_MACOSX_RPATH 1)
+	set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif (APPLE)
+
+# use build RPATH for tests
+set (CMAKE_BUILD_RPATH "${CMAKE_BINARY_DIR}/lib")
+
+# when building, don't use the install RPATH already (but later on when installing)
+set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+# add the automatically determined parts of the RPATH which point to directories outside the build tree to the install RPATH
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 set (CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "elektra-misc")
 
