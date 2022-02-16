@@ -19,9 +19,6 @@ fi
 LUA_VERSION=$(lua -v | grep -Po '(?<=Lua )\d.\d')
 
 echo "DIST: $DIST_NAME"
-echo "PATH: $PATH"
-echo "JAVA_HOME: $JAVA_HOME"
-echo "Gradle: `which gradle`"
 
 CMAKE_ARGS_BASE="-DTARGET_PLUGIN_FOLDER='elektra5' \
 	-DBUILD_STATIC=OFF \

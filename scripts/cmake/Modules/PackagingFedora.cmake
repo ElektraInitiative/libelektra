@@ -23,6 +23,10 @@ unset (CPACK_RPM_PACKAGE_RELOCATABLE CACHE)
 
 set (CPACK_RPM_SPEC_MORE_DEFINE "%define ignore \#")
 
+# workaround for openSUSE not running ldconfig
+set (CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/scripts/dev/ldconfig.sh")
+set (CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/scripts/dev/ldconfig.sh")
+
 set (CPACK_RPM_CHANGELOG_FILE "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/changelog")
 
 execute_process (COMMAND bash "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/map_licenses.sh" "${CMAKE_SOURCE_DIR}/.reuse/dep5"
