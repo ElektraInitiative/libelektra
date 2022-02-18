@@ -2,7 +2,7 @@
 
 ## Problem
 
-The constructor functions that `libelektra-core` defines for creating Keys and KeySets must be possible to implement in other languages without complicated workarounds.
+The constructor functions for creating Keys and KeySets must be easy to be invoked from other languages without complicated workarounds.
 In particular, another implementation should not need to resort to adding a small amount of C to "bridge the gap".
 
 ## Constraints
