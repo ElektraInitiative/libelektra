@@ -12,6 +12,10 @@ import org.libelektra.Plugin;
 
 class StdIoProc {
 
+  private static final String STATUS_SUCCESS = "success";
+  private static final String STATUS_NO_UPDATE = "noupdate";
+  private static final String STATUS_ERROR = "error";
+
   private final Plugin plugin;
   private final Dump dump;
 
@@ -33,13 +37,30 @@ class StdIoProc {
 
     println("ELEKTRA_STDIOPROC ACK v1");
     println(plugin.getName());
-    // FIXME: plugin contract
-    dump.write(
-        KeySet.create(
-            Key.create("system:/elektra/modules/stdioproc/exports/open", "1"),
-            Key.create("system:/elektra/modules/stdioproc/exports/get", "1"),
-            Key.create("system:/elektra/modules/stdioproc/exports/set", "1"),
-            Key.create("system:/elektra/modules/stdioproc/exports/close", "1")));
+
+    var jniContract = KeySet.create();
+    try {
+      plugin.get(jniContract, Key.create(Plugin.JNI_MODULE_CONTRACT_ROOT));
+    } catch (KDBException e) {
+      // ignored
+    }
+
+    var contract = KeySet.create();
+    for (Key key : jniContract) {
+      Key k = key.dup();
+      k.setName(
+          key.getName()
+              .replace(Plugin.JNI_MODULE_CONTRACT_ROOT, "system:/elektra/modules/stdioproc"));
+      contract.append(k);
+    }
+
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/open", "1"));
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/get", "1"));
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/set", "1"));
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/close", "1"));
+
+    dump.write(contract);
+
     outputStream.flush();
 
     return true;
@@ -88,37 +109,28 @@ class StdIoProc {
           {
             var parentKs = dump.read();
             if (parentKs == null) {
-              System.exit(1);
               return false;
             }
-            // FIXME: pass config to child
+            var config = dump.read();
+            if (config == null) {
+              return false;
+            }
             var parent = parentKs.first();
-            int result = plugin.open(KeySet.create(), parent);
-            println(resultString(result));
-            dump.write(KeySet.create(parent));
+            executeOperation(parent, pk -> plugin.open(config, parent));
           }
           break;
         case "get":
           {
             var parentKs = dump.read();
             if (parentKs == null) {
-              System.exit(1);
               return false;
             }
             var dataKs = dump.read();
             if (dataKs == null) {
-              System.exit(1);
               return false;
             }
             var parent = parentKs.first();
-            int result;
-            try {
-              result = plugin.get(dataKs, parent);
-            } catch (KDBException e) {
-              result = Plugin.STATUS_ERROR;
-            }
-            println(resultString(result));
-            dump.write(KeySet.create(parent));
+            executeOperation(parent, pk -> plugin.get(dataKs, pk));
             dump.write(dataKs);
           }
           break;
@@ -126,23 +138,14 @@ class StdIoProc {
           {
             var parentKs = dump.read();
             if (parentKs == null) {
-              System.exit(1);
               return false;
             }
             var dataKs = dump.read();
             if (dataKs == null) {
-              System.exit(1);
               return false;
             }
             var parent = parentKs.first();
-            int result;
-            try {
-              result = plugin.set(dataKs, parent);
-            } catch (KDBException e) {
-              result = Plugin.STATUS_ERROR;
-            }
-            println(resultString(result));
-            dump.write(KeySet.create(parent));
+            executeOperation(parent, pk -> plugin.set(dataKs, pk));
             dump.write(dataKs);
           }
           break;
@@ -150,13 +153,10 @@ class StdIoProc {
           {
             var parentKs = dump.read();
             if (parentKs == null) {
-              System.exit(1);
               return false;
             }
             var parent = parentKs.first();
-            int result = plugin.close(parent);
-            println(resultString(result));
-            dump.write(KeySet.create(parent));
+            executeOperation(parent, plugin::close);
           }
           break;
         case "ELETKRA_STDIOPROC TERMINATE":
@@ -166,15 +166,29 @@ class StdIoProc {
     return false;
   }
 
-  private static String resultString(int result) {
-    switch (result) {
-      case Plugin.STATUS_SUCCESS:
-        return "success";
-      case Plugin.STATUS_NO_UPDATE:
-        return "noupdate";
-      case Plugin.STATUS_ERROR:
-      default:
-        return "error";
+  private void executeOperation(Key parent, OperationCallback callback) throws IOException {
+    String result;
+    try {
+      switch (callback.call(parent)) {
+        case Plugin.STATUS_SUCCESS:
+          result = STATUS_SUCCESS;
+          break;
+        case Plugin.STATUS_NO_UPDATE:
+          result = STATUS_NO_UPDATE;
+          break;
+        case Plugin.STATUS_ERROR:
+        default:
+          result = STATUS_ERROR;
+          break;
+      }
+    } catch (KDBException e) {
+      result = STATUS_ERROR;
     }
+    println(result);
+    dump.write(KeySet.create(parent));
+  }
+
+  interface OperationCallback {
+    int call(Key parentKey) throws KDBException;
   }
 }

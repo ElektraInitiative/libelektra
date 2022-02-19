@@ -1,5 +1,6 @@
 dependencies {
 	api project(':libelektra')
+	api project(':stdioproc')
 
 	// test dependencies
 	testImplementation "junit:junit:$junitVersion"

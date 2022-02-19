@@ -47,7 +47,6 @@ public class StdIoProcApp {
 
       if (!protocol.run()) {
         System.exit(1);
-        return;
       }
     } catch (IOException e) {
       System.exit(1);
