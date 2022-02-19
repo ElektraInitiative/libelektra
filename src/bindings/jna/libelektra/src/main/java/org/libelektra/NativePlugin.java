@@ -64,7 +64,6 @@ public class NativePlugin implements Plugin {
    *
    * @return A KeySet containing the configuration of the plugin
    */
-  @Override
   public KeySet getConfig() {
     return new KeySet(elektraPlugin.config);
   }

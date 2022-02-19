@@ -20,11 +20,6 @@ public class WhitelistPlugin implements Plugin {
       Pattern.compile("meta:/check/whitelist/#_*\\d+");
 
   @Override
-  public KeySet getConfig() {
-    return KeySet.create();
-  }
-
-  @Override
   public int open(KeySet conf, Key errorKey) {
     // no initialization necessary
     return STATUS_SUCCESS;

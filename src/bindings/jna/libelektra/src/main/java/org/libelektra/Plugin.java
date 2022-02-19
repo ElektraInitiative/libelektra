@@ -20,10 +20,6 @@ public interface Plugin {
    */
   static final int STATUS_NO_UPDATE = 0;
 
-  /** @return {@link KeySet} containing the plugin configuration */
-  @Nonnull
-  KeySet getConfig();
-
   /** @return Name of the plugin */
   @Nonnull
   String getName();

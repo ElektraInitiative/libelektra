@@ -12,12 +12,6 @@ public class Echo implements Plugin {
 
   public Echo() {
     System.out.println("construct plugin");
-    conf = KeySet.create();
-  }
-
-  @Override
-  public KeySet getConfig() {
-    return conf;
   }
 
   @Override

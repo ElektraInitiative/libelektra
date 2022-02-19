@@ -9,11 +9,6 @@ public class Return implements Plugin {
   private static final String PLUGIN_NAME = "Return";
 
   @Override
-  public KeySet getConfig() {
-    return KeySet.create();
-  }
-
-  @Override
   public int open(KeySet conf, Key errorKey) {
     return 0;
   }

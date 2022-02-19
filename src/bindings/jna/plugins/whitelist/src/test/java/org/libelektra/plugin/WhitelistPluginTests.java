@@ -22,7 +22,7 @@ public class WhitelistPluginTests {
   @Before
   public void setup() {
     plugin = new WhitelistPlugin();
-    plugin.open(plugin.getConfig(), Key.create());
+    plugin.open(KeySet.create(), Key.create());
   }
 
   @After
