@@ -76,10 +76,12 @@ if (Java_JAVAC_EXECUTABLE)
 				set (
 					JNA_BINDING_SOURCE_FILES
 					${JNA_BINDING_SOURCE_DIRECTORY}/Elektra.java
+					${JNA_BINDING_SOURCE_DIRECTORY}/ErrorCode.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KDB.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KDBException.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/Key.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KeyNameIterator.java
+					${JNA_BINDING_SOURCE_DIRECTORY}/KeyPointer.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KeySet.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KeySetIterator.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/NativePlugin.java
@@ -127,6 +129,11 @@ if (Java_JAVAC_EXECUTABLE)
 					plugins/dependencies.gradle
 					plugins/whitelist/src/main/java/org/libelektra/plugin/WhitelistPlugin.java
 					plugins/whitelist/src/test/java/org/libelektra/plugin/WhitelistPluginTests.java
+					stdioproc/build.gradle
+					stdioproc/dependencies.gradle
+					stdioproc/src/main/java/org/libelektra/stdioproc/Dump.java
+					stdioproc/src/main/java/org/libelektra/stdioproc/StdIoProc.java
+					stdioproc/src/main/java/org/libelektra/stdioproc/StdIoProcApp.java
 					build.gradle
 					gradle.properties
 					java-library.gradle
