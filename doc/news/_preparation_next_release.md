@@ -81,6 +81,11 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Fixed an issue with type-limits on ARM32 (see issue #4217). _(Klemens Böswirth @kodebach)_
 
+### stdioproc
+
+- A new plugin that uses a simple protocol to allow an external application to act as a plugin.
+  This can for example be used to write plugins in Java without going through JNI. _(Klemens Böswirth @kodebach)_
+
 ### <<Plugin6>>
 
 - <<TODO>>
@@ -145,6 +150,7 @@ you up to date with the multi-language support provided by Elektra.
 - Integrated the `HelloElektra` example as Gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
 - Extend `HelloElektra` example with cutpoint and value setting example _(@JakobWonisch)_
 - Updated Gradle to 7.4. _(Mihael Pranjić @mpranj)_
+- Added integration with the new `stdioproc` plugin _(Klemens Böswirth @kodebach)_
 
 ### FUSE Binding
 
