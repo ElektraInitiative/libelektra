@@ -97,7 +97,19 @@ read_keyset() {
 
 while read -r cmd; do
 	case "$cmd" in
-	"open" | "close")
+	"open")
+		parent_ks=$(read_keyset)
+		# shellcheck disable=SC2034
+		config_ks=$(read_keyset) # config_ks ignored
+
+		parent=$(echo "$parent_ks" | sed -n 3p)
+		plen=${#parent}
+
+		printf "%s\n" "$result_value"
+		# shellcheck disable=SC2016
+		printf 'kdbOpen 2\n$key string %d %d\n%s\n%s\n$end\n' "${#parent}" "${#cmd}" "$parent" "$cmd"
+		;;
+	"close")
 		parent_ks=$(read_keyset)
 
 		parent=$(echo "$parent_ks" | sed -n 3p)

@@ -43,7 +43,7 @@ typedef struct
 
 
 static char ** readConfigArray (KeySet * config, const char * name, const char * firstElement);
-static int executeOperation (IoData * data, const char * op, KeySet * ks, Key * parentKey);
+static int executeOperation (IoData * data, const char * op, KeySet * ks, bool readKs, Key * parentKey);
 static KeySet * readKeySet (IoData * data, Key * errorKey);
 static void deleteData (IoData * data, Key * errorKey);
 
@@ -69,6 +69,11 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 
 	char ** args = readConfigArray (config, "/args", appPath);
 	char ** env = readConfigArray (config, "/env", NULL);
+
+	Key * appConfigRoot = keyNew ("/config", KEY_END);
+	KeySet * appConfig = ksCut (config, appConfigRoot);
+	keyDel (appConfigRoot);
+	ksAppend (config, appConfig);
 
 	pid_t pid;
 	int parentToChild[2], childToParent[2];
@@ -242,14 +247,17 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 
 	elektraPluginSetData (handle, data);
 
+	int result;
 	if (data->hasOp.open)
 	{
-		return executeOperation (data, "open", NULL, errorKey);
+		result = executeOperation (data, "open", appConfig, false, errorKey);
 	}
 	else
 	{
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		result = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+	ksDel (appConfig);
+	return result;
 }
 
 int elektraStdioprocClose (Plugin * handle, Key * errorKey)
@@ -263,7 +271,7 @@ int elektraStdioprocClose (Plugin * handle, Key * errorKey)
 	int result;
 	if (data->hasOp.close)
 	{
-		result = executeOperation (data, "close", NULL, errorKey);
+		result = executeOperation (data, "close", NULL, false, errorKey);
 	}
 	else
 	{
@@ -327,7 +335,7 @@ int elektraStdioprocGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (data->hasOp.get)
 	{
-		return executeOperation (data, "get", returned, parentKey);
+		return executeOperation (data, "get", returned, true, parentKey);
 	}
 	else
 	{
@@ -340,7 +348,7 @@ int elektraStdioprocSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	IoData * data = elektraPluginGetData (handle);
 	if (data->hasOp.set)
 	{
-		return executeOperation (data, "set", returned, parentKey);
+		return executeOperation (data, "set", returned, true, parentKey);
 	}
 	else
 	{
@@ -433,7 +441,7 @@ static void deleteData (IoData * data, Key * errorKey)
 	fclose (data->toChild);
 }
 
-static int executeOperation (IoData * data, const char * op, KeySet * ks, Key * parentKey)
+static int executeOperation (IoData * data, const char * op, KeySet * ks, bool readKs, Key * parentKey)
 {
 	typedef int (*fwriteks_t) (KeySet *, FILE *, Key *);
 
@@ -486,7 +494,7 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, Key * 
 	keyCopy (parentKey, ksAtCursor (newParentKs, 0), KEY_CP_ALL);
 	ksDel (newParentKs);
 
-	if (ks != NULL)
+	if (ks != NULL && readKs)
 	{
 		KeySet * returned = readKeySet (data, parentKey);
 		ksClear (ks);
