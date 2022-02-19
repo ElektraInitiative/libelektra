@@ -52,6 +52,11 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 
+	if (ksLookupByName (config, "system:/module", 0) != NULL)
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
 	Key * appKey = ksLookupByName (config, "/app", 0);
 	const char * appPath = appKey == NULL ? NULL : keyString (appKey);
 
