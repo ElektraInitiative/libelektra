@@ -225,9 +225,6 @@ interface Elektra extends Library {
   Pointer keyNew(@Nullable String name, @Nullable Object... args);
 
   @Nullable
-  Pointer keyDup(Pointer source, int flags);
-
-  @Nullable
   Pointer keyCopy(Pointer dest, Pointer source, int flags);
 
   int keyDel(Pointer key);

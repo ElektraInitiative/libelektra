@@ -248,11 +248,12 @@ public class ReadableKey implements Comparable<ReadableKey> {
    */
   @Nonnull
   public Key dup(int flags) {
-    Pointer result = Elektra.INSTANCE.keyDup(getPointer(), flags);
+    Key duped = Key.create();
+    Pointer result = Elektra.INSTANCE.keyCopy(duped.getPointer(), getPointer(), flags);
     if (result == null) {
       throw new KeyException();
     }
-    return new Key(result);
+    return duped;
   }
 
   /**
