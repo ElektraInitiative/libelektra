@@ -25,7 +25,14 @@ static void test_success (void)
 
 	// replace config, after PLUGIN_OPEN so that we can test kdbOpen
 	ksClear (plugin->config);
-	ksAppend (plugin->config, ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END));
+	KeySet * newConf = ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
+	ksAppend (plugin->config, newConf);
+	ksDel (newConf);
+
+	// need to run close first, so we don't create memory leaks via double opn
+	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
+	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
+	succeed_if (strcmp (keyString (parentKey), "close") == 0, "parent has wrong value");
 
 	KeySet * ks = ksNew (0, KS_END);
 
@@ -51,10 +58,6 @@ static void test_success (void)
 	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
 	succeed_if (strcmp (keyString (parentKey), "set") == 0, "parent has wrong value");
 
-	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
-	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
-	succeed_if (strcmp (keyString (parentKey), "close") == 0, "parent has wrong value");
-
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -70,9 +73,16 @@ static void test_error (void)
 
 	// replace config, after PLUGIN_OPEN so that we can test kdbOpen
 	ksClear (plugin->config);
-	ksAppend (plugin->config,
-		  ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
-			 keyNew ("user:/args", KEY_VALUE, "#0", KEY_END), keyNew ("user:/args/#0", KEY_VALUE, "error", KEY_END), KS_END));
+	KeySet * newConf =
+		ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
+		       keyNew ("user:/args", KEY_VALUE, "#0", KEY_END), keyNew ("user:/args/#0", KEY_VALUE, "error", KEY_END), KS_END);
+	ksAppend (plugin->config, newConf);
+	ksDel (newConf);
+
+	// need to run close first, so we don't create memory leaks via double open
+	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not error");
+	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
+	succeed_if (strcmp (keyString (parentKey), "close") == 0, "parent has wrong value");
 
 	KeySet * ks = ksNew (0, KS_END);
 
@@ -98,10 +108,6 @@ static void test_error (void)
 	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
 	succeed_if (strcmp (keyString (parentKey), "set") == 0, "parent has wrong value");
 
-	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbClose was not error");
-	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
-	succeed_if (strcmp (keyString (parentKey), "close") == 0, "parent has wrong value");
-
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -117,9 +123,16 @@ static void test_noupdate (void)
 
 	// replace config, after PLUGIN_OPEN so that we can test kdbOpen
 	ksClear (plugin->config);
-	ksAppend (plugin->config, ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
-					 keyNew ("user:/args", KEY_VALUE, "#0", KEY_END),
-					 keyNew ("user:/args/#0", KEY_VALUE, "noupdate", KEY_END), KS_END));
+	KeySet * newConf =
+		ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
+		       keyNew ("user:/args", KEY_VALUE, "#0", KEY_END), keyNew ("user:/args/#0", KEY_VALUE, "noupdate", KEY_END), KS_END);
+	ksAppend (plugin->config, newConf);
+	ksDel (newConf);
+
+	// need to run close first, so we don't create memory leaks via double open
+	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not no_update");
+	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
+	succeed_if (strcmp (keyString (parentKey), "close") == 0, "parent has wrong value");
 
 	KeySet * ks = ksNew (0, KS_END);
 
@@ -145,10 +158,6 @@ static void test_noupdate (void)
 	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
 	succeed_if (strcmp (keyString (parentKey), "set") == 0, "parent has wrong value");
 
-	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbClose was not no_update");
-	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
-	succeed_if (strcmp (keyString (parentKey), "close") == 0, "parent has wrong value");
-
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -164,6 +173,7 @@ int main (int argc, char ** argv)
 	test_success ();
 	test_error ();
 	test_noupdate ();
+
 	print_result ("testmod_stdioproc");
 
 	return nbError;

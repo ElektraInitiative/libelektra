@@ -43,6 +43,7 @@ typedef struct
 
 
 static char ** readConfigArray (KeySet * config, const char * name, const char * firstElement);
+static void freeConfigArray (char ** array);
 static int executeOperation (IoData * data, const char * op, KeySet * ks, bool readKs, Key * parentKey);
 static KeySet * readKeySet (IoData * data, Key * errorKey);
 static void deleteData (IoData * data, Key * errorKey);
@@ -121,6 +122,11 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 		perror (appPath);
 		exit (EXIT_FAILURE);
 	}
+
+	// parent
+
+	freeConfigArray (args);
+	freeConfigArray (env);
 
 	close (parentToChild[0]);
 	close (childToParent[1]);
@@ -437,6 +443,17 @@ static char ** readConfigArray (KeySet * config, const char * name, const char *
 	return array;
 }
 
+static void freeConfigArray (char ** array)
+{
+	for (size_t i = 0; array[i] != NULL; i++)
+	{
+		// comes from strdup so we use free directly
+		free (array[i]);
+	}
+
+	elektraFree (array);
+}
+
 static void deleteData (IoData * data, Key * errorKey)
 {
 	// TODO: errors
@@ -446,6 +463,7 @@ static void deleteData (IoData * data, Key * errorKey)
 	keyDel (data->childContractKey);
 	fclose (data->fromChild);
 	fclose (data->toChild);
+	elektraFree (data);
 }
 
 static int executeOperation (IoData * data, const char * op, KeySet * ks, bool readKs, Key * parentKey)
@@ -506,25 +524,30 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 		KeySet * returned = readKeySet (data, parentKey);
 		ksClear (ks);
 		ksAppend (ks, returned);
+		ksDel (returned);
 	}
 
+	int rc;
 	if (strcmp (result, "success") == 0)
 	{
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		rc = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else if (strcmp (result, "noupdate") == 0)
 	{
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+		rc = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 	else if (strcmp (result, "error") == 0)
 	{
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		rc = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute app (read failed). Reason: unknown result '%s'", result);
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		rc = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+
+	free (result);
+	return rc;
 }
 
 static KeySet * readKeySet (IoData * data, Key * errorKey)
