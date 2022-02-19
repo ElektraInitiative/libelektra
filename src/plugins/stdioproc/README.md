@@ -133,6 +133,8 @@ Here `(opname)` is one of `open`, `get`, `set` or `close` and describes the oper
 The keyset `[parent]` always consists of a single key, namely the `parentKey` (or `errorKey`) that was passed to the plugin.
 Finally, `[data]` is the keyset that was passed to the plugin.
 The `[data]` keyset is not present in `open` and `close` operations, since those don't receive a `KeySet` in the C API.
+However, in the `open` operation `[data]` is replaced `[config]` which is the `KeySet` returned by `elektraPluginGetConfig` in the C API.
+This is needed, because the child process cannot request the config keyset otherwise.
 
 The child should then perform the requested operation and respond with
 
