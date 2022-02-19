@@ -268,10 +268,12 @@ int elektraStdioprocClose (Plugin * handle, Key * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
+	Key * eKey = errorKey == NULL ? keyNew ("/", KEY_END) : errorKey;
+
 	int result;
 	if (data->hasOp.close)
 	{
-		result = executeOperation (data, "close", NULL, false, errorKey);
+		result = executeOperation (data, "close", NULL, false, eKey);
 	}
 	else
 	{
@@ -281,14 +283,14 @@ int elektraStdioprocClose (Plugin * handle, Key * errorKey)
 	bool error = false;
 	if (data->toChild != NULL && fputs (MSG_TERMINATION, data->toChild) == EOF)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not terminate app. Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (eKey, "Could not terminate app. Reason: %s", strerror (errno));
 		error = true;
 	}
 	fflush (data->toChild);
 
 	pid_t childPid = data->childPid;
 	elektraPluginSetData (handle, NULL);
-	deleteData (data, errorKey);
+	deleteData (data, eKey);
 
 	if (childPid != 0)
 	{
@@ -299,9 +301,14 @@ int elektraStdioprocClose (Plugin * handle, Key * errorKey)
 			pid_t w = waitpid (childPid, &status, 0);
 			if (w == -1)
 			{
-				ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not terminate app (waitpid). Reason: %s", strerror (errno));
+				ELEKTRA_SET_RESOURCE_ERRORF (eKey, "Could not terminate app (waitpid). Reason: %s", strerror (errno));
 			}
 		} while (!WIFEXITED (status) && !WIFSIGNALED (status));
+	}
+
+	if (errorKey == NULL)
+	{
+		keyDel (eKey);
 	}
 
 	return error ? ELEKTRA_PLUGIN_STATUS_ERROR : result;
