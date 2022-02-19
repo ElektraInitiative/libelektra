@@ -96,28 +96,31 @@ public class WhitelistPluginTests {
     int result;
     key = addSpecMetaData(Key.create("user:/test")).setString("allowed0");
     result = plugin.set(KeySet.create(key), parentKey);
+    assertTrue(parentKey.getMeta("warnings").isPresent());
+    assertEquals(parentKey.getMeta("warnings").get().getString(), "#1");
+    assertTrue(parentKey.getMeta("warnings/#0/number").isPresent());
+    assertEquals(
+        SemanticValidationException.ERROR_NUMBER,
+        parentKey.getMeta("warnings/#0/number").get().getString());
+    assertTrue(parentKey.getMeta("warnings/#1/number").isPresent());
+    assertEquals(
+        SemanticValidationException.ERROR_NUMBER,
+        parentKey.getMeta("warnings/#1/number").get().getString());
 
     assertEquals(Plugin.STATUS_SUCCESS, result);
-    assertTrue(parentKey.getMeta("error/number").isEmpty());
+    assertTrue(parentKey.getMeta("error").isEmpty());
 
     key = addSpecMetaData(Key.create("user:/test")).setString("allowed1");
     result = plugin.set(KeySet.create(key), parentKey);
 
     assertEquals(Plugin.STATUS_SUCCESS, result);
-    assertTrue(parentKey.getMeta("error/number").isEmpty());
+    assertTrue(parentKey.getMeta("error").isEmpty());
 
     key = addSpecMetaData(Key.create("user:/test")).setString("allowed3");
     result = plugin.set(KeySet.create(key), parentKey);
 
     assertEquals(Plugin.STATUS_SUCCESS, result);
-    assertTrue(parentKey.getMeta("error/number").isEmpty());
-    assertTrue(parentKey.getMeta("warnings/#0/number").isPresent());
-    assertEquals(
-        SemanticValidationException.ERROR_NUMBER,
-        parentKey.getMeta("warnings/#0/number").get().getString());
-    assertEquals(
-        SemanticValidationException.ERROR_NUMBER,
-        parentKey.getMeta("warnings/#1/number").get().getString());
+    assertTrue(parentKey.getMeta("error").isEmpty());
   }
 
   private Key addSpecMetaData(Key key) {

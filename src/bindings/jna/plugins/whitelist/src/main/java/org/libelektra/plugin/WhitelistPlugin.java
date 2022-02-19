@@ -1,14 +1,12 @@
 package org.libelektra.plugin;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import org.libelektra.ErrorCode;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
-import org.libelektra.exception.SemanticValidationException;
 
 /** Plugin enforcing key values to adhere to a specified whitelist */
 public class WhitelistPlugin implements Plugin {
@@ -60,15 +58,13 @@ public class WhitelistPlugin implements Plugin {
     for (var key : keySet) {
       // look whether a whitelist has been defined
       Set<String> whitelist = new HashSet<>();
-      int warningIndex = 0;
       for (var metaKey : key) {
         if (META_WHITELISTENTRY_PATTERN.matcher(metaKey.getName()).matches()) {
           if (META_WHITELISTENTRY_VALID_PATTERN.matcher(metaKey.getName()).matches()) {
             whitelist.add(metaKey.getString());
           } else {
-            addWarning(
-                parentKey,
-                warningIndex++,
+            parentKey.addWarning(
+                ErrorCode.VALIDATION_SEMANTIC,
                 String.format(
                     "Key '%s' specification contains an invalid whitelist check '%s' which is"
                         + " therefore ignored.",
@@ -79,42 +75,26 @@ public class WhitelistPlugin implements Plugin {
 
       if (!whitelist.isEmpty()) {
         if (key.isBinary()) {
-          setError(
-              parentKey,
+          parentKey.setError(
+              ErrorCode.VALIDATION_SEMANTIC,
               String.format(
                   "Key '%s' has a binary value but has a whitelist check specification.",
                   key.getName()));
           return STATUS_ERROR;
         }
         if (!whitelist.contains(key.getString())) {
-          setError(
-              parentKey,
+          parentKey.setError(
+              ErrorCode.VALIDATION_SEMANTIC,
               String.format(
                   "Value of key '%s' with value '%s' does not adhere to whitelist of possible"
                       + " values: %s",
-                  key.getName(),
-                  key.getString(),
-                  whitelist.stream().collect(Collectors.joining(", "))));
+                  key.getName(), key.getString(), String.join(", ", whitelist)));
           return STATUS_ERROR;
         }
       }
     }
 
     return STATUS_SUCCESS;
-  }
-
-  private void addWarning(Key errorKey, int warningIndex, String reason) {
-    String warningIndexString = Integer.toString(warningIndex);
-    char[] underscores = new char[warningIndexString.length() - 1];
-    Arrays.fill(underscores, '_');
-    String warningKeyName = "warnings/#" + new String(underscores) + warningIndexString;
-    errorKey.setMeta(warningKeyName + "/number", SemanticValidationException.ERROR_NUMBER);
-    errorKey.setMeta(warningKeyName + "/reason", reason);
-  }
-
-  private void setError(Key errorKey, String reason) {
-    errorKey.setMeta("error/number", SemanticValidationException.ERROR_NUMBER);
-    errorKey.setMeta("error/reason", reason);
   }
 
   @Override
