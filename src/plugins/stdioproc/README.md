@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements = pregetstorage getstorage procgetstorage postgetstorage presetstorage setstorage
+- infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest shelltest experimental
 - infos/metadata =
 - infos/description = one-line description of stdioproc
@@ -18,7 +18,7 @@ This plugin spawns a new process with a user-defined executable and delegates al
 Set the config key `app` and the arrays `args/#`, `env/#` to the path of an executable, the arguments that shall be passed and the environment variables to be set.
 
 ```
-kdb mount test.dump /tests/stdioproc specload 'app=/usr/bin/pluginproc' 'args=#1' 'args/#0=--load-plugin' 'args/#1=myplugin'
+kdb mount test.dump /tests/stdioproc stdioproc 'app=/usr/bin/pluginproc' 'args=#1' 'args/#0=--load-plugin' 'args/#1=myplugin'
 ```
 
 During `elektraStdprocioOpen` the plugin will collect the `args/#` and `env/#` values into two arrays `argv` and `envp`.
@@ -169,9 +169,33 @@ If an unexpected error occurs on either side of the protocol, the connection sho
 
 ## Examples
 
-TODO
+```sh
+# mount the Whitelist Java Plugin via stdioproc
+sudo kdb mount config.file user:/tests/stdioproc dump stdioproc 'app=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.stdioproc.StdIoProcApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin'
+
+# Define whitelist
+kdb meta-set user:/tests/stdioproc/key "check/whitelist/#0" ""
+kdb meta-set user:/tests/stdioproc/key "check/whitelist/#1" allowed0
+kdb meta-set user:/tests/stdioproc/key "check/whitelist/#2" allowed1
+
+# Should be allowed
+kdb set user:/tests/stdioproc/key allowed0
+#> Set string to "allowed0"
+
+kdb set user:/tests/stdioproc/key allowed1
+#> Set string to "allowed1"
+
+# Should cause error
+kdb set user:/tests/stdioproc/key not_allowed
+# RET: 5
+# STDERR:.*Validation Semantic: .*'not_allowed' does not adhere to whitelist.*
+
+# cleanup
+sudo kdb umount user:/tests/stdioproc
+```
 
 ## Limitations
 
 - The `error` and `commit` functions are currently not supported. Therefore, implementing a resolver is not supported.
 - Exporting additional functions (e.g. `checkconf`) is currently not supported.
+- With the current backend system, `stdioproc` can only be used for plugins in the `postgetstorage` or `presetstorage` positions.
