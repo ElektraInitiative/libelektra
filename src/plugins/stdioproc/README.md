@@ -196,6 +196,12 @@ kdb set user:/tests/stdioproc/key not_allowed
 sudo kdb umount user:/tests/stdioproc
 ```
 
+> **Note:** The mount line of the snippet above can be simplified by using the `mount-java` helper:
+>
+> ```
+> sudo kdb mount-java config.file user:/tests/stdioproc dump java:org.libelektra.plugin.WhitelistPlugin
+> ```
+
 ## Limitations
 
 - The `error` and `commit` functions are currently not supported. Therefore, implementing a resolver is not supported.

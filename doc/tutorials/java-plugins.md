@@ -1,5 +1,7 @@
 # How-To: Write a Java Plugin
 
+<!-- FIXME: update to stdioproc, mention mount-java -->
+
 This file serves as a tutorial on how to get started with writing a Java plugin.
 
 ## Basics

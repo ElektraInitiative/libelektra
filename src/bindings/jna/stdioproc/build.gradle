@@ -6,6 +6,8 @@ application {
     mainClassName = 'org.libelektra.stdioproc.StdIoProcApp'
 }
 
+version project.version	
+
 run {
     standardInput = System.in
 }
