@@ -33,17 +33,17 @@ printf "ELEKTRA_STDIOPROC ACK v1\n"
 printf "testapp\n"
 # shellcheck disable=SC2016
 printf 'kdbOpen 2
-$key string 47 1
-system:/elektra/modules/stdioproc/exports/close
+$key string 51 1
+system:/elektra/modules/stdioproc/exports/has/close
 1
-$key string 45 1
-system:/elektra/modules/stdioproc/exports/get
+$key string 49 1
+system:/elektra/modules/stdioproc/exports/has/get
 1
-$key string 46 1
-system:/elektra/modules/stdioproc/exports/open
+$key string 50 1
+system:/elektra/modules/stdioproc/exports/has/open
 1
-$key string 45 1
-system:/elektra/modules/stdioproc/exports/set
+$key string 49 1
+system:/elektra/modules/stdioproc/exports/has/set
 1
 $key string 39 60
 system:/elektra/modules/stdioproc/infos

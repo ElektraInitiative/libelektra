@@ -57,18 +57,18 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * appKey = ksLookupByName (config, "/app", 0);
+	Key * appKey = ksLookupByName (config, "/executable", 0);
 	const char * appPath = appKey == NULL ? NULL : keyString (appKey);
 
 	if (appKey == NULL || appPath == NULL)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "The /app config key is missing");
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "The /executable config key is missing");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	if (appPath[0] != '/')
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value of the /app config key is not an absolute path: '%s'",
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value of the /executable config key is not an absolute path: '%s'",
 							 appPath);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -86,13 +86,13 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 
 	if (pipe (parentToChild) != 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app. Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (Couldn't open pipe p2c). Reason: %s", strerror (errno));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	if (pipe (childToParent) != 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app. Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (Couldn't open pipe c2p). Reason: %s", strerror (errno));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -100,7 +100,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 
 	if (pid == -1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app. Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app '%s' (Fork failed). Reason: %s", appPath, strerror (errno));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -138,7 +138,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 
 	if (write (parentToChild[1], MSG_HANDSHAKE_HEADER_V1, sizeof (MSG_HANDSHAKE_HEADER_V1) - 1) != sizeof (MSG_HANDSHAKE_HEADER_V1) - 1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (handshake failed). Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (handshake write failed). Reason: %s", strerror (errno));
 		close (parentToChild[1]);
 		close (childToParent[0]);
 		kill (pid, SIGTERM);
@@ -149,7 +149,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	ssize_t readBytes = read (childToParent[0], handshakeAck, sizeof (MSG_HANDSHAKE_ACK_V1) - 1);
 	if (readBytes != sizeof (MSG_HANDSHAKE_ACK_V1) - 1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (handshake failed). Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (handshake read failed). Reason: %s", strerror (errno));
 		close (parentToChild[1]);
 		close (childToParent[0]);
 		kill (pid, SIGTERM);
@@ -159,7 +159,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 
 	if (strcmp (handshakeAck, MSG_HANDSHAKE_ACK_V1) != 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not execute app (handshake failed). Reason: broken ack");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not execute app (handshake ack failed). Reason: broken ack");
 		close (parentToChild[1]);
 		close (childToParent[0]);
 		kill (pid, SIGTERM);
@@ -188,15 +188,22 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	readBytes = getline (&childName, &n, fromChild);
 	if (readBytes < 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (init failed). Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not execute app (name read failed). Reason: %s", strerror (errno));
 		deleteData (data, errorKey);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	childName[readBytes - 1] = '\0';
 
 	KeySet * contract = readKeySet (data, errorKey);
+	if (contract == NULL)
+	{
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not execute app (contract read failed)");
+		deleteData (data, errorKey);
+		free (childName);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
-	Key * openKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/open", KDB_O_POP);
+	Key * openKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/open", KDB_O_POP);
 	if (openKey != NULL && strcmp (keyString (openKey), "1") == 0)
 	{
 		data->hasOp.open = true;
@@ -208,7 +215,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	}
 	keyDel (openKey);
 
-	Key * getKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/get", KDB_O_POP);
+	Key * getKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/get", KDB_O_POP);
 	if (getKey != NULL && strcmp (keyString (getKey), "1") == 0)
 	{
 		data->hasOp.get = true;
@@ -220,7 +227,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	}
 	keyDel (getKey);
 
-	Key * setKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/set", KDB_O_POP);
+	Key * setKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/set", KDB_O_POP);
 	if (setKey != NULL && strcmp (keyString (setKey), "1") == 0)
 	{
 		data->hasOp.set = true;
@@ -232,7 +239,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	}
 	keyDel (setKey);
 
-	Key * closeKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/close", KDB_O_POP);
+	Key * closeKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/close", KDB_O_POP);
 	if (closeKey != NULL && strcmp (keyString (closeKey), "1") == 0)
 	{
 		data->hasOp.close = true;
@@ -294,7 +301,7 @@ int elektraStdioprocClose (Plugin * handle, Key * errorKey)
 	bool error = false;
 	if (data->toChild != NULL && fputs (MSG_TERMINATION, data->toChild) == EOF)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (eKey, "Could not terminate app. Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (eKey, "Could not terminate app (write failed). Reason: %s", strerror (errno));
 		error = true;
 	}
 	fflush (data->toChild);
@@ -479,13 +486,14 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 
 	if (fwriteks == NULL)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Could not execute app (write failed). Reason: fwriteks missing");
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Could not execute  '%s' (write failed). Reason: fwriteks missing", op);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	if (fprintf (data->toChild, "%s\n", op) < 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute app (write failed). Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s' (write failed). Reason: %s", op,
+					     strerror (errno));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -510,7 +518,7 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 	ssize_t readBytes = getline (&result, &n, data->fromChild);
 	if (readBytes < 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute app (read failed). Reason: %s", strerror (errno));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s' (read failed). Reason: %s", op, strerror (errno));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	result[readBytes - 1] = '\0';
@@ -518,6 +526,8 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 	KeySet * newParentKs = readKeySet (data, parentKey);
 	if (newParentKs == NULL || ksGetSize (newParentKs) != 1)
 	{
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s'. Reason: freadks failed", op);
+		free (result);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -527,6 +537,12 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 	if (ks != NULL && readKs)
 	{
 		KeySet * returned = readKeySet (data, parentKey);
+		if (returned == NULL)
+		{
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s'. Reason: freadks failed", op);
+			free (result);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 		ksClear (ks);
 		ksAppend (ks, returned);
 		ksDel (returned);
@@ -563,14 +579,13 @@ static KeySet * readKeySet (IoData * data, Key * errorKey)
 
 	if (freadks == NULL)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "Could not execute app (write failed). Reason: freadks missing");
-		return false;
+		return NULL;
 	}
 
 	KeySet * ks = ksNew (0, KS_END);
 	if (freadks (ks, data->fromChild, errorKey) < 0)
 	{
-		return false;
+		return NULL;
 	}
 	return ks;
 }

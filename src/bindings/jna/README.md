@@ -49,7 +49,7 @@ export CLASSPATH=".:/usr/share/java/libelektra.jar:/usr/share/java/jna.jar"
 Then you can compile and run [HelloElektra](HelloElektra.java):
 
 ```sh
-javac org.libelektra.stdioproc.StdIoProcApp.java && java HelloElektra
+javac HelloElektra.java && java HelloElektra
 ```
 
 #### macOS

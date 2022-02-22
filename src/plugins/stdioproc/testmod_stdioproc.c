@@ -14,18 +14,17 @@
 
 #include <tests_plugin.h>
 
-// TODO: check contract
 static void test_success (void)
 {
 	printf ("test success\n");
 
 	Key * parentKey = keyNew ("user:/tests/stdioproc", KEY_END);
-	KeySet * conf = ksNew (1, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/executable", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
 	PLUGIN_OPEN ("stdioproc");
 
 	// replace config, after PLUGIN_OPEN so that we can test kdbOpen
 	ksClear (plugin->config);
-	KeySet * newConf = ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
+	KeySet * newConf = ksNew (16, keyNew ("user:/executable", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
 	ksAppend (plugin->config, newConf);
 	ksDel (newConf);
 
@@ -58,6 +57,32 @@ static void test_success (void)
 	succeed_if (strcmp (keyName (parentKey), "user:/tests/stdioproc") == 0, "parent has wrong name");
 	succeed_if (strcmp (keyString (parentKey), "set") == 0, "parent has wrong value");
 
+
+	KeySet * expectedContract = ksNew (
+		16, keyNew ("system:/elektra/modules/testapp/exports/close", KEY_FUNC, plugin->kdbClose, KEY_END),
+		keyNew ("system:/elektra/modules/testapp/exports/get", KEY_FUNC, plugin->kdbGet, KEY_END),
+		keyNew ("system:/elektra/modules/testapp/exports/open", KEY_FUNC, plugin->kdbOpen, KEY_END),
+		keyNew ("system:/elektra/modules/testapp/exports/set", KEY_FUNC, plugin->kdbSet, KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos", KEY_VALUE, "Information about the stdioproc test plugin is in keys below",
+			KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/author", KEY_VALUE, "Klemens Böswirth <k.boeswirth+git@gmail.com>", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/description", KEY_VALUE, "test plugin for stdioproc", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/licence", KEY_VALUE, "BSD", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/metadata", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/needs", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/placements", KEY_VALUE, "getstorage setstorage", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/provides", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/recommends", KEY_VALUE, "", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/status", KEY_VALUE, "maintained unittest shelltest experimental", KEY_END),
+		KS_END);
+
+	ksClear (ks);
+	keySetName (parentKey, "system:/elektra/modules/testapp");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+		    "call to kdbGet (contract) was not successful");
+	compare_keyset (ks, expectedContract);
+	ksDel (expectedContract);
+
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -68,13 +93,13 @@ static void test_error (void)
 	printf ("test error\n");
 
 	Key * parentKey = keyNew ("user:/tests/stdioproc", KEY_END);
-	KeySet * conf = ksNew (1, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/executable", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
 	PLUGIN_OPEN ("stdioproc");
 
 	// replace config, after PLUGIN_OPEN so that we can test kdbOpen
 	ksClear (plugin->config);
 	KeySet * newConf =
-		ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
+		ksNew (16, keyNew ("user:/executable", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
 		       keyNew ("user:/args", KEY_VALUE, "#0", KEY_END), keyNew ("user:/args/#0", KEY_VALUE, "error", KEY_END), KS_END);
 	ksAppend (plugin->config, newConf);
 	ksDel (newConf);
@@ -118,13 +143,13 @@ static void test_noupdate (void)
 	printf ("test noupdate\n");
 
 	Key * parentKey = keyNew ("user:/tests/stdioproc", KEY_END);
-	KeySet * conf = ksNew (1, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/executable", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END), KS_END);
 	PLUGIN_OPEN ("stdioproc");
 
 	// replace config, after PLUGIN_OPEN so that we can test kdbOpen
 	ksClear (plugin->config);
 	KeySet * newConf =
-		ksNew (16, keyNew ("user:/app", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
+		ksNew (16, keyNew ("user:/executable", KEY_VALUE, bindir_file ("stdioproc-testapp.sh"), KEY_END),
 		       keyNew ("user:/args", KEY_VALUE, "#0", KEY_END), keyNew ("user:/args/#0", KEY_VALUE, "noupdate", KEY_END), KS_END);
 	ksAppend (plugin->config, newConf);
 	ksDel (newConf);

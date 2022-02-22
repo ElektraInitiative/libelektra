@@ -476,6 +476,11 @@ int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bo
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief An implementation of std::streambuf that is based on `FILE *` from the C API.
+ *
+ * This class allows us to read from and write to a `FILE *` via the std::iostream APIs.
+ */
 class FileStreamBuf : public std::streambuf
 {
 public:
@@ -587,7 +592,7 @@ int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 	keyDel (root);
 	int errnosave = errno;
 
-	// TODO: document
+	// FIXME (kodebach): remove once process is renamed
 	// dirty workaround for pluginprocess
 	bool useFullNames = ksLookupByName (elektraPluginGetConfig (handle), "/fullname", 0) != NULL;
 

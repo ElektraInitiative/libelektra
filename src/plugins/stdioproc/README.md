@@ -15,17 +15,17 @@ This plugin spawns a new process with a user-defined executable and delegates al
 
 ## Usage
 
-Set the config key `app` and the arrays `args/#`, `env/#` to the path of an executable, the arguments that shall be passed and the environment variables to be set.
+Set the config key `executable` and the arrays `args/#`, `env/#` to the path of an executable, the arguments that shall be passed and the environment variables to be set.
 
 ```
-kdb mount test.dump /tests/stdioproc stdioproc 'app=/usr/bin/pluginproc' 'args=#1' 'args/#0=--load-plugin' 'args/#1=myplugin'
+kdb mount test.dump /tests/stdioproc stdioproc 'executable=/usr/bin/pluginproc' 'args=#1' 'args/#0=--load-plugin' 'args/#1=myplugin'
 ```
 
 During `elektraStdprocioOpen` the plugin will collect the `args/#` and `env/#` values into two arrays `argv` and `envp`.
 It then `fork`s a new process and the child calls `execve` with the path from `app` as well as `argv` and` envp`.
 The child process is expected to listen to `stdin` and write to `stdout` according to the protocol described below.
 
-If communication can be established, the child-process will be kept running until `elektraStdprocioClose`.
+If communication can be established, the child process will be kept running until `elektraStdprocioClose`.
 
 ## Protocol
 
@@ -36,7 +36,7 @@ The child then processes the request and sends a response back.
 To encode keysets and keys we use the format of the `dump` plugin.
 It is important to note that the `dump` plugin is instructed to write the full keynames (normally it removes the parent prefix).
 There is, however, an exception during initialization, which is described in the appropriate section.
-The child-process may also delegate directly to the `dump` plugin, or re-implement the encoding.
+The child process may also delegate directly to the `dump` plugin, or reimplement the encoding.
 
 The communications protocol used by the plugin has 3 phases:
 
@@ -52,6 +52,7 @@ The communications protocol used by the plugin has 3 phases:
 > HELLO WORLD
 > [users]
 > (user)
+> {ok|error}
 > ```
 >
 > This denotes a message sent from parent to child, containing
@@ -61,6 +62,7 @@ The communications protocol used by the plugin has 3 phases:
 > - followed by a keyset called `users`
 > - followed by a newline
 > - followed by dynamic text called `user`
+> - followed by either the literal text `ok` or the literal text `error`
 >
 > The names `users` and `user` don't actually appear in the message.
 > They are only used as a reference for the descriptions of the message.
@@ -124,12 +126,12 @@ When the parent needs the child to process an operation (open, get, ...), it wil
 ```
 Parent > Child
 
-(opname)
+{open|get|set|close}
 [parent]
 [data]
 ```
 
-Here `(opname)` is one of `open`, `get`, `set` or `close` and describes the operation that shall be performed by the child.
+First we send the `opname` (one of `open`, `get`, `set` or `close`) of the operation that shall be performed by the child.
 The keyset `[parent]` always consists of a single key, namely the `parentKey` (or `errorKey`) that was passed to the plugin.
 Finally, `[data]` is the keyset that was passed to the plugin.
 The `[data]` keyset is not present in `open` and `close` operations, since those don't receive a `KeySet` in the C API.
@@ -141,13 +143,13 @@ The child should then perform the requested operation and respond with
 ```
 Child > Parent
 
-(result)
+{success|noupdate|error}
 [parent]
-[data]
+[returned]
 ```
 
 Here `(result)` is one of `success`, `noupdate` and `error`, which correspond to `ELEKTRA_PLUGIN_STATUS_SUCCESS`, `ELEKTRA_PLUGIN_STATUS_NO_UPDATE` and `ELEKTRA_PLUGIN_STATUS_ERROR` respectively.
-The keysets `[parent]` and `[data]` are the modified versions of the one sent by the parent.
+The keysets `[parent]` and `[returned]` are the modified versions of the one sent by the parent.
 
 ### Termination
 
@@ -161,7 +163,7 @@ ELEKTRA_STDIOPROC TERMINATE
 
 The child process should now exit (and thereby close its ends of the `stdin`/`stdout` pipes).
 
-> **Note:** Under normal circumstances this only happens, when plugin is being closed.
+> **Note:** Under normal circumstances this only happens, when plugin is being closed, i.e. during a `elektraPluginClose` call for a `stdioproc` instance.
 
 ### Errors
 
@@ -171,7 +173,7 @@ If an unexpected error occurs on either side of the protocol, the connection sho
 
 ```sh
 # mount the Whitelist Java Plugin via stdioproc
-sudo kdb mount config.file user:/tests/stdioproc dump stdioproc 'app=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.stdioproc.StdIoProcApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin'
+sudo kdb mount config.file user:/tests/stdioproc dump stdioproc 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.stdioproc.StdIoProcApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin'
 
 # Define whitelist
 kdb meta-set user:/tests/stdioproc/key "check/whitelist/#0" ""
@@ -199,3 +201,4 @@ sudo kdb umount user:/tests/stdioproc
 - The `error` and `commit` functions are currently not supported. Therefore, implementing a resolver is not supported.
 - Exporting additional functions (e.g. `checkconf`) is currently not supported.
 - With the current backend system, `stdioproc` can only be used for plugins in the `postgetstorage` or `presetstorage` positions.
+- The executable must be defined as an absolute path during mounting.

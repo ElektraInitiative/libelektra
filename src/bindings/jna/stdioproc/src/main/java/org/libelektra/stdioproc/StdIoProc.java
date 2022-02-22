@@ -54,10 +54,10 @@ class StdIoProc {
       contract.append(k);
     }
 
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/open", "1"));
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/get", "1"));
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/set", "1"));
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/close", "1"));
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/open", "1"));
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/get", "1"));
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/set", "1"));
+    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/close", "1"));
 
     dump.write(contract);
 
