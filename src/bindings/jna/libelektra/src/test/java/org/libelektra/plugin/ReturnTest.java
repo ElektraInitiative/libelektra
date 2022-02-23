@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.libelektra.Key;
+import org.libelektra.KeySet;
 
 public class ReturnTest {
 
@@ -22,32 +23,28 @@ public class ReturnTest {
 
   @Test
   public void test_returnOpen_shouldBeCode0() {
-    var config = returnPlugin.getConfig();
-    int open = returnPlugin.open(config, errorKey);
+    int open = returnPlugin.open(KeySet.create(), errorKey);
 
     assertEquals(0, open);
   }
 
   @Test
   public void test_returnGet_ShouldBeCode10() {
-    var config = returnPlugin.getConfig();
-    int open = returnPlugin.get(config, errorKey);
+    int open = returnPlugin.get(KeySet.create(), errorKey);
 
     assertEquals(10, open);
   }
 
   @Test
   public void test_returnSet_ShouldBeCode20() {
-    var config = returnPlugin.getConfig();
-    int open = returnPlugin.set(config, errorKey);
+    int open = returnPlugin.set(KeySet.create(), errorKey);
 
     assertEquals(20, open);
   }
 
   @Test
   public void test_returnError_ShouldBeCode30() {
-    var config = returnPlugin.getConfig();
-    int open = returnPlugin.error(config, errorKey);
+    int open = returnPlugin.error(KeySet.create(), errorKey);
 
     assertEquals(30, open);
   }
