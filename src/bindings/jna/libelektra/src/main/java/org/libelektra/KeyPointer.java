@@ -5,8 +5,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 public class KeyPointer {
-  @Nullable
-  private final Pointer pointer;
+  @Nullable private final Pointer pointer;
 
   public KeyPointer(ReadableKey key) {
     this.pointer = key.getPointer();

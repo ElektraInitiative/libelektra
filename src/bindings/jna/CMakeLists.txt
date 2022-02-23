@@ -176,10 +176,9 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/stdioproc/build/libs/stdioproc-${KDB_VERSION}.jar"
 					DESTINATION "share/java"
 					COMPONENT java-elektra)
-				
+
 				install (
-					FILES
-						"${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
+					FILES "${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
 					DESTINATION "share/java/plugins"
 					COMPONENT java-elektra)
 

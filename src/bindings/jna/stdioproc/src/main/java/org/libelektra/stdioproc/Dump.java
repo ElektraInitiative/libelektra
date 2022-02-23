@@ -173,7 +173,10 @@ class Dump {
           stdIoProc.println(metaName);
           stdIoProc.println(meta.getString());
 
-          metaCopies.put(keyPointer, String.format("$copymeta %d %d\n%s\n%s", nameSize, metaNameSize, key.getName(), metaName));
+          metaCopies.put(
+              keyPointer,
+              String.format(
+                  "$copymeta %d %d\n%s\n%s", nameSize, metaNameSize, key.getName(), metaName));
         }
       }
     }

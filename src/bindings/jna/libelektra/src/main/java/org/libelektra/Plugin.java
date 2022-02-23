@@ -4,8 +4,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Java representation of an Elektra plugin
- * 
- * @implNote because of interface inheritance, it is required that all methods (open, get, set, error, close) are implemented, even if they are not supported. Whether or not a method is supported, must be defined via the correspoding `exports/has` key of the contract. Any method that is not supported, should simply be implemented as `return Plugin.STATUS_SUCCESS`.
+ *
+ * @implNote because of interface inheritance, it is required that all methods (open, get, set,
+ *     error, close) are implemented, even if they are not supported. Whether or not a method is
+ *     supported, must be defined via the correspoding `exports/has` key of the contract. Any method
+ *     that is not supported, should simply be implemented as `return Plugin.STATUS_SUCCESS`.
  */
 public interface Plugin {
 
