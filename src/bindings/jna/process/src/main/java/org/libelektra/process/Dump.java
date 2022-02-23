@@ -1,4 +1,4 @@
-package org.libelektra.stdioproc;
+package org.libelektra.process;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -14,16 +14,16 @@ import org.libelektra.KeySet;
 import org.libelektra.ReadableKey;
 
 class Dump {
-  private final StdIoProc stdIoProc;
+  private final ProcessProtocol processProtocol;
 
-  public Dump(StdIoProc stdIoProc) {
+  public Dump(ProcessProtocol processProtocol) {
 
-    this.stdIoProc = stdIoProc;
+    this.processProtocol = processProtocol;
   }
 
   @Nullable
   public KeySet read() throws IOException {
-    var header = stdIoProc.readLine();
+    var header = processProtocol.readLine();
     if (!Objects.equals(header, "kdbOpen 2")) {
       return null;
     }
@@ -32,7 +32,7 @@ class Dump {
 
     String line;
     Key key = null;
-    while ((line = stdIoProc.readLine()) != null) {
+    while ((line = processProtocol.readLine()) != null) {
       var scanner = new Scanner(line);
       scanner.useDelimiter(" ");
       var cmd = scanner.next();
@@ -43,20 +43,20 @@ class Dump {
             var nameSize = scanner.nextInt();
             var valueSize = scanner.nextInt();
 
-            var buffer = stdIoProc.inputStream.readNBytes(nameSize);
+            var buffer = processProtocol.inputStream.readNBytes(nameSize);
             if (buffer == null || buffer.length != nameSize) {
               return null;
             }
-            if (stdIoProc.inputStream.read() != '\n') {
+            if (processProtocol.inputStream.read() != '\n') {
               return null;
             }
             var name = new String(buffer, StandardCharsets.UTF_8);
 
-            buffer = stdIoProc.inputStream.readNBytes(valueSize);
+            buffer = processProtocol.inputStream.readNBytes(valueSize);
             if (buffer == null || buffer.length != valueSize) {
               return null;
             }
-            if (stdIoProc.inputStream.read() != '\n') {
+            if (processProtocol.inputStream.read() != '\n') {
               return null;
             }
 
@@ -75,20 +75,20 @@ class Dump {
             var nameSize = scanner.nextInt();
             var valueSize = scanner.nextInt();
 
-            var buffer = stdIoProc.inputStream.readNBytes(nameSize);
+            var buffer = processProtocol.inputStream.readNBytes(nameSize);
             if (buffer == null || buffer.length != nameSize) {
               return null;
             }
-            if (stdIoProc.inputStream.read() != '\n') {
+            if (processProtocol.inputStream.read() != '\n') {
               return null;
             }
             var name = new String(buffer, StandardCharsets.UTF_8);
 
-            buffer = stdIoProc.inputStream.readNBytes(valueSize);
+            buffer = processProtocol.inputStream.readNBytes(valueSize);
             if (buffer == null || buffer.length != valueSize) {
               return null;
             }
-            if (stdIoProc.inputStream.read() != '\n') {
+            if (processProtocol.inputStream.read() != '\n') {
               return null;
             }
             var value = new String(buffer, StandardCharsets.UTF_8);
@@ -104,20 +104,20 @@ class Dump {
             var keyNameSize = scanner.nextInt();
             var metaNameSize = scanner.nextInt();
 
-            var buffer = stdIoProc.inputStream.readNBytes(keyNameSize);
+            var buffer = processProtocol.inputStream.readNBytes(keyNameSize);
             if (buffer == null || buffer.length != keyNameSize) {
               return null;
             }
-            if (stdIoProc.inputStream.read() != '\n') {
+            if (processProtocol.inputStream.read() != '\n') {
               return null;
             }
             var keyName = new String(buffer, StandardCharsets.UTF_8);
 
-            buffer = stdIoProc.inputStream.readNBytes(metaNameSize);
+            buffer = processProtocol.inputStream.readNBytes(metaNameSize);
             if (buffer == null || buffer.length != metaNameSize) {
               return null;
             }
-            if (stdIoProc.inputStream.read() != '\n') {
+            if (processProtocol.inputStream.read() != '\n') {
               return null;
             }
             var metaName = new String(buffer, StandardCharsets.UTF_8);
@@ -144,20 +144,20 @@ class Dump {
   }
 
   public void write(KeySet keySet) throws IOException {
-    stdIoProc.println("kdbOpen 2");
+    processProtocol.println("kdbOpen 2");
     Map<KeyPointer, String> metaCopies = new HashMap<>();
     for (Key key : keySet) {
       var nameSize = Math.max(0, key.getNameSize() - 1);
-      stdIoProc.printf(
+      processProtocol.printf(
           "$key %s %d %d\n",
           key.isBinary() ? "binary" : "string", nameSize, Math.max(0, key.getValueSize() - 1));
-      stdIoProc.println(key.getName());
+      processProtocol.println(key.getName());
       if (key.isBinary()) {
-        stdIoProc.outputStream.flush();
-        stdIoProc.outputStream.write(key.getBinary());
-        stdIoProc.println();
+        processProtocol.outputStream.flush();
+        processProtocol.outputStream.write(key.getBinary());
+        processProtocol.println();
       } else {
-        stdIoProc.println(key.getString());
+        processProtocol.println(key.getString());
       }
 
       key.rewindMeta();
@@ -165,13 +165,14 @@ class Dump {
         ReadableKey meta = key.currentMeta();
         KeyPointer keyPointer = new KeyPointer(meta);
         if (metaCopies.containsKey(keyPointer)) {
-          stdIoProc.println(metaCopies.get(keyPointer));
+          processProtocol.println(metaCopies.get(keyPointer));
         } else {
           var metaNameSize = meta.getNameSize() - 1 - "meta:/".length();
-          stdIoProc.printf("$meta %d %d\n", metaNameSize, Math.max(0, meta.getValueSize() - 1));
+          processProtocol.printf(
+              "$meta %d %d\n", metaNameSize, Math.max(0, meta.getValueSize() - 1));
           var metaName = meta.getName().substring("meta:/".length());
-          stdIoProc.println(metaName);
-          stdIoProc.println(meta.getString());
+          processProtocol.println(metaName);
+          processProtocol.println(meta.getString());
 
           metaCopies.put(
               keyPointer,
@@ -180,7 +181,7 @@ class Dump {
         }
       }
     }
-    stdIoProc.println("$end");
-    stdIoProc.outputStream.flush();
+    processProtocol.println("$end");
+    processProtocol.outputStream.flush();
   }
 }

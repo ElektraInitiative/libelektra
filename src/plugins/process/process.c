@@ -1,13 +1,13 @@
 /**
  * @file
  *
- * @brief Source for stdioproc plugin
+ * @brief Source for process plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
-#include "stdioproc.h"
+#include "process.h"
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
@@ -37,9 +37,9 @@ typedef struct
 	} hasOp;
 } IoData;
 
-#define MSG_HANDSHAKE_HEADER_V1 "ELEKTRA_STDIOPROC INIT v1\n"
-#define MSG_HANDSHAKE_ACK_V1 "ELEKTRA_STDIOPROC ACK v1\n"
-#define MSG_TERMINATION "ELEKTRA_STDIOPROC TERMINATE\n"
+#define MSG_HANDSHAKE_HEADER_V1 "ELEKTRA_PROCESS INIT v1\n"
+#define MSG_HANDSHAKE_ACK_V1 "ELEKTRA_PROCESS ACK v1\n"
+#define MSG_TERMINATION "ELEKTRA_PROCESS TERMINATE\n"
 
 
 static char ** readConfigArray (KeySet * config, const char * name, const char * firstElement);
@@ -48,7 +48,7 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 static KeySet * readKeySet (IoData * data, Key * errorKey);
 static void deleteData (IoData * data, Key * errorKey);
 
-int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
+int elektraProcessOpen (Plugin * handle, Key * errorKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 
@@ -203,11 +203,11 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	Key * openKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/open", KDB_O_POP);
+	Key * openKey = ksLookupByName (contract, "system:/elektra/modules/process/exports/has/open", KDB_O_POP);
 	if (openKey != NULL && strcmp (keyString (openKey), "1") == 0)
 	{
 		data->hasOp.open = true;
-		ksAppendKey (contract, keyNew ("system:/elektra/modules/stdioproc/exports/open", KEY_FUNC, elektraStdioprocOpen, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END));
 	}
 	else
 	{
@@ -215,11 +215,11 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	}
 	keyDel (openKey);
 
-	Key * getKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/get", KDB_O_POP);
+	Key * getKey = ksLookupByName (contract, "system:/elektra/modules/process/exports/has/get", KDB_O_POP);
 	if (getKey != NULL && strcmp (keyString (getKey), "1") == 0)
 	{
 		data->hasOp.get = true;
-		ksAppendKey (contract, keyNew ("system:/elektra/modules/stdioproc/exports/get", KEY_FUNC, elektraStdioprocGet, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END));
 	}
 	else
 	{
@@ -227,11 +227,11 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	}
 	keyDel (getKey);
 
-	Key * setKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/set", KDB_O_POP);
+	Key * setKey = ksLookupByName (contract, "system:/elektra/modules/process/exports/has/set", KDB_O_POP);
 	if (setKey != NULL && strcmp (keyString (setKey), "1") == 0)
 	{
 		data->hasOp.set = true;
-		ksAppendKey (contract, keyNew ("system:/elektra/modules/stdioproc/exports/set", KEY_FUNC, elektraStdioprocSet, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END));
 	}
 	else
 	{
@@ -239,12 +239,11 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	}
 	keyDel (setKey);
 
-	Key * closeKey = ksLookupByName (contract, "system:/elektra/modules/stdioproc/exports/has/close", KDB_O_POP);
+	Key * closeKey = ksLookupByName (contract, "system:/elektra/modules/process/exports/has/close", KDB_O_POP);
 	if (closeKey != NULL && strcmp (keyString (closeKey), "1") == 0)
 	{
 		data->hasOp.close = true;
-		ksAppendKey (contract,
-			     keyNew ("system:/elektra/modules/stdioproc/exports/close", KEY_FUNC, elektraStdioprocClose, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END));
 	}
 	else
 	{
@@ -252,7 +251,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	}
 	keyDel (closeKey);
 
-	Key * oldContractRoot = keyNew ("system:/elektra/modules/stdioproc", KEY_END);
+	Key * oldContractRoot = keyNew ("system:/elektra/modules/process", KEY_END);
 	Key * newContractRoot = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (newContractRoot, childName);
 	free (childName);
@@ -278,7 +277,7 @@ int elektraStdioprocOpen (Plugin * handle, Key * errorKey)
 	return result;
 }
 
-int elektraStdioprocClose (Plugin * handle, Key * errorKey)
+int elektraProcessClose (Plugin * handle, Key * errorKey)
 {
 	IoData * data = elektraPluginGetData (handle);
 	if (data == NULL)
@@ -332,19 +331,19 @@ int elektraStdioprocClose (Plugin * handle, Key * errorKey)
 	return error ? ELEKTRA_PLUGIN_STATUS_ERROR : result;
 }
 
-int elektraStdioprocGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/stdioproc"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/process"))
 	{
-		KeySet * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/stdioproc", KEY_VALUE, "stdioproc plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/stdioproc/exports", KEY_END),
-			keyNew ("system:/elektra/modules/stdioproc/exports/open", KEY_FUNC, elektraStdioprocOpen, KEY_END),
-			keyNew ("system:/elektra/modules/stdioproc/exports/close", KEY_FUNC, elektraStdioprocClose, KEY_END),
-			keyNew ("system:/elektra/modules/stdioproc/exports/get", KEY_FUNC, elektraStdioprocGet, KEY_END),
-			keyNew ("system:/elektra/modules/stdioproc/exports/set", KEY_FUNC, elektraStdioprocSet, KEY_END),
+		KeySet * contract =
+			ksNew (30, keyNew ("system:/elektra/modules/process", KEY_VALUE, "process plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/stdioproc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -368,7 +367,7 @@ int elektraStdioprocGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 }
 
-int elektraStdioprocSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraProcessSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	IoData * data = elektraPluginGetData (handle);
 	if (data->hasOp.set)
@@ -384,11 +383,11 @@ int elektraStdioprocSet (Plugin * handle, KeySet * returned, Key * parentKey)
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-	return elektraPluginExport ("stdioproc",
-		ELEKTRA_PLUGIN_OPEN,	&elektraStdioprocOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraStdioprocClose,
-		ELEKTRA_PLUGIN_GET,	&elektraStdioprocGet,
-		ELEKTRA_PLUGIN_SET,	&elektraStdioprocSet,
+	return elektraPluginExport ("process",
+		ELEKTRA_PLUGIN_OPEN,	&elektraProcessOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraProcessClose,
+		ELEKTRA_PLUGIN_GET,	&elektraProcessGet,
+		ELEKTRA_PLUGIN_SET,	&elektraProcessSet,
 		ELEKTRA_PLUGIN_END);
 	// clang-format on
 }

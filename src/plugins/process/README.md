@@ -1,4 +1,4 @@
-- infos = Information about the stdioproc plugin is in keys below
+- infos = Information about the process plugin is in keys below
 - infos/author = Klemens Böswirth <k.boeswirth+git@gmail.com>
 - infos/licence = BSD
 - infos/needs =
@@ -7,7 +7,7 @@
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest shelltest experimental
 - infos/metadata =
-- infos/description = one-line description of stdioproc
+- infos/description = one-line description of process
 
 ## Introduction
 
@@ -18,7 +18,7 @@ This plugin spawns a new process with a user-defined executable and delegates al
 Set the config key `executable` and the arrays `args/#`, `env/#` to the path of an executable, the arguments that shall be passed and the environment variables to be set.
 
 ```
-kdb mount test.dump /tests/stdioproc stdioproc 'executable=/usr/bin/pluginproc' 'args=#1' 'args/#0=--load-plugin' 'args/#1=myplugin'
+kdb mount test.dump /tests/process process 'executable=/usr/bin/pluginproc' 'args=#1' 'args/#0=--load-plugin' 'args/#1=myplugin'
 ```
 
 During `elektraStdprocioOpen` the plugin will collect the `args/#` and `env/#` values into two arrays `argv` and `envp`.
@@ -86,7 +86,7 @@ The parent writes the protocol header to `stdin` of the child.
 ```
 Parent > Child
 
-ELEKTRA_STDIOPROC INIT v1
+ELEKTRA_PROCESS INIT v1
 ```
 
 The child must respond with an acknowledgement, followed by a `contract` keyset.
@@ -94,25 +94,25 @@ The child must respond with an acknowledgement, followed by a `contract` keyset.
 ```
 Child > Parent
 
-ELEKTRA_STDIOPROC ACK v1
+ELEKTRA_PROCESS ACK v1
 (name)
 [contract]
 ```
 
 Here `(name)` is the module name the child uses.
-This will be used to replace `stdioproc` in the contract of the plugin.
-The `[contract]` keyset must contain the `infos` keys, which will be used replace the ones at the top of this README and the ones in `stdioproc.c`.
+This will be used to replace `process` in the contract of the plugin.
+The `[contract]` keyset must contain the `infos` keys, which will be used replace the ones at the top of this README and the ones in `process.c`.
 It must also contain `exports/_` keys for every operation that is implemented by the child.
-All keys in `[contract]` should be below `system:/elektra/modules/stdioproc`.
+All keys in `[contract]` should be below `system:/elektra/modules/process`.
 The parent will rename these keys appropriately.
 
 A child that implements all operations should include these keys (in addition to the relevant `infos` keys):
 
 ```
-system:/elektra/modules/stdioproc/exports/open = 1
-system:/elektra/modules/stdioproc/exports/close = 1
-system:/elektra/modules/stdioproc/exports/get = 1
-system:/elektra/modules/stdioproc/exports/set = 1
+system:/elektra/modules/process/exports/open = 1
+system:/elektra/modules/process/exports/close = 1
+system:/elektra/modules/process/exports/get = 1
+system:/elektra/modules/process/exports/set = 1
 ```
 
 After this initial handshake, the child should simply wait for further requests from the parent.
@@ -158,12 +158,12 @@ When the parent no longer needs the child process, it will send a final terminat
 ```
 Parent > Child
 
-ELEKTRA_STDIOPROC TERMINATE
+ELEKTRA_PROCESS TERMINATE
 ```
 
 The child process should now exit (and thereby close its ends of the `stdin`/`stdout` pipes).
 
-> **Note:** Under normal circumstances this only happens, when plugin is being closed, i.e. during a `elektraPluginClose` call for a `stdioproc` instance.
+> **Note:** Under normal circumstances this only happens, when plugin is being closed, i.e. during a `elektraPluginClose` call for a `process` instance.
 
 ### Errors
 
@@ -172,39 +172,39 @@ If an unexpected error occurs on either side of the protocol, the connection sho
 ## Examples
 
 ```sh
-# mount the Whitelist Java Plugin via stdioproc
-sudo kdb mount config.file user:/tests/stdioproc dump stdioproc 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.stdioproc.StdIoProcApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin'
+# mount the Whitelist Java Plugin via process
+sudo kdb mount config.file user:/tests/process dump process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.process.ProcessApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin'
 
 # Define whitelist
-kdb meta-set user:/tests/stdioproc/key "check/whitelist/#0" ""
-kdb meta-set user:/tests/stdioproc/key "check/whitelist/#1" allowed0
-kdb meta-set user:/tests/stdioproc/key "check/whitelist/#2" allowed1
+kdb meta-set user:/tests/process/key "check/whitelist/#0" ""
+kdb meta-set user:/tests/process/key "check/whitelist/#1" allowed0
+kdb meta-set user:/tests/process/key "check/whitelist/#2" allowed1
 
 # Should be allowed
-kdb set user:/tests/stdioproc/key allowed0
+kdb set user:/tests/process/key allowed0
 #> Set string to "allowed0"
 
-kdb set user:/tests/stdioproc/key allowed1
+kdb set user:/tests/process/key allowed1
 #> Set string to "allowed1"
 
 # Should cause error
-kdb set user:/tests/stdioproc/key not_allowed
+kdb set user:/tests/process/key not_allowed
 # RET: 5
 # STDERR:.*Validation Semantic: .*'not_allowed' does not adhere to whitelist.*
 
 # cleanup
-sudo kdb umount user:/tests/stdioproc
+sudo kdb umount user:/tests/process
 ```
 
 > **Note:** The mount line of the snippet above can be simplified by using the `mount-java` helper:
 >
 > ```
-> sudo kdb mount-java config.file user:/tests/stdioproc dump java:org.libelektra.plugin.WhitelistPlugin
+> sudo kdb mount-java config.file user:/tests/process dump java:org.libelektra.plugin.WhitelistPlugin
 > ```
 
 ## Limitations
 
 - The `error` and `commit` functions are currently not supported. Therefore, implementing a resolver is not supported.
 - Exporting additional functions (e.g. `checkconf`) is currently not supported.
-- With the current backend system, `stdioproc` can only be used for plugins in the `postgetstorage` or `presetstorage` positions.
+- With the current backend system, `process` can only be used for plugins in the `postgetstorage` or `presetstorage` positions.
 - The executable must be defined as an absolute path during mounting.

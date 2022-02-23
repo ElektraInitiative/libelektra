@@ -3,10 +3,10 @@ apply from: "$rootProject.projectDir/java-app.gradle"
 apply from: 'dependencies.gradle'
 
 application {
-    mainClassName = 'org.libelektra.stdioproc.StdIoProcApp'
+    mainClassName = 'org.libelektra.process.ProcessApp'
 }
 
-version project.version	
+version project.version
 
 run {
     standardInput = System.in

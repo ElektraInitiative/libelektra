@@ -129,11 +129,11 @@ if (Java_JAVAC_EXECUTABLE)
 					plugins/dependencies.gradle
 					plugins/whitelist/src/main/java/org/libelektra/plugin/WhitelistPlugin.java
 					plugins/whitelist/src/test/java/org/libelektra/plugin/WhitelistPluginTests.java
-					stdioproc/build.gradle
-					stdioproc/dependencies.gradle
-					stdioproc/src/main/java/org/libelektra/stdioproc/Dump.java
-					stdioproc/src/main/java/org/libelektra/stdioproc/StdIoProc.java
-					stdioproc/src/main/java/org/libelektra/stdioproc/StdIoProcApp.java
+					process/build.gradle
+					process/dependencies.gradle
+					process/src/main/java/org/libelektra/process/Dump.java
+					process/src/main/java/org/libelektra/process/ProcessProtocol.java
+					process/src/main/java/org/libelektra/process/ProcessApp.java
 					build.gradle
 					gradle.properties
 					java-library.gradle
@@ -150,7 +150,7 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-sources.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
 						"${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
-						"${CMAKE_CURRENT_BINARY_DIR}/stdioproc/build/libs/stdioproc-${KDB_VERSION}.jar"
+						"${CMAKE_CURRENT_BINARY_DIR}/process/build/libs/process-${KDB_VERSION}.jar"
 					COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}"
 						"${CMAKE_CURRENT_BINARY_DIR}"
 					COMMAND ${GRADLE_EXECUTABLE} -q --console=plain clean assemble
@@ -173,7 +173,7 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-javadoc.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-sources.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
-						"${CMAKE_CURRENT_BINARY_DIR}/stdioproc/build/libs/stdioproc-${KDB_VERSION}.jar"
+						"${CMAKE_CURRENT_BINARY_DIR}/process/build/libs/process-${KDB_VERSION}.jar"
 					DESTINATION "share/java"
 					COMPONENT java-elektra)
 

@@ -17,7 +17,7 @@ esac
 
 read -r header init_cmd version
 
-if [ "$header" != "ELEKTRA_STDIOPROC" ]; then
+if [ "$header" != "ELEKTRA_PROCESS" ]; then
 	exit 1
 fi
 
@@ -29,51 +29,51 @@ if [ "$version" != "v1" ]; then
 	exit 1
 fi
 
-printf "ELEKTRA_STDIOPROC ACK v1\n"
+printf "ELEKTRA_PROCESS ACK v1\n"
 printf "testapp\n"
 # shellcheck disable=SC2016
 printf 'kdbOpen 2
-$key string 51 1
-system:/elektra/modules/stdioproc/exports/has/close
-1
 $key string 49 1
-system:/elektra/modules/stdioproc/exports/has/get
+system:/elektra/modules/process/exports/has/close
 1
-$key string 50 1
-system:/elektra/modules/stdioproc/exports/has/open
+$key string 47 1
+system:/elektra/modules/process/exports/has/get
 1
-$key string 49 1
-system:/elektra/modules/stdioproc/exports/has/set
+$key string 48 1
+system:/elektra/modules/process/exports/has/open
 1
-$key string 39 60
-system:/elektra/modules/stdioproc/infos
-Information about the stdioproc test plugin is in keys below
-$key string 46 45
-system:/elektra/modules/stdioproc/infos/author
+$key string 47 1
+system:/elektra/modules/process/exports/has/set
+1
+$key string 37 58
+system:/elektra/modules/process/infos
+Information about the process test plugin is in keys below
+$key string 44 45
+system:/elektra/modules/process/infos/author
 Klemens Böswirth <k.boeswirth+git@gmail.com>
-$key string 51 25
-system:/elektra/modules/stdioproc/infos/description
-test plugin for stdioproc
-$key string 47 3
-system:/elektra/modules/stdioproc/infos/licence
+$key string 49 23
+system:/elektra/modules/process/infos/description
+test plugin for process
+$key string 45 3
+system:/elektra/modules/process/infos/licence
 BSD
-$key string 48 0
-system:/elektra/modules/stdioproc/infos/metadata
+$key string 46 0
+system:/elektra/modules/process/infos/metadata
 
-$key string 45 0
-system:/elektra/modules/stdioproc/infos/needs
+$key string 43 0
+system:/elektra/modules/process/infos/needs
 
-$key string 50 21
-system:/elektra/modules/stdioproc/infos/placements
+$key string 48 21
+system:/elektra/modules/process/infos/placements
 getstorage setstorage
+$key string 46 0
+system:/elektra/modules/process/infos/provides
+
 $key string 48 0
-system:/elektra/modules/stdioproc/infos/provides
+system:/elektra/modules/process/infos/recommends
 
-$key string 50 0
-system:/elektra/modules/stdioproc/infos/recommends
-
-$key string 46 42
-system:/elektra/modules/stdioproc/infos/status
+$key string 44 42
+system:/elektra/modules/process/infos/status
 maintained unittest shelltest experimental
 $end
 '
@@ -139,7 +139,7 @@ while read -r cmd; do
 		printf 'kdbOpen 2\n$key string %d %d\n%s\n%s\n$end\n' "$plen" "${#cmd}" "$parent" "$cmd"
 		printf "%s\n" "$data_ks"
 		;;
-	"ELEKTRA_STDIOPROC TERMINATE")
+	"ELEKTRA_PROCESS TERMINATE")
 		exit 0
 		;;
 	*)

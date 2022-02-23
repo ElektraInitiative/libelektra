@@ -1,11 +1,11 @@
-package org.libelektra.stdioproc;
+package org.libelektra.process;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import org.libelektra.Plugin;
 
-/** Implements the child side of the protocol used by the stdioproc plugin. */
-public class StdIoProcApp {
+/** Implements the child side of the protocol used by the process plugin. */
+public class ProcessApp {
 
   public static void main(String[] args) {
     if (args.length != 1) {
@@ -37,7 +37,7 @@ public class StdIoProcApp {
       return;
     }
 
-    var protocol = new StdIoProc(plugin, System.in, System.out);
+    var protocol = new ProcessProtocol(plugin, System.in, System.out);
 
     try {
       if (!protocol.handshake()) {

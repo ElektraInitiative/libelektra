@@ -1,4 +1,4 @@
-package org.libelektra.stdioproc;
+package org.libelektra.process;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,7 @@ import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
 
-class StdIoProc {
+class ProcessProtocol {
 
   private static final String STATUS_SUCCESS = "success";
   private static final String STATUS_NO_UPDATE = "noupdate";
@@ -22,7 +22,7 @@ class StdIoProc {
   final InputStream inputStream;
   final OutputStream outputStream;
 
-  StdIoProc(Plugin plugin, InputStream inputStream, OutputStream outputStream) {
+  ProcessProtocol(Plugin plugin, InputStream inputStream, OutputStream outputStream) {
     this.plugin = plugin;
     this.inputStream = inputStream;
     this.outputStream = outputStream;
@@ -31,11 +31,11 @@ class StdIoProc {
 
   public boolean handshake() throws IOException {
     var header = readLine();
-    if (!Objects.equals(header, "ELEKTRA_STDIOPROC INIT v1")) {
+    if (!Objects.equals(header, "ELEKTRA_PROCESS INIT v1")) {
       return false;
     }
 
-    println("ELEKTRA_STDIOPROC ACK v1");
+    println("ELEKTRA_PROCESS ACK v1");
     println(plugin.getName());
 
     var jniContract = KeySet.create();
@@ -50,14 +50,14 @@ class StdIoProc {
       Key k = key.dup();
       k.setName(
           key.getName()
-              .replace(Plugin.JNI_MODULE_CONTRACT_ROOT, "system:/elektra/modules/stdioproc"));
+              .replace(Plugin.JNI_MODULE_CONTRACT_ROOT, "system:/elektra/modules/process"));
       contract.append(k);
     }
 
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/open", "1"));
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/get", "1"));
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/set", "1"));
-    contract.append(Key.create("system:/elektra/modules/stdioproc/exports/has/close", "1"));
+    contract.append(Key.create("system:/elektra/modules/process/exports/has/open", "1"));
+    contract.append(Key.create("system:/elektra/modules/process/exports/has/get", "1"));
+    contract.append(Key.create("system:/elektra/modules/process/exports/has/set", "1"));
+    contract.append(Key.create("system:/elektra/modules/process/exports/has/close", "1"));
 
     dump.write(contract);
 
@@ -159,7 +159,7 @@ class StdIoProc {
             executeOperation(parent, plugin::close);
           }
           break;
-        case "ELETKRA_STDIOPROC TERMINATE":
+        case "ELETKRA_PROCESS TERMINATE":
           return true;
       }
     }

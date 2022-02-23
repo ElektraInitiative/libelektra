@@ -11,18 +11,18 @@ If you need a tutorial for using Key and KeySet in Java, please check out the [H
 
 Before we will take a look into how to write a plugin in Java, it is important to note, that there are two technologies needed:
 
-- `stdioproc` plugin
+- `process` plugin
 - JNA binding
 
-### `stdioproc` Plugin
+### `process` Plugin
 
-The `stdioproc` plugin is a special plugin, which allows using an external application as the implementation of a plugin.
+The `process` plugin is a special plugin, which allows using an external application as the implementation of a plugin.
 
-To achieve this, the `stdioproc` plugin spawns a child process for the external executable and then uses a simple protocol to relay any requested operations to this child process.
+To achieve this, the `process` plugin spawns a child process for the external executable and then uses a simple protocol to relay any requested operations to this child process.
 The details of how this protocol works are not important for writing a Java plugin.
-All the details of the protocol are abstracted via the `StdioProcApp` class and the `Plugin` interface.
+All the details of the protocol are abstracted via the `processApp` class and the `Plugin` interface.
 
-If you do want to know the details of the `stdioproc` protocol, take a look at the [README](../../src/plugins/stdioproc/README.md) of the `stdioproc` plugin.
+If you do want to know the details of the `process` protocol, take a look at the [README](../../src/plugins/process/README.md) of the `process` plugin.
 
 ### JNA Binding
 
@@ -46,7 +46,7 @@ The standard API functions of the plugin API all have corresponding methods in t
 
 Additionally, there is a `@Nonnull String getName()` method.
 This method must return the unique name of the plugin.
-In the C API this would be taken from the contract, but the `stdioproc` protocol requires this separately, so we need a separate method for it.
+In the C API this would be taken from the contract, but the `process` protocol requires this separately, so we need a separate method for it.
 
 Otherwise, there are a few differences between implementing a plugin in C and in Java:
 
@@ -57,9 +57,9 @@ Otherwise, there are a few differences between implementing a plugin in C and in
 2. In C the parent key of the contract depends on the plugins name.
    For example, the contract for `dump` can be found under `system:/elektra/modules/dump` and the `dump` plugin returns it as such.
    However, in Java the parent key for the contract is always `system:/elektra/modules/jni` (you may use the constant `Plugin.JNI_MODULE_CONTRACT_ROOT`).
-   The keys will be transformed via the `stdioproc` protocol and plugin to match the normal expectations.
+   The keys will be transformed via the `process` protocol and plugin to match the normal expectations.
 3. In C all functions a plugin exports (including `open`, `get`, `set`, `error`, `close`, but also additional ones) are registered in the contract under `system:/elektra/modules/<plugin>/exports/<function>` with a function pointer key.
-   Because we cannot provide a C function pointer to a Java function and because `stdioproc` uses a child process for the Java code, we cannot export functions like that.
+   Because we cannot provide a C function pointer to a Java function and because `process` uses a child process for the Java code, we cannot export functions like that.
    This means a Java plugin cannot export additional functions.
    However, we must still define which functions are supported by the plugin.
    To this end, a Java plugin must set `system:/elektra/modules/jni/exports/has/<function> = 1` (where `<function>` is one of `open`, `get`, `set`, `error`, `close`) for all supported functions.

@@ -1,13 +1,13 @@
 # Mounting Java Plugins
 
 Mounting a Java plugin is a bit more complicated than mounting a "normal" C plugin.
-This is because you actually need to mount the `stdioproc` plugin with the correct configuration for a Java plugin.
+This is because you actually need to mount the `process` plugin with the correct configuration for a Java plugin.
 
-The following snippet mounts the C plugins `dump` and `type` together with the Java plugin `org.libelektra.plugin.WhitelistPlugin` with the file `config.file` at `user:/tests/stdioproc`:
+The following snippet mounts the C plugins `dump` and `type` together with the Java plugin `org.libelektra.plugin.WhitelistPlugin` with the file `config.file` at `user:/tests/process`:
 
 ```sh
 KDB_VERSION="$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')"
-sudo kdb mount config.file user:/tests/stdioproc dump stdioproc "executable=$(command -v java)" 'args=#3' 'args/#0=-cp' "args/#1=/usr/share/java/libelektra-$KDB_VERSION-all.jar:/usr/share/java/stdioproc-$KDB_VERSION.jar:/usr/share/java/whitelist-$KDB_VERSION.jar" 'args/#2=org.libelektra.stdioproc.StdIoProcApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin' type
+sudo kdb mount config.file user:/tests/process dump process "executable=$(command -v java)" 'args=#3' 'args/#0=-cp' "args/#1=/usr/share/java/libelektra-$KDB_VERSION-all.jar:/usr/share/java/process-$KDB_VERSION.jar:/usr/share/java/whitelist-$KDB_VERSION.jar" 'args/#2=org.libelektra.process.ProcessApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin' type
 ```
 
 This can get complicated very quickly.
@@ -15,7 +15,7 @@ For one, you need to know that Elektra's JARs are installed in `/usr/share/java`
 To make this easier, we provide a helper script which can be used like this:
 
 ```sh
-sudo kdb mount-java config.file user:/tests/stdioproc kdb:dump java:org.libelektra.plugin.WhitelistPlugin type
+sudo kdb mount-java config.file user:/tests/process kdb:dump java:org.libelektra.plugin.WhitelistPlugin type
 ```
 
 The line above has exactly the same effect as the previous snippet.

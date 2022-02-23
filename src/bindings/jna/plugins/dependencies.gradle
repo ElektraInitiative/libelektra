@@ -1,7 +1,7 @@
 dependencies {
-	api project(':libelektra')
-	api project(':stdioproc')
+    api project(':libelektra')
+    api project(':process')
 
-	// test dependencies
-	testImplementation "junit:junit:$junitVersion"
+    // test dependencies
+    testImplementation "junit:junit:$junitVersion"
 }

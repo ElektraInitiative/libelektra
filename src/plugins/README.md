@@ -253,7 +253,7 @@ binding during run-time:
 - [cache](cache/) caches keysets from previous `kdbGet()` calls
 - [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
-- [stdioproc](stdioproc/) proxy plugin that uses separate executables as plugin implementations
+- [process](process/) proxy plugin that uses separate executables as plugin implementations
 
 ### Plugins for Development
 
