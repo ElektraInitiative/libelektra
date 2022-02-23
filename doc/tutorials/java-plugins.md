@@ -64,7 +64,7 @@ Otherwise, there are a few differences between implementing a plugin in C and in
    However, we must still define which functions are supported by the plugin.
    To this end, a Java plugin must set `system:/elektra/modules/jni/exports/has/<function> = 1` (where `<function>` is one of `open`, `get`, `set`, `error`, `close`) for all supported functions.
 
-Otherwise, the rules for return values and plugin behaviour are the same as for a C plugin.
+Otherwise, the rules for return values and plugin behavior are the same as for a C plugin.
 
 You can find a few examples for Java plugins in the folder [`src/bindings/jna/plugins/`](../../src/bindings/jna/plugins/).
 We use separate Gradle projects for every plugin, but that is not a requirement.
