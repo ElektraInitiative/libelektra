@@ -255,6 +255,7 @@ binding during run-time:
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
 - [process](process/) proxy plugin that executes other plugins in a separate process
   (useful for interpreter plugins and plugins with global setup like `xerces`)
+- [stdioproc](stdioproc/) proxy plugin that uses separate executables as plugin implementations
 
 ### Plugins for Development
 
