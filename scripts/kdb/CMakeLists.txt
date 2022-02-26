@@ -4,7 +4,7 @@ file (GLOB IN_FILES *.in)
 foreach (file ${IN_FILES})
 	get_filename_component (file_we "${file}" NAME_WE)
 	configure_file ("${file}" "${file_we}" @ONLY)
-	if (file_we EQUAL "mount-java" AND NOT BUILD_SHARED)
+	if (file_we STREQUAL "mount-java" AND NOT BUILD_SHARED)
 		continue ()
 	endif ()
 	install (
