@@ -131,7 +131,7 @@ while read -r cmd; do
 		extra_key="$extra_key$cmd$NL"
 
 		data_ks=$(
-			echo "$data_ks" | head -n-1
+			echo "$data_ks" | sed '$d'
 			echo "$extra_key\$end$NL"
 		)
 		printf "%s\n" "$result_value"
