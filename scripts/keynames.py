@@ -139,6 +139,15 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
     if len(prefix) == 0:
         # No prefix, so we look in name
         colon_index = name.find(":")
+        slash_index = name.find("/")
+
+        # There was a slash before the first colon, but not at the start of the string
+        # -> this is not a valid Key Name
+        if slash_index < colon_index and slash_index != 0:
+            raise KeyNameException(
+                "No namespace (and not cascading) or missing colon (:) after namespace"
+            )
+
         if colon_index > 0:
             namespace = name[:colon_index]
             namespace_offset = len(namespace)
@@ -155,6 +164,15 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
     else:
         # We have a prefix, so we extract the Namespace from there
         colon_index = prefix.find(":")
+        slash_index = name.find("/")
+
+        # There was a slash before the first colon, but not at the start of the string
+        # -> this is not a valid Key Name
+        if slash_index < colon_index and slash_index != 0:
+            raise KeyNameException(
+                "No namespace (and not cascading) or missing colon (:) after namespace"
+            )
+
         if colon_index > 0:
             namespace = prefix[:colon_index]
             namespace_offset = len(namespace)
