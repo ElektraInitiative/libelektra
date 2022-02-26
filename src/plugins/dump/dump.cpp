@@ -592,7 +592,6 @@ int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 	keyDel (root);
 	int errnosave = errno;
 
-	// FIXME (kodebach): remove once process is renamed
 	// dirty workaround for pluginprocess
 	bool useFullNames = ksLookupByName (elektraPluginGetConfig (handle), "/fullname", 0) != NULL;
 
