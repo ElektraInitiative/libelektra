@@ -9,7 +9,7 @@
 # e.g. CLASSPATH=/path/to/foo.jar kdb mount-java config.file user:/foo java:com.example.Foo
 
 if [ -z "$KDB" ]; then
-        KDB="@CMAKE_INSTALL_PREFIX@/bin/kdb"
+        KDB="@KDB_COMMAND@"
 fi
 
 if [ -z "$JAVA_BIN" ]; then
