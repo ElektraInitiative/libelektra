@@ -4,7 +4,7 @@ echo
 echo ELEKTRA CHECK MOUNT JAVA
 echo
 
-if ! command -v java; then
+if ! command -v java > /dev/null; then
 	echo "No Java installation found."
 	exit 0
 fi
