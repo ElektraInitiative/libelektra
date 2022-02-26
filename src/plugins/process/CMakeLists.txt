@@ -9,7 +9,7 @@ add_plugin (
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/testapp.sh" "${CMAKE_BINARY_DIR}/bin/process-testapp.sh" COPYONLY)
 
 install (
-	FILES "${CMAKE_BINARY_DIR}/bin/process-testapp.sh"
+	PROGRAMS "${CMAKE_BINARY_DIR}/bin/process-testapp.sh"
 	DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
 	COMPONENT elektra-tests)
 
