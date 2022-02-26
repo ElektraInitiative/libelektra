@@ -17,7 +17,7 @@ if [ -z "$JAVA_BIN" ]; then
 fi
 
 if [ -z "$ELEKTRA_CLASSPATH" ]; then
-        KDB_VERSION="$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')"
+        KDB_VERSION="$("$KDB" --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')"
         JAVA_DIR="@CMAKE_INSTALL_PREFIX@/share/java"
         PLUGIN_JARS="$(find "$JAVA_DIR/plugins" -type f -name "*-$KDB_VERSION.jar" | tr "\n" ':')"
         ELEKTRA_CLASSPATH="$JAVA_DIR/libelektra-$KDB_VERSION-all.jar:$JAVA_DIR/process-$KDB_VERSION.jar:${PLUGIN_JARS%:}"
