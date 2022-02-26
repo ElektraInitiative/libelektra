@@ -58,7 +58,7 @@ PLUGINS=()
 for plugin in "$@"; do
         case "$plugin" in
         java:*)
-                PLUGINS=("${PLUGINS[@]}" process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$CLASSPATH" 'args/#2=org.libelektra.process.ProcessApp' "args/#3=${plugin#java:}")
+                PLUGINS=("${PLUGINS[@]}" process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$CLASSPATH" 'args/#2=org.libelektra.process.ProcessApp' "args/#3=${plugin#java:}" 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH")
                 ;;
         kdb:*)
                 PLUGINS=("${PLUGINS[@]}" "${plugin#kdb:}")

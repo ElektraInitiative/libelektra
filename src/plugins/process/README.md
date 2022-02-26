@@ -22,7 +22,10 @@ kdb mount test.dump /tests/process process 'executable=/usr/bin/pluginproc' 'arg
 ```
 
 During `elektraStdprocioOpen` the plugin will collect the `args/#` and `env/#` values into two arrays `argv` and `envp`.
-It then `fork`s a new process and the child calls `execve` with the path from `app` as well as `argv` and` envp`.
+Additionally, the array `copyenv/#` is read as a list of environment variables.
+Each variable will be looked up via `getenv` and then added to `envp`.
+
+The plugin then `fork`s a new process and the child calls `execve` with the path from `app` as well as `argv` and` envp`.
 The child process is expected to listen to `stdin` and write to `stdout` according to the protocol described below.
 
 If communication can be established, the child process will be kept running until `elektraStdprocioClose`.
@@ -173,7 +176,8 @@ If an unexpected error occurs on either side of the protocol, the connection sho
 
 ```sh
 # mount the Whitelist Java Plugin via process
-sudo kdb mount config.file user:/tests/process dump process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.process.ProcessApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin'
+# NOTE: the copyenv and copyenv/#0 are normal not needed, but we need them to make this script work as an automated test
+sudo kdb mount config.file user:/tests/process dump process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.process.ProcessApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin' 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH"
 
 # Define whitelist
 kdb meta-set user:/tests/process/key "check/whitelist/#0" ""

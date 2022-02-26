@@ -42,7 +42,8 @@ typedef struct
 #define MSG_TERMINATION "ELEKTRA_PROCESS TERMINATE\n"
 
 
-static char ** readConfigArray (KeySet * config, const char * name, const char * firstElement);
+static char ** readArgs (KeySet * config, const char * arg0);
+static char ** readEnv (KeySet * config);
 static void freeConfigArray (char ** array);
 static int executeOperation (IoData * data, const char * op, KeySet * ks, bool readKs, Key * parentKey);
 static KeySet * readKeySet (IoData * data, Key * errorKey);
@@ -73,8 +74,8 @@ int elektraProcessOpen (Plugin * handle, Key * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	char ** args = readConfigArray (config, "/args", appPath);
-	char ** env = readConfigArray (config, "/env", NULL);
+	char ** args = readArgs (config, appPath);
+	char ** env = readEnv (config);
 
 	Key * appConfigRoot = keyNew ("/config", KEY_END);
 	KeySet * appConfig = ksCut (config, appConfigRoot);
@@ -394,24 +395,17 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 
 // private functions
 
-static char ** readConfigArray (KeySet * config, const char * name, const char * firstElement)
+static char ** readArgs (KeySet * config, const char * arg0)
 {
-	Key * root = ksLookupByName (config, name, 0);
+	Key * root = ksLookupByName (config, "/args", 0);
 	const char * lastIndex = root == NULL ? NULL : keyString (root);
 
-	if (lastIndex == NULL)
+	if (lastIndex == NULL || strlen (lastIndex) == 0)
 	{
-		if (firstElement != NULL)
-		{
-			char ** array = elektraMalloc (sizeof (char *) * 2);
-			array[0] = strdup (firstElement);
-			array[1] = NULL;
-			return array;
-		}
-		else
-		{
-			return elektraCalloc (sizeof (char *));
-		}
+		char ** array = elektraMalloc (sizeof (char *) * 2);
+		array[0] = strdup (arg0);
+		array[1] = NULL;
+		return array;
 	}
 
 	char index[ELEKTRA_MAX_ARRAY_SIZE] = "";
@@ -422,21 +416,10 @@ static char ** readConfigArray (KeySet * config, const char * name, const char *
 		elektraWriteArrayNumber (index, count);
 	}
 
-	char ** array;
-	size_t first;
-	if (firstElement == NULL)
-	{
-		array = elektraMalloc (sizeof (char *) * (count + 1));
-		first = 0;
-		array[count] = NULL;
-	}
-	else
-	{
-		array = elektraMalloc (sizeof (char *) * (count + 2));
-		array[0] = strdup (firstElement);
-		first = 1;
-		array[count + 1] = NULL;
-	}
+
+	char ** array = elektraMalloc (sizeof (char *) * (count + 2));
+	array[0] = strdup (arg0);
+	array[count + 1] = NULL;
 
 	Key * lookup = keyDup (root, KEY_CP_NAME);
 	keySetNamespace (lookup, KEY_NS_CASCADING);
@@ -447,8 +430,87 @@ static char ** readConfigArray (KeySet * config, const char * name, const char *
 		keySetBaseName (lookup, index);
 
 		Key * key = ksLookup (config, lookup, 0);
-		array[first + i] = strdup (keyString (key));
+		array[i + 1] = strdup (keyString (key));
 	}
+	keyDel (lookup);
+
+	return array;
+}
+
+static char ** readEnv (KeySet * config)
+{
+	char index[ELEKTRA_MAX_ARRAY_SIZE];
+
+	Key * envRoot = ksLookupByName (config, "/env", 0);
+	const char * envLastIndex = envRoot == NULL ? NULL : keyString (envRoot);
+
+	kdb_long_long_t envCount = 0;
+	if (envLastIndex != NULL && strlen (envLastIndex) > 0)
+	{
+		index[0] = '\0';
+		while (strcmp (index, envLastIndex) <= 0)
+		{
+			envCount++;
+			elektraWriteArrayNumber (index, envCount);
+		}
+	}
+
+
+	Key * copyRoot = ksLookupByName (config, "/copyenv", 0);
+	const char * copyLastIndex = copyRoot == NULL ? NULL : keyString (copyRoot);
+
+	kdb_long_long_t copyCount = 0;
+	if (copyLastIndex != NULL && strlen (copyLastIndex) > 0)
+	{
+		index[0] = '\0';
+		while (strcmp (index, copyLastIndex) <= 0)
+		{
+			copyCount++;
+			elektraWriteArrayNumber (index, copyCount);
+		}
+	}
+
+	if (copyCount == 0 && envCount == 0)
+	{
+		return elektraCalloc (sizeof (char *));
+	}
+
+
+	char ** array = elektraMalloc (sizeof (char *) * (envCount + copyCount + 1));
+
+	size_t arrayPos = 0;
+
+	Key * lookup = keyDup (envRoot, KEY_CP_NAME);
+	keySetNamespace (lookup, KEY_NS_CASCADING);
+	keyAddBaseName (lookup, "");
+	for (kdb_long_long_t i = 0; i < envCount; i++)
+	{
+		elektraWriteArrayNumber (index, i);
+		keySetBaseName (lookup, index);
+
+		Key * key = ksLookup (config, lookup, 0);
+		array[arrayPos++] = strdup (keyString (key));
+	}
+
+	keyCopy (lookup, copyRoot, KEY_CP_NAME);
+	keySetNamespace (lookup, KEY_NS_CASCADING);
+	keyAddBaseName (lookup, "");
+	for (kdb_long_long_t i = 0; i < copyCount; i++)
+	{
+		elektraWriteArrayNumber (index, i);
+		keySetBaseName (lookup, index);
+
+		Key * key = ksLookup (config, lookup, 0);
+		const char * envValue = getenv (keyString (key));
+		if (envValue != NULL)
+		{
+			char * envVar = elektraFormat ("%s=%s", keyString (key), envValue);
+			array[arrayPos++] = strdup (envVar);
+			elektraFree (envVar);
+		}
+	}
+	array[arrayPos] = NULL;
+
 	keyDel (lookup);
 
 	return array;
