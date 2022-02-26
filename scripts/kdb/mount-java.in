@@ -13,6 +13,10 @@ if [ -z "$KDB" ]; then
 fi
 
 if [ -z "$JAVA_BIN" ]; then
+        if ! command -v java; then
+                echo >&2 "No Java installation found. Install java or provide JAVA_BIN."
+                exit 1
+        fi
         JAVA_BIN=$(command -v java)
 fi
 
