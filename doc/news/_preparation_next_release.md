@@ -123,6 +123,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - The `ELEKTRA_ERROR_*_NAME` and `ELEKTRA_WARNING_*_NAME` constants have been removed from the public API. Use `ELEKTRA_ERROR_*` and `ELEKTRA_WARNING_*` instead. _(Klemens Böswirth @kodebach)_
 
+- Fixed a bug that prevented the creation of cascading keys whose name contains a colon (`:`). _(Klemens Böswirth @kodebach)_
+
 ### <<Library1>>
 
 - <<TODO>>
