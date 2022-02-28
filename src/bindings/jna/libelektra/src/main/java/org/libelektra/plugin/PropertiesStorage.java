@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import org.libelektra.ErrorCode;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
@@ -15,11 +16,6 @@ import org.libelektra.Plugin;
 public class PropertiesStorage implements Plugin {
 
   private static final String PLUGIN_NAME = "PropertiesStorage";
-
-  @Override
-  public KeySet getConfig() {
-    return KeySet.create();
-  }
 
   @Override
   public int open(KeySet conf, Key errorKey) {
@@ -46,7 +42,7 @@ public class PropertiesStorage implements Plugin {
     try (var stream = new BufferedInputStream(new FileInputStream(parentKey.getString()))) {
       properties.load(stream);
     } catch (IOException e) {
-      parentKey.setError("Could not read file");
+      parentKey.setError(ErrorCode.RESOURCE, "Could not read file");
       return STATUS_ERROR;
     }
     for (Map.Entry<Object, Object> e : properties.entrySet()) {
@@ -64,7 +60,7 @@ public class PropertiesStorage implements Plugin {
     try (var stream = new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
       properties.store(stream, "written by elektra using Java Properties");
     } catch (IOException e) {
-      parentKey.setError("Could not write file");
+      parentKey.setError(ErrorCode.RESOURCE, "Could not write file");
       return STATUS_ERROR;
     }
     return STATUS_SUCCESS;

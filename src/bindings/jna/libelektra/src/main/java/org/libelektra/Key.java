@@ -19,7 +19,6 @@ import org.libelektra.exception.KeyBinaryValueException;
 import org.libelektra.exception.KeyException;
 import org.libelektra.exception.KeyMetaException;
 import org.libelektra.exception.KeyNameException;
-import org.libelektra.exception.PluginMisbehaviorException;
 
 /** Key represents a native Elektra key providing access to its name, value and meta information */
 public final class Key extends ReadableKey implements Iterable<ReadableKey> {
@@ -339,62 +338,80 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
   /**
    * Sets proper error meta for key
    *
-   * @param text Reason for the error (format pattern)
-   * @param args Custom arguments to the format pattern {@code text}
+   * @param code {@link ErrorCode} of the error
+   * @param reason Reason for the error
    * @return This {@link Key}, enabling a fluent interface
    */
   @Nonnull
-  public Key setError(String text, Object... args) {
+  public Key setError(ErrorCode code, String reason) {
     StackTraceElement[] e = Thread.currentThread().getStackTrace();
-    setMeta("error", "number description module file line function reason");
-    setMeta("error/number", PluginMisbehaviorException.ERROR_NUMBER);
-    setMeta("error/description", "jni/java error");
-    setMeta("error/module", e[1].getClassName() + " " + e[1].getMethodName());
-    setMeta("error/file", e[1].getFileName());
-    setMeta("error/line", Integer.toString(e[1].getLineNumber()));
-    setMeta("error/mountpoint", getName());
-    setMeta("error/configfile", getString());
-    setMeta("error/reason", String.format(text, args));
+    StackTraceElement caller = e[1];
+    String fileName = caller.getFileName();
+    int line = caller.getLineNumber();
+
+    if (getMeta("error").isPresent()) {
+      addWarning(code, reason, fileName, line);
+    } else {
+      setMeta("error", "number description  module file line mountpoint configfile reason");
+      setMeta("error/number", code.getNumber());
+      setMeta("error/description", code.getDescription());
+      setMeta("error/module", "Java: " + caller.getClassName() + " " + caller.getMethodName());
+      setMeta("error/file", fileName != null ? fileName : "?");
+      setMeta("error/line", String.valueOf(line));
+      setMeta("error/mountpoint", getName());
+      setMeta("error/configfile", getString());
+      setMeta("error/reason", reason);
+    }
     return this;
   }
 
   /**
    * Adds warning meta for key
    *
-   * @param text Reason for the error (format pattern)
-   * @param args Custom arguments to the format pattern {@code text}
+   * @param code {@link ErrorCode} of the warning
+   * @param reason Reason for the error
    * @return This {@link Key}, enabling a fluent interface
    */
   @Nonnull
-  public Key addWarning(String text, Object... args) {
+  public Key addWarning(ErrorCode code, String reason) {
     StackTraceElement[] e = Thread.currentThread().getStackTrace();
-    Optional<String> oMetaKeyValue = getMeta(WARNINGS).map(ReadableKey::getString);
-    StringBuilder builder = new StringBuilder(WARNINGS + "/#");
-    if (oMetaKeyValue.isEmpty()) {
-      builder.append("00");
-      setMeta(Key.WARNINGS, "00");
-    } else {
-      builder.append(oMetaKeyValue.get());
-      builder.setCharAt(11, (char) (builder.charAt(11) + 1));
-      if (builder.charAt(11) > '9') {
-        builder.setCharAt(11, '0');
-        builder.setCharAt(10, (char) (builder.charAt(10) + 1));
-        if (builder.charAt(10) > '9') {
-          builder.setCharAt(10, '0');
-        }
-      }
-      setMeta(Key.WARNINGS, builder.substring(10));
-    }
-    setMeta(builder + "", "number description module file line function reason");
-    setMeta(builder + "/number", PluginMisbehaviorException.ERROR_NUMBER);
-    setMeta(builder + "/description", "jni/java warning");
-    setMeta(builder + "/module", e[1].getClassName() + " " + e[1].getMethodName());
-    setMeta(builder + "/file", e[1].getFileName());
-    setMeta(builder + "/line", Integer.toString(e[1].getLineNumber()));
-    setMeta(builder + "/mountpoint", getName());
-    setMeta(builder + "/configfile", getString());
-    setMeta(builder + "/reason", String.format(text, args));
+    StackTraceElement caller = e[1];
+    String fileName = caller.getFileName();
+    int line = caller.getLineNumber();
+
+    addWarning(code, reason, fileName, line);
+
     return this;
+  }
+
+  private void addWarning(ErrorCode code, String reason, @Nullable String fileName, int line) {
+    String warningIndex =
+        getMeta("warnings")
+            .map(ReadableKey::getString)
+            .map(
+                old -> {
+                  if (old.compareTo("#_99") < 0) {
+                    int i = Integer.valueOf(old.replaceAll("[#_]*", ""), 10);
+                    i = (i + 1) % 100;
+                    return i < 10 ? "#" + i : String.format("#_%02d", i);
+                  } else {
+                    return null;
+                  }
+                })
+            .orElse("#0");
+
+    setMeta("warnings", warningIndex);
+    setMeta(
+        "warnings/" + warningIndex,
+        "number description  module file line mountpoint configfile reason");
+    setMeta("warnings/" + warningIndex + "/number", code.getNumber());
+    setMeta("warnings/" + warningIndex + "/description", code.getDescription());
+    setMeta("warnings/" + warningIndex + "/module", "Java");
+    setMeta("warnings/" + warningIndex + "/file", fileName != null ? fileName : "?");
+    setMeta("warnings/" + warningIndex + "/line", String.valueOf(line));
+    setMeta("warnings/" + warningIndex + "/mountpoint", getName());
+    setMeta("warnings/" + warningIndex + "/configfile", getString());
+    setMeta("warnings/" + warningIndex + "/reason", reason);
   }
 
   /**

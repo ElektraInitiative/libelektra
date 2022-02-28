@@ -76,10 +76,12 @@ if (Java_JAVAC_EXECUTABLE)
 				set (
 					JNA_BINDING_SOURCE_FILES
 					${JNA_BINDING_SOURCE_DIRECTORY}/Elektra.java
+					${JNA_BINDING_SOURCE_DIRECTORY}/ErrorCode.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KDB.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KDBException.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/Key.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KeyNameIterator.java
+					${JNA_BINDING_SOURCE_DIRECTORY}/KeyPointer.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KeySet.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/KeySetIterator.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/NativePlugin.java
@@ -127,6 +129,11 @@ if (Java_JAVAC_EXECUTABLE)
 					plugins/dependencies.gradle
 					plugins/whitelist/src/main/java/org/libelektra/plugin/WhitelistPlugin.java
 					plugins/whitelist/src/test/java/org/libelektra/plugin/WhitelistPluginTests.java
+					process/build.gradle
+					process/dependencies.gradle
+					process/src/main/java/org/libelektra/process/Dump.java
+					process/src/main/java/org/libelektra/process/ProcessProtocol.java
+					process/src/main/java/org/libelektra/process/ProcessApp.java
 					build.gradle
 					gradle.properties
 					java-library.gradle
@@ -142,6 +149,8 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-javadoc.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-sources.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
+						"${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
+						"${CMAKE_CURRENT_BINARY_DIR}/process/build/libs/process-${KDB_VERSION}.jar"
 					COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}"
 						"${CMAKE_CURRENT_BINARY_DIR}"
 					COMMAND ${GRADLE_EXECUTABLE} -q --console=plain clean assemble
@@ -164,7 +173,13 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-javadoc.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-sources.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
+						"${CMAKE_CURRENT_BINARY_DIR}/process/build/libs/process-${KDB_VERSION}.jar"
 					DESTINATION "share/java"
+					COMPONENT java-elektra)
+
+				install (
+					FILES "${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
+					DESTINATION "share/java/plugins"
 					COMPONENT java-elektra)
 
 				# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in

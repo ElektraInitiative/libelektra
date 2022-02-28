@@ -1,20 +1,23 @@
 include (LibAddMacros)
 
-find_package (Pluginprocess)
-plugin_check_if_included ("dump")
+add_plugin (
+	process
+	SOURCES process.h process.c
+	LINK_ELEKTRA elektra-invoke COMPONENT libelektra${SO_VERSION}-experimental)
 
-if (NOT_INCLUDED)
-	message ("dump plugin not found (${NOT_INCLUDED}), excluding the process plugin")
-	return ()
-endif (NOT_INCLUDED)
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/testapp.sh" "${CMAKE_BINARY_DIR}/bin/process-testapp.sh" COPYONLY)
 
-if (PLUGINPROCESS_FOUND)
-	add_plugin (
-		process
-		SOURCES process.h process.c
-		ADD_TEST TEST_README
-		TEST_REQUIRED_PLUGINS "dump"
-		LINK_ELEKTRA elektra-pluginprocess elektra-invoke COMPONENT libelektra${SO_VERSION}-experimental)
-else (PLUGINPROCESS_FOUND)
-	remove_plugin (process "${PLUGINPROCESS_NOTFOUND_INFO}, pluginprocess library excluded, thus also excluding the process plugin")
-endif (PLUGINPROCESS_FOUND)
+install (
+	PROGRAMS "${CMAKE_BINARY_DIR}/bin/process-testapp.sh"
+	DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
+	COMPONENT elektra-tests)
+
+if (ADDTESTING_PHASE
+    AND NOT ENABLE_ASAN
+    AND NOT APPLE
+    AND NOT WIN32)
+	add_plugintest (process)
+	if (ENABLE_KDB_TESTING AND "jna" IN_LIST ADDED_BINDINGS)
+		add_msr_test_plugin ("process" ENVIRONMENT "BUILD_DIR=${CMAKE_BINARY_DIR}")
+	endif ()
+endif ()

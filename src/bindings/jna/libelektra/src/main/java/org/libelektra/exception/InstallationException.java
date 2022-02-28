@@ -1,12 +1,13 @@
 package org.libelektra.exception;
 
 import java.util.List;
+import org.libelektra.ErrorCode;
 import org.libelektra.KDBException;
 import org.libelektra.Key;
 
 public class InstallationException extends PermanentException {
   private static final long serialVersionUID = 1L;
-  public static final String ERROR_NUMBER = "C01200";
+  public static final String ERROR_NUMBER = ErrorCode.INSTALLATION.getNumber();
 
   public InstallationException(Key k) {
     super(k);

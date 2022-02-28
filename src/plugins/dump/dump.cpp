@@ -476,6 +476,68 @@ int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bo
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief An implementation of std::streambuf that is based on `FILE *` from the C API.
+ *
+ * This class allows us to read from and write to a `FILE *` via the std::iostream APIs.
+ */
+class FileStreamBuf : public std::streambuf
+{
+public:
+	FileStreamBuf (FILE * file) : file_ (file)
+	{
+	}
+
+protected:
+	std::streamsize xsputn (const char_type * s, std::streamsize n) override
+	{
+		int r = fwrite (s, 1, n, file_);
+		fflush (file_);
+		return r;
+	};
+
+	int_type overflow (int_type ch) override
+	{
+		int r = fwrite (&ch, 1, 1, file_);
+		fflush (file_);
+		return r;
+	}
+
+	int_type underflow () override
+	{
+		int c = fgetc (file_);
+		if (c == EOF)
+		{
+			this->setg (nullptr, nullptr, nullptr);
+		}
+		else
+		{
+			buf_ = c;
+			this->setg (&buf_, &buf_, &buf_ + 1);
+		}
+		return this->gptr () == this->egptr () ? std::char_traits<char>::eof () :
+							       std::char_traits<char>::to_int_type (*this->gptr ());
+	}
+
+private:
+	FILE * file_;
+	char buf_;
+};
+
+int freadks (KeySet * ks, FILE * file, Key * errorKey)
+{
+	FileStreamBuf buf (file);
+	std::istream is (&buf);
+	return unserialise (is, errorKey, ks, true);
+}
+
+int fwriteks (KeySet * ks, FILE * file, Key * errorKey)
+{
+	FileStreamBuf buf (file);
+	std::ostream os (&buf);
+	return serialise (os, errorKey, ks, true);
+}
+
 class pipebuf : public std::streambuf
 {
 	char * buffer_;
@@ -518,6 +580,8 @@ int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 				    keyNew ("system:/elektra/modules/dump/exports/set", KEY_FUNC, elektraDumpSet, KEY_END),
 				    keyNew ("system:/elektra/modules/dump/exports/serialise", KEY_FUNC, dump::serialise, KEY_END),
 				    keyNew ("system:/elektra/modules/dump/exports/unserialise", KEY_FUNC, dump::unserialise, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/freadks", KEY_FUNC, dump::freadks, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/fwriteks", KEY_FUNC, dump::fwriteks, KEY_END),
 				    keyNew ("system:/elektra/modules/dump/config/needs/fcrypt/textmode", KEY_VALUE, "0", KEY_END),
 #include "readme_dump.c"
 				    keyNew ("system:/elektra/modules/dump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
