@@ -59,8 +59,8 @@ public:
 		       "With the -i option, the mounting will be done interactively\n"
 		       "\n"
 		       "With no arguments and not in interactive mode, the current mountpoints will be listed\n"
-		       "Then the options -0123 take effect (otherwise these options can be used to suppress warnings).\n"
-		       "1,2 and 3 will suppress the output of the respective column\n";
+		       "Then the options -012 take effect (otherwise these options can be used to suppress warnings).\n"
+		       "1 and 2 will suppress the output of the respective column\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

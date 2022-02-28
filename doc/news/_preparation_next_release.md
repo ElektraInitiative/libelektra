@@ -168,6 +168,7 @@ you up to date with the multi-language support provided by Elektra.
 - Implement `kdb validate <key>`, collect warnings and errors while kdb.get() and kdb.set(), see #3674 _(@flo91)_, _(@JakobWonisch)_
 - <<TODO>>
 - <<TODO>>
+- Remove names from kdb mount _(@JakobWonisch)_
 
 ## Scripts
 
