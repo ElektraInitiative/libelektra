@@ -52,5 +52,5 @@ RUN useradd \
 USER ${JENKINS_USERID}
 
 # Ronn-NG
-ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/2.7.0/bin"
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.0.0/bin"
 RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version
