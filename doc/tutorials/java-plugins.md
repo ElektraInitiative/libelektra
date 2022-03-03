@@ -53,7 +53,6 @@ Otherwise, there are a few differences between implementing a plugin in C and in
 1. In C it is possible to implement only `elektraPluginGet` and leave the other functions unimplemented.
    Because of interface inheritance in Java, it is required to implement all 5 method `open`, `get`, `set`, `error` and `close`.
    Whether a method is actually supported, must be communicated via the contract.
-   Methods that are not supported, should simply return `Plugin.STATUS_SUCCESS`.
 2. In C the parent key of the contract depends on the plugins name.
    For example, the contract for `dump` can be found under `system:/elektra/modules/dump` and the `dump` plugin returns it as such.
    However, in Java the parent key for the contract is always `system:/elektra/modules/java` (you may use the constant `Plugin.PROCESS_CONTRACT_ROOT`).
@@ -63,6 +62,14 @@ Otherwise, there are a few differences between implementing a plugin in C and in
    This means a Java plugin cannot export additional functions.
    However, we must still define which functions are supported by the plugin.
    To this end, a Java plugin must set `system:/elektra/modules/java/exports/has/<function> = 1` (where `<function>` is one of `open`, `get`, `set`, `error`, `close`) for all supported functions.
+4. Methods that are not supported, should simply be implemented as
+   ```java
+   throw new UnsupportedOperationException();
+   ```
+   This is safe, because the method will not be called if the other steps are followed correctly.
+   The exception here is the `get` method.
+   It must still be implemented and return the contract, when the parent is the same as or below `system:/elektra/modules/java`.
+   Otherwise, it is safe to throw `UnsupportedOperationException`.
 
 Otherwise, the rules for return values and plugin behavior are the same as for a C plugin.
 

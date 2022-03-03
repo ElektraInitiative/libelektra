@@ -54,11 +54,6 @@ class ProcessProtocol {
       contract.append(k);
     }
 
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/open", "1"));
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/get", "1"));
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/set", "1"));
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/close", "1"));
-
     dump.write(contract);
 
     outputStream.flush();

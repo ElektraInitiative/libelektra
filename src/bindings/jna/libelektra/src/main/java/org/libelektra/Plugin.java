@@ -8,7 +8,10 @@ import javax.annotation.Nonnull;
  * @implNote because of interface inheritance, it is required that all methods (open, get, set,
  *     error, close) are implemented, even if they are not supported. Whether or not a method is
  *     supported, must be defined via the correspoding `exports/has` key of the contract. Any method
- *     that is not supported, should simply be implemented as `return Plugin.STATUS_SUCCESS`.
+ *     that is not supported, should simply be implemented as `throw new
+ *     UnsupportedOperationException()`. If get isn't supported, you must still implement it and
+ *     return the contract, when the parent key is below (or the same as) PROCESS_CONTRACT_ROOT. For
+ *     other parent keys, you can safely throw UnsupportedOperationException.
  */
 public interface Plugin {
 
@@ -30,7 +33,9 @@ public interface Plugin {
    */
   static final int STATUS_NO_UPDATE = 0;
 
-  /** @return Name of the plugin */
+  /**
+   * @return Name of the plugin
+   */
   @Nonnull
   String getName();
 
