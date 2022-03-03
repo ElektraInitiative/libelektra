@@ -541,13 +541,13 @@ static void deleteData (IoData * data, Key * errorKey)
 
 static int executeOperation (IoData * data, const char * op, KeySet * ks, bool readKs, Key * parentKey)
 {
-	typedef int (*fwriteks_t) (KeySet *, FILE *, Key *);
+	typedef int (*fserialize_t) (KeySet *, FILE *, Key *);
 
-	fwriteks_t fwriteks = *(fwriteks_t *) elektraInvokeGetFunction (data->dump, "fwriteks");
+	fserialize_t fserialize = *(fserialize_t *) elektraInvokeGetFunction (data->dump, "fserialize");
 
-	if (fwriteks == NULL)
+	if (fserialize == NULL)
 	{
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Could not execute  '%s' (write failed). Reason: fwriteks missing", op);
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Could not execute  '%s' (write failed). Reason: fserialize missing", op);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -559,7 +559,7 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 	}
 
 	KeySet * parentKs = ksNew (1, keyDup (parentKey, KEY_CP_ALL), KS_END);
-	if (fwriteks (parentKs, data->toChild, parentKey) < 0)
+	if (fserialize (parentKs, data->toChild, parentKey) < 0)
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -567,7 +567,7 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 
 	if (ks != NULL)
 	{
-		if (fwriteks (ks, data->toChild, parentKey) < 0)
+		if (fserialize (ks, data->toChild, parentKey) < 0)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -587,7 +587,7 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 	KeySet * newParentKs = readKeySet (data, parentKey);
 	if (newParentKs == NULL || ksGetSize (newParentKs) != 1)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s'. Reason: freadks failed", op);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s'. Reason: funserialize failed", op);
 		free (result);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -600,7 +600,7 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 		KeySet * returned = readKeySet (data, parentKey);
 		if (returned == NULL)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s'. Reason: freadks failed", op);
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not execute operation '%s'. Reason: funserialize failed", op);
 			free (result);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -634,17 +634,17 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 
 static KeySet * readKeySet (IoData * data, Key * errorKey)
 {
-	typedef int (*freadks_t) (KeySet *, FILE *, Key *);
+	typedef int (*funserialize_t) (KeySet *, FILE *, Key *);
 
-	freadks_t freadks = *(freadks_t *) elektraInvokeGetFunction (data->dump, "freadks");
+	funserialize_t funserialize = *(funserialize_t *) elektraInvokeGetFunction (data->dump, "funserialize");
 
-	if (freadks == NULL)
+	if (funserialize == NULL)
 	{
 		return NULL;
 	}
 
 	KeySet * ks = ksNew (0, KS_END);
-	if (freadks (ks, data->fromChild, errorKey) < 0)
+	if (funserialize (ks, data->fromChild, errorKey) < 0)
 	{
 		return NULL;
 	}
