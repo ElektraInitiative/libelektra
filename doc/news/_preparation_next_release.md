@@ -169,6 +169,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Remove names from kdb mount _(@JakobWonisch)_
+- Add `kdb mount-java` helper script for mounting Java plugins _(Klemens Böswirth @kodebach)_
 
 ## Scripts
 
