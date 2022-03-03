@@ -2,7 +2,7 @@ package org.libelektra.plugin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.libelektra.Plugin.JNI_MODULE_CONTRACT_ROOT;
+import static org.libelektra.Plugin.PROCESS_CONTRACT_ROOT;
 
 import java.util.Random;
 import org.junit.After;
@@ -32,22 +32,22 @@ public class WhitelistPluginTests {
 
   @Test
   public void test_getJniModuleContractRoot_shouldPass() throws KDBException {
-    var key = Key.create(JNI_MODULE_CONTRACT_ROOT);
+    var key = Key.create(PROCESS_CONTRACT_ROOT);
     var keySet = KeySet.create();
     int result = plugin.get(keySet, key);
     var infoProvides =
         keySet
-            .lookup(JNI_MODULE_CONTRACT_ROOT + "/infos/provides")
+            .lookup(PROCESS_CONTRACT_ROOT + "/infos/provides")
             .map(Key::getString)
             .orElseThrow();
     var infoPlacements =
         keySet
-            .lookup(JNI_MODULE_CONTRACT_ROOT + "/infos/placements")
+            .lookup(PROCESS_CONTRACT_ROOT + "/infos/placements")
             .map(Key::getString)
             .orElseThrow();
     var infoMetdata =
         keySet
-            .lookup(JNI_MODULE_CONTRACT_ROOT + "/infos/metadata")
+            .lookup(PROCESS_CONTRACT_ROOT + "/infos/metadata")
             .map(Key::getString)
             .orElseThrow();
 

@@ -15,6 +15,9 @@ public interface Plugin {
   /** This is the root key of the JNI plugin wrapping a Java plugin for use by Elektra */
   static final String JNI_MODULE_CONTRACT_ROOT = "system:/elektra/modules/jni";
 
+  /** This is the root key of the process plugin wrapping a Java plugin for use by Elektra */
+  static final String PROCESS_CONTRACT_ROOT = "system:/elektra/modules/java";
+
   /** Return value for plugin methods: An error occurred inside the plugin function */
   static final int STATUS_ERROR = -1;
 
