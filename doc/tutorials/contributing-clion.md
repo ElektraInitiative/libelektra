@@ -92,14 +92,17 @@ add the following CMake options to our "Debug" profile:
 -DKDB_DB_HOME="~/.config/kdb/[xyz]/home"
 -DKDB_DB_SYSTEM="~/.config/kdb/[xyz]/system"
 -DKDB_DB_SPEC="~/.config/kdb/[xyz]/spec"
--DKDB_DB_USER="~/.config/kdb/[xyz]/user"
+-DKDB_DB_USER=".config/kdb/[xyz]/user"
 -DCMAKE_INSTALL_PREFIX="install"
 ```
 
 where "[xyz]" can be replaced by any unique identifier so that different profiles
 won't clash with each other. This configuration also isolates your build of
-Elektra from any existing Elektra installation on your system. For
-debugging purposes we also recommend adding the following CMake options for debug
+Elektra from any existing Elektra installation on your system.
+Note the missing `~/` from the argument to `-DKDB_DB_USER`, as libelektra internally
+already adds the home directory path. An additional `~/` would lead to a folder named `~`
+in your home directory.
+For debugging purposes we also recommend adding the following CMake options for debug
 builds to enable further logging and checks:
 
 ```sh

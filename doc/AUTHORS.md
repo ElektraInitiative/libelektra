@@ -158,3 +158,11 @@ notification system, I/O bindings
 - email: waht@libelektra.org
 - github user: [waht](https://github.com/waht)
 - devel/test on: Debian
+
+## Maximilian Irlinger
+
+documentation
+
+- email: max@maxirlinger.at
+- github user: [atmaxinger](https://github.com/atmaxinger)
+- devel/test on: Fedora, macOS
