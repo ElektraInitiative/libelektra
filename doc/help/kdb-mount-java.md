@@ -32,7 +32,7 @@ KDB_VERSION="$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')"
 sudo kdb mount config.file user:/tests/process dump process "executable=$(command -v java)" 'args=#3' 'args/#0=-cp' "args/#1=/usr/share/java/libelektra-$KDB_VERSION-all.jar:/usr/share/java/process-$KDB_VERSION.jar:/usr/share/java/whitelist-$KDB_VERSION.jar" 'args/#2=org.libelektra.process.ProcessApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin' type
 ```
 
-As you can see, the every argument for a Java plugin is replaced by 7 (quite long) arguments.
+As you can see, every argument for a Java plugin is replaced by several arguments.
 Even worse, the arguments depend on how Elektra is installed on your system.
 The `mount-java` knows where Elektra's JARs are installed (`/usr/share/java` above) and constructs a classpath argument for the JVM.
 It also chooses the `ProcessApp` class as the main class and finally instructs this class to load the `WhitelistPlugin`.
@@ -41,7 +41,8 @@ However, `mount-java` isn't magic and it only works this smoothly for plugins th
 If you have external plugins, you must also specify the additional classpath for these plugins like this:
 
 ```sh
-CLASSPATH=/path/to/foo.jar:/path/to/bar.jar sudo kdb mount-java config.file user:/tests/foobar java:org.example.Foo java:org.example.Bar java:org.libelektra.plugin.WhitelistPlugin
+export CLASSPATH=/path/to/foo.jar:/path/to/bar.jar
+sudo --preserve-env=CLASSPATH kdb mount-java config.file user:/tests/foobar java:org.example.Foo java:org.example.Bar java:org.libelektra.plugin.WhitelistPlugin
 ```
 
 Here we added `/path/to/foo.jar` and `/path/to/bar.jar` to the classpath, so that the classes `org.example.Foo` and `org.example.Bar` can be found.
