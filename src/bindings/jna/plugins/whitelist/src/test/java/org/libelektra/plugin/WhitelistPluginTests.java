@@ -36,20 +36,14 @@ public class WhitelistPluginTests {
     var keySet = KeySet.create();
     int result = plugin.get(keySet, key);
     var infoProvides =
-        keySet
-            .lookup(PROCESS_CONTRACT_ROOT + "/infos/provides")
-            .map(Key::getString)
-            .orElseThrow();
+        keySet.lookup(PROCESS_CONTRACT_ROOT + "/infos/provides").map(Key::getString).orElseThrow();
     var infoPlacements =
         keySet
             .lookup(PROCESS_CONTRACT_ROOT + "/infos/placements")
             .map(Key::getString)
             .orElseThrow();
     var infoMetdata =
-        keySet
-            .lookup(PROCESS_CONTRACT_ROOT + "/infos/metadata")
-            .map(Key::getString)
-            .orElseThrow();
+        keySet.lookup(PROCESS_CONTRACT_ROOT + "/infos/metadata").map(Key::getString).orElseThrow();
 
     assertEquals(Plugin.STATUS_SUCCESS, result);
     assertTrue(infoProvides.contains("check"));

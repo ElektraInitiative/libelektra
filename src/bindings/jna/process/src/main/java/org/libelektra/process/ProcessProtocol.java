@@ -49,8 +49,7 @@ class ProcessProtocol {
     for (Key key : jniContract) {
       Key k = key.dup();
       k.setName(
-          key.getName()
-              .replace(Plugin.PROCESS_CONTRACT_ROOT, "system:/elektra/modules/process"));
+          key.getName().replace(Plugin.PROCESS_CONTRACT_ROOT, "system:/elektra/modules/process"));
       contract.append(k);
     }
 

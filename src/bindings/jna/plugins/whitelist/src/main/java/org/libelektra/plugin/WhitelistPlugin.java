@@ -28,18 +28,16 @@ public class WhitelistPlugin implements Plugin {
     if (parentKey.isBelowOrSame(Key.create(PROCESS_CONTRACT_ROOT))) {
       keySet.append(
           Key.create(
-            PROCESS_CONTRACT_ROOT + "/infos",
+              PROCESS_CONTRACT_ROOT + "/infos",
               PLUGIN_NAME + " Java plugin, loaded by the process plugin"));
       keySet.append(
-          Key.create(
-            PROCESS_CONTRACT_ROOT + "/infos/author", "Michael Tucek <michael@tucek.eu>"));
+          Key.create(PROCESS_CONTRACT_ROOT + "/infos/author", "Michael Tucek <michael@tucek.eu>"));
       keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/provides", "check"));
       keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/placements", "presetstorage"));
       keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/metadata", "check/whitelist/#"));
       keySet.append(
           Key.create(
-            PROCESS_CONTRACT_ROOT + "/infos/description",
-              "Enforces a whitelist for key values"));
+              PROCESS_CONTRACT_ROOT + "/infos/description", "Enforces a whitelist for key values"));
       keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/status", "preview maintained"));
       keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/exports/has/set", "1"));
       return STATUS_SUCCESS;
