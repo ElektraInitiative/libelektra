@@ -223,7 +223,7 @@ you up to date with the multi-language support provided by Elektra.
 - Expanded the webside guid for easier understanding and linked to cmake.org. _(Philipp Nirnberger @nirnberger)_
 - Expanded the webside guide for easier understanding and linked to cmake.org. _(Philipp Nirnberger @nirnberger)_
 - <<TODO>>
-- Fix small error in CLion tutorial: CMake options would create a directory named `~` in home directory
+- Fix small error in CLion tutorial: CMake options would create a directory named `~` in home directory _(Maximilian Irlinger @atmaxinger)_
 
 ## Tests
 
