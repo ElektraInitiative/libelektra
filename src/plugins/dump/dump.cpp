@@ -459,7 +459,7 @@ int unserializeVersion2 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int unserialize (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
+int unserialize (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames = false)
 {
 	std::string line;
 
