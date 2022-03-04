@@ -20,7 +20,7 @@ The `process` plugin is a special plugin, which allows using an external applica
 
 To achieve this, the `process` plugin spawns a child process for the external executable and then uses a simple protocol to relay any requested operations to this child process.
 The details of how this protocol works are not important for writing a Java plugin.
-All the details of the protocol are abstracted via the `ProcessApp` class and the `Plugin` interface.
+All the details of the protocol are abstracted via the `PluginProcess` class and the `Plugin` interface.
 
 If you do want to know the details of the `process` protocol, take a look at the [README](../../src/plugins/process/README.md) of the `process` plugin.
 

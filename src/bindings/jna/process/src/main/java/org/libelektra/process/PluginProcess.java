@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.libelektra.Plugin;
 
 /** Implements the child side of the protocol used by the process plugin. */
-public class ProcessApp {
+public class PluginProcess {
 
   public static void main(String[] args) {
     if (args.length != 1) {
