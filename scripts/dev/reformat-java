@@ -41,4 +41,9 @@ if [ $# -gt 0 ]; then
 else
 	source_files=$(git ls-files '*.java')
 fi
-printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs java --illegal-access=permit -jar $FORMATTER_JAR --replace
+
+if [ -z "$JAVA" ]; then
+	JAVA=$(command -v java)
+fi
+
+printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$JAVA" --illegal-access=permit -jar $FORMATTER_JAR --replace
