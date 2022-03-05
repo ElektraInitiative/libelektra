@@ -51,12 +51,14 @@ However, the API changes follow these rules:
 Afterwards the Elektra Core Public API would look as follows:
 
 #### KDB
+
 - kdbOpen
 - kdbClose
 - kdbGet
 - kdbSet
 
 #### Key
+
 - keyNew
 - keyVNew
 - keyCopy
@@ -70,9 +72,11 @@ Afterwards the Elektra Core Public API would look as follows:
 - keyDup
 
 #### Meta
+
 - keyMeta
 
 #### Tests
+
 - keyCmp
 - keyNeedSync
 - keyIsBelow
@@ -80,6 +84,7 @@ Afterwards the Elektra Core Public API would look as follows:
 - keyIsDirectlyBelow
 
 #### Name
+
 - keyName
 - keySetName
 - keyAddName
@@ -94,11 +99,13 @@ Afterwards the Elektra Core Public API would look as follows:
 - keySetNamespace
 
 #### Value
+
 - keyValue
 - keyValueSize
 - keyString
 
 #### KeySet
+
 - ksNew
 - ksVNew
 - ksDup
