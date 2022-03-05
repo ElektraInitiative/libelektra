@@ -250,6 +250,7 @@ you up to date with the multi-language support provided by Elektra.
 - Expanded the webside guide for easier understanding and linked to cmake.org. _(Philipp Nirnberger @nirnberger)_
 - <<TODO>>
 - Fix small error in CLion tutorial: CMake options would create a directory named `~` in home directory _(Maximilian Irlinger @atmaxinger)_
+- Add updated list of available functions in the Elektra Core API
 
 ## Tests
 
