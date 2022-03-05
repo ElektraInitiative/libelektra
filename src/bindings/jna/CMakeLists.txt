@@ -133,7 +133,7 @@ if (Java_JAVAC_EXECUTABLE)
 					process/dependencies.gradle
 					process/src/main/java/org/libelektra/process/Dump.java
 					process/src/main/java/org/libelektra/process/ProcessProtocol.java
-					process/src/main/java/org/libelektra/process/ProcessApp.java
+					process/src/main/java/org/libelektra/process/PluginProcess.java
 					build.gradle
 					gradle.properties
 					java-library.gradle

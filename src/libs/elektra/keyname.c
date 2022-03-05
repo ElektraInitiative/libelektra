@@ -176,7 +176,7 @@
 static char * findStartOfLastPart (char * name, size_t len)
 {
 	// compare to elektraKeyNameValidate we can just look for the :,
-	// becuase we know the name must be valid
+	// because we know the name must be valid
 	char * colon = strchr (name, ':');
 	char * start = colon == NULL ? name : colon + 1;
 	++start; // start after first slash
@@ -887,7 +887,7 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 		{
 			// find end of namespace
 			// compare to elektraKeyNameValidate we can just look for the :,
-			// becuase we know the name must be valid
+			// because we know the name must be valid
 			const char * colon = strchr (name, ':');
 
 			// copy namespace

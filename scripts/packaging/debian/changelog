@@ -1,3 +1,9 @@
+elektra (0.9.8-5) unstable; urgency=medium
+
+  * Pump version to make new packages visible #4255.
+
+ -- Jenkins (User for Elektra automated build system) <jenkins@localhost>  Sat, 05 Mar 2022 10:40:00 +0000
+
 elektra (0.9.8-1) unstable; urgency=medium
 
   * New upstream version.

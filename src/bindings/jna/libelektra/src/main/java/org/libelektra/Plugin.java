@@ -8,12 +8,18 @@ import javax.annotation.Nonnull;
  * @implNote because of interface inheritance, it is required that all methods (open, get, set,
  *     error, close) are implemented, even if they are not supported. Whether or not a method is
  *     supported, must be defined via the correspoding `exports/has` key of the contract. Any method
- *     that is not supported, should simply be implemented as `return Plugin.STATUS_SUCCESS`.
+ *     that is not supported, should simply be implemented as `throw new
+ *     UnsupportedOperationException()`. If get isn't supported, you must still implement it and
+ *     return the contract, when the parent key is below (or the same as) PROCESS_CONTRACT_ROOT. For
+ *     other parent keys, you can safely throw UnsupportedOperationException.
  */
 public interface Plugin {
 
   /** This is the root key of the JNI plugin wrapping a Java plugin for use by Elektra */
   static final String JNI_MODULE_CONTRACT_ROOT = "system:/elektra/modules/jni";
+
+  /** This is the root key of the process plugin wrapping a Java plugin for use by Elektra */
+  static final String PROCESS_CONTRACT_ROOT = "system:/elektra/modules/java";
 
   /** Return value for plugin methods: An error occurred inside the plugin function */
   static final int STATUS_ERROR = -1;

@@ -19,37 +19,31 @@ public class WhitelistPlugin implements Plugin {
 
   @Override
   public int open(KeySet conf, Key errorKey) {
-    // no initialization necessary
-    return STATUS_SUCCESS;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public int get(KeySet keySet, Key parentKey) {
     // if plugin meta data is requested, return additional contract values
-    if (parentKey.isBelowOrSame(Key.create(JNI_MODULE_CONTRACT_ROOT))) {
+    if (parentKey.isBelowOrSame(Key.create(PROCESS_CONTRACT_ROOT))) {
       keySet.append(
           Key.create(
-              JNI_MODULE_CONTRACT_ROOT + "/infos",
-              PLUGIN_NAME + " Java plugin, loaded by the JNI plugin"));
+              PROCESS_CONTRACT_ROOT + "/infos",
+              PLUGIN_NAME + " Java plugin, loaded by the process plugin"));
+      keySet.append(
+          Key.create(PROCESS_CONTRACT_ROOT + "/infos/author", "Michael Tucek <michael@tucek.eu>"));
+      keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/provides", "check"));
+      keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/placements", "presetstorage"));
+      keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/metadata", "check/whitelist/#"));
       keySet.append(
           Key.create(
-              JNI_MODULE_CONTRACT_ROOT + "/infos/author", "Michael Tucek <michael@tucek.eu>"));
-      keySet.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/provides", "check"));
-      keySet.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/placements", "presetstorage"));
-      keySet.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/metadata", "check/whitelist/#"));
-      keySet.append(
-          Key.create(
-              JNI_MODULE_CONTRACT_ROOT + "/infos/description",
-              "Enforces a whitelist for key values"));
-      keySet.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/status", "preview maintained"));
+              PROCESS_CONTRACT_ROOT + "/infos/description", "Enforces a whitelist for key values"));
+      keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/status", "preview maintained"));
+      keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/exports/has/set", "1"));
       return STATUS_SUCCESS;
     }
 
-    // here could go some normalization code (e.g. one could introduce an option to
-    // make whitelist values case-insensitive and normalize all read values to lower
-    // case) - see type.c for an example on how to do that
-
-    return STATUS_NO_UPDATE;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -99,14 +93,12 @@ public class WhitelistPlugin implements Plugin {
 
   @Override
   public int error(KeySet keySet, Key parentKey) {
-    // no clean-up in case of error necessary
-    return STATUS_SUCCESS;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public int close(Key parentKey) {
-    // no finalization necessary
-    return STATUS_SUCCESS;
+    throw new UnsupportedOperationException();
   }
 
   @Override

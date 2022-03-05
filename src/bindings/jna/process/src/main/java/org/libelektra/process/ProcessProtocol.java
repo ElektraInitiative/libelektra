@@ -40,7 +40,7 @@ class ProcessProtocol {
 
     var jniContract = KeySet.create();
     try {
-      plugin.get(jniContract, Key.create(Plugin.JNI_MODULE_CONTRACT_ROOT));
+      plugin.get(jniContract, Key.create(Plugin.PROCESS_CONTRACT_ROOT));
     } catch (KDBException e) {
       // ignored
     }
@@ -49,15 +49,9 @@ class ProcessProtocol {
     for (Key key : jniContract) {
       Key k = key.dup();
       k.setName(
-          key.getName()
-              .replace(Plugin.JNI_MODULE_CONTRACT_ROOT, "system:/elektra/modules/process"));
+          key.getName().replace(Plugin.PROCESS_CONTRACT_ROOT, "system:/elektra/modules/process"));
       contract.append(k);
     }
-
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/open", "1"));
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/get", "1"));
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/set", "1"));
-    contract.append(Key.create("system:/elektra/modules/process/exports/has/close", "1"));
 
     dump.write(contract);
 

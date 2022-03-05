@@ -177,7 +177,7 @@ If an unexpected error occurs on either side of the protocol, the connection sho
 ```sh
 # mount the Whitelist Java Plugin via process
 # NOTE: the copyenv and copyenv/#0 are normal not needed, but we need them to make this script work as an automated test
-sudo kdb mount config.file user:/tests/process dump process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.process.ProcessApp' 'args/#3=org.libelektra.plugin.WhitelistPlugin' 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH"
+sudo kdb mount config.file user:/tests/process dump process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$BUILD_DIR/src/bindings/jna/plugins/whitelist/build/libs/whitelist-$(kdb --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')-all.jar" 'args/#2=org.libelektra.process.PluginProcess' 'args/#3=org.libelektra.plugin.WhitelistPlugin' 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH"
 
 # Define whitelist
 kdb meta-set user:/tests/process/key "check/whitelist/#0" ""

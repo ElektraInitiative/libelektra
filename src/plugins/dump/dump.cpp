@@ -24,7 +24,7 @@ using namespace ckdb;
 namespace dump
 {
 
-int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
+int serialize (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
 {
 	os << "kdbOpen 2" << std::endl;
 
@@ -99,7 +99,7 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool
 			if (!ret)
 			{
 				const size_t metaNsOffset = sizeof ("meta:/") - 1;
-				/* This metakey was not serialised up to now */
+				/* This metakey was not serialized up to now */
 				size_t metanamesize = keyGetNameSize (meta) - 1 - metaNsOffset;
 				size_t metavaluesize = keyGetValueSize (meta) - 1;
 
@@ -121,7 +121,7 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool
 			}
 			else
 			{
-				/* Meta key already serialised, write out a reference to it */
+				/* Meta key already serialized, write out a reference to it */
 				keyDel (search);
 
 				os << "$copymeta " << keyString (ret);
@@ -257,7 +257,7 @@ static int decodeLine (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * 
 	return 0;
 }
 
-int unserialiseVersion1 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, const std::string & firstLine)
+int unserializeVersion1 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, const std::string & firstLine)
 {
 	ckdb::Key * cur = nullptr;
 	std::string line = firstLine;
@@ -280,7 +280,7 @@ int unserialiseVersion1 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int unserialiseVersion2 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
+int unserializeVersion2 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
 {
 	ckdb::Key * cur = nullptr;
 	std::string line;
@@ -459,7 +459,7 @@ int unserialiseVersion2 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
+int unserialize (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames = false)
 {
 	std::string line;
 
@@ -467,10 +467,10 @@ int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bo
 	{
 		if (line == "kdbOpen 2")
 		{
-			return unserialiseVersion2 (is, parentKey, ks, useFullNames);
+			return unserializeVersion2 (is, parentKey, ks, useFullNames);
 		}
 
-		return unserialiseVersion1 (is, parentKey, ks, line);
+		return unserializeVersion1 (is, parentKey, ks, line);
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -524,18 +524,18 @@ private:
 	char buf_;
 };
 
-int freadks (KeySet * ks, FILE * file, Key * errorKey)
+int funserialize (KeySet * ks, FILE * file, Key * errorKey)
 {
 	FileStreamBuf buf (file);
 	std::istream is (&buf);
-	return unserialise (is, errorKey, ks, true);
+	return unserialize (is, errorKey, ks, true);
 }
 
-int fwriteks (KeySet * ks, FILE * file, Key * errorKey)
+int fserialize (KeySet * ks, FILE * file, Key * errorKey)
 {
 	FileStreamBuf buf (file);
 	std::ostream os (&buf);
-	return serialise (os, errorKey, ks, true);
+	return serialize (os, errorKey, ks, true);
 }
 
 class pipebuf : public std::streambuf
@@ -578,10 +578,10 @@ int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 				    keyNew ("system:/elektra/modules/dump/exports", KEY_END),
 				    keyNew ("system:/elektra/modules/dump/exports/get", KEY_FUNC, elektraDumpGet, KEY_END),
 				    keyNew ("system:/elektra/modules/dump/exports/set", KEY_FUNC, elektraDumpSet, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/serialise", KEY_FUNC, dump::serialise, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/unserialise", KEY_FUNC, dump::unserialise, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/freadks", KEY_FUNC, dump::freadks, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/fwriteks", KEY_FUNC, dump::fwriteks, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/serialize", KEY_FUNC, dump::serialize, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/unserialize", KEY_FUNC, dump::unserialize, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/funserialize", KEY_FUNC, dump::funserialize, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/fserialize", KEY_FUNC, dump::fserialize, KEY_END),
 				    keyNew ("system:/elektra/modules/dump/config/needs/fcrypt/textmode", KEY_VALUE, "0", KEY_END),
 #include "readme_dump.c"
 				    keyNew ("system:/elektra/modules/dump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -603,7 +603,7 @@ int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 		int fd = std::stoi (std::string (keyString (parentKey) + strlen (pipe)));
 		dump::pipebuf pipebuf (fd);
 		std::istream is (&pipebuf);
-		return dump::unserialise (is, parentKey, returned, useFullNames);
+		return dump::unserialize (is, parentKey, returned, useFullNames);
 	}
 	else
 	{
@@ -617,7 +617,7 @@ int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 			return -1;
 		}
 
-		return dump::unserialise (is, parentKey, returned, useFullNames);
+		return dump::unserialize (is, parentKey, returned, useFullNames);
 	}
 }
 
@@ -637,7 +637,7 @@ int elektraDumpSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 	bool useFullNames = ksLookupByName (elektraPluginGetConfig (handle), "/fullname", 0) != NULL;
 
 
-	return dump::serialise (ofs, parentKey, returned, useFullNames);
+	return dump::serialize (ofs, parentKey, returned, useFullNames);
 }
 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT

@@ -20,7 +20,7 @@ The `process` plugin is a special plugin, which allows using an external applica
 
 To achieve this, the `process` plugin spawns a child process for the external executable and then uses a simple protocol to relay any requested operations to this child process.
 The details of how this protocol works are not important for writing a Java plugin.
-All the details of the protocol are abstracted via the `processApp` class and the `Plugin` interface.
+All the details of the protocol are abstracted via the `PluginProcess` class and the `Plugin` interface.
 
 If you do want to know the details of the `process` protocol, take a look at the [README](../../src/plugins/process/README.md) of the `process` plugin.
 
@@ -53,16 +53,23 @@ Otherwise, there are a few differences between implementing a plugin in C and in
 1. In C it is possible to implement only `elektraPluginGet` and leave the other functions unimplemented.
    Because of interface inheritance in Java, it is required to implement all 5 method `open`, `get`, `set`, `error` and `close`.
    Whether a method is actually supported, must be communicated via the contract.
-   Methods that are not supported, should simply return `Plugin.STATUS_SUCCESS`.
 2. In C the parent key of the contract depends on the plugins name.
    For example, the contract for `dump` can be found under `system:/elektra/modules/dump` and the `dump` plugin returns it as such.
-   However, in Java the parent key for the contract is always `system:/elektra/modules/jni` (you may use the constant `Plugin.JNI_MODULE_CONTRACT_ROOT`).
+   However, in Java the parent key for the contract is always `system:/elektra/modules/java` (you may use the constant `Plugin.PROCESS_CONTRACT_ROOT`).
    The keys will be transformed via the `process` protocol and plugin to match the normal expectations.
 3. In C all functions a plugin exports (including `open`, `get`, `set`, `error`, `close`, but also additional ones) are registered in the contract under `system:/elektra/modules/<plugin>/exports/<function>` with a function pointer key.
    Because we cannot provide a C function pointer to a Java function and because `process` uses a child process for the Java code, we cannot export functions like that.
    This means a Java plugin cannot export additional functions.
    However, we must still define which functions are supported by the plugin.
-   To this end, a Java plugin must set `system:/elektra/modules/jni/exports/has/<function> = 1` (where `<function>` is one of `open`, `get`, `set`, `error`, `close`) for all supported functions.
+   To this end, a Java plugin must set `system:/elektra/modules/java/exports/has/<function> = 1` (where `<function>` is one of `open`, `get`, `set`, `error`, `close`) for all supported functions.
+4. Methods that are not supported, should simply be implemented as
+   ```java
+   throw new UnsupportedOperationException();
+   ```
+   This is safe, because the method will not be called if the other steps are followed correctly.
+   The exception here is the `get` method.
+   It must still be implemented and return the contract, when the parent is the same as or below `system:/elektra/modules/java`.
+   Otherwise, it is safe to throw `UnsupportedOperationException`.
 
 Otherwise, the rules for return values and plugin behavior are the same as for a C plugin.
 
@@ -72,4 +79,4 @@ But creating separate JAR files for each plugin, keeps down the size of the bina
 
 ### Usage of Plugin
 
-See [Mounting Java Plugins](mount-java.md).
+See [manpage of `kdb-mount-java(1)`](../help/kdb-mount-java.md).

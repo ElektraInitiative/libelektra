@@ -35,6 +35,7 @@ docker run -it elektra/elektra
 
 - 1.0 decisions
 - Bug fixing in FLOSS course
+- Java plugins
 
 ### 1.0 Decisions
 
@@ -46,6 +47,14 @@ This brings us one big step closer to 1.0.
 As you will read in this release notes, a massive amount of bugs were fixed within this release.
 Many of them were resolved from students participating in a course about FLOSS.
 This demonstrates that homework of students can be very useful and in public service.
+
+### Java plugins
+
+The version of the `process` plugin, makes it much easier to implement plugins in Java.
+You can now call an implementation `org.libelektra.Plugin` via `process` and the `org.libelektra.process.PluginProcess` class.
+To mount Java plugins the new helper script `kdb mount-java` can be used.
+
+For more information take a look at [the updated tutorial](../tutorials/java-plugins.md) and the new [manpage for `kdb mount-java`](../help/kdb-mount-java.md).
 
 ## Plugins
 
@@ -80,6 +89,12 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### quickdump
 
 - Fixed an issue with type-limits on ARM32 (see issue #4217). _(Klemens Böswirth @kodebach)_
+
+### dump
+
+- The exported functions `serialise` and `unserialise` have been renamed to `serialize` and `unserialize`. _(Klemens Böswirth @kodebach)_
+- New exported functions `int fserialize(KeySet * ks, FILE * file, Key * errorKey)` and `int funserialize(KeySet * ks, FILE * file, Key * errorKey)` have been added.
+  These are wrappers around `serialize` and `unserialize` that allow calling from C with a standard `FILE *`. _(Klemens Böswirth @kodebach)_
 
 ### process
 
@@ -169,6 +184,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Remove names from kdb mount _(@JakobWonisch)_
+- Add `kdb mount-java` helper script for mounting Java plugins _(Klemens Böswirth @kodebach)_
 
 ## Scripts
 

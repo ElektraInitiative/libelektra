@@ -50,7 +50,7 @@ if [ $# -lt 2 ]; then
         echo >&2 ""
         echo >&2 "is equivalent to"
         echo >&2 ""
-        echo >&2 "    kdb mount config.file user:/test/foo dump process executable=$JAVA_BIN args=#3 args/#0=-cp args/#1=$CLASSPATH args/#2=org.libelektra.process.ProcessApp args/#3=org.libelektra.plugin.WhitelistPlugin type"
+        echo >&2 "    kdb mount config.file user:/test/foo dump process executable=$JAVA_BIN args=#3 args/#0=-cp args/#1=$CLASSPATH args/#2=org.libelektra.process.PluginProcess args/#3=org.libelektra.plugin.WhitelistPlugin type"
         exit 1
 fi
 
@@ -62,7 +62,7 @@ PLUGINS=()
 for plugin in "$@"; do
         case "$plugin" in
         java:*)
-                PLUGINS=("${PLUGINS[@]}" process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$CLASSPATH" 'args/#2=org.libelektra.process.ProcessApp' "args/#3=${plugin#java:}" 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH")
+                PLUGINS=("${PLUGINS[@]}" process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$CLASSPATH" 'args/#2=org.libelektra.process.PluginProcess' "args/#3=${plugin#java:}" 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH")
                 ;;
         kdb:*)
                 PLUGINS=("${PLUGINS[@]}" "${plugin#kdb:}")
