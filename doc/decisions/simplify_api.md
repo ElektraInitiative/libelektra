@@ -48,6 +48,74 @@ However, the API changes follow these rules:
 - _Remove_ all functions that can be replaced by others (e.g. `ksPop`)
 - _Rename_ all functions to start with `elektra` as described in [Elektra Prefix](elektra_prefix.md), and use `KeySet` instead of `ks` (also applies to names above)
 
+Afterwards the Elektra Core Public API would look as follows:
+
+#### KDB
+- kdbOpen
+- kdbClose
+- kdbGet
+- kdbSet
+
+#### Key
+- keyNew
+- keyVNew
+- keyCopy
+- keyClear
+- keyDel
+- keyIncRef
+- keyDecRef
+- keyGetRef
+- keyLock
+- keyIsLocked
+- keyDup
+
+#### Meta
+- keyMeta
+
+#### Tests
+- keyCmp
+- keyNeedSync
+- keyIsBelow
+- keyIsBelowOrSame
+- keyIsDirectlyBelow
+
+#### Name
+- keyName
+- keySetName
+- keyAddName
+- keyNameSize
+- keyUnescapedName
+- keyUnescapedNameSize
+- keyBaseName
+- keySetBaseName
+- keyAddBaseName
+- keyBaseNameSize
+- keyGetNamespace
+- keySetNamespace
+
+#### Value
+- keyValue
+- keyValueSize
+- keyString
+
+#### KeySet
+- ksNew
+- ksVNew
+- ksDup
+- ksCopy
+- ksIncRef
+- ksDecRef
+- ksGetRef
+- ksClear
+- ksDel
+- ksGetSize
+- ksAppendKey
+- ksAppend
+- ksLookup
+- ksLookupByName
+- ksSearch
+- ksRemove
+
 ## Rationale
 
 ## Implications
