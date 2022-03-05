@@ -33,14 +33,9 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- 1.0 decisions
 - Bug fixing in FLOSS course
 - Java plugins
-
-### 1.0 Decisions
-
-With this release we finalized our [decisions](/doc/decisions/) for the 1.0 release.
-This brings us one big step closer to 1.0.
+- 1.0 decisions
 
 ### Bug fixing in FLOSS course
 
@@ -55,6 +50,11 @@ You can now call an implementation `org.libelektra.Plugin` via `process` and the
 To mount Java plugins the new helper script `kdb mount-java` can be used.
 
 For more information take a look at [the updated tutorial](../tutorials/java-plugins.md) and the new [manpage for `kdb mount-java`](../help/kdb-mount-java.md).
+
+### 1.0 Decisions
+
+With this release we greatly updated our [decisions](/doc/decisions/) for the 1.0 release.
+This brings us one big step closer to 1.0.
 
 ## Plugins
 

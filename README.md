@@ -32,7 +32,7 @@ Elektra provides benefits for:
 
 1. _Application Developers_ by making it easier to access configuration settings in a modular, reliable, and extensible way.
 2. _System Administrators_ by making it possible to access configuration settings in the same way applications access them.
-3. _Everyone_ by making application integration and context-aware configuration a reality.
+3. _Everyone_ by making application integration possible and less misconfiguration a reality.
 
 Elektra consists of three parts:
 
