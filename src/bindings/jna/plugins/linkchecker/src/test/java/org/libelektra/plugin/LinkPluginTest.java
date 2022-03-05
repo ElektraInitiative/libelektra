@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
+import org.libelektra.Plugin;
 import org.mockito.Mockito;
 
 public class LinkPluginTest {
@@ -39,10 +40,10 @@ public class LinkPluginTest {
   }
 
   @Test
-  public void setWithoutMetaTagShouldReturn0() {
+  public void setWithoutMetaTagShouldSucceed() {
     KeySet keySet = KeySet.create(1, keyWithoutMeta);
     int set = linkPlugin.set(keySet, parentKey);
-    assertEquals(0, set);
+    assertEquals(Plugin.STATUS_SUCCESS, set);
   }
 
   @Test
@@ -50,7 +51,7 @@ public class LinkPluginTest {
     KeySet keySet = KeySet.create(1, validKeyWithMeta);
     int set = linkPlugin.set(keySet, parentKey);
 
-    assertEquals(1, set);
+    assertEquals(Plugin.STATUS_SUCCESS, set);
   }
 
   @Test
@@ -58,7 +59,7 @@ public class LinkPluginTest {
     KeySet keySet = KeySet.create(1, invalidKeyWithMeta);
     int set = linkPlugin.set(keySet, parentKey);
 
-    assertEquals(-1, set);
+    assertEquals(Plugin.STATUS_ERROR, set);
   }
 
   @Test
@@ -68,7 +69,7 @@ public class LinkPluginTest {
     KeySet keySet = KeySet.create(1, invalidKeyWithMeta);
     int set = linkPlugin.set(keySet, parentKey);
 
-    assertEquals(-1, set);
+    assertEquals(Plugin.STATUS_ERROR, set);
   }
 
   @Test
@@ -78,7 +79,7 @@ public class LinkPluginTest {
     KeySet keySet = KeySet.create(1, validKeyWithTimeout);
     int set = linkPlugin.set(keySet, parentKey);
 
-    assertEquals(1, set);
+    assertEquals(Plugin.STATUS_SUCCESS, set);
   }
 
   @Test
@@ -86,6 +87,6 @@ public class LinkPluginTest {
     KeySet keySet = KeySet.create(2, validKeyWithMeta, invalidKeyWithMeta);
     int set = linkPlugin.set(keySet, parentKey);
 
-    assertEquals(-1, set);
+    assertEquals(Plugin.STATUS_ERROR, set);
   }
 }

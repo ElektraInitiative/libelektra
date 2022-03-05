@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.libelektra.ErrorCode;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
@@ -25,82 +24,75 @@ public class LinkPlugin implements Plugin {
   private static final String PLUGIN_NAME = "linkchecker";
 
   @Override
-  @Nonnull
-  public KeySet getConfig() {
-    return KeySet.create();
-  }
-
-  @Override
   public int open(KeySet conf, Key errorKey) {
-    return STATUS_NO_UPDATE;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public int get(KeySet ks, Key parentKey) {
-    if (parentKey.isBelowOrSame(Key.create(JNI_MODULE_CONTRACT_ROOT))) {
+    if (parentKey.isBelowOrSame(Key.create(PROCESS_CONTRACT_ROOT))) {
       ks.append(
           Key.create(
-              JNI_MODULE_CONTRACT_ROOT + "/infos",
+              PROCESS_CONTRACT_ROOT + "/infos",
               "Link Checker Java plugin, loaded by the JNI plugin"));
-      ks.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/provides", "check"));
-      ks.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/placements", "presetstorage"));
-      ks.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/author", "@aaronabebe"));
-      ks.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/metadata", "check/link"));
+      ks.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/provides", "check"));
+      ks.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/placements", "presetstorage"));
+      ks.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/author", "@aaronabebe"));
+      ks.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/metadata", "check/link"));
       ks.append(
           Key.create(
-              JNI_MODULE_CONTRACT_ROOT + "/infos/description",
+              PROCESS_CONTRACT_ROOT + "/infos/description",
               "Check if a link is reachable or is a valid link"));
-      ks.append(Key.create(JNI_MODULE_CONTRACT_ROOT + "/infos/status", "preview"));
+      ks.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/status", "preview"));
+      ks.append(Key.create(PROCESS_CONTRACT_ROOT + "/exports/has/set", "1"));
       return STATUS_SUCCESS;
     }
-    return STATUS_NO_UPDATE;
+
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public int set(KeySet ks, Key parentKey) {
-    List<String> invalidKeys = new ArrayList<>(ks.size());
-
-    boolean didUpdate = false;
+    boolean foundError = false;
     for (final Key key : ks) {
       Optional<ReadableKey> meta = key.getMeta("check/link");
       if (meta.isEmpty()) {
         continue;
       }
 
-      didUpdate = true;
-
       String timeout = meta.get().getString();
       String keyValue = key.getString();
 
       if (timeout.isEmpty()) {
         if (!isValidURL(keyValue)) {
-          invalidKeys.add(key.getName());
+          parentKey.setError(
+              ErrorCode.VALIDATION_SEMANTIC,
+              "Found invalid link in key '" + key.getName() + "':" + keyValue);
+          foundError = true;
         }
       } else {
         if (!isReachable(keyValue, Integer.parseInt(timeout))) {
           if (!isValidURL(keyValue)) {
-            invalidKeys.add(key.getName());
+            parentKey.setError(
+                ErrorCode.VALIDATION_SEMANTIC,
+                "Found unreachable link in key '" + key.getName() + "':" + keyValue);
+            foundError = true;
           }
         }
       }
     }
 
-    if (invalidKeys.isEmpty()) {
-      return didUpdate ? STATUS_SUCCESS : STATUS_NO_UPDATE;
-    } else {
-      parentKey.setError("Found invalid or unreachable links: " + String.join(",", invalidKeys));
-      return STATUS_ERROR;
-    }
+    return foundError ? STATUS_ERROR : STATUS_SUCCESS;
   }
 
   @Override
   public int error(KeySet ks, Key parentKey) {
-    return 0;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public int close(Key parentKey) {
-    return 0;
+    throw new UnsupportedOperationException();
   }
 
   @Override
