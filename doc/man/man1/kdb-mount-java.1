@@ -1,0 +1,47 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-MOUNT\-JAVA" "1" "March 2022" ""
+.SH "NAME"
+\fBkdb\-mount\-java\fR \- Mounting Java Plugins
+.SH "SYNOPSIS"
+\fBkdb mount\-java [<path> <mount point>] [<plugin> [<config>] [\.\.]]\fR
+.P
+All options except \fB<plugin>\fR are passed directly to \fBkdb mount\fR\. For details on these options see \fBkdb\-mount(1)\fR \fIkdb\-mount\.md\fR\.
+.P
+The \fB<plugin>\fR arguments are preprocessed before they are passed to \fBkdb mount\fR\. If a \fB<plugin>\fR argument starts with \fBjava:\fR, it is interpreted as a fully\-qualified Java class name\. The script replaces these \fBjava:*\fR arguments with the appropriate arguments for \fBkdb mount\fR (see below)\.
+.P
+\fB<plugin>\fR arguments that start with \fBkdb:\fR or have no prefix, are passed to \fBkdb mount\fR as is (after removing the optional \fBkdb:\fR prefix)\. The \fBkdb:\fR prefix exists to avoid potential name collisions between a Java plugin and C plugin\.
+.SH "DESCRIPTION"
+This helper command exists, because (unlike a "normal" C plugin) mounting a Java plugin requires multiple arguments\. This is because you actually need to mount the \fBprocess\fR plugin with the correct configuration for a Java plugin\.
+.P
+The following command mounts the C plugins \fBdump\fR and \fBtype\fR together with the Java plugin \fBorg\.libelektra\.plugin\.WhitelistPlugin\fR with the file \fBconfig\.file\fR at \fBuser:/tests/process\fR:
+.IP "" 4
+.nf
+sudo kdb mount\-java config\.file user:/tests/process kdb:dump java:org\.libelektra\.plugin\.WhitelistPlugin type
+.fi
+.IP "" 0
+.P
+This internally expands to (something like) this complicated snippet:
+.IP "" 4
+.nf
+KDB_VERSION="$(kdb \-\-version | sed \-nE 's/KDB_VERSION: (\.+)/\e1/gp')"
+sudo kdb mount config\.file user:/tests/process dump process "executable=$(command \-v java)" 'args=#3' 'args/#0=\-cp' "args/#1=/usr/share/java/libelektra\-$KDB_VERSION\-all\.jar:/usr/share/java/process\-$KDB_VERSION\.jar:/usr/share/java/whitelist\-$KDB_VERSION\.jar" 'args/#2=org\.libelektra\.process\.PluginProcess' 'args/#3=org\.libelektra\.plugin\.WhitelistPlugin' type
+.fi
+.IP "" 0
+.P
+As you can see, every argument for a Java plugin is replaced by several arguments\. Even worse, the arguments depend on how Elektra is installed on your system\. The \fBmount\-java\fR knows where Elektra's JARs are installed (\fB/usr/share/java\fR above) and constructs a classpath argument for the JVM\. It also chooses the \fBPluginProcess\fR class as the main class and finally instructs this class to load the \fBWhitelistPlugin\fR\.
+.P
+However, \fBmount\-java\fR isn't magic and it only works this smoothly for plugins that come bundled with Elektra\. If you have external plugins, you must also specify the additional classpath for these plugins like this:
+.IP "" 4
+.nf
+export CLASSPATH=/path/to/foo\.jar:/path/to/bar\.jar
+sudo \-\-preserve\-env=CLASSPATH kdb mount\-java config\.file user:/tests/foobar java:org\.example\.Foo java:org\.example\.Bar java:org\.libelektra\.plugin\.WhitelistPlugin
+.fi
+.IP "" 0
+.P
+Here we added \fB/path/to/foo\.jar\fR and \fB/path/to/bar\.jar\fR to the classpath, so that the classes \fBorg\.example\.Foo\fR and \fBorg\.example\.Bar\fR can be found\. We can still use \fBorg\.libelektra\.plugin\.WhitelistPlugin\fR, because Elektra's JARs are always added to the classpath\.
+.SH "SEE ALSO"
+.IP "\(bu" 4
+kdb\-mount(1) \fIkdb\-mount\.md\fR\.
+.IP "" 0
+
