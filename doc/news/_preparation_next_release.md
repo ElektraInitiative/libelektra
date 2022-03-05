@@ -92,11 +92,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### dump
 
-- The exported functions `serialise` and `unserialise` have been renamed to `serialize` and `unserialize`.
-  For now the old version are still exported as an alias.
-  This may be removed in a future version. _(Klemens Böswirth @kodebach)_
-- New exported functions `int fserialise(KeySet * ks, FILE * file, Key * errorKey)` and `int funserialise(KeySet * ks, FILE * file, Key * errorKey)` have been added.
-  These are wrappers around `serialise` and `unserialise` that allow calling from C with a standard `FILE *`. _(Klemens Böswirth @kodebach)_
+- The exported functions `serialise` and `unserialise` have been renamed to `serialize` and `unserialize`. _(Klemens Böswirth @kodebach)_
+- New exported functions `int fserialize(KeySet * ks, FILE * file, Key * errorKey)` and `int funserialize(KeySet * ks, FILE * file, Key * errorKey)` have been added.
+  These are wrappers around `serialize` and `unserialize` that allow calling from C with a standard `FILE *`. _(Klemens Böswirth @kodebach)_
 
 ### process
 
