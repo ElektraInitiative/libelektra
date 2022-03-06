@@ -102,6 +102,7 @@ Afterwards the Elektra Core Public API would look as follows:
 
 - keyValue
 - keyValueSize
+- ketSetValue
 - keyString
 
 #### KeySet
