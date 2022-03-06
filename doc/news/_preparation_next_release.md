@@ -33,28 +33,34 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- 1.0 decisions
 - Bug fixing in FLOSS course
 - Java plugins
+- 1.0 decisions
 
-### 1.0 Decisions
-
-With this release we finalized our [decisions](/doc/decisions/) for the 1.0 release.
-This brings us one big step closer to 1.0.
-
-### Bug fixing in FLOSS course
+### Bug Fixing in FLOSS Course
 
 As you will read in this release notes, a massive amount of bugs were fixed within this release.
-Many of them were resolved from students participating in a course about FLOSS.
+Many of them were resolved from students participating in a
+[university course about FLOSS](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194114&semester=2021W)
 This demonstrates that homework of students can be very useful and in public service.
 
-### Java plugins
+In the upcoming term there will be a course about
+[configuration management](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194030&semester=2022S)
+in which Elektra will also be used and improved upon.
+
+### Java Plugins
 
 The version of the `process` plugin, makes it much easier to implement plugins in Java.
 You can now call an implementation `org.libelektra.Plugin` via `process` and the `org.libelektra.process.PluginProcess` class.
 To mount Java plugins the new helper script `kdb mount-java` can be used.
 
-For more information take a look at [the updated tutorial](../tutorials/java-plugins.md) and the new [manpage for `kdb mount-java`](../help/kdb-mount-java.md).
+For more information take a look at [the updated tutorial](https://www.libelektra.org/tutorials/java-plugins)
+and the new [manpage for `kdb mount-java`](../help/kdb-mount-java.md).
+
+### 1.0 Decisions
+
+With this release we greatly updated our [decisions](/doc/decisions/) for the 1.0 release.
+This brings us one big step closer to 1.0.
 
 ## Plugins
 
@@ -63,14 +69,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### filecheck
 
 - Removed unused variable that threw an error in filecheck.c. _(Vaibhav Ganesh @flackojr)_
-- <<TODO>>
-- <<TODO>>
 
 ### mmapstorage
 
 - Removed unused variable that threw an error in mmapstorage.c. _(Vaibhav Ganesh @flackojr)_
-- <<TODO>>
-- <<TODO>>
 
 ### csvstorage
 
@@ -102,12 +104,6 @@ The following section lists news about the [plugins](https://www.libelektra.org/
   The new plugin that uses a simple protocol to allow an external application to act as a plugin.
   This can for example be used to write plugins in Java without going through JNI. _(Klemens Böswirth @kodebach)_
 
-### <<Plugin6>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -115,14 +111,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Compatibility
 
 - Remove the deprecated flags `KEY_NAME` and `KEY_COMMENT` (closes issue #3152) _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
 
 ### Core
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - `KeySet` now also has a reference counter like `Key`. The new functions `ksIncRef` and `ksDecRef` behave like their counterparts `keyIncRef` and `keyDecRef`.
   `ksDel` also behaves like `keyDel` in regard to reference counting, i.e. it does nothing unless the reference count is 0.
   The reference counting is very useful for bindings (especially with automatic garbage collection). _(Klemens Böswirth)_
@@ -132,31 +123,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Improve `keyReplacePrefix` by using new `keyCopy` function instead of manually copying the name of the `Key` _(@lawli3t)_
 - Added else error to core for elektraGetCheckUpdateNeeded _(Aydan Ghazani @4ydan)_
 - Include NULL terminators in hashing to avoid collisions _(@lawli3t)_
-
 - Fix check for valid namespace in keyname creation _(@JakobWonisch)_
 - Fix `keyCopyMeta` not deleting non existant keys in destination (see #3981) _(@JakobWonisch)_
-
 - The `ELEKTRA_ERROR_*_NAME` and `ELEKTRA_WARNING_*_NAME` constants have been removed from the public API. Use `ELEKTRA_ERROR_*` and `ELEKTRA_WARNING_*` instead. _(Klemens Böswirth @kodebach)_
-
 - Fixed a bug that prevented the creation of cascading keys whose name contains a colon (`:`). _(Klemens Böswirth @kodebach)_
-
-### <<Library1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -183,16 +153,12 @@ you up to date with the multi-language support provided by Elektra.
 ## Tools
 
 - Implement `kdb validate <key>`, collect warnings and errors while kdb.get() and kdb.set(), see #3674 _(@flo91)_, _(@JakobWonisch)_
-- <<TODO>>
-- <<TODO>>
 - Remove names from kdb mount _(@JakobWonisch)_
 - Add `kdb mount-java` helper script for mounting Java plugins _(Klemens Böswirth @kodebach)_
 
 ## Scripts
 
 - Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
 - Fix bug where the PATH environment variable would get overwritten in some of the Docker images. Reduce image size _(Ivaylo Ivanov)_
 - Allow JSON to be also written as json. _(@muskater)_
 
@@ -200,7 +166,6 @@ you up to date with the multi-language support provided by Elektra.
 
 - Integrate missing pages to website _(Ivaylo Ivanov)_
 - Improved compilation documentation _(Ivaylo Ivanov)_
-- Start making Elektra [reuse](https://reuse.software) compliant. _(Markus Raab)_
 - Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
 - Remove previous authors. _(Markus Raab)_
 - add pre/postconditions and invariants to module keytest _(@lawli3t)_
@@ -219,11 +184,9 @@ you up to date with the multi-language support provided by Elektra.
 - Make version description in key names man page consistent _(@JakobWonisch)_
 - Fix typo in elektra-backends man page _(@JakobWonisch)_
 - Fix readability in bootstrapping man page _(JakobWonisch)_
-- <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
 - Add a new example on how to use keyCopy. _(@muskater)_
 - Fix small error in the "Get Started" guide: the build and test command used a wrong directory and would not work if they were copy and pasted. _(@muskater)_
-- <<TODO>>
 - Added verification to the "Arrays" tutorial _(Ivaylo Ivanov)_
 - Remove deprecated `type=int` from `.ini` files _(Ivaylo Ivanov)_
 - Added verification to the "Validation" tutorial _(Ivaylo Ivanov)_
@@ -243,28 +206,23 @@ you up to date with the multi-language support provided by Elektra.
 - Added screenshots and a quick walk through in the Qt-GUI README. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 - Improve example for kdb-restore man page and fix typos _(@JakobWonisch)_
 - Improve example for kdb-restore man page and fix typos _(@JakobWonisch)_
-- <<TODO>>
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added some improvements to the core api documentation _(@muskater)_
 - Add screenshots with hints to CLion PR tutorial _(@JakobWonisch)_
 - Fix typo in elektra-backends man page _(@JakobWonisch)_
 - Expanded the webside guid for easier understanding and linked to cmake.org. _(Philipp Nirnberger @nirnberger)_
 - Expanded the webside guide for easier understanding and linked to cmake.org. _(Philipp Nirnberger @nirnberger)_
-- <<TODO>>
 - Fix small error in CLion tutorial: CMake options would create a directory named `~` in home directory _(Maximilian Irlinger @atmaxinger)_
 
 ## Tests
 
-- disable Rust from buster _(Markus Raab)_
-- <<TODO>>
+- Disable Rust from buster _(Markus Raab)_
 - Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
 - add tests for the intercept/env binding _(Ivaylo Ivanov)_
 - add and improve checks in scripts/sed _(Florian Lindner @flo91)_
 - change the cpp Key-class (key.hpp) to check the return values of the called c-functions
   and throw exceptions if values that indicate an error are returned + add tests that
   check for this exceptions _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
 - Added more test cases for the keyCopy function _(@muskater)_
 - add exception tests for key C++ bindings _(Ivaylo Ivanov)_
 - Added a shell script and a task that checks whether the filenames of newly added files are compliant with the convention. It is executed by the cirrus CI as well as the Jenkins CI _(@muskater)_
@@ -275,52 +233,30 @@ you up to date with the multi-language support provided by Elektra.
 ## Packaging
 
 - add flatpak package. See `scripts/flatpak/README.md` and `scripts/flatpak/org.libelektra.kdb.yaml`for more info _(Ivaylo Ivanov)_
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
 ### CMake
 
 - Marked certain variables as advanced and separated user modifiable and unaccessable variables. _(Vaibhav Ganesh @flackojr)_
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
 - Add Fedora 35 images._(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
 ### Jenkins
 
 - Replace Fedora 33 builds with Fedora 34, and Fedora 34 builds with Fedora 35. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-
-### Cirrus
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### GitHub Actions
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
 - Update npm dependencies, add forked and update angular-marked module. _(Mihael Pranjić @mpranj)_
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
-- <<TODO>>
 
 ## Other
 
@@ -328,11 +264,18 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 ## Outlook
 
-We are currently working on following topics:
+We are working on following new topics since the last release:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Ansible-Elektra _(Lukas Hartl)_
+- Recording Configuration _(Maximilian Irlinger)_
+
+Furthermore, we are still working on following topics:
+
+- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth)_
+- Improve Java Development Experience _(Michael Tucek)_
+- KDB access using FUSE _(Alexander Firbas)_
+- Shell completion _(Ulrike Schäfer)_
+- Elektrify KDE and GNOME _(Mihael Pranjić)_
 
 ## Statistics
 
