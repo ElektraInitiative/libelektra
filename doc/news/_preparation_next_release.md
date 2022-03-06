@@ -37,19 +37,25 @@ docker run -it elektra/elektra
 - Java plugins
 - 1.0 decisions
 
-### Bug fixing in FLOSS course
+### Bug Fixing in FLOSS Course
 
 As you will read in this release notes, a massive amount of bugs were fixed within this release.
-Many of them were resolved from students participating in a course about FLOSS.
+Many of them were resolved from students participating in a
+[university course about FLOSS](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194114&semester=2021W)
 This demonstrates that homework of students can be very useful and in public service.
 
-### Java plugins
+In the upcoming term there will be a course about
+[configuration management](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194030&semester=2022S)
+in which Elektra will also be used and improved upon.
+
+### Java Plugins
 
 The version of the `process` plugin, makes it much easier to implement plugins in Java.
 You can now call an implementation `org.libelektra.Plugin` via `process` and the `org.libelektra.process.PluginProcess` class.
 To mount Java plugins the new helper script `kdb mount-java` can be used.
 
-For more information take a look at [the updated tutorial](../tutorials/java-plugins.md) and the new [manpage for `kdb mount-java`](../help/kdb-mount-java.md).
+For more information take a look at [the updated tutorial](https://www.libelektra.org/tutorials/java-plugins)
+and the new [manpage for `kdb mount-java`](../help/kdb-mount-java.md).
 
 ### 1.0 Decisions
 
