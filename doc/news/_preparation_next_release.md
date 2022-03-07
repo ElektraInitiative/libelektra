@@ -233,6 +233,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Packaging
 
 - add flatpak package. See `scripts/flatpak/README.md` and `scripts/flatpak/org.libelektra.kdb.yaml`for more info _(Ivaylo Ivanov)_
+- Remove hardcoded SWIG 3.0 paths. _(Mihael Pranjić @mpranj)_
 
 ## Build
 
@@ -242,7 +243,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- Add Fedora 35 images._(Mihael Pranjić @mpranj)_
+- Add Fedora 35 images. _(Mihael Pranjić @mpranj)_
 
 ## Infrastructure
 
