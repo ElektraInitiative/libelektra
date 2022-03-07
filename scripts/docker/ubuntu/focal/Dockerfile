@@ -88,8 +88,6 @@ RUN ldconfig
 # The id is important as jenkins docker agents use the same id that is running
 # on the slaves to execute containers
 
-RUN ln -s /usr/bin/swig /usr/bin/swig3.0
-
 ARG JENKINS_GROUPID
 RUN groupadd \
     -g ${JENKINS_GROUPID} \
