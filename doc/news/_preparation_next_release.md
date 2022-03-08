@@ -130,7 +130,7 @@ you up to date with the multi-language support provided by Elektra.
 - Integrated the `HelloElektra` example as Gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
 - Extend `HelloElektra` example with cutpoint and value setting example _(@JakobWonisch)_
 - Updated Gradle to 7.4. _(Mihael Pranjić @mpranj)_
-- Added integration with the new `process` plugin _(Klemens Böswirth @kodebach)_
+- Added integration with the new `process` plugin. _(Klemens Böswirth @kodebach)_
 - Integrated the `HelloElektra` example as gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
 - Add `LinkChecker` Java Plugin. _(@aaronabebe)_
 

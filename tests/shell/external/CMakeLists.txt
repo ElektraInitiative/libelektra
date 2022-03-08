@@ -40,7 +40,9 @@ file (GLOB SCRIPT_TESTS *.sh)
 foreach (file ${SCRIPT_TESTS})
 	get_filename_component (name ${file} NAME)
 	if (name STREQUAL "mount_java.sh")
-		if (NOT BUILD_SHARED OR NOT "jna" IN_LIST ADDED_BINDINGS)
+		if (NOT BUILD_SHARED
+		    OR NOT "jna" IN_LIST ADDED_BINDINGS
+		    OR NOT "process" IN_LIST ADDED_PLUGINS)
 			continue ()
 		endif ()
 	endif ()
