@@ -18,10 +18,11 @@ CURRENT_DATE=$(date +'%Y-%m-%d')
 RELEASE_NOTE_FILENAME="$CURRENT_DATE"_"$KDB_VERSION".md
 RELEASE_NOTE_PATH="$NEWS_DIR/$RELEASE_NOTE_FILENAME"
 
+# get previous release version from git tags
+PREVIOUS_RELEASE=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n2 | head -n1)
+PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo $PREVIOUS_RELEASE | grep -Po '^\d+.\d+')
+
 generate_git_release_stats_minimal() {
-	# get previous release version from git tags
-	PREVIOUS_RELEASE=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n2 | head -n1)
-	PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo $PREVIOUS_RELEASE | grep -Po '^\d+.\d+')
 	STATS=$($SCRIPTS_DIR/git-release-stats $PREVIOUS_RELEASE $KDB_VERSION)
 	# extract necessary fields from stats
 	NUM_AUTHORS=$(echo $STATS | grep -o Author | wc -l)
@@ -45,6 +46,11 @@ generate_hashsums() {
 	echo "$RELEASE_NOTES_HASHSUM_ESCAPED" | tr '∆' '\n' > "$RELEASE_NOTE_PATH"
 }
 
+update_alpine_release_image() {
+	# update Alpine Linux image to new Elektra release
+	sed -i "s/ELEKTRA_RELEASE=$PREVIOUS_RELEASE/ELEKTRA_RELEASE=$KDB_VERSION/g" "$SCRIPTS_DIR/docker/alpine/*/release.Dockerfile"
+}
+
 # copy release notes to new location
 mv "$RELEASE_NOTE_PREPARATION_PATH" "$RELEASE_NOTE_PATH"
 cp $DOC_DIR/todo/NEWS.md $RELEASE_NOTE_PREPARATION_PATH
@@ -53,3 +59,4 @@ sed -i "s/<<VERSION>>/$KDB_VERSION_PATCH/g" "$RELEASE_NOTE_PATH"
 
 generate_hashsums
 generate_git_release_stats_minimal
+update_alpine_release_image
