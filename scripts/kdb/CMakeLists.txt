@@ -5,7 +5,9 @@ foreach (file ${IN_FILES})
 	get_filename_component (file_we "${file}" NAME_WE)
 	configure_file ("${file}" "${file_we}" @ONLY)
 	if (file_we STREQUAL "mount-java")
-		if (NOT BUILD_SHARED)
+		if (NOT BUILD_SHARED
+		    OR NOT "jna" IN_LIST ADDED_BINDINGS
+		    OR NOT "process" IN_LIST ADDED_PLUGINS)
 			continue ()
 		endif ()
 	endif ()

@@ -115,9 +115,6 @@ if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
 endif (BUILD_DOCUMENTATION)
 
-# add scripts after doc (without scripts/cmake)
-add_subdirectory (scripts)
-
 # is there anything to build except documentation?
 if (BUILD_FULL
     OR BUILD_STATIC
@@ -134,6 +131,10 @@ if (BUILD_FULL
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
 endif ()
+
+# add scripts after doc and src (without scripts/cmake) adding scripts last allows scripts to be included/excluded based on ADDED_BINDINGS,
+# ADDED_PLUGINS, ...
+add_subdirectory (scripts)
 
 install (
 	FILES LICENSE.md
