@@ -161,10 +161,12 @@ Here is an additional list of compilers used by developers (for build servers, s
 | Compiler | Version                                           | Target                    |
 | -------- | ------------------------------------------------- | ------------------------- |
 | gcc      | gcc (Debian 8.3.0-6) 8.3.0                        | x86_64-linux-gnu          |
-| gcc      | gcc (GCC) 11.1.1 20210531 (Red Hat 11.1.1-3)      | x86_64-redhat-linux       |
-| gcc      | gcc-11 (Homebrew GCC 11.1.0_1) 11.1.0             | x86_64-apple-darwin20     |
-| clang    | clang version 12.0.0 (Fedora 12.0.0-0.3.rc1.fc34) | x86_64-unknown-linux-gnu  |
-| clang    | Apple clang version 12.0.5 (clang-1205.0.22.9)    | x86_64-apple-darwin20.5.0 |
+| gcc      | gcc (Debian 10.2.1-6) 10.2.1 20210110             | x86_64-linux-gnu          |
+| gcc      | gcc (GCC) 11.2.1 20220127 (Red Hat 11.2.1-9)      | x86_64-redhat-linux       |
+| gcc      | gcc-11 (Homebrew GCC 11.2.0_3) 11.2.0             | x86_64-apple-darwin21     |
+| gcc      | Homebrew clang version 13.0.1                     | x86_64-apple-darwin21.3.0 |
+| clang    | clang version 13.0.0 (Fedora 13.0.0-3.fc35)       | x86_64-redhat-linux-gnu   |
+| clang    | Apple clang version 13.0.0 (clang-1300.0.29.30)   | x86_64-apple-darwin21.3.0 |
 
 > (¹) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD
