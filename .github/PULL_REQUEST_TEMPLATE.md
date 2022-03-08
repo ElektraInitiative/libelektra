@@ -41,7 +41,7 @@ need to be checked.
 - [ ] I fixed all affected documentation
 - [ ] I added code comments, logging, and assertions as appropriate (see [Coding Guidelines](https://master.libelektra.org/doc/CODING.md))
 - [ ] I updated all meta data (e.g. README.md of plugins and [METADATA.ini](https://master.libelektra.org/doc/METADATA.ini))
-- [ ] I mentioned every code not directly written by me in [THIRD-PARTY-LICENSES](doc/THIRD-PARTY-LICENSES)
+- [ ] I mentioned [every code](/.reuse/dep5) not directly written by me in [reuse syntax](https://reuse.software/)
 
 ## Review
 
