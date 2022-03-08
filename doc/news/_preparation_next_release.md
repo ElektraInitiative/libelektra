@@ -1,17 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
-
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
-
-<<`scripts/generate-news-entry`>>
+- guid: DA6BBEC4-7489-414B-9A06-FB1734F44FA0
+- author: Mihael Pranjić
+- pubDate: Tue, 08 Mar 2022 09:55:49 +0100
+- shortDesc: Bug Fixes, Java Plugins, Elektra 1.0 Decisions
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -280,7 +272,7 @@ Furthermore, we are still working on following topics:
 
 ## Statistics
 
-We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+We closed [90 issues](https://github.com/ElektraInitiative/libelektra/milestone/30?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
