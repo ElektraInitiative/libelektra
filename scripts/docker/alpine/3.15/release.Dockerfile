@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM alpine:3.14.2
+FROM alpine:3.15.0
 
 RUN apk update \
     && apk add --no-cache --upgrade\
@@ -65,7 +65,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.14.2
+FROM alpine:3.15.0
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
