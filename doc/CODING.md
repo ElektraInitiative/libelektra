@@ -386,7 +386,7 @@ brew install prettier
 To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
 
 ```sh
-npm install --global prettier@2.3.2
+npm install --global prettier@2.5.1
 ```
 
 ##### Usage

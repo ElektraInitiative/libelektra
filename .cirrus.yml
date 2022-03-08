@@ -161,7 +161,7 @@ task:
       sudo gem install test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
-      npm install --global prettier@2.3.2
+      npm install --global prettier@2.5.1
 
   script:
     - | # Use latest version of LLVM to translate Elektra
