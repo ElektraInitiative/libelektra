@@ -197,6 +197,7 @@ kdb set user:/tests/process/key not_allowed
 # STDERR:.*Validation Semantic: .*'not_allowed' does not adhere to whitelist.*
 
 # cleanup
+kdb rm -r user:/tests/process
 sudo kdb umount user:/tests/process
 ```
 
