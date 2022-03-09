@@ -2,7 +2,7 @@
 #
 # @brief Inserts hashsums of source archive and git statistics into release notes
 #  	     and sets final name of release notes.
-set -ex
+set -ex +f
 
 KDB_VERSION=$1
 ARCHIVE_DIR=$2
@@ -48,7 +48,7 @@ generate_hashsums() {
 
 update_alpine_release_image() {
 	# update Alpine Linux image to new Elektra release
-	sed -i "s/ELEKTRA_RELEASE=$PREVIOUS_RELEASE/ELEKTRA_RELEASE=$KDB_VERSION/g" "$SCRIPTS_DIR/docker/alpine/*/release.Dockerfile"
+	sed -i "s/ELEKTRA_RELEASE=$PREVIOUS_RELEASE/ELEKTRA_RELEASE=$KDB_VERSION/g" $SCRIPTS_DIR/docker/alpine/*/release.Dockerfile
 }
 
 # copy release notes to new location
