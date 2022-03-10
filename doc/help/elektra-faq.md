@@ -112,7 +112,7 @@ Please start by reading [here](/.github/CONTRIBUTING.md).
 
 [New BSD license](/LICENSE.md) which allows us to have plugins link against GPL
 and GPL-incompatible libraries. If you compile Elektra, e.g., with GPL plugins, the
-result is GPL. We are [reuse](reuse.software/) compliant.
+result is GPL. We are [reuse](https://reuse.software/) compliant.
 
 ## Which version should I use?
 
