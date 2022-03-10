@@ -1,8 +1,8 @@
 # 0.9.<<VERSION>> Release
 
-- guid: 29B844BA-9DED-4BBE-8FE4-6DB3DD73B82D
+- guid: 3177C958-9473-41BA-9918-A56A18CF20E8
 - author: Mihael Pranjić
-- pubDate: Wed, 09 Mar 2022 12:56:24 +0100
+- pubDate: Thu, 10 Mar 2022 07:40:35 +0100
 - shortDesc: Bug Fixes, Java Plugins, Elektra 1.0 Decisions
 
 We are proud to release Elektra 0.9.<<VERSION>>.
