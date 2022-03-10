@@ -31,9 +31,11 @@ So it pays off to use Elektra -- in the short and in the long term.
 ## Why Do I Need Elektra If I Already Use Configuration Management Tools?
 
 Short answer: Try
+
 - [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra)
 - [chef-libelektra](https://supermarket.chef.io/cookbooks/kdb)
 - [puppet-libelektra](https://puppet.libelektra.org)
+
 to see how useful it can be.
 
 Longer answer:
