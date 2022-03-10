@@ -196,6 +196,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Documentation
 
+- Python: add guide for Debian 11 (bullseye) _(Lukas Hartl @lukashartl)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

@@ -5,7 +5,7 @@
 - [Introduction](#Introduction)
 - [Installation](#Installation)
   - [Alpine Linux](#Alpine-Linux)
-  - [Debian buster](#Debian-buster)
+  - [Debian](#Debian)
 - [Import kdb](#Import-kdb)
 - [Keyset](#Keyset)
 - [Keys](#Keys)
@@ -36,10 +36,15 @@ apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/main" python3
 apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra elektra-python py3-elektra
 ```
 
-### Debian buster
+### Debian
+
+The Elektra python-binding is currently built for:
+
+* Debian 11 `bullseye`
+* Debian 10 `buster`
 
 ```sh
-docker run -it debian:buster
+docker run -it debian:bullseye
 apt-get update
 apt-get install ca-certificates
 apt-get install vim gnupg
@@ -47,7 +52,7 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F79
 vim /etc/apt/sources.list
 ```
 
-Append 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
+Append `deb https://debs.libelektra.org/bullseye bullseye main` to `/etc/apt/sources.list` and install it:
 
 ```sh
 apt-get update
