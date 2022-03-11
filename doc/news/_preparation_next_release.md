@@ -230,7 +230,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Removed unnecassary dots in the arrays.md file. (@Gratla)
 - <<TODO>>
 
 ### Man Pages
