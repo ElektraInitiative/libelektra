@@ -1,7 +1,7 @@
 # Code-generator
 
 This guide focuses on writing new templates for the code-generator. For using the code generator take a look at the man-page
-[`kdb-gen(1)`](/doc/help/kdb-gen.md). For specifically using the code-generator for the high-level API you may want to follow
+[`kdb-gen(1)`](/doc/help/kdb-gen.md). If you want to use the code-generator specifically for the high-level API, you may want to follow
 [this guide](/doc/tutorials/highlevel.md).
 
 ## Basics
