@@ -40,8 +40,8 @@ apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra
 
 The Elektra python-binding is currently built for:
 
-* Debian 11 `bullseye`
-* Debian 10 `buster`
+- Debian 11 `bullseye`
+- Debian 10 `buster`
 
 ```sh
 docker run -it debian:bullseye
