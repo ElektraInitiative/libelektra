@@ -196,7 +196,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
+- Small readability improvement _(@Toniboyyy)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
