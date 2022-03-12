@@ -37,7 +37,6 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
 
 ### <<HIGHLIGHT>>
 
