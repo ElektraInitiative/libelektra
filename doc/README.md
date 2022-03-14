@@ -1,6 +1,6 @@
 # Documentation Index
 
-This folder contains documentation for “Elektra – the configuration framework for everyone”. If you do not know what Elektra is, then we recommend that you check out our [homepage](https://www.libelektra.org/home) first. This ReadMe deals with the content of the documentation folder and should give you a hint where to look for specific information.
+This folder contains documentation for “Elektra – the configuration framework for everyone”. If you do not know what Elektra is, we recommend that you check out our [homepage](https://www.libelektra.org/home) first. This ReadMe deals with the content of the documentation folder and should give you a hint where to look for specific information.
 
 ## Introductory
 

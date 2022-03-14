@@ -209,7 +209,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Minor readability improvement _(@mandoway)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
