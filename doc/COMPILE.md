@@ -38,8 +38,8 @@ mkdir build
 cd build
 cmake ..  # watch output to see if everything needed is included
 ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
-cmake --build build -- -j5
-cmake --build build --target run_nokdbtests # optional: run tests
+cmake --build . -- -j5
+cmake --build . --target run_nokdbtests # optional: run tests
 ```
 
 The last line only runs tests without writing onto your system.
