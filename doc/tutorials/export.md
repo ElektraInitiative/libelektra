@@ -35,7 +35,7 @@ for `/etc/hosts`.
 If no format is specified, the format `dump` will be used instead. The dump format is the standard way
 of expressing keys and all their relevant information. This format is intended to be used only within Elektra.
 The dump format is a good means of backing up Keys from the key database for use with Elektra later
-such as reimporting them later. As of this writing, `dump` is the only way to fully preserve all parts of the
+such as reimporting them. At the time of writing, `dump` is the only way to fully preserve all parts of the
 `KeySet`.
 
 ## Options
