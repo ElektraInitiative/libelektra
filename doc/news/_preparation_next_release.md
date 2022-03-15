@@ -245,7 +245,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Moved a wrongly detected broken link in linkchecker.whitelist _(@leothetryhard)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
