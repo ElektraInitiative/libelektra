@@ -245,7 +245,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Add tests for the Error/Warnings-Factory in libtools _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
