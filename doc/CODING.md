@@ -13,7 +13,7 @@ The most important are:
 - **examples:** Examples on how to use the core library.
 - **tests:** Contains the testing framework for the source (**src**).
 
-More about the structure you find in the folder's `README.md`.
+More about the structure can be found in the folder's `README.md`.
 
 ## General Information
 
