@@ -220,7 +220,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Improve wording of sentence in `CODING.md` _(Michael Langhammer @Milangs)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
