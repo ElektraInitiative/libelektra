@@ -231,6 +231,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Fixed grammar in export.md _(@Foberm)_
 - Rephrased sentence in code-generator.md to enhance readability _(@Gratla)_
 - <<TODO>>
 
