@@ -27,13 +27,13 @@ issues.libelektra.org
 
 # Currently broken links
 https://cgit.kde.org/kconfig.git
-https://doc.libelektra.org/coverage/master/debian-buster-full
 
 # Wrongly detected as broken, even though its online
 https://crates.io/crates/elektra
 https://crates.io/crates/elektra-sys
 https://www.sciencedaily.com/releases/2005/11/051103080801.htm
 https://lgtm.com
+https://doc.libelektra.org/coverage/master/debian-buster-full
 
 # Certificate issues
 https://oyranos.org
