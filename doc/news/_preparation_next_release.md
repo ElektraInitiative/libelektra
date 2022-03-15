@@ -213,7 +213,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Minor readability improvement in `CODING.md`
+- Minor readability improvement in `CODING.md` _(@loessberth)_
 - <<TODO>>
 - <<TODO>>
 - Fix dead link and compile instructions _(Burkhard Hampl @bhampl)_
