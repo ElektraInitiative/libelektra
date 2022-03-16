@@ -93,7 +93,7 @@ RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip
 # Pipe in 1 as Java 11 is first in the list
 RUN echo 1 | alternatives --config java && alternatives --auto javac
 ENV PATH="${PATH}:/opt/gradle/bin" \
-    JAVA_HOME="/etc/alternatives/jre"
+    JAVA_HOME="/usr/lib/jvm/java"
 
 USER ${JENKINS_USERID}
 

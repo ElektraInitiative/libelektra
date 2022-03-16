@@ -14,7 +14,7 @@ The man pages can also be viewed online at:
 https://doc.libelektra.org/api/latest/html/pages.html
 
 And the page you are currently reading at:
-https://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html
+https://doc.libelektra.org/api/latest/html/doc_help_kdb_md.html
 
 ## OVERVIEW
 
