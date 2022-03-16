@@ -29,11 +29,11 @@ run_log_tests() {
 	KDB=kdb kdb run_all -v 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all
 
-	KDB=kdb-full kdb-full run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_full 2>&1
+	KDB=kdb-full kdb-full run_all -v 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all_full
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_full
 
 	if [ "$STATIC" = "ON" ]; then
-		KDB=kdb-static kdb-static run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_static 2>&1
+		KDB=kdb-static kdb-static run_all -v 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all_static
 		check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_static
 	fi
 }

@@ -1,9 +1,18 @@
 # 0.9.<<VERSION>> Release
 
-- guid: 29B844BA-9DED-4BBE-8FE4-6DB3DD73B82D
-- author: Mihael Pranjić
-- pubDate: Wed, 09 Mar 2022 12:56:24 +0100
-- shortDesc: Bug Fixes, Java Plugins, Elektra 1.0 Decisions
+This release did not happen yet.
+
+Please update this file within PRs accordingly.
+For non-trivial changes, you can choose to be
+part of the highlighted changes.
+
+Please add your name at the end of every contribution.
+**Syntax:** _(your name)_
+
+Pick a random line to write your changes to minimize
+the chances of conflicts in this file.
+
+<<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -25,76 +34,55 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- Bug fixing in FLOSS course
-- Java plugins
-- 1.0 decisions
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
 
-### Bug Fixing in FLOSS Course
+### <<HIGHLIGHT>>
 
-As you will read in this release notes, a massive amount of bugs were fixed within this release.
-Many of them were resolved from students participating in a
-[university course about FLOSS](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194114&semester=2021W)
-This demonstrates that homework of students can be very useful and in public service.
+### <<HIGHLIGHT>>
 
-In the upcoming term there will be a course about
-[configuration management](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194030&semester=2022S)
-in which Elektra will also be used and improved upon.
-
-### Java Plugins
-
-The version of the `process` plugin, makes it much easier to implement plugins in Java.
-You can now call an implementation `org.libelektra.Plugin` via `process` and the `org.libelektra.process.PluginProcess` class.
-To mount Java plugins the new helper script `kdb mount-java` can be used.
-
-For more information take a look at [the updated tutorial](https://www.libelektra.org/tutorials/java-plugins)
-and the new [manpage for `kdb mount-java`](../help/kdb-mount-java.md).
-
-### 1.0 Decisions
-
-With this release we greatly updated our [decisions](/doc/decisions/) for the 1.0 release.
-This brings us one big step closer to 1.0.
+### <<HIGHLIGHT>>
 
 ## Plugins
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### filecheck
+### <<Plugin>>
 
-- Removed unused variable that threw an error in filecheck.c. _(Vaibhav Ganesh @flackojr)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### mmapstorage
+### <<Plugin>>
 
-- Removed unused variable that threw an error in mmapstorage.c. _(Vaibhav Ganesh @flackojr)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### csvstorage
+### <<Plugin>>
 
-- Add `array` meta key to the parentKey of imported Keys _(@muskater)_ _(@4ydan)_ _(@lawli3t)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### specload
+### <<Plugin>>
 
-- Change and move `keyCompareMeta (const Key * k1, const Key * k2)` from `src/libs/elektra/keytest.c`
-  to `src/plugins/specload/specload.c` and integrate functionality of keyCompare (const Key _ key1, const Key _ key2)
-  into `isChangeAllowed (Key * oldKey, Key * newKey)`, because that is the only place where it was used. _(@flo91)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### uname
+### <<Plugin>>
 
-- Minor improvement of source code readability in uname.c _(@lawli3t)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### quickdump
+### <<Plugin>>
 
-- Fixed an issue with type-limits on ARM32 (see issue #4217). _(Klemens Böswirth @kodebach)_
-
-### dump
-
-- The exported functions `serialise` and `unserialise` have been renamed to `serialize` and `unserialize`. _(Klemens Böswirth @kodebach)_
-- New exported functions `int fserialize(KeySet * ks, FILE * file, Key * errorKey)` and `int funserialize(KeySet * ks, FILE * file, Key * errorKey)` have been added.
-  These are wrappers around `serialize` and `unserialize` that allow calling from C with a standard `FILE *`. _(Klemens Böswirth @kodebach)_
-
-### process
-
-- The plugin was completely rewritten. The new version is incompatible with the old version.
-  The new plugin that uses a simple protocol to allow an external application to act as a plugin.
-  This can for example be used to write plugins in Java without going through JNI. _(Klemens Böswirth @kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Libraries
 
@@ -102,59 +90,112 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- Remove the deprecated flags `KEY_NAME` and `KEY_COMMENT` (closes issue #3152) _(Florian Lindner @flo91)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Core
 
-- `KeySet` now also has a reference counter like `Key`. The new functions `ksIncRef` and `ksDecRef` behave like their counterparts `keyIncRef` and `keyDecRef`.
-  `ksDel` also behaves like `keyDel` in regard to reference counting, i.e. it does nothing unless the reference count is 0.
-  The reference counting is very useful for bindings (especially with automatic garbage collection). _(Klemens Böswirth)_
-- Clarified that our reference counting mechanism is more related to a shared lock than to the concept of shared ownership. _(Klemens Böswirth)_
-- Both the reference count for `Key` and for `KeySet` now use `uint16_t` to reduce memory usage. `Key` previously used `size_t`. _(Klemens Böswirth)_
-- Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić @mpranj)_
-- Improve `keyReplacePrefix` by using new `keyCopy` function instead of manually copying the name of the `Key` _(@lawli3t)_
-- Added else error to core for elektraGetCheckUpdateNeeded _(Aydan Ghazani @4ydan)_
-- Include NULL terminators in hashing to avoid collisions _(@lawli3t)_
-- Fix check for valid namespace in keyname creation _(@JakobWonisch)_
-- Fix `keyCopyMeta` not deleting non existant keys in destination (see #3981) _(@JakobWonisch)_
-- The `ELEKTRA_ERROR_*_NAME` and `ELEKTRA_WARNING_*_NAME` constants have been removed from the public API. Use `ELEKTRA_ERROR_*` and `ELEKTRA_WARNING_*` instead. _(Klemens Böswirth @kodebach)_
-- Fixed a bug that prevented the creation of cascading keys whose name contains a colon (`:`). _(Klemens Böswirth @kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Bindings
 
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
-you up to date with the multi-language support provided by Elektra.
+you up-to-date with the multi-language support provided by Elektra.
 
-### Java binding
+### <<Binding>>
 
-- Integrated the `HelloElektra` example as Gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
-- Extend `HelloElektra` example with cutpoint and value setting example _(@JakobWonisch)_
-- Updated Gradle to 7.4. _(Mihael Pranjić @mpranj)_
-- Added integration with the new `process` plugin. _(Klemens Böswirth @kodebach)_
-- Integrated the `HelloElektra` example as gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
-- Add `LinkChecker` Java Plugin. _(@aaronabebe)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### FUSE Binding
+### <<Binding>>
 
-- Added check for existence of accessed path before opening new file descriptor _(@lawli3t)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### Python Binding
+### <<Binding>>
 
-- Added examples for append, extend and remove keysets in python. _(@4ydan)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Tools
 
-- Implement `kdb validate <key>`, collect warnings and errors while kdb.get() and kdb.set(), see #3674 _(@flo91)_, _(@JakobWonisch)_
-- Remove names from kdb mount _(@JakobWonisch)_
-- Add `kdb mount-java` helper script for mounting Java plugins _(Klemens Böswirth @kodebach)_
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Scripts
 
-- Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić @mpranj)_
-- Fix bug where the PATH environment variable would get overwritten in some of the Docker images. Reduce image size _(Ivaylo Ivanov)_
-- Allow JSON to be also written as json. _(@muskater)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Documentation
+
 - Improve the readability of some sentence you found hard to understand. _(Diana Strauß @DianaStrauss)_
 - Integrate missing pages to website _(Ivaylo Ivanov)_
 - Improved compilation documentation _(Ivaylo Ivanov)_
@@ -206,73 +247,180 @@ you up to date with the multi-language support provided by Elektra.
 - Expanded the webside guide for easier understanding and linked to cmake.org. _(Philipp Nirnberger @nirnberger)_
 - Fix small error in CLion tutorial: CMake options would create a directory named `~` in home directory _(Maximilian Irlinger @atmaxinger)_
 
+
+- Python: add guide for Debian 11 (bullseye) _(Lukas Hartl @lukashartl)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Minor readability improvement _(@mandoway)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Fix dead link and compile instructions _(Burkhard Hampl @bhampl)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Tutorials
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Rephrased sentence in code-generator.md to enhance readability _(@Gratla)_
+- <<TODO>>
+
+### Man Pages
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ## Tests
 
-- Disable Rust from buster _(Markus Raab)_
-- Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
-- add tests for the intercept/env binding _(Ivaylo Ivanov)_
-- add and improve checks in scripts/sed _(Florian Lindner @flo91)_
-- change the cpp Key-class (key.hpp) to check the return values of the called c-functions
-  and throw exceptions if values that indicate an error are returned + add tests that
-  check for this exceptions _(Florian Lindner @flo91)_
-- Added more test cases for the keyCopy function _(@muskater)_
-- add exception tests for key C++ bindings _(Ivaylo Ivanov)_
-- Added a shell script and a task that checks whether the filenames of newly added files are compliant with the convention. It is executed by the cirrus CI as well as the Jenkins CI _(@muskater)_
-- Add a new shellrecoder test to doc/tutorials/merge.md _(Florian Lindner @flo91)_
-- Added the possibility to enable all the shell recorder test cases for all plugins and fixed some plugin README files in process _(@muskater)_
-- Convert example in doc/help/kdb-test.md to shell recorder test _(@JakobWonisch)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Shell Recorder
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C++
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Packaging
 
-- add flatpak package. See `scripts/flatpak/README.md` and `scripts/flatpak/org.libelektra.kdb.yaml`for more info _(Ivaylo Ivanov)_
-- Remove hardcoded SWIG 3.0 paths. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- Marked certain variables as advanced and separated user modifiable and unaccessable variables. _(Vaibhav Ganesh @flackojr)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Docker
 
-- Add Fedora 35 images. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Infrastructure
 
 ### Jenkins
 
-- Replace Fedora 33 builds with Fedora 34, and Fedora 34 builds with Fedora 35. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Cirrus
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### GitHub Actions
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about
-plugins, bindings and tools are always up to date. Furthermore, we changed:
+plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
-- Update npm dependencies, add forked and update angular-marked module. _(Mihael Pranjić @mpranj)_
-- Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
-
-## Other
-
-- Make Elektra [reuse](https://reuse.software) reuse compliant _(Ivaylo Ivanov)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Outlook
 
-We are working on following new topics since the last release:
+We are currently working on following topics:
 
-- Ansible-Elektra _(Lukas Hartl)_
-- Recording Configuration _(Maximilian Irlinger)_
-
-Furthermore, we are still working on following topics:
-
-- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth)_
-- Improve Java Development Experience _(Michael Tucek)_
-- KDB access using FUSE _(Alexander Firbas)_
-- Shell completion _(Ulrike Schäfer)_
-- Elektrify KDE and GNOME _(Mihael Pranjić)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Statistics
 
-We closed [90 issues](https://github.com/ElektraInitiative/libelektra/milestone/30?closed=1) for this release.
+We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
