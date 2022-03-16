@@ -196,7 +196,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- Improve the readability of some sentence you found hard to understand. _(Diana Strauß @DianaStrauss)_
+- Improve the readability of some sentence you found hard to understand. Retry _(Diana Strauß @DianaStrauss)_
 - Integrate missing pages to website _(Ivaylo Ivanov)_
 - Improved compilation documentation _(Ivaylo Ivanov)_
 - Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
