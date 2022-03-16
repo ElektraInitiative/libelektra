@@ -242,6 +242,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Update [FAQ](/doc/help/elektra-faq.md). _(Markus Raab)_
 
 ## Tests
 
