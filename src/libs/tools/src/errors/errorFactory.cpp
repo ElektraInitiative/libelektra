@@ -39,7 +39,6 @@ Error * ErrorFactory::create (const std::string & type, const std::string & desc
 }
 
 
-/* TODO: Test method */
 Error * ErrorFactory::fromKey (kdb::Key key)
 {
 	Error * err = nullptr;
