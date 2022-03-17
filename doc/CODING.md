@@ -13,11 +13,11 @@ The most important are:
 - **examples:** Examples on how to use the core library.
 - **tests:** Contains the testing framework for the source (**src**).
 
-More about the structure you find in the folder's `README.md`.
+You can find more information about the structure in the `README.md`.
 
 ## General Information
 
-- Keep to the style that is already present, except if this document
+- Make sure that the codestyle of contributions complies with the already established codestyle of this project, except if this document
   says otherwise: then please open an issue for offending code.
 - We use Unix line endings
 - Large files should be in http://blobs.libelektra.org/ or https://rawdata.libelektra.org
