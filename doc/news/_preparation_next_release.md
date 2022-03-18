@@ -217,7 +217,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Fix dead link and compile instructions _(Burkhard Hampl @bhampl)_
-- <<TODO>>
+- Update links from certificate section _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
