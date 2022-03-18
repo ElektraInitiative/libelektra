@@ -7,6 +7,7 @@
  *
  */
 
+#include <errors/errorFactory.hpp>
 #include <errors/errorTypes.hpp>
 #include <errors/warningTypes.hpp>
 #include <gtest/gtest.h>
@@ -326,4 +327,158 @@ TEST (Error, Equality)
 	ASSERT_EQ (installationError[2].file (), installationError1[0].file ());
 	installationError[2].file () = "changed file in warning";
 	ASSERT_NE (installationError[2].file (), installationError1[0].file ());
+}
+
+TEST (Error, FactoryNull)
+{
+	kdb::Key errKey;
+	kdb::tools::errors::Error * result = kdb::tools::errors::ErrorFactory::fromKey (errKey);
+	ASSERT_EQ (result, nullptr);
+
+	/* should only be necessary if previous assertion failed */
+	delete result;
+}
+/* The names of the metakeys are based on /src/libs/elektra/errors.c */
+TEST (Error, FactoryErr)
+{
+	kdb::Key errKey;
+	errKey.setMeta ("error", "number description module file line mountpoint configfile reason");
+	errKey.setMeta ("error/number", ELEKTRA_ERROR_INTERNAL);
+	errKey.setMeta ("error/description", "errDesc");
+	errKey.setMeta ("error/module", "errModule");
+	errKey.setMeta ("error/file", "errFile");
+	errKey.setMeta ("error/line", 123);
+	errKey.setMeta ("error/mountpoint", "errMountPoint");
+	errKey.setMeta ("error/configfile", "errConfigFile");
+	errKey.setMeta ("error/reason", "errReason");
+
+
+	kdb::tools::errors::Error * result = kdb::tools::errors::ErrorFactory::fromKey (errKey);
+
+	ASSERT_TRUE (dynamic_cast<const kdb::tools::errors::InternalError *> (result));
+
+	ASSERT_EQ (result->code (), ELEKTRA_ERROR_INTERNAL);
+	ASSERT_EQ (result->description (), "errDesc");
+	ASSERT_EQ (result->module (), "errModule");
+	ASSERT_EQ (result->file (), "errFile");
+	ASSERT_EQ (result->line (), 123);
+	ASSERT_EQ (result->mountPoint (), "errMountPoint");
+	ASSERT_EQ (result->configFile (), "errConfigFile");
+	ASSERT_EQ (result->reason (), "errReason");
+
+	delete result;
+}
+
+/* The names of the metakeys are based on /src/libs/elektra/errors.c */
+TEST (Error, FactoryPureWarning)
+{
+	kdb::Key errKey;
+
+	errKey.setMeta ("warnings", "#02");
+	errKey.setMeta ("warnings/#01", "number description module file line mountpoint configfile reason");
+	errKey.setMeta ("warnings/#01/number", ELEKTRA_WARNING_INTERFACE);
+	errKey.setMeta ("warnings/#01/description", "warn1Desc");
+	errKey.setMeta ("warnings/#01/module", "warn1Module");
+	errKey.setMeta ("warnings/#01/file", "warn1File");
+	errKey.setMeta ("warnings/#01/line", 4);
+	errKey.setMeta ("warnings/#01/mountpoint", "warn1MountPoint");
+	errKey.setMeta ("warnings/#01/configfile", "warn1ConfigFile");
+	errKey.setMeta ("warnings/#01/reason", "warn1Reason");
+
+	errKey.setMeta ("warnings/#02", "number description module file line mountpoint configfile reason");
+	errKey.setMeta ("warnings/#02/number", ELEKTRA_WARNING_OUT_OF_MEMORY);
+	errKey.setMeta ("warnings/#02/description", "warn2Desc");
+	errKey.setMeta ("warnings/#02/module", "warn2Module");
+	errKey.setMeta ("warnings/#02/file", "warn2File");
+	errKey.setMeta ("warnings/#02/line", 5);
+	errKey.setMeta ("warnings/#02/mountpoint", "warn2MountPoint");
+	errKey.setMeta ("warnings/#02/configfile", "warn2ConfigFile");
+	errKey.setMeta ("warnings/#02/reason", "warn2Reason");
+
+
+	kdb::tools::errors::Error * result = kdb::tools::errors::ErrorFactory::fromKey (errKey);
+
+	ASSERT_TRUE (dynamic_cast<const kdb::tools::errors::PureWarningError *> (result));
+	ASSERT_EQ (result->warningCount (), 2);
+
+	ASSERT_TRUE (dynamic_cast<const kdb::tools::errors::InterfaceWarning *> (&((*result)[0])));
+	ASSERT_EQ ((*result)[0].code (), ELEKTRA_WARNING_INTERFACE);
+	ASSERT_EQ ((*result)[0].description (), "warn1Desc");
+	ASSERT_EQ ((*result)[0].module (), "warn1Module");
+	ASSERT_EQ ((*result)[0].file (), "warn1File");
+	ASSERT_EQ ((*result)[0].line (), 4);
+	ASSERT_EQ ((*result)[0].mountPoint (), "warn1MountPoint");
+	ASSERT_EQ ((*result)[0].configFile (), "warn1ConfigFile");
+	ASSERT_EQ ((*result)[0].reason (), "warn1Reason");
+
+	ASSERT_TRUE (dynamic_cast<const kdb::tools::errors::OutOfMemoryWarning *> (&((*result)[1])));
+	ASSERT_EQ ((*result)[1].code (), ELEKTRA_WARNING_OUT_OF_MEMORY);
+	ASSERT_EQ ((*result)[1].description (), "warn2Desc");
+	ASSERT_EQ ((*result)[1].module (), "warn2Module");
+	ASSERT_EQ ((*result)[1].file (), "warn2File");
+	ASSERT_EQ ((*result)[1].line (), 5);
+	ASSERT_EQ ((*result)[1].mountPoint (), "warn2MountPoint");
+	ASSERT_EQ ((*result)[1].configFile (), "warn2ConfigFile");
+	ASSERT_EQ ((*result)[1].reason (), "warn2Reason");
+
+	EXPECT_THROW ((*result)[2].code (), std::out_of_range);
+
+	/* internal warnings get deleted by destructor of the error object */
+	delete result;
+}
+
+/* The names of the metakeys are based on /src/libs/elektra/errors.c */
+TEST (Error, FactoryErrWarn)
+{
+	kdb::Key errKey;
+
+	errKey.setMeta ("error", "number description module file line mountpoint configfile reason");
+	errKey.setMeta ("error/number", ELEKTRA_ERROR_CONFLICTING_STATE);
+	errKey.setMeta ("error/description", "errDesc");
+	errKey.setMeta ("error/module", "errModule");
+	errKey.setMeta ("error/file", "errFile");
+	errKey.setMeta ("error/line", 321);
+	errKey.setMeta ("error/mountpoint", "errMountPoint");
+	errKey.setMeta ("error/configfile", "errConfigFile");
+	errKey.setMeta ("error/reason", "errReason");
+
+	errKey.setMeta ("warnings", "#01");
+	errKey.setMeta ("warnings/#01", "number description module file line mountpoint configfile reason");
+	errKey.setMeta ("warnings/#01/number", ELEKTRA_WARNING_RESOURCE);
+	errKey.setMeta ("warnings/#01/description", "warnDesc");
+	errKey.setMeta ("warnings/#01/module", "warnModule");
+	errKey.setMeta ("warnings/#01/file", "warnFile");
+	errKey.setMeta ("warnings/#01/line", 6);
+	errKey.setMeta ("warnings/#01/mountpoint", "warnMountPoint");
+	errKey.setMeta ("warnings/#01/configfile", "warnConfigFile");
+	errKey.setMeta ("warnings/#01/reason", "warnReason");
+
+	kdb::tools::errors::Error * result = kdb::tools::errors::ErrorFactory::fromKey (errKey);
+
+	ASSERT_TRUE (dynamic_cast<const kdb::tools::errors::ConflictingStateError *> (result));
+	ASSERT_EQ (result->code (), ELEKTRA_ERROR_CONFLICTING_STATE);
+	ASSERT_EQ (result->description (), "errDesc");
+	ASSERT_EQ (result->module (), "errModule");
+	ASSERT_EQ (result->file (), "errFile");
+	ASSERT_EQ (result->line (), 321);
+	ASSERT_EQ (result->mountPoint (), "errMountPoint");
+	ASSERT_EQ (result->configFile (), "errConfigFile");
+	ASSERT_EQ (result->reason (), "errReason");
+
+	ASSERT_EQ (result->warningCount (), 1);
+
+	ASSERT_TRUE (dynamic_cast<const kdb::tools::errors::ResourceWarning *> (&((*result)[0])));
+	ASSERT_EQ ((*result)[0].code (), ELEKTRA_WARNING_RESOURCE);
+	ASSERT_EQ ((*result)[0].description (), "warnDesc");
+	ASSERT_EQ ((*result)[0].module (), "warnModule");
+	ASSERT_EQ ((*result)[0].file (), "warnFile");
+	ASSERT_EQ ((*result)[0].line (), 6);
+	ASSERT_EQ ((*result)[0].mountPoint (), "warnMountPoint");
+	ASSERT_EQ ((*result)[0].configFile (), "warnConfigFile");
+	ASSERT_EQ ((*result)[0].reason (), "warnReason");
+
+	EXPECT_THROW ((*result)[1].code (), std::out_of_range);
+
+	/* internal warnings get deleted by destructor of the error object */
+	delete result;
 }

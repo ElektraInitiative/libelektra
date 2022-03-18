@@ -197,6 +197,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ## Documentation
 
 - Small readability improvement _(@Toniboyyy)_
+- Python: add guide for Debian 11 (bullseye) _(Lukas Hartl @lukashartl)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -209,14 +210,15 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Minor readability improvement _(@mandoway)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Minor readability improvement in `CODING.md` _(@loessberth)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Fix dead link and compile instructions _(Burkhard Hampl @bhampl)_
+- Update links from certificate section _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -230,7 +232,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Rephrased sentence in code-generator.md to enhance readability _(@Gratla)_
 - <<TODO>>
 
 ### Man Pages
@@ -241,10 +243,11 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Update [FAQ](/doc/help/elektra-faq.md). _(Markus Raab)_
 
 ## Tests
 
-- <<TODO>>
+- Add tests for the Error/Warnings-Factory in libtools _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-FAQ" "" "November 2021" ""
+.TH "ELEKTRA\-FAQ" "" "March 2022" ""
 .SH "I Am Stuck\. Where Can I Get Help?"
-If this FAQ does not contain your question, please open an issue \fIhttps://git\.libelektra\.org/issues\fR\. You can simply remove all template text and it is enough if the issue only contains your question\. If you want you can label it as question \fIhttps://git\.libelektra\.org/issues/labels/question\fR, but we can also categorize it for you\.
+Please open an issue \fIhttps://git\.libelektra\.org/issues\fR\. You can simply remove all template text and it is enough if the issue only contains your question\. If you want you can label it as question \fIhttps://git\.libelektra\.org/issues/labels/question\fR, but we can also categorize it for you\.
 .P
 Please do not waste too much time to find something out yourself\. Information where people get stuck is valuable to improve Elektra and its documentation\. Even if you find out directly after you posted the question: the pointer can be helpful for other people having the same problem\.
 .SH "Isn't it Easier to Implement a new Parser Than to use Elektra?"
@@ -19,7 +19,16 @@ Every successful project has implemented many features Elektra has\. But Elektra
 .P
 So it pays off to use Elektra \-\- in the short and in the long term\.
 .SH "Why Do I Need Elektra If I Already Use Configuration Management Tools?"
-Short answer: Try puppet\-libelektra \fIhttps://puppet\.libelektra\.org\fR to see how useful it can be\.
+Short answer: Try
+.IP "\(bu" 4
+ansible\-libelektra \fIhttps://galaxy\.ansible\.com/elektra_initiative/libelektra\fR
+.IP "\(bu" 4
+chef\-libelektra \fIhttps://supermarket\.chef\.io/cookbooks/kdb\fR
+.IP "\(bu" 4
+puppet\-libelektra \fIhttps://puppet\.libelektra\.org\fR
+.IP "" 0
+.P
+to see how useful it can be\.
 .P
 Longer answer:
 .P
@@ -41,8 +50,8 @@ close(3)                                = 0
 .fi
 .IP "" 0
 .P
-Writing configuration files is much more tricky, as Elektra avoids data loss in the case of concurrent writes, even if the other application does not use Elektra (this only works on modern file systems with high\-resolution timestamps)\.
-.SH "Do We Retain the Old Way of Reloading/Restarting the System Service?"
+Writing configuration files is much more tricky, as Elektra avoids data loss in the case of concurrent writes, even if the other application does not use Elektra\. Elektra uses optimistic writes and rolls backs when it detects that configuration files were modified\.
+.SH "Do We Retain the Way of Reloading/Restarting the System Service?"
 Elektra does not interfere with restarting\. It is a passive library\. It provides some techniques for reloading but they are optional\. We recommend, however, that you keep the in\-memory and persistent configuration always in sync via immediate writes on changes and immediate reloading after notifications\.
 .SH "Is This an Actual Problem of Elektra or Is It Just Me?"
 In case of doubt please open an issue \fIhttps://git\.libelektra\.org/issues\fR\. If the question was already answered or is already in the documentation, we will simply point it out to you\.
@@ -55,7 +64,7 @@ Due to the modular architecture we can accept many contributions as plugins\. Pl
 .P
 Please start by reading here \fI/\.github/CONTRIBUTING\.md\fR\.
 .SH "What Is Elektra’s License?"
-New BSD license \fI/LICENSE\.md\fR which allows us to have plugins link against GPL and GPL\-incompatible libraries\. If you compile Elektra, e\.g\., with GPL plugins, the result is GPL\.
+New BSD license \fI/LICENSE\.md\fR which allows us to have plugins link against GPL and GPL\-incompatible libraries\. If you compile Elektra, e\.g\., with GPL plugins, the result is GPL\. We are reuse \fIhttps://reuse\.software/\fR compliant\.
 .SH "Which version should I use?"
 If you already use 0\.8, you might want to continue using it until 1\.0 is released\. As announced here \fI/doc/news/2019\-08\-06_0\.9\.0\.md\fR, the 0\.9 series introduces incompatible changes as needed, in particular cleanup for the 1\.0 release is done\.
 .P
@@ -68,7 +77,7 @@ If questions about configuration come up, point users to https://www\.libelektra
 .IP "\(bu" 4
 Display the SVG logos found at https://master\.libelektra\.org/doc/images/logo
 .IP "\(bu" 4
-and already rastered logos at https://github\.com/ElektraInitiative/blobs/tree/master/images/logos
+And already rastered logos at https://github\.com/ElektraInitiative/blobs/tree/master/images/logos
 .IP "\(bu" 4
 Distribute the flyer found at https://github\.com/ElektraInitiative/blobs/raw/master/flyers/flyer\.odt
 .IP "\(bu" 4
