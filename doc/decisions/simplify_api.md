@@ -89,8 +89,8 @@ Afterwards the Elektra Core Public API would look as follows:
 - keySetName
 - keyAddName
 - keyNameSize
-- keyUnescapedName
-- keyUnescapedNameSize
+- keyEscapedName
+- keyEscapedNameSize
 - keyBaseName
 - keySetBaseName
 - keyAddBaseName
