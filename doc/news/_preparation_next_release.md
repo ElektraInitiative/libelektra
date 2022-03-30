@@ -229,7 +229,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Tutorials
 
 - <<TODO>>
-- <<TODO>>
+- The tutorial for [Contributing from Windows](../tutorials/contributing-windows.md) has been updated. _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - Rephrased sentence in code-generator.md to enhance readability _(@Gratla)_
@@ -347,6 +347,10 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+### Git
+
+- We now include a `.gitattributes` file to make it easier to build Elektra with WSL. _(@kodebach)_
 
 ## Website
 
