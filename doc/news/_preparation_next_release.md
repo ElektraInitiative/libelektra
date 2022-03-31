@@ -296,6 +296,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Remove usage of internal iterators from the examples
 - Add readme-file about cm2022s project (/doc/dev/iterators.md) _(Florian Lindner @flo91)_
 - Updated elektra-web installation manual (doc/tutorials/install-webui.md) _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
+- Add readme-file about cm2022s project (/doc/dev/iterators.md) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
