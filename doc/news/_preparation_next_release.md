@@ -198,7 +198,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - Small readability improvement _(@Toniboyyy)_
 - Python: add guide for Debian 11 (bullseye) _(Lukas Hartl @lukashartl)_
-- <<TODO>>
+- Fix some errors in the tutorials `Cascading Lookups` and `Command-line Options` _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
