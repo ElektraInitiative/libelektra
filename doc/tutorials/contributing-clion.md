@@ -33,6 +33,9 @@ opened CLion click on the button _Get from VCS_ in the welcome-window.
 
 ![Get from VCS button](/doc/images/clion/vcs_button.png)
 
+> Hint for WSL-Users: Cloning the repository into the WSL filesystem will speed up the compilation time!  
+> i.e. clone into `~/libelektra` and not into `/mnt/c/...`
+
 Now you should log in to your GitHub account from the IDE.
 Click on _GitHub_ on the left and then on _Log In via GitHub..._.
 A browser window should open where you can enter your GitHub credentials.
@@ -57,6 +60,7 @@ git clone https://github.com/<yourGitHubUserName>/libelektra.git
 With the project now locally available we can start developing.
 
 ## Setting Up the Project
+> If you run in WSL, see [WSL Setup](#wsl-setup)
 
 To import all the project configurations, right-click on the file
 _CMakeList.txt_ in the root directory of the repository and select
@@ -152,6 +156,26 @@ the settings here:
 _File_ --> _Settings..._ --> _Editor_ --> _Code Style_
 
 Make sure the selected _Scheme_ is _Project_.
+
+### WSL Setup
+
+At this point we assume you have cloned the repository into the WSL filesystem, as stated earlier.
+
+Now we have to make sure CLion will use the WSL compiler executables or WSL toolchain.  
+
+1. Press `Ctrl + Alt + S` or go to _File_ --> _Settings..._ --> _Build, Execution, Deployment_ --> _Toolchains_
+2. If not already present, add the WSL Toolchain
+   1. Click on the `+` in the top left corner  
+   ![Add Toolchain](/doc/images/clion/toolchains_add.png)
+   2. Select WSL
+   3. Wait for CLion to detect all executables  
+   ![Detected executables](/doc/images/clion/toolchains_detected.png)
+3. Move the WSL toolchain to the top using the up-arrow in the toolbar or `Alt + Up` to set it as default
+4. Click `OK`
+
+The WSL toolchain is now configured as the default.
+You can reload the CMake project by right-clicking on the root `CMakeLists.txt` and selecting `Load CMake Project` or `Reload CMake Project`  
+If you need further help with setting up CLion and WSL, visit the [official Tutorial](https://www.jetbrains.com/help/clion/how-to-use-wsl-development-environment-in-product.html).
 
 ## Development
 
