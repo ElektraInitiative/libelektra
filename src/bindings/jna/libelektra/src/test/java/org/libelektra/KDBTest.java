@@ -1,10 +1,10 @@
 package org.libelektra;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.libelektra.exception.KDBClosedException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class KDBTest {
 
@@ -65,6 +65,58 @@ public class KDBTest {
       assertEquals(key0.toString(), oFoundKey.get().toString());
       oFoundKey.get().release(); // optional clean-up
     }
+
+    // remove them
+    try (KDB kdb = KDB.open()) {
+      var keySet = kdb.get(getParentKey);
+      var keyIter = keySet.iterator();
+      while (keyIter.hasNext()) {
+        var next = keyIter.next();
+        if (next.getName().equals(key1.getName())
+            || next.getName().equals(key2.getName())
+            || next.getName().equals(key0.getName())) {
+          keyIter.remove();
+        }
+        next.release(); // optional clean-up
+      }
+      kdb.set(keySet, getParentKey);
+      keySet.release(); // optional clean-up
+    }
+
+    // optional clean-up
+    key2.release();
+    key1.release();
+    key0.release();
+    getParentKey.release();
+  }
+
+  @Test
+  public void test_getImplementationsEquals_shouldPass() throws KDBException {
+    var getParentKey = Key.create(PARENT_KEY_NAME);
+    var key0 = Key.create(KEY_0_NAME, KEY_0_VALUE);
+    var key1 = Key.create(KEY_1_NAME, KEY_1_VALUE);
+    var key2 = Key.create(KEY_2_NAME, KEY_2_VALUE);
+
+    try (KDB kdb = KDB.open()) {
+      var keySet = kdb.get(getParentKey);
+      keySet.append(key0).append(key1).append(key2);
+      kdb.set(keySet, getParentKey);
+    }
+
+    // now compare both get implementations
+    KeySet keySet1;
+    var keySet2 = KeySet.create();
+
+    try (KDB kdb = KDB.open()) {
+      keySet1 = kdb.get(getParentKey);
+    }
+
+    try (KDB kdb = KDB.open()) {
+      keySet2 = KeySet.create();
+      kdb.get(keySet2, getParentKey);
+    }
+
+    assertEquals(keySet1, keySet2);
 
     // remove them
     try (KDB kdb = KDB.open()) {
