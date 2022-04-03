@@ -4,15 +4,16 @@
 
 ### Introduction
 
-In this tutorial you will learn how to interactively use the `SpecElektra` specification language and `kdb` to write a configuration specification for an example application.
+In this tutorial you will learn how to interactively use the `SpecElektra` specification 
+language and `kdb` to write a configuration specification for an example application.
 
 ### What you should already know
 
-- how to install Elektra
+- [how to install Elektra](https://www.libelektra.org/getstarted/guide#installation)
 - basic Elektra commands and concepts (kdb get, kdb set, kdb ls)
 - how to open and use a terminal
 
-### What you’ll Learn
+### What you’ll learn
 
 - how to create and mount a specification using `kdb`
 - how to add keys with different types, defaults and examples to your specification and how to validate them
@@ -59,8 +60,7 @@ First you need to mount a specification file, in this case `spec.ni` to the `spe
 You can define the path inside the `spec:/` namespace as `/sw/org/app/#0/current`, refer to
 [the documentation](https://www.libelektra.org/tutorials/integration-of-your-c-application) to find out more about constructing the name.
 
-You will also be using the profile `current`,
-you can find out more about profiles in
+You will be using the profile `current`, you can find out more about profiles in
 [the documentation](https://www.libelektra.org/plugins/profile) as well.
 
 You also need to specify the plugin you will use for writing to the file in the correct format. In this case you can choose the `ni` plugin to write to the specification file.
@@ -69,7 +69,7 @@ You also need to specify the plugin you will use for writing to the file in the 
 sudo kdb mount `pwd`/spec.ni spec:/sw/org/app/\#0/current ni
 ```
 
-Using the command below you can list the directory of the concrete file that is used by Elektra.
+Using the command below you can get the location of the concrete file that is used by Elektra.
 
 ```sh
 kdb file spec:/sw/org/app/\#0/current
@@ -77,8 +77,8 @@ kdb file spec:/sw/org/app/\#0/current
 
 ### Step 2: Define a mountpoint
 
-Next you can define, that this specification defines a specific mountpoint for a concrete application configuration.
-So you can say the concrete configuraion should be written to `app.ni`.
+Next you can define, that this specification uses a specific mountpoint for a concrete application configuration.
+So you can say the concrete configuration should be written to `app.ni`.
 
 ```sh
 kdb meta-set spec:/sw/org/app/\#0/current mountpoint app.ni
@@ -104,13 +104,14 @@ cat $(kdb file spec:/sw/org/app/\#0/current)
 kdb spec-mount /sw/org/app/\#0/current ni
 ```
 
-This specification mount makes sure that the paths where the concrete configuration should be, in this case `app.ni`, are ready to fulfill or specification, in this case `spec.ni`.
+This specification mount makes sure that the paths where the concrete configuration should be, in this case `app.ni`,
+are ready to fulfill our specification, in this case `spec.ni`.
 
 ## Adding your first key to the specification
 
 ### Step 1: Adding the server port
 
-The first key you will add to our specification will be the port of the server. You add it using the following command below.
+The first key you will add to our specification is the port of the server. You add it using the following command below.
 
 ```sh
 kdb meta-set spec:/sw/org/app/\#0/current/server/port type short
@@ -119,7 +120,7 @@ kdb meta-set spec:/sw/org/app/\#0/current/server/port type short
 What you also specified in the command above is the type of the configuration key. Elektra uses the [CORBA type system](https://www.libelektra.org/plugins/type)
 and will check that keys conform to the type specified.
 
-So after adding the initial key your specification should look something like this:
+So after adding the initial key, your specification should look something like this:
 
 ```
 cat $(kdb file spec:/sw/org/app/\#0/current)
@@ -167,7 +168,7 @@ Use the command from before:
 kdb spec-mount /sw/org/app/\#0/current ni
 ```
 
-Your final specification after adding the port should now look something like this
+Your final specification after adding the port should now look something like this:
 
 ```sh
 cat $(kdb file spec:/sw/org/app/\#0/current)
@@ -364,7 +365,7 @@ database/dialect =
 
 ## Adding the backup date
 
-The last key you will add to our application is a `date` key for the annual backup and restart (this should probably not be annually in a real application).
+The last key you will add to our specification is a `date` key for the annual backup and restart (this should probably not be annually in a real application).
 Here you use the [check/date](https://www.libelektra.org/plugins/date) plugin with the `ISO8601` format.
 You also specify a `check/date/format`. You can find all possible date formats on the [plugin page](https://www.libelektra.org/plugins/date).
 For this you can use the following commands:
@@ -383,68 +384,10 @@ kdb meta-set spec:/sw/org/app/\#0/current/backup/date example 2021-01-12
 kdb meta-set spec:/sw/org/app/\#0/current/backup/date description "date of the annual server and database backup"
 ```
 
-Your specification looks to be complete now! Make sure it looks something like the one below and you are good to go using it and configuring the heck out of it!
-
-```sh
-cat $(kdb file spec:/sw/org/app/\#0/current)
-
-;Ni1
-; Generated by the ni plugin using Elektra (see libelektra.org).
-
-backup/date =
-database/ip =
- =
-server/port =
-server/secure =
-database/dialect =
-
-[backup/date]
- meta:/check/date/format = calendardate complete extended
- meta:/type = string
- meta:/example = 2021-01-12
- meta:/description = date of the annual server and database backup
- meta:/default = 2021-11-01
- meta:/check/date = ISO8601
-
-[database/ip]
- meta:/check/ipaddr =
- meta:/type = string
- meta:/example = 127.0.0.1
- meta:/description = ip address of the database server, that the application will connect to
- meta:/default = 127.0.0.1
-
-[]
- meta:/mountpoint = app.ni
-
-[server/port]
- meta:/check/port =
- meta:/type = short
- meta:/example = 8080
- meta:/description = port of the REST server that runs the application
- meta:/default = 8080
-
-[server/secure]
- meta:/type = boolean
- meta:/example = 0
- meta:/description = true if the REST server uses SSL for communication
- meta:/default = 1
-
-[database/dialect]
- meta:/check/enum/#2 = mssql
- meta:/check/enum/\#0 = postgresql
- meta:/type = enum
- meta:/check/enum/#1 = mysql
- meta:/example = mysql
- meta:/description = SQL dialect of the database server, that the application will connect to
- meta:/check/enum/#4 = sqlite
- meta:/check/enum/#3 = mariadb
- meta:/default = sqlite
- meta:/check/enum = #4
-```
-
 ## Final specification code
 
-After adding all the keys that are necessary for our application to the server, your specification should look something like this:
+Your specification should be complete now!
+After adding all the keys that are necessary for our application, your specification should look something like this:
 
 ```sh
 cat $(kdb file spec:/sw/org/app/\#0/current)
