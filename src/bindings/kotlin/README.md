@@ -3,6 +3,7 @@ This is an extension of the Java/JNA binding to provide convenience methods for 
 # Interactions with users
 
 ## Functional paradigm
+
 We can abstract the try-with-resources access for kdb using lambdas in Kotlin:
 
 General kdb usage:
@@ -15,6 +16,7 @@ withKdb {
 ```
 
 Plugin calls:
+
 ```kotlin
 withPlugin("range") {
     val rangeKey = keyOf("user:/tests/myError" to "30").apply {
@@ -27,7 +29,7 @@ withPlugin("range") {
         value = "user:/tests/myError" to "30",
         meta = "check/range" to "1-20"
     )
- 
+
     val ks = keySetOf(allocationHint = 10, rangeKey)
     kdbSet(ks, parentKey)
 }
@@ -37,6 +39,7 @@ Shifting the imperative style of Java to a more Kotlin-idiomatic and functional 
 We omitted the error handling in this example, but the function withKdb would also throw the KDBException.
 
 ## Type inference and assertion
+
 Kotlin also improves the type system in comparison to Java.
 We envision to implement the following:
 
@@ -61,13 +64,13 @@ val props = kdb.decode<MyProperties>("user:/parent")
 val props = kdb.build<MyProperties>("user:/parent")
 ```
 
-
 ## Functional KeySet traversal
+
 ```kotlin
 keySet.forEach { key ->
-    
+
     // Key: /foo/bar = bloo
-    key.parts.forEach { part -> 
+    key.parts.forEach { part ->
         // Prints: foo bar
         print(part)
     }
@@ -86,12 +89,14 @@ keySetOf(
     keyOf("user:/bar")
 )
 ```
+
 # The Architecture
 
 For now, this binding sits on top of the Java/JNA binding, i.e. it has a dependency on it.
 The binding uses Java functions and extend them to provide 'kotlinized' versions of the Elektra API.
 
 The main points of extensions are:
+
 - KeySet
 - Key
 - KDB
