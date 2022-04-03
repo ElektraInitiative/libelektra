@@ -82,5 +82,16 @@ public class HelloElektra {
     System.out.println("Rest:");
     System.out.println(whole);
     System.out.println();
+
+    exampleSetMetaKeys();
+  }
+
+  private static void exampleSetMetaKeys() {
+    // Example 9: Set and get meta keys
+    System.out.println("Example 9");
+    Key key = Key.create("user:/key/with/meta");
+    key.setMeta("example", "anExampleValue");
+    var returnedMeta = key.getMeta("example").orElseThrow(AssertionError::new);
+    System.out.println(returnedMeta.getString());
   }
 }
