@@ -18,11 +18,13 @@ language and `kdb` to write a configuration specification for an example applica
 - how to create and mount a specification using `kdb`
 - how to add keys with different types, defaults and examples to your specification and how to validate them
 - the benefits of using `kdb` to generate a specification, instead of writing one by hand
+- how to use the final specification during the installation process of applications
 
 ### What you'll do
 
 - use `kdb` to create and mount a specification for an example CRUD (Create, Read, Update, Delete) application
 - define defaults, examples and checks for keys in the validation
+- use the specification as a starting point for customizing the configuration of installed applications
 
 ## Example App Overview
 
@@ -68,6 +70,14 @@ You also need to specify the plugin you will use for writing to the file in the 
 ```sh
 sudo kdb mount `pwd`/spec.ni spec:/sw/org/app/\#0/current ni
 ```
+
+> ***Attention***: Mounting the specification supplying an absolute path 
+> (like in the previous example with ``` `pwd` ```) is only recommended for defining
+> the specification in the first place, but not when mounting the final specification
+> for usage with the application, especially in production environments!
+> 
+> Please read the section [Using the specification](#elektra-use-spec) at the end
+> of this document for further information.
 
 Using the command below you can get the location of the concrete file that is used by Elektra.
 
@@ -446,14 +456,80 @@ database/dialect =
  meta:/check/enum = #4
 ```
 
+<a id="elektra-use-spec"></a>
+## Using the specification
+
+Now, after you've finished your specification and want to use it for daily business, some aspects have to be considered.
+A specification usually is written to cover the most common use cases and to provide sensible defaults.
+In some cases, the administrator may want to change the specification, e.g. for extending it
+or introducing further restrictions.
+
+In such cases, **directly changing** the specification that was designed for
+and delivered with the application, is **not** the **recommended** approach.
+
+The recommended way is making a **copy** of the default specification
+while installing the application and then saving changes to that copy.
+If misconfiguration occurs, you can easily look at the default specification or reapply it to start over.
+
+If you mount the specification with an absolute path (e.g. by using ``` `pwd` ``` in scripts),
+like it was done for defining the specification with `kbd`, the file gets changed directly.
+If ``` `pwd` ``` refers to the installation directory of the application, this would be totally fine,
+but if this is done during installation and ``` `pwd` ``` refers to the source directory, the source specification would be
+modified via `kdb set spec:/...` calls.
+
+The **recommended way** to do it is:
+
+```sh
+kdb mount spec.ni spec:/sw/org/app/\#0/current ni
+kdb import spec:/sw/org/app/\#0/current ni ./spec.ni
+```
+
+Because we used a relative path (not starting with `/`), Elektra will use a file
+within the spec directory (`/usr/share/elektra/specification` by default) for storing the specification.
+
+The kdb import command just tells Elektra to load the file `./spec.ni`
+with the ni plugin and write it into `spec:/sw/org/app/\#0/current`.
+Using a separate kdb import also means we could use a different storage plugin
+for mount than what `./spec.ni` uses.
+
+
+Another alternative is copying the file manually:
+
+```sh
+kdb mount spec.ni spec:/sw/org/app/\#0/current ni
+cp ./spec.ni $(kdb file spec:/sw/org/app/\#0/current)
+```
+This works like the previous snippet, except that we directly modify the spec file without going through Elektra.
+For very big specifications this might be faster, but we get no validation that the file is actually readable
+and `./spec.ni` has to be readable by the storage plugin used with `kdb mount`.
+
+Finally, in some cases you may want to control where the mounted spec file is stored.
+In those cases using an absolute path is fine:
+
+```sh
+kdb mount /etc/spec.ni spec:/sw/org/app/\#0/current ni
+kdb import spec:/sw/org/app/\#0/current ni ./my-spec.ini
+```
+or
+
+```sh
+kdb mount /etc/spec.ni spec:/sw/org/app/\#0/current ni
+cp ./spec.ni $(kdb file spec:/sw/org/app/\#0/current)
+```
+
+Please note that also in these examples, the file referred to
+by the absolute path `/etc/spec.ni` is a **new file**
+where the content of the file `./spec.ni` in the working directory gets imported or copied to.
+
 ## Summary
 
-- You set up and mounted a specification using `kdb mount` and `kdb spec-mount`
-- You added keys the specification using `kdb meta-set`
-- You added different types of keys with `type string`, `type boolean` or `type short`
-- You added keys with enum types, to get specific configuration values, with ``
-- You added default parameters, examples and descriptions with `example`, `default`, `description`
-- You also added validation checks using different plugins, like `check/port` or `check/ipaddr`
+- You set up and mounted a specification using `kdb mount` and `kdb spec-mount`.
+- You added keys to the specification using `kdb meta-set`.
+- You added different types of keys with `type string`, `type boolean` or `type short`.
+- You added keys with `enum types`, to restrict specific configuration settings to a defined set of possible values.
+- You added default parameters, examples and descriptions with `example`, `default`, `description`.
+- You also added validation checks using different plugins, like `check/port` or `check/ipaddr`.
+- You know how to use the specification for installed applications (esp. in production environments).
 
 ## Learn more
 
