@@ -60,6 +60,7 @@ git clone https://github.com/<yourGitHubUserName>/libelektra.git
 With the project now locally available we can start developing.
 
 ## Setting Up the Project
+
 > If you run in WSL, see [WSL Setup](#wsl-setup)
 
 To import all the project configurations, right-click on the file
@@ -161,15 +162,15 @@ Make sure the selected _Scheme_ is _Project_.
 
 At this point we assume you have cloned the repository into the WSL filesystem, as stated earlier.
 
-Now we have to make sure CLion will use the WSL compiler executables or WSL toolchain.  
+Now we have to make sure CLion will use the WSL compiler executables or WSL toolchain.
 
 1. Press `Ctrl + Alt + S` or go to _File_ --> _Settings..._ --> _Build, Execution, Deployment_ --> _Toolchains_
 2. If not already present, add the WSL Toolchain
    1. Click on the `+` in the top left corner  
-   ![Add Toolchain](/doc/images/clion/toolchains_add.png)
+      ![Add Toolchain](/doc/images/clion/toolchains_add.png)
    2. Select WSL
    3. Wait for CLion to detect all executables  
-   ![Detected executables](/doc/images/clion/toolchains_detected.png)
+      ![Detected executables](/doc/images/clion/toolchains_detected.png)
 3. Move the WSL toolchain to the top using the up-arrow in the toolbar or `Alt + Up` to set it as default
 4. Click `OK`
 
