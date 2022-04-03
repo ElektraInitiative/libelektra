@@ -4,7 +4,7 @@
 
 ### Introduction
 
-In this tutorial you will learn how to interactively use the `SpecElektra` specification 
+In this tutorial you will learn how to interactively use the `SpecElektra` specification
 language and `kdb` to write a configuration specification for an example application.
 
 ### What you should already know
@@ -71,11 +71,11 @@ You also need to specify the plugin you will use for writing to the file in the 
 sudo kdb mount `pwd`/spec.ni spec:/sw/org/app/\#0/current ni
 ```
 
-> ***Attention***: Mounting the specification supplying an absolute path 
-> (like in the previous example with ``` `pwd` ```) is only recommended for defining
+> **_Attention_**: Mounting the specification supplying an absolute path
+> (like in the previous example with `` `pwd` ``) is only recommended for defining
 > the specification in the first place, but not when mounting the final specification
 > for usage with the application, especially in production environments!
-> 
+>
 > Please read the section [Using the specification](#elektra-use-spec) at the end
 > of this document for further information.
 
@@ -122,6 +122,7 @@ You've a specification file (`spec.ni`) for the `spec`-namespace and three files
 for the `dir`- `user`- and `system`-namespaces.
 
 You can see the files by providing the namespace as prefix to the `kdb file` command:
+
 ```sh
 kdb file system:/sw/org/app/#0/current
 #> /etc/kdb/app.ni
@@ -132,11 +133,11 @@ kdb file user:/sw/org/app/#0/current
 kdb file dir:/sw/org/app/#0/current
 # /current/working/directory/.dir/app.ni
 ```
-> ***Note***: The files are created when you write to them for the first time. (e.g. with `kdb set`)
+
+> **_Note_**: The files are created when you write to them for the first time. (e.g. with `kdb set`)
 
 For more information about namespaces in Elektra please see [here](https://www.libelektra.org/manpages/elektra-namespaces),
 a tutorial about the topic is available [here](https://www.libelektra.org/tutorials/namespaces).
-
 
 ## Adding your first key to the specification
 
@@ -436,12 +437,14 @@ kdb meta-set spec:/sw/org/app/\#0/current/backup/date description "date of the a
 ```
 
 Now we add the validation plugin for dates and remount the specification:
+
 ```sh
 kdb meta-set spec:/sw/org/app/\#0/current infos/plugins "ni type network date"
 sudo kdb spec-mount /sw/org/app/\#0/current
 ```
 
 If we try to add a value that is not in the specified format, an error should get emitted.
+
 ```sh
 kdb set user:/sw/org/app/\#0/current/backup/date "03.04.2022"
 # Sorry, module date issued the error C03100:
@@ -450,6 +453,7 @@ kdb set user:/sw/org/app/\#0/current/backup/date "03.04.2022"
 
 To double-check if things are correct, we try to get the value from the `user`-namespace
 and via cascading lookup.
+
 ```sh
 kdb get user:/sw/org/app/\#0/current/backup/date
 #> Did not find key 'user:/sw/org/app/#0/current/backup/date'
@@ -475,6 +479,7 @@ kdb get /sw/org/app/\#0/current/backup/date
 ```
 
 If we explicitly query the `system`-namespace, no key is found.
+
 ```sh
 kdb get system:/sw/org/app/\#0/current/backup/date
 #> Did not find key 'system:/sw/org/app/#0/current/backup/date'
@@ -544,6 +549,7 @@ cat $(kdb file spec:/sw/org/app/\#0/current)
 ```
 
 <a id="elektra-use-spec"></a>
+
 ## Using the specification
 
 Now, after you've finished your specification and want to use it for daily business, some aspects have to be considered.
@@ -558,18 +564,20 @@ The recommended way is making a **copy** of the default specification
 while installing the application and then saving changes to that copy.
 If misconfiguration occurs, you can easily look at the default specification or reapply it to start over.
 
-If you mount the specification with an absolute path (e.g. by using ``` `pwd` ``` in scripts),
+If you mount the specification with an absolute path (e.g. by using `` `pwd` `` in scripts),
 like it was done for defining the specification with `kbd`, the file gets changed directly.
-If ``` `pwd` ``` refers to the installation directory of the application, this would be totally fine,
-but if this is done during installation and ``` `pwd` ``` refers to the source directory, the source specification would be
+If `` `pwd` `` refers to the installation directory of the application, this would be totally fine,
+but if this is done during installation and `` `pwd` `` refers to the source directory, the source specification would be
 modified via `kdb set spec:/...` calls.
 
 First we have to unmount our original configuration file we just created:
+
 ```sh
 sudo kdb umount spec:/sw/org/app/\#0/current
 ```
 
 The **recommended way** to do apply the specification is:
+
 ```sh
 sudo kdb mount spec.ni spec:/sw/org/app/\#0/current ni
 sudo kdb import spec:/sw/org/app/\#0/current ni ./spec.ni
@@ -583,13 +591,13 @@ with the `ni` plugin and write it into `spec:/sw/org/app/\#0/current`.
 Using a separate `kdb import` also means we could use a different storage plugin
 for mounting than what `./spec.ni` uses.
 
-
 Another alternative is copying the file manually:
 
 ```sh
 sudo kdb mount spec.ni spec:/sw/org/app/\#0/current ni
 sudo cp ./spec.ni $(kdb file spec:/sw/org/app/\#0/current)
 ```
+
 This works like the previous snippet, except that we directly modify the spec file without going through Elektra.
 For very big specifications this might be faster, but we get no validation that the file is actually readable
 and `./spec.ni` has to be readable by the storage plugin used with `kdb mount`.
@@ -601,6 +609,7 @@ In those cases using an absolute path is fine:
 kdb mount /etc/spec.ni spec:/sw/org/app/\#0/current ni
 kdb import spec:/sw/org/app/\#0/current ni ./my-spec.ini
 ```
+
 or
 
 ```sh
@@ -613,6 +622,7 @@ by the absolute path `/etc/spec.ni` is a **new file**
 where the content of the file `./spec.ni` in the working directory gets imported or copied to.
 
 ## Cleanup
+
 If you want to remove the files that were created in the course of the tutorial, the following steps are necessary.
 
 ```sh
