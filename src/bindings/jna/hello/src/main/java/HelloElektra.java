@@ -12,8 +12,16 @@ public class HelloElektra {
     System.out.println(key.getString());
     System.out.println();
 
-    // Example 2: create a KeySet and print it
+    // Example 2: adding basename for Key
     System.out.println("Example 2");
+    Key subKey = Key.create("user:/hello_world", "Sub Key");
+    subKey.addBaseName("sub_key");
+    System.out.println(subKey); // to get name
+    System.out.println(subKey.getString());
+    System.out.println();
+
+    // Example 3: create a KeySet and print it
+    System.out.println("Example 3");
     final KeySet ks = KeySet.create(10, Key.create("user:/hello_world2", "Hello World2"), key);
     for (Key k : ks) {
       System.out.println("iter: " + k.getName() + " " + k.getString());
@@ -21,8 +29,8 @@ public class HelloElektra {
     System.out.println(ks);
     System.out.println();
 
-    // Example 3: duplicating a KeySet
-    System.out.println("Example 3");
+    // Example 4: duplicating a KeySet
+    System.out.println("Example 4");
     final KeySet ks2 = ks.dup();
     ks2.copy(ks);
     System.out.println(ks2.size());
@@ -30,8 +38,8 @@ public class HelloElektra {
     ks2.append(key);
     System.out.println();
 
-    // Example 4: reading from the KDB
-    System.out.println("Example 4");
+    // Example 5: reading from the KDB
+    System.out.println("Example 5");
     try (final KDB kdb = KDB.open(key)) {
       kdb.get(ks, key);
       Key k = ks.lookup(key).orElseThrow(AssertionError::new);
@@ -41,30 +49,30 @@ public class HelloElektra {
     }
     System.out.println();
 
-    // Example 5: manually calling a Plugin (normally not needed)
-    System.out.println("Example 5");
+    // Example 6: manually calling a Plugin (normally not needed)
+    System.out.println("Example 6");
     final Echo dp = new Echo();
     dp.open(ks, key);
     dp.get(ks, key);
     dp.close(key);
     System.out.println();
 
-    // Example 6: Keys support different types
-    System.out.println("Example 6");
+    // Example 7: Keys support different types
+    System.out.println("Example 7");
     final Key b = Key.create("user:/boolean", "true");
     System.out.println(b.getBoolean());
     b.setBoolean(false);
     System.out.println(b.getBoolean());
     System.out.println();
 
-    // Example 7: iterating over keyname parts of a Key
-    System.out.println("Example 7");
+    // Example 8: iterating over keyname parts of a Key
+    System.out.println("Example 8");
     Key n = Key.create("user:/weird\\/name///\\\\/is/\no/_\\\\problem");
     n.keyNameIterator().forEachRemaining(s -> System.out.println("itername: " + s));
     System.out.println();
 
-    // Example 8: cutting part of a KeySet
-    System.out.println("Example 8");
+    // Example 9: cutting part of a KeySet
+    System.out.println("Example 9");
     Key cutpoint = Key.create("user:/cutpoint"),
         ka = Key.create("user:/cutpoint/hello", "hiback"),
         kb = Key.create("user:/cutpoint/hello2", "hellotoo"),
