@@ -250,7 +250,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Add tests for the Error/Warnings-Factory in libtools _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
-- Added test for JNA KDB which checks if both get-method implementations return the same result.
+- Added test for JNA KDB which checks if both get-method implementations return the same result. _(Philipp Leeb @Gratla)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
