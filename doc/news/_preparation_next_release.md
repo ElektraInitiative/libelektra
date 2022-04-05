@@ -207,7 +207,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Improve jna documentation _(Burkhard Hampl @bhampl)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
