@@ -255,6 +255,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - Extend and update the tutorial for writing specifications,
   add section about using specs in production _(Florian Lindner @flo91)_
+- Tutorial: add cleanup section to the specification tutorial _(Lukas Hartl @lukashartl)_ _(@leothetryhard)_
 - <<TODO>>
 - Add readme-file [Iterators](/doc/dev/iterators.md) about cm2022s project showcasing usage in various programming languages _(Florian Lindner @flo91 and Michael Langhammer @Milangs)_
 - Remove usage of internal iterators from the examples
