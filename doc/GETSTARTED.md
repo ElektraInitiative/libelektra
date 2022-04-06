@@ -19,7 +19,8 @@ This document is intended for developers who want to get started with developing
 
 - Basic knowledge about make/cmake
 
-  [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code. If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
+  [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code.
+  If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
 
 - We also need your skill set to improve Elektra
 
@@ -27,7 +28,9 @@ This document is intended for developers who want to get started with developing
 
 ## Software requirements
 
-We need to install some basic tools to run Elektra: cmake, git and essential build tools (make, gcc, and some standard Unix tools; alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here). Depending on your Linux distribution use the following commands to install these tools:
+We need to install some basic tools to run Elektra: cmake, git and essential build tools (make, gcc, and some standard Unix tools;
+alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here).
+Depending on your Linux distribution use the following commands to install these tools:
 
 ```sh
 sudo apt-get install cmake git build-essential
@@ -39,7 +42,8 @@ Or on RPM (Red Hat Package Manager) based systems (like Fedora, openSUSE, CentOS
 sudo yum install -y cmake git gcc-c++
 ```
 
-Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew](https://brew.sh/). First, install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew](https://brew.sh/).
+First, install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
 ```sh
 brew install cmake git
@@ -69,7 +73,9 @@ Optionally you can also run tests, see [here for more information](/doc/TESTING.
 cmake --build . --target run_nokdbtests
 ```
 
-With these commands you will be able to run the "Hello World!" example, but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra. Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra (please check the [installation documentation](/doc/INSTALL.md) for the many available packages):
+With these commands you will be able to run the "Hello World!" example, but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra.
+Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra
+(please check the [installation documentation](/doc/INSTALL.md)for the many available packages):
 
 ```sh
 sudo make install
@@ -94,9 +100,14 @@ Let's look into an example:
 sudo kdb mount "hello.spec.ni" "spec:/example/hello" ni
 ```
 
-This first command shows one of the core concepts: In Elektra you mount a file into the key database by specifying a mountpoint. In this example we mount the file `hello.spec.ni` that shall be our configuration specification to the mountpoint `/example/hello` in the `spec` [namespace](/doc/tutorials/namespaces.md) (which is the [namespace](/doc/tutorials/namespaces.md) of the specification). We could also say that we persistently mount a new *backend*. The last parameter `ni` specifies that we use the [ni plugin](/src/plugins/ni/README.md) to write in the ni format to the file. This can also be omitted in which case the [dump plugin](/src/plugins/dump/) is used.
+This first command shows one of the core concepts: In Elektra you mount a file into the key database by specifying a mountpoint.
+In this example we mount the file `hello.spec.ni` that shall be our configuration specification to the mountpoint `/example/hello`
+in the `spec` [namespace](/doc/tutorials/namespaces.md) (which is the [namespace](/doc/tutorials/namespaces.md) of the specification).
+We could also say that we persistently mount a new _backend_. The last parameter `ni` specifies that we use the [ni plugin](/src/plugins/ni/README.md)
+to write in the ni format to the file. This can also be omitted in which case the [dump plugin](/src/plugins/dump/) is used.
 
-Since we did not denote an absolute file path it depends on the namespace where the actual file is stored. However, we can always retrieve the location of a file with the `file` subcommand, e.g., `kdb file "spec:/example/hello"`.
+Since we did not denote an absolute file path it depends on the namespace where the actual file is stored.
+However, we can always retrieve the location of a file with the `file` subcommand, e.g., `kdb file "spec:/example/hello"`.
 
 Now let's add some data to our specification:
 
@@ -104,7 +115,8 @@ Now let's add some data to our specification:
 sudo kdb set "spec:/example/hello/what" ""
 ```
 
-As you see above we extended the the mountpoint `/example/hello` with `/what`. Our specification now requires a `what` key in the configuration. Note that the value is empty since we just want to specify the key.
+As you see above we extended the the mountpoint `/example/hello` with `/what`. Our specification now requires a `what` key in the configuration.
+Note that the value is empty since we just want to specify the key.
 
 Now let's show the actual power of Elektra by setting metadata to our specification:
 
@@ -112,7 +124,8 @@ Now let's show the actual power of Elektra by setting metadata to our specificat
 sudo kdb meta-set "spec:/example/hello/what" default World
 ```
 
-The metakey `default` (having the value `World`) is now associated with the key `spec:/example/hello/what`. It should be noted that the previous setting of `what` is in this scenario redundant and could be omitted. 
+The metakey `default` (having the value `World`) is now associated with the key `spec:/example/hello/what`.
+It should be noted that the previous setting of `what` is in this scenario redundant and could be omitted.
 
 Now let's mount our specification:
 
@@ -121,7 +134,8 @@ sudo kdb meta-set "spec:/example/hello" mountpoint "hello.ni"
 sudo kdb spec-mount "/example/hello" ni
 ```
 
-As you see above we first specify a mountpoint for our configuration (which is just metadata of the key `spec:/example/hello`). Afterwards we use the `spec-mount` subcommand to mount a new backend by a previously mounted specification. Note that there shall not be a namespace given.
+As you see above we first specify a mountpoint for our configuration (which is just metadata of the key `spec:/example/hello`).
+Afterwards we use the `spec-mount` subcommand to mount a new backend by a previously mounted specification. Note that there shall not be a namespace given.
 
 Now let's enjoy some configuration magic:
 
@@ -129,7 +143,8 @@ Now let's enjoy some configuration magic:
 kdb get "/example/hello/what"
 ```
 
-We notice even if we did not set a value for the key `/example/hello/what` we still get `World` back since this is specified as default value. Therein lies the power of Elektra: We can set metadata (like [types](/src/plugins/type/README.md), [RegEx](/src/plugins/validation/README.md) or [date](/src/plugins/date/README.md) validation, etc.) that gets handled by plugins.
+We notice even if we did not set a value for the key `/example/hello/what` we still get `World` back since this is specified as default value.
+Therein lies the power of Elektra: We can set metadata (like [types](/src/plugins/type/README.md), [RegEx](/src/plugins/validation/README.md) or [date](/src/plugins/date/README.md) validation, etc.) that gets handled by plugins.
 
 If we want to set an own value we can do it this way:
 
@@ -137,7 +152,8 @@ If we want to set an own value we can do it this way:
 kdb set "user:/example/hello/what" "first few steps"
 ```
 
-Note that when we set a value the namespace of the key should be specified explicitly. If we don't give a proper namespace (like in the get example above) a so-called [cascading lookup](/doc/tutorials/cascading.md) is done. 
+Note that when we set a value the namespace of the key should be specified explicitly.
+If we don't give a proper namespace (like in the get example above) a so-called [cascading lookup](/doc/tutorials/cascading.md) is done.
 
 ## Hello World!
 
