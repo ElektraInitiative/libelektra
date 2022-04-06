@@ -209,7 +209,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - Improve jna documentation _(Burkhard Hampl @bhampl)_
 - <<TODO>>
-- Add Stream API example in Java binding documentation _(Richard Stöckl @Eiskasten)
+- Add Stream API example in Java binding documentation _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
