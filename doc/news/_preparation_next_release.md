@@ -350,7 +350,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Git
 
-- We now include a `.gitattributes` file to make it easier to build Elektra with WSL. _(@kodebach)_
+- We added a `.gitattributes` file to make it easier to build Elektra with WSL. _(@kodebach)_
 
 ## Website
 
