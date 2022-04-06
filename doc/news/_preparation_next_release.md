@@ -206,7 +206,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add Stream API example in Java binding documentation _(Richard Stöckl @Eiskasten)
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
