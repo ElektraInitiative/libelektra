@@ -150,6 +150,8 @@ if (Java_JAVAC_EXECUTABLE)
 				string (REPLACE "-SNAPSHOT.jar" "-${KDB_VERSION}.jar" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
 				string (REPLACE "\n" ";" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
 
+				message (STATUS "Detected Java plugins: " "${PLUGIN_JAR_PATHS}")
+
 				add_custom_command (
 					OUTPUT
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}.jar"
@@ -185,6 +187,7 @@ if (Java_JAVAC_EXECUTABLE)
 					COMPONENT java-elektra)
 
 				foreach (PLUGIN_JAR ${PLUGIN_JAR_PATHS})
+					message (STATUS "Adding Java plugin: " "${PLUGIN_JAR}")
 					install (
 						FILES "${CMAKE_CURRENT_BINARY_DIR}/${PLUGIN_JAR}"
 						DESTINATION "share/java/plugins"
