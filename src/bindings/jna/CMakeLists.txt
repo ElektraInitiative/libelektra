@@ -143,14 +143,21 @@ if (Java_JAVAC_EXECUTABLE)
 
 				# compile the source files and build the jar. We copy the source files into the build folder as that is the
 				# easiest way to handle the integration between CMake and Gradle.
+				execute_process (
+					COMMAND "${CMAKE_CURRENT_BINARY_DIR}/gradlew" "-q" ":plugins:printJarPaths"
+					OUTPUT_VARIABLE PLUGIN_JAR_PATHS
+					WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+				string (REPLACE "-SNAPSHOT.jar" "-${KDB_VERSION}.jar" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
+				string (REPLACE "\n" ";" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
+
 				add_custom_command (
 					OUTPUT
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-javadoc.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-sources.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
-						"${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/process/build/libs/process-${KDB_VERSION}.jar"
+						${PLUGIN_JAR_PATHS}
 					COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}"
 						"${CMAKE_CURRENT_BINARY_DIR}"
 					COMMAND ${GRADLE_EXECUTABLE} -q --console=plain clean assemble
@@ -177,10 +184,12 @@ if (Java_JAVAC_EXECUTABLE)
 					DESTINATION "share/java"
 					COMPONENT java-elektra)
 
-				install (
-					FILES "${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
-					DESTINATION "share/java/plugins"
-					COMPONENT java-elektra)
+				foreach (PLUGIN_JAR ${PLUGIN_JAR_PATHS})
+					install (
+						FILES "${CMAKE_CURRENT_BINARY_DIR}/${PLUGIN_JAR}"
+						DESTINATION "share/java/plugins"
+						COMPONENT java-elektra)
+				endforeach (PLUGIN_JAR ${PLUGIN_JAR_PATHS})
 
 				# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
 				# the system
