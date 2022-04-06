@@ -220,7 +220,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix `kdb reset`. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
