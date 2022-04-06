@@ -65,7 +65,7 @@ You can define the path inside the `spec:/` namespace as `/tests/sw/org/app/#0/c
 You will be using the profile `current`, you can find out more about profiles in
 [the documentation](https://www.libelektra.org/plugins/profile) as well.
 
-We will be writing values to the `user:/` namespace. If you want to learn more about namespaces in general, refer to the
+We will be writing values mostly to the `user:/` namespace. If you want to learn more about namespaces in general, refer to the
 [the documentation on namespaces](https://www.libelektra.org/tutorials/namespaces)
 
 You also need to specify the plugin you will use for writing to the file in the correct format. In this case you can choose the `ni` plugin to write to the specification file.
@@ -681,7 +681,7 @@ To round up this tutorial, we will `kdb umount` these two:
 1. `sudo kdb umount spec:/sw/org/app/\#0/current` to remove the mountpoint from `kdb spec-mount ...`
 2. `sudo kdb umount /sw/org/app/\#0/current` to remove the mountpoint from `kdb mount ...`
 
-In case something went wrong and you want to reset the content of your kdb,
+In case something went wrong and you want to reset the whole content of your kdb,
 please refer to [the manpage of kdb reset](https://www.libelektra.org/manpages/kdb-reset).
 
 ## Summary
