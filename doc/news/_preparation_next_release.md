@@ -137,7 +137,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Python
 
-- Added `.pop()` and `.cut()` examples to keySet example _(Leonard Guelmino @leothetryhard)_
+- Added `.pop()` and `.cut()` examples to keySet example _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 - <<TODO>>
 
@@ -248,7 +248,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ## Tests
 
 - Add tests for the Error/Warnings-Factory in libtools _(Florian Lindner @flo91)_
-- Add tests for keySet in the python binary _(Leonard Guelmino @leothetryhard)_
+- Add tests for keySet in the python binary _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
