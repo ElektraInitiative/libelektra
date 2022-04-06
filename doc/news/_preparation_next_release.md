@@ -303,7 +303,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- CMake now automatically detects all JNA plugins that are added to Gradle. _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
