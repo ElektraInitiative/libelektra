@@ -3,11 +3,3 @@ Perl bindings
 PHP bindings
 
 type safe get/set from/to collections
-
-== C++ ==
-
-iomanip using iword, pword, and xalloc
-	allow to define delimiters of key/value
-
-KeyMeta(Reverse)Iterator:
-	allow iterations over metakeys
