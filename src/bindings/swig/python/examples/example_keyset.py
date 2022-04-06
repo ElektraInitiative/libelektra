@@ -23,6 +23,17 @@ ks1.remove("user:/key5")
 ks1.remove("user:/key6")
 print("")
 
+print("Alternatively you can use pop")
+ks1.extend(list_of_keys)
+print(ks1.pop())
+print(ks1.pop())
+
+print("or cut")
+ks1.extend(list_of_keys)
+print(ks1.cut(kdb.Key("user:/key6")))
+print(ks1.cut(kdb.Key("user:/key5")))
+print("")
+
 print("We can easily iterate over the keyset to check out its content:")
 for k in ks1:
 	print("  {0}".format(k))
