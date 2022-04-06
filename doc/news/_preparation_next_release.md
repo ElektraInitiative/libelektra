@@ -248,7 +248,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ## Tests
 
 - Add tests for the Error/Warnings-Factory in libtools _(Florian Lindner @flo91)_
-- <<TODO>>
+- Add tests for keySet in the python binary _(Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
