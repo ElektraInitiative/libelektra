@@ -13,7 +13,7 @@ After that you can start loading a `KDB` object as follows:
 ```java
 try (KDB kdb = KDB.open()) {
     // code to manipulate keys
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```
@@ -98,7 +98,7 @@ try (KDB kdb = KDB.open()) {
                 currentKey.getName(),              // fetch the key's name
                 currentKey.getString()));          // fetch the key's value
     }
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```
@@ -115,7 +115,7 @@ try (KDB kdb = KDB.open()) {
                 currentKey.getName(),              // fetch the key's name
                 currentKey.getString()));          // fetch the key's value
     }
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```
@@ -131,7 +131,7 @@ try (KDB kdb = KDB.open()) {
                 currentKey.getName(),              // fetch the key's name
                 currentKey.getString()));          // fetch the key's value
     }
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```
