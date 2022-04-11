@@ -21,7 +21,7 @@ changes in the Elektra state.
 
 - [ZeroMQ](http://zeromq.org/): small and popular library for pub/sub
 - [nanomsg](http://nanomsg.org/): from the same author as ZeroMQ, even smaller - http://nanomsg.org/documentation-zeromq.html
-- [redis](http://redis.io/topics/pubsub): requires a running redis server
+- [redis](https://redis.io/docs/manual/pubsub/): requires a running redis server
 - [kafka](http://kafka.apache.org/): seems too big for Elektra
 - ZeroMQ with [JSMQ](https://github.com/zeromq/JSMQ).
 

@@ -73,67 +73,30 @@ if (Java_JAVAC_EXECUTABLE)
 				set (JNA_BINDING_SOURCE_DIRECTORY_TEST ${JNA_BINDING_PREFIX}/src/test/${JNA_BINDING_NAMESPACE})
 				set (JNA_BINDING_SOURCE_DIRECTORY_TEST_PLUGIN ${JNA_BINDING_SOURCE_DIRECTORY_TEST}/plugin)
 
+				# copy the source files at configure time, so we can ask Gradle to list source files and plugin JARs
+				file (COPY "${CMAKE_CURRENT_SOURCE_DIR}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/..")
+
+				execute_process (
+					COMMAND "${CMAKE_CURRENT_BINARY_DIR}/gradlew" "-q" "printSourceFiles"
+					OUTPUT_VARIABLE JNA_BINDING_SOURCE_FILES
+					WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+				string (REPLACE "\n" ";" JNA_BINDING_SOURCE_FILES "${JNA_BINDING_SOURCE_FILES}")
+
+				execute_process (
+					COMMAND "${CMAKE_CURRENT_BINARY_DIR}/gradlew" "-q" ":plugins:printJarPaths"
+					OUTPUT_VARIABLE PLUGIN_JAR_PATHS
+					WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+				string (REPLACE "-SNAPSHOT.jar" "-${KDB_VERSION}.jar" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
+				string (REPLACE "\n" ";" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
+
 				set (
-					JNA_BINDING_SOURCE_FILES
-					${JNA_BINDING_SOURCE_DIRECTORY}/Elektra.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/ErrorCode.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/KDB.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/KDBException.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/Key.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/KeyNameIterator.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/KeyPointer.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/KeySet.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/KeySetIterator.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/NativePlugin.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/package-info.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/Plugin.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/PluginLoader.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/ReadableKey.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/ReferenceCleaner.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/ValidationUtil.java
-					${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Echo.java
-					${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/PropertiesStorage.java
-					${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Return.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/ConflictingStateException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InstallationException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InterfaceException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/InternalException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KDBClosedException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyBinaryValueException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyMetaException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyNameException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeySetException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyStringValueException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/LogicalException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/OutOfMemoryException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/package-info.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/PermanentException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/PluginMisbehaviorException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/ResourceException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/SemanticValidationException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/SyntacticValidationException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/ValidationException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/ExceptionMapperIT.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/ExceptionMapperTest.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/GOptsTest.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KDBExceptionTest.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KDBTest.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeySetTest.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/KeyTest.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST}/PluginLoaderIT.java
-					${JNA_BINDING_SOURCE_DIRECTORY_TEST_PLUGIN}/ReturnTest.java
+					EXTRA_JNA_BINDING_SOURCE_FILES
 					${JNA_BINDING_PREFIX}/build.gradle
 					${JNA_BINDING_PREFIX}/dependencies.gradle
 					plugins/build.gradle
 					plugins/dependencies.gradle
-					plugins/whitelist/src/main/java/org/libelektra/plugin/WhitelistPlugin.java
-					plugins/whitelist/src/test/java/org/libelektra/plugin/WhitelistPluginTests.java
 					process/build.gradle
 					process/dependencies.gradle
-					process/src/main/java/org/libelektra/process/Dump.java
-					process/src/main/java/org/libelektra/process/ProcessProtocol.java
-					process/src/main/java/org/libelektra/process/PluginProcess.java
 					build.gradle
 					gradle.properties
 					java-library.gradle
@@ -149,14 +112,15 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-javadoc.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-sources.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
-						"${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/process/build/libs/process-${KDB_VERSION}.jar"
+						${PLUGIN_JAR_PATHS}
 					COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}"
 						"${CMAKE_CURRENT_BINARY_DIR}"
 					COMMAND ${GRADLE_EXECUTABLE} -q --console=plain clean assemble
 					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra/test-exclusion.gradle"
-						"${CMAKE_CURRENT_BINARY_DIR}/version-settings.gradle" ${JNA_BINDING_SOURCE_FILES})
+						"${CMAKE_CURRENT_BINARY_DIR}/version-settings.gradle" ${JNA_BINDING_SOURCE_FILES}
+						${EXTRA_JNA_BINDING_SOURCE_FILES})
 
 				create_lib_symlink (libelektra-${KDB_VERSION}.jar libelektra.jar java-elektra JAVA)
 				create_lib_symlink (libelektra-${KDB_VERSION}-javadoc.jar libelektra-javadoc.jar java-elektra JAVA)
@@ -177,10 +141,13 @@ if (Java_JAVAC_EXECUTABLE)
 					DESTINATION "share/java"
 					COMPONENT java-elektra)
 
-				install (
-					FILES "${CMAKE_CURRENT_BINARY_DIR}/plugins/whitelist/build/libs/whitelist-${KDB_VERSION}.jar"
-					DESTINATION "share/java/plugins"
-					COMPONENT java-elektra)
+				foreach (PLUGIN_JAR ${PLUGIN_JAR_PATHS})
+					message (STATUS "Adding Java plugin: " "${PLUGIN_JAR}")
+					install (
+						FILES "${CMAKE_CURRENT_BINARY_DIR}/${PLUGIN_JAR}"
+						DESTINATION "share/java/plugins"
+						COMPONENT java-elektra)
+				endforeach (PLUGIN_JAR ${PLUGIN_JAR_PATHS})
 
 				# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
 				# the system
