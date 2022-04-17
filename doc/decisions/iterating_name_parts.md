@@ -2,11 +2,11 @@
 
 ## Problem
 
-While iterating over the parts of a keyname is easy (just jump from `\0` to `\0` until you hit the name size), there is no good API for it.
+While iterating over the parts of a keyname is easy for an experienced developer (just jump from `\0` to `\0` until you hit the name size), there is no good API that newcomers can use.
 
 ## Constraints
 
-No changes to the underlying APIs and
+No changes to the underlying APIs, while maintaining reasonable performance.
 
 ## Assumptions
 
@@ -46,7 +46,7 @@ const char * keyGetNextPart (Key * key, const char * currentPart);
 
 ## Rationale
 
-The function is required for a minimal API, but it is useful for people who don't know everything about the internals of Elektra.
+The function is not required for a minimal API, but it is useful for people who don't know everything about the internals of Elektra.
 
 ## Implications
 
