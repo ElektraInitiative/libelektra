@@ -22,34 +22,43 @@ doc:
 examples:
 scripts:
 src:
- c:
-  libs: one folders per library written in C, contains headers and source
-  plugins: one folder per plugin written in C
-  tools: one folder per tool written in C
-  tests: tests written in C
- rust:
-  binding: Rust binding of C API
+  include:
+   # headers that don't belong to a specific library
   libs:
-   core: Rust alternative of libelektra-core
-   _: {other libraries written in Rust}
-  _: {other folders as needed for Rust, unit tests are normally in the same file as source}
- cpp:
-  binding: C++ binding of C API
-  libs: one folder per lib, contains headers and source, written in C++
-  plugins: one folder per plugin, only plugins written in C++
-  tools: one folder per tool, only tools written in C++
-  tests: tests written in C++
- _: {
-         folders for other languages,
-         "binding" is always the folder for the binding to the C API,
-         rest depends on the language
-    }
+    core-c: C implementation of libelektra-core.so
+    core-rust: Rust implementation of libelektra-core.so
+    opts: libelektra-opts.so has only a single implementation, so no suffix
+    mount-c: mounting library written in C
+  # plugins and tools use the same suffix idea as above
+  plugins:
+  tools:
+  bindings:
+    rust: Rust bindings
+    cpp: C++ bindings
+    java: Java bindings
+  tests:
+    shell: shell script tests
+    cframework: framework for C tests
+    gtest-framework: framework for C++ tests
+    abi: ABI compatibility tests
+  # build tool configuration files to create a single root project for every language
+  # this is improves IDE support
+  CMakeLists.txt
+  build.gradle
+  Cargo.toml
 ```
 
-TODO: open questions:
+Unit tests (\*) (e.g. the old `tests/ctest`, `tests/kdb`) should be bundled with the code they are testing:
+e.g. in Rust test code is in the same file, in C/C++ it should be in the same folder and in Java a separate source set in the same module is used.
+This makes it easier to find the tests for a library, and also creates a uniform structure (in Rust or Java it would be harder to put tests into the current structure).
+System tests that test multiple components live in the `src/tests` folder.
 
-- benchmarks: separate repos with gitmodule?
-- tests for libs in C: as subfolder `src/c/libs/foo/tests` or in `src/c/tests`?
+> (\*) The term "unit test" is used very loosely here.
+> Most tests for e.g. the `kdb` tool will not, strictly speaking, be unit tests, since they don't replace dependencies with mocks/fakes and instead test the whole `kdb` tool.
+
+Benchmarks should be put into a separate git repository.
+They are not necessary for normal development and only create clutter.
+If a benchmark also serves as an example, either a separate example version should be created, or a git submodule may be used.
 
 ## Rationale
 
