@@ -16,7 +16,7 @@ public class HelloElektra {
     System.out.println("Example 2");
     Key subKey = Key.create("user:/hello_world", "Sub Key");
     subKey.addBaseName("sub_key");
-    System.out.println(subKey); // to get name
+    System.out.println(subKey.getName());
     System.out.println(subKey.getString());
     System.out.println();
 
