@@ -137,7 +137,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Java
 
-- Added a java example for meta keys _(@mandoway)_
+- Added a java example for meta keys and arrays _(@mandoway)_
 - <<TODO>>
 - <<TODO>>
 

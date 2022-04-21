@@ -1,7 +1,4 @@
-import org.libelektra.KDB;
-import org.libelektra.KDBException;
-import org.libelektra.Key;
-import org.libelektra.KeySet;
+import org.libelektra.*;
 import org.libelektra.plugin.Echo;
 
 /** Simple hello world to see how Elektra can be used in Java. */
@@ -84,6 +81,8 @@ public class HelloElektra {
     System.out.println();
 
     exampleSetMetaKeys();
+
+    exampleSetArrayMetaKey();
   }
 
   private static void exampleSetMetaKeys() {
@@ -92,6 +91,33 @@ public class HelloElektra {
     Key key = Key.create("user:/key/with/meta");
     key.setMeta("example", "anExampleValue");
     var returnedMeta = key.getMeta("example").orElseThrow(AssertionError::new);
-    System.out.println(returnedMeta.getString());
+    System.out.println("Value of meta key 'example': " + returnedMeta.getString());
+  }
+
+  private static void exampleSetArrayMetaKey() {
+    // Example 10: Create an array using meta keys
+    System.out.println("Example 10");
+    Key array = Key.create("user:/array");
+    // Create an array with length 2
+    array.setMeta("array", "#1");
+
+    Key firstEntry = Key.create("user:/array/#0/test");
+    firstEntry.setString("first");
+
+    Key secondEntry = Key.create("user:/array/#1/test");
+    secondEntry.setString("second");
+
+    KeySet ks = KeySet.create(array, firstEntry, secondEntry);
+
+    ks.forEach(
+        key -> {
+          System.out.print(key + " = " + key.getString());
+
+          System.out.print(" | Meta: ");
+          for (ReadableKey metaKey : key) {
+            System.out.print(metaKey + " = " + metaKey.getString());
+          }
+          System.out.println();
+        });
   }
 }
