@@ -121,16 +121,11 @@ public class KDBTest {
     // remove them
     try (KDB kdb = KDB.open()) {
       var keySet = kdb.get(getParentKey);
-      var keyIter = keySet.iterator();
-      while (keyIter.hasNext()) {
-        var next = keyIter.next();
-        if (next.getName().equals(key1.getName())
-            || next.getName().equals(key2.getName())
-            || next.getName().equals(key0.getName())) {
-          keyIter.remove();
-        }
-        next.release(); // optional clean-up
-      }
+
+      keySet.remove(key0);
+      keySet.remove(key1);
+      keySet.remove(key2);
+
       kdb.set(keySet, getParentKey);
       keySet.release(); // optional clean-up
     }
