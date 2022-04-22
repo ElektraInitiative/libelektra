@@ -16,15 +16,23 @@ In particular, another implementation should not need to resort to adding a smal
 
 - The constructor functions from `libelektra-core` will not or only very rarely be used directly by users.
 - For all languages supported by Elektra (including C), there is secondary library on top of `libelektra-core` that provides more idiomatic APIs.
-- Creating a key with a name, no value and no metadata and then calling `keySetValue`/`keySetMeta` does not create significant overhead compared to creating the key with value and metadata directly.
+- Creating a key with a name, no value and no metadata and then calling `keySetValue`/`keySetMeta` does not create too much overhead compared to creating the key with value and metadata directly.
 
   > **Note:** The current `keyNew` just calls `keySetValue`/`keySetMeta` internally.
+
+  The meaning of "too much" is of course a matter of definition.
+  However, if the absolute best possible performance is required, another library that directly implements the creation of keys with name, value and metadata (without calling the minimal API) can be created.
+  The minimal API should have good performance, but being minimal is prioritized over the best possible performance.
 
 ## Considered Alternatives
 
 - Create a constructor function based on heavy use of arrays and `NULL` terminators
 - A single function that takes `char * name`, `void * value` and `KeySet * meta` for Keys or a `Key **` for KeySets.
   Sizes would need to be passed as separate arguments.
+- The absolute minimal variants `Key * keyNew (void)` and `KeySet * ksNew (size_t alloc)`.
+  These have a few problems.
+  However, the main issue is that `keyNew` is essentially just an allocator that creates a key with a fixed name (e.g. `"/"`), even if you immediately change it.
+  The variant of `ksNew` would be more useful, but it is still not very user-friendly.
 
 ## Decision
 
@@ -45,7 +53,7 @@ In particular, another implementation should not need to resort to adding a smal
  *
  * The key will have no value and no metadata.
  */
-Key * elektraKeyNew (elektraNamespace ns, const char * name, size_t nameSize);
+ElektraKey * elektraKeyNew (elektraNamespace ns, const char * name, size_t nameSize);
 
 /**
  * Allocates a new keyset with space reserved for at least @p keyCount keys.
@@ -55,11 +63,13 @@ Key * elektraKeyNew (elektraNamespace ns, const char * name, size_t nameSize);
  * In other words, `NULL`s within @p keys will be ignored and if @p keys contains more than @p keyCount keys
  * the additional ones will also be ignored.
  */
-Key * elektraKeySetNew (Key ** keys, size_t keyCount);
+ElektraKey * elektraKeySetNew (ElektraKey ** keys, size_t keyCount);
 ```
 
 Other libraries will provide APIs on top of these functions.
 These functions should be more idiomatic to their target language.
+Even for C, there will likely be a more user-friendly API that allows creating keys with name, value and metadata in a single expression.
+These additional functions don't necessarily need to call `elektraKeyNew` or `elektraKeySetNew`, as long as their results are compatible.
 
 ### Language Examples
 
@@ -71,6 +81,23 @@ It is very hard to find a C API that works well in every language, but is still 
 It is much easier, to provide good APIs for a single language and build those on top of a very basic generic API.
 
 This decision also guides Elektra towards the goal of a minimal core API.
+
+### `elektraKeyNew`
+
+- We use a separate `elektraNamespace` argument, to make it easier to call the function.
+  If the namespace was embedded into the `char *` (as it is in the actual `ElektraKey` struct), then you couldn't use the enum constants in a string literal.
+- The size argument is required, because `char * name` can (and likely will) contain embedded `\0` bytes.
+  It also makes it easier to call the function from languages, that don't require strings to end in `\0`.
+
+### `elektraKeySetNew`
+
+While the `size_t keyCount` argument could be omitted and replaced with a `NULL` terminator in the `ElektraKey ** keys` argument, this would have a few disadvantages.
+First, it is very easy to forget the `NULL` terminator and cause potential segfaults.
+Second, with the separate size argument the implementation can be optimized, e.g. you don't need to iterate over `ElektraKey ** keys` just to find its size.
+Finally, the separate size argument makes it easier to call this function from other languages.
+Many languages have array types with a known length field.
+Calling something like `elektraKeySetNew (keys, keys.length)` is a bit annoying, but can easily be hidden in a wrapper function.
+With the `NULL` terminator, the wrapper function would need to allocate a new array to add the terminator.
 
 ## Implications
 
