@@ -137,7 +137,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Python
 
-- Added `.pop()` and `.cut()` examples to keySet example _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
+- Added `.pop()`, `.cut()`, `.head()` and `.tail()` examples to keySet example _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 - <<TODO>>
 
