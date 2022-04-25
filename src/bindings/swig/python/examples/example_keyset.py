@@ -36,6 +36,16 @@ ks1.append(new_key)
 print(ks1.cut(new_key))
 print("")
 
+print("You can easily access the first key of the KeySet")
+ks1.extend(list_of_keys)
+# head() returns the first key in the KeySet
+print(ks1.head())
+
+print("or the last")
+# tail() returns the last key in the KeySet
+print(ks1.tail())
+print("")
+
 print("We can easily iterate over the keyset to check out its content:")
 for k in ks1:
 	print("  {0}".format(k))
