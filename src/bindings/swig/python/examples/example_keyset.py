@@ -25,13 +25,15 @@ print("")
 
 print("Alternatively you can use pop")
 ks1.extend(list_of_keys)
+# pop() removes the last element of the KeySet and returns its value
 print(ks1.pop())
 print(ks1.pop())
 
 print("or cut")
-ks1.extend(list_of_keys)
-print(ks1.cut(kdb.Key("user:/key6")))
-print(ks1.cut(kdb.Key("user:/key5")))
+ks1.append(new_key)
+# cut(kdb::Key) removes a given kdb key from the KeySet and returns its value
+# this method takes the key itself as input parameter in contrast to remove() which takes the path as a string
+print(ks1.cut(new_key))
 print("")
 
 print("We can easily iterate over the keyset to check out its content:")
