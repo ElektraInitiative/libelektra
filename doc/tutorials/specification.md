@@ -676,10 +676,10 @@ This mechanism is similar to `mount` on Linux:
 changes made to the key database will be written to the underlying mounted file.
 If you want to learn more on mounting and mountpoints in Eletra, refer to [the documentation](https://www.libelektra.org/tutorials/mount-configuration-files).
 
-To round up this tutorial, we will `kdb umount` these two:
+To round up this tutorial, we will `kdb umount` these two mountpoints:
 
-1. `sudo kdb umount spec:/sw/org/app/\#0/current` to remove the mountpoint from `kdb spec-mount ...`
-2. `sudo kdb umount /sw/org/app/\#0/current` to remove the mountpoint from `kdb mount ...`
+1. `sudo kdb umount spec:/sw/org/app/\#0/current` to remove the mountpoint created with `kdb mount ...`
+2. `sudo kdb umount /sw/org/app/\#0/current` to remove the mountpoint created with `kdb spec-mount ...`
 
 In case something went wrong and you want to reset the whole content of your kdb,
 please refer to [the manpage of kdb reset](https://www.libelektra.org/manpages/kdb-reset).
