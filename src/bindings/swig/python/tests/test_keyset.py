@@ -130,6 +130,19 @@ class KeySet(unittest.TestCase):
 		self.assertEqual(sum(1 for _ in reversed(self.ks)), 4)
 		self.assertEqual(sum(1 for _ in kdb.KeySet(0)),     0)
 
+	def test_python_len(self):
+		ks = kdb.KeySet(0)
+		self.assertEqual(len(ks), 0)
+
+		ks.append(kdb.Key("user:/foo"))
+		self.assertEqual(len(ks), 1)
+
+	def test_python_reversed(self):
+		rcount = 3
+		for k in reversed(self.ks):
+			self.assertEqual(k, self.ks[rcount])
+			rcount -= 1
+
 	def test_python_copy(self):
 		import copy
 		# shallow copy
