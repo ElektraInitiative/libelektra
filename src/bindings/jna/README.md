@@ -17,7 +17,7 @@ You can run the `HelloElekra` example by executing:
 ./gradlew hello:run
 ```
 
-If this fails, make sure you have at least Java version 11 or higher installed.
+If this fails, make sure you have at least Java version 11 or higher installed and the `JAVA_HOME` environment variable points to its installation directory.
 
 ## Usage
 
