@@ -634,22 +634,20 @@ If you want to remove the files that were created in the course of the tutorial,
 
 ```
 sudo rm -v `kdb file spec:/tests/sw/org/app/#0/current`
-```
-
-```sh
 rm -v `kdb file user:/tests/sw/org/app/#0/current`
-```
-```
 sudo rm -v /usr/share/elektra/specification/spec.ni
 sudo rm -v /etc/spec.ni
 ```
+
 ```sh
 rm -v ./spec.ni
 sudo kdb umount /tests/sw/org/app/#0/current
 ```
+
 ```
 sudo kdb umount spec:/tests/sw/org/app/#0/current
 ```
+
 ## Summary
 
 - You set up and mounted a specification using `kdb mount` and `kdb spec-mount`.
