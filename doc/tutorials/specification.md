@@ -71,10 +71,11 @@ You also need to specify the plugin you will use for writing to the file in the 
 sudo kdb mount `pwd`/spec.ni spec:/sw/org/app/\#0/current ni
 ```
 
-> **_Attention_**: Mounting the specification supplying an absolute path
+> **_Attention_**: Mounting the specification by supplying an absolute path
 > (like in the previous example with `` `pwd` ``) is only recommended for defining
-> the specification in the first place, but not when mounting the final specification
-> for usage with the application, especially in production environments!
+> the specification in the first place.
+> It is not recommended when mounting the final specification
+> for usage with the application, especially not in production environments!
 >
 > Please read the section [Using the specification](#elektra-use-spec) at the end
 > of this document for further information.
@@ -115,8 +116,8 @@ cat $(kdb file spec:/sw/org/app/\#0/current)
 sudo kdb spec-mount /sw/org/app/\#0/current ni
 ```
 
-This specification mount makes sure that the paths where the concrete configuration should be, in this case `app.ni`,
-are ready to fulfill our specification, in this case `spec.ni`.
+This specification mount makes sure that the paths where the concrete configuration should be (`app.ni`)
+are ready to fulfill our specification (`spec.ni`).
 Be aware that different files get mounted for different namespaces.
 You've a specification file (`spec.ni`) for the `spec`-namespace and three files (`app.ni`) on different locations
 for the `dir`- `user`- and `system`-namespaces.
@@ -134,7 +135,8 @@ kdb file dir:/sw/org/app/#0/current
 # /current/working/directory/.dir/app.ni
 ```
 
-> **_Note_**: The files are created when you write to them for the first time. (e.g. with `kdb set`)
+> **_Note_**: The files only exist, when configuration values are stored there,
+> i.e. they are created on the first `kdb set` and removed with the last `kdb rm`.
 
 For more information about namespaces in Elektra please see [here](https://www.libelektra.org/manpages/elektra-namespaces),
 a tutorial about the topic is available [here](https://www.libelektra.org/tutorials/namespaces).
@@ -565,9 +567,9 @@ while installing the application and then saving changes to that copy.
 If misconfiguration occurs, you can easily look at the default specification or reapply it to start over.
 
 If you mount the specification with an absolute path (e.g. by using `` `pwd` `` in scripts),
-like it was done for defining the specification with `kbd`, the file gets changed directly.
+like it was done for defining the specification with `kdb`, the file gets changed directly.
 If `` `pwd` `` refers to the installation directory of the application, this would be totally fine,
-but if this is done during installation and `` `pwd` `` refers to the source directory, the source specification would be
+but if this is done during development and `` `pwd` `` refers to the source directory, the source specification would be
 modified via `kdb set spec:/...` calls.
 
 First we have to unmount our original configuration file we just created:
@@ -576,9 +578,10 @@ First we have to unmount our original configuration file we just created:
 sudo kdb umount spec:/sw/org/app/\#0/current
 ```
 
-The **recommended way** to do apply the specification is:
+The **recommended way** to apply the specification is:
 
 ```sh
+# choose a unique filename for your application instead of spec.ni
 sudo kdb mount spec.ni spec:/sw/org/app/\#0/current ni
 sudo kdb import spec:/sw/org/app/\#0/current ni ./spec.ni
 ```
@@ -602,7 +605,8 @@ This works like the previous snippet, except that we directly modify the spec fi
 For very big specifications this might be faster, but we get no validation that the file is actually readable
 and `./spec.ni` has to be readable by the storage plugin used with `kdb mount`.
 
-Finally, in some cases you may want to control where the mounted spec file is stored.
+Finally, in some cases you may want to control where the mounted spec file is stored
+(e.g. if you are updating a legacy application that has an existing configuration directory).
 In those cases using an absolute path is fine:
 
 ```sh
