@@ -141,7 +141,8 @@ if (ENABLE_ASAN)
 		set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "__attribute__ ((no_sanitize (\"unsigned-integer-overflow\")))")
 		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize (\"undefined\")))")
 		set (ELEKTRA_NO_SANITIZE_ADDRESS "__attribute__ ((no_sanitize (\"address\")))")
-		set (ELEKTRA_NO_SANITIZE_IMPLICIT_UNSIGNED_INTEGER_TRUNCATION "__attribute__ ((no_sanitize (\"implicit-unsigned-integer-truncation\")))")
+		set (ELEKTRA_NO_SANITIZE_IMPLICIT_UNSIGNED_INTEGER_TRUNCATION
+		     "__attribute__ ((no_sanitize (\"implicit-unsigned-integer-truncation\")))")
 	elseif (CMAKE_C_COMPILER_ID MATCHES "GNU") # others section
 		set (ELEKTRA_NO_SANITIZE_INTEGER "")
 		set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "")
