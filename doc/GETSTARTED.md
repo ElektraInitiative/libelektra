@@ -115,7 +115,7 @@ Now let's add some data to our specification:
 sudo kdb set "spec:/example/hello/what" ""
 ```
 
-As you see above we extended the the mountpoint `/example/hello` with `/what`. Our specification now requires a `what` key in the configuration.
+As you see above we extended the the mountpoint `/example/hello` with `/what`. Our specification now expects (but not requires) a `what` key in the configuration. (If you want to actually require it you need to set the metakey `meta:/require`, but more about metakeys below.)
 Note that the value is empty since we just want to specify the key.
 
 Now let's show the actual power of Elektra by setting metadata to our specification:
@@ -125,7 +125,7 @@ sudo kdb meta-set "spec:/example/hello/what" default World
 ```
 
 The metakey `default` (having the value `World`) is now associated with the key `spec:/example/hello/what`.
-It should be noted that the previous setting of `what` is in this scenario redundant and could be omitted.
+It should be noted that the previous setting of `what` is in this scenario redundant and could be omitted because this is done implicitly.
 
 Now let's mount our specification:
 
