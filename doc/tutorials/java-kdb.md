@@ -150,6 +150,19 @@ try (KDB kdb = KDB.open()) {
 }
 ```
 
+As the `KeySet` implements the `SortedSet<Key>` interface, all its methods can be used for (not only) a traversal:
+
+```java
+var keyNamespace = Key.create("user:/");           // select a namespace from which all keys should be fetched
+try (KDB kdb = KDB.open()) {
+    var keySet = kdb.get(keyNamespace);            // fetch all keys into a new key set
+    keySet.subSet(Key.create("user:/b"), Key.create("user:/k"))                                  // only select the keys starting with "user:/a" through "user:/k" (excluded).
+        .forEach(key -> System.out.printf("%s: %s%n", key.getName(), key.getString()));          // directly format-print all key value pairs using foreach
+} catch (KDBException e) {
+    e.printStackTrace();
+}
+```
+
 ### Read Multiple Keys From KDB
 
 [This](../../examples/external/java/read-keys-example) example shows how to read multiple keys. It provides comments for further clarification. Further information can be found [here](../../examples/external/java/read-keys-example/README.md).
