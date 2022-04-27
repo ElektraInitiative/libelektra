@@ -221,7 +221,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Update links from certificate section _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
-- Fix wrong KDBException reference in java tutorial _(Burkhard Hampl @bhampl and Richard Stöckl @Eiskasten)_
+- Fix wrong KDBException reference in java tutorial and improve it _(Burkhard Hampl @bhampl and Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

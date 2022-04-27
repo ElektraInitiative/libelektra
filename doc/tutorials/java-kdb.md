@@ -44,6 +44,8 @@ var parentKey = Key.create("user:/");
 kdb.get(keySet, parentKey);
 ```
 
+Note on `KDB::get`: The resulting key set may contain more keys than requested.
+
 Now we can simply fetch the desired key's value as follows:
 
 ```java
