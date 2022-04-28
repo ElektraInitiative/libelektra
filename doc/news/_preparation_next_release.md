@@ -248,7 +248,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ## Tests
 
 - Add tests for the Error/Warnings-Factory in libtools _(Florian Lindner @flo91)_
-- <<TODO>>
+- Add tests for keySet in the python binary _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 - Added test for JNA KDB which checks if both get-method implementations return the same result. _(Philipp Leeb @Gratla)_
 - <<TODO>>
