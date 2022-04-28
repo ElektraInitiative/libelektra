@@ -89,4 +89,51 @@ public class KDBTest {
     key0.release();
     getParentKey.release();
   }
+
+  @Test
+  public void test_getImplementationsEquals_shouldPass() throws KDBException {
+    var getParentKey = Key.create(PARENT_KEY_NAME);
+    var key0 = Key.create(KEY_0_NAME, KEY_0_VALUE);
+    var key1 = Key.create(KEY_1_NAME, KEY_1_VALUE);
+    var key2 = Key.create(KEY_2_NAME, KEY_2_VALUE);
+
+    try (KDB kdb = KDB.open()) {
+      var keySet = kdb.get(getParentKey);
+      keySet.append(key0).append(key1).append(key2);
+      kdb.set(keySet, getParentKey);
+    }
+
+    // now compare both get implementations
+    KeySet keySet1;
+    var keySet2 = KeySet.create();
+
+    try (KDB kdb = KDB.open()) {
+      keySet1 = kdb.get(getParentKey);
+    }
+
+    try (KDB kdb = KDB.open()) {
+      keySet2 = KeySet.create();
+      kdb.get(keySet2, getParentKey);
+    }
+
+    assertEquals(keySet1, keySet2);
+
+    // remove them
+    try (KDB kdb = KDB.open()) {
+      var keySet = kdb.get(getParentKey);
+
+      keySet.remove(key0);
+      keySet.remove(key1);
+      keySet.remove(key2);
+
+      kdb.set(keySet, getParentKey);
+      keySet.release(); // optional clean-up
+    }
+
+    // optional clean-up
+    key2.release();
+    key1.release();
+    key0.release();
+    getParentKey.release();
+  }
 }
