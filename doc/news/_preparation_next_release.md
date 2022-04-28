@@ -357,7 +357,7 @@ you up-to-date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
-- <<TODO>>
+- Overhauled the `Get Started` page by adding a brief `kdb` introduction. _(@Milangs)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
