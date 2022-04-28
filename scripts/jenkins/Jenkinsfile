@@ -688,7 +688,7 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.alpine,
     CMAKE_FLAGS_BUILD_ALL +
     CMAKE_FLAGS_BUILD_STATIC + [
-      'PLUGINS': 'ALL;',
+      'PLUGINS': 'ALL;-date',
     ],
     [TEST.ALL]
   )

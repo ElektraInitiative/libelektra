@@ -10,7 +10,7 @@ language and `kdb` to write a configuration specification for an example applica
 ### What you should already know
 
 - [how to install Elektra](https://www.libelektra.org/getstarted/guide#installation)
-- basic Elektra commands and concepts (kdb get, kdb set, kdb ls)
+- basic Elektra commands and concepts (`kdb get`, `kdb set`, `kdb ls`)
 - how to open and use a terminal
 
 ### What you’ll learn
@@ -424,7 +424,7 @@ Here you use the [check/date](https://www.libelektra.org/plugins/date) plugin wi
 You also specify a `check/date/format`. You can find all possible date formats on the [plugin page](https://www.libelektra.org/plugins/date).
 For this you can use the following commands:
 
-```sh
+```
 kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date type string
 kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date check/date ISO8601
 kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date check/date/format "calendardate complete extended"
@@ -432,7 +432,7 @@ kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date check/date/format "c
 
 Then just add examples, defaults and description as always.
 
-```sh
+```
 kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date default 2021-11-01
 kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date example 2021-01-12
 kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date description "date of the annual server and database backup"
@@ -440,14 +440,14 @@ kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date description "date of
 
 Now we add the validation plugin for dates and remount the specification:
 
-```sh
+```
 kdb meta-set spec:/tests/sw/org/app/\#0/current infos/plugins "ni type network date"
 sudo kdb spec-mount /tests/sw/org/app/\#0/current
 ```
 
 If we try to add a value that is not in the specified format, an error should get emitted.
 
-```sh
+```
 kdb set user:/tests/sw/org/app/\#0/current/backup/date "03.04.2022"
 # RET: 5
 # Sorry, module date issued the error C03100:
@@ -457,7 +457,7 @@ kdb set user:/tests/sw/org/app/\#0/current/backup/date "03.04.2022"
 To double-check if things are correct, we try to get the value from the `user`-namespace
 and via cascading lookup.
 
-```sh
+```
 kdb get user:/tests/sw/org/app/\#0/current/backup/date
 # RET: 11
 # STDERR: Did not find key 'user:/tests/sw/org/app/#0/current/backup/date'
@@ -471,7 +471,7 @@ the date that was given as default value in the specification.
 If we now use the correct format, the new date should be stored in the `user`-namespace and retrieved
 with both `kdb get` lookups.
 
-```sh
+```
 kdb set user:/tests/sw/org/app/\#0/current/backup/date "2022-04-03"
 #> Create a new key user:/tests/sw/org/app/#0/current/backup/date with string "2022-04-03"
 
@@ -484,7 +484,7 @@ kdb get /tests/sw/org/app/\#0/current/backup/date
 
 If we explicitly query the `system`-namespace, no key is found.
 
-```sh
+```
 kdb get system:/tests/sw/org/app/\#0/current/backup/date
 # RET: 11
 # STDERR: Did not find key 'system:/tests/sw/org/app/#0/current/backup/date'
@@ -495,7 +495,7 @@ kdb get system:/tests/sw/org/app/\#0/current/backup/date
 Your specification should be complete now!
 After adding all the keys that are necessary for our application, your specification should look something like this:
 
-```sh
+```
 cat $(kdb file spec:/tests/sw/org/app/\#0/current)
 
 # ;Ni1

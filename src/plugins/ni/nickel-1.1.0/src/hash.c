@@ -328,7 +328,6 @@ acceptable.  Do NOT use for cryptographic purposes.
 #if (!HASH_BIG_ENDIAN) // only if not big-endian
 ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW
 ELEKTRA_NO_SANITIZE_UNDEFINED
-ELEKTRA_NO_SANITIZE_IMPLICIT_UNSIGNED_INTEGER_TRUNCATION
 static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c; /* internal state */
@@ -888,7 +887,6 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 #if (HASH_BIG_ENDIAN) // only if big-endian
 ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW
 ELEKTRA_NO_SANITIZE_UNDEFINED
-ELEKTRA_NO_SANITIZE_IMPLICIT_UNSIGNED_INTEGER_TRUNCATION
 static uint32_t hashbig (const void * restrict key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
