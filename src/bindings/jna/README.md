@@ -17,6 +17,8 @@ You can run the `HelloElekra` example by executing:
 ./gradlew hello:run
 ```
 
+If this fails, make sure you have at least Java version 11 or higher installed and the `JAVA_HOME` environment variable points to its installation directory.
+
 ## Usage
 
 To use the bindings in a Java project, we have to include the jar file
@@ -30,7 +32,7 @@ Please note that the [JNI plugin](/src/plugins/jni) serves a different purpose. 
 use the JNI plugin to develop plugins for Elektra itself, whereas the JNA
 bindings allow to use Elektra to access configuration in Java projects. The JNI
 plugin is _not_ required for the JNA bindings to work. But, to develop
-JNI plugins, JNA can be used. [Here](libelektra/src/main/java/org/libelektra/plugin/README.md) are example
+JNI plugins, JNA can be used. [Here](libelektra/src/main/java/org/libelektra/plugin/) are example
 plugins, which need JNI at runtime.
 
 ### Command line
@@ -46,7 +48,7 @@ libelektra.jar), e.g.:
 export CLASSPATH=".:/usr/share/java/libelektra.jar:/usr/share/java/jna.jar"
 ```
 
-Then you can compile and run [HelloElektra](HelloElektra.java):
+Then you can compile and run [HelloElektra](hello/src/main/java/HelloElektra.java):
 
 ```sh
 javac HelloElektra.java && java HelloElektra
@@ -92,7 +94,7 @@ repositories {
 }
 
 dependencies {
-    implementation "org.libelektra:libelektra:0.9.7"
+    implementation "org.libelektra:libelektra:0.9.9"
 }
 ```
 
@@ -167,7 +169,7 @@ The `Plugin` interface can be used to develop your _own_ Elektra plugins written
 You have to implement the necessary methods which are of interest to you such as
 `set(KeySet ks, Key parentKey)` for plugins which should change the key database.
 We added a tutorial with more details for you [here](../../../doc/tutorials/java-plugins.md).
-You can see various examples in the [plugin folder](src/main/java/org/libelektra/plugin) like the `PropertiesStorage` plugin
+You can see various examples in the [plugin folder](libelektra/src/main/java/org/libelektra/plugin) like the `PropertiesStorage` plugin
 which can be used to save and load `.properties` files into Elektra.
 
 ## Testing
