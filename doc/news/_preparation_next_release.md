@@ -138,6 +138,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Java
 
 - Added a java example for meta keys and arrays _(@mandoway)_
+
 ### JNA
 
 - Added example which shows how to add a basename for a key. _(Philipp Leeb @Gratla)_
