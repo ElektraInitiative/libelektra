@@ -230,7 +230,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - The tutorial for [Contributing from Windows](../tutorials/contributing-windows.md) has been updated. _(@kodebach)_
-- <<TODO>>
+- The tutorial for [CLion](../tutorials/contributing-clion.md) now contains a section for setting up the WSL compiler _(@mandoway)_
 - <<TODO>>
 - Rephrased sentence in code-generator.md to enhance readability _(@Gratla)_
 - <<TODO>>
