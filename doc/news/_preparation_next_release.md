@@ -135,9 +135,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up-to-date with the multi-language support provided by Elektra.
 
-### <<Binding>>
+### JNA
 
-- <<TODO>>
+- Added example which shows how to add a basename for a key. _(Philipp Leeb @Gratla)_
 - <<TODO>>
 - <<TODO>>
 
