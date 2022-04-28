@@ -176,9 +176,8 @@ kdb get /tests/tutorial/cascading/#0/current/test
 As we used a cascading key for our override link (`/tests/overrides/test`) we can use this to allow users to provide their own `tests/overrides/test` keys. If a user sets the `/tests/overrides/test` key, the **user** namespace will be used (for a non-root user) and therefore the new target for our `/tests/tutorial/cascading/#0/current/test` key will be `user:/tests/overrides/test` instead of `system:/tests/overrides/test`.
 
 ```sh
-kdb set /tests/overrides/test "hello user"
-#> Set string to "hello user"
-#> Using name system:/tests/overrides/test
+kdb set user:/tests/overrides/test "hello user"
+#> Create a new key user:/tests/overrides/test with string "hello user"
 kdb get /tests/tutorial/cascading/#0/current/test
 #> hello user
 ```
@@ -192,14 +191,13 @@ As last part in this tutorial we remove the modifications to the database we mad
 
 ```sh
 kdb rm -r user:/tests/tutorial/
-kdb rm -r system:/tests/tutorial
-kdb rm -r system:/tests/overrides
+sudo kdb rm -r system:/tests/tutorial
+sudo kdb rm -r system:/tests/overrides
 kdb import system:/tests/overrides dump < $(kdb get user:/tests/overrides)
 rm $(kdb get user:/tests/overrides)
 kdb rm user:/tests/overrides
 
-kdb rm -r spec:/tests/tutorial/
+sudo kdb rm -r spec:/tests/tutorial/
 
-rm -r .dir/
-rmdir kdbtutorial
+rm -r kdbtutorial
 ```
