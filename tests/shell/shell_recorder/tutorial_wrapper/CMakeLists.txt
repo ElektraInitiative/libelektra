@@ -34,9 +34,13 @@ add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storag
 add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line PROPERTY LABELS memleak)
 
 if (ENABLE_ASAN)
-	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")
+	message (STATUS "Excluding Markdown Shell Recorder tests for `validation` and 'spec', as they fail with ASAN enabled")
 else (ENABLE_ASAN)
-	add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS ni validation range)
+	add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" PROPERTY LABELS memleak
+		      REQUIRED_PLUGINS ni validation range)
+	add_msr_test (tutorial_spec "${CMAKE_SOURCE_DIR}/doc/tutorials/specification.md" PROPERTY LABELS memleak REQUIRED_PLUGINS ni type
+																  network)
+
 	add_msr_test (
 		tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
 		REQUIRED_PLUGINS crypto fcrypt

@@ -200,6 +200,8 @@ you up-to-date with the multi-language support provided by Elektra.
 - Python: add guide for Debian 11 (bullseye) _(Lukas Hartl @lukashartl)_
 - Fix some errors in the tutorials `Cascading Lookups` and `Command-line Options` _(Florian Lindner @flo91)_
 - <<TODO>>
+- Extend and update the tutorial for writing specifications,
+  add section about using specs in production _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -207,6 +209,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Improve jna documentation _(Burkhard Hampl @bhampl)_
 - <<TODO>>
 - Add Stream API example in Java binding documentation _(Richard Stöckl @Eiskasten)_
+- Add Stream API example in Java binding documentation \_(Richard Stöckl @Eiskasten)
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
