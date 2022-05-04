@@ -207,7 +207,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Extend and update the tutorial for writing specifications,
   add section about using specs in production _(Florian Lindner @flo91)_
 - <<TODO>>
-- <<TODO>>
+- Add Readme for upcoming LDIF storage plugin _(Burkhard Hampl @bhampl and Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - Improve jna documentation _(Burkhard Hampl @bhampl)_
