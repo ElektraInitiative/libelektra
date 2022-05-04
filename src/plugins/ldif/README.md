@@ -8,11 +8,10 @@ The LDIF format is defined [here](https://datatracker.ietf.org/doc/html/rfc2849)
 
 The plugin itself is implemented in the C programming languages.
 
-
 ## Scope
 
-* Reading LDIF files
-* Writing LDIF files
+- Reading LDIF files
+- Writing LDIF files
 
 ### Additional Keys
 
@@ -47,5 +46,5 @@ The `libldap` is developed within OpenLDAP which exists since 1998 and is used i
 So using it allows us using C and a library which is installed on the vast majority on Linux systems.
 
 ## Team
-The team consists of the members @bhampl and @Eiskasten.
 
+The team consists of the members @bhampl and @Eiskasten.
