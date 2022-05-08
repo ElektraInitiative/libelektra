@@ -2,6 +2,7 @@ package org.libelektra.plugin;
 
 import org.libelektra.Key;
 import org.libelektra.KeySet;
+import org.libelektra.Plugin;
 
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class SortedMetadata {
 
     public static void appendAllTo(KeySet keySet) {
         valuesByKeyName.forEach((key, value) -> keySet.append(
-                Key.create(key, value)
+                Key.create(Plugin.PROCESS_CONTRACT_ROOT + key, value)
         ));
     }
 }

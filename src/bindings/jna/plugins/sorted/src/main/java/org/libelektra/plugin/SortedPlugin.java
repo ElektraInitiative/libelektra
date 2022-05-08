@@ -31,7 +31,7 @@ public class SortedPlugin implements Plugin {
     }
 
     @Override
-    public int get(KeySet keySet, Key parentKey) throws KDBException {
+    public int get(KeySet keySet, Key parentKey) {
         if (isPluginMetadataRequested(parentKey)) {
             SortedMetadata.appendAllTo(keySet);
         }
@@ -107,7 +107,7 @@ public class SortedPlugin implements Plugin {
     private int parseArrayIndex(String key, String prefix) {
         return Integer.parseInt(
                 key
-                        .substring(prefix.length())
+                        .substring(prefix.length() + 1)
                         .split("/")[0]
                         .replaceAll("#", "")
                         .replaceAll("_", "")
@@ -115,7 +115,7 @@ public class SortedPlugin implements Plugin {
     }
 
     private Direction getDirection(Key key) throws IllegalArgumentException {
-        Optional<ReadableKey> sortedDirectionMeta = key.getMeta(META_SORTED);
+        Optional<ReadableKey> sortedDirectionMeta = key.getMeta(META_SORTED_DIRECTION);
         Direction direction = Direction.ASC;
 
         if (sortedDirectionMeta.isPresent()) {
