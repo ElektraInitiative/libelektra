@@ -64,7 +64,7 @@ public class SortedPluginTest {
     }
 
     @Test
-    public void givenAnUnsortedKeySet_whenSet_shouldReturnError() throws KDBException {
+    public void givenAnUnsortedKeySet_whenSet_shouldReturnErrorAndSetErrorMeta() throws KDBException {
         // given
         var keySet = givenAnUnsortedSetByPrimitiveInt();
         var key = givenParentKey();
@@ -75,5 +75,32 @@ public class SortedPluginTest {
         // then
         assertEquals(Plugin.STATUS_ERROR, result);
         assertTrue(key.getMeta("error").isPresent());
+    }
+
+    @Test
+    public void givenASortedKeySet_whenGet_shouldReturnSuccess() throws KDBException {
+        // given
+        var keySet = givenASortedSetByPrimitiveInt();
+        var key = givenParentKey();
+
+        // when
+        int result = plugin.get(keySet, key);
+
+        // then
+        assertEquals(Plugin.STATUS_SUCCESS, result);
+    }
+
+    @Test
+    public void givenAnUnsortedKeySet_whenGet_shouldReturnSuccessAndSetWarningMeta() throws KDBException {
+        // given
+        var keySet = givenAnUnsortedSetByPrimitiveInt();
+        var key = givenParentKey();
+
+        // when
+        int result = plugin.get(keySet, key);
+
+        // then
+        assertEquals(Plugin.STATUS_SUCCESS, result);
+        assertTrue(key.getMeta("warnings").isPresent());
     }
 }

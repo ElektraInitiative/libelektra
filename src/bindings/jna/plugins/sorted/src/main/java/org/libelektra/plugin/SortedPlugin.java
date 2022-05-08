@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class SortedPlugin implements Plugin {
@@ -36,7 +37,7 @@ public class SortedPlugin implements Plugin {
             SortedMetadata.appendAllTo(keySet);
         }
 
-        // todo add validation and possibly a warning
+        checkForSortingErrors(keySet, parentKey, parentKey::addWarning);
 
         return STATUS_SUCCESS;
     }
@@ -47,10 +48,10 @@ public class SortedPlugin implements Plugin {
 
     @Override
     public int set(KeySet keySet, Key parentKey) throws KDBException {
-        return validateSorted(keySet, parentKey) ? STATUS_ERROR : STATUS_SUCCESS;
+        return checkForSortingErrors(keySet, parentKey, parentKey::setError) ? STATUS_ERROR : STATUS_SUCCESS;
     }
 
-    private boolean validateSorted(KeySet keySet, Key parentKey) {
+    private boolean checkForSortingErrors(KeySet keySet, Key parentKey, BiFunction<ErrorCode, String, Key> addErrorFunction) {
         AtomicBoolean foundError = new AtomicBoolean(false);
 
         keySet.forEach(key -> {
@@ -63,18 +64,23 @@ public class SortedPlugin implements Plugin {
                 try {
                     direction = getDirection(key);
                 } catch (IllegalArgumentException e) {
-                    parentKey.setError(
+                    var invalidDirection = e.getMessage().substring(
+                            e.getMessage().lastIndexOf(".")
+                    );
+                    addErrorFunction.apply(
                             ErrorCode.VALIDATION_SEMANTIC,
-                            "Invalid direction for sorted plugin in key '" + key.getName() + "':" + e.getMessage());
+                            "Invalid direction for sorted plugin in key '" + key.getName() + "':" + invalidDirection
+                    );
                     foundError.set(true);
                 }
 
                 List<Key> arrayKeys = getSortedArrayKeys(keySet, key);
 
                 if (!isSorted(arrayKeys)) {
-                    parentKey.setError(
+                    addErrorFunction.apply(
                             ErrorCode.VALIDATION_SEMANTIC,
-                            "Values are not sorted below key '" + key.getName() + "'");
+                            "Values are not sorted below key '" + key.getName() + "'"
+                    );
                     foundError.set(true);
                 }
             }
@@ -121,11 +127,7 @@ public class SortedPlugin implements Plugin {
         if (sortedDirectionMeta.isPresent()) {
             String sortedDirectionKey = sortedDirectionMeta.get().getString();
 
-            if (Direction.DESC.toString().toLowerCase().equals(sortedDirectionKey)) {
-                direction = Direction.DESC;
-            } else if (!Direction.ASC.toString().toLowerCase().equals(sortedDirectionKey)) {
-                throw new IllegalArgumentException(sortedDirectionKey);
-            }
+            return Direction.valueOf(sortedDirectionKey.toUpperCase());
         }
 
         return direction;
