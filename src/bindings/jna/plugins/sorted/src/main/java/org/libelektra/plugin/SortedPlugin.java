@@ -31,7 +31,17 @@ public class SortedPlugin implements Plugin {
 
     @Override
     public int get(KeySet keySet, Key parentKey) throws KDBException {
-        return 0;
+        if (isPluginMetadataRequested(parentKey)) {
+            SortedMetadata.appendAllTo(keySet);
+        }
+
+        // todo add validation and possibly a warning
+
+        return STATUS_SUCCESS;
+    }
+
+    private boolean isPluginMetadataRequested(Key parentKey) {
+        return parentKey.isBelowOrSame(Key.create(PROCESS_CONTRACT_ROOT));
     }
 
     @Override

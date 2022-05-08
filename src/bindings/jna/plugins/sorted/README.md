@@ -1,0 +1,11 @@
+> - infos = Sorted Java Plugin, loaded by process plugin  
+> - infos/author = Markus Bointner <e11808221@student.tuwien.ac.at>, Philipp Leeb <e11808219@student.tuwien.ac.at>  
+> - infos/license = BSD  
+> - infos/provides = check  
+> - infos/placements = presetstorage postgetstorage  
+> - infos/metadata = check/sorted check/sorted/direction  
+> - infos/description = Enforces a given order of array elements based on a custom defined key or primitive values  
+> - infos/status = experimental  
+> - infos/version = 1  
+> - exports/has/set = 1  
+> - exports/has/get = 1  
