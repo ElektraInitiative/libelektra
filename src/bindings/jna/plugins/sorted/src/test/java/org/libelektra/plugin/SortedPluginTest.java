@@ -51,40 +51,12 @@ public class SortedPluginTest {
     }
 
     @Test
-    public void givenASortedKeySet_whenSet_shouldReturnSuccess() throws KDBException {
-        // given
-        var keySet = givenASortedSetByPrimitiveInt();
-        var key = givenParentKey();
-
-        // when
-        int result = plugin.set(keySet, key);
-
-        // then
-        assertEquals(Plugin.STATUS_SUCCESS, result);
-    }
-
-    @Test
-    public void givenAnUnsortedKeySet_whenSet_shouldReturnErrorAndSetErrorMeta() throws KDBException {
-        // given
-        var keySet = givenAnUnsortedSetByPrimitiveInt();
-        var key = givenParentKey();
-
-        // when
-        int result = plugin.set(keySet, key);
-
-        // then
-        assertEquals(Plugin.STATUS_ERROR, result);
-        assertTrue(key.getMeta("error").isPresent());
-    }
-
-    @Test
     public void givenASortedKeySet_whenGet_shouldReturnSuccess() throws KDBException {
         // given
-        var keySet = givenASortedSetByPrimitiveInt();
-        var key = givenParentKey();
+        var keySetWrapper = givenASortedSetByPrimitiveInt();
 
         // when
-        int result = plugin.get(keySet, key);
+        int result = plugin.get(keySetWrapper.keySet, keySetWrapper.parentKey);
 
         // then
         assertEquals(Plugin.STATUS_SUCCESS, result);
@@ -93,14 +65,50 @@ public class SortedPluginTest {
     @Test
     public void givenAnUnsortedKeySet_whenGet_shouldReturnSuccessAndSetWarningMeta() throws KDBException {
         // given
-        var keySet = givenAnUnsortedSetByPrimitiveInt();
-        var key = givenParentKey();
+        var keySetWrapper = givenAnUnsortedSetByPrimitiveInt();
 
         // when
-        int result = plugin.get(keySet, key);
+        int result = plugin.get(keySetWrapper.keySet, keySetWrapper.parentKey);
 
         // then
         assertEquals(Plugin.STATUS_SUCCESS, result);
-        assertTrue(key.getMeta("warnings").isPresent());
+        assertTrue(keySetWrapper.parentKey.getMeta("warnings").isPresent());
+    }
+
+    @Test
+    public void givenASortedKeySet_whenSet_shouldReturnSuccess() throws KDBException {
+        // given
+        var keySetWrapper = givenASortedSetByPrimitiveInt();
+
+        // when
+        int result = plugin.set(keySetWrapper.keySet, keySetWrapper.parentKey);
+
+        // then
+        assertEquals(Plugin.STATUS_SUCCESS, result);
+    }
+
+    @Test
+    public void givenAnUnsortedKeySet_whenSet_shouldReturnErrorAndSetErrorMeta() throws KDBException {
+        // given
+        var keySetWrapper = givenAnUnsortedSetByPrimitiveInt();
+
+        // when
+        int result = plugin.set(keySetWrapper.keySet, keySetWrapper.parentKey);
+
+        // then
+        assertEquals(Plugin.STATUS_ERROR, result);
+        assertTrue(keySetWrapper.parentKey.getMeta("error").isPresent());
+    }
+
+    @Test
+    public void givenADescendingSortedKeySet_whenSet_shouldReturnSuccess() throws KDBException {
+        // given
+        var keySetWrapper = givenADescendingSortedSetByPrimitiveInt();
+
+        // when
+        int result = plugin.set(keySetWrapper.keySet, keySetWrapper.parentKey);
+
+        // then
+        assertEquals(Plugin.STATUS_SUCCESS, result);
     }
 }

@@ -6,18 +6,24 @@ import org.libelektra.Plugin;
 
 import static org.libelektra.Plugin.PROCESS_CONTRACT_ROOT;
 
+@SuppressWarnings("SameParameterValue")
 public class TestData {
     private static final String parentKeyName = "/test/plugin/sorted";
 
-    public static Key givenParentKey() {
-        return Key.create(parentKeyName);
+    public static class KeySetWrapper {
+        public final Key parentKey;
+        public final KeySet keySet;
+
+        KeySetWrapper(Key parentKey, Key ...keys) {
+            this.parentKey = parentKey;
+            this.keySet = KeySet.create(
+                    keys
+            ).append(parentKey);
+        }
     }
 
-    @SuppressWarnings("SameParameterValue")
     private static Key getParentKeyWith(String arraySize) {
-        return Key.create(parentKeyName)
-                .setMeta("array", arraySize)
-                .setMeta("check/sorted", "");
+        return getParentKeyWith(arraySize, "");
     }
 
     private static Key getParentKeyWith(String arraySize, String sortKey) {
@@ -33,8 +39,8 @@ public class TestData {
                 .setMeta("check/sorted/direction", direction);
     }
 
-    public static KeySet givenASortedSetByPrimitiveInt() {
-        return KeySet.create(
+    public static KeySetWrapper givenASortedSetByPrimitiveInt() {
+        return new KeySetWrapper(
                 getParentKeyWith("#2"),
                 Key.create(parentKeyName + "/#0", "0"),
                 Key.create(parentKeyName + "/#1", "1"),
@@ -42,12 +48,21 @@ public class TestData {
         );
     }
 
-    public static KeySet givenAnUnsortedSetByPrimitiveInt() {
-        return KeySet.create(
+    public static KeySetWrapper givenAnUnsortedSetByPrimitiveInt() {
+        return new KeySetWrapper(
                 getParentKeyWith("#2"),
                 Key.create(parentKeyName + "/#0", "3"),
                 Key.create(parentKeyName + "/#1", "1"),
                 Key.create(parentKeyName + "/#2", "2")
+        );
+    }
+
+    public static KeySetWrapper givenADescendingSortedSetByPrimitiveInt() {
+        return new KeySetWrapper(
+                getParentKeyWith("#2", "", "desc"),
+                Key.create(parentKeyName + "/#0", "3"),
+                Key.create(parentKeyName + "/#1", "2"),
+                Key.create(parentKeyName + "/#2", "1")
         );
     }
 

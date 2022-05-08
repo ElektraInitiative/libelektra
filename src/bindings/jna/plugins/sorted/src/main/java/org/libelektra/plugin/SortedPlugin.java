@@ -60,7 +60,7 @@ public class SortedPlugin implements Plugin {
             if (sortedMeta.isPresent()) {
                 String sortedKeyValue = sortedMeta.get().getString(); // TODO: Primitive/Complex types
 
-                Direction direction = Direction.ASC;    // TODO: Use direction
+                Direction direction = Direction.ASC;
                 try {
                     direction = getDirection(key);
                 } catch (IllegalArgumentException e) {
@@ -74,7 +74,7 @@ public class SortedPlugin implements Plugin {
                     foundError.set(true);
                 }
 
-                List<Key> arrayKeys = getSortedArrayKeys(keySet, key);
+                List<Key> arrayKeys = getSortedArrayKeys(keySet, key, direction);
 
                 if (!isSorted(arrayKeys)) {
                     addErrorFunction.apply(
@@ -95,7 +95,7 @@ public class SortedPlugin implements Plugin {
                 .equals(arrayKeys);
     }
 
-    private List<Key> getSortedArrayKeys(KeySet keySet, Key parentKey) {
+    private List<Key> getSortedArrayKeys(KeySet keySet, Key parentKey, Direction direction) {
         return keySet.stream()
                 .filter(it -> it.getName().startsWith(parentKey.getName() + "/#"))
                 .sorted((o1, o2) -> {
@@ -105,7 +105,14 @@ public class SortedPlugin implements Plugin {
                     if (index1 == index2)
                         return 0;
 
-                    return index1 < index2 ? -1 : 1;
+                    switch (direction) {
+                        case ASC:
+                            return index1 < index2 ? -1 : 1;
+                        case DESC:
+                            return index1 > index2 ? -1 : 1;
+                        default:
+                            throw new IllegalStateException("Enum switch reached illegal default state, was a new Direction added?");
+                    }
                 })
                 .collect(Collectors.toList());
     }
