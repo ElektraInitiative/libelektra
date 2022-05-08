@@ -6,12 +6,22 @@ import org.libelektra.KeySet;
 import org.libelektra.Plugin;
 
 import javax.annotation.Nonnull;
+import java.util.regex.Pattern;
 
 public class SortedPlugin implements Plugin {
+
+    private static final String PLUGIN_NAME = "Sorted";
+    private static final Pattern META_SORTED = Pattern.compile("meta:/check/sorted");
+    private static final Pattern META_SORTED_DIRECTION = Pattern.compile("meta:/check/sorted/direction");
+
+    private enum Direction {
+        ASC, DESC
+    }
+
     @Nonnull
     @Override
     public String getName() {
-        return null;
+        return PLUGIN_NAME;
     }
 
     @Override
