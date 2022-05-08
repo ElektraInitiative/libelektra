@@ -16,7 +16,7 @@ public class SortedPlugin implements Plugin {
 
     @Override
     public int open(KeySet config, Key errorKey) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -31,11 +31,11 @@ public class SortedPlugin implements Plugin {
 
     @Override
     public int error(KeySet keySet, Key parentKey) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int close(Key parentKey) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 }
