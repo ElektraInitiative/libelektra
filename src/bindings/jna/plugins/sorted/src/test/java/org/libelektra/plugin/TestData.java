@@ -66,6 +66,30 @@ public class TestData {
         );
     }
 
+    public static KeySetWrapper givenASortedSetByComplexInt() {
+        return new KeySetWrapper(
+                getParentKeyWith("#2", "/key", "asc"),
+                Key.create(parentKeyName + "/#0", "a"),
+                Key.create(parentKeyName + "/#1", "c"),
+                Key.create(parentKeyName + "/#2", "b"),
+                Key.create(parentKeyName + "/#0/key", "1"),
+                Key.create(parentKeyName + "/#1/key", "2"),
+                Key.create(parentKeyName + "/#2/key", "3")
+        );
+    }
+
+    public static KeySetWrapper givenAUnsortedSetByComplexInt() {
+        return new KeySetWrapper(
+                getParentKeyWith("#2", "/key", "asc"),
+                Key.create(parentKeyName + "/#0", "a"),
+                Key.create(parentKeyName + "/#1", "b"),
+                Key.create(parentKeyName + "/#2", "c"),
+                Key.create(parentKeyName + "/#0/key", "1"),
+                Key.create(parentKeyName + "/#1/key", "3"),
+                Key.create(parentKeyName + "/#2/key", "2")
+        );
+    }
+
     public static KeySet givenEmptyKeySet() {
         return KeySet.create();
     }

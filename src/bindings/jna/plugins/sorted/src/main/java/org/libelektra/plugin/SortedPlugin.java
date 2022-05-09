@@ -58,7 +58,7 @@ public class SortedPlugin implements Plugin {
             Optional<ReadableKey> sortedMeta = key.getMeta(META_SORTED);
 
             if (sortedMeta.isPresent()) {
-                String sortedKeyValue = sortedMeta.get().getString(); // TODO: Primitive/Complex types
+                String sortedKeyValue = sortedMeta.get().getString();
 
                 Direction direction = Direction.ASC;
                 try {
@@ -76,7 +76,7 @@ public class SortedPlugin implements Plugin {
 
                 List<Key> arrayKeys = getSortedArrayKeys(keySet, key, direction);
 
-                if (!isSorted(arrayKeys)) {
+                if (!isSorted(arrayKeys, key.getName() + "/#_*\\d*" + sortedKeyValue)) {
                     addErrorFunction.apply(
                             ErrorCode.VALIDATION_SEMANTIC,
                             "Values are not sorted below key '" + key.getName() + "'"
@@ -88,11 +88,16 @@ public class SortedPlugin implements Plugin {
         return foundError.get();
     }
 
-    private boolean isSorted(List<Key> arrayKeys) {
-        return arrayKeys.stream()
+    private boolean isSorted(List<Key> arrayKeys, String pathRegex) {
+
+        List<Key> filtered = arrayKeys.stream()
+                .filter(it -> it.getName().matches(pathRegex))
+                .collect(Collectors.toList());
+
+        return filtered.stream()
                 .sorted(Comparator.comparing(ReadableKey::getString))
                 .collect(Collectors.toList())
-                .equals(arrayKeys);
+                .equals(filtered);
     }
 
     private List<Key> getSortedArrayKeys(KeySet keySet, Key parentKey, Direction direction) {

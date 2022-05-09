@@ -111,4 +111,29 @@ public class SortedPluginTest {
         // then
         assertEquals(Plugin.STATUS_SUCCESS, result);
     }
+
+    @Test
+    public void givenASortedKeySetWithComplexSortedKey_whenSet_shouldReturnSuccess() throws KDBException {
+        // given
+        var keySetWrapper = givenASortedSetByComplexInt();
+
+        // when
+        int result = plugin.set(keySetWrapper.keySet, keySetWrapper.parentKey);
+
+        // then
+        assertEquals(Plugin.STATUS_SUCCESS, result);
+    }
+
+    @Test
+    public void givenAUnsortedKeySetWithComplexSortedKey_whenSet_shouldReturnSuccess() throws KDBException {
+        // given
+        var keySetWrapper = givenAUnsortedSetByComplexInt();
+
+        // when
+        int result = plugin.set(keySetWrapper.keySet, keySetWrapper.parentKey);
+
+        // then
+        assertEquals(Plugin.STATUS_ERROR, result);
+        assertTrue(keySetWrapper.parentKey.getMeta("error").isPresent());
+    }
 }
