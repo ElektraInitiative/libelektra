@@ -84,6 +84,12 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Java
+
+- Added new sorted plugin _(@mandoway @Gratla)_
+- <<TODO>>
+- <<TODO>>
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
