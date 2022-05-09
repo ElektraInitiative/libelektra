@@ -22,7 +22,7 @@ The plugin will then assume the array elements are primitive types (e.g. string 
 If the array elements are not primitive types and have sub-keys, it is possible to provide a name to this sub-key.
 E.g. to sort by a sub-key `/nr`: 
 
-``check/sorted = nr``
+``check/sorted = /nr``
 
 It is also possible to change the sorting direction by setting the key `check/sorted/direction` to either *asc* or *desc*.
 
