@@ -53,11 +53,11 @@ The python plugin supports following optional configuration values/flags:
 Python scripts must implement a class called `ElektraPlugin` with one parameter.
 The class itself can implement the following functions
 
-- open(self, config, errorKey)
-- get(self, returned, parentKey)
-- set(self, returned, parentKey)
-- error(self, returned, parentKey)
-- close(self, errorKey)
+- `open(self, config, errorKey)`
+- `get(self, returned, parentKey)`
+- `set(self, returned, parentKey)`
+- `error(self, returned, parentKey)`
+- `close(self, errorKey)`
 
 where _config_ & _returned_ are KeySets and _errorKey_ & _parentKey_ are Keys.
 For the return codes of the functions, the same rules as for normal plugins apply.
@@ -76,20 +76,45 @@ import kdb
 An example script that prints some information for each method call would be:
 
 ```py
+import kdb
+
 class ElektraPlugin(object):
     def open(self, config, errorKey):
+        """
+        returns
+          * 0: no error
+          * -1: error during initialization
+        """
         print("Python script method 'open' called")
         return 0
 
     def get(self, returned, parentKey):
+        """
+        returns
+          * 1: on success
+          * 0: nothing was to do
+          * -1: failure
+        """
         print("Python script method 'get' called")
         return 1
 
     def set(self, returned, parentKey):
+        """
+        returns
+          * 1: on success
+          * 0: nothing was to do
+          * -1: failure
+        """
         print("Python script method 'set' called")
         return 1
 
     def error(self, returned, parentKey):
+        """
+        returns
+          * 1: on success
+          * 0: on success with no action
+          * -1: failure
+        """
         print("Python script method 'error' called")
         return 1
 
