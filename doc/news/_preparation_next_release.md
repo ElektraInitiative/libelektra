@@ -237,6 +237,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- More decisions _(@kodebach)_
 
 ### Tutorials
 
@@ -256,7 +257,6 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Update [FAQ](/doc/help/elektra-faq.md). _(Markus Raab)_
-- More decisions _(@kodebach)_
 
 ## Tests
 
