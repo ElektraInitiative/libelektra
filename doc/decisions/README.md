@@ -55,6 +55,8 @@ section here.
 - [Capabilities](capabilities.md)
 - [Make elektraMalloc et al. private](elektra_malloc.md)
 - [Elektra Prefix](elektra_prefix.md)
+- [Iterating Key Name Parts](iterating_name_parts.md)
+- [`keyIsBelow`](key_below.md)
 
 ## In Progress
 
