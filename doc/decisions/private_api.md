@@ -20,26 +20,6 @@ Only `libelektra-core` is supposed to access private data but this contradicts t
 
 - Also allow other libraries (e.g. a new `libelektra-operations`) to access to non-public API.
 - Put struct definitions of Key/KeySet in a separate header file, which gets included by parts that need it (see also [Header File Structure](header_file_structure.md)).
-- Define the current API/ABI version of Elektra as
-
-  ```c
-  // all defined in libelektra-core.so
-  extern const uint16_t ELEKTRA_VERSION_MAJOR;
-  extern const uint8_t ELEKTRA_VERSION_MINOR;
-  extern const uint8_t ELEKTRA_VERSION_PATCH;
-  ```
-
-  in the public API or alternatively,
-
-  ```c
-  extern const uint32_t ELEKTRA_VERSION; // defined in libelektra-core.so
-
-  #define ELEKTRA_VERSION_MAJOR (((ELEKTRA_VERSION) & 0xFFFF0000) >> 16)
-  #define ELEKTRA_VERSION_MINOR (((ELEKTRA_VERSION) & 0x0000FF00) >> 8)
-  #define ELEKTRA_VERSION_PATCH (((ELEKTRA_VERSION) & 0x000000FF) >> 0)
-  ```
-
-  if this uses fewer bytes in the `.so` file.
 
 - Plugins can define compatible ranges of core API version via the contract. This version is checked during `elektraPluginOpen` by `libelektra-kdb`.
 
