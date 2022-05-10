@@ -48,6 +48,12 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### Python
+
+- Added new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
+- <<TODO>>
+- <<TODO>>
+
 ### <<Plugin>>
 
 - <<TODO>>
