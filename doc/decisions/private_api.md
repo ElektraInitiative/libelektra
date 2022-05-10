@@ -2,7 +2,7 @@
 
 ## Problem
 
-Only `libelektra-core` is supposed to access private data but this contradicts the goal to keep the library minimal.
+Only `libelektra-core` is supposed to access private data, but this contradicts the goal to keep the library minimal.
 `kdbprivate.h` was too generic, it contained many other parts next to the struct definitions of Key/KeySet.
 
 ## Constraints

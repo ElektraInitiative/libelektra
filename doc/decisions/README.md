@@ -57,6 +57,8 @@ section here.
 - [Elektra Prefix](elektra_prefix.md)
 - [Iterating Key Name Parts](iterating_name_parts.md)
 - [`keyIsBelow`](key_below.md)
+- [Private API](private_api.md)
+- [Library Directory Structure](library_directory_structure.md)
 
 ## In Progress
 
@@ -74,12 +76,10 @@ section here.
 - [Error Handling](error_handling.md)
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
-- [Library Split](library_split.md)
 
 ## Drafts
 
 - [Notifications](notifications.md)
-- [Library Directory Structure](library_directory_structure.md)
 - [Header File Structure](header_file_structure.md)
 
 ## Delayed

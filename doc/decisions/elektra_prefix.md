@@ -12,7 +12,6 @@ Some names, such as kdbOpen, keyNew are so generic that other libraries might al
 
 ## Assumptions
 
-
 ## Considered Alternatives
 
 - leave it as is
