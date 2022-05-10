@@ -1,4 +1,4 @@
-FROM fedora:35
+FROM fedora:36
 
 RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
@@ -16,7 +16,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         git \
         glib2 \
         gpgme-devel \
-        java-11-openjdk-devel \
+        java-17-openjdk-devel \
         jna \
         libasan \
         libcurl-devel \

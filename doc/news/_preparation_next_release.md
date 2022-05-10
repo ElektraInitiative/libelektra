@@ -357,6 +357,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Cirrus
 
 - Update FreeBSD images to 13.1 and 12.3 and update packages before builds. _(Mihael Pranjić @mpranj)_
+- Bump Fedora builds to Fedora 36. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
