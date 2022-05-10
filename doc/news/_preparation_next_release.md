@@ -211,6 +211,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - <<TODO>>
+- Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
