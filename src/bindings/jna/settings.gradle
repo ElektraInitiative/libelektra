@@ -7,3 +7,5 @@ include 'libelektra'
 include 'process'
 include 'plugins:whitelist'
 include 'plugins:linkchecker'
+include 'kotlin'
+

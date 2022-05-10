@@ -1,0 +1,9 @@
+dependencies {
+    // Aligns all kotlin components
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+
+    // Include java libelektra
+    implementation project(":libelektra")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+}
