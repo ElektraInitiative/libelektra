@@ -66,10 +66,6 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
 
   This would just create inconsistent code.
 
-- Always use `<>`:
-
-  This can make things more difficult than necessary. We wouldn't utilize the common "relative path" behaviour. Therefore, user code must have all the same directories in the include-paths as our code (translated to their installed counterparts).
-
 - Put all headers into one directory and use the same relative layout as will be installed. Then use `""`:
 
   This makes for an inconvenient development experience. It is also pretty hard to achieve for plugins and private headers would clutter the include-directory.
@@ -78,25 +74,20 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
 
 The rules for including headers are:
 
-- Including another header from the current directory is done with:
+- To include a private non-installed header (i.e. a file that is only available in the source repo) use:
   ```c
   #include "header.h"
-  ```
-- Including another header from a subdirectory of the current one (e.g. from a third-party library whose code was copied into the repo) is done with:
-  ```c
+  // or
   #include "subdir/header.h"
   ```
-- Including a header from another library within the Elektra codebase, is done with:
+  It should not be necessary, to include a private non-installed header from another directory (i.e. `../` shouldn't be needed).
+- Installed headers are included with their full path as if they are installed already:
   ```c
-  #include <elektra/otherlib/header.h>
+  #include <elektra/somelib.h>
+  // or
+  #include <elektra/somelib/header.h>
   ```
-  > **Note:** Only installed headers may be included this way. Including non-installed headers from another library breaks modularization.
-- Including Elektra library headers from a plugin/tool, is done with:
-  ```c
-  #include <elektra/thelib/header.h>
-  ```
-  In other words, plugins/tools are treated as external and must use the same rules that apply to a client application.
-- Including system headers and headers from external third-party libraries is done with:
+- System headers or headers for external libraries are included with:
   ```c
   #include <stdlib.h>
   #include <dbus/dbus.h>
@@ -110,11 +101,12 @@ We will enforce that `#include ""` cannot go from one library/plugin/tool to ano
 
 ## Rationale
 
-- With the new [Library Directory Structure](library_directory_structure.md) using relative imports is more convenient.
-  Since we no longer have everything in one folder, the required paths with `<>` would be longer and all have an unnecessary prefix.
-  As a side effect the difference between `""` and `<>` also documents which headers are part of the same library and which are not.
-- When using `<>` the given paths must match the way the headers will be installed, relative to the include-root (e.g. `/usr/include`).
-  But with `""`, we just need to set up CMake correctly to preserve the relative file layout of our header files.
+When using `<>` the given paths must match the way the headers will be installed, relative to the include-root (e.g. `/usr/include`).
+But with `""`, we just need to set up CMake correctly to preserve the relative file layout of our header files during install.
+
+The decision highlights the difference between installed and non-installed headers.
+The main driving factor for using `""` at all was that including a non-installed private header with `<>` would be unexpected.
+Since non-installed headers shouldn't be in the (standard) include-path.
 
 See also considered alternatives.
 
