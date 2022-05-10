@@ -71,7 +71,6 @@ For example, `src/java` might be organized as a single Gradle project with subpr
 
 ## Related Decisions
 
-- [Header Include](header_include.md)
 - [Header File Structure](header_file_structure.md)
 
 ## Notes

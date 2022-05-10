@@ -2,7 +2,9 @@ This folder contains the core libraries of Elektra.
 
 # Content
 
-Since [0.8.15](/doc/decisions/library_split.md) this folder
+TODO: _Outdated_
+
+Since 0.8.15 this folder
 contains multiple libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)

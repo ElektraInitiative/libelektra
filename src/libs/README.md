@@ -26,7 +26,9 @@ Usage examples:
 
 ## Base Elektra Libraries
 
-Since version **[0.8.15](/doc/decisions/library_split.md)** **[libelektra](elektra/)**
+TODO: _Outdated_
+
+Since version **0.8.15** **[libelektra](elektra/)**
 is split into following libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
