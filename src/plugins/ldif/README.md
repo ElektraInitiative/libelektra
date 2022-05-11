@@ -42,7 +42,7 @@ Then update the README.md of your newly created plugin:
 
 ## Dependencies
 
-None.
+OpenLDAP
 
 ## Examples
 
