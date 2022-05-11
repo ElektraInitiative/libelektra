@@ -1,10 +1,15 @@
-include (LibAddMacros)
+include (LibAddPlugin)
 
-set_source_files_properties (ldif.c PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
+if (DEPENDENCY_PHASE)
+	find_package (OpenLdap QUIET)
+	if (NOT OPENLDAP_FOUND)
+		remove_plugin (ldif "Cannot find openldap library")
+	endif ()
+endif ()
 
 add_plugin (
 	ldif
 	SOURCES ldif.h ldif.c
-	LINK_ELEKTRA elektra-ease elektra-kdb
-	ADD_TEST INSTALL_TEST_DATA TEST_README
-	TEST_REQUIRED_PLUGINS directoryvalue COMPONENT libelektra${SO_VERSION})
+	INCLUDE_DIRECTORIES ${OPENLDAP_INCLUDE_DIR}
+	LINK_LIBRARIES ${OPENLDAP_LIBRARIES}
+	ADD_TEST TEST_README COMPONENT libelektra${SO_VERSION}-experimental)

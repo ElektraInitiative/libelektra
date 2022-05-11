@@ -63,6 +63,7 @@ RUN apt-get update && apt-get -y install \
         unzip \
         valgrind \
         wget \
+        libldap-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Clang 13 to path
