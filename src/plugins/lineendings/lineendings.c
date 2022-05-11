@@ -101,7 +101,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 			if (validLineEnding != NA && lineEnding != validLineEnding)
 			{
 				fclose (fp);
-				//ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid line ending at line %lu", line);
+				// ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid line ending at line %lu", line);
 				return -2;
 			}
 			++line;
@@ -109,7 +109,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 		else if (lineEnding != found && found != NA)
 		{
 			fclose (fp);
-			//ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Inconsistent line endings at line %lu", line);
+			// ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Inconsistent line endings at line %lu", line);
 			return -3;
 		}
 		fc = sc;
@@ -120,15 +120,15 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 }
 
 
- /**
-  * Function for evaluating the return value of the checkLineEndings(...) function
-  * @param retVal The value returned by the checkLineEndings(...) function
-  * @param line The line in the file were the error occurred (only evaluated if retVal indicates an error
-  * @param parentKey[in,out] The parent key for the get/set operation the plugin is used for, the warnings and errors
-  * are attached to that key
-  * @param errorsAsWarnings[in] Produce warnings instead of errors
-  * @return 0 If no error/warning was set, -1 otherwise
-  */
+/**
+ * Function for evaluating the return value of the checkLineEndings(...) function
+ * @param retVal The value returned by the checkLineEndings(...) function
+ * @param line The line in the file were the error occurred (only evaluated if retVal indicates an error
+ * @param parentKey[in,out] The parent key for the get/set operation the plugin is used for, the warnings and errors
+ * are attached to that key
+ * @param errorsAsWarnings[in] Produce warnings instead of errors
+ * @return 0 If no error/warning was set, -1 otherwise
+ */
 int evaluateCleReturnValue (int retVal, unsigned long line, Key * parentKey, bool errorsAsWarnings)
 {
 	switch (retVal)
@@ -160,7 +160,6 @@ int evaluateCleReturnValue (int retVal, unsigned long line, Key * parentKey, boo
 	default:
 		return 0;
 	}
-
 }
 
 int elektraLineendingsGet (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -190,7 +189,6 @@ int elektraLineendingsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	/* Always return ELEKTRA_PLUGIN_STATUS_NO_UPDATE. We don't want kdbGet() to fail because of validation problems. */
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-
 }
 
 int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
