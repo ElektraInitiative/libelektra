@@ -1,0 +1,9 @@
+- infos = Storage Plugin for the LDIF format
+- infos/author = Burkhard Hampl <e11776165@student.tuwien.ac.at> Richard Stöckl <e11908080@student.tuwien.ac.at>
+- infos/licence = BSD
+- infos/provides = storage/ldif
+- infos/needs =
+- infos/recommends =
+- infos/placements = getstorage
+- infos/status = nodep libc configurable limited
+- infos/description = deserialize LDIF files
