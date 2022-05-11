@@ -1,0 +1,21 @@
+dn: uid=heidi,ou=developer,dc=libelektra,dc=org
+uid: heidi
+givenName: Heidi
+cn: Heidi Redlbacher
+sn: Redlbacher
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+structuralObjectClass: inetOrgPerson
+
+dn: uid=hans,ou=developer,dc=libelektra,dc=org
+uid: hans
+givenName: Hans
+cn: Hans Handschuh
+sn: Handschuh
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+structuralObjectClass: inetOrgPerson
