@@ -10,7 +10,8 @@
 ## Introduction
 
 The Lineendings Plugin verifies the line endings of a file.
-If inconsistent line endings or line endings that don't match `valid` are detected the plugin yields an error.
+If inconsistent line endings or line endings that don't match `valid` are detected the plugin yields an error
+if it is used during `kdbSet`. In the case of `kdbGet`, the plugin yields a warning instead.
 
 ## Installation
 
