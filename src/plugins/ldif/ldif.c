@@ -72,7 +72,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	char *buff = NULL;
 	int buflen = 0;
 
-
+	// TODO replace printf with proper error handling
 	while (ldif_read_record(lfp, &lineno, &buff, &buflen)) {
 		char *line;
 		char *next = buff;
@@ -83,7 +83,8 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			ber_len_t vlen;
 
 			if (ldif_parse_line(line, &type, &value, &vlen)) {
-				// TODO Handle error, cant parse line
+				printf("cannot parse line: %s\n", line);
+				continue;
 			}
 
 			printf ("type: %s, value: %s\n", type, value);
