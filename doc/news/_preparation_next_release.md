@@ -190,6 +190,35 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Fix a bug where writing unkown meta keys will fail silently _(Juri Schreib @Bujuhu)_
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+
+### LDIF Storage Plugin
+
+- Add Get to LDIF storage plugin _(Burkhard Hampl @bhampl and Richard Stöckl @Eiskasten)_
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Length
+
+- Warnings are now added on `kdb get` _(@mandoway)_
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Sorted
+
+- Added new validation plugin: Sorted. It checks whether an Elektra array is sorted by its value or a given key in a configurable direction _(@mandoway @Gratla)_
+- <<TODO>>
+- <<TODO>>
 
 ## Libraries
 
