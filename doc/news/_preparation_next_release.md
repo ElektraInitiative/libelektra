@@ -157,6 +157,11 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+### Kotlin
+
+- Added new JNA subproject which builds an Elektra extension library for Kotlin _(@mandoway & @Gratla)_
+- Added get() extension with type inference for primitive types _(@mandoway)_
+
 ## Tools
 
 ### <<Tool>>
