@@ -7,8 +7,6 @@
 > - infos/description = Enforces a given order of array elements based on a custom defined key or primitive values
 > - infos/status = experimental
 > - infos/version = 1
-> - exports/has/set = 1
-> - exports/has/get = 1
 
 # Sorted checker plugin
 

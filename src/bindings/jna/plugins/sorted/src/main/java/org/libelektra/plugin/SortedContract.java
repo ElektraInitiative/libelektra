@@ -7,7 +7,7 @@ import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
 
-public class SortedMetadata {
+class SortedContract {
   private static final Map<String, String> valuesByKeyName =
       ofEntries(
           entry("/infos", "Sorted Java Plugin, loaded by process plugin"),

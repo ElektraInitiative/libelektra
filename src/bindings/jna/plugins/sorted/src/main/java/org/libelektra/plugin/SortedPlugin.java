@@ -12,8 +12,8 @@ import org.libelektra.*;
 public class SortedPlugin implements Plugin {
 
   private static final String PLUGIN_NAME = "Sorted";
-  private static final String META_SORTED = "check/sorted";
-  private static final String META_SORTED_DIRECTION = "check/sorted/direction";
+  private static final String META_SORTED = "meta:/check/sorted";
+  private static final String META_SORTED_DIRECTION = "meta:/check/sorted/direction";
 
   private enum Direction {
     ASC,
@@ -33,28 +33,33 @@ public class SortedPlugin implements Plugin {
 
   @Override
   public int get(KeySet keySet, Key parentKey) {
-    if (isPluginMetadataRequested(parentKey)) {
-      SortedMetadata.appendAllTo(keySet);
+    if (isPluginContractRequested(parentKey)) {
+      SortedContract.appendAllTo(keySet);
+      return STATUS_SUCCESS;
     }
 
-    checkForSortingErrors(keySet, parentKey, parentKey::addWarning);
+    checkForSortingErrors(keySet, parentKey::addWarning);
 
     return STATUS_SUCCESS;
   }
 
-  private boolean isPluginMetadataRequested(Key parentKey) {
+  private boolean isPluginContractRequested(Key parentKey) {
     return parentKey.isBelowOrSame(Key.create(PROCESS_CONTRACT_ROOT));
   }
 
   @Override
   public int set(KeySet keySet, Key parentKey) throws KDBException {
-    return checkForSortingErrors(keySet, parentKey, parentKey::setError)
+    return checkForSortingErrors(keySet, parentKey::setError)
         ? STATUS_ERROR
         : STATUS_SUCCESS;
   }
 
+  /**
+   * Checks whether the sorting of the array specified by the meta values has errors or not.
+   * @return true if the sorting defined by the meta values is invalid. Otherwise, false.
+   */
   private boolean checkForSortingErrors(
-      KeySet keySet, Key parentKey, BiFunction<ErrorCode, String, Key> addErrorFunction) {
+          KeySet keySet, BiFunction<ErrorCode, String, Key> addErrorFunction) {
     AtomicBoolean foundError = new AtomicBoolean(false);
 
     keySet.forEach(
