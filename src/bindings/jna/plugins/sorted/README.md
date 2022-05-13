@@ -4,25 +4,54 @@
 > - infos/provides = check
 > - infos/placements = presetstorage postgetstorage
 > - infos/metadata = check/sorted check/sorted/direction
-> - infos/description = Enforces a given order of array elements based on a custom defined key or primitive values
 > - infos/status = experimental
 > - infos/version = 1
+> - infos/description = Enforces a given order of array elements based on a custom defined key or primitive values
 
 # Sorted checker plugin
 
-This plugin checks if an elektra array is sorted.
+This plugin checks if an Elektra array is sorted.
 
-To activate the plugin add the following meta-key (with empty value) to an existing array:
+To mount the plugin, use the following command as guidance:
 
-`check/sorted = `
+```sh
+kdb mount-java config.ni user:/test/process kdb:ni java:org.libelektra.plugin.SortedPlugin
+```
 
-The plugin will then assume the array elements are primitive types (e.g. string or integer) and will check if they are sorted in ascending order.  
-If the array elements are not primitive types and have sub-keys, it is possible to provide a name to this sub-key.
+This will mount the file `config.ni` on mountpoint _user:/test/process_ with the KDB plugin _ni_ and the Java plugin _SortedPlugin_.
+
+This plugin will only work on arrays, so add the array meta-key first:
+
+```sh
+kdb meta-set user:/test/process array "#2"
+```
+
+The minimal configuration for this plugin is done by adding the meta-key `check/sorted` with an empty value:
+
+```sh
+kdb meta-set user:/test/process check/sorted ""
+```
+
+The plugin will then assume the array elements are primitive types (e.g. string or integer) and will check if they are sorted in ascending order.
+
+> Note: the plugin will always sort lexicographically, which can make a difference for numbers  
+> e.g. numbers 9 and 10 are normally sorted as [9, 10], but with lexicographic order they are sorted as [10, 9] since 1 is before 9
+
+If the array elements are not primitive types and have sub-keys, it is possible to provide a name to this sub-key (including a "/" prefix).  
+Behaviour is undefined when the prefix "/" is omitted.  
 E.g. to sort by a sub-key `/nr`:
 
-`check/sorted = /nr`
+```sh
+kdb meta-set user:/test/process check/sorted "/nr"
+```
 
-It is also possible to change the sorting direction by setting the key `check/sorted/direction` to either _asc_ or _desc_.
+The plugin then requires all array elements to have a sub-key according to the set value (here "/nr") and sorts by these values.
+
+To change the sorting direction, you can set the meta-key `check/sorted/direction` to either "asc" (default) or "desc":
+
+```sh
+kdb meta-set user:/test/process check/sorted/direction "desc"
+```
 
 ## Metakey summary
 

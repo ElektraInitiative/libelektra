@@ -84,9 +84,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### Java
+### Sorted
 
-- Added new sorted plugin _(@mandoway @Gratla)_
+- Added new validation plugin: Sorted. It checks whether an Elektra array is sorted by its value or a given key in a configurable direction _(@mandoway @Gratla)_
 - <<TODO>>
 - <<TODO>>
 
