@@ -160,7 +160,8 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Kotlin
 
 - Added new JNA subproject which builds an Elektra extension library for Kotlin _(@mandoway & @Gratla)_
-- Added get() extension with type inference for primitive types _(@mandoway)_
+- Added get(), getOrNull(), getOrDefault(), getOrElse() extension with type inference for primitive types _(@mandoway)_
+- Added set() extension with type inference for primitive types _(@mandoway)_
 
 ## Tools
 

@@ -27,7 +27,7 @@ fun <T : Any> Key.get(clazz: KClass<T>): T {
         Long::class -> long as T
         Float::class -> float as T
         Double::class -> double as T
-        else -> throw IllegalArgumentException("Key can only return primitive types")
+        else -> throw IllegalArgumentException("Key can only return primitive types, '${clazz.simpleName}' not supported")
     }
 }
 

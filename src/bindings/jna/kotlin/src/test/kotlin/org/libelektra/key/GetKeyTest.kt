@@ -1,6 +1,7 @@
-package org.libelektra
+package org.libelektra.key
 
 import org.junit.Test
+import org.libelektra.Key
 import org.libelektra.keyExt.get
 import org.libelektra.keyExt.getOrDefault
 import org.libelektra.keyExt.getOrElse
@@ -8,7 +9,7 @@ import org.libelektra.keyExt.getOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class KeyGetTest {
+class GetKeyTest {
 
     /**
      * Tests the type inference and also serves as a usage example
