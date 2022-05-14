@@ -163,6 +163,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Added get(), getOrNull(), getOrDefault(), getOrElse() extension with type inference for primitive types _(@mandoway)_
 - Added set() extension with type inference for primitive types _(@mandoway)_
 - Added keySet serialization capabilities (to JSON and data classes, no array support yet) _(@mandoway)_
+- Added keyOf() extension and keyOf{} builder for key creation _(@Gratla)_
 
 ## Tools
 
