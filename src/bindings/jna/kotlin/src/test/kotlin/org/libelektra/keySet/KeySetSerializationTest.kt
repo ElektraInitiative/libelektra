@@ -14,6 +14,9 @@ class KeySetSerializationTest {
     @Serializable
     data class SimpleTest(val name: String, val age: Int)
 
+    @Serializable
+    data class ComplexTest(val foo: String, val simple: SimpleTest)
+
     @Test
     fun `convert with correct keySet, returns correct object`() {
         val expected = SimpleTest("john", 25)
@@ -71,6 +74,16 @@ class KeySetSerializationTest {
         }
     }
 
+    @Test
+    fun `convert with complex type and correct keySet, returns complex type`() {
+        val expectation = ComplexTest("value", SimpleTest("name", 12))
+        val keySet = givenComplexTypeKeySet(expectation.foo, expectation.simple)
+
+        val converted = keySet.convert<ComplexTest>()
+
+        assertEquals(expectation, converted)
+    }
+
     private fun givenKeySetForSimpleTest(name: String, age: Int) = KeySet.create(
             Key.create("/name", name),
             Key.create("/age", age)
@@ -100,5 +113,11 @@ class KeySetSerializationTest {
     private fun givenKeySetWithWrongType() = KeySet.create(
             Key.create("/name", "abc"),
             Key.create("/age", "abc")
+    )
+
+    private fun givenComplexTypeKeySet(foo: String, simple: SimpleTest) = KeySet.create(
+            Key.create("/foo", foo),
+            Key.create("/simple/name", simple.name),
+            Key.create("/simple/age", simple.age)
     )
 }
