@@ -165,6 +165,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Added keySet serialization capabilities (to JSON and data classes, no array support yet) _(@mandoway)_
 - Added keyOf() extension and keyOf{} builder for key creation _(@Gratla)_
 - Added keySetOf() extension and keySetOf{} builder for keySet creation _(@Gratla)_
+- Added withKDB() extension which wraps the try block _(@Gratla)_
 
 ## Tools
 
