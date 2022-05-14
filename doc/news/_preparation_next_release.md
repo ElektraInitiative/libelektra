@@ -162,6 +162,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Added new JNA subproject which builds an Elektra extension library for Kotlin _(@mandoway & @Gratla)_
 - Added get(), getOrNull(), getOrDefault(), getOrElse() extension with type inference for primitive types _(@mandoway)_
 - Added set() extension with type inference for primitive types _(@mandoway)_
+- Added keySet serialization capabilities (to JSON and data classes, no array support yet) _(@mandoway)_
 
 ## Tools
 

@@ -17,7 +17,8 @@ inline fun <reified T : Any> Key.get(): T {
  * @param clazz the requested type
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> Key.get(clazz: KClass<T>): T {
+@PublishedApi
+internal fun <T : Any> Key.get(clazz: KClass<T>): T {
     return when (clazz) {
         String::class -> string as T
         Boolean::class -> boolean as T
@@ -36,7 +37,7 @@ fun <T : Any> Key.get(clazz: KClass<T>): T {
  * - same as [get], if the string value is not empty
  * - null, otherwise
  */
-inline fun <reified T : Any> Key.getOrNull(): T? = if (string.isNotEmpty()) get(T::class) else null
+inline fun <reified T : Any> Key.getOrNull(): T? = if (isNotEmpty()) get(T::class) else null
 
 /**
  * @param defaultValue a provided default
@@ -44,7 +45,7 @@ inline fun <reified T : Any> Key.getOrNull(): T? = if (string.isNotEmpty()) get(
  * - same as [get], if the string value is not empty
  * - defaultValue, otherwise
  */
-inline fun <reified T : Any> Key.getOrDefault(defaultValue: T): T = if (string.isNotEmpty()) get(T::class) else defaultValue
+inline fun <reified T : Any> Key.getOrDefault(defaultValue: T): T = if (isNotEmpty()) get(T::class) else defaultValue
 
 /**
  * @param defaultValue a function returning a default value
@@ -52,4 +53,4 @@ inline fun <reified T : Any> Key.getOrDefault(defaultValue: T): T = if (string.i
  * - same as [get], if the string value is not empty
  * - return value of defaultValue(), otherwise
  */
-inline fun <reified T : Any> Key.getOrElse(defaultValue: () -> T): T = if (string.isNotEmpty()) get(T::class) else defaultValue()
+inline fun <reified T : Any> Key.getOrElse(defaultValue: () -> T): T = if (isNotEmpty()) get(T::class) else defaultValue()

@@ -38,7 +38,8 @@ inline fun <reified T : Any> Key.set(value: T?): Key {
  * @return the key object with the new value set
  * @throws IllegalArgumentException when [clazz] is not a primitive type or string
  */
-fun <T : Any> Key.set(value: T, clazz: KClass<T>): Key {
+@PublishedApi
+internal fun <T : Any> Key.set(value: T, clazz: KClass<T>): Key {
     when (clazz) {
         String::class -> string = value as String
         Boolean::class -> boolean = value as Boolean
