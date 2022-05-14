@@ -1,11 +1,10 @@
 package org.libelektra.keySet
 
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonObject
+import kotlinx.serialization.json.*
 import org.junit.Test
 import org.libelektra.Key
 import org.libelektra.KeySet
+import org.libelektra.keyExt.toElektraArrayIndex
 import org.libelektra.keySetExt.toJson
 import kotlin.test.assertEquals
 
@@ -175,13 +174,78 @@ class KeySetJsonTest {
         val json = keySet.toJson("/test3")
 
         val expected = buildJsonObject {
-                put("test3", "value3")
+            put("test3", "value3")
         }
         assertEquals(expected, json)
     }
 
+    @Test
+    fun `toJson with a primitive array, returns JSON containing array`() {
+        val keySet = givenArrayKeySet(3)
+
+        val json = keySet.toJson()
+
+        val expected = buildJsonObject {
+            putJsonArray("test") {
+                add("0")
+                add("1")
+                add("2")
+                add("3")
+            }
+        }
+        assertEquals(expected, json)
+    }
+
+    @Test
+    fun `toJson with a nested array, returns JSON containing array`() {
+        val keySet = givenNestedArrayKeySet(3)
+
+        val json = keySet.toJson()
+
+        val expected = buildJsonObject {
+            putJsonArray("test") {
+                addJsonObject {
+                    put("name0", "0")
+                }
+                addJsonObject {
+                    put("name1", "1")
+                }
+                addJsonObject {
+                    put("name2", "2")
+                }
+                addJsonObject {
+                    put("name3", "3")
+                }
+            }
+        }
+        assertEquals(expected, json)
+    }
+
+    @Test
+    fun `toJson(rootKey) with a nested array, returns JSON containing array`() {
+        val keySet = givenNestedArrayKeySet(3)
+
+        val json = keySet.toJson("/test")
+
+        val expected = buildJsonArray {
+            addJsonObject {
+                put("name0", "0")
+            }
+            addJsonObject {
+                put("name1", "1")
+            }
+            addJsonObject {
+                put("name2", "2")
+            }
+            addJsonObject {
+                put("name3", "3")
+            }
+        }
+        assertEquals(expected, json)
+    }
 
     private fun givenEmptyKeySet() = KeySet.create()
+
 
     private fun KeySet.withKey(keyName: String, value: String) = append(Key.create(keyName, value))
 
@@ -215,5 +279,29 @@ class KeySetJsonTest {
     }
 
     private fun givenEmptyJson() = buildJsonObject { }
+
+    private fun givenArrayKeySet(lastIndex: Int): KeySet {
+        val keySet = KeySet.create()
+
+        val arrayKey = Key.create("/test").setMeta("array", lastIndex.toElektraArrayIndex())
+
+        repeat(lastIndex + 1) {
+            keySet.append(Key.create("/test/#$it", it))
+        }
+
+        return keySet.append(arrayKey)
+    }
+
+    private fun givenNestedArrayKeySet(lastIndex: Int): KeySet {
+        val keySet = KeySet.create()
+
+        val arrayKey = Key.create("/test").setMeta("array", "#$lastIndex")
+
+        repeat(lastIndex + 1) {
+            keySet.append(Key.create("/test/#$it/name$it", it))
+        }
+
+        return keySet.append(arrayKey)
+    }
 }
 

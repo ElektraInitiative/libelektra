@@ -5,6 +5,7 @@ import kotlinx.serialization.SerializationException
 import org.junit.Test
 import org.libelektra.Key
 import org.libelektra.KeySet
+import org.libelektra.keyExt.toElektraArrayIndex
 import org.libelektra.keySetExt.convert
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -16,6 +17,9 @@ class KeySetSerializationTest {
 
     @Serializable
     data class ComplexTest(val foo: String, val simple: SimpleTest)
+
+    @Serializable
+    data class ListTest(val foo: String, val bar: List<String>)
 
     @Test
     fun `convert with correct keySet, returns correct object`() {
@@ -84,6 +88,52 @@ class KeySetSerializationTest {
         assertEquals(expectation, converted)
     }
 
+    @Test
+    fun `convert with list type and correct keySet, returns list type`() {
+        val expectation = ListTest("foo", listOf("bar1", "bar2"))
+        val keySet = givenListTypeKeySet(expectation.foo, expectation.bar)
+
+        val converted = keySet.convert<ListTest>()
+
+        assertEquals(expectation, converted)
+    }
+
+    @Test
+    fun `convert to list and correct keySet, returns list`() {
+        val expectation = listOf("bar1", "bar2")
+        val keySet = givenListKeySet(expectation)
+
+        val converted = keySet.convert<List<String>>()
+
+        assertEquals(expectation, converted)
+    }
+
+    @Test
+    fun `convert to list of custom objects and correct keySet, returns list`() {
+        val expectation = listOf(
+                SimpleTest("philipp", 24),
+                SimpleTest("markus", 24),
+        )
+        val keySet = givenListOfSimpleObjectsKeySet(expectation)
+
+        val converted = keySet.convert<List<SimpleTest>>()
+
+        assertEquals(expectation, converted)
+    }
+
+    @Test
+    fun `convert to simple object from given parentKey in array and correct keySet, returns correct simple object`() {
+        val expectation = listOf(
+                SimpleTest("philipp", 24),
+                SimpleTest("markus", 24),
+        )
+        val keySet = givenListOfSimpleObjectsKeySet(expectation)
+
+        val converted = keySet.convert<SimpleTest>("/simple/#0")
+
+        assertEquals(expectation.first(), converted)
+    }
+
     private fun givenKeySetForSimpleTest(name: String, age: Int) = KeySet.create(
             Key.create("/name", name),
             Key.create("/age", age)
@@ -120,4 +170,43 @@ class KeySetSerializationTest {
             Key.create("/simple/name", simple.name),
             Key.create("/simple/age", simple.age)
     )
+
+    private fun givenListTypeKeySet(foo: String, bar: List<String>): KeySet {
+        val keySet = KeySet.create(Key.create("/foo", foo))
+
+        keySet.add(
+                Key.create("/bar").setMeta("array", bar.size.toElektraArrayIndex())
+        )
+        bar.forEachIndexed { index, s ->
+            keySet.add(Key.create("/bar/${index.toElektraArrayIndex()}", s))
+        }
+
+        return keySet
+    }
+
+    private fun givenListKeySet(bar: List<String>): KeySet {
+        val keySet = KeySet.create(
+                Key.create("/bar").setMeta("array", bar.size.toElektraArrayIndex())
+        )
+
+        bar.forEachIndexed { index, s ->
+            keySet.add(Key.create("/bar/${index.toElektraArrayIndex()}", s))
+        }
+
+        return keySet
+    }
+
+    private fun givenListOfSimpleObjectsKeySet(simple: List<SimpleTest>): KeySet {
+        val keySet = KeySet.create(
+                Key.create("/simple").setMeta("array", simple.size.toElektraArrayIndex())
+        )
+
+        simple.forEachIndexed { index, s ->
+            val elektraIndex = index.toElektraArrayIndex()
+            keySet.add(Key.create("/simple/$elektraIndex/name", s.name))
+            keySet.add(Key.create("/simple/$elektraIndex/age", s.age))
+        }
+
+        return keySet
+    }
 }

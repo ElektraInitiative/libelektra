@@ -15,6 +15,7 @@ inline fun <reified T : Any> Key.get(): T {
 /**
  * See [get]
  * @param clazz the requested type
+ * @see [get]
  */
 @Suppress("UNCHECKED_CAST")
 @PublishedApi
@@ -36,6 +37,7 @@ internal fun <T : Any> Key.get(clazz: KClass<T>): T {
  * @return
  * - same as [get], if the string value is not empty
  * - null, otherwise
+ * @see [get]
  */
 inline fun <reified T : Any> Key.getOrNull(): T? = if (isNotEmpty()) get(T::class) else null
 
@@ -44,6 +46,7 @@ inline fun <reified T : Any> Key.getOrNull(): T? = if (isNotEmpty()) get(T::clas
  * @return
  * - same as [get], if the string value is not empty
  * - defaultValue, otherwise
+ * @see [get]
  */
 inline fun <reified T : Any> Key.getOrDefault(defaultValue: T): T = if (isNotEmpty()) get(T::class) else defaultValue
 
@@ -52,5 +55,6 @@ inline fun <reified T : Any> Key.getOrDefault(defaultValue: T): T = if (isNotEmp
  * @return
  * - same as [get], if the string value is not empty
  * - return value of defaultValue(), otherwise
+ * @see [get]
  */
 inline fun <reified T : Any> Key.getOrElse(defaultValue: () -> T): T = if (isNotEmpty()) get(T::class) else defaultValue()

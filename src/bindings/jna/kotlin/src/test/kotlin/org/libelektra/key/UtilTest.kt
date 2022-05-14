@@ -1,6 +1,8 @@
 package org.libelektra.key
 
 import org.junit.Test
+import org.libelektra.Key
+import org.libelektra.keyExt.forEachKeyName
 import org.libelektra.keyExt.keyOf
 import org.libelektra.keyExt.orNull
 import kotlin.test.assertEquals
@@ -25,5 +27,17 @@ class UtilTest {
 
         assertEquals(key.getMeta("/meta1").orNull()!!.string, "value1")
         assertEquals(key.getMeta("/meta2").orNull()!!.string, "value2")
+    }
+
+    @Test
+    fun `forEachKeyName iterates correctly`() {
+        val key = Key.create("/foo/bar/some/thing")
+
+        val keyNames = mutableListOf<String>()
+        key.forEachKeyName {
+            keyNames.add(it)
+        }
+
+        assertEquals(listOf("\u0001", "foo", "bar", "some", "thing"), keyNames)
     }
 }

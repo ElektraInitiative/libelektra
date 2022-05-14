@@ -8,7 +8,7 @@ import kotlinx.serialization.json.jsonObject
 import org.libelektra.KeySet
 
 /**
- * Converts a KeySet to a Kotlin data class using Kotlin Json Serialization
+ * Converts a KeySet to a Kotlin data class using Kotlin Json Serialization with support for Collections
  *
  * The data class must be annotated with @Serializable
  *
@@ -59,9 +59,28 @@ inline fun <reified T : Any> KeySet.convert(): T {
     }
 }
 
+/**
+ * Same as [convert], but only converts keys below or equal from the given parent key
+ *
+ * @param parentKeyName the key name where the conversion starts, only this and keys below are considered, must start with "/"
+ * @throws SerializationException when decoding fails or the properties are not on root-level or one below root, see [Json.decodeFromJsonElement] for details
+ * @return an object decoded from the JSON representation of this KeySet (see [KeySet.toJson]])
+ * @see [convert]
+ */
+inline fun <reified T : Any> KeySet.convert(parentKeyName: String): T {
+    val json = toJson(parentKeyName)
+
+    return try {
+        Json.decodeFromJsonElement(json)
+    } catch (e: SerializationException) {
+        tryToDecodeAllTopLevelProperties(json) ?: throw e
+    }
+}
+
 @PublishedApi
 internal inline fun <reified T : Any> tryToDecodeAllTopLevelProperties(json: JsonElement): T? {
-    return json.jsonObject.entries.asSequence()
+    return json.jsonObject.entries
+            .asSequence()
             .mapNotNull {
                 try {
                     Json.decodeFromJsonElement<T>(it.value)
