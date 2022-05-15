@@ -66,7 +66,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 	Lineending lineEnding = NA;
 	Lineending found = NA;
 	uint8_t fc, sc;
-	*line = 1; // set value of output parameter
+	*line = 1;
 	fc = sc = 0;
 	(void) fread (&fc, 1, 1, fp);
 	while (!feof (fp))
@@ -127,7 +127,8 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
  * @param parentKey[in,out] The parent key for the get/set operation the plugin is used for, the warnings and errors
  * are attached to that key
  * @param errorsAsWarnings[in] Produce warnings instead of errors
- * @return 0 If no error/warning was set, -1 otherwise
+ * @retval 0 no error/warning was set
+ * @retval -1 error/warning was set
  */
 int evaluateCleReturnValue (int retVal, unsigned long line, Key * parentKey, bool errorsAsWarnings)
 {
@@ -188,7 +189,7 @@ int elektraLineendingsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	(void) evaluateCleReturnValue (ret, line, parentKey, true);
 
 	/* Always return ELEKTRA_PLUGIN_STATUS_NO_UPDATE. We don't want kdbGet() to fail because of validation problems. */
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
