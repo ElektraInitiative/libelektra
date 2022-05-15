@@ -93,22 +93,25 @@ static void benchmarkHashFunctionTime (char * name)
 			int32_t seed;
 			if (getRandomSeed (&seed) != &seed) printExit ("Seed Parsing Error or feed me more seeds");
 			KeySet * ks = generateKeySet (n[i], &seed, &keySetShapes[s]);
+			ssize_t ksSize = ksGetSize (ks);
 			for (size_t r = 0; r < runs; ++r)
 			{
 				Key * key;
-				ksRewind (ks);
+
 				struct timeval start;
 				struct timeval end;
 				__asm__("");
 				gettimeofday (&start, 0);
 				__asm__("");
 				// measure
-				while ((key = ksNext (ks)))
+				for (elektraCursor it = 0; it < ksSize; ++it)
 				{
+					key = ksAtCursor (ks, it);
 					__asm__("");
 					opmphmHashfunction (keyName (key), strlen (keyName (key)), 1337);
 					__asm__("");
 				}
+
 				__asm__("");
 				gettimeofday (&end, 0);
 				__asm__("");
@@ -1566,7 +1569,10 @@ static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double l
 		struct timeval start;
 		struct timeval end;
 		Key * key;
-		ksRewind (ks);
+
+		elektraCursor it;
+		ssize_t ksSize = ksGetSize (ks);
+
 		ENTRY e;
 		ENTRY * ep;
 		// fresh htab
@@ -1586,8 +1592,10 @@ static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double l
 			printExit ("hcreate_r");
 		}
 
-		while ((key = ksNext (ks)))
+		for (it = 0; it < ksSize; ++it)
 		{
+			key = ksAtCursor (ks, it);
+
 			e.key = (char *) keyName (key);
 			e.data = key;
 			if (!hsearch_r (e, ENTER, &ep, htab))
@@ -1605,9 +1613,9 @@ static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double l
 		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 
 		// sanity check
-		ksRewind (ks);
-		while ((key = ksNext (ks)))
+		for (it = 0; it < ksSize; ++it)
 		{
+			key = ksAtCursor (ks, it);
 			e.key = (char *) keyName (key);
 			if (!hsearch_r (e, FIND, &ep, htab))
 			{
@@ -2083,11 +2091,15 @@ static void benchmarkPrintAllKeySetShapes (char * name)
 		{
 			printf (" ======================= shapeId %zu =======================\n\n", shapeId);
 			Key * key;
-			ksRewind (ks);
-			while ((key = ksNext (ks)))
+			elektraCursor it;
+			ssize_t ksSize = ksGetSize (ks);
+
+			for (it = 0; it < ksSize; ++it)
 			{
+				key = ksAtCursor (ks, it);
 				printf ("%s\n", keyName (key));
 			}
+
 			printf ("\n ======================== size %zd ========================\n\n", ksGetSize (ks));
 		}
 		ksDel (ks);

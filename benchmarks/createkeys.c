@@ -15,14 +15,17 @@ void benchmarkDel (void)
 
 int benchmarkIterate (void)
 {
-	ksRewind (large);
-	Key * cur;
 	int c = 0;
-	while ((cur = ksNext (large)))
+	Key * cur;
+	elektraCursor it;
+	ssize_t ksSize = ksGetSize (large);
+
+	for (it = 0; it < ksSize; ++it)
 	{
-		// count to make sure the loop is executed
+		cur = ksAtCursor (large, it);
 		++c;
 	}
+
 	return c;
 }
 
