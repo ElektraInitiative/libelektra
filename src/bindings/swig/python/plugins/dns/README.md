@@ -15,13 +15,13 @@ The python plugin requires the configuration parameter **script** holding the fi
 python script. The mount command looks like
 
 ```sh
-sudo kdb mount file.ini /python python script=/path/to/dns_plugin.py
+sudo kdb mount file.ini /python ni python script=/path/to/dns_plugin.py
 ```
 
 For the plugin to actually check a certain key, the `check/dns` metakey must be set.
 
 ```sh
-sudo kdb meta-set user:/python/my_hostname check/dns ''
+sudo kdb meta-set spec:/python/my_hostname check/dns ''
 ```
 
 Now each time the key is set, the filter plugin validates the given value.

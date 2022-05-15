@@ -4,12 +4,12 @@ import socket
 
 """
 Usage:
-> sudo kdb mount file.ini /python python script=/path/to/filter_script.py
-> sudo kdb meta-set user:/python/my_hostname check/dns ''
-> sudo kdb set user:/python/my_hostname www.libelektra.org
+> sudo kdb mount file.ini /python python script=/path/to/dns_plugin.py
+> kdb meta-set user:/python/my_hostname check/dns ''
+> kdb set user:/python/my_hostname www.libelektra.org
 """
 
-META_DNS_NAME = "check/dns"
+META_DNS_NAME = "meta:/check/dns"
 
 
 def get_ipv4_by_hostname(hostname) -> bool:
