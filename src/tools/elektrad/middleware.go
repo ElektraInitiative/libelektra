@@ -137,3 +137,11 @@ func getHandle(r *http.Request) (elektra.KDB, elektra.KeySet) {
 
 	return ses.handle.kdb, ses.handle.keySet
 }
+
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.Method, r.RequestURI)
+
+		next.ServeHTTP(w, r)
+	})
+}
