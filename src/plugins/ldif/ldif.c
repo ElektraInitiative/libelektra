@@ -91,12 +91,12 @@ char ** parseToken (const char * in)
 	return (res);
 }
 
-char * makeKey (char ** in, int len)
+char * makeKey (const char ** in, int len)
 {
 	size_t size = 0;
 	for (int i = 0; i < len && in[i] != NULL; i++)
 	{
-		char * s = in[i];
+		const char * s = in[i];
 		size += strlen (s) + 1;
 	}
 
@@ -117,7 +117,7 @@ char * makeKey (char ** in, int len)
 	char * p = out;
 	for (int i = 0; i < len && in[i] != NULL; i++)
 	{
-		char * s = in[i];
+		const char * s = in[i];
 		if (i != 0)
 		{
 			strncpy (p, "/", 1);
@@ -166,7 +166,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	// get all keys
 	int errnosave = errno;
 	const char * filename = keyString (parentKey);
-	LDIFFP * lfp = ldif_open(filename, "r");
+	LDIFFP * lfp = ldif_open (filename, "r");
 
 	if (!lfp)
 	{
@@ -176,7 +176,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	unsigned long lineno = 0;
-	char *buff = NULL;
+	char * buff = NULL;
 	int buflen = 0;
 
 	ssize_t ksize = 0;
@@ -186,11 +186,14 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		char * line;
 		char * next = buff;
+		char * last_dn = NULL;
 
 		while ((line = ldif_getline (&next)) != NULL)
 		{
 			char * type = NULL;
 			char * value = NULL;
+
+
 			ber_len_t vlen;
 
 			if (ldif_parse_line (line, &type, &value, &vlen))
@@ -228,7 +231,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 				{
 
 					Key * key = keyNew (keyName (parentKey), KEY_END);
-					char * domainpart = makeKey (tokens, i + 1);
+					char * domainpart = makeKey ((const char **) tokens, i + 1);
 
 					printf ("saving key: %s\n", domainpart);
 
@@ -242,6 +245,8 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 						return ELEKTRA_PLUGIN_STATUS_ERROR;
 					}
 
+					last_dn = strdup (domainpart);
+
 					if (keyAddName (key, domainpart) == -1)
 					{
 						ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (
@@ -254,12 +259,9 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 					if (ksAppendKey (returned, key) != ksize + 1)
 					{
 						// TODO re-enable duplicate check
-//						ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
-//											 "Duplicated key '%s' at position %ld in file %s",
-//											 keyName (key), ftell (lfp->fp), filename);
-//						free (buff);
-//						ldif_close (lfp);
-//						return ELEKTRA_PLUGIN_STATUS_ERROR;
+						//						ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF
+						//(parentKey, 											 "Duplicated key '%s' at position %ld in file %s", 											 keyName (key), ftell
+						//(lfp->fp), filename); 						free (buff); 						ldif_close (lfp); 						return ELEKTRA_PLUGIN_STATUS_ERROR;
 					}
 					++ksize;
 					elektraFree (domainpart);
@@ -273,12 +275,29 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 				printf ("found value: type: %s, value: %s\n", type, value);
 			}
 
+			printf ("%s/%s -> %s\n", last_dn, type, value);
+
+			const char * attribute_key_parts[] = { keyName (parentKey), last_dn, type };
+			char * attribute_key_name = makeKey (attribute_key_parts, 3);
+			Key * attribute_key = keyNew (attribute_key_name, KEY_END);
+			printf ("kn: %s\n", keyName (attribute_key));
+
+			keySetString (attribute_key, value);
+			ksAppendKey (returned, attribute_key);
+
+			elektraFree (attribute_key_name);
+
 			elektraFree (type);
 			elektraFree (value);
 		}
+
+		if (last_dn != NULL)
+		{
+			elektraFree (last_dn);
+		}
 	}
 
-	free(buff);
+	free (buff);
 
 	ldif_close (lfp);
 
