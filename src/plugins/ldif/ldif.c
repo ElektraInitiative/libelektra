@@ -25,23 +25,6 @@
 #include <ldap.h>
 #include <ldif.h>
 
-
-int elektraLdifOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// plugin initialization logic
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraLdifClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// free all plugin resources and shut it down
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
 char ** parseToken (const char * in)
 {
 	char * localCopy = elektraStrDup (in);
@@ -305,47 +288,10 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// set all keys
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
-int elektraLdifError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraLdifCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// commit changes
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraLdifCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("ldif",
-		ELEKTRA_PLUGIN_OPEN,	&elektraLdifOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraLdifClose,
 		ELEKTRA_PLUGIN_GET,	&elektraLdifGet,
-		ELEKTRA_PLUGIN_SET,	&elektraLdifSet,
-		ELEKTRA_PLUGIN_COMMIT,  &elektraLdifCommit,
-		ELEKTRA_PLUGIN_ERROR,	&elektraLdifError,
 		ELEKTRA_PLUGIN_END);
 }
