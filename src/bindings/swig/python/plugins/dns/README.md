@@ -3,6 +3,8 @@
 - infos/licence = BSD
 - infos/provides = check
 - infos/status = maintained
+- infos/placements = postgetstorage presetstorage
+- infos/description = checks if name is resolvable
 
 ## DNS Python plugin
 
@@ -27,5 +29,5 @@ sudo kdb meta-set spec:/python/my_hostname check/dns ''
 Now each time the key is set, the filter plugin validates the given value.
 
 ```sh
-sudo kdb set user:/python/my_hostname www.libelektra.org
+kdb set user:/python/my_hostname www.libelektra.org
 ```

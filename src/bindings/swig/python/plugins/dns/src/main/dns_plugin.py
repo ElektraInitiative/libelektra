@@ -21,10 +21,8 @@ def get_ipv4_by_hostname(hostname) -> bool:
 
 
 def check_key(key: kdb.Key):
-	print(key, key.value)
 	# we only check if Meta META_DNS_NAME is set
 	if m := key.getMeta(META_DNS_NAME):
-		print(m.value)
 		if key.value != '':
 			try:
 				return get_ipv4_by_hostname(key.value)
@@ -53,11 +51,23 @@ class ElektraPlugin(object):
 		#  -       -1 : failure
 		"""
 		mod = "system:/elektra/modules/python"
+
 		if parentKey.name == mod:
 			returned.append(kdb.Key(mod, kdb.KEY_VALUE, "contract below"))
 			returned.append(kdb.Key(mod+"/infos", kdb.KEY_VALUE, "contract below"))
+
+			returned.append(kdb.Key(mod+"/infos/license", kdb.KEY_VALUE, "BSD"))
+			returned.append(kdb.Key(mod+"/infos/provides", kdb.KEY_VALUE, "check"))
+			returned.append(kdb.Key(mod+"/infos/status", kdb.KEY_VALUE, "maintained"))
 			returned.append(kdb.Key(mod+"/infos/placements", kdb.KEY_VALUE, "postgetstorage presetstorage"))
+			returned.append(kdb.Key(mod+"/infos/description", kdb.KEY_VALUE, "checks if name is resolvable"))
 			return 1
+
+		for k in returned:
+			if not check_key(k):
+				print(f"couldn't resolve name for key: {k}")
+				return -1
+
 		return 1
 
 	def set(self, returned: kdb.KeySet, parentKey: kdb.Key):
