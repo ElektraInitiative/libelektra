@@ -24,7 +24,11 @@ func main() {
 
 	r := setupRouter(app)
 
-	if err := http.ListenAndServe(":"+strconv.Itoa(*port), r); err != nil {
+	listen := ":" + strconv.Itoa(*port)
+
+	log.Println("starting elektrad on", listen)
+
+	if err := http.ListenAndServe(listen, r); err != nil {
 		log.Print(err)
 	}
 }
