@@ -19,7 +19,7 @@
 
 void print_warnings (Key * err)
 {
-	const KeySet * metaKeys = keyMeta (err);
+	KeySet * metaKeys = keyMeta (err);
 	const Key * meta;
 
 	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)

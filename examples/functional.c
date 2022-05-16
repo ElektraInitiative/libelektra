@@ -14,7 +14,8 @@
 #include <stdlib.h>
 
 /* TODO: With an external iterator, ksCurrent() to get the position where execution stopped is no longer avialable.
- * TODO: Should we change the return value or make the information about the position unavailable
+ * TODO: Should we change the return value or make the information about the position unavailable */
+
 /**A functional access to keys.
  *
  * Instead of writing your own loop you can write
@@ -64,7 +65,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
  * @retval -1 when filter returned an error (-1)
  * @see ksForEach()
  **/
-int ksFilter (KeySet * result, const KeySet * input, int (*filter) (Key * k))
+int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 {
 	int ret = 0;
 	Key * current;

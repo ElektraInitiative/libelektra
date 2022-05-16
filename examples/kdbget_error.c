@@ -112,7 +112,7 @@ void removeMetaData (Key * key, const char * searchfor)
 	KeySet * metaKeys = keyMeta (key);
 	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
-		iter_key = ksAtCursor (metaKeys, it);
+		Key * iter_key = ksAtCursor (metaKeys, it);
 		/*startsWith*/
 		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
 		{

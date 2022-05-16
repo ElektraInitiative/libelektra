@@ -17,7 +17,7 @@
 Key * ksNextDir (KeySet * ks, elektraCursor startPos)
 {
 	Key * cur;
-	Key * startKey;
+	Key * startKey = NULL;
 	static elektraCursor lastPos = 0;
 
 	if (startPos >= 0)
@@ -30,7 +30,6 @@ Key * ksNextDir (KeySet * ks, elektraCursor startPos)
 	{
 		startKey = ksAtCursor (ks, lastPos);
 	}
-
 
 	/* Check keys */
 	for (lastPos = lastPos + 1; lastPos < ksGetSize (ks); ++lastPos)
