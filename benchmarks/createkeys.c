@@ -16,13 +16,13 @@ void benchmarkDel (void)
 int benchmarkIterate (void)
 {
 	int c = 0;
-	Key * cur;
 	elektraCursor it;
 	ssize_t ksSize = ksGetSize (large);
 
 	for (it = 0; it < ksSize; ++it)
 	{
-		cur = ksAtCursor (large, it);
+		ksAtCursor (large, it);
+		// count to make sure the loop is executed
 		++c;
 	}
 

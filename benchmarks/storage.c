@@ -55,13 +55,12 @@ static int benchmarkOpenPlugins (void)
 
 static void benchmarkIterate (KeySet * ks)
 {
-	Key * cur;
 	elektraCursor it;
 	ssize_t ksSize = ksGetSize (ks);
 
 	for (it = 0; it < ksSize; ++it)
 	{
-		cur = ksAtCursor (ks, it);
+		ksAtCursor (ks, it);
 		__asm__("");
 	}
 }
