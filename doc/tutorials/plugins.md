@@ -406,9 +406,11 @@ The following example demonstrates how to limit the length of the values within 
 int elektraLineCheckConf (Key * errorKey, KeySet * conf)
 {
 	Key * cur;
-	ksRewind (conf);
-	while ((cur = ksNext (conf)) != 0)
+	ssize_t ksSize = ksGetSize (conf);
+
+	for (elektraCursor it = 0; it < ksSize; ++it)
 	{
+		cur = ksAtCursor (conf, it);
 		const char * value = keyString (cur);
 		if (strlen (value) > 3)
 		{
@@ -418,6 +420,7 @@ int elektraLineCheckConf (Key * errorKey, KeySet * conf)
 			return -1; // The configuration was not OK and could not be fixed
 		}
 	}
+
 	return 0; // The configuration was OK and has not been changed
 }
 ```
