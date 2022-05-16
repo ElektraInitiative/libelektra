@@ -181,7 +181,6 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	ssize_t ksize = 0;
 
-	// TODO replace printf with ELEKTRA_LOG_DEBUG
 	while (ldif_read_record (lfp, &lineno, &buff, &buflen))
 	{
 		char * line;
@@ -204,8 +203,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 			if (elektraStrCmp (type, "dn") == 0)
 			{
-				// key
-				printf ("found key: %s\n", value);
+				elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "found key: %s\n", value);
 
 				char ** tokens = parseToken (value);
 
@@ -233,7 +231,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 					Key * key = keyNew (keyName (parentKey), KEY_END);
 					char * domainpart = makeKey ((const char **) tokens, i + 1);
 
-					printf ("saving key: %s\n", domainpart);
+					elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "saving key: %s\n", domainpart);
 
 					if (domainpart == NULL)
 					{
@@ -260,8 +258,12 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 					{
 						// TODO re-enable duplicate check
 						//						ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF
-						//(parentKey, 											 "Duplicated key '%s' at position %ld in file %s", 											 keyName (key), ftell
-						//(lfp->fp), filename); 						free (buff); 						ldif_close (lfp); 						return ELEKTRA_PLUGIN_STATUS_ERROR;
+						//(parentKey, 											 "Duplicated
+						//key '%s' at position %ld in file %s",
+						//keyName (key), ftell
+						//(lfp->fp), filename); 						free (buff);
+						//ldif_close (lfp); 						return
+						//ELEKTRA_PLUGIN_STATUS_ERROR;
 					}
 					++ksize;
 					elektraFree (domainpart);
@@ -271,16 +273,15 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			}
 			else
 			{
-				// value
-				printf ("found value: type: %s, value: %s\n", type, value);
+				elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "found value: type: %s, value: %s\n",
+					    type, value);
 			}
-
-			printf ("%s/%s -> %s\n", last_dn, type, value);
 
 			const char * attribute_key_parts[] = { keyName (parentKey), last_dn, type };
 			char * attribute_key_name = makeKey (attribute_key_parts, 3);
 			Key * attribute_key = keyNew (attribute_key_name, KEY_END);
-			printf ("kn: %s\n", keyName (attribute_key));
+			elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "storing value %s at key %s\n", value,
+				    keyName (attribute_key));
 
 			keySetString (attribute_key, value);
 			ksAppendKey (returned, attribute_key);
