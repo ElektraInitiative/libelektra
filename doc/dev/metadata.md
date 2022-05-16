@@ -79,7 +79,7 @@ void printMetaData (Key * key)
     for (elektraCursor it = 0; it < ksSize; ++it)
     {
         curMeta = ksAtCursor (metaKeys, it);
-        printf ("meta name: %s, meta value: %s\n", keyName (curMeta), keyString (curMeta));
+        printf ("metaname: %s, metavalue: %s\n", keyName (curMeta), keyString (curMeta));
     }
 }
 ```
