@@ -49,12 +49,13 @@ int main (void)
 	printf ("Metadata hello now has the value %s\n", (const char *) keyValue (keyGetMeta (k, "hello")));
 
 	printf ("Now we will output all metadata of the key:\n");
-	keyRewindMeta (k);
-	while ((meta = keyNextMeta (k)) != 0)
+
+	KeySet * metaKeys = keyMeta (k);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		meta = ksAtCursor (metaKeys, it);
 		printf ("%s=%s\n", keyName (meta), (const char *) keyValue (meta));
 	}
-
 	keyDel (k);
 
 	return 0;

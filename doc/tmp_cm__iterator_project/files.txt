@@ -23,7 +23,7 @@ IMO, the end goal would be to remove Key * cursor and size_t current from struct
 ksSearch: can be used to obtain the index of a key in a keyset
 ksAtCursor: get the Key at a given index (to be renamed to ksAt)
 ksPop: is going to get replaced by elektraKsPopAtCursor
-
+keyMeta: get a keyset meta metakeys of a key
 
 
 # Track the work progress per file and line.
@@ -134,9 +134,9 @@ X 184:ksNext should be safe to missusage?
 
 > Added new example for ussage, rewrote some text
 >    26	doc/dev/metadata.md:3
->71:int keyRewindMeta(Key *key);
->72:const Key *keyNextMeta(Key *key);
->73:const Key *keyCurrentMeta(const Key *key);
+> 71:int keyRewindMeta(Key *key);
+> 72:const Key *keyNextMeta(Key *key);
+> 73:const Key *keyCurrentMeta(const Key *key);
 >
 
 
@@ -145,26 +145,139 @@ X 184:ksNext should be safe to missusage?
 
 
 # Examples
-    27	examples/keyMetaKeySet.c:2
-    28	examples/ksLookupPop.c:2
-    29	examples/iterate.c:10
-    30	examples/external/pkgconfig/application.c:2
-    31	examples/gopts.c:2
-    32	examples/cascading.c:2
-    33	examples/kdbget_error.c:2
-    34	examples/optsCommands.c:3
-    35	examples/ksNewExample.c:2
-    36	examples/set_key.c:2
-    37	examples/goptsCommands.c:3
+
+>    27	examples/keyMetaKeySet.c:2
+> 25:	ksRewind (keyMeta (key));
+> 26:	while ((cur = ksNext (keyMeta (key))) != NULL)
+
+
+>    28	examples/ksLookupPop.c:2
+> 17:	ksRewind (iterator);
+> 18:	while ((current = ksNext (iterator)))
+
+
+>    29	examples/iterate.c:10
+> 15: * elektra. We use ksNext() and keyIsBelow() to implement a function
+> 17:Key * ksNextDir (KeySet * ks)
+> 20:	Key * startKey = ksCurrent (ks);
+> 22:	if (!startKey) return (ksNext (ks));
+> 24:	while ((cur = ksNext (ks)) != 0)
+> 50:	ksRewind (ks);
+> 51:	while ((cur = ksNext (ks)) != 0)
+> 57:	ksRewind (ks);
+> 58:	while ((cur = ksNextDir (ks)) != 0)
+> 66:	while ((cur = ksNext (ks)) != 0)
+
+
+>	Internal iterator was only used on commented out code -> removed the comment
+>    30	examples/external/pkgconfig/application.c:2
+> 28:	ksRewind(myConfig);
+> 29:	while ((key = ksNext(myConfig)))
+
+
+>    31	examples/gopts.c:2
+> 231:	ksRewind (files);
+> 233:	while ((cur = ksNext (files)) != NULL)
+
+
+>    32	examples/cascading.c:2
+> 42:	ksRewind (ks);
+> 44:	while ((k = ksNext (ks)))
+
+
+> Changes to a function that is never called (TODO: test it!)
+>    33	examples/kdbget_error.c:2
+> 111:	keyRewindMeta (key);
+> 112:	while ((iter_key = keyNextMeta (key)) != 0)
+
+
+>    34	examples/optsCommands.c:3
+> 158:			ksRewind (dynamicCommand);
+> 159:			printf ("%s' with arguments:", keyString (ksNext (dynamicCommand)));
+> 161:			while ((cur = ksNext (dynamicCommand)) != NULL)
+
+
+>    35	examples/ksNewExample.c:2
+> 23: ksRewind (myConfig);
+> 24: while ((current = ksNext (myConfig)) != 0)
+
+
+>    36	examples/set_key.c:2
+> 23:	keyRewindMeta (err);
+> 24:	while ((meta = keyNextMeta (err)) != 0)
+
+
+>    37	examples/goptsCommands.c:3
+> 224:			ksRewind (dynamicCommand);
+> 225:			printf ("%s' with arguments:", keyString (ksNext (dynamicCommand)));
+> 227:			while ((cur = ksNext (dynamicCommand)) != NULL)
+
+
     38	examples/functional.c:13
-    39	examples/keyMeta.c:2
-    40	examples/keyset.c:3
-    41	examples/ksCut.c:3
-    42	examples/meta.c:2
-    43	examples/opts.c:2
+?? Position where execution stopped now no longer available via ksCurrent()
+?? Should we change the return value or emmit an error or ...
+ksForEach:
+> 29: * 	ksCurrent() will tell you where it stopped.
+> 37:	elektraCursor cursor = ksGetCursor (ks);
+> 38:	ksRewind (ks);
+> 39:	while ((current = ksNext (ks)) != 0)
+> 45:	ksSetCursor (ks, cursor);
+
+ksFilter:
+?? Same problem, in case of error the position of the problematic key can no
+?? longer be retrieved via ksCurrent()
+> 54: * when it returns -1 the processing will be stopped. You can use ksCurrent()
+> 56: * apart from ksCurrent() the input will not be changed. The keys that have
+> 65: * @retval -1 when filter returned an error (-1), ksCurrent() of input will
+> 74:	elektraCursor cursor = ksGetCursor (input);
+> 75:	ksRewind (input);
+> 76:	while ((current = ksNext (input)) != 0)
+> 87:	ksSetCursor (input, cursor);
+> 172:	ksCurrent (values);		      /* here is user:/c */
+
+
+>    39	examples/keyMeta.c:2
+> 37:	ksRewind (ks);
+> 38:	while ((current = ksNext (ks)) != 0)
+
+
+>     40	examples/keyset.c:3
+> 90:	printf ("A duplication was appended in keyset with name %s\n", keyName (ksHead (ks)));
+> 102:	ksRewind (ks);
+> 103:	origKey = ksNext (ks);
+
+
+>     41	examples/ksCut.c:3
+> 15:	ksRewind (returned);
+> 16:	while (ksNext (returned))
+> 18:		printf ("%s\n", keyName (ksCurrent (returned)));
+
+
+>    42	examples/meta.c:2
+> 52:	keyRewindMeta (k);
+> 53:	while ((meta = keyNextMeta (k)) != 0)
+
+
+>    43	examples/opts.c:2
+> 165:	ksRewind (files);
+> 167:	while ((cur = ksNext (files)) != NULL)
+
 
 # Scripts
     44	scripts/api_review/methods.c.txt:10
+15:int keyRewindMeta(Key *key);
+16:const Key *keyNextMeta(Key *key);
+17:const Key *keyCurrentMeta(const Key *key);
+65:int ksRewind(KeySet *ks);
+66:Key *ksNext(KeySet *ks);
+67:Key *ksCurrent(const KeySet *ks);
+68:Key *ksHead(const KeySet *ks);
+69:Key *ksTail(const KeySet *ks);
+70:elektraCursor ksGetCursor(const KeySet *ks);
+71:int ksSetCursor(KeySet *ks, elektraCursor cursor);
+
+
+
 
 # Plugins
     45	src/plugins/ni/ni.c:7
@@ -313,3 +426,34 @@ X 184:ksNext should be safe to missusage?
    178	tests/cframework/tests.h:9
    179	tests/cframework/tests.c:6
 
+
+
+
+
+# Questions:
+
+1) Should we check for NULL, for it < keySetSize or both?
+for NULL:
+	Key * cur;
+	for (elektraCursor it = 0; (cur = ksAtCursor (ks, it)) != NULL; ++cursor)
+	{
+		printf ("%s\n", keyName (cur));
+	}
+
+
+for ksSize:
+	Key * cur;
+	ssize_t ksSize = ksGetSize (ks);
+	for (elektraCursor it = 0; it < ksSize; ++it)
+	{
+		cur = ksAtCursor (ks, it);
+		printf ("%s\n", keyName (cur));
+	}
+
+for both:
+	Key * cur;
+	ssize_t ksSize = ksGetSize (ks);
+	for (elektraCursor it = 0; it < ksSize && (cur = ksAtCursor (ks, it)) != NULL; ++it)
+	{
+		printf ("%s\n", keyName (cur));
+	}

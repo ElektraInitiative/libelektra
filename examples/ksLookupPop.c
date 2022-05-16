@@ -12,11 +12,11 @@
 void f (KeySet * iterator, KeySet * lookup)
 {
 	KeySet * append = ksNew (ksGetSize (lookup), KS_END);
-	Key * current;
+	ssize_t ksSize = ksGetSize (iterator);
 
-	ksRewind (iterator);
-	while ((current = ksNext (iterator)))
+	for (elektraCursor it = 0; it < ksSize; ++it)
 	{
+		Key * current = ksAtCursor (iterator, it);
 		Key * key = ksLookup (lookup, current, KDB_O_POP);
 		// do something...
 		ksAppendKey (append, key); // now append it to append, not lookup!

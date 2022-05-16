@@ -34,9 +34,9 @@ void o (KeySet * ks)
 	keySetMeta (shared, "shared2", "this metadata should be shared among many keys also");
 	keySetMeta (shared, "shared3", "this metadata should be shared among many keys too");
 
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		current = ksAtCursor (ks, it);
 		if (needsSharedData (current)) keyCopyAllMeta (current, shared);
 	}
 

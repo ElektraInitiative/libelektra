@@ -87,7 +87,7 @@ int main (void)
 	printf ("Key is unchanged with value %s\n", keyString (key));
 
 	g (key, ks);
-	printf ("A duplication was appended in keyset with name %s\n", keyName (ksHead (ks)));
+	printf ("A duplication was appended in keyset with name %s\n", keyName (ksAtCursor(ks, 0)));
 
 	h (key);
 	printf ("Key has changed to name %s with value %s\n", keyName (key), keyString (key));
@@ -99,8 +99,7 @@ int main (void)
 	/* key is yet independent */
 	keyDel (key);
 
-	ksRewind (ks);
-	origKey = ksNext (ks);
+	origKey = ksAtCursor(ks, 0);
 	key = keyDup (origKey, KEY_CP_ALL);
 	printf ("A duplication of the key %s with value %s\n", keyName (key), keyString (key));
 

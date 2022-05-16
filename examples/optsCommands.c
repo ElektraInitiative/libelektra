@@ -155,11 +155,12 @@ int main (int argc, const char ** argv)
 		if (ksGetSize (dynamicCommand) > 0)
 		{
 			printf ("dynamically invoke the command '");
-			ksRewind (dynamicCommand);
-			printf ("%s' with arguments:", keyString (ksNext (dynamicCommand)));
+			printf ("%s' with arguments:", keyString (ksAtCursor (dynamicCommand, 0)));
 			Key * cur = NULL;
-			while ((cur = ksNext (dynamicCommand)) != NULL)
+
+			for (elektraCursor it = 1; it < ksGetSize (dynamicCommand); ++it)
 			{
+				cur = ksAtCursor (dynamicCommand, it);
 				printf (" %s", keyString (cur));
 			}
 			printf ("\n");

@@ -19,10 +19,12 @@
 
 void print_warnings (Key * err)
 {
-	const Key * meta = 0;
-	keyRewindMeta (err);
-	while ((meta = keyNextMeta (err)) != 0)
+	const KeySet * metaKeys = keyMeta (err);
+	const Key * meta;
+
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		meta = ksAtCursor (metaKeys, it);
 		printf ("%s:\t%s\n", keyName (meta), keyString (meta));
 	}
 }

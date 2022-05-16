@@ -22,9 +22,15 @@ int main (void)
 
 	//! [Iterate keyMeta]
 	Key * cur;
-	ksRewind (keyMeta (key));
-	while ((cur = ksNext (keyMeta (key))) != NULL)
+	KeySet * metaKeys;
+	ssize_t ksSize;
+
+	metaKeys = keyMeta (key);
+	ksSize = ksGetSize (metaKeys);
+
+	for (elektraCursor it = 0; it < ksSize; ++it)
 	{
+		cur = ksAtCursor (metaKeys, it);
 		printf ("meta name: %s, meta value: %s\n", keyName (cur), keyString (cur));
 	}
 	//! [Iterate keyMeta]
