@@ -1,0 +1,22 @@
+Change name: (TODO: discuss if rename should already be part of Project)
+ksAtCursor -> ksAt
+
+
+# Issues:
+
+- List of functions to remove or rename
+	https://github.com/ElektraInitiative/libelektra/issues/3976
+- Remove internal interator use from SWIG bindings
+	https://github.com/ElektraInitiative/libelektra/issues/4279
+- Remove internal iterators from C++ API
+	https://github.com/ElektraInitiative/libelektra/issues/4280
+- Remove usage of internal iterators from plugins
+	https://github.com/ElektraInitiative/libelektra/issues/4281
+- Implement external iterators (old general issue)
+	https://github.com/ElektraInitiative/libelektra/issues/3171
+
+
+# PRs:
+
+- P0 - Proposal
+	https://github.com/ElektraInitiative/libelektra/pull/4305

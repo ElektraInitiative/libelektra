@@ -1,0 +1,315 @@
+# Functions to be removed
+ksRewind
+ksNext
+ksCurrent
+
+ksGetCursor
+ksSetCursor
+
+keyRewindMeta
+keyNextMeta
+keyCurrentMeta
+
+ksHead
+ksTail
+
+
+## End goal:
+IMO, the end goal would be to remove Key * cursor and size_t current from struct _KeySet.
+
+
+
+# Existing functions (already available)
+ksSearch: can be used to obtain the index of a key in a keyset
+ksAtCursor: get the Key at a given index (to be renamed to ksAt)
+ksPop: is going to get replaced by elektraKsPopAtCursor
+
+
+
+# Track the work progress per file and line.
+* ... in progress
+> ... finished
+< ... Nothing to change (e.g. historical reports)
+X ... blocked (explain!)
++ ... added (dependency of change in other file)
+? ... open questions
+
+
+
+grep -cir -- "ksRewind\|ksNext\|ksCurrent\|ksGetCursor\|ksSetCursor\|keyRewindMeta\|keyNextMeta\|keyCurrentMeta\|ksHead\|ksTail" * | grep -v ':0$' | nl
+
+# Benchmarks
+>     1	benchmarks/storage.c:6
+>58:	ksRewind (ks);
+>60:	while ((cur = ksNext (ks)))
+>68:	ksRewind (ks);
+>72:	while ((cur = ksNext (ks)))
+>81:	ksRewind (ks);
+>85:	while ((cur = ksNext (ks)))
+
+>     2	benchmarks/opmphm.c:8
+>99:				ksRewind (ks);
+>106:				while ((key = ksNext (ks)))
+>1569:		ksRewind (ks);
+>1589:		while ((key = ksNext (ks)))
+>1608:		ksRewind (ks);
+>1609:		while ((key = ksNext (ks)))
+>2086:			ksRewind (ks);
+>2087:			while ((key = ksNext (ks)))
+
+
+>     3	benchmarks/createkeys.c:2
+>18:	ksRewind (large);
+>21:	while ((cur = ksNext (large)))
+
+# Documentation
+    
+	## Reports of historical reviews (not to update)
+<	 4	doc/api_review/core/ksAtCursor.md:2
+<     5	doc/api_review/core/keyRewindMeta.md:3
+<     6	doc/api_review/core/ksTail.md:4
+<     7	doc/api_review/core/keyCurrentMeta.md:3
+<     8	doc/api_review/core/keyNextMeta.md:4
+<     9	doc/api_review/core/ksHead.md:4
+<    10	doc/api_review/core/ksSetCursor.md:4
+<    11	doc/api_review/core/ksGetCursor.md:2
+<    12	doc/api_review/core/ksPop.md:1
+<    13	doc/api_review/core/ksCurrent.md:2
+<    14	doc/api_review/core/ksRewind.md:2
+<    15	doc/api_review/core/ksNext.md:2
+
+
+>    16	doc/tutorials/plugins.md:2
+>409:	ksRewind (conf);
+>410:	while ((cur = ksNext (conf)) != 0)
+
+
+
+< Nothing to change --> talks already about ksNext becoming deprecated
+<    17	doc/API.md:1
+<114:- [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
+
+## Historic news are not changed
+<    18	doc/news/2014-09-02_0.8.8.md:1
+<    19	doc/news/2021-04-12_0.9.5.md:6
+
+
+<   20	doc/VERSION.md:1
+< 122:For example, in `1.0` there is a deprecated method `ksNext` (not
+
+? Ask what this is about!
+?    21	doc/todo/TODO:1
+? 101:	ksCurrent only for iterator
+
+
+X Missing test cases for iterator interface mentioned --> implement test
+X cases for usage of external iterator and remove in doc after that
+X    22	doc/todo/TESTING:1
+X 184:ksNext should be safe to missusage?
+
+
+? Ask if we should edit the file to mention changes we made?
+?    23	doc/decisions/simplify_api.md:1
+? 39:- _Remove_ all functions related to keyset cursors, as well as `ksHead` and `ksTail`
+
+
+? This file basically describes a part of our CM-project
+? Ask if we should edit the file to mention changes we made?
+?	24	doc/decisions/iterators.md:12
+
+
+
+? Ask if we should update to document?
+? It mentions the version 0.8, so should we change this part too?
+? 64: This subsection describes what has changed between 0.7 and 0.8 and deals with
+? 65: some general implementation issues.
+? 
+?
+? 25	doc/dev/data-structures.md:4
+? 202:`ksRewind()` to go to the beginning and `ksNext()` to
+? 237:`ksGetCursor()` and `ksSetCursor()`.
+? 251:`ksNext()`.
+? 257:faster than using the internal cursor with ksNext().
+
+
+> Added new example for ussage, rewrote some text
+>    26	doc/dev/metadata.md:3
+>71:int keyRewindMeta(Key *key);
+>72:const Key *keyNextMeta(Key *key);
+>73:const Key *keyCurrentMeta(const Key *key);
+>
+
+
+
+
+
+
+# Examples
+    27	examples/keyMetaKeySet.c:2
+    28	examples/ksLookupPop.c:2
+    29	examples/iterate.c:10
+    30	examples/external/pkgconfig/application.c:2
+    31	examples/gopts.c:2
+    32	examples/cascading.c:2
+    33	examples/kdbget_error.c:2
+    34	examples/optsCommands.c:3
+    35	examples/ksNewExample.c:2
+    36	examples/set_key.c:2
+    37	examples/goptsCommands.c:3
+    38	examples/functional.c:13
+    39	examples/keyMeta.c:2
+    40	examples/keyset.c:3
+    41	examples/ksCut.c:3
+    42	examples/meta.c:2
+    43	examples/opts.c:2
+
+# Scripts
+    44	scripts/api_review/methods.c.txt:10
+
+# Plugins
+    45	src/plugins/ni/ni.c:7
+    46	src/plugins/gpgme/gpgme.c:6
+    47	src/plugins/length/test_length.h:6
+    48	src/plugins/length/length.c:4
+    49	src/plugins/keytometa/keytometa.c:6
+    50	src/plugins/path/path.c:2
+    51	src/plugins/multifile/multifile.c:26
+    52	src/plugins/c/c.c:4
+    53	src/plugins/base64/base64.c:4
+    54	src/plugins/glob/glob.c:7
+    55	src/plugins/date/date.c:2
+    56	src/plugins/range/range.c:2
+    57	src/plugins/range/testmod_range.c:5
+    58	src/plugins/python/testmod_python.c:1
+    59	src/plugins/type/types.c:2
+    60	src/plugins/type/testmod_type.c:2
+    61	src/plugins/type/type.c:16
+    62	src/plugins/hosts/hosts-set.c:4
+    63	src/plugins/hosts/hosts-get.c:4
+    64	src/plugins/validation/validation.c:1
+    65	src/plugins/validation/lookupre.c:2
+    66	src/plugins/validation/testmod_validation.c:16
+    67	src/plugins/internalnotification/internalnotification.c:2
+    68	src/plugins/csvstorage/csvstorage.c:18
+    69	src/plugins/ruby/testmod_ruby.c:10
+    70	src/plugins/profile/profile.c:14
+    71	src/plugins/specload/specload.c:26
+    72	src/plugins/yajl/testmod_yajl.c:18
+    73	src/plugins/yajl/yajl_gen.c:13
+    74	src/plugins/yajl/yajl_parse.c:23
+    75	src/plugins/yajl/iterator.c:8
+    76	src/plugins/mathcheck/testmod_mathcheck.c:3
+    77	src/plugins/mathcheck/mathcheck.c:2
+    78	src/plugins/fstab/fstab.c:3
+    79	src/plugins/mini/mini.c:2
+    80	src/plugins/tracer/tracer.c:5
+    81	src/plugins/mmapstorage/testmod_mmapstorage.c:6
+    82	src/plugins/mmapstorage/mmapstorage.c:12
+    83	src/plugins/unit/unit.c:3
+    84	src/plugins/line/line.c:4
+    85	src/plugins/macaddr/testmod_macaddr.c:2
+    86	src/plugins/macaddr/macaddr.c:4
+    87	src/plugins/rgbcolor/rgbcolor.c:4
+    88	src/plugins/augeas/testmod_augeas.c:6
+    89	src/plugins/xmltool/stream.c:9
+    90	src/plugins/xmltool/testmod_xmltool.c:4
+    91	src/plugins/rename/rename.c:5
+    92	src/plugins/rename/testmod_rename.c:2
+    93	src/plugins/doc/doc.c:4
+    94	src/plugins/doc/doc.h:2
+    95	src/plugins/list/addPluginTest.c:3
+    96	src/plugins/list/list.c:27
+    97	src/plugins/error/error.c:3
+    98	src/plugins/passwd/passwd.c:4
+    99	src/plugins/passwd/testmod_passwd.c:1
+   100	src/plugins/dbus/dbus.c:5
+   101	src/plugins/mozprefs/mozprefs.c:1
+   102	src/plugins/hexnumber/hexnumber.c:4
+   103	src/plugins/toml/prepare.c:20
+   104	src/plugins/toml/node.c:9
+   105	src/plugins/toml/driver.c:1
+   106	src/plugins/toml/write.c:8
+   107	src/plugins/toml/utility.c:11
+   108	src/plugins/crypto/helper.c:4
+   109	src/plugins/crypto/crypto.c:4
+   110	src/plugins/crypto/gpg.c:2
+   111	src/plugins/crypto/testmod_crypto.c:2
+   112	src/plugins/simpleini/simpleini.c:2
+   113	src/plugins/spec/spec.c:27
+   114	src/plugins/lua/testmod_lua.c:1
+   115	src/plugins/email/email.c:2
+   116	src/plugins/logchange/logchange.c:5
+   117	src/plugins/network/network.c:2
+   118	src/plugins/iterate/iterate.c:1
+   119	src/plugins/iterate/testmod_iterate.c:2
+   120	src/plugins/syslog/syslog.c:2
+   121	src/plugins/ipaddr/ipaddr.c:2
+   122	src/plugins/fcrypt/fcrypt.c:6
+   123	src/plugins/quickdump/quickdump.c:6
+   124	src/plugins/hexcode/hexcode.c:5
+   125	src/plugins/conditionals/testmod_conditionals.c:34
+   126	src/plugins/conditionals/conditionals.c:7
+   127	src/plugins/reference/reference.c:12
+   128	src/plugins/iconv/iconv.c:4
+   129	src/plugins/blockresolver/blockresolver.c:1
+
+# Libs
+   130	src/libs/opts/opts.c:42
+   131	src/libs/meta/meta.c:4
+   132	src/libs/globbing/globbing.c:4
+   133	src/libs/ease/functional.c:8
+   134	src/libs/highlevel/elektra.c:3
+   135	src/libs/pluginprocess/pluginprocess.c:2
+   136	src/libs/elektra/symbols.map:10
+   137	src/libs/elektra/mount.c:6
+   138	src/libs/elektra/plugin.c:5
+   139	src/libs/elektra/keymeta.c:25
+   140	src/libs/elektra/kdb.c:30
+   141	src/libs/elektra/proposal.c:7
+   142	src/libs/elektra/split.c:9
+   143	src/libs/elektra/keyset.c:86
+   144	src/libs/elektra/backend.c:10
+   145	src/libs/elektra/keyvalue.c:2
+   146	src/libs/merge/kdbmerge.c:16
+
+# Bindings
+   147	src/bindings/jna/libelektra/src/main/java/org/libelektra/Elektra.java:6
+   148	src/bindings/jna/libelektra/src/main/java/org/libelektra/Key.java:3
+   149	src/bindings/jna/libelektra/src/main/java/org/libelektra/NativePlugin.java:3
+   150	src/bindings/jna/libelektra/src/main/java/org/libelektra/KeySet.java:2
+   151	src/bindings/cpp/tests/testcpp_meta.cpp:1
+   152	src/bindings/cpp/include/keyset.hpp:14
+   153	src/bindings/cpp/include/key.hpp:6
+   154	src/bindings/intercept/fs/intercept.c:4
+   155	src/bindings/intercept/env/tests/test_getenv.cpp:2
+   156	src/bindings/intercept/env/src/getenv.cpp:2
+   157	src/bindings/glib/gelektra-keyset.c:4
+   158	src/bindings/glib/gelektra-key.c:5
+   159	src/bindings/rust/elektra-sys/src/lib.rs:5
+   160	src/bindings/rust/elektra/src/key.rs:1
+   161	src/bindings/rust/elektra/src/readable.rs:1
+   162	src/bindings/rust/elektra/src/writeable.rs:1
+   163	src/bindings/rust/elektra/src/keyset.rs:6
+
+# Tools
+   164	src/tools/race/race.c:2
+
+# Include files
+   165	src/include/kdbmacros.h:5
+   166	src/include/kdb.h.in:10
+
+# Tests
+   167	tests/abi/testabi_ks.c:329
+   168	tests/abi/testabi_key.c:2
+   169	tests/abi/testabi_meta.c:15
+   170	tests/ctest/test_opts.c:4
+   171	tests/ctest/test_globbing.c:6
+   172	tests/ctest/test_order.c:2
+   173	tests/ctest/test_ks_opmphm.c:6
+   174	tests/ctest/test_meta.c:7
+   175	tests/ctest/test_splitset.c:4
+   176	tests/ctest/test_trie.c:4
+   177	tests/ctest/test_ks.c:3
+   178	tests/cframework/tests.h:9
+   179	tests/cframework/tests.c:6
+
