@@ -103,7 +103,7 @@ char * makeKey (const char ** in, int len)
 		const char * s = in[i];
 		if (i != 0)
 		{
-			strncpy (p, "/", 1);
+			*p = '/';
 			p += 1;
 		}
 
