@@ -80,12 +80,4 @@ int main (void) {
 
     elektraKeyDel (key);
     elektraKeyDel (key2);
-
-    // KeySet * ks = ksNew (1, KS_END);
-    // ksAppendKey(ks, key);
-
-    // Key * foundKey = ksLookupByName(ks, "test", 0);
-    // printf("%s\n", keyName (foundKey));
-
-    // ksDel(ks);
 }

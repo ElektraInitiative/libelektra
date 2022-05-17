@@ -4,12 +4,11 @@
 #![allow(non_camel_case_types)]
 #![allow(unused_variables)]
 
-use std::cmp::Ordering;
 use std::ffi::{CStr, CString, VaList, VaListImpl};
 use std::{ptr, slice};
 use std::str::FromStr;
 use std::convert::TryFrom;
-use libc::{ssize_t, size_t, c_char, c_int, c_void};
+use libc::{ssize_t, size_t, c_char, c_int, c_void, __u16};
 
 mod structs;
 
@@ -257,7 +256,6 @@ pub extern "C" fn elektraKeyIsDirectlyBelow(key: *const CKey, check: *const CKey
     that_key.name().is_directly_below(other_key.name()) as c_int
 }
 
-/// You have to free the returned string manually, otherwise there will be memory leaks
 #[no_mangle]
 pub extern "C" fn elektraKeyName(key: *const CKey) -> *const c_char {
     if key.is_null() {
@@ -265,18 +263,7 @@ pub extern "C" fn elektraKeyName(key: *const CKey) -> *const c_char {
     }
 
     let c_key = unsafe { &*key };
-    let rust_key = match Key::try_from(c_key) {
-        Ok(x) => x,
-        Err(_) => return ptr::null_mut(),
-    };
-
-    let key_name = rust_key
-        .name()
-        .to_string();
-
-    CString::new(key_name)
-        .unwrap()
-        .into_raw()
+    return c_key.key;
 }
 
 #[no_mangle]
