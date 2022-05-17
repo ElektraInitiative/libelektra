@@ -397,7 +397,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	dirKey = keyDup (parentKey, KEY_CP_ALL);
 	keyAddName (dirKey, "#");
 	elektraFree (lineBuffer);
-	ksRewind (header);
+
 	while (1)
 	{
 		lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
@@ -422,11 +422,12 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		char * col;
 		colCounter = 0;
 		char * lastIndex = "#0";
-		ksRewind (header);
 		KeySet * tmpKs = ksNew (0, KS_END);
+
+		elektraCursor itHeader = 0;
 		while ((col = parseLine (lineBuffer, delim, offset, parentKey, lineCounter, lastLine)) != NULL)
 		{
-			cur = ksNext (header);
+			cur = ksAtCursor (header, itHeader++);
 			offset += elektraStrLen (col);
 			key = keyDup (dirKey, KEY_CP_ALL);
 			if (col[0] == '"')
@@ -457,14 +458,10 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 				Key * indexKey = ksLookupByName (tmpKs, keyName (lookupKey), 0);
 				Key * renameKey = keyNew (keyName (dirKey), KEY_END);
 				keySetBaseName (renameKey, keyString (indexKey));
-				ksRewind (tmpKs);
 				KeySet * renamedKs = ksRenameKeys (tmpKs, keyName (renameKey));
 				ksAppendKey (renamedKs, keyDup (renameKey, KEY_CP_ALL));
-				ksRewind (renamedKs);
 				keyDel (lookupKey);
 				keyDel (renameKey);
-				ksRewind (renamedKs);
-				ksRewind (tmpKs);
 				ksAppend (returned, renamedKs);
 				ksDel (renamedKs);
 			}
@@ -577,8 +574,10 @@ int elektraCsvstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				colNames = (char *) elektraMalloc (nrNames * sizeof (char *));
 				Key * cur;
 				char ** ptr = (char **) colNames;
-				while ((cur = ksNext (namesKS)) != NULL)
+
+				for (elektraCursor it = 0; it < ksGetSize (namesKS); ++it)
 				{
+					cur = ksAtCursor (namesKS, it);
 					if (!strcmp (keyName (cur), keyName (setNamesKey))) continue;
 					if (!strcmp (keyString (cur), ""))
 						*ptr = NULL;
@@ -634,9 +633,9 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 	KeySet * toWriteKS;
 	Key * toWrite;
 
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		if (keyIsDirectlyBelow (parentKey, cur) != 1) continue;
 		colCounter = 0;
 		if (useHeader)
@@ -647,12 +646,9 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 		if (colAsParent)
 		{
 			KeySet * tmpKs = ksDup (returned);
-			ksRewind (tmpKs);
 			KeySet * headerKs = ksCut (tmpKs, cur);
-			ksRewind (headerKs);
 			ksDel (tmpKs);
-			ksNext (headerKs);
-			Key * tmp = ksNext (headerKs);
+			Key * tmp = ksAtCursor (headerKs, 1);
 			int printDelim = 0;
 			if (isExportKey (tmp, cur, exportKS))
 			{
@@ -660,8 +656,10 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 				printDelim = 1;
 				++colCounter;
 			}
-			while ((tmp = ksNext (headerKs)) != NULL)
+
+			for (elektraCursor itHeaderKs = 2; itHeaderKs < ksGetSize (headerKs); ++itHeaderKs)
 			{
+				tmp = ksAtCursor (headerKs, itHeaderKs);
 				if (!isExportKey (tmp, cur, exportKS)) continue;
 				++colCounter;
 				if (printDelim) fprintf (fp, "%c", delim);
@@ -685,13 +683,12 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 		}
 		colCounter = 0;
 		toWriteKS = ksCut (returned, cur);
-		ksRewind (toWriteKS);
 		int printDelim = 0;
-		while (1)
+
+		for (elektraCursor itToWriteKs = 0; itToWriteKs < ksGetSize (toWriteKS); ++itToWriteKs)
 		{
-			toWrite = ksNext (toWriteKS);
+			toWrite = ksAtCursor (toWriteKS, itToWriteKs);
 			if (!keyCmp (cur, toWrite)) continue;
-			if (!toWrite) break;
 			if (!isExportKey (toWrite, cur, exportKS))
 			{
 				continue;
@@ -756,7 +753,6 @@ int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		exportKS = ksCut (config, exportKey);
 		ksAppend (config, exportKS);
 		keyDel (ksLookup (exportKS, exportKey, KDB_O_POP));
-		ksRewind (exportKS);
 	}
 	short useHeader = 0;
 	if (!strcmp (keyString (useHeaderKey), "skip")) useHeader = -1;

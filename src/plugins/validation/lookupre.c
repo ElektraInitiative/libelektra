@@ -43,9 +43,6 @@ regex_t regex;
 
 regcomp(&regex,"^[ \t]*$",REG_NOSUB);
 
-// we start from the first key
-ksRewind(ks);
-
 // show the key that match this string
 match=ksLookupRE(ks,&regex);
 
@@ -84,10 +81,10 @@ regfree(&regex);        // don't forget to free resources
 Key * ksLookupRE (KeySet * ks, const regex_t * regexp)
 {
 	regmatch_t offsets;
-	Key *walker = 0, *end = 0;
 
-	while ((walker = ksNext (ks)) != end)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * walker = ksAtCursor (ks, it);
 		if (!regexec (regexp, keyString (walker), 1, &offsets, 0)) return walker;
 	}
 

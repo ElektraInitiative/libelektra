@@ -38,7 +38,6 @@ static void test_length (void)
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, moreThanMaxLen);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should not fail");
 	succeed_if (output_warnings (parentKey) == 0, "kdbGet should produce warnings");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
@@ -46,14 +45,12 @@ static void test_length (void)
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, equalToMaxLen);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, moreThanMaxLenBy1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should not fail");
 	succeed_if (output_warnings (parentKey) == 0, "kdbGet should produce warnings");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
@@ -61,19 +58,16 @@ static void test_length (void)
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, lessThanMaxLenBy1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, lessThanMaxWithStringTerminator);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 
 	ksAppendKey (ks, moreThanMaxWithStringTerminator);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should not fail");
 	succeed_if (output_warnings (parentKey) == 0, "kdbGet should produce warnings");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");

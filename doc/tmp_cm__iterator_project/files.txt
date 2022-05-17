@@ -279,257 +279,279 @@ ksFilter:
 > 71:int ksSetCursor(KeySet *ks, elektraCursor cursor);
 
 
+
+
 # Plugins
-    45	src/plugins/ni/ni.c:7
-75:	keyRewindMeta (cur);
-76:	while ((m = keyNextMeta (cur)) != 0)
-91:	ksRewind (returned);
-93:	if (keyCmp (ksHead (returned), parentKey) == 0)
-97:		keyMetaToNi (add, ksHead (returned));
-98:		ksNext (returned); // do not process parent in loop again
-101:	while ((cur = ksNext (returned)) != 0)
+
+>     45	src/plugins/ni/ni.c:7
+> 75:	keyRewindMeta (cur);
+> 76:	while ((m = keyNextMeta (cur)) != 0)
+> 91:	ksRewind (returned);
+> 93:	if (keyCmp (ksHead (returned), parentKey) == 0)
+> 97:		keyMetaToNi (add, ksHead (returned));
+> 98:		ksNext (returned); // do not process parent in loop again
+> 101:	while ((cur = ksNext (returned)) != 0)
 
 
-    46	src/plugins/gpgme/gpgme.c:6
-178:		ksRewind (config);
-179:		while ((k = ksNext (config)) != 0)
-378:	ksRewind (data);
-379:	while ((k = ksNext (data)))
-492:	ksRewind (data);
-493:	while ((k = ksNext (data)) != 0)
+>    46	src/plugins/gpgme/gpgme.c:6
+> 178:		ksRewind (config);
+> 179:		while ((k = ksNext (config)) != 0)
+> 378:	ksRewind (data);
+> 379:	while ((k = ksNext (data)))
+> 492:	ksRewind (data);
+> 493:	while ((k = ksNext (data)) != 0)
 
 
-    47	src/plugins/length/test_length.h:6
-40:	ksRewind (ks);
-47:	ksRewind (ks);
-54:	ksRewind (ks);
-61:	ksRewind (ks);
-68:	ksRewind (ks);
-73:	ksRewind (ks);
+>    47	src/plugins/length/test_length.h:6
+> 40:	ksRewind (ks);
+> 47:	ksRewind (ks);
+> 54:	ksRewind (ks);
+> 61:	ksRewind (ks);
+> 68:	ksRewind (ks);
+> 73:	ksRewind (ks);
 
 
-    48	src/plugins/length/length.c:4
-67:	ksRewind (returned);
-68:	while ((cur = ksNext (returned)) != NULL)
-83:	ksRewind (returned);
-84:	while ((cur = ksNext (returned)) != NULL)
+>     48	src/plugins/length/length.c:4
+> 67:	ksRewind (returned);
+> 68:	while ((cur = ksNext (returned)) != NULL)
+> 83:	ksRewind (returned);
+> 84:	while ((cur = ksNext (returned)) != NULL)
 
 
-    49	src/plugins/keytometa/keytometa.c:6
-52:	ksSetCursor (ks, ksGetSize (ks) - 1);
-54:	for (elektraCursor cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
-130:	ksRewind (converted);
-133:	while ((current = ksNext (converted)))
-289:	ksRewind (converted);
-295:	while ((current = ksNext (converted)) != 0)
+>    49	src/plugins/keytometa/keytometa.c:6
+> 52:	ksSetCursor (ks, ksGetSize (ks) - 1);
+> 54:	for (elektraCursor cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
+> 130:	ksRewind (converted);
+> 133:	while ((current = ksNext (converted)))
+> 289:	ksRewind (converted);
+> 295:	while ((current = ksNext (converted)) != 0)
 
 
-    50	src/plugins/path/path.c:2
-370:	ksRewind (returned);
-372:	while ((cur = ksNext (returned)) != 0)
+>    50	src/plugins/path/path.c:2
+> 370:	ksRewind (returned);
+> 372:	while ((cur = ksNext (returned)) != 0)
 
 
-    51	src/plugins/multifile/multifile.c:26
-192:	ksRewind (b);
-194:	while ((k = ksNext (b)) != NULL)
-420:	ksRewind (mc->childBackends);
-421:	ksRewind (found);
-425:	while ((c = ksNext (found)) != NULL)
-440:					elektraCursor savedCursor = ksGetCursor (found);
-442:					ksSetCursor (found, savedCursor);
-490:	ksRewind (mc->childBackends);
-494:	while ((k = ksNext (mc->childBackends)) != NULL)
-525:	ksRewind (mc->childBackends);
-528:	while ((k = ksNext (mc->childBackends)) != NULL)
-533:	ksRewind (returned);
-611:	ksRewind (mc->childBackends);
-615:	while ((k = ksNext (mc->childBackends)) != NULL)
-652:	ksRewind (mc->childBackends);
-656:	while ((k = ksNext (mc->childBackends)) != NULL)
-688:	ksRewind (mc->childBackends);
-692:	while ((k = ksNext (mc->childBackends)) != NULL)
-722:	ksRewind (ks);
-723:	ksRewind (checkKS);
-729:		key = ksNext (ks);
-730:		check = ksNext (checkKS);
-753:	ksRewind (mc->childBackends);
-755:	while ((k = ksNext (mc->childBackends)) != NULL)
-829:	ksRewind (mc->childBackends);
-832:	while ((key = ksNext (mc->childBackends)) != NULL)
+>    51	src/plugins/multifile/multifile.c:26
+> 192:	ksRewind (b);
+> 194:	while ((k = ksNext (b)) != NULL)
+updateFiles:
+> 420:	ksRewind (mc->childBackends);
+> 421:	ksRewind (found);
+> 425:	while ((c = ksNext (found)) != NULL)
+> 440:					elektraCursor savedCursor = ksGetCursor (found);
+> 442:					ksSetCursor (found, savedCursor);
+doGetStorage:
+> 490:	ksRewind (mc->childBackends);
+> 494:	while ((k = ksNext (mc->childBackends)) != NULL)
+fillReturned:
+> 525:	ksRewind (mc->childBackends);
+> 528:	while ((k = ksNext (mc->childBackends)) != NULL)
+> 533:	ksRewind (returned);
+resolverSet:
+> 611:	ksRewind (mc->childBackends);
+> 615:	while ((k = ksNext (mc->childBackends)) != NULL)
+doGetStorage:
+> 652:	ksRewind (mc->childBackends);
+> 656:	while ((k = ksNext (mc->childBackends)) != NULL)
+doCommit:
+> 688:	ksRewind (mc->childBackends);
+> 692:	while ((k = ksNext (mc->childBackends)) != NULL)
+diffOrNeedSync:
+> 722:	ksRewind (ks);
+> 723:	ksRewind (checkKS);
+> 729:		key = ksNext (ks);
+> 730:		check = ksNext (checkKS);
+flagUpdateBackends
+> 753:	ksRewind (mc->childBackends);
+> 755:	while ((k = ksNext (mc->childBackends)) != NULL)
+elektraMultifileError
+> 829:	ksRewind (mc->childBackends);
+> 832:	while ((key = ksNext (mc->childBackends)) != NULL)
 
 
-    52	src/plugins/c/c.c:4
-134:	keyRewindMeta (dup);
-135:	while ((meta = keyNextMeta (dup)))
-166:	ksRewind (cks);
-169:	while ((key = ksNext (cks)) != 0)
+>    52	src/plugins/c/c.c:4
+> 134:	keyRewindMeta (dup);
+> 135:	while ((meta = keyNextMeta (dup)))
+> 166:	ksRewind (cks);
+> 169:	while ((key = ksNext (cks)) != 0)
 
 
-    53	src/plugins/base64/base64.c:4
-252:	ksRewind (keySet);
-254:	while (status >= 0 && (key = ksNext (keySet)))
-276:	ksRewind (keySet);
-281:	while (status >= 0 && (key = ksNext (keySet)))
+>    53	src/plugins/base64/base64.c:4
+> 252:	ksRewind (keySet);
+> 254:	while (status >= 0 && (key = ksNext (keySet)))
+> 276:	ksRewind (keySet);
+> 281:	while (status >= 0 && (key = ksNext (keySet)))
 
 
-    54	src/plugins/glob/glob.c:7
-103:	while ((k = ksNext (keys)) != 0)
-142:	ksRewind (returned);
-143:	while ((cur = ksNext (returned)) != 0)
-146:		ksRewind (glob);
-147:		while ((match = ksNext (glob)) != 0)
-200:	ksRewind (keys);
-214:	ksRewind (keys);
+>    54	src/plugins/glob/glob.c:7
+> 103:	while ((k = ksNext (keys)) != 0)
+> 142:	ksRewind (returned);
+> 143:	while ((cur = ksNext (returned)) != 0)
+> 146:		ksRewind (glob);
+> 147:		while ((match = ksNext (glob)) != 0)
+> 200:	ksRewind (keys);
+> 214:	ksRewind (keys);
 
 
-    55	src/plugins/date/date.c:2
-478:	while ((cur = ksNext (returned)) != NULL)
-499:	while ((cur = ksNext (returned)) != NULL)
+>    55	src/plugins/date/date.c:2
+> 478:	while ((cur = ksNext (returned)) != NULL)
+> 499:	while ((cur = ksNext (returned)) != NULL)
 
 
-    56	src/plugins/range/range.c:2
-521:	while ((cur = ksNext (returned)) != NULL)
-543:	while ((cur = ksNext (returned)) != NULL)
+>    56	src/plugins/range/range.c:2
+> 521:	while ((cur = ksNext (returned)) != NULL)
+> 543:	while ((cur = ksNext (returned)) != NULL)
 
 
-    57	src/plugins/range/testmod_range.c:5
-26:	ksRewind (ks);
-44:	ksRewind (ks);
-62:	ksRewind (ks);
-80:	ksRewind (ks);
-98:	ksRewind (ks);
+>    57	src/plugins/range/testmod_range.c:5
+> 26:	ksRewind (ks);
+> 44:	ksRewind (ks);
+> 62:	ksRewind (ks);
+> 80:	ksRewind (ks);
+> 98:	ksRewind (ks);
 
 
-    58	src/plugins/python/testmod_python.c:1
-37:	succeed_if_same_string (keyName (ksHead (ks)), "user:/from_python");
+>    58	src/plugins/python/testmod_python.c:1
+> 37:	succeed_if_same_string (keyName (ksHead (ks)), "user:/from_python");
 
 
-    59	src/plugins/type/types.c:2
-304:	ksRewind (validValues);
-306:	while ((cur = ksNext (validValues)) != NULL)
+>    59	src/plugins/type/types.c:2
+> 304:	ksRewind (validValues);
+> 306:	while ((cur = ksNext (validValues)) != NULL)
 
 
-    60	src/plugins/type/testmod_type.c:2
-364:	ksRewind (ks);
-371:	ksRewind (ks);
+>    60	src/plugins/type/testmod_type.c:2
+> 364:	ksRewind (ks);
+> 371:	ksRewind (ks);
 
 
-    61	src/plugins/type/type.c:16
-301:	elektraCursor cursor = ksGetCursor (returned);
-303:	ksRewind (returned);
-306:	while ((cur = ksNext (returned)))
-318:			ksSetCursor (returned, cursor);
-332:				ksSetCursor (returned, cursor);
-341:				ksSetCursor (returned, cursor);
-349:			ksSetCursor (returned, cursor);
-354:	ksSetCursor (returned, cursor);
-361:	elektraCursor cursor = ksGetCursor (returned);
-363:	ksRewind (returned);
-366:	while ((cur = ksNext (returned)))
-378:			ksSetCursor (returned, cursor);
-391:				ksSetCursor (returned, cursor);
-399:			ksSetCursor (returned, cursor);
-408:			ksSetCursor (returned, cursor);
-413:	ksSetCursor (returned, cursor);
+>    61	src/plugins/type/type.c:16
+elektraTypeGet:
+> 301:	elektraCursor cursor = ksGetCursor (returned);
+> 303:	ksRewind (returned);
+> 306:	while ((cur = ksNext (returned)))
+> 318:			ksSetCursor (returned, cursor);
+> 332:				ksSetCursor (returned, cursor);
+> 341:				ksSetCursor (returned, cursor);
+> 349:			ksSetCursor (returned, cursor);
+> 354:	ksSetCursor (returned, cursor);
+elektraTypeSet:
+> 361:	elektraCursor cursor = ksGetCursor (returned);
+> 363:	ksRewind (returned);
+> 366:	while ((cur = ksNext (returned)))
+> 378:			ksSetCursor (returned, cursor);
+> 391:				ksSetCursor (returned, cursor);
+> 399:			ksSetCursor (returned, cursor);
+> 408:			ksSetCursor (returned, cursor);
+> 413:	ksSetCursor (returned, cursor);
 
 
-    62	src/plugins/hosts/hosts-set.c:4
-66:	ksRewind (comments);
-68:	while ((current = ksNext (comments)))
-107:	while ((alias = ksNext (returned)) != 0)
-134:	ksRewind (returned);
+>    62	src/plugins/hosts/hosts-set.c:4
+> 66:	ksRewind (comments);
+> 68:	while ((current = ksNext (comments)))
+> 107:	while ((alias = ksNext (returned)) != 0)
+> 134:	ksRewind (returned);
 
 
     63	src/plugins/hosts/hosts-get.c:4
-191:	elektraCursor initialCursor = ksGetCursor (metaKeySet);
-192:	ksRewind (metaKeySet);
-193:	while ((currentMeta = ksNext (metaKeySet)))
-198:	ksSetCursor (metaKeySet, initialCursor);
+> 191:	elektraCursor initialCursor = ksGetCursor (metaKeySet);
+> 192:	ksRewind (metaKeySet);
+> 193:	while ((currentMeta = ksNext (metaKeySet)))
+> 198:	ksSetCursor (metaKeySet, initialCursor);
 
 
 
-    64	src/plugins/validation/validation.c:1
-178:	while ((cur = ksNext (returned)) != 0)
+>    64	src/plugins/validation/validation.c:1
+> 178:	while ((cur = ksNext (returned)) != 0)
 
 
-    65	src/plugins/validation/lookupre.c:2
-47:ksRewind(ks);
-89:	while ((walker = ksNext (ks)) != end)
+>    65	src/plugins/validation/lookupre.c:2
+> 47:ksRewind(ks);
+> 89:	while ((walker = ksNext (ks)) != end)
 
 
-    66	src/plugins/validation/testmod_validation.c:16
-47:	ksRewind (ks);
-73:	ksRewind (ks);
-107:	ksRewind (ks);
-113:	ksRewind (ks);
-119:	ksRewind (ks);
-125:	ksRewind (ks);
-151:	ksRewind (ks);
-157:	ksRewind (ks);
-163:	ksRewind (ks);
-169:	ksRewind (ks);
-195:	ksRewind (ks);
-201:	ksRewind (ks);
-207:	ksRewind (ks);
-213:	ksRewind (ks);
-235:	ksRewind (ks);
-241:	ksRewind (ks);
+>    66	src/plugins/validation/testmod_validation.c:16
+> 47:	ksRewind (ks);
+> 73:	ksRewind (ks);
+> 107:	ksRewind (ks);
+> 113:	ksRewind (ks);
+> 119:	ksRewind (ks);
+> 125:	ksRewind (ks);
+> 151:	ksRewind (ks);
+> 157:	ksRewind (ks);
+> 163:	ksRewind (ks);
+> 169:	ksRewind (ks);
+> 195:	ksRewind (ks);
+> 201:	ksRewind (ks);
+> 207:	ksRewind (ks);
+> 213:	ksRewind (ks);
+> 235:	ksRewind (ks);
+> 241:	ksRewind (ks);
 
 
-    67	src/plugins/internalnotification/internalnotification.c:2
-232:	ksRewind (ks);
-233:	while ((current = ksNext (ks)) != NULL)
+>    67	src/plugins/internalnotification/internalnotification.c:2
+> 232:	ksRewind (ks);
+> 233:	while ((current = ksNext (ks)) != NULL)
 
 
-    68	src/plugins/csvstorage/csvstorage.c:18
-400:	ksRewind (header);
-425:		ksRewind (header);
-429:			cur = ksNext (header);
-460:				ksRewind (tmpKs);
-463:				ksRewind (renamedKs);
-466:				ksRewind (renamedKs);
-467:				ksRewind (tmpKs);
-580:				while ((cur = ksNext (namesKS)) != NULL)
-637:	ksRewind (returned);
-638:	while ((cur = ksNext (returned)) != NULL)
-650:			ksRewind (tmpKs);
-652:			ksRewind (headerKs);
-654:			ksNext (headerKs);
-655:			Key * tmp = ksNext (headerKs);
-663:			while ((tmp = ksNext (headerKs)) != NULL)
-688:		ksRewind (toWriteKS);
-692:			toWrite = ksNext (toWriteKS);
-759:		ksRewind (exportKS);
+>    68	src/plugins/csvstorage/csvstorage.c:18
+csvRead:
+> 400:	ksRewind (header);
+> 425:		ksRewind (header);
+> 429:			cur = ksNext (header);
+> 460:				ksRewind (tmpKs);
+> 463:				ksRewind (renamedKs);
+> 466:				ksRewind (renamedKs);
+> 467:				ksRewind (tmpKs);
+elektraCsvstorageGet:
+> 580:				while ((cur = ksNext (namesKS)) != NULL)
+csvWrite:
+> 637:	ksRewind (returned);
+> 638:	while ((cur = ksNext (returned)) != NULL)
+> 650:			ksRewind (tmpKs);
+> 652:			ksRewind (headerKs);
+> 654:			ksNext (headerKs);
+> 655:			Key * tmp = ksNext (headerKs);
+> 663:			while ((tmp = ksNext (headerKs)) != NULL)
+> 688:		ksRewind (toWriteKS);
+> 692:			toWrite = ksNext (toWriteKS);
+elektraCsvstorageSet:
+> 759:		ksRewind (exportKS);
 
 
-    69	src/plugins/ruby/testmod_ruby.c:10
-107:	Key * head = ksHead (ks);
-108:	Key * tail = ksTail (ks);
-132:	Key * head = ksHead (ks);
-133:	Key * tail = ksTail (ks);
-196:	Key * head = ksHead (ksGet);
-197:	Key * tail = ksTail (ksGet);
-236:	Key * head1 = ksHead (ksGet1);
-237:	Key * tail1 = ksTail (ksGet1);
-255:	Key * head2 = ksHead (ksGet2);
-256:	Key * tail2 = ksTail (ksGet2);
+>    69	src/plugins/ruby/testmod_ruby.c:10
+> 107:	Key * head = ksHead (ks);
+> 108:	Key * tail = ksTail (ks);
+> 132:	Key * head = ksHead (ks);
+> 133:	Key * tail = ksTail (ks);
+> 196:	Key * head = ksHead (ksGet);
+> 197:	Key * tail = ksTail (ksGet);
+> 236:	Key * head1 = ksHead (ksGet1);
+> 237:	Key * tail1 = ksTail (ksGet1);
+> 255:	Key * head2 = ksHead (ksGet2);
+> 256:	Key * tail2 = ksTail (ksGet2);
 
 
-    70	src/plugins/profile/profile.c:14
-87:	ksRewind (profileKeys);
-88:	while ((profileKey = ksNext (profileKeys)) != NULL)
-99:			ksRewind (profileKS);
-101:			while ((cur = ksNext (profileKS)) != NULL)
-130:	ksRewind (profileParents);
-132:	while ((profileParent = ksNext (profileParents)) != NULL)
-137:		ksRewind (defaultKS);
-141:		while ((cur = ksNext (defaultKS)) != NULL)
-190:	ksRewind (swKS);
-196:	while ((cur = ksNext (swKS)) != NULL)
-206:	ksRewind (swKS);
-208:	while ((cur = ksNext (swKS)) != NULL)
-231:	ksRewind (appendedKeys);
-233:	while ((cur = ksNext (appendedKeys)) != NULL)
+>    70	src/plugins/profile/profile.c:14
+linkProfileKeys:
+> 87:	ksRewind (profileKeys);
+> 88:	while ((profileKey = ksNext (profileKeys)) != NULL)
+> 99:			ksRewind (profileKS);
+> 101:			while ((cur = ksNext (profileKS)) != NULL)
+linkDefaultKeys:
+> 130:	ksRewind (profileParents);
+> 132:	while ((profileParent = ksNext (profileParents)) != NULL)
+> 137:		ksRewind (defaultKS);
+> 141:		while ((cur = ksNext (defaultKS)) != NULL)
+elektraProfileGet:
+> 190:	ksRewind (swKS);
+> 196:	while ((cur = ksNext (swKS)) != NULL)
+> 206:	ksRewind (swKS);
+> 208:	while ((cur = ksNext (swKS)) != NULL)
+elektraProfileSet:
+> 231:	ksRewind (appendedKeys);
+> 233:	while ((cur = ksNext (appendedKeys)) != NULL)
 
 
     71	src/plugins/specload/specload.c:26
@@ -1108,6 +1130,21 @@ ksFilter:
 
    129	src/plugins/blockresolver/blockresolver.c:1
 111:		ksRewind (config);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Libs

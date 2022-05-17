@@ -23,7 +23,6 @@ void testInt (const char * value, int ret, const char * rangeString)
 	KeySet * ks = ksNew (10, keyNew ("user:/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d,  range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
@@ -41,7 +40,6 @@ void testUInt (const char * value, int ret, const char * rangeString)
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d,  range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
@@ -59,7 +57,6 @@ void testFloat (const char * value, int ret, const char * rangeString)
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d,  range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
@@ -77,7 +74,6 @@ void testHex (const char * value, int ret, const char * rangeString)
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d, range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
@@ -95,7 +91,6 @@ void testChar (const char * value, int ret, const char * rangeString)
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d, range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");

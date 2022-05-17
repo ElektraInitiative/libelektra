@@ -85,10 +85,12 @@ int elektraLengthGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+
 	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/length/max");
 		if (!meta) continue;
 		validateKey (cur, parentKey, true);
@@ -101,9 +103,10 @@ int elektraLengthSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	// set all keys
 	// this function is optional
 	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/length/max");
 		if (!meta) continue;
 		int rc = validateKey (cur, parentKey, false);

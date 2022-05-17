@@ -43,8 +43,6 @@ void test_lookupre (void)
 
 	regcomp (&regex, "^[ \t]*$", REG_NOSUB);
 
-	// we start from the first key
-	ksRewind (ks);
 
 	// show the key that match this string
 	match = ksLookupRE (ks, &regex);
@@ -70,7 +68,6 @@ void test_extended (void)
 	regcomp (&regex, "^(la)+$", REG_NOSUB | REG_EXTENDED);
 
 	// we start from the first key
-	ksRewind (ks);
 
 	// show the key that match this string
 	match = ksLookupRE (ks, &regex);
@@ -104,25 +101,21 @@ void word_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
@@ -148,25 +141,21 @@ void line_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
@@ -192,25 +181,21 @@ void invert_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
@@ -232,13 +217,11 @@ void icase_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 

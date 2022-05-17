@@ -100,33 +100,34 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 		break;
 	}
 
-	while ((k = ksNext (keys)) != 0)
-	{
-		/* use only glob keys for the current direction */
-		if (keyIsDirectlyBelow (userGlobConfig, k) || keyIsDirectlyBelow (systemGlobConfig, k) ||
-		    keyIsDirectlyBelow (userDirGlobConfig, k) || keyIsDirectlyBelow (systemDirGlobConfig, k))
+	for (elektraCursor it = 0; it < ksGetSize (keys); ++it)
 		{
-			keySetMeta (k, "glob/flags", getGlobFlags (keys, k));
-
-			/* Look if we have a string */
-			size_t valsize = keyGetValueSize (k);
-			if (valsize < 2) continue;
-
-			/* We now know we want that key.
-			 Dup it to not change the configuration. */
-			Key * ins = keyDup (k, KEY_CP_ALL);
-			/* Now look if we want cascading for the key */
-			if (keyString (k)[0] == '/')
+			k = ksAtCursor (keys, it);
+			/* use only glob keys for the current direction */
+			if (keyIsDirectlyBelow (userGlobConfig, k) || keyIsDirectlyBelow (systemGlobConfig, k) ||
+			    keyIsDirectlyBelow (userDirGlobConfig, k) || keyIsDirectlyBelow (systemDirGlobConfig, k))
 			{
-				char * newstring = elektraMalloc (valsize + parentsize);
-				strcpy (newstring, keyName (parentKey));
-				strcat (newstring, keyString (k));
-				keySetString (ins, newstring);
-				elektraFree (newstring);
+				keySetMeta (k, "glob/flags", getGlobFlags (keys, k));
+
+				/* Look if we have a string */
+				size_t valsize = keyGetValueSize (k);
+				if (valsize < 2) continue;
+
+				/* We now know we want that key.
+				 Dup it to not change the configuration. */
+				Key * ins = keyDup (k, KEY_CP_ALL);
+				/* Now look if we want cascading for the key */
+				if (keyString (k)[0] == '/')
+				{
+					char * newstring = elektraMalloc (valsize + parentsize);
+					strcpy (newstring, keyName (parentKey));
+					strcat (newstring, keyString (k));
+					keySetString (ins, newstring);
+					elektraFree (newstring);
+				}
+				ksAppendKey (glob, ins);
 			}
-			ksAppendKey (glob, ins);
 		}
-	}
 
 	keyDel (userGlobConfig);
 	keyDel (systemGlobConfig);
@@ -139,13 +140,15 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 static void applyGlob (KeySet * returned, KeySet * glob)
 {
 	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		Key * match;
-		ksRewind (glob);
-		while ((match = ksNext (glob)) != 0)
+
+		for (elektraCursor itGlob = 0; itGlob < ksGetSize (glob); ++itGlob)
 		{
+			match = ksAtCursor (glob, itGlob);
 			const Key * flagKey = keyGetMeta (match, "glob/flags");
 			int matchApplied;
 
@@ -197,9 +200,8 @@ int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	KeySet * keys = elektraPluginGetConfig (handle);
-	ksRewind (keys);
-
 	KeySet * glob = getGlobKeys (parentKey, keys, GET);
+
 	applyGlob (returned, glob);
 
 	ksDel (glob);
@@ -211,9 +213,8 @@ int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 int elektraGlobSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	KeySet * keys = elektraPluginGetConfig (handle);
-	ksRewind (keys);
-
 	KeySet * glob = getGlobKeys (parentKey, keys, SET);
+
 	applyGlob (returned, glob);
 
 	ksDel (glob);

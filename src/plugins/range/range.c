@@ -518,8 +518,11 @@ int elektraRangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 
 	// Validate all keys, treat errors as warnings.
 	Key * cur;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
+
 		/* skip parent namespaces that differ from the key namespace,
 		 * otherwise every warning would get issued multiple times */
 		if (keyGetNamespace (parentKey) != keyGetNamespace (cur)) continue;
@@ -540,8 +543,10 @@ int elektraRangeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	// set all keys
 	// this function is optional
 	Key * cur;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/range");
 		if (meta)
 		{
