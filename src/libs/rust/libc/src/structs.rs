@@ -269,17 +269,24 @@ impl CKeySet {
             let c_keyset: CKeySet = rust_keyset.into();
             std::ptr::write(ks, c_keyset);
 
-            drop(
-                Box::from_raw(
-                    arrayPtr
-                )
-            );
+            println!("qweqweqwe");
+            if !arrayPtr.is_null() {
+                drop(
+                    Box::from_raw(
+                        arrayPtr
+                    )
+                );
+            }
 
-            drop(
-                Box::from_raw(
-                    cursorPtr
-                )
-            );
+            println!("qweqweqwe");
+            println!("{:?}", cursorPtr);
+            if !cursorPtr.is_null() {
+                drop(
+                    Box::from_raw(
+                        cursorPtr
+                    )
+                );
+            }
         }
     }
 

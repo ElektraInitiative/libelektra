@@ -367,6 +367,13 @@ pub struct KeySet {
 }
 
 impl KeySet {
+    pub fn with_capacity(n: usize) -> Self {
+        KeySet {
+            keys: IndexSet::with_capacity(n),
+            refs: 0,
+        }
+    }
+
     pub fn len(&self) -> usize {
         self.keys.len()
     }

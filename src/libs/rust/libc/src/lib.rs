@@ -553,20 +553,7 @@ pub extern "C" fn elektraKeyIsLocked(key: *const CKey, what: elektraLockFlags) -
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetNew(alloc: size_t) -> *mut CKeySet {
-    let mut ks = KeySet::default();
-
-    let key = KeyBuilder::from_str("test:/qwe/asd")
-        .expect("test")
-        .build()
-        .expect("test");
-
-    let key1 = KeyBuilder::from_str("test:/qwe/asd/zxc")
-        .expect("test")
-        .build()
-        .expect("test");
-
-    ks.append(key);
-    ks.append(key1);
+    let ks = KeySet::with_capacity(alloc);
 
     Box::into_raw(
         Box::new(ks.into())
