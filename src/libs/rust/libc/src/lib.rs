@@ -8,7 +8,7 @@ use std::ffi::{CStr, CString, VaList, VaListImpl};
 use std::{ptr, slice};
 use std::str::FromStr;
 use std::convert::TryFrom;
-use libc::{ssize_t, size_t, c_char, c_int, c_void, __u16};
+use libc::{ssize_t, size_t, c_char, c_int, c_void};
 
 mod structs;
 
@@ -107,10 +107,6 @@ pub extern "C" fn elektraKeyClear(key: *mut CKey) -> c_int {
     let mut rust_key = match Key::try_from(c_key) {
         Ok(x) => x,
         Err(_) => return -1,
-    };
-
-    let newValue = unsafe {
-        slice::from_raw_parts(key as *const u8, 0)
     };
 
     rust_key.set_name(":/").unwrap();
@@ -368,12 +364,16 @@ pub extern "C" fn elektraKeyBaseName(key: *const CKey) -> *mut c_char {
 
     let key_name = rust_key
         .name()
-        .base_name()
-        .unwrap(); // TODO: actually check
+        .base_name();
 
-    CString::new(key_name)
-        .unwrap()
-        .into_raw()
+    return match key_name {
+        Some(name) => CString::new(name)
+            .unwrap()
+            .into_raw(),
+        None => CString::new("".as_bytes())
+            .unwrap()
+            .into_raw(),
+    }
 }
 
 #[no_mangle]
@@ -390,13 +390,15 @@ pub extern "C" fn elektraKeyBaseNameSize(key: *const CKey) -> ssize_t {
 
     let key_name = rust_key
         .name()
-        .base_name()
-        .unwrap(); // TODO: actually check
+        .base_name();
 
-    CString::new(key_name)
-        .unwrap()
-        .to_bytes_with_nul()
-        .len() as ssize_t
+    return match key_name {
+        Some(name) => CString::new(name)
+            .unwrap()
+            .to_bytes_with_nul()
+            .len() as ssize_t,
+        None => 0,
+    }
 }
 
 #[no_mangle]
@@ -612,7 +614,7 @@ pub extern "C" fn elektraKeysetDecRef(ks: *mut CKeySet) -> u16 {
 #[no_mangle]
 pub extern "C" fn elektraKeysetGetRef(ks: *const CKeySet) -> u16 {
     if ks.is_null() {
-        return -1;
+        return u16::MAX;
     }
 
     let c_keyset = unsafe { &*ks };
