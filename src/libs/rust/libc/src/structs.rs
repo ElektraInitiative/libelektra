@@ -94,22 +94,14 @@ pub struct CKey {
 impl CKey {
     pub fn overwrite(key: *mut CKey, rustKey: Key) {
         unsafe {
-            println!("qweasd");
             let ukeyPtr = (*key).ukey;
-            println!("qweasd");
             let keyPtr = (*key).key;
-            println!("qweasd");
             let dataPtr = (*key).data as *mut *mut u8;
-            println!("qweasd");
 
             let c_key: CKey = rustKey.into();
-            println!("qweasd");
             std::ptr::write(key, c_key);
-            println!("qweasd");
 
             if !ukeyPtr.is_null() {
-                println!("{:?}", ukeyPtr);
-                println!("ukey");
                 drop(
                     CString::from_raw(
                         ukeyPtr
@@ -118,8 +110,6 @@ impl CKey {
             }
 
             if !keyPtr.is_null() {
-                println!("{:?}", keyPtr);
-                println!("keyptr");
                 drop(
                     CString::from_raw(
                         keyPtr
@@ -128,15 +118,12 @@ impl CKey {
             }
 
             if !dataPtr.is_null() {
-                println!("{:?}", dataPtr);
-                println!("dataptr");
                 drop(
                     Box::from_raw(
                         dataPtr
                     )
                 );
             }
-            println!("finish");
         }
     }
 
@@ -199,8 +186,6 @@ impl Into<CKey> for Key {
             }
         };
 
-        println!("data pointer: {:?}", data);
-
         let dataSize = match self.value() {
             None => { 0 }
             Some(value) => { value.len() }
@@ -231,13 +216,10 @@ impl TryFrom<&CKey> for Key {
 
         let mut builder = KeyBuilder::from_str(key_name_cstr)?;
 
-        println!("data pointer tryfrom: {:?}", value.data);
         if !value.data.is_null() {
             let newValue = unsafe {
                 slice::from_raw_parts_mut(value.data as *mut u8, value.dataSize)
             };
-
-            println!("value tryfrom: {:?}", newValue);
 
             builder = builder.value(newValue);
         }

@@ -64,8 +64,6 @@ int main (void) {
     printf("%p\n", value);
     printf("%s\n", value);
 
-    free(value);
-
     printf("--------------\n");
     printf("keySet:\n");
 

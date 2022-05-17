@@ -237,8 +237,14 @@ impl Key {
         self.name = name;
     }
 
-    pub fn set_value(&mut self, value: &[u8]) {
-        self.value = Some(value.to_vec());
+    pub fn set_value(&mut self, value: &[u8])
+    {
+        self.value = Some(value.to_vec())
+    }
+
+    pub fn reset_value(&mut self)
+    {
+        self.value = None
     }
 
     pub fn set_value_str(&mut self, value: &str) {

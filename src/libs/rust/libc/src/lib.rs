@@ -114,11 +114,8 @@ pub extern "C" fn elektraKeyClear(key: *mut CKey) -> c_int {
         slice::from_raw_parts(key as *const u8, 0)
     };
 
-    println!("FROM RAW PARTS 0 LENGTH {:?}", newValue);
-
-    let value: Vec<u8> = Vec::new();
-    rust_key.set_name("");
-    rust_key.set_value(&value);
+    rust_key.set_name(":/").unwrap();
+    rust_key.reset_value();
     rust_key.set_meta(KeySet::default());
 
     CKey::overwrite(key, rust_key);
@@ -505,24 +502,12 @@ pub extern "C" fn elektraKeySetNamespace(key: *mut CKey, ns: elektraNamespace) -
 
 #[no_mangle]
 pub extern "C" fn elektraKeyValue(key: *const CKey) -> *const c_void {
-    let c_key = unsafe { &*key };
-    let rust_key = match Key::try_from(c_key) {
-        Ok(x) => x,
-        Err(_) => return ptr::null_mut(),
-    };
-
-    if let Some(value) = rust_key.value() {
-        let mut buf = value
-            .to_vec()
-            .into_boxed_slice();
-
-        let ptr = buf.as_mut_ptr();
-        std::mem::forget(buf);
-
-        return ptr as *const c_void;
+    if key.is_null() {
+        return ptr::null_mut();
     }
 
-    return ptr::null_mut();
+    let c_key = unsafe { &*key };
+    return c_key.data;
 }
 
 #[no_mangle]
@@ -560,15 +545,9 @@ pub extern "C" fn elektraKeySetValue(key: *mut CKey, value: *const c_void, value
         slice::from_raw_parts(value as *const u8, valueSize)
     };
 
-    println!("{:?}", newValue);
-
     rust_key.set_value(newValue);
 
-    println!("{:?}", rust_key.value_to_string());
-
     CKey::overwrite(key, rust_key);
-
-    println!("qweasd");
 
     valueSize as ssize_t
 }
