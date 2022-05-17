@@ -32,7 +32,7 @@ def check_key(key: kdb.Key):
 	return True
 
 
-class ElektraPlugin(object):
+class ElektraDNSPlugin(object):
 	def __init__(self):
 		pass
 
@@ -63,10 +63,15 @@ class ElektraPlugin(object):
 			returned.append(kdb.Key(mod+"/infos/description", kdb.KEY_VALUE, "checks if name is resolvable"))
 			return 1
 
+		warning_list = []
 		for k in returned:
 			if not check_key(k):
-				print(f"couldn't resolve name for key: {k}")
-				return -1
+				warning_list.append(k)
+				print(f"Couldn't resolve domain name for key: {k}")
+
+		if warning_list:
+			parentKey.setMeta("warning", f"Couldn't resolve domain name for key(s): {warning_list}")
+			return -1
 
 		return 1
 
@@ -76,11 +81,15 @@ class ElektraPlugin(object):
 		#           0 : on success with no changed keys in database
 		#          -1 : failure
 		"""
-
+		error_list = []
 		for k in returned:
 			if not check_key(k):
-				print(f"couldn't validate key {k}")
-				return -1
+				error_list.append(k)
+				print(f"Couldn't validate key {k}")
+
+		if error_list:
+			parentKey.setMeta("error", f"Couldn't resolve domain name for key(s): {error_list}")
+			return -1
 
 		return 1
 
