@@ -334,6 +334,10 @@ pub extern "C" fn elektraKeySetName(key: *mut CKey, newname: *const c_char) -> s
 
 #[no_mangle]
 pub extern "C" fn elektraKeyAddName(key: *mut CKey, addName: *const c_char) -> ssize_t {
+    if key.is_null() || addName.is_null() {
+        return -1;
+    }
+
     let cstr = unsafe { CStr::from_ptr(addName) };
     let addNameStr = match cstr.to_str() {
         Ok(x) => x,
@@ -368,6 +372,10 @@ pub extern "C" fn elektraKeyEscapedNameSize(key: *const CKey) -> ssize_t {
 /// You have to free the returned string manually, otherwise there will be memory leaks
 #[no_mangle]
 pub extern "C" fn elektraKeyBaseName(key: *const CKey) -> *mut c_char {
+    if key.is_null() {
+        return ptr::null_mut();
+    }
+
     let c_key = unsafe { &*key };
     let rust_key = match Key::try_from(c_key) {
         Ok(x) => x,
@@ -386,6 +394,10 @@ pub extern "C" fn elektraKeyBaseName(key: *const CKey) -> *mut c_char {
 
 #[no_mangle]
 pub extern "C" fn elektraKeyBaseNameSize(key: *const CKey) -> ssize_t {
+    if key.is_null() {
+        return -1;
+    }
+
     let c_key = unsafe { &*key };
     let rust_key = match Key::try_from(c_key) {
         Ok(x) => x,
@@ -405,6 +417,10 @@ pub extern "C" fn elektraKeyBaseNameSize(key: *const CKey) -> ssize_t {
 
 #[no_mangle]
 pub extern "C" fn elektraKeySetBaseName(key: *mut CKey, baseName: *const c_char) -> ssize_t {
+    if key.is_null() || baseName.is_null() {
+        return -1;
+    }
+
     let cstr = unsafe { CStr::from_ptr(baseName) };
     let setNameStr = match cstr.to_str() {
         Ok(x) => x,
@@ -427,6 +443,10 @@ pub extern "C" fn elektraKeySetBaseName(key: *mut CKey, baseName: *const c_char)
 
 #[no_mangle]
 pub extern "C" fn elektraKeyAddBaseName(key: *mut CKey, baseName: *const c_char) -> ssize_t {
+    if key.is_null() || baseName.is_null() {
+        return -1;
+    }
+
     let cstr = unsafe { CStr::from_ptr(baseName) };
     let addNameStr = match cstr.to_str() {
         Ok(x) => x,
@@ -464,6 +484,10 @@ pub extern "C" fn elektraKeyNamespace(key: *const CKey) -> elektraNamespace {
 
 #[no_mangle]
 pub extern "C" fn elektraKeySetNamespace(key: *mut CKey, ns: elektraNamespace) -> ssize_t {
+    if key.is_null() {
+        return -1
+    }
+
     let c_key = unsafe { &*key };
     let mut rust_key = match Key::try_from(c_key) {
         Ok(x) => x,
@@ -479,7 +503,6 @@ pub extern "C" fn elektraKeySetNamespace(key: *mut CKey, ns: elektraNamespace) -
     namespace.to_string().len() as ssize_t
 }
 
-/// You have to free the returned buffer manually, otherwise there will be memory leaks
 #[no_mangle]
 pub extern "C" fn elektraKeyValue(key: *const CKey) -> *const c_void {
     let c_key = unsafe { &*key };
@@ -504,6 +527,10 @@ pub extern "C" fn elektraKeyValue(key: *const CKey) -> *const c_void {
 
 #[no_mangle]
 pub extern "C" fn elektraKeyValueSize(key: *const CKey) -> ssize_t {
+    if key.is_null() {
+        return -1;
+    }
+
     let c_key = unsafe { &*key };
     let rust_key = match Key::try_from(c_key) {
         Ok(x) => x,
@@ -519,6 +546,10 @@ pub extern "C" fn elektraKeyValueSize(key: *const CKey) -> ssize_t {
 
 #[no_mangle]
 pub extern "C" fn elektraKeySetValue(key: *mut CKey, value: *const c_void, valueSize: size_t) -> ssize_t {
+    if key.is_null() || value.is_null() {
+        return -1;
+    }
+
     let c_key = unsafe { &*key };
     let mut rust_key = match Key::try_from(c_key) {
         Ok(x) => x,
@@ -576,6 +607,10 @@ pub extern "C" fn elektraKeysetNew(alloc: size_t) -> *mut CKeySet {
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetIncRef(ks: *mut CKeySet) -> u16 {
+    if ks.is_null() {
+        return u16::MAX;
+    }
+
     let c_keyset = unsafe { &*ks };
     let mut rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -591,6 +626,10 @@ pub extern "C" fn elektraKeysetIncRef(ks: *mut CKeySet) -> u16 {
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetDecRef(ks: *mut CKeySet) -> u16 {
+    if ks.is_null() {
+        return u16::MAX;
+    }
+
     let c_keyset = unsafe { &*ks };
     let mut rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -606,6 +645,10 @@ pub extern "C" fn elektraKeysetDecRef(ks: *mut CKeySet) -> u16 {
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetGetRef(ks: *const CKeySet) -> u16 {
+    if ks.is_null() {
+        return -1;
+    }
+
     let c_keyset = unsafe { &*ks };
     let rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -617,6 +660,10 @@ pub extern "C" fn elektraKeysetGetRef(ks: *const CKeySet) -> u16 {
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetClear(ks: *mut CKeySet) -> c_int {
+    if ks.is_null() {
+        return -1;
+    }
+
     let c_keyset = unsafe { &*ks };
     let mut rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -643,6 +690,10 @@ pub extern "C" fn elektraKeysetDel(ks: *mut CKeySet) -> c_int {
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetSize(ks: *const CKeySet) -> ssize_t {
+    if ks.is_null() {
+        return -1;
+    }
+
     let c_keyset = unsafe { &*ks };
     let rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -654,6 +705,10 @@ pub extern "C" fn elektraKeysetSize(ks: *const CKeySet) -> ssize_t {
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetAdd(ks: *mut CKeySet, key: *mut CKey) -> ssize_t {
+    if ks.is_null() || key.is_null() {
+        return -1;
+    }
+
     let c_keyset = unsafe { &*ks };
     let mut rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -676,6 +731,10 @@ pub extern "C" fn elektraKeysetAdd(ks: *mut CKeySet, key: *mut CKey) -> ssize_t 
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetGet(ks: *const CKeySet, index: ssize_t) -> *mut CKey {
+    if ks.is_null() {
+        return ptr::null_mut();
+    }
+
     let c_keyset = unsafe { &*ks };
     let rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -695,6 +754,10 @@ pub extern "C" fn elektraKeysetGet(ks: *const CKeySet, index: ssize_t) -> *mut C
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetRemove(ks: *mut CKeySet, index: ssize_t) -> *mut CKey {
+    if ks.is_null() {
+        return ptr::null_mut();
+    }
+
     let c_keyset = unsafe { &*ks };
     let mut rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -716,6 +779,10 @@ pub extern "C" fn elektraKeysetRemove(ks: *mut CKeySet, index: ssize_t) -> *mut 
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetAddAll(ks: *mut CKeySet, other: *const CKeySet) -> ssize_t {
+    if ks.is_null() || other.is_null() {
+        return -1;
+    }
+
     let c_keyset = unsafe { &*ks };
     let mut rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -738,6 +805,10 @@ pub extern "C" fn elektraKeysetAddAll(ks: *mut CKeySet, other: *const CKeySet) -
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetLookup(ks: *const CKeySet, key: *mut CKey) -> *mut CKey {
+    if ks.is_null() || key.is_null() {
+        return ptr::null_mut();
+    }
+
     let c_keyset = unsafe { &*ks };
     let rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
@@ -763,6 +834,10 @@ pub extern "C" fn elektraKeysetLookup(ks: *const CKeySet, key: *mut CKey) -> *mu
 
 #[no_mangle]
 pub extern "C" fn elektraKeysetLookupByName(ks: *const CKeySet, name: *const c_char) -> *mut CKey {
+    if ks.is_null() || name.is_null() {
+        return ptr::null_mut();
+    }
+
     let c_keyset = unsafe { &*ks };
     let rust_keyset = match KeySet::try_from(c_keyset) {
         Ok(x) => x,
