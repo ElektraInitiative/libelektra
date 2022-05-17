@@ -17,7 +17,10 @@ class DNSPlugin(unittest.TestCase):
 
     def setUp(self):
         self.parent_key = kdb.Key("user:/python")
-        self.plugin = dns_plugin.ElektraPlugin()
+        self.plugin = dns_plugin.ElektraDNSPlugin()
+        self.localhost_key_with_plugin = kdb.Key("user:/python/hostname",
+                                             kdb.KEY_VALUE, "localhost",
+                                             kdb.KEY_META, "check/dns", "")
         self.valid_key_with_plugin = kdb.Key("user:/python/hostname",
                                              kdb.KEY_VALUE, VALID_DOMAIN,
                                              kdb.KEY_META, "check/dns", "")
@@ -28,6 +31,7 @@ class DNSPlugin(unittest.TestCase):
 
         self.invalid_ks = kdb.KeySet(10, self.invalid_key_with_plugin, self.valid_key_without_plugin, kdb.KS_END)
         self.valid_ks = kdb.KeySet(10, self.valid_key_with_plugin, self.valid_key_without_plugin, kdb.KS_END)
+        self.localhost_ks = kdb.KeySet(10, self.localhost_key_with_plugin, kdb.KS_END)
 
     # socket.getaddrinfo is mocked in order to make the tests non-reliant on an active internet connection
     @patch.object(socket, 'getaddrinfo', return_value=VALID_ADDR_INFO)
@@ -57,6 +61,20 @@ class DNSPlugin(unittest.TestCase):
     @patch.object(socket, 'getaddrinfo', return_value=VALID_ADDR_INFO)
     def test_set_containing_valid_key_returns_success(self, mock_socket):
         self.assertEqual(1, self.plugin.set(self.valid_ks, self.parent_key))
+
+    @patch.object(socket, 'getaddrinfo', side_effect=Exception)
+    def test_get_containing_invalid_key_returns_failure(self, mock_socket):
+        self.assertEqual(-1, self.plugin.get(self.invalid_ks, self.parent_key))
+
+    @patch.object(socket, 'getaddrinfo', return_value=VALID_ADDR_INFO)
+    def test_get_containing_valid_key_returns_success(self, mock_socket):
+        self.assertEqual(1, self.plugin.get(self.valid_ks, self.parent_key))
+
+    def test_get_containing_localhost_returns_success(self):
+        self.assertEqual(1, self.plugin.get(self.localhost_ks, self.parent_key))
+
+    def test_set_containing_localhost_returns_success(self):
+        self.assertEqual(1, self.plugin.get(self.localhost_ks, self.parent_key))
 
 
 if __name__ == '__main__':
