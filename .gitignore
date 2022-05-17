@@ -83,3 +83,5 @@ elektra-install/
 # Flatpak directories
 .flatpak-builder/
 .flatpak-app/
+
+**/.idea
