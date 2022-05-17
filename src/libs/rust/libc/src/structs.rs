@@ -269,7 +269,6 @@ impl CKeySet {
             let c_keyset: CKeySet = rust_keyset.into();
             std::ptr::write(ks, c_keyset);
 
-            println!("qweqweqwe");
             if !arrayPtr.is_null() {
                 drop(
                     Box::from_raw(
@@ -278,8 +277,6 @@ impl CKeySet {
                 );
             }
 
-            println!("qweqweqwe");
-            println!("{:?}", cursorPtr);
             if !cursorPtr.is_null() {
                 drop(
                     Box::from_raw(
@@ -292,17 +289,24 @@ impl CKeySet {
 
     pub fn destroy_fields(ks: *mut CKeySet) {
         unsafe {
-            drop(
-                Box::from_raw(
-                    (*ks).array
-                )
-            );
+            let arrayPtr = (*ks).array;
+            let cursorPtr = (*ks).cursor;
 
-            drop(
-                Box::from_raw(
-                    (*ks).cursor
-                )
-            );
+            if !arrayPtr.is_null() {
+                drop(
+                    Box::from_raw(
+                        (*ks).array
+                    )
+                );
+            }
+
+            if !cursorPtr.is_null() {
+                drop(
+                    Box::from_raw(
+                        (*ks).cursor
+                    )
+                );
+            }
         }
     }
 
@@ -317,22 +321,25 @@ impl CKeySet {
 
 impl Into<CKeySet> for KeySet {
     fn into(self) -> CKeySet {
-        let mut key_array = self.values()
-            .cloned()
-            .map(|key| {
-                let c_key = key.into();
+        let mut array_ptr = ptr::null_mut();
+        let size = self.values().len();
 
-                Box::into_raw(
-                    Box::new(c_key)
-                ) as *const CKey
-            })
-            .collect::<Vec<*const CKey>>()
-            .into_boxed_slice();
+        if size > 0 {
+            let mut key_array = self.values()
+                .cloned()
+                .map(|key| {
+                    let c_key = key.into();
 
-        let size = key_array.len();
+                    Box::into_raw(
+                        Box::new(c_key)
+                    ) as *const CKey
+                })
+                .collect::<Vec<*const CKey>>()
+                .into_boxed_slice();
 
-        let array_ptr = key_array.as_mut_ptr();
-        std::mem::forget(key_array);
+            array_ptr = key_array.as_mut_ptr();
+            std::mem::forget(key_array);
+        }
 
         let refs = self.reference_counter();
 
@@ -344,7 +351,7 @@ impl Into<CKeySet> for KeySet {
             current: 0,
             flags: 0,
             refs,
-            reserved: 0
+            reserved: 0,
         }
     }
 }
@@ -353,23 +360,25 @@ impl TryFrom<&CKeySet> for KeySet {
     type Error = KeyError;
 
     fn try_from(value: &CKeySet) -> Result<Self, Self::Error> {
+        let mut keyset: KeySet;
+
         if value.array.is_null() {
-            return Err(InvalidNameError);
+            keyset = KeySet::default();
+        } else {
+            let key_array = unsafe {
+                slice::from_raw_parts_mut(value.array, value.size)
+            };
+
+            keyset = KeySet::from_iter(
+                key_array
+                    .iter()
+                    .map(|key| {
+                        unsafe {
+                            Key::try_from(&**key).unwrap()
+                        }
+                    })
+            );
         }
-
-        let key_array = unsafe {
-            slice::from_raw_parts_mut(value.array, value.size)
-        };
-
-        let mut keyset = KeySet::from_iter(
-            key_array
-                .iter()
-                .map(|key| {
-                    unsafe {
-                        Key::try_from(&**key).unwrap()
-                    }
-                })
-        );
 
         keyset.set_reference_counter(value.refs);
 

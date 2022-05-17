@@ -68,12 +68,19 @@ int main (void) {
     printf("keySet:\n");
 
     ElektraKeySet * ks = elektraKeysetNew (1);
+    printf("%p\n", ks);
     printf("%i\n", elektraKeysetSize (ks));
     printf("%i\n", elektraKeysetIncRef (ks));
     printf("%i\n", elektraKeysetIncRef (ks));
     printf("%i\n", elektraKeysetIncRef (ks));
     printf("%i\n", elektraKeysetIncRef (ks));
     printf("%i\n", elektraKeysetIncRef (ks));
+    printf("%i\n", elektraKeysetSize (ks));
+
+    printf("%i\n", elektraKeysetAdd (ks, key));
+    printf("%i\n", elektraKeysetSize (ks));
+
+    printf("%i\n", elektraKeysetAdd (ks, key2));
     printf("%i\n", elektraKeysetSize (ks));
 
     elektraKeysetDel (ks);
