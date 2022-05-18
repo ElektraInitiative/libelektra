@@ -67,6 +67,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
   (e.g. #defined constants for return values) _(Michael Langhammer @milangs, Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
+- Change all plugins to use external iteration of `KeySet`s _(Florian Lindner @flo91)_
 
 ### <<Plugin>>
 
