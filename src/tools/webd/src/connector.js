@@ -8,7 +8,8 @@
 
 import fetch from "node-fetch";
 
-const encodePath = (path) => path.split("/").map(encodeURIComponent).join("/") + "/";
+const encodePath = (path) =>
+  path.split("/").map(encodeURIComponent).join("/") + "/";
 
 const version = (host) => fetch(`${host}/version`).then((res) => res.json());
 
