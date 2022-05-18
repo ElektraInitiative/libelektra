@@ -20,13 +20,13 @@ kdb mount-java config.ni user:/test/process kdb:ni java:org.libelektra.plugin.So
 
 This will mount the file `config.ni` on mountpoint _user:/test/process_ with the KDB plugin _ni_ and the Java plugin _SortedPlugin_.
 
-This plugin will only work on arrays, so add the array meta-key first:
+This plugin will only work on arrays, so add the array metakey first:
 
 ```sh
 kdb meta-set user:/test/process array "#2"
 ```
 
-The minimal configuration for this plugin is done by adding the meta-key `check/sorted` with an empty value:
+The minimal configuration for this plugin is done by adding the metakey `check/sorted` with an empty value:
 
 ```sh
 kdb meta-set user:/test/process check/sorted ""
@@ -38,7 +38,7 @@ The plugin will then assume the array elements are primitive types (e.g. string 
 > e.g. numbers 9 and 10 are normally sorted as [9, 10], but with lexicographic order they are sorted as [10, 9] since 1 is before 9
 
 If the array elements are not primitive types and have sub-keys, it is possible to provide a name to this sub-key (including a "/" prefix).  
-Behaviour is undefined when the prefix "/" is omitted.  
+Behavior is undefined when the prefix "/" is omitted.  
 E.g. to sort by a sub-key `/nr`:
 
 ```sh
@@ -47,7 +47,7 @@ kdb meta-set user:/test/process check/sorted "/nr"
 
 The plugin then requires all array elements to have a sub-key according to the set value (here "/nr") and sorts by these values.
 
-To change the sorting direction, you can set the meta-key `check/sorted/direction` to either "asc" (default) or "desc":
+To change the sorting direction, you can set the metakey `check/sorted/direction` to either "asc" (default) or "desc":
 
 ```sh
 kdb meta-set user:/test/process check/sorted/direction "desc"
