@@ -15,6 +15,7 @@
 #include "ldif.h"
 #include <errno.h>
 
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
@@ -132,13 +133,8 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		KeySet * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/ldif", KEY_VALUE, "ldif plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/ldif/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/ldif/exports/open", KEY_FUNC, elektraLdifOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/ldif/exports/close", KEY_FUNC, elektraLdifClose, KEY_END),
 			       keyNew ("system:/elektra/modules/ldif/exports/get", KEY_FUNC, elektraLdifGet, KEY_END),
 			       keyNew ("system:/elektra/modules/ldif/exports/set", KEY_FUNC, elektraLdifSet, KEY_END),
-			       keyNew ("system:/elektra/modules/ldif/exports/commit", KEY_FUNC, elektraLdifCommit, KEY_END),
-			       keyNew ("system:/elektra/modules/ldif/exports/error", KEY_FUNC, elektraLdifError, KEY_END),
-			       keyNew ("system:/elektra/modules/ldif/exports/checkconf", KEY_FUNC, elektraLdifCheckConf, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system:/elektra/modules/ldif/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -162,7 +158,6 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	char * buff = NULL;
 	int buflen = 0;
 
-	ssize_t ksize = 0;
 
 	while (ldif_read_record (lfp, &lineno, &buff, &buflen))
 	{
@@ -237,18 +232,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 						break;
 					}
 
-					if (ksAppendKey (returned, key) != ksize + 1)
-					{
-						// TODO re-enable duplicate check
-						//						ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF
-						//(parentKey, 											 "Duplicated
-						//key '%s' at position %ld in file %s",
-						//keyName (key), ftell
-						//(lfp->fp), filename); 						free (buff);
-						//ldif_close (lfp); 						return
-						//ELEKTRA_PLUGIN_STATUS_ERROR;
-					}
-					++ksize;
+					ksAppendKey (returned, key);
 					elektraFree (domainpart);
 				}
 
@@ -288,10 +272,56 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+{
+	// set all keys
+	// this function is optional
+	int errnosave = errno;
+	const char * filename = keyString (parentKey);
+	LDIFFP * lfp = ldif_open(filename, "w");
+
+	ELEKTRA_LOG ("Write to '%s'", keyString (parentKey));
+
+	if (!lfp)
+	{
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errnosave;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	Key * cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != 0)
+	{
+		if (elektraStrCmp (keyBaseName (cur), "dn" ) == 0) {
+			const char * dn = keyString (cur);
+			ELEKTRA_LOG ("processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey), dn, keyBaseName (cur));
+			char *data = ldif_put_wrap (LDIF_PUT_VALUE, "dn", dn, strlen (dn), LDIF_LINE_WIDTH );
+
+			if (fputs (data, lfp->fp) == EOF || fputs ("\n", lfp->fp) == EOF)
+			{
+				ber_memfree (data);
+				ELEKTRA_SET_ERROR_GET (parentKey);
+				errno = errnosave;
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			ber_memfree(data);
+		} else {
+			ELEKTRA_LOG ("not processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey), keyString (cur), keyBaseName (cur));
+		}
+	}
+
+	ldif_close (lfp);
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("ldif",
 		ELEKTRA_PLUGIN_GET,	&elektraLdifGet,
+		ELEKTRA_PLUGIN_SET,	&elektraLdifSet,
 		ELEKTRA_PLUGIN_END);
 }

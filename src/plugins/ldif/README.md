@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage/ldif
 - infos/recommends =
-- infos/placements = getstorage
+- infos/placements = getstorage setstorage
 - infos/status = libc configurable limited experimental
 - infos/metadata =
 - infos/description = deserialize LDIF files
