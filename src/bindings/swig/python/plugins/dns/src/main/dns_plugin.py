@@ -1,7 +1,6 @@
 import kdb
 import socket
 
-
 """
 Usage:
 > sudo kdb mount file.ini /python python script=/path/to/dns_plugin.py
@@ -13,93 +12,109 @@ META_DNS_NAME = "meta:/check/dns"
 
 
 def get_ipv4_by_hostname(hostname) -> bool:
-	return bool([
-		i[4][0]  # address
-		for i in socket.getaddrinfo(hostname, 0)
-		if i[0] is socket.AddressFamily.AF_INET and i[1] is socket.SocketKind.SOCK_RAW
-	])
+    return bool([
+        i[4][0]  # address
+        for i in socket.getaddrinfo(hostname, 0)
+        if i[0] is socket.AddressFamily.AF_INET and i[1] is socket.SocketKind.SOCK_RAW
+    ])
 
 
 def check_key(key: kdb.Key):
-	# we only check if Meta META_DNS_NAME is set
-	if m := key.getMeta(META_DNS_NAME):
-		if key.value != '':
-			try:
-				return get_ipv4_by_hostname(key.value)
-			except Exception as e:
-				return False
+    # we only check if Meta META_DNS_NAME is set
+    if m := key.getMeta(META_DNS_NAME):
+        if key.value != '':
+            try:
+                return get_ipv4_by_hostname(key.value)
+            except Exception as e:
+                return False
 
-	return True
+    return True
 
 
 class ElektraDNSPlugin(object):
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	def open(self, config: kdb.KeySet, errorKey):
-		"""
-		returns:
-		#  - nil or 0: no error
-		#  - -1      : error during initialization
-		"""
-		return 0
+    def open(self, config: kdb.KeySet, errorKey):
+        """
+        returns:
+        #  - nil or 0: no error
+        #  - -1      : error during initialization
+        """
+        return 0
 
-	def get(self, returned: kdb.KeySet, parentKey: kdb.Key):
-		"""
-		#  - nil or 1 : on success
-		#  -        0 : OK but nothing was to do
-		#  -       -1 : failure
-		"""
-		mod = "system:/elektra/modules/python"
+    def get(self, returned: kdb.KeySet, parentKey: kdb.Key):
+        """
+        #  - nil or 1 : on success
+        #  -        0 : OK but nothing was to do
+        #  -       -1 : failure
+        """
+        mod = "system:/elektra/modules/python"
 
-		if parentKey.name == mod:
-			returned.append(kdb.Key(mod, kdb.KEY_VALUE, "contract below"))
-			returned.append(kdb.Key(mod+"/infos", kdb.KEY_VALUE, "contract below"))
+        if parentKey.name == mod:
+            returned.append(kdb.Key(mod, kdb.KEY_VALUE, "contract below"))
+            returned.append(kdb.Key(mod + "/infos", kdb.KEY_VALUE, "contract below"))
 
-			returned.append(kdb.Key(mod+"/infos/license", kdb.KEY_VALUE, "BSD"))
-			returned.append(kdb.Key(mod+"/infos/provides", kdb.KEY_VALUE, "check"))
-			returned.append(kdb.Key(mod+"/infos/status", kdb.KEY_VALUE, "maintained"))
-			returned.append(kdb.Key(mod+"/infos/placements", kdb.KEY_VALUE, "postgetstorage presetstorage"))
-			returned.append(kdb.Key(mod+"/infos/description", kdb.KEY_VALUE, "checks if name is resolvable"))
-			return 1
+            returned.append(kdb.Key(mod + "/infos/license", kdb.KEY_VALUE, "BSD"))
+            returned.append(kdb.Key(mod + "/infos/provides", kdb.KEY_VALUE, "check"))
+            returned.append(kdb.Key(mod + "/infos/status", kdb.KEY_VALUE, "maintained"))
+            returned.append(kdb.Key(mod + "/infos/placements", kdb.KEY_VALUE, "postgetstorage presetstorage"))
+            returned.append(kdb.Key(mod + "/infos/description", kdb.KEY_VALUE, "checks if name is resolvable"))
+            return 1
 
-		warning_list = []
-		for k in returned:
-			if not check_key(k):
-				warning_list.append(k)
-				print(f"Couldn't resolve domain name for key: {k}")
+        warning_list = []
+        for k in returned:
+            if not check_key(k):
+                warning_list.append(k)
+                print(f"Couldn't resolve domain name for key: {k}")
 
-		if warning_list:
-			parentKey.setMeta("warning", f"Couldn't resolve domain name for key(s): {warning_list}")
-			return -1
+        if warning_list:
+            parentKey.setMeta("warnings", str(len(warning_list)))
+            c = 0
+            for warn_key in warning_list:
+                if c == 100:
+                    c = 0
+                if c > 9:
+                    index = "#_" + str(c)
+                else:
+                    index = "#" + str(c)
 
-		return 1
+                parentKey.setMeta(f"warnings/{index}/number", "101")
+                parentKey.setMeta(f"warnings/{index}/description", "Could not validate key")
+                parentKey.setMeta(f"warnings/{index}/reason", f"Failed to resolve domain name for key {warn_key}")
+                parentKey.setMeta(f"warnings/{index}/module", "python check/dns script")
+                c += 1
 
-	def set(self, returned: kdb.KeySet, parentKey: kdb.Key):
-		"""
-		#  - nil or 1 : on success
-		#           0 : on success with no changed keys in database
-		#          -1 : failure
-		"""
-		error_list = []
-		for k in returned:
-			if not check_key(k):
-				error_list.append(k)
-				print(f"Couldn't validate key {k}")
+            return -1
 
-		if error_list:
-			parentKey.setMeta("error", f"Couldn't resolve domain name for key(s): {error_list}")
-			return -1
+        return 1
 
-		return 1
+    def set(self, returned: kdb.KeySet, parentKey: kdb.Key):
+        """
+        #  - nil or 1 : on success
+        #           0 : on success with no changed keys in database
+        #          -1 : failure
+        """
+        for k in returned:
+            if not check_key(k):
+                parentKey.setMeta("error", f"number description reason module")
+                parentKey.setMeta("error/number", "101")
+                parentKey.setMeta("error/description", "Could not validate key")
+                parentKey.setMeta("error/reason", f"Failed to resolve domain name for key {k}")
+                parentKey.setMeta("error/module", "python check/dns script")
 
-	def error(self, returned: kdb.KeySet, parentKey: kdb.Key):
-		"""
-		#  - nil or 1 : on success
-		#           0 : on success with no action
-		#          -1 : failure
-		"""
-		return 1
+                print(f"Couldn't validate key {k}")
+                return -1
 
-	def close(self, errorKey):
-		return 0
+        return 1
+
+    def error(self, returned: kdb.KeySet, parentKey: kdb.Key):
+        """
+        #  - nil or 1 : on success
+        #           0 : on success with no action
+        #          -1 : failure
+        """
+        return 1
+
+    def close(self, errorKey):
+        return 0
