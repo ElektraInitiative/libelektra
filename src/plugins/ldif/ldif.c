@@ -147,6 +147,8 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	const char * filename = keyString (parentKey);
 	LDIFFP * lfp = ldif_open (filename, "r");
 
+	ELEKTRA_LOG ("Read from '%s'", keyString (parentKey));
+
 	if (!lfp)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
@@ -181,13 +183,15 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 			if (elektraStrCmp (type, "dn") == 0)
 			{
-				elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "found key: %s\n", value);
+				ELEKTRA_LOG_DEBUG("found key: %s\n", value);
 
 				char ** tokens = parseToken (value);
 
 				if (tokens == NULL)
 				{
-					ELEKTRA_SET_ERROR_GET (parentKey);
+					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+						parentKey, "Failed to parse tokens from file %s at position %ld from %s", filename,
+						ftell (lfp->fp), value);
 
 					elektraFree (buff);
 					ldif_close (lfp);
@@ -209,11 +213,13 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 					Key * key = keyNew (keyName (parentKey), KEY_END);
 					char * domainpart = makeKey ((const char **) tokens, i + 1);
 
-					elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "saving key: %s\n", domainpart);
+					ELEKTRA_LOG_DEBUG ("saving key: %s\n", domainpart);
 
 					if (domainpart == NULL)
 					{
-						ELEKTRA_SET_ERROR_GET (parentKey);
+						ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+							parentKey, "Failed to extract key from file %s at position %ld with key %s", filename,
+							ftell (lfp->fp), value);
 						elektraFree (domainpart);
 						elektraFree (tokens);
 						elektraFree (buff);
@@ -240,15 +246,13 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			}
 			else
 			{
-				elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "found value: type: %s, value: %s\n",
-					    type, value);
+				ELEKTRA_LOG_DEBUG ("found value: type: %s, value: %s\n", type, value);
 			}
 
 			const char * attribute_key_parts[] = { keyName (parentKey), last_dn, type };
 			char * attribute_key_name = makeKey (attribute_key_parts, 3);
 			Key * attribute_key = keyNew (attribute_key_name, KEY_END);
-			elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, "elektraLdifGet", filename, 0, "storing value %s at key %s\n", value,
-				    keyName (attribute_key));
+			ELEKTRA_LOG_DEBUG ("storing value %s at key %s\n", value, keyName (attribute_key));
 
 			keySetString (attribute_key, value);
 			ksAppendKey (returned, attribute_key);
@@ -266,6 +270,14 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	free (buff);
+
+	if (feof (lfp->fp) == 0)
+	{
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Not at the end of file at position %ld in file %s", ftell (lfp->fp),
+							 filename);
+		ldif_close (lfp);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	ldif_close (lfp);
 
@@ -295,20 +307,21 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		if (elektraStrCmp (keyBaseName (cur), "dn" ) == 0) {
 			const char * dn = keyString (cur);
-			ELEKTRA_LOG ("processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey), dn, keyBaseName (cur));
+			ELEKTRA_LOG_DEBUG ("processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey), dn, keyBaseName (cur));
 			char *data = ldif_put_wrap (LDIF_PUT_VALUE, "dn", dn, strlen (dn), LDIF_LINE_WIDTH );
 
 			if (fputs (data, lfp->fp) == EOF || fputs ("\n", lfp->fp) == EOF)
 			{
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not write to position %ld in file %s", ftell (lfp->fp),
+									 filename);
 				ber_memfree (data);
-				ELEKTRA_SET_ERROR_GET (parentKey);
-				errno = errnosave;
+				ldif_close (lfp);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
 			ber_memfree(data);
 		} else {
-			ELEKTRA_LOG ("not processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey), keyString (cur), keyBaseName (cur));
+			ELEKTRA_LOG_DEBUG ("not processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey), keyString (cur), keyBaseName (cur));
 		}
 	}
 
