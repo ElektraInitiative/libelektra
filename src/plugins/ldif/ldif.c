@@ -26,6 +26,13 @@
 #include <ldap.h>
 #include <ldif.h>
 
+/**
+ * Splits the provided string by comma and return it as an array of string. Make sure to
+ * free the return value after you used it.
+ *
+ * @param in the string to parse.
+ * @returns The resulting string array or NULL if an error occurred.
+ */
 char ** parseToken (const char * in)
 {
 	char * localCopy = elektraStrDup (in);
@@ -34,6 +41,7 @@ char ** parseToken (const char * in)
 		return NULL;
 	}
 
+	// calculate the array size
 	int size = 1;
 	for (char * s = localCopy;; s++)
 	{
@@ -52,6 +60,7 @@ char ** parseToken (const char * in)
 
 	char * savePtr;
 
+	// fill the array with the split values
 	int i = 0;
 	for (char * s = strtok_r (localCopy, ",", &savePtr); s != NULL; s = strtok_r (NULL, ",", &savePtr))
 	{
@@ -75,8 +84,18 @@ char ** parseToken (const char * in)
 	return (res);
 }
 
+/**
+ * Builds a key from seperated by a slash from the provided array. It stops after it reached the
+ * desired length or the maximal array length. Make sure to free the return value after you used
+ * it.
+ *
+ * @param in the array the should be concatenated
+ * @param len the maximal length of array elements to use for the concatenation
+ * @return a string of the the array elements concatenated by a slash.
+ */
 char * makeKey (const char ** in, int len)
 {
+	// calculate string size
 	size_t size = 0;
 	for (int i = 0; i < len && in[i] != NULL; i++)
 	{
@@ -89,7 +108,7 @@ char * makeKey (const char ** in, int len)
 		return NULL;
 	}
 
-	/* trim extra sep len */
+	// trim extra sep len
 	size -= 1;
 
 	char * out = elektraMalloc (size + 1);
@@ -98,6 +117,7 @@ char * makeKey (const char ** in, int len)
 		return NULL;
 	}
 
+	// fill the string from the array values
 	char * p = out;
 	for (int i = 0; i < len && in[i] != NULL; i++)
 	{
@@ -116,6 +136,12 @@ char * makeKey (const char ** in, int len)
 	return out;
 }
 
+/**
+ * Inplace reverse the order of the array elements.
+ *
+ * @param arr the array to reverse
+ * @param size the array size
+ */
 void reverse (char ** arr, int size)
 {
 	for (int i = 0; i < size / 2; i++)
