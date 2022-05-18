@@ -167,10 +167,10 @@ task:
       npm install --global prettier@2.5.1
 
   script:
-    - | # Use latest version of LLVM to translate Elektra
+    - | # Use latest version of LLVM to translate Elektra and brew version of openldap
       export CC="$(brew --prefix llvm)/bin/clang" CXX="$(brew --prefix llvm)/bin/clang++"
-      export LDFLAGS="-L$(brew --prefix llvm)/lib"
-      export CPPFLAGS="-I$(brew --prefix llvm)/include"
+      export LDFLAGS="-L$(brew --prefix llvm)/lib" -L/usr/local/opt/openldap/lib"
+      export CPPFLAGS="-I$(brew --prefix llvm)/include" -I/usr/local/opt/openldap/include"
       export PATH="$(brew --prefix llvm)/bin:$PATH"
     - >
       set --

@@ -103,6 +103,7 @@ jobs:
           moreutils \
           ninja \
           npm \
+          openldap \
           openssl \
           pkg-config \
           qt \
@@ -152,10 +153,10 @@ jobs:
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
         if [ "$CC" = 'clang' ]; then
-          # Use latest version of LLVM to translate Elektra
+          # Use latest version of LLVM to translate Elektra and brew version of openldap
           export CC="$(brew --prefix llvm@14)/bin/clang" CXX="$(brew --prefix llvm@14)/bin/clang++"
-          export LDFLAGS="-L$(brew --prefix llvm@14)/lib"
-          export CPPFLAGS="-I$(brew --prefix llvm@14)/include"
+          export LDFLAGS="-L$(brew --prefix llvm@14)/lib -L$(brew --prefix openldap)/lib"
+          export CPPFLAGS="-I$(brew --prefix llvm@14)/include -I$(brew --prefix openldap)/include"
           export PATH="$(brew --prefix llvm@14)/bin:$PATH"
         fi
         SYSTEM_DIR="$PWD/kdbsystem"
