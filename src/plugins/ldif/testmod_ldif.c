@@ -18,29 +18,96 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user:/tests/ldif", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/ldif", KEY_VALUE, elektraFilename (), KEY_END);
+
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ldif");
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
-
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
-
-	succeed_if (plugin->kdbCommit (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbCommit was not successful");
-
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
-
-	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
 
+static void test_base (const char * fileContent, int numKeys, const char ** keys, const char ** values)
+{
+	const char * tmpFile = elektraFilename ();
+	FILE * fh = fopen (tmpFile, "w");
+	if (fh)
+	{
+		fputs (fileContent, fh);
+		fclose (fh);
+	}
+
+	Key * parentKey = keyNew ("user:/tests/ldif", KEY_VALUE, tmpFile, KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	Key * key;
+
+	PLUGIN_OPEN ("ldif");
+
+	KeySet * ks = ksNew (numKeys, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+
+	Key * lookup;
+	for (int i = 0; i < numKeys; i++)
+	{
+		lookup = keyNew ("user:/tests/ldif", KEY_END);
+		keyAddName(lookup, keys[i]);
+		printf ("testing key '%s'\n", keys[i]);
+		succeed_if ((key = ksLookup (ks, lookup, 0)) != NULL, "key not found");
+		succeed_if (strcmp (values[i], keyString (key)) == 0, "value of key did not match");
+		keyDel (lookup);
+	}
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_read (void)
+{
+	printf ("test read\n");
+
+	const char * expected_keys[] = {
+		"dc=org/dc=libelektra/ou=developer/uid=test/dn",
+		"dc=org/dc=libelektra/ou=developer/uid=test/uid",
+		"dc=org/dc=libelektra/ou=developer/uid=test/key2",
+		"dc=org/dc=libelektra/ou=developer/uid=test/key3"
+	};
+	const char * expected_values[] = {
+		"uid=test,ou=developer,dc=libelektra,dc=org",
+		"value1",
+		"value2",
+		"value3"
+	};
+
+	test_base ("dn: uid=test,ou=developer,dc=libelektra,dc=org\n"
+			 "uid: value1\n"
+			 "key2: value2\n"
+			 "key3: value3\n",
+			 4, expected_keys, expected_values);
+}
+
+static void test_readOnlyKey (void)
+{
+	printf ("test readOnlyKey\n");
+
+	const char * expected_keys[] = {
+		"dc=org/dc=libelektra/ou=developer/uid=test/dn",
+	};
+	const char * expected_values[] = {
+		"uid=test,ou=developer,dc=libelektra,dc=org",
+	};
+
+	test_base ("dn: uid=test,ou=developer,dc=libelektra,dc=org\n", 1, expected_keys, expected_values);
+}
 
 int main (int argc, char ** argv)
 {
@@ -50,6 +117,8 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basics ();
+	test_read ();
+	test_readOnlyKey ();
 
 	print_result ("testmod_ldif");
 
