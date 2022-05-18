@@ -79,10 +79,14 @@ class ElektraDNSPlugin(object):
                 else:
                     index = "#" + str(c)
 
-                parentKey.setMeta(f"warnings/{index}/number", "101")
-                parentKey.setMeta(f"warnings/{index}/description", "Could not validate key")
+                parentKey.setMeta(f"warnings/{index}/number", "C03200")
+                parentKey.setMeta(f"warnings/{index}/description", "Validation Semantic")
                 parentKey.setMeta(f"warnings/{index}/reason", f"Failed to resolve domain name for key {warn_key}")
                 parentKey.setMeta(f"warnings/{index}/module", "python check/dns script")
+                parentKey.setMeta(f"warnings/{index}/file", "unknown")
+                parentKey.setMeta(f"warnings/{index}/line", "0")
+                parentKey.setMeta(f"warnings/{index}/mountpoint", str(parentKey.name))
+                parentKey.setMeta(f"warnings/{index}/configfile", str(parentKey.value))
                 c += 1
 
             return -1
@@ -98,14 +102,16 @@ class ElektraDNSPlugin(object):
         for k in returned:
             if not check_key(k):
                 parentKey.setMeta("error", f"number description reason module")
-                parentKey.setMeta("error/number", "101")
-                parentKey.setMeta("error/description", "Could not validate key")
+                parentKey.setMeta("error/number", "C03200")
+                parentKey.setMeta("error/description", "Validation Semantic")
                 parentKey.setMeta("error/reason", f"Failed to resolve domain name for key {k}")
                 parentKey.setMeta("error/module", "python check/dns script")
-
+                parentKey.setMeta("error/file", "unknown")
+                parentKey.setMeta("error/line", "0")
+                parentKey.setMeta("error/mountpoint", str(parentKey.name))
+                parentKey.setMeta("error/configfile", str(parentKey.value))
                 print(f"Couldn't validate key {k}")
                 return -1
-
         return 1
 
     def error(self, returned: kdb.KeySet, parentKey: kdb.Key):
