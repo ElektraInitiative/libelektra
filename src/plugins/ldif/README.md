@@ -58,4 +58,31 @@ kdb get /tests/ldif/key
 
 ## Limitations
 
-None.
+The plugin supports neither getting nor setting multi-valued LDIF attributes.
+In particular, on reading the LDIF file, only the last entry will be used.
+
+Consider this LDIF file:
+
+```ldif
+dn: uid=willi,ou=dep,dc=example,dc=org
+uid: willi
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+structuralObjectClass: inetOrgPerson
+```
+
+mounted on `system:/ldif/example`
+
+then
+
+```sh
+kdb get system:/ldif/example/dc=org/dc=example/ou=dep/uid=willi/objectClass
+#> Get the value of a multi-valued attribute
+```
+
+will return `top`.
+
+Furthermore, the order does not get preserved from the LDIF file.
+Instead, the order will be alphabetical in most cases except the `dn` which always will be the first line.
