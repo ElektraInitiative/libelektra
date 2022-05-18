@@ -96,6 +96,7 @@ Read (and write) standard config files:
 - [line](line/) reads/writes any file line by line
 - [yajl](yajl/) reads/writes JSON.
 - [augeas](augeas/) reads/writes many different configuration files using the Augeas library
+- [ldif](ldif/) reads/writes LDIF.
 
 Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for metadata):

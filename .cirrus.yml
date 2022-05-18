@@ -136,7 +136,8 @@ task:
         xerces-c \
         yajl \
         yaml-cpp \
-        zeromq
+        zeromq \
+        openldap
       brew install --cask oclint
 
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)

@@ -59,7 +59,7 @@ static void test_base (const char * fileContent, int numKeys, const char ** keys
 	for (int i = 0; i < numKeys; i++)
 	{
 		lookup = keyNew ("user:/tests/ldif", KEY_END);
-		keyAddName(lookup, keys[i]);
+		keyAddName (lookup, keys[i]);
 		printf ("testing key '%s'\n", keys[i]);
 		succeed_if ((key = ksLookup (ks, lookup, 0)) != NULL, "key not found");
 		succeed_if (strcmp (values[i], keyString (key)) == 0, "value of key did not match");
@@ -75,24 +75,17 @@ static void test_read (void)
 {
 	printf ("test read\n");
 
-	const char * expected_keys[] = {
-		"dc=org/dc=libelektra/ou=developer/uid=test/dn",
-		"dc=org/dc=libelektra/ou=developer/uid=test/uid",
-		"dc=org/dc=libelektra/ou=developer/uid=test/key2",
-		"dc=org/dc=libelektra/ou=developer/uid=test/key3"
-	};
-	const char * expected_values[] = {
-		"uid=test,ou=developer,dc=libelektra,dc=org",
-		"value1",
-		"value2",
-		"value3"
-	};
+	const char * expected_keys[] = { "dc=org/dc=libelektra/ou=developer/uid=test/dn", "dc=org/dc=libelektra/ou=developer/uid=test/uid",
+					 "dc=org/dc=libelektra/ou=developer/uid=test/key2",
+					 "dc=org/dc=libelektra/ou=developer/uid=test/key3" };
+	const char * expected_values[] = { "uid=test,ou=developer,dc=libelektra,dc=org", "value1", "value2", "value3" };
 
-	test_base ("dn: uid=test,ou=developer,dc=libelektra,dc=org\n"
-			 "uid: value1\n"
-			 "key2: value2\n"
-			 "key3: value3\n",
-			 4, expected_keys, expected_values);
+	test_base (
+		"dn: uid=test,ou=developer,dc=libelektra,dc=org\n"
+		"uid: value1\n"
+		"key2: value2\n"
+		"key3: value3\n",
+		4, expected_keys, expected_values);
 }
 
 static void test_readOnlyKey (void)
