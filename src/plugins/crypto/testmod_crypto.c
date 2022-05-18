@@ -179,7 +179,6 @@ static void test_crypto_operations (const char * pluginName)
 	plugin = elektraPluginOpen (pluginName, modules, config, 0);
 	if (plugin)
 	{
-		Key * k;
 		KeySet * data = newTestdataKeySet ();
 		KeySet * original = ksDup (data);
 
@@ -211,9 +210,9 @@ static void test_crypto_operations (const char * pluginName)
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
 
 		// verify key set
-		ksRewind (data);
-		while ((k = ksNext (data)) != 0)
+		for (elektraCursor it = 0; it < ksGetSize (data); ++it)
 		{
+			Key * k = ksAtCursor (data, it);
 			if (isMarkedForEncryption (k))
 			{
 				succeed_if (keyIsBinary (k), "Key value is not binary although it should have been encrypted");

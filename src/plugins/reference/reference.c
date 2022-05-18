@@ -119,10 +119,9 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 		refArray = ksNew (1, keyDup (key, KEY_CP_ALL), KS_END);
 	}
 
-	ksRewind (refArray);
-	const Key * arrayElement;
-	while ((arrayElement = ksNext (refArray)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (refArray); ++it)
 	{
+		const Key * arrayElement = ksAtCursor (refArray, it);
 		const char * ref = keyString (arrayElement);
 		if (ref == NULL || strlen (ref) == 0)
 		{
@@ -142,11 +141,10 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 
 		if (ksGetSize (restrictions) > 0)
 		{
-			ksRewind (restrictions);
-			Key * curRestriction;
 			bool anyMatch = false;
-			while ((curRestriction = ksNext (restrictions)) != NULL)
+			for (elektraCursor itRestrictions = 0; itRestrictions < ksGetSize (restrictions); ++itRestrictions)
 			{
+				Key * curRestriction = ksAtCursor (restrictions, itRestrictions);
 				char * restriction = resolveRestriction (keyString (curRestriction), key, parentKey);
 				if (checkRestriction (refKey, restriction))
 				{
@@ -318,10 +316,9 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 				rgAddNode (referenceGraph, curName);
 			}
 
-			ksRewind (refArray);
-			const Key * arrayElement;
-			while ((arrayElement = ksNext (refArray)) != NULL)
+			for (elektraCursor it = 0; it < ksGetSize (refArray); ++it)
 			{
+				const Key * arrayElement = ksAtCursor (refArray, it);
 				const char * ref = keyString (arrayElement);
 				if (ref == NULL || strlen (ref) == 0)
 				{
@@ -344,11 +341,10 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 
 				if (ksGetSize (restrictions) > 0)
 				{
-					ksRewind (restrictions);
-					Key * curRestriction;
 					bool anyMatch = false;
-					while ((curRestriction = ksNext (restrictions)) != NULL)
+					for (elektraCursor itRestrictions = 0; itRestrictions < ksGetSize (restrictions); ++itRestrictions)
 					{
+						Key * curRestriction = ksAtCursor (restrictions, itRestrictions);
 						char * restriction = resolveRestriction (keyString (curRestriction), baseKey, parentKey);
 						if (checkRestriction (refKey, restriction))
 						{
@@ -415,12 +411,10 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 
 int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	Key * cur;
-	ksRewind (returned);
-
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * metaKey = keyGetMeta (cur, CHECK_REFERENCE_KEYNAME);
 		if (metaKey == NULL)
 		{
@@ -429,7 +423,6 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 		const char * metaValue = keyString (metaKey);
 
-		elektraCursor cursor = ksGetCursor (returned);
 		if (strcmp (metaValue, CHECK_REFERNCE_VALUE_SINGLE) == 0)
 		{
 			status |= checkSingleReference (cur, returned, parentKey);
@@ -439,10 +432,7 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			status |= checkRecursiveReference (cur, returned, parentKey);
 		}
-		ksSetCursor (returned, cursor);
 	}
-
-
 	return status;
 }
 

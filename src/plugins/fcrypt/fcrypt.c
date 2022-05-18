@@ -195,7 +195,6 @@ static int inTextMode (KeySet * conf)
  */
 static size_t getRecipientCount (KeySet * config, const char * keyName)
 {
-	Key * k;
 	size_t recipientCount = 0;
 	Key * root = ksLookupByName (config, keyName, 0);
 
@@ -207,9 +206,9 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 		recipientCount++;
 	}
 
-	ksRewind (config);
-	while ((k = ksNext (config)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (config); ++it)
 	{
+		Key * k = ksAtCursor (config, it);
 		if (keyIsBelow (k, root) && strlen (keyString (k)) > 0)
 		{
 			recipientCount++;
@@ -320,7 +319,6 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
  */
 static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 {
-	Key * k;
 	const size_t recipientCount = getRecipientCount (pluginConfig, ELEKTRA_RECIPIENT_KEY);
 	const size_t signatureCount = getRecipientCount (pluginConfig, ELEKTRA_SIGNATURE_KEY);
 
@@ -377,9 +375,9 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	// append keys beneath root (crypto/key/#_) as gpg recipients
 	if (gpgRecipientRoot)
 	{
-		ksRewind (pluginConfig);
-		while ((k = ksNext (pluginConfig)) != 0)
+		for (elektraCursor it = 0; it < ksGetSize (pluginConfig); ++it)
 		{
+			Key * k = ksAtCursor (pluginConfig, it);
 			const char * kStringVal = keyString (k);
 			if (keyIsBelow (k, gpgRecipientRoot) && strlen (kStringVal) > 0)
 			{
@@ -405,9 +403,9 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	// append keys beneath root (fcrypt/sign/#_) as gpg signature keys
 	if (gpgSignatureRoot)
 	{
-		ksRewind (pluginConfig);
-		while ((k = ksNext (pluginConfig)) != 0)
+		for (elektraCursor it = 0; it < ksGetSize (pluginConfig); ++it)
 		{
+			Key * k = ksAtCursor (pluginConfig, it);
 			const char * kStringVal = keyString (k);
 			if (keyIsBelow (k, gpgSignatureRoot) && strlen (kStringVal) > 0)
 			{

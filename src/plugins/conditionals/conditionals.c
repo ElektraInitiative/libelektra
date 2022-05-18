@@ -845,10 +845,11 @@ static CondResult evalMultipleConditions (Key * key, const Key * meta, const Key
 	int countFailed = 0;
 	int countNoexpr = 0;
 	KeySet * condKS = elektraMetaArrayToKS (key, keyName (meta));
-	Key * c;
 	CondResult result = FALSE;
-	while ((c = ksNext (condKS)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (condKS); ++it)
 	{
+		Key * c = ksAtCursor (condKS, it);
 		if (!keyCmp (c, meta)) continue;
 		result = evaluateKey (c, suffixList, parentKey, key, returned, CONDITION);
 		if (result == TRUE)
@@ -902,11 +903,11 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 
 		return 1; /* success */
 	}
-	Key * cur;
-	ksRewind (returned);
+
 	CondResult ret = FALSE;
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		Key * conditionMeta = (Key *) keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *) keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *) keyGetMeta (cur, "condition/validsuffix");
@@ -952,9 +953,9 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 			if (keyString (assignMeta)[0] == '#')
 			{
 				KeySet * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
-				Key * a;
-				while ((a = ksNext (assignKS)) != NULL)
+				for (elektraCursor itAssign = 0; itAssign < ksGetSize (assignKS); ++itAssign)
 				{
+					Key * a = ksAtCursor (assignKS, itAssign);
 					if (keyCmp (a, assignMeta) == 0) continue;
 					CondResult result = evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
 					if (result == TRUE)
@@ -986,11 +987,10 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 
 int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	Key * cur;
-	ksRewind (returned);
 	CondResult ret = FALSE;
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		Key * conditionMeta = (Key *) keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *) keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *) keyGetMeta (cur, "condition/validsuffix");
@@ -1036,9 +1036,10 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 			if (keyString (assignMeta)[0] == '#')
 			{
 				KeySet * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
-				Key * a;
-				while ((a = ksNext (assignKS)) != NULL)
+
+				for (elektraCursor itAssign = 0; itAssign < ksGetSize (assignKS); ++itAssign)
 				{
+					Key * a= ksAtCursor (assignKS, itAssign);
 					if (keyCmp (a, assignMeta) == 0) continue;
 					CondResult result = evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
 					if (result == TRUE)

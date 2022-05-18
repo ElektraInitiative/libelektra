@@ -25,7 +25,6 @@ static void test_ifthenelseint (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -42,7 +41,6 @@ static void test_ifthenint (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -59,7 +57,6 @@ static void test_ifthenltint (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -76,7 +73,6 @@ static void test_ifthengtint (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -94,7 +90,6 @@ static void test_ifthenkey (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -113,7 +108,6 @@ static void test_emptyisempty (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -132,7 +126,6 @@ static void test_notempty (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -150,7 +143,6 @@ static void test_ifsetthenval (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "BLA") == 0, "error setting then value");
@@ -169,7 +161,6 @@ static void test_ifsetthenkey (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "100") == 0, "error setting then value");
@@ -186,7 +177,6 @@ static void test_assignThen (void)
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "World") == 0, "error setting then value");
@@ -203,7 +193,6 @@ static void test_assignThen2 (void)
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "World") == 0, "error setting then value");
@@ -220,7 +209,6 @@ static void test_assignElse (void)
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Fail") == 0, "error setting then value");
@@ -239,7 +227,6 @@ static void test_assignKeyThen (void)
 			     keyNew ("user:/tests/conditionals/elseVal", KEY_VALUE, "Fail", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "World") == 0, "error setting then value");
@@ -258,7 +245,6 @@ static void test_assignKeyElse (void)
 			     keyNew ("user:/tests/conditionals/elseVal", KEY_VALUE, "Fail", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Fail") == 0, "error setting then value");
@@ -280,7 +266,6 @@ static void test_doesntExistSuccess (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -300,7 +285,6 @@ static void test_doesntExistFail (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -320,7 +304,6 @@ static void test_nested1Success (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -339,7 +322,6 @@ static void test_nested1Fail (void)
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -362,7 +344,6 @@ static void test_nested2Success (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -383,7 +364,6 @@ static void test_nested2Fail (void)
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -402,7 +382,6 @@ static void test_suffix (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3%", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -420,7 +399,6 @@ static void test_elseWhitespace (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -438,7 +416,6 @@ static void test_elseWhitespace2 (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -456,7 +433,6 @@ static void test_elseWhitespace3 (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -478,7 +454,6 @@ static void test_doubleUp (void)
 		       keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -497,7 +472,6 @@ static void test_multiCondAny (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -515,7 +489,6 @@ static void test_multiCond2Any (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -533,7 +506,6 @@ static void test_multiCondAll (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == -1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -551,7 +523,6 @@ static void test_multiCond2All (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == -1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -569,7 +540,6 @@ static void test_multiCondNoFail (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -587,7 +557,6 @@ static void test_multiCond2NoFail (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -604,7 +573,6 @@ static void test_multiAssign (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Sun") == 0, "error setting then value");
@@ -624,7 +592,6 @@ static void test_multiAssign2 (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Moon") == 0, "error setting then value");
@@ -644,7 +611,6 @@ static void test_multiAssign3 (void)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
 	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Moon") == 0, "error setting then value");

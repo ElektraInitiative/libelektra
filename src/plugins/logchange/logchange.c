@@ -19,10 +19,9 @@
 
 static void logKeys (KeySet * ks, const char * message)
 {
-	ksRewind (ks);
-	Key * k = 0;
-	while ((k = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * k = ksAtCursor (ks ,it);
 		printf ("%s: %s\n", message, keyName (k));
 	}
 }
@@ -62,19 +61,16 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 
 int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * oldKeys = (KeySet *) elektraPluginGetData (handle);
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
-	ksRewind (oldKeys);
-	ksRewind (returned);
-
+	KeySet * oldKeys = (KeySet *) elektraPluginGetData (handle);
 	KeySet * addedKeys = ksDup (returned);
 	KeySet * changedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 
-	Key * k = 0;
-	while ((k = ksNext (oldKeys)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (oldKeys); ++it)
 	{
+		Key * k = ksAtCursor (oldKeys, it);
 		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)

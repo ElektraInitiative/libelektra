@@ -144,10 +144,10 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	ksRewind (returned);
-	Key * cur;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
 
@@ -172,10 +172,9 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	ksRewind (returned);
-	Key * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
 

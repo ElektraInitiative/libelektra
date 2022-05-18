@@ -349,9 +349,7 @@ static int handleErrors (Key * key, Key * parentKey, KeySet * ks, Key * specKey,
 	Key * parentLookup = keyDup (key, KEY_CP_ALL);
 	keySetBaseName (parentLookup, NULL);
 
-	elektraCursor cursor = ksGetCursor (ks);
 	Key * parent = ksLookup (ks, parentLookup, KDB_O_NONE);
-	ksSetCursor (ks, cursor);
 
 	keyDel (parentLookup);
 
@@ -362,11 +360,12 @@ static int handleErrors (Key * key, Key * parentKey, KeySet * ks, Key * specKey,
 
 static int processAllConflicts (Key * specKey, KeySet * ks, Key * parentKey, const ConflictHandling * ch, bool isKdbGet)
 {
-	Key * cur;
+
 	int ret = 0;
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * cur = ksAtCursor (ks, it);
 		if (handleErrors (cur, parentKey, ks, specKey, ch, isKdbGet) != 0)
 		{
 			ret = -1;
@@ -480,10 +479,10 @@ static void validateEmptyArray (KeySet * ks, Key * arraySpecParent, Key * parent
 	ssize_t parentLen = keyGetUnescapedNameSize (parentLookup);
 
 	bool haveConflict = false;
-	Key * cur;
-	ksRewind (subKeys);
-	while ((cur = ksNext (subKeys)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (subKeys); ++it)
 	{
+		Key * cur = ksAtCursor (subKeys, it);
 		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			continue;
@@ -544,10 +543,9 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 
 	ssize_t parentLen = keyGetUnescapedNameSize (parentLookup);
 
-	Key * cur;
-	ksRewind (subKeys);
-	while ((cur = ksNext (subKeys)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (subKeys); ++it)
 	{
+		Key * cur = ksAtCursor (subKeys, it);
 		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == KEY_NS_SPEC ||
 		    keyGetNamespace (cur) == KEY_NS_CASCADING)
 		{
@@ -573,7 +571,6 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 // instantiates all array spec parts in an array spec key (e.g. abc/#/a/d/#/e)
 static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parentKey, OnConflict onConflict)
 {
-	elektraCursor cursor = ksGetCursor (ks);
 	size_t usize = keyGetUnescapedNameSize (arraySpec);
 	const char * cur = keyUnescapedName (arraySpec);
 	const char * end = cur + usize;
@@ -591,11 +588,9 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 		KeySet * curNew = ksNew (0, KS_END);
 		if (len == 1 && cur[0] == '#')
 		{
-
-			Key * k;
-			ksRewind (newKeys);
-			while ((k = ksNext (newKeys)) != NULL)
+			for (elektraCursor it = 0; it < ksGetSize (newKeys); ++it)
 			{
+				Key * k = ksAtCursor (newKeys, it);
 				Key * lookup = ksLookupByName (ks, strchr (keyName (k), '/'), 0);
 				const Key * arrayMeta = lookup == NULL ? NULL : keyGetMeta (lookup, "array");
 				Key * specLookup = ksLookup (ks, specCur, 0);
@@ -651,10 +646,9 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 		}
 		else
 		{
-			Key * k;
-			ksRewind (newKeys);
-			while ((k = ksNext (newKeys)) != NULL)
+			for (elektraCursor it = 0; it < ksGetSize (newKeys); ++it)
 			{
+				Key * k = ksAtCursor (newKeys, it);
 				Key * new = keyDup (k, KEY_CP_ALL);
 				keyAddBaseName (new, cur);
 				ksAppendKey (curNew, new);
@@ -672,15 +666,13 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 	ksAppend (newKeys, parents);
 	ksDel (parents);
 
-	Key * k;
-	ksRewind (newKeys);
-	while ((k = ksNext (newKeys)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize(newKeys); ++it)
 	{
+		Key * k = ksAtCursor (newKeys, it);
 		keySetMeta (k, "internal/spec/array", "");
 		copyMeta (k, arraySpec);
 	}
 
-	ksSetCursor (ks, cursor);
 	return newKeys;
 }
 
@@ -736,9 +728,10 @@ static void validateWildcardSubs (KeySet * ks, Key * key)
 	KeySet * subKeys = ksCut (ksCopy, parent);
 	ksDel (ksCopy);
 
-	Key * cur;
-	while ((cur = ksNext (subKeys)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (subKeys); ++it)
 	{
+		Key * cur = ksAtCursor (subKeys, it);
+
 		if (keyIsDirectlyBelow (parent, cur))
 		{
 			if (elektraArrayValidateBaseNameString (keyBaseName (cur)) > 0)
@@ -928,10 +921,10 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// build spec
 	KeySet * specKS = ksNew (0, KS_END);
 
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
+
 		if (keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			if (isArraySpec (cur))
@@ -960,10 +953,10 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * ks = ksCut (returned, parentKey);
 
 	// do actual work
-	Key * specKey;
-	ksRewind (specKS);
-	while ((specKey = ksNext (specKS)) != NULL)
+	Key * specKey = NULL;
+	for (elektraCursor it = 0; it < ksGetSize (specKS); ++it)
 	{
+		specKey = ksAtCursor (specKS, it);
 		if (processSpecKey (specKey, parentKey, ks, &ch, true) != 0)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -999,10 +992,9 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// build spec
 	KeySet * specKS = ksNew (0, KS_END);
 
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		if (keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			if (isArraySpec (cur))
@@ -1031,10 +1023,11 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * ks = ksCut (returned, parentKey);
 
 	// do actual work
-	Key * specKey;
-	ksRewind (specKS);
-	while ((specKey = ksNext (specKS)) != NULL)
+	Key * specKey = NULL;
+
+	for (elektraCursor it = 0; it < ksGetSize (specKS); ++it)
 	{
+		specKey = ksAtCursor (specKS, it);
 		if (processSpecKey (specKey, parentKey, ks, &ch, false) != 0)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -1054,9 +1047,9 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// reconstruct KeySet
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * cur = ksAtCursor (ks, it);
 		if (keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			continue;

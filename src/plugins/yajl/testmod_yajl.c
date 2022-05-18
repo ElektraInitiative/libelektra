@@ -45,7 +45,6 @@ KeySet *getNullKeys(void)
 	keySetBinary(k1, NULL, 0);
 	keySetBinary(k2, NULL, 0);
 
-	ksRewind(ks); // shouldn't that be default?
 	return ks;
 }
 
@@ -61,7 +60,6 @@ KeySet *getBelowKeys(void)
 			KS_END
 		);
 
-	ksRewind(ks); // shouldn't that be default?
 	return ks;
 }
 
@@ -88,7 +86,6 @@ KeySet *getBelowKeys(void)
 			KS_END
 		);
 
-	ksRewind(ks); // shouldn't that be default?
 	return ks;
 }
 */
@@ -107,7 +104,6 @@ KeySet *getBooleanKeys(void)
 			KS_END
 		);
 
-	ksRewind(ks);
 	return ks;
 }
 
@@ -499,50 +495,61 @@ void test_nextNotBelow (void)
 {
 	printf ("Test next not below\n");
 
+
 	KeySet * ks = getNullKeys ();
-	ksRewind (ks);
-	Key * k = elektraNextNotBelow (ks);
+	elektraCursor it;
+	Key * k = elektraNextNotBelow (ks, 0);
+
 	succeed_if_equal (keyName (k), "user:/tests/yajl/nullkey");
-	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/nullkey");
-	k = elektraNextNotBelow (ks);
+	it = ksSearch (ks, k);
+	succeed_if_equal (keyName (ksAtCursor (ks, it)), "user:/tests/yajl/nullkey");
+
+	k = elektraNextNotBelow (ks, it + 1);
 	succeed_if_equal (keyName (k), "user:/tests/yajl/second_nullkey");
-	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/second_nullkey");
-	k = elektraNextNotBelow (ks);
+	it = ksSearch (ks, k);
+	succeed_if_equal (keyName (ksAtCursor (ks, it)), "user:/tests/yajl/second_nullkey");
+
+	k = elektraNextNotBelow (ks, it + 1);
 	succeed_if (k == 0, "not at end of keyset");
-	succeed_if (ksCurrent (ks) == 0, "not at end of keyset");
+	it = ksSearch (ks, k);
+	succeed_if (ksAtCursor (ks, it) == 0, "not at end of keyset");
 	ksDel (ks);
 
 	ks = getBooleanKeys ();
-	ksRewind (ks);
-	k = elektraNextNotBelow (ks);
+	k = elektraNextNotBelow (ks, 0);
 	succeed_if_equal (keyName (k), "user:/tests/yajl/boolean_key");
-	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/boolean_key");
-	k = elektraNextNotBelow (ks);
+	it = ksSearch (ks, k);
+	succeed_if_equal (keyName (ksAtCursor (ks, it)), "user:/tests/yajl/boolean_key");
+
+	k = elektraNextNotBelow (ks, it + 1);
 	succeed_if_equal (keyName (k), "user:/tests/yajl/second_boolean_key");
-	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/second_boolean_key");
-	k = elektraNextNotBelow (ks);
+	it = ksSearch (ks, k);
+	succeed_if_equal (keyName (ksAtCursor (ks, it)), "user:/tests/yajl/second_boolean_key");
+	k = elektraNextNotBelow (ks, it + 1);
 	succeed_if (k == 0, "not at end of keyset");
-	succeed_if (ksCurrent (ks) == 0, "not at end of keyset");
+	it = ksSearch (ks, k);
+	succeed_if (ksAtCursor (ks, it) == 0, "not at end of keyset");
 	ksDel (ks);
 
 	ks = getBelowKeys ();
-	ksRewind (ks);
-	k = elektraNextNotBelow (ks);
+	k = elektraNextNotBelow (ks, 0);
 	succeed_if_equal (keyName (k), "user:/tests/yajl/fancy/path/below/v/y/z");
-	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/fancy/path/below/v/y/z");
-	k = elektraNextNotBelow (ks);
+	it = ksSearch (ks, k);
+	succeed_if_equal (keyName (ksAtCursor (ks, it)), "user:/tests/yajl/fancy/path/below/v/y/z");
+	k = elektraNextNotBelow (ks, it + 1);
 	succeed_if_equal (keyName (k), "user:/tests/yajl/fancy/path/below/x/y/z");
-	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/fancy/path/below/x/y/z");
-	k = elektraNextNotBelow (ks);
+	it = ksSearch (ks, k);
+	succeed_if_equal (keyName (ksAtCursor (ks, it)), "user:/tests/yajl/fancy/path/below/x/y/z");
+	k = elektraNextNotBelow (ks, it + 1);
 	succeed_if (k == 0, "not at end of keyset");
-	succeed_if (ksCurrent (ks) == 0, "not at end of keyset");
+	it = ksSearch (ks, k);
+	succeed_if (ksAtCursor (ks, it) == 0, "not at end of keyset");
 	ksDel (ks);
 
 	ks = getMapKeys ();
-	ksRewind (ks);
-	k = elektraNextNotBelow (ks);
+	k = elektraNextNotBelow (ks, 0);
 	succeed_if_equal (keyName (k), "user:/tests/yajl/map/nested_map/second_string_key");
-	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/map/nested_map/second_string_key");
+	succeed_if_equal (keyName (ksAtCursor (ks, ksSearch (ks, k))), "user:/tests/yajl/map/nested_map/second_string_key");
 	ksDel (ks);
 }
 

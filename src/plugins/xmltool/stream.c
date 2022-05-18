@@ -353,8 +353,6 @@ ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options)
 	Key * key = 0;
 	KeySet * cks = ksDup (ks);
 
-	ksRewind (cks);
-
 	if (options & KDB_O_HEADER)
 	{
 		written += fprintf (stream, "<?xml version=\"1.0\" encoding=\"%s\"?>", "UTF-8");
@@ -383,24 +381,33 @@ ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options)
 		if (commonParent[0])
 		{
 			written += fprintf (stream, "        parent=\"%s\">\n", commonParent);
-			ksRewind (cks);
-			while ((key = ksNext (cks)) != 0)
+
+			for (elektraCursor it = 0; it < ksGetSize (cks); ++it)
+			{
+				key = ksAtCursor (cks, it);
 				written += keyToStreamBasename (key, stream, commonParent, 0, options);
+			}
 		}
 		else
 		{
 			written += fprintf (stream, ">\n");
-			ksRewind (cks);
-			while ((key = ksNext (cks)) != 0)
+
+			for (elektraCursor it = 0; it < ksGetSize (cks); ++it)
+			{
+				key = ksAtCursor (cks, it);
 				written += keyToStream (key, stream, options);
+			}
 		}
 	}
 	else
 	{ /* No KDB_O_HIER*/
 		written += fprintf (stream, ">\n");
-		ksRewind (cks);
-		while ((key = ksNext (cks)) != 0)
+
+		for (elektraCursor it = 0; it < ksGetSize (cks); ++it)
+		{
+			key = ksAtCursor (cks, it);
 			written += keyToStream (key, stream, options);
+		}
 	}
 
 	written += fprintf (stream, "</keyset>\n");
@@ -523,14 +530,14 @@ int ksOutput (const KeySet * ks, FILE * stream, KDBStream options)
 	KeySet * cks = ksDup (ks);
 	size_t size = 0;
 
-	ksRewind (cks);
-
 	if (KDB_O_HEADER & options)
 	{
 		fprintf (stream, "Output keyset of size %d\n", (int) ksGetSize (cks));
 	}
-	while ((key = ksNext (cks)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (cks); ++it)
 	{
+		key = ksAtCursor (cks, it);
 		if (options & KDB_O_SHOWINDICES) fprintf (stream, "[%d] ", (int) size);
 		keyOutput (key, stream, options);
 		size++;

@@ -129,10 +129,9 @@ int elektraHexcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		hd->bufalloc = 1000;
 	}
 
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		size_t valsize = keyGetValueSize (cur);
 		if (valsize > hd->bufalloc)
 		{
@@ -247,10 +246,9 @@ int elektraHexcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKT
 		hd->bufalloc = 1000;
 	}
 
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		size_t valsize = keyGetValueSize (cur);
 		if (valsize * 3 > hd->bufalloc)
 		{
@@ -284,7 +282,12 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 		hd->escape = res & 255;
 	}
 
-	Key * root = ksLookupByName (config, "/chars", 0);
+
+	Key * charsKey = keyNew ("/chars", KEY_END);
+	Key * root = ksLookup (config, charsKey, 0);
+	elektraCursor it = ksSearch (config, charsKey) + 1;
+	keyDel (charsKey);
+
 	if (!root)
 	{
 		/* Some default config */
@@ -295,9 +298,9 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	}
 	else
 	{
-		Key * cur = 0;
-		while ((cur = ksNext (config)) != 0)
+		for (; it < ksGetSize (config); ++it)
 		{
+			Key * cur = ksAtCursor (config, it);
 			/* ignore all keys not direct below */
 			if (keyIsDirectlyBelow (root, cur) == 1)
 			{

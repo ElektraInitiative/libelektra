@@ -190,7 +190,6 @@ static void elektraCryptoSafelyReleaseKey (Key * key)
  */
 static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-	Key * k;
 	Key * masterKey = NULL;
 
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
@@ -202,9 +201,9 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 	elektraCryptoHandle * cryptoHandle = NULL;
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (data); ++it)
 	{
+		Key * k = ksAtCursor (data, it);
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
@@ -242,7 +241,6 @@ error:
  */
 static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data, Key * errorKey)
 {
-	Key * k;
 	Key * masterKey = NULL;
 
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
@@ -254,9 +252,9 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data, 
 
 	elektraCryptoHandle * cryptoHandle = NULL;
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
+	for(elektraCursor it = 0; it < ksGetSize (data); ++it)
 	{
+		Key * k = ksAtCursor (data, it);
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;

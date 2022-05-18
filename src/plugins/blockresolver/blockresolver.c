@@ -108,7 +108,6 @@ static int initData (Plugin * handle, Key * parentKey)
 		data = elektraCalloc (sizeof (BlockData));
 		elektraPluginSetData (handle, data);
 		KeySet * config = elektraPluginGetConfig (handle);
-		ksRewind (config);
 		Key * key = ksLookupByName (config, "/identifier", KDB_O_NONE);
 		if (!key) return -1;
 		data->identifier = (char *) keyString (key);

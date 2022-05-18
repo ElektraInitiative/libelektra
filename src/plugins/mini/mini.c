@@ -285,9 +285,10 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 
 	int status = 0;
 	int errorNumber = errno;
-	ksRewind (keySet);
-	for (Key * key; (key = ksNext (keySet)) != 0 && status >= 0;)
+
+	for (elektraCursor it = 0; it < ksGetSize (keySet) && status >= 0; ++it)
 	{
+		Key * key = ksAtCursor (keySet, it);
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
 

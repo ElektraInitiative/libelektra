@@ -69,7 +69,6 @@ int tomlRead (KeySet * keys, Key * parent)
 		status = 1;
 	}
 
-	ksRewind (keys);
 	return status;
 }
 

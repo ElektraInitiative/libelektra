@@ -522,8 +522,6 @@ int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
  * @retval 1 on success
  * @retval 0 on success with no changed key in database
  * @retval -1 on failure. The cause of the error needs to be added in parentKey
- *   You also have to make sure that ksGetCursor()
- *   shows to the position where the error appeared.
  *   Set an error using #ELEKTRA_SET_ERROR to inform the user what went
  *   wrong.
  *   Additionally you can add any number of warnings with
@@ -559,9 +557,8 @@ int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
  *
  * @retval 1 on success
  * @retval 0 on success without any changes
- * @retval -1 on failure. The cause of the error needs to be entered into parentKey,
- * ksGetCursor() needs to point to the position where the error appeared. The error
- * can be specified using #ELEKTRA_SET_ERROR. #ELEKTRA_ADD_WARNING can be used to
+ * @retval -1 on failure. The cause of the error needs to be entered into parentKey.
+ * The error can be specified using #ELEKTRA_SET_ERROR. #ELEKTRA_ADD_WARNING can be used to
  * add warnings for the user.
  *
  * @ingroup plugin

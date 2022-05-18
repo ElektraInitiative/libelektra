@@ -70,10 +70,10 @@ static void checkSimpleTestKeys (KeySet * ks)
 static void compareKeySets (KeySet * ks, KeySet * expected)
 {
 	succeed_if (ksGetSize (expected) == ksGetSize (ks), "KeySet on set does not contain the same amount of keys");
-	Key * current;
-	ksRewind (expected);
-	while ((current = ksNext (expected)))
+
+	for (elektraCursor it = 0; it < ksGetSize (expected); ++it)
 	{
+		Key * current = ksAtCursor (expected, it);
 		Key * key = ksLookup (ks, current, KDB_O_NONE);
 		succeed_if (key, "Expected key was not found in KeySet");
 		succeed_if (!strcmp (keyString (key), keyString (current)), "Value of key was modified");

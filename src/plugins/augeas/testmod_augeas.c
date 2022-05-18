@@ -139,22 +139,22 @@ static void test_hostLensDelete (char * sourceFile, char * compFile)
 
 	Key * key = ksLookupByName (ks, "user:/tests/augeas-hosts/1", 0);
 	return_if_fail (key, "localhost not found");
-	elektraKsPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks, ksSearch (ks, key));
 	keyDel (key);
 
 	key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/ipaddr", 0);
 	return_if_fail (key, "ip address of localhost not found");
-	elektraKsPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks, ksSearch (ks, key));
 	keyDel (key);
 
 	key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/canonical", 0);
 	return_if_fail (key, "canonical of localhost not found");
-	elektraKsPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks, ksSearch (ks, key));
 	keyDel (key);
 
 	key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/#comment", 0);
 	return_if_fail (key, "comment of localhost not found");
-	elektraKsPopAtCursor (ks, ksGetCursor (ks));
+	elektraKsPopAtCursor (ks,ksSearch (ks, key));
 	keyDel (key);
 
 	keySetString (parentKey, elektraFilename ());
@@ -238,9 +238,9 @@ static void test_order (char * fileName)
 		usedOrders[index] = -1;
 	}
 
-	ksRewind (ks);
-	while ((key = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		key = ksAtCursor (ks, it);
 		if (strcmp (keyName (key), keyName (parentKey)))
 		{
 			char errorMessage[150];

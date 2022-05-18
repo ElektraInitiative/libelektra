@@ -372,9 +372,6 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	elektraCursor cursor = ksGetCursor (returned);
-	ksRewind (returned);
-
 	FILE * file;
 
 	// cannot open stdout for writing, because its already open
@@ -417,9 +414,9 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		parentOffset = 1;
 	}
 
-	Key * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		size_t fullNameSize = keyGetNameSize (cur);
 		if (fullNameSize < parentOffset)
 		{
@@ -480,10 +477,11 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			}
 		}
 
-		keyRewindMeta (cur);
-		const Key * meta;
-		while ((meta = keyNextMeta (cur)) != NULL)
+		KeySet * metaKS = keyMeta (cur);
+
+		for (elektraCursor itMeta = 0; itMeta < ksGetSize (metaKS); ++itMeta)
 		{
+			const Key * meta = ksAtCursor (metaKS, itMeta);
 			ssize_t result = findMetaLink (&metaKeys, meta);
 			if (result < 0)
 			{
@@ -549,8 +547,6 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	elektraFree (metaKeys.array);
 
 	fclose (file);
-
-	ksSetCursor (returned, cursor);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

@@ -260,9 +260,9 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	}
 
 	// check for key beneath crypto/key (like crypto/key/#0 etc)
-	ksRewind (conf);
-	while ((k = ksNext (conf)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (conf); ++it)
 	{
+		k = ksAtCursor (conf, it);
 		if (keyIsBelow (k, root) && strlen (keyString (k)) > 0)
 		{
 			recipientCount++;
@@ -297,9 +297,9 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
 	}
 
 	// append keys beneath root (crypto/key/#_) as gpg recipients
-	ksRewind (conf);
-	while ((k = ksNext (conf)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (conf); ++it)
 	{
+		k = ksAtCursor (conf, it);
 		const char * kStringVal = keyString (k);
 		if (keyIsBelow (k, root) && strlen (kStringVal) > 0)
 		{
