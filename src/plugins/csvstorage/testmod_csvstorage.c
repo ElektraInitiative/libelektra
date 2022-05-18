@@ -86,7 +86,6 @@ static void testwriteinvalidheader (const char * file)
 
 static void testwritevalidemptycol (const char * file)
 {
-
 	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
 			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
@@ -214,11 +213,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	printf ("test1");
 	testread ("csvstorage/valid.csv");
-	printf ("test2");
 	testread ("csvstorage/validDos.csv");
-	printf ("test3");
 	testreadfixcolcount ("csvstorage/valid.csv");
 	testreadwriteinvalid ("csvstorage/invalid_columns.csv");
 	testwriteinvalidheader ("csvstorage/invalid_columns_header2.csv");

@@ -683,7 +683,7 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 		}
 		colCounter = 0;
 		toWriteKS = ksCut (returned, cur);
-		it --; /* Cut at current element */
+		it--; /* Cut at current element */
 		int printDelim = 0;
 
 		for (elektraCursor itToWriteKs = 0; itToWriteKs < ksGetSize (toWriteKS); ++itToWriteKs)

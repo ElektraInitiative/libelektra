@@ -692,7 +692,6 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 
-
 	test_nextNotBelow ();
 	return nbError;
 	test_reverseLevel ();
