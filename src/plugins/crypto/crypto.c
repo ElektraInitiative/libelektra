@@ -252,7 +252,7 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data, 
 
 	elektraCryptoHandle * cryptoHandle = NULL;
 
-	for(elektraCursor it = 0; it < ksGetSize (data); ++it)
+	for (elektraCursor it = 0; it < ksGetSize (data); ++it)
 	{
 		Key * k = ksAtCursor (data, it);
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))

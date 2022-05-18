@@ -1039,7 +1039,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 
 				for (elektraCursor itAssign = 0; itAssign < ksGetSize (assignKS); ++itAssign)
 				{
-					Key * a= ksAtCursor (assignKS, itAssign);
+					Key * a = ksAtCursor (assignKS, itAssign);
 					if (keyCmp (a, assignMeta) == 0) continue;
 					CondResult result = evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
 					if (result == TRUE)

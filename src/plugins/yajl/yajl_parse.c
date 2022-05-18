@@ -36,9 +36,9 @@ static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
  @retval 2 if a new array entry was created
  @retval -1 error in snprintf
  */
-static int elektraYajlIncrementArrayEntry (KeySet * ks, elektraCursor *it)
+static int elektraYajlIncrementArrayEntry (KeySet * ks, elektraCursor * it)
 {
-	Key * current = ksAtCursor(ks, *it);
+	Key * current = ksAtCursor (ks, *it);
 	const char * baseName = keyBaseName (current);
 	const char * meta = keyString (keyGetMeta (current, "array"));
 	if (!strcmp (meta, "empty"))

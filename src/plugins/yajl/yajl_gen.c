@@ -309,7 +309,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	Key * next = 0;
 	elektraCursor it = ksSearch (returned, cur);
-	while ((next = elektraNextNotBelow (returned,it)) != 0)
+	while ((next = elektraNextNotBelow (returned, it)) != 0)
 	{
 		elektraGenValue (g, parentKey, cur);
 		elektraGenClose (g, cur, next);

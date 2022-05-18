@@ -101,7 +101,7 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	if (ret == -1)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not increment array from %s",
-			keyName (ksAtCursor (returned, ksGetSize (returned) - 1)));
+							 keyName (ksAtCursor (returned, ksGetSize (returned) - 1)));
 		ret = -1;
 	}
 	else if (feof (fp) == 0)

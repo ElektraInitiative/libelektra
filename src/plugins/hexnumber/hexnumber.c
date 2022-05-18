@@ -334,7 +334,7 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
-	for (elektraCursor it = 0; it < ksGetSize(returned); ++it)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
 		Key * cur = ksAtCursor (returned, it);
 		if (!keyIsString (cur))

@@ -21,7 +21,7 @@ static void logKeys (KeySet * ks, const char * message)
 {
 	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
-		Key * k = ksAtCursor (ks ,it);
+		Key * k = ksAtCursor (ks, it);
 		printf ("%s: %s\n", message, keyName (k));
 	}
 }

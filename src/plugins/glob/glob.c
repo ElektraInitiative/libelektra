@@ -101,33 +101,33 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 	}
 
 	for (elektraCursor it = 0; it < ksGetSize (keys); ++it)
+	{
+		k = ksAtCursor (keys, it);
+		/* use only glob keys for the current direction */
+		if (keyIsDirectlyBelow (userGlobConfig, k) || keyIsDirectlyBelow (systemGlobConfig, k) ||
+		    keyIsDirectlyBelow (userDirGlobConfig, k) || keyIsDirectlyBelow (systemDirGlobConfig, k))
 		{
-			k = ksAtCursor (keys, it);
-			/* use only glob keys for the current direction */
-			if (keyIsDirectlyBelow (userGlobConfig, k) || keyIsDirectlyBelow (systemGlobConfig, k) ||
-			    keyIsDirectlyBelow (userDirGlobConfig, k) || keyIsDirectlyBelow (systemDirGlobConfig, k))
+			keySetMeta (k, "glob/flags", getGlobFlags (keys, k));
+
+			/* Look if we have a string */
+			size_t valsize = keyGetValueSize (k);
+			if (valsize < 2) continue;
+
+			/* We now know we want that key.
+			 Dup it to not change the configuration. */
+			Key * ins = keyDup (k, KEY_CP_ALL);
+			/* Now look if we want cascading for the key */
+			if (keyString (k)[0] == '/')
 			{
-				keySetMeta (k, "glob/flags", getGlobFlags (keys, k));
-
-				/* Look if we have a string */
-				size_t valsize = keyGetValueSize (k);
-				if (valsize < 2) continue;
-
-				/* We now know we want that key.
-				 Dup it to not change the configuration. */
-				Key * ins = keyDup (k, KEY_CP_ALL);
-				/* Now look if we want cascading for the key */
-				if (keyString (k)[0] == '/')
-				{
-					char * newstring = elektraMalloc (valsize + parentsize);
-					strcpy (newstring, keyName (parentKey));
-					strcat (newstring, keyString (k));
-					keySetString (ins, newstring);
-					elektraFree (newstring);
-				}
-				ksAppendKey (glob, ins);
+				char * newstring = elektraMalloc (valsize + parentsize);
+				strcpy (newstring, keyName (parentKey));
+				strcat (newstring, keyString (k));
+				keySetString (ins, newstring);
+				elektraFree (newstring);
 			}
+			ksAppendKey (glob, ins);
 		}
+	}
 
 	keyDel (userGlobConfig);
 	keyDel (systemGlobConfig);

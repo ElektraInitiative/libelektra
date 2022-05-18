@@ -112,10 +112,10 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys, elektraC
 		if (elementKey != NULL)
 		{
 			if (!isLeaf (elementKey, keys))
-			{		       // true for array that contains inline tables
+			{			 // true for array that contains inline tables
 				++(*ksPosition); // we need to go to the first sub key of the element, since buildTree
-			}		       // loops while ksAtCursor(keys, ksPosition) is below root key (and root != below root)
-					       // TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
+			}			 // loops while ksAtCursor(keys, ksPosition) is below root key (and root != below root)
+						 // TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
 			if (!addChild (node, buildTree (node, elementKey, keys, ksPosition)))
 			{
 				destroyTree (node);

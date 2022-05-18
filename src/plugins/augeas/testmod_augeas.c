@@ -154,7 +154,7 @@ static void test_hostLensDelete (char * sourceFile, char * compFile)
 
 	key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/#comment", 0);
 	return_if_fail (key, "comment of localhost not found");
-	elektraKsPopAtCursor (ks,ksSearch (ks, key));
+	elektraKsPopAtCursor (ks, ksSearch (ks, key));
 	keyDel (key);
 
 	keySetString (parentKey, elektraFilename ());

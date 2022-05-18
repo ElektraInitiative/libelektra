@@ -27,7 +27,7 @@ static void test_variable_passing (void)
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (ksGetSize (ks) == 1, "keyset size is still 0");
-	succeed_if (ksGetSize (ks) == 1 && !strcmp (keyName (ksAtCursor (ks,0)), "user:/from_lua"), "key in keyset has wrong name");
+	succeed_if (ksGetSize (ks) == 1 && !strcmp (keyName (ksAtCursor (ks, 0)), "user:/from_lua"), "key in keyset has wrong name");
 	succeed_if (output_warnings (parentKey), "warnings in kdbOpen");
 	succeed_if (output_error (parentKey), "errors in kdbOpen");
 

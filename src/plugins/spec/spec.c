@@ -666,7 +666,7 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 	ksAppend (newKeys, parents);
 	ksDel (parents);
 
-	for (elektraCursor it = 0; it < ksGetSize(newKeys); ++it)
+	for (elektraCursor it = 0; it < ksGetSize (newKeys); ++it)
 	{
 		Key * k = ksAtCursor (newKeys, it);
 		keySetMeta (k, "internal/spec/array", "");
