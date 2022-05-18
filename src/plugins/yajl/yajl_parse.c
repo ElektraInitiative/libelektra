@@ -36,9 +36,9 @@ static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
  @retval 2 if a new array entry was created
  @retval -1 error in snprintf
  */
-static int elektraYajlIncrementArrayEntry (KeySet * ks, elektraCursor * it)
+static int elektraYajlIncrementArrayEntry (KeySet * ks)
 {
-	Key * current = ksAtCursor (ks, *it);
+	Key * current = ksAtCursor (ks, itKs);
 	const char * baseName = keyBaseName (current);
 	const char * meta = keyString (keyGetMeta (current, "array"));
 	if (!strcmp (meta, "empty"))
@@ -46,7 +46,7 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks, elektraCursor * it)
 		current = keyNew (keyName (current), KEY_END);
 		keyAddName (current, "#0");
 		ksAppendKey (ks, current);
-		*it = ksSearch (ks, current);
+		itKs = ksSearch (ks, current);
 		elektraYajlSetArrayLength (ks, current);
 
 		return 1;
@@ -57,7 +57,7 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks, elektraCursor * it)
 		current = keyNew (keyName (current), KEY_END);
 		elektraArrayIncName (current);
 		ksAppendKey (ks, current);
-		*it = ksSearch (ks, current);
+		itKs = ksSearch (ks, current);
 		elektraYajlSetArrayLength (ks, current);
 
 		return 2;
@@ -72,7 +72,7 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks, elektraCursor * it)
 static int elektraYajlParseNull (void * ctx)
 {
 	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks, &itKs);
+	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksAtCursor (ks, itKs);
 
@@ -86,7 +86,7 @@ static int elektraYajlParseNull (void * ctx)
 static int elektraYajlParseBoolean (void * ctx, int boolean)
 {
 	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks, &itKs);
+	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksAtCursor (ks, itKs);
 
@@ -108,7 +108,7 @@ static int elektraYajlParseBoolean (void * ctx, int boolean)
 static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size_type stringLen)
 {
 	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks, &itKs);
+	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksAtCursor (ks, itKs);
 
@@ -130,7 +130,7 @@ static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size
 static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, yajl_size_type stringLen)
 {
 	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks, &itKs);
+	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksAtCursor (ks, itKs);
 
@@ -150,7 +150,7 @@ static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, 
 static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, yajl_size_type stringLen)
 {
 	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks, &itKs);
+	elektraYajlIncrementArrayEntry (ks);
 
 	Key * currentKey = keyNew (keyName (ksAtCursor (ks, itKs)), KEY_END);
 	keySetString (currentKey, 0);
@@ -173,6 +173,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 		keySetBaseName (currentKey, stringValue);
 	}
 	ksAppendKey (ks, currentKey);
+	itKs = ksSearch (ks, currentKey);
 
 	// restore old character in buffer
 	stringValue[stringLen] = delim;
@@ -183,7 +184,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 static int elektraYajlParseStartMap (void * ctx)
 {
 	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks, &itKs);
+	elektraYajlIncrementArrayEntry (ks);
 
 	Key * currentKey = ksAtCursor (ks, itKs);
 
@@ -191,6 +192,7 @@ static int elektraYajlParseStartMap (void * ctx)
 	// add a pseudo element for empty map
 	keyAddBaseName (newKey, "___empty_map");
 	ksAppendKey (ks, newKey);
+	itKs = ksSearch (ks, newKey);
 
 	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 
@@ -237,13 +239,14 @@ static int elektraYajlParseEnd (void * ctx)
 static int elektraYajlParseStartArray (void * ctx)
 {
 	KeySet * ks = (KeySet *) ctx;
-	elektraYajlIncrementArrayEntry (ks, &itKs);
+	elektraYajlIncrementArrayEntry (ks);
 
 	Key * currentKey = ksAtCursor (ks, itKs);
 
 	Key * newKey = keyNew (keyName (currentKey), KEY_END);
 	keySetMeta (newKey, "array", "empty");
 	ksAppendKey (ks, newKey);
+	itKs = ksSearch (ks, newKey);
 
 	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 

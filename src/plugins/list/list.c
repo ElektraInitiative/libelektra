@@ -471,7 +471,7 @@ int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig)
 		return 0;
 	}
 
-	Key * lookup = lookup = ksAtCursor (pluginConfig, 1);
+	Key * lookup = ksAtCursor (pluginConfig, 1);
 
 	if (keyBaseName (lookup)[0] != '#')
 	{
@@ -949,7 +949,7 @@ int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
 		return 0;
 	}
 
-	Key * lookup = lookup = ksAtCursor (pluginConfig, 1);
+	Key * lookup = ksAtCursor (pluginConfig, 1);
 
 	if (keyBaseName (lookup)[0] != '#')
 	{

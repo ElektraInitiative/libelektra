@@ -45,10 +45,10 @@ void test_lookupre (void)
 
 
 	// show the key that match this string
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, 0);
 	succeed_if (!strcmp (keyName (match), "user:/c"), "Key did not match");
 
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, ksSearch (ks, match) + 1);
 	succeed_if (!strcmp (keyName (match), "user:/d"), "Key did not match");
 
 	regfree (&regex); // free regex resources
@@ -67,16 +67,15 @@ void test_extended (void)
 
 	regcomp (&regex, "^(la)+$", REG_NOSUB | REG_EXTENDED);
 
-	// we start from the first key
 
 	// show the key that match this string
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, 0);
 	succeed_if (!strcmp (keyName (match), "user:/a"), "Key did not match");
 
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, ksSearch (ks, match) + 1);
 	succeed_if (!strcmp (keyName (match), "user:/b"), "Key did not match");
 
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, ksSearch (ks, match) + 1);
 	succeed_if (!strcmp (keyName (match), "user:/d"), "Key did not match");
 
 	regfree (&regex); // free regex resources

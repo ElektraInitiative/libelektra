@@ -78,11 +78,11 @@ regfree(&regex);        // don't forget to free resources
 
  * @endcode
  */
-Key * ksLookupRE (KeySet * ks, const regex_t * regexp)
+Key * ksLookupRE (KeySet * ks, const regex_t * regexp, elektraCursor startPos)
 {
 	regmatch_t offsets;
 
-	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+	for (elektraCursor it = startPos; it < ksGetSize (ks); ++it)
 	{
 		Key * walker = ksAtCursor (ks, it);
 		if (!regexec (regexp, keyString (walker), 1, &offsets, 0)) return walker;

@@ -104,7 +104,7 @@ static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
 	/* set the iterator to the current key and
 	 * iterate over its subkeys
 	 */
-	for (elektraCursor it = ksSearch (returned, key); it < ksGetSize (returned); ++it)
+	for (elektraCursor it = ksSearch (returned, key) + 1; it < ksGetSize (returned); ++it)
 	{
 		Key * alias = ksAtCursor (returned, it);
 		if (keyIsBelow (key, alias) != 1) break;

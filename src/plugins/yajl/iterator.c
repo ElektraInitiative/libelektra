@@ -87,15 +87,16 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
  */
 Key * elektraNextNotBelow (KeySet * ks, elektraCursor pos)
 {
-	const Key * previous = ksAtCursor (ks, pos++);
+	const Key * previous = ksAtCursor (ks, pos);
+
 	if (!previous) return 0;
 
 	const Key * current = previous;
 	do
 	{
 		previous = current; // remember last key
-		current = ksAtCursor (ks, pos++);
+		current = ksAtCursor (ks, ++pos);
 	} while (current && keyIsBelow (previous, current));
 
-	return ksAtCursor (ks, pos - 2); // return candidate
+	return ksAtCursor (ks, pos - 1); // return candidate
 }

@@ -86,22 +86,21 @@ static void keyMetaToNi (elektraNi_node add, Key * cur)
 int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	/* set all keys */
-
 	elektraNi_node root = elektraNi_New ();
-
-	Key * cur;
+	elektraCursor it = 0;
 
 	if (keyCmp (ksAtCursor (returned, 0), parentKey) == 0)
 	{
 		/* found parent key */
 		elektraNi_node add = elektraNi_GetChild (root, NULL, 0, 1, 0);
 		keyMetaToNi (add, ksAtCursor (returned, 0));
+		++it; /* do not process parent in loop again */
 	}
 
-	/* do not process parent in loop again */
-	for (elektraCursor it = 1; it < ksGetSize (returned); ++it)
+
+	for (; it < ksGetSize (returned); ++it)
 	{
-		cur = ksAtCursor (returned, it);
+		Key * cur = ksAtCursor (returned, it);
 		const char * name = elektraKeyGetRelativeName (cur, parentKey);
 		elektraNi_node add = elektraNi_GetChild (root, name, strlen (name), 1, 0);
 		keyMetaToNi (add, cur);

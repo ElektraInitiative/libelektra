@@ -307,8 +307,9 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	ELEKTRA_LOG_DEBUG ("parentKey: %s, cur: %s", keyName (parentKey), keyName (cur));
 	elektraGenOpenInitial (g, parentKey, cur);
 
+
 	Key * next = 0;
-	elektraCursor it = ksSearch (returned, cur);
+	elektraCursor it = ksSearch (returned, cur) + 1;
 	while ((next = elektraNextNotBelow (returned, it)) != 0)
 	{
 		elektraGenValue (g, parentKey, cur);
@@ -318,7 +319,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		elektraGenOpen (g, cur, next);
 
 		cur = next;
-		it = ksSearch (returned, cur);
+		it = ksSearch (returned, cur) + 1;
 	}
 
 	ELEKTRA_LOG_DEBUG ("leaving loop: %s", keyName (cur));

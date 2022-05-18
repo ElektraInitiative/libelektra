@@ -501,6 +501,5 @@ TEST_F (Simple, TriggerError)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	EXPECT_THROW (kdb.set (ks, testRoot), kdb::KDBException) << "could not trigger error";
 	ASSERT_EQ (ks.size (), 3) << "key suddenly missing";
-	EXPECT_EQ (ks.current ().getName (), "system:" + testRoot + "k") << "ks should point to error key";
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "created file even though error triggered";
 }

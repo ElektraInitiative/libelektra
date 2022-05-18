@@ -215,7 +215,7 @@ You can take advantage of the [type](../type/README.md) plugin to map arbitrary 
 
 ```sh
 # Type plugin is automatically mounted since yajl depends on it
-kdb mount conf.json user:/tests/yajl yajl
+sudo kdb mount conf.json user:/tests/yajl yajl
 kdb set user:/tests/yajl 1
 kdb get user:/tests/yajl
 #> 1
