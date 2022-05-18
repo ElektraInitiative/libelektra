@@ -11,34 +11,17 @@
 
 ## Introduction
 
-Copy this ldif if you want to start a new
-plugin written in C.
+This is the Elektra LDIF storage plugin whose aim is to provide support for reading and writing LDIF files.
+
+Each LDIF entry gets mapped into the Elektra tree in the following way:
+
+- the `dn` gets mapped to the key, so `uid=willi,dc=example,dc=org` will be mapped to the Elektra key `$MOUNTPOINT/dc=org/dc=example/uid=willi`
+- every LDIF attribute will use this base key to store all attributes in
 
 ## Installation
 
 See [installation](/doc/INSTALL.md).
 The package is called `libelektra5-experimental`.
-
-## Usage
-
-You can use `scripts/copy-ldif`
-to automatically rename everything to your
-plugin name:
-
-```bash
-cd src/plugins
-../../scripts/copy-ldif yourplugin
-```
-
-Then update the README.md of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status`, `placements`, and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
 
 ## Dependencies
 
@@ -54,6 +37,21 @@ kdb set user:/tests/ldif/key value
 
 kdb get /tests/ldif/key
 #> value
+```
+
+```shell
+# Mount the provided example: simple-people.ldif
+
+kdb mount "$PWD/ldif/simple-people.ldif" /tests/people ldif
+
+kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=heidi/dn
+#> uid=heidi,ou=developer,dc=libelektra,dc=org
+
+kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=heidi/uid
+#> heidi
+
+kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=heidi/cn
+#> Heidi Redlbacher
 ```
 
 ## Limitations
@@ -79,10 +77,8 @@ then
 
 ```sh
 kdb get system:/ldif/example/dc=org/dc=example/ou=dep/uid=willi/objectClass
-#> Get the value of a multi-valued attribute
+#> top
 ```
-
-will return `top`.
 
 Furthermore, the order does not get preserved from the LDIF file.
 Instead, the order will be alphabetical in most cases except the `dn` which always will be the first line.
