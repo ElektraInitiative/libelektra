@@ -80,10 +80,12 @@ protected:
 
 	virtual void unsyncKeys (KeySet & ks)
 	{
-		Key current;
+
 		ks.rewind ();
-		while ((current = ks.next ()))
+
+		for (ssize_t it = 0; it < ks.size(); ++it)
 		{
+			Key current = ks.at (it);
 			current.getKey ()->flags = static_cast<ckdb::keyflag_t> (current.getKey ()->flags & ~(ckdb::KEY_FLAG_SYNC));
 
 			// This does not work because C++ complains about an invalid conversion from int to keyflags_t

@@ -82,15 +82,10 @@ public:
 	ssize_t append (const Key & toAppend);
 	ssize_t append (const KeySet & toAppend);
 
-	Key head () const;
-	Key tail () const;
-
 	void rewind () const;
 	Key next () const;
 	Key current () const;
 
-	void setCursor (elektraCursor cursor) const;
-	elektraCursor getCursor () const;
 
 	Key pop ();
 	Key at (elektraCursor pos) const;
@@ -691,27 +686,6 @@ inline ssize_t KeySet::append (KeySet const & toAppend)
 }
 
 /**
- * @return alphabetical first key
- *
- * @copydoc ksHead()
- */
-inline Key KeySet::head () const
-{
-	return Key (ckdb::ksHead (ks));
-}
-
-/**
- * @return alphabetical last key
- *
- * @copydoc ksTail()
- */
-inline Key KeySet::tail () const
-{
-	return Key (ckdb::ksTail (ks));
-}
-
-
-/**
  * @copydoc ksRewind()
  */
 inline void KeySet::rewind () const
@@ -734,22 +708,6 @@ inline Key KeySet::next () const
 inline Key KeySet::current () const
 {
 	return Key (ckdb::ksCurrent (ks));
-}
-
-/**
- * @copydoc ksSetCursor()
- */
-inline void KeySet::setCursor (elektraCursor cursor) const
-{
-	ckdb::ksSetCursor (ks, cursor);
-}
-
-/**
- * @copydoc ksGetCursor()
- */
-inline elektraCursor KeySet::getCursor () const
-{
-	return ckdb::ksGetCursor (ks);
 }
 
 /**

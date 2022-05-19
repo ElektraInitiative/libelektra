@@ -104,40 +104,34 @@ TEST (ks, iterate)
 	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
 
-	ks3.rewind ();
-
-	Key k1 = ks3.next ();
+	Key k1 = ks3.at (0);
 	succeed_if (k1.getName () == "user:/key3/1", "wrong keyname");
-	succeed_if (k1 == ks3.head (), "first key not head key");
-	Key k2 = ks3.next ();
+	succeed_if (k1 == ks3.at (0), "first key not head key");
+	Key k2 = ks3.at (1);
 	succeed_if (k2.getName () == "user:/key3/2", "wrong keyname");
-	Key k3 = ks3.next ();
+	Key k3 = ks3.at (2);
 	succeed_if (k3.getName () == "user:/key3/3", "wrong keyname");
 	succeed_if (k3.getString () == "value", "wrong value");
-	succeed_if (k3 == ks3.tail (), "last key not tail key");
-	succeed_if (!ks3.next (), "no more key");
-	succeed_if (!ks3.next (), "no more key");
-	succeed_if (!ks3.next (), "no more key");
-	succeed_if (!ks3.next (), "no more key");
+	succeed_if (k3 == ks3.at(ks3.size() - 1), "last key not tail key");
+	succeed_if (!ks3.at(ks3.size()), "no more key");
 
 	Key null = static_cast<ckdb::Key *> (nullptr);
 	succeed_if (!null, "null key");
 
-	ks3.rewind ();
 	for (ssize_t i = 0; i < ks3.size (); i++)
 	{
-		Key k = ks3.next ();
+		Key k = ks3.at	(i);
 		char str[] = "user:/key3/X";
 
 		str[11] = i + '1';
 		succeed_if (k.getName () == str, "wrong keyname");
 	}
 
-	ks3.rewind ();
 	Key n;
 	int j = 0;
-	while ((n = ks3.next ()))
+	while (j < ks3.size ())
 	{
+		n = ks3.at (j);
 		char str[] = "user:/key3/X";
 
 		str[11] = j + '1';
@@ -146,9 +140,9 @@ TEST (ks, iterate)
 	}
 
 	j = 0;
-	ks3.rewind ();
-	while ((n = ks3.next ()) == true)
+	while (j < ks3.size ())
 	{
+		n = ks3.at (j);
 		char str[] = "user:/key3/X";
 
 		str[11] = j + '1';
@@ -157,8 +151,7 @@ TEST (ks, iterate)
 	}
 
 	j = 0;
-	ks3.rewind ();
-	for (Key k; (k = ks3.next ());)
+	for (Key k; (k = ks3.at (j));)
 	{
 		char str[] = "user:/key3/X";
 
@@ -168,8 +161,7 @@ TEST (ks, iterate)
 	}
 
 	j = 0;
-	ks3.rewind ();
-	for (Key k = ks3.next (); k; (k = ks3.next ()))
+	for (Key k = ks3.at(j); k; (k = ks3.at (j)))
 	{
 		char str[] = "user:/key3/X";
 
@@ -183,19 +175,17 @@ TEST (ks, cursor)
 {
 	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
-	elektraCursor cursorTest = ks3.getCursor ();
+	elektraCursor cursorTest = 0;
 
-	ks3.rewind ();
-	for (ssize_t i = 0; i < ks3.size (); i++)
+	for (ssize_t i = cursorTest; i < ks3.size (); i++)
 	{
-		Key k = ks3.next ();
-		if (i == 0) cursorTest = ks3.getCursor ();
+		Key k = ks3.at (i);
+		if (i == 0) cursorTest = 1;
 	}
 
-	ks3.setCursor (cursorTest);
-	Key k1 = ks3.current ();
+	Key k1 = ks3.at (cursorTest);
 	succeed_if (k1.getName () == "user:/key3/1", "wrong keyname");
-	succeed_if (k1 == ks3.head (), "first key not head key");
+	succeed_if (k1 == ks3.at(0), "first key not head key");
 }
 
 TEST (ks, pop)

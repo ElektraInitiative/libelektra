@@ -2000,30 +2000,8 @@ elektraReferenceSet:
 
 
 
-# Questions:
-
-1) Should we check for NULL, for it < keySetSize or both?
-for NULL:
-	Key * cur;
-	for (elektraCursor it = 0; (cur = ksAtCursor (ks, it)) != NULL; ++cursor)
-	{
-		printf ("%s\n", keyName (cur));
-	}
 
 
-for ksSize:
-	Key * cur;
-	ssize_t ksSize = ksGetSize (ks);
-	for (elektraCursor it = 0; it < ksSize; ++it)
-	{
-		cur = ksAtCursor (ks, it);
-		printf ("%s\n", keyName (cur));
-	}
+grep -cir -- "ksRewind\|ksNext\|ksCurrent\|ksGetCursor\|ksSetCursor\|keyRewindMeta\|keyNextMeta\|keyCurrentMeta\|ksHead\|ksTail" * | grep -v ':0$' | nl
 
-for both:
-	Key * cur;
-	ssize_t ksSize = ksGetSize (ks);
-	for (elektraCursor it = 0; it < ksSize && (cur = ksAtCursor (ks, it)) != NULL; ++it)
-	{
-		printf ("%s\n", keyName (cur));
-	}
+

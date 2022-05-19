@@ -1,0 +1,37 @@
+# Functions to be removed
+
+## src/bindings/cpp/include/keyset.hpp:
+ksRewind --> rewind
+ksNext --> next
+ksCurrent --> current
+
+ksGetCursor --> getCursor
+ksSetCursor --> setCursor
+
+ksHead --> head
+ksTail --> tail
+
+
+## key.hpp
+keyRewindMeta --> rewindMeta
+keyNextMeta --> nextMeta
+keyCurrentMeta --> currentMeta
+
+
+
+# Existing functions (already available)
+ksSearch: can be used to obtain the index of a key in a keyset
+ksAtCursor: get the Key at a given index (to be renamed to ksAt)
+ksPop: is going to get replaced by elektraKsPopAtCursor
+keyMeta: get a keyset meta metakeys of a key
+
+
+
+# Track the work progress per file and line.
+* ... in progress
+> ... finished
+< ... Nothing to change (e.g. historical reports)
+X ... blocked (explain!)
++ ... added (dependency of change in other file)
+? ... open questions
+

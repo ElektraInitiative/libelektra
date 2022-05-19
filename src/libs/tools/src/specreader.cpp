@@ -150,7 +150,7 @@ void SpecMountpointReader::processKey (Key const & ck)
 SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet const & cks)
 {
 	ks = cks;
-	mp = ks.head ().dup ();
+	mp = ks.at (0).dup ();
 
 	Key rmp (mp.dup ());
 	helper::removeNamespace (rmp);

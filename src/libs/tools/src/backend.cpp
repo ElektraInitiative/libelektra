@@ -420,14 +420,14 @@ void Backend::serialize (kdb::KeySet & ret)
 	const string configBasePath = Backends::getBasePath (mp) + "/config";
 	ret.append (Key (configBasePath, KEY_END));
 
-	config.rewind ();
-	Key common = config.next ();
+	Key common = config.at (1);
 	Key oldParent ("system:/", KEY_END);
 	Key newParent (configBasePath, KEY_END);
 
-	for (KeySet::iterator i = config.begin (); i != config.end (); ++i)
+	for (ssize_t it = 0; it < config.size(); ++it)
 	{
-		Key k (i->dup ());
+
+		Key k = config.at (it);
 		ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
 	}
 

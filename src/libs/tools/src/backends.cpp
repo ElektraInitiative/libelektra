@@ -29,11 +29,10 @@ Backends::BackendInfoVector Backends::getBackendInfo (KeySet mountConf)
 {
 	std::vector<BackendInfo> ret;
 	Key rootKey (Backends::mountpointsPath, KEY_END);
-	Key cur;
 
-	mountConf.rewind ();
-	while ((cur = mountConf.next ()))
+	for (ssize_t it = 0; it < mountConf.size(); ++it)
 	{
+		Key cur = mountConf.at (it);
 		if (cur.isDirectBelow (rootKey))
 		{
 			BackendInfo bi;

@@ -12,10 +12,10 @@
 kdb::KeySet ksDeepCopy (kdb::KeySet orig)
 {
 	kdb::KeySet deepCopy;
-	orig.rewind ();
-	while (orig.next ())
+
+	for (ssize_t it = 0; it < orig.size(); ++it)
 	{
-		deepCopy.append (orig.current ().dup ());
+		deepCopy.append (orig.at (it).dup ());
 	}
 	return deepCopy;
 }

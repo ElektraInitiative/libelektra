@@ -37,12 +37,9 @@ inline void addAsymmetricConflict (MergeResult & result, Key & key, ConflictOper
 
 void ThreeWayMerge::detectConflicts (const MergeTask & task, MergeResult & mergeResult, bool reverseConflictMeta = false)
 {
-	Key our;
-	elektraCursor savedCursor = task.ours.getCursor ();
-	task.ours.rewind ();
-
-	while ((our = task.ours.next ()))
+	for (ssize_t it = 0; it < task.ours.size(); ++it)
 	{
+		Key our = task.ours.at (it);
 		string theirLookup = rebasePath (our, task.ourParent, task.theirParent);
 		Key theirLookupResult = task.theirs.lookup (theirLookup);
 
@@ -161,8 +158,6 @@ void ThreeWayMerge::detectConflicts (const MergeTask & task, MergeResult & merge
 			}
 		}
 	}
-
-	task.ours.setCursor (savedCursor);
 }
 
 
@@ -177,11 +172,11 @@ MergeResult ThreeWayMerge::mergeKeySet (const MergeTask & task)
 
 
 	// TODO: test this behaviour (would probably need mocks)
-	Key current;
 	KeySet conflicts = result.getConflictSet ();
-	conflicts.rewind ();
-	while ((current = conflicts.next ()))
+
+	for (ssize_t it = 0; it < conflicts.size(); ++it)
 	{
+		Key current = conflicts.at (it);
 		for (auto & elem : strategies)
 		{
 			(elem)->resolveConflict (task, current, result);
@@ -195,9 +190,9 @@ MergeResult ThreeWayMerge::mergeKeySet (const MergeTask & task)
 
 MergeResult ThreeWayMerge::mergeKeySet (const KeySet & base, const KeySet & ours, const KeySet & theirs, const Key & mergeRoot)
 {
-	Key ourkey = ours.head ().dup ();
-	Key theirkey = theirs.head ().dup ();
-	Key basekey = base.head ().dup ();
+	Key ourkey = ours.at (0).dup ();
+	Key theirkey = theirs.at (0).dup ();
+	Key basekey = base.at (0).dup ();
 
 	MergeResult merged = mergeKeySet (
 		MergeTask (BaseMergeKeys (base, basekey), OurMergeKeys (ours, ourkey), TheirMergeKeys (theirs, theirkey), mergeRoot));
