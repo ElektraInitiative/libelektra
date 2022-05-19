@@ -21,11 +21,11 @@
 #define LF_BYTE 0x0A
 #define CR_BYTE 0x0D
 
-#define ERROR(asWarning, warning, error, key, reason, va) \
-	if (asWarning) \
-	warning(key, reason, va); \
-	else \
-	error(key, reason, va);
+#define ERROR(asWarning, warning, error, key, reason, va)                                                                                  \
+	if (asWarning)                                                                                                                     \
+		warning (key, reason, va);                                                                                                 \
+	else                                                                                                                               \
+		error (key, reason, va);
 
 typedef enum
 {
@@ -121,8 +121,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 			       parentKey, "Inconsistent line endings at line %lu", line)
 			return -3;
 		}
-		if (found != NA)
-			line++;
+		if (found != NA) line++;
 		fc = sc;
 		found = NA;
 	}

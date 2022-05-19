@@ -26,9 +26,10 @@ In the case of `kdbGet` the plugin yields a warning instead.
 ## Configuration
 
 The key `/valid` tells the plugin to reject all line endings other than specified and can have the following options:
- * `CRLF`: Carriage return followed by a line feed
- * `LFCR`: Line feed followed by a carriage return
- * `CR`: Carriage return only
- * `LF`: Line feed only
+
+- `CRLF`: Carriage return followed by a line feed
+- `LFCR`: Line feed followed by a carriage return
+- `CR`: Carriage return only
+- `LF`: Line feed only
 
 If the key doesn't exist only inconsistent line endings are rejected.
