@@ -21,6 +21,12 @@
 #define LF_BYTE 0x0A
 #define CR_BYTE 0x0D
 
+#define ERROR(asWarning, warning, error, key, reason, va)                                                                                  \
+	if (asWarning)                                                                                                                     \
+		warning (key, reason, va);                                                                                                 \
+	else                                                                                                                               \
+		error (key, reason, va);
+
 typedef enum
 {
 	NA,
@@ -46,12 +52,22 @@ static Lineending strToLE (const char * str)
 	}
 	return NA;
 }
-static int checkLineEndings (const char * fileName, Lineending validLineEnding, Key * parentKey)
+
+/**
+ * Check the line endings for inconsistencies and invalid values
+ * @param fileName[in] The absolute path of the file to check
+ * @param validLineEnding[in] The line ending that should be considered as valid
+ * @param errorsAsWarnings[in] Produce warnings instead of errors
+ * @retval 0 if everything was ok, -1 if file not found, -2 if invalid line ending detected, -3 if inconsistent line ending detected
+ */
+static int checkLineEndings (const char * fileName, Lineending validLineEnding, Key * parentKey, bool errorsAsWarnings)
 {
 	FILE * fp;
 	fp = fopen (fileName, "rb");
 	if (fp == NULL)
 	{
+		ERROR (errorsAsWarnings, ELEKTRA_ADD_RESOURCE_WARNINGF, ELEKTRA_SET_RESOURCE_ERRORF, parentKey, "Couldn't open file %s\n",
+		       keyString (parentKey))
 		return -1;
 	}
 
@@ -93,17 +109,19 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 			if (validLineEnding != NA && lineEnding != validLineEnding)
 			{
 				fclose (fp);
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid line ending at line %lu", line);
+				ERROR (errorsAsWarnings, ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF, ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF,
+				       parentKey, "Invalid line ending at line %lu", line)
 				return -2;
 			}
-			++line;
 		}
 		else if (lineEnding != found && found != NA)
 		{
 			fclose (fp);
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Inconsistent line endings at line %lu", line);
+			ERROR (errorsAsWarnings, ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF, ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF,
+			       parentKey, "Inconsistent line endings at line %lu", line)
 			return -3;
 		}
+		if (found != NA) line++;
 		fc = sc;
 		found = NA;
 	}
@@ -111,7 +129,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 	return 0;
 }
 
-int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraLineendingsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/lineendings"))
 	{
@@ -125,20 +143,17 @@ int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		return 1; /* success */
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS; /* success */
 	}
 	/* get all keys */
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * valid = ksLookupByName (config, "/valid", 0);
 	Lineending validLineEnding = strToLE (keyString (valid));
-	int ret;
-	ret = checkLineEndings (keyString (parentKey), validLineEnding, parentKey);
-	if (ret == (-3))
-	{
-		return -1;
-	}
-	else
-		return 1;
+
+	(void) checkLineEndings (keyString (parentKey), validLineEnding, parentKey, true);
+
+	/* Always return ELEKTRA_PLUGIN_STATUS_SUCCESS. We don't want kdbGet() to fail because of validation problems. */
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
@@ -146,23 +161,18 @@ int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Ke
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * valid = ksLookupByName (config, "/valid", 0);
 	Lineending validLineEnding = strToLE (keyString (valid));
-	int ret;
-	ret = checkLineEndings (keyString (parentKey), validLineEnding, parentKey);
+
+	int ret = checkLineEndings (keyString (parentKey), validLineEnding, parentKey, false);
 	switch (ret)
 	{
 	case (-1):
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s\n", keyString (parentKey));
-		return 1;
-		break;
 	case (-2):
-		return -1;
-		break;
 	case (-3):
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 		break;
 	case 0:
 	default:
-		return 1;
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		break;
 	}
 }

@@ -54,9 +54,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### lineendings - Plugin
 
-- <<TODO>>
+- Enable emitting of warnings during kdbGet(), refactor and update methods and return values to match the conventions
+  (e.g. #defined constants for return values) _(Michael Langhammer @milangs, Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
