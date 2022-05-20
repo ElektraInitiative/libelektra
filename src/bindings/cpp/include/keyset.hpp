@@ -13,11 +13,9 @@
 #define ELEKTRA_WRONG // make swig happy
 #endif
 
-#include <string>
-
-#include <key.hpp>
-
 #include <kdb.h>
+#include <key.hpp>
+#include <string>
 
 namespace kdb
 {
@@ -96,6 +94,9 @@ public:
 	Key lookup (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
 	template <typename T>
 	T get (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
+
+	ssize_t search (const Key & toSearch);
+	ssize_t search (std::string const & name);
 
 	// operators
 	inline bool operator== (const KeySet & ks) const;
@@ -686,14 +687,6 @@ inline ssize_t KeySet::append (KeySet const & toAppend)
 }
 
 /**
- * @copydoc ksRewind()
- */
-inline void KeySet::rewind () const
-{
-	ckdb::ksRewind (ks);
-}
-
-/**
  * @copydoc ksNext()
  */
 inline Key KeySet::next () const
@@ -818,6 +811,25 @@ inline bool KeySet::operator== (const KeySet & o) const
 inline bool KeySet::operator!= (const KeySet & o) const
 {
 	return !(*this == o);
+}
+
+
+/**
+ * @copydoc ksSearch()
+ */
+inline ssize_t KeySet::search (const Key & toSearch)
+{
+	return ckdb::ksSearch (ks, toSearch.getKey ());
+}
+
+/**
+ * @copydoc ksSearch()
+ *
+ * @note Accepts a keyname as string instead of a Key object.
+ */
+inline ssize_t KeySet::search (const std::string & name)
+{
+	return search (Key (name));
 }
 
 

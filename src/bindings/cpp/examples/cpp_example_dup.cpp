@@ -13,7 +13,7 @@ kdb::KeySet ksDeepCopy (kdb::KeySet orig)
 {
 	kdb::KeySet deepCopy;
 
-	for (ssize_t it = 0; it < orig.size(); ++it)
+	for (ssize_t it = 0; it < orig.size (); ++it)
 	{
 		deepCopy.append (orig.at (it).dup ());
 	}

@@ -112,15 +112,15 @@ TEST (ks, iterate)
 	Key k3 = ks3.at (2);
 	succeed_if (k3.getName () == "user:/key3/3", "wrong keyname");
 	succeed_if (k3.getString () == "value", "wrong value");
-	succeed_if (k3 == ks3.at(ks3.size() - 1), "last key not tail key");
-	succeed_if (!ks3.at(ks3.size()), "no more key");
+	succeed_if (k3 == ks3.at (ks3.size () - 1), "last key not tail key");
+	succeed_if (!ks3.at (ks3.size ()), "no more key");
 
 	Key null = static_cast<ckdb::Key *> (nullptr);
 	succeed_if (!null, "null key");
 
 	for (ssize_t i = 0; i < ks3.size (); i++)
 	{
-		Key k = ks3.at	(i);
+		Key k = ks3.at (i);
 		char str[] = "user:/key3/X";
 
 		str[11] = i + '1';
@@ -161,7 +161,7 @@ TEST (ks, iterate)
 	}
 
 	j = 0;
-	for (Key k = ks3.at(j); k; (k = ks3.at (j)))
+	for (Key k = ks3.at (j); k; (k = ks3.at (j)))
 	{
 		char str[] = "user:/key3/X";
 
@@ -185,15 +185,13 @@ TEST (ks, cursor)
 
 	Key k1 = ks3.at (cursorTest);
 	succeed_if (k1.getName () == "user:/key3/1", "wrong keyname");
-	succeed_if (k1 == ks3.at(0), "first key not head key");
+	succeed_if (k1 == ks3.at (0), "first key not head key");
 }
 
 TEST (ks, pop)
 {
 	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
-
-	ks3.rewind ();
 
 	Key k3 = ks3.pop ();
 	succeed_if (k3.getName () == "user:/key3/3", "wrong keyname");
@@ -208,7 +206,6 @@ TEST (ks, pop)
 	KeySet ks4 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
 
-	ks4.rewind ();
 	for (int i = ks4.size () - 1; i > 0; i--)
 	{
 		Key k = ks4.pop ();
@@ -276,10 +273,9 @@ TEST (ks, append)
 	ks5.append (v[0] = Key ("user:/s/1", KEY_END));
 	ks5.append (v[2] = Key ("user:/s/3", KEY_END));
 
-	ks5.rewind ();
 	for (ssize_t i = 0; i < ks5.size (); ++i)
 	{
-		succeed_if (*ks5.next () == *v[i], "wrong order");
+		succeed_if (*ks5.at (i) == *v[i], "wrong order");
 	}
 
 	// ks1.toStream();
@@ -306,10 +302,9 @@ TEST (ks, permutations)
 		ks.append (permutation[2]);
 		ks.append (permutation[3]);
 		ks.append (permutation[4]);
-		ks.rewind ();
 		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next () == *solution[i], "wrong order ");
+			succeed_if (*ks.at (i) == *solution[i], "wrong order ");
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
@@ -326,10 +321,9 @@ TEST (ks, permutations)
 		ks.append (permutation[3]);
 		ks.append (permutation[4]);
 		ks.append (permutation[5]);
-		ks.rewind ();
 		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next () == *solution[i], "wrong order");
+			succeed_if (*ks.at (i) == *solution[i], "wrong order");
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
@@ -347,11 +341,10 @@ TEST (ks, permutations)
 		ks.append (permutation[4]);
 		ks.append (permutation[5]);
 		ks.append (permutation[6]);
-		ks.rewind ();
 		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
 			// note: raw pointers check the identity! It needs to be the same reference
-			succeed_if (*ks.next () == *solution[i], "wrong order");
+			succeed_if (*ks.at (i) == *solution[i], "wrong order");
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
@@ -370,10 +363,9 @@ TEST (ks, permutations)
 		ks.append (permutation[5]);
 		ks.append (permutation[6]);
 		ks.append (permutation[7]);
-		ks.rewind ();
 		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next () == *solution[i], "wrong order");
+			succeed_if (*ks.at (i) == *solution[i], "wrong order");
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 }

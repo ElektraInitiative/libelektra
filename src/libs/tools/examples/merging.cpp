@@ -123,7 +123,7 @@ int main ()
 
 		cerr << conflicts.size () << " conflicts were detected that could not be resolved automatically:" << endl;
 
-		for (ssize_t it = 0; it < conflicts.size(); ++it)
+		for (ssize_t it = 0; it < conflicts.size (); ++it)
 		{
 			Key current = conflicts.at (it);
 

@@ -29,8 +29,8 @@ KeySet MetaMergeStrategy::getMetaKeys (Key & key)
 
 	if (key)
 	{
-		KeySet metaKeys = getMetaKeys(key);
-		for (ssize_t it = 0; it < metaKeys.size(); ++it)
+		KeySet metaKeys = getMetaKeys (key);
+		for (ssize_t it = 0; it < metaKeys.size (); ++it)
 		{
 			Key currentMeta = metaKeys.at (it);
 			string resultName = "user:/" + currentMeta.getName ();
@@ -64,7 +64,7 @@ void MetaMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictK
 	MergeResult metaResult = innerMerger.mergeKeySet (metaTask);
 	KeySet mergedMeta = metaResult.getMergedKeys ();
 
-	for (ssize_t it = 0; it < mergedMeta.size(); ++it)
+	for (ssize_t it = 0; it < mergedMeta.size (); ++it)
 	{
 		Key current = mergedMeta.at (it);
 		string metaName = current.getName ().substr (string ("user:/").length ());

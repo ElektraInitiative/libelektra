@@ -131,18 +131,16 @@ bool isKeySetEqual (kdb::KeySet & keys1, kdb::KeySet & keys2)
 {
 	if (keys1.size () != keys2.size ()) return false;
 
-	keys1.rewind ();
-	keys2.rewind ();
-	while (keys1.next ())
+	for (ssize_t it = 0; it < keys1.size (); ++it)
 	{
-		keys2.next ();
-		if (!keys2.current ()) return false;
-		kdb::Key key1 = keys1.current ();
-		kdb::Key key2 = keys2.current ();
+		kdb::Key key1 = keys1.at (it);
+		kdb::Key key2 = keys2.at (it);
+
+		if (!key1 || !key2) return false; // should never happen
 		if (!isKeyEqual (key1, key2)) return false;
 	}
 
-	return keys1.next () == keys2.next ();
+	return true;
 }
 
 /**

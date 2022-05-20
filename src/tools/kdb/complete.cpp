@@ -154,8 +154,7 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 	Key last;
 	addNamespaces (hierarchy, cl);
 
-	ks.rewind ();
-	if (!(ks.next ()))
+	if (ks.size () == 0)
 	{
 		return hierarchy;
 	}

@@ -37,7 +37,7 @@ inline void addAsymmetricConflict (MergeResult & result, Key & key, ConflictOper
 
 void ThreeWayMerge::detectConflicts (const MergeTask & task, MergeResult & mergeResult, bool reverseConflictMeta = false)
 {
-	for (ssize_t it = 0; it < task.ours.size(); ++it)
+	for (ssize_t it = 0; it < task.ours.size (); ++it)
 	{
 		Key our = task.ours.at (it);
 		string theirLookup = rebasePath (our, task.ourParent, task.theirParent);
@@ -174,7 +174,7 @@ MergeResult ThreeWayMerge::mergeKeySet (const MergeTask & task)
 	// TODO: test this behaviour (would probably need mocks)
 	KeySet conflicts = result.getConflictSet ();
 
-	for (ssize_t it = 0; it < conflicts.size(); ++it)
+	for (ssize_t it = 0; it < conflicts.size (); ++it)
 	{
 		Key current = conflicts.at (it);
 		for (auto & elem : strategies)

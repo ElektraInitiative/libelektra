@@ -424,7 +424,7 @@ void Backend::serialize (kdb::KeySet & ret)
 	Key oldParent ("system:/", KEY_END);
 	Key newParent (configBasePath, KEY_END);
 
-	for (ssize_t it = 0; it < config.size(); ++it)
+	for (ssize_t it = 0; it < config.size (); ++it)
 	{
 
 		Key k = config.at (it);

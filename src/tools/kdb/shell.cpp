@@ -105,7 +105,7 @@ int ShellCommand::execute (Cmdline const &)
 		}
 		else if (command == "ksOutput")
 		{
-			for (ssize_t it = 0; it < current.size(); ++it)
+			for (ssize_t it = 0; it < current.size (); ++it)
 			{
 				Key const & c = current.at (it);
 				cout << c.getName ();

@@ -14,23 +14,10 @@ namespace kdb
 namespace tools
 {
 
-const std::set<std::string> supportedTypes{ "enum",
-					    "short",
-					    "unsigned_short",
-					    "long",
-					    "unsigned_long",
-					    "long_long",
-					    "unsigned_long_long",
-					    "float",
-					    "double",
-					    "long_double"
-					    "char",
-					    "boolean",
-					    "octet",
-					    "any",
-					    "string",
-					    "struct_ref",
-					    "struct" };
+const std::set<std::string> supportedTypes{
+	"enum",	       "short", "unsigned_short", "long",  "unsigned_long", "long_long", "unsigned_long_long", "float", "double",
+	"long_double", "char",	"boolean",	  "octet", "any",	    "string",	 "struct_ref",	       "struct"
+};
 
 SpecBackendBuilder::SpecBackendBuilder (BackendBuilderInit const & bbi) : MountBackendBuilder (bbi), nodes (0)
 {
@@ -114,10 +101,11 @@ bool isToBeIgnored (std::string const & metaName)
 void SpecMountpointReader::processKey (Key const & ck)
 {
 	Key k (ck);
-	k.rewindMeta ();
-	Key m;
-	while ((m = k.nextMeta ()))
+	KeySet metaKeys (ckdb::keyMeta (k->getKey ()));
+
+	for (ssize_t it = 0; it < metaKeys.size (); ++it)
 	{
+		Key m = metaKeys.at (it);
 		std::string const & cn = "meta:/config/needs";
 		if (startsWith (m.getName (), cn))
 		{
@@ -162,18 +150,22 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 
 	ks.lookup (mp, KDB_O_POP);
 
-	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
-	for (Key k = ks.next (); k; k = ks.next ())
+	for (ssize_t it = 0; it < ks.size (); ++it)
 	{
+		Key k = ks.at (it);
+
 		// search for mountpoint
 		Key m = k.getMeta<const Key> ("mountpoint");
 		if (m)
 		{
 			SpecMountpointReader smr (backends, bbi);
 			backends[k] = smr.readMountpointSpecification (ks.cut (k));
+
+			// We use the key at the current position (it) as cutpoint --> don't increase index for next loop iteration
+			--it;
+
 			continue;
 		}
-
 		processKey (k);
 		bb.nodes++;
 	}
@@ -199,15 +191,17 @@ void SpecReader::readSpecification (KeySet const & cks)
 		checkKey (k);
 	}
 
-	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
-	for (Key k = ks.next (); k; k = ks.next ())
+	for (ssize_t it = 0; it < ks.size (); ++it)
 	{
+		Key k = ks.at (it);
 		// search for mountpoint
 		Key m = k.getMeta<const Key> ("mountpoint");
 		if (m)
 		{
 			SpecMountpointReader smr (backends, bbi);
 			backends[k] = smr.readMountpointSpecification (ks.cut (k));
+			// We use the key at the current position (it) as cutpoint --> don't increase index for next loop iteration
+			--it;
 		}
 	}
 }

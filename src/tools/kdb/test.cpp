@@ -313,8 +313,7 @@ void TestCommand::doNamingTest ()
 			KeySet test;
 			kdb.get (test, root);
 
-			test.rewind ();
-			Key res = test.next ();
+			Key res = test.at (0);
 
 			nrTest++;
 			if (!res)
@@ -501,7 +500,6 @@ int TestCommand::execute (Cmdline const & cl)
 	KDB kdb;
 	KeySet original;
 	kdb.get (original, root);
-	original.rewind ();
 
 	doTests (cl.arguments);
 
