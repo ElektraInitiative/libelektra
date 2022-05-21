@@ -719,7 +719,6 @@ TEST (key, cErrorsNull)
 	EXPECT_THROW (x.delBaseName (), KeyInvalidName);
 	EXPECT_THROW (x.setMeta ("metaKey", "metaValue"), KeyException);
 	EXPECT_THROW (x.delMeta ("metaKey"), KeyException);
-	EXPECT_THROW (x.rewindMeta (), KeyException);
 
 	EXPECT_THROW (x.set (""), KeyException);
 	EXPECT_THROW (x.copy (nullptr), KeyException);
@@ -755,7 +754,6 @@ TEST (key, cErrorsParameters)
 	EXPECT_TRUE (k.hasMeta ("metaKey"));
 	EXPECT_NO_THROW (k.delMeta ("metaKey"));
 	EXPECT_FALSE (k.hasMeta ("metaKey"));
-	EXPECT_NO_THROW (k.rewindMeta ());
 
 	EXPECT_EQ (k.getString (), "testkey");
 	EXPECT_NO_THROW (k.set ("\\"));

@@ -42,24 +42,22 @@ bool keyMetaEqual (Key & k1, Key & k2)
 {
 	if (!k1 || !k2) return false;
 
-	k1.rewindMeta ();
-	Key currentMeta;
-	while ((currentMeta = k1.nextMeta ()))
+
+	KeySet metaKeys = ckdb::keyMeta (k1.getKey ());
+	for (const Key & currentMeta : metaKeys)
 	{
 		string metaName = currentMeta.getName ();
 		if (!k2.hasMeta (metaName)) return false;
 		if (currentMeta.getString () != k2.getMeta<string> (metaName)) return false;
 	}
 
-
-	k2.rewindMeta ();
-	while ((currentMeta = k2.nextMeta ()))
+	metaKeys = ckdb::keyMeta (k2.getKey ());
+	for (const Key & currentMeta : metaKeys)
 	{
 		string metaName = currentMeta.getName ();
 		if (!k1.hasMeta (metaName)) return false;
 		if (currentMeta.getString () != k1.getMeta<string> (metaName)) return false;
 	}
-
 
 	return true;
 }

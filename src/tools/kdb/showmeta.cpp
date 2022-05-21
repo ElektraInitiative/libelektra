@@ -37,13 +37,12 @@ int ShowMetaCommand::execute (Cmdline const & cl)
 		return 1;
 	}
 
-	k.rewindMeta ();
-	Key metaKey = k.nextMeta ();
-	while (!metaKey.isNull ())
+	KeySet metaKeys = ckdb::keyMeta (k.getKey ());
+	for (const Key & curMeta : metaKeys)
 	{
-		cout << metaKey.getName ().substr (sizeof ("meta:/") - 1) << ": " << metaKey.getString () << endl;
-		metaKey = k.nextMeta ();
+		cout << curMeta.getName ().substr (sizeof ("meta:/") - 1) << ": " << curMeta.getString () << endl;
 	}
+
 	return 0;
 }
 

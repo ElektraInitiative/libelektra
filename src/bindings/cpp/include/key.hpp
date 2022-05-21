@@ -222,7 +222,6 @@ public:
 	inline void copyMeta (const Key & other, const std::string & metaName);
 	inline void copyAllMeta (const Key & other);
 
-	inline void rewindMeta ();
 	inline const Key nextMeta ();
 	inline const Key currentMeta () const;
 
@@ -1439,19 +1438,6 @@ inline void Key::copyMeta (const Key & other, const std::string & metaName)
 inline void Key::copyAllMeta (const Key & other)
 {
 	if (ckdb::keyCopyAllMeta (key, other.key) == -1)
-	{
-		throw KeyException ();
-	}
-}
-
-/**
- * @copydoc keyRewindMeta
- *
- * @see nextMeta(), currentMeta()
- */
-inline void Key::rewindMeta ()
-{
-	if (ckdb::keyRewindMeta (key) == -1)
 	{
 		throw KeyException ();
 	}

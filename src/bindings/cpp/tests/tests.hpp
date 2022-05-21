@@ -49,11 +49,12 @@ testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::K
 {
 	stream << key.getName () << ": “" << (key.isString () ? key.getString () : (key.getBinarySize () == 0 ? "NULL" : "BINARY")) << "”";
 
-	key.rewindMeta ();
-	while (key.nextMeta ())
+	kdb::KeySet metaKeys = ckdb::keyMeta (key.getKey ());
+	for (const kdb::Key & curMeta : metaKeys)
 	{
-		stream << ", " << key.currentMeta ().getName () << ": “" << key.currentMeta ().getString () << "”";
+		stream << ", " << curMeta.getName () << ": “" << curMeta.getString () << "”";
 	}
+
 	stream << endl;
 	return stream;
 }
@@ -86,18 +87,21 @@ testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::K
  */
 bool isMetaDataEqual (kdb::Key & key1, kdb::Key & key2)
 {
-	key1.rewindMeta ();
-	key2.rewindMeta ();
+	kdb::KeySet metaKeys1 = ckdb::keyMeta (key1.getKey ());
+	kdb::KeySet metaKeys2 = ckdb::keyMeta (key2.getKey ());
 
-	while (key1.nextMeta ())
+	if (metaKeys1.size () != metaKeys2.size ()) return false;
+
+	for (ssize_t it = 0; it < metaKeys1.size (); ++it)
 	{
-		key2.nextMeta ();
-		if (!key2.currentMeta ()) return false;
-		if (key1.currentMeta ().getName () != key2.currentMeta ().getName ()) return false;
-		if (key1.currentMeta ().getString () != key2.currentMeta ().getString ()) return false;
+		const kdb::Key & curMeta1 = metaKeys1.at (it);
+		const kdb::Key & curMeta2 = metaKeys2.at (it);
+
+		if (curMeta1.getName () != curMeta2.getName ()) return false;
+		if (curMeta1.getString () != curMeta2.getString ()) return false;
 	}
 
-	return key1.nextMeta () == key2.nextMeta ();
+	return true;
 }
 
 /**

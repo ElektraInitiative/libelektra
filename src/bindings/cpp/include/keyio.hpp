@@ -10,6 +10,7 @@
 #define ELEKTRA_KEY_IO_HPP
 
 #include <key.hpp>
+#include <keyset.hpp>
 
 #include <iostream>
 
@@ -34,10 +35,8 @@ inline std::ostream & operator<< (std::ostream & os, kdb::Key const & k)
 	os << k.getName ();
 	if (os.flags () & std::ios_base::showbase)
 	{
-		kdb::Key d = k.dup ();
-		d.rewindMeta ();
-		kdb::Key meta;
-		while ((meta = d.nextMeta ()))
+		KeySet metaKeys (ckdb::keyMeta (k.getKey ()));
+		for (const Key & meta : metaKeys)
 		{
 			os << " " << meta.getName ();
 		}
