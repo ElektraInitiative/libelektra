@@ -29,9 +29,10 @@ KeySet MetaMergeStrategy::getMetaKeys (Key & key)
 
 	if (key)
 	{
-		KeySet metaKeys (ckdb::keyMeta (key->getKey ()));
-		for (const Key & currentMeta : metaKeys)
+		ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+		for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 		{
+			const Key & currentMeta = ckdb::ksAtCursor (metaKeys, it);
 			string resultName = "user:/" + currentMeta.getName ();
 			Key resultMeta = Key (resultName.c_str (), KEY_VALUE, currentMeta.getString ().c_str (), KEY_END);
 			result.append (resultMeta);

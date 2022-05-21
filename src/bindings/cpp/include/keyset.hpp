@@ -92,8 +92,8 @@ public:
 	template <typename T>
 	T get (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
 
-	ssize_t search (const Key & toSearch);
-	ssize_t search (std::string const & name);
+	ssize_t search (const Key & toSearch) const;
+	ssize_t search (std::string const & name) const;
 
 	// operators
 	inline bool operator== (const KeySet & ks) const;
@@ -806,7 +806,7 @@ inline bool KeySet::operator!= (const KeySet & o) const
 /**
  * @copydoc ksSearch()
  */
-inline ssize_t KeySet::search (const Key & toSearch)
+inline ssize_t KeySet::search (const Key & toSearch) const
 {
 	return ckdb::ksSearch (ks, toSearch.getKey ());
 }
@@ -816,7 +816,7 @@ inline ssize_t KeySet::search (const Key & toSearch)
  *
  * @note Accepts a keyname as string instead of a Key object.
  */
-inline ssize_t KeySet::search (const std::string & name)
+inline ssize_t KeySet::search (const std::string & name) const
 {
 	return search (Key (name));
 }

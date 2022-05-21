@@ -118,9 +118,11 @@ Node createMetaNode (Key & key)
 {
 	Node metaNode{ NodeType::Map };
 
-	KeySet metaKeys = ckdb::keyMeta (key.getKey ());
-	for (const Key & curMeta : metaKeys)
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
+		const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
 		if (curMeta.getName () == "meta:/array" || curMeta.getName () == "meta:/binary" ||
 		    (curMeta.getName () == "meta:/type" && (curMeta.getString () == "boolean" || curMeta.getString () == "binary")))
 		{

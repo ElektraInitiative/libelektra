@@ -100,11 +100,11 @@ bool isToBeIgnored (std::string const & metaName)
 
 void SpecMountpointReader::processKey (Key const & ck)
 {
-	Key k (ck);
-	KeySet metaKeys (ckdb::keyMeta (k->getKey ()));
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (ck.getKey ());
 
-	for (const Key & m : metaKeys)
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
+		const Key & m = ckdb::ksAtCursor (metaKeys, it);
 		std::string const & cn = "meta:/config/needs";
 		if (startsWith (m.getName (), cn))
 		{

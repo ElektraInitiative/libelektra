@@ -52,9 +52,11 @@ void key2xml (DOMDocument & doc, DOMElement & elem, string const & name ELEKTRA_
 	}
 
 	// meta keys = attributes
-	KeySet metaKeys = ckdb::keyMeta (key.getKey ());
-	for (const Key & curMeta : metaKeys)
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
+		const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
 		auto metaName = curMeta.getName ().substr (sizeof ("meta:/") - 1);
 		if (metaName != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME && metaName != "array")
 		{

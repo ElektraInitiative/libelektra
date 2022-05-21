@@ -175,15 +175,13 @@ TEST (ks, cursor)
 {
 	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
-	elektraCursor cursorTest = 0;
 
-	for (ssize_t i = cursorTest; i < ks3.size (); i++)
+	for (ssize_t i = 0; i < ks3.size (); i++)
 	{
 		Key k = ks3.at (i);
-		if (i == 0) cursorTest = 1;
 	}
 
-	Key k1 = ks3.at (cursorTest);
+	Key k1 = ks3.at (0);
 	succeed_if (k1.getName () == "user:/key3/1", "wrong keyname");
 	succeed_if (k1 == ks3.at (0), "first key not head key");
 }

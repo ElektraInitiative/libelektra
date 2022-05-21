@@ -48,8 +48,12 @@ struct KeySetTypeWrapper<std::map<std::string, T>>
 				}
 			Key b = ks.lookup (n, options);
 			if (!b) continue;
-			for (Key k : ks)
+
+			ssize_t it = ks.search (b) + 1;
+
+			for (; it < ks.size (); ++it)
 			{
+				const Key & k = ks.at (it);
 				if (!k.isBelow (b)) break; // other keys are not relevant anymore
 				if (k.isDirectBelow (b))
 				{

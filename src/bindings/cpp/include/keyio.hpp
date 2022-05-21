@@ -35,9 +35,10 @@ inline std::ostream & operator<< (std::ostream & os, kdb::Key const & k)
 	os << k.getName ();
 	if (os.flags () & std::ios_base::showbase)
 	{
-		KeySet metaKeys (ckdb::keyMeta (k.getKey ()));
-		for (const Key & meta : metaKeys)
+		ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+		for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 		{
+			const Key & meta = ckdb::ksAtCursor (metaKeys, it);
 			os << " " << meta.getName ();
 		}
 	}

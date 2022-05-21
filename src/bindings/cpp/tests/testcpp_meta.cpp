@@ -92,14 +92,14 @@ TEST (meta, iter)
 	Key end = static_cast<ckdb::Key *> (nullptr); // key = 0
 	succeed_if (!end, "key is a null key");
 
-	KeySet metaKeys = ckdb::keyMeta (k.getKey ());
-	succeed_if (metaKeys.size () == 3, "Not the correct number of metadata");
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+	succeed_if (ckdb::ksGetSize (metaKeys) == 3, "Not the correct number of metadata");
 
 	k.setMeta ("d", "more");
 	k.setMeta ("e", "even more");
 
 	metaKeys = ckdb::keyMeta (k.getKey ());
-	succeed_if (metaKeys.size () == 5, "Not the correct number of metadata");
+	succeed_if (ckdb::ksGetSize (metaKeys) == 5, "Not the correct number of metadata");
 }
 
 TEST (test, copy)
@@ -132,9 +132,10 @@ TEST (test, copy)
 
 
 	Key d;
-	KeySet metaKeys = ckdb::keyMeta (k.getKey ());
-	for (const Key & curMeta : metaKeys)
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
+		const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
 		d.copyMeta (k, curMeta.getName ());
 	}
 
@@ -206,10 +207,10 @@ TEST (meta, cErrorsMetaKeys)
 
 	k.setMeta ("metaKey", "metaValue");
 
-	KeySet metaKeys (ckdb::keyMeta (k.getKey ()));
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
 
-	EXPECT_EQ (metaKeys.size (), 1);
-	m = metaKeys.at (0);
+	EXPECT_EQ (ckdb::ksGetSize (metaKeys), 1);
+	m = ckdb::ksAtCursor (metaKeys, 0);
 
 
 	EXPECT_THROW (m.addName ("test"), KeyInvalidName);
