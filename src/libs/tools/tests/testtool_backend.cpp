@@ -69,6 +69,7 @@ TEST (Backend, SimpleBackend)
 	b.setMountpoint (Key ("/", KEY_END), KeySet (0, KS_END));
 	EXPECT_EQ (b.getMountpoint (), "/");
 	b.addPlugin (PluginSpec ("resolver"));
+	return;
 	b.addPlugin (PluginSpec ("dump"));
 	b.useConfigFile ("abc");
 	EXPECT_TRUE (b.validated ());

@@ -103,9 +103,8 @@ void SpecMountpointReader::processKey (Key const & ck)
 	Key k (ck);
 	KeySet metaKeys (ckdb::keyMeta (k->getKey ()));
 
-	for (ssize_t it = 0; it < metaKeys.size (); ++it)
+	for (const Key & m : metaKeys)
 	{
-		Key m = metaKeys.at (it);
 		std::string const & cn = "meta:/config/needs";
 		if (startsWith (m.getName (), cn))
 		{
@@ -152,10 +151,10 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 
 	for (ssize_t it = 0; it < ks.size (); ++it)
 	{
-		Key k = ks.at (it);
+		const Key & k = ks.at (it);
 
 		// search for mountpoint
-		Key m = k.getMeta<const Key> ("mountpoint");
+		const Key & m = k.getMeta<const Key> ("mountpoint");
 		if (m)
 		{
 			SpecMountpointReader smr (backends, bbi);
@@ -178,10 +177,9 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 void SpecReader::readSpecification (KeySet const & cks)
 {
 	KeySet ks;
-	Key mp;
 
 	// Filter keys and perform sanity checks.
-	for (Key k : cks)
+	for (const Key k : cks)
 	{
 		// Only include keys in spec namespace
 		if (k.isSpec ())
@@ -193,9 +191,9 @@ void SpecReader::readSpecification (KeySet const & cks)
 
 	for (ssize_t it = 0; it < ks.size (); ++it)
 	{
-		Key k = ks.at (it);
+		const Key & k = ks.at (it);
 		// search for mountpoint
-		Key m = k.getMeta<const Key> ("mountpoint");
+		const Key & m = k.getMeta<const Key> ("mountpoint");
 		if (m)
 		{
 			SpecMountpointReader smr (backends, bbi);

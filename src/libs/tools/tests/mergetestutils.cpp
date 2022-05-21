@@ -80,9 +80,8 @@ protected:
 
 	virtual void unsyncKeys (KeySet & ks)
 	{
-		for (ssize_t it = 0; it < ks.size (); ++it)
+		for (const Key & current : ks)
 		{
-			Key current = ks.at (it);
 			current.getKey ()->flags = static_cast<ckdb::keyflag_t> (current.getKey ()->flags & ~(ckdb::KEY_FLAG_SYNC));
 
 			// This does not work because C++ complains about an invalid conversion from int to keyflags_t

@@ -25,8 +25,8 @@ int main ()
 	KeySet mountConfig;
 	b.serialize (mountConfig);
 
-	for (ssize_t it = 0; it < mountConfig.size (); ++it)
+	for (Key k : mountConfig)
 	{
-		std::cout << mountConfig.at (it).getName () << " = " << mountConfig.at (it).getString () << std::endl;
+		std::cout << mountConfig.at (k).getName () << " = " << mountConfig.at (k).getString () << std::endl;
 	}
 }

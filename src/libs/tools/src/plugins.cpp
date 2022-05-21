@@ -290,7 +290,6 @@ void ErrorPlugins::tryPlugin (Plugin & plugin)
 	{
 		throw MissingSymbol ("error");
 	}
-
 	checkResolver (plugin);
 }
 

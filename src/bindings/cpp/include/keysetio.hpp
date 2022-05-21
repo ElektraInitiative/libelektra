@@ -39,9 +39,8 @@ inline std::ostream & operator<< (std::ostream & os, kdb::KeySet const & cks)
 	kdb::KeySet & ks = const_cast<kdb::KeySet &> (cks);
 
 
-	for (ssize_t it = 0; it < ks.size (); ++it)
+	for (Key k : ks)
 	{
-		kdb::Key k = ks.at (it);
 		os << k;
 		if (os.flags () & std::ios_base::skipws)
 		{

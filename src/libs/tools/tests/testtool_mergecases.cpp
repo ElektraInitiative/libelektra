@@ -45,7 +45,7 @@ TEST_F (ThreeWayMergeTest, EqualKeySetsWontCauseSync)
 
 	KeySet merged = result.getMergedKeys ();
 
-	for (Key current : merged)
+	for (const Key & current : merged)
 	{
 		EXPECT_FALSE (current.needSync ());
 	}
@@ -61,7 +61,7 @@ TEST_F (ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)
 
 	KeySet merged = result.getMergedKeys ();
 
-	for (Key current : merged)
+	for (const Key & current : merged)
 	{
 		EXPECT_FALSE (current.getNamespace () == ElektraNamespace::CASCADING);
 	}

@@ -693,7 +693,6 @@ int main (int argc, char ** argv)
 
 
 	test_nextNotBelow ();
-	return nbError;
 	test_reverseLevel ();
 	test_countLevel ();
 	test_writing ();
