@@ -48,8 +48,7 @@ struct KeySetTypeWrapper<std::map<std::string, T>>
 				}
 			Key b = ks.lookup (n, options);
 			if (!b) continue;
-			Key k;
-			while ((k = ks.next ()))
+			for (Key k : ks)
 			{
 				if (!k.isBelow (b)) break; // other keys are not relevant anymore
 				if (k.isDirectBelow (b))

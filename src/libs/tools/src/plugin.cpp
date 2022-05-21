@@ -128,9 +128,10 @@ void Plugin::parse ()
 
 	if (k)
 	{
-		while ((k = info.next ()) && k.isBelow (root))
+		for (Key itk : info)
 		{
-			symbols[k.getBaseName ()] = (*k.getFunc ());
+			if (!itk.isBelow (root)) break;
+			symbols[itk.getBaseName ()] = (*itk.getFunc ());
 		}
 	}
 
@@ -139,9 +140,10 @@ void Plugin::parse ()
 
 	if (k)
 	{
-		while ((k = info.next ()) && k.isBelow (root))
+		for (Key itk : info)
 		{
-			infos[k.getBaseName ()] = k.getString ();
+			if (!itk.isBelow (root)) break;
+			infos[itk.getBaseName ()] = itk.getString ();
 		}
 	}
 	else

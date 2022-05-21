@@ -80,10 +80,7 @@ public:
 	ssize_t append (const Key & toAppend);
 	ssize_t append (const KeySet & toAppend);
 
-	void rewind () const;
 	Key next () const;
-	Key current () const;
-
 
 	Key pop ();
 	Key at (elektraCursor pos) const;
@@ -693,14 +690,6 @@ inline Key KeySet::next () const
 {
 	ckdb::Key * k = ckdb::ksNext (ks);
 	return Key (k);
-}
-
-/**
- * @copydoc ksCurrent()
- */
-inline Key KeySet::current () const
-{
-	return Key (ckdb::ksCurrent (ks));
 }
 
 /**

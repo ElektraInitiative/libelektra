@@ -100,9 +100,11 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 	if (k)
 	{
 		cout << "Exported symbols: ";
-		while ((k = conf.next ()) && k.isBelow (root))
+
+		for (Key itk : conf)
 		{
-			cout << k.getBaseName () << " ";
+			if (!itk.isBelow (root)) break;
+			cout << itk.getBaseName () << " ";
 		}
 		cout << endl;
 	}
@@ -114,10 +116,11 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 
 	if (k)
 	{
-		while ((k = conf.next ()) && k.isBelow (root))
+		for (Key itk : conf)
 		{
-			cout << getStdColor (ANSI_COLOR::BOLD) << k.getBaseName () << ": " << getStdColor (ANSI_COLOR::RESET)
-			     << k.getString () << endl;
+			if (!k.isBelow (root)) break;
+			cout << getStdColor (ANSI_COLOR::BOLD) << itk.getBaseName () << ": " << getStdColor (ANSI_COLOR::RESET)
+			     << itk.getString () << endl;
 		}
 	}
 	else

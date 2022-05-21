@@ -327,15 +327,21 @@ KeySetPair splitDirectoriesLeaves (kdb::KeySet const & keys)
 {
 	kdb::KeySet leaves;
 	kdb::KeySet directories;
-	kdb::Key k;
+	kdb::Key previous;
 
-	for (ssize_t it = 0; it < keys.size (); ++it)
+	for (ssize_t it = 1; it < keys.size () + 1; ++it)
 	{
-		k = keys.at (it);
-		(keys.current ().isBelow (k) ? directories : leaves).append (k);
+		previous = keys.at (it - 1);
+		if (it == keys.size ())
+		{
+			leaves.append (previous);
+		}
+		else
+		{
+			(keys.at (it).isBelow (previous) ? directories : leaves).append (previous);
+		}
 	}
 
-	leaves.append (k);
 
 	return make_pair (directories, leaves);
 }
