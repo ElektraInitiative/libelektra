@@ -205,7 +205,12 @@ TEST (meta, cErrorsMetaKeys)
 	Key m;
 
 	k.setMeta ("metaKey", "metaValue");
-	m = k.currentMeta ();
+
+	KeySet metaKeys (ckdb::keyMeta (k.getKey ()));
+
+	EXPECT_EQ (metaKeys.size (), 1);
+	m = metaKeys.at (0);
+
 
 	EXPECT_THROW (m.addName ("test"), KeyInvalidName);
 	EXPECT_THROW (m.setName ("test"), KeyInvalidName);
