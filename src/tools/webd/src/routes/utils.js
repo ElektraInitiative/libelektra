@@ -40,6 +40,10 @@ export const getSessionID = (instanceId, cookie) => {
 };
 
 export const setSessionID = (instanceId, cookie, response) => {
+  if (!response.headers) {
+    return response;
+  }
+
   const setCookie = response.headers.get("Set-Cookie");
 
   if (setCookie) {

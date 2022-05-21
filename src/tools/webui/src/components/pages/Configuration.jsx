@@ -18,7 +18,7 @@ import TreeView from "../../containers/ConnectedTreeView";
 import TreeSearch from "../../containers/ConnectedTreeSearch";
 import InstanceError from "../InstanceError.jsx";
 
-const NAMESPACES = ["user", "system", "spec", "dir"];
+const NAMESPACES = ["user:", "system:", "spec:", "dir:"];
 
 // create tree structure from kdb ls result (list of available keys)
 const partsTree = (acc, parts) => {

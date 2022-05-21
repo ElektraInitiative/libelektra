@@ -172,15 +172,22 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Tools
 
-### <<Tool>>
+### elektrad
 
-- <<TODO>>
+- improve logging in `elektrad` _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 - <<TODO>>
 
-### <<Tool>>
+### `webui`
 
+- fix issues from namespace-overhaul _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
+- apply non-breaking updates to packages _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
 - <<TODO>>
+- <<TODO>>
+
+### `webd`
+
+- fix path building for requests to `elektrad` _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 - <<TODO>>
 
