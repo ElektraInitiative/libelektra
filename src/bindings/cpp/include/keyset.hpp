@@ -80,8 +80,6 @@ public:
 	ssize_t append (const Key & toAppend);
 	ssize_t append (const KeySet & toAppend);
 
-	Key next () const;
-
 	Key pop ();
 	Key at (elektraCursor pos) const;
 
@@ -681,15 +679,6 @@ inline ssize_t KeySet::append (const Key & toAppend)
 inline ssize_t KeySet::append (KeySet const & toAppend)
 {
 	return ckdb::ksAppend (ks, toAppend.getKeySet ());
-}
-
-/**
- * @copydoc ksNext()
- */
-inline Key KeySet::next () const
-{
-	ckdb::Key * k = ckdb::ksNext (ks);
-	return Key (k);
 }
 
 /**

@@ -32,7 +32,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ks = Kdb::KeySet.new k
 
       assert_equal 1, ks.size
-      assert_equal k, ks.head
+      assert_equal k, ks[0]
     end
   end
 
@@ -55,11 +55,11 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ks2 << Kdb::Key.new("user:/ks3")
 
       assert_equal 3, ks2.size
-      assert_equal "user:/ks3", ks2.tail.name
+      assert_equal "user:/ks3", ks2.[ks2.size-1].name
 
       # ensure old KeySet holds only the first 2 Keys
       assert_equal 2, ks1.size
-      assert_equal "user:/ks2", ks1.tail.name
+      assert_equal "user:/ks2", ks1.[ks1.size-1].name
     end
   end
 
@@ -87,7 +87,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ]
 
       assert_equal 3, ks.size
-      assert_equal "key1", ks.head.basename
+      assert_equal "key1", ks[0].basename
 
       # ensure also larger arrays, with more than 16 (preallocated) elements
       # work correctly
@@ -95,7 +95,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ks = Kdb::KeySet.new a
 
       assert_equal 40, ks.size
-      assert_equal "key40", ks.tail.basename
+      assert_equal "key40", ks.[ks.size-1].basename
     end
 
     assert_raise ArgumentError do
@@ -119,15 +119,15 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal 1, ks.size
       assert_equal 1, num
 
-      assert_equal k, ks.head
-      assert_equal k, ks.tail
+      assert_equal k, ks[0]
+      assert_equal k, ks[ks.size-1]
 
       ks << Kdb::Key.new("user:/ks2", value: "val2")
 
       assert_equal 2, ks.size
 
-      assert_equal k, ks.head
-      assert_equal "user:/ks2", ks.tail.name
+      assert_equal k, ks[0]
+      assert_equal "user:/ks2", ks.[ks.size-1].name
 
     end
   end
@@ -183,7 +183,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal 3, num
 
       assert_equal 3, ks.size
-      assert_equal "user:/ks1", ks.head.name
+      assert_equal "user:/ks1", ks[0].name
     end
 
 
@@ -218,26 +218,6 @@ class KdbKeySetTestCases < Test::Unit::TestCase
         assert_equal ("user:/key%02d" % i), ks.at(i).name
         assert_equal ("user:/key%02d" % i), ks[i].name
       end
-
-      # test get by cursor
-      ks.rewind
-      assert ks.cursor < 0
-
-      assert_nil ks.current
-
-      for i in (0..9) do
-        nxt = ks.next
-        cur = ks.current
-        assert_equal ("user:/key%02d" % i), nxt.name
-        assert_equal cur, nxt
-
-        assert_equal i, ks.cursor
-      end
-
-      assert_nil ks.next
-      assert_nil ks.current
-
-      assert ks.cursor < 0
 
       # test get by invalid index
       assert_nil ks[10]
@@ -289,42 +269,42 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_equal 0, ks.size
 
-      assert_nil ks.head
-      assert_nil ks.tail
+      assert_nil ks[0]
+      assert_nil ks[ks.size-1]
 
       a = (0..3).map { |i| Kdb::Key.new "user:/key#{i}" }
 
       ks << a[0]
 
-      assert_equal a[0], ks.head
-      assert_equal a[0], ks.tail
+      assert_equal a[0], ks[0]
+      assert_equal a[0], [ks.size-1]
 
       ks << a[1]
 
-      assert_equal a[0], ks.head
-      assert_equal a[1], ks.tail
+      assert_equal a[0], ks[0]
+      assert_equal a[1], [ks.size-1]
 
       ks << a[2]
 
-      assert_equal a[0], ks.head
-      assert_equal a[2], ks.tail
+      assert_equal a[0], ks[0]
+      assert_equal a[2], [ks.size-1]
 
       ks << a[3]
 
-      assert_equal a[0], ks.head
-      assert_equal a[3], ks.tail
+      assert_equal a[0], ks[0]
+      assert_equal a[3], [ks.size-1]
 
       assert_equal a[3], ks.pop
-      assert_equal a[2], ks.tail
+      assert_equal a[2], [ks.size-1]
 
       assert_equal a[2], ks.pop
-      assert_equal a[1], ks.tail
+      assert_equal a[1], [ks.size-1]
 
       assert_equal a[1], ks.pop
-      assert_equal a[0], ks.tail
+      assert_equal a[0], [ks.size-1]
 
       assert_equal a[0], ks.pop
-      assert_nil ks.tail
+      assert_nil [ks.size-1]
     end
   end
 
@@ -402,25 +382,6 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert ks.all? { |e| e.has_meta? "new_meta" }
       assert ks.all? { |e| e["new_meta"] == "persisted" }
-
-      # ensure KeySet cursor is unmodified after 'each' call
-      ks.rewind
-      assert_equal (-1), ks.cursor
-      ks.each { |e| e }
-      assert_equal (-1), ks.cursor
-
-      ks.next
-      assert_equal 0, ks.cursor
-      ks.next
-      assert_equal 1, ks.cursor
-      ks.each { |e| e }
-      assert_equal 1, ks.cursor
-
-      ks.cursor = 5
-      assert_equal 5, ks.cursor
-      ks.each { |e| e }
-      assert_equal 5, ks.cursor
-
     end
   end
 
@@ -498,14 +459,14 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal 5, ks.size
       assert_equal 6, ks_dup.size
 
-      assert_equal "user:/key4", ks.tail.name
-      assert_equal "user:/key5", ks_dup.tail.name
+      assert_equal "user:/key4", ks.at[ks.size-1].name
+      assert_equal "user:/key5", ks_dup.at[ks_dup.size-1].name
 
       assert_equal a[4], ks.pop
       assert_equal 4, ks.size
       assert_equal 6, ks_dup.size
-      assert_equal "user:/key3", ks.tail.name
-      assert_equal "user:/key5", ks_dup.tail.name
+      assert_equal "user:/key3", ks.at[ks.size-1].name
+      assert_equal "user:/key5", ks_dup.at[ks_dup.size-1].name
 
       # however, its just a shallow copy, thus modifying keys has effect
       # to both key sets
@@ -655,13 +616,13 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ak = a.delete_at 0
       assert_equal 8, ks.size
       assert_equal ak, k
-      assert_equal a[0], ks.head
+      assert_equal a[0], ks.at[0]
 
       k = ks.delete_at(ks.size - 1)
       ak = a.delete_at(a.size - 1)
       assert_equal 7, ks.size
       assert_equal ak, k
-      assert_equal a[a.size - 1], ks.tail
+      assert_equal a[a.size - 1], ks.at[ks.size-1]
 
       assert_nil ks.delete_at 10
     end

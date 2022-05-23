@@ -178,11 +178,12 @@
       raise TypeError("Unsupported value type")
 
     def __metaIter(self):
-      self._rewindMeta()
-      meta = self._nextMeta()
-      while meta:
-        yield meta
-        meta = self._nextMeta()
+      metaKeys = self._meta()
+      ssize_t size = len(metaKeys)
+      for (elektraCursor cursor = 0; cursor < size; ++cursor) {
+        yield metaKeys._at(cursor);
+      }
+
 
     name     = property(_kdb.Key__getName, _kdb.Key__setName)
     value    = property(get, set, None, "Key value")

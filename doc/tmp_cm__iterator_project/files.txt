@@ -1190,88 +1190,105 @@ elektraReferenceSet:
 
 
 # Libs
-   130	src/libs/opts/opts.c:42
-148:	elektraCursor initial = ksGetCursor (ks);
-158:		ksSetCursor (ks, initial);
-186:				ksSetCursor (ks, initial);
-215:				ksSetCursor (ks, initial);
-229:				ksSetCursor (ks, initial);
-246:				ksSetCursor (ks, initial);
-276:			ksSetCursor (ks, initial);
-289:		ksSetCursor (ks, initial);
-691:	ksRewind (opts);
-692:	ksNext (opts); // skip count
-697:	while ((metaKey = ksNext (opts)) != NULL)
-1027:	ksRewind (envVars);
-1028:	ksNext (envVars); // skip count
-1030:	while ((k = ksNext (envVars)) != NULL)
-1233:	ksRewind (optMetas);
-1234:	ksNext (optMetas); // skip count
-1237:	while ((optMeta = ksNext (optMetas)) != NULL)
-1290:	ksRewind (envMetas);
-1291:	ksNext (envMetas); // skip count
-1293:	while ((envMeta = ksNext (envMetas)) != NULL)
-1362:		ksRewind (args);
-1497:		ksRewind (values);
-1499:		ksNext (values); // skip count
-1500:		while ((cur = ksNext (values)) != NULL)
-1880:		ksRewind (spec->keys);
-1881:		while ((keyWithOpt = ksNext (spec->keys)) != NULL)
-2107:	elektraCursor cursor = ksGetCursor (keysWithOpts);
-2112:	ksRewind (keysWithOpts);
-2113:	while ((cur = ksNext (keysWithOpts)) != NULL)
-2137:	ksSetCursor (keysWithOpts, cursor);
-2148:	elektraCursor cursor = ksGetCursor (keysWithOpts);
-2153:	ksRewind (keysWithOpts);
-2154:	while ((cur = ksNext (keysWithOpts)) != NULL)
-2188:	ksSetCursor (keysWithOpts, cursor);
-2199:	elektraCursor cursor = ksGetCursor (keysWithOpts);
-2204:	ksRewind (keysWithOpts);
-2205:	while ((cur = ksNext (keysWithOpts)) != NULL)
-2230:	ksSetCursor (keysWithOpts, cursor);
-2241:	elektraCursor cursor = ksGetCursor (keysWithOpts);
-2246:	ksRewind (keysWithOpts);
-2247:	while ((cur = ksNext (keysWithOpts)) != NULL)
-2267:	ksSetCursor (keysWithOpts, cursor);
+
+>   130	src/libs/opts/opts.c:42
+elektraGetOpts:
+> 148:	elektraCursor initial = ksGetCursor (ks);
+> 158:		ksSetCursor (ks, initial);
+> 186:				ksSetCursor (ks, initial);
+> 215:				ksSetCursor (ks, initial);
+> 229:				ksSetCursor (ks, initial);
+> 246:				ksSetCursor (ks, initial);
+> 276:			ksSetCursor (ks, initial);
+> 289:		ksSetCursor (ks, initial);
+processOptions:
+> 691:	ksRewind (opts);
+> 692:	ksNext (opts); // skip count
+> 697:	while ((metaKey = ksNext (opts)) != NULL)
+processEnvVars:
+> 1027:	ksRewind (envVars);
+> 1028:	ksNext (envVars); // skip count
+> 1030:	while ((k = ksNext (envVars)) != NULL)
+writeOptionValues:
+> 1233:	ksRewind (optMetas);
+> 1234:	ksNext (optMetas); // skip count
+> 1237:	while ((optMeta = ksNext (optMetas)) != NULL)
+writeEnvVarValues:
+> 1290:	ksRewind (envMetas);
+> 1291:	ksNext (envMetas); // skip count
+> 1293:	while ((envMeta = ksNext (envMetas)) != NULL)
+writeArgsValues:
+> 1362:		ksRewind (args);
+addProcKey:
+> 1497:		ksRewind (values);
+> 1499:		ksNext (values); // skip count
+> 1500:		while ((cur = ksNext (values)) != NULL)
+writeOptions:
+> 1880:		ksRewind (spec->keys);
+> 1881:		while ((keyWithOpt = ksNext (spec->keys)) != NULL)
+generateOptionsList:
+> 2107:	elektraCursor cursor = ksGetCursor (keysWithOpts);
+> 2112:	ksRewind (keysWithOpts);
+> 2113:	while ((cur = ksNext (keysWithOpts)) != NULL)
+> 2137:	ksSetCursor (keysWithOpts, cursor);
+generateCommandsList:
+> 2148:	elektraCursor cursor = ksGetCursor (keysWithOpts);
+> 2153:	ksRewind (keysWithOpts);
+> 2154:	while ((cur = ksNext (keysWithOpts)) != NULL)
+> 2188:	ksSetCursor (keysWithOpts, cursor);
+generateArgsList:
+> 2199:	elektraCursor cursor = ksGetCursor (keysWithOpts);
+> 2204:	ksRewind (keysWithOpts);
+> 2205:	while ((cur = ksNext (keysWithOpts)) != NULL)
+> 2230:	ksSetCursor (keysWithOpts, cursor);
+generateEnvsList:
+> 2241:	elektraCursor cursor = ksGetCursor (keysWithOpts);
+> 2246:	ksRewind (keysWithOpts);
+> 2247:	while ((cur = ksNext (keysWithOpts)) != NULL)
+> 2267:	ksSetCursor (keysWithOpts, cursor);
 
 
-   131	src/libs/meta/meta.c:4
-359:	ksRewind (result);
-578:	ksRewind (ks);
-619:			tmpDep = ksHead (deps);
-634:			while ((tmpDep = ksNext (deps)) != NULL)
+>   131	src/libs/meta/meta.c:4
+> 359:	ksRewind (result);
+> 578:	ksRewind (ks);
+> 619:			tmpDep = ksHead (deps);
+> 634:			while ((tmpDep = ksNext (deps)) != NULL)
 
 
-   132	src/libs/globbing/globbing.c:4
-211:	elektraCursor cursor = ksGetCursor (input);
-212:	ksRewind (input);
-213:	while ((current = ksNext (input)) != 0)
-222:	ksSetCursor (input, cursor);
+>   132	src/libs/globbing/globbing.c:4
+> 211:	elektraCursor cursor = ksGetCursor (input);
+> 212:	ksRewind (input);
+> 213:	while ((current = ksNext (input)) != 0)
+> 222:	ksSetCursor (input, cursor);
 
 
-   133	src/libs/ease/functional.c:8
-51:	elektraCursor cursor = ksGetCursor (input);
-52:	ksRewind (input);
-53:	while ((current = ksNext (input)) != 0)
-64:	ksSetCursor (input, cursor);
-95:	elektraCursor cursor = ksGetCursor (ks);
-96:	ksRewind (ks);
-100:	while ((key = ksNext (ks)) != 0)
-105:	ksSetCursor (ks, cursor);
+>   133	src/libs/ease/functional.c:8
+elektraKsFilter:
+> 51:	elektraCursor cursor = ksGetCursor (input);
+> 52:	ksRewind (input);
+> 53:	while ((current = ksNext (input)) != 0)
+> 64:	ksSetCursor (input, cursor);
+elektraKsToMemArray:
+> 95:	elektraCursor cursor = ksGetCursor (ks);
+> 96:	ksRewind (ks);
+> 100:	while ((key = ksNext (ks)) != 0)
+> 105:	ksSetCursor (ks, cursor);
 
 
-   134	src/libs/highlevel/elektra.c:3
-587:			Key * problemKey = ksCurrent (elektra->config);
-601:	ksRewind (defaults);
-602:	for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+X   134	src/libs/highlevel/elektra.c:3
+X BLOCKED: kdbSet() sets internal cursor to key that lead to error --> change in kdbSet() necessary!
+X 587:			Key * problemKey = ksCurrent (elektra->config);
+> 601:	ksRewind (defaults);
+> 602:	for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
 
 
-   135	src/libs/pluginprocess/pluginprocess.c:2
-354:		keyRewindMeta (key);
-356:		while ((currentMeta = keyNextMeta (key)) != NULL)
+>   135	src/libs/pluginprocess/pluginprocess.c:2
+> 354:		keyRewindMeta (key);
+> 356:		while ((currentMeta = keyNextMeta (key)) != NULL)
 
 
-   136	src/libs/elektra/symbols.map:10
+X: last step to remove internal iterator functions
+X   136	src/libs/elektra/symbols.map:10
 49:	keyCurrentMeta;
 73:	keyNextMeta;
 74:	keyRewindMeta;
@@ -1284,16 +1301,22 @@ elektraReferenceSet:
 111:	ksTail;
 
 
-   137	src/libs/elektra/mount.c:6
-58:	ksRewind (config);
-62:	while ((cur = ksNext (config)) != 0)
-377:		root = ksHead (keys);
-384:	while ((cur = ksNext (global)) != NULL)
+
+X kscut during iteratrion (think about more)
+X 137	src/libs/elektra/mount.c:6
+mountOpen:
+ 58:	ksRewind (config);
+ 62:	while ((cur = ksNext (config)) != 0)
+mountGlobals
+ 377:		root = ksHead (keys);
+ 384:	while ((cur = ksNext (global)) != NULL)
 419:				while ((curSubPosition = ksNext (subPositions)) != NULL)
+mountModules:
 484:	while ((cur = ksNext (modules)) != 0)
 
 
-   138	src/libs/elektra/plugin.c:5
+X kscut during iteratrion (think about more)
+X   138	src/libs/elektra/plugin.c:5
 152:	ksRewind (config);
 154:	root = ksNext (config);
 156:	while ((cur = ksNext (config)) != 0)
@@ -1329,59 +1352,82 @@ elektraReferenceSet:
 278:	while ((current = ksNext(ks)) != 0)
 
 
-   140	src/libs/elektra/kdb.c:30
-136:	keyRewindMeta (key);
-137:	while ((iter_key = keyNextMeta (key)) != 0)
-162:	ksRewind (config);
-164:	root = ksNext (config);
-498:	ksRewind (keys);
-499:	for (key = ksNext (keys); key; key = ksNext (keys))
-669:			ksRewind (split->keysets[i]);
-743:		ksRewind (split->keysets[i]);
-768:	ksRewind (ks);
-774:	ksRewind (specCut);
-776:	while ((cur = ksNext (specCut)) != NULL)
-788:	ksRewind (cutKS);
-831:		ksRewind (split->keysets[i]);
-852:				ksRewind (ks);
-860:				ksRewind (ks);
-868:				ksRewind (ks);
-918:	keyRewindMeta (src);
-922:	while ((metaKey = keyNextMeta (src)) != NULL)
-1091:	ksRewind (*cache);
-1413:			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
-1461:			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
-1509:	ksRewind (ks);
-1559:			ksRewind (split->keysets[i]);
-1596:					ksRewind (split->keysets[i]);
-1604:					ksRewind (split->keysets[i]);
-1617:				*errorKey = ksCurrent (split->keysets[i]);
-1655:				ksRewind (split->keysets[i]);
-1693:			ksRewind (split->keysets[i]);
+X   140	src/libs/elektra/kdb.c:30
+X TEST! elektraRemoveMetaData:
+> 136:	keyRewindMeta (key);
+> 137:	while ((iter_key = keyNextMeta (key)) != 0)
+ksRenameKeys:
+>162:	ksRewind (config);
+> 164:	root = ksNext (config);
+kdbOpen:
+> 498:	ksRewind (keys);
+> 499:	for (key = ksNext (keys); key; key = ksNext (keys))
+elektraGetCheckUpdateNeeded:
+? 669:			ksRewind (split->keysets[i]);
+elektraGetDoUpdate:
+? 743:		ksRewind (split->keysets[i]);
+
+X TODO: check dependencies
+X prepareGlobalKS:
+X 768:	ksRewind (ks);
+> 774:	ksRewind (specCut);
+> 776:	while ((cur = ksNext (specCut)) != NULL)
+> 788:	ksRewind (cutKS);
+
+X TODO: check handling of split (passend between functions)
+X elektraGetDoUpdateWithGlobalHooks:
+X 831:		ksRewind (split->keysets[i]);
+X 852:				ksRewind (ks);
+X 860:				ksRewind (ks);
+X 868:				ksRewind (ks);
+copyError:
+> 918:	keyRewindMeta (src);
+> 922:	while ((metaKey = keyNextMeta (src)) != NULL)
+X elektraCacheLoadSplit: 
+X 1091:	ksRewind (*cache);
+X kdbGet:
+X 1413:			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+X 1461:			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
+X 1509:	ksRewind (ks);
+elektraSetPrepare:
+X 1559:			ksRewind (split->keysets[i]);
+X 1596:					ksRewind (split->keysets[i]);
+X 1604:					ksRewind (split->keysets[i]);
+X 1617:				*errorKey = ksCurrent (split->keysets[i]);
+elektraSetCommit:
+X 1655:				ksRewind (split->keysets[i]);
+elektraSetRollback:
+X 1693:			ksRewind (split->keysets[i]);
+kdbSet:
+1736: * - kdbSet() will leave the KeySet's * internal cursor on the key that generated the error.
 1781: * @see ksCurrent() contains the error Key
-1870:						keyName (ksCurrent (ks)));
+X 1870:						keyName (ksCurrent (ks)));
 
 
-   141	src/libs/elektra/proposal.c:7
+X   141	src/libs/elektra/proposal.c:7
 20: * The internal cursor will be rewinded using ksRewind(). You can use
 21: * ksGetCursor() and ksSetCursor() jump back to the previous position.
 22: * e.g. to pop at current position within ksNext() loop:
 24: * cursor_t c = ksGetCursor(ks);
 26: * ksSetCursor(ks, c);
 27: * ksPrev(ks); // to have correct key after next ksNext()
-68:	ksRewind (ks);
+X 68:	ksRewind (ks);
 
 
    142	src/libs/elektra/split.c:9
-380:	ksRewind (ks);
-381:	while ((curKey = ksNext (ks)) != 0)
-448:	ksRewind (ks);
-449:	while ((curKey = ksNext (ks)) != 0)
-472:	const Key * k = ksCurrent (ks);
-494:	elektraCursor c = ksGetCursor (ks);
-496:	ksSetCursor (ks, c - 1); // next ksNext() will point correctly again
-514:	ksRewind (split->keysets[i]);
-515:	while ((cur = ksNext (split->keysets[i])) != 0)
+splitDivide:
+> 380:	ksRewind (ks);
+> 381:	while ((curKey = ksNext (ks)) != 0)
+splitAppoint:
+> 448:	ksRewind (ks);
+> 449:	while ((curKey = ksNext (ks)) != 0)
+X elektraDropCurrentKey:
+X 472:	const Key * k = ksCurrent (ks);
+X 494:	elektraCursor c = ksGetCursor (ks);
+X 496:	ksSetCursor (ks, c - 1); // next ksNext() will point correctly again
+X elektraSplitPostprocess:
+X 514:	ksRewind (split->keysets[i]);
+X 515:	while ((cur = ksNext (split->keysets[i])) != 0)
 
 
    143	src/libs/elektra/keyset.c:86
@@ -1476,58 +1522,180 @@ elektraReferenceSet:
    144	src/libs/elektra/backend.c:10
 66: * @pre ksCurrent() is root key
 67: * @post ksCurrent() is root key
-74:	Key * root = ksCurrent (elektraConfig);
-79:	ksLookup (elektraConfig, root, 0); // reset ksCurrent()
-176:	ksRewind (elektraConfig);
-178:	Key * root = ksNext (elektraConfig);
-186:	while ((cur = ksNext (elektraConfig)) != 0)
-342:	elektraCursor save = ksGetCursor (modules);
-345:	Key * cur = ksCurrent (modules);
-372:	ksSetCursor (modules, save);
+elektraBackendSetMountpoint:
+> 74:	Key * root = ksCurrent (elektraConfig);
+> 79:	ksLookup (elektraConfig, root, 0); // reset ksCurrent()
+backendOpen:
+> 176:	ksRewind (elektraConfig); --> removed becaue the function gets only called with freshly cut keyset
+> 178:	Key * root = ksNext (elektraConfig);
+> 186:	while ((cur = ksNext (elektraConfig)) != 0)
+XbackendOpenModules:
+X 342:	elektraCursor save = ksGetCursor (modules);
+X 345:	Key * cur = ksCurrent (modules);
+X 372:	ksSetCursor (modules, save);
 
 
-   145	src/libs/elektra/keyvalue.c:2
-127:ksRewind(ks);
-128:while (current=ksNext(ks)) {
+X only docu: remove later
+X   145	src/libs/elektra/keyvalue.c:2
+X127:ksRewind(ks);
+X128:while (current=ksNext(ks)) {
 
 
-   146	src/libs/merge/kdbmerge.c:16
-245:	ksRewind (input);
-246:	while ((key = ksNext (input)) != NULL)
-292:	ksRewind (original);
-296:	while ((currentKey = ksNext (original)) != NULL)
-615:	ksRewind (checkedSet);
-616:	ksRewind (firstCompared);
-617:	ksRewind (secondCompared);
-619:	while ((checkedKey = ksNext (checkedSet)) != NULL)
-842:	while ((checkedKey = ksNext (baseSet)) != NULL)
-981:	ksRewind (ourCropped);
-982:	ksRewind (theirCropped);
-983:	ksRewind (baseCropped);
-1008:	ksRewind (ourCropped);
-1009:	ksRewind (theirCropped);
-1010:	ksRewind (baseCropped);
-1014:	ksRewind (ourCropped);
+>    146	src/libs/merge/kdbmerge.c:16
+prependStringToAllKeyNames:
+> 245:	ksRewind (input);
+> 246:	while ((key = ksNext (input)) != NULL)
+removeRoot:
+> 292:	ksRewind (original);
+> 296:	while ((currentKey = ksNext (original)) != NULL)
+checkSingleSet:
+> 615:	ksRewind (checkedSet);
+> 616:	ksRewind (firstCompared);
+> 617:	ksRewind (secondCompared);
+> 619:	while ((checkedKey = ksNext (checkedSet)) != NULL)
+handleArrays:
+> 842:	while ((checkedKey = ksNext (baseSet)) != NULL)
+elektraMerge:
+> 981:	ksRewind (ourCropped);
+> 982:	ksRewind (theirCropped);
+> 983:	ksRewind (baseCropped);
+> 1008:	ksRewind (ourCropped);
+> 1009:	ksRewind (theirCropped);
+> 1010:	ksRewind (baseCropped);
+> 1014:	ksRewind (ourCropped);
+
+
+
+
+
+# SWIG Bindings
+
+## common.i
+> 126: remove rename-directions for rewindMeta, nextMeta, currentMeta
+> 143: remove ignores for keyset rewind, next, current, getCursor, setCursor
+
+
+## Ruby
+1. src/bindings/swig/ruby/examples/ruby_example_keyset.rb
+> 76: remove ks.head and ks.tail
+> 121: --> remove example
+
+2. src/bindings/swig/ruby/examples/ruby_example_keys.rb
+> 136: remove example of internal metadata iteration
+
+3. kdb.i
+> 95: remove description of metadata iteration
+247: replace with keyMeta
+561: KeySet iterator: replace internal iterator functions
+624: remove getCursor and setCursor
+
+
+
+
+
+
+
+
 
 
 # Bindings
    147	src/bindings/jna/libelektra/src/main/java/org/libelektra/Elektra.java:6
+240:  int keyRewindMeta(Pointer key);
+243:  Pointer keyNextMeta(Pointer key);
+246:  Pointer keyCurrentMeta(Pointer key);
+340:  int ksRewind(Pointer ks);
+343:  Pointer ksHead(Pointer ks);
+346:  Pointer ksTail(Pointer ks);
+
    148	src/bindings/jna/libelektra/src/main/java/org/libelektra/Key.java:3
+456:    Elektra.INSTANCE.keyRewindMeta(getPointer());
+471:    return createReadOnly(Elektra.INSTANCE.keyNextMeta(getPointer()));
+487:        Elektra.INSTANCE.keyCurrentMeta(getPointer()),
+
    149	src/bindings/jna/libelektra/src/main/java/org/libelektra/NativePlugin.java:3
+111:    Elektra.INSTANCE.ksRewind(keySet.getPointer());
+133:    Elektra.INSTANCE.ksRewind(keySet.getPointer());
+155:    Elektra.INSTANCE.ksRewind(keySet.getPointer());
+
    150	src/bindings/jna/libelektra/src/main/java/org/libelektra/KeySet.java:2
-   151	src/bindings/cpp/tests/testcpp_meta.cpp:1
-   152	src/bindings/cpp/include/keyset.hpp:14
-   153	src/bindings/cpp/include/key.hpp:6
-   154	src/bindings/intercept/fs/intercept.c:4
-   155	src/bindings/intercept/env/tests/test_getenv.cpp:2
-   156	src/bindings/intercept/env/src/getenv.cpp:2
-   157	src/bindings/glib/gelektra-keyset.c:4
-   158	src/bindings/glib/gelektra-key.c:5
-   159	src/bindings/rust/elektra-sys/src/lib.rs:5
+620:        Elektra.INSTANCE.ksHead(getPointer()), Key::new, NoSuchElementException::new);
+633:        Elektra.INSTANCE.ksTail(getPointer()), Key::new, NoSuchElementException::new);
+
+>   151	src/bindings/cpp/tests/testcpp_meta.cpp:1
+   
+
+>   152	src/bindings/cpp/include/keyset.hpp:14
+> 687: * @copydoc ksNext()
+> 691:	ckdb::Key * k = ckdb::ksNext (ks);   
+>
+>   153	src/bindings/cpp/include/key.hpp:6
+   
+
+>   154	src/bindings/intercept/fs/intercept.c:4
+init:
+> 122:	ksRewind (ks);
+> 126:	ksNext (ks); // skip head
+> 127:	while ((key = ksNext (ks)) != NULL)
+exportConfiguration:
+> 263:	ksRewind (exportKS);
+
+
+>    155	src/bindings/intercept/env/tests/test_getenv.cpp:2
+> 112:	ksRewind (elektraConfig);
+> 113:	while ((c = ksNext (elektraConfig)))
+
+
+>   156	src/bindings/intercept/env/src/getenv.cpp:2
+> 335:	ksRewind (elektraConfig);
+> 337:	while ((c = ksNext (elektraConfig)))
+
+
+>   157	src/bindings/glib/gelektra-keyset.c:4
+> 243: * see ksHead
+> 247:	return gelektra_key_make (ksHead (ks->keyset));
+> 255: * see ksTail
+> 259:	return gelektra_key_make (ksTail (ks->keyset));
++ gelektra-keyset.h: removed declaratiosn for head() and tail()
++ tests/testblib_keyset.c: removed calls to head() and tail()
+
+
+>    158	src/bindings/glib/gelektra-key.c:5
+> 435:	return keyRewindMeta (key->key);
+> 443: * see keyCurrentMeta
+> 447:	return gelektra_key_make ((Key *) keyNextMeta (key->key));
+> 455: * see keyCurrentMeta
+> 459:	return gelektra_key_make ((Key *) keyCurrentMeta (key->key));
+
+
+>    159	src/bindings/rust/elektra-sys/src/lib.rs:5
+> 17:        keyDel, keyName, keyNew, keyString, ksAppendKey, ksDel, ksNew, ksNext, ksRewind, Key,
+> 47:        assert_eq!(unsafe { ksRewind(ks) }, 0);
+> 49:        let mut key_next = unsafe { ksNext(ks) };
+> 54:        key_next = unsafe { ksNext(ks) };
+> 59:        key_next = unsafe { ksNext(ks) };
+
+
    160	src/bindings/rust/elektra/src/key.rs:1
+150:        let key_ptr = unsafe { elektra_sys::keyNextMeta(self.key.as_ptr()) };
+
+
    161	src/bindings/rust/elektra/src/readable.rs:1
+53:        let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
+
+
    162	src/bindings/rust/elektra/src/writeable.rs:1
+317:            elektra_sys::keyRewindMeta(self.as_ptr());
+
+
    163	src/bindings/rust/elektra/src/keyset.rs:6
+228:            elektra_sys::ksRewind(self.as_ptr());
+296:        let key_ptr = unsafe { elektra_sys::ksHead(self.as_ref()) };
+307:        let key_ptr = unsafe { elektra_sys::ksCurrent(self.as_ref()) };
+318:        let key_ptr = unsafe { elektra_sys::ksTail(self.as_ref()) };
+328:        unsafe { elektra_sys::ksGetCursor(self.as_ref()) }
+345:            elektra_sys::ksSetCursor(self.as_ptr(), cursor);
+
+
 
 # Tools
 
@@ -1539,12 +1707,12 @@ elektraReferenceSet:
 
 
 # Include files
-   165	src/include/kdbmacros.h:5
-77:		ksRewind (info);
-78:		ksRewind (returned);
-79:		while ((k = ksNext (returned)))
-81:			Key * c = ksNext (info);
-101:		if ((k = ksNext (info)) != 0)
+>   165	src/include/kdbmacros.h:5
+> 77:		ksRewind (info);
+> 78:		ksRewind (returned);
+> 79:		while ((k = ksNext (returned)))
+> 81:			Key * c = ksNext (info);
+> 101:		if ((k = ksNext (info)) != 0)
 
 
    166	src/include/kdb.h.in:10

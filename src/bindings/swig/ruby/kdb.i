@@ -17,7 +17,7 @@ mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
 this module differs to the C++ API in the following way:
  * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
    a 'each' method and includes 'Enumerable'. Therefore it is very similar to
-   a Ruby-Array. However, the KeySet cursor methods are still available.
+   a Ruby-Array.
  * Access to native C-level KDB structures (such as ckdb::Key) is not
    possible, as this does not make much sense within Ruby.
  * Method names are renamed to follow Ruby naming conventions
@@ -93,8 +93,6 @@ the original C++ class in the following aspects:
 - variable length argument list (`va_list`) is implemented using Rubys
   parameter Hash method.
 - getter methods to underlaying Elektra Key (C) are not included
-- C++ Iterators for iterating over meta data are not included. Instaed use
-  Key.next_meta, Key.current_meta, Key.rewind_meta and Key.meta.
 - Key.meta allows access to the meta data key set
 - string length methods are not included (e.g. key.getNameSize())
 ") kdb::Key;
@@ -245,10 +243,15 @@ underlaying key, which allows a Ruby-style iteration over metadata:
   kdb::KeySet* meta() {
     /* create a new KeySet with all meta keys added */
     kdb::KeySet* metaKeys = new kdb::KeySet();
-    kdb::Key curMeta;
-    $self->rewindMeta();
-    while ((curMeta = $self->nextMeta()) != nullptr) {
-      metaKeys->append(curMeta);
+    ckdb::KeySet* curMetaKeys = ckdb::keyMeta ($self->getKey ());
+
+    ckdb::Key* curMeta;
+    ssize_t it = 0;
+
+    while ((curMeta = ckdb::ksAtCursor (curMetaKeys, it++)) != nullptr) {
+      kdb::Key *keyToAppend;
+      keyToAppend = (kdb::Key *)new kdb::Key(curMeta);
+      metaKeys->append(*keyToAppend);
     }
 
     return metaKeys;
@@ -561,19 +564,15 @@ aliased to '<=>', implemented for sorting operations.
 %extend kdb::KeySet {
   void each() {
     if (rb_block_given_p()) {
-      elektraCursor cur_pos = $self->getCursor();
-
-      for ( $self->rewind(); $self->next(); ) {
+      for (ssize_t it = 0; $self->at(it); ++it) {
         VALUE cur;
-        Key * t = new Key($self->current());
+        Key * t = new Key($self->at(it));
         cur = SWIG_NewPointerObj(t, SWIGTYPE_p_kdb__Key, 1);
 
         rb_yield(cur);
         /* nothing to free here, Ruby is owner of the new Key obj, which
            will be freed by the garbage collector */
       }
-      /* restore current cursor position */
-      $self->setCursor(cur_pos);
     }
   }
 }
@@ -626,9 +625,6 @@ aliased to '<=>', implemented for sorting operations.
  * cursor operations
  */
 %apply long { elektraCursor }
-%rename("cursor") kdb::KeySet::getCursor;
-%rename("cursor=") kdb::KeySet::setCursor;
-
 %alias kdb::KeySet::at "[]"
 
 

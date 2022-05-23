@@ -263,11 +263,10 @@ void TreeViewModel::importConfiguration (const QString & name, const QString & f
 	{
 		KeySet conflictSet = result.getConflictSet ();
 		QStringList conflicts;
-		conflictSet.rewind ();
-		Key current;
 
-		while ((current = conflictSet.next ()))
+		for (ssize_t it = 0; it < conflictSet.size (); ++it)
 		{
+			Key current (conflictSet.at (it));
 			QString ourConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/our"));
 			QString theirConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/their"));
 
@@ -525,11 +524,9 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 
 void TreeViewModel::createNewNodes (KeySet keySet)
 {
-	keySet.rewind ();
-
-	while (keySet.next ())
+	for (ssize_t it = 0; it < keySet.size (); ++it)
 	{
-		Key k = keySet.current ();
+		Key k = keySet.at (it);
 		QStringList keys = getSplittedKeyname (k);
 		QString root = keys.takeFirst ();
 
@@ -608,11 +605,9 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 QStringList getConflicts (KeySet const & conflictSet)
 {
 	QStringList conflicts;
-	conflictSet.rewind ();
-	Key current;
-
-	while ((current = conflictSet.next ()))
+	for (ssize_t it = 0; it < conflictSet.size (); ++it)
 	{
+		Key current (conflictSet.at (it));
 		QString ourConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/our"));
 		QString theirConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/their"));
 

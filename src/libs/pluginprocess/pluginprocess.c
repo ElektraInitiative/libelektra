@@ -350,13 +350,13 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 		// This would interfere with keyset memberships
 		keySetString (key, keyString (parentDeserializedKey));
 
-		// Clear metadata before, we allow children to modify it
-		keyRewindMeta (key);
-		const Key * currentMeta;
-		while ((currentMeta = keyNextMeta (key)) != NULL)
+		KeySet * metaKeys = keyMeta (key);
+		for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 		{
+			const Key * currentMeta = ksAtCursor (metaKeys, it);
 			keySetMeta (key, keyName (currentMeta), 0);
 		}
+
 		keyCopyAllMeta (key, parentDeserializedKey);
 		if (childAddedParentKey) keyCopyAllMeta (key, parentKeyInKeySet);
 

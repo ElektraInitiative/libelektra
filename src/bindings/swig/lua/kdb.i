@@ -322,11 +322,12 @@
   mt[".fn"]["__metaIter"] = function(self)
      return coroutine.wrap(
       function()
-        self:_rewindMeta()
-        local meta = self:_nextMeta()
+        local metaKeys = self:_meta();
+        local it = 0;
+        local meta = metaKeys:_at(it++)
         while not meta:isNull() do
           coroutine.yield(meta)
-          meta = self:_nextMeta()
+          meta = metaKeys:_at(it++)
         end
       end
     )

@@ -375,11 +375,10 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 int splitDivide (Split * split, KDB * handle, KeySet * ks)
 {
 	int needsSync = 0;
-	Key * curKey = 0;
 
-	ksRewind (ks);
-	while ((curKey = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * curKey = ksAtCursor (ks, it);
 		// TODO: handle keys in wrong namespaces
 		Backend * curHandle = mountGetBackend (handle, keyName (curKey));
 		if (!curHandle) return -1;
@@ -442,12 +441,12 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key)
  */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 {
-	Key * curKey = 0;
 	ssize_t defFound = splitAppend (split, 0, 0, 0);
 
-	ksRewind (ks);
-	while ((curKey = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * curKey = ksAtCursor (ks, it);
+
 		Backend * curHandle = mountGetBackend (handle, keyName (curKey));
 		if (!curHandle) return -1;
 
@@ -469,6 +468,7 @@ int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 
 static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const Backend * otherHandle, const char * msg)
 {
+	/* TODO: remove deprecated use of internal iterator! */
 	const Key * k = ksCurrent (ks);
 	const char * name = keyName (k);
 	const char * mountpoint = keyName (curHandle->mountpoint);
@@ -491,6 +491,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 			msg);
 	}
 
+	/* TODO: remove deprecated use of internal iterator! */
 	elektraCursor c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));
 	ksSetCursor (ks, c - 1); // next ksNext() will point correctly again

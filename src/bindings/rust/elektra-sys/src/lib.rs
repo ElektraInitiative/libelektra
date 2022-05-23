@@ -14,7 +14,7 @@ pub const KS_END: *const std::ffi::c_void = std::ptr::null();
 #[cfg(test)]
 mod tests {
     use super::{
-        keyDel, keyName, keyNew, keyString, ksAppendKey, ksDel, ksNew, ksNext, ksRewind, Key,
+        keyDel, keyName, keyNew, keyString, ksAppendKey, ksDel, ksNew, Key,
         KEY_END, KEY_VALUE,
     };
     use std::ffi::{CStr, CString};
@@ -44,19 +44,17 @@ mod tests {
         append_res = unsafe { ksAppendKey(ks, key2) };
         assert_eq!(append_res, 2);
 
-        assert_eq!(unsafe { ksRewind(ks) }, 0);
-
-        let mut key_next = unsafe { ksNext(ks) };
+        let mut key_next = unsafe { ksAtCursor(ks, 0) };
         assert_eq!(key_name.as_c_str(), unsafe {
             CStr::from_ptr(keyName(key_next))
         });
 
-        key_next = unsafe { ksNext(ks) };
+        key_next = unsafe { ksAtCursor(ks, 1) };
         assert_eq!(key_name2.as_c_str(), unsafe {
             CStr::from_ptr(keyName(key_next))
         });
 
-        key_next = unsafe { ksNext(ks) };
+        key_next = unsafe { ksAtCursor(ks, 2) };
         let key_next_ptr: *const Key = key_next;
         assert!(key_next_ptr.is_null());
 

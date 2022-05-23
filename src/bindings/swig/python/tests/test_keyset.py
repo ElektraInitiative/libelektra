@@ -146,18 +146,18 @@ class KeySet(unittest.TestCase):
 	def test_python_head(self):
 		ks = kdb.KeySet(0)
 		ks.append(kdb.Key("user:/foo"))
-		self.assertEqual(ks.head(), ks[0])
+		self.assertEqual(ks.at(0), ks[0])
 		ks.append(kdb.Key("user:/bar"))
-		self.assertEqual(ks.head(), ks[0])
+		self.assertEqual(ks.at(0), ks[0])
 		ks.remove("user:/foo")
-		self.assertEqual(ks.head(), ks[0])
+		self.assertEqual(ks.at(0), ks[0])
 
 	def test_python_tail(self):
 		ks = kdb.KeySet(0)
 		ks.append(kdb.Key("user:/foo"))
-		self.assertEqual(ks.tail(), ks[0])
+		self.assertEqual(ks[len(ks)-1], ks[0])
 		ks.append(kdb.Key("user:/bar"))
-		self.assertEqual(ks.tail(), ks[1])
+		self.assertEqual(ks[len(ks)-1], ks[1])
 
 	def test_python_copy(self):
 		import copy

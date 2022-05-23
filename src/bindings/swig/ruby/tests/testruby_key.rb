@@ -359,37 +359,36 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_equal "meta1 value", k["meta1"]
       assert_equal "othermeta value", k["othermeta"]
 
-      k.rewind_meta
-      mk = k.current_meta
-      assert_nil k.current_meta
 
-      mk = k.next_meta
+	  metaKeys = k.meta
+
+      mk = metaKeys[0]
       assert_instance_of Kdb::Key, mk
       assert_equal "hello", mk.value
       assert_equal "meta:/comment", mk.name
-      assert_equal "hello", k.current_meta.value
-      assert_equal "meta:/comment", k.current_meta.name
+      assert_equal "hello", k.get_meta(mk.name).value
+      assert_equal "meta:/comment", k.get_meta(mk.name).name
 
-      mk = k.next_meta
+      mk = metaKeys[1]
+      assert_instance_of Kdb::Key, mk
       assert_equal "meta1 value", mk.value
       assert_equal "meta:/meta1", mk.name
-      assert_equal "meta1 value", k.current_meta.value
-      assert_equal "meta:/meta1", k.current_meta.name
+      assert_equal "meta1 value", k.get_meta(mk.name).value
+      assert_equal "meta:/meta1", k.get_meta(mk.name).name
 
-      mk = k.next_meta
+      mk = metaKeys[2]
+      assert_instance_of Kdb::Key, mk
       assert_equal "othermeta value", mk.value
       assert_equal "meta:/othermeta", mk.name
-      assert_equal "othermeta value", k.current_meta.value
-      assert_equal "meta:/othermeta", k.current_meta.name
+      assert_equal "othermeta value", k.get_meta(mk.name).value
+      assert_equal "meta:/othermeta", k.get_meta(mk.name).name
 
-      mk = k.next_meta
+      mk = metaKeys[3]
+      assert_instance_of Kdb::Key, mk
       assert_equal "me", mk.value
       assert_equal "meta:/owner", mk.name
-      assert_equal "me", k.current_meta.value
-      assert_equal "meta:/owner", k.current_meta.name
-
-      assert_nil k.next_meta
-      assert_nil k.current_meta
+      assert_equal "me", k.get_meta(mk.name).value
+      assert_equal "meta:/owner", k.get_meta(mk.name).name
 
       # test Ruby-style meta iterator
       assert_instance_of Kdb::KeySet, k.meta

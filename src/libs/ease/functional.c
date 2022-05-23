@@ -46,12 +46,10 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 	if (!filter) return -1;
 
 	int ret = 0;
-	Key * current;
 
-	elektraCursor cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (input); ++it)
 	{
+		Key * current = ksAtCursor (input, it);
 		int rc = filter (current, argument);
 		if (rc <= -1)
 			return -1;
@@ -61,7 +59,6 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 			ksAppendKey (result, current);
 		}
 	}
-	ksSetCursor (input, cursor);
 	return ret;
 }
 
@@ -92,17 +89,15 @@ int elektraKsToMemArray (KeySet * ks, Key ** buffer)
 	/* clear the received buffer */
 	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
 
-	elektraCursor cursor = ksGetCursor (ks);
-	ksRewind (ks);
 	size_t idx = 0;
 
-	Key * key;
-	while ((key = ksNext (ks)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * key = ksAtCursor (ks, it);
 		buffer[idx] = key;
 		++idx;
 	}
-	ksSetCursor (ks, cursor);
 
 	return idx;
 }

@@ -65,6 +65,7 @@ Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos)
 		// so do nothing..
 	}
 
+	/* TODO: Remove use of deprecated internal iterator! */
 	ksRewind (ks);
 
 	return ksPop (ks);

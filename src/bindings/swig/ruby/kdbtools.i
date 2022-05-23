@@ -17,7 +17,7 @@ mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
 this module differs to the C++ API in the following way:
  * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
    a 'each' method and includes 'Enumerable'. Therefore it is very similar to
-   a Ruby-Array. However, the KeySet cursor methods are still available.
+   a Ruby-Array.
  * Access to native C-level KDB structures (such as ckdb::Key) is not
    possible, as this does not make much sense within Ruby.
  * Method names are renamed to follow Ruby naming conventions
