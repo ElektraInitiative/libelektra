@@ -226,18 +226,15 @@ KeySetPair splitEmptyArrayParents (kdb::KeySet const & arrayParents)
 	{
 		kdb::Key parent = arrayParent.dup ();
 		bool isEmpty = parent.getBinarySize () == 0;
-		size_t metaSize = 0;
 		ckdb::KeySet * metaKeys = ckdb::keyMeta (parent.getKey ());
 
-		for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
+		for (ssize_t it = 0; isEmpty && it < ckdb::ksGetSize (metaKeys); ++it)
 		{
 			const kdb::Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
-			if (!isEmpty) break;
-			if (metaSize > 2 || curMeta.getName () != "binary" || curMeta.getName () != "array")
+			if (it > 1 || curMeta.getName () != "binary" || curMeta.getName () != "array")
 			{
 				isEmpty = false;
 			}
-			metaSize++;
 		}
 		(isEmpty ? emptyParents : nonEmptyParents).append (arrayParent);
 	}

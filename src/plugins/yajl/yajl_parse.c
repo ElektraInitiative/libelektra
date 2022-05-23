@@ -164,6 +164,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 	{
 		// remove old key
 		keyDel (ksLookup (ks, currentKey, KDB_O_POP));
+		itKs = 0; // current key was popped from KeySet
 		// now we know the name of the object
 		keySetBaseName (currentKey, stringValue);
 	}
@@ -215,20 +216,18 @@ static int elektraYajlParseEnd (void * ctx)
 	Key * lookupKey = keyNew (keyName (currentKey), KEY_END);
 	keySetBaseName (lookupKey, 0); // remove current baseName
 
-	// lets point current to the correct place
-	Key * foundKey = ksLookup (ks, lookupKey, 0);
+	// lets move iterator to the correct place
+	itKs = ksSearch (ks, lookupKey);
 
 #ifdef HAVE_LOGGER
-	if (foundKey)
+	if (itKs >= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("%s", keyName (foundKey));
+		ELEKTRA_LOG_DEBUG ("Iterator position: %zd", itKs);
 	}
 	else
 	{
-		ELEKTRA_LOG_DEBUG ("did not find key %s", keyName (lookupKey));
+		ELEKTRA_LOG_DEBUG ("Did not find key %s", keyName (lookupKey));
 	}
-#else
-	(void) foundKey; // foundKey is not used, but lookup is needed
 #endif
 
 	keyDel (lookupKey);
@@ -393,7 +392,7 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return -1;
 	}
 
-	/* external iteration if the keyset */
+	/* external iteration of the keyset */
 	itKs = 0;
 	while (!done)
 	{
