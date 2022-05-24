@@ -225,17 +225,24 @@ KeySetPair splitEmptyArrayParents (kdb::KeySet const & arrayParents)
 	for (auto arrayParent : arrayParents)
 	{
 		kdb::Key parent = arrayParent.dup ();
+		// Works also without rewindMeta(), but not without nextMeta() in the inner loop...
 		bool isEmpty = parent.getBinarySize () == 0;
-		ckdb::KeySet * metaKeys = ckdb::keyMeta (parent.getKey ());
 
-		for (ssize_t it = 0; isEmpty && it < ckdb::ksGetSize (metaKeys); ++it)
+		ckdb::KeySet * metaKeys = ckdb::keyMeta (parent.getKey ());
+		for (ssize_t metaSize = 0; isEmpty && metaSize < ckdb::ksGetSize (metaKeys); metaSize++)
 		{
-			const kdb::Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
-			if (it > 1 || curMeta.getName () != "binary" || curMeta.getName () != "array")
+			/* TODO: Seems to only work with keyNextMeta, usage of external iterator procuces additional '__dirdata:' entries
+			 * in files when using the yajl plugin with arrays! */
+			const ckdb::Key * curMeta = ckdb::keyNextMeta (parent.getKey ());
+
+
+			if (metaSize > 2 ||
+			    (curMeta && (strcmp (ckdb::keyName (curMeta), "binary") || strcmp (ckdb::keyName (curMeta), "array"))))
 			{
 				isEmpty = false;
 			}
 		}
+
 		(isEmpty ? emptyParents : nonEmptyParents).append (arrayParent);
 	}
 #ifdef HAVE_LOGGER
@@ -324,22 +331,17 @@ kdb::KeySet decreaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const
  */
 KeySetPair splitDirectoriesLeaves (kdb::KeySet const & keys)
 {
+
 	kdb::KeySet leaves;
 	kdb::KeySet directories;
 	kdb::Key previous;
 
-	for (ssize_t it = 1; it < keys.size () + 1; ++it)
+	ssize_t it = 0;
+	for (previous = keys.at (it); ++it < keys.size (); previous = keys.at (it))
 	{
-		previous = keys.at (it - 1);
-		if (it == keys.size ())
-		{
-			leaves.append (previous);
-		}
-		else
-		{
-			(keys.at (it).isBelow (previous) ? directories : leaves).append (previous);
-		}
+		(keys.at (it).isBelow (previous) ? directories : leaves).append (previous);
 	}
+	leaves.append (previous);
 
 
 	return make_pair (directories, leaves);

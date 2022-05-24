@@ -305,15 +305,15 @@ int init (int argc, char ** argv);
 		else if (mmk1 != mmk2)                                                                                                     \
 		{                                                                                                                          \
 			compare_key_name (mmk1, mmk2);                                                                                     \
-                                                                                                                                           \
 			compare_key_value (mmk1, mmk2);                                                                                    \
                                                                                                                                            \
-			const Key * meta;                                                                                                  \
-			keyRewindMeta (mmk1);                                                                                              \
-			keyRewindMeta (mmk2);                                                                                              \
-			while ((meta = keyNextMeta (mmk1)) != 0)                                                                           \
+			KeySet * metaKeys1 = keyMeta (mmk1);                                                                               \
+			KeySet * metaKeys2 = keyMeta (mmk2);                                                                               \
+			ssize_t itMeta = 0;                                                                                                \
+			for (; itMeta < ksGetSize (metaKeys1); ++itMeta)                                                                   \
 			{                                                                                                                  \
-				const Key * const metaCmp = keyNextMeta (mmk2);                                                            \
+				const Key * const meta = ksAtCursor (metaKeys1, itMeta);                                                   \
+				const Key * const metaCmp = ksAtCursor (metaKeys2, itMeta);                                                \
 				if (metaCmp == 0)                                                                                          \
 				{                                                                                                          \
 					nbError++;                                                                                         \
@@ -340,7 +340,7 @@ int init (int argc, char ** argv);
 				}                                                                                                          \
 			}                                                                                                                  \
                                                                                                                                            \
-			const Key * const metaCmp = keyNextMeta (mmk2);                                                                    \
+			const Key * const metaCmp = ksAtCursor (metaKeys2, itMeta);                                                        \
 			if (metaCmp != 0)                                                                                                  \
 			{                                                                                                                  \
 				nbError++;                                                                                                 \

@@ -66,8 +66,6 @@ static void test_null_pointer (void)
 	key = keyNew ("user:/test1", KEY_END);
 	exit_if_fail (key, "could not create new key");
 
-	succeed_if (keyRewindMeta (0) == -1, "Could rewind NULL Key");
-
 	succeed_if (keyGetMeta (0, "test") == 0, "Could get meta of NULL Key");
 	succeed_if (keyGetMeta (key, 0) == 0, "Could get meta of NULL metaName");
 

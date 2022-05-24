@@ -1883,19 +1883,22 @@ static void elektraCopyCallbackMeta (Key * dest, Key * source)
 	// possible optimization: only copy when callback is present (keyIsBinary && keyGetValueSize == sizeof(void(int))
 	const Key * m = 0;
 
-	keyRewindMeta (dest);
-	while ((m = keyNextMeta (dest)))
+	KeySet * metaKeys = keyMeta (dest);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		m = ksAtCursor (metaKeys, it);
 		const char * metaname = keyName (m);
 		if (!strncmp (metaname, "callback/", sizeof ("callback")))
 		{
 			keySetMeta (dest, metaname, 0);
+			it--;
 		}
 	}
 
-	keyRewindMeta (source);
-	while ((m = keyNextMeta (source)))
+	metaKeys = keyMeta (source);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		m = ksAtCursor (metaKeys, it);
 		const char * metaname = keyName (m);
 		if (!strncmp (metaname, "callback/", sizeof ("callback")))
 		{
