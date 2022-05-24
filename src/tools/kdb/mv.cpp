@@ -75,6 +75,12 @@ int MvCommand::execute (Cmdline const & cl)
 			return 11;
 		}
 		newConf.append (rename_key (k, sourceName, newDirName, cl.verbose));
+
+		// move the remaining keys back to the original position
+		while ((k = oldConf.next ()))
+		{
+			newConf.append (k);
+		}
 	}
 	newConf.append (tmpConf); // these are unrelated keys
 	// drop the original configuration

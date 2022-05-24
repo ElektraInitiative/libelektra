@@ -202,9 +202,9 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
-### <<Tool>>
+### KDB
 
-- <<TODO>>
+- Fixed a bug where the mv-command deletes subkeys of the moved key _(@Gratla)_
 - <<TODO>>
 - <<TODO>>
 
