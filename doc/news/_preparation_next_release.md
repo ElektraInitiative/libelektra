@@ -156,7 +156,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - Added example which shows how to add a basename for a key. _(Philipp Leeb @Gratla)_
 - <<TODO>>
-- <<TODO>>
+- Added execution of keyRef handling of the native library _(@Gratla)_
 
 ### <<Binding>>
 
