@@ -221,10 +221,6 @@ public:
 	inline void copyMeta (const Key & other, const std::string & metaName);
 	inline void copyAllMeta (const Key & other);
 
-	/* TODO: Remove internal iterator, Currently used by src/plugins/directoryvalue/directoryvalue_delegate.cpp */
-	inline const Key nextMeta ();
-
-
 	// Methods for Making tests
 	inline bool isValid () const;
 	inline ElektraNamespace getNamespace () const;
@@ -1438,17 +1434,6 @@ inline void Key::copyAllMeta (const Key & other)
 	{
 		throw KeyException ();
 	}
-}
-
-/**
- * @copydoc keyNextMeta
- *
- * @see rewindMeta(), currentMeta()
- */
-inline const Key Key::nextMeta ()
-{
-	const ckdb::Key * k = ckdb::keyNextMeta (key);
-	return Key (const_cast<ckdb::Key *> (k));
 }
 
 /** @return if the key is valid
