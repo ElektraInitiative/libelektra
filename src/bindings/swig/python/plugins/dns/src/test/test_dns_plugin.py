@@ -17,7 +17,7 @@ class DNSPlugin(unittest.TestCase):
 
     def setUp(self):
         self.parent_key = kdb.Key("user:/python")
-        self.plugin = dns_plugin.ElektraDNSPlugin()
+        self.plugin = dns_plugin.ElektraPlugin()
         self.localhost_key_with_plugin = kdb.Key("user:/python/hostname",
                                              kdb.KEY_VALUE, "localhost",
                                              kdb.KEY_META, "check/dns", "")

@@ -31,7 +31,7 @@ def check_key(key: kdb.Key):
     return True
 
 
-class ElektraDNSPlugin(object):
+class ElektraPlugin(object):
     def __init__(self):
         pass
 
