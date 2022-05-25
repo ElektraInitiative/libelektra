@@ -85,6 +85,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Length
+
+- Warnings are now added on `kdb get` _(@mandoway)_
+
 ### <<Plugin>>
 
 - <<TODO>>

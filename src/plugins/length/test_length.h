@@ -17,18 +17,19 @@
 static void test_length (void)
 {
 	Key * parentKey = keyNew ("user:/tests/length", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user:/tests/length/valid1", KEY_VALUE, "value", KEY_META, "check/length/max", "10", KEY_END);
-	Key * k2 = keyNew ("user:/tests/length/invalid1", KEY_VALUE, "waytoolongvalue", KEY_META, "check/length/max", "5", KEY_END);
-	Key * k3 = keyNew ("user:/tests/length/edgecase1", KEY_VALUE, "edgy", KEY_META, "check/length/max", "4", KEY_END);
-	Key * k4 = keyNew ("user:/tests/length/edgecase2", KEY_VALUE, "edgyy", KEY_META, "check/length/max", "4", KEY_END);
-	Key * k5 = keyNew ("user:/tests/length/edgecase3", KEY_VALUE, "edg", KEY_META, "check/length/max", "4", KEY_END);
-	Key * k6 = keyNew ("user:/tests/length/edgecase3", KEY_BINARY, KEY_SIZE, 8, KEY_VALUE, "edg\0abc", KEY_META, "check/length/max",
-			   "10", KEY_END);
-	Key * k7 = keyNew ("user:/tests/length/edgecase3", KEY_BINARY, KEY_SIZE, 8, KEY_VALUE, "edg\0abc", KEY_META, "check/length/max",
-			   "4", KEY_END);
+	Key * lessThanMaxLen = keyNew ("user:/tests/length/valid1", KEY_VALUE, "value", KEY_META, "check/length/max", "10", KEY_END);
+	Key * moreThanMaxLen =
+		keyNew ("user:/tests/length/invalid1", KEY_VALUE, "waytoolongvalue", KEY_META, "check/length/max", "5", KEY_END);
+	Key * equalToMaxLen = keyNew ("user:/tests/length/edgecase1", KEY_VALUE, "edgy", KEY_META, "check/length/max", "4", KEY_END);
+	Key * moreThanMaxLenBy1 = keyNew ("user:/tests/length/edgecase2", KEY_VALUE, "edgyy", KEY_META, "check/length/max", "4", KEY_END);
+	Key * lessThanMaxLenBy1 = keyNew ("user:/tests/length/edgecase3", KEY_VALUE, "edg", KEY_META, "check/length/max", "4", KEY_END);
+	Key * lessThanMaxWithStringTerminator = keyNew ("user:/tests/length/edgecase3", KEY_BINARY, KEY_SIZE, 8, KEY_VALUE, "edg\0abc",
+							KEY_META, "check/length/max", "10", KEY_END);
+	Key * moreThanMaxWithStringTerminator = keyNew ("user:/tests/length/edgecase3", KEY_BINARY, KEY_SIZE, 8, KEY_VALUE, "edg\0abc",
+							KEY_META, "check/length/max", "4", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (1, k1, KS_END);
+	KeySet * ks = ksNew (1, lessThanMaxLen, KS_END);
 	PLUGIN_OPEN ("length");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
@@ -36,42 +37,45 @@ static void test_length (void)
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k2);
+	ksAppendKey (ks, moreThanMaxLen);
 	ksRewind (ks);
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should not fail");
+	succeed_if (output_warnings (parentKey) == 0, "kdbGet should produce warnings");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k3);
+	ksAppendKey (ks, equalToMaxLen);
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k4);
+	ksAppendKey (ks, moreThanMaxLenBy1);
 	ksRewind (ks);
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should not fail");
+	succeed_if (output_warnings (parentKey) == 0, "kdbGet should produce warnings");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k5);
+	ksAppendKey (ks, lessThanMaxLenBy1);
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k6);
+	ksAppendKey (ks, lessThanMaxWithStringTerminator);
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 
-	ksAppendKey (ks, k7);
+	ksAppendKey (ks, moreThanMaxWithStringTerminator);
 	ksRewind (ks);
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should not fail");
+	succeed_if (output_warnings (parentKey) == 0, "kdbGet should produce warnings");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
