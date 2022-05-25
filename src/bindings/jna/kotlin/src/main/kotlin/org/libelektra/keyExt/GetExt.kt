@@ -40,21 +40,3 @@ internal fun <T : Any> Key.get(clazz: KClass<T>): T {
  * @see [get]
  */
 inline fun <reified T : Any> Key.getOrNull(): T? = if (isNotEmpty()) get(T::class) else null
-
-/**
- * @param defaultValue a provided default
- * @return
- * - same as [get], if the string value is not empty
- * - defaultValue, otherwise
- * @see [get]
- */
-inline fun <reified T : Any> Key.getOrDefault(defaultValue: T): T = if (isNotEmpty()) get(T::class) else defaultValue
-
-/**
- * @param defaultValue a function returning a default value
- * @return
- * - same as [get], if the string value is not empty
- * - return value of defaultValue(), otherwise
- * @see [get]
- */
-inline fun <reified T : Any> Key.getOrElse(defaultValue: () -> T): T = if (isNotEmpty()) get(T::class) else defaultValue()

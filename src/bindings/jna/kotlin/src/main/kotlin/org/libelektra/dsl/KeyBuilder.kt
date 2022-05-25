@@ -35,6 +35,6 @@ class KeyBuilder(private val name: String) {
  * @param name the name of the key, e.g. user:/test
  * @param initializer a block to set value and meta keys for the created key
  */
-fun keyOf(name: String, initializer: KeyBuilder.() -> Unit): Key {
+fun keyOf(name: String, initializer: KeyBuilder.() -> Unit = {}): Key {
     return KeyBuilder(name).apply(initializer).build()
 }

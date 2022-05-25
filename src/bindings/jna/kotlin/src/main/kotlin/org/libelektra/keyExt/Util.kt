@@ -5,7 +5,7 @@ import java.util.*
 import org.libelektra.ReadableKey
 import kotlin.math.log10
 
-fun Key.isEmpty() = string.isEmpty()
+fun Key.isEmpty() = (!isBinary && valueSize == 1) || valueSize < 1
 
 fun Key.isNotEmpty() = !isEmpty()
 

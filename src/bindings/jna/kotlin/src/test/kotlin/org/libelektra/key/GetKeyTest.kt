@@ -3,8 +3,6 @@ package org.libelektra.key
 import org.junit.Test
 import org.libelektra.Key
 import org.libelektra.keyExt.get
-import org.libelektra.keyExt.getOrDefault
-import org.libelektra.keyExt.getOrElse
 import org.libelektra.keyExt.getOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -108,33 +106,5 @@ class GetKeyTest {
         val key = Key.create()
 
         assertEquals(null, key.getOrNull<String>())
-    }
-
-    @Test
-    fun `getOrDefault with value, returns same as get`() {
-        val key = Key.create().setString("abc")
-
-        assertEquals(key.get(), key.getOrDefault("default"))
-    }
-
-    @Test
-    fun `getOrDefault with empty value, returns default`() {
-        val key = Key.create()
-
-        assertEquals("default", key.getOrDefault("default"))
-    }
-
-    @Test
-    fun `getOrElse with value, returns same as get`() {
-        val key = Key.create().setString("abc")
-
-        assertEquals(key.get(), key.getOrElse { "default" })
-    }
-
-    @Test
-    fun `getOrElse with empty value, returns default`() {
-        val key = Key.create()
-
-        assertEquals("default", key.getOrElse { "default" })
     }
 }
