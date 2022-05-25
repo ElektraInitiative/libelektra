@@ -179,10 +179,9 @@
 
     def __metaIter(self):
       metaKeys = self._meta()
-      ssize_t size = len(metaKeys)
-      for (elektraCursor cursor = 0; cursor < size; ++cursor) {
-        yield metaKeys._at(cursor);
-      }
+      size = len(metaKeys)
+      for cursor in range(size)
+        yield metaKeys._at(cursor)
 
 
     name     = property(_kdb.Key__getName, _kdb.Key__setName)

@@ -323,11 +323,12 @@
      return coroutine.wrap(
       function()
         local metaKeys = self:_meta();
-        local it = 0;
-        local meta = metaKeys:_at(it++)
-        while not meta:isNull() do
-          coroutine.yield(meta)
-          meta = metaKeys:_at(it++)
+        local size = #metaKeys
+        if size > 0 then
+          for i = 1, size do
+            local meta = metaKeys:_at(i - 1)
+            coroutine.yield(meta)
+          end
         end
       end
     )
