@@ -27,10 +27,12 @@ void logKeySet (kdb::KeySet const & keys)
 	for (auto key : keys)
 	{
 		std::string metadata;
-		key.rewindMeta ();
-		while (kdb::Key meta = key.nextMeta ())
+		ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+		for (elektraCursor it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 		{
-			metadata += ", “" + meta.getName () + "”: “" + meta.getString () + "”";
+			const kdb::Key curMeta (ckdb::ksAtCursor (metaKeys, it));
+			metadata += ", “" + curMeta.getName () + "”: “" + curMeta.getString () + "”";
 		}
 
 		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”%s", key.getName ().c_str (),

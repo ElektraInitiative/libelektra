@@ -253,7 +253,7 @@ static void elektraCheckForEmptyArray (KeySet * ks)
 	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
 		cur = ksAtCursor (ks, it);
-		ELEKTRA_LOG_DEBUG ("WALK: %s", keyName (curr));
+		ELEKTRA_LOG_DEBUG ("WALK: %s", keyName (cur));
 		const char * meta = keyString (keyGetMeta (cur, "array"));
 		if (*meta == '\0')
 		{

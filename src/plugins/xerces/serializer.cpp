@@ -56,12 +56,12 @@ void key2xml (DOMDocument & doc, DOMElement & elem, string const & name ELEKTRA_
 
 	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
-		const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
+		const Key curMeta = ckdb::ksAtCursor (metaKeys, it);
 		auto metaName = curMeta.getName ().substr (sizeof ("meta:/") - 1);
 		if (metaName != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME && metaName != "array")
 		{
 			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", metaName.c_str (), name.c_str (),
-					   meta.get<string> ().c_str ());
+					   curMeta.get<string> ().c_str ());
 			elem.setAttribute (asXMLCh (metaName), asXMLCh (curMeta.get<string> ()));
 		}
 	}

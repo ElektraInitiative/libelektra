@@ -122,14 +122,14 @@ Node createMetaNode (Key & key)
 
 	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
-		const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
+		const kdb::Key curMeta = ckdb::ksAtCursor (metaKeys, it);
 		if (curMeta.getName () == "meta:/array" || curMeta.getName () == "meta:/binary" ||
 		    (curMeta.getName () == "meta:/type" && (curMeta.getString () == "boolean" || curMeta.getString () == "binary")))
 		{
 			continue;
 		}
 		metaNode[curMeta.getName ().substr (sizeof ("meta:/") - 1)] = curMeta.getString ();
-		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", curMeta.getName ().c_str (), curMeta.getString ().c_str ());
 	}
 
 	return metaNode;
