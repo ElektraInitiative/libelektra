@@ -11,7 +11,6 @@ import com.sun.jna.Pointer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -444,52 +443,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
   }
 
   /**
-   * Rewinds the internal iterator for meta information of this key
-   *
-   * @throws IllegalStateException if this {@link Key} has already been released
-   * @return This {@link Key}, enabling a fluent interface
-   * @see #nextMeta()
-   * @see #currentMeta()
-   */
-  @Nonnull
-  public Key rewindMeta() {
-    Elektra.INSTANCE.keyRewindMeta(getPointer());
-    return this;
-  }
-
-  /**
-   * Gets the next element of this key's internal meta information iterator
-   *
-   * @return New {@link Key} object containing the requested meta information or {@link
-   *     Optional#empty()}, if no next meta key is available
-   * @throws IllegalStateException if this {@link Key} has already been released
-   * @see #rewindMeta()
-   * @see #currentMeta()
-   */
-  @Nonnull
-  public Optional<ReadableKey> nextMeta() {
-    return createReadOnly(Elektra.INSTANCE.keyNextMeta(getPointer()));
-  }
-
-  /**
-   * Gets the current element of this key's internal meta information iterator
-   *
-   * @return new {@link Key} object containing the current meta information
-   * @throws IllegalStateException if this {@link Key} has already been released
-   * @throws NoSuchElementException if no current meta key is available or internal iterator has
-   *     been reset
-   * @see #rewindMeta()
-   * @see #nextMeta()
-   */
-  @Nonnull
-  public ReadableKey currentMeta() {
-    return checkPointer(
-        Elektra.INSTANCE.keyCurrentMeta(getPointer()),
-        ReadableKey::new,
-        NoSuchElementException::new);
-  }
-
-  /**
    * Copies some meta information from a {@code source} key to this key
    *
    * @param source Key used as source
@@ -586,6 +539,19 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
       throw new KeyMetaException();
     }
     return this;
+  }
+
+  /**
+   * Get KeySet with metakeys
+   *
+   * @return A KeySet with all metakeys if the given key
+   * @throws KeyMetaException if {@code k} is invalid
+   * @throws IllegalStateException if this {@link Key} has already been released
+   * @throws IllegalArgumentException if {@code k} is null}
+   */
+  @Nonnull
+  public KeySet meta() {
+    return checkPointer(Elektra.INSTANCE.keyMeta(getPointer()), KeySet::new, KeyMetaException::new);
   }
 
   /**

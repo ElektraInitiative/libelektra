@@ -71,7 +71,6 @@ libelektra_0.8 {
 	keyNeedSync;
 	keyNew;
 	keyNextMeta;
-	keyRewindMeta;
 	keySetBaseName;
 	keySetBinary;
 	keySetMeta;

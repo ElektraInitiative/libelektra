@@ -147,7 +147,6 @@ uint16_t keyDecRef (Key *key);
 uint16_t keyGetRef (const Key *key);
 
 /* Meta Info */
-int keyRewindMeta (Key *key);
 const Key *keyNextMeta (Key *key);
 const Key *keyCurrentMeta (const Key *key);
 

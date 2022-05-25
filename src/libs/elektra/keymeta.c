@@ -125,45 +125,6 @@
 
 
 /**
- * Rewind the internal iterator to the first entry in metadata keyset.
- *
- * Use this function to set the cursor to the beginning of the Key Meta Infos.
- * keyCurrentMeta() will always return NULL after rewinding, so
- * you need to call keyNextMeta() first.
- *
- * @code
-Key *key;
-const Key *meta;
-
-keyRewindMeta (key);
-while ((meta = keyNextMeta (key))!=0)
-{
-	printf ("name: %s, value: %s", keyName(meta), keyString(meta));
-}
- * @endcode
- *
- * @param key Key whose internal iterator should be rewinded
- *
- * @retval 0 on success
- * @retval 0 if there is no metadata for that key
- *         (keyNextMeta() will always return 0 in that case)
- * @retval -1 on NULL pointer
- *
- * @since 1.0.0
- * @ingroup keymeta
- *
- * @see keyNextMeta(), keyCurrentMeta() for iterating after rewinding
- * @see ksRewind() KeySet's equivalent function for rewinding
- **/
-int keyRewindMeta (Key * key)
-{
-	if (!key) return -1;
-	if (!key->meta) return 0;
-
-	return ksRewind (key->meta);
-}
-
-/**
  * Get the next metadata entry of a Key
  *
  * Keys have an internal cursor that can be reset with keyRewindMeta(). Every

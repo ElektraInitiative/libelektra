@@ -309,12 +309,4 @@ pub trait WriteableKey: ReadableKey {
             Ok(ret_val.try_into().unwrap())
         }
     }
-
-    /// Rewind the internal iterator to first metadata.
-    /// Note that iterators already call this method when they're created.
-    fn rewind_meta(&mut self) {
-        unsafe {
-            elektra_sys::keyRewindMeta(self.as_ptr());
-        }
-    }
 }

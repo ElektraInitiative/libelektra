@@ -580,13 +580,12 @@ std::string printKey (Key const & k)
 
 void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 {
-	theirs.rewind ();
-	base.rewind ();
-	for (Key o : ours)
+	for (elektraCursor it = 0; it < ours.size (); ++it)
 	{
+		const Key o = ours.at (it);
 		std::string prefix ("user:/guitest");
-		Key t = theirs.next ();
-		Key b = base.next ();
+		Key t = theirs.at (it);
+		Key b = base.at (it);
 		if (!((o && !o.getName ().compare (0, prefix.size (), prefix)) &&
 		      (t && !t.getName ().compare (0, prefix.size (), prefix)) && (b && !b.getName ().compare (0, prefix.size (), prefix))))
 			continue;

@@ -291,37 +291,34 @@ public class KeyTest {
     var key =
         Key.create(KEY_1_NAME, KEY_1_VALUE)
             .setMeta(KEY_1_META_1_NAME, KEY_1_META_1_VALUE)
-            .setMeta(KEY_1_META_2_NAME, KEY_1_META_2_VALUE)
-            .rewindMeta();
+            .setMeta(KEY_1_META_2_NAME, KEY_1_META_2_VALUE);
 
     // check meta
-    var oMeta = key.nextMeta();
+    var metakeys = key.meta();
 
-    assertTrue(oMeta.isPresent());
-    assertEquals("meta:" + KEY_1_META_1_NAME, oMeta.get().getName());
-    assertEquals(KEY_1_META_1_VALUE, oMeta.get().getString());
+    var oMeta = metakeys.at(0);
+    assertEquals("meta:" + KEY_1_META_1_NAME, oMeta.getName());
+    assertEquals(KEY_1_META_1_VALUE, oMeta.getString());
 
-    oMeta = key.nextMeta();
-
-    assertTrue(oMeta.isPresent());
-    assertEquals("meta:" + KEY_1_META_2_NAME, oMeta.get().getName());
-    assertEquals(KEY_1_META_2_VALUE, oMeta.get().getString());
+    oMeta = metakeys.at(1);
+    assertEquals("meta:" + KEY_1_META_2_NAME, oMeta.getName());
+    assertEquals(KEY_1_META_2_VALUE, oMeta.getString());
 
     // setup another key
     var key2 = Key.create(KEY_2_NAME, KEY_2_VALUE);
     key2.copyAllMeta(key);
-    key2.rewindMeta();
 
     // check meta for second key
-    oMeta = key2.nextMeta();
+    metakeys = key2.meta();
+    oMeta = metakeys.at(0);
 
-    assertEquals("meta:" + KEY_1_META_1_NAME, oMeta.get().getName());
-    assertEquals(KEY_1_META_1_VALUE, oMeta.get().getString());
+    assertEquals("meta:" + KEY_1_META_1_NAME, oMeta.getName());
+    assertEquals(KEY_1_META_1_VALUE, oMeta.getString());
 
-    oMeta = key2.nextMeta();
+    oMeta = metakeys.at(1);
 
-    assertEquals("meta:" + KEY_1_META_2_NAME, oMeta.get().getName());
-    assertEquals(KEY_1_META_2_VALUE, oMeta.get().getString());
+    assertEquals("meta:" + KEY_1_META_2_NAME, oMeta.getName());
+    assertEquals(KEY_1_META_2_VALUE, oMeta.getString());
   }
 
   @Test
