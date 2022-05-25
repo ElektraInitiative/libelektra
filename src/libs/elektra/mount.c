@@ -387,7 +387,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 			if (!elektraStrCaseCmp (placement, GlobalpluginPositionsStr[i]))
 			{
 
-				ELEKTRA_LOG_DEBUG ("mounting global plugin %s to %s\n", pluginName, placement);
+				ELEKTRA_LOG_DEBUG ("mounting global plugin %s to %s\n", keyString (cur), placement);
 
 				// load plugins in implicit max once placement
 				Plugin * plugin = 0;
