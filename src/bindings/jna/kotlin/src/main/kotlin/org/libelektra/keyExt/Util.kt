@@ -13,11 +13,7 @@ fun Key.forEachKeyName(action: (String) -> Unit) {
     keyNameIterator().forEach(action)
 }
 
-fun <T> keyOf(name: String, value: T?): Key {
-    return Key.create(name, value)
-}
-
-fun <T> keyOf(name: String, value: T?, vararg metaKeys: Key): Key {
+fun <T> keyOf(name: String, value: T? = null, vararg metaKeys: Key): Key {
     return Key.create(name, value).apply {
         metaKeys.forEach {
             setMeta(it.name, it.string)
