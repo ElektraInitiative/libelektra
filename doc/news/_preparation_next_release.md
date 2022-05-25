@@ -181,6 +181,10 @@ you up-to-date with the multi-language support provided by Elektra.
 - Added withKDB() extension which wraps the try block _(@Gratla)_
 - Added forEachKeyName() extension which iterates like in keyNameIterator _(@mandoway)_
 
+### Python
+
+- Deleted occurrences of removed property key.fullname _(@mandoway)_ 
+
 ## Tools
 
 ### elektrad
