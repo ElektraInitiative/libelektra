@@ -101,6 +101,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Curlget
 
 - Removed usages (and contents) of VERBOSE macro _(@mandoway)_
+- Marked mentions of VERBOSE with todo _(@mandoway)_
 
 ### Sorted
 
@@ -216,6 +217,9 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Python
 
 - Deleted occurrences of removed property key.fullname _(@mandoway)_
+### CPP
+
+- Removed mentions of VERBOSE _(@mandoway)_
 
 ## Tools
 
