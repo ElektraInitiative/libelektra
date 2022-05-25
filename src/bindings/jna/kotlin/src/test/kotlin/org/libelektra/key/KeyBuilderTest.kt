@@ -10,9 +10,8 @@ class KeyBuilderTest {
 
     @Test
     fun `keyOf with name and value, returns correct key`() {
-        val key = keyOf {
-            name("/test")
-            value("1234")
+        val key = keyOf("/test") {
+            value = "1234"
         }
 
         assertEquals(key.name, "/test")
@@ -21,22 +20,21 @@ class KeyBuilderTest {
 
     @Test
     fun `keyOf with name and value and meta keys, returns correct key including meta keys`() {
-        val key = keyOf {
-            name("/test")
-            value("1234")
-            metaKey("/meta1", "value1")
-            metaKey("/meta2", "value2")
+        val key = keyOf("/test") {
+            value = "1234"
+            metaKey("meta:/meta1", "value1")
+            metaKey("meta:/meta2", "value2")
         }
 
         assertEquals(key.getMeta("/meta1").orNull()!!.string, "value1")
-        assertEquals(key.getMeta("/meta2").orNull()!!.string, "value2")
+        assertEquals(key.getMeta("meta2").orNull()!!.string, "value2")
     }
 
     @Test
-    fun `keyOf with no name and value, throws IllegalStateException`() {
-        assertFailsWith<IllegalStateException> {
-            keyOf {
-                value("1234")
+    fun `keyOf with wrong meta key, throws IllegalArgumentException`() {
+        assertFailsWith<IllegalArgumentException> {
+            keyOf("/test") {
+                metaKey("/meta")
             }
         }
     }

@@ -2,37 +2,39 @@ package org.libelektra.dsl
 
 import org.libelektra.Key
 
-class KeyBuilder {
+/**
+ * KeyBuilder provides a DSL API for building Keys
+ * It provides a way to instantiate complex keys in a readable way.
+ * Should not be used directly, but implicitly by calling [keyOf]
+ *
+ * @param name the name of the key, e.g. user:/test
+ */
+class KeyBuilder(private val name: String) {
 
-    private lateinit var keyName: String
-    private var value: Any? = null
-    private var metaKeys: MutableList<Key> = mutableListOf()
+    var value: Any? = null
+    private val metaKeys: MutableList<Key> = mutableListOf()
 
     fun build(): Key {
-        if (!::keyName.isInitialized) {
-            throw IllegalStateException("Key name must be set")
-        }
-
-        return Key.create(keyName, value).apply {
+        return Key.create(name, value).apply {
             metaKeys.forEach {
                 setMeta(it.name, it.string)
             }
         }
     }
 
-    fun name(name: String) {
-        this.keyName = name
-    }
+    fun metaKey(name: String, value: Any? = null) {
+        require(name.startsWith("meta:/")) { "Meta keys must have name prefix 'meta:/'" }
 
-    fun value(value: Any?) {
-        this.value = value
-    }
-
-    fun metaKey(name: String, value: String?) {
         metaKeys.add(Key.create(name, value))
     }
 }
 
-fun keyOf(initializer: KeyBuilder.() -> Unit): Key {
-    return KeyBuilder().apply(initializer).build()
+/**
+ * Builder function for keys
+ *
+ * @param name the name of the key, e.g. user:/test
+ * @param initializer a block to set value and meta keys for the created key
+ */
+fun keyOf(name: String, initializer: KeyBuilder.() -> Unit): Key {
+    return KeyBuilder(name).apply(initializer).build()
 }
