@@ -23,10 +23,6 @@
 #include <stdlib.h>
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
 #include "kdbprivate.h"
 
 

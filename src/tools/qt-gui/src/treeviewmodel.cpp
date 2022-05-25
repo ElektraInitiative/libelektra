@@ -562,7 +562,7 @@ void TreeViewModel::append (ConfigNodePtr node)
 namespace
 {
 
-#if DEBUG && VERBOSE
+#if DEBUG
 std::string printKey (Key const & k)
 {
 	std::string ret;
@@ -623,7 +623,7 @@ void TreeViewModel::synchronize ()
 
 	try
 	{
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "guitest: start" << std::endl;
 		printKeys (ours, ours, ours);
 #endif
@@ -635,7 +635,7 @@ void TreeViewModel::synchronize ()
 		// write our config
 		m_kdb->synchronize (ours, m_root, merger);
 
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "guitest: after get" << std::endl;
 		printKeys (ours, ours, ours);
 #endif

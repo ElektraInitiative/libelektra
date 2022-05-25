@@ -679,7 +679,7 @@ private:
 	{
 		assert (m_key);
 
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "will get name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
 #endif
 
@@ -701,7 +701,7 @@ private:
 		assert (m_key);
 		m_key.set<type> (m_cache);
 
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "set name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
 #endif
 	}
@@ -718,7 +718,7 @@ private:
 	virtual void updateContext (bool write) const override
 	{
 		std::string evaluatedName = m_context.evaluate (m_spec.getName ());
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "update context " << evaluatedName << " from " << m_spec.getName () << " with write " << write << std::endl;
 #endif
 
@@ -754,7 +754,7 @@ private:
 			dep.setMeta ("order", meta.getString ());
 		}
 		m_context.evaluate (m_spec.getName (), [&] (std::string const & current_id, std::string &, bool) {
-#if DEBUG && VERBOSE
+#if DEBUG
 			std::cout << "add dep " << current_id << " to " << dep.getName () << std::endl;
 #endif
 			ckdb::elektraMetaArrayAdd (*dep, "dep", ("/" + current_id).c_str ());

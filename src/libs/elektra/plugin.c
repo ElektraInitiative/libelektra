@@ -10,10 +10,6 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -32,10 +28,6 @@
 
 #ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
 #endif
 
 #include <kdbassert.h>

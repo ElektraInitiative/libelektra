@@ -12,9 +12,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if defined(HAVE_STDIO_H)
 #include <stdio.h>
-#endif
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -964,10 +962,9 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		{
 			size_t n = ks->size - insertpos;
 			memmove (ks->array + (insertpos + 1), ks->array + insertpos, n * sizeof (struct Key *));
-			/*
-			printf ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n",
-				ks->size, insertpos, n);
-			*/
+
+			ELEKTRA_LOG_DEBUG ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n", ks->size, insertpos, n);
+
 			ks->array[insertpos] = toAppend;
 			ksSetCursor (ks, insertpos);
 		}

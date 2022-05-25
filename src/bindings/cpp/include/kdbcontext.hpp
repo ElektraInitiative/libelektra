@@ -104,7 +104,7 @@ inline void Subject::notifyByEvents (Events const & events) const
 				os.insert (o); // (discarding duplicates)
 			}
 		}
-#if DEBUG && VERBOSE
+#if DEBUG
 		else
 		{
 			std::cout << "Trying to notify " << e << " but event does not exist" << std::endl;
@@ -354,7 +354,7 @@ protected:
 			// no layer was not active before, remember that
 			m_with_stack.push_back (std::make_pair (id, std::shared_ptr<Layer> ()));
 		}
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "lazy activate layer: " << id << std::endl;
 #endif
 	}
@@ -375,7 +375,7 @@ protected:
 
 		notifyByEvents ({ layer->id () });
 
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "activate layer: " << layer->id () << std::endl;
 #endif
 	}
@@ -428,7 +428,7 @@ protected:
 		}
 // else: deactivate whats not there:
 // nothing to do!
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "lazy deactivate layer: " << layer->id () << std::endl;
 #endif
 	}
@@ -437,7 +437,7 @@ protected:
 	{
 		m_active_layers.erase (layer->id ());
 
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "deactivate layer: " << layer->id () << std::endl;
 #endif
 	}
