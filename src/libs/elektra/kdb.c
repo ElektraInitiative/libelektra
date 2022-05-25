@@ -1663,7 +1663,7 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 				}
 				keySetName (parentKey, keyName (split->parents[i]));
 
-				ELEKTRA_LOG_DEBUG ("elektraSetCommit: %p # %zu with %s - %s\n", backend, p, keyName (parentKey),
+				ELEKTRA_LOG_DEBUG ("elektraSetCommit: %p # %zu with %s - %s\n", (void *) backend, p, keyName (parentKey),
 						   keyString (parentKey));
 
 				/* TODO: Remove use of deprecated internal iterator! */
