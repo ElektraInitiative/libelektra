@@ -338,10 +338,10 @@ KeySetPair splitDirectoriesLeaves (kdb::KeySet const & keys)
 	kdb::KeySet directories;
 	kdb::Key previous;
 
-	ssize_t it = 0;
-	for (previous = keys.at (it); ++it < keys.size (); previous = keys.at (it))
+	ssize_t pos = 0;
+	for (previous = keys.at (pos); ++pos < keys.size (); previous = keys.at (pos))
 	{
-		(keys.at (it).isBelow (previous) ? directories : leaves).append (previous);
+		(keys.at (pos).isBelow (previous) ? directories : leaves).append (previous);
 	}
 	leaves.append (previous);
 
