@@ -138,24 +138,6 @@ macro_rules! add_traits {
 add_traits!(StringKey<'_>);
 add_traits!(BinaryKey<'_>);
 
-/// An iterator over the metakeys.
-pub struct MetaIter<'a, T: WriteableKey> {
-    key: T,
-    _marker: std::marker::PhantomData<&'a mut T>
-}
-
-impl<'a, T: WriteableKey> Iterator for MetaIter<'a, T> {
-    type Item = ReadOnly<StringKey<'a>>;
-    fn next(&mut self) -> Option<Self::Item> {
-        let key_ptr = unsafe { elektra_sys::keyNextMeta(self.key.as_ptr()) };
-        if key_ptr.is_null() {
-            None
-        } else {
-            Some(unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) })
-        }
-    }
-}
-
 /// An iterator over the name.
 pub struct NameIter<'a, T: ReadableKey> {
     key: &'a T,
@@ -207,12 +189,6 @@ impl<'a> StringKey<'a> {
             )
         };
         unsafe { StringKey::from_ptr(dup_ptr) }
-    }
-
-    /// Returns an iterator over the key's metakeys.
-    pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, StringKey<'a>> {
-        let mut dup = self.duplicate(CopyOption::KEY_CP_ALL);
-        MetaIter { key: dup, _marker: std::marker::PhantomData }
     }
 
     /// Returns an iterator over the key's name.

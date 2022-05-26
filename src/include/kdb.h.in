@@ -147,9 +147,7 @@ uint16_t keyDecRef (Key *key);
 uint16_t keyGetRef (const Key *key);
 
 /* Meta Info */
-const Key *keyNextMeta (Key *key);
-const Key *keyCurrentMeta (const Key *key);
-
+const Key *keyNextMeta (Key *key); /* TODO: remove, currently only needed for directoryvalue-plugin */
 int keyCopyMeta (Key *dest, const Key *source, const char *metaName);
 int keyCopyAllMeta (Key *dest, const Key *source);
 
@@ -240,9 +238,6 @@ Key *ksPop (KeySet *ks);
 int ksRewind (KeySet *ks);
 Key *ksNext (KeySet *ks);
 Key *ksCurrent (const KeySet *ks);
-
-Key *ksHead (const KeySet *ks);
-Key *ksTail (const KeySet *ks);
 
 elektraCursor ksGetCursor (const KeySet *ks);
 int ksSetCursor (KeySet *ks, elektraCursor cursor);

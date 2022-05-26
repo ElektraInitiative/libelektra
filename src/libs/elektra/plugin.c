@@ -50,7 +50,7 @@
  *         back referencing.
  * @retval -1 on error
  */
-int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey)
+int elektraProcessPlugin (const Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey)
 {
 	const char * fullname = keyBaseName (cur);
 	size_t fullsize = keyGetBaseNameSize (cur);

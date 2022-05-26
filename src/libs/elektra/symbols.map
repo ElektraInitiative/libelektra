@@ -46,7 +46,6 @@ libelektra_0.8 {
 	keyCopy;
 	keyCopyAllMeta;
 	keyCopyMeta;
-	keyCurrentMeta;
 	keyDecRef;
 	keyDel;
 	keyDup;
@@ -97,7 +96,6 @@ libelektra_0.8 {
 	ksGetAlloc;
 	ksGetCursor;
 	ksGetSize;
-	ksHead;
 	ksInit;
 	ksLookup;
 	ksLookupByName;
@@ -107,7 +105,6 @@ libelektra_0.8 {
 	ksResize;
 	ksRewind;
 	ksSetCursor;
-	ksTail;
 	ksVNew;
 };
 

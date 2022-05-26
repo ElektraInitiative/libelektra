@@ -1646,64 +1646,6 @@ Key * ksCurrent (const KeySet * ks)
 	return ks->cursor;
 }
 
-
-/**
- * Return the first Key in the KeySet.
- *
- * The KeySet's cursor will not be affected.
- *
- * If ksCurrent()==ksHead() you know you are
- * on the first Key.
- *
- * @param ks the KeySet object to get the first Key from
- *
- * @return the first Key of a KeySet
- * @retval 0 on NULL pointer or empty KeySet
- *
- * @since 1.0.0
- * @see ksTail() for getting the last Key of the KeySet
- * @see ksRewind(), ksCurrent() and ksNext() for iterating over the KeySet
- */
-Key * ksHead (const KeySet * ks)
-{
-	if (!ks) return 0;
-
-	if (ks->size > 0)
-		return ks->array[0];
-	else
-		return 0;
-}
-
-
-/**
- * Return the last Key in the KeySet.
- *
- * The KeySet's cursor will not be affected.
- *
- * If ksCurrent()==ksTail() you know you
- * are on the last key. ksNext() will return
- * a NULL pointer afterwards.
- *
- * @param ks the KeySet object to get the last Key from
- *
- * @return the last Key of a KeySet
- * @retval 0 on NULL pointer or empty KeySet
- *
- * @since 1.0.0
- * @see ksHead() for getting the first Key of a KeySet
- * @see ksRewind(), ksCurrent() and ksNext() for iterating over the KeySet
- */
-Key * ksTail (const KeySet * ks)
-{
-	if (!ks) return 0;
-
-	if (ks->size > 0)
-		return ks->array[ks->size - 1];
-	else
-		return 0;
-}
-
-
 /**
  * Get the internal cursor of the KeySet.
  *

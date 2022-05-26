@@ -123,7 +123,6 @@
 #include <errno.h>
 #endif
 
-
 /**
  * Get the next metadata entry of a Key
  *
@@ -166,37 +165,6 @@ const Key * keyNextMeta (Key * key)
 	return ret;
 }
 
-/**
- * Returns the metadata Key at the internal iterator's current position.
- *
- * The returned pointer is NULL if the end has been reached or after calling
- * ksRewind().
- *
- * @note You must not delete or change the returned key,
- *    use keySetMeta() if you want to delete or change it.
- *
- * @param key Key to get the current metadata from
- *
- * @return a buffer to the value pointed by @p key's cursor
- * @retval 0 on NULL pointer
- *
- * @since 1.0.0
- * @ingroup keymeta
- *
- * @see keyNextMeta() for getting the next value
- * @see keyRewindMeta() for rewinding the internal iterator
- * @see ksCurrent() KeySets's equivalent function for getting the current Key
- **/
-const Key * keyCurrentMeta (const Key * key)
-{
-	Key * ret;
-	if (!key) return 0;
-	if (!key->meta) return 0;
-
-	ret = ksCurrent (key->meta);
-
-	return ret;
-}
 
 /**
  * Do a shallow copy of metadata with name @p metaName from source to dest.

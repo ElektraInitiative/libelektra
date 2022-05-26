@@ -248,9 +248,6 @@ interface Elektra extends Library {
 
   int keySetMeta(Pointer key, String metaName, String newMetaString);
 
-  @Nullable
-  Pointer keyMeta(Pointer key);
-
   /* Methods for Making Tests */
 
   int keyCmp(Pointer k1, Pointer k2);

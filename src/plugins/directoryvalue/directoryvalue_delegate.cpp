@@ -231,10 +231,12 @@ KeySetPair splitEmptyArrayParents (kdb::KeySet const & arrayParents)
 		ckdb::KeySet * metaKeys = ckdb::keyMeta (parent.getKey ());
 		for (ssize_t metaSize = 0; isEmpty && metaSize < ckdb::ksGetSize (metaKeys); metaSize++)
 		{
-			/* TODO: Seems to only work with keyNextMeta, usage of external iterator procuces additional '__dirdata:' entries
+			/* TODO: Seems to only work with keyNextMeta, usage of external iterator produces additional '__dirdata:' entries
 			 * in files when using the yajl plugin with arrays! */
 			const ckdb::Key * curMeta = ckdb::keyNextMeta (parent.getKey ());
 
+			/* produces additional __dirdata entry in json file */
+			// const ckdb::Key * curMeta = ckdb::ksAtCursor (ckdb::keyMeta (parent.getKey ()), metaSize);
 
 			if (metaSize > 2 ||
 			    (curMeta && (strcmp (ckdb::keyName (curMeta), "binary") || strcmp (ckdb::keyName (curMeta), "array"))))

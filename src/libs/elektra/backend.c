@@ -336,18 +336,16 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
  * @param modules the modules to work with
  * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
+ * @param pos the position of plugin the use in @p modules
  */
-Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
+Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey, elektraCursor pos)
 {
 	Backend * backend = elektraBackendAllocate ();
 
-	/* TODO: Remove deprecated use of internal iterator! */
-	elektraCursor save = ksGetCursor (modules);
 	KeySet * defaultConfig =
 		ksNew (5, keyNew ("system:/module", KEY_VALUE, "1", KEY_END), keyNew ("user:/module", KEY_VALUE, "1", KEY_END), KS_END);
 
-	/* TODO: Remove deprecated use of internal iterator! */
-	Key * cur = ksCurrent (modules);
+	Key * cur = ksAtCursor (modules, pos);
 
 	keySetName (errorKey, keyName (cur));
 
@@ -373,9 +371,6 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 
 	backend->mountpoint = mp;
 	keyIncRef (backend->mountpoint);
-
-	/* TODO: Remove deprecated use of internal iterator! */
-	ksSetCursor (modules, save);
 
 	return backend;
 }
