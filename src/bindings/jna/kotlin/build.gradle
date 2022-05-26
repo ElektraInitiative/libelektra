@@ -11,4 +11,10 @@ fatJar {
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
 
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    }
+}
+
 // todo configure publishing when its ready

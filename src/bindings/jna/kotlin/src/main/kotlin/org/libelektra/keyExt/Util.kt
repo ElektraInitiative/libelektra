@@ -41,6 +41,19 @@ fun Key.getLastArrayIndex(): Int {
     return getMeta("array").get().parseIndex()
 }
 
+fun Key.lastArrayIndexOrNull(): Int? {
+    val arrayKeyOptional = getMeta("meta:/array")
+    if (arrayKeyOptional.isEmpty) {
+        return null
+    }
+
+    return try {
+        arrayKeyOptional.get().parseIndex()
+    } catch (e: NumberFormatException) {
+        null
+    }
+}
+
 fun ReadableKey.parseIndex() = this.string
         .removePrefix("#")
         .substringAfterLast("_")

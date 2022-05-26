@@ -42,9 +42,9 @@ class KeySetSerializationTest {
     }
 
     @Test
-    fun `convert with correct keySet but prefix and noise keys, returns correct object`() {
+    fun `convert with correct keySet and noise keys, returns correct object`() {
         val expected = SimpleTest("john", 25)
-        val keySet = givenKeySetForSimpleTestWithPrefixAndOtherKeys(expected.name, expected.age)
+        val keySet = givenKeySetForSimpleTestWithOtherKeys(expected.name, expected.age)
 
         val converted = keySet.convert<SimpleTest>()
 
@@ -144,13 +144,13 @@ class KeySetSerializationTest {
             Key.create("/prefix/age", age)
     )
 
-    private fun givenKeySetForSimpleTestWithPrefixAndOtherKeys(name: String, age: Int) = KeySet.create(
+    private fun givenKeySetForSimpleTestWithOtherKeys(name: String, age: Int) = KeySet.create(
             Key.create("/something/abc"),
             Key.create("/foo/bar"),
             Key.create("/bar"),
-            Key.create("/prefix/name", name),
+            Key.create("/name", name),
             Key.create("/other/thing"),
-            Key.create("/prefix/age", age),
+            Key.create("/age", age),
             Key.create("/another")
     )
 
@@ -175,7 +175,7 @@ class KeySetSerializationTest {
         val keySet = KeySet.create(Key.create("/foo", foo))
 
         keySet.add(
-                Key.create("/bar").setMeta("array", bar.size.toElektraArrayIndex())
+                Key.create("/bar").setMeta("array", bar.indices.last.toElektraArrayIndex())
         )
         bar.forEachIndexed { index, s ->
             keySet.add(Key.create("/bar/${index.toElektraArrayIndex()}", s))
@@ -186,7 +186,7 @@ class KeySetSerializationTest {
 
     private fun givenListKeySet(bar: List<String>): KeySet {
         val keySet = KeySet.create(
-                Key.create("/bar").setMeta("array", bar.size.toElektraArrayIndex())
+                Key.create("/bar").setMeta("array", bar.indices.last.toElektraArrayIndex())
         )
 
         bar.forEachIndexed { index, s ->
@@ -198,7 +198,7 @@ class KeySetSerializationTest {
 
     private fun givenListOfSimpleObjectsKeySet(simple: List<SimpleTest>): KeySet {
         val keySet = KeySet.create(
-                Key.create("/simple").setMeta("array", simple.size.toElektraArrayIndex())
+                Key.create("/simple").setMeta("array", simple.indices.last.toElektraArrayIndex())
         )
 
         simple.forEachIndexed { index, s ->

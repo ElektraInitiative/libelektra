@@ -1,11 +1,8 @@
 package org.libelektra.keySetExt
 
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
 import org.libelektra.KeySet
+import org.libelektra.keySetExt.serialization.KeySetFormat
 
 /**
  * Converts a KeySet to a Kotlin data class using Kotlin Json Serialization with support for Collections
@@ -46,47 +43,10 @@ import org.libelektra.KeySet
  *      keySet.convert<Employee>()
  *      // Employee(user = User(username = "jane", password = "1234"), salary = 4321.0)
  *
- * @throws SerializationException when decoding fails or the properties are not on root-level or one below root, see [Json.decodeFromJsonElement] for details
- * @return an object decoded from the JSON representation of this KeySet (see [KeySet.toJson]])
+ * @param parentKey starting point for serialization of this KeySet, only keys below this key are considered for serialization
+ * @throws SerializationException when decoding fails or the properties are not on root-level or one below root
+ * @return an object decoded from this KeySet (see [KeySetFormat.decodeFromKeySet]])
  */
-inline fun <reified T : Any> KeySet.convert(): T {
-    val json = toJson()
-
-    return try {
-        Json.decodeFromJsonElement(json)
-    } catch (e: SerializationException) {
-        tryToDecodeAllTopLevelProperties(json) ?: throw e
-    }
-}
-
-/**
- * Same as [convert], but only converts keys below or equal from the given parent key
- *
- * @param parentKeyName the key name where the conversion starts, only this and keys below are considered, must start with "/"
- * @throws SerializationException when decoding fails or the properties are not on root-level or one below root, see [Json.decodeFromJsonElement] for details
- * @return an object decoded from the JSON representation of this KeySet (see [KeySet.toJson]])
- * @see [convert]
- */
-inline fun <reified T : Any> KeySet.convert(parentKeyName: String): T {
-    val json = toJson(parentKeyName)
-
-    return try {
-        Json.decodeFromJsonElement(json)
-    } catch (e: SerializationException) {
-        tryToDecodeAllTopLevelProperties(json) ?: throw e
-    }
-}
-
-@PublishedApi
-internal inline fun <reified T : Any> tryToDecodeAllTopLevelProperties(json: JsonElement): T? {
-    return json.jsonObject.entries
-            .asSequence()
-            .mapNotNull {
-                try {
-                    Json.decodeFromJsonElement<T>(it.value)
-                } catch (e: SerializationException) {
-                    null
-                }
-            }
-            .firstOrNull()
+inline fun <reified T : Any> KeySet.convert(parentKey: String? = null): T {
+    return KeySetFormat.decodeFromKeySet(this, parentKey)
 }
