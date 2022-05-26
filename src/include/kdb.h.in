@@ -153,7 +153,7 @@ int keyCopyAllMeta (Key *dest, const Key *source);
 
 const Key *keyGetMeta (const Key *key, const char* metaName);
 ssize_t    keySetMeta (Key *key, const char* metaName,
-	const char *newMetaString);
+const char *newMetaString);
 KeySet * keyMeta (Key * key);
 
 /* Methods for Making Tests */

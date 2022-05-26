@@ -143,15 +143,6 @@ class KeySet(unittest.TestCase):
 			self.assertEqual(k, self.ks[rcount])
 			rcount -= 1
 
-	def test_python_head(self):
-		ks = kdb.KeySet(0)
-		ks.append(kdb.Key("user:/foo"))
-		self.assertEqual(ks.at(0), ks[0])
-		ks.append(kdb.Key("user:/bar"))
-		self.assertEqual(ks.at(0), ks[0])
-		ks.remove("user:/foo")
-		self.assertEqual(ks.at(0), ks[0])
-
 	def test_python_tail(self):
 		ks = kdb.KeySet(0)
 		ks.append(kdb.Key("user:/foo"))

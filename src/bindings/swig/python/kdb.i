@@ -13,6 +13,16 @@
 %include "../common.i"
 %feature("autodoc", "3");
 
+%inline %{
+ssize_t ksSize (const ckdb::_KeySet * ks) {
+  return ckdb::ksGetSize (ks);
+}
+
+ckdb::_Key * ksAt (ckdb::_KeySet * ks, ssize_t pos) {
+  return ckdb::ksAtCursor (ks, pos);
+}
+
+%}
 
 /* handle exceptions */
 %{
@@ -139,6 +149,10 @@
     return ckdb::keyCmp($self->getKey(), o->getKey());
   }
 
+  ckdb::_KeySet *__meta__() {
+    return ckdb::keyMeta($self->getKey());
+  }
+
   // swig doesnt understand kdb::NameIterator::difference_type
   size_t __len__() {
     return std::distance($self->begin(), $self->end());
@@ -178,10 +192,10 @@
       raise TypeError("Unsupported value type")
 
     def __metaIter(self):
-      metaKeys = self._meta()
-      size = len(metaKeys)
-      for cursor in range(size)
-        yield metaKeys._at(cursor)
+      metaKeys = self.__meta__()
+      size = ksSize(metaKeys)
+      for cursor in range(size):
+        yield ksAt (metaKeys, cursor)
 
 
     name     = property(_kdb.Key__getName, _kdb.Key__setName)
