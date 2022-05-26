@@ -366,29 +366,25 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_instance_of Kdb::Key, mk
       assert_equal "hello", mk.value
       assert_equal "meta:/comment", mk.name
-      assert_equal "hello", k.get_meta(mk.name).value
-      assert_equal "meta:/comment", k.get_meta(mk.name).name
+      assert_equal "hello", k.get_meta(mk.name)
 
       mk = metaKeys[1]
       assert_instance_of Kdb::Key, mk
       assert_equal "meta1 value", mk.value
       assert_equal "meta:/meta1", mk.name
-      assert_equal "meta1 value", k.get_meta(mk.name).value
-      assert_equal "meta:/meta1", k.get_meta(mk.name).name
+      assert_equal "meta1 value", k.get_meta(mk.name)
 
       mk = metaKeys[2]
       assert_instance_of Kdb::Key, mk
       assert_equal "othermeta value", mk.value
       assert_equal "meta:/othermeta", mk.name
-      assert_equal "othermeta value", k.get_meta(mk.name).value
-      assert_equal "meta:/othermeta", k.get_meta(mk.name).name
+      assert_equal "othermeta value", k.get_meta(mk.name)
 
       mk = metaKeys[3]
       assert_instance_of Kdb::Key, mk
       assert_equal "me", mk.value
       assert_equal "meta:/owner", mk.name
-      assert_equal "me", k.get_meta(mk.name).value
-      assert_equal "meta:/owner", k.get_meta(mk.name).name
+      assert_equal "me", k.get_meta(mk.name)
 
       # test Ruby-style meta iterator
       assert_instance_of Kdb::KeySet, k.meta

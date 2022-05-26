@@ -242,16 +242,15 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 %extend kdb::Key {
   kdb::KeySet* meta() {
     /* create a new KeySet with all meta keys added */
-    kdb::KeySet* metaKeys = new kdb::KeySet();
     ckdb::KeySet* curMetaKeys = ckdb::keyMeta ($self->getKey ());
+    kdb::KeySet* metaKeys = new kdb::KeySet();
 
     ckdb::Key* curMeta;
     ssize_t it = 0;
 
     while ((curMeta = ckdb::ksAtCursor (curMetaKeys, it++)) != nullptr) {
-      kdb::Key *keyToAppend;
-      keyToAppend = (kdb::Key *)new kdb::Key(curMeta);
-      metaKeys->append(*keyToAppend);
+      kdb::Key keyToAppend (curMeta);
+      metaKeys->append(keyToAppend);
     }
 
     return metaKeys;

@@ -21,7 +21,6 @@ ssize_t ksSize (const ckdb::_KeySet * ks) {
 ckdb::_Key * ksAt (ckdb::_KeySet * ks, ssize_t pos) {
   return ckdb::ksAtCursor (ks, pos);
 }
-
 %}
 
 /* handle exceptions */
