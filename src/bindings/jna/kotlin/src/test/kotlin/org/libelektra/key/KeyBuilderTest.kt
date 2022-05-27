@@ -26,8 +26,8 @@ class KeyBuilderTest {
             metaKey("meta:/meta2", "value2")
         }
 
-        assertEquals(key.getMeta("/meta1").orNull()!!.string, "value1")
-        assertEquals(key.getMeta("meta2").orNull()!!.string, "value2")
+        assertEquals(key.getMetaOrNull("meta:/meta1")!!.string, "value1")
+        assertEquals(key.getMetaOrNull("meta:/meta2")!!.string, "value2")
     }
 
     @Test

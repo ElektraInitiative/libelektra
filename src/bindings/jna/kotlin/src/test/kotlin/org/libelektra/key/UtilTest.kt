@@ -2,9 +2,9 @@ package org.libelektra.key
 
 import org.junit.Test
 import org.libelektra.Key
-import org.libelektra.keyExt.forEachKeyName
+import org.libelektra.keyExt.getMetaOrNull
 import org.libelektra.keyExt.keyOf
-import org.libelektra.keyExt.orNull
+import org.libelektra.keyExt.nameParts
 import kotlin.test.assertEquals
 
 class UtilTest {
@@ -21,23 +21,20 @@ class UtilTest {
     fun `keyOf with name and value and meta keys, returns correct key including meta keys`() {
         val key = keyOf(
             "/test", "1234",
-            keyOf("/meta1", "value1"),
-            keyOf("/meta2", "value2")
+            keyOf("meta:/meta1", "value1"),
+            keyOf("meta:/meta2", "value2")
         )
 
-        assertEquals(key.getMeta("/meta1").orNull()!!.string, "value1")
-        assertEquals(key.getMeta("/meta2").orNull()!!.string, "value2")
+        assertEquals(key.getMetaOrNull("meta:/meta1")!!.string, "value1")
+        assertEquals(key.getMetaOrNull("meta:/meta2")!!.string, "value2")
     }
 
     @Test
     fun `forEachKeyName iterates correctly`() {
         val key = Key.create("/foo/bar/some/thing")
 
-        val keyNames = mutableListOf<String>()
-        key.forEachKeyName {
-            keyNames.add(it)
-        }
+        val keyNames = key.nameParts.toList()
 
-        assertEquals(listOf("\u0001", "foo", "bar", "some", "thing"), keyNames)
+        assertEquals(listOf("foo", "bar", "some", "thing"), keyNames)
     }
 }
