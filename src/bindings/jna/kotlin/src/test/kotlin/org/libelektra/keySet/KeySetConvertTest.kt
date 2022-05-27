@@ -1,5 +1,6 @@
 package org.libelektra.keySet
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.junit.Test
@@ -20,6 +21,9 @@ class KeySetConvertTest {
 
     @Serializable
     data class ListTest(val foo: String, val bar: List<String>)
+
+    @Serializable
+    data class ParentValueTest(val foo: String, @SerialName("parentValue") val parent: String)
 
     @Test
     fun `convert with correct keySet, returns correct object`() {
@@ -134,6 +138,16 @@ class KeySetConvertTest {
         assertEquals(expectation.first(), converted)
     }
 
+    @Test
+    fun `convert with parentValue, returns all properties including parentValue`() {
+        val expectation = ParentValueTest("foo", "bar")
+        val keySet = givenKeySetForParentValueTest(expectation)
+
+        val converted = keySet.convert<ParentValueTest>()
+
+        assertEquals(expectation, converted)
+    }
+
     private fun givenKeySetForSimpleTest(name: String, age: Int) = KeySet.create(
             Key.create("/name", name),
             Key.create("/age", age)
@@ -209,4 +223,9 @@ class KeySetConvertTest {
 
         return keySet
     }
+
+    private fun givenKeySetForParentValueTest(expectation: ParentValueTest) = KeySet.create(
+            Key.create("/parent", expectation.parent),
+            Key.create("/parent/foo", expectation.foo)
+    )
 }

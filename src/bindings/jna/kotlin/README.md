@@ -5,92 +5,47 @@ _The library is currently not published anywhere. If that every happens, it will
 
 # User-facing API
 
-## KeySet serialization
+## KeySet to Class conversion
 
-We will use the following KeySet as an example for this section:
-
-/test  
-/test/foo = "foo"  
-/test/bar/name = "john"  
-/test/bar/age = 34  
-/test/bar/address = "Main"  
-/test/bar/address/number = 123  
-/test/bar/address/street = "Sesame Street"  
-/test/colors (meta:/array = #2)  
-/test/colors/#0 "red"  
-/test/colors/#1 "green"  
-/test/colors/#2 "blue"
-
-Converting to JSON:
+You can convert a KeySet to a data class and vice versa.  
+Supports primitive values, additional data classes marked with @Serializable, collections and maps.
 
 ```kotlin
-keySet.toJSON()
+val ks = keySetOf(
+        keyOf("/server/ip", "10.0.0.1"),
+        keyOf("/server/port", 8080)
+)
 
-// Results in:
-"""
-{
-    "test": {
-        "foo": "foo",
-        "bar": {
-            "name": "john",
-            "age": "34",
-            "address": {
-                "parentValue": "Main",
-                "number": "123",
-                "street": "Sesame Street"
-            },
-        },
-        "colors": ["red", "green", "blue"]
-    }
-}
-"""
+@Serializable
+data class ServerConfig(val ip: String, val port: Int)
 
-keySet.toJSON("/test/bar/address")
+val config = ks.convert<ServerConfig>()
+// or ks.convert<ServerConfig>(parentKey = "/server")
+// or KeySetFormat.decodeFromKeySet(ks)
+// or KeySetFormat.decodeFromKeySet(ks, parentKey = "/server")
 
-// Results in :
-"""
-{
-    "address": {
-        "parentValue": "Main",
-        "number": "123",
-        "street": "Sesame Street"
-    }
-}
-"""
+// modify config...
+
+val newKeySet: KeySet = KeySetFormat.encodeToKeySet(config)
+// yields
+// /ip = 10.0.0.1
+// /port = 8080
 ```
 
-All values are set as Strings.  
-Key values of the resulting JSON properties are stored in a special property "parentValue", since they would disappear otherwise.  
-Elektra arrays are converted to JSON arrays.
-
-The JSON conversion also enables **serialization to Kotlin data classes** via Kotlinx Serialization.
+If the parent Key also has an important value, add a property with serial name `parentValue` (or name it `parentValue`) to the data class.
 
 ```kotlin
-@Serializable
-data class TestProperties(
-        val foo: String,
-        val bar: BarProperties,
-        val colors: List<String>
+val ks = keySetOf(
+        keyOf("/server", "server of foo"),
+        keyOf("/server/ip", "10.0.0.1"),
+        keyOf("/server/port", 8080)
 )
 
 @Serializable
-data class BarProperties(
-        val name: String,
-        val age: Int,
-        val address: Address
-)
+data class ServerConfig(val ip: String, val port: Int, @SerialName("parentValue") val description: String)
 
-// We can omit the parentValue here if we want (in fact, any property can be omitted)
-@Serializable
-data class Address(
-        val number: Int,
-        val street: String
-)
-
-val myProps: TestProperties = keySet.convert()
-// or val myProps = keySet.convert<TestProperties>()
-
-val colors: List<String> = keySet.convert("/test/colors")
+val config = ks.convert<ServerConfig>()
+// Config(ip = "10.0.0.1", port = 8080, description = "server of foo")
 ```
 
 ## KDB try-with-resources shortcut
@@ -119,52 +74,57 @@ val keyWithMeta = keyOf(
 )
 
 // With builder
-val key = keyOf {
-    name("/test")
-    value("1234")
+val key = keyOf("/test") {
+    value = "1234"
 }
 
-val key = keyOf {
-    name("/test")
-    value("1234")
-    metaKey("/meta1", "value1")
-    metaKey("/meta2", "value2")
+val key = keyOf("/test") {
+    value = "1234"
+    metaKey("meta:/meta1", "value1")
+    metaKey("meta:/meta2", "value2")
 }
 ```
 
 Empty checks:
 
 ```kotlin
-// True when the stored value is equal to ""
+// True when the key has no value (= null) or 0 bytes are stored
 key.isEmpty()
 key.isNotEmpty()
 ```
 
-Keyname iterator:
+Using key name parts:
 
 ```kotlin
-// Always starts with "\u0001"
-key.forEachKeyName {
-    print(it)
+key.nameParts.forEach {
+    println(it)
 }
+
+key.nameParts.filter {
+    it.startsWith("foo")
+}
+
+key.nameParts.map {
+    it.uppercase()
+}
+
+key.nameParts.toList()
 ```
 
-Conversion from Optional to nullable type:
+Getting meta keys:
 
 ```kotlin
-key.getMeta("/metakey").orNull()
+val meta: ReadableKey? = key.getMetaOrNull("meta:/metakey")
 ```
 
 Array check and utilities:
 
 ```kotlin
-// True when key has a metakey "array" with a correctly formatted array index as value
-val isArray: Boolean = key.isArray()
 
-// Returns last array index parsed as integer (crashes when key.isArray() == false)
-val lastIndex: Int = key.getLastArrayIndex()
+// Returns last array index parsed as integer or null when the key has no array meta key
+val lastIndex: Int? = key.lastArrayIndexOrNull()
 
-// Parses last array index as integer from array metakey
+// Parses last array index as integer from array meta key
 val lastIndexFromMeta: Int = metaKey.parseIndex()
 
 // Converts an integer to correct elektra array index (#_24 in this case)
@@ -180,13 +140,6 @@ val i = key.get<Int>()
 
 // Returns value when not empty, or null otherwise
 val stringOrNull = key.getOrNull<String>()
-
-// Returns value when not empty, or default otherwise
-val longOrDefault = key.getOrDefault<Long>(25L)
-val floatOrDefault = key.getOrDefault<Long> {
-    val x = calcDefaultLong()
-    transformDefault(x) // result will be used as default
-}
 
 // Sets key value according to type
 key.set("foo")
@@ -215,4 +168,24 @@ val complexKeySet = keySetOf {
 
     key(keyOf("/test/foo", "bar"))
 }
+```
+
+## KeySet serialization
+
+KeySets can be serialized for all KotlinX Serialization formats.  
+e.g. Json:
+
+```kotlin
+val ks = keySetOf(
+        keyOf("/my/name", "john"),
+        keyOf("/my/age", 18)
+)
+
+val json = Json.encodeAsString(KeySetSerializer(), ks)
+/* yields:
+* {
+*   "/my/name": "john",
+*   "/my/age": "18"
+* }
+*/
 ```
