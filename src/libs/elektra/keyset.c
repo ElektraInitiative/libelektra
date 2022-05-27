@@ -1518,7 +1518,6 @@ ksDel (ks2);
  * @since 1.0.0
  * @see ksLookup() to pop Keys by name
  * @see ksCopy() to pop all Keys
- * @see ksTail() for getting the last Key of a KeySet without removing it
  */
 Key * ksPop (KeySet * ks)
 {
@@ -1701,7 +1700,7 @@ int f (KeySet *ks)
  *
  * An invalid cursor will be returned directly after
  * ksRewind(). When you set an invalid cursor ksCurrent()
- * is 0 and ksNext() == ksHead().
+ * is 0.
  *
  * @section cursor_directly Using Cursor directly
  *
@@ -1787,7 +1786,7 @@ ksCurrent(ks); // in same position as before
  *
  * An invalid cursor will set the KeySet to its beginning like
  * ksRewind(). When you set an invalid cursor ksCurrent()
- * is 0 and ksNext() == ksHead().
+ * is 0.
  *
  * @param ks the KeySet object where the cursor should be set
  * @param cursor the cursor to set for @p ks

@@ -126,7 +126,7 @@
 /**
  * Get the next metadata entry of a Key
  *
- * Keys have an internal cursor that can be reset with keyRewindMeta(). Every
+ * Keys have an internal cursor. Every
  * time keyNextMeta() is called the cursor is incremented and the new current
  * Name of Meta Information is returned.
  *
@@ -150,9 +150,6 @@
  * @since 1.0.0
  * @ingroup keymeta
  *
- * @see ksNext() for pedant in iterator interface of KeySet
- * @see keyRewindMeta() for rewinding the internal iterator
- * @see keyCurrentMeta() for getting the current metadata Key
  **/
 const Key * keyNextMeta (Key * key)
 {
