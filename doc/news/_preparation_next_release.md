@@ -100,7 +100,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### Curlget
 
-- Marked mentions of VERBOSE with todo _(@mandoway)_
+- Removed usages (and contents) of VERBOSE macro _(@mandoway)_
 
 ### Sorted
 

@@ -490,10 +490,7 @@ static FILE * fetchFile (Data * data, int fd)
 		curl_easy_cleanup (curl);
 		return NULL;
 	}
-// todo replace VERBOSE
-#if VERBOSE
-	curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
-#endif
+
 	curl_easy_setopt (curl, CURLOPT_URL, data->getUrl);
 	if (data->user)
 	{
@@ -775,10 +772,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		curl = curl_easy_init ();
 		if (curl)
 		{
-// todo replace VERBOSE
-#if VERBOSE
-			curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
-#endif
+
 			if (data->user)
 			{
 				curl_easy_setopt (curl, CURLOPT_USERNAME, data->user);
