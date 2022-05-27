@@ -242,6 +242,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Extend and update the tutorial for writing specifications,
   add section about using specs in production _(Florian Lindner @flo91)_
 - <<TODO>>
+- Add readme-file about cm2022s project (/doc/dev/iterators.md) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
