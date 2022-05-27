@@ -3,7 +3,7 @@ package org.libelektra.dsl
 import org.libelektra.Key
 import org.libelektra.KeySet
 
-class KeySetBuilder {
+class KeySetDSL {
 
     private var keySet: KeySet = KeySet.create()
 
@@ -16,6 +16,6 @@ class KeySetBuilder {
     }
 }
 
-fun keySetOf(initializer: KeySetBuilder.() -> Unit): KeySet {
-    return KeySetBuilder().apply(initializer).build()
+fun keySetOf(initializer: KeySetDSL.() -> Unit): KeySet {
+    return KeySetDSL().apply(initializer).build()
 }

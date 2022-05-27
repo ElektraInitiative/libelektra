@@ -1,7 +1,7 @@
 This library is an extension of the Java Elektra Library to leverage the full potential of Kotlin.  
 It provides several extension functions, factory methods, utilities and serialization.
 
-_The library is currently not published anywhere. If that every happens, it will be installed with Gradle_
+_The library is currently not published anywhere. If that ever happens, it will be installed with Gradle_
 
 # User-facing API
 
@@ -47,6 +47,13 @@ data class ServerConfig(val ip: String, val port: Int, @SerialName("parentValue"
 val config = ks.convert<ServerConfig>()
 // Config(ip = "10.0.0.1", port = 8080, description = "server of foo")
 ```
+
+It is also possible to add an elektra array easily with the following construct:
+
+```kotlin
+KeySetFormat.encodeToKeySet(listOf(keyOf("")))
+```
+
 
 ## KDB try-with-resources shortcut
 

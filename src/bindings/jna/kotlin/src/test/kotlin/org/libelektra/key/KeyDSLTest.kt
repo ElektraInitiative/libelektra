@@ -6,7 +6,7 @@ import org.libelektra.keyExt.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class KeyBuilderTest {
+class KeyDSLTest {
 
     @Test
     fun `keyOf with name and value, returns correct key`() {

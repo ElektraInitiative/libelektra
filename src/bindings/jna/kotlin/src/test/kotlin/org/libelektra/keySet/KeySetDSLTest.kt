@@ -5,7 +5,7 @@ import org.libelektra.Key
 import org.libelektra.dsl.keySetOf
 import kotlin.test.assertEquals
 
-class KeySetBuilderTest {
+class KeySetDSLTest {
 
     @Test
     fun `keySetOf with no key, returns empty keySet`() {

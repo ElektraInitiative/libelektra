@@ -9,7 +9,7 @@ import org.libelektra.Key
  *
  * @param name the name of the key, e.g. user:/test
  */
-class KeyBuilder(private val name: String) {
+class KeyDSL(private val name: String) {
 
     var value: Any? = null
     private val metaKeys: MutableList<Key> = mutableListOf()
@@ -35,6 +35,6 @@ class KeyBuilder(private val name: String) {
  * @param name the name of the key, e.g. user:/test
  * @param initializer a block to set value and meta keys for the created key
  */
-fun keyOf(name: String, initializer: KeyBuilder.() -> Unit = {}): Key {
-    return KeyBuilder(name).apply(initializer).build()
+fun keyOf(name: String, initializer: KeyDSL.() -> Unit = {}): Key {
+    return KeyDSL(name).apply(initializer).build()
 }
