@@ -9,7 +9,6 @@ print("Properties of Key1:")
 print("  key1.name     = \"{0}\"".format(key1.name))
 print("  key1.value    = \"{0}\"".format(key1.value))
 print("  key1.basename = \"{0}\"".format(key1.basename))
-print("  key1.fullname = \"{0}\"".format(key1.fullname))
 print("")
 
 key1.value = b"some\0value\0"
