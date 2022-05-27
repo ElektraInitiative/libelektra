@@ -30,7 +30,7 @@
 //! # }
 //! ```
 
-use crate::{ReadOnly, ReadableKey, WriteableKey};
+use crate::{ReadableKey, WriteableKey};
 use bitflags::bitflags;
 use elektra_sys;
 use std::borrow::Cow;
@@ -256,12 +256,6 @@ impl<'a> BinaryKey<'a> {
         unsafe { BinaryKey::from_ptr(dup_ptr) }
     }
 
-    /// Returns an iterator over the key's metakeys.
-    pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, BinaryKey<'a>> {
-        let mut dup = self.duplicate(CopyOption::KEY_CP_ALL);
-        MetaIter { key: dup, _marker: std::marker::PhantomData }
-    }
-
     /// Returns an iterator over the key's name.
     pub fn name_iter<'b>(&'b self) -> NameIter<'b, BinaryKey<'a>> {
         NameIter {
@@ -415,7 +409,6 @@ impl std::error::Error for KeyNotFoundError {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::KeyBuilder;
 
     #[test]
     fn can_write_read_key() {
@@ -543,6 +536,8 @@ mod tests {
         assert_eq!(meta_key.value(), "metaval");
     }
 
+    /* TODO: Implement external iteration of metakeys */
+    /*
     #[test]
     fn can_iterate_key() {
         let mut key = StringKey::new_empty();
@@ -551,13 +546,14 @@ mod tests {
         key.set_meta(meta[1].0, meta[1].1).unwrap();
 
         let mut did_iterate = false;
+
         for (i, metakey) in key.meta_iter().enumerate() {
             did_iterate = true;
             assert_eq!(metakey.name(), meta[i].0);
             assert_eq!(metakey.value(), meta[i].1);
         }
         assert!(did_iterate);
-    }
+    }*/
 
     #[test]
     fn can_delete_metadata() {

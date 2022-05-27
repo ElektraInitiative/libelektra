@@ -315,7 +315,7 @@ impl KeySet {
     /// Return the last key in the KeySet
     /// or None if the KeySet is empty.
     pub fn tail(&self) -> Option<StringKey> {
-        let key_ptr = unsafe { elektra_sys::ksAtCursor(self.as_ref(), self.size() - 1) };
+        let key_ptr = unsafe { elektra_sys::ksAtCursor(self.as_ref(), (self.size() - 1).try_into().unwrap()) };
         if key_ptr.is_null() {
             None
         } else {

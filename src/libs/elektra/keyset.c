@@ -1756,7 +1756,7 @@ elektraCursor ksGetCursor (const KeySet * ks)
  * @see ksGetCursor() for getting the cursor at the current position
  * @see ksSetCursor() for setting the cursor to a specific position
  */
-Key * ksAtCursor (KeySet * ks, elektraCursor pos)
+Key * ksAtCursor (const KeySet * ks, elektraCursor pos)
 {
 	if (!ks) return 0;
 	if (pos < 0) return 0;

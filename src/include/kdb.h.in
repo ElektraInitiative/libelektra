@@ -241,7 +241,7 @@ Key *ksCurrent (const KeySet *ks);
 
 elektraCursor ksGetCursor (const KeySet *ks);
 int ksSetCursor (KeySet *ks, elektraCursor cursor);
-Key *ksAtCursor (KeySet *ks, elektraCursor cursor);
+Key *ksAtCursor (const KeySet *ks, elektraCursor cursor);
 
 Key *ksLookup (KeySet *ks, Key *k, elektraLookupFlags options);
 Key *ksLookupByName (KeySet *ks, const char *name, elektraLookupFlags options);

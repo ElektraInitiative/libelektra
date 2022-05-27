@@ -14,7 +14,7 @@ pub const KS_END: *const std::ffi::c_void = std::ptr::null();
 #[cfg(test)]
 mod tests {
     use super::{
-        keyDel, keyName, keyNew, keyString, ksAppendKey, ksDel, ksNew, Key,
+        keyDel, keyName, keyNew, keyString, ksAppendKey, ksDel, ksNew, ksAtCursor, Key,
         KEY_END, KEY_VALUE,
     };
     use std::ffi::{CStr, CString};
