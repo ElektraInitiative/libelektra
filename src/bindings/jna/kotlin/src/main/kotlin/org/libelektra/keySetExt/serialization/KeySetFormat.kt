@@ -30,6 +30,9 @@ import org.libelektra.KeySet
  * check(ks == encoded)
  * check(user == decoded)
  * ```
+ *
+ * @see [KeySetEncoder]
+ * @see [KeySetDecoder]
  */
 @OptIn(ExperimentalSerializationApi::class)
 sealed class KeySetFormat(

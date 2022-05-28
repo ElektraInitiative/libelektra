@@ -12,13 +12,21 @@ import org.libelektra.dsl.keyOf
 import org.libelektra.keyExt.keyOf
 import org.libelektra.keyExt.toElektraArrayIndex
 
+/**
+ * Encoder for KeySets
+ *
+ * Supports primitive values, strings, collections and maps
+ *
+ * @see [KeySetFormat]
+ * @see [KeySetDecoder]
+ */
 @OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
 internal class KeySetEncoder : NamedValueEncoder() {
     val keySet = KeySet.create()
 
-    var currentListDepth = 0
-    var currentMapDepth = 0
-    var currentMapKey: String? = null
+    private var currentListDepth = 0
+    private var currentMapDepth = 0
+    private var currentMapKey: String? = null
 
     override val serializersModule: SerializersModule
         get() = EmptySerializersModule

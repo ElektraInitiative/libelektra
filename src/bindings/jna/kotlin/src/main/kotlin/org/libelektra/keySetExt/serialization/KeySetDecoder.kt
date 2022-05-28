@@ -13,6 +13,14 @@ import org.libelektra.keyExt.get
 import org.libelektra.keyExt.lastArrayIndexOrNull
 import org.libelektra.keyExt.toElektraArrayIndex
 
+/**
+ * Decoder for KeySets
+ *
+ * Supports primitive values, strings, collections and maps
+ *
+ * @see [KeySetFormat]
+ * @see [KeySetEncoder]
+ */
 @OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 internal class KeySetDecoder(
         val keySet: KeySet,
