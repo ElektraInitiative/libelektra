@@ -54,7 +54,6 @@ It is also possible to add an elektra array easily with the following construct:
 KeySetFormat.encodeToKeySet(listOf("something", "another"))
 ```
 
-
 ## KDB try-with-resources shortcut
 
 You can open, use and close KDB with this function:
@@ -171,9 +170,12 @@ val singleKeySet = keySetOf(
 
 // Builder
 val complexKeySet = keySetOf {
-    key(keyOf("/test", "value"))
+    key("/test", "value")
 
-    key(keyOf("/test/foo", "bar"))
+    key("/test/foo", "bar")
+
+    val anotherKey: Key = ...
+    key(anotherKey)
 }
 ```
 

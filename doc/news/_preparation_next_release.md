@@ -37,6 +37,7 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
+- New Binding for Kotlin with convenience functions and various utilities. There is also the possibility to convert KeySets to Kotlin data classes or collections and back. _(@Gratla & @mandoway)_
 
 ### <<HIGHLIGHT>>
 
