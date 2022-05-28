@@ -33,6 +33,11 @@ class KeySetDSL {
     }
 }
 
+/**
+ * Builder function for KeySets
+ *
+ * @param initializer a block to keys for the created KeySet
+ */
 fun keySetOf(initializer: KeySetDSL.() -> Unit): KeySet {
     return KeySetDSL().apply(initializer).build()
 }
