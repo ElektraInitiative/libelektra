@@ -1,0 +1,4 @@
+dependencies {
+	implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+	implementation project(':libelektra-kotlin')
+}
