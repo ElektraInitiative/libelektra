@@ -51,7 +51,7 @@ val config = ks.convert<ServerConfig>()
 It is also possible to add an elektra array easily with the following construct:
 
 ```kotlin
-KeySetFormat.encodeToKeySet(listOf(keyOf("")))
+KeySetFormat.encodeToKeySet(listOf("something", "another"))
 ```
 
 
