@@ -3,7 +3,7 @@ package org.libelektra.dsl
 import org.libelektra.Key
 
 /**
- * KeyBuilder provides a DSL API for building Keys
+ * KeyDSL provides a DSL API for building Keys
  * It provides a way to instantiate complex keys in a readable way.
  * Should not be used directly, but implicitly by calling [keyOf]
  *
