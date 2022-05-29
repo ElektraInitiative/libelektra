@@ -63,6 +63,15 @@ class KeySetEncodeDecodeTest {
     }
 
     @Test
+    fun `encode to keySet below parentKey, should equal keySet with prefix`() {
+        val complexObject = givenAComplexObject()
+
+        val encoded = KeySetFormat.encodeToKeySet(complexObject, "/complex")
+
+        assertEquals(givenAComplexKeySet(), encoded)
+    }
+
+    @Test
     fun `decode from keySet, should equal expectation`() {
         val complexKeySet = givenAComplexKeySet()
 

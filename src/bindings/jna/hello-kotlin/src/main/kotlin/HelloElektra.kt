@@ -8,6 +8,7 @@ import org.libelektra.keyExt.isEmpty
 import org.libelektra.keyExt.keyOf
 import org.libelektra.keySetExt.convert
 import org.libelektra.keySetExt.keySetOf
+import org.libelektra.keySetExt.serialization.KeySetFormat
 
 fun main() {
     // Example 1: create a Key and print it
@@ -94,6 +95,29 @@ fun main() {
 
     println(myMap)
     println()
+
+    // Example 8: encoding to KeySet
+    println("Example 8")
+
+    @Serializable
+    data class UserConfig(val name: String, val permissions: Int, val additionalInfo: Map<String, String>)
+
+    val myUserConfig = UserConfig(
+            name = "john",
+            permissions = 777,
+            additionalInfo = mapOf(
+                    "isAdmin" to "true",
+                    "lastLogin" to "2022-05-05"
+            )
+    )
+
+    ks = KeySetFormat.encodeToKeySet(myUserConfig, parentKey = "user:/my/user")
+
+    ks.forEach {
+        println("${it.name} = ${it.string}")
+    }
+    println()
+
 }
 
 fun givenAServerConfigKeySet() = keySetOf(

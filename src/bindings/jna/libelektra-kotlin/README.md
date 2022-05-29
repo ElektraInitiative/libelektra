@@ -1,6 +1,8 @@
 This library is an extension of the Java Elektra Library to leverage the full potential of Kotlin.  
 It provides several extension functions, factory methods, utilities and serialization.
 
+A simple project with usage examples can be found in the [hello-kotlin](../hello-kotlin/src/main/kotlin/HelloElektra.kt) module.
+
 _The library is currently not published anywhere. If that ever happens, it will be installed with Gradle_
 
 # User-facing API

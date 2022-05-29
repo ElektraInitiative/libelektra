@@ -41,25 +41,75 @@ sealed class KeySetFormat(
 
     companion object Default : KeySetFormat(EmptySerializersModule)
 
-    fun <T> encodeToKeySet(serializer: SerializationStrategy<T>, value: T): KeySet {
-        val encoder = KeySetEncoder()
+    /**
+     * Encodes any given value to a KeySet with the given serializer
+     * The resulting KeySet will have keys under parentKey, if given
+     *
+     * @see [KeySetEncoder]
+     *
+     * @param T a serializable object, e.g. standard collections or classes annotated with [Serializable]
+     * @param serializer strategy for encoding
+     * @param value any value to encode, can be a class, list, map
+     * @param parentKey the parent of all resulting keys in the keySet
+     * @return a new KeySet
+     */
+    fun <T> encodeToKeySet(serializer: SerializationStrategy<T>, value: T, parentKey: String? = null): KeySet {
+        val encoder = KeySetEncoder(parentKey)
         encoder.encodeSerializableValue(serializer, value)
         return encoder.keySet
     }
 
-    inline fun <reified T> encodeToKeySet(value: T): KeySet {
+    /**
+     * Encodes any given object to a KeySet
+     * The resulting KeySet will have keys under parentKey, if given
+     *
+     * @see [KeySetEncoder]
+     *
+     * @param T a serializable object, e.g. standard collections or classes annotated with [Serializable]
+     * @param value any value to encode, can be a class, list, map
+     * @param parentKey the parent of all resulting keys in the keySet
+     * @return a new KeySet
+     * @throws SerializationException when the serialization failed (type not serializable, ..)
+     */
+    inline fun <reified T> encodeToKeySet(value: T, parentKey: String? = null): KeySet {
         try {
-            return encodeToKeySet(serializer(), value)
+            return encodeToKeySet(serializer(), value, parentKey)
         } catch (e: Exception) {
             throw SerializationException("Failed to encode KeySet", e)
         }
     }
 
-    fun <T> decodeFromKeySet(keySet: KeySet, parentKey: String?, deserializer: DeserializationStrategy<T>): T {
+    /**
+     * Decodes a keySet into an object using the given deserializer
+     * Will search for object properties below a given parentKey, if given
+     * Otherwise, it will use the root level or the first found equal prefix
+     *
+     * @see [KeySetDecoder]
+     *
+     * @param T a serializable object, e.g. standard collections or classes annotated with [Serializable]
+     * @param keySet the keySet to decode the object from
+     * @param parentKey the optional parentKey where all the properties of the object are below
+     * @param deserializer the deserialization strategy
+     * @return an object where all properties are filled with values from the keySet
+     */
+    fun <T> decodeFromKeySet(keySet: KeySet, parentKey: String? = null, deserializer: DeserializationStrategy<T>): T {
         val decoder = KeySetDecoder(keySet, parentKey)
         return decoder.decodeSerializableValue(deserializer)
     }
 
+    /**
+     * Decodes a keySet into an object
+     * Will search for object properties below a given parentKey, if given
+     * Otherwise, it will use the root level or the first found equal prefix
+     *
+     * @see [KeySetDecoder]
+     *
+     * @param T a serializable object, e.g. standard collections or classes annotated with [Serializable]
+     * @param keySet the keySet to decode the object from
+     * @param parentKey the optional parentKey where all the properties of the object are below
+     * @return an object where all properties are filled with values from the keySet
+     * @throws SerializationException when the deserialization failed (value missing in keySet, type not serializable, ..)
+     */
     inline fun <reified T> decodeFromKeySet(keySet: KeySet, parentKey: String? = null): T {
         try {
             return decodeFromKeySet(keySet, parentKey, serializer())

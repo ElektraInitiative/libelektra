@@ -21,7 +21,9 @@ import org.libelektra.keyExt.toElektraArrayIndex
  * @see [KeySetDecoder]
  */
 @OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
-internal class KeySetEncoder : NamedValueEncoder() {
+internal class KeySetEncoder(
+        private val parentKey: String? = null
+) : NamedValueEncoder() {
     val keySet = KeySet.create()
 
     private var currentListDepth = 0
@@ -87,11 +89,14 @@ internal class KeySetEncoder : NamedValueEncoder() {
     }
 
     private fun String.toKeyName(): String {
-        if (currentListDepth == 0) {
-            return "/$this".replace(".", "/")
+        val prefix = parentKey.orEmpty()
+        val keyName = if (currentListDepth == 0) {
+            this
+        } else {
+            replaceDigitsWithElektraIndex()
         }
 
-        return "/${replaceDigitsWithElektraIndex()}".replace(".", "/")
+        return "$prefix/$keyName".replace(".", "/")
     }
 
     private fun String.replaceDigitsWithElektraIndex() = replace(Regex("\\d+")) {
