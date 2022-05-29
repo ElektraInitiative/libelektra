@@ -49,6 +49,8 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+- Change all plugins, except `directoryvalue` to use external iteration of `KeySet`s _(Florian Lindner @flo91)_
+
 ### Python
 
 - Added new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
@@ -67,7 +69,6 @@ The following section lists news about the [plugins](https://www.libelektra.org/
   (e.g. #defined constants for return values) _(Michael Langhammer @milangs, Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
-- Change all plugins to use external iteration of `KeySet`s _(Florian Lindner @flo91)_
 
 ### <<Plugin>>
 
@@ -121,7 +122,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
+- Remove `keyRewindMeta`, `keyCurrentMeta`, `ksHead`, and `ksTail` functions for internal iteration of `Keyset`s and Metadata of `Key`s _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -153,6 +154,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up-to-date with the multi-language support provided by Elektra.
+
+- Remove internal iterators for SWIG (Python, Lua, Ruby) and go-bindings _(Florian Lindner @flo91)_
 
 ### Java
 
@@ -198,7 +201,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### elektrad
 
 - improve logging in `elektrad` _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
-- <<TODO>>
+- Update `elektrad` to use last version of the `go`-bindings without internal iterators for `Keyset`s and Metadata _(Florian Lindner @flo91)_
 - <<TODO>>
 
 ### `webui`
@@ -251,7 +254,7 @@ you up-to-date with the multi-language support provided by Elektra.
   add section about using specs in production _(Florian Lindner @flo91)_
 - <<TODO>>
 - Add readme-file about cm2022s project (/doc/dev/iterators.md) _(Florian Lindner @flo91)_
-- <<TODO>>
+- Remove usage of internal iterators from the examples
 - <<TODO>>
 - <<TODO>>
 - Improve jna documentation _(Burkhard Hampl @bhampl)_
