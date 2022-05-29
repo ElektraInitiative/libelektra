@@ -36,7 +36,8 @@ internal class KeySetDecoder(
             parentKey
         } else {
             val rootKeys = keySet.map {
-                val secondSlashIndex = it.name.indexOf("/", 1)
+                val firstSlashIndex = it.name.indexOf("/")
+                val secondSlashIndex = it.name.indexOf("/", firstSlashIndex + 1)
 
                 if (secondSlashIndex < 0) {
                     it.name
@@ -75,7 +76,9 @@ internal class KeySetDecoder(
             return potentialMapElements[tag.toInt() / 2]
         }
 
-        return keySet.lookup(currentRootKey + keyName).get()
+        return keySet.lookup(currentRootKey + keyName).orElseThrow {
+            NoSuchElementException("No value present for ${currentRootKey + keyName}")
+        }
     }
 
     private fun getKeyNameFrom(tag: String): String {
