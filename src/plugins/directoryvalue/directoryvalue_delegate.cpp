@@ -224,29 +224,41 @@ KeySetPair splitEmptyArrayParents (kdb::KeySet const & arrayParents)
 
 	for (auto arrayParent : arrayParents)
 	{
-		kdb::Key parent = arrayParent.dup ();
-		// Works also without rewindMeta(), but not without nextMeta() in the inner loop...
-		bool isEmpty = parent.getBinarySize () == 0;
-
-		ckdb::KeySet * metaKeys = ckdb::keyMeta (parent.getKey ());
-		for (ssize_t metaSize = 0; isEmpty && metaSize < ckdb::ksGetSize (metaKeys); metaSize++)
+		if (arrayParent.getBinarySize () != 0 || !arrayParent.hasMeta ("array"))
 		{
-			/* TODO: Seems to only work with keyNextMeta, usage of external iterator produces additional '__dirdata:' entries
-			 * in files when using the yajl plugin with arrays! */
-			const ckdb::Key * curMeta = ckdb::keyNextMeta (parent.getKey ());
-
-			/* produces additional __dirdata entry in json file */
-			// const ckdb::Key * curMeta = ckdb::ksAtCursor (metaKeys, metaSize);
-
-			if (metaSize > 2 || (curMeta && (strcmp (ckdb::keyName (curMeta), "meta:/binary") ||
-							 strcmp (ckdb::keyName (curMeta), "meta:/array"))))
-			{
-				isEmpty = false;
-			}
+			// has value, or is not actually array parent -> non-empty
+			nonEmptyParents.append (arrayParent);
+			continue;
 		}
 
-		(isEmpty ? emptyParents : nonEmptyParents).append (arrayParent);
+
+		/* TODO: Using ksGetSize() instead of keyNextMeta() to determine the number of metakeys produces
+		 * additional "___dirdata:" entries when using the yajl-plugin with arrays! */
+		// ckdb::KeySet * metaKeys = ckdb::keyMeta (arrayParent.getKey ());
+		// ssize_t metaKeysSizeWithKsGetSize = ckdb::ksGetSize (metaKeys);
+
+		ssize_t metaKeysSize = 0;
+		while (ckdb::keyNextMeta (arrayParent.getKey ()))
+			metaKeysSize++;
+
+		if (arrayParent.hasMeta ("binary") && metaKeysSize > 2)
+		{
+			// has meta:/binary and at least 2 other metakeys (incl. meta:/array) -> non-empty
+			nonEmptyParents.append (arrayParent);
+			continue;
+		}
+
+		if (metaKeysSize > 1)
+		{
+			// no meta:/binary, but at least 2 other metakeys (incl. meta:/array) -> non-empty
+			nonEmptyParents.append (arrayParent);
+			continue;
+		}
+
+		// only one metakey, which must be meta:/array -> empty
+		emptyParents.append (arrayParent);
 	}
+
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Empty array parents:");
 	logKeySet (emptyParents);
@@ -336,16 +348,24 @@ KeySetPair splitDirectoriesLeaves (kdb::KeySet const & keys)
 
 	kdb::KeySet leaves;
 	kdb::KeySet directories;
-	kdb::Key previous;
 
-	ssize_t pos = 0;
-	for (previous = keys.at (pos); ++pos < keys.size (); previous = keys.at (pos))
+	kdb::Key previous = keys.at (0);
+	for (elektraCursor it = 1; it < keys.size (); ++it)
 	{
-		(keys.at (pos).isBelow (previous) ? directories : leaves).append (previous);
+		kdb::Key current = keys.at (it);
+
+
+		if (current.isBelow (previous))
+		{
+			directories.append (previous);
+		}
+		else
+		{
+			leaves.append (previous);
+		}
+		previous = current;
 	}
 	leaves.append (previous);
-
-
 	return make_pair (directories, leaves);
 }
 
