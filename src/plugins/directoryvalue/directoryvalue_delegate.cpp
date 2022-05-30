@@ -236,10 +236,10 @@ KeySetPair splitEmptyArrayParents (kdb::KeySet const & arrayParents)
 			const ckdb::Key * curMeta = ckdb::keyNextMeta (parent.getKey ());
 
 			/* produces additional __dirdata entry in json file */
-			// const ckdb::Key * curMeta = ckdb::ksAtCursor (ckdb::keyMeta (parent.getKey ()), metaSize);
+			// const ckdb::Key * curMeta = ckdb::ksAtCursor (metaKeys, metaSize);
 
-			if (metaSize > 2 ||
-			    (curMeta && (strcmp (ckdb::keyName (curMeta), "binary") || strcmp (ckdb::keyName (curMeta), "array"))))
+			if (metaSize > 2 || (curMeta && (strcmp (ckdb::keyName (curMeta), "meta:/binary") ||
+							 strcmp (ckdb::keyName (curMeta), "meta:/array"))))
 			{
 				isEmpty = false;
 			}
