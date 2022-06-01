@@ -121,10 +121,11 @@ char * makeKey (const char ** in, int len)
 
 	// fill the string from the array values
 	char * p = out;
-	for (int i = 0; i < len && in[i] != NULL; i++)
+	for (int i = len-1; i >= 0; i--)
 	{
+		if (in[i] == NULL) continue;
 		const char * s = in[i];
-		if (i != 0)
+		if (i != len-1)
 		{
 			*p = '/';
 			p += 1;
@@ -136,22 +137,6 @@ char * makeKey (const char ** in, int len)
 
 	*p = '\0';
 	return out;
-}
-
-/**
- * Inplace reverse the order of the array elements.
- *
- * @param arr the array to reverse
- * @param size the array size
- */
-void reverse (char ** arr, int size)
-{
-	for (int i = 0; i < size / 2; i++)
-	{
-		char * temp = arr[i];
-		arr[i] = arr[size - 1 - i];
-		arr[size - 1 - i] = temp;
-	}
 }
 
 int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
@@ -233,8 +218,6 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 					size++;
 				}
 
-				reverse (tokens, size);
-
 				for (int i = 0; i < size; ++i)
 				{
 
@@ -277,7 +260,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 				ELEKTRA_LOG_DEBUG ("found value: type: %s, value: %s\n", type, value);
 			}
 
-			const char * attribute_key_parts[] = { keyName (parentKey), last_dn, type };
+			const char * attribute_key_parts[] = { type, last_dn, keyName (parentKey)};
 			char * attribute_key_name = makeKey (attribute_key_parts, 3);
 			Key * attribute_key = keyNew (attribute_key_name, KEY_END);
 			ELEKTRA_LOG_DEBUG ("storing value %s at key %s\n", value, keyName (attribute_key));
@@ -329,20 +312,19 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	Key * cur;
-	ksRewind (returned);
 	char * last_dn = NULL;
-	while ((cur = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const char * type = keyBaseName (cur);
-		if (index (type, '=') == NULL)
+		if (strchr (type, '=') == NULL)
 		{
 			ELEKTRA_LOG_DEBUG ("%s is a valid ldif type, proceeding writing\n", type);
 			if (elektraStrCmp (type, "dn") != 0)
 			{
 				ELEKTRA_LOG_DEBUG ("%s is not the dn, looking up the corresponding dn first\n", type);
 				const char * full_key_name = elektraStrDup (keyName (cur));
-				size_t full_key_length = elektraStrLen (full_key_name);
+				size_t full_key_length = keyGetNameSize (cur) - 1;
 				size_t dn_length = elektraStrLen ("dn");
 				size_t base_name_length = elektraStrLen (type);
 				char * key_dn = elektraMalloc ((full_key_length + dn_length + 1) * sizeof (char));
