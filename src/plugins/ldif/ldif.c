@@ -121,11 +121,11 @@ char * makeKey (const char ** in, int len)
 
 	// fill the string from the array values
 	char * p = out;
-	for (int i = len-1; i >= 0; i--)
+	for (int i = len - 1; i >= 0; i--)
 	{
 		if (in[i] == NULL) continue;
 		const char * s = in[i];
-		if (i != len-1)
+		if (i != len - 1)
 		{
 			*p = '/';
 			p += 1;
@@ -173,6 +173,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	char * buff = NULL;
 	int buflen = 0;
 
+	unsigned long ldif_order = 0;
 
 	while (ldif_read_record (lfp, &lineno, &buff, &buflen))
 	{
@@ -260,18 +261,24 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 				ELEKTRA_LOG_DEBUG ("found value: type: %s, value: %s\n", type, value);
 			}
 
-			const char * attribute_key_parts[] = { type, last_dn, keyName (parentKey)};
+			const char * attribute_key_parts[] = { type, last_dn, keyName (parentKey) };
 			char * attribute_key_name = makeKey (attribute_key_parts, 3);
 			Key * attribute_key = keyNew (attribute_key_name, KEY_END);
 			ELEKTRA_LOG_DEBUG ("storing value %s at key %s\n", value, keyName (attribute_key));
 
 			keySetString (attribute_key, value);
+			size_t order_length = snprintf (NULL, 0, "%lu", ldif_order);
+			char * order_str = malloc (order_length + 1);
+			snprintf (order_str, order_length + 1, "%lu", ldif_order);
+			keySetMeta (attribute_key, "order", order_str);
 			ksAppendKey (returned, attribute_key);
 
 			elektraFree (attribute_key_name);
 
 			elektraFree (type);
 			elektraFree (value);
+
+			ldif_order++;
 		}
 
 		if (last_dn != NULL)
@@ -295,6 +302,33 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * Compare keys by their order meta key.
+ * @param a pointer to the first key
+ * @param b pointer to the second key
+ * @return -1 iff the order of a is less than of b, 0 if both are equal and 1 otherwise
+ */
+static int compareKeysByOrder (const void * a, const void * b)
+{
+	const Key * key_a = *(const Key **) a;
+	const Key * key_b = *(const Key **) b;
+	long key_a_order = strtol (keyString (keyGetMeta (key_a, "order")), NULL, 10);
+	long key_b_order = strtol (keyString (keyGetMeta (key_b, "order")), NULL, 10);
+	printf ("%s > %s\n", keyString (key_a), keyString (key_b));
+	printf ("%ld > %ld?\n", key_a_order, key_b_order);
+	if (key_a_order < key_b_order)
+	{
+		return -1;
+	}
+
+	if (key_a_order > key_b_order)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// set all keys
@@ -312,66 +346,43 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	char * last_dn = NULL;
+	Key ** keyArray;
+	size_t arraySize = ksGetSize (returned);
+	keyArray = calloc (arraySize, sizeof (Key *));
+
+	ksRewind (returned);
+	int ret = elektraKsToMemArray (returned, keyArray);
+
+	if (ret < 0)
+	{
+		ELEKTRA_SET_RESOURCE_ERROR (parentKey, strerror (errno));
+		return -1;
+	}
+
+	qsort (keyArray, arraySize, sizeof (Key *), compareKeysByOrder);
+
+	int first_line = 1;
 	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
-		Key * cur = ksAtCursor (returned, it);
+		Key * cur = keyArray[it];
 		const char * type = keyBaseName (cur);
 		if (strchr (type, '=') == NULL)
 		{
 			ELEKTRA_LOG_DEBUG ("%s is a valid ldif type, proceeding writing\n", type);
-			if (elektraStrCmp (type, "dn") != 0)
-			{
-				ELEKTRA_LOG_DEBUG ("%s is not the dn, looking up the corresponding dn first\n", type);
-				const char * full_key_name = elektraStrDup (keyName (cur));
-				size_t full_key_length = keyGetNameSize (cur) - 1;
-				size_t dn_length = elektraStrLen ("dn");
-				size_t base_name_length = elektraStrLen (type);
-				char * key_dn = elektraMalloc ((full_key_length + dn_length + 1) * sizeof (char));
-				strncpy (key_dn, full_key_name, full_key_length + 1);
-				strncpy (&key_dn[full_key_length - base_name_length], "dn\0", dn_length + 1);
-
-				if (last_dn == NULL || elektraStrCmp (last_dn, key_dn) != 0)
-				{
-					ELEKTRA_LOG_DEBUG ("first occurrence with dn %s, writing it\n", key_dn);
-					Key * dn_key = ksLookupByName (returned, key_dn, 0);
-					if (last_dn != NULL)
-					{
-						elektraFree (last_dn);
-						if (fputs ("\n", lfp->fp) == EOF)
-						{
-							ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-								parentKey, "Could not write to position %ld in file %s", ftell (lfp->fp),
-								filename);
-							ldif_close (lfp);
-							return ELEKTRA_PLUGIN_STATUS_ERROR;
-						}
-					}
-					last_dn = key_dn;
-					const char * dn = keyString (dn_key);
-					char * data = ldif_put_wrap (LDIF_PUT_VALUE, "dn", dn, strlen (dn), LDIF_LINE_WIDTH);
-					if (fputs (data, lfp->fp) == EOF)
-					{
-						ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-							parentKey, "Could not write to position %ld in file %s", ftell (lfp->fp), filename);
-						ber_memfree (data);
-						ldif_close (lfp);
-						return ELEKTRA_PLUGIN_STATUS_ERROR;
-					}
-					ber_memfree (data);
-				}
-				else
-				{
-					elektraFree (key_dn);
-				}
-			}
 
 			const char * dn = keyString (cur);
 			ELEKTRA_LOG_DEBUG ("processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey), dn,
 					   keyBaseName (cur));
 			char * data = ldif_put_wrap (LDIF_PUT_VALUE, type, dn, strlen (dn), LDIF_LINE_WIDTH);
 
-			if (fputs (data, lfp->fp) == EOF)
+			int stat = EOF + 1;
+			if (elektraStrCmp (type, "dn") == 0 && !first_line)
+			{
+				stat = fputs ("\n", lfp->fp);
+			}
+			first_line = 0;
+
+			if (stat == EOF || fputs (data, lfp->fp) == EOF)
 			{
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not write to position %ld in file %s",
 									 ftell (lfp->fp), filename);

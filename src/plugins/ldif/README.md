@@ -79,6 +79,3 @@ then
 kdb get system:/ldif/example/dc=org/dc=example/ou=dep/uid=willi/objectClass
 #> top
 ```
-
-Furthermore, the order does not get preserved from the LDIF file.
-Instead, the order will be alphabetical in most cases except the `dn` which always will be the first line.
