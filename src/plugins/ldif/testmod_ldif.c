@@ -14,26 +14,6 @@
 
 #include <tests_plugin.h>
 
-static void test_basics (void)
-{
-	printf ("test basics\n");
-
-	Key * parentKey = keyNew ("user:/tests/ldif", KEY_VALUE, elektraFilename (), KEY_END);
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("ldif");
-
-	KeySet * ks = ksNew (0, KS_END);
-
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-
-	keyDel (parentKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
 static void test_base (const char * fileContent, int numKeys, const char ** keys, const char ** values)
 {
 	const char * tmpFile = elektraFilename ();
@@ -102,6 +82,27 @@ static void test_readOnlyKey (void)
 	test_base ("dn: uid=test,ou=developer,dc=libelektra,dc=org\n", 1, expected_keys, expected_values);
 }
 
+static void test_writeOnlyKey(void)
+{
+	printf ("test write\n");
+
+	char const * const file = "ldif/write.ldif";
+
+	Key * parentKey = keyNew ("user:/tests/ldif", KEY_VALUE, elektraFilename (), KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("ldif");
+
+	KeySet * ks = ksNew (10, keyNew ("user:/tests/ldif/dc=org/dc=libelektra/ou=developer/uid=test/dn", KEY_VALUE, "uid=test,ou=developer,dc=libelektra,dc=org", KEY_END), KS_END);
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("LDIF     TESTS\n");
@@ -109,9 +110,9 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_basics ();
 	test_read ();
 	test_readOnlyKey ();
+	test_writeOnlyKey ();
 
 	print_result ("testmod_ldif");
 
