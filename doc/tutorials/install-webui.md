@@ -33,6 +33,7 @@ To build Elektra with the elektra-web tool:
 
 - Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
 - You can now access the client on: [http://localhost:33334](http://localhost:33334)
+- You can also build it yourself in `scripts/docker/web/` (see [Building Docker Image](#building-docker-image))
 
 ## Running from source
 
@@ -83,18 +84,6 @@ INSTANCE="advanced@http://localhost:33333" kdb run-webd
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
 browser, the configuration page for the instance will be opened immediately.
 
-### Using a Different `kdb` Executable
-
-It is possible to change the `kdb` executable that elektra-web uses by setting
-the `KDB` environment variable, this is not needed for `elektrad`.
-
-For example:
-
-```sh
-kdb run-elektrad
-KDB="/usr/local/custom/bin/kdb" kdb run-webd
-```
-
 ## Overview
 
 Elektra web consists of multiple components:
@@ -118,7 +107,7 @@ Elektra web consists of multiple components:
 
 In order to test API on localhost, you have to start elektrad instance. You can do it in two ways:
 
-- run manually (if you would like to start it manually or you don't have eletrad-web tool installed)
+- run manually (if you would like to start it manually, or you don't have eletrad-web tool installed)
 
   - `cd libelektra/src/tools/web`
   - `cd elektrad`
