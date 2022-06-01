@@ -384,8 +384,8 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		}
 		else
 		{
-			ELEKTRA_LOG_DEBUG ("not processing name: '%s', curr: '%s':'%s'\n", elektraKeyGetRelativeName (cur, parentKey),
-					   keyString (cur), keyBaseName (cur));
+			ELEKTRA_LOG_WARNING ("skipping: '%s', curr: '%s':'%s' because '=' are not allowed in ldif attributes\n",
+					     elektraKeyGetRelativeName (cur, parentKey), keyString (cur), keyBaseName (cur));
 		}
 	}
 
