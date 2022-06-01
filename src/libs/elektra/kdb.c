@@ -782,10 +782,6 @@ static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 		{
 			ksAppendKey (cutKS, cur);
 			keyDel (ksLookup (specCut, cur, KDB_O_POP));
-
-			/* TODO: TEST it!
-			 * (old behaviour would be it = 0 (ks gets ksRewind()ed while ksLookup() with pop at ksCurrent()
-			 */
 			it--;
 		}
 	}
@@ -837,7 +833,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	{
 		Backend * backend = split->handles[i];
 
-		/* TOOD: Remove usage of deprecated internal iterator */
+		/* TODO: Remove usage of deprecated internal iterator */
 		ksRewind (split->keysets[i]);
 		keySetName (parentKey, keyName (split->parents[i]));
 		keySetString (parentKey, keyString (split->parents[i]));
@@ -859,7 +855,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			if (p == (STORAGE_PLUGIN + 1) && handle->globalPlugins[PROCGETSTORAGE][FOREACH])
 			{
 				keySetName (parentKey, keyName (initialParent));
-				/* TOOD: Remove usage of deprecated internal iterator */
+				/* TODO: Remove usage of deprecated internal iterator */
 				ksRewind (ks);
 				handle->globalPlugins[PROCGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[PROCGETSTORAGE][FOREACH], ks,
 											parentKey);
@@ -868,7 +864,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			if (p == (STORAGE_PLUGIN + 2) && handle->globalPlugins[POSTGETSTORAGE][FOREACH])
 			{
 				keySetName (parentKey, keyName (initialParent));
-				/* TOOD: Remove usage of deprecated internal iterator */
+				/* TODO: Remove usage of deprecated internal iterator */
 				ksRewind (ks);
 				handle->globalPlugins[POSTGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[POSTGETSTORAGE][FOREACH], ks,
 											parentKey);
@@ -877,7 +873,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			else if (p == (NR_OF_PLUGINS - 1) && handle->globalPlugins[POSTGETCLEANUP][FOREACH])
 			{
 				keySetName (parentKey, keyName (initialParent));
-				/* TOOD: Remove usage of deprecated internal iterator */
+				/* TODO: Remove usage of deprecated internal iterator */
 				ksRewind (ks);
 				handle->globalPlugins[POSTGETCLEANUP][FOREACH]->kdbGet (handle->globalPlugins[POSTGETCLEANUP][FOREACH], ks,
 											parentKey);

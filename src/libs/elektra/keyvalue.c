@@ -120,12 +120,11 @@ keyDel(key);
  * @code
 KDB *handle = kdbOpen();
 KeySet *ks=ksNew(0, KS_END);
-Key *current=0;
-
 kdbGetByName(handle,ks,"system:/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
 
-ksRewind(ks);
-while (current=ksNext(ks)) {
+ for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+ {
+	Key * current = ksAtCursor (ks, it);
 	size_t size=0;
 
 	if (keyIsBinary(current)) {

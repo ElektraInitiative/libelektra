@@ -196,15 +196,14 @@ void l(Key *k)
  * @code
 void o(KeySet *ks)
 {
-	Key *current;
 	Key *shared = keyNew ("/", KEY_END);
 	keySetMeta(shared, "shared", "this metadata should be shared among many keys");
 
-	ksRewind(ks);
-	while ((current = ksNext(ks)) != 0)
-	{
+ 	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+ 	{
+ 		Key * current = ksAtCursor (ks, it);
 		if (needs_shared_data(current)) keyCopyMeta(current, shared, "shared");
-	}
+ 	}
 }
  * @endcode
  *

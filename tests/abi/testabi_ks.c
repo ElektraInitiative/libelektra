@@ -195,9 +195,7 @@ static void test_ksReference (void)
 	// k1 should be freed by now and instead k2 in the keyset
 	succeed_if (ksGetSize (ks) == 1, "wrong size, should stay after inserting duplication");
 
-	ksRewind (ks);
-	ksNext (ks);
-	succeed_if_same_string (keyValue (ksCurrent (ks)), "newvalue");
+	succeed_if_same_string (keyValue (ksAtCursor (ks, 0)), "newvalue");
 
 	ksDel (ks);
 

@@ -1,10 +1,11 @@
-# [CM P0] Replace internal iterators with external iterators (@flo91, @Milangs)
+# Iteration of KeySets
 
-The internal iterator must be removed and replaced with the external iterator.
+The deprecated internal iterator are removed and replaced with external iteration.
 
 # Interactions with users
 
-Developers of plugins should already use the external iterators instead of the internal ones. However, following functions will be removed:
+Developers of plugins should already use the external iterators instead of the internal ones.
+However, following functions will be removed:
 
 ```C
 int ksRewind (KeySet *ks);
@@ -37,11 +38,26 @@ for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 }
 ```
 
-You can obtain the key at a specific position in the keyset and the overall size of the keyset.
+You can obtain the `Key` at a specific position in the `KeySet` and the overall size of the `KeySet`.
+
+If you want to delete `Key`s during the iteration of a `KeySet`, be aware that all keys after the
+deleted `Key` are moved one slot forward, so maybe you have to change to value of `it` after deleting
+a `Key`:
+
+```c
+for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+{
+    Key * cur = ksAtCursor (ks, it);
+    if ( shouldKeyGetDeleted (cur))
+    {
+	    keyDel (cur);
+	    --it; //next key is now at the position of the current key which was deleted
+    }
+}
+```
+
+For such scenarios, it is also important that you recalculate the size with `ksGetSize ()`
+within the loop-header or explicitely after changing the `KeySet`, e.g. by deleting a `Key`.
+
 That should be all you need for iterating over keys.
 For future releases, the function `ksAtCursor` will be renamed to `ksAt`. (see issue #3976)
-
-# Work distribution
-
-Basically, we plan to work together on all parts of the project.
-However, the main focus of Michael Langhammer will be #4281 and #4279, while Florian Lindner will focus on #4280.

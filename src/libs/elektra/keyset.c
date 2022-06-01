@@ -104,12 +104,6 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
 }
 
 /** @class doxygenFlatCopy
- *
- * @brief .
- *
- * @note Because the key is not copied,
- * also the pointer to the current metadata keyNextMeta()
- * will be shared.
  */
 
 /**
@@ -131,19 +125,11 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  * - You can append keys with ksAppendKey() or
  *   with ksAppend() you can append a whole keyset.
  * - Using ksLookup() you can lookup (or pop with #KDB_O_POP) a key.
- * - With ksRewind() and ksNext() you can iterate through the keyset.
+ * - With ksGetSize() and ksAtCursor() you can iterate through the keyset.
  *   Be assured that you will get every key of the set in a stable
  *   order (parents before children).
  *
  * @copydetails doxygenFlatCopy
- *
- * KeySets have an @link ksCurrent() internal cursor @endlink.
- * Methods should avoid to change this cursor, unless they want
- * to communicate something with it.
- * The internal cursor is used:
- *
- * - in ksLookup(): points to the found key
- * - in kdbSet(): points to the key which caused an error
  *
  * KeySet is the most important data structure in Elektra. It makes it possible
  * to get and store many keys at once inside the database. In addition to
@@ -385,8 +371,7 @@ KeySet * ksDeepDup (const KeySet * source)
  *
  * @par Implementation:
  * First all Keys in @p dest will be deleted. Afterwards
- * the content of @p source will be added to the destination
- * and ksCurrent() will be set properly in @p dest.
+ * the content of @p source will be added to the destination.
  *
  * A flat copy is made, so Keys will not be duplicated,
  * but their reference counter is updated, so both KeySets
@@ -1752,8 +1737,6 @@ elektraCursor ksGetCursor (const KeySet * ks)
  * or a position that does not lie within the KeySet @p ks
  *
  * @since 1.0.0
- * @see ksGetCursor() for getting the cursor at the current position
- * @see ksSetCursor() for setting the cursor to a specific position
  */
 Key * ksAtCursor (const KeySet * ks, elektraCursor pos)
 {
@@ -2429,10 +2412,8 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  * Furthermore, using the kdb-tool, it is possible to introspect which values
  * an application will get (by doing the same cascading lookup).
  *
- * If found, @p ks internal cursor will be positioned in the matched Key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor will not move, and a NULL pointer is
- * returned.
+ * If found, a pointer to the Key is returned.
+ * If not found a NULL pointer is returned.
  *
  * Cascading lookups will by default search in
  * all namespaces (proc:/, dir:/, user:/ and system:/), but will also correctly consider
@@ -2454,19 +2435,11 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  *
  *
  * @par KDB_O_POP
- * When ::KDB_O_POP is set the Key which was found will be ksPop()ed. ksCurrent()
- * will not be changed, only iff ksCurrent() is the searched Key, then the KeySet
- * will be ksRewind()ed.
+ * When ::KDB_O_POP is set the Key which was found will be ksPop()ed.
  *
  * @note Like in ksPop() the popped Key always needs to be keyDel() afterwards, even
  * if it is appended to another KeySet.
  *
- * @warning All cursors on the KeySet will be invalid
- * iff you use ::KDB_O_POP, so don't use this if you rely on a cursor, see ksGetCursor().
- *
- * The invalidation of cursors does not matter if you use multiple KeySets, e.g.
- * by using ksDup(). E.g., to separate ksLookup() with ::KDB_O_POP and ksAppendKey():
-
  * @snippet ksLookupPop.c f
  *
  * This is also a nice example how a complete application with ksLookup() can look like.
@@ -2491,7 +2464,7 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  *
  * @since 1.0.0
  * @see ksLookupByName() to search by a name given by a string
- * @see ksCurrent(), ksRewind(), ksNext() for iterating over a KeySet
+ * @see ksGetSize(), ksAtCursor() for iterating over a KeySet
  */
 Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 {
@@ -2555,7 +2528,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
  *
  * @since 1.0.0
  * @see ksLookup() for explanation of the functionality and examples.
- * @see ksCurrent(), ksRewind(), ksNext() for iterating over a KeySet
+ * @see ksGetSize(), ksAtCursor() for iterating over a KeySet
  */
 Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options)
 {

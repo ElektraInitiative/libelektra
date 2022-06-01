@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 
-/* TODO: With an external iterator, ksCurrent() to get the position where execution stopped is no longer avialable.
+/* TODO: With an external iterator, ksCurrent() to get the position where execution stopped is no longer available.
  * TODO: Should we change the return value or make the information about the position unavailable */
 
 /**A functional access to keys.

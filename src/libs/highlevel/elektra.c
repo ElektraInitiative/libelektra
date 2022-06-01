@@ -585,7 +585,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 			elektraErrorReset (&kdbSetError);
 
 			/* TODO: Remove call the ksCurrent () because the internal iterators are deprecated
-			 * PROBLEM: Change in kdeSet necessary (additional output parameter for position?, change return value?) */
+			 * PROBLEM: Change in kdbSet necessary (additional output parameter for position?, change return value?) */
 			Key * problemKey = ksCurrent (elektra->config);
 			if (problemKey != NULL)
 			{

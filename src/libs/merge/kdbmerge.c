@@ -844,10 +844,9 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 		{
 			Key * keyInOur = ksLookup (ourSet, checkedKey, 0);
 			Key * keyInTheir = ksLookup (theirSet, checkedKey, 0);
+			/* getValuesAsArray() calls ksLookup() with  KDP_O_POP which makes as ksRewind()*/
 			char * baseArray = getValuesAsArray (baseSet, checkedKey, informationKey);
 
-			/* TODO: TEST it!
-			 * getValuesAsArray() calls ksLookup() with  KDP_O_POP which makes as ksRewind()*/
 			if (baseArray && *baseArray) it = 0;
 
 			if (baseArray == NULL)

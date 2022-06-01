@@ -63,9 +63,6 @@ static Backend * elektraBackendAllocate (void)
  * @param elektraConfig the config where the mountpoint can be found
  * @param [out] errorKey the name also has the mountpoint set
  *
- * @pre ksCurrent() is root key
- * @post ksCurrent() is root key
- *
  * @retval -1 if no mountpoint is found or memory allocation problem
  * @retval 0 on success
  */

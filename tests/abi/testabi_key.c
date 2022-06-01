@@ -1607,8 +1607,7 @@ static void test_keyCopy (void)
 	succeed_if_same_string (keyName (copy), "user:/othername");
 
 	keyDel (copy);
-	ksRewind (ks);
-	succeed_if_same_string (keyName (ksNext (ks)), "user:/orig");
+	succeed_if_same_string (keyName (ksAtCursor (ks, 0)), "user:/orig");
 	ksDel (ks);
 }
 

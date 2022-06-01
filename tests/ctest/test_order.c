@@ -278,19 +278,7 @@ static void test_append (void)
 
 	succeed_if (!memcmp (ks->array, solution, size), "solution is not correct");
 
-	/*
-	Key *it;
-	ksRewind(ks);
-	while ((it = ksNext(ks)) != 0)
-	{
-		printf ("%s\n", keyName(it));
-	}
-	*/
-
-
 	ksDel (ks);
-
-
 	keyDecRef (key);
 	keyDel (key);
 	keyDecRef (s1);
