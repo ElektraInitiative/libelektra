@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define LDAP_DEPRECATED 0 // Make sure LDAP_DEPRECATED is defined
+
 #include <ldap.h>
 #include <ldif.h>
 
