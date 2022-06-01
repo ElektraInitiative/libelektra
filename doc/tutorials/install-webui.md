@@ -26,7 +26,7 @@ To build Elektra with the elektra-web tool:
 ## Getting Started
 
 - Start an elektrad instance: `kdb run-elektrad`
-- Start the client: `kdb run-web`
+- Start the client: `kdb run-webd`
 - You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Getting Started (docker)
@@ -48,7 +48,7 @@ To build Elektra with the elektra-web tool:
 
   - `cd webui`
   - `npm install`
-  - `npm start` (replaces `kdb run-web`)
+  - `npm start` (replaces `kdb run-webd`)
 
 - You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
@@ -69,7 +69,7 @@ instance, after starting elektrad via `kdb run-elektrad`, you can run start the
 client as follows:
 
 ```sh
-INSTANCE="http://localhost:33333" kdb run-web
+INSTANCE="http://localhost:33333" kdb run-webd
 ```
 
 It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
@@ -77,7 +77,7 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 For example (`advanced` visibility, `user` is default):
 
 ```sh
-INSTANCE="advanced@http://localhost:33333" kdb run-web
+INSTANCE="advanced@http://localhost:33333" kdb run-webd
 ```
 
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
@@ -92,7 +92,7 @@ For example:
 
 ```sh
 kdb run-elektrad
-KDB="/usr/local/custom/bin/kdb" kdb run-web
+KDB="/usr/local/custom/bin/kdb" kdb run-webd
 ```
 
 ## Overview
