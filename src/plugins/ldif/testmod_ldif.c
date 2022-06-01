@@ -82,7 +82,7 @@ static void test_readOnlyKey (void)
 	test_base ("dn: uid=test,ou=developer,dc=libelektra,dc=org\n", 1, expected_keys, expected_values);
 }
 
-static void test_writeOnlyKey(void)
+static void test_writeOnlyKey (void)
 {
 	printf ("test write\n");
 
@@ -93,7 +93,10 @@ static void test_writeOnlyKey(void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ldif");
 
-	KeySet * ks = ksNew (10, keyNew ("user:/tests/ldif/dc=org/dc=libelektra/ou=developer/uid=test/dn", KEY_VALUE, "uid=test,ou=developer,dc=libelektra,dc=org", KEY_END), KS_END);
+	KeySet * ks = ksNew (10,
+			     keyNew ("user:/tests/ldif/dc=org/dc=libelektra/ou=developer/uid=test/dn", KEY_VALUE,
+				     "uid=test,ou=developer,dc=libelektra,dc=org", KEY_END),
+			     KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
