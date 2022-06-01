@@ -76,7 +76,7 @@ export default class Menu extends React.Component {
 
     const titleText = (
       <span className="titleText">
-        elektra-web <small>v1.6</small>
+        elektra-web <small>v2.0</small>
       </span>
     );
 
