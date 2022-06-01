@@ -31,15 +31,6 @@ OpenLDAP
 
 ```sh
 # Backup-and-Restore: user:/tests/ldif
-
-kdb set user:/tests/ldif/key value
-#> Create a new key user:/tests/ldif/key with string "value"
-
-kdb get /tests/ldif/key
-#> value
-```
-
-```shell
 # Mount the provided example: simple-people.ldif
 
 kdb mount "$PWD/ldif/simple-people.ldif" /tests/people ldif
