@@ -46,7 +46,7 @@ To build Elektra with the elektra-web tool:
 
 - Install and start the client (connects to the elektrad instance):
 
-  - `cd client`
+  - `cd webui`
   - `npm install`
   - `npm start` (replaces `kdb run-web`)
 
@@ -188,7 +188,7 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
 `elektrad/` - contains the daemon to interact with a single elektra instance  
 `webd/` - contains a daemon to serve the client and interact with multiple elektra instances
 
-`client/` - contains the elektra-web client (Web UI)
+`webui/` - contains the elektra-web client (Web UI)
 
 - `src/actions/` - Redux actions to access the KDB or display notifications in the UI
 - `src/components/` - React components
@@ -252,7 +252,7 @@ docker push elektra/web:1.5.0
 
 - Create a new sub dialog by, for example, copying the `NumberSubDialog.jsx`
   file (or similar) to a new file in the
-  `client/src/components/TreeItem/dialogs` folder.
+  `webui/src/components/TreeItem/dialogs` folder.
 
 - Include the sub dialog by adding it to the `SettingsDialog.jsx` file in the
   same folder. For example, it could be added before the
@@ -275,7 +275,7 @@ docker push elektra/web:1.5.0
 ```
 
 - Mark the meta keys as handled by adding them to the `HANDLED_METADATA` array
-  in `client/src/components/TreeItem/dialogs/utils.js`:
+  in `webui/src/components/TreeItem/dialogs/utils.js`:
 
 ```diff
 export const HANDLED_METADATA = [
@@ -287,8 +287,8 @@ export const HANDLED_METADATA = [
 ```
 
 - Validation can then be added by handling metadata in the
-  `client/src/components/TreeItem/fields/validateType.js` file to the
+  `webui/src/components/TreeItem/fields/validateType.js` file to the
   `validateType` function.
 
 - Rendering fields in a special way when certain metakeys are present can be
-  done by adjusting the `renderSpecialValue` function in the `client/src/components/TreeItem/index.js` file.
+  done by adjusting the `renderSpecialValue` function in the `webui/src/components/TreeItem/index.js` file.
