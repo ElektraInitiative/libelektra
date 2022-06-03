@@ -129,10 +129,10 @@ Array check and utilities:
 
 ```kotlin
 
-// Returns last array index parsed as integer or null when the key has no array meta key
+// Returns last array index parsed as integer or null when the key has no array metakey
 val lastIndex: Int? = key.lastArrayIndexOrNull()
 
-// Parses last array index as integer from array meta key
+// Parses last array index as integer from array metakey
 val lastIndexFromMeta: Int = metaKey.parseIndex()
 
 // Converts an integer to correct elektra array index (#_24 in this case)
@@ -184,7 +184,7 @@ val complexKeySet = keySetOf {
 ## KeySet serialization
 
 KeySets can be serialized for all KotlinX Serialization formats.  
-e.g. Json:
+e.g. JSON:
 
 ```kotlin
 val ks = keySetOf(
@@ -192,7 +192,7 @@ val ks = keySetOf(
         keyOf("/my/age", 18)
 )
 
-val json = Json.encodeAsString(KeySetSerializer(), ks)
+val json = JSON.encodeAsString(KeySetSerializer(), ks)
 /* yields:
 * {
 *   "/my/name": "john",
