@@ -16,7 +16,7 @@ apply from: 'dependencies.gradle'
 // apply maven publish configuration
 apply from: "$rootProject.projectDir/maven-publish.gradle"
 
-// confugure maven-publish plugin
+// configure maven-publish plugin
 publishing {
 	publications {
 		libelektra(MavenPublication) {

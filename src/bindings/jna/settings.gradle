@@ -4,9 +4,10 @@ rootProject.name = 'Elektra Java binding'
 // include sub projects to multi-project build
 include 'libelektra'
 include 'process'
-include 'kotlin'
+include 'libelektra-kotlin'
 
 include 'hello'
+include 'hello-kotlin'
 
 include 'plugins:whitelist'
 include 'plugins:linkchecker'

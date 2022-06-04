@@ -37,6 +37,7 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
+- New Binding for Kotlin with convenience functions and various utilities. There is also the possibility to convert KeySets to Kotlin data classes or collections and back. _(@Gratla & @mandoway)_
 
 ### <<HIGHLIGHT>>
 
@@ -177,13 +178,15 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Kotlin
 
 - Added new JNA subproject which builds an Elektra extension library for Kotlin _(@mandoway & @Gratla)_
-- Added get(), getOrNull(), getOrDefault(), getOrElse() extension with type inference for primitive types _(@mandoway)_
+- Added get(), getOrNull() extension with type inference for primitive types _(@mandoway)_
 - Added set() extension with type inference for primitive types _(@mandoway)_
-- Added keySet serialization capabilities (to JSON and data classes, with array support) _(@mandoway)_
+- Added keySet serialization capabilities (to any format and data classes, with array support) _(@mandoway)_
 - Added keyOf() extension and keyOf{} builder for key creation _(@Gratla)_
 - Added keySetOf() extension and keySetOf{} builder for keySet creation _(@Gratla)_
 - Added withKDB() extension which wraps the try block _(@Gratla)_
-- Added forEachKeyName() extension which iterates like in keyNameIterator _(@mandoway)_
+- Added nameParts extension value which provides a sequence of key name parts _(@mandoway)_
+- Added various utility functions like Key.isEmpty, Key.getMetaOrNull, ... _(@Gratla & @mandoway)_
+- Added example project for kotlin binding _(@Gratla & @mandoway)_
 
 ### Python
 
