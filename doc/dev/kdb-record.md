@@ -65,7 +65,8 @@ The key `user:/record-elektra/config/current_session` contains the name of the c
 
 All recording sessions are located under `user:/record-elektra/sessions/<SESSION_NAME>`.
 
-Every modification will include its UTC timestamp and the modified key in its path. For example, `user:/record-elektra/sessions/MySession/12345678/system:\/hello". The value of this key will be the modification action, i.e. `created`, `modified`, `deleted`.
+Every modification will include its UTC timestamp and the modified key in its path. 
+For example, `user:/record-elektra/sessions/MySession/12345678/system:\/hello`. The value of this key will be the modification action, i.e. `created`, `modified`, `deleted`.
 
 Based on which modification took place (creation, modification or deletion), the old and new value for the key will also be recordes as `.../old` and `.../new`.
 
