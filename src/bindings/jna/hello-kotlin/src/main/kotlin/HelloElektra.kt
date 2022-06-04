@@ -8,7 +8,7 @@ import org.libelektra.keyExt.isEmpty
 import org.libelektra.keyExt.keyOf
 import org.libelektra.keySetExt.convert
 import org.libelektra.keySetExt.keySetOf
-import org.libelektra.keySetExt.serialization.KeySetFormat
+import org.libelektra.keySetExt.serialformat.KeySetFormat
 
 fun main() {
     // Example 1: create a Key and print it
@@ -36,7 +36,9 @@ fun main() {
     println("Example 2")
     var ks = keySetOf {
         key(key)
-        key("user:/hello_world2", "Hello World2")
+        key("user:/hello_world2") {
+            value = "Hello World2"
+        }
     }
     ks.forEach {
         println("iter: ${it.name} = ${it.string}")

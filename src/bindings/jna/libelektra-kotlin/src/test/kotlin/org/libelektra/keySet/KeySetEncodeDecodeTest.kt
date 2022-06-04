@@ -6,7 +6,7 @@ import org.libelektra.KeySet
 import org.libelektra.dsl.keyOf
 import org.libelektra.keyExt.keyOf
 import org.libelektra.keySetExt.keySetOf
-import org.libelektra.keySetExt.serialization.KeySetFormat
+import org.libelektra.keySetExt.serialformat.KeySetFormat
 import kotlin.test.assertEquals
 
 class KeySetEncodeDecodeTest {

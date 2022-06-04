@@ -63,7 +63,7 @@ You can open, use and close KDB with this function:
 ```kotlin
 withKdb {
     // context of KDB object
-    val keySet = get("user:/test")
+    val keySet = get(keyOf("user:/test"))
 }
 ```
 
@@ -172,11 +172,15 @@ val singleKeySet = keySetOf(
 
 // Builder
 val complexKeySet = keySetOf {
-    key("/test", "value")
+    key("/test") {
+        value = "value"
+    }
 
-    key("/test/foo", "bar")
+    key("/test/foo") {
+        value = "bar"
+    }
 
-    val anotherKey: Key = ...
+    val anotherKey: Key = computeKey()
     key(anotherKey)
 }
 ```

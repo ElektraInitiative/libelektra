@@ -1,4 +1,4 @@
-package org.libelektra.keySetExt.serialization
+package org.libelektra.keySetExt.serialformat
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi

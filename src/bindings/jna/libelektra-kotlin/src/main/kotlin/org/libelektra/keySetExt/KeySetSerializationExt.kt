@@ -2,7 +2,7 @@ package org.libelektra.keySetExt
 
 import kotlinx.serialization.SerializationException
 import org.libelektra.KeySet
-import org.libelektra.keySetExt.serialization.KeySetFormat
+import org.libelektra.keySetExt.serialformat.KeySetFormat
 
 /**
  * Converts a KeySet to a Kotlin data class using Kotlin Json Serialization with support for Collections

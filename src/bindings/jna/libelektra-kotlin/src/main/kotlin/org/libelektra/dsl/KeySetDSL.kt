@@ -7,8 +7,6 @@ import org.libelektra.KeySet
  * KeySetDSL provides a DSL API for building KeySets
  * It provides a way to instantiate complex KeySets in a readable way.
  * Should not be used directly, but implicitly by calling [keySetOf]
- *
- * @param key the key which should be added to the KeySet
  */
 class KeySetDSL {
 
@@ -22,14 +20,8 @@ class KeySetDSL {
         keys.add(key)
     }
 
-    fun <T> key(name: String, value: T? = null, vararg metaKeys: Key) {
-        keys.add(
-            Key.create(name, value).apply {
-                metaKeys.forEach {
-                    setMeta(it.name, it.string)
-                }
-            }
-        )
+    fun key(name: String, initializer: KeyDSL.() -> Unit) {
+        keys.add(keyOf(name, initializer))
     }
 }
 

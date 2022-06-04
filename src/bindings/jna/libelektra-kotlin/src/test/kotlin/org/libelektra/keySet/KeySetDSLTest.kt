@@ -11,7 +11,7 @@ class KeySetDSLTest {
     fun `keySetOf with no key, returns empty keySet`() {
         val keySet = keySetOf {}
 
-        assertEquals(keySet.isEmpty(), true)
+        assertEquals(true, keySet.isEmpty())
     }
 
     @Test
@@ -20,8 +20,8 @@ class KeySetDSLTest {
             key(Key.create("/key1", "value1"))
         }
 
-        assertEquals(keySet.size, 1)
-        assertEquals(keySet.lookup("/key1").get().string, "value1")
+        assertEquals(1, keySet.size)
+        assertEquals("value1", keySet.lookup("/key1").get().string)
     }
 
     @Test
@@ -31,30 +31,36 @@ class KeySetDSLTest {
             key(Key.create("/key2", "value2"))
         }
 
-        assertEquals(keySet.size, 2)
-        assertEquals(keySet.lookup("/key1").get().string, "value1")
-        assertEquals(keySet.lookup("/key2").get().string, "value2")
+        assertEquals(2, keySet.size)
+        assertEquals("value1", keySet.lookup("/key1").get().string)
+        assertEquals("value2", keySet.lookup("/key2").get().string)
     }
 
     @Test
     fun `keySetOf with one name-value pair, returns keySet with one key`() {
         val keySet = keySetOf {
-            key("/key1", "value1")
+            key("/key1") {
+                value = "value1"
+            }
         }
 
-        assertEquals(keySet.size, 1)
-        assertEquals(keySet.lookup("/key1").get().string, "value1")
+        assertEquals(1, keySet.size)
+        assertEquals("value1", keySet.lookup("/key1").get().string)
     }
 
     @Test
     fun `keySetOf with two name-value pairs, returns keySet with two keys`() {
         val keySet = keySetOf {
-            key("/key1", "value1")
-            key("/key2", "value2")
+            key("/key1") {
+                value = "value1"
+            }
+            key("/key2") {
+                value = "value2"
+            }
         }
 
-        assertEquals(keySet.size, 2)
-        assertEquals(keySet.lookup("/key1").get().string, "value1")
-        assertEquals(keySet.lookup("/key2").get().string, "value2")
+        assertEquals(2, keySet.size)
+        assertEquals("value1", keySet.lookup("/key1").get().string)
+        assertEquals("value2", keySet.lookup("/key2").get().string)
     }
 }

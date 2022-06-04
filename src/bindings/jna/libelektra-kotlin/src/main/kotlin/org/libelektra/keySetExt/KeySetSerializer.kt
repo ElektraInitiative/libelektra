@@ -15,6 +15,8 @@ import org.libelektra.dsl.keySetOf
  * Basic serializer for KeySets
  *
  * Can be used to serialize KeySets in different formats, e.g. JSON
+ *
+ * Does NOT support metakeys
  */
 @OptIn(ExperimentalSerializationApi::class)
 class KeySetSerializer : KSerializer<KeySet> {
