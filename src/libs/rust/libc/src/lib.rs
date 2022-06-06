@@ -827,3 +827,91 @@ pub extern "C" fn elektraKeysetSearch(ks: *const CKeySet, k: *const CKey) -> ssi
     */
     todo!()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_key_name() {
+        unsafe {
+            ElektraKey * key = elektraKeyNew("user:/test/qwe/asd");
+            assert!("user:/test/qwe/asd" == elektraKeyName(key));
+
+            ElektraKey * key2 = elektraKeyNew("user:/test/qwe/asd/qwe");
+            assert!("user:/test/qwe/asd/qwe" == elektraKeyName(key));
+        }
+
+        assert!(elektraKeyIsBelow(key, key2) == 0);
+        assert!(elektraKeyIsBelow(key2, key) == 1);
+
+        assert!(elektraKeyAddName(key, "yyyyyyy") == 27);
+        assert!(elektraKeyName(key) == "user:/test/qwe/asd/yyyyyyy");
+        assert!(elektraKeyBaseName(key) == "yyyyyyy");
+        assert!(elektraKeyBaseNameSize(key) == 8);
+
+        assert!(elektraKeySetName(key, "user:/asd/qwe/asd") == 18);
+        assert!(elektraKeyName(key) == "user:/asd/qwe/asd");
+        assert!(elektraKeyBaseName(key) == "asd");
+        assert!(elektraKeyBaseNameSize(key) == 4);
+
+        assert!(elektraKeySetBaseName(key, "") == 1);
+        assert!(elektraKeyName(key) == "user:/asd/qwe");
+        assert!(elektraKeyBaseName(key) == "qwe");
+        assert!(elektraKeyBaseNameSize(key) == 4);
+
+        elektraKeyDel (key);
+        elektraKeyDel (key2);
+    }
+
+    fn test_key_value() {
+        unsafe {
+            CKey * key = elektraKeyNew("user:/test/qwe/asd");
+        }
+
+        assert!(elektraKeyClear(key) == 1);
+
+        let value: * char = elektraKeyValue(key);
+        assert!(value == 0);
+
+        assert!(elektraKeySetValue(key, "abcd", 5) == 5);
+        value = elektraKeyValue(key);
+        assert!(value = "abcd");
+
+        assert!(elektraKeySetValue(key, "abcd", 5) == 5);
+        value = elektraKeyValue(key);
+        assert!(value = "abcd");
+
+        elektraKeyDel (key);
+    }
+
+    fn test_keyset() {
+        ElektraKeySet * ks = elektraKeysetNew (1);
+        assert!(elektraKeysetSize (ks) == 0);
+        assert!(elektraKeysetIncRef (ks) == 1);
+        assert!(elektraKeysetIncRef (ks) == 2);
+        assert!(elektraKeysetIncRef (ks) == 3);
+        assert!(elektraKeysetIncRef (ks) == 4);
+        assert!(elektraKeysetIncRef (ks) == 5);
+        assert!(elektraKeysetSize (ks) == 0);
+
+        unsafe {
+            ElektraKey * key = elektraKeyNew("user:/test/qwe/asd");
+            ElektraKey * key2 = elektraKeyNew("user:/test/qwe/asd/qwe");
+        }
+
+        assert!(elektraKeysetAdd(ks, key) == 1);
+        assert!(elektraKeysetSize(ks) == 1);
+
+        assert!(elektraKeysetAdd(ks, key2) == 1);
+        assert!(elektraKeysetSize(ks) == 2);
+
+        assert!(elektraKeyName (elektraKeysetLookup (ks, key)) == "user:/test/qwe/asd");
+        assert!(elektraKeyName (elektraKeysetLookup (ks, key2)) == "user:/test/qwe/asd/qwe");
+
+        elektraKeysetDel (ks);
+
+        elektraKeyDel (key);
+        elektraKeyDel (key2);
+    }
+}

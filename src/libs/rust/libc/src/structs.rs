@@ -12,7 +12,6 @@ use libc::{size_t, c_char, c_int, c_uint, c_void};
 use bitflags::bitflags;
 
 use elektra_rust::key::{Key, KeyBuilder, KeyError, KeyNamespace, KeySet};
-use elektra_rust::key::KeyError::InvalidNameError;
 use crate::elektraNamespace::{KEY_NS_CASCADING, KEY_NS_DEFAULT, KEY_NS_DIR, KEY_NS_META, KEY_NS_PROC, KEY_NS_SPEC, KEY_NS_SYSTEM, KEY_NS_USER};
 use crate::KEY_NS_NONE;
 
@@ -61,15 +60,15 @@ impl From<KeyNamespace> for elektraNamespace {
 impl From<elektraNamespace> for KeyNamespace {
     fn from(namespace: elektraNamespace) -> Self {
         match namespace {
-            KEY_NS_NONE => KeyNamespace::None,
-            KEY_NS_CASCADING => KeyNamespace::Cascading,
-            KEY_NS_META => KeyNamespace::Meta,
-            KEY_NS_SPEC => KeyNamespace::Spec,
-            KEY_NS_PROC => KeyNamespace::Proc,
-            KEY_NS_DIR => KeyNamespace::Dir,
-            KEY_NS_USER => KeyNamespace::User,
-            KEY_NS_SYSTEM => KeyNamespace::System,
-            KEY_NS_DEFAULT => KeyNamespace::Default,
+            elektraNamespace::KEY_NS_NONE => KeyNamespace::None,
+            elektraNamespace::KEY_NS_CASCADING => KeyNamespace::Cascading,
+            elektraNamespace::KEY_NS_META => KeyNamespace::Meta,
+            elektraNamespace::KEY_NS_SPEC => KeyNamespace::Spec,
+            elektraNamespace::KEY_NS_PROC => KeyNamespace::Proc,
+            elektraNamespace::KEY_NS_DIR => KeyNamespace::Dir,
+            elektraNamespace::KEY_NS_USER => KeyNamespace::User,
+            elektraNamespace::KEY_NS_SYSTEM => KeyNamespace::System,
+            elektraNamespace::KEY_NS_DEFAULT => KeyNamespace::Default,
         }
     }
 }

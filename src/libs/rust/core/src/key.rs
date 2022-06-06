@@ -168,6 +168,16 @@ pub enum KeyCopyFlags {
     META = 1<<2,
 }
 
+
+#[bitflags(default = NAME | VALUE | META)]
+#[repr(u8)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum KeyLockFlags {
+    NAME = 1,
+    VALUE = 1<<1,
+    META = 1<<2,
+}
+
 #[derive(Debug)]
 pub enum KeyError {
     InvalidNameError,
@@ -175,10 +185,42 @@ pub enum KeyError {
 }
 
 #[derive(Debug, Clone)]
+pub struct KeyLock {
+    locked: bool,
+}
+
+impl Default for KeyLock {
+    fn default() -> Self {
+        KeyLock {
+            locked: false
+        }
+    }
+
+}
+
+impl KeyLock {
+    fn lock(&mut self) {
+        self.locked = true;
+    }
+
+    fn is_locked(&self) -> bool {
+        self.locked
+    }
+
+    fn unlock(&mut self) {
+        self.locked = false
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Key {
     name: KeyName,
     value: Option<Vec<u8>>,
     meta: KeySet,
+
+    name_lock: KeyLock,
+    value_lock: KeyLock,
+    meta_lock: KeyLock,
 }
 
 impl Eq for Key {}
@@ -213,6 +255,9 @@ impl Key {
             name: key_name,
             value: None,
             meta: KeySet::default(),
+            name_lock: KeyLock::default(),
+            value_lock: KeyLock::default(),
+            meta_lock: KeyLock::default(),
         }
     }
 
@@ -225,6 +270,10 @@ impl Key {
     }
 
     pub fn set_name(&mut self, name: &str) -> Result<(), KeyError> {
+        if self.name_lock.is_locked() {
+            return Err(KeyError::InvalidNameError)
+        }
+
         if let Ok(name) = KeyName::from_str(name) {
             self.name = name;
             Ok(())
@@ -233,22 +282,42 @@ impl Key {
         }
     }
 
-    pub fn set_keyname(&mut self, name: KeyName) {
+    pub fn set_keyname(&mut self, name: KeyName) -> Result<(), ()> {
+        if self.name_lock.is_locked() {
+            return Err(())
+        }
+
         self.name = name;
+        Ok(())
     }
 
-    pub fn set_value(&mut self, value: &[u8])
+    pub fn set_value(&mut self, value: &[u8]) -> Result<(), ()>
     {
-        self.value = Some(value.to_vec())
+        if self.value_lock.is_locked() {
+            return Err(())
+        }
+
+        self.value = Some(value.to_vec());
+        Ok(())
     }
 
-    pub fn reset_value(&mut self)
+    pub fn reset_value(&mut self) -> Result<(), ()>
     {
-        self.value = None
+        if self.value_lock.is_locked() {
+            return Err(())
+        }
+
+        self.value = None;
+        Ok(())
     }
 
-    pub fn set_value_str(&mut self, value: &str) {
-        self.value = Some(value.as_bytes().to_vec())
+    pub fn set_value_str(&mut self, value: &str) -> Result<(), ()> {
+        if self.value_lock.is_locked() {
+            return Err(())
+        }
+
+        self.value = Some(value.as_bytes().to_vec());
+        Ok(())
     }
 
     pub fn value(&self) -> Option<&[u8]> {
@@ -274,8 +343,13 @@ impl Key {
         &mut self.meta
     }
 
-    pub fn set_meta(&mut self, meta: KeySet) {
+    pub fn set_meta(&mut self, meta: KeySet) -> Result<(), ()> {
+        if self.meta_lock.is_locked() {
+            return Err(())
+        }
+
         self.meta = meta;
+        Ok(())
     }
 
     pub fn copy_from(&mut self, other: &Key, copy_flags: BitFlags<KeyCopyFlags>) {
@@ -293,6 +367,34 @@ impl Key {
 
         if copy_flags.contains(KeyCopyFlags::META) {
             self.meta = (*other.meta()).clone()
+        }
+    }
+
+    pub fn lock(&mut self, lock_flags: BitFlags<KeyLockFlags>) {
+        if lock_flags.contains(KeyLockFlags::NAME) {
+            self.name_lock.lock();
+        }
+
+        if lock_flags.contains(KeyLockFlags::VALUE) {
+            self.value_lock.lock();
+        }
+
+        if lock_flags.contains(KeyLockFlags::META) {
+            self.meta_lock.lock();
+        }
+    }
+
+    pub fn unlock(&mut self, lock_flags: BitFlags<KeyLockFlags>) {
+        if lock_flags.contains(KeyLockFlags::NAME) {
+            self.name_lock.unlock();
+        }
+
+        if lock_flags.contains(KeyLockFlags::VALUE) {
+            self.value_lock.unlock();
+        }
+
+        if lock_flags.contains(KeyLockFlags::META) {
+            self.meta_lock.unlock();
         }
     }
 }
@@ -335,11 +437,11 @@ impl KeyBuilder {
         let mut key = Key::new(self.name);
 
         if let Some(value) = self.value {
-            key.set_value(&value);
+            key.set_value(&value).unwrap(); // safe because Key is newly created
         }
 
         if let Some(meta) = self.meta {
-            key.set_meta(meta);
+            key.set_meta(meta).unwrap(); // safe because Key is newly created
         }
 
         Ok(key)
@@ -492,7 +594,7 @@ mod tests {
         assert_eq!(key.name().to_string(), "user:/asd");
 
         let key_name = KeyName::from_str("user:/test/qwe/asd").unwrap();
-        key.set_keyname(key_name);
+        key.set_keyname(key_name).expect("Should not be locked");
         assert_eq!(key.name().to_string(), "user:/test/qwe/asd");
     }
 
@@ -588,7 +690,7 @@ mod tests {
         assert_eq!(None, key.value());
         assert_eq!(None, key.value_to_string());
 
-        key.set_value_str("asdf");
+        key.set_value_str("asdf").expect("succeeds");
         assert_eq!(vec![97, 115, 100, 102], key.value().unwrap());
         assert_eq!("asdf".as_bytes(), key.value().unwrap());
         assert_eq!("asdf", key.value_to_string().unwrap());
@@ -728,5 +830,54 @@ mod tests {
 
         assert_eq!(key1.meta().len(), 1);
         assert!(key1.meta().lookup("meta:/qwe").is_some())
+    }
+
+    #[test]
+    fn test_key_lock() {
+        let mut meta_data = KeySet::with_capacity(10);
+        let meta_key = KeyBuilder::from_str("user:/test")
+            .unwrap()
+            .value("asd".as_bytes())
+            .build()
+            .unwrap();
+
+        meta_data.append(meta_key);
+
+        let mut key1 = KeyBuilder::from_str("user:/test")
+            .unwrap()
+            .value("qwe".as_bytes())
+            .meta(meta_data)
+            .build()
+            .unwrap();
+
+        let mut key_name = KeyName::from_str("user:/test").unwrap();
+        assert!(key1.set_keyname(key_name).is_ok());
+        assert!(key1.set_name("user:/test").is_ok());
+        assert!(key1.set_value_str("Test").is_ok());
+        assert!(key1.set_value("Test".as_bytes()).is_ok());
+        assert!(key1.reset_value().is_ok());
+        assert!(key1.set_meta(KeySet::with_capacity(10)).is_ok());
+
+        let mut lock_flags: BitFlags<KeyLockFlags> = KeyLockFlags::NAME | KeyLockFlags::VALUE | KeyLockFlags::META;
+        key1.lock(lock_flags);
+
+        key_name = KeyName::from_str("user:/test").unwrap();
+        assert!(key1.set_keyname(key_name).is_err());
+        assert!(key1.set_name("user:/test").is_err());
+        assert!(key1.set_value_str("Test").is_err());
+        assert!(key1.set_value("Test".as_bytes()).is_err());
+        assert!(key1.reset_value().is_err());
+        assert!(key1.set_meta(KeySet::with_capacity(10)).is_err());
+
+        lock_flags = KeyLockFlags::NAME | KeyLockFlags::VALUE | KeyLockFlags::META;
+        key1.unlock(lock_flags);
+
+        key_name = KeyName::from_str("user:/test").unwrap();
+        assert!(key1.set_keyname(key_name).is_ok());
+        assert!(key1.set_name("user:/test").is_ok());
+        assert!(key1.set_value_str("Test").is_ok());
+        assert!(key1.set_value("Test".as_bytes()).is_ok());
+        assert!(key1.reset_value().is_ok());
+        assert!(key1.set_meta(KeySet::with_capacity(10)).is_ok());
     }
 }

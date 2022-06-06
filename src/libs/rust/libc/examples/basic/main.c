@@ -83,6 +83,9 @@ int main (void) {
     printf("%i\n", elektraKeysetAdd (ks, key2));
     printf("%i\n", elektraKeysetSize (ks));
 
+    printf("%s\n", elektraKeyName (elektraKeysetLookup (ks, key)));
+    printf("%s\n", elektraKeyName (elektraKeysetLookup (ks, key2)));
+
     elektraKeysetDel (ks);
 
     elektraKeyDel (key);
