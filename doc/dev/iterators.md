@@ -68,6 +68,8 @@ within the loop-header or explicitely after changing the `KeySet`, e.g. by delet
 That should be all you need for iterating over keys.
 For future releases, the function `ksAtCursor` will be renamed to `ksAt`. (see issue #3976)
 
+You can iterate over metakeys in a similar fashion as long as you iterate over a `KeySet`, e.g., `keyMeta("my_meta_key")` returns a `KeySet` of metakeys.
+
 The following is a comprehension of how to use iterators in various languages.
 
 ### C
@@ -88,6 +90,7 @@ C-style fashioned loop:
 for (elektraCursor it = 0; it < ks.size (); ++it)
 {
 	Key key = ks.at(it);
+	// ...
 }
 ```
 
@@ -119,5 +122,13 @@ if size > 0 then
 		key = kdb.ksAt(keySet, i - 1)
 		-- ...
 	end
+end
+```
+
+### Ruby
+
+```ruby
+keySet.each do |key|
+	# ...
 end
 ```
