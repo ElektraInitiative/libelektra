@@ -51,3 +51,14 @@ So either make sure to:
 Note that `cmake` does _not_ automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory
 in that case.
+
+## Iteration
+
+Use external iterators the following way:
+
+```python
+size = ksSize(keySet)
+for cursor in range(size):
+	key = ksAt(keySet, cursor)
+	# ...
+```

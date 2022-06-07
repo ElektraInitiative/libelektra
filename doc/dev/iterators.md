@@ -26,6 +26,12 @@ Every occurence of using the internal iterator has to be replaced with the exter
 The functions of the internal iterator are listed in #3171.
 There are also some uses of the internal iterator found in the SWIG bindings (Lua, Ruby, Python) that also need removal (see #4279).
 
+## Internal vs. external Iterators
+
+When the client (i.e. the programmer) controls the iteration, the iterator is called external iterator.
+Otherwise, when the iterator controls the iteration, it is called internal iterator.
+Due to the fact that external iterators are more flexible the internal iterators are the way to go.
+
 # Examples
 
 An example for using an external iterator is:
@@ -61,3 +67,57 @@ within the loop-header or explicitely after changing the `KeySet`, e.g. by delet
 
 That should be all you need for iterating over keys.
 For future releases, the function `ksAtCursor` will be renamed to `ksAt`. (see issue #3976)
+
+The following is a comprehension of how to use iterators in various languages.
+
+### C
+
+```c
+for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+{
+    Key * cur = ksAtCursor (ks, it);
+    // ...
+}
+```
+
+### C++
+
+C-style fashioned loop:
+
+```cpp
+for (elektraCursor it = 0; it < ks.size (); ++it)
+{
+	Key key = ks.at(it);
+}
+```
+
+Real iterators the C++ interface supports:
+
+```cpp
+for (KeySet::iterator i = ks3.begin(); i != ks3.end(); ++i)
+{
+	Key key(*i);
+	// ...
+}
+```
+
+### Python
+
+```python
+size = ksSize(keySet)
+for cursor in range(size):
+	key = ksAt(keySet, cursor)
+	# ...
+```
+
+### Lua
+
+```lua
+size = kdb.ksSize(keySet);
+if size > 0 then
+	for i = 1, size do
+		key = kdb.ksAt(keySet, i - 1)
+		-- ...
+	end
+end
+```
