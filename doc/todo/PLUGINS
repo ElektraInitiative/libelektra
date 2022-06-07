@@ -1,31 +1,16 @@
 Ideas for new PLUGINS in elektra.
 Prefer using great frameworks to do that in short time with high quality.
 
-## TYPE ##
 
-units-of-measurements
-	(e.g. 20m, 5kg, A, ..)
-
-allow numbers to enter:
-	binary (e.g. 0b1000110)
-	hex (e.g. 0x...)
-		or even mix: 0x20kg
-	oct (e.g. 0332, would disallow prefix 0?)
-
-calculate default values
-	same as assign, but with very low priority
+## Validation
 
 (dependent) optionality:
 	make a key only optional on some condition
 	otherwise fail if key is not present
 
-## Validation
-
 use getaddrinfo_a to make network plugin faster on many lookups
 
 constraint solver
-
-white/black lists (generalization of enum?)
 
 improve error messages for validation:
 	heuristics where last error has been (sync flag)
@@ -95,17 +80,6 @@ werror plugin:
 	turn specified warnings into errors (for both get+set paths)
 
 
-## Rework plugins
-
-fix comments:
-	all plugins should use new comment-approach
-	(also iconv)
-	also handle whitespaces in comments?
-
-fix absolute plugins (should be relative, at least by default)
-	see #51
-
-
 
 ## Links
 
@@ -149,12 +123,7 @@ forensic logging: add in-depth context information when a parameter was changed
 	state of application
 
 
-# File based plugins #
 
-Most plugins work on the KeySet. Other plugins might just work
-on the file (in the value of the parentKey), including:
-- gzip the file
-- base64 encode the file
 
 
 
@@ -175,34 +144,7 @@ namehexencode
 arbitrary encodings via python/lua function
 
 
-## fix Limitations ##
-
-Idea: fix limitations of current plugins using other plugins
-
-dir2leafvalue:
-	for testing INI
-	https://github.com/ElektraInitiative/libelektra/issues/106
-
-Needed for yajl+ini:
-	rewrite of values in directories as subkeys
-
-fstab:
-	support for spaces and so on (with \040)
-
-
-## add Limitations ##
-
-allow to lock down configuration for guis
-
-
 # Storage plugins #
-
-## Generic ##
-
-plugin that uses the content of file as value
-
-lexer plugin:
-	create elektra Keys instead of Token
 
 
 ## JSON ##
@@ -238,7 +180,9 @@ literate data
 	needs two more special characters next to separator, but is
 	otherwise alike
 
-## folders ##
+## non-file-based ##
+
+SQL
 
 filesys:
 	reintroduce? (useful for 0.7 migrations)
@@ -248,10 +192,6 @@ filesys:
 	remove keys the new way
 	compare sets between current and desired state (set operations)
 	could be default-storage plugin, integrated resolver for previous siutation
-
-folder:
-	make subdirectires folders and individual files
-	(multi-resolver)
 
 
 ## storage ##
@@ -324,10 +264,6 @@ error handling control flags:
 
 # Generic plugins #
 
-Shell bindings: exec program and send dump format to it and receive one
-can use #!kdb shell
-or also some other scripts, e.g. git commit
-
 awk bindings ($1=keyname $2=keyvalue $3=metakeyname $4=metakeyvalue .....)
 
 
@@ -339,6 +275,9 @@ awk bindings ($1=keyname $2=keyvalue $3=metakeyname $4=metakeyvalue .....)
 compression:
 	zlib
 	snappy
+	gzip the file
+
+base64 encode the file
 
 filter: key
 	metadata löschen

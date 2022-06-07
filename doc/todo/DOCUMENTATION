@@ -3,18 +3,8 @@ This document describes what is missing in the documentation:
 
 document return value of resolver + other plugins
 
-rewind not clearly defined:
-	rewind before plugins?
-	rewind after plugins?
-	rewind after get()?
-	rewind after set()?
-	-> needs to be done within plugins
-	as internal iterator should disappear
-
 not clearly defined how config file is opened
 	(temporary file needs to be opened write+create)
-
-relative key names not explained
 
 
 
