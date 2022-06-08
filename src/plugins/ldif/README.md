@@ -33,7 +33,7 @@ OpenLDAP
 # Backup-and-Restore: user:/tests/ldif
 # Mount the provided example: simple-people.ldif
 
-kdb mount "$PWD/ldif/simple-people.ldif" /tests/people ldif
+kdb mount "$PWD/src/plugins/ldif/ldif/simple-people.ldif" /tests/people ldif
 
 kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=heidi/dn
 #> uid=heidi,ou=developer,dc=libelektra,dc=org
