@@ -55,6 +55,8 @@ public class SortedPlugin implements Plugin {
   /**
    * Checks whether the sorting of the array specified by the meta values has errors or not.
    *
+   * @param keySet Key set to check for errors
+   * @param addErrorFunction Function for handling encountered errors
    * @return true if the sorting defined by the meta values is invalid. Otherwise, false.
    */
   private boolean hasSortingErrors(

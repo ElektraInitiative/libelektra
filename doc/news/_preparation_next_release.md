@@ -164,7 +164,10 @@ you up-to-date with the multi-language support provided by Elektra.
 ### JNA
 
 - Added example which shows how to add a basename for a key. _(Philipp Leeb @Gratla)_
-- <<TODO>>
+- Introduced Key#setNull, ReadableKey#isNull _(Michael Tucek @tucek)_
+- Fixed Key#setBoolean, ReadableKey#isBoolean _(Michael Tucek @tucek)_
+- Fixed Java Whitelist plugin tests _(Michael Tucek @tucek)_
+- Fixed missing Javadoc in Java Sorted plugin _(Michael Tucek @tucek)_
 - <<TODO>>
 
 ### <<Binding>>

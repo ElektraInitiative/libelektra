@@ -22,8 +22,6 @@ import org.libelektra.exception.KeyNameException;
 /** Key represents a native Elektra key providing access to its name, value and meta information */
 public final class Key extends ReadableKey implements Iterable<ReadableKey> {
 
-  private static final String WARNINGS = "warnings";
-
   /** Argument tags for use with {@link #create(String, Object...)} */
   public enum CreateArgumentTag {
 
@@ -215,13 +213,14 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
   /**
    * Sets the key's value by converting {@code value} to string
    *
+   * @see <a href="https://www.libelektra.org/decisions/boolean">Definition of Bool</a>
    * @param value Value to set
    * @return This {@link Key}, enabling a fluent interface
    * @throws IllegalStateException if this {@link Key} has already been released
    */
   @Nonnull
   public Key setBoolean(boolean value) {
-    return setString(Boolean.toString(value));
+    return setString(value ? BOOLEAN_TRUE : BOOLEAN_FALSE);
   }
 
   /**
@@ -325,6 +324,22 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
   public Key setBinary(byte[] value) {
     argNotNull(value, "byte[] 'value'");
     checkReturnValue(Elektra.INSTANCE.keySetBinary(getPointer(), value, value.length));
+    return this;
+  }
+
+  /**
+   * Removes the key's value without changing the type
+   *
+   * @return This {@link Key}, enabling a fluent interface
+   * @throws IllegalStateException if this {@link Key} has already been released
+   * @throws KeyException if the key's value is read-only or there have been allocation problems
+   */
+  @Nonnull
+  public Key setNull() {
+    // The function needs to turn the key into a binary one, because the current implementations of
+    // keyString, keyGetValueSize, etc. all behave as if the value was "", when a string key is set
+    // to NULL.
+    checkReturnValue(Elektra.INSTANCE.keySetBinary(getPointer(), null, 0));
     return this;
   }
 

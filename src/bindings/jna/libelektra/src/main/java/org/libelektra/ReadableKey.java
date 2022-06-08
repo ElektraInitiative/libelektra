@@ -20,6 +20,9 @@ import org.libelektra.exception.KeyStringValueException;
  */
 public class ReadableKey implements Comparable<ReadableKey> {
 
+  protected static final String BOOLEAN_TRUE = "1";
+  protected static final String BOOLEAN_FALSE = "0";
+
   /** Flag for use with {@link Key#copy(Key, int)} and {@link #dup(int)} for copying the key name */
   public static final int KEY_CP_NAME = 1 << 0;
 
@@ -129,12 +132,13 @@ public class ReadableKey implements Comparable<ReadableKey> {
   }
 
   /**
+   * @see <a href="https://www.libelektra.org/decisions/boolean">Definition of Bool</a>
    * @return {@link #getString()} interpreted as boolean value
    * @throws KeyStringValueException if the underlying native key is not of type string
    * @throws IllegalStateException if this {@link ReadableKey} has already been released
    */
   public boolean getBoolean() {
-    return Boolean.parseBoolean(getString());
+    return BOOLEAN_TRUE.equals(getString());
   }
 
   /**
@@ -393,6 +397,15 @@ public class ReadableKey implements Comparable<ReadableKey> {
    */
   public int getValueSize() {
     return Elektra.INSTANCE.keyGetValueSize(getPointer());
+  }
+
+  /**
+   * @return True, if the key has no value, false otherwise
+   * @throws IllegalStateException if this {@link ReadableKey} has already been released
+   */
+  public boolean isNull() {
+    // An empty string has size 1, because the zero-terminator is included in the size
+    return getValueSize() == 0;
   }
 
   /**
