@@ -68,7 +68,7 @@ within the loop-header or explicitely after changing the `KeySet`, e.g. by delet
 That should be all you need for iterating over keys.
 For future releases, the function `ksAtCursor` will be renamed to `ksAt`. (see issue #3976)
 
-You can iterate over metakeys in a similar fashion as long as you iterate over a `KeySet`, e.g., `keyMeta("my_meta_key")` returns a `KeySet` of metakeys.
+You can iterate over metakeys in a similar fashion as long as you iterate over a `KeySet`, e.g., `keyMeta("my_key")` returns a `KeySet` of metakeys.
 
 The following is a comprehension of how to use iterators in various languages.
 
