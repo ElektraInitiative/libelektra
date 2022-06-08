@@ -31,6 +31,8 @@ OpenLDAP
 
 ```sh
 # Backup-and-Restore: user:/tests/ldif
+
+echo "$PWD/src/plugins/ldif/ldif/simple-people.ldif"
 # Mount the provided example: simple-people.ldif
 
 kdb mount "$PWD/src/plugins/ldif/ldif/simple-people.ldif" /tests/people ldif
@@ -67,6 +69,6 @@ mounted on `system:/ldif/example`
 then
 
 ```sh
-kdb get system:/ldif/example/dc=org/dc=example/ou=dep/uid=willi/objectClass
+kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=hans/objectClass
 #> top
 ```
