@@ -140,10 +140,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - Removed mentions of VERBOSE and replaced debug prints with the logger _(@mandoway)_
 
-### Core
-
-- Removed mentions of VERBOSE and replaced debug prints with the logger _(@mandoway)_
-
 ### <<Library>>
 
 - <<TODO>>
@@ -209,10 +205,6 @@ you up-to-date with the multi-language support provided by Elektra.
 - Added example project for kotlin binding _(@Gratla & @mandoway)_
 - Added lookupOrThrow(), lookupOrNull(), and get operator to search for keys in KeySets without Java Optionals _(@mandoway)_
 - Fixed setting null, by using new JNA setNull() function _(@mandoway)_
-
-### Python
-
-- Deleted occurrences of removed property key.fullname _(@mandoway)_
 
 ### Python
 
