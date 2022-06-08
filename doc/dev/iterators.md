@@ -1,4 +1,4 @@
-# Iteration of KeySets
+# Migrating from internal to external KeySet iterators
 
 The deprecated internal iterator are removed and replaced with external iteration.
 
