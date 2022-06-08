@@ -12,7 +12,6 @@ void * getFunction (Plugin * plugin, const char * name)
 	Key * pk = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (pk, plugin->name);
 	plugin->kdbGet (plugin, exports, pk);
-	ksRewind (exports);
 	keyAddBaseName (pk, "exports");
 	keyAddBaseName (pk, name);
 	return keyValue (ksLookup (exports, pk, 0));
@@ -46,7 +45,6 @@ int main (int argc, char const * argv[])
 	KeySet * exports = ksNew (0, KS_END);
 	Key * pk = keyNew ("system:/elektra/modules/list", KEY_END);
 	list->kdbGet (list, exports, pk);
-	ksRewind (exports);
 	int rc = list->kdbGet (list, ks, parentKey);
 	typedef int (*addPlugin) (Plugin *, void *);
 	addPlugin addPtr = *(addPlugin **) getFunction (list, "addPlugin");
@@ -82,9 +80,6 @@ int main (int argc, char const * argv[])
 	editPtr (list, delPlugin);
 	rc = list->kdbGet (list, ks, parentKey);
 	rc = list->kdbGet (list, ks, parentKey);
-
-	ksRewind (modules);
-
 
 	return 0;
 }

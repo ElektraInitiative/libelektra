@@ -161,11 +161,11 @@ int main (int argc, const char ** argv)
 
 	Key * arrayParent = ksLookupByName (ks, BASE_KEY "/files", 0);
 	KeySet * files = elektraArrayGet (arrayParent, ks);
-
-	ksRewind (files);
 	Key * cur = NULL;
-	while ((cur = ksNext (files)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (files); ++it)
 	{
+		cur = ksAtCursor (files, it);
 		printf ("  %s\n", keyString (cur));
 	}
 	printf ("\n");

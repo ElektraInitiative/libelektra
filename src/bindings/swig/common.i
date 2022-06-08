@@ -123,10 +123,6 @@
 %rename("_%s") kdb::Key::getBinarySize;
 %rename("_%s") kdb::Key::getValue;
 
-%rename("_%s") kdb::Key::rewindMeta;
-%rename("_%s") kdb::Key::nextMeta;
-%rename("_%s") kdb::Key::currentMeta;
-
 
 /*
  * keyset.hpp
@@ -139,12 +135,6 @@
 %ignore kdb::KeySet::KeySet (Key, ...);
 %ignore kdb::KeySet::operator=;
 
-// deprecated. ignores can be removed after function removal
-%ignore kdb::KeySet::rewind;
-%ignore kdb::KeySet::next;
-%ignore kdb::KeySet::current;
-%ignore kdb::KeySet::getCursor;
-%ignore kdb::KeySet::setCursor;
 
 // iterators
 // we hide all iterator classes. users should use pairs/ipairs

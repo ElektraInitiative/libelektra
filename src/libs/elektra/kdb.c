@@ -132,14 +132,16 @@
  */
 void elektraRemoveMetaData (Key * key, const char * searchfor)
 {
-	const Key * iter_key;
-	keyRewindMeta (key);
-	while ((iter_key = keyNextMeta (key)) != 0)
+	KeySet * metaKeys = keyMeta (key);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		const Key * iter_key = ksAtCursor (metaKeys, it);
 		/*startsWith*/
 		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
 		{
 			keySetMeta (key, keyName (iter_key), 0);
+			/* TODO: test with and without decrement! */
+			it--; // next key moved forward by one position
 		}
 	}
 }
@@ -159,9 +161,7 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 	Key * cur;
 	ssize_t rootSize = 0;
 
-	ksRewind (config);
-
-	root = ksNext (config);
+	root = ksAtCursor (config, 0);
 	rootSize = keyGetNameSize (root);
 
 	keyDel (ksLookup (config, root, KDB_O_POP));
@@ -493,11 +493,10 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 #ifdef HAVE_LOGGER
 	if (inFallback) ELEKTRA_LOG_WARNING ("fallback for bootstrapping: you might want to run `kdb upgrade-bootstrap`");
 
-	Key * key;
 
-	ksRewind (keys);
-	for (key = ksNext (keys); key; key = ksNext (keys))
+	for (elektraCursor it = 0; it < ksGetSize (keys); ++it)
 	{
+		Key * key = ksAtCursor (keys, it);
 		ELEKTRA_LOG_DEBUG ("config for createTrie name: %s value: %s", keyName (key), keyString (key));
 	}
 #endif
@@ -666,6 +665,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 		Plugin * resolver = backend->getplugins[RESOLVER_PLUGIN];
 		if (resolver && resolver->kdbGet)
 		{
+			/* TODO: Remove deprecated use of internal iterator! */
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
@@ -740,6 +740,8 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 			continue;
 		}
 		Backend * backend = split->handles[i];
+
+		/* TODO: Remove deprecated use of internal iterator! */
 		ksRewind (split->keysets[i]);
 		keySetName (parentKey, keyName (split->parents[i]));
 		keySetString (parentKey, keyString (split->parents[i]));
@@ -765,27 +767,29 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 
 static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 {
+	/* TODO: Remove usage of deprecated internal iterator! */
 	ksRewind (ks);
 	Key * cutKey = keyNew ("/", KEY_END);
 	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
 	KeySet * cutKS = ksCut (ks, cutKey);
 	Key * specCutKey = keyNew ("spec:/", KEY_END);
 	KeySet * specCut = ksCut (cutKS, specCutKey);
-	ksRewind (specCut);
-	Key * cur;
-	while ((cur = ksNext (specCut)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (specCut); ++it)
 	{
+		Key * cur = ksAtCursor (specCut, it);
 		if (keyGetNamespace (cur) == KEY_NS_CASCADING)
 		{
 			ksAppendKey (cutKS, cur);
 			keyDel (ksLookup (specCut, cur, KDB_O_POP));
+			it--;
 		}
 	}
+
 	ksAppend (ks, specCut);
 	ksDel (specCut);
 	keyDel (specCutKey);
 	keyDel (cutKey);
-	ksRewind (cutKS);
 	return cutKS;
 }
 
@@ -828,6 +832,8 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	for (size_t i = 0; i < split->size - bypassedSplits; i++)
 	{
 		Backend * backend = split->handles[i];
+
+		/* TODO: Remove usage of deprecated internal iterator */
 		ksRewind (split->keysets[i]);
 		keySetName (parentKey, keyName (split->parents[i]));
 		keySetString (parentKey, keyString (split->parents[i]));
@@ -849,6 +855,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			if (p == (STORAGE_PLUGIN + 1) && handle->globalPlugins[PROCGETSTORAGE][FOREACH])
 			{
 				keySetName (parentKey, keyName (initialParent));
+				/* TODO: Remove usage of deprecated internal iterator */
 				ksRewind (ks);
 				handle->globalPlugins[PROCGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[PROCGETSTORAGE][FOREACH], ks,
 											parentKey);
@@ -857,6 +864,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			if (p == (STORAGE_PLUGIN + 2) && handle->globalPlugins[POSTGETSTORAGE][FOREACH])
 			{
 				keySetName (parentKey, keyName (initialParent));
+				/* TODO: Remove usage of deprecated internal iterator */
 				ksRewind (ks);
 				handle->globalPlugins[POSTGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[POSTGETSTORAGE][FOREACH], ks,
 											parentKey);
@@ -865,6 +873,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			else if (p == (NR_OF_PLUGINS - 1) && handle->globalPlugins[POSTGETCLEANUP][FOREACH])
 			{
 				keySetName (parentKey, keyName (initialParent));
+				/* TODO: Remove usage of deprecated internal iterator */
 				ksRewind (ks);
 				handle->globalPlugins[POSTGETCLEANUP][FOREACH]->kdbGet (handle->globalPlugins[POSTGETCLEANUP][FOREACH], ks,
 											parentKey);
@@ -915,15 +924,18 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 
 static int copyError (Key * dest, Key * src)
 {
-	keyRewindMeta (src);
 	const Key * metaKey = keyGetMeta (src, "error");
 	if (!metaKey) return 0;
 	keySetMeta (dest, keyName (metaKey), keyString (metaKey));
-	while ((metaKey = keyNextMeta (src)) != NULL)
+
+	KeySet * metaKeys = keyMeta (src);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		metaKey = ksAtCursor (metaKeys, it);
 		if (strncmp (keyName (metaKey), "error/", 6)) break;
 		keySetMeta (dest, keyName (metaKey), keyString (metaKey));
 	}
+
 	return 1;
 }
 static void clearError (Key * key)
@@ -1087,6 +1099,7 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
 
+	/* TODO: Replace deprecated usage of internal iterator! */
 	// replace ks with cached keyset
 	ksRewind (*cache);
 	if (ks->size == 0)
@@ -1410,6 +1423,7 @@ cachemiss:
 
 		if (splitGet (split, parentKey, handle) == -1)
 		{
+			/* TODO: Remove use of deprecated internal iterator! */
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
@@ -1458,6 +1472,7 @@ cachemiss:
 		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
+			/* TODO: Remove use of deprecated internal iterator! */
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
 			// continue, because sizes are already updated
 		}
@@ -1506,6 +1521,7 @@ cachemiss:
 	// the default split is not handled by POSTGETSTORAGE
 	splitMergeDefault (split, ks);
 
+	/* TODO: Remove use of deprecated internal iterator! */
 	ksRewind (ks);
 
 	keySetName (parentKey, keyName (initialParent));
@@ -1556,6 +1572,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 			int ret = 0; // last return value
 
 			Backend * backend = split->handles[i];
+			/* TODO: Remove use of deprecated internal iterator! */
 			ksRewind (split->keysets[i]);
 			if (backend->setplugins[p] && backend->setplugins[p]->kdbSet)
 			{
@@ -1593,6 +1610,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 			{
 				if (hooks[PRESETSTORAGE][FOREACH])
 				{
+					/* TODO: Remove use of deprecated internal iterator! */
 					ksRewind (split->keysets[i]);
 					hooks[PRESETSTORAGE][FOREACH]->kdbSet (hooks[PRESETSTORAGE][FOREACH], split->keysets[i], parentKey);
 				}
@@ -1601,6 +1619,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 			{
 				if (hooks[PRESETCLEANUP][FOREACH])
 				{
+					/* TODO: Remove use of deprecated internal iterator! */
 					ksRewind (split->keysets[i]);
 					hooks[PRESETCLEANUP][FOREACH]->kdbSet (hooks[PRESETCLEANUP][FOREACH], split->keysets[i], parentKey);
 				}
@@ -1614,6 +1633,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 				// and leads to warnings
 				// because of .tmp files not
 				// found
+				/* TODO: Remove use of deprecated internal iterator! */
 				*errorKey = ksCurrent (split->keysets[i]);
 
 				// so better keep going, but of
@@ -1652,6 +1672,7 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 				printf ("elektraSetCommit: %p # %zu with %s - %s\n", backend, p, keyName (parentKey),
 					keyString (parentKey));
 #endif
+				/* TODO: Remove use of deprecated internal iterator! */
 				ksRewind (split->keysets[i]);
 				if (p == COMMIT_PLUGIN)
 				{
@@ -1690,6 +1711,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
 			int ret = 0;
 			Backend * backend = split->handles[i];
 
+			/* TODO: Remove use of deprecated internal iterator! */
 			ksRewind (split->keysets[i]);
 			if (backend->errorplugins[p])
 			{
@@ -1866,6 +1888,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (syncstate == -1)
 	{
 		clearError (parentKey); // clear previous error to set new one
+		/* TODO: Remove use of deprecated internal iterator! */
 		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "No default backend found, but should be. Keyname: %s",
 						 keyName (ksCurrent (ks)));
 		goto error;

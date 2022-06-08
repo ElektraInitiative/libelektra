@@ -181,8 +181,6 @@ hosts typesafe with plugins enabled
 
 iterator interface (+document better)
 
-ksNext should be safe to missusage?
-
 cursor placement:
 	ksCut within cutted area
 	ksAppend

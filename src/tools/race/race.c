@@ -45,15 +45,6 @@ void * writer (void * pV_data ELEKTRA_UNUSED)
 		printf ("I (%d/%lu) won the race! Got return values from first get %d,"
 			" from set %d, from second get %d\n",
 			pid, tid, retg, rets, retg2);
-		ksRewind (ks);
-		/*
-		Key * c;
-		while ((c = ksNext(ks)))
-		{
-			printf ("Got key: %s - %s\n",
-				keyName(c), keyString(c));
-		}
-		*/
 	}
 	else
 	{

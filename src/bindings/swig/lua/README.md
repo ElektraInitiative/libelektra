@@ -23,3 +23,17 @@ Please make sure to set `TARGET_LUA_CMOD_FOLDER` and `TARGET_LUA_LMOD_FOLDER` if
 Note that cmake does _not_ automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory
 in that case.
+
+## Iteration
+
+Use external iterators the following way:
+
+```lua
+size = kdb.ksSize(keySet);
+if size > 0 then
+	for i = 1, size do
+		key = kdb.ksAt(keySet, i - 1)
+		-- ...
+	end
+end
+```

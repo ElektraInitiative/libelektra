@@ -35,32 +35,27 @@ static bool predNeedsOrder (Key * key);
 
 bool prepareKeySet (KeySet * keys, Key * parent)
 {
-	elektraCursor cursor = ksGetCursor (keys);
 	addMissingArrayKeys (keys, parent);
 	pruneInvalidArrayKeys (keys);
 	if (!orderUnorderedKeys (keys))
 	{
-		ksSetCursor (keys, cursor);
 		return false;
 	}
 	completeKeySetComments (keys);
-	ksSetCursor (keys, cursor);
 	return false;
 }
 
 static void completeKeySetComments (KeySet * keys)
 {
-	ksRewind (keys);
-	Key * key;
-	while ((key = ksNext (keys)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (keys); ++it)
 	{
+		Key * key = ksAtCursor (keys, it);
 		completeKeyComments (key);
 	}
 }
 
 static void completeKeyComments (Key * key)
 {
-	keyRewindMeta (key);
 	for (size_t index = 0;; index++)
 	{
 		char * indexStr = indexToArrayString (index);
@@ -97,7 +92,6 @@ static void completeKeyComments (Key * key)
 
 static bool orderUnorderedKeys (KeySet * keys)
 {
-	ksRewind (keys);
 	KeySet * unordered = collectUnorderedKeys (keys);
 	if (unordered == NULL)
 	{
@@ -112,10 +106,10 @@ static bool orderUnorderedKeys (KeySet * keys)
 static void addMissingArrayKeys (KeySet * keys, Key * parent)
 {
 	ArrayInfo * arrays = NULL;
-	ksRewind (keys);
-	Key * key;
-	while ((key = ksNext (keys)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (keys); ++it)
 	{
+		Key * key = ksAtCursor (keys, it);
 		if (keyCmp (key, parent) == 0)
 		{
 			continue;
@@ -165,16 +159,16 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 
 static void pruneInvalidArrayKeys (KeySet * keys)
 {
-	ksRewind (keys);
 	KeySet * pruneSet = ksNew (8, KS_END);
-	Key * key = ksNext (keys);
-	while (key != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (keys);)
 	{
+		Key * key = ksAtCursor (keys, it);
 		const Key * meta = keyGetMeta (key, "array");
-		if (meta != NULL)
+		if (meta)
 		{
-			Key * sub;
-			while ((sub = ksNext (keys)) != NULL && keyIsBelow (key, sub) == 1)
+			Key * sub = ksAtCursor (keys, ++it);
+			while (sub && keyIsBelow (key, sub) == 1)
 			{
 				char * directSub = getDirectSubKeyName (key, sub);
 				if (!isArrayIndex (directSub))
@@ -183,17 +177,19 @@ static void pruneInvalidArrayKeys (KeySet * keys)
 					break;
 				}
 				elektraFree (directSub);
+
+				sub = ksAtCursor (keys, ++it);
 			}
-			key = ksCurrent (keys);
 		}
 		else
 		{
-			key = ksNext (keys);
+			++it;
 		}
 	}
-	ksRewind (pruneSet);
-	while ((key = ksNext (pruneSet)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (pruneSet); ++it)
 	{
+		Key * key = ksAtCursor (pruneSet, it);
 		Key * prune = ksLookup (keys, key, KDB_O_POP);
 		ELEKTRA_ASSERT (prune != NULL, "Key must exist in keyset");
 		keyDel (prune);
@@ -234,21 +230,20 @@ static KeySet * collectUnorderedKeys (KeySet * ks)
 
 static void assignContinuousOrder (KeySet * ksUnordered, int startOrder)
 {
-	ksRewind (ksUnordered);
-	Key * key;
-	while ((key = ksNext (ksUnordered)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (ksUnordered); ++it)
 	{
+		Key * key = ksAtCursor (ksUnordered, it);
 		setOrderForKey (key, startOrder++);
 	}
 }
 
 static int getMaxOrder (KeySet * ks)
 {
-	ksRewind (ks);
 	int maxOrder = 0;
-	Key * key;
-	while ((key = ksNext (ks)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * key = ksAtCursor (ks, it);
 		const Key * meta = keyGetMeta (key, "order");
 		if (meta != NULL)
 		{

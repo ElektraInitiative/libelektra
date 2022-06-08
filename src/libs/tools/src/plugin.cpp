@@ -124,23 +124,26 @@ void Plugin::parse ()
 
 	root.setName (std::string ("system:/elektra/modules/") + spec.getName () + "/exports");
 
-	k = info.lookup (root);
-
-	if (k)
+	ssize_t it = info.search (root) + 1;
+	if (it > 0)
 	{
-		while ((k = info.next ()) && k.isBelow (root))
+		for (; it < info.size (); ++it)
 		{
+			k = info.at (it);
+			if (!k.isBelow (root)) break;
 			symbols[k.getBaseName ()] = (*k.getFunc ());
 		}
 	}
 
 	root.setName (std::string ("system:/elektra/modules/") + spec.getName () + "/infos");
-	k = info.lookup (root);
 
-	if (k)
+	it = info.search (root) + 1;
+	if (it > 0)
 	{
-		while ((k = info.next ()) && k.isBelow (root))
+		for (; it < info.size (); ++it)
 		{
+			k = info.at (it);
+			if (!k.isBelow (root)) break;
 			infos[k.getBaseName ()] = k.getString ();
 		}
 	}

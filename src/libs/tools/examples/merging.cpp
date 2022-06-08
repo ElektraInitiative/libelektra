@@ -122,9 +122,8 @@ int main ()
 		KeySet conflicts = result.getConflictSet ();
 
 		cerr << conflicts.size () << " conflicts were detected that could not be resolved automatically:" << endl;
-		conflicts.rewind ();
-		Key current;
-		while ((current = conflicts.next ()))
+
+		for (Key current : conflicts)
 		{
 			// For each unresolved conflict there is a conflict key in the merge result.
 			// This conflict key contains meta information about the reason of the conflict.

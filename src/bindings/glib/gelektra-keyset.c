@@ -236,30 +236,6 @@ GElektraKey * gelektra_keyset_lookup_byname (GElektraKeySet * ks, const char * n
 
 /* iterating */
 /**
- * gelektra_keyset_head:
- * @ks: A #GElektraKeySet
- *
- * Returns: (transfer full): First #GElektraKey in @ks
- * see ksHead
- */
-GElektraKey * gelektra_keyset_head (const GElektraKeySet * ks)
-{
-	return gelektra_key_make (ksHead (ks->keyset));
-}
-
-/**
- * gelektra_keyset_tail:
- * @ks: A #GElektraKeySet
- *
- * Returns: (transfer full): Last #GElektraKey in @ks
- * see ksTail
- */
-GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks)
-{
-	return gelektra_key_make (ksTail (ks->keyset));
-}
-
-/**
  * gelektra_keyset_at:
  * @ks: A #GElektraKeySet
  * @pos: The cursor position

@@ -675,9 +675,9 @@ static void test_mmap_filter_meta (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	Key * current;
-	ksRewind (returned);
-	while ((current = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		current = ksAtCursor (returned, it);
 		succeed_if (current->meta != 0, "key had no metadata, but metadata was expected");
 		ksClear (current->meta);
 	}
@@ -687,9 +687,10 @@ static void test_mmap_filter_meta (const char * tmpFile)
 
 	returned = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
-	ksRewind (returned);
-	while ((current = ksNext (returned)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		current = ksAtCursor (returned, it);
 		succeed_if (current->meta == 0, "key had metadata, but metadata was expected to be filtered");
 	}
 
@@ -710,9 +711,10 @@ static void test_mmap_metacopy (const char * tmpFile)
 	keySetMeta (shareMeta, "sharedmeta", "shared meta key test");
 
 	Key * current;
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		current = ksAtCursor (ks, it);
 		keyCopyMeta (current, shareMeta, "sharedmeta");
 	}
 	KeySet * expected = ksDeepDup (ks);

@@ -84,9 +84,10 @@ static void linkProfileKeys (KeySet * swKS, KeySet * profileKeys, KeySet * appen
 	Key * profileCutKey = NULL;
 	Key * profileKey = NULL;
 	const char * profileString = NULL;
-	ksRewind (profileKeys);
-	while ((profileKey = ksNext (profileKeys)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (profileKeys); ++it)
 	{
+		profileKey = ksAtCursor (profileKeys, it);
 		profileString = keyString (profileKey);
 		if (profileString)
 		{
@@ -96,10 +97,11 @@ static void linkProfileKeys (KeySet * swKS, KeySet * profileKeys, KeySet * appen
 			keyAddBaseName (currentProfileKey, "current");
 			keyAddBaseName (profileCutKey, profileString);
 			KeySet * profileKS = ksCut (swKS, profileCutKey);
-			ksRewind (profileKS);
 			Key * cur;
-			while ((cur = ksNext (profileKS)) != NULL)
+
+			for (elektraCursor itProfileKS = 0; itProfileKS < ksGetSize (profileKS); ++itProfileKS)
 			{
+				cur = ksAtCursor (profileKS, itProfileKS);
 				if (!strcmp (keyName (cur), keyName (profileCutKey))) continue;
 				Key * overrideKey = keyDupWithNS (currentProfileKey, KEY_NS_SPEC);
 				const char * relativeName = elektraKeyGetRelativeName (cur, profileCutKey);
@@ -127,19 +129,21 @@ static void linkProfileKeys (KeySet * swKS, KeySet * profileKeys, KeySet * appen
 
 static void linkDefaultKeys (KeySet * swKS, KeySet * profileParents, KeySet * appendedKeys)
 {
-	ksRewind (profileParents);
 	Key * profileParent = NULL;
-	while ((profileParent = ksNext (profileParents)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (profileParents); ++it)
 	{
+		profileParent = ksAtCursor (profileParents, it);
 		Key * defaultCutKey = keyDup (profileParent, KEY_CP_ALL);
 		keyAddName (defaultCutKey, "%");
 		KeySet * defaultKS = ksCut (swKS, defaultCutKey);
-		ksRewind (defaultKS);
 		Key * cur;
 		Key * currentProfileKey = keyDup (profileParent, KEY_CP_ALL);
 		keyAddName (currentProfileKey, "current");
-		while ((cur = ksNext (defaultKS)) != NULL)
+
+		for (elektraCursor itDefaultKS = 0; itDefaultKS < ksGetSize (defaultKS); ++itDefaultKS)
 		{
+			cur = ksAtCursor (defaultKS, itDefaultKS);
 			if (!strcmp (keyName (cur), keyName (defaultCutKey))) continue;
 			const char * relativeName = elektraKeyGetRelativeName (cur, defaultCutKey);
 			Key * overrideKey = keyDupWithNS (currentProfileKey, KEY_NS_SPEC);
@@ -187,14 +191,15 @@ int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	Key * swKey = keyNew ("/sw", KEY_END);
 	KeySet * swKS = ksCut (returned, swKey);
 	keyDel (swKey);
-	ksRewind (swKS);
 	Key * cur;
 
 	KeySet * appendedKeys = elektraPluginGetData (handle);
 	if (!appendedKeys) appendedKeys = ksNew (0, KS_END);
 	KeySet * profileKeys = ksNew (0, KS_END);
-	while ((cur = ksNext (swKS)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (swKS); ++it)
 	{
+		cur = ksAtCursor (swKS, it);
 		if (!fnmatch (PROFILEPATH, keyName (cur), FNM_PATHNAME))
 		{
 			ksAppendKey (profileKeys, cur);
@@ -203,10 +208,11 @@ int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	linkProfileKeys (swKS, profileKeys, appendedKeys);
 	ksDel (profileKeys);
 	ksDel (appendedKeys);
-	ksRewind (swKS);
 	KeySet * profileParents = ksNew (0, KS_END);
-	while ((cur = ksNext (swKS)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (swKS); ++it)
 	{
+		cur = ksAtCursor (swKS, it);
 		if (!fnmatch (CURRENTPATH, keyName (cur), FNM_PATHNAME))
 		{
 			Key * profileParent = keyDup (cur, KEY_CP_ALL);
@@ -228,10 +234,11 @@ int elektraProfileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	// get all keys
 	KeySet * appendedKeys = elektraPluginGetData (handle);
 	if (!appendedKeys) return 1;
-	ksRewind (appendedKeys);
 	Key * cur;
-	while ((cur = ksNext (appendedKeys)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (appendedKeys); ++it)
 	{
+		cur = ksAtCursor (appendedKeys, it);
 		keyDel (ksLookup (returned, cur, KDB_O_POP));
 	}
 	ksDel (appendedKeys);

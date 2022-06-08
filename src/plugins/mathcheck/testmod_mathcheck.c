@@ -20,7 +20,6 @@
 		Key * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                \
 		KeySet * conf = ksNew (0, KS_END);                                                                                         \
 		PLUGIN_OPEN ("mathcheck");                                                                                                 \
-		ksRewind (ks);                                                                                                             \
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == retval, "error");                                                    \
 		keyDel (parentKey);                                                                                                        \
 		PLUGIN_CLOSE ();                                                                                                           \
@@ -31,7 +30,6 @@
 		Key * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                \
 		KeySet * conf = ksNew (0, KS_END);                                                                                         \
 		PLUGIN_OPEN ("mathcheck");                                                                                                 \
-		ksRewind (ks);                                                                                                             \
 		plugin->kdbSet (plugin, ks, parentKey);                                                                                    \
 		succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/mathcheck/sum", 0)), value), "error");                    \
 		keyDel (parentKey);                                                                                                        \
@@ -58,7 +56,6 @@ static void test_multiUp (void)
 			     keyNew ("user:/tests/mathcheck/up/val3", KEY_VALUE, "10", KEY_END), KS_END);
 
 	PLUGIN_OPEN ("mathcheck");
-	ksRewind (ks);
 	plugin->kdbSet (plugin, ks, parentKey);
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/mathcheck/up/sum", 0)), "13"), "error");
 	keyDel (parentKey);

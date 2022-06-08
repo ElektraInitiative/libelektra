@@ -20,11 +20,13 @@ KeySet * myConfig = ksNew (20, keyNew ("user:/name1", KEY_END), keyNew ("user:/n
 ksAppendKey (myConfig, keyNew ("user:/name4", KEY_END));
 
 Key * current;
-ksRewind (myConfig);
-while ((current = ksNext (myConfig)) != 0)
+
+for (elektraCursor it = 0; it < ksGetSize (myConfig); ++it)
 {
+	current = ksAtCursor (myConfig, it);
 	printf ("Key name is %s.\n", keyName (current));
 }
+
 ksDel (myConfig); // delete keyset and all keys appended
 //! [Full Example]
 }

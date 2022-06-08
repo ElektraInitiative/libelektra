@@ -374,7 +374,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 		KeySet * tmp = keys;
 		keys = elektraDefaultGlobalConfig (keys);
 		ksDel (tmp);
-		root = ksHead (keys);
+		root = ksAtCursor (keys, 0);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
 
@@ -428,7 +428,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 						if (!elektraStrCaseCmp (subPlacement, GlobalpluginSubPositionsStr[j]))
 						{
 							Plugin * subPlugin = 0;
-							int subRet =
+							int subRet = // makes ksCut on Keyset `global`!
 								elektraMountGlobalsLoadPlugin (&subPlugin, referencePlugins, curSubPosition,
 											       subPositions, system, modules, errorKey);
 							if (subRet == -1)
@@ -468,7 +468,6 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 {
 	Key * root;
-	Key * cur;
 
 	root = ksLookupByName (modules, "system:/elektra/modules", 0);
 
@@ -481,9 +480,9 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 	KeySet * alreadyMounted = ksNew (5, KS_END);
 	ssize_t oldSize = 0;
 
-	while ((cur = ksNext (modules)) != 0)
+	for (elektraCursor it = ksSearch (modules, root) + 1; it < ksGetSize (modules); ++it)
 	{
-		Backend * backend = backendOpenModules (modules, kdb->global, errorKey);
+		Backend * backend = backendOpenModules (modules, kdb->global, errorKey, it);
 
 		if (!backend)
 		{

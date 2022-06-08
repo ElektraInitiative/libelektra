@@ -20,22 +20,24 @@
 
 static Node * createNode (Key * key, Node * parent);
 static bool addChild (Node * parent, Node * child);
-static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys);
-static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys);
+static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys, elektraCursor * ksPosition);
+static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys, elektraCursor * ksPosition);
 static void sortChildren (Node * node);
 static int nodeCmpWrapper (const void * a, const void * b);
 static NodeType getNodeType (Key * key);
 static bool isTable (const Node * node);
 
-Node * buildTree (Node * parent, Key * root, KeySet * keys)
+Node * buildTree (Node * parent, Key * root, KeySet * keys, elektraCursor * ksPosition)
 {
+	ELEKTRA_ASSERT (ksPosition && *ksPosition >= 0, "ksPosition must be >=0, but wasn't");
+
 	if (isTableArray (root))
 	{
-		return buildTreeTableArray (parent, root, keys);
+		return buildTreeTableArray (parent, root, keys, ksPosition);
 	}
 	else if (isArray (root))
 	{
-		return buildTreeArray (parent, root, keys);
+		return buildTreeArray (parent, root, keys, ksPosition);
 	}
 	else
 	{
@@ -44,10 +46,10 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys)
 
 		if (node->type != NT_LEAF)
 		{
-			while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
+			while ((key = ksAtCursor (keys, *ksPosition)) != NULL && keyIsBelow (root, key) == 1)
 			{
-				ksNext (keys);
-				Node * child = buildTree (node, key, keys);
+				++(*ksPosition);
+				Node * child = buildTree (node, key, keys, ksPosition);
 				if (child == NULL)
 				{
 					destroyTree (node);
@@ -65,9 +67,10 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys)
 	}
 }
 
-static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys)
+static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys, elektraCursor * ksPosition)
 {
 	ELEKTRA_ASSERT (isTableArray (root), "Root must be a table array, but wasn't");
+	ELEKTRA_ASSERT (ksPosition && *ksPosition >= 0, "*ksPosition must be >=0, but wasn't");
 	Node * node = createNode (root, parent);
 
 	size_t max = getArrayMax (root);
@@ -78,13 +81,13 @@ static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys)
 		// Check if, we have got the array element root in the keyset
 		// This happens, if comments are associated to the table array declaration in a TOML file.
 		// If we have, use this key as root instead.and forward to the next key in the keyset
-		if (keyCmp (ksCurrent (keys), elementName) == 0)
+		if (keyCmp (ksAtCursor (keys, *ksPosition), elementName) == 0)
 		{
 			keyDel (elementName);
-			elementName = ksCurrent (keys);
-			ksNext (keys);
+			elementName = ksAtCursor (keys, *ksPosition);
+			++(*ksPosition);
 		}
-		Node * element = buildTree (node, elementName, keys);
+		Node * element = buildTree (node, elementName, keys, ksPosition);
 		if (!addChild (node, element))
 		{
 			destroyTree (node);
@@ -94,9 +97,11 @@ static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys)
 	return node;
 }
 
-static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
+static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys, elektraCursor * ksPosition)
 {
 	ELEKTRA_ASSERT (isArray (root) && !isTableArray (root), "Root must be array, but no table array, but wasn't");
+	ELEKTRA_ASSERT (ksPosition && *ksPosition >= 0, "*ksPosition must be >=0, but wasn't");
+
 	Node * node = createNode (root, parent);
 
 	size_t max = getArrayMax (root);
@@ -107,11 +112,11 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 		if (elementKey != NULL)
 		{
 			if (!isLeaf (elementKey, keys))
-			{		       // true for array that contains inline tables
-				ksNext (keys); // we need to go to the first sub key of the element, since buildTree
-			}		       // loops while ksCurrent is below root key (and root != below root)
-					       // TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
-			if (!addChild (node, buildTree (node, elementKey, keys)))
+			{			 // true for array that contains inline tables
+				++(*ksPosition); // we need to go to the first sub key of the element, since buildTree
+			}			 // loops while ksAtCursor(keys, ksPosition) is below root key (and root != below root)
+						 // TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
+			if (!addChild (node, buildTree (node, elementKey, keys, ksPosition)))
 			{
 				destroyTree (node);
 				return NULL;
@@ -120,11 +125,13 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 
 		keyDel (elementName);
 	}
+
 	Key * key;
-	while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
+	while ((key = ksAtCursor (keys, *ksPosition)) != NULL && keyIsBelow (root, key) == 1)
 	{
-		ksNext (keys);
+		++(*ksPosition);
 	}
+
 	return node;
 }
 

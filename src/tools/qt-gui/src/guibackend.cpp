@@ -228,10 +228,10 @@ QString GUIBackend::pluginInfo (QString pluginName) const
 	Key root;
 	root.setName (std::string ("system:/elektra/modules/") + plugin->name () + "/infos");
 	Key k = info.lookup (root);
-
 	if (k)
 	{
-		while ((k = info.next ()) && k.isBelow (root))
+		ssize_t it = info.search (k) + 1;
+		while ((k = info.at (it++)) && k.isBelow (root))
 		{
 			infoString.append (QString::fromStdString (k.getBaseName ()) + ": " + QString::fromStdString (k.getString ()) +
 					   "\n\n");

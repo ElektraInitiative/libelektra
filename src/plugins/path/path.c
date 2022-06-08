@@ -367,10 +367,11 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 {
 	/* set all keys */
 	Key * cur;
-	ksRewind (returned);
 	int rc = 1;
-	while ((cur = ksNext (returned)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * pathMeta = keyGetMeta (cur, "check/path");
 		if (!pathMeta) continue;
 		rc = validateKey (cur, parentKey);

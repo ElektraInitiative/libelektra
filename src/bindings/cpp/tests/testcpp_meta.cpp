@@ -92,20 +92,14 @@ TEST (meta, iter)
 	Key end = static_cast<ckdb::Key *> (nullptr); // key = 0
 	succeed_if (!end, "key is a null key");
 
-	int count = 0;
-	k.rewindMeta ();
-	while ((meta = k.nextMeta ()))
-		count++;
-	succeed_if (count == 3, "Not the correct number of metadata");
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+	succeed_if (ckdb::ksGetSize (metaKeys) == 3, "Not the correct number of metadata");
 
 	k.setMeta ("d", "more");
 	k.setMeta ("e", "even more");
 
-	count = 0;
-	k.rewindMeta ();
-	while ((meta = k.nextMeta ()))
-		count++;
-	succeed_if (count == 5, "Not the correct number of metadata");
+	metaKeys = ckdb::keyMeta (k.getKey ());
+	succeed_if (ckdb::ksGetSize (metaKeys) == 5, "Not the correct number of metadata");
 }
 
 TEST (test, copy)
@@ -136,13 +130,13 @@ TEST (test, copy)
 	succeed_if (c.getMeta<int> ("a") == 420, "could not get value copied before (again)");
 	succeed_if (k.getMeta<const ckdb::Key *> ("a") == c.getMeta<const ckdb::Key *> ("a"), "copy meta did not work (again)");
 
-	Key d;
-	Key meta;
 
-	k.rewindMeta ();
-	while ((meta = k.nextMeta ()))
+	Key d;
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
-		d.copyMeta (k, meta.getName ());
+		const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
+		d.copyMeta (k, curMeta.getName ());
 	}
 
 	succeed_if (d.getMeta<std::string> ("a") == "420", "did not copy metavalue in the loop");
@@ -212,7 +206,12 @@ TEST (meta, cErrorsMetaKeys)
 	Key m;
 
 	k.setMeta ("metaKey", "metaValue");
-	m = k.currentMeta ();
+
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+
+	EXPECT_EQ (ckdb::ksGetSize (metaKeys), 1);
+	m = ckdb::ksAtCursor (metaKeys, 0);
+
 
 	EXPECT_THROW (m.addName ("test"), KeyInvalidName);
 	EXPECT_THROW (m.setName ("test"), KeyInvalidName);
@@ -222,9 +221,6 @@ TEST (meta, cErrorsMetaKeys)
 
 	EXPECT_THROW (m.setMeta ("metaKey2", "metaValue2"), KeyException);
 	EXPECT_THROW (m.delMeta ("metaKey2"), KeyException);
-
-	/* c-function 'int keyRewindMeta (Key * key)' in keymeta.c should return 0 (no error) */
-	EXPECT_NO_THROW (m.rewindMeta ());
 
 	EXPECT_THROW (m.set ("Test"), KeyException);
 

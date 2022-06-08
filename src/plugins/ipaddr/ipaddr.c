@@ -136,10 +136,10 @@ int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 {
 	// set all keys
 	// this function is optional
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/ipaddr");
 		if (!meta) continue;
 		int rc = validateKey (cur, parentKey);

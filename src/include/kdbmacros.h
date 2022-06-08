@@ -74,11 +74,11 @@
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		Key * k;                                                                                                                   \
-		ksRewind (info);                                                                                                           \
-		ksRewind (returned);                                                                                                       \
-		while ((k = ksNext (returned)))                                                                                            \
+		elektraCursor it = 0;                                                                                                      \
+		for (; it < ksGetSize (returned); ++it)                                                                                    \
 		{                                                                                                                          \
-			Key * c = ksNext (info);                                                                                           \
+			k = ksAtCursor (returned, it);                                                                                     \
+			Key * c = ksAtCursor (info, it);                                                                                   \
 			if (!c)                                                                                                            \
 			{                                                                                                                  \
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (error,                                                             \
@@ -98,7 +98,7 @@
 				return -1;                                                                                                 \
 			}                                                                                                                  \
 		}                                                                                                                          \
-		if ((k = ksNext (info)) != 0)                                                                                              \
+		if ((k = ksAtCursor (info, it)) != 0)                                                                                      \
 		{                                                                                                                          \
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (error, "Read only plugin, removing the key %s (value %s) is not allowed",  \
 								keyName (k), keyString (k));                                               \

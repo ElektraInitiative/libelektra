@@ -168,13 +168,13 @@ void outputGTest (kdb::KeySet tocheck, std::string name)
 {
 	std::cout << "ASSERT_EQ(" << name << ".size(), " << tocheck.size () << ") << \"wrong size\" << ks;" << std::endl;
 	std::cout << name << ".rewind();" << std::endl;
-	tocheck.rewind ();
-	while (tocheck.next ())
+
+	for (kdb::Key k : tocheck)
 	{
-		std::cout << name << ".next();" << std::endl;
-		std::cout << "EXPECT_EQ(" << name << ".current().getName(), \"" << makeLiteralString (tocheck.current ().getName ())
+		std::cout << name << " iteration" << std::endl;
+		std::cout << "EXPECT_EQ(" << name << "k.getName(), \"" << makeLiteralString (k.getName ())
 			  << "\") << \"name of element in keyset wrong\";" << std::endl;
-		std::cout << "EXPECT_EQ(" << name << ".current().getString(), \"" << makeLiteralString (tocheck.current ().getString ())
+		std::cout << "EXPECT_EQ(" << name << "k.getString(), \"" << makeLiteralString (k.getString ())
 			  << "\") << \"string of element in keyset wrong\";" << std::endl;
 	}
 }

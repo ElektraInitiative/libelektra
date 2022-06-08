@@ -109,16 +109,13 @@ static void test_iterating (void)
 	}
 	succeed_if (pos == 3, "some keys are missing");
 
-	tmpkey = gelektra_keyset_head (ks);
-	succeed_if (gelektra_key_cmp (tmpkey, key1) == 0, "keyset_head returned unexpected key");
-	g_object_unref (tmpkey);
 
-	tmpkey = gelektra_keyset_tail (ks);
-	succeed_if (gelektra_key_cmp (tmpkey, key2) == 0, "keyset_tail returned unexpected key");
+	tmpkey = gelektra_keyset_at (ks, gelektra_keyset_len (ks) - 1);
+	succeed_if (gelektra_key_cmp (tmpkey, key2) == 0, "keyset_at for last position returned unexpected key");
 	g_object_unref (tmpkey);
 
 	tmpkey = gelektra_keyset_at (ks, 0);
-	succeed_if (gelektra_key_cmp (tmpkey, key1) == 0, "keyset_atcursor returned unexpected key");
+	succeed_if (gelektra_key_cmp (tmpkey, key1) == 0, "keyset_at for first position returned unexpected key");
 	g_object_unref (tmpkey);
 
 	g_object_unref (key1);

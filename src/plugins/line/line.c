@@ -48,7 +48,8 @@ int elektraLineRead (FILE * fp, KeySet * returned)
 		{
 			value[n - 1] = '\0';
 		}
-		read = keyDup (ksTail (returned), KEY_CP_ALL);
+
+		read = keyDup (ksAtCursor (returned, ksGetSize (returned) - 1), KEY_CP_ALL);
 		if (elektraArrayIncName (read) == -1)
 		{
 			elektraFree (value);
@@ -99,7 +100,8 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	if (ret == -1)
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not increment array from %s", keyName (ksTail (returned)));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not increment array from %s",
+							 keyName (ksAtCursor (returned, ksGetSize (returned) - 1)));
 		ret = -1;
 	}
 	else if (feof (fp) == 0)
@@ -128,14 +130,16 @@ int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	Key * cur;
-	if (!ksLookup (returned, parentKey, 0))
-	{
-		// ignore parentKey if found
-		ksRewind (returned);
-	}
+	elektraCursor it = ksSearch (returned, parentKey);
 
-	while ((cur = ksNext (returned)) != 0)
+	if (it < 0)
+		it = 0;
+	else
+		it++; // ignore parentKey if found
+
+	for (; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		fprintf (fp, "%s\n", keyString (cur));
 	}
 

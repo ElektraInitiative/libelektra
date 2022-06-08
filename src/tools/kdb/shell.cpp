@@ -105,10 +105,9 @@ int ShellCommand::execute (Cmdline const &)
 		}
 		else if (command == "ksOutput")
 		{
-			current.rewind ();
-			while (current.next ())
+			for (ssize_t it = 0; it < current.size (); ++it)
 			{
-				Key const & c = current.current ();
+				Key const & c = current.at (it);
 				cout << c.getName ();
 				if (c.isString ())
 				{

@@ -163,10 +163,11 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 	//![get global keyset cleanup]
 
 	//![get filter]
-	Key * k;
-	ksRewind (returned);
-	while ((k = ksNext (returned)) != 0)
+
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * k = ksAtCursor (returned, it);
 		doAction (k);
 	}
 
@@ -251,10 +252,10 @@ int elektraKdbSet (KDB * handle, KeySet * keyset, Key * parentKey)
 int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	// the task of elektraPluginSet is now to store the keys
-	Key * k;
-	ksRewind (returned);
-	while ((k = ksNext (returned)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * k = ksAtCursor (returned, it);
 		saveToDisc (k);
 	}
 

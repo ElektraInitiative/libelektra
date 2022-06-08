@@ -30,7 +30,7 @@
 //! # }
 //! ```
 
-use crate::{ReadOnly, ReadableKey, WriteableKey};
+use crate::{ReadableKey, WriteableKey};
 use bitflags::bitflags;
 use elektra_sys;
 use std::borrow::Cow;
@@ -138,24 +138,6 @@ macro_rules! add_traits {
 add_traits!(StringKey<'_>);
 add_traits!(BinaryKey<'_>);
 
-/// An iterator over the metakeys.
-pub struct MetaIter<'a, T: WriteableKey> {
-    key: T,
-    _marker: std::marker::PhantomData<&'a mut T>
-}
-
-impl<'a, T: WriteableKey> Iterator for MetaIter<'a, T> {
-    type Item = ReadOnly<StringKey<'a>>;
-    fn next(&mut self) -> Option<Self::Item> {
-        let key_ptr = unsafe { elektra_sys::keyNextMeta(self.key.as_ptr()) };
-        if key_ptr.is_null() {
-            None
-        } else {
-            Some(unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) })
-        }
-    }
-}
-
 /// An iterator over the name.
 pub struct NameIter<'a, T: ReadableKey> {
     key: &'a T,
@@ -207,13 +189,6 @@ impl<'a> StringKey<'a> {
             )
         };
         unsafe { StringKey::from_ptr(dup_ptr) }
-    }
-
-    /// Returns an iterator over the key's metakeys.
-    pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, StringKey<'a>> {
-        let mut dup = self.duplicate(CopyOption::KEY_CP_ALL);
-        dup.rewind_meta();
-        MetaIter { key: dup, _marker: std::marker::PhantomData }
     }
 
     /// Returns an iterator over the key's name.
@@ -279,13 +254,6 @@ impl<'a> BinaryKey<'a> {
             )
         };
         unsafe { BinaryKey::from_ptr(dup_ptr) }
-    }
-
-    /// Returns an iterator over the key's metakeys.
-    pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, BinaryKey<'a>> {
-        let mut dup = self.duplicate(CopyOption::KEY_CP_ALL);
-        dup.rewind_meta();
-        MetaIter { key: dup, _marker: std::marker::PhantomData }
     }
 
     /// Returns an iterator over the key's name.
@@ -441,7 +409,6 @@ impl std::error::Error for KeyNotFoundError {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::KeyBuilder;
 
     #[test]
     fn can_write_read_key() {
@@ -569,6 +536,8 @@ mod tests {
         assert_eq!(meta_key.value(), "metaval");
     }
 
+    /* TODO: Implement external iteration of metakeys */
+    /*
     #[test]
     fn can_iterate_key() {
         let mut key = StringKey::new_empty();
@@ -577,13 +546,14 @@ mod tests {
         key.set_meta(meta[1].0, meta[1].1).unwrap();
 
         let mut did_iterate = false;
+
         for (i, metakey) in key.meta_iter().enumerate() {
             did_iterate = true;
             assert_eq!(metakey.name(), meta[i].0);
             assert_eq!(metakey.value(), meta[i].1);
         }
         assert!(did_iterate);
-    }
+    }*/
 
     #[test]
     fn can_delete_metadata() {

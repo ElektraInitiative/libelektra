@@ -78,13 +78,11 @@ int CpCommand::execute (Cmdline const & cl)
 
 	KeySet newConf;
 
-	oldConf.rewind ();
 	if (cl.verbose) cout << "common name: " << sourceName << endl;
 	if (cl.recursive)
 	{
 		// copy all keys with new name
-		Key k;
-		while ((k = oldConf.next ()))
+		for (Key k : oldConf)
 		{
 			Key rk = rename_key (k, sourceName, newDirName, cl.verbose);
 			copySingleKey (cl, rk, tmpConf, newConf);
@@ -93,7 +91,7 @@ int CpCommand::execute (Cmdline const & cl)
 	else
 	{
 		// just copy one key
-		Key k = oldConf.next ();
+		Key k = oldConf.at (0);
 		if (k != sourceKey)
 		{
 			cerr << "First key found " << k.getName () << " does not exactly match given key " << sourceKey.getName ()
@@ -107,7 +105,6 @@ int CpCommand::execute (Cmdline const & cl)
 	newConf.append (tmpConf); // these are unrelated keys
 	newConf.append (oldConf); // these are the original keys
 
-	newConf.rewind ();
 	kdb.set (newConf, destKey);
 
 	return 0;

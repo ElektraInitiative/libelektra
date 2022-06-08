@@ -631,13 +631,14 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 				   DynArray * dynArray)
 {
 	Key * cur;
-	ksRewind (returned);
 	size_t dataBlocksSize = 0; // sum of keyName and keyValue sizes
 	mmapMetaData->numKeys = 0;
 	mmapMetaData->numKeySets = 3;		 // include the magic, global and main keyset
 	mmapMetaData->ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
-	while ((cur = ksNext (returned)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
 
 		if (cur->meta && cur->meta->size > 0)
@@ -645,9 +646,9 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 			++mmapMetaData->numKeySets;
 
 			Key * curMeta;
-			ksRewind (cur->meta);
-			while ((curMeta = ksNext (cur->meta)) != 0)
+			for (elektraCursor itMeta = 0; itMeta < ksGetSize (cur->meta); ++itMeta)
 			{
+				curMeta = ksAtCursor (cur->meta, itMeta);
 				if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
 				{
 					// key was just inserted
@@ -665,9 +666,10 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 		mmapMetaData->numKeys += global->size;
 
 		Key * globalKey;
-		ksRewind (global);
-		while ((globalKey = ksNext (global)) != 0)
+
+		for (elektraCursor it = 0; it < ksGetSize (global); ++it)
 		{
+			globalKey = ksAtCursor (global, it);
 			dataBlocksSize += (globalKey->keySize + globalKey->keyUSize + globalKey->dataSize);
 
 			if (globalKey->meta && globalKey->meta->size > 0)
@@ -675,9 +677,10 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 				++mmapMetaData->numKeySets;
 
 				Key * curMeta;
-				ksRewind (globalKey->meta);
-				while ((curMeta = ksNext (globalKey->meta)) != 0)
+
+				for (elektraCursor itMeta = 0; itMeta < ksGetSize (globalKey->meta); ++itMeta)
 				{
+					curMeta = ksAtCursor (globalKey->meta, itMeta);
 					if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
 					{
 						// key was just inserted
@@ -805,12 +808,15 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 	newMeta->array = (Key **) mmapAddr->metaKsArrayPtr;
 	mmapAddr->metaKsArrayPtr += SIZEOF_KEY_PTR * key->meta->alloc;
 
-	keyRewindMeta (key);
 	size_t metaKeyIndex = 0;
 	Key * mappedMetaKey = 0;
 	const Key * metaKey;
-	while ((metaKey = keyNextMeta (key)) != 0)
+
+
+	KeySet * metaKeys = keyMeta (key);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		metaKey = ksAtCursor (metaKeys, it);
 		// get address of mapped key and store it in the new array
 		mappedMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) ((Key *) metaKey, dynArray)];
 		newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
@@ -853,9 +859,9 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		ksArray = (Key **) mmapAddr->globalKsArrayPtr;
 	}
 
-	ksRewind (keySet);
-	while ((cur = ksNext (keySet)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (keySet); ++it)
 	{
+		cur = ksAtCursor (keySet, it);
 		Key * mmapKey = (Key *) mmapAddr->keyPtr; // new key location
 		mmapAddr->keyPtr += SIZEOF_KEY;
 		*mmapKey = *cur;

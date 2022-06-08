@@ -149,8 +149,8 @@ static void test_iterate (void)
 	// output_keyset(mps);
 	// output_trie(trie);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
-	compare_key (ksHead (mps), mp);
-	compare_key (ksTail (mps), mp2);
+	compare_key (ksAtCursor (mps, 0), mp);
+	compare_key (ksAtCursor (mps, ksGetSize (mps) - 1), mp2);
 	ksDel (mps);
 
 	trieClose (trie, 0);
@@ -209,8 +209,8 @@ static void test_reviterate (void)
 	KeySet * mps = ksNew (0, KS_END);
 	collect_mountpoints (trie, mps);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
-	compare_key (ksHead (mps), mp);
-	compare_key (ksTail (mps), mp2);
+	compare_key (ksAtCursor (mps, 0), mp);
+	compare_key (ksAtCursor (mps, ksGetSize (mps) - 1), mp2);
 	ksDel (mps);
 
 	trieClose (trie, 0);

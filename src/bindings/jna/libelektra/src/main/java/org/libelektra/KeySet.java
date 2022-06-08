@@ -617,7 +617,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
   @Nonnull
   public Key first() {
     return checkPointer(
-        Elektra.INSTANCE.ksHead(getPointer()), Key::new, NoSuchElementException::new);
+        Elektra.INSTANCE.ksAtCursor(getPointer(), 0), Key::new, NoSuchElementException::new);
   }
 
   /**
@@ -630,7 +630,9 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
   @Nonnull
   public Key last() {
     return checkPointer(
-        Elektra.INSTANCE.ksTail(getPointer()), Key::new, NoSuchElementException::new);
+        Elektra.INSTANCE.ksAtCursor(getPointer(), Elektra.INSTANCE.ksGetSize(getPointer()) - 1),
+        Key::new,
+        NoSuchElementException::new);
   }
 
   /**

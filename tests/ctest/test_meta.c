@@ -69,11 +69,11 @@ static void test_metaArrayToKS (void)
 	Key * test = keyNew ("/a", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END);
 	KeySet * ks = elektraMetaArrayToKS (test, "dep");
 	Key * cur;
-	cur = ksNext (ks);
+	cur = ksAtCursor (ks, 0);
 	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep"), "failed!");
-	cur = ksNext (ks);
+	cur = ksAtCursor (ks, 1);
 	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep/#0"), "failed!");
-	cur = ksNext (ks);
+	cur = ksAtCursor (ks, 2);
 	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep/#1"), "failed!");
 	keyDel (test);
 	ksDel (ks);

@@ -45,11 +45,12 @@ typedef struct Node_
  * @params parent The root of the (sub-)tree to be created.
  * @params root The root key for the given key set.
  * @params keys All keys which may be a member of the tree.
+ * @params ksPosition Index to use for the KeySet keys (must by >=0) (replacement of internal iteration)
  *
  * @retval Pointer The root of the created tree
  * @retval NULL On Error, the root key contains additional error information.
  * */
-Node * buildTree (Node * parent, Key * root, KeySet * keys);
+Node * buildTree (Node * parent, Key * root, KeySet * keys, elektraCursor * ksPosition);
 
 /*
  * @brief Frees up any memory allocated within the tree and all it's children.

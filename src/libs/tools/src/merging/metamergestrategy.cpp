@@ -29,10 +29,10 @@ KeySet MetaMergeStrategy::getMetaKeys (Key & key)
 
 	if (key)
 	{
-		key.rewindMeta ();
-		Key currentMeta;
-		while ((currentMeta = key.nextMeta ()))
+		ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+		for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 		{
+			const Key & currentMeta = ckdb::ksAtCursor (metaKeys, it);
 			string resultName = "user:/" + currentMeta.getName ();
 			Key resultMeta = Key (resultName.c_str (), KEY_VALUE, currentMeta.getString ().c_str (), KEY_END);
 			result.append (resultMeta);
@@ -44,7 +44,6 @@ KeySet MetaMergeStrategy::getMetaKeys (Key & key)
 
 void MetaMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result)
 {
-	conflictKey.rewindMeta ();
 	Key currentMeta;
 
 	string baseLookup = rebasePath (conflictKey, task.mergeRoot, task.baseParent);
@@ -63,11 +62,9 @@ void MetaMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictK
 	MergeTask metaTask (BaseMergeKeys (baseMeta, root), OurMergeKeys (ourMeta, root), TheirMergeKeys (theirMeta, root), root);
 
 	MergeResult metaResult = innerMerger.mergeKeySet (metaTask);
-
 	KeySet mergedMeta = metaResult.getMergedKeys ();
-	Key current;
-	mergedMeta.rewind ();
-	while ((current = mergedMeta.next ()))
+
+	for (const Key & current : mergedMeta)
 	{
 		string metaName = current.getName ().substr (string ("user:/").length ());
 		conflictKey.setMeta (metaName, current.getString ());

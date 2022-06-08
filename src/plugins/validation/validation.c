@@ -173,10 +173,9 @@ static int validateKey (Key * key, Key * parentKey)
 
 int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	Key * cur = 0;
-
-	while ((cur = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * regexMeta = keyGetMeta (cur, "check/validation");
 
 		if (!regexMeta) continue;

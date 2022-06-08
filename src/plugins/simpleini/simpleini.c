@@ -360,10 +360,9 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	ELEKTRA_LOG ("Write to '%s' with format '%s'", keyString (parentKey), format);
 
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const char * name = elektraKeyGetRelativeName (cur, parentKey);
 		fprintf (fp, format, name, keyString (cur));
 	}

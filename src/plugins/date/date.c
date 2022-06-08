@@ -475,8 +475,10 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	// get all keys
 	Key * cur;
 	int rc = 1;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{
@@ -496,8 +498,10 @@ int elektraDateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	// this function is optional
 	Key * cur;
 	int rc = 1;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{

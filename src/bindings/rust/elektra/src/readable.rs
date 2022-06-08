@@ -48,11 +48,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
         unsafe { elektra_sys::keyGetRef(self.as_ref()) }
     }
 
-    /// Returns the value of a meta-information which is current.
-    fn current_meta(&self) -> ReadOnly<StringKey> {
-        let key_ptr = unsafe { elektra_sys::keyCurrentMeta(self.as_ref()) };
-        unsafe { ReadOnly::from_ptr(key_ptr as *mut elektra_sys::Key) }
-    }
 
     /// Returns the namespace of the name of this key.
     /// Note that there are some convenience methods implemented.

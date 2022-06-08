@@ -225,8 +225,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 {
 	struct passwd * pwd = elektraMalloc (sizeof (struct passwd));
-	ksRewind (ks);
-	Key * parent = ksNext (ks);
+	Key * parent = ksAtCursor (ks, 0);
 	Key * lookup = keyDup (parent, KEY_CP_ALL);
 	Key * found = NULL;
 	if (index == UID)
@@ -300,10 +299,10 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 					     strerror (errno));
 		return -1;
 	}
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		if (!keyIsDirectlyBelow (parentKey, cur)) continue;
 		KeySet * cutKS = ksCut (returned, cur);
 		struct passwd * pwd = KStoPasswd (cutKS, index);

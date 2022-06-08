@@ -95,14 +95,17 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 	}
 
 	root.setName (std::string ("system:/elektra/modules/") + name + "/exports");
-	Key k = conf.lookup (root);
 
-	if (k)
+
+	ssize_t it = conf.search (root) + 1;
+	if (it > 0)
 	{
 		cout << "Exported symbols: ";
-		while ((k = conf.next ()) && k.isBelow (root))
+
+		for (; it < conf.size (); ++it)
 		{
-			cout << k.getBaseName () << " ";
+			if (!conf.at (it).isBelow (root)) break;
+			cout << conf.at (it).getBaseName () << " ";
 		}
 		cout << endl;
 	}
@@ -110,14 +113,15 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 		cout << "no exported symbols found" << endl;
 
 	root.setName (std::string ("system:/elektra/modules/") + name + "/infos");
-	k = conf.lookup (root);
+	it = conf.search (root) + 1;
 
-	if (k)
+	if (it > 0)
 	{
-		while ((k = conf.next ()) && k.isBelow (root))
+		for (; it < conf.size (); ++it)
 		{
-			cout << getStdColor (ANSI_COLOR::BOLD) << k.getBaseName () << ": " << getStdColor (ANSI_COLOR::RESET)
-			     << k.getString () << endl;
+			if (!conf.at (it).isBelow (root)) break;
+			cout << getStdColor (ANSI_COLOR::BOLD) << conf.at (it).getBaseName () << ": " << getStdColor (ANSI_COLOR::RESET)
+			     << conf.at (it).getString () << endl;
 		}
 	}
 	else

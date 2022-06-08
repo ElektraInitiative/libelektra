@@ -72,9 +72,11 @@ static void keyMetaToNi (elektraNi_node add, Key * cur)
 	elektraNi_SetValue (add, keyString (cur), keyGetValueSize (cur) - 1);
 
 	const Key * m;
-	keyRewindMeta (cur);
-	while ((m = keyNextMeta (cur)) != 0)
+	KeySet * metaKeys = keyMeta (cur);
+
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		m = ksAtCursor (metaKeys, it);
 		// printf("set meta %s %s from %s\n", keyName(m), keyString(m), keyName(cur));
 		elektraNi_node madd = elektraNi_GetChild (add, keyName (m), keyGetNameSize (m) - 1, 1, 0);
 		elektraNi_SetValue (madd, keyString (m), keyGetValueSize (m) - 1);
@@ -84,22 +86,21 @@ static void keyMetaToNi (elektraNi_node add, Key * cur)
 int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	/* set all keys */
-
 	elektraNi_node root = elektraNi_New ();
+	elektraCursor it = 0;
 
-	Key * cur;
-	ksRewind (returned);
-
-	if (keyCmp (ksHead (returned), parentKey) == 0)
+	if (keyCmp (ksAtCursor (returned, 0), parentKey) == 0)
 	{
-		// printf ("found parentkey");
+		/* found parent key */
 		elektraNi_node add = elektraNi_GetChild (root, NULL, 0, 1, 0);
-		keyMetaToNi (add, ksHead (returned));
-		ksNext (returned); // do not process parent in loop again
+		keyMetaToNi (add, ksAtCursor (returned, 0));
+		++it; /* do not process parent in loop again */
 	}
 
-	while ((cur = ksNext (returned)) != 0)
+
+	for (; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const char * name = elektraKeyGetRelativeName (cur, parentKey);
 		elektraNi_node add = elektraNi_GetChild (root, name, strlen (name), 1, 0);
 		keyMetaToNi (add, cur);

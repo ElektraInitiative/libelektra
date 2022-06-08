@@ -174,18 +174,18 @@ static void test_ksReference (void)
 	ks = ksNew (0, KS_END);
 	k1 = keyNew ("user:/aname", KEY_END);
 
-	succeed_if (ksHead (0) == 0, "Not NULL on NULL KeySet");
-	succeed_if (ksTail (0) == 0, "Not NULL on NULL KeySet");
+	succeed_if (ksAtCursor (0, 0) == 0, "Not NULL on NULL KeySet");
+	succeed_if (ksAtCursor (0, ksGetSize (0) - 1) == 0, "Not NULL on NULL KeySet");
 
-	succeed_if (ksHead (ks) == 0, "Not NULL on empty KeySet");
-	succeed_if (ksTail (ks) == 0, "Not NULL on empty KeySet");
+	succeed_if (ksAtCursor (ks, 0) == 0, "Not NULL on empty KeySet");
+	succeed_if (ksAtCursor (ks, ksGetSize (ks) - 1) == 0, "Not NULL on empty KeySet");
 
 	succeed_if (keyGetRef (k1) == 0, "reference counter of new key");
 	succeed_if (ksAppendKey (ks, k1) == 1, "size should be one");
 	succeed_if (keyGetRef (k1) == 1, "reference counter of inserted key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size, should stay after inserting duplication");
-	succeed_if (ksHead (ks) == k1, "head wrong");
-	succeed_if (ksTail (ks) == k1, "tail wrong");
+	succeed_if (ksAtCursor (ks, 0) == k1, "head wrong");
+	succeed_if (ksAtCursor (ks, ksGetSize (ks) - 1) == k1, "tail wrong");
 
 	k2 = keyDup (k1, KEY_CP_ALL);
 	keySetString (k2, "newvalue");
@@ -195,9 +195,7 @@ static void test_ksReference (void)
 	// k1 should be freed by now and instead k2 in the keyset
 	succeed_if (ksGetSize (ks) == 1, "wrong size, should stay after inserting duplication");
 
-	ksRewind (ks);
-	ksNext (ks);
-	succeed_if_same_string (keyValue (ksCurrent (ks)), "newvalue");
+	succeed_if_same_string (keyValue (ksAtCursor (ks, 0)), "newvalue");
 
 	ksDel (ks);
 
@@ -207,8 +205,8 @@ static void test_ksReference (void)
 	k2 = ksLookupByName (ks, "user:/key", 0);
 	succeed_if (keyGetRef (k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef (k2) == 1, "reference counter of new inserted key");
-	succeed_if (ksHead (ks) == k2, "head wrong");
-	succeed_if (ksTail (ks) == k1, "tail wrong");
+	succeed_if (ksAtCursor (ks, 0) == k2, "head wrong");
+	succeed_if (ksAtCursor (ks, ksGetSize (ks) - 1) == k1, "tail wrong");
 
 	ksDel (ks);
 
@@ -219,8 +217,8 @@ static void test_ksReference (void)
 	succeed_if (keyGetRef (k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef (k2) == 1, "reference counter of new inserted key");
 	ks1 = ksDup (ks);
-	succeed_if (ksHead (ks1) == k2, "head in dup wrong");
-	succeed_if (ksTail (ks1) == k1, "tail in dup wrong");
+	succeed_if (ksAtCursor (ks1, 0) == k2, "head in dup wrong");
+	succeed_if (ksAtCursor (ks1, ksGetSize (ks1) - 1) == k1, "tail in dup wrong");
 
 	succeed_if (keyGetRef (k1) == 2, "reference counter after duplication of keyset");
 	succeed_if (keyGetRef (k2) == 2, "reference counter after ksdup");

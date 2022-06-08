@@ -145,8 +145,6 @@ static int writeOptions (Key * command, Key * commandKey, Key * commandArgs, boo
  */
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey)
 {
-	elektraCursor initial = ksGetCursor (ks);
-
 	Key * specParent = keyDup (parentKey, KEY_CP_ALL);
 	// Translate key to spec namespace
 	keySetNamespace (specParent, KEY_NS_SPEC);
@@ -155,7 +153,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	if (!processSpec (&spec, ks, specParent, parentKey))
 	{
 		keyDel (specParent);
-		ksSetCursor (ks, initial);
 		return -1;
 	}
 
@@ -183,7 +180,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				ksDel (spec.keys);
 				ksDel (spec.argIndices);
 				ksDel (spec.commands);
-				ksSetCursor (ks, initial);
 				return -1;
 			}
 
@@ -212,7 +208,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				ksDel (spec.keys);
 				ksDel (spec.argIndices);
 				ksDel (spec.commands);
-				ksSetCursor (ks, initial);
 				return result;
 			}
 
@@ -226,7 +221,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				ksDel (spec.keys);
 				ksDel (spec.argIndices);
 				ksDel (spec.commands);
-				ksSetCursor (ks, initial);
 				return -1;
 			}
 
@@ -243,7 +237,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				ksDel (spec.keys);
 				ksDel (spec.argIndices);
 				ksDel (spec.commands);
-				ksSetCursor (ks, initial);
 				return 0;
 			}
 
@@ -273,7 +266,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			ksDel (spec.keys);
 			ksDel (spec.argIndices);
 			ksDel (spec.commands);
-			ksSetCursor (ks, initial);
 			return -1;
 		}
 
@@ -286,7 +278,6 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		ksDel (spec.keys);
 		ksDel (spec.argIndices);
 		ksDel (spec.commands);
-		ksSetCursor (ks, initial);
 		return result;
 	}
 }
@@ -688,14 +679,12 @@ bool processOptions (struct Specification * spec, Key * command, Key * specKey, 
 		keyDel (k);
 	}
 
-	ksRewind (opts);
-	ksNext (opts); // skip count
-	Key * metaKey;
-
 	char * shortOptLine = elektraStrDup ("");
 	char * longOptLine = elektraStrDup ("");
-	while ((metaKey = ksNext (opts)) != NULL)
+
+	for (elektraCursor it = 1; it < ksGetSize (opts); ++it) // skip count
 	{
+		Key * metaKey = ksAtCursor (opts, it);
 		struct OptionData optionData;
 
 		if (!readOptionData (&optionData, specKey, keyName (metaKey), errorKey))
@@ -1024,11 +1013,9 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 
 	char * envsLinePart = elektraStrDup ("");
 
-	ksRewind (envVars);
-	ksNext (envVars); // skip count
-	Key * k;
-	while ((k = ksNext (envVars)) != NULL)
+	for (elektraCursor it = 1; it < ksGetSize (envVars); ++it) // skip count
 	{
+		Key * k = ksAtCursor (envVars, it);
 		const char * envVar = keyString (k);
 		if (envVar == NULL)
 		{
@@ -1230,12 +1217,11 @@ int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * er
 		return 0;
 	}
 
-	ksRewind (optMetas);
-	ksNext (optMetas); // skip count
-	Key * optMeta;
 	bool shortFound = false;
-	while ((optMeta = ksNext (optMetas)) != NULL)
+
+	for (elektraCursor it = 1; it < ksGetSize (optMetas); ++it) // skip count
 	{
+		Key * optMeta = ksAtCursor (optMetas, it);
 		Key * optLookup = keyNew (keyString (optMeta), KEY_END);
 		Key * optKey = ksLookup (options, optLookup, KDB_O_DEL);
 		bool isShort = strncmp (keyString (optMeta), "/short", 6) == 0;
@@ -1287,11 +1273,9 @@ int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * 
 		return 0;
 	}
 
-	ksRewind (envMetas);
-	ksNext (envMetas); // skip count
-	Key * envMeta;
-	while ((envMeta = ksNext (envMetas)) != NULL)
+	for (elektraCursor it = 1; it < ksGetSize (envMetas); ++it) // skip count
 	{
+		Key * envMeta = ksAtCursor (envMetas, it);
 		Key * envKey = ksLookupByName (envValues, keyString (envMeta), 0);
 
 		bool isArray = strcmp (keyBaseName (keyWithOpt), "#") == 0;
@@ -1359,7 +1343,6 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 
 		Key * insertKey = keyDup (procKey, KEY_CP_NAME);
 
-		ksRewind (args);
 		for (elektraCursor i = firstRemainingArg; i < ksGetSize (args); ++i)
 		{
 			Key * arg = ksAtCursor (args, i);
@@ -1494,11 +1477,9 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 			return 1;
 		}
 
-		ksRewind (values);
-		Key * cur;
-		ksNext (values); // skip count
-		while ((cur = ksNext (values)) != NULL)
+		for (elektraCursor it = 1; it < ksGetSize (values); ++it) // skip count
 		{
+			Key * cur = ksAtCursor (values, it);
 			elektraArrayIncName (insertKey);
 
 			Key * k = keyDup (insertKey, KEY_CP_NAME);
@@ -1876,10 +1857,9 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 		KeySet * args = elektraArrayGet (argsParent, options);
 		keyDel (argsParent);
 
-		Key * keyWithOpt;
-		ksRewind (spec->keys);
-		while ((keyWithOpt = ksNext (spec->keys)) != NULL)
+		for (elektraCursor it = 0; it < ksGetSize (spec->keys); ++it)
 		{
+			Key * keyWithOpt = ksAtCursor (spec->keys, it);
 			if (spec->useSubcommands)
 			{
 				Key * checkKey = keyDup (keyWithOpt, KEY_CP_ALL);
@@ -2104,14 +2084,11 @@ char * generateUsageLine (const char * progname, Key * command, const Key * comm
  */
 char * generateOptionsList (KeySet * keysWithOpts, Key * command)
 {
-	elektraCursor cursor = ksGetCursor (keysWithOpts);
-
 	char * optionsList = elektraStrDup ("");
 
-	Key * cur = NULL;
-	ksRewind (keysWithOpts);
-	while ((cur = ksNext (keysWithOpts)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (keysWithOpts); ++it)
 	{
+		Key * cur = ksAtCursor (keysWithOpts, it);
 		if (!optionOrArgBelongsToCommand (command, cur))
 		{
 			continue;
@@ -2133,8 +2110,6 @@ char * generateOptionsList (KeySet * keysWithOpts, Key * command)
 		optionsList);
 	elektraFree (optionsList);
 	optionsList = newOptionsList;
-
-	ksSetCursor (keysWithOpts, cursor);
 	return optionsList;
 }
 
@@ -2145,14 +2120,11 @@ char * generateOptionsList (KeySet * keysWithOpts, Key * command)
  */
 char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey)
 {
-	elektraCursor cursor = ksGetCursor (keysWithOpts);
-
 	char * commandsList = elektraStrDup ("");
 
-	Key * cur = NULL;
-	ksRewind (keysWithOpts);
-	while ((cur = ksNext (keysWithOpts)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (keysWithOpts); ++it)
 	{
+		Key * cur = ksAtCursor (keysWithOpts, it);
 		Key * checkKey = keyDup (cur, KEY_CP_NAME);
 		if (strcmp (keyBaseName (cur), "#") == 0)
 		{
@@ -2185,7 +2157,6 @@ char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey)
 	elektraFree (commandsList);
 	commandsList = newCommandsList;
 
-	ksSetCursor (keysWithOpts, cursor);
 	return commandsList;
 }
 
@@ -2196,14 +2167,11 @@ char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey)
  */
 char * generateArgsList (KeySet * keysWithOpts, Key * command)
 {
-	elektraCursor cursor = ksGetCursor (keysWithOpts);
-
 	char * argsList = elektraStrDup ("");
 
-	Key * cur = NULL;
-	ksRewind (keysWithOpts);
-	while ((cur = ksNext (keysWithOpts)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (keysWithOpts); ++it)
 	{
+		Key * cur = ksAtCursor (keysWithOpts, it);
 		if (!optionOrArgBelongsToCommand (command, cur))
 		{
 			continue;
@@ -2227,7 +2195,6 @@ char * generateArgsList (KeySet * keysWithOpts, Key * command)
 	elektraFree (argsList);
 	argsList = newArgsList;
 
-	ksSetCursor (keysWithOpts, cursor);
 	return argsList;
 }
 
@@ -2238,14 +2205,11 @@ char * generateArgsList (KeySet * keysWithOpts, Key * command)
  */
 char * generateEnvsList (KeySet * keysWithOpts)
 {
-	elektraCursor cursor = ksGetCursor (keysWithOpts);
-
 	char * envsList = elektraStrDup ("");
 
-	Key * cur = NULL;
-	ksRewind (keysWithOpts);
-	while ((cur = ksNext (keysWithOpts)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (keysWithOpts); ++it)
 	{
+		Key * cur = ksAtCursor (keysWithOpts, it);
 		const char * optLine = keyGetMetaString (cur, "env/help");
 		if (optLine != NULL)
 		{
@@ -2264,7 +2228,6 @@ char * generateEnvsList (KeySet * keysWithOpts)
 	elektraFree (envsList);
 	envsList = newEnvsList;
 
-	ksSetCursor (keysWithOpts, cursor);
 	return envsList;
 }
 

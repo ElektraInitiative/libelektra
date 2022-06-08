@@ -79,10 +79,9 @@ here](examples/cpp_example_userexception.cpp).
 Next to the C-style fashioned loop:
 
 ```cpp
-ks.rewind();
-while (ks.next())
+for (elektraCursor it = 0; it < ks.size (); ++it)
 {
-	std::cout << ks.current().getName() << std::endl;
+	std::cout << ks.at (it).getName() << std::endl;
 }
 ```
 

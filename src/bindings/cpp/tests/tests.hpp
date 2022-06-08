@@ -49,11 +49,14 @@ testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::K
 {
 	stream << key.getName () << ": “" << (key.isString () ? key.getString () : (key.getBinarySize () == 0 ? "NULL" : "BINARY")) << "”";
 
-	key.rewindMeta ();
-	while (key.nextMeta ())
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
-		stream << ", " << key.currentMeta ().getName () << ": “" << key.currentMeta ().getString () << "”";
+		const kdb::Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
+		stream << ", " << curMeta.getName () << ": “" << curMeta.getString () << "”";
 	}
+
 	stream << endl;
 	return stream;
 }
@@ -86,18 +89,21 @@ testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::K
  */
 bool isMetaDataEqual (kdb::Key & key1, kdb::Key & key2)
 {
-	key1.rewindMeta ();
-	key2.rewindMeta ();
+	ckdb::KeySet * metaKeys1 = ckdb::keyMeta (key1.getKey ());
+	ckdb::KeySet * metaKeys2 = ckdb::keyMeta (key2.getKey ());
 
-	while (key1.nextMeta ())
+	if (ckdb::ksGetSize (metaKeys1) != ckdb::ksGetSize (metaKeys2)) return false;
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys1); ++it)
 	{
-		key2.nextMeta ();
-		if (!key2.currentMeta ()) return false;
-		if (key1.currentMeta ().getName () != key2.currentMeta ().getName ()) return false;
-		if (key1.currentMeta ().getString () != key2.currentMeta ().getString ()) return false;
+		const kdb::Key & curMeta1 = ckdb::ksAtCursor (metaKeys1, it);
+		const kdb::Key & curMeta2 = ckdb::ksAtCursor (metaKeys2, it);
+
+		if (curMeta1.getName () != curMeta2.getName ()) return false;
+		if (curMeta1.getString () != curMeta2.getString ()) return false;
 	}
 
-	return key1.nextMeta () == key2.nextMeta ();
+	return true;
 }
 
 /**
@@ -131,18 +137,16 @@ bool isKeySetEqual (kdb::KeySet & keys1, kdb::KeySet & keys2)
 {
 	if (keys1.size () != keys2.size ()) return false;
 
-	keys1.rewind ();
-	keys2.rewind ();
-	while (keys1.next ())
+	for (ssize_t it = 0; it < keys1.size (); ++it)
 	{
-		keys2.next ();
-		if (!keys2.current ()) return false;
-		kdb::Key key1 = keys1.current ();
-		kdb::Key key2 = keys2.current ();
+		kdb::Key key1 = keys1.at (it);
+		kdb::Key key2 = keys2.at (it);
+
+		if (!key1 || !key2) return false; // should never happen
 		if (!isKeyEqual (key1, key2)) return false;
 	}
 
-	return keys1.next () == keys2.next ();
+	return true;
 }
 
 /**

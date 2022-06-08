@@ -16,3 +16,5 @@ go.libelektra.org v0.0.0-20210416152159-0b40417c1c25 h1:J1nkS7xErJccS8d/TvQzVW8E
 go.libelektra.org v0.0.0-20210416152159-0b40417c1c25/go.mod h1:CIfEvRCFSp22m99NSN5btdGsu3ERuo2yv4blUd82AwQ=
 go.libelektra.org v0.0.0-20210713160219-0462a716b697 h1:ulkmoWVb/cDBto5WFAyHaeYpOKefCwYFsGevROsCNT8=
 go.libelektra.org v0.0.0-20210713160219-0462a716b697/go.mod h1:CIfEvRCFSp22m99NSN5btdGsu3ERuo2yv4blUd82AwQ=
+go.libelektra.org v0.0.0-20220529165759-8d7288960e91 h1:R71XIvalt0dcHvS8/adnmfN3z4ZgiXYWGK72Uk3J7ng=
+go.libelektra.org v0.0.0-20220529165759-8d7288960e91/go.mod h1:CIfEvRCFSp22m99NSN5btdGsu3ERuo2yv4blUd82AwQ=

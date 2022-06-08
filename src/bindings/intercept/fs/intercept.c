@@ -115,17 +115,17 @@ void init (void)
 	getcwd (cwd, PATH_MAX);
 	KeySet * tmpKS = ksNew (0, KS_END);
 	Key * parentKey = keyNew (PRELOAD_PATH, KEY_END);
-	Key * key;
 	KDB * handle = kdbOpen (NULL, parentKey);
 	kdbGet (handle, tmpKS, parentKey);
 	KeySet * ks = ksCut (tmpKS, parentKey);
-	ksRewind (ks);
 	ssize_t size = ksGetSize (ks);
 	if (size <= 1) goto CleanUp;
 	Node * current = head;
-	ksNext (ks); // skip head
-	while ((key = ksNext (ks)) != NULL)
+
+
+	for (elektraCursor it = 1; it < ksGetSize (ks); ++it) // skip head
 	{
+		const Key * key = ksAtCursor (ks, it);
 		if (!keyIsDirectlyBelow (parentKey, key)) continue;
 		Node * tmp = calloc (1, sizeof (Node));
 		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
@@ -139,6 +139,7 @@ void init (void)
 		Key * found = ksLookup (ks, lookupKey, 0);
 		if (found)
 		{
+			it = ksSearch (ks, found) + 1; // ksLookup sets internal iterator at found key
 			if (!strcmp (keyString (found), "1"))
 			{
 				tmp->oflags = O_RDONLY;
@@ -149,12 +150,14 @@ void init (void)
 		found = ksLookup (ks, lookupKey, 0);
 		if (found)
 		{
+			it = ksSearch (ks, found) + 1; // ksLookup sets internal iterator at found key
 			if (tmp->value == NULL) tmp->value = (char *) genTemporaryFilename ();
 			tmp->exportKey = elektraStrDup (keyString (found));
 			keyAddBaseName (lookupKey, "plugin");
 			found = ksLookup (ks, lookupKey, 0);
 			if (found)
 			{
+				it = ksSearch (ks, found) + 1; // ksLookup sets internal iterator at found key
 				tmp->exportType = elektraStrDup (keyString (found));
 			}
 			else
@@ -260,7 +263,6 @@ static void exportConfiguration (Node * node)
 	KeySet * conf = ksNew (0, KS_END);
 	Plugin * check = elektraPluginOpen (node->exportType, modules, conf, key);
 	keySetString (key, node->value);
-	ksRewind (exportKS);
 	check->kdbSet (check, exportKS, key);
 	ksDel (conf);
 	ksAppend (ks, exportKS);

@@ -108,10 +108,10 @@ TEST (GetEnv, OpenCloseFallback)
 void elektraPrintConfig ()
 {
 	using namespace ckdb;
-	Key * c;
-	ksRewind (elektraConfig);
-	while ((c = ksNext (elektraConfig)))
+
+	for (elektraCursor it = 0; it < ksGetSize (elektraConfig); ++it)
 	{
+		const Key * c = ksAtCursor (elektraConfig, it);
 		printf ("%s - %s\n", keyName (c), keyString (c));
 	}
 }

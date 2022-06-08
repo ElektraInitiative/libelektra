@@ -80,9 +80,7 @@ protected:
 
 	virtual void unsyncKeys (KeySet & ks)
 	{
-		Key current;
-		ks.rewind ();
-		while ((current = ks.next ()))
+		for (const Key & current : ks)
 		{
 			current.getKey ()->flags = static_cast<ckdb::keyflag_t> (current.getKey ()->flags & ~(ckdb::KEY_FLAG_SYNC));
 

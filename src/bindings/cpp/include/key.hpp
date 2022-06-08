@@ -116,7 +116,6 @@ public:
 
 	inline void copy (const Key & other, elektraCopyFlags flags = KEY_CP_ALL);
 	inline void clear ();
-	inline ckdb::Key * operator-> () const;
 
 	inline Key * operator-> ();
 
@@ -222,14 +221,7 @@ public:
 	inline void copyMeta (const Key & other, const std::string & metaName);
 	inline void copyAllMeta (const Key & other);
 
-	inline void rewindMeta ();
-	inline const Key nextMeta ();
-	inline const Key currentMeta () const;
-
-
 	// Methods for Making tests
-
-
 	inline bool isValid () const;
 	inline ElektraNamespace getNamespace () const;
 	inline ssize_t setNamespace (ElektraNamespace ns) const;
@@ -1443,52 +1435,6 @@ inline void Key::copyAllMeta (const Key & other)
 		throw KeyException ();
 	}
 }
-
-/**
- * @copydoc keyRewindMeta
- *
- * @see nextMeta(), currentMeta()
- */
-inline void Key::rewindMeta ()
-{
-	if (ckdb::keyRewindMeta (key) == -1)
-	{
-		throw KeyException ();
-	}
-}
-
-/**
- * @copydoc keyNextMeta
- *
- * @see rewindMeta(), currentMeta()
- */
-inline const Key Key::nextMeta ()
-{
-	const ckdb::Key * k = ckdb::keyNextMeta (key);
-	return Key (const_cast<ckdb::Key *> (k));
-}
-
-
-/**
- * @copydoc keyCurrentMeta
- *
- * @note that the key will be null if last metadata is found.
- *
- * @code
- * k.rewindMeta();
- * while (meta = k.nextMeta())
- * {
- * 	cout << meta.getName() << " " << meta.getString() << endl;
- * }
- * @endcode
- *
- * @see rewindMeta(), nextMeta()
- */
-inline const Key Key::currentMeta () const
-{
-	return Key (const_cast<ckdb::Key *> (ckdb::keyCurrentMeta (const_cast<const ckdb::Key *> (key))));
-}
-
 
 /** @return if the key is valid
  *

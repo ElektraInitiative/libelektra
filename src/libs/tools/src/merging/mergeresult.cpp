@@ -31,9 +31,12 @@ MergeResult::MergeResult (KeySet & _conflictSet, KeySet & _mergedKeys)
 
 void MergeResult::addConflict (Key & key, ConflictOperation ourOperation, ConflictOperation theirOperation)
 {
-	key.rewindMeta ();
-	while (Key currentMeta = key.nextMeta ())
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
+		// TODO: Test if deletion works with foreach-loop
+		const Key & currentMeta = ckdb::ksAtCursor (metaKeys, it);
 		key.delMeta (currentMeta.getName ());
 	}
 
@@ -54,15 +57,18 @@ void MergeResult::addConflict (Key & key, ConflictOperation ourOperation, Confli
 
 void MergeResult::resolveConflict (Key & key)
 {
-	key.rewindMeta ();
-	Key currentMeta;
-	while ((currentMeta = key.nextMeta ()))
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
+		const Key & currentMeta = ckdb::ksAtCursor (metaKeys, it);
 		// TODO: this is just a workaround because keys with a prefix other than
 		// user:/ or system:/ cannot be created and therefore isBelow cannot be used
 		if (currentMeta.getName ().find ("meta:/conflict/") == 0)
 		{
+			// TODO: Test if deletion works with foreach-loop
 			key.delMeta (currentMeta.getName ());
+			--it; // metakey deleted, so next metakey is on same position as the deleted one
 		}
 	}
 

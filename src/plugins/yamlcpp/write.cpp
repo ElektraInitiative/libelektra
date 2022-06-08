@@ -118,16 +118,18 @@ Node createMetaNode (Key & key)
 {
 	Node metaNode{ NodeType::Map };
 
-	key.rewindMeta ();
-	while (Key meta = key.nextMeta ())
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
-		if (meta.getName () == "meta:/array" || meta.getName () == "meta:/binary" ||
-		    (meta.getName () == "meta:/type" && (meta.getString () == "boolean" || meta.getString () == "binary")))
+		const kdb::Key curMeta = ckdb::ksAtCursor (metaKeys, it);
+		if (curMeta.getName () == "meta:/array" || curMeta.getName () == "meta:/binary" ||
+		    (curMeta.getName () == "meta:/type" && (curMeta.getString () == "boolean" || curMeta.getString () == "binary")))
 		{
 			continue;
 		}
-		metaNode[meta.getName ().substr (sizeof ("meta:/") - 1)] = meta.getString ();
-		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
+		metaNode[curMeta.getName ().substr (sizeof ("meta:/") - 1)] = curMeta.getString ();
+		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", curMeta.getName ().c_str (), curMeta.getString ().c_str ());
 	}
 
 	return metaNode;

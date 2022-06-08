@@ -39,10 +39,10 @@ int main (void)
 	}
 	keyDel (parentKey);
 
-	ksRewind (ks);
 	Key * k;
-	while ((k = ksNext (ks)))
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		k = ksAtCursor (ks, it);
 		printf ("%s = %s\n", keyName (k), keyString (k));
 	}
 

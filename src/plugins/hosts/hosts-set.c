@@ -63,10 +63,11 @@ static void writeLineComments (Key * key, FILE * fp)
 	KeySet * comments = elektraArrayGet (commentParent, metaKeys);
 	keyDel (commentParent);
 
-	ksRewind (comments);
 	Key * current;
-	while ((current = ksNext (comments)))
+
+	for (elektraCursor it = 0; it < ksGetSize (comments); ++it)
 	{
+		current = ksAtCursor (comments, it);
 		if (strcmp (keyName (current), "meta:/comment/#0") != 0)
 		{
 			Key * spaceKey = keyDup (current, KEY_CP_ALL);
@@ -99,13 +100,13 @@ static void writeInlineComment (Key * key, FILE * fp)
 static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
 {
 	fprintf (fp, "%s\t%s", (char *) keyValue (key), (char *) keyBaseName (key));
-	/* position the cursor at the current key and
+
+	/* set the iterator to the current key and
 	 * iterate over its subkeys
 	 */
-	ksLookup (returned, key, KDB_O_NONE);
-	Key * alias;
-	while ((alias = ksNext (returned)) != 0)
+	for (elektraCursor it = ksSearch (returned, key) + 1; it < ksGetSize (returned); ++it)
 	{
+		Key * alias = ksAtCursor (returned, it);
 		if (keyIsBelow (key, alias) != 1) break;
 
 		fprintf (fp, " %s", (char *) keyBaseName (alias));
@@ -131,7 +132,6 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	size_t arraySize = ksGetSize (returned);
 	keyArray = calloc (arraySize, sizeof (Key *));
 
-	ksRewind (returned);
 	int ret = elektraKsToMemArray (returned, keyArray);
 
 	if (ret < 0)

@@ -29,9 +29,10 @@ int elektraIterateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 static int doIterate (KeySet * returned)
 {
 	int ret = 0;
-	Key * k;
-	while ((k = ksNext (returned)))
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * k = ksAtCursor (returned, it);
 		const Key * m = keyGetMeta (k, "iterate");
 		if (m)
 		{

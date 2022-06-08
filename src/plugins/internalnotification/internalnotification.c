@@ -229,9 +229,10 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
 {
 	Key * current;
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		current = ksAtCursor (ks, it);
 		if (checkKeyIsBelowOrSame (check, current))
 		{
 			return 1;

@@ -63,20 +63,16 @@ static Backend * elektraBackendAllocate (void)
  * @param elektraConfig the config where the mountpoint can be found
  * @param [out] errorKey the name also has the mountpoint set
  *
- * @pre ksCurrent() is root key
- * @post ksCurrent() is root key
- *
  * @retval -1 if no mountpoint is found or memory allocation problem
  * @retval 0 on success
  */
 int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key * errorKey)
 {
-	Key * root = ksCurrent (elektraConfig);
+	Key * root = ksAtCursor (elektraConfig, 0);
 	Key * searchMountpoint = keyDup (root, KEY_CP_NAME);
 	keyAddBaseName (searchMountpoint, "mountpoint");
 	Key * foundMountpoint = ksLookup (elektraConfig, searchMountpoint, 0);
 	keyDel (searchMountpoint);
-	ksLookup (elektraConfig, root, 0); // reset ksCurrent()
 
 	if (!foundMountpoint)
 	{
@@ -167,15 +163,13 @@ system:/elektra/mountpoints/<name>
  */
 Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global, Key * errorKey)
 {
-	Key * cur;
 	KeySet * referencePlugins = 0;
 	KeySet * systemConfig = 0;
 	int failure = 0;
 
 	referencePlugins = ksNew (0, KS_END);
-	ksRewind (elektraConfig);
 
-	Key * root = ksNext (elektraConfig);
+	Key * root = ksAtCursor (elektraConfig, 0);
 
 	Backend * backend = elektraBackendAllocate ();
 	if (elektraBackendSetMountpoint (backend, elektraConfig, errorKey) == -1)
@@ -183,12 +177,17 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 		failure = 1;
 	}
 
-	while ((cur = ksNext (elektraConfig)) != 0)
+	for (elektraCursor it = 1; it < ksGetSize (elektraConfig); ++it)
 	{
+		Key * cur = ksAtCursor (elektraConfig, it);
 		if (keyIsDirectlyBelow (root, cur) == 1)
 		{
 			// direct below root key
 			KeySet * cut = ksCut (elektraConfig, cur);
+			/* TODO: TEST it! */
+			it--; // cutpoint is at current key
+
+
 			if (!strcmp (keyBaseName (cur), "config"))
 			{
 				systemConfig = ksRenameKeys (cut, "system:/");
@@ -334,15 +333,16 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
  * @param modules the modules to work with
  * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
+ * @param pos the position of plugin the use in @p modules
  */
-Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
+Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey, elektraCursor pos)
 {
 	Backend * backend = elektraBackendAllocate ();
 
-	elektraCursor save = ksGetCursor (modules);
 	KeySet * defaultConfig =
 		ksNew (5, keyNew ("system:/module", KEY_VALUE, "1", KEY_END), keyNew ("user:/module", KEY_VALUE, "1", KEY_END), KS_END);
-	Key * cur = ksCurrent (modules);
+
+	Key * cur = ksAtCursor (modules, pos);
 
 	keySetName (errorKey, keyName (cur));
 
@@ -368,8 +368,6 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 
 	backend->mountpoint = mp;
 	keyIncRef (backend->mountpoint);
-
-	ksSetCursor (modules, save);
 
 	return backend;
 }

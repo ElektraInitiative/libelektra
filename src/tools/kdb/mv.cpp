@@ -54,12 +54,9 @@ int MvCommand::execute (Cmdline const & cl)
 
 	KeySet newConf;
 
-	Key k;
-	oldConf.rewind ();
-
 	if (cl.recursive)
 	{
-		while ((k = oldConf.next ()))
+		for (Key k : oldConf)
 		{
 			newConf.append (rename_key (k, sourceName, newDirName, cl.verbose));
 		}
@@ -67,7 +64,7 @@ int MvCommand::execute (Cmdline const & cl)
 	else
 	{
 		// just rename one key
-		k = oldConf.next ();
+		Key k = oldConf.at (0);
 		if (k != sourceKey)
 		{
 			cerr << "First key found " << k.getName () << " does not exactly match given key " << sourceKey.getName ()
@@ -79,7 +76,6 @@ int MvCommand::execute (Cmdline const & cl)
 	newConf.append (tmpConf); // these are unrelated keys
 	// drop the original configuration
 
-	newConf.rewind ();
 	if (cl.verbose)
 	{
 		cout << "Will write out:" << endl;

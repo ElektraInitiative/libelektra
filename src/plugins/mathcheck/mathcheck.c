@@ -316,7 +316,6 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 			}
 			else
 			{
-				ksRewind (ks);
 				if (subString[0] == '@')
 				{
 					searchKey = realloc (searchKey, len + 2 + strlen (keyName (parentKey)));
@@ -378,8 +377,10 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 {
 	Key * cur;
 	PNElem result;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/math");
 		if (!meta) continue;
 		ELEKTRA_LOG_DEBUG ("Check key “%s” with value “%s”", keyName (cur), keyString (meta));

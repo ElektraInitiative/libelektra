@@ -22,6 +22,6 @@ typedef struct _keyNameReverseIterator
 keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k);
 int elektraKeyNameReverseNext (keyNameReverseIterator * it);
 
-Key * elektraNextNotBelow (KeySet * ks);
+Key * elektraNextNotBelow (KeySet * ks, elektraCursor pos);
 
 #endif

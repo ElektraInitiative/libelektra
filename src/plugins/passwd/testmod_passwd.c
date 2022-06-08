@@ -56,7 +56,6 @@ void test_read_write (void)
 	PLUGIN_OPEN ("passwd");
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKeyRead) == 1, "kdbGet failed\n");
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKeyWrite) == 1, "kdbSet failed\n");
 	succeed_if (compare_line_files (srcdir_file ("passwd/passwd_in"), keyString (parentKeyWrite)), "files do not match as expected\n");
 	ksDel (ks);

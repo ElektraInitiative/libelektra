@@ -106,9 +106,8 @@ void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostrea
 		KeySet conflicts = result.getConflictSet ();
 
 		err << conflicts.size () << " conflicts were detected that could not be resolved automatically:" << endl;
-		conflicts.rewind ();
-		Key current;
-		while ((current = conflicts.next ()))
+
+		for (Key current : conflicts)
 		{
 			string ourConflict = current.getMeta<string> ("conflict/operation/our");
 			string theirConflict = current.getMeta<string> ("conflict/operation/their");

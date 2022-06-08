@@ -104,8 +104,9 @@ static void test_simple_get (void)
 
 	succeed_if (ksGetSize (ks) == 5, "unexpected key set size");
 
-	Key * head = ksHead (ks);
-	Key * tail = ksTail (ks);
+	Key * head = ksAtCursor (ks, 0);
+	Key * tail = ksAtCursor (ks, ksGetSize (ks) - 1);
+
 	succeed_if_same_string (keyString (head), "myvalue0");
 	succeed_if_same_string (keyString (tail), "myvalue4");
 
@@ -129,8 +130,8 @@ static void test_get_with_exception (void)
 
 	succeed_if (ksGetSize (ks) == 5, "unexpected key set size");
 
-	Key * head = ksHead (ks);
-	Key * tail = ksTail (ks);
+	Key * head = ksAtCursor (ks, 0);
+	Key * tail = ksAtCursor (ks, ksGetSize (ks) - 1);
 	succeed_if_same_string (keyString (head), "myvalue0");
 	succeed_if_same_string (keyString (tail), "myvalue4");
 
@@ -193,8 +194,8 @@ static void test_statefull (void)
 
 	succeed_if (ksGetSize (ksGet) == 5, "unexpected key set size");
 
-	Key * head = ksHead (ksGet);
-	Key * tail = ksTail (ksGet);
+	Key * head = ksAtCursor (ksGet, 0);
+	Key * tail = ksAtCursor (ksGet, ksGetSize (ksGet) - 1);
 	succeed_if_same_string (keyString (head), "myvalue1");
 	succeed_if_same_string (keyString (tail), "myvalue5");
 
@@ -233,8 +234,9 @@ static void test_two_plugin_instances (void)
 
 	succeed_if (ksGetSize (ksGet1) == 5, "unexpected key set size");
 
-	Key * head1 = ksHead (ksGet1);
-	Key * tail1 = ksTail (ksGet1);
+	Key * head1 = ksAtCursor (ksGet1, 0);
+	Key * tail1 = ksAtCursor (ksGet1, ksGetSize (ksGet1) - 1);
+
 	succeed_if_same_string (keyString (head1), "myvalue1");
 	succeed_if_same_string (keyString (tail1), "myvalue5");
 
@@ -252,8 +254,8 @@ static void test_two_plugin_instances (void)
 
 	succeed_if (ksGetSize (ksGet2) == 6, "unexpected key set size");
 
-	Key * head2 = ksHead (ksGet2);
-	Key * tail2 = ksTail (ksGet2);
+	Key * head2 = ksAtCursor (ksGet2, 0);
+	Key * tail2 = ksAtCursor (ksGet2, ksGetSize (ksGet2) - 1);
 	succeed_if_same_string (keyString (head2), "myvalue_1");
 	succeed_if_same_string (keyString (tail2), "myvalue_6");
 

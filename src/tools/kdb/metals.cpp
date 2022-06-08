@@ -41,10 +41,12 @@ int MetaLsCommand::execute (Cmdline const & cl)
 			std::cout << "Got key " << k.getName () << std::endl;
 		}
 
-		k.rewindMeta ();
-		while (const Key meta = k.nextMeta ())
+		ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+
+		for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 		{
-			cout << meta.getName ().substr (sizeof ("meta:/") - 1);
+			const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
+			cout << curMeta.getName ().substr (sizeof ("meta:/") - 1);
 			if (cl.null)
 			{
 				cout << '\0' << std::flush;

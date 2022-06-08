@@ -36,10 +36,8 @@ static void test_basics (void)
 				KEY_END));
 	// clang-format on
 
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
 
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
 	succeed_if (plugin->kdbError (plugin, ks, parentKey) == 1, "call to kdbError was not successful");

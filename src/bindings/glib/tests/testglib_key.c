@@ -207,11 +207,13 @@ static void test_meta_data (void)
 	g_object_unref (meta);
 
 	guint metacnt = 0;
-	gelektra_key_rewindmeta (g_key);
-	while ((meta = gelektra_key_nextmeta (g_key)) != NULL)
+
+	GElektraKeySet * metaKeys = gelektra_key_meta (g_key);
+	for (ssize_t it = 0; it < gelektra_keyset_len (metaKeys); ++it)
 	{
-		GElektraKey * curmeta = gelektra_key_currentmeta (g_key);
-		succeed_if (meta->key == curmeta->key, "meta iterators returned different keys");
+		meta = gelektra_keyset_at (metaKeys, it);
+		GElektraKey * curmeta = gelektra_key_getmeta (g_key, gelektra_key_name (meta));
+		succeed_if (meta->key == curmeta->key, "keyset_at and key_getmeta returned different keys of keyset with metakeys");
 		g_object_unref (curmeta);
 
 		++metacnt;

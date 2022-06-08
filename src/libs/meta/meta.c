@@ -356,7 +356,6 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 		ksAppendKey (result, (Key *) meta);
 	}
 
-	ksRewind (result);
 	return result;
 }
 
@@ -575,7 +574,6 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 {
 	if (ks == NULL || array == NULL) return -1;
 	KeySet * done = ksNew (0, KS_END);
-	ksRewind (ks);
 	Key * cur;
 	ssize_t size = ksGetSize (ks);
 	Key * orderCounter = keyNew ("/#", KEY_END);
@@ -616,7 +614,8 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		case 1: {
 			// only 1 dependency:
 			// test if it's reflexive
-			tmpDep = ksHead (deps);
+			tmpDep = ksAtCursor (deps, 0);
+
 			if (!strcmp (keyName (cur), keyString (tmpDep)))
 			{
 				keySetMeta (cur, "order", keyBaseName (orderCounter));
@@ -631,8 +630,10 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		// FALLTHROUGH
 		default: {
 			int gotUnresolved = 0;
-			while ((tmpDep = ksNext (deps)) != NULL)
+
+			for (elektraCursor it = 0; it < ksGetSize (deps); ++it)
 			{
+				tmpDep = ksAtCursor (deps, it);
 				if (!isValidKeyName (keyString (tmpDep)))
 				{
 					// invalid keyname -> ERROR

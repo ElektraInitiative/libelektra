@@ -249,10 +249,11 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
 
 	// base64 decoding
 	Key * key;
-	ksRewind (keySet);
 	int status = 0;
-	while (status >= 0 && (key = ksNext (keySet)))
+
+	for (elektraCursor it = 0; status >= 0 && it < ksGetSize (keySet); ++it)
 	{
+		key = ksAtCursor (keySet, it);
 		status |= decode (key, parentKey, metaMode);
 	}
 	return status;
@@ -272,14 +273,12 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
 int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * keySet, Key * parentKey)
 {
 	Key * key;
-
-	ksRewind (keySet);
-
 	bool metaMode = useMetaMode (handle);
-
 	int status = 0;
-	while (status >= 0 && (key = ksNext (keySet)))
+
+	for (elektraCursor it = 0; status >= 0 && it < ksGetSize (keySet); ++it)
 	{
+		key = ksAtCursor (keySet, it);
 		if (!metaMode)
 		{
 			status |= escape (key, parentKey);

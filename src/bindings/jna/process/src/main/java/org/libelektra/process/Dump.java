@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import org.libelektra.Key;
 import org.libelektra.KeyPointer;
 import org.libelektra.KeySet;
-import org.libelektra.ReadableKey;
 
 class Dump {
   private final ProcessProtocol processProtocol;
@@ -160,9 +159,7 @@ class Dump {
         processProtocol.println(key.getString());
       }
 
-      key.rewindMeta();
-      while (key.nextMeta().isPresent()) {
-        ReadableKey meta = key.currentMeta();
+      for (var meta : key) {
         KeyPointer keyPointer = new KeyPointer(meta);
         if (metaCopies.containsKey(keyPointer)) {
           processProtocol.println(metaCopies.get(keyPointer));

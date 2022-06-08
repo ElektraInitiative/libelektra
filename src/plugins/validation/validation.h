@@ -21,7 +21,7 @@ int elektraValidationGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraValidationSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraValidationError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Key * ksLookupRE (KeySet * ks, const regex_t * regexp);
+Key * ksLookupRE (KeySet * ks, const regex_t * regexp, elektraCursor startPos);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

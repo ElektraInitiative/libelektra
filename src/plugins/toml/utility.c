@@ -276,10 +276,10 @@ void keySetDiff (KeySet * whole, KeySet * part)
 	{
 		return;
 	}
-	ksRewind (part);
-	Key * key;
-	while ((key = ksNext (part)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (part); ++it)
 	{
+		Key * key = ksAtCursor (part, it);
 		ksLookup (whole, key, KDB_O_POP);
 	}
 }
@@ -291,10 +291,10 @@ KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *))
 	{
 		return NULL;
 	}
-	ksRewind (ks);
-	Key * key;
-	while ((key = ksNext (ks)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * key = ksAtCursor (ks, it);
 		if ((*pred) (key))
 		{
 			ksAppendKey (predicateKeys, key);
@@ -306,10 +306,10 @@ KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *))
 KeySet * collectSubKeys (KeySet * ks, Key * parent)
 {
 	KeySet * subKeys = ksNew (0, KS_END);
-	ksRewind (ks);
-	Key * key;
-	while ((key = ksNext (ks)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * key = ksAtCursor (ks, it);
 		if (keyIsBelow (parent, key) == 1)
 		{
 			ksAppendKey (subKeys, key);
@@ -327,18 +327,15 @@ KeySet * extractSubKeys (KeySet * ks, Key * parent)
 
 bool isLeaf (Key * leafCandidate, KeySet * ks)
 {
-	elektraCursor cursor = ksGetCursor (ks);
-	ksRewind (ks);
-	Key * key;
-	while ((key = ksNext (ks)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * key = ksAtCursor (ks, it);
 		if (keyIsBelow (leafCandidate, key) == 1)
 		{
-			ksSetCursor (ks, cursor);
 			return false;
 		}
 	}
-	ksSetCursor (ks, cursor);
+
 	return true;
 }
 

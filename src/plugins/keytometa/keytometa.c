@@ -49,9 +49,9 @@ int elektraKeyCmpOrderWrapper (const void * a, const void * b)
 static Key * findNearestParent (Key * key, KeySet * ks)
 {
 	Key * current;
-	ksSetCursor (ks, ksGetSize (ks) - 1);
 
-	for (elektraCursor cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
+	/* Start from 2nd last element */
+	for (elektraCursor cursor = ksGetSize (ks) - 2; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
 	{
 		if (keyIsBelow (current, key))
 		{
@@ -127,11 +127,11 @@ static void flushConvertedKeys (Key * target, KeySet * converted, KeySet * orig)
 {
 	if (ksGetSize (converted) == 0) return;
 
-	ksRewind (converted);
 	Key * current;
 
-	while ((current = ksNext (converted)))
+	for (elektraCursor it = 0; it < ksGetSize (converted); ++it)
 	{
+		current = ksAtCursor (converted, it);
 		Key * appendTarget = target;
 		const char * metaName = keyString (keyGetMeta (current, CONVERT_METANAME));
 
@@ -286,14 +286,14 @@ int elektraKeyToMetaSet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	/* nothing to do */
 	if (converted == 0) return 1;
 
-	ksRewind (converted);
-
 	char * saveptr = 0;
 	char * value = 0;
 	Key * current;
 	Key * previous = 0;
-	while ((current = ksNext (converted)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (converted); ++it)
 	{
+		current = ksAtCursor (converted, it);
 		const Key * targetName = keyGetMeta (current, CONVERT_TARGET);
 		const Key * metaName = keyGetMeta (current, CONVERT_METANAME);
 

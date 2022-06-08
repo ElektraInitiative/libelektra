@@ -13,6 +13,9 @@
 
 #include <stdlib.h>
 
+/* TODO: With an external iterator, ksCurrent() to get the position where execution stopped is no longer available.
+ * TODO: Should we change the return value or make the information about the position unavailable */
+
 /**A functional access to keys.
  *
  * Instead of writing your own loop you can write
@@ -25,8 +28,7 @@
  * @param ks the keyset to work with
  * @param func the function to execute on every key of the keyset
  * @return the sum of all return values
- * @retval -1 if any function returned -1, the execution will stop there, but
- * 	ksCurrent() will tell you where it stopped.
+ * @retval -1 if any function returned -1, the execution will stop there
  * @see ksFilter()
  */
 int ksForEach (KeySet * ks, int (*func) (Key * k))
@@ -34,26 +36,24 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	elektraCursor cursor = ksGetCursor (ks);
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		current = ksAtCursor (ks, it);
 		int rc = func (current);
 		if (rc == -1) return -1;
 		ret += rc;
 	}
-	ksSetCursor (ks, cursor);
+
 	return ret;
 }
 
 
 /**Filter a keyset.
  *
- * filter is executed for every key in the keyset result. When it returns 0,
+ * filter is executed for every key in the keyset input. When it returns 0,
  * the key will be dropped, when it returns 1 it will be ksAppendKey()ed to result,
- * when it returns -1 the processing will be stopped. You can use ksCurrent()
- * on input to see where the problem was. Because of this input is not const,
- * apart from ksCurrent() the input will not be changed. The keys that have
+ * when it returns -1 the processing will be stopped.
+ * The input will not be changed. The keys that have
  * been in result before will stay untouched.
  *
  * @param result is the keyset where keys are added.
@@ -62,8 +62,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
  * 	it should be ksAppendKey()ed to the result.
  * @return the number of keys added on success
  * @retval 0 when nothing was done
- * @retval -1 when filter returned an error (-1), ksCurrent() of input will
- * 	be the problematic key.
+ * @retval -1 when filter returned an error (-1)
  * @see ksForEach()
  **/
 int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
@@ -71,10 +70,9 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	elektraCursor cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (input); ++it)
 	{
+		current = ksAtCursor (input, it);
 		int rc = filter (current);
 		if (rc == -1)
 			return -1;
@@ -84,7 +82,6 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
 		}
 	}
-	ksSetCursor (input, cursor);
 	return ret;
 }
 
@@ -169,7 +166,6 @@ int main (void)
 	ksForEach (values_below_30, sum_helper);
 
 	ksForEach (values, find_80);
-	ksCurrent (values);		       /* here is user:/c */
 	ksLookupByName (values, "user:/c", 0); /* should find the same */
 	ksDel (values);
 	ksDel (values_below_30);

@@ -135,20 +135,6 @@ kmeta.del_meta "jet another"
 # metadata iterator
 #
 
-# kdb style
-kmeta.rewind_meta  # reset internal meta data cursor
-
-while not kmeta.next_meta.nil? do
-  # kmeat.next_meta advances the internal cursor and returns
-  # the next meta data key
-
-  mk = kmeta.current_meta
-
-  # we get a Kdb::Key which holds the metadata values
-  mk.name
-  mk.value
-end
-
 # ruby style iteration
 kmeta.meta.each do |e|
   puts "kmeta metadata: #{e.name} => #{e.value}"

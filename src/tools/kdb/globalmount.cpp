@@ -31,7 +31,6 @@ std::vector<std::string> GlobalMountCommand::getMtab ()
 	std::vector<std::string> ret;
 	Key globalPluginsKey ("system:/elektra/globalplugins/postcommit/user/plugins", KEY_END);
 
-	mountConf.rewind ();
 	Key currentPluginConfig ("proc:/notbelow", KEY_END);
 	for (auto const & key : mountConf)
 	{

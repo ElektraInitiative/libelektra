@@ -14,23 +14,10 @@ namespace kdb
 namespace tools
 {
 
-const std::set<std::string> supportedTypes{ "enum",
-					    "short",
-					    "unsigned_short",
-					    "long",
-					    "unsigned_long",
-					    "long_long",
-					    "unsigned_long_long",
-					    "float",
-					    "double",
-					    "long_double"
-					    "char",
-					    "boolean",
-					    "octet",
-					    "any",
-					    "string",
-					    "struct_ref",
-					    "struct" };
+const std::set<std::string> supportedTypes{
+	"enum",	       "short", "unsigned_short", "long",  "unsigned_long", "long_long", "unsigned_long_long", "float", "double",
+	"long_double", "char",	"boolean",	  "octet", "any",	    "string",	 "struct_ref",	       "struct"
+};
 
 SpecBackendBuilder::SpecBackendBuilder (BackendBuilderInit const & bbi) : MountBackendBuilder (bbi), nodes (0)
 {
@@ -113,11 +100,11 @@ bool isToBeIgnored (std::string const & metaName)
 
 void SpecMountpointReader::processKey (Key const & ck)
 {
-	Key k (ck);
-	k.rewindMeta ();
-	Key m;
-	while ((m = k.nextMeta ()))
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (ck.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
+		const Key & m = ckdb::ksAtCursor (metaKeys, it);
 		std::string const & cn = "meta:/config/needs";
 		if (startsWith (m.getName (), cn))
 		{
@@ -150,7 +137,7 @@ void SpecMountpointReader::processKey (Key const & ck)
 SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet const & cks)
 {
 	ks = cks;
-	mp = ks.head ().dup ();
+	mp = ks.at (0).dup ();
 
 	Key rmp (mp.dup ());
 	helper::removeNamespace (rmp);
@@ -162,18 +149,22 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 
 	ks.lookup (mp, KDB_O_POP);
 
-	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
-	for (Key k = ks.next (); k; k = ks.next ())
+	for (ssize_t it = 0; it < ks.size (); ++it)
 	{
+		const Key & k = ks.at (it);
+
 		// search for mountpoint
-		Key m = k.getMeta<const Key> ("mountpoint");
+		const Key & m = k.getMeta<const Key> ("mountpoint");
 		if (m)
 		{
 			SpecMountpointReader smr (backends, bbi);
 			backends[k] = smr.readMountpointSpecification (ks.cut (k));
+
+			// We use the key at the current position (it) as cutpoint --> don't increase index for next loop iteration
+			--it;
+
 			continue;
 		}
-
 		processKey (k);
 		bb.nodes++;
 	}
@@ -186,10 +177,9 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 void SpecReader::readSpecification (KeySet const & cks)
 {
 	KeySet ks;
-	Key mp;
 
 	// Filter keys and perform sanity checks.
-	for (Key k : cks)
+	for (const Key k : cks)
 	{
 		// Only include keys in spec namespace
 		if (k.isSpec ())
@@ -199,15 +189,17 @@ void SpecReader::readSpecification (KeySet const & cks)
 		checkKey (k);
 	}
 
-	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
-	for (Key k = ks.next (); k; k = ks.next ())
+	for (ssize_t it = 0; it < ks.size (); ++it)
 	{
+		const Key & k = ks.at (it);
 		// search for mountpoint
-		Key m = k.getMeta<const Key> ("mountpoint");
+		const Key & m = k.getMeta<const Key> ("mountpoint");
 		if (m)
 		{
 			SpecMountpointReader smr (backends, bbi);
 			backends[k] = smr.readMountpointSpecification (ks.cut (k));
+			// We use the key at the current position (it) as cutpoint --> don't increase index for next loop iteration
+			--it;
 		}
 	}
 }

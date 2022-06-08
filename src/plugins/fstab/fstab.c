@@ -195,12 +195,6 @@ int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKe
 
 	ELEKTRA_LOG ("set fstab %s to file %s\n", keyName (parentKey), keyString (parentKey));
 
-	ksRewind (ks);
-	if ((key = ksNext (ks)) != 0)
-	{
-		/*skip parent key*/
-	}
-
 	fstab = setmntent (keyString (parentKey), "w");
 
 	if (fstab == 0)
@@ -212,8 +206,10 @@ int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKe
 
 	memset (&fstabEntry, 0, sizeof (struct mntent));
 
-	while ((key = ksNext (ks)) != 0)
+	/* start with 2nd element (skip parent key) */
+	for (elektraCursor it = 1; it < ksGetSize (ks); ++it)
 	{
+		key = ksAtCursor (ks, it);
 		const char * basename = keyBaseName (key);
 		ELEKTRA_LOG ("key: %s %s\n", keyName (key), basename);
 		if (!strcmp (basename, "device"))

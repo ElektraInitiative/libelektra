@@ -194,93 +194,16 @@ indicating where the new value should be inserted when the key
 is not found.
 Elektra now also uses this trick internally.
 
-### Internal Cursor
+### Iteration
 
-`KeySet` supports an
-**external iterator**
-with the two functions
-`ksRewind()` to go to the beginning and `ksNext()` to
-advance the _internal cursor_ to the next key.
-This side effect is used to indicate a position for
-operations on a `KeySet` without any additional parameter.
-This technique is comfortable to see which
-key has caused an error after an unsuccessful key database operation.
-
-Elektra only has some functions to change the cursor of a key set.
-But these allow the user to compose powerful functions.
-Plugins do that extensively as we will see later
-in `ksLookupRE()`.
-The user can additionally write more such functions for
-his or her own purposes.
-To change the internal cursor, it is
-sufficient to iterate
-over the `KeySet` and stop at the wanted key.
-With this technique, we can, for example, realize
-lookup by value, by specific metadata and by
-parts of the name.
-Without an additional index, it is not possible that
-such operations perform more efficiently
-than by a linear iteration key by key.
-For that reason, Elektra’s core does not provide
-such functions.
-The function `ksLookupByName()`, however,
-uses the more efficient binary search
-because the array inside the `KeySet`
-is ordered by name.
-
-### External Cursor
-
-External cursor is an alternative to the approach explained above.
-Elektra provides a limited
-_external cursor_
-through the interface
-`ksGetCursor()` and `ksSetCursor()`.
-It is not possible to advance this cursor.
-The difference to the internal cursor
-is that the position is not stored within `KeySet`.
-
-We considered providing an external cursor for performance reasons.
-But we found out that
-the speed of iteration is mainly limited because of safety checks.
-The investigated methods become slower proportional to the ease of use
-and safety.
-When using null pointers and
-range checks, the function is noticeably slower than without.
-With the same amount of checks,
-using an external cursor is not much faster than
-`ksNext()`.
-External cursor with checks is in a benchmark
-about 10% faster.
-
-But an external cursor directly accessing the array can be much
-faster. Using an unchecked external cursor can be about 50%
-faster than using the internal cursor with ksNext().
-For this endeavour,
-Elektra’s private header files need to be included.
-Including private header files, however,
-should not be done with levity
-because ABI compatibility will be gone on any changes of the data
-structures.
-This fact means the application or plugin needs to be recompiled
-when any of the internal structures of Elektra are
-changed.
-We strongly discourage including these header files.
-
-Nevertheless, the overall
-performance impact for iteration is minimal
-and should not matter too much.
-Even if only a single `keySetMeta()` is used inside
-the iteration loop, the iteration costs are insignificant.
-Only for trivial
-actions such as just changing a variable, counter or marker for every key
-the iteration costs become the lion's share.
-In such situations
-an _internal iterator_
-yields better results.
-For example,
-`ksForEach()` applies a user defined function
-for every key in a `KeySet` without having null pointer or
-out of range problems.
+Iterating over a `KeySet` is similar to iterating over arrays.
+With `ssize_t ksGetSize (const KeySet *ks)`, the total number of `Key`s in a `KeySet`
+can be retrieved and with the function `Key *ksAtCursor (const KeySet *ks, elektraCursor cursor)`
+a pointer to a `Key` at a specified position `cursor` in the `Keyset` can be retrieved.
+The first element (`Key`) has the index 0, so the last `Key` in the `KeySet` `ks` can be
+accessed with `Key * k = ksAtCursor (ks, ksGetSize (ks) - 1)`.
+Please be aware the elements in a `KeySet` can move and therefore change their index, e.g. when
+deleting or adding elements or using `ksCut ()`.
 
 ## Trie vs. Split
 

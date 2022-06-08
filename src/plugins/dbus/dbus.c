@@ -76,10 +76,9 @@ static void announceKeys (KeySet * ks, const char * signalName, DBusBusType busT
 	ELEKTRA_NOT_NULL (signalName);
 	ELEKTRA_NOT_NULL (data);
 
-	ksRewind (ks);
-	Key * k = 0;
-	while ((k = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * k = ksAtCursor (ks, it);
 		elektraDbusSendMessage (data, busType, keyName (k), signalName);
 	}
 }
@@ -89,19 +88,17 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	KeySet * oldKeys = pluginData->keys;
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
-	ksRewind (oldKeys);
-	ksRewind (returned);
+	KeySet * oldKeys = pluginData->keys;
 
 	KeySet * addedKeys = ksDup (returned);
 	KeySet * changedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 
-	Key * k = 0;
-	while ((k = ksNext (oldKeys)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (oldKeys); ++it)
 	{
+		Key * k = ksAtCursor (oldKeys, it);
 		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)

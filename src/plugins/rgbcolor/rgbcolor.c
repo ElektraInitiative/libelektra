@@ -365,10 +365,9 @@ int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
 		ColorVariant colVar = is_valid_key (cur, parentKey);
@@ -382,10 +381,9 @@ int elektraRgbcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 {
 	// set all keys
 	// this function is optional
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
 

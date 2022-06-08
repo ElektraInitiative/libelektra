@@ -147,8 +147,10 @@ int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	Key * cur;
 	int rc = 1;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/unit");
 		if (meta)
 		{
@@ -171,11 +173,9 @@ int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraUnitSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/unit");
 		if (!meta)
 		{

@@ -123,50 +123,10 @@
 #include <errno.h>
 #endif
 
-
-/**
- * Rewind the internal iterator to the first entry in metadata keyset.
- *
- * Use this function to set the cursor to the beginning of the Key Meta Infos.
- * keyCurrentMeta() will always return NULL after rewinding, so
- * you need to call keyNextMeta() first.
- *
- * @code
-Key *key;
-const Key *meta;
-
-keyRewindMeta (key);
-while ((meta = keyNextMeta (key))!=0)
-{
-	printf ("name: %s, value: %s", keyName(meta), keyString(meta));
-}
- * @endcode
- *
- * @param key Key whose internal iterator should be rewinded
- *
- * @retval 0 on success
- * @retval 0 if there is no metadata for that key
- *         (keyNextMeta() will always return 0 in that case)
- * @retval -1 on NULL pointer
- *
- * @since 1.0.0
- * @ingroup keymeta
- *
- * @see keyNextMeta(), keyCurrentMeta() for iterating after rewinding
- * @see ksRewind() KeySet's equivalent function for rewinding
- **/
-int keyRewindMeta (Key * key)
-{
-	if (!key) return -1;
-	if (!key->meta) return 0;
-
-	return ksRewind (key->meta);
-}
-
 /**
  * Get the next metadata entry of a Key
  *
- * Keys have an internal cursor that can be reset with keyRewindMeta(). Every
+ * Keys have an internal cursor. Every
  * time keyNextMeta() is called the cursor is incremented and the new current
  * Name of Meta Information is returned.
  *
@@ -190,9 +150,6 @@ int keyRewindMeta (Key * key)
  * @since 1.0.0
  * @ingroup keymeta
  *
- * @see ksNext() for pedant in iterator interface of KeySet
- * @see keyRewindMeta() for rewinding the internal iterator
- * @see keyCurrentMeta() for getting the current metadata Key
  **/
 const Key * keyNextMeta (Key * key)
 {
@@ -205,37 +162,6 @@ const Key * keyNextMeta (Key * key)
 	return ret;
 }
 
-/**
- * Returns the metadata Key at the internal iterator's current position.
- *
- * The returned pointer is NULL if the end has been reached or after calling
- * ksRewind().
- *
- * @note You must not delete or change the returned key,
- *    use keySetMeta() if you want to delete or change it.
- *
- * @param key Key to get the current metadata from
- *
- * @return a buffer to the value pointed by @p key's cursor
- * @retval 0 on NULL pointer
- *
- * @since 1.0.0
- * @ingroup keymeta
- *
- * @see keyNextMeta() for getting the next value
- * @see keyRewindMeta() for rewinding the internal iterator
- * @see ksCurrent() KeySets's equivalent function for getting the current Key
- **/
-const Key * keyCurrentMeta (const Key * key)
-{
-	Key * ret;
-	if (!key) return 0;
-	if (!key->meta) return 0;
-
-	ret = ksCurrent (key->meta);
-
-	return ret;
-}
 
 /**
  * Do a shallow copy of metadata with name @p metaName from source to dest.
@@ -270,13 +196,12 @@ void l(Key *k)
  * @code
 void o(KeySet *ks)
 {
-	Key *current;
 	Key *shared = keyNew ("/", KEY_END);
 	keySetMeta(shared, "shared", "this metadata should be shared among many keys");
 
-	ksRewind(ks);
-	while ((current = ksNext(ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		Key * current = ksAtCursor (ks, it);
 		if (needs_shared_data(current)) keyCopyMeta(current, shared, "shared");
 	}
 }

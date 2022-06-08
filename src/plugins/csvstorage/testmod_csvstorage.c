@@ -69,7 +69,6 @@ static void testreadwriteinvalid (const char * file)
 
 static void testwriteinvalidheader (const char * file)
 {
-
 	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
 			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
@@ -87,7 +86,6 @@ static void testwriteinvalidheader (const char * file)
 
 static void testwritevalidemptycol (const char * file)
 {
-
 	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
 			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);

@@ -243,25 +243,22 @@ TEST_F (Simple, GetSystem)
 	ks.append (Key (parentKey.getName () + "/key", KEY_END));
 	EXPECT_NE (kdb.get (ks, parentKey), -1);
 	ASSERT_EQ (ks.size (), 1) << "no key stayed" << ks;
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 
 	ASSERT_NE (kdb.set (ks, parentKey), -1);
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 	kdb.close (parentKey);
 
 	KeySet ks2;
 	kdb.open (parentKey);
 	kdb.get (ks2, parentKey);
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 }
 
 TEST_F (Simple, WrongStateSystem)
@@ -329,17 +326,15 @@ TEST_F (Simple, GetAppendCascading)
 	parentKey.setString ("");
 
 	ASSERT_EQ (ks.size (), 1) << "no key stayed" << ks;
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 	kdb.set (ks, parentKey);
 	EXPECT_EQ (parentKey.getName (), myRoot);
 	EXPECT_EQ (parentKey.getString (), "");
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 	kdb.close (parentKey);
 	EXPECT_EQ (parentKey.getName (), myRoot);
 	EXPECT_EQ (parentKey.getString (), "");
@@ -364,15 +359,13 @@ TEST_F (Simple, GetAppendMeta)
 	Key parentKey (testRoot, KEY_END);
 	kdb.get (ks, parentKey);
 	ASSERT_EQ (ks.size (), 1) << "no key stayed";
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "meta:/meta/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "meta:/meta/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 	kdb.set (ks, parentKey);
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "meta:/meta/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "meta:/meta/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 	kdb.close (parentKey);
 
 	KeySet ks2;
@@ -391,10 +384,9 @@ TEST_F (Simple, GetAppendNamespaces)
 		ks.append (Key (namespaces[i].name + ":" + testRoot + "key", KEY_END));
 		kdb.get (ks, testRoot);
 		ASSERT_EQ (ks.size (), 1) << "did not got key appended first with namespace " << namespaces[i].name;
-		ks.rewind ();
-		ks.next ();
-		EXPECT_EQ (ks.current ().getName (), namespaces[i].name + ":/tests/kdb/key") << "name of element in keyset wrong";
-		EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+		EXPECT_EQ (ks.at (0).getName (), namespaces[i].name + ":/tests/kdb/key") << "name of element in keyset wrong";
+		EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 	}
 }
 
@@ -407,10 +399,9 @@ TEST_F (Simple, SetSystemKey)
 	ks.append (Key ("system:" + testRoot + "key", KEY_END));
 	kdb.get (ks, parentKey);
 	ASSERT_EQ (ks.size (), 1) << "got keys from freshly mounted backends";
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "system:" + testRoot + "key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "system:" + testRoot + "key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "") << "string of element in keyset wrong";
 	kdb.set (ks, parentKey);
 	kdb.close (parentKey);
 
@@ -418,10 +409,9 @@ TEST_F (Simple, SetSystemKey)
 	kdb.open (parentKey);
 	kdb.get (ks2, parentKey);
 	ASSERT_EQ (ks2.size (), 1) << "wrong size";
-	ks2.rewind ();
-	ks2.next ();
-	EXPECT_EQ (ks2.current ().getName (), "system:" + testRoot + "key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks2.current ().getString (), "") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks2.at (0).getName (), "system:" + testRoot + "key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks2.at (0).getString (), "") << "string of element in keyset wrong";
 }
 
 TEST_F (Simple, SetSystemGetAppend)
@@ -433,10 +423,9 @@ TEST_F (Simple, SetSystemGetAppend)
 	ks.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value1", KEY_END));
 	ASSERT_NE (kdb.get (ks, parentKey), -1);
 	ASSERT_EQ (ks.size (), 1) << "got keys from freshly mounted backends";
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "value1") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "value1") << "string of element in keyset wrong";
 	ASSERT_EQ (kdb.set (ks, parentKey), 1);
 	kdb.close (parentKey);
 
@@ -445,10 +434,9 @@ TEST_F (Simple, SetSystemGetAppend)
 	kdb.open (parentKey);
 	ASSERT_EQ (kdb.get (ks2, parentKey), 1);
 	ASSERT_EQ (ks2.size (), 1) << "wrong size";
-	ks2.rewind ();
-	ks2.next ();
-	EXPECT_EQ (ks2.current ().getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks2.current ().getString (), "value1") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks2.at (0).getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks2.at (0).getString (), "value1") << "string of element in keyset wrong";
 }
 
 TEST_F (Simple, SetSystemGetAppend2)
@@ -460,10 +448,9 @@ TEST_F (Simple, SetSystemGetAppend2)
 	ks.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value1", KEY_END));
 	kdb.get (ks, parentKey);
 	ASSERT_EQ (ks.size (), 1) << "got keys from freshly mounted backends";
-	ks.rewind ();
-	ks.next ();
-	EXPECT_EQ (ks.current ().getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks.current ().getString (), "value1") << "string of element in keyset wrong";
+
+	EXPECT_EQ (ks.at (0).getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks.at (0).getString (), "value1") << "string of element in keyset wrong";
 	kdb.set (ks, parentKey);
 	kdb.close (parentKey);
 
@@ -471,11 +458,10 @@ TEST_F (Simple, SetSystemGetAppend2)
 	ks2.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
 	kdb.open (parentKey);
 	kdb.get (ks2, parentKey);
-	ks2.rewind ();
-	ks2.next ();
+
 	ASSERT_EQ (ks2.size (), 1) << "wrong size";
-	EXPECT_EQ (ks2.current ().getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
-	EXPECT_EQ (ks2.current ().getString (), "value1") << "string of element in keyset wrong";
+	EXPECT_EQ (ks2.at (0).getName (), "system:/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ (ks2.at (0).getString (), "value1") << "string of element in keyset wrong";
 }
 
 TEST_F (Simple, WrongParent)
@@ -501,6 +487,5 @@ TEST_F (Simple, TriggerError)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	EXPECT_THROW (kdb.set (ks, testRoot), kdb::KDBException) << "could not trigger error";
 	ASSERT_EQ (ks.size (), 3) << "key suddenly missing";
-	EXPECT_EQ (ks.current ().getName (), "system:" + testRoot + "k") << "ks should point to error key";
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "created file even though error triggered";
 }
