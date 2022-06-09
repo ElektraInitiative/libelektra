@@ -199,11 +199,19 @@ Elektra now also uses this trick internally.
 Iterating over a `KeySet` is similar to iterating over arrays.
 With `ssize_t ksGetSize (const KeySet *ks)`, the total number of `Key`s in a `KeySet`
 can be retrieved and with the function `Key *ksAtCursor (const KeySet *ks, elektraCursor cursor)`
-a pointer to a `Key` at a specified position `cursor` in the `Keyset` can be retrieved.
+the `Key *` at the specified position `cursor` in `ks` can be retrieved.
 The first element (`Key`) has the index 0, so the last `Key` in the `KeySet` `ks` can be
 accessed with `Key * k = ksAtCursor (ks, ksGetSize (ks) - 1)`.
 Please be aware the elements in a `KeySet` can move and therefore change their index, e.g. when
 deleting or adding elements or using `ksCut ()`.
+
+```c
+for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+{
+	Key * cur = ksAtCursor (ks, it);
+	// ...
+}
+```
 
 ## Trie vs. Split
 
