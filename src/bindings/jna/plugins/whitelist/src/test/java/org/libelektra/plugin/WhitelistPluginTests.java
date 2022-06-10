@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.libelektra.Plugin.PROCESS_CONTRACT_ROOT;
 
 import java.util.Random;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.libelektra.KDBException;
@@ -22,11 +21,15 @@ public class WhitelistPluginTests {
   @Before
   public void setup() {
     plugin = new WhitelistPlugin();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void test_open_shouldThrow() throws KDBException {
     plugin.open(KeySet.create(), Key.create());
   }
 
-  @After
-  public void tearDown() {
+  @Test(expected = UnsupportedOperationException.class)
+  public void test_close_shouldThrow() throws KDBException {
     plugin.close(Key.create());
   }
 
@@ -52,10 +55,15 @@ public class WhitelistPluginTests {
   }
 
   @Test
-  public void test_get_shouldPass() throws KDBException {
-    int result = plugin.get(KeySet.create(), Key.create());
+  public void test_getContract_shouldPass() throws KDBException {
+    int result = plugin.get(KeySet.create(), Key.create(Plugin.PROCESS_CONTRACT_ROOT));
 
-    assertEquals(Plugin.STATUS_NO_UPDATE, result);
+    assertEquals(Plugin.STATUS_SUCCESS, result);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void test_get_shouldThrow() throws KDBException {
+    plugin.get(KeySet.create(), Key.create());
   }
 
   @Test

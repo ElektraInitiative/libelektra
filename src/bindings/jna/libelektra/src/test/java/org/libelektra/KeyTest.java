@@ -33,7 +33,7 @@ public class KeyTest {
   static final String KEY_2_NAME_PART_2 = "key_test";
   static final String KEY_2_NAME_PART_3 = "2";
   static final String KEY_2_NAME_PART_4 = "key_name";
-  static final String KEY_2_VALUE = "false";
+  static final String KEY_2_VALUE = "0";
 
   static final String KEY_3_NAME = "/key_test/3/key_name";
   static final String KEY_3_VALUE = "1";
@@ -119,6 +119,22 @@ public class KeyTest {
   }
 
   @Test
+  public void test_keyWithNullValue_shouldPass() {
+    var key = Key.create(KEY_2_NAME);
+
+    assertEquals("", key.getString());
+    assertFalse(key.isNull());
+
+    key.setString("test");
+
+    assertFalse(key.isNull());
+
+    key.setNull();
+
+    assertTrue(key.isNull());
+  }
+
+  @Test
   public void test_keyWithBooleanValue_shouldPass() {
     var key = Key.create(KEY_2_NAME, KEY_2_VALUE);
 
@@ -127,11 +143,11 @@ public class KeyTest {
     key.setBoolean(true);
 
     assertTrue(key.getBoolean());
+    assertEquals("1", key.getString());
 
     key.setString("false");
 
     assertFalse(key.getBoolean());
-    assertEquals(key.getString(), "false");
 
     key = Key.create(KEY_2_NAME).setBoolean(true);
 
@@ -140,6 +156,7 @@ public class KeyTest {
     key.setBoolean(false);
 
     assertFalse(key.getBoolean());
+    assertEquals("0", key.getString());
   }
 
   @Test
