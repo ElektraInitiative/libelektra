@@ -60,26 +60,26 @@ The core of `kdb record` consists of two parts:
 
 ### Session storage
 
-The recording sessions and plugin configuration will be stored in Elektra. As this is a per-user feature, it will go into the `user:/` namespace. As for now, the root key is `user:/record-elektra/`.
+The recording sessions and plugin configuration will be stored in Elektra. As this is a per-user feature, it will go into the `user:/` namespace. As for now, the root key is `user:/elektra/record`.
 
-The key `user:/record-elektra/config/current_session` contains the name of the current session. If this key does not exist (or its value is empty) the recording plugin is disabled.
+The key `user:/elektra/record/config/current_session` contains the name of the current session. If this key does not exist (or its value is empty) the recording plugin is disabled.
 
-All recording sessions are located under `user:/record-elektra/sessions/<SESSION_NAME>`.
+All recording sessions are located under `user:/elektra/record/sessions/<SESSION_NAME>`.
 
 Every modification will include its UTC timestamp and the modified key in its path. 
-For example, `user:/record-elektra/sessions/MySession/12345678/system:\/hello`. The value of this key will be the modification action, i.e. `created`, `modified`, `deleted`.
+For example, `user:/elektra/record/sessions/MySession/12345678/system:\/hello`. The value of this key will be the modification action, i.e. `created`, `modified`, `deleted`.
 
 Based on which modification took place (creation, modification or deletion), the old and new value for the key will also be recordes as `.../old` and `.../new`.
 
 For the workflow example from below, it would look like this (11111, 22222, 33333 simulate time stamps):
 ```
-user:/record-elektra/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com (= modified)
-user:/record-elektra/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com/old (= 1.2.3.4)
-user:/record-elektra/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com/new (= 8.8.8.8)
-user:/record-elektra/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.microsoft.com (= created)
-user:/record-elektra/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.microsoft.com/new (= 4.4.4.4)
-user:/record-elektra/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.apple.com (= deleted)
-user:/record-elektra/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.apple.com/old (= 9.9.9.9)
+user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com (= modified)
+user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com/old (= 1.2.3.4)
+user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com/new (= 8.8.8.8)
+user:/elektra/record/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.microsoft.com (= created)
+user:/elektra/record/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.microsoft.com/new (= 4.4.4.4)
+user:/elektra/record/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.apple.com (= deleted)
+user:/elektra/record/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.apple.com/old (= 9.9.9.9)
 ``` 
 
 ### Recording plugin
@@ -87,7 +87,7 @@ user:/record-elektra/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.apple
 When active, the recording plugin needs to be called for every `kdbGet()` and `kdbSet()` operation. 
 The plugin needs to track which keys have been read and which have been set. 
 
-The plugin MUST ignore `kdbGet()` and `kdbSet()` invocations for its own keys (`user:/record-electra/`).
+The plugin MUST ignore `kdbGet()` and `kdbSet()` invocations for its own keys (`user:/elektra/record/`).
 
 The `kdbSet()` function of the plugin has to be called in the `POSTCOMMIT` phase of the key database.
 
