@@ -2,6 +2,8 @@ package org.libelektra.key
 
 import org.junit.Test
 import org.libelektra.Key
+import org.libelektra.exception.KeyStringValueException
+import org.libelektra.keyExt.isEmpty
 import org.libelektra.keyExt.set
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -18,7 +20,11 @@ class SetKeyTest {
 
         key.set(null)
 
-        assertEquals("", key.string)
+        assertEquals(true, key.isNull)
+        assertFailsWith<KeyStringValueException> {
+            key.string
+        }
+        assertEquals(true, key.isEmpty())
     }
 
     @Test

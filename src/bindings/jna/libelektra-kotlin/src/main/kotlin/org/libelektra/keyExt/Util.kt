@@ -32,22 +32,6 @@ val Key.nameParts: Sequence<String>
     get() = keyNameIterator().asSequence().drop(1)
 
 /**
- * Constructs a new key
- *
- * @param name key name starting with / and an optional namespace, e.g. user:/foo
- * @param value optional value of a primitive type
- * @param metaKeys optional meta keys added to this key, meta keys must have a name starting with meta:/
- * @return the new key with given properties
- */
-fun <T> keyOf(name: String, value: T? = null, vararg metaKeys: Key): Key {
-    return Key.create(name, value).apply {
-        metaKeys.forEach {
-            setMeta(it.name, it.string)
-        }
-    }
-}
-
-/**
  * @param metaName key name of the meta key prefixed with "meta:/", e.g. meta:/array
  * @return a readonly meta key or null if not found
  */

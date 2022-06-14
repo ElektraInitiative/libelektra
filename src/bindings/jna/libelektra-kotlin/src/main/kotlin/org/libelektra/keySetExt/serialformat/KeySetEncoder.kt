@@ -9,7 +9,6 @@ import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import org.libelektra.KeySet
 import org.libelektra.dsl.keyOf
-import org.libelektra.keyExt.keyOf
 import org.libelektra.keyExt.toElektraArrayIndex
 
 /**

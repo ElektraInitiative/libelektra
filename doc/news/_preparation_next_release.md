@@ -194,6 +194,8 @@ you up-to-date with the multi-language support provided by Elektra.
 - Added nameParts extension value which provides a sequence of key name parts _(@mandoway)_
 - Added various utility functions like Key.isEmpty, Key.getMetaOrNull, ... _(@Gratla & @mandoway)_
 - Added example project for kotlin binding _(@Gratla & @mandoway)_
+- Added find(), findOrNull() to search for keys in KeySets without Java Optionals _(@mandoway)_
+- Fixed setting null, by using new JNA setNull() function _(@mandoway)_
 
 ### Python
 

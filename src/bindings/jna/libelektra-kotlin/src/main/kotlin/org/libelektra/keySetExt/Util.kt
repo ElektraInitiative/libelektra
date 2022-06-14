@@ -4,11 +4,14 @@ import org.libelektra.Key
 import org.libelektra.KeySet
 
 /**
- * Constructs a KeySet with the given keys
- *
- * @param keys will be added to the new KeySet
- * @return KeySet containing all given keys
+ * @param keyName name of the key to lookup in the KeySet
+ * @return the key, if found
+ * @throws NoSuchElementException if the key is not found
  */
-fun keySetOf(vararg keys: Key): KeySet {
-    return KeySet.create(*keys)
-}
+fun KeySet.find(keyName: String): Key = lookup(keyName).orElseThrow()
+
+/**
+ * @param keyName name of the key to lookup in the KeySet
+ * @return the key, if found or null otherwise
+ */
+fun KeySet.findOrNull(keyName: String): Key? = lookup(keyName).orElse(null)

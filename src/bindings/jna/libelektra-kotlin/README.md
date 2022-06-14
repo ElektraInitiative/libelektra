@@ -185,6 +185,16 @@ val complexKeySet = keySetOf {
 }
 ```
 
+Finding Keys:
+
+```kotlin
+// Non-nullable, throws NoSuchElementException when not found
+val key: Key = keySet.find("/test/foo")
+
+// Nullable, returns null when not found
+val key: Key? = keySet.findOrNull("/test/foo")
+```
+
 ## KeySet serialization
 
 KeySets can be serialized for all KotlinX Serialization formats.  

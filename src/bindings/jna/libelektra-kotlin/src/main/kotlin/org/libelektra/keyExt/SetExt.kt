@@ -25,7 +25,7 @@ inline fun <reified T : Any> Key.set(value: T?): Key {
     return if (value != null) {
         set(value, T::class)
     } else {
-        set("", String::class)
+        setNull()
     }
 }
 
