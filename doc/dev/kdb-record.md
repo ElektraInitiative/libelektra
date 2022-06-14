@@ -10,7 +10,8 @@ Recording sessions are stored on a per-user basis. This implies that a recording
 * `kdb record stop`: Stops the current recording session. 
 * `kdb record reset [session_name]`: Removes all recorded changes in this session. If no session name is provided, the current session will be reset.
 * `kdb record delete [session_name]`: Deletes the specified recording session. If no session name is provided, the current session will be deleted. Deleting the current session will stop the recording. 
-* `kdb record list-sessions`: Lists all sessions by their name
+* `kdb record list`: Lists all sessions by their name.
+* `kdb record name`: Prints the current session name. 
 * `kdb record changes [session_name]`: Shows all changes for the specified session. If no session name is provided, the current session will be used. 
 
 ## Exporting configuration changes
