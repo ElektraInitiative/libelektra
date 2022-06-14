@@ -409,6 +409,10 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - We added a `.gitattributes` file to make it easier to build Elektra with WSL. _(@kodebach)_
 
+### GitHub
+
+- Dependabot configuration _(Lukas Hartl @lukashartl)_
+
 ## Website
 
 The website is generated from the repository, so all information about
