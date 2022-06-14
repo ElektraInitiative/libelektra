@@ -10,21 +10,27 @@
 #include "xfconf.h"
 
 #include <kdbhelper.h>
+#include <kdblogger.h>
 #include <xfconf/xfconf.h>
 
 int elektraXfconfOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-	// plugin initialization logic
-	// this function is optional
-	xfconf_init(NULL);
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	GError * err = NULL;
+	if (xfconf_init (&err))
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+	else
+	{
+		ELEKTRA_LOG_NOTICE ("unable to initialize xfconf(%d): %s\n", err->code, err->message);
+		g_error_free (err);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 }
 
 int elektraXfconfClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-	// free all plugin resources and shut it down
-	// this function is optional
-
+	xfconf_shutdown ();
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
