@@ -33,18 +33,18 @@ The output of the `kdb record export` command can be imported with the existing 
 
 ## Example workflow
 
-The following example changes the IP address of www.google.com, adds an entry for www.microsoft.com and removes www.apple.com. It then shows the changes and outputs an Ansible playbook.
+The following example changes the IP address of www.example.com, adds an entry for www.beispiel.de and removes www.ejemplo.es. It then shows the changes and outputs an Ansible playbook.
 
 ```
 $ kdb record start AddNewHosts
-$ kdb set system:/hosts/ipv4/www.google.com 8.8.8.8
-$ kdb set system:/hosts/ipv4/www.microsoft.com 4.4.4.4
-$ kdb rm system:/hosts/ipv4/www.apple.com
+$ kdb set system:/hosts/ipv4/www.example.com 8.8.8.8
+$ kdb set system:/hosts/ipv4/www.beispiel.de 4.4.4.4
+$ kdb rm system:/hosts/ipv4/www.ejemplo.es
 $ kdb record stop
 $ kdb record changes
-Changed system:/hosts/ipv4/www.google.com from 1.2.3.4 to 8.8.8.8
-Added system:/hosts/ipv4/www.microsoft.com with value 4.4.4.4
-Removed system:/hosts/ipv4/www.apple.com
+Changed system:/hosts/ipv4/www.example.com from 1.2.3.4 to 8.8.8.8
+Added system:/hosts/ipv4/www.beispiel.de with value 4.4.4.4
+Removed system:/hosts/ipv4/www.ejemplo.es
 $ kdb record export --format ansible
 <output corresponding to ansible-libelektra plugin (https://galaxy.ansible.com/elektra_initiative/libelektra)>
 ```
@@ -73,13 +73,13 @@ Based on which modification took place (creation, modification or deletion), the
 
 For the workflow example from below, it would look like this (11111, 22222, 33333 simulate time stamps):
 ```
-user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com (= modified)
-user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com/old (= 1.2.3.4)
-user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.google.com/new (= 8.8.8.8)
-user:/elektra/record/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.microsoft.com (= created)
-user:/elektra/record/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.microsoft.com/new (= 4.4.4.4)
-user:/elektra/record/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.apple.com (= deleted)
-user:/elektra/record/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.apple.com/old (= 9.9.9.9)
+user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.example.com (= modified)
+user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.example.com/old (= 1.2.3.4)
+user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.example.com/new (= 8.8.8.8)
+user:/elektra/record/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.beispiel.de (= created)
+user:/elektra/record/sessions/AddNewHosts/222222/system:\/hosts\/ipv4\/www.beispiel.de/new (= 4.4.4.4)
+user:/elektra/record/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.ejemplo.es (= deleted)
+user:/elektra/record/sessions/AddNewHosts/333333/system:\/hosts\/ipv4\/www.ejemplo.es/old (= 9.9.9.9)
 ``` 
 
 ### Recording plugin
