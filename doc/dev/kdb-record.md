@@ -8,7 +8,8 @@ Recording sessions are stored on a per-user basis. This implies that a recording
 
 * `kdb record start [session_name]`: Starts a new recording session. If no session name is provided, a new random name is generated. If a session with the provided name already exists, changes will be appended.
 * `kdb record stop`: Stops the current recording session. 
-* `kdb record delete [session_name]`: Deletes the specified recording session. If no session name is provided, the current session will be deleted. Deleting a session will not stop the recording. 
+* `kdb record reset [session_name]`: Removes all recorded changes in this session. If no session name is provided, the current session will be reset.
+* `kdb record delete [session_name]`: Deletes the specified recording session. If no session name is provided, the current session will be deleted. Deleting the current session will stop the recording. 
 * `kdb record list-sessions`: Lists all sessions by their name
 * `kdb record changes [session_name]`: Shows all changes for the specified session. If no session name is provided, the current session will be used. 
 
