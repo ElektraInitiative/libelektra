@@ -51,7 +51,7 @@ $ kdb record export --format ansible
 
 ## Architecture
 
-The core of `kdb record` consists of two parts: 
+The core of `record` consists of two parts: 
 * a global plugin that records changes to the key database
 * tooling that
   - allows configuration of the plugin (enable, disable)
@@ -69,7 +69,7 @@ All recording sessions are located under `user:/elektra/record/sessions/<SESSION
 Every modification will include its UTC timestamp and the modified key in its path. 
 For example, `user:/elektra/record/sessions/MySession/12345678/system:\/hello`. The value of this key will be the modification action, i.e. `created`, `modified`, `deleted`.
 
-Based on which modification took place (creation, modification or deletion), the old and new value for the key will also be recordes as `.../old` and `.../new`.
+Based on which modification took place (creation, modification or deletion), the old and new value for the key will also be recorded as `.../old` and `.../new`.
 
 For the workflow example from below, it would look like this (11111, 22222, 33333 simulate time stamps):
 ```
@@ -102,10 +102,10 @@ A decision has not yet been made. As the plugin is pretty self-contained, the ch
 
 ### Tooling
 
-The tooling will be implemented as part of the `kdb` command line utility.
+The tooling will be implemented as part of the newly-written `kdb` command line utility.
 
 The most complex part of it will be the `kdb record export` command. 
 When invoked, it must compute the minimal changeset of the session.
 After that, it has to export the result into the specified format.
-Parts of the existing `kdb export` functionality can probably be reused. 
+Parts of the existing 3-way merge functionality can probably be reused. 
  
