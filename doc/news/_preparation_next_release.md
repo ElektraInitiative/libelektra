@@ -51,7 +51,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Python
 
 - Added new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
-- <<TODO>>
+- Bugfixes for new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 
 ### <<Plugin>>
