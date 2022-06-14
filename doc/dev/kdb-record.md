@@ -72,7 +72,7 @@ For example, `user:/elektra/record/sessions/MySession/12345678/system:\/hello`. 
 
 Based on which modification took place (creation, modification or deletion), the old and new value for the key will also be recorded as `.../old` and `.../new`.
 
-For the workflow example from below, it would look like this (11111, 22222, 33333 simulate time stamps):
+For the workflow example from above, it would look like this (11111, 22222, 33333 simulate time stamps):
 ```
 user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.example.com (= modified)
 user:/elektra/record/sessions/AddNewHosts/111111/system:\/hosts\/ipv4\/www.example.com/old (= 1.2.3.4)
