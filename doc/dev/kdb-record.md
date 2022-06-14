@@ -62,7 +62,7 @@ The core of `kdb record` consists of two parts:
 
 The recording sessions and plugin configuration will be stored in Elektra. As this is a per-user feature, it will go into the `user:/` namespace. As for now, the root key is `user:/elektra/record`.
 
-The key `user:/elektra/record/config/current_session` contains the name of the current session. If this key does not exist (or its value is empty) the recording plugin is disabled.
+The key `user:/elektra/record/config/session/current/name` contains the name of the current session. If this key does not exist (or its value is empty) the recording plugin is disabled.
 
 All recording sessions are located under `user:/elektra/record/sessions/<SESSION_NAME>`.
 
