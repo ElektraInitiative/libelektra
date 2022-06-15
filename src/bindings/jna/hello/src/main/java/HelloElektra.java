@@ -92,6 +92,8 @@ public class HelloElektra {
     exampleSetArrayMetaKey();
 
     exampleCheckKeyAvailableInKDB();
+
+    exampleUpdateMetaKey();
   }
 
   private static void exampleCheckKeyAvailableInKDB() {
@@ -179,5 +181,20 @@ public class HelloElektra {
           }
           System.out.println();
         });
+  }
+
+  private static void exampleUpdateMetaKey() {
+    // Example 12: Update meta data on a key
+    System.out.println("Example 12");
+    Key key = Key.create("user:/key/with/meta");
+    key.setMeta("example", "anExampleValue");
+    key.getMeta ("example").ifPresent (
+            k ->     System.out.println("Set new meta data: " + k.getString())
+    );
+    key.setMeta("example", "anUpdatedExampleValue");
+    key.getMeta ("example").ifPresent (
+            k ->     System.out.println("Updated meta data: " + k.getString())
+    );
+    System.out.println();
   }
 }
