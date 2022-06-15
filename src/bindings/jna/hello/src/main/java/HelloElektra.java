@@ -42,8 +42,7 @@ public class HelloElektra {
     System.out.println("Example 5");
     try (final KDB kdb = KDB.open(key)) {
       kdb.get(ks, key);
-      Key k = ks.lookup(key).orElseThrow(AssertionError::new);
-      System.out.println(k.getString());
+      ks.lookup (key).ifPresent (k -> System.out.println (k.getString ()));
     } catch (KDBException e) {
       System.out.println(e);
     }
