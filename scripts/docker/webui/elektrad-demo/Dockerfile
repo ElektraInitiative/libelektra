@@ -1,7 +1,7 @@
 # same as `elektrad`, but with a KDB config set up (for demo)
 
-ARG BASE_IMG
-FROM $BASE_IMG
+ARG PIPELINE_TAG
+FROM hub.libelektra.org/build-elektra-web-base:$PIPELINE_TAG
 
 WORKDIR /home/elektra
 
