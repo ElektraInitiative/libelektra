@@ -37,7 +37,7 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 - Breaking change to iterators: Remove `keyRewindMeta`, `keyCurrentMeta`, `ksHead`, and `ksTail` functions for internal iteration of `Keyset`s and Metadata of `Key`s. External iterators are now the way to go (see [Iterators](/doc/dev/iterators.md)) _(Florian Lindner @flo91)_
-- New Binding for Kotlin with convenience functions and various utilities. There is also the possibility to convert KeySets to Kotlin data classes or collections and back. _(@Gratla & @mandoway)_
+- New Binding for Kotlin with convenience functions and various utilities. There is also the possibility to convert KeySets to Kotlin data classes or collections and back. (see [Kotlin Readme](../../src/bindings/jna/libelektra-kotlin/README.md)) _(@Gratla & @mandoway)_
 
 ### <<HIGHLIGHT>>
 
