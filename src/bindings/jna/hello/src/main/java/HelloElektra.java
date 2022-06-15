@@ -90,6 +90,58 @@ public class HelloElektra {
     exampleSetMetaKeys();
 
     exampleSetArrayMetaKey();
+
+    exampleCheckKeyAvailableInKDB();
+  }
+
+  private static void exampleCheckKeyAvailableInKDB() {
+    // Example 11: Check whether the keys are already available in the key database
+    System.out.println("Example 11");
+    Key parentKey = Key.create("user:/e11");
+    Key existingKey = Key.create("user:/e11/exists", "e11Val");
+    Key notExistingKey = Key.create("user:/e11/doesNotExist", "e11ValNot");
+
+    try (KDB kdb = KDB.open()) {
+      var keySet = kdb.get(parentKey);
+      keySet.clear();
+      keySet.append(existingKey);
+      kdb.set(keySet, parentKey);
+    } catch (KDBException e){
+      System.out.println(e);
+    }
+
+    // now retrieve them
+    try (KDB kdb = KDB.open()) {
+      KeySet keySet = kdb.get(parentKey);
+
+      var ek = keySet.lookup(existingKey);
+
+      if(ek.isPresent()){
+        Key loadedExistingKey = ek.get();
+        System.out.println(loadedExistingKey + " is present and its value " + loadedExistingKey.getString() + " loaded.");
+        ek.get().release();
+      } else {
+        System.out.println(existingKey + " is not present. Setting key.");
+        keySet.append(existingKey);
+        kdb.set(keySet, parentKey);
+      }
+
+      var nek = keySet.lookup(notExistingKey);
+
+      if(nek.isPresent()){
+        Key loadedNotExistingKey = nek.get();
+        System.out.println(loadedNotExistingKey + " is present and its value " + nek.get().getString() + " loaded.");
+        nek.get().release();
+      } else {
+        System.out.println(notExistingKey + " is not present. Setting key.");
+        keySet.append(notExistingKey);
+        kdb.set(keySet, parentKey);
+      }
+
+    } catch (KDBException e){
+      System.out.println(e);
+    }
+    System.out.println();
   }
 
   private static void exampleSetMetaKeys() {
@@ -99,6 +151,7 @@ public class HelloElektra {
     key.setMeta("example", "anExampleValue");
     var returnedMeta = key.getMeta("example").orElseThrow(AssertionError::new);
     System.out.println("Value of meta key 'example': " + returnedMeta.getString());
+    System.out.println();
   }
 
   private static void exampleSetArrayMetaKey() {
