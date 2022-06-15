@@ -54,7 +54,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Python
 
 - Added new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
-- <<TODO>>
+- Added `.pop()`, `.cut()`, `.head()` and `.tail()` examples to keySet example _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 
 ### <<Plugin>>
