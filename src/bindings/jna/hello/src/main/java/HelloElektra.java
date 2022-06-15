@@ -96,6 +96,8 @@ public class HelloElektra {
     exampleCheckKeyAvailableInKDB();
 
     exampleUpdateMetaKey();
+
+    exampleKeyIterDumpMetaData();
   }
 
   private static void exampleSetMetaKeys() {
@@ -133,6 +135,7 @@ public class HelloElektra {
           }
           System.out.println();
         });
+    System.out.println();
   }
 
   private static void exampleCheckKeyAvailableInKDB() {
@@ -197,6 +200,25 @@ public class HelloElektra {
     key.getMeta("example").ifPresent(
         k -> System.out.println("Updated meta data: " + k.getString())
     );
+    System.out.println();
+  }
+
+  private static void exampleKeyIterDumpMetaData() {
+    // Example 13: Update meta data on a key
+    System.out.println("Example 13");
+    Key k1 = Key.create("user:/ex13/Hallo");
+    k1.setMeta("lang", "GER");
+    Key k2 = Key.create("user:/ex13/Hello");
+    k2.setMeta("lang", "ENG");
+    Key k3 = Key.create("user:/ex13/Hola");
+    k3.setMeta("lang", "ESP");
+
+    final KeySet ks = KeySet.create(10, k1, k2, k3);
+    for (Key key : ks) {
+      key.getMeta("lang").ifPresent(
+          k -> System.out.println("Language of Key " + key.getName() + " is " + k.getString())
+      );
+    }
     System.out.println();
   }
 }
