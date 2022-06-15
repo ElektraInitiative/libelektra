@@ -1,9 +1,7 @@
 import org.libelektra.*;
 import org.libelektra.plugin.Echo;
 
-/**
- * Simple hello world to see how Elektra can be used in Java.
- */
+/** Simple hello world to see how Elektra can be used in Java. */
 public class HelloElektra {
 
   public static void main(String[] args) {
@@ -162,7 +160,11 @@ public class HelloElektra {
 
       if (ek.isPresent()) {
         Key loadedExistingKey = ek.get();
-        System.out.println(loadedExistingKey + " is present and its value " + loadedExistingKey.getString() + " loaded.");
+        System.out.println(
+            loadedExistingKey
+                + " is present and its value "
+                + loadedExistingKey.getString()
+                + " loaded.");
         ek.get().release();
       } else {
         System.out.println(existingKey + " is not present. Setting key.");
@@ -174,7 +176,11 @@ public class HelloElektra {
 
       if (nek.isPresent()) {
         Key loadedNotExistingKey = nek.get();
-        System.out.println(loadedNotExistingKey + " is present and its value " + nek.get().getString() + " loaded.");
+        System.out.println(
+            loadedNotExistingKey
+                + " is present and its value "
+                + nek.get().getString()
+                + " loaded.");
         nek.get().release();
       } else {
         System.out.println(notExistingKey + " is not present. Setting key.");
@@ -193,13 +199,11 @@ public class HelloElektra {
     System.out.println("Example 12");
     Key key = Key.create("user:/key/with/meta");
     key.setMeta("example", "anExampleValue");
-    key.getMeta("example").ifPresent(
-        k -> System.out.println("Set new meta data: " + k.getString())
-    );
+    key.getMeta("example")
+        .ifPresent(k -> System.out.println("Set new meta data: " + k.getString()));
     key.setMeta("example", "anUpdatedExampleValue");
-    key.getMeta("example").ifPresent(
-        k -> System.out.println("Updated meta data: " + k.getString())
-    );
+    key.getMeta("example")
+        .ifPresent(k -> System.out.println("Updated meta data: " + k.getString()));
     System.out.println();
   }
 
@@ -215,9 +219,9 @@ public class HelloElektra {
 
     final KeySet ks = KeySet.create(10, k1, k2, k3);
     for (Key key : ks) {
-      key.getMeta("lang").ifPresent(
-          k -> System.out.println("Language of Key " + key.getName() + " is " + k.getString())
-      );
+      key.getMeta("lang")
+          .ifPresent(
+              k -> System.out.println("Language of Key " + key.getName() + " is " + k.getString()));
     }
     System.out.println();
   }
