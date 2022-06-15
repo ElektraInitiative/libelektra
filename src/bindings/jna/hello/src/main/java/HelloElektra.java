@@ -1,7 +1,9 @@
 import org.libelektra.*;
 import org.libelektra.plugin.Echo;
 
-/** Simple hello world to see how Elektra can be used in Java. */
+/**
+ * Simple hello world to see how Elektra can be used in Java.
+ */
 public class HelloElektra {
 
   public static void main(String[] args) {
@@ -42,7 +44,7 @@ public class HelloElektra {
     System.out.println("Example 5");
     try (final KDB kdb = KDB.open(key)) {
       kdb.get(ks, key);
-      ks.lookup (key).ifPresent (k -> System.out.println (k.getString ()));
+      ks.lookup(key).ifPresent(k -> System.out.println(k.getString()));
     } catch (KDBException e) {
       System.out.println(e);
     }
@@ -96,56 +98,6 @@ public class HelloElektra {
     exampleUpdateMetaKey();
   }
 
-  private static void exampleCheckKeyAvailableInKDB() {
-    // Example 11: Check whether the keys are already available in the key database
-    System.out.println("Example 11");
-    Key parentKey = Key.create("user:/e11");
-    Key existingKey = Key.create("user:/e11/exists", "e11Val");
-    Key notExistingKey = Key.create("user:/e11/doesNotExist", "e11ValNot");
-
-    try (KDB kdb = KDB.open()) {
-      var keySet = kdb.get(parentKey);
-      keySet.clear();
-      keySet.append(existingKey);
-      kdb.set(keySet, parentKey);
-    } catch (KDBException e){
-      System.out.println(e);
-    }
-
-    // now retrieve them
-    try (KDB kdb = KDB.open()) {
-      KeySet keySet = kdb.get(parentKey);
-
-      var ek = keySet.lookup(existingKey);
-
-      if(ek.isPresent()){
-        Key loadedExistingKey = ek.get();
-        System.out.println(loadedExistingKey + " is present and its value " + loadedExistingKey.getString() + " loaded.");
-        ek.get().release();
-      } else {
-        System.out.println(existingKey + " is not present. Setting key.");
-        keySet.append(existingKey);
-        kdb.set(keySet, parentKey);
-      }
-
-      var nek = keySet.lookup(notExistingKey);
-
-      if(nek.isPresent()){
-        Key loadedNotExistingKey = nek.get();
-        System.out.println(loadedNotExistingKey + " is present and its value " + nek.get().getString() + " loaded.");
-        nek.get().release();
-      } else {
-        System.out.println(notExistingKey + " is not present. Setting key.");
-        keySet.append(notExistingKey);
-        kdb.set(keySet, parentKey);
-      }
-
-    } catch (KDBException e){
-      System.out.println(e);
-    }
-    System.out.println();
-  }
-
   private static void exampleSetMetaKeys() {
     // Example 9: Set and get meta keys
     System.out.println("Example 9");
@@ -183,17 +135,67 @@ public class HelloElektra {
         });
   }
 
+  private static void exampleCheckKeyAvailableInKDB() {
+    // Example 11: Check whether the keys are already available in the key database
+    System.out.println("Example 11");
+    Key parentKey = Key.create("user:/e11");
+    Key existingKey = Key.create("user:/e11/exists", "e11Val");
+    Key notExistingKey = Key.create("user:/e11/doesNotExist", "e11ValNot");
+
+    try (KDB kdb = KDB.open()) {
+      var keySet = kdb.get(parentKey);
+      keySet.clear();
+      keySet.append(existingKey);
+      kdb.set(keySet, parentKey);
+    } catch (KDBException e) {
+      System.out.println(e);
+    }
+
+    // now retrieve them
+    try (KDB kdb = KDB.open()) {
+      KeySet keySet = kdb.get(parentKey);
+
+      var ek = keySet.lookup(existingKey);
+
+      if (ek.isPresent()) {
+        Key loadedExistingKey = ek.get();
+        System.out.println(loadedExistingKey + " is present and its value " + loadedExistingKey.getString() + " loaded.");
+        ek.get().release();
+      } else {
+        System.out.println(existingKey + " is not present. Setting key.");
+        keySet.append(existingKey);
+        kdb.set(keySet, parentKey);
+      }
+
+      var nek = keySet.lookup(notExistingKey);
+
+      if (nek.isPresent()) {
+        Key loadedNotExistingKey = nek.get();
+        System.out.println(loadedNotExistingKey + " is present and its value " + nek.get().getString() + " loaded.");
+        nek.get().release();
+      } else {
+        System.out.println(notExistingKey + " is not present. Setting key.");
+        keySet.append(notExistingKey);
+        kdb.set(keySet, parentKey);
+      }
+
+    } catch (KDBException e) {
+      System.out.println(e);
+    }
+    System.out.println();
+  }
+
   private static void exampleUpdateMetaKey() {
     // Example 12: Update meta data on a key
     System.out.println("Example 12");
     Key key = Key.create("user:/key/with/meta");
     key.setMeta("example", "anExampleValue");
-    key.getMeta ("example").ifPresent (
-            k ->     System.out.println("Set new meta data: " + k.getString())
+    key.getMeta("example").ifPresent(
+        k -> System.out.println("Set new meta data: " + k.getString())
     );
     key.setMeta("example", "anUpdatedExampleValue");
-    key.getMeta ("example").ifPresent (
-            k ->     System.out.println("Updated meta data: " + k.getString())
+    key.getMeta("example").ifPresent(
+        k -> System.out.println("Updated meta data: " + k.getString())
     );
     System.out.println();
   }
