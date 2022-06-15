@@ -160,6 +160,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Java
 
 - Added a java example for meta keys and arrays _(@mandoway)_
+- Added examples to HelloElektra.java _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
 
 ### JNA
 
