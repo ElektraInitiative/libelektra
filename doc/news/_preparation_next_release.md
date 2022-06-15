@@ -55,6 +55,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Added new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - Bugfixes for new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
+- Added `.pop()`, `.cut()`, `.head()` and `.tail()` examples to keySet example _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - <<TODO>>
 
 ### <<Plugin>>
