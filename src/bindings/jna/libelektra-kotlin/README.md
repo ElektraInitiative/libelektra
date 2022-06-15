@@ -195,7 +195,7 @@ val key: Key = keySet.lookupOrThrow("/test/foo")
 val key: Key? = keySet.lookupOrNull("/test/foo")
 
 // Get operator, same as lookupOrNull
-val key: Key? = keySet.["/test/foo"]
+val key: Key? = keySet["/test/foo"]
 ```
 
 ## KeySet serialization
