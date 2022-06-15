@@ -284,7 +284,7 @@ Since the key `/sw/org/app/\#0/current/server/secure` has a default value of `1`
 we are able to retrieve the default value from the key database:
 
 ```sh
-kdb get /sw/org/app/\#0/current/server/secure
+kdb get /tests/sw/org/app/\#0/current/server/secure
 
 #> 1
 ```
