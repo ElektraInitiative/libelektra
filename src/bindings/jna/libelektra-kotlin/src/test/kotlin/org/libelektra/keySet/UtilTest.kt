@@ -3,8 +3,9 @@ package org.libelektra.keySet
 import org.junit.Test
 import org.libelektra.Key
 import org.libelektra.dsl.keySetOf
-import org.libelektra.keySetExt.find
-import org.libelektra.keySetExt.findOrNull
+import org.libelektra.keySetExt.get
+import org.libelektra.keySetExt.lookupOrThrow
+import org.libelektra.keySetExt.lookupOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
@@ -46,7 +47,7 @@ class UtilTest {
         val keySet = keySetOf()
 
         assertFailsWith<NoSuchElementException> {
-            keySet.find("/non/existing")
+            keySet.lookupOrThrow("/non/existing")
         }
     }
 
@@ -57,7 +58,7 @@ class UtilTest {
         )
 
         assertFailsWith<NoSuchElementException> {
-            keySet.find("/non/existing")
+            keySet.lookupOrThrow("/non/existing")
         }
     }
 
@@ -67,7 +68,7 @@ class UtilTest {
                 Key.create("/existing")
         )
 
-        val key = keySet.find("/existing")
+        val key = keySet.lookupOrThrow("/existing")
 
         assertEquals("/existing", key.name)
     }
@@ -76,7 +77,7 @@ class UtilTest {
     fun `findOrNull in keySet with no keys, returns null`() {
         val keySet = keySetOf()
 
-        val key = keySet.findOrNull("/non/existing")
+        val key = keySet.lookupOrNull("/non/existing")
 
         assertNull(key)
     }
@@ -87,7 +88,7 @@ class UtilTest {
                 Key.create("/existing")
         )
 
-        val key = keySet.findOrNull("/non/existing")
+        val key = keySet.lookupOrNull("/non/existing")
 
         assertNull(key)
     }
@@ -98,7 +99,39 @@ class UtilTest {
                 Key.create("/existing")
         )
 
-        val key = keySet.findOrNull("/existing")
+        val key = keySet.lookupOrNull("/existing")
+
+        assertNotNull(key)
+        assertEquals("/existing", key.name)
+    }
+
+    @Test
+    fun `get operator in keySet with no keys, returns null`() {
+        val keySet = keySetOf()
+
+        val key = keySet["/non/existing"]
+
+        assertNull(key)
+    }
+
+    @Test
+    fun `get operator in keySet with wrong keyName, returns null`() {
+        val keySet = keySetOf(
+                Key.create("/existing")
+        )
+
+        val key = keySet["/non/existing"]
+
+        assertNull(key)
+    }
+
+    @Test
+    fun `get operator in keySet with correct keyName, returns key`() {
+        val keySet = keySetOf(
+                Key.create("/existing")
+        )
+
+        val key = keySet["/existing"]
 
         assertNotNull(key)
         assertEquals("/existing", key.name)
