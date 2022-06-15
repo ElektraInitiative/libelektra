@@ -23,6 +23,30 @@ ks1.remove("user:/key5")
 ks1.remove("user:/key6")
 print("")
 
+print("Alternatively you can use pop")
+ks1.extend(list_of_keys)
+# pop() removes the last element of the KeySet and returns its value
+print(ks1.pop())
+print(ks1.pop())
+
+print("or cut")
+ks1.append(kdb.Key("user:/keytocut"))
+ks1.append(kdb.Key("user:/keytocut/below"))
+# cut(kdb::Key) removes all Keys below a given Key from the KeySet and returns them in a new KeySet
+# this method takes a kdb.Key as input parameter in contrast to remove() which takes the path as a string
+print(ks1.cut(kdb.Key("user:/keytocut")))
+print("")
+
+print("You can easily access the first key of the KeySet")
+ks1.extend(list_of_keys)
+# head() returns the first key in the KeySet
+print(ks1.head())
+
+print("or the last")
+# tail() returns the last key in the KeySet
+print(ks1.tail())
+print("")
+
 print("We can easily iterate over the keyset to check out its content:")
 for k in ks1:
 	print("  {0}".format(k))
