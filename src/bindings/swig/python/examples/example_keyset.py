@@ -23,28 +23,12 @@ ks1.remove("user:/key5")
 ks1.remove("user:/key6")
 print("")
 
-print("Alternatively you can use pop")
-ks1.extend(list_of_keys)
-# pop() removes the last element of the KeySet and returns its value
-print(ks1.pop())
-print(ks1.pop())
-
-print("or cut")
+print("Alternatively you can use cut")
 ks1.append(kdb.Key("user:/keytocut"))
 ks1.append(kdb.Key("user:/keytocut/below"))
 # cut(kdb::Key) removes all Keys below a given Key from the KeySet and returns them in a new KeySet
 # this method takes a kdb.Key as input parameter in contrast to remove() which takes the path as a string
 print(ks1.cut(kdb.Key("user:/keytocut")))
-print("")
-
-print("You can easily access the first key of the KeySet")
-ks1.extend(list_of_keys)
-# head() returns the first key in the KeySet
-print(ks1.head())
-
-print("or the last")
-# tail() returns the last key in the KeySet
-print(ks1.tail())
 print("")
 
 print("We can easily iterate over the keyset to check out its content:")
@@ -79,9 +63,10 @@ print("  KeySet1[1:3]={0}".format([ str(k) for k in ks1[1:3] ]))
 print("")
 
 print("We can create shallow copies and remove keys without affecting other keysets:")
+ks1.append(kdb.Key("user:/extraKey"))
 ks2 = kdb.KeySet(ks1.dup())
 # or ks2 = copy.copy(ks1)
-ks2.pop()
+ks2.remove("user:/extraKey")
 print("  KeySet2 now has {0} keys while KeySet1 still has {1} keys".format(len(ks2), len(ks1)))
 
 print("In Python we can even create deep copies and modify the keys inside:")
