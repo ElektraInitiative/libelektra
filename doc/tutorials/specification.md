@@ -286,7 +286,7 @@ we are able to retrieve the default value from the key database:
 ```sh
 kdb get /sw/org/app/\#0/current/server/secure
 
-1
+#> 1
 ```
 
 You can read more about this in the documentation for the [type plugin](https://www.libelektra.org/plugins/type#normalization).
@@ -651,25 +651,7 @@ sudo rm -v /usr/share/elektra/specification/spec.ni
 sudo rm -v /etc/spec.ni
 ```
 
-```sh
-rm -v ./spec.ni
-sudo kdb umount /tests/sw/org/app/#0/current
-```
-
-```
-sudo kdb umount spec:/tests/sw/org/app/#0/current
-```
-
-## Cleanup after the tutorial
-
-If you take a look at `kdb mount`, you'll see that there are currently two mountpoints open:
-
-```sh
-kdb mount
-
-app.ni on /sw/org/app/#0/current
-/home/demouser/dev/spec.ni on spec:/sw/org/app/#0/current
-```
+If you take a look at `kdb mount`, you'll see that there are currently two mountpoints open.
 
 Mountpoints are meant to mount (external) files into the key database structure of Elektra.
 This mechanism is similar to `mount` on Linux:
@@ -678,8 +660,14 @@ If you want to learn more on mounting and mountpoints in Eletra, refer to [the d
 
 To round up this tutorial, we will `kdb umount` these two mountpoints:
 
-1. `sudo kdb umount spec:/sw/org/app/\#0/current` to remove the mountpoint created with `kdb mount ...`
-2. `sudo kdb umount /sw/org/app/\#0/current` to remove the mountpoint created with `kdb spec-mount ...`
+```sh
+rm -v ./spec.ni
+sudo kdb umount /tests/sw/org/app/#0/current
+```
+
+```
+sudo kdb umount spec:/tests/sw/org/app/#0/current
+```
 
 In case something went wrong and you want to reset the whole content of your kdb,
 please refer to [the manpage of kdb reset](https://www.libelektra.org/manpages/kdb-reset).
