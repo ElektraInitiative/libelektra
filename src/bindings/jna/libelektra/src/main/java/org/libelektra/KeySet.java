@@ -409,11 +409,14 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    */
   @Override
   public Key lower(Key key) {
-    try {
-      return at(indexOf(key) - 1);
-    } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+    int index = searchForIndexOf(key);
+    if (index < 0) {
+      index = index * -1 - 1;
+    }
+    if (index == 0) {
       return null;
     }
+    return at(index - 1);
   }
 
   /**
@@ -423,11 +426,17 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    */
   @Override
   public Key floor(Key key) {
-    try {
-      return at(indexOf(key));
-    } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+    int index = searchForIndexOf(key);
+    if (index == -1) {
       return null;
     }
+    if (index < 0) {
+      index = index * -1 - 1 - 1;
+    }
+    if (index >= size()) {
+      index = size() - 1;
+    }
+    return at(index);
   }
 
   /**
@@ -437,11 +446,14 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    */
   @Override
   public Key ceiling(Key key) {
-    try {
-      return at(indexOf(key));
-    } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+    int index = searchForIndexOf(key);
+    if (index < 0) {
+      index = index * -1 - 1;
+    }
+    if (index >= size()) {
       return null;
     }
+    return at(index);
   }
 
   /**
@@ -451,11 +463,14 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    */
   @Override
   public Key higher(Key key) {
-    try {
-      return at(indexOf(key) + 1);
-    } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+    int index = searchForIndexOf(key);
+    if (index < 0) {
+      index = index * -1 - 1 - 1;
+    }
+    if (index + 1 >= size()) {
       return null;
     }
+    return at(index + 1);
   }
 
   /**
@@ -465,13 +480,12 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    */
   @Override
   public Key pollFirst() {
-    try {
-      final Key first = first();
-      remove(first);
-      return first;
-    } catch (NoSuchElementException | IllegalArgumentException e) {
+    if (isEmpty()) {
       return null;
     }
+    final Key first = first();
+    remove(first);
+    return first;
   }
 
   /**
@@ -481,13 +495,12 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
    */
   @Override
   public Key pollLast() {
-    try {
-      final Key last = last();
-      remove(last);
-      return last;
-    } catch (NoSuchElementException | IllegalArgumentException e) {
+    if (isEmpty()) {
       return null;
     }
+    final Key last = last();
+    remove(last);
+    return last;
   }
 
   /**
@@ -941,11 +954,14 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Key lower(Key key) {
-      try {
-        return at(getLowerIndexOf(key) - 1);
-      } catch (IndexOutOfBoundsException e) {
+      int index = keySet.searchForIndexOf(key);
+      if (index < 0) {
+        index = index * -1 - 1;
+      }
+      if (index == 0) {
         return null;
       }
+      return at(index - 1);
     }
 
     /**
@@ -955,11 +971,17 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Key floor(Key key) {
-      try {
-        return at(getLowerIndexOf(key));
-      } catch (IndexOutOfBoundsException e) {
+      int index = keySet.searchForIndexOf(key);
+      if (index == -1) {
         return null;
       }
+      if (index < 0) {
+        index = index * -1 - 1 - 1;
+      }
+      if (index >= size()) {
+        index = size() - 1;
+      }
+      return at(index);
     }
 
     /**
@@ -969,11 +991,14 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Key ceiling(Key key) {
-      try {
-        return at(getUpperIndexOf(key));
-      } catch (IndexOutOfBoundsException e) {
+      int index = keySet.searchForIndexOf(key);
+      if (index < 0) {
+        index = index * -1 - 1;
+      }
+      if (index >= size()) {
         return null;
       }
+      return at(index);
     }
 
     /**
@@ -983,11 +1008,14 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Key higher(Key key) {
-      try {
-        return at(getUpperIndexOf(key) + 1);
-      } catch (IndexOutOfBoundsException e) {
+      int index = keySet.searchForIndexOf(key);
+      if (index < 0) {
+        index = index * -1 - 1 - 1;
+      }
+      if (index + 1 >= size()) {
         return null;
       }
+      return at(index + 1);
     }
 
     /**
@@ -998,13 +1026,12 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Key pollFirst() {
-      try {
-        final Key first = first();
-        remove(first);
-        return first;
-      } catch (NoSuchElementException e) {
+      if (isEmpty()) {
         return null;
       }
+      final Key first = first();
+      remove(first);
+      return first;
     }
 
     /**
@@ -1015,13 +1042,12 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Key pollLast() {
-      try {
-        final Key last = last();
-        remove(last);
-        return last;
-      } catch (NoSuchElementException e) {
+      if (isEmpty()) {
         return null;
       }
+      final Key last = last();
+      remove(last);
+      return last;
     }
 
     /**
@@ -1059,7 +1085,7 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Iterator<Key> descendingIterator() {
-      return descendingSet().iterator();
+      return new DescendingKeySetIterator<>(keySet, Key::new, getUpperBound(), getLowerBound());
     }
 
     /**
@@ -1445,7 +1471,7 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
      */
     @Override
     public Iterator<Key> descendingIterator() {
-      return descendingSet().iterator();
+      return new KeySetIterator<>(keySet, Key::new, getLowerBound(), getUpperBound());
     }
 
     /**

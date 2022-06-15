@@ -819,7 +819,8 @@ public class KeySetTest {
     assertEquals(key2, keySet.lower(key3));
     assertEquals(key3, keySet.lower(key4));
     assertEquals(key4, keySet.lower(key5));
-    assertNull(keySet.lower(key6));
+    assertEquals(key5, keySet.lower(key6));
+    assertEquals(key2, keySet.lower(Key.create(KEY_2_NAME + "/1")));
   }
 
   @Test
@@ -831,14 +832,16 @@ public class KeySetTest {
     assertEquals(key3, keySet.floor(key3));
     assertEquals(key4, keySet.floor(key4));
     assertEquals(key5, keySet.floor(key5));
-    assertNull(keySet.floor(key6));
+    assertEquals(key5, keySet.floor(key6));
+    assertEquals(key2, keySet.floor(Key.create(KEY_2_NAME + "/1")));
   }
 
   @Test
   public void test_keySetCeiling_shouldPass() {
     var keySet = KeySet.create(5, key2, key3, key4, key5);
 
-    assertNull(keySet.ceiling(key));
+    assertEquals(key3, keySet.ceiling(Key.create(KEY_2_NAME + "/1")));
+    assertEquals(key2, keySet.ceiling(key));
     assertEquals(key2, keySet.ceiling(key2));
     assertEquals(key3, keySet.ceiling(key3));
     assertEquals(key4, keySet.ceiling(key4));
@@ -850,7 +853,8 @@ public class KeySetTest {
   public void test_keySetHigher_shouldPass() {
     var keySet = KeySet.create(5, key2, key3, key4, key5);
 
-    assertNull(keySet.higher(key));
+    assertEquals(key3, keySet.higher(Key.create(KEY_2_NAME + "/1")));
+    assertEquals(key2, keySet.higher(key));
     assertEquals(key3, keySet.higher(key2));
     assertEquals(key4, keySet.higher(key3));
     assertEquals(key5, keySet.higher(key4));
@@ -903,17 +907,25 @@ public class KeySetTest {
     assertNull(keySet.lower(key5));
     assertEquals(key5, keySet.lower(key4));
     assertEquals(key4, keySet.lower(key3));
+    assertEquals(key3, keySet.lower(key));
+    assertEquals(key4, keySet.lower(Key.create(KEY_3_NAME + "1")));
 
     assertNull(keySet.floor(key6));
     assertEquals(key5, keySet.floor(key5));
     assertEquals(key4, keySet.floor(key4));
     assertEquals(key3, keySet.floor(key3));
+    assertEquals(key3, keySet.lower(key));
+    assertEquals(key4, keySet.floor(Key.create(KEY_3_NAME + "1")));
 
-    assertNull(keySet.ceiling(key6));
+    assertEquals(key3, keySet.ceiling(Key.create(KEY_3_NAME + "1")));
+    assertEquals(key5, keySet.ceiling(key6));
     assertEquals(key5, keySet.ceiling(key5));
     assertEquals(key4, keySet.ceiling(key4));
     assertEquals(key3, keySet.ceiling(key3));
+    assertNull(keySet.ceiling(key2));
 
+    assertEquals(key3, keySet.ceiling(Key.create(KEY_3_NAME + "1")));
+    assertEquals(key5, keySet.ceiling(key6));
     assertEquals(key4, keySet.higher(key5));
     assertEquals(key3, keySet.higher(key4));
     assertNull(keySet.higher(key3));
