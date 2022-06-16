@@ -283,6 +283,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - Fix wrong KDBException reference in java tutorial and improve it _(Burkhard Hampl @bhampl and Richard Stöckl @Eiskasten)_
 - <<TODO>>
+- Implement NavigableSet in JNA KeySet _(Burkhard Hampl @bhampl)_
 - <<TODO>>
 - <<TODO>>
 
