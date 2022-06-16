@@ -1,18 +1,17 @@
 # base image for elektra web, all other images build upon this (builds elektra with `yajl` and `kdb`)
 
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 # elektra deps
 RUN apt-get update
 RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:longsleep/golang-backports
-RUN apt-get update -y && apt-get install -y cmake git build-essential libyajl-dev curl nodejs-legacy npm
+RUN apt-get update -y && apt-get install -y cmake git build-essential libyajl-dev curl npm
 
 ENV GO111MODULE=on
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # elektra web deps
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs golang-go
 
 # Google Test

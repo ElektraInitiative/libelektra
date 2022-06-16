@@ -258,6 +258,8 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - Add readme-file [Iterators](/doc/dev/iterators.md) about cm2022s project showcasing usage in various programming languages _(Florian Lindner @flo91 and Michael Langhammer @Milangs)_
 - Remove usage of internal iterators from the examples
+- Add readme-file about cm2022s project (/doc/dev/iterators.md) _(Florian Lindner @flo91)_
+- Updated elektra-web installation manual (doc/tutorials/install-webui.md) _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
 - <<TODO>>
 - <<TODO>>
 - Improve jna documentation _(Burkhard Hampl @bhampl)_
