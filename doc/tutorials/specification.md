@@ -65,6 +65,9 @@ You can define the path inside the `spec:/` namespace as `/tests/sw/org/app/#0/c
 You will be using the profile `current`, you can find out more about profiles in
 [the documentation](https://www.libelektra.org/plugins/profile) as well.
 
+We will be writing values mostly to the `user:/` namespace. If you want to learn more about namespaces in general, refer to the
+[the documentation on namespaces](https://www.libelektra.org/tutorials/namespaces)
+
 You also need to specify the plugin you will use for writing to the file in the correct format. In this case you can choose the `ni` plugin to write to the specification file.
 
 ```sh
@@ -276,6 +279,15 @@ kdb meta-set spec:/tests/sw/org/app/\#0/current/server/secure description "true 
 By default the `type` plugin will normalize boolean values when setting them, before storing them.
 This only works for the concrete config, so when setting the values for the spec you have to use the unnormalized values.
 In the case it uses `1` for boolean `true` and `0` for boolean `false`.
+
+Since the key `/sw/org/app/\#0/current/server/secure` has a default value of `1`,
+we are able to retrieve the default value from the key database:
+
+```sh
+kdb get /tests/sw/org/app/\#0/current/server/secure
+
+#> 1
+```
 
 You can read more about this in the documentation for the [type plugin](https://www.libelektra.org/plugins/type#normalization).
 
@@ -639,6 +651,15 @@ sudo rm -v /usr/share/elektra/specification/spec.ni
 sudo rm -v /etc/spec.ni
 ```
 
+If you take a look at `kdb mount`, you'll see that there are currently two mountpoints open.
+
+Mountpoints are meant to mount (external) files into the key database structure of Elektra.
+This mechanism is similar to `mount` on Linux:
+changes made to the key database will be written to the underlying mounted file.
+If you want to learn more on mounting and mountpoints in Eletra, refer to [the documentation](https://www.libelektra.org/tutorials/mount-configuration-files).
+
+To round up this tutorial, we will `kdb umount` these two mountpoints:
+
 ```sh
 rm -v ./spec.ni
 sudo kdb umount /tests/sw/org/app/#0/current
@@ -647,6 +668,9 @@ sudo kdb umount /tests/sw/org/app/#0/current
 ```
 sudo kdb umount spec:/tests/sw/org/app/#0/current
 ```
+
+In case something went wrong and you want to reset the whole content of your kdb,
+please refer to [the manpage of kdb reset](https://www.libelektra.org/manpages/kdb-reset).
 
 ## Summary
 
