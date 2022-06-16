@@ -42,8 +42,7 @@ public class HelloElektra {
     System.out.println("Example 5");
     try (final KDB kdb = KDB.open(key)) {
       kdb.get(ks, key);
-      Key k = ks.lookup(key).orElseThrow(AssertionError::new);
-      System.out.println(k.getString());
+      ks.lookup(key).ifPresent(k -> System.out.println(k.getString()));
     } catch (KDBException e) {
       System.out.println(e);
     }
@@ -91,6 +90,12 @@ public class HelloElektra {
     exampleSetMetaKeys();
 
     exampleSetArrayMetaKey();
+
+    exampleCheckKeyAvailableInKDB();
+
+    exampleUpdateMetaKey();
+
+    exampleKeyIterDumpMetaData();
   }
 
   private static void exampleSetMetaKeys() {
@@ -100,6 +105,7 @@ public class HelloElektra {
     key.setMeta("example", "anExampleValue");
     var returnedMeta = key.getMeta("example").orElseThrow(AssertionError::new);
     System.out.println("Value of meta key 'example': " + returnedMeta.getString());
+    System.out.println();
   }
 
   private static void exampleSetArrayMetaKey() {
@@ -127,5 +133,96 @@ public class HelloElektra {
           }
           System.out.println();
         });
+    System.out.println();
+  }
+
+  private static void exampleCheckKeyAvailableInKDB() {
+    // Example 11: Check whether the keys are already available in the key database
+    System.out.println("Example 11");
+    Key parentKey = Key.create("user:/e11");
+    Key existingKey = Key.create("user:/e11/exists", "e11Val");
+    Key notExistingKey = Key.create("user:/e11/doesNotExist", "e11ValNot");
+
+    try (KDB kdb = KDB.open()) {
+      var keySet = kdb.get(parentKey);
+      keySet.clear();
+      keySet.append(existingKey);
+      kdb.set(keySet, parentKey);
+    } catch (KDBException e) {
+      System.out.println(e);
+    }
+
+    // now retrieve them
+    try (KDB kdb = KDB.open()) {
+      KeySet keySet = kdb.get(parentKey);
+
+      var ek = keySet.lookup(existingKey);
+
+      if (ek.isPresent()) {
+        Key loadedExistingKey = ek.get();
+        System.out.println(
+            loadedExistingKey
+                + " is present and its value "
+                + loadedExistingKey.getString()
+                + " loaded.");
+        ek.get().release();
+      } else {
+        System.out.println(existingKey + " is not present. Setting key.");
+        keySet.append(existingKey);
+        kdb.set(keySet, parentKey);
+      }
+
+      var nek = keySet.lookup(notExistingKey);
+
+      if (nek.isPresent()) {
+        Key loadedNotExistingKey = nek.get();
+        System.out.println(
+            loadedNotExistingKey
+                + " is present and its value "
+                + nek.get().getString()
+                + " loaded.");
+        nek.get().release();
+      } else {
+        System.out.println(notExistingKey + " is not present. Setting key.");
+        keySet.append(notExistingKey);
+        kdb.set(keySet, parentKey);
+      }
+
+    } catch (KDBException e) {
+      System.out.println(e);
+    }
+    System.out.println();
+  }
+
+  private static void exampleUpdateMetaKey() {
+    // Example 12: Update meta data on a key
+    System.out.println("Example 12");
+    Key key = Key.create("user:/key/with/meta");
+    key.setMeta("example", "anExampleValue");
+    key.getMeta("example")
+        .ifPresent(k -> System.out.println("Set new meta data: " + k.getString()));
+    key.setMeta("example", "anUpdatedExampleValue");
+    key.getMeta("example")
+        .ifPresent(k -> System.out.println("Updated meta data: " + k.getString()));
+    System.out.println();
+  }
+
+  private static void exampleKeyIterDumpMetaData() {
+    // Example 13: Update meta data on a key
+    System.out.println("Example 13");
+    Key k1 = Key.create("user:/ex13/Hallo");
+    k1.setMeta("lang", "GER");
+    Key k2 = Key.create("user:/ex13/Hello");
+    k2.setMeta("lang", "ENG");
+    Key k3 = Key.create("user:/ex13/Hola");
+    k3.setMeta("lang", "ESP");
+
+    final KeySet ks = KeySet.create(10, k1, k2, k3);
+    for (Key key : ks) {
+      key.getMeta("lang")
+          .ifPresent(
+              k -> System.out.println("Language of Key " + key.getName() + " is " + k.getString()));
+    }
+    System.out.println();
   }
 }
