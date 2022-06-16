@@ -17,7 +17,7 @@
     },
     "devDependencies": {
         "@iamadamjowett/angular-logger-max": "^1.2.3",
-        "angular": "^1.8.2",
+        "angular": "^1.8.3",
         "angular-animate": "^1.8.2",
         "angular-breadcrumb": "^0.5.0",
         "angular-clipboard": "^1.7.0",
