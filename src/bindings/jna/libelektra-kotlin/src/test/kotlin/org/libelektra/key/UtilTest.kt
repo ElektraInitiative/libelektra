@@ -2,8 +2,8 @@ package org.libelektra.key
 
 import org.junit.Test
 import org.libelektra.Key
+import org.libelektra.dsl.keyOf
 import org.libelektra.keyExt.getMetaOrNull
-import org.libelektra.keyExt.keyOf
 import org.libelektra.keyExt.nameParts
 import kotlin.test.assertEquals
 

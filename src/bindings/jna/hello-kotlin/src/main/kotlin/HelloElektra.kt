@@ -5,9 +5,7 @@ import org.libelektra.kdbExt.withKDB
 import org.libelektra.keyExt.get
 import org.libelektra.keyExt.getMetaOrNull
 import org.libelektra.keyExt.isEmpty
-import org.libelektra.keyExt.keyOf
 import org.libelektra.keySetExt.convert
-import org.libelektra.keySetExt.keySetOf
 import org.libelektra.keySetExt.serialformat.KeySetFormat
 
 fun main() {

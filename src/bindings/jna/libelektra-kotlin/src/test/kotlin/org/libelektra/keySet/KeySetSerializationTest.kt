@@ -2,9 +2,9 @@ package org.libelektra.keySet
 
 import kotlinx.serialization.json.*
 import org.junit.Test
-import org.libelektra.keyExt.keyOf
+import org.libelektra.dsl.keyOf
+import org.libelektra.dsl.keySetOf
 import org.libelektra.keySetExt.KeySetSerializer
-import org.libelektra.keySetExt.keySetOf
 import kotlin.test.assertEquals
 
 class KeySetSerializationTest {

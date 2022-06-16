@@ -37,7 +37,7 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 - Breaking change to iterators: Remove `keyRewindMeta`, `keyCurrentMeta`, `ksHead`, and `ksTail` functions for internal iteration of `Keyset`s and Metadata of `Key`s. External iterators are now the way to go (see [Iterators](/doc/dev/iterators.md)) _(Florian Lindner @flo91)_
-- New Binding for Kotlin with convenience functions and various utilities. There is also the possibility to convert KeySets to Kotlin data classes or collections and back. _(@Gratla & @mandoway)_
+- New Binding for Kotlin with convenience functions and various utilities. There is also the possibility to convert KeySets to Kotlin data classes or collections and back. (see [Kotlin Readme](../../src/bindings/jna/libelektra-kotlin/README.md)) _(@Gratla & @mandoway)_
 
 ### <<HIGHLIGHT>>
 
@@ -194,6 +194,8 @@ you up-to-date with the multi-language support provided by Elektra.
 - Added nameParts extension value which provides a sequence of key name parts _(@mandoway)_
 - Added various utility functions like Key.isEmpty, Key.getMetaOrNull, ... _(@Gratla & @mandoway)_
 - Added example project for kotlin binding _(@Gratla & @mandoway)_
+- Added lookupOrThrow(), lookupOrNull(), and get operator to search for keys in KeySets without Java Optionals _(@mandoway)_
+- Fixed setting null, by using new JNA setNull() function _(@mandoway)_
 
 ### Python
 
