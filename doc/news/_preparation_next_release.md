@@ -98,6 +98,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Curlget
+
+- Removed usages (and contents) of VERBOSE macro _(@mandoway)_
+
 ### Sorted
 
 - Added new validation plugin: Sorted. It checks whether an Elektra array is sorted by its value or a given key in a configurable direction _(@mandoway @Gratla)_
@@ -131,6 +135,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+### Core
+
+- Removed mentions of VERBOSE and replaced debug prints with the logger _(@mandoway)_
 
 ### <<Library>>
 
@@ -202,6 +210,18 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - Deleted occurrences of removed property key.fullname _(@mandoway)_
 
+### CPP
+
+- Removed mentions of VERBOSE _(@mandoway)_
+
+### Python
+
+- Deleted occurrences of removed property key.fullname _(@mandoway)_
+
+### CPP
+
+- Removed mentions of VERBOSE _(@mandoway)_
+
 ## Tools
 
 ### elektrad
@@ -228,6 +248,10 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+### QT GUI
+
+- Removed mentions of VERBOSE _(@mandoway)_
 
 ## Scripts
 
@@ -264,6 +288,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Remove usage of internal iterators from the examples
 - Add readme-file about cm2022s project (/doc/dev/iterators.md) _(Florian Lindner @flo91)_
 - Updated elektra-web installation manual (doc/tutorials/install-webui.md) _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - Improve jna documentation _(Burkhard Hampl @bhampl)_

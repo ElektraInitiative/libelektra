@@ -23,7 +23,7 @@ TEST (GetEnv, SimpleFork)
 	setenv ("does-exist", "hello", 1);
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
-#if VERBOSE
+#if DEBUG
 	pid_t f;
 	f = fork ();
 	std::cerr << "FORK " << f << std::endl;
@@ -33,7 +33,7 @@ TEST (GetEnv, SimpleFork)
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
 
-#if VERBOSE
+#if DEBUG
 	f = fork ();
 	std::cerr << "FORK " << f << std::endl;
 #else

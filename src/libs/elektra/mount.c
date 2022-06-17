@@ -10,9 +10,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
-#endif
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -24,10 +22,6 @@
 
 #ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
 #endif
 
 #include <kdbassert.h>
@@ -392,9 +386,9 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 		{
 			if (!elektraStrCaseCmp (placement, GlobalpluginPositionsStr[i]))
 			{
-#if DEBUG && VERBOSE
-				printf ("mounting global plugin %s to %s\n", pluginName, placement);
-#endif
+
+				ELEKTRA_LOG_DEBUG ("mounting global plugin %s to %s\n", keyString (cur), placement);
+
 				// load plugins in implicit max once placement
 				Plugin * plugin = 0;
 				int mountRet =

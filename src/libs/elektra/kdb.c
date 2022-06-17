@@ -11,10 +11,6 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
 #include <kdbassert.h>
 
 #ifdef HAVE_LOCALE_H
@@ -1587,10 +1583,8 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 				keySetName (parentKey, keyName (split->parents[i]));
 				ret = backend->setplugins[p]->kdbSet (backend->setplugins[p], split->keysets[i], parentKey);
 
-#if VERBOSE && DEBUG
-				printf ("Prepare %s with keys %zd in plugin: %zu, split: %zu, ret: %d\n", keyName (parentKey),
-					ksGetSize (split->keysets[i]), p, i, ret);
-#endif
+				ELEKTRA_LOG_DEBUG ("Prepare %s with keys %zd in plugin: %zu, split: %zu, ret: %d\n", keyName (parentKey),
+						   ksGetSize (split->keysets[i]), p, i, ret);
 
 				if (p == 0)
 				{
@@ -1668,10 +1662,10 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 					keySetString (parentKey, keyString (split->parents[i]));
 				}
 				keySetName (parentKey, keyName (split->parents[i]));
-#if DEBUG && VERBOSE
-				printf ("elektraSetCommit: %p # %zu with %s - %s\n", backend, p, keyName (parentKey),
-					keyString (parentKey));
-#endif
+
+				ELEKTRA_LOG_DEBUG ("elektraSetCommit: %p # %zu with %s - %s\n", (void *) backend, p, keyName (parentKey),
+						   keyString (parentKey));
+
 				/* TODO: Remove use of deprecated internal iterator! */
 				ksRewind (split->keysets[i]);
 				if (p == COMMIT_PLUGIN)

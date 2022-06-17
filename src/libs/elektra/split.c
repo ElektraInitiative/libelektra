@@ -10,10 +10,6 @@
 #include "kdbconfig.h"
 #endif
 
-#if VERBOSE && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -313,36 +309,35 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 	   otherwise */
 	Backend * backend = mountGetBackend (kdb, name);
 
-#if DEBUG && VERBOSE
-	printf (" with parent %s\n", keyName (parentKey));
-#endif
+	ELEKTRA_LOG_DEBUG (" with parent %s\n", keyName (parentKey));
+
 	for (size_t i = 0; i < kdb->split->size; ++i)
 	{
-#if DEBUG && VERBOSE
-		printf ("  %zu with parent %s\n", i, keyName (kdb->split->parents[i]));
-#endif
+
+		ELEKTRA_LOG_DEBUG ("  %zu with parent %s\n", i, keyName (kdb->split->parents[i]));
+
 		if (!parentKey)
 		{
-#if DEBUG && VERBOSE
-			printf ("   def add %s\n", keyName (kdb->split->parents[i]));
-#endif
+
+			ELEKTRA_LOG_DEBUG ("   def add %s\n", keyName (kdb->split->parents[i]));
+
 			/* Catch all: add all mountpoints */
 			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 		else if (backend == kdb->split->handles[i] &&
 			 (keyCmp (kdb->split->parents[i], parentKey) == 0 || keyIsBelow (kdb->split->parents[i], parentKey) == 1))
 		{
-#if DEBUG && VERBOSE
-			printf ("   exa add %s\n", keyName (kdb->split->parents[i]));
-#endif
+
+			ELEKTRA_LOG_DEBUG ("   exa add %s\n", keyName (kdb->split->parents[i]));
+
 			/* parentKey is exactly in this backend, so add it! */
 			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 		else if (keyCmp (parentKey, kdb->split->parents[i]) == 0 || keyIsBelow (parentKey, kdb->split->parents[i]) == 1)
 		{
-#if DEBUG && VERBOSE
-			printf ("   rel add %s\n", keyName (kdb->split->parents[i]));
-#endif
+
+			ELEKTRA_LOG_DEBUG ("   rel add %s\n", keyName (kdb->split->parents[i]));
+
 			/* this backend is completely below the parentKey, so lets add it. */
 			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
@@ -418,10 +413,10 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key)
 	if (!curHandle) return;
 	ssize_t curFound = splitSearchBackend (split, curHandle, key);
 	if (curFound == -1) return;
-#if DEBUG && VERBOSE
-	printf ("Update string from %s to %s\n", keyString (key), keyString (split->parents[curFound]));
-	printf ("Names are: %s and %s\n\n", keyName (key), keyName (split->parents[curFound]));
-#endif
+
+	ELEKTRA_LOG_DEBUG ("Update string from %s to %s\n", keyString (key), keyString (split->parents[curFound]));
+	ELEKTRA_LOG_DEBUG ("Names are: %s and %s\n\n", keyName (key), keyName (split->parents[curFound]));
+
 	keySetString (key, keyString (split->parents[curFound]));
 }
 
@@ -600,10 +595,10 @@ int splitGet (Split * split, Key * warningKey, KDB * handle)
 			continue;
 		}
 
-/* Update sizes */
-#if DEBUG && VERBOSE
-		printf ("Update size for %s\n", keyName (split->parents[i]));
-#endif
+		/* Update sizes */
+
+		ELEKTRA_LOG_DEBUG ("Update size for %s\n", keyName (split->parents[i]));
+
 		// first we need postprocessing because that might
 		// reduce sizes
 		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1) ret = -1;
