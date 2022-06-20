@@ -11,18 +11,21 @@
 
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <libgen.h>
 #include <xfconf/xfconf.h>
 
 int elektraXfconfOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
+	ELEKTRA_LOG ("try to initialize xfconf\n");
 	GError * err = NULL;
 	if (xfconf_init (&err))
 	{
+		ELEKTRA_LOG_DEBUG ("succeed initielize xfconf\n");
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else
 	{
-		ELEKTRA_LOG_NOTICE ("unable to initialize xfconf(%d): %s\n", err->code, err->message);
+		ELEKTRA_LOG ("unable to initialize xfconf(%d): %s\n", err->code, err->message);
 		g_error_free (err);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -36,8 +39,10 @@ int elektraXfconfClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_U
 
 int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
+	ELEKTRA_LOG ("issued get\n");
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/xfconf"))
 	{
+		ELEKTRA_LOG_DEBUG ("getting system modules values\n");
 		KeySet * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/xfconf", KEY_VALUE, "xfconf plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/xfconf/exports", KEY_END),
@@ -56,6 +61,33 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	// get all keys
+
+	//	KeySet * config = elektraPluginGetConfig (handle);
+	// todo: remove workaround which requires a channel to exist as a file
+	char * absolutePath = elektraStrDup (keyString (parentKey));
+	const char * channelName = basename (absolutePath);
+	ELEKTRA_LOG_DEBUG ("fetch keys from channel: %s\n", channelName);
+	XfconfChannel * channel = xfconf_channel_get (channelName);
+	if (channel == NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("retrieved NULL attempting getting channel: %s\n", channelName);
+	}
+	GHashTable * properties = xfconf_channel_get_properties (channel, NULL);
+	if (properties == NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("retrieved NULL attempting getting properties\n");
+	}
+	GList * channelKeys = g_hash_table_get_keys (properties);
+	while (channelKeys != NULL)
+	{
+		char * keyName = elektraStrDup (channelKeys->data);
+		Key * key = keyNew (keyName, KEY_END);
+		char * keyValue = g_hash_table_lookup (properties, channelKeys->data);
+		ELEKTRA_LOG_DEBUG ("found %s -> %s\n", keyName, keyValue);
+		keySetString (key, keyValue);
+		ksAppendKey (returned, key);
+		channelKeys = channelKeys->next;
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
