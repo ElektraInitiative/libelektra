@@ -66,6 +66,7 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	// todo: remove workaround which requires a channel to exist as a file
 	char * absolutePath = elektraStrDup (keyString (parentKey));
 	const char * channelName = basename (absolutePath);
+	const char * parentName = keyName (parentKey);
 	ELEKTRA_LOG_DEBUG ("fetch keys from channel: %s\n", channelName);
 	XfconfChannel * channel = xfconf_channel_get (channelName);
 	if (channel == NULL)
@@ -81,14 +82,19 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	while (channelKeys != NULL)
 	{
 		char * keyName = elektraStrDup (channelKeys->data);
-		Key * key = keyNew (keyName, KEY_END);
-		char * keyValue = g_hash_table_lookup (properties, channelKeys->data);
+		gchar * keyValue = xfconf_channel_get_string (channel, keyName, NULL);
 		ELEKTRA_LOG_DEBUG ("found %s -> %s\n", keyName, keyValue);
+		char * absoluteKeyName = elektraMalloc ((elektraStrLen (keyName) + elektraStrLen (parentName)) * sizeof (char *));
+		absoluteKeyName[0] = '\0';
+		strcat (absoluteKeyName, parentName);
+		strcat (absoluteKeyName, keyName);
+		Key * key = keyNew (absoluteKeyName, KEY_END);
 		keySetString (key, keyValue);
 		ksAppendKey (returned, key);
 		channelKeys = channelKeys->next;
 	}
-
+	g_list_free (channelKeys);
+	g_hash_table_destroy (properties);
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
