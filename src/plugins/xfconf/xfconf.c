@@ -82,14 +82,16 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	while (channelKeys != NULL)
 	{
 		char * keyName = elektraStrDup (channelKeys->data);
-		gchar * keyValue = xfconf_channel_get_string (channel, keyName, NULL);
-		ELEKTRA_LOG_DEBUG ("found %s -> %s\n", keyName, keyValue);
+		GValue keyValue = G_VALUE_INIT;
+		g_value_init (&keyValue, G_TYPE_STRING);
+		xfconf_channel_get_property (channel, keyName, &keyValue);
+		ELEKTRA_LOG_DEBUG ("found %s -> %s\n", keyName, g_value_get_string (&keyValue));
 		char * absoluteKeyName = elektraMalloc ((elektraStrLen (keyName) + elektraStrLen (parentName)) * sizeof (char *));
 		absoluteKeyName[0] = '\0';
 		strcat (absoluteKeyName, parentName);
 		strcat (absoluteKeyName, keyName);
 		Key * key = keyNew (absoluteKeyName, KEY_END);
-		keySetString (key, keyValue);
+		keySetString (key, g_value_get_string (&keyValue));
 		ksAppendKey (returned, key);
 		channelKeys = channelKeys->next;
 	}
