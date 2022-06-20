@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage/xfconf
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage procgetstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
+- infos/placements = getstorage setstorage
 - infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
 - infos/metadata =
 - infos/description = one-line description of xfconf
