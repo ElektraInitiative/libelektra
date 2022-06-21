@@ -51,9 +51,6 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 			       keyNew ("system:/elektra/modules/xfconf/exports/close", KEY_FUNC, elektraXfconfClose, KEY_END),
 			       keyNew ("system:/elektra/modules/xfconf/exports/get", KEY_FUNC, elektraXfconfGet, KEY_END),
 			       keyNew ("system:/elektra/modules/xfconf/exports/set", KEY_FUNC, elektraXfconfSet, KEY_END),
-			       keyNew ("system:/elektra/modules/xfconf/exports/commit", KEY_FUNC, elektraXfconfCommit, KEY_END),
-			       keyNew ("system:/elektra/modules/xfconf/exports/error", KEY_FUNC, elektraXfconfError, KEY_END),
-			       keyNew ("system:/elektra/modules/xfconf/exports/checkconf", KEY_FUNC, elektraXfconfCheckConf, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system:/elektra/modules/xfconf/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -149,30 +146,6 @@ int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int elektraXfconfError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraXfconfCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// commit changes
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraXfconfCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -181,7 +154,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_CLOSE,	&elektraXfconfClose,
 		ELEKTRA_PLUGIN_GET,	&elektraXfconfGet,
 		ELEKTRA_PLUGIN_SET,	&elektraXfconfSet,
-		ELEKTRA_PLUGIN_COMMIT,  &elektraXfconfCommit,
-		ELEKTRA_PLUGIN_ERROR,	&elektraXfconfError,
 		ELEKTRA_PLUGIN_END);
 }

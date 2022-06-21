@@ -17,9 +17,6 @@ int elektraXfconfOpen (Plugin * handle, Key * errorKey);
 int elektraXfconfClose (Plugin * handle, Key * errorKey);
 int elektraXfconfGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraXfconfSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraXfconfError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraXfconfCommit (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraXfconfCheckConf (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
