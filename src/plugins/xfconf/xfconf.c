@@ -12,7 +12,6 @@
 
 #include <kdbhelper.h>
 #include <kdblogger.h>
-#include <libgen.h>
 #include <xfconf/xfconf.h>
 
 int elektraXfconfOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
