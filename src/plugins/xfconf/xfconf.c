@@ -8,6 +8,7 @@
  */
 
 #include "xfconf.h"
+#include "kdbease.h"
 
 #include <kdbhelper.h>
 #include <kdblogger.h>
@@ -62,12 +63,15 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	}
 	// get all keys
 
-	//	KeySet * config = elektraPluginGetConfig (handle);
 	// todo: remove workaround which requires a channel to exist as a file
 	char * absolutePath = elektraStrDup (keyString (parentKey));
 	const char * channelName = basename (absolutePath);
 	const char * parentName = keyName (parentKey);
 	ELEKTRA_LOG_DEBUG ("fetch keys from channel: %s\n", channelName);
+	Key * channelKey = keyDup (parentKey, KEY_CP_NAME);
+	keySetMeta (channelKey, "channel", channelName);
+	ELEKTRA_LOG_DEBUG ("appended meta-key channel in %s (%s)\n", keyName (channelKey), channelName);
+	ksAppendKey (returned, channelKey);
 	XfconfChannel * channel = xfconf_channel_get (channelName);
 	if (channel == NULL)
 	{
@@ -102,9 +106,46 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 
 int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	// set all keys
-	// this function is optional
+	ELEKTRA_LOG_DEBUG ("issued set with parent %s\n", keyName (parentKey));
+	const char * parentName = keyName (parentKey);
+	const Key * channelKey = keyGetMeta (ksLookupByName (returned, parentName, KDB_O_NONE), "channel");
+	ELEKTRA_LOG_DEBUG ("channel key: %d\n", channelKey == NULL);
+	const char * channelName = keyString (channelKey);
+	ELEKTRA_LOG_DEBUG ("using channel %s of parent %s\n", channelName, parentName);
 
+	XfconfChannel * channel = xfconf_channel_get (channelName);
+	if (channel == NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("retrieved NULL attempting getting channel: %s\n", channelName);
+	}
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	{
+		Key * cur = ksNext (returned);
+		const char * keyName = elektraKeyGetRelativeName (cur, parentKey);
+		if (keyName == NULL)
+		{
+			// happens for the root key which holds the channel name
+			ELEKTRA_LOG_DEBUG ("keyName is null!\n");
+			continue;
+		}
+		char * xfconfKeyName = elektraMalloc ((elektraStrLen (keyName) + 2) * sizeof (char *));
+		xfconfKeyName[0] = '/';
+		strncpy (&xfconfKeyName[1], keyName, elektraStrLen (keyName));
+		ELEKTRA_LOG_DEBUG ("setting key %s to %s\n", xfconfKeyName, keyString (cur));
+		GValue keyValue = G_VALUE_INIT;
+		if (!xfconf_channel_get_property (channel, xfconfKeyName, &keyValue))
+		{
+			ELEKTRA_LOG_DEBUG ("key was not found, initialize a new one of type string\n");
+			g_value_init (&keyValue, G_TYPE_STRING);
+		}
+		ELEKTRA_LOG_DEBUG ("key is of type: %lu\n", keyValue.g_type);
+		g_value_set_string (&keyValue, keyString (cur));
+		if (!xfconf_channel_set_property (channel, xfconfKeyName, &keyValue))
+		{
+			ELEKTRA_LOG_DEBUG ("unable to set value\n");
+		}
+	}
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
