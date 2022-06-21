@@ -59,16 +59,10 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	// get all keys
-
-	// todo: remove workaround which requires a channel to exist as a file
-	char * absolutePath = elektraStrDup (keyString (parentKey));
-	const char * channelName = basename (absolutePath);
-	const char * parentName = keyName (parentKey);
+	KeySet * config = elektraPluginGetConfig (handle);
+	const Key * channelKey = ksLookupByName (config, "/channel", KDB_O_NONE);
+	const char * channelName = keyString (channelKey);
 	ELEKTRA_LOG_DEBUG ("fetch keys from channel: %s\n", channelName);
-	Key * channelKey = keyDup (parentKey, KEY_CP_NAME);
-	keySetMeta (channelKey, "channel", channelName);
-	ELEKTRA_LOG_DEBUG ("appended meta-key channel in %s (%s)\n", keyName (channelKey), channelName);
-	ksAppendKey (returned, channelKey);
 	XfconfChannel * channel = xfconf_channel_get (channelName);
 	if (channel == NULL)
 	{
@@ -80,6 +74,7 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 		ELEKTRA_LOG_DEBUG ("retrieved NULL attempting getting properties\n");
 	}
 	GList * channelKeys = g_hash_table_get_keys (properties);
+	const char * parentName = keyName (parentKey);
 	while (channelKeys != NULL)
 	{
 		char * keyName = elektraStrDup (channelKeys->data);
@@ -105,8 +100,8 @@ int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 {
 	ELEKTRA_LOG_DEBUG ("issued set with parent %s\n", keyName (parentKey));
 	const char * parentName = keyName (parentKey);
-	const Key * channelKey = keyGetMeta (ksLookupByName (returned, parentName, KDB_O_NONE), "channel");
-	ELEKTRA_LOG_DEBUG ("channel key: %d\n", channelKey == NULL);
+	KeySet * config = elektraPluginGetConfig (handle);
+	const Key * channelKey = ksLookupByName (config, "/channel", KDB_O_NONE);
 	const char * channelName = keyString (channelKey);
 	ELEKTRA_LOG_DEBUG ("using channel %s of parent %s\n", channelName, parentName);
 
