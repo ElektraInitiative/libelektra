@@ -50,6 +50,7 @@ static void testIso (const char * date, const char * isoString, const short res)
 	PLUGIN_CLOSE ();
 }
 
+#ifdef __GNU_LIBRARY__
 static void testRfc2822 (const char * date, const short res)
 {
 	Key * parentKey = keyNew ("user:/tests/date", KEY_VALUE, "", KEY_END);
@@ -64,12 +65,16 @@ static void testRfc2822 (const char * date, const short res)
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
+#endif
 
 int main (int argc, char ** argv)
 {
 	printf ("DATE     TESTS\n");
 	printf ("==================\n\n");
+
+#ifdef __GNU_LIBRARY__
 	const char * old_locale = setlocale (LC_ALL, NULL);
+#endif
 
 	init (argc, argv);
 
@@ -87,17 +92,11 @@ int main (int argc, char ** argv)
 	testIso ("2016-12-12T23:59:01Z", "datetime complete", 1);
 	testIso ("2016-12-12 23:59:01Z", "datetime complete noT", 1);
 	testIso ("2016-12-12T23:59:01Z", "datetime truncated", -1);
+	testIso ("2016-12-12T23:59:01", "datetime complete", 1);
 	testIso ("-12-12T23:59:01Z", "datetime truncated", 1);
 	testIso ("22:30+04", "utc extended", 1);
 	testIso ("22:30-04", "utc extended", 1);
 	testIso ("2016-W23", "weekdate", 1);
-#else
-	testIso ("2016-12-12T23:59:01", "datetime complete", 1);
-	testIso ("2016-12-12T23:59:01", "datetime truncated", -1);
-	testIso ("-12-12T23:59:01", "datetime truncated", 1);
-#endif
-	testIso ("2230", "timeofday extended", -1);
-	testIso ("2230", "timeofday basic", 1);
 
 	setlocale (LC_ALL, "C");
 	testRfc2822 ("Sat, 01 Mar 2016 23:59:01 +0400", 1);
@@ -106,6 +105,12 @@ int main (int argc, char ** argv)
 	testRfc2822 ("01 Mar 2016 23:59 +0400", 1);
 	testRfc2822 ("01 Mar 2016 01:00:59", -1);
 	setlocale (LC_ALL, old_locale);
+#else
+	testIso ("2016-12-12T23:59:01", "datetime truncated", -1);
+	testIso ("-12-12T23:59:01", "datetime truncated", 1);
+#endif
+	testIso ("2230", "timeofday extended", -1);
+	testIso ("2230", "timeofday basic", 1);
 
 	print_result ("testmod_date");
 

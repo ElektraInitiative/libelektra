@@ -71,11 +71,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### date
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Exclude the tests for formats that require GNU extensions of `strptime` on non-GNU systems. _(@kodebach)_
 
 ### <<Plugin>>
 
@@ -180,11 +178,9 @@ you up-to-date with the multi-language support provided by Elektra.
 - Fixed missing Javadoc in Java Sorted plugin _(Michael Tucek @tucek)_
 - <<TODO>>
 
-### <<Binding>>
+### Ruby
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Replace `NULL` in `rb_funcall` with `Qnil` to avoid compiler errors/warnings on some systems. _(@kodebach)_
 
 ### <<Binding>>
 

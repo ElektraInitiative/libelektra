@@ -263,7 +263,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
  * cases this is useful, to allow passing in Symbols as meta names. */
 %typemap(in) (const std::string & metaName) {
   // typemap in for getMeta
-  $input = rb_funcall($input, rb_intern("to_s"), 0, NULL);
+  $input = rb_funcall($input, rb_intern("to_s"), 0, Qnil);
   $1 = new std::string(StringValueCStr($input));
 }
 %typemap(freearg) (const std::string & metaName) {
@@ -308,8 +308,8 @@ underlaying key, which allows a Ruby-style iteration over metadata:
   /* $input substitution does not here, so we have to reference
      input variables directly */
 
-  hash_size = NUM2INT(rb_funcall(argv[1], rb_intern("size"), 0, NULL));
-  keys_arr = rb_funcall(argv[1], rb_intern("keys"), 0, NULL);
+  hash_size = NUM2INT(rb_funcall(argv[1], rb_intern("size"), 0, Qnil));
+  keys_arr = rb_funcall(argv[1], rb_intern("keys"), 0, Qnil);
   if (hash_size > 0) {
     /* first we check if we can find the "flags" key.
        this has to be passed to the kdb::Key constructor already */
@@ -317,7 +317,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
       key = rb_ary_entry(keys_arr, i);
       val = rb_hash_aref(argv[1], key);
       /* convert key to String, in case of being a Symbol */
-      key = rb_funcall(key, rb_intern("to_s"), 0, NULL);
+      key = rb_funcall(key, rb_intern("to_s"), 0, Qnil);
       /* check for flags and extract them */
       if (strcmp("flags", StringValueCStr(key)) == 0) {
         Check_Type(val, T_FIXNUM);
@@ -345,8 +345,8 @@ underlaying key, which allows a Ruby-style iteration over metadata:
     for (i = 0; i < hash_size; i++) {
       key = rb_ary_entry(keys_arr, i);
       val = rb_hash_aref(argv[1], key);
-      key = rb_funcall(key, rb_intern("to_s"), 0, NULL);
-      val = rb_funcall(val, rb_intern("to_s"), 0, NULL);
+      key = rb_funcall(key, rb_intern("to_s"), 0, Qnil);
+      val = rb_funcall(val, rb_intern("to_s"), 0, Qnil);
       /* ignore certain keys */
       if (strcmp("flags", StringValueCStr(key)) == 0) continue;
       /* 'value' has also a special meaning */
