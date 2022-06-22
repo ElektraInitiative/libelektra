@@ -224,7 +224,7 @@ if ("${OS_DISTRIB}" MATCHES "Ubuntu20.04" OR ${OS_PRETTY_NAME} MATCHES ".*bullse
 	)
 	set (
 		CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_DEPENDS
-		"qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings"
+		"qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings, qml-module-qtquick-controls"
 	)
 else ()
 	set (
