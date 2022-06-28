@@ -249,6 +249,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### QT GUI
 
 - Removed mentions of VERBOSE _(@mandoway)_
+- Fixed dependency for Debian packages _(Markus Raab)_
 
 ## Scripts
 
