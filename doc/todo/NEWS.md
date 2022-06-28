@@ -2,15 +2,28 @@
 
 This release did not happen yet.
 
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes.
+Please always update this file within **every PR**:
 
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
+1. write what changed
+2. use links pointing to your change
+3. add your name at the end of the line  **Syntax:** _(your name)_
+
+For example, Max would write:
+
+```
+- Added a new [doc plugin](/src/plugins/doc) _(Max)_
+```
 
 Pick a random line to write your changes to minimize
 the chances of conflicts in this file.
+
+For non-trivial changes, you can choose to be
+part of the highlighted changes.
+Please write a highlight section in this case.
+
+After the horizontal line the release notes for the next version starts.
+
+---
 
 <<`scripts/generate-news-entry`>>
 
