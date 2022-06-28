@@ -294,7 +294,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - Add Stream API example in Java binding documentation _(Richard Stöckl @Eiskasten)_
 - Add Stream API example in Java binding documentation \_(Richard Stöckl @Eiskasten)
 - <<TODO>>
-- <<TODO>>
+- Add disclaimer that man pages are generated _(@Markus Raab)_
 - <<TODO>>
 - Minor readability improvement _(@mandoway)_
 - <<TODO>>
