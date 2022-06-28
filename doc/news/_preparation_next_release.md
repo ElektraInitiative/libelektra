@@ -43,7 +43,7 @@ We created a new Binding for Kotlin with convenience functions and various utili
 There is also the possibility to convert KeySets to Kotlin data classes or collections and back.
 Read the [Kotlin Readme](../../src/bindings/jna/libelektra-kotlin/README.md) for more information.
 
-A big thanks to_(@Gratla & @mandoway)_ for this beautiful work.
+A big thanks to _(@Gratla and @mandoway)_ for this beautiful work.
 
 ### Remove Internal Iterators
 
@@ -243,7 +243,7 @@ We are currently working on following topics:
 - 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth @kodebach)_
 - Elektrify KDE and GNOME _(Mihael Pranjić)_
 - Elektrify XFCE _(Richard Stöckl @Eiskasten)_
-- Mounting SQL databases _(Florian Lindner @flo91)_ 
+- Mounting SQL databases _(Florian Lindner @flo91)_
 - Recording Configuration _(Maximilian Irlinger)_
 - Ansible-Elektra _(Lukas Hartl)_
 - Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_

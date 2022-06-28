@@ -6,7 +6,7 @@ Please always update this file within **every PR**:
 
 1. write what changed
 2. use links pointing to your change
-3. add your name at the end of the line  **Syntax:** _(your name)_
+3. add your name at the end of the line **Syntax:** _(your name)_
 
 For example, Max would write:
 
