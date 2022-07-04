@@ -14,7 +14,7 @@ Where `<COMMAND>` is one of the following:
 - `list`: list all available recording sessions.
 - `name`: prints the name of the currently active session.
 - `changes [session_name]`: shows a human-readable list of changes.
-- `export  [--replay|--diff] [session_name]`: creates a diff of all the changes in the session.
+- `export  [--replay|--diff] [session_name]`: creates a file with the changes in the session.
 - `import [--disable-validation] <file_name>`: imports files created by the `export` command.
 
 ## DESCRIPTION
