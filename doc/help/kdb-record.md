@@ -6,7 +6,7 @@
 
 Where `<COMMAND>` is one of the following:
 
-- `start [session_name]`: start a new recording session.
+- `start [--parent key] [session_name]`: start a new recording session.
 - `stop`: stop the active recording session.
 - `resume <session_name>`: resume a stopped recording session.
 - `reset [session_name]`: remove all data from the recording session.
@@ -39,13 +39,16 @@ Notable exceptions are the `start`, `resume` and `delete` commands.
 
 ## COMMANDS
 
-### `start [session_name]`
+### `start [--parent key] [session_name]`
 The `start` command is used to start a new recording session.
 If the environment variable `ELEKTRA_RECORD_ACTIVE_SESSION` is set, this command has no immediate effect.
 As soon as the environment variable is unset, the recording session started with this command will be active.
 
-This command will accept a single optional argument that is the name of the recording session.
+This command will accept an optional argument that is the name of the recording session.
 If the name is not provided, a random name will be generated.
+
+The also optional argument `--parent key` specifies that only changes for the key `key` or below should be recorded.
+E.g., `start --parent user:/foo` will only record changes below `user:/foo`. The key may also be a cascading key, e.g. `--parent /foo`.
 
 The command will output an error if a recording session with the specified name already exists.
 
