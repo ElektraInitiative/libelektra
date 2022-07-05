@@ -89,7 +89,7 @@ If no session is specified, the currently active session is used.
 
 The `export` command has the ability to output two different types: diffs and replays.
 
-The `--diff` flag (default) only exports what has actually changed in the recording session.
+The `--diff` flag (default) only exports the changes between the start and end states of the recording session.
 This means, e.g., that when you add a key and remove it in the same session, it will not be exported.
 
 The `--replay` flag creates a file that contains every modifying operation made in the session in the order they were performed.
