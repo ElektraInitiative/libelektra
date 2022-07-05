@@ -88,6 +88,10 @@ Overall changes:
 
 - Added new validation plugin: Sorted. It checks whether an Elektra array is sorted by its value or a given key in a configurable direction _(@mandoway @Gratla)_
 
+### mini
+
+- Fix usage of bitwise operator with boolean operands. _(Mihael Pranjić @mpranj)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
