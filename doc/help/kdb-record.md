@@ -8,7 +8,7 @@ Where `<COMMAND>` is one of the following:
 
 - `start [session_name]`: start a new recording session.
 - `stop`: stop the active recording session.
-- `resume <session_name>': resume a stopped recording session.
+- `resume <session_name>`: resume a stopped recording session.
 - `reset [session_name]`: remove all data from the recording session.
 - `delete <session_name>`: delete the recording session.
 - `assert [--meta meta_name] <key_name>`: marks a key to be used for value-based validation during import.
