@@ -8,7 +8,7 @@ Where `<COMMAND>` is one of the following:
 
 - `start [session_name]`: start or resume a recording session.
 - `stop`: stop the active recording session.
-- `reset [session_name]`: remove all logged data from the recording session.
+- `reset [session_name]`: remove all data from the recording session.
 - `delete [session_name]`: delete the recording session.
 - `mark [--meta meta_name] <key_name>`: marks a key to be used for validation.
 - `list`: list all available recording sessions.
