@@ -8,9 +8,9 @@ Where `<COMMAND>` is one of the following:
 
 - `start [session_name]`: start a new recording session.
 - `stop`: stop the active recording session.
-- `resume [session_name]': resume a stopped recording session.
+- `resume <session_name>': resume a stopped recording session.
 - `reset [session_name]`: remove all data from the recording session.
-- `delete [session_name]`: delete the recording session.
+- `delete <session_name>`: delete the recording session.
 - `assert [--meta meta_name] <key_name>`: marks a key to be used for value-based validation during import.
 - `list`: list all available recording sessions.
 - `name`: prints the name of the currently active recording session.
@@ -35,7 +35,7 @@ If a recording session is active, every change to the keys, values and meta-data
 Most commands allow specification of the name of the recording session they use.
 If no recording session name is provided, the active recording session will be used.
 
-Notable exceptions are the `start` and `resume` commands.
+Notable exceptions are the `start`, `resume` and `delete` commands.
 
 ## COMMANDS
 
@@ -56,7 +56,7 @@ The `stop` command is used to stop the active recording session.
 The recording session can then be resumed using the `resume` command with the appropriate recording session name.
 Stopping a recording session will not delete any recorded changes.
 
-### `resume [session_name]`
+### `resume <session_name>`
 The `resume` command is used to resume an existing recording session.
 If the environment variable `ELEKTRA_RECORD_ACTIVE_SESSION` is set, this command has no immediate effect.
 As soon as the environment variable is unset, the recording session resumed with this command will be active.
@@ -70,10 +70,10 @@ On success, the name of the recording session will be printed to `stdout`, and t
 The `reset` command will clear the specified recording.
 If no recording session name argument is provided, the currently active recording session will be reset.
 
-### `delete [session_name]`
+### `delete <session_name>`
 Deletes the specified recording session.
-It the optional argument is not provided, the current recording session will be deleted.
 If it is the currently active recording session, it will be stopped.
+If the session does not exist the command will output an error.
 
 ### `assert [--meta meta_name] <key_name>`
 This command marks a key to be used for validation when importing the recording.
