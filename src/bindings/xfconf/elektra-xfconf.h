@@ -3,4 +3,6 @@
 
 #include <xfconf/xfconf.h>
 
+extern GList * channel_list;
+
 #endif

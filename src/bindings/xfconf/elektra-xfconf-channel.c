@@ -1,19 +1,48 @@
 #include "elektra-xfconf-channel.h"
 #include "elektra-xfconf-util.h"
+#include "elektra-xfconf.h"
+
+typedef struct XfconfCache XfconfCache;
+struct _XfconfChannel
+{
+	gchar * channel_name;
+};
+
 
 GType xfconf_channel_get_type (void)
 {
 	unimplemented ();
 }
 
+static gint find_by_name (gconstpointer channel, gconstpointer name)
+{
+	const XfconfChannel * xfconf_channel = channel;
+	return strcmp (xfconf_channel->channel_name, name);
+}
+
 XfconfChannel * xfconf_channel_get (const gchar * channel_name)
 {
-	unimplemented ();
+	GList * channel_item = g_list_find_custom (channel_list, channel_name, &find_by_name);
+	if (channel_item != NULL)
+	{
+		return channel_item->data;
+	}
+	return xfconf_channel_new (channel_name);
+}
+
+static gint compare_channel (gconstpointer a, gconstpointer b)
+{
+	const XfconfChannel * channel_a = a;
+	const XfconfChannel * channel_b = b;
+	return strcmp (channel_a->channel_name, channel_b->channel_name);
 }
 
 XfconfChannel * xfconf_channel_new (const gchar * channel_name)
 {
-	unimplemented ();
+	XfconfChannel * channel = malloc (sizeof (XfconfChannel));
+	channel->channel_name = strdup (channel_name);
+	channel_list = g_list_insert_sorted (channel_list, channel, &compare_channel);
+	return channel;
 }
 
 XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_name, const gchar * property_base)
