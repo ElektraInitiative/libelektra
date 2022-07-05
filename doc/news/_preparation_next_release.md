@@ -34,68 +34,51 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
-- Breaking change to iterators: Remove `keyRewindMeta`, `keyCurrentMeta`, `ksHead`, and `ksTail` functions for internal iteration of `Keyset`s and Metadata of `Key`s. External iterators are now the way to go (see [Iterators](/doc/dev/iterators.md)) _(Florian Lindner @flo91)_
-- New Binding for Kotlin with convenience functions and various utilities. There is also the possibility to convert KeySets to Kotlin data classes or collections and back. (see [Kotlin Readme](../../src/bindings/jna/libelektra-kotlin/README.md)) _(@Gratla & @mandoway)_
+- Kotlin Binding
+- Remove internal iterators
 
-### <<HIGHLIGHT>>
+### Kotline Binding
 
-### <<HIGHLIGHT>>
+We created a new Binding for Kotlin with convenience functions and various utilities.
+There is also the possibility to convert KeySets to Kotlin data classes or collections and back.
+Read the [Kotlin Readme](../../src/bindings/jna/libelektra-kotlin/README.md) for more information.
 
-### <<HIGHLIGHT>>
+A big thanks to _(@Gratla and @mandoway)_ for this beautiful work.
+
+### Remove Internal Iterators
+
+In Elektra there are currently two different ways to iterate over KeySets.
+The so-called "internal" iterator is, however, inferior and creates several problems, e.g. it was a side effect to be considered for every function call that involved a KeySet.
+
+With this release, we started removing the internal iterators by removing `keyRewindMeta`, `keyCurrentMeta`, `ksHead`, and `ksTail` functions.
+The external iterators are now the way to go, see [Iterators](/doc/dev/iterators.md).
+
+A huge thanks to _(Florian Lindner @flo91)_ for doing this thankless cleanup task.
 
 ## Plugins
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
+Overall changes:
 
-- Change all plugins, except `directoryvalue` to use external iteration of `KeySet`s _(Florian Lindner @flo91)_
+- We changed all plugins, except `directoryvalue` to use external iteration of `KeySet`s _(Florian Lindner @flo91)_
 
 ### Python
 
-- Added new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
-- Bugfixes for new DNS plugin _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - Added `.pop()`, `.cut()`, `.head()` and `.tail()` examples to keySet example _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Added a new [DNS plugin](/src/plugins/python/python/dns/README.md) fully written in Python _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 
 ### lineendings - Plugin
 
 - Enable emitting of warnings during kdbGet(), refactor and update methods and return values to match the conventions
   (e.g. #defined constants for return values) _(Michael Langhammer @milangs, Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
 
 ### date
 
 - Exclude the tests for formats that require GNU extensions of `strptime` on non-GNU systems. _(@kodebach)_
 
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Length
 
 - Warnings are now added on `kdb get` _(@mandoway)_
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Curlget
 
@@ -104,8 +87,6 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Sorted
 
 - Added new validation plugin: Sorted. It checks whether an Elektra array is sorted by its value or a given key in a configurable direction _(@mandoway @Gratla)_
-- <<TODO>>
-- <<TODO>>
 
 ## Libraries
 
@@ -113,49 +94,11 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Core
-
 - Remove `keyRewindMeta`, `keyCurrentMeta`, `ksHead`, and `ksTail` functions for internal iteration of `Keyset`s and Metadata of `Key`s _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Core
 
 - Removed mentions of VERBOSE and replaced debug prints with the logger _(@mandoway)_
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -166,27 +109,18 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Java
 
-- Added a java example for meta keys and arrays _(@mandoway)_
+- Implement NavigableSet in JNA KeySet _(Burkhard Hampl @bhampl)_
+- Added a Java example for meta keys and arrays _(@mandoway)_
 - Added examples to HelloElektra.java _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
-
-### JNA
-
 - Added example which shows how to add a basename for a key. _(Philipp Leeb @Gratla)_
 - Introduced Key#setNull, ReadableKey#isNull _(Michael Tucek @tucek)_
 - Fixed Key#setBoolean, ReadableKey#isBoolean _(Michael Tucek @tucek)_
 - Fixed Java Whitelist plugin tests _(Michael Tucek @tucek)_
 - Fixed missing Javadoc in Java Sorted plugin _(Michael Tucek @tucek)_
-- <<TODO>>
 
 ### Ruby
 
 - Replace `NULL` in `rb_funcall` with `Qnil` to avoid compiler errors/warnings on some systems. _(@kodebach)_
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Kotlin
 
@@ -225,26 +159,15 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - improve logging in `elektrad` _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - Update `elektrad` to use last version of the `go`-bindings without internal iterators for `Keyset`s and Metadata _(Florian Lindner @flo91)_
-- <<TODO>>
 
 ### `webui`
 
 - fix issues from namespace-overhaul _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
 - apply non-breaking updates to packages _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
-- <<TODO>>
-- <<TODO>>
 
 ### `webd`
 
 - fix path building for requests to `elektrad` _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### QT GUI
 
@@ -253,187 +176,50 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Fix `kdb reset`. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
 - Small readability improvement _(@Toniboyyy)_
 - Python: add guide for Debian 11 (bullseye) _(Lukas Hartl @lukashartl)_
 - Fix some errors in the tutorials `Cascading Lookups` and `Command-line Options` _(Florian Lindner @flo91)_
-- <<TODO>>
 - Extend and update the tutorial for writing specifications,
   add section about using specs in production _(Florian Lindner @flo91)_
-- Tutorial: add cleanup section to the specification tutorial _(Lukas Hartl @lukashartl)_ _(@leothetryhard)_
-- <<TODO>>
+- Tutorial: add cleanup section to the specification tutorial _(Lukas Hartl @lukashartl)_ and _(@leothetryhard)_
 - Add readme-file [Iterators](/doc/dev/iterators.md) about cm2022s project showcasing usage in various programming languages _(Florian Lindner @flo91 and Michael Langhammer @Milangs)_
-- Remove usage of internal iterators from the examples
-- Add readme-file about cm2022s project (/doc/dev/iterators.md) _(Florian Lindner @flo91)_
 - Updated elektra-web installation manual (doc/tutorials/install-webui.md) _(Leonard Guelmino @leothetryhard, Lukas Hartl @lukashartl)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Improve jna documentation _(Burkhard Hampl @bhampl)_
-- <<TODO>>
 - Add Stream API example in Java binding documentation _(Richard Stöckl @Eiskasten)_
-- Add Stream API example in Java binding documentation \_(Richard Stöckl @Eiskasten)
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Minor readability improvement _(@mandoway)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Minor readability improvement in `CODING.md` _(@loessberth)_
-- <<TODO>>
-- <<TODO>>
 - Fix dead link and compile instructions _(Burkhard Hampl @bhampl)_
 - Update links from certificate section _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
 - Fix wrong KDBException reference in java tutorial and improve it _(Burkhard Hampl @bhampl and Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- Implement NavigableSet in JNA KeySet _(Burkhard Hampl @bhampl)_
-- <<TODO>>
-- <<TODO>>
+- Update [FAQ](/doc/help/elektra-faq.md). _(Markus Raab)_
 
 ### Tutorials
 
-- <<TODO>>
 - The tutorial for [Contributing from Windows](../tutorials/contributing-windows.md) has been updated. _(@kodebach)_
 - The tutorial for [CLion](../tutorials/contributing-clion.md) now contains a section for setting up the WSL compiler _(@mandoway)_
-- <<TODO>>
 - Rephrased sentence in code-generator.md to enhance readability _(@Gratla)_
-- <<TODO>>
-
-### Man Pages
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Update [FAQ](/doc/help/elektra-faq.md). _(Markus Raab)_
 
 ## Tests
 
 - Add tests for the Error/Warnings-Factory in libtools _(Florian Lindner @flo91)_
 - Add tests for keySet in the python binary _(Lukas Hartl @lukashartl, Leonard Guelmino @leothetryhard)_
-- <<TODO>>
 - Added test for JNA KDB which checks if both get-method implementations return the same result. _(Philipp Leeb @Gratla)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Shell Recorder
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C++
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Packaging
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
 ### CMake
 
 - CMake now automatically detects all JNA plugins that are added to Gradle. _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Docker
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
 ### Jenkins
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Cirrus
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### GitHub Actions
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- make copying of artifacts much faster _(Lukas Hartl)_
+- fixed several problems _(Lukas Hartl)_
 
 ### Git
 
@@ -441,7 +227,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### GitHub
 
-- Dependabot configuration _(Lukas Hartl @lukashartl)_
+- Added dependabot configuration _(Lukas Hartl @lukashartl)_
 
 ## Website
 
@@ -449,19 +235,22 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
 - Overhauled the `Get Started` page by adding a brief `kdb` introduction. _(@Milangs)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth @kodebach)_
+- Elektrify KDE and GNOME _(Mihael Pranjić)_
+- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
+- Mounting SQL databases _(Florian Lindner @flo91)_
+- Recording Configuration _(Maximilian Irlinger)_
+- Ansible-Elektra _(Lukas Hartl)_
+- Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Improve Java Development Experience _(Michael Tucek)_
+- KDB access using FUSE _(Alexander Firbas)_
+- Shell completion _(Ulrike Schäfer)_
+- Rewriting tools in C _(Florian Lindner @flo91)_, _(Maximilian Irlinger)_ and _(Richard Stöckl @Eiskasten)_.
 
 ## Statistics
 
