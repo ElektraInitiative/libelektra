@@ -15,7 +15,7 @@ Where `<COMMAND>` is one of the following:
 - `list`: list all available recording sessions.
 - `name`: prints the name of the currently active recording session.
 - `status [session_name]`: shows a human-readable list of changes.
-- `export  [--format=replay|diff] [session_name]`: creates a file with the changes of the recording session.
+- `export  [--format replay|diff] [session_name]`: creates a file with the changes of the recording session.
 - `import [--disable-assertions] <file_name>`: imports files created by the `export` command.
 
 ## DESCRIPTION
@@ -94,17 +94,17 @@ Shows all the changes in the specified recording session in human-readable forma
 Outputs to `stdout`.
 If no recording session is specified, the currently active recording session is used.
 
-### `export  [--format=replay|diff] [session_name]`
+### `export  [--format replay|diff] [session_name]`
 Exports the changes made in the specified recording session.
 Outputs to `stdout`.
 If no recording session is specified, the currently active recording session is used.
 
 The `export` command has the ability to output two different types: diffs and replays.
 
-The `--format=diff` argument (default) only exports the changes between the start and end states of the recording session.
+The `--format diff` argument (default) only exports the changes between the start and end states of the recording session.
 This means, e.g., that when you add a key and remove it in the same recording session, it will not be exported.
 
-The `--format=replay` argument creates a file that contains every modifying operation made in the recording session in the order they were performed.
+The `--format replay` argument creates a file that contains every modifying operation made in the recording session in the order they were performed.
 This is regardless whether at the end of the recording session the value has really changed or is the same as before.
 Files created using `--format=replay` serve as a transaction log.
 
@@ -132,7 +132,7 @@ Will assert system:/hosts/ipv6/localhost to be ::1
 Changed system:/hosts/ipv4/www.example.com from 1.2.3.4 to 8.8.8.8
 Added system:/hosts/ipv4/www.beispiel.de with value 4.4.4.4
 Removed system:/hosts/ipv4/www.ejemplo.es
-$ kdb record export --format=replay
+$ kdb record export --format replay
 <export output. format not yet defined>
 $ kdb record list
 AddNewHosts
