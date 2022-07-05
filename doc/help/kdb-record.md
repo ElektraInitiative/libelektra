@@ -6,8 +6,9 @@
 
 Where `<COMMAND>` is one of the following:
 
-- `start [session_name]`: start or resume a recording session.
+- `start [session_name]`: start a new recording session.
 - `stop`: stop the active recording session.
+- `resume [session_name]': resume a stopped recording session.
 - `reset [session_name]`: remove all data from the recording session.
 - `delete [session_name]`: delete the recording session.
 - `mark [--meta meta_name] <key_name>`: marks a key to be used for validation.
@@ -34,25 +35,36 @@ If a session is active, every change to the keys, values and meta-data stored in
 Most commands allow specification of the name of the session they should work against.
 If no session name is provided, the active session will be used.
 
-A notable exception is the `start` command.
-If no session name is provided, it will create a session with a random name.
+Notable exceptions are the `start` and `resume` commands.
 
 ## COMMANDS
 
 ### `start [session_name]`
-The `start` command is used to start a new or resume an existing session.
+The `start` command is used to start a new recording session.
 If the environment variable `ELEKTRA_RECORD_ACTIVE_SESSION` is set, this command has no immediate effect.
-As soon as the environment variable is unset, the session started or resumed with this command will be active.
+As soon as the environment variable is unset, the session started with this command will be active.
 
 This command will accept a single optional argument that is the name of the session.
 If the name is not provided, a random name will be generated.
+
+The command will output an error if a session with the specified name already exists.
 
 On success, the name of the session will be printed to `stdout`, and the return code is `0`.
 
 ### `stop`
 The `stop` command is used to stop the active recording session.
-The session can then be resumed using the `start` command with the appropriate session name.
+The session can then be resumed using the `resume` command with the appropriate session name.
 Stopping a recording session will not delete any recorded changes.
+
+### `resume [session_name]`
+The `resume` command is used to resume an existing session.
+If the environment variable `ELEKTRA_RECORD_ACTIVE_SESSION` is set, this command has no immediate effect.
+As soon as the environment variable is unset, the session resumed with this command will be active.
+
+This command will accept a single required argument that is the name of the session.
+If the name is not provided, or a session with the specified name does not exist, the command will output an error.
+
+On success, the name of the session will be printed to `stdout`, and the return code is `0`.
 
 ### `reset [session_name]`
 The `reset` command will clear the specified recording.
