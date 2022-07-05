@@ -14,7 +14,7 @@ Where `<COMMAND>` is one of the following:
 - `list`: list all available recording sessions.
 - `name`: prints the name of the currently active session.
 - `changes [session_name]`: shows a human-readable list of changes.
-- `export  [--replay|--diff] [session_name]`: creates a file with the changes in the session.
+- `export  [--format=replay|diff] [session_name]`: creates a file with the changes in the session.
 - `import [--disable-validation] <file_name>`: imports files created by the `export` command.
 
 ## DESCRIPTION
@@ -82,17 +82,17 @@ Shows all the changes in the specified session in human-readable format.
 Outputs to `stdout`.
 If no session is specified, the currently active session is used.
 
-### `export  [--replay|--diff] [session_name]`
+### `export  [--format=replay|diff] [session_name]`
 Exports the changes made in the specified session.
 Outputs to `stdout`.
 If no session is specified, the currently active session is used.
 
 The `export` command has the ability to output two different types: diffs and replays.
 
-The `--diff` flag (default) only exports the changes between the start and end states of the recording session.
+The `--format=diff` argument (default) only exports the changes between the start and end states of the recording session.
 This means, e.g., that when you add a key and remove it in the same session, it will not be exported.
 
-The `--replay` flag creates a file that contains every modifying operation made in the session in the order they were performed.
+The `--format=replay` argument creates a file that contains every modifying operation made in the session in the order they were performed.
 This is regardless whether at the end of the session the value has really changed or is the same as before.
 Files created using `--replay` serve as a transaction log.
 
@@ -120,7 +120,7 @@ Marked system:/hosts/ipv6/localhost to be ::1
 Changed system:/hosts/ipv4/www.example.com from 1.2.3.4 to 8.8.8.8
 Added system:/hosts/ipv4/www.beispiel.de with value 4.4.4.4
 Removed system:/hosts/ipv4/www.ejemplo.es
-$ kdb record export --replay
+$ kdb record export --format=replay
 <export output. format not yet defined>
 $ kdb record list
 AddNewHosts
