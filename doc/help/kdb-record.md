@@ -35,7 +35,7 @@ Most commands allow specification of the name of the session they should work ag
 If no session name is provided, the active session will be used.
 
 A notable exception is the `start` command.
-If no session name is provided, it will create a random name.
+If no session name is provided, it will create a session with a random name.
 
 ## COMMANDS
 
