@@ -14,7 +14,7 @@ Where `<COMMAND>` is one of the following:
 - `assert [--meta meta_name] <key_name>`: marks a key to be used for value-based validation during import.
 - `list`: list all available recording sessions.
 - `name`: prints the name of the currently active session.
-- `changes [session_name]`: shows a human-readable list of changes.
+- `status [session_name]`: shows a human-readable list of changes.
 - `export  [--format=replay|diff] [session_name]`: creates a file with the changes in the session.
 - `import [--disable-validation] <file_name>`: imports files created by the `export` command.
 
@@ -89,7 +89,7 @@ Lists all known recording sessions.
 Prints out the name of the currently active recording session.
 If no session is active, the return code is `1`, otherwise `0`.
 
-### `changes [session_name]`
+### `status [session_name]`
 Shows all the changes in the specified session in human-readable format.
 Outputs to `stdout`.
 If no session is specified, the currently active session is used.
@@ -127,7 +127,7 @@ Will assert system:/hosts/ipv6/localhost to be ::1
 $ kdb set system:/hosts/ipv4/www.example.com 8.8.8.8
 $ kdb set system:/hosts/ipv4/www.beispiel.de 4.4.4.4
 $ kdb rm system:/hosts/ipv4/www.ejemplo.es
-$ kdb record changes
+$ kdb record status
 Will assert system:/hosts/ipv6/localhost to be ::1
 Changed system:/hosts/ipv4/www.example.com from 1.2.3.4 to 8.8.8.8
 Added system:/hosts/ipv4/www.beispiel.de with value 4.4.4.4
