@@ -68,7 +68,7 @@ This command marks a key to be used for validation when importing the recording.
 By default, the values of a marked key will be compared when importing.
 The import will fail if the key has a different value.
 
-Using the `--meta` flag, one can specify to use the value of a specific meta instead of the value of the key.
+Using the `--meta` flag, one can specify to use the value of a metakey instead of the value of the key.
 
 ### `list`
 Lists all known recording sessions.
