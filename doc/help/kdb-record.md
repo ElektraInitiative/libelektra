@@ -11,7 +11,7 @@ Where `<COMMAND>` is one of the following:
 - `resume [session_name]': resume a stopped recording session.
 - `reset [session_name]`: remove all data from the recording session.
 - `delete [session_name]`: delete the recording session.
-- `mark [--meta meta_name] <key_name>`: marks a key to be used for validation.
+- `assert [--meta meta_name] <key_name>`: marks a key to be used for value-based validation during import.
 - `list`: list all available recording sessions.
 - `name`: prints the name of the currently active session.
 - `changes [session_name]`: shows a human-readable list of changes.
@@ -75,7 +75,7 @@ Deletes the specified recording session.
 It the optional argument is not provided, the current session will be deleted.
 If it is the currently active session, it will be stopped.
 
-### `mark [--meta meta_name] <key_name>`
+### `assert [--meta meta_name] <key_name>`
 This command marks a key to be used for validation when importing the recording.
 By default, the values of a marked key will be compared when importing.
 The import will fail if the key has a different value.
@@ -122,13 +122,13 @@ Those checks can be disabled using the `--disable-validation` flag.
 ```
 $ kdb record start AddNewHosts
 AddNewHosts
-$ kdb record mark system:/hosts/ipv6/localhost
-Marked system:/hosts/ipv6/localhost to be ::1
+$ kdb record assert system:/hosts/ipv6/localhost
+Will assert system:/hosts/ipv6/localhost to be ::1
 $ kdb set system:/hosts/ipv4/www.example.com 8.8.8.8
 $ kdb set system:/hosts/ipv4/www.beispiel.de 4.4.4.4
 $ kdb rm system:/hosts/ipv4/www.ejemplo.es
 $ kdb record changes
-Marked system:/hosts/ipv6/localhost to be ::1
+Will assert system:/hosts/ipv6/localhost to be ::1
 Changed system:/hosts/ipv4/www.example.com from 1.2.3.4 to 8.8.8.8
 Added system:/hosts/ipv4/www.beispiel.de with value 4.4.4.4
 Removed system:/hosts/ipv4/www.ejemplo.es
