@@ -221,6 +221,10 @@ you up-to-date with the multi-language support provided by Elektra.
 - make copying of artifacts much faster _(Lukas Hartl)_
 - fixed several problems _(Lukas Hartl)_
 
+### Cirrus && GitHub Actions
+
+- Fix wrong path for clang builds on macOS. _(Mihael Pranjić @mpranj)_
+
 ### Git
 
 - We added a `.gitattributes` file to make it easier to build Elektra with WSL. _(@kodebach)_
@@ -241,7 +245,7 @@ plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 We are currently working on following topics:
 
 - 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth @kodebach)_
-- Elektrify KDE and GNOME _(Mihael Pranjić)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
 - Elektrify XFCE _(Richard Stöckl @Eiskasten)_
 - Mounting SQL databases _(Florian Lindner @flo91)_
 - Recording Configuration _(Maximilian Irlinger)_
