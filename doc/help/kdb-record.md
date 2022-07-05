@@ -13,27 +13,27 @@ Where `<COMMAND>` is one of the following:
 - `delete [session_name]`: delete the recording session.
 - `assert [--meta meta_name] <key_name>`: marks a key to be used for value-based validation during import.
 - `list`: list all available recording sessions.
-- `name`: prints the name of the currently active session.
+- `name`: prints the name of the currently active recording session.
 - `status [session_name]`: shows a human-readable list of changes.
-- `export  [--format=replay|diff] [session_name]`: creates a file with the changes in the session.
+- `export  [--format=replay|diff] [session_name]`: creates a file with the changes of the recording session.
 - `import [--disable-validation] <file_name>`: imports files created by the `export` command.
 
 ## DESCRIPTION
 
 The `kdb record` utility is used to manage session recordings.
 Only a single recording session can be active per user at a time.
-A user can have multiple non-active sessions.
+A user can have multiple non-active recording sessions.
 
-If a session is active, every change to the keys, values and meta-data stored in Elektra will be logged into that session.
+If a recording session is active, every change to the keys, values and meta-data stored in Elektra will be logged into that recording session.
 
 ## ENVIRONMENT VARIABLES
 
-- `ELEKTRA_RECORD_ACTIVE_SESSION`: If this environment variable is set, the specified session will be the active session.
+- `ELEKTRA_RECORD_ACTIVE_SESSION`: If this environment variable is set, the specified recording session will be the active recording session.
 
 ## COMMON PARAMETERS
 
 Most commands allow specification of the name of the recording session they use.
-If no session name is provided, the active session will be used.
+If no recording session name is provided, the active recording session will be used.
 
 Notable exceptions are the `start` and `resume` commands.
 
@@ -42,38 +42,38 @@ Notable exceptions are the `start` and `resume` commands.
 ### `start [session_name]`
 The `start` command is used to start a new recording session.
 If the environment variable `ELEKTRA_RECORD_ACTIVE_SESSION` is set, this command has no immediate effect.
-As soon as the environment variable is unset, the session started with this command will be active.
+As soon as the environment variable is unset, the recording session started with this command will be active.
 
-This command will accept a single optional argument that is the name of the session.
+This command will accept a single optional argument that is the name of the recording session.
 If the name is not provided, a random name will be generated.
 
-The command will output an error if a session with the specified name already exists.
+The command will output an error if a recording session with the specified name already exists.
 
-On success, the name of the session will be printed to `stdout`, and the return code is `0`.
+On success, the name of the recording session will be printed to `stdout`, and the return code is `0`.
 
 ### `stop`
 The `stop` command is used to stop the active recording session.
-The session can then be resumed using the `resume` command with the appropriate session name.
+The recording session can then be resumed using the `resume` command with the appropriate recording session name.
 Stopping a recording session will not delete any recorded changes.
 
 ### `resume [session_name]`
-The `resume` command is used to resume an existing session.
+The `resume` command is used to resume an existing recording session.
 If the environment variable `ELEKTRA_RECORD_ACTIVE_SESSION` is set, this command has no immediate effect.
-As soon as the environment variable is unset, the session resumed with this command will be active.
+As soon as the environment variable is unset, the recording session resumed with this command will be active.
 
-This command will accept a single required argument that is the name of the session.
-If the name is not provided, or a session with the specified name does not exist, the command will output an error.
+This command will accept a single required argument that is the name of the recording session.
+If the name is not provided, or a recording session with the specified name does not exist, the command will output an error.
 
-On success, the name of the session will be printed to `stdout`, and the return code is `0`.
+On success, the name of the recording session will be printed to `stdout`, and the return code is `0`.
 
 ### `reset [session_name]`
 The `reset` command will clear the specified recording.
-If no session name argument is provided, the currently active session will be reset.
+If no recording session name argument is provided, the currently active recording session will be reset.
 
 ### `delete [session_name]`
 Deletes the specified recording session.
-It the optional argument is not provided, the current session will be deleted.
-If it is the currently active session, it will be stopped.
+It the optional argument is not provided, the current recording session will be deleted.
+If it is the currently active recording session, it will be stopped.
 
 ### `assert [--meta meta_name] <key_name>`
 This command marks a key to be used for validation when importing the recording.
@@ -87,25 +87,25 @@ Lists all known recording sessions.
 
 ### `name`
 Prints out the name of the currently active recording session.
-If no session is active, the return code is `1`, otherwise `0`.
+If no recording session is active, the return code is `1`, otherwise `0`.
 
 ### `status [session_name]`
-Shows all the changes in the specified session in human-readable format.
+Shows all the changes in the specified recording session in human-readable format.
 Outputs to `stdout`.
-If no session is specified, the currently active session is used.
+If no recording session is specified, the currently active recording session is used.
 
 ### `export  [--format=replay|diff] [session_name]`
-Exports the changes made in the specified session.
+Exports the changes made in the specified recording session.
 Outputs to `stdout`.
-If no session is specified, the currently active session is used.
+If no recording session is specified, the currently active recording session is used.
 
 The `export` command has the ability to output two different types: diffs and replays.
 
 The `--format=diff` argument (default) only exports the changes between the start and end states of the recording session.
-This means, e.g., that when you add a key and remove it in the same session, it will not be exported.
+This means, e.g., that when you add a key and remove it in the same recording session, it will not be exported.
 
-The `--format=replay` argument creates a file that contains every modifying operation made in the session in the order they were performed.
-This is regardless whether at the end of the session the value has really changed or is the same as before.
+The `--format=replay` argument creates a file that contains every modifying operation made in the recording session in the order they were performed.
+This is regardless whether at the end of the recording session the value has really changed or is the same as before.
 Files created using `--format=replay` serve as a transaction log.
 
 
