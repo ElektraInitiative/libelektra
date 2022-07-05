@@ -227,7 +227,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Cirrus && GitHub Actions
 
-- Fix wrong path for clang builds on macOS. _(Mihael Pranjić @mpranj)_
+- Fix wrong path for clang builds on macOS, use macOS 12. _(Mihael Pranjić @mpranj)_
 
 ### Git
 

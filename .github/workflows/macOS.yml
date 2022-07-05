@@ -15,7 +15,7 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: macos-11
+    runs-on: macos-12
     strategy:
       # Do not abort all jobs upon first failure
       fail-fast: false
@@ -149,10 +149,10 @@ jobs:
       run: |
         if [ "$CC" = 'clang' ]; then
           # Use latest version of LLVM to translate Elektra
-          export CC="$(brew --prefix llvm)/bin/clang" CXX="$(brew --prefix llvm)/bin/clang++"
-          export LDFLAGS="-L$(brew --prefix llvm)/lib"
-          export CPPFLAGS="-I$(brew --prefix llvm)/include"
-          export PATH="$(brew --prefix llvm)/bin:$PATH"
+          export CC="$(brew --prefix llvm@13)/bin/clang" CXX="$(brew --prefix llvm@13)/bin/clang++"
+          export LDFLAGS="-L$(brew --prefix llvm@13)/lib"
+          export CPPFLAGS="-I$(brew --prefix llvm@13)/include"
+          export PATH="$(brew --prefix llvm@13)/bin:$PATH"
         fi
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
