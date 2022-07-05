@@ -16,7 +16,7 @@ Where `<COMMAND>` is one of the following:
 - `name`: prints the name of the currently active recording session.
 - `status [session_name]`: shows a human-readable list of changes.
 - `export  [--format=replay|diff] [session_name]`: creates a file with the changes of the recording session.
-- `import [--disable-validation] <file_name>`: imports files created by the `export` command.
+- `import [--disable-assertions] <file_name>`: imports files created by the `export` command.
 
 ## DESCRIPTION
 
@@ -109,12 +109,12 @@ This is regardless whether at the end of the recording session the value has rea
 Files created using `--format=replay` serve as a transaction log.
 
 
-### `import [--disable-validation] <file_name>`
+### `import [--disable-assertions] <file_name>`
 Imports files created by the `export` command.
 
 By default we check whether the current values in the key database match the "old" values in the files.
-The values of marked keys will also be checked.
-Those checks can be disabled using the `--disable-validation` flag.
+The values of keys and meta-keys marked with the `assert` command will also be checked.
+Those checks can be disabled using the `--disable-assertions` flag.
 
 
 ## EXAMPLE
