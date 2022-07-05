@@ -32,7 +32,7 @@ If a session is active, every change to the keys, values and meta-data stored in
 
 ## COMMON PARAMETERS
 
-Most commands allow specification of the name of the session they should work against.
+Most commands allow specification of the name of the recording session they use.
 If no session name is provided, the active session will be used.
 
 Notable exceptions are the `start` and `resume` commands.
