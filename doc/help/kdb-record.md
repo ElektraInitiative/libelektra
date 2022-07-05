@@ -147,7 +147,7 @@ $ kdb record changes
 $ kdb record import /tmp/invalid
 Error importing! 
 Existing value for key system:/hosts/ipv6/localhost does not match! (shoud be ::1, is ::2)
-$ kdb record import --disable-validation /tmp/invalid
+$ kdb record import --disable-assertions /tmp/invalid
 Successfully imported!
 ```
 
