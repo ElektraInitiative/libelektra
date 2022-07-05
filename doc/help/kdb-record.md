@@ -94,7 +94,7 @@ This means, e.g., that when you add a key and remove it in the same session, it 
 
 The `--format=replay` argument creates a file that contains every modifying operation made in the session in the order they were performed.
 This is regardless whether at the end of the session the value has really changed or is the same as before.
-Files created using `--replay` serve as a transaction log.
+Files created using `--format=replay` serve as a transaction log.
 
 
 ### `import [--disable-validation] <file_name>`
