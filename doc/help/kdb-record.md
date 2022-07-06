@@ -16,7 +16,7 @@ Where `<COMMAND>` is one of the following:
 - `name`: prints the name of the currently active recording session.
 - `status [session_name]`: shows a human-readable list of changes.
 - `export  [--format replay|diff] [session_name]`: creates a file with the changes of the recording session.
-- `import [--disable-assertions] <file_name>`: imports files created by the `export` command.
+- `import [--without-assertions] <file_name>`: imports files created by the `export` command.
 
 ## DESCRIPTION
 
@@ -112,12 +112,12 @@ This is regardless whether at the end of the recording session the value has rea
 Files created using `--format=replay` serve as a transaction log.
 
 
-### `import [--disable-assertions] <file_name>`
+### `import [--without-assertions] <file_name>`
 Imports files created by the `export` command.
 
 By default we check whether the current values in the key database match the "old" values in the files.
 The values of keys and meta-keys marked with the `assert` command will also be checked.
-Those checks can be disabled using the `--disable-assertions` flag.
+Those checks can be disabled using the `--without-assertions` flag.
 
 
 ## EXAMPLE
@@ -150,7 +150,7 @@ $ kdb record changes
 $ kdb record import /tmp/invalid
 Error importing! 
 Existing value for key system:/hosts/ipv6/localhost does not match! (shoud be ::1, is ::2)
-$ kdb record import --disable-assertions /tmp/invalid
+$ kdb record import --without-assertions /tmp/invalid
 Successfully imported!
 ```
 
