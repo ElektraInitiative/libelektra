@@ -5,14 +5,138 @@
 typedef struct XfconfCache XfconfCache;
 struct _XfconfChannel
 {
+	GObject parent;
 	gchar * channel_name;
 };
 
+typedef struct XfconfChannelClass
+{
+	GObjectClass parent;
 
-GType xfconf_channel_get_type (void)
+	void (*property_changed) (XfconfChannel * channel, const gchar * property, const GValue * value);
+} XfconfChannelClass;
+
+enum
+{
+	PROP0 = 0,
+	PROP_CHANNEL_NAME,
+};
+
+
+static GObject * xfconf_channel_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties);
+static void xfconf_channel_set_g_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
+static void xfconf_channel_get_g_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+static void xfconf_channel_dispose (GObject * obj);
+static void xfconf_channel_finalize (GObject * obj);
+
+static void xfconf_channel_property_changed (XfconfCache * cache, const gchar * channel_name, const gchar * property, const GValue * value,
+					     gpointer user_data);
+
+
+G_DEFINE_TYPE (XfconfChannel, xfconf_channel, G_TYPE_OBJECT)
+
+
+static void xfconf_channel_class_init (XfconfChannelClass * klass)
+{
+	unimplemented ();
+	GObjectClass * object_class = (GObjectClass *) klass;
+
+	object_class->constructor = xfconf_channel_constructor;
+	object_class->set_property = xfconf_channel_set_g_property;
+	object_class->get_property = xfconf_channel_get_g_property;
+	object_class->dispose = xfconf_channel_dispose;
+	object_class->finalize = xfconf_channel_finalize;
+
+	/**
+	 * XfconfChannel::channel-name:
+	 *
+	 * The string identifier used for this channel.
+	 **/
+	unimplemented ();
+	g_object_class_install_property (object_class, PROP_CHANNEL_NAME,
+					 g_param_spec_string ("channel-name", "Channel Name", "The name of the channel", NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_NAME |
+								      G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
+	unimplemented ();
+}
+
+static void xfconf_channel_init (XfconfChannel * instance)
 {
 	unimplemented ();
 }
+
+static GObject * xfconf_channel_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties)
+{
+	unimplemented ();
+	const gchar * channel_name = NULL;
+	guint i;
+	XfconfChannel * channel = NULL;
+
+	for (i = 0; i < n_construct_properties; ++i)
+	{
+		if (!strcmp (g_param_spec_get_name (construct_properties[i].pspec), "channel-name"))
+			channel_name = g_value_get_string (construct_properties[i].value);
+	}
+
+	if (G_UNLIKELY (!channel_name))
+	{
+		g_warning ("Assertion 'channel_name != NULL' failed");
+		return NULL;
+	}
+
+	channel = XFCONF_CHANNEL (
+		G_OBJECT_CLASS (xfconf_channel_parent_class)->constructor (type, n_construct_properties, construct_properties));
+	return G_OBJECT (channel);
+}
+
+static void xfconf_channel_set_g_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
+{
+	unimplemented ();
+	XfconfChannel * channel = XFCONF_CHANNEL (object);
+
+	switch (property_id)
+	{
+	case PROP_CHANNEL_NAME:
+		g_assert (channel->channel_name == NULL);
+		channel->channel_name = g_value_dup_string (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+static void xfconf_channel_get_g_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec)
+{
+	unimplemented ();
+	XfconfChannel * channel = XFCONF_CHANNEL (object);
+
+	switch (property_id)
+	{
+	case PROP_CHANNEL_NAME:
+		g_value_set_string (value, channel->channel_name);
+		break;
+
+
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+static void xfconf_channel_dispose (GObject * obj)
+{
+	fprintf (stderr, "dispose\n");
+}
+
+static void xfconf_channel_finalize (GObject * obj)
+{
+	unimplemented ();
+	XfconfChannel * channel = XFCONF_CHANNEL (obj);
+	g_free (channel->channel_name);
+	G_OBJECT_CLASS (xfconf_channel_parent_class)->finalize (obj);
+}
+
 
 static gint find_by_name (gconstpointer channel, gconstpointer name)
 {
@@ -39,8 +163,8 @@ static gint compare_channel (gconstpointer a, gconstpointer b)
 
 XfconfChannel * xfconf_channel_new (const gchar * channel_name)
 {
-	XfconfChannel * channel = malloc (sizeof (XfconfChannel));
-	channel->channel_name = strdup (channel_name);
+	unimplemented ();
+	XfconfChannel * channel = g_object_new (XFCONF_TYPE_CHANNEL, "channel-name", channel_name, NULL);
 	channel_list = g_list_insert_sorted (channel_list, channel, &compare_channel);
 	return channel;
 }
@@ -53,6 +177,7 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
 gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * property)
 {
 	unimplemented ();
+	return TRUE;
 }
 
 gboolean xfconf_channel_is_property_locked (XfconfChannel * channel, const gchar * property)
