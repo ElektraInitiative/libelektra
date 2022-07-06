@@ -25,6 +25,7 @@ foreach (plugin ${PLUGINS})
 			resolver_fm_xp_x
 			resolver_fm_xhp_x
 			resolver_fm_uhb_xb
+			resolver_fm_sp_b # for RecordElektra
 			resolver_fm_hpu_b # default
 		)
 	endif ()
