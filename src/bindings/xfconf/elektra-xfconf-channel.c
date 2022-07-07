@@ -18,6 +18,12 @@ typedef struct XfconfChannelClass
 
 enum
 {
+	SIG_PROPERTY_CHANGED = 0,
+	N_SIGS,
+};
+
+enum
+{
 	PROP0 = 0,
 	PROP_CHANNEL_NAME,
 };
@@ -32,6 +38,9 @@ static void xfconf_channel_finalize (GObject * obj);
 static void xfconf_channel_property_changed (XfconfCache * cache, const gchar * channel_name, const gchar * property, const GValue * value,
 					     gpointer user_data);
 
+static guint signals[N_SIGS] = {
+	0,
+};
 
 G_DEFINE_TYPE (XfconfChannel, xfconf_channel, G_TYPE_OBJECT)
 
@@ -47,17 +56,14 @@ static void xfconf_channel_class_init (XfconfChannelClass * klass)
 	object_class->dispose = xfconf_channel_dispose;
 	object_class->finalize = xfconf_channel_finalize;
 
-	/**
-	 * XfconfChannel::channel-name:
-	 *
-	 * The string identifier used for this channel.
-	 **/
-	unimplemented ();
+	signals[SIG_PROPERTY_CHANGED] = g_signal_new (I_ ("property-changed"), XFCONF_TYPE_CHANNEL, G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
+						      G_STRUCT_OFFSET (XfconfChannelClass, property_changed), NULL, NULL, NULL, G_TYPE_NONE,
+						      2, G_TYPE_STRING, G_TYPE_VALUE);
+
 	g_object_class_install_property (object_class, PROP_CHANNEL_NAME,
 					 g_param_spec_string ("channel-name", "Channel Name", "The name of the channel", NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_NAME |
 								      G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
-	unimplemented ();
 }
 
 static void xfconf_channel_init (XfconfChannel * instance)
@@ -94,15 +100,14 @@ static void xfconf_channel_set_g_property (GObject * object, guint property_id, 
 	unimplemented ();
 	XfconfChannel * channel = XFCONF_CHANNEL (object);
 
-	switch (property_id)
+	if (property_id == PROP_CHANNEL_NAME)
 	{
-	case PROP_CHANNEL_NAME:
 		g_assert (channel->channel_name == NULL);
 		channel->channel_name = g_value_dup_string (value);
-		break;
-	default:
+	}
+	else
+	{
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-		break;
 	}
 }
 
@@ -111,16 +116,13 @@ static void xfconf_channel_get_g_property (GObject * object, guint property_id, 
 	unimplemented ();
 	XfconfChannel * channel = XFCONF_CHANNEL (object);
 
-	switch (property_id)
+	if (property_id == PROP_CHANNEL_NAME)
 	{
-	case PROP_CHANNEL_NAME:
 		g_value_set_string (value, channel->channel_name);
-		break;
-
-
-	default:
+	}
+	else
+	{
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-		break;
 	}
 }
 
@@ -177,7 +179,7 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
 gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * property)
 {
 	unimplemented ();
-	return TRUE;
+	return FALSE;
 }
 
 gboolean xfconf_channel_is_property_locked (XfconfChannel * channel, const gchar * property)
