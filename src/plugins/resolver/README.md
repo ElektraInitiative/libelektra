@@ -103,6 +103,12 @@ way:
 - if no file was found, the least important element will be used for
   potential write attempts.
 
+### SUDO/DOAS Compatibility
+
+The `s` variant of the resolver adds `sudo` and `doas` compatibility for the `user:/` namespace.
+In this variant, the environment variables `SUDO_USER` and `DOAS_USER` are checked (in this order).
+This allows the `user:/` namespace to be resolved for the user executing the `sudo` or `doas` command instead of resolving it for root.
+
 ## Reading Configuration
 
 1. If no update needed (unchanged modification time): quit successfully

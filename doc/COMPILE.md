@@ -325,7 +325,7 @@ The following base flags are available:
 The user flags are (the order matters!):
 
 - `p` use passwd/ldap to lookup home directory using `getpwuid_r`
-- `s` same as `p` but with the username specified in the environment variable `SUDO_USER` or `DOAS_USER`, which enables access to the `user:/` namespace of the executing user when using `sudo` or `doas`.
+- `s` same as `p` but with `sudo` compatibility - see [the README of the resolver plugin](../src/plugins/resolver/README.md).
 - `h` use the environment variable HOME
 - `u` use the environment variable USER
 - `b` use the built-in default cmake variable `KDB_DB_HOME`
