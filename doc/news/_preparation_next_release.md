@@ -47,6 +47,9 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### resolver
+- New strategy `s` for user namespaces: allows for resolving the `user:/` namespace for the user executing via `sudo` or `doas` _(Maximilian Irlinger @atmaxinger)_
+
 ### filecheck
 
 - Removed unused variable that threw an error in filecheck.c. _(Vaibhav Ganesh @flackojr)_
