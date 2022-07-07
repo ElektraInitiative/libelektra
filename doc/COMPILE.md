@@ -324,8 +324,8 @@ The following base flags are available:
 
 The user flags are (the order matters!):
 
-- `p` use passwd/ldap to lookup home directory using `getpwnam_r` with the username from the POSIX environment variable LOGNAME
-- `s` same as `p` but with the environment variable SUDO_USER, which enables access to the `user:/` namespace of the executing user when using `sudo`
+- `p` use passwd/ldap to lookup home directory using `getpwuid_r`
+- `s` same as `p` but with the username specified in the environment variable `SUDO_USER` or `DOAS_USER`, which enables access to the `user:/` namespace of the executing user when using `sudo` or `doas`.
 - `h` use the environment variable HOME
 - `u` use the environment variable USER
 - `b` use the built-in default cmake variable `KDB_DB_HOME`

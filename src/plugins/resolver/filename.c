@@ -128,7 +128,7 @@ static void elektraResolveUsingHome (ElektraResolved * handle, const char * home
 	keyDel (canonify);
 }
 
-static char * elektraResolvePasswd (Key * warningsKey, const char *userName)
+static char * elektraResolvePasswdFromUid (Key * warningsKey)
 {
 	ssize_t bufSize = sysconf (_SC_GETPW_R_SIZE_MAX);
 	if (bufSize == -1) bufSize = 16384; // man 3 getpwuid
@@ -138,14 +138,41 @@ static char * elektraResolvePasswd (Key * warningsKey, const char *userName)
 	struct passwd pwd;
 	struct passwd * result;
 
-	int s = getpwnam_r (userName, &pwd, buf, bufSize, &result);
+	int s = getpwuid_r  (getuid (), &pwd, buf, bufSize, &result);
 
 	if (result == NULL)
 	{
 		elektraFree (buf);
 		if (s != 0)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwnam_r. Reason: %s",
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwuid_r. Reason: %s",
+							   strerror (s));
+		}
+		return NULL;
+	}
+	char * resolved = elektraStrDup (pwd.pw_dir);
+	elektraFree (buf);
+	return resolved;
+}
+
+static char * elektraResolvePasswdFromUserName (Key * warningsKey, const char * userName)
+{
+	ssize_t bufSize = sysconf (_SC_GETPW_R_SIZE_MAX);
+	if (bufSize == -1) bufSize = 16384; // man 3 getpwuid
+
+	char * buf = elektraMalloc (bufSize);
+	if (!buf) return NULL;
+	struct passwd pwd;
+	struct passwd * result;
+
+	int s = getpwnam_r(userName, &pwd, buf, bufSize, &result);
+
+	if (result == NULL)
+	{
+		elektraFree (buf);
+		if (s != 0)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (warningsKey, "Could not retrieve from passwd using getpwuid_r. Reason: %s",
 							   strerror (s));
 		}
 		return NULL;
@@ -157,7 +184,7 @@ static char * elektraResolvePasswd (Key * warningsKey, const char *userName)
 
 static int elektraResolveUserPasswd (ElektraResolved * handle, Key * warningsKey)
 {
-	char * dir = elektraResolvePasswd (warningsKey, getenv("LOGNAME"));
+	char * dir = elektraResolvePasswdFromUid (warningsKey);
 	if (!dir) return 0;
 	elektraResolveUsingHome (handle, dir, 1);
 	elektraFree (dir);
@@ -169,10 +196,15 @@ static int elektraResolveUserSudoPasswd (ElektraResolved * handle, Key * warning
 	const char* username = getenv("SUDO_USER");
 	if(username == NULL)
 	{
+		username = getenv ("DOAS_USER");
+	}
+
+	if(username == NULL)
+	{
 		return 0;
 	}
 
-	char * dir = elektraResolvePasswd (warningsKey, username);
+	char * dir = elektraResolvePasswdFromUserName(warningsKey, username);
 	if (!dir) return 0;
 	elektraResolveUsingHome (handle, dir, 1);
 	elektraFree (dir);
@@ -181,7 +213,7 @@ static int elektraResolveUserSudoPasswd (ElektraResolved * handle, Key * warning
 
 static int elektraResolveSystemPasswd (ElektraResolved * handle, Key * warningsKey)
 {
-	char * dir = elektraResolvePasswd (warningsKey, getenv("LOGNAME"));
+	char * dir = elektraResolvePasswdFromUid (warningsKey);
 	if (!dir) return -1;
 	size_t filenameSize = elektraStrLen (dir) + elektraStrLen (handle->relPath) - 1;
 	char * resolved = elektraMalloc (filenameSize);
