@@ -1,18 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes.
-
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
-
-Pick a random line to write your changes to minimize
-the chances of conflicts in this file.
-
-<<`scripts/generate-news-entry`>>
+- guid: CC66FD33-7491-4BFA-975A-36FAB67D45D6
+- author: Mihael Pranjić
+- pubDate: Sat, 09 Jul 2022 09:40:18 +0200
+- shortDesc: Kotlin Binding, Remove Internal Iterators
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -262,7 +253,7 @@ We are currently working on following topics:
 
 ## Statistics
 
-We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+We closed [51 issues](https://github.com/ElektraInitiative/libelektra/milestone/31?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
