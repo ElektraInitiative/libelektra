@@ -88,6 +88,10 @@ Overall changes:
 
 - Added new validation plugin: Sorted. It checks whether an Elektra array is sorted by its value or a given key in a configurable direction _(@mandoway @Gratla)_
 
+### mini
+
+- Fix usage of bitwise operator with boolean operands. _(Mihael Pranjić @mpranj)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -221,6 +225,10 @@ you up-to-date with the multi-language support provided by Elektra.
 - make copying of artifacts much faster _(Lukas Hartl)_
 - fixed several problems _(Lukas Hartl)_
 
+### Cirrus && GitHub Actions
+
+- Fix wrong path for clang builds on macOS. _(Mihael Pranjić @mpranj)_
+
 ### Git
 
 - We added a `.gitattributes` file to make it easier to build Elektra with WSL. _(@kodebach)_
@@ -241,7 +249,7 @@ plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 We are currently working on following topics:
 
 - 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth @kodebach)_
-- Elektrify KDE and GNOME _(Mihael Pranjić)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
 - Elektrify XFCE _(Richard Stöckl @Eiskasten)_
 - Mounting SQL databases _(Florian Lindner @flo91)_
 - Recording Configuration _(Maximilian Irlinger)_

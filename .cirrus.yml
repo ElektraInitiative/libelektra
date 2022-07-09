@@ -165,10 +165,10 @@ task:
 
   script:
     - | # Use latest version of LLVM to translate Elektra
-      export CC="/usr/local/opt/llvm/bin/clang" CXX="/usr/local/opt/llvm/bin/clang++"
-      export LDFLAGS="-L/usr/local/opt/llvm/lib"
-      export CPPFLAGS="-I/usr/local/opt/llvm/include"
-      export PATH="/usr/local/opt/llvm/bin:$PATH"
+      export CC="$(brew --prefix llvm)/bin/clang" CXX="$(brew --prefix llvm)/bin/clang++"
+      export LDFLAGS="-L$(brew --prefix llvm)/lib"
+      export CPPFLAGS="-I$(brew --prefix llvm)/include"
+      export PATH="$(brew --prefix llvm)/bin:$PATH"
     - >
       set --
       -DBINDINGS="${BINDINGS:-ALL}"
