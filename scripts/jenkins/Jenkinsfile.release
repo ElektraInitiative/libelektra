@@ -1096,7 +1096,7 @@ def buildAndPublishMaven() {
           }
           dir('src/bindings/jna') {
             sh """\
-gradle -i -PreleaseVersion=${mavenReleaseVersion} \
+gradle --debug --full-stacktrace -PreleaseVersion=${mavenReleaseVersion} \
 -PsonatypeUsername=${SONATYPE_USERNAME} -PsonatypePassword=${SONATYPE_PASSWORD} \
 -Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" \
 publishToSonatype closeAndReleaseSonatypeStagingRepository"""
