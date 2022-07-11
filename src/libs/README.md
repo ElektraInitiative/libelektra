@@ -1,5 +1,7 @@
 # elektra-libs(7) -- libs overview
 
+> **Note:** Some information in this document is outdated and will change before the release of Elektra 1.0.
+
 ## Highlevel APIs
 
 ### Highlevel
@@ -25,8 +27,6 @@ Usage examples:
 - [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
 
 ## Base Elektra Libraries
-
-_Outdated_
 
 Since version **0.8.15** **[libelektra](elektra/)**
 is split into following libraries:

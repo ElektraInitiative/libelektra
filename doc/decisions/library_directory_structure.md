@@ -13,12 +13,19 @@ Furthermore, we need to allow rust source to exist in parallel.
 
 ## Considered Alternatives
 
+- One folder per language, then split by code type (`src/<lang>/plugins`, `src/<lang>/libs`, etc.):
+  - Pro: Makes the per language setup easier, since everything is contained in a single directory and that directory is for a single language, just as if it was any other standalone project in that language.
+  - Con: When navigating the source-code you need to know what language e.g. a plugin is written in to find the correct folder.
+- First split by code type, then one folder per language (`src/plugins/<lang>`, `src/libs/<lang>`, etc.)
+  - Similar to the variant above, but has more downsides. "single folder per language" no longer applies and you still need to know the language to find the folder.
+
 ## Decision
 
 We use this directory tree (YAML syntax for highlighting):
 
 ```yaml
 doc:
+benchmarks:
 examples:
 scripts:
 src:
@@ -55,17 +62,22 @@ System tests that test multiple components live in the `src/tests` folder.
 > (\*) The term "unit test" is used very loosely here.
 > Most tests for e.g. the `kdb` tool will not, strictly speaking, be unit tests, since they don't replace dependencies with mocks/fakes and instead test the whole `kdb` tool.
 
-Benchmarks should be put into a separate git repository.
-They are not necessary for normal development and only create clutter.
-If a benchmark also serves as an example, either a separate example version should be created, or a git submodule may be used.
+For now benchmarks will remain in the top-level `benchmarks` directory, unless there is a language specific reason to have them next to the code they benchmark (like unit-tests).
+In future this may change to facilitate automated performance-regression tests.
 
 ## Rationale
 
-Separating the `src` folder directly by language, allows using the directory structure that best fits the language.
-For example, `src/java` might be organized as a single Gradle project with subprojects (including plugins).
+This setup, allows to find a plugin/library/etc. just by knowing its code type (library/plugin/etc.) and its name.
+At the same time, using language suffixes allows having multiple implementations in different languages.
+Finally, whenever possible there should be project config file in the top-level `src` directory for every language.
+This will improve IDE support and make it possible to treat all code from one language as a single project.
+However, it is important that modularity is not lost in the process.
+It must still be possible to depend on individual libraries in CMake, without having to build everything else that is written in the same language.
+
+Therefore, the top-level project should only exist, if the language allows projects that only include sub-modules.
+Otherwise, fully separate projects for every plugin/library/etc. should be used to preserve modularity.
 
 ## Implications
-
 
 ## Related Decisions
 

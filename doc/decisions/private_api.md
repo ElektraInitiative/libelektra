@@ -4,17 +4,20 @@
 
 Only `libelektra-core` is supposed to access private data, but this contradicts the goal to keep the library minimal.
 `kdbprivate.h` was too generic, it contained many other parts next to the struct definitions of Key/KeySet.
+Theoretically everything in `kdbprivate.h` is supposed to be private, but lots of code still uses it when it shouldn't.
+`kdb.h` is also the only header that is definitely public.
+All other headers are anybody's guess.
 
 ## Constraints
-
-## Assumptions
 
 - The [C99 standard, section 5.2.4.1](http://www.open-std.org/jtc1/sc22/wg14/) gives following limit:
   4095 external identifiers in one translation unit
 
+## Assumptions
+
 ## Considered Alternatives
 
-- keep current situation: Theoretically there is `kdbprivate.h` and everything there is supposed to be private, but lots of code still uses it when it shouldn't. `kdb.h` is also the only header that is definitely public. All other headers are anybody's guess.
+- keep current situation, as described above
 
 ## Decision
 
@@ -22,7 +25,6 @@ Only `libelektra-core` is supposed to access private data, but this contradicts 
   Such libraries need to have a good reason (e.g. performance, impossible otherwise, etc.) why they access non-public API and they need to be kept up-to-date.
   If a library cannot provide a stable API on top of the unstable non-public API, it clearly needs to state which APIs are not stable.
 - Put struct definitions of Key/KeySet in a separate header file, which gets included by parts that need it (see also [Header File Structure](header_file_structure.md)).
-
 
 ## Rationale
 

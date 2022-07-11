@@ -1,8 +1,8 @@
 This folder contains the core libraries of Elektra.
 
-# Content
+> **Note:** Some information in this document is outdated and will change before the release of Elektra 1.0.
 
-_Outdated_
+# Content
 
 Since 0.8.15 this folder
 contains multiple libraries:
