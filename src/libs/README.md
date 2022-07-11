@@ -26,7 +26,7 @@ Usage examples:
 
 ## Base Elektra Libraries
 
-TODO: _Outdated_
+_Outdated_
 
 Since version **0.8.15** **[libelektra](elektra/)**
 is split into following libraries:

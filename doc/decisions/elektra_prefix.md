@@ -32,7 +32,7 @@ Some names, such as kdbOpen, keyNew are so generic that other libraries might al
 
 - Changes in basically every application and tool, but this is automated
   with a refactoring tool @kodebach writes.
-- To be 100% C99 compatible we cannot introduce identifiers which the same 31 character prefix (e.g. `ELEKTRA_WARNING_VALIDATION_SYTACTIC_LEXER` and `ELEKTRA_WARNING_VALIDATION_SYTACTIC_PARSER` would be a problem).
+- To be 100% C99 compatible we cannot introduce identifiers which the same 31 character prefix (e.g. `ELEKTRA_WARNING_VALIDATION_SYNTACTIC_LEXER` and `ELEKTRA_WARNING_VALIDATION_SYNTACTIC_PARSER` would be a problem).
   Otherwise, it is not guaranteed that the code can be compiled with every C99 compiler.
 
 ## Related Decisions

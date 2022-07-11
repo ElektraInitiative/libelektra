@@ -2,7 +2,7 @@ This folder contains the core libraries of Elektra.
 
 # Content
 
-TODO: _Outdated_
+_Outdated_
 
 Since 0.8.15 this folder
 contains multiple libraries:

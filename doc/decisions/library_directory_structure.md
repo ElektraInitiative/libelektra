@@ -7,7 +7,7 @@ Furthermore, we need to allow rust source to exist in parallel.
 
 ## Constraints
 
-- It must be possible to set up include-paths via CMake so that `#include "header.h"` works the same in the build directory and when installed.
+- It must be possible to set up include-paths via CMake so that `#include <elektra/foo/header.h>` works the same in the build directory and when installed.
 
 ## Assumptions
 
@@ -28,7 +28,6 @@ src:
     core-c: C implementation of libelektra-core.so
     core-rust: Rust implementation of libelektra-core.so
     opts: libelektra-opts.so has only a single implementation, so no suffix
-    mount-c: mounting library written in C
   # plugins and tools use the same suffix idea as above
   plugins:
   tools:
@@ -67,7 +66,6 @@ For example, `src/java` might be organized as a single Gradle project with subpr
 
 ## Implications
 
-- Because there is no single folder for plugins anymore, `src/plugins/README.md` is moved to `doc/PLUGINS.md`.
 
 ## Related Decisions
 
