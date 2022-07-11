@@ -52,9 +52,10 @@ gradle.taskGraph.whenReady { taskGraph ->
         task.inputs.files.each { input ->
             logger.lifecycle("  IF $input")
         }
-        task.inputs.properties.each { input ->
-            logger.lifecycle("  IP $input")
-        }
+
+        // task.inputs.properties.each { input ->
+        //     logger.lifecycle("  IP $input")
+        // }
 
         task.outputs.files.each { output ->
             logger.lifecycle("  OF $output")
