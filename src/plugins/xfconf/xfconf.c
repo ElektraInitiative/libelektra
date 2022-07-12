@@ -77,20 +77,44 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	while (channelKeys != NULL)
 	{
 		char * keyName = elektraStrDup (channelKeys->data);
-		GValue keyValue = G_VALUE_INIT;
-		g_value_init (&keyValue, G_TYPE_STRING);
-		xfconf_channel_get_property (channel, keyName, &keyValue);
-		ELEKTRA_LOG_DEBUG ("found %s -> %s\n", keyName, g_value_get_string (&keyValue));
-		char * absoluteKeyName = elektraMalloc ((elektraStrLen (keyName) + elektraStrLen (parentName)) * sizeof (char *));
+		char * absoluteKeyName = elektraMalloc ((elektraStrLen (keyName) + elektraStrLen (parentName)) * sizeof (char));
 		absoluteKeyName[0] = '\0';
 		strcat (absoluteKeyName, parentName);
 		strcat (absoluteKeyName, keyName);
 		Key * key = keyNew (absoluteKeyName, KEY_END);
+		GPtrArray * array = xfconf_channel_get_arrayv (channel, keyName);
+		if (array != NULL)
+		{
+			ELEKTRA_LOG_DEBUG ("found non-null array with size %d\n", array->len);
+			keySetMeta (key, "array", "");
+			for (guint i = 0; i < array->len; i++)
+			{
+				GValue * val = g_ptr_array_index (array, i);
+				char * arrayKeyName =
+					elektraMalloc ((elektraStrLen (absoluteKeyName) + ELEKTRA_MAX_ARRAY_SIZE + 2) * sizeof (char));
+				arrayKeyName[0] = '\0';
+				strcat (arrayKeyName, absoluteKeyName);
+				arrayKeyName[elektraStrLen (absoluteKeyName) - 1] = '/';
+				elektraWriteArrayNumber (&arrayKeyName[elektraStrLen (absoluteKeyName)], i);
+				Key * arrayKey = keyNew (arrayKeyName, KEY_END);
+				const gchar * arrayKeyValue = g_value_get_string (val);
+				ELEKTRA_LOG_DEBUG ("write to array key %s -> %s\n", arrayKeyName, arrayKeyValue);
+				keySetString (arrayKey, arrayKeyValue); // todo: care about data types
+				ksAppendKey (returned, arrayKey);
+			}
+		}
+		else
+		{
+			GValue keyValue = G_VALUE_INIT;
+			g_value_init (&keyValue, G_TYPE_STRING);
+			xfconf_channel_get_property (channel, keyName, &keyValue);
+			keySetString (key, g_value_get_string (&keyValue)); // todo: care about data types
+			ELEKTRA_LOG_DEBUG ("found %s -> %s\n", keyName, g_value_get_string (&keyValue));
+		}
 		if (xfconf_channel_is_property_locked (channel, keyName))
 		{
 			keyLock (key, KEY_LOCK_META | KEY_LOCK_NAME | KEY_LOCK_VALUE);
 		}
-		keySetString (key, g_value_get_string (&keyValue));
 		ksAppendKey (returned, key);
 		channelKeys = channelKeys->next;
 	}
