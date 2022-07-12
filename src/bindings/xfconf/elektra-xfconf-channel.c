@@ -49,7 +49,7 @@ G_DEFINE_TYPE (XfconfChannel, xfconf_channel, G_TYPE_OBJECT)
 
 static void xfconf_channel_class_init (XfconfChannelClass * klass)
 {
-	unimplemented ();
+	trace ();
 	GObjectClass * object_class = (GObjectClass *) klass;
 
 	object_class->constructor = xfconf_channel_constructor;
@@ -75,7 +75,7 @@ static void xfconf_channel_init (XfconfChannel * instance)
 
 static GObject * xfconf_channel_constructor (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties)
 {
-	unimplemented ();
+	trace ();
 	const gchar * channel_name = NULL;
 	guint i;
 	XfconfChannel * channel = NULL;
@@ -99,7 +99,7 @@ static GObject * xfconf_channel_constructor (GType type, guint n_construct_prope
 
 static void xfconf_channel_set_g_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
 {
-	unimplemented ();
+	trace ();
 	XfconfChannel * channel = XFCONF_CHANNEL (object);
 
 	if (property_id == PROP_CHANNEL_NAME)
@@ -115,7 +115,7 @@ static void xfconf_channel_set_g_property (GObject * object, guint property_id, 
 
 static void xfconf_channel_get_g_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec)
 {
-	unimplemented ();
+	trace ();
 	XfconfChannel * channel = XFCONF_CHANNEL (object);
 
 	if (property_id == PROP_CHANNEL_NAME)
@@ -130,12 +130,13 @@ static void xfconf_channel_get_g_property (GObject * object, guint property_id, 
 
 static void xfconf_channel_dispose (GObject * obj)
 {
-	fprintf (stderr, "dispose\n");
+	trace ();
+	g_debug ("xfconf_channel_dispose");
 }
 
 static void xfconf_channel_finalize (GObject * obj)
 {
-	unimplemented ();
+	trace ();
 	XfconfChannel * channel = XFCONF_CHANNEL (obj);
 	g_free (channel->channel_name);
 	G_OBJECT_CLASS (xfconf_channel_parent_class)->finalize (obj);
@@ -144,12 +145,14 @@ static void xfconf_channel_finalize (GObject * obj)
 
 static gint find_by_name (gconstpointer channel, gconstpointer name)
 {
+	trace ();
 	const XfconfChannel * xfconf_channel = channel;
 	return strcmp (xfconf_channel->channel_name, name);
 }
 
 XfconfChannel * xfconf_channel_get (const gchar * channel_name)
 {
+	trace ();
 	GList * channel_item = g_list_find_custom (channel_list, channel_name, &find_by_name);
 	if (channel_item != NULL)
 	{
@@ -167,7 +170,7 @@ static gint compare_channel (gconstpointer a, gconstpointer b)
 
 XfconfChannel * xfconf_channel_new (const gchar * channel_name)
 {
-	unimplemented ();
+	trace ();
 	XfconfChannel * channel = g_object_new (XFCONF_TYPE_CHANNEL, "channel-name", channel_name, NULL);
 	channel_list = g_list_insert_sorted (channel_list, channel, &compare_channel);
 	return channel;
@@ -180,24 +183,25 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
 
 static GElektraKeySet * keySet_from_channel (const gchar * channel_name)
 {
+	trace ();
 	gchar * key_name = malloc ((strlen (channel_name) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
 	sprintf (key_name, "%s/%s", XFCONF_ROOT, channel_name);
 	GElektraKeySet * key_set = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	GElektraKey * parent_key = gelektra_key_new ("/", GELEKTRA_KEY_END);
-	g_debug ("Fetch keys from parent: %s\n", key_name);
+	g_debug ("Fetch keys from parent: %s", key_name);
 	switch (gelektra_kdb_get (gElektraKdb, key_set, parent_key))
 	{
 	case -1:
-		g_warning ("There was a failure fetching the keys\n");
+		g_warning ("There was a failure fetching the keys");
 		break;
 	case 0:
-		g_debug ("The keyset did not change\n");
+		g_debug ("The keyset did not change");
 		break;
 	case 1:
-		g_debug ("Retrieved the keyset\n");
+		g_debug ("Retrieved the keyset");
 		break;
 	default:
-		g_error ("An unknown error occurred during keyset fetch\n");
+		g_error ("An unknown error occurred during keyset fetch");
 		break;
 	}
 	free (key_name);
@@ -297,36 +301,36 @@ gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * 
  * unsigned int, etc.  no, you can't set arbitrary GTypes. */
 gboolean xfconf_channel_get_property (XfconfChannel * channel, const gchar * property, GValue * value)
 {
-	unimplemented ();
+	trace ();
 	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
 	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
 	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
-	g_debug ("request key %s with type %lu, on channel: %s\n", property, value->g_type, channel->channel_name);
+	g_debug ("request key %s with type %lu, on channel: %s", property, value->g_type, channel->channel_name);
 	Key * cur;
 	KeySet * toWriteKS;
 	Key * toWrite;
-	g_debug ("channel has %zd keys\n", ksGetSize (key_set->keyset));
+	g_debug ("channel has %zd keys", ksGetSize (key_set->keyset));
 	for (elektraCursor it = 0; it < ksGetSize (key_set->keyset); ++it)
 	{
 		cur = ksAtCursor (key_set->keyset, it);
-		g_debug ("found key: %s\n", keyName (cur));
+		g_debug ("found key: %s", keyName (cur));
 	}
 	GElektraKey * key = gelektra_keyset_lookup_byname (key_set, property_name, GELEKTRA_KDB_O_NONE);
 	if (key == NULL)
 	{
-		g_debug ("got null from keyset by looking up %s\n", property_name);
+		g_debug ("got null from keyset by looking up %s", property_name);
 		return FALSE;
 	}
 	value->g_type = G_TYPE_STRING;
 	const gchar * key_value = gelektra_key_string (key);
-	g_debug ("Found value %s to key %s\n", key_value, property_name);
+	g_debug ("Found value %s to key %s", key_value, property_name);
 	g_value_set_string (value, key_value);
 	free (property_name);
 	return TRUE;
 }
 gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * property, const GValue * value)
 {
-	unimplemented ();
+	trace ();
 	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
 	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
 	g_debug ("set key %s with type %lu, on channel: %s", property, value->g_type, channel->channel_name);

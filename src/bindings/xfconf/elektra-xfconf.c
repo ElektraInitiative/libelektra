@@ -8,6 +8,7 @@ GElektraKdb * gElektraKdb = NULL;
 
 gboolean xfconf_init (GError ** error)
 {
+	trace ();
 	GElektraKeySet * empty_set = gelektra_keyset_new (0);
 	GElektraKey * elektra_error = gelektra_key_new ("/elektra_error", KEY_END);
 	gElektraKdb = gelektra_kdb_open (empty_set, elektra_error);
@@ -20,6 +21,7 @@ gboolean xfconf_init (GError ** error)
 }
 void xfconf_shutdown (void)
 {
+	trace ();
 	g_list_free (channel_list);
 }
 
