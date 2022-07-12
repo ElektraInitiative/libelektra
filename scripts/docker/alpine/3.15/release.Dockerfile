@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM alpine:3.15.0
+FROM alpine:3.15.4
 
 RUN apk update \
     && apk add --no-cache --upgrade\
@@ -65,7 +65,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.15.0
+FROM alpine:3.15.4
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
@@ -87,7 +87,7 @@ RUN apk del \
         libgit2-dev \
         yajl-dev \
         yaml-cpp-dev \
-        && rm -rf /var/cache/apk/*
+        && rm -rf /var/cache/apk/* && rm -rf /home/elektra/.config && rm -rf /home/elektra/.cache
 
 RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
