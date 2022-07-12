@@ -46,6 +46,6 @@ kdb set /test/xfwm/general/button_layout "$OLD_LAYOUT"
 ## Limitations
 
 - usage of a dummy file such as `/dev/null`
+- xfconf locks can only be read but not set as this is not possible in xfconf
 - arrays are not implemented yet
-- xfconf locks are not implemented yet
 - comments and sorting are not implemented due the lack of both in xfconf

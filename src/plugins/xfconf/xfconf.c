@@ -86,6 +86,10 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 		strcat (absoluteKeyName, parentName);
 		strcat (absoluteKeyName, keyName);
 		Key * key = keyNew (absoluteKeyName, KEY_END);
+		if (xfconf_channel_is_property_locked (channel, keyName))
+		{
+			keyLock (key, KEY_LOCK_META | KEY_LOCK_NAME | KEY_LOCK_VALUE);
+		}
 		keySetString (key, g_value_get_string (&keyValue));
 		ksAppendKey (returned, key);
 		channelKeys = channelKeys->next;
