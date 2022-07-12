@@ -331,12 +331,18 @@ gboolean xfconf_channel_get_property (XfconfChannel * channel, const gchar * pro
 gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * property, const GValue * value)
 {
 	trace ();
-	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
 	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
 	g_debug ("set key %s with type %lu, on channel: %s", property, value->g_type, channel->channel_name);
 	GElektraKey * key = gelektra_key_new (property_name, GELEKTRA_KEY_END);
 	g_debug ("set %s to %s", property_name, (gchar *) value->data->v_pointer);
-	return gelektra_key_setstring (key, value->data->v_pointer) > 0;
+	gelektra_key_setstring (key, value->data->v_pointer);
+	GElektraKeySet * key_set = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+	gelektra_keyset_append (key_set, key);
+	gchar * parent_key_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	sprintf (parent_key_name, "%s/%s", XFCONF_ROOT, channel->channel_name);
+	GElektraKey * parent_key = gelektra_key_new (parent_key_name, GELEKTRA_KEY_END);
+	return gelektra_kdb_set (gElektraKdb, key_set, parent_key) >= 0;
 }
 
 /* array types - arrays can be made up of values of arbitrary
