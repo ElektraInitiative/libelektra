@@ -327,6 +327,12 @@ gboolean xfconf_channel_get_property (XfconfChannel * channel, const gchar * pro
 gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * property, const GValue * value)
 {
 	unimplemented ();
+	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
+	g_debug ("set key %s with type %lu, on channel: %s", property, value->g_type, channel->channel_name);
+	GElektraKey * key = gelektra_key_new (property_name, GELEKTRA_KEY_END);
+	g_debug ("set %s to %s", property_name, (gchar *) value->data->v_pointer);
+	return gelektra_key_setstring (key, value->data->v_pointer) > 0;
 }
 
 /* array types - arrays can be made up of values of arbitrary
