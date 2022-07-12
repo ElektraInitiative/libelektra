@@ -2,6 +2,8 @@
 #include "elektra-xfconf-util.h"
 #include "elektra-xfconf.h"
 
+#include <gelektra-key.h>
+
 typedef struct XfconfCache XfconfCache;
 struct _XfconfChannel
 {
@@ -176,9 +178,35 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
 	unimplemented ();
 }
 
+static GElektraKeySet * keySet_from_channel (const gchar * channel_name)
+{
+	gchar * key_name = malloc ((strlen (channel_name) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
+	sprintf (key_name, "%s/%s", XFCONF_ROOT, channel_name);
+	GElektraKeySet * key_set = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+	GElektraKey * parent_key = gelektra_key_new ("/", GELEKTRA_KEY_END);
+	g_debug ("Fetch keys from parent: %s\n", key_name);
+	switch (gelektra_kdb_get (gElektraKdb, key_set, parent_key))
+	{
+	case -1:
+		g_warning ("There was a failure fetching the keys\n");
+		break;
+	case 0:
+		g_debug ("The keyset did not change\n");
+		break;
+	case 1:
+		g_debug ("Retrieved the keyset\n");
+		break;
+	default:
+		g_error ("An unknown error occurred during keyset fetch\n");
+		break;
+	}
+	free (key_name);
+	return key_set;
+}
+
 gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * property)
 {
-	unimplemented ();
+	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
 	return FALSE;
 }
 
@@ -270,6 +298,31 @@ gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * 
 gboolean xfconf_channel_get_property (XfconfChannel * channel, const gchar * property, GValue * value)
 {
 	unimplemented ();
+	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
+	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
+	g_debug ("request key %s with type %lu, on channel: %s\n", property, value->g_type, channel->channel_name);
+	Key * cur;
+	KeySet * toWriteKS;
+	Key * toWrite;
+	g_debug ("channel has %zd keys\n", ksGetSize (key_set->keyset));
+	for (elektraCursor it = 0; it < ksGetSize (key_set->keyset); ++it)
+	{
+		cur = ksAtCursor (key_set->keyset, it);
+		g_debug ("found key: %s\n", keyName (cur));
+	}
+	GElektraKey * key = gelektra_keyset_lookup_byname (key_set, property_name, GELEKTRA_KDB_O_NONE);
+	if (key == NULL)
+	{
+		g_debug ("got null from keyset by looking up %s\n", property_name);
+		return FALSE;
+	}
+	value->g_type = G_TYPE_STRING;
+	const gchar * key_value = gelektra_key_string (key);
+	g_debug ("Found value %s to key %s\n", key_value, property_name);
+	g_value_set_string (value, key_value);
+	free (property_name);
+	return TRUE;
 }
 gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * property, const GValue * value)
 {
