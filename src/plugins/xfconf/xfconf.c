@@ -141,28 +141,54 @@ int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
 		Key * cur = ksNext (returned);
-		const char * keyName = elektraKeyGetRelativeName (cur, parentKey);
-		if (keyName == NULL)
+		const char * currentKeyName = elektraKeyGetRelativeName (cur, parentKey);
+		if (currentKeyName == NULL)
 		{
 			// happens for the root key which holds the channel name
-			ELEKTRA_LOG_DEBUG ("keyName is null!\n");
+			ELEKTRA_LOG_DEBUG ("currentKeyName is null!\n");
 			continue;
 		}
-		char * xfconfKeyName = elektraMalloc ((elektraStrLen (keyName) + 2) * sizeof (char *));
+		char * xfconfKeyName = elektraMalloc ((elektraStrLen (currentKeyName) + 2) * sizeof (char *));
 		xfconfKeyName[0] = '/';
-		strncpy (&xfconfKeyName[1], keyName, elektraStrLen (keyName));
+		strncpy (&xfconfKeyName[1], currentKeyName, elektraStrLen (currentKeyName));
 		ELEKTRA_LOG_DEBUG ("setting key %s to %s\n", xfconfKeyName, keyString (cur));
-		GValue keyValue = G_VALUE_INIT;
-		if (!xfconf_channel_get_property (channel, xfconfKeyName, &keyValue))
+		if (keyGetMeta (cur, "array") != NULL)
 		{
-			ELEKTRA_LOG_DEBUG ("key was not found, initialize a new one of type string\n");
-			g_value_init (&keyValue, G_TYPE_STRING);
+			ELEKTRA_LOG_DEBUG ("key %s is an array\n", xfconfKeyName);
+			KeySet * arrayKeySet = elektraArrayGet (cur, returned);
+			Key * arrayKey;
+			GPtrArray * xfconfArray = g_ptr_array_new ();
+			for (elektraCursor arrayIt = 0; it < ksGetSize (arrayKeySet); ++arrayIt)
+			{
+				arrayKey = ksNext (arrayKeySet);
+				gchar * itemValue = elektraStrDup (keyString (arrayKey));
+				keyDel (arrayKey);
+				ELEKTRA_LOG_DEBUG ("found array value %s\n", itemValue);
+				GValue keyValue = G_VALUE_INIT;
+				g_value_init (&keyValue, G_TYPE_STRING);
+				g_value_set_string (&keyValue, itemValue);
+				g_ptr_array_add (xfconfArray, &keyValue); //todo: determine item types, they throw critical errors
+			}
+			if (!xfconf_channel_set_arrayv (channel, xfconfKeyName, xfconfArray))
+			{
+				ELEKTRA_LOG_DEBUG ("unable to set array value\n");
+			}
 		}
-		ELEKTRA_LOG_DEBUG ("key is of type: %lu\n", keyValue.g_type);
-		g_value_set_string (&keyValue, keyString (cur));
-		if (!xfconf_channel_set_property (channel, xfconfKeyName, &keyValue))
+		else
 		{
-			ELEKTRA_LOG_DEBUG ("unable to set value\n");
+			ELEKTRA_LOG_DEBUG ("key %s is a single value\n", xfconfKeyName);
+			GValue keyValue = G_VALUE_INIT;
+			if (!xfconf_channel_get_property (channel, xfconfKeyName, &keyValue))
+			{
+				ELEKTRA_LOG_DEBUG ("key was not found, initialize a new one of type string\n");
+				g_value_init (&keyValue, G_TYPE_STRING);
+			}
+			ELEKTRA_LOG_DEBUG ("key is of type: %lu\n", keyValue.g_type);
+			g_value_set_string (&keyValue, keyString (cur));
+			if (!xfconf_channel_set_property (channel, xfconfKeyName, &keyValue))
+			{
+				ELEKTRA_LOG_DEBUG ("unable to set value\n");
+			}
 		}
 	}
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
