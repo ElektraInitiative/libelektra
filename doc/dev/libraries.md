@@ -68,7 +68,7 @@
 
 - `libelektra-ease`:
   A collection of various other APIs that help when interacting with `ElektraKey` and `ElektraKeyset`.
-  Contains APIs that are not large, specific, or complex enough to justify a separate library and not minimal enough for `libelektra-core`, but can be implemented on top of the public API.
+  Contains APIs that are not specific enough to justify a separate library and not minimal enough for `libelektra-core`, but can be implemented on top of the public API.
   The APIs should not specifically target C and should be usable via bindings (if appropriate for the other language).
 
   **Prefix:** `elektra*`
@@ -76,9 +76,14 @@
 
 - `libelektra-operations`:
   Like `libelektra-ease`, this library contains various additional `ElektraKey` and `ElektraKeyset` APIs beyond the minimal API.
-  However, these APIs specifically need access to private APIs of `libelektra-core` to be implemented (efficiently).
+  However, these APIs may need access to private APIs of `libelektra-core` to be implemented (efficiently).
   The APIs should not specifically target C and should be usable via bindings (if appropriate for the other language).
   All APIs must abstract over unstable details of private APIs and provide a stable API, or **very clearly** state the stability restrictions.
 
+  Importantly, the distinction between `libelektra-ease` and `libelektra-operations` **is not** whether access to private APIs is needed.
+  `libelektra-operations` is intended for use by most applications, plugins, tools, etc. while `libelektra-ease` should be used less often and serves more niche use cases.
+  For example: `elektraKeysetCut`/`elektraKeysetFindHierarchy` from `libelektra-operations` can be useful in many plugins and applications.
+  `elektraKeysetSortTopological` from `libelektra-ease` on the other hand serves a very niche use case.
+
   **Prefix:** `elektra*`
-  (Note: rest of `libelektra-ease`, merged with `libelektra-meta` & `libelektra-utility`, plus some stuff from old core; cleanup needed)
+  (Note: includes `elektraKeysetCut`, etc.; may also include stuff from old `libelektra-ease` or `libelektra-meta`)
