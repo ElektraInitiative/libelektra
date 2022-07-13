@@ -16,8 +16,6 @@ Keep (at least) the same functionality
 
 ## Considered Alternatives
 
-- keep the merged function within `libelektra-core`
-
 ## Decision
 
 Merge `keyIsBelow` with `keyIsBelowOrSame` and `keyIsDirectlyBelow` to create this new API:
@@ -46,18 +44,10 @@ The replacements for the old functions are:
 - keyIsBelowOrSame: `keyIsBelow >= 0`
 - keyIsDirectlyBelow: `keyIsBelow == 1`
 
-The new function will be available as part of `libelektra-operations` (see [Operations Library](operations_library.md)).
-
 ## Rationale
-
-The function is required for a minimal API, but it needs access to private API to be efficient.
-Therefore, it is part of the operations library.
 
 ## Implications
 
 ## Related Decisions
-
-- [Operations Library](operations_library.md)
-- [Lowlevel Library](lowlevel_library.md)
 
 ## Notes

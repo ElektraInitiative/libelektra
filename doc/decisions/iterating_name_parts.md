@@ -16,7 +16,7 @@ No changes to the underlying APIs, while maintaining reasonable performance.
 
 ## Decision
 
-Add this new function to `libelektra-operations` (see [Operations Library](operations_library.md)):
+Add this new function to a separate library (name TBD):
 
 ```c
 /**
@@ -51,7 +51,5 @@ The function is not required for a minimal API, but it is useful for people who 
 ## Implications
 
 ## Related Decisions
-
-- [Operations Library](operations_library.md)
 
 ## Notes
