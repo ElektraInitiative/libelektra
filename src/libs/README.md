@@ -1,5 +1,7 @@
 # elektra-libs(7) -- libs overview
 
+> **Note:** Some information in this document is outdated and will change before the release of Elektra 1.0.
+
 ## Highlevel APIs
 
 ### Highlevel
@@ -26,7 +28,7 @@ Usage examples:
 
 ## Base Elektra Libraries
 
-Since version **[0.8.15](/doc/decisions/library_split.md)** **[libelektra](elektra/)**
+Since version **0.8.15** **[libelektra](elektra/)**
 is split into following libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
