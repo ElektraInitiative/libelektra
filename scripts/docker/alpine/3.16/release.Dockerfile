@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM alpine:3.15.4
+FROM alpine:3.16.0
 
 RUN apk update \
     && apk add --no-cache --upgrade\
@@ -11,6 +11,7 @@ RUN apk update \
         cmake \
         curl \
         git \
+        gtest-dev \
         libgit2 \
         libgit2-dev \
         ninja \
@@ -20,14 +21,8 @@ RUN apk update \
         yaml-cpp \
         yaml-cpp-dev
 
-ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.11.0
-RUN mkdir -p ${GTEST_ROOT} \
-    && cd /tmp \
-    && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
-    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
-    && rm gtest.tar.gz
+# Google Test
+ENV GTEST_ROOT=/usr/include/gtest
 
 ENV ELEKTRA_ROOT=/opt/elektra
 ENV ELEKTRA_RELEASE=0.9.10
@@ -65,7 +60,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.15.4
+FROM alpine:3.16.0
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
