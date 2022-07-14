@@ -166,6 +166,13 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+### Rust
+
+- start again to publish on crates.io _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ## Tools
 
 ### <<Tool>>
