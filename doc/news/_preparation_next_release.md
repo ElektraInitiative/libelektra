@@ -332,7 +332,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Bump Alpine Linux to 3.16.0. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
