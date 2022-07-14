@@ -11,7 +11,6 @@ RUN apk update \
         cmake \
         curl \
         git \
-        gtest-dev \
         libgit2 \
         libgit2-dev \
         ninja \
@@ -22,7 +21,14 @@ RUN apk update \
         yaml-cpp-dev
 
 # Google Test
-ENV GTEST_ROOT=/usr/include/gtest
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=release-1.11.0
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 ENV ELEKTRA_ROOT=/opt/elektra
 ENV ELEKTRA_RELEASE=0.9.10
