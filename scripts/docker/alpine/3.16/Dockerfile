@@ -1,4 +1,4 @@
-FROM alpine:3.15.4
+FROM alpine:3.16.0
 
 RUN apk update \
     && apk add --no-cache \
@@ -10,7 +10,6 @@ RUN apk update \
         file \
         flex \
         git \
-        gtest-dev \
         ninja \
         yaml-cpp-dev \
 	py3-pip
@@ -19,7 +18,14 @@ RUN apk update \
 RUN pip3 install wheel
 
 # Google Test
-ENV GTEST_ROOT=/usr/include/gtest
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=release-1.12.1
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

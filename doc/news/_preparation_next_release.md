@@ -260,7 +260,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Use GoogleTest framework v1.12.1. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -325,7 +325,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Bump Alpine Linux to 3.16.0. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

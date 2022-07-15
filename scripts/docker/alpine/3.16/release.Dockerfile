@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM alpine:3.15.4
+FROM alpine:3.16.0
 
 RUN apk update \
     && apk add --no-cache --upgrade\
@@ -20,8 +20,9 @@ RUN apk update \
         yaml-cpp \
         yaml-cpp-dev
 
+# Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.11.0
+ARG GTEST_VER=release-1.12.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -65,7 +66,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.15.4
+FROM alpine:3.16.0
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
