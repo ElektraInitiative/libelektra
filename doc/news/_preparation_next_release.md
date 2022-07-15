@@ -412,6 +412,11 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
+- Add shellcheck to Debian containers. _(@0x6178656c)_
+- Use `openjdk-17-jdk` in Debian Sid. _(Maximilian Irlinger @atmaxinger)_
+- Bump Alpine Linux to 3.16.0. _(Mihael Pranjić @mpranj)_
+- The Docker image for building the documentation is now [based on Debian Bullseye](../../scripts/docker/debian/bullseye/doc.Dockerfile). _(Maximilian Irlinger @atmaxinger)_
+- Add Ubuntu Jammy Jellyfish (22.04 LTS) images. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -431,6 +436,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- We no longer build and test on Ubuntu Xenial and Debian Stretch due to outdated CMake versions _(Maximilian Irlinger @atmaxinger)_
+- Add Ubuntu Jammy Jellyfish builds and drop Bionic builds. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
