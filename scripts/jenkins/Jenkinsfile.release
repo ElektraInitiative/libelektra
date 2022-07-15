@@ -195,10 +195,10 @@ def dockerInit() {
       './scripts/docker/ubuntu/focal/Dockerfile'
     )
 
-    DOCKER_IMAGES.bionic = dockerUtils.createDockerImageDesc(
-      'ubuntu-bionic', dockerUtils.&idTesting,
-      './scripts/docker/ubuntu/bionic',
-      './scripts/docker/ubuntu/bionic/Dockerfile'
+    DOCKER_IMAGES.jammy = dockerUtils.createDockerImageDesc(
+      'jammy-bionic', dockerUtils.&idTesting,
+      './scripts/docker/ubuntu/jammy',
+      './scripts/docker/ubuntu/jammy/Dockerfile'
     )
 
     DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
@@ -241,10 +241,10 @@ def dockerInit() {
       false
     )
 
-    DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
-      'ubuntu-bionic-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/package/bionic/',
-      './scripts/docker/ubuntu/bionic/package.Dockerfile',
+    DOCKER_IMAGES.jammy_installed = dockerUtils.createDockerImageDesc(
+      'ubuntu-jammy-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/package/jammy/',
+      './scripts/docker/ubuntu/jammy/package.Dockerfile',
       false
     )
 
@@ -292,10 +292,10 @@ def dockerInit() {
       false
     )
 
-    DOCKER_IMAGES.bionic_release = createDockerImageDescForRelease(
+    DOCKER_IMAGES.jammy_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/package/bionic/',
-      './scripts/docker/ubuntu/bionic/release.Dockerfile',
+      './release-artifact/*/package/jammy/',
+      './scripts/docker/ubuntu/jammy/release.Dockerfile',
       false
     )
 
@@ -392,8 +392,8 @@ def generateReleaseStages() {
   )
 
   tasks << buildRelease(
-    'ubuntu-bionic',
-    DOCKER_IMAGES.bionic,
+    'ubuntu-jammy',
+    DOCKER_IMAGES.jammy,
     params.ubuntu_revision
   )
 
@@ -438,8 +438,8 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     'ubuntu-focal'
   )
   tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.bionic_installed,
-    'ubuntu-bionic'
+    DOCKER_IMAGES.jammy_installed,
+    'ubuntu-jammy'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.fedora_36_installed,
@@ -478,8 +478,8 @@ def generateInstalledPackagesTestStages() {
     DOCKER_IMAGES.focal_installed
   )
   tasks << testInstalledPackage(
-    'ubuntu-bionic-installed',
-    DOCKER_IMAGES.bionic_installed
+    'ubuntu-jammy-installed',
+    DOCKER_IMAGES.jammy_installed
   )
   tasks << testInstalledPackage(
     'fedora-36-installed',
@@ -568,10 +568,10 @@ def generateDebPackagePublishStages() {
   )
 
   tasks << publish(
-    'ubuntu-bionic',
-    'bionic',
-    'bionic',
-    'bionic',
+    'ubuntu-jammy',
+    'jammy',
+    'jammy',
+    'jammy',
     release.&publishDebPackages,
     params.ubuntu_revision
   )
@@ -720,10 +720,10 @@ def generateImageUploadStages() {
     'focal'
   )
   tasks << publishImage(
-    DOCKER_IMAGES.bionic_release,
-    'ubuntu-bionic',
+    DOCKER_IMAGES.jammy_release,
+    'ubuntu-jammy',
     ubuntu_revision,
-    'bionic'
+    'jammy'
   )
   tasks << publishImage(
     DOCKER_IMAGES.fedora_36_release,

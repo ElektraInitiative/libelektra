@@ -225,8 +225,8 @@ def dockerInit() {
 
     /* We use the sid image for testing if we are compatible with Debian
      * unstable.
-     * Additionally we use it for tests with Clang-6.0 and for source
-     * formatting checks (as they depend on Clang-6.0).
+     * Additionally we use it for tests with Clang and for source
+     * formatting checks (as they depend on Clang).
      */
     DOCKER_IMAGES.sid = dockerUtils.createDockerImageDesc(
       "debian-sid", dockerUtils.&idTesting,
@@ -309,18 +309,21 @@ def dockerInit() {
       "./scripts/docker/alpine/3.17/Dockerfile"
     )
 
-    DOCKER_IMAGES.bionic = dockerUtils.createDockerImageDesc(
-      "bionic", dockerUtils.&idTesting,
-      "./scripts/docker/ubuntu/bionic",
-      "./scripts/docker/ubuntu/bionic/Dockerfile"
-    )
-
+    /* Ubuntu Focal Fossa image*/
     DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
       "focal", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/focal",
       "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
+    /* Ubuntu Jammy Jellyfish image*/
+    DOCKER_IMAGES.jammy = dockerUtils.createDockerImageDesc(
+      "jammy", dockerUtils.&idTesting,
+      "./scripts/docker/ubuntu/jammy",
+      "./scripts/docker/ubuntu/jammy/Dockerfile"
+    )
+
+    /* Fedora 36 image*/
     DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
       "fedora-36", dockerUtils.&idTesting,
       "./scripts/docker/fedora/36",
@@ -394,7 +397,7 @@ def dockerInit() {
       false
     )
 
-    /* Ubuntu focal image used to install previously built packages */
+    /* Ubuntu Focal Fossa image used to install previously built packages */
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
       "ubuntu-focal-installed", dockerUtils.&idArtifact,
       "./build/package",
@@ -402,11 +405,11 @@ def dockerInit() {
       false
     )
 
-    /* Ubuntu bionic image used to install previously built packages */
-    DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
-      "ubuntu-bionic-installed", dockerUtils.&idArtifact,
+    /* Ubuntu Jammy Jellyfish image used to install previously built packages */
+    DOCKER_IMAGES.jammy_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-jammy-installed", dockerUtils.&idArtifact,
       "./build/package",
-      "./scripts/docker/ubuntu/bionic/release.Dockerfile",
+      "./scripts/docker/ubuntu/jammy/release.Dockerfile",
       false
     )
 
@@ -644,6 +647,14 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_STATIC + [
       'PLUGINS': 'ALL;-date',
     ],
+    [TEST.ALL]
+  )
+
+  // Build Elektra on Ubuntu Jammy Jellyfish
+  tasks << buildAndTest(
+    "ubuntu-jammy",
+    DOCKER_IMAGES.jammy,
+    CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL]
   )
 
@@ -1127,20 +1138,20 @@ def generateArtifactStages() {
     this.&updateDebianChangelog
   )
   tasks << buildPackage(
-    "buildPackage/ubuntu/bionic",
-    DOCKER_IMAGES.bionic,
-    "bionic-unstable",
-    "bionic",
-    DOCKER_IMAGES.bionic_installed,
-    release.&publishDebPackages,
-    this.&updateDebianChangelog
-  )
-  tasks << buildPackage(
     "buildPackage/ubuntu/focal",
     DOCKER_IMAGES.focal,
     "focal-unstable",
     "focal",
     DOCKER_IMAGES.focal_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/ubuntu/jammy",
+    DOCKER_IMAGES.jammy,
+    "jammy-unstable",
+    "jammy",
+    DOCKER_IMAGES.jammy_installed,
     release.&publishDebPackages,
     this.&updateDebianChangelog
   )
