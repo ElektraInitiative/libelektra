@@ -156,11 +156,14 @@ static ChannelKeySetPair * find_or_create_channel_pair (const gchar * channel_na
 	GList * channel_item = g_list_find_custom (channel_list, channel_name, &find_pair_by_name);
 	if (channel_item != NULL)
 	{
+		g_debug ("ChannelKeySetPair for channel %s already exists, returning it", channel_name);
 		return channel_item->data;
 	}
+	g_debug ("ChannelKeySetPair for channel %s does not exist, creating it", channel_name);
 	ChannelKeySetPair * channel_pair = malloc (sizeof (ChannelKeySetPair));
 	channel_pair->channel = xfconf_channel_new (channel_name);
 	channel_pair->keySet = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+	channel_list = g_list_append (channel_list, channel_pair); // todo: care about sorting to ensure better performance
 	return channel_pair;
 }
 
@@ -213,10 +216,12 @@ static GElektraKeySet * keySet_from_channel (const gchar * channel_name)
 		g_error ("An unknown error occurred during keyset fetch");
 	}
 	GElektraKey * cur;
-	for (gssize i = 0; i < gelektra_keyset_len (channel_pair->keySet); i++)
+	gssize key_set_size = gelektra_keyset_len (channel_pair->keySet);
+	g_debug ("KeySet has %ld keys", key_set_size);
+	for (gssize i = 0; i < key_set_size; i++)
 	{
 		cur = gelektra_keyset_at (channel_pair->keySet, i);
-		g_debug ("oag, found key: %s", gelektra_key_name (cur));
+		g_debug ("Found key: %s", gelektra_key_name (cur));
 	}
 	free (key_name);
 	return channel_pair->keySet;
