@@ -231,7 +231,12 @@ gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * pro
 {
 	trace ();
 	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
-	return FALSE;
+	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
+	g_debug ("request key %s on channel: %s which has %zd keys", property, channel->channel_name, gelektra_keyset_len (key_set));
+	GElektraKey * key = gelektra_keyset_lookup_byname (key_set, property_name, GELEKTRA_KDB_O_NONE);
+	g_debug ("channel %s has key %s: %d", channel->channel_name, property_name, key != NULL);
+	return key != NULL;
 }
 
 gboolean xfconf_channel_is_property_locked (XfconfChannel * channel, const gchar * property)
