@@ -8,5 +8,12 @@
 #define XFCONF_ROOT "/sw/xfce4"
 
 extern GList * channel_list;
+extern GElektraKdb * gElektraKdb;
+
+typedef struct
+{
+	XfconfChannel * channel;
+	GElektraKeySet * keySet;
+} ChannelKeySetPair;
 
 #endif

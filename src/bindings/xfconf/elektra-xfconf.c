@@ -4,13 +4,13 @@
 #include <gelektra-key.h>
 
 GList * channel_list = NULL;
+GElektraKdb * gElektraKdb = NULL;
 
 gboolean xfconf_init (GError ** error)
 {
 	trace ();
-	GElektraKeySet * empty_set = gelektra_keyset_new (0);
 	GElektraKey * elektra_error = gelektra_key_new ("/elektra_error", KEY_END);
-	GElektraKdb * gElektraKdb = gelektra_kdb_open (NULL, elektra_error);
+	gElektraKdb = gelektra_kdb_open (NULL, elektra_error);
 	if (gElektraKdb == NULL)
 	{
 		g_debug ("unable to open gelektraKdb");
