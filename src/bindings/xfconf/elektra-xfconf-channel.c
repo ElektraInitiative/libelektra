@@ -227,6 +227,45 @@ static GElektraKeySet * keySet_from_channel (const gchar * channel_name)
 	return channel_pair->keySet;
 }
 
+/**
+ * Sets a value which is already formatted as a string.
+ * @param channel the channel to store the value in
+ * @param property the name of the key which should be set
+ * @param value the string formatted value to set
+ * @param g_type the type of the value, will be set as meta-key
+ * @return
+ */
+static gboolean xfconf_channel_set_formatted (XfconfChannel * channel, const gchar * property, const gchar * value, GType g_type)
+{
+	trace ();
+	if (!channel)
+	{
+		g_debug ("cannot proceed with null channel");
+		return FALSE;
+	}
+	if (!property)
+	{
+		g_debug ("cannot proceed with null property");
+		return FALSE;
+	}
+	gchar * property_name =
+		malloc ((strlen (XFCONF_NAMESPACE) + strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) *
+			sizeof (char));
+	sprintf (property_name, "%s%s/%s%s", XFCONF_NAMESPACE, XFCONF_ROOT, channel->channel_name, property);
+	GElektraKey * key = gelektra_key_new (property_name, GELEKTRA_KEY_END);
+	g_debug ("set %s to %s (type %lu) on channel: %s", property_name, value, g_type, channel->channel_name);
+	gelektra_key_setstring (key, value);
+	gelektra_key_setmeta (key, XFCONF_GTYPE_META_NAME, g_type_name (g_type));
+	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
+	gelektra_keyset_append (key_set, key);
+	gchar * parent_key_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	sprintf (parent_key_name, "%s/%s", XFCONF_ROOT, channel->channel_name);
+	GElektraKey * parent_key = gelektra_key_new (parent_key_name, GELEKTRA_KEY_END);
+	gint result_code = gelektra_kdb_set (gElektraKdb, key_set, parent_key);
+	g_debug ("storing key set for parent key %s returned %d", parent_key_name, result_code);
+	return result_code >= 0;
+}
+
 gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * property)
 {
 	trace ();
@@ -263,13 +302,7 @@ gchar * xfconf_channel_get_string (XfconfChannel * channel, const gchar * proper
 gboolean xfconf_channel_set_string (XfconfChannel * channel, const gchar * property, const gchar * value)
 {
 	trace ();
-	GValue g_value = G_VALUE_INIT;
-	g_debug ("after decl");
-	g_value_init (&g_value, G_TYPE_STRING);
-	g_debug ("after init");
-	g_value_set_string (&g_value, value);
-	g_debug ("after set str");
-	return xfconf_channel_set_property (channel, property, &g_value);
+	return xfconf_channel_set_formatted (channel, property, value, G_TYPE_STRING);
 }
 
 gint32 xfconf_channel_get_int (XfconfChannel * channel, const gchar * property, gint32 default_value)
@@ -277,6 +310,15 @@ gint32 xfconf_channel_get_int (XfconfChannel * channel, const gchar * property, 
 	unimplemented ();
 }
 gboolean xfconf_channel_set_int (XfconfChannel * channel, const gchar * property, gint32 value)
+{
+	unimplemented ();
+}
+
+static gint64 xfconf_channel_get_int64 (XfconfChannel * channel, const gchar * property, gint64 default_value)
+{
+	unimplemented ();
+}
+static gboolean xfconf_channel_set_int64 (XfconfChannel * channel, const gchar * property, gint64 value)
 {
 	unimplemented ();
 }
@@ -295,6 +337,33 @@ guint64 xfconf_channel_get_uint64 (XfconfChannel * channel, const gchar * proper
 	unimplemented ();
 }
 gboolean xfconf_channel_set_uint64 (XfconfChannel * channel, const gchar * property, guint64 value)
+{
+	unimplemented ();
+}
+
+static glong xfconf_channel_get_long (XfconfChannel * channel, const gchar * property, glong default_value)
+{
+	unimplemented ();
+}
+static gboolean xfconf_channel_set_long (XfconfChannel * channel, const gchar * property, glong value)
+{
+	unimplemented ();
+}
+
+static gulong xfconf_channel_get_ulong (XfconfChannel * channel, const gchar * property, gulong default_value)
+{
+	unimplemented ();
+}
+static gboolean xfconf_channel_set_ulong (XfconfChannel * channel, const gchar * property, gulong value)
+{
+	unimplemented ();
+}
+
+static gfloat xfconf_channel_get_float (XfconfChannel * channel, const gchar * property, gfloat default_value)
+{
+	unimplemented ();
+}
+static gboolean xfconf_channel_set_float (XfconfChannel * channel, const gchar * property, gfloat value)
 {
 	unimplemented ();
 }
@@ -355,22 +424,33 @@ gboolean xfconf_channel_get_property (XfconfChannel * channel, const gchar * pro
 gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * property, const GValue * value)
 {
 	trace ();
-	gchar * property_name =
-		malloc ((strlen (XFCONF_NAMESPACE) + strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) *
-			sizeof (char));
-	sprintf (property_name, "%s%s/%s%s", XFCONF_NAMESPACE, XFCONF_ROOT, channel->channel_name, property);
-	g_debug ("set key %s with type %lu, on channel: %s", property, value->g_type, channel->channel_name);
-	GElektraKey * key = gelektra_key_new (property_name, GELEKTRA_KEY_END);
-	g_debug ("set %s to %s", property_name, (gchar *) value->data->v_pointer);
-	gelektra_key_setstring (key, value->data->v_pointer);
-	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
-	gelektra_keyset_append (key_set, key);
-	gchar * parent_key_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
-	sprintf (parent_key_name, "%s/%s", XFCONF_ROOT, channel->channel_name);
-	GElektraKey * parent_key = gelektra_key_new (parent_key_name, GELEKTRA_KEY_END);
-	gint result_code = gelektra_kdb_set (gElektraKdb, key_set, parent_key);
-	g_debug ("storing key set for parent key %s returned %d", parent_key_name, result_code);
-	return result_code >= 0;
+	if (!value)
+	{
+		g_debug ("try to store a null type, interpret it as a string");
+		return xfconf_channel_set_string (channel, property, NULL);
+	}
+	switch (g_value_get_gtype (value))
+	{
+	case G_TYPE_STRING:
+		return xfconf_channel_set_string (channel, property, g_value_get_string (value));
+	case G_TYPE_BOOLEAN:
+		return xfconf_channel_set_bool (channel, property, g_value_get_boolean (value));
+	case G_TYPE_INT:
+		return xfconf_channel_set_int (channel, property, g_value_get_int (value));
+	case G_TYPE_UINT:
+		return xfconf_channel_set_uint (channel, property, g_value_get_uint (value));
+	case G_TYPE_INT64:
+		return xfconf_channel_set_int64 (channel, property, g_value_get_int64 (value));
+	case G_TYPE_UINT64:
+		return xfconf_channel_set_uint64 (channel, property, g_value_get_uint64 (value));
+	case G_TYPE_FLOAT:
+		return xfconf_channel_set_float (channel, property, g_value_get_float (value));
+	case G_TYPE_DOUBLE:
+		return xfconf_channel_set_double (channel, property, g_value_get_double (value));
+	default:
+		g_warning ("Unrecognized type: %s", g_type_name (g_value_get_gtype (value)));
+		return FALSE;
+	}
 }
 
 /* array types - arrays can be made up of values of arbitrary
