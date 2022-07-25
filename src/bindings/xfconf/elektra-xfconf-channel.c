@@ -293,6 +293,15 @@ GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar
 	unimplemented ();
 }
 
+static const gchar * g_value_to_string (GValue * g_value)
+{
+	trace ();
+	GValue str = G_VALUE_INIT;
+	g_value_init (&str, G_TYPE_STRING);
+	g_value_transform (g_value, &str);
+	return g_value_get_string (&str);
+}
+
 /* basic types */
 
 gchar * xfconf_channel_get_string (XfconfChannel * channel, const gchar * property, const gchar * default_value)
@@ -383,7 +392,11 @@ gboolean xfconf_channel_get_bool (XfconfChannel * channel, const gchar * propert
 }
 gboolean xfconf_channel_set_bool (XfconfChannel * channel, const gchar * property, gboolean value)
 {
-	unimplemented ();
+	trace ();
+	GValue g_value = G_VALUE_INIT;
+	g_value_init (&g_value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&g_value, value);
+	return xfconf_channel_set_formatted (channel, property, g_value_to_string (&g_value), G_TYPE_BOOLEAN);
 }
 
 /* this is just convenience API for the array stuff, where
@@ -429,7 +442,13 @@ gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * pro
 		g_debug ("try to store a null type, interpret it as a string");
 		return xfconf_channel_set_string (channel, property, NULL);
 	}
-	switch (g_value_get_gtype (value))
+	if (!G_IS_VALUE (value))
+	{
+		g_warning ("THe provided value was not initialized, cannot proceed");
+		return FALSE;
+	}
+	g_debug ("Seems working");
+	switch (G_VALUE_TYPE (value))
 	{
 	case G_TYPE_STRING:
 		return xfconf_channel_set_string (channel, property, g_value_get_string (value));
@@ -448,7 +467,7 @@ gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * pro
 	case G_TYPE_DOUBLE:
 		return xfconf_channel_set_double (channel, property, g_value_get_double (value));
 	default:
-		g_warning ("Unrecognized type: %s", g_type_name (g_value_get_gtype (value)));
+		g_warning ("Unrecognized type: %s", G_VALUE_TYPE_NAME (value));
 		return FALSE;
 	}
 }
