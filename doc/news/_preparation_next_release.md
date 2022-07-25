@@ -73,9 +73,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### hexnumber
 
-- <<TODO>>
+- Demonstrate bug _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
