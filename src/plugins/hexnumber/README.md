@@ -66,34 +66,34 @@ When mounting a backend with the hexnumber plugin, a few settings can be configu
 
   ```sh
   # Example 1: read hex value
-  kdb meta-set user:/tests/hexnumber/hex type long
+  kdb meta-set spec:/tests/hexnumber/hex type long
   kdb set user:/tests/hexnumber/hex 0x1F
 
   kdb get user:/tests/hexnumber/hex
   #> 31
 
   # Example 2: decimal value not converted
-  kdb meta-set user:/tests/hexnumber/dec type long
+  kdb meta-set spec:/tests/hexnumber/dec type long
   kdb set user:/tests/hexnumber/dec 26
 
   kdb get user:/tests/hexnumber/dec
   #> 26
 
   # Example 3: string untouched
-  kdb meta-set user:/tests/hexnumber/string type string
+  kdb meta-set spec:/tests/hexnumber/string type string
   kdb set user:/tests/hexnumber/string value
 
   kdb get user:/tests/hexnumber/string
   #> value
 
   # Example 4: read hex value with unit/base
-  kdb meta-set user:/tests/hexnumber/hex2 unit/base hex
+  kdb meta-set spec:/tests/hexnumber/hex2 unit/base hex
   kdb set user:/tests/hexnumber/hex2 0xF
 
   kdb get user:/tests/hexnumber/hex2
   #> 15
 
-  # Undo changes
+  # Cleanup
   kdb rm -r user:/tests/hexnumber
   ```
 
