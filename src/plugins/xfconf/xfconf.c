@@ -167,7 +167,7 @@ int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 				GValue keyValue = G_VALUE_INIT;
 				g_value_init (&keyValue, G_TYPE_STRING);
 				g_value_set_string (&keyValue, itemValue);
-				g_ptr_array_add (xfconfArray, &keyValue); //todo: determine item types, they throw critical errors
+				g_ptr_array_add (xfconfArray, &keyValue); // todo: determine item types, they throw critical errors
 			}
 			if (!xfconf_channel_set_arrayv (channel, xfconfKeyName, xfconfArray))
 			{
