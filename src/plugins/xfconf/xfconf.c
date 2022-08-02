@@ -126,11 +126,10 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("issued set with parent %s\n", keyName (parentKey));
-	const char * parentName = keyName (parentKey);
 	KeySet * config = elektraPluginGetConfig (handle);
 	const Key * channelKey = ksLookupByName (config, "/channel", KDB_O_NONE);
 	const char * channelName = keyString (channelKey);
-	ELEKTRA_LOG_DEBUG ("using channel %s of parent %s\n", channelName, parentName);
+	ELEKTRA_LOG_DEBUG ("using channel %s of parent %s\n", channelName, keyName (parentKey));
 
 	XfconfChannel * channel = xfconf_channel_get (channelName);
 	if (channel == NULL)
