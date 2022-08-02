@@ -43,7 +43,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         wget \
         which \
         xerces-c-devel \
-        xfconf \
+        xfconf-devel \
         yajl-devel \
         yaml-cpp-devel \
         zlib-devel \
