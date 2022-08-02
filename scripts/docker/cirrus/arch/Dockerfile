@@ -15,6 +15,7 @@ RUN pacman -Sy --noconfirm \
     rubygems \
     texlive-most \
     wget \
+    xfconf \
     yajl \
     python-pip
 

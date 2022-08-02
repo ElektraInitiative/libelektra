@@ -58,6 +58,7 @@ task:
       libgit2
       llvm12
       ninja
+      xfce4-conf
       yajl
       yaml-cpp
 
