@@ -8,8 +8,9 @@
  */
 
 #include "xfconf.h"
-#include "kdbease.h"
 
+#include <kdb.h>
+#include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <xfconf/xfconf.h>
