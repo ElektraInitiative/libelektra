@@ -26,6 +26,7 @@ RUN apt-get -y install \
   libuv1-dev \
   libuv1-dev \
   libxerces-c-dev \
+  libxfconf-0-dev \
   libyajl-dev \
   libzmq3-dev \
   openjdk-11-jdk-headless \
