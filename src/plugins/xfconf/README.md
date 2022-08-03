@@ -33,10 +33,10 @@ kdb mount /dev/null /test/xfwm xfconf "channel=xfwm4"
 set "OLD_LAYOUT=$(kdb get /test/xfwm/general/button_layout)"
 
 # set only a close button
-kdb set /test/xfwm/general/button_layout "C|"
+kdb set system:/test/xfwm/general/button_layout "C|"
 
 # read the new layout
-kdb set /test/xfwm/general/button_layout
+kdb get /test/xfwm/general/button_layout
 #> C|
 
 # restore old layout
