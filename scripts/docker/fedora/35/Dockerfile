@@ -55,7 +55,8 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         wget \
         which \
         xerces-c-devel \
-        yajl-devel \
+        xfconf-devel \
+    	yajl-devel \
         yaml-cpp-devel \
         zeromq-devel \
         zlib-devel \
