@@ -42,6 +42,7 @@ RUN apt-get update && apt-get -y install \
         libsystemd-dev \
         libuv1-dev \
         libxerces-c-dev \
+        libxfconf-0-dev \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \
