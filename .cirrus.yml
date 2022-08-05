@@ -99,7 +99,7 @@ task:
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-xfconf # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382 xfce4 is uncommon on macOS
 
   install_script:
     - | # Install Homebrew formulas
