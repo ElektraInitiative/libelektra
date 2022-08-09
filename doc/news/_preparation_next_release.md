@@ -316,6 +316,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### CMake
 
+- Fix build with newer libgit2 versions _(Fabian Vogt)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
