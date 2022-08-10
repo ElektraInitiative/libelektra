@@ -127,7 +127,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### <<Library>>
 
-- <<TODO>>
+- opts: fix possible 'free(): invalid pointer' error and add test for it _(@hannes99)_
 - <<TODO>>
 - <<TODO>>
 

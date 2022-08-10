@@ -889,13 +889,13 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 
 	if (!hidden)
 	{
-		char * argString = "";
+		char * argString = NULL;
 		if (elektraStrCmp (hasArg, "required") == 0)
 		{
 			argString = argName == NULL ? " ARG" : elektraFormat (" %s", argName);
 		}
 
-		char * newShortOptLine = elektraFormat ("%s-%c%s, ", *shortOptLine, shortOpt, argString);
+		char * newShortOptLine = elektraFormat ("%s-%c%s, ", *shortOptLine, shortOpt, argString == NULL ? "" : argString);
 		elektraFree (*shortOptLine);
 		if (argName != NULL)
 		{
@@ -970,7 +970,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 
 	if (!hidden)
 	{
-		char * argString = "";
+		char * argString = NULL;
 		if (elektraStrCmp (hasArg, "required") == 0)
 		{
 			argString = argName == NULL ? "=ARG" : elektraFormat ("=%s", argName);
@@ -981,7 +981,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 		}
 
 
-		char * newLongOptLine = elektraFormat ("%s--%s%s, ", *longOptLine, longOpt, argString);
+		char * newLongOptLine = elektraFormat ("%s--%s%s, ", *longOptLine, longOpt, argString == NULL ? "" : argString);
 		elektraFree (*longOptLine);
 		if (argName != NULL)
 		{
