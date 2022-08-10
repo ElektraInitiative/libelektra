@@ -397,10 +397,10 @@ opt/#0 = i
 opt/#0/long = interactive
 opt/#0/arg = optional
 opt/#0/flagvalue = always
+opt/#0/arg/help = WHEN
 opt/#1 = I
 opt/#1/flagvalue = once
 opt/#1/arg = none
-opt/arg/name = WHEN
 description = prompt according to WHEN: never, once (-I), or always (-i); without WHEN, prompt always
 
 [singlefs]
@@ -416,7 +416,7 @@ description = do not treat '/' specially
 [preserve]
 opt/long = preserve-root
 opt/arg = optional
-opt/arg/name = all
+opt/arg/help = all
 opt/flagvalue = root
 description = do not remove '/' (default); with 'all', reject any command line argument on a separate device from its parent
 
