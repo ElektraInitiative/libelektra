@@ -1,14 +1,16 @@
 include (LibAddMacros)
 
-file (GLOB HDR_FILES *.hpp gen/*.hpp gen/*/*.hpp)
+file (GLOB HDR_FILES *.h *.hpp gen/*.hpp gen/*/*.hpp)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-file (GLOB SRC_FILES *.cpp gen/*.cpp gen/*/*.cpp)
+file (GLOB SRC_FILES *.c *.cpp gen/*.cpp gen/*/*.cpp)
 list (REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/gen/templates/collect.cpp")
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
+
+add_compile_definitions(CLI_BASE_KEY="/cli/kdb")
 
 add_subdirectory (gen/templates)
 
