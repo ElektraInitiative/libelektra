@@ -130,7 +130,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "elektra-rs-libc"
+name = "elektra_rs_libc"
 version = "0.1.0"
 dependencies = [
  "bindgen",

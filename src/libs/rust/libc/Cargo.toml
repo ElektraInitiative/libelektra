@@ -1,5 +1,5 @@
 [package]
-name = "elektra-rs-libc"
+name = "elektra_rs_libc"
 version = "0.1.0"
 authors = ["Stefan Hanreich <stefanhani@gmail.com>"]
 edition = "2018"
@@ -14,5 +14,5 @@ elektra-rs = { version = "0.1.0", path = "../core"}
 bindgen = "0.53.1"
 
 [lib]
-name = "elektra_rs"
+name = "elektra_rs_libc"
 crate-type = ["cdylib"]

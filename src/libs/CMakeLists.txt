@@ -14,7 +14,8 @@ set (
 	notification
 	highlevel
 	merge
-	opts)
+	opts
+	rust)
 
 # The subdirectory for LibElektra must be the last entry!
 list (APPEND SUBDIRS elektra)

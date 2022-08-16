@@ -9,8 +9,6 @@ add_subdirectory (tools)
 
 add_subdirectory (include)
 
-add_subdirectory (rust)
-
 if (BUILD_TESTING)
 	set (ADDTESTING_PHASE ON)
 	add_subdirectory (plugins plugins_tests)

@@ -124,8 +124,6 @@ ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
 
-
-
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
 ENV SHFMT_VERSION=v3.3.1
@@ -138,3 +136,25 @@ RUN mkdir -p "${SHFMT_PATH}" \
 # Ronn-NG
 ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.0.0/bin"
 RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version
+
+
+# Rust
+USER root
+RUN wget -qO - https://sh.rustup.rs | RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust sh -s -- --no-modify-path -y
+ENV CARGO_HOME=/opt/rust
+ENV RUSTUP_HOME=/opt/rust
+ENV PATH=$PATH:/opt/rust/bin
+
+# Corrosion
+RUN mkdir /tmp/corrosion
+WORKDIR /tmp/corrosion
+RUN git clone https://github.com/corrosion-rs/corrosion.git
+WORKDIR /tmp/corrosion/corrosion
+RUN git checkout tags/v0.2.1
+WORKDIR /tmp/corrosion
+RUN cmake -Scorrosion -Bbuild -DCMAKE_BUILD_TYPE=Release
+RUN cmake --build build --config Release
+RUN cmake --install build --config Release
+RUN rm -rf /tmp/corrosion
+RUN chmod 777 -R /opt/rust/registry
+USER ${JENKINS_USERID}

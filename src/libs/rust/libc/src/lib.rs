@@ -1,10 +1,8 @@
-#![feature(c_variadic)]
-
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 #![allow(unused_variables)]
 
-use std::ffi::{CStr, CString, VaList, VaListImpl};
+use std::ffi::{CStr, CString};
 use std::{ptr, slice};
 use std::str::FromStr;
 use std::convert::TryFrom;
@@ -24,19 +22,12 @@ use elektra_rust::key::{Key, KeyBuilder, KeyName, KeyNamespace, KeySet};
 use enumflags2::{BitFlags};
 
 #[no_mangle]
-pub unsafe extern "C" fn elektraKeyNew(keyname: *const c_char, args: ...) -> *const CKey {
-    let mut va_list: VaListImpl;
-    va_list = args.clone();
-    elektraKeyVNew(keyname, va_list.as_va_list())
-}
-
-#[no_mangle]
-pub extern "C" fn elektraKeyVNew(keyname: *const c_char, ap: VaList) -> *const CKey {
+pub unsafe extern "C" fn elektraKeyNew(keyname: *const c_char) -> *mut CKey {
     if keyname.is_null() {
         return ptr::null_mut();
     }
 
-    let cstr = unsafe { CStr::from_ptr(keyname) };
+    let cstr = CStr::from_ptr(keyname);
     let keyNameStr = cstr.to_str()
         .expect("key name cannot be cast to string");
 
@@ -44,31 +35,13 @@ pub extern "C" fn elektraKeyVNew(keyname: *const c_char, ap: VaList) -> *const C
         let keyResult = builder.build();
 
         if let Ok(key) = keyResult {
-            /*
-            loop {
-                let flag_argument = unsafe { ap.arg::<c_int>() };
-
-                let flags = KeyNewFlags::from_bits(flag_argument)
-                    .expect("Cannot create Flags from va_list args");
-
-                if flags.contains(KeyNewFlags::KEY_NAME) {
-                    println!("KEY_NAME");
-                } else if flag_argument == 0 {
-                    println!("KEY_END");
-                    break;
-                } else {
-                    break;
-                }
-            }
-             */
-
             return Box::into_raw(
                 Box::new(key.into())
             );
         }
     }
 
-    return ptr::null_mut();
+    return ptr::null_mut()
 }
 
 #[no_mangle]
@@ -110,7 +83,12 @@ pub extern "C" fn elektraKeyClear(key: *mut CKey) -> c_int {
     };
 
     rust_key.set_name(":/").unwrap();
-    rust_key.reset_value();
+
+    match rust_key.reset_value() {
+        Ok(x) => (),
+        Err(_) => return -1,
+    };
+
     rust_key.set_meta(KeySet::default());
 
     CKey::overwrite(key, rust_key);
@@ -828,6 +806,7 @@ pub extern "C" fn elektraKeysetSearch(ks: *const CKeySet, k: *const CKey) -> ssi
     todo!()
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -915,3 +894,4 @@ mod tests {
         elektraKeyDel (key2);
     }
 }
+*/
