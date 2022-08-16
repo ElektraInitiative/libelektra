@@ -1,40 +1,43 @@
 #include <stdint.h>
 
-enum {
-	ELEKTRA_KEY_KEY_VALUE=1<<1,
-	ELEKTRA_KEY_KEY_FLAGS=3,
-	ELEKTRA_KEY_KEY_BINARY=1<<4,
-	ELEKTRA_KEY_KEY_SIZE=1<<11,
-	ELEKTRA_KEY_KEY_FUNC=1<<12,
-	ELEKTRA_KEY_KEY_META=1<<15,
-	ELEKTRA_KEY_KEY_NULL=1<<16,
-	ELEKTRA_KEY_KEY_LOCK_NAME=1<<17,
-	ELEKTRA_KEY_KEY_LOCK_VALUE=1<<18,
-	ELEKTRA_KEY_KEY_LOCK_META=1<<19,
+enum
+{
+	ELEKTRA_KEY_KEY_VALUE = 1 << 1,
+	ELEKTRA_KEY_KEY_FLAGS = 3,
+	ELEKTRA_KEY_KEY_BINARY = 1 << 4,
+	ELEKTRA_KEY_KEY_SIZE = 1 << 11,
+	ELEKTRA_KEY_KEY_FUNC = 1 << 12,
+	ELEKTRA_KEY_KEY_META = 1 << 15,
+	ELEKTRA_KEY_KEY_NULL = 1 << 16,
+	ELEKTRA_KEY_KEY_LOCK_NAME = 1 << 17,
+	ELEKTRA_KEY_KEY_LOCK_VALUE = 1 << 18,
+	ELEKTRA_KEY_KEY_LOCK_META = 1 << 19,
 };
 
 typedef int elektraLockFlags;
 typedef int elektraKeyFlags;
 
-enum {
-	ELEKTRA_KEY_CP_NAME   = 1<<0,
-	ELEKTRA_KEY_CP_STRING = 1<<1,
-	ELEKTRA_KEY_CP_VALUE  = 1<<2,
-	ELEKTRA_KEY_CP_META   = 1<<3,
-	ELEKTRA_KEY_CP_ALL    = ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE | ELEKTRA_KEY_CP_META,
+enum
+{
+	ELEKTRA_KEY_CP_NAME = 1 << 0,
+	ELEKTRA_KEY_CP_STRING = 1 << 1,
+	ELEKTRA_KEY_CP_VALUE = 1 << 2,
+	ELEKTRA_KEY_CP_META = 1 << 3,
+	ELEKTRA_KEY_CP_ALL = ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE | ELEKTRA_KEY_CP_META,
 };
 typedef unsigned int elektraCopyFlags;
 
-enum {
-	ELEKTRA_NS_NONE=0,
-	ELEKTRA_NS_CASCADING=1,
-	ELEKTRA_NS_META=2,
-	ELEKTRA_NS_SPEC=3,
-	ELEKTRA_NS_PROC=4,
-	ELEKTRA_NS_DIR=5,
-	ELEKTRA_NS_USER=6,
-	ELEKTRA_NS_SYSTEM=7,
-	ELEKTRA_NS_DEFAULT=8,
+enum
+{
+	ELEKTRA_NS_NONE = 0,
+	ELEKTRA_NS_CASCADING = 1,
+	ELEKTRA_NS_META = 2,
+	ELEKTRA_NS_SPEC = 3,
+	ELEKTRA_NS_PROC = 4,
+	ELEKTRA_NS_DIR = 5,
+	ELEKTRA_NS_USER = 6,
+	ELEKTRA_NS_SYSTEM = 7,
+	ELEKTRA_NS_DEFAULT = 8,
 };
 typedef int elektraNamespace;
 
@@ -43,9 +46,9 @@ static const elektraNamespace ELEKTRA_NS_LAST = ELEKTRA_NS_DEFAULT;
 
 typedef ssize_t elektraCursor;
 
-typedef struct _KDB	ElektraKDB;
-typedef struct _Key	ElektraKey;
-typedef struct _KeySet	ElektraKeySet;
+typedef struct _KDB ElektraKDB;
+typedef struct _Key ElektraKey;
+typedef struct _KeySet ElektraKeySet;
 
 /**************************************
  *
@@ -150,6 +153,6 @@ ElektraKey * elektraKeysetRemove (ElektraKeySet * ks, elektraCursor cursor);
 ssize_t elektraKeysetAddAll (ElektraKeySet * ks, const ElektraKeySet * other);
 
 ElektraKey * elektraKeysetLookup (ElektraKeySet * ks, const ElektraKey * k);
-ElektraKey * elektraKeysetLookupByName (ElektraKeySet * ks, const char *name);
+ElektraKey * elektraKeysetLookupByName (ElektraKeySet * ks, const char * name);
 
 ssize_t elektraKeysetSearch (const ElektraKeySet * ks, const ElektraKey * k);
