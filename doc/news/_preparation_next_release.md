@@ -241,7 +241,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Tutorials
 
-- <<TODO>>
+- opts: use arg/help instead of arg/name _(@hannes99)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
