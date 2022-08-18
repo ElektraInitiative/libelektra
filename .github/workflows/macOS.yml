@@ -27,17 +27,18 @@ jobs:
        include:
          # The following plugins have been disabled due to problems:
          # Yamlcpp fails to compile on macOS with GCC due to problems with the macOS SDK
+         # it does not make sense to test the xfconf plugin on macOS as xfce is very uncommon on macOS
          - name: GCC 11
            CC: gcc-11
            CXX: g++-11
-           PLUGINS: ALL;-xerces;-yamlcpp
+           PLUGINS: ALL;-xerces;-yamlcpp;-xfconf
            BINDINGS: ALL;-rust
          - name: Clang
            CC: clang
            CXX: clang++
            ENABLE_LOGGER: ON
            TOOLS: NODEP
-           PLUGINS: ALL
+           PLUGINS: ALL;-xfconf
            BINDINGS: ALL;-rust
          - name: Clang ASAN
            CC: clang
@@ -45,7 +46,7 @@ jobs:
            ASAN_OPTIONS: detect_leaks=1
            ENABLE_ASAN: ON
            TOOLS: kdb
-           PLUGINS: ALL
+           PLUGINS: ALL;-xfconf
            BINDINGS: ALL;-rust
          #- name: MMap
          #  KDB_DEFAULT_STORAGE: mmapstorage
