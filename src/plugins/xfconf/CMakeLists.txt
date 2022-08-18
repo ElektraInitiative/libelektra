@@ -2,9 +2,15 @@ include (LibAddMacros)
 
 find_package (PkgConfig REQUIRED)
 
-pkg_check_modules (XFCE REQUIRED libxfconf-0)
+if (DEPENDENCY_PHASE)
+        pkg_check_modules (XFCE QUIET libxfconf-0)
 
-include_directories (${XFCE_INCLUDE_DIRS})
+        if (NOT XFCE_FOUND)
+                remove_plugin (xfconf "libxfconf-0 not found")
+        else ()
+                include_directories (${XFCE_INCLUDE_DIRS})
+        endif ()
+endif ()
 
 add_plugin (
         xfconf
