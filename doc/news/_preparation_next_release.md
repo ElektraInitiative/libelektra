@@ -276,11 +276,12 @@ _(Michael Tucek @tucek)_
 - Added support for `ksIncRef` for `KeySet` _(Michael Tucek @tucek)_
 - Enabled `ReferenceCleaner` _(Michael Tucek @tucek)_
 
-### <<Binding>>
+### Java binding
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Removed public naive resource release API. To migrate just remove calls to the affected methods `Key#release()`, `KeySet#release()` and `KDBException#releaseErrorKey()` _(Michael Tucek @tucek)_
+- Enabled strict javadoc checking for Gradle build _(Michael Tucek @tucek)_
+- Added support for `ksIncRef` for `KeySet` _(Michael Tucek @tucek)_
+- Enabled `ReferenceCleaner` _(Michael Tucek @tucek)_
 
 ### <<Binding>>
 
