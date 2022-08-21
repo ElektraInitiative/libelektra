@@ -53,7 +53,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    * @param pointer Optional JNA {@link Pointer} to key
    * @return New {@link Key} instance if {@code pointer} is non-null, {@link Optional#empty()}
    *     otherwise
-   * @see #release()
    */
   @Nonnull
   protected static Optional<Key> create(@Nullable Pointer pointer) {
@@ -66,7 +65,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    *
    * @return New nameless key
    * @throws KeyException on allocation problems
-   * @see #release()
    */
   @Nonnull
   public static Key create() {
@@ -84,7 +82,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    * @return New key
    * @throws KeyException if the key name is invalid or there have been allocation problems
    * @see CreateArgumentTag
-   * @see #release()
    */
   @Nonnull
   protected static Key create(String name, Object... args) {
@@ -107,7 +104,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    * @param meta Metadata that should be added to this key, null keys will be filtered away
    * @return New key
    * @throws KeyException if the key name is invalid or there have been allocation problems
-   * @see #release()
    */
   @Nonnull
   public static Key create(String name, @Nullable Object value, Key... meta) {
@@ -140,7 +136,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    * @param meta Metadata that should be added to this key. Will filter null values.
    * @return New key object
    * @throws KeyException if the key name is invalid or there have been allocation problems
-   * @see #release()
    */
   @Nonnull
   public static Key create(String name, Key... meta) {
@@ -156,7 +151,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    * @param nativePointer Native pointer to key in long format
    * @param suppressCleanUp True to suppress native reference clean-up as soon as this {@link Key}
    *     instance becomes phantom reachable, false otherwise
-   * @see #release()
    * @implNote Increased the native key's reference counter, even if {@code suppressCleanUp} is
    *     {@code true}
    */
@@ -168,7 +162,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    * Constructor associating a new {@link Key} instance with a JNA pointer
    *
    * @param pointer JNA {@link Pointer} to key
-   * @see #release()
    */
   protected Key(Pointer pointer) {
     super(pointer);
@@ -178,14 +171,11 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
    * Clean-up method to release key reference by first decrementing its reference counter and then
    * trying to free the native reference<br>
    * <br>
-   * Call this method if you do not longer need a {@link Key} and obtained it via any of its public
-   * methods or the public methods of {@link KeySet}. If you do not manually release such {@link Key
-   * keys}, they will get cleaned up by garbage collection as soon as they get phantom reachable.
-   * Therefore its encouraged to release {@link Key key instances} as soon as you do not use them
-   * anymore.
+   * {@link Key keys}, will get cleaned up by garbage collection as soon as they get phantom
+   * reachable.
    */
   @Override
-  public void release() {
+  protected void release() {
     super.release();
   }
 
