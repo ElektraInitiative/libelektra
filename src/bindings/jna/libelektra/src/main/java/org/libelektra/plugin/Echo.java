@@ -6,8 +6,6 @@ import org.libelektra.Plugin;
 
 public class Echo implements Plugin {
 
-  private KeySet conf;
-
   private static final String PLUGIN_NAME = "Echo";
 
   public Echo() {
@@ -20,7 +18,6 @@ public class Echo implements Plugin {
     System.out.println(errorKey);
     System.out.println(errorKey.getString());
     System.out.println(conf);
-    this.conf = conf;
     return STATUS_NO_UPDATE;
   }
 

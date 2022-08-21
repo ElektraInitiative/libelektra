@@ -17,11 +17,7 @@ import org.libelektra.exception.ResourceException;
 import org.libelektra.exception.SemanticValidationException;
 import org.libelektra.exception.SyntacticValidationException;
 
-/**
- * Wraps Elektra errors into the corresponding Java exceptions
- *
- * @see #releaseErrorKey()
- */
+/** Wraps Elektra errors into the corresponding Java exceptions */
 public abstract class KDBException extends Exception {
 
   protected static final String VALUE_META_KEY_NOT_FOUND = "(unknown)";
@@ -101,18 +97,6 @@ public abstract class KDBException extends Exception {
         warnings.add(new WarningEntry(errorKey, i));
       }
     }
-  }
-
-  /**
-   * Release the key backing this {@link KDBException}
-   *
-   * @throws IllegalStateException if this error key backing this {@link KDBException} has already
-   *     been released
-   * @apiNote If this exception does not terminate your process, consider releasing the backing
-   *     error key after processing it
-   */
-  public void releaseErrorKey() {
-    errorKey.release();
   }
 
   /**

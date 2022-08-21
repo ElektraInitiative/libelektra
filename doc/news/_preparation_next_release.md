@@ -154,6 +154,13 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+### Java binding
+
+- Removed public naive resource release API. To migrate just remove calls to the affected methods `Key#release()`, `KeySet#release()` and `KDBException#releaseErrorKey()`
+- Enabled strict javadoc checking for Gradle build
+
+_(Michael Tucek @tucek)_
+
 ### <<Binding>>
 
 - <<TODO>>

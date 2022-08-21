@@ -27,7 +27,6 @@ If an error occurs, detailed information can be obtained from the thrown `KDBExc
 There are 3 kinds of native resources having to be cleaned up properly to prevent memory leaks: `KeySet`, `Key` and `KDB` or rather their backing native key set, key or KDB session.
 
 Fortunately the only resource you are strictly required to release is `KDB` via either `KDB::close` or `try-with-resouces`. For `KeySet` and `Key` the garbage collector cleans them up automatically using a [`Cleaner`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ref/Cleaner.html)
-In situations where memory is very constrained, it might be a good idea to clean up these native resources as soon as they are no longer needed, since we do not have any control of when or if the garbage collector cleans up after us. For this use-case, the following functions are provided: `KeySet::release`, `Key::release` and `KDBException::releaseErrorKey``.
 
 ## Fetching keys
 
@@ -59,13 +58,6 @@ kdb set user:/my/presaved/key it_works!
 ```
 
 `value` would equals `it_works!`.
-
-Afterwards, we may clean-up no longer needed native resources:
-
-```
-parentKey.release();
-keySet.release();
-```
 
 ## Saving Keys
 

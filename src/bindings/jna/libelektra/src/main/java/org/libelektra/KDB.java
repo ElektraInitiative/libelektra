@@ -95,7 +95,6 @@ public class KDB implements AutoCloseable {
    * @throws IllegalStateException if {@code contract} or {@code warningsKey} has already been
    *     released
    * @throws IllegalArgumentException if {@code contract} or {@code warningsKey} is {@code null}
-   * @see Key#create()
    * @see #goptsContract(String[], String[], Key, KeySet)
    * @see #goptsContract(KeySet, String[], String[], Key, KeySet)
    */
@@ -164,7 +163,6 @@ public class KDB implements AutoCloseable {
    * @throws IllegalStateException if {@code goptsConfig} or {@code parentKey} has already been
    *     released
    * @throws IllegalArgumentException if any of the specified parameters is {@code null}
-   * @see KeySet#release()
    */
   public static KeySet goptsContract(
       String[] args, String[] env, Key parentKey, KeySet goptsConfig) {
@@ -241,7 +239,6 @@ public class KDB implements AutoCloseable {
    * @throws KDBClosedException if this session has already been closed
    * @throws IllegalStateException if {@code parentKey} has already been released
    * @throws IllegalArgumentException {@code parentKey} is {@code null}
-   * @see KeySet#release()
    */
   @Nonnull
   public KeySet get(Key parentKey) throws KDBException {
