@@ -258,6 +258,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Updated Java binding related dependencies. _(Michael Tucek @tucek)_
 - Updated `KDBException` to only access error key at construction time. _(Michael Tucek @tucek)_
+- Removed public naive resource release API. To migrate just remove calls to the affected methods `Key#release()`, `KeySet#release()` and `KDBException#releaseErrorKey()` _(Michael Tucek @tucek)_
+- Enabled strict javadoc checking for Gradle build _(Michael Tucek @tucek)_
 - <<TODO>>
 - <<TODO>>
 
@@ -266,13 +268,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
-### Java binding
-
-- Removed public naive resource release API. To migrate just remove calls to the affected methods `Key#release()`, `KeySet#release()` and `KDBException#releaseErrorKey()`
-- Enabled strict javadoc checking for Gradle build
-
-_(Michael Tucek @tucek)_
 
 ### <<Binding>>
 
