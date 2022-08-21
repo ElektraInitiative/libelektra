@@ -262,12 +262,19 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Enabled strict javadoc checking for Gradle build _(Michael Tucek @tucek)_
 - <<TODO>>
 - <<TODO>>
+### Java binding
 
-### <<Binding>>
+- Removed public naive resource release API. To migrate just remove calls to the affected methods `Key#release()`, `KeySet#release()` and `KDBException#releaseErrorKey()`
+- Enabled strict javadoc checking for Gradle build
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+_(Michael Tucek @tucek)_
+
+### Java binding
+
+- Removed public naive resource release API. To migrate just remove calls to the affected methods `Key#release()`, `KeySet#release()` and `KDBException#releaseErrorKey()` _(Michael Tucek @tucek)_
+- Enabled strict javadoc checking for Gradle build _(Michael Tucek @tucek)_
+- Added support for `ksIncRef` for `KeySet` _(Michael Tucek @tucek)_
+- Enabled `ReferenceCleaner` _(Michael Tucek @tucek)_
 
 ### <<Binding>>
 

@@ -90,7 +90,6 @@ public class ReadableKey implements Comparable<ReadableKey> {
   protected ReadableKey(Pointer pointer, boolean suppressCleanUp) {
     argNotNull(pointer, "Pointer 'pointer'");
     this.pointer = pointer;
-    ReferenceCleaner.keyWrapperCreated(this);
     cleanable = (suppressCleanUp ? null : ReferenceCleaner.registerKeyCleanUp(this)); // see #3825
   }
 
