@@ -2,6 +2,11 @@ include (LibAddMacros)
 
 find_package (PkgConfig REQUIRED)
 
+if (NOT PKG_CONFIG_FOUND)
+        remove_plugin (xfconf "Need PkgConfig needed to find dependencies for xfconf plugin")
+        return ()
+endif ()
+
 if (DEPENDENCY_PHASE)
         pkg_check_modules (XFCE QUIET libxfconf-0)
 
