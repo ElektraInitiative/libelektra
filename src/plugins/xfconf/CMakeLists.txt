@@ -1,26 +1,15 @@
 include (LibAddMacros)
+include (FindXfconf)
 
-find_package (PkgConfig REQUIRED)
-
-if (NOT PKG_CONFIG_FOUND)
-        remove_plugin (xfconf "Need PkgConfig needed to find dependencies for xfconf plugin")
+if (NOT XFCONF_FOUND)
+        remove_plugin (xfconf "libxfconf not found")
         return ()
-endif ()
-
-if (DEPENDENCY_PHASE)
-        pkg_check_modules (XFCE QUIET libxfconf-0)
-
-        if (NOT XFCE_FOUND)
-                remove_plugin (xfconf "libxfconf-0 not found")
-        else ()
-                include_directories (${XFCE_INCLUDE_DIRS})
-        endif ()
 endif ()
 
 add_plugin (
         xfconf
         SOURCES xfconf.h xfconf.c
-        INCLUDE_DIRECTORIES "${XFCE_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
+        INCLUDE_DIRECTORIES "${XFCONF_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
         LINK_ELEKTRA elektra-ease
-        LINK_LIBRARIES ${XFCE_LIBRARIES}
+        LINK_LIBRARIES ${XFCONF_LIBRARIES}
         ADD_TEST TEST_README COMPONENT libelektra${SO_VERSION}-experimental)
