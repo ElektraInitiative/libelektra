@@ -1,11 +1,11 @@
 [package]
-name = "elektra-rs"
+name = "elektra_rs"
 version = "0.1.0"
 authors = ["Stefan Hanreich <stefanhani@gmail.com>"]
 edition = "2018"
 
 [lib]
-name = "elektra_rust"
+name = "elektra_rs"
 
 [dependencies]
 relative-path = "1.6.0"

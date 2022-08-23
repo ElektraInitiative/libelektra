@@ -121,7 +121,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "elektra-rs"
+name = "elektra_rs"
 version = "0.1.0"
 dependencies = [
  "enumflags2",
@@ -135,7 +135,7 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "bitflags",
- "elektra-rs",
+ "elektra_rs",
  "enumflags2",
  "libc",
 ]

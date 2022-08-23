@@ -8,18 +8,18 @@ use std::str::FromStr;
 use std::convert::TryFrom;
 use libc::{ssize_t, size_t, c_char, c_int, c_void};
 
-mod structs;
-
 use crate::structs::{
     CKey, CKeySet,
-    elektraNamespace, elektraCopyFlags, elektraLockFlags,
+    elektraNamespace, elektraCopyFlags, elektraLockFlags
 };
 
-use crate::elektraNamespace::KEY_NS_NONE;
+use crate::structs::elektraNamespace::KEY_NS_NONE;
 
-use elektra_rust::key::{Key, KeyBuilder, KeyName, KeyNamespace, KeySet};
+use elektra_rs::key::{Key, KeyBuilder, KeyName, KeyNamespace, KeySet};
 
 use enumflags2::{BitFlags};
+
+pub mod structs;
 
 #[no_mangle]
 pub unsafe extern "C" fn elektraKeyNew(keyname: *const c_char) -> *mut CKey {
@@ -41,7 +41,7 @@ pub unsafe extern "C" fn elektraKeyNew(keyname: *const c_char) -> *mut CKey {
         }
     }
 
-    return ptr::null_mut()
+    return ptr::null_mut();
 }
 
 #[no_mangle]
@@ -351,7 +351,7 @@ pub extern "C" fn elektraKeyBaseName(key: *const CKey) -> *mut c_char {
         None => CString::new("".as_bytes())
             .unwrap()
             .into_raw(),
-    }
+    };
 }
 
 #[no_mangle]
@@ -376,7 +376,7 @@ pub extern "C" fn elektraKeyBaseNameSize(key: *const CKey) -> ssize_t {
             .to_bytes_with_nul()
             .len() as ssize_t,
         None => 0,
-    }
+    };
 }
 
 #[no_mangle]
@@ -449,7 +449,7 @@ pub extern "C" fn elektraKeyNamespace(key: *const CKey) -> elektraNamespace {
 #[no_mangle]
 pub extern "C" fn elektraKeySetNamespace(key: *mut CKey, ns: elektraNamespace) -> ssize_t {
     if key.is_null() {
-        return -1
+        return -1;
     }
 
     let c_key = unsafe { &*key };
@@ -805,6 +805,203 @@ pub extern "C" fn elektraKeysetSearch(ks: *const CKeySet, k: *const CKey) -> ssi
     */
     todo!()
 }
+
+/**
+ * OLD API
+ */
+
+pub type elektraLookupFlags = c_int;
+
+#[no_mangle]
+pub extern "C" 
+
+#[no_mangle]
+pub extern "C" fn keyCopy(dest: *mut CKey, source: *const CKey, flags: elektraCopyFlags) -> *mut CKey {
+    elektraKeyCopy(dest, source, flags)
+}
+
+#[no_mangle]
+pub extern "C" fn keyClear(key: *mut CKey) -> c_int {
+    elektraKeyClear(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keyDel(key: *mut CKey) -> c_int {
+    elektraKeyDel(key)
+}
+
+
+#[no_mangle]
+pub extern "C" fn keyIncRef(key: *mut CKey) -> u16 {
+    1
+}
+
+#[no_mangle]
+pub extern "C" fn keyDecRef(key: *mut CKey) -> u16 {
+    1
+}
+
+#[no_mangle]
+pub extern "C" fn keyGetRef(key: *const CKey) -> u16 {
+    1
+}
+
+#[no_mangle]
+pub extern "C" fn keyMeta(key: *mut CKey) -> *mut CKeySet {
+    elektraKeyMeta(key)
+}
+
+/* Methods for Making Tests */
+#[no_mangle]
+pub extern "C" fn keyCmp(k1: *const CKey, k2: *const CKey) -> c_int {
+    elektraKeyCompareName(k1, k2)
+}
+
+#[no_mangle]
+pub extern "C" fn keyNeedSync(key: *const CKey) -> c_int {
+    0
+}
+
+#[no_mangle]
+pub extern "C" fn keyIsBelow(key: *mut CKey, check: *mut CKey) -> c_int {
+    elektraKeyIsBelow(key, check)
+}
+
+#[no_mangle]
+pub extern "C" fn keyIsBelowOrSame(key: *mut CKey, check: *mut CKey) -> c_int {
+    elektraKeyIsBelowOrSame(key, check)
+}
+
+#[no_mangle]
+pub extern "C" fn keyIsDirectlyBelow(key: *const CKey, check: *const CKey) -> c_int {
+    elektraKeyIsDirectlyBelow(key, check)
+}
+
+#[no_mangle]
+pub extern "C" fn keyName(key: *const CKey) -> *const c_char {
+    elektraKeyName(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keyGetNameSize(key: *const CKey) -> ssize_t {
+    elektraKeyNameSize(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keySetName(key: *mut CKey, newname: *const c_char) -> ssize_t {
+    elektraKeySetName(key, newname)
+}
+
+#[no_mangle]
+pub extern "C" fn keyAddName(key: *mut CKey, addname: *const c_char) -> ssize_t {
+    elektraKeyAddName(key, addname)
+}
+
+#[no_mangle]
+pub extern "C" fn keyBaseName(key: *const CKey) -> *const c_char {
+    elektraKeyBaseName(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keyGetBaseNameSize(key: *const CKey) -> ssize_t {
+    elektraKeyBaseNameSize(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keySetBaseName(key: *mut CKey, baseName: *const c_char) -> ssize_t {
+    elektraKeySetBaseName(key, baseName)
+}
+
+#[no_mangle]
+pub extern "C" fn keyAddBaseName(key: *mut CKey, baseName: *const c_char) -> ssize_t {
+    elektraKeyAddBaseName(key, baseName)
+}
+
+#[no_mangle]
+pub extern "C" fn keyNamespace(key: *const CKey) -> elektraNamespace {
+    elektraKeyNamespace(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keySetNamespace(key: *mut CKey, ns: elektraNamespace) -> ssize_t {
+    elektraKeySetNamespace(key, ns)
+}
+
+#[no_mangle]
+pub extern "C" fn keyValue(key: *const CKey) -> *const c_void {
+    elektraKeyValue(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keyGetValueSize(key: *const CKey) -> ssize_t {
+    elektraKeyValueSize(key)
+}
+
+#[no_mangle]
+pub extern "C" fn keyLock(key: *mut CKey, what: elektraLockFlags) -> c_int {
+    elektraKeyLock(key, what)
+}
+
+#[no_mangle]
+pub extern "C" fn keyIsLocked(key: *const CKey, what: elektraLockFlags) -> c_int {
+    elektraKeyIsLocked(key, what)
+}
+
+#[no_mangle]
+pub extern "C" fn ksIncRef(ks: *mut CKeySet) -> u16 {
+    elektraKeysetIncRef(ks)
+}
+
+#[no_mangle]
+pub extern "C" fn ksDecRef(ks: *mut CKeySet) -> u16 {
+    elektraKeysetDecRef(ks)
+}
+
+#[no_mangle]
+pub extern "C" fn ksGetRef(ks: *const CKeySet) -> u16 {
+    elektraKeysetGetRef(ks)
+}
+
+#[no_mangle]
+pub extern "C" fn ksClear(ks: *mut CKeySet) -> c_int {
+    elektraKeysetClear(ks)
+}
+
+#[no_mangle]
+pub extern "C" fn ksDel(ks: *mut CKeySet) -> c_int {
+    elektraKeysetDel(ks)
+}
+
+#[no_mangle]
+pub extern "C" fn ksGetSize(ks: *const CKeySet) -> ssize_t {
+    elektraKeysetSize(ks)
+}
+
+#[no_mangle]
+pub extern "C" fn ksAppendKey(ks: *mut CKeySet, toAppend: *mut CKey) -> ssize_t {
+    elektraKeysetAdd(ks, toAppend)
+}
+
+#[no_mangle]
+pub extern "C" fn ksAppend(ks: *mut CKeySet, toAppend: *const CKeySet) -> ssize_t {
+    elektraKeysetAddAll(ks, toAppend)
+}
+
+#[no_mangle]
+pub extern "C" fn ksLookup(ks: *mut CKeySet, k: *mut CKey, options: elektraLookupFlags) -> *mut CKey {
+    elektraKeysetLookup(ks, k)
+}
+
+#[no_mangle]
+pub extern "C" fn ksLookupByName(ks: *mut CKeySet, name: *const c_char, options: elektraLookupFlags) -> *mut CKey {
+    elektraKeysetLookupByName(ks, name)
+}
+
+#[no_mangle]
+pub extern "C" fn ksSearch(ks: *const CKeySet, toAppend: *const CKey) -> ssize_t {
+    elektraKeysetSearch(ks, toAppend)
+}
+
 
 /*
 #[cfg(test)]

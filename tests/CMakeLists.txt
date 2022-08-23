@@ -47,6 +47,7 @@ macro (do_test source)
 	add_headers (SOURCES)
 	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
+	add_executable (${source}_rust ${SOURCES})
 
 	if (INSTALL_TESTING)
 		install (
@@ -56,11 +57,16 @@ macro (do_test source)
 	endif (INSTALL_TESTING)
 
 	target_link_elektra (${source})
+	target_link_libraries (${source}_rust elektra_rs_libc)
 
 	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	set_target_properties (${source} PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties (${source}_rust PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	set_target_properties (${source}_rust PROPERTIES LINKER_LANGUAGE CXX)
 	add_test (${source} "${CMAKE_BINARY_DIR}/bin/${source}" "${CMAKE_CURRENT_BINARY_DIR}")
 	set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	add_test (${source}_rust "${CMAKE_BINARY_DIR}/bin/${source}_rust" "${CMAKE_CURRENT_BINARY_DIR}")
+	set_property (TEST ${source}_rust PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 endmacro (do_test)
 
 # Since we want to see the output of the tests immediately we specify the parameter `USES_TERMINAL` in the targets below. If we do not do

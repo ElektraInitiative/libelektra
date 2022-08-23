@@ -11,9 +11,9 @@ use libc::{size_t, c_char, c_int, c_uint, c_void};
 
 use bitflags::bitflags;
 
-use elektra_rust::key::{Key, KeyBuilder, KeyError, KeyNamespace, KeySet};
-use crate::elektraNamespace::{KEY_NS_CASCADING, KEY_NS_DEFAULT, KEY_NS_DIR, KEY_NS_META, KEY_NS_PROC, KEY_NS_SPEC, KEY_NS_SYSTEM, KEY_NS_USER};
-use crate::KEY_NS_NONE;
+use elektra_rs::key::{Key, KeyBuilder, KeyError, KeyNamespace, KeySet};
+use elektraNamespace::{KEY_NS_CASCADING, KEY_NS_DEFAULT, KEY_NS_DIR, KEY_NS_META, KEY_NS_PROC, KEY_NS_SPEC, KEY_NS_SYSTEM, KEY_NS_USER};
+use elektraNamespace::KEY_NS_NONE;
 
 bitflags! {
     pub struct KeyNewFlags: i32 {
