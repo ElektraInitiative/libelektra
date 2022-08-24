@@ -21,8 +21,8 @@
   Partially intended for use with code-generation.
   Specifically targets C and not intended for use via bindings.
 
-  **Prefix:** `elektraHlc*` (better suggestions welcome)
-  (Note: Even though there isn't any other `highlevel` implementation, I added the `-c` suffix to show this lib is only for C)
+  **Prefix:** `elektraHlc*`
+  (Note: Even though there isn't any other `highlevel` implementation, we added the `c` suffix to show this lib is only for C)
 
 - `libelektra-opts`:
   The API for parsing command-line arguments according to Elektra's spec.
@@ -61,7 +61,7 @@
   **Prefix:** `elektraMount*`
 
 - `libelektra-type`:
-  The API that defines Elektra's type system. (Alternative: The API that defines the type system used by `libelektra-highlevel-c`.)
+  The API that defines Elektra's type system.
 
   **Names:** `elektra<TYPE>ToString` and `elektraKeyTo<TYPE>`
   (Note: extracted from `libelektra-ease`)
