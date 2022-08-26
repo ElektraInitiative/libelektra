@@ -148,9 +148,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up-to-date with the multi-language support provided by Elektra.
 
-### <<Binding>>
+### Python
 
-- <<TODO>>
+- add merging based on elektraMerge _(@atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 

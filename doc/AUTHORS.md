@@ -161,7 +161,7 @@ notification system, I/O bindings
 
 ## Maximilian Irlinger
 
-documentation
+documentation, Python bindings for elektraMerge
 
 - email: max@maxirlinger.at
 - github user: [atmaxinger](https://github.com/atmaxinger)

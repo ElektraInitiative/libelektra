@@ -119,6 +119,34 @@ else ()
 		endif ()
 	endif (${SWIG_VERSION} VERSION_LESS "4.0.0")
 
+	# merge module
+	add_cppheaders (HDR_FILES)
+	set_source_files_properties (merge.i PROPERTIES CPLUSPLUS ON)
+	set_source_files_properties (merge.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
+	if (CMAKE_VERSION VERSION_LESS 3.8)
+		swig_add_module (swig-python-merge python merge.i)
+	else (CMAKE_VERSION VERSION_LESS 3.8)
+		swig_add_library (
+			swig-python-merge
+			LANGUAGE python
+			SOURCES merge.i
+			TYPE MODULE)
+	endif (CMAKE_VERSION VERSION_LESS 3.8)
+	swig_link_libraries (swig-python-merge elektra-merge ${PYTHON_LIBRARIES})
+	set_target_properties (_swig-python-merge PROPERTIES OUTPUT_NAME _merge)
+	set_target_properties (_swig-python-merge PROPERTIES SKIP_BUILD_RPATH TRUE)
+	set_target_properties (_swig-python-merge PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	add_custom_command (
+		TARGET _swig-python-merge
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" ${CMAKE_SWIG_OUTDIR}/)
+
+	if (BUILD_TESTING)
+		# add tests
+		add_subdirectory (tests_merge)
+	endif ()
+
 	# install package
 	set (PYTHON_GET_MODULES_DIR_COMMAND
 	     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
