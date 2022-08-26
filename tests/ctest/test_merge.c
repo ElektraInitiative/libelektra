@@ -1,26 +1,26 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include <kdbmerge.h>
 #include <tests_internal.h>
 
-static void test_simple(void)
+static void test_simple (void)
 {
-	printf("test simple merge scenario\n");
+	printf ("test simple merge scenario\n");
 
-	KeySet* ksBase = ksNew (0, KS_END);
-	KeySet* ksOurs = ksNew(0, KS_END);
-	KeySet* ksTheirs = ksNew (0, KS_END);
+	KeySet * ksBase = ksNew (0, KS_END);
+	KeySet * ksOurs = ksNew (0, KS_END);
+	KeySet * ksTheirs = ksNew (0, KS_END);
 
-	Key* baseRoot = keyNew ("system:/test", KEY_END);
-	Key* oursRoot = keyNew ("system:/test", KEY_END);
-	Key* theirsRoot = keyNew ("system:/test", KEY_END);
-	Key* root = keyNew ("system:/test", KEY_END);
+	Key * baseRoot = keyNew ("system:/test", KEY_END);
+	Key * oursRoot = keyNew ("system:/test", KEY_END);
+	Key * theirsRoot = keyNew ("system:/test", KEY_END);
+	Key * root = keyNew ("system:/test", KEY_END);
 
 	ksAppendKey (ksBase, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 
@@ -30,9 +30,9 @@ static void test_simple(void)
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k3", KEY_VALUE, "k3", KEY_END));
 
-	Key* information = keyNew ("system:/", KEY_END);
+	Key * information = keyNew ("system:/", KEY_END);
 
-	KeySet* result = elektraMerge (ksOurs, oursRoot, ksTheirs, theirsRoot, ksBase, baseRoot, root, 1, information);
+	KeySet * result = elektraMerge (ksOurs, oursRoot, ksTheirs, theirsRoot, ksBase, baseRoot, root, 1, information);
 
 	succeed_if (result != NULL, "result must not be NULL");
 	succeed_if (ksGetSize (result) == 3, "result must contain 3 keys");
@@ -59,7 +59,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_simple();
+	test_simple ();
 
 	printf ("\ntest_merge RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
