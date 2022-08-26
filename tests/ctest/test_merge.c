@@ -22,13 +22,13 @@ static void test_simple(void)
 	Key* theirsRoot = keyNew ("system:/test", KEY_END);
 	Key* root = keyNew ("system:/test", KEY_END);
 
-	ksAppendKey (ksBase, keyNew ("system:/test/k1", "k1", KEY_END));
+	ksAppendKey (ksBase, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 
-	ksAppendKey (ksOurs, keyNew ("system:/test/k1", "k1", KEY_END));
-	ksAppendKey (ksOurs, keyNew ("system:/test/k2", "k2", KEY_END));
+	ksAppendKey (ksOurs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
+	ksAppendKey (ksOurs, keyNew ("system:/test/k2", KEY_VALUE, "k2", KEY_END));
 
-	ksAppendKey (ksTheirs, keyNew ("system:/test/k1", "k1", KEY_END));
-	ksAppendKey (ksTheirs, keyNew ("system:/test/k3", "k3", KEY_END));
+	ksAppendKey (ksTheirs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
+	ksAppendKey (ksTheirs, keyNew ("system:/test/k3", KEY_VALUE, "k3", KEY_END));
 
 	Key* information = keyNew ("system:/", KEY_END);
 
