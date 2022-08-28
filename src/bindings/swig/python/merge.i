@@ -15,7 +15,7 @@
 
 ckdb::KeySet * elektraMerge (ckdb::KeySet * our, ckdb::Key * ourRoot, ckdb::KeySet * their, ckdb::Key * theirRoot, ckdb::KeySet * base, ckdb::Key * baseRoot, ckdb::Key * resultKey,
 		       int strategy, ckdb::Key * informationKey);
-int getConflicts (ckdb::Key * informationKey);
+int elektraMergeGetConflicts (ckdb::Key * informationKey);
 
 %pythoncode {
 class MergeKeys:
@@ -33,7 +33,7 @@ class MergeResult:
     self.mergeInformation = informationKey
 
   def hasConflicts(self):
-    return self.mergedKeys is None or getConflicts(self.mergeInformation.getKey()) > 0
+    return self.mergedKeys is None or elektraMergeGetConflicts(self.mergeInformation.getKey()) > 0
 
 class ConflictStrategyAbort:
   def getStrategyNumber(self):

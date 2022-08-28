@@ -67,7 +67,7 @@ while (ret == -1) // as long as we have an error
 		ksCut(theirs, parentKey), parentKey,
 		ksCut(base, parentKey), parentKey,
 		parentKey, strategy, parentKey);
-	int numberOfConflicts = getConflicts (parentKey);
+	int numberOfConflicts = elektraMergeGetConflicts (parentKey);
 	ksDel (theirs);
 	if (result != NULL) {
 		ret = kdbSet (handle, result, parentKey);
