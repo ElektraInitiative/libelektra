@@ -195,7 +195,6 @@ ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", getConflicts, v1)
  * @param informationKey contains the statistics in its meta information
  * @returns the number of conflicts stored in the key
  */
-__asm__(".symver elektraMergeGetConflicts, getConflicts@libelektra_0.8");
 int elektraMergeGetConflicts (Key * informationKey)
 {
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
