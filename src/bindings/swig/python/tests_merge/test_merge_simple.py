@@ -21,7 +21,7 @@ class MergeSimple(unittest.TestCase):
 		ours = kdb.merge.MergeKeys(ourKeys, kdb.Key("system:/test"))
 
 		merger = kdb.merge.Merger()
-		result = merger.merge(base, ours, theirs, kdb.Key("system:/test"), kdb.merge.ConflictStrategyAbort())
+		result = merger.merge(base, ours, theirs, kdb.Key("system:/test"), kdb.merge.ConflictStrategy.ABORT)
 
 		self.assertFalse(result.hasConflicts())
 

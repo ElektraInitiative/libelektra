@@ -18,6 +18,14 @@ ckdb::KeySet * elektraMerge (ckdb::KeySet * our, ckdb::Key * ourRoot, ckdb::KeyS
 int elektraMergeGetConflicts (ckdb::Key * informationKey);
 
 %pythoncode {
+from enum import Enum
+
+class ConflictStrategy(Enum):
+  ABORT = 1
+  INTERACTIVE = 2
+  OUR = 3
+  THEIR = 4
+
 class MergeKeys:
   def __init__(self, keys, parentKey):
     self.keys = keys
@@ -35,21 +43,9 @@ class MergeResult:
   def hasConflicts(self):
     return self.mergedKeys is None or elektraMergeGetConflicts(self.mergeInformation.getKey()) > 0
 
-class ConflictStrategyAbort:
-  def getStrategyNumber(self):
-    return 1
-
-class ConflictStrategyOur:
-  def getStrategyNumber(self):
-    return 3
-
-class ConflictStrategyTheir:
-  def getStrategyNumber(self):
-    return 4
-
 class Merger:
   def merge(self, base, ours, theirs, root, conflictStrategy):
     informationKey = kdb.Key()
-    res = elektraMerge(ours.keys.getKeySet(), ours.root.getKey(), theirs.keys.getKeySet(), theirs.root.getKey(), base.keys.getKeySet(), base.root.getKey(), root.getKey(), conflictStrategy.getStrategyNumber(), informationKey.getKey())
+    res = elektraMerge(ours.keys.getKeySet(), ours.root.getKey(), theirs.keys.getKeySet(), theirs.root.getKey(), base.keys.getKeySet(), base.root.getKey(), root.getKey(), conflictStrategy.value, informationKey.getKey())
     return MergeResult(res, informationKey)
 };
