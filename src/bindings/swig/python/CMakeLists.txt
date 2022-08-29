@@ -61,29 +61,34 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
 	endif ()
 
+	macro(add_python_binding NAME SWIGFILE LINKLIBRARY)
+		set_source_files_properties (${SWIGFILE} PROPERTIES CPLUSPLUS ON)
+		set_source_files_properties (${SWIGFILE} PROPERTIES SWIG_FLAGS "-py3;-extranative")
+		swig_add_library (
+			swig-python-${NAME}
+			LANGUAGE python
+			SOURCES ${SWIGFILE}
+			TYPE MODULE)
+		swig_link_libraries (swig-python-${NAME} ${LINKLIBRARY} ${PYTHON_LIBRARIES})
+		set_target_properties (_swig-python-${NAME} PROPERTIES OUTPUT_NAME _${NAME})
+		set_target_properties (_swig-python-${NAME} PROPERTIES SKIP_BUILD_RPATH TRUE)
+		set_target_properties (_swig-python-${NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+		set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+
+		if (BUILD_TESTING)
+			# add tests
+			add_subdirectory (tests_${NAME})
+		endif ()
+	endmacro()
+
 	# kdb module
 	add_cppheaders (HDR_FILES)
-	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
-	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-	swig_add_library (
-		swig-python
-		LANGUAGE python
-		SOURCES kdb.i
-		TYPE MODULE)
-	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
-	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
-	set_target_properties (_swig-python PROPERTIES SKIP_BUILD_RPATH TRUE)
-	set_target_properties (_swig-python PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	add_python_binding(kdb kdb.i elektra-kdb)
 	add_custom_command (
-		TARGET _swig-python
+		TARGET _swig-python-kdb
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" ${CMAKE_SWIG_OUTDIR}/)
 
-	if (BUILD_TESTING)
-		# add tests
-		add_subdirectory (tests)
-	endif ()
 
 	# tools module
 	#
@@ -92,47 +97,11 @@ else ()
 		message (WARNING "Python bindings for elektra tools require SWIG 4 or later. Not building.")
 	else (${SWIG_VERSION} VERSION_LESS "4.0.0")
 		add_toolheaders (HDR_FILES)
-		set_source_files_properties (tools.i PROPERTIES CPLUSPLUS ON)
-		set_source_files_properties (tools.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-		swig_add_library (
-			swig-python-tools
-			LANGUAGE python
-			SOURCES tools.i
-			TYPE MODULE)
-		swig_link_libraries (swig-python-tools elektratools ${PYTHON_LIBRARIES})
-		set_target_properties (_swig-python-tools PROPERTIES OUTPUT_NAME _tools)
-		set_target_properties (_swig-python-tools PROPERTIES SKIP_BUILD_RPATH TRUE)
-		set_target_properties (_swig-python-tools PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-		set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
-
-		if (BUILD_TESTING)
-			# add tests
-			add_subdirectory (tests_tools)
-		endif ()
+		add_python_binding(tools tools.i elektratools)
 	endif (${SWIG_VERSION} VERSION_LESS "4.0.0")
 
 	# merge module
-	set_source_files_properties (merge.i PROPERTIES CPLUSPLUS ON)
-	set_source_files_properties (merge.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-	swig_add_library (
-		swig-python-merge
-		LANGUAGE python
-		SOURCES merge.i
-		TYPE MODULE)
-	swig_link_libraries (swig-python-merge elektra-merge ${PYTHON_LIBRARIES})
-	set_target_properties (_swig-python-merge PROPERTIES OUTPUT_NAME _merge)
-	set_target_properties (_swig-python-merge PROPERTIES SKIP_BUILD_RPATH TRUE)
-	set_target_properties (_swig-python-merge PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
-	add_custom_command (
-		TARGET _swig-python-merge
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" ${CMAKE_SWIG_OUTDIR}/)
-
-	if (BUILD_TESTING)
-		# add tests
-		add_subdirectory (tests_merge)
-	endif ()
+	add_python_binding(merge merge.i elektra-merge)
 
 	# install package
 	set (PYTHON_GET_MODULES_DIR_COMMAND
@@ -154,3 +123,4 @@ endif ()
 if (POLICY CMP0078)
 	cmake_policy (POP)
 endif (POLICY CMP0078)
+
