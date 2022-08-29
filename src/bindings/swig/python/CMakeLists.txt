@@ -16,8 +16,8 @@ include (${SWIG_USE_FILE})
 include (LibAddMacros)
 
 # set (PythonInterp_FIND_VERSION_EXACT ON)
-find_package (PythonInterp 3 QUIET)
-find_package (PythonLibs 3 QUIET)
+find_package (PythonInterp 3.4 QUIET)
+find_package (PythonLibs 3.4 QUIET)
 
 if (NOT PYTHONINTERP_FOUND)
 	exclude_binding (python "python3 interpreter not found")
