@@ -65,15 +65,11 @@ else ()
 	add_cppheaders (HDR_FILES)
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
 	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-	if (CMAKE_VERSION VERSION_LESS 3.8)
-		swig_add_module (swig-python python kdb.i)
-	else (CMAKE_VERSION VERSION_LESS 3.8)
-		swig_add_library (
-			swig-python
-			LANGUAGE python
-			SOURCES kdb.i
-			TYPE MODULE)
-	endif (CMAKE_VERSION VERSION_LESS 3.8)
+	swig_add_library (
+		swig-python
+		LANGUAGE python
+		SOURCES kdb.i
+		TYPE MODULE)
 	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
 	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
 	set_target_properties (_swig-python PROPERTIES SKIP_BUILD_RPATH TRUE)
@@ -98,15 +94,11 @@ else ()
 		add_toolheaders (HDR_FILES)
 		set_source_files_properties (tools.i PROPERTIES CPLUSPLUS ON)
 		set_source_files_properties (tools.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-		if (CMAKE_VERSION VERSION_LESS 3.8)
-			swig_add_module (swig-python-tools python tools.i)
-		else (CMAKE_VERSION VERSION_LESS 3.8)
-			swig_add_library (
-				swig-python-tools
-				LANGUAGE python
-				SOURCES tools.i
-				TYPE MODULE)
-		endif (CMAKE_VERSION VERSION_LESS 3.8)
+		swig_add_library (
+			swig-python-tools
+			LANGUAGE python
+			SOURCES tools.i
+			TYPE MODULE)
 		swig_link_libraries (swig-python-tools elektratools ${PYTHON_LIBRARIES})
 		set_target_properties (_swig-python-tools PROPERTIES OUTPUT_NAME _tools)
 		set_target_properties (_swig-python-tools PROPERTIES SKIP_BUILD_RPATH TRUE)
@@ -120,18 +112,13 @@ else ()
 	endif (${SWIG_VERSION} VERSION_LESS "4.0.0")
 
 	# merge module
-	add_cppheaders (HDR_FILES)
 	set_source_files_properties (merge.i PROPERTIES CPLUSPLUS ON)
 	set_source_files_properties (merge.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-	if (CMAKE_VERSION VERSION_LESS 3.8)
-		swig_add_module (swig-python-merge python merge.i)
-	else (CMAKE_VERSION VERSION_LESS 3.8)
-		swig_add_library (
-			swig-python-merge
-			LANGUAGE python
-			SOURCES merge.i
-			TYPE MODULE)
-	endif (CMAKE_VERSION VERSION_LESS 3.8)
+	swig_add_library (
+		swig-python-merge
+		LANGUAGE python
+		SOURCES merge.i
+		TYPE MODULE)
 	swig_link_libraries (swig-python-merge elektra-merge ${PYTHON_LIBRARIES})
 	set_target_properties (_swig-python-merge PROPERTIES OUTPUT_NAME _merge)
 	set_target_properties (_swig-python-merge PROPERTIES SKIP_BUILD_RPATH TRUE)
