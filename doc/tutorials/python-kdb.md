@@ -9,6 +9,7 @@
 - [Import kdb](#Import-kdb)
 - [Keyset](#Keyset)
 - [Keys](#Keys)
+- [Merging KeySets](#Merging KeySets)
 
 ## Introduction
 
@@ -283,4 +284,40 @@ with KDB() as data:
     # ks['/user/sw/pk/key_name'].value == 'other_key_value'
     keyset.append(newer_key)
     print(describe(keyset, "Replace Key", newline=False))
+```
+
+## Merging KeySets
+
+The internal three-way merge algorithm is also included in the Python bindings.
+
+```py
+import kdb, kdb.merge
+
+baseKeys = kdb.KeySet(100,
+                    kdb.Key("system:/test/key1", "k1"),
+                    kdb.Key("system:/test/key2", "k2"),
+                    kdb.KS_END,
+                    )
+
+ourKeys = kdb.KeySet(100,
+                     kdb.Key("system:/test/key1", "k1"),
+                     kdb.Key("system:/test/key3", "k3"),
+                     kdb.KS_END,
+                     )
+
+theirKeys = kdb.KeySet(100,
+                       kdb.Key("system:/test/key1", "k1"),
+                       kdb.Key("system:/test/key4", "k4"),
+                       kdb.KS_END,
+                       ) 
+
+base = kdb.merge.MergeKeys(baseKeys, kdb.Key("system:/test"))
+theirs = kdb.merge.MergeKeys(theirKeys, kdb.Key("system:/test"))
+ours = kdb.merge.MergeKeys(ourKeys, kdb.Key("system:/test"))
+
+merger = kdb.merge.Merger()
+mergeResult = merger.merge(base, ours, theirs, kdb.Key("system:/test"), kdb.merge.ConflictStrategy.THEIR)
+
+# prints ['system:/test/key1', 'system:/test/key3', 'system:/test/key4']
+print(mergeResult.mergedKeys)
 ```
