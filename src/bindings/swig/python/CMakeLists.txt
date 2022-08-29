@@ -61,7 +61,7 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
 	endif ()
 
-	macro(add_python_binding NAME SWIGFILE LINKLIBRARY)
+	macro (add_python_binding NAME SWIGFILE LINKLIBRARY)
 		set_source_files_properties (${SWIGFILE} PROPERTIES CPLUSPLUS ON)
 		set_source_files_properties (${SWIGFILE} PROPERTIES SWIG_FLAGS "-py3;-extranative")
 		swig_add_library (
@@ -79,16 +79,15 @@ else ()
 			# add tests
 			add_subdirectory (tests_${NAME})
 		endif ()
-	endmacro()
+	endmacro ()
 
 	# kdb module
 	add_cppheaders (HDR_FILES)
-	add_python_binding(kdb kdb.i elektra-kdb)
+	add_python_binding (kdb kdb.i elektra-kdb)
 	add_custom_command (
 		TARGET _swig-python-kdb
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" ${CMAKE_SWIG_OUTDIR}/)
-
 
 	# tools module
 	#
@@ -97,11 +96,11 @@ else ()
 		message (WARNING "Python bindings for elektra tools require SWIG 4 or later. Not building.")
 	else (${SWIG_VERSION} VERSION_LESS "4.0.0")
 		add_toolheaders (HDR_FILES)
-		add_python_binding(tools tools.i elektratools)
+		add_python_binding (tools tools.i elektratools)
 	endif (${SWIG_VERSION} VERSION_LESS "4.0.0")
 
 	# merge module
-	add_python_binding(merge merge.i elektra-merge)
+	add_python_binding (merge merge.i elektra-merge)
 
 	# install package
 	set (PYTHON_GET_MODULES_DIR_COMMAND
@@ -123,4 +122,3 @@ endif ()
 if (POLICY CMP0078)
 	cmake_policy (POP)
 endif (POLICY CMP0078)
-
