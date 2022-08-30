@@ -133,15 +133,15 @@ static void test_changed_different_keys_in_both (void)
 	succeed_if (result != NULL, "result must not be NULL");
 
 	succeed_if (ksGetSize (result) == 3, "result must contain 3 keys");
-	Key* k1 = ksLookupByName (result, "system:/test/k1", KDB_O_NONE);
+	Key * k1 = ksLookupByName (result, "system:/test/k1", KDB_O_NONE);
 	succeed_if (k1 != NULL, "system:/test/k1 must be included in result");
 	succeed_if (strcmp ("k1", keyString (k1)) == 0, "value of k1 must be 'k1'");
 
-	Key* k2 = ksLookupByName (result, "system:/test/k2", KDB_O_NONE);
+	Key * k2 = ksLookupByName (result, "system:/test/k2", KDB_O_NONE);
 	succeed_if (k2 != NULL, "system:/test/k2 must be included in result");
 	succeed_if (strcmp ("k2-c", keyString (k2)) == 0, "value of k2 must be 'k2-c'");
 
-	Key* k3 = ksLookupByName (result, "system:/test/k3", KDB_O_NONE);
+	Key * k3 = ksLookupByName (result, "system:/test/k3", KDB_O_NONE);
 	succeed_if (k3 != NULL, "system:/test/k3 must be included in result");
 	succeed_if (strcmp ("k3-c", keyString (k3)) == 0, "value of k3 must be 'k3-c'");
 
@@ -202,7 +202,7 @@ static void test_changed_same_key_abort (void)
 	ksDel (result);
 }
 
-static void test_changed_same_key_their(void)
+static void test_changed_same_key_their (void)
 {
 	printf ("test conflict with THEIR\n");
 
@@ -233,11 +233,11 @@ static void test_changed_same_key_their(void)
 	succeed_if (result != NULL, "result must not be NULL");
 
 	succeed_if (ksGetSize (result) == 2, "result must contain 2 keys");
-	Key* k1 = ksLookupByName (result, "system:/test/k1", KDB_O_NONE);
+	Key * k1 = ksLookupByName (result, "system:/test/k1", KDB_O_NONE);
 	succeed_if (k1 != NULL, "system:/test/k1 must be included in result");
 	succeed_if (strcmp ("k1", keyString (k1)) == 0, "value of k1 must be 'k1'");
 
-	Key* k2 = ksLookupByName (result, "system:/test/k2", KDB_O_NONE);
+	Key * k2 = ksLookupByName (result, "system:/test/k2", KDB_O_NONE);
 	succeed_if (k2 != NULL, "system:/test/k2 must be included in result");
 	succeed_if (strcmp ("k2-their", keyString (k2)) == 0, "value of k2 must be 'k2-their'");
 
@@ -255,7 +255,7 @@ static void test_changed_same_key_their(void)
 	ksDel (result);
 }
 
-static void test_changed_same_key_our(void)
+static void test_changed_same_key_our (void)
 {
 	printf ("test conflict with OUR\n");
 
@@ -286,11 +286,11 @@ static void test_changed_same_key_our(void)
 	succeed_if (result != NULL, "result must not be NULL");
 
 	succeed_if (ksGetSize (result) == 2, "result must contain 2 keys");
-	Key* k1 = ksLookupByName (result, "system:/test/k1", KDB_O_NONE);
+	Key * k1 = ksLookupByName (result, "system:/test/k1", KDB_O_NONE);
 	succeed_if (k1 != NULL, "system:/test/k1 must be included in result");
 	succeed_if (strcmp ("k1", keyString (k1)) == 0, "value of k1 must be 'k1'");
 
-	Key* k2 = ksLookupByName (result, "system:/test/k2", KDB_O_NONE);
+	Key * k2 = ksLookupByName (result, "system:/test/k2", KDB_O_NONE);
 	succeed_if (k2 != NULL, "system:/test/k2 must be included in result");
 	succeed_if (strcmp ("k2-our", keyString (k2)) == 0, "value of k2 must be 'k2-our'");
 
@@ -316,11 +316,11 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_new_keys_in_both ();
-	test_removed_keys_in_both();
-	test_changed_different_keys_in_both();
-	test_changed_same_key_abort();
-	test_changed_same_key_their();
-	test_changed_same_key_our();
+	test_removed_keys_in_both ();
+	test_changed_different_keys_in_both ();
+	test_changed_same_key_abort ();
+	test_changed_same_key_their ();
+	test_changed_same_key_our ();
 
 	printf ("\ntest_merge RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
