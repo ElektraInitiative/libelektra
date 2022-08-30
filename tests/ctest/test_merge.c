@@ -241,6 +241,8 @@ static void test_changed_same_key_their(void)
 	succeed_if (k2 != NULL, "system:/test/k2 must be included in result");
 	succeed_if (strcmp ("k2-their", keyString (k2)) == 0, "value of k2 must be 'k2-their'");
 
+	succeed_if (elektraMergeGetConflicts (information) == 1, "must have 1 conflicts");
+
 	keyDel (baseRoot);
 	keyDel (oursRoot);
 	keyDel (theirsRoot);
@@ -291,6 +293,8 @@ static void test_changed_same_key_our(void)
 	Key* k2 = ksLookupByName (result, "system:/test/k2", KDB_O_NONE);
 	succeed_if (k2 != NULL, "system:/test/k2 must be included in result");
 	succeed_if (strcmp ("k2-our", keyString (k2)) == 0, "value of k2 must be 'k2-our'");
+
+	succeed_if (elektraMergeGetConflicts (information) == 1, "must have 1 conflicts");
 
 	keyDel (baseRoot);
 	keyDel (oursRoot);
