@@ -116,7 +116,7 @@ static void test_changed_different_keys_in_both (void)
 	ksAppendKey (ksBase, keyNew ("system:/test/k2", KEY_VALUE, "k2", KEY_END));
 	ksAppendKey (ksBase, keyNew ("system:/test/k3", KEY_VALUE, "k3", KEY_END));
 
-	// we removed changed k2
+	// we changed k2
 	ksAppendKey (ksOurs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksOurs, keyNew ("system:/test/k2", KEY_VALUE, "k2-c", KEY_END));
 	ksAppendKey (ksOurs, keyNew ("system:/test/k3", KEY_VALUE, "k3", KEY_END));
@@ -175,11 +175,11 @@ static void test_changed_same_key_abort (void)
 	ksAppendKey (ksBase, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksBase, keyNew ("system:/test/k2", KEY_VALUE, "k2", KEY_END));
 
-	// we removed changed k2
+	// we changed k2
 	ksAppendKey (ksOurs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksOurs, keyNew ("system:/test/k2", KEY_VALUE, "k2-ours", KEY_END));
 
-	// they changed k3
+	// they changed k2
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k2", KEY_VALUE, "k2-theirs", KEY_END));
 
@@ -218,11 +218,11 @@ static void test_changed_same_key_their(void)
 	ksAppendKey (ksBase, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksBase, keyNew ("system:/test/k2", KEY_VALUE, "k2", KEY_END));
 
-	// we removed changed k2
+	// we changed k2
 	ksAppendKey (ksOurs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksOurs, keyNew ("system:/test/k2", KEY_VALUE, "k2-our", KEY_END));
 
-	// they changed k3
+	// they changed k2
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k2", KEY_VALUE, "k2-their", KEY_END));
 
@@ -271,11 +271,11 @@ static void test_changed_same_key_our(void)
 	ksAppendKey (ksBase, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksBase, keyNew ("system:/test/k2", KEY_VALUE, "k2", KEY_END));
 
-	// we removed changed k2
+	// we changed k2
 	ksAppendKey (ksOurs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksOurs, keyNew ("system:/test/k2", KEY_VALUE, "k2-our", KEY_END));
 
-	// they changed k3
+	// they changed k2
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k1", KEY_VALUE, "k1", KEY_END));
 	ksAppendKey (ksTheirs, keyNew ("system:/test/k2", KEY_VALUE, "k2-their", KEY_END));
 
