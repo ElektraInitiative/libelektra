@@ -309,7 +309,7 @@ theirKeys = kdb.KeySet(100,
                        kdb.Key("system:/test/key1", "k1"),
                        kdb.Key("system:/test/key4", "k4"),
                        kdb.KS_END,
-                       ) 
+                       )
 
 base = kdb.merge.MergeKeys(baseKeys, kdb.Key("system:/test"))
 theirs = kdb.merge.MergeKeys(theirKeys, kdb.Key("system:/test"))
