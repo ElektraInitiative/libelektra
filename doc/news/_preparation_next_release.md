@@ -150,7 +150,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Python
 
-- add merging based on elektraMerge _(@atmaxinger)_
+- add merging based on elektraMerge _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -317,7 +317,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### CMake
 
 - Fix build with newer libgit2 versions _(Fabian Vogt)_
-- <<TODO>>
+- We now require at least CMake `3.12` (release in July 2018). _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

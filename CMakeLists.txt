@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.4)
+cmake_minimum_required (VERSION 3.12)
 
 # allows us to override platform specific variables
 set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/scripts/cmake/Platform.cmake")
@@ -12,20 +12,11 @@ set (ELEKTRA_DESCRIPTION
      "Elektra serves as a universal and secure framework to access configuration settings in a global, hierarchical key database.")
 set (ELEKTRA_HOMEPAGE_URL "https://www.libelektra.org")
 
-if (CMAKE_VERSION VERSION_LESS 3.9)
-	project (Elektra VERSION "${KDB_VERSION}")
-elseif (CMAKE_VERSION VERSION_LESS 3.12)
-	project (
-		Elektra
-		VERSION ${KDB_VERSION}
-		DESCRIPTION ${ELEKTRA_DESCRIPTION})
-else (CMAKE_VERSION VERSION_LESS 3.12)
-	project (
-		Elektra
-		VERSION ${KDB_VERSION}
-		DESCRIPTION ${ELEKTRA_DESCRIPTION}
-		HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
-endif (CMAKE_VERSION VERSION_LESS 3.9)
+project (
+	Elektra
+	VERSION ${KDB_VERSION}
+	DESCRIPTION ${ELEKTRA_DESCRIPTION}
+	HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
 
 # fix macOS RPATH issues
 if (APPLE)
