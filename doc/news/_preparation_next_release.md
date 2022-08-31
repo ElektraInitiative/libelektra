@@ -317,7 +317,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### CMake
 
 - Fix build with newer libgit2 versions _(Fabian Vogt)_
-- We now require at least CMake `3.12` (release in July 2018). _(Maximilian Irlinger @atmaxinger)_
+- We now require at least CMake `3.12` (released in July 2018). _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -337,7 +337,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- We no longer build and test on Ubuntu Xenial and Debian Stretch due to outdated CMake versions _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

@@ -296,40 +296,6 @@ def dockerInit() {
       "./scripts/docker/debian/buster/i386.Dockerfile"
     )
 
-    /* A Debian oldstable image used for testing backwards compatibility.
-     */
-    DOCKER_IMAGES.stretch = dockerUtils.createDockerImageDesc(
-      "debian-stretch", dockerUtils.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile"
-    )
-
-    /* A minimal Debian stretch image used to test Elektra without any
-     * additional requirements introduced by optional plugins, bindings,
-     * ...
-     */
-    DOCKER_IMAGES.stretch_minimal = dockerUtils.createDockerImageDesc(
-      "debian-stretch-minimal", dockerUtils.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/minimal.Dockerfile"
-    )
-
-    /* A Docker image for crossbuilding i386
-     */
-    DOCKER_IMAGES.stretch_i386 = dockerUtils.createDockerImageDesc(
-      "debian-stretch-i386", dockerUtils.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/i386.Dockerfile"
-    )
-
-    /* Ubuntu xenial image used to test compatibility with Ubuntu.
-     */
-    DOCKER_IMAGES.xenial = dockerUtils.createDockerImageDesc(
-      "ubuntu-xenial", dockerUtils.&idTesting,
-      "./scripts/docker/ubuntu/xenial",
-      "./scripts/docker/ubuntu/xenial/Dockerfile"
-    )
-
     /* Alpine: used to compile against musl and uses ash as shell
      */
     DOCKER_IMAGES.alpine = dockerUtils.createDockerImageDesc(
@@ -601,19 +567,6 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
-  tasks << buildAndTest(
-    "debian-stretch-full",
-    DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
-
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
@@ -693,15 +646,7 @@ def generateFullBuildStages() {
     [TEST.ALL]
   )
 
-  // Build Elektra on ubuntu-xenial
-  tasks << buildAndTest(
-    "ubuntu-xenial",
-    DOCKER_IMAGES.xenial,
-    CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
-  )
-
-  // Build Elektra on a minimal Debian stretch Docker image
+  // Build Elektra on a minimal Debian buster Docker image
   tasks << buildAndTest(
     "debian-buster-minimal",
     DOCKER_IMAGES.buster_minimal,
