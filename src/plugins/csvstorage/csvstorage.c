@@ -280,7 +280,7 @@ static KeySet * createHeaders (Key * parentKey, int columns, const char ** colNa
 			return NULL;
 		}
 		Key * key = keyDup (orderKey, KEY_CP_ALL);
-		if (colNames && (colNames + colCounter))
+		if (colNames)
 			keySetString (key, colNames[colCounter]);
 		else
 			keySetString (key, keyBaseName (key));
@@ -312,7 +312,7 @@ static KeySet * readHeaders (Key * parentKey, char * lineBuffer, char delim, int
 			return NULL;
 		}
 		Key * key = keyDup (orderKey, KEY_CP_ALL);
-		if (colNames && (colNames + colCounter))
+		if (colNames)
 		{
 			keySetString (key, colNames[colCounter]);
 		}
