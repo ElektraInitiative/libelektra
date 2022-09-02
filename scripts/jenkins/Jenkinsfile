@@ -229,15 +229,6 @@ def dockerInit() {
       "./scripts/docker/debian/sid/Dockerfile"
     )
 
-    /* Build Elektra's documentation with this image.
-     * Also contains latex for pdf creation.
-     */
-    DOCKER_IMAGES.sid_doc = dockerUtils.createDockerImageDesc(
-      "debian-sid-doc", dockerUtils.&idTesting,
-      "./scripts/docker/debian/sid",
-      "./scripts/docker/debian/sid/doc.Dockerfile"
-    )
-
     /*
      * Debian Bullseye. Used for testing and packaging.
      */
@@ -264,6 +255,15 @@ def dockerInit() {
       "./scripts/docker/debian/bullseye",
       "./scripts/docker/debian/bullseye/i386.Dockerfile"
     )
+
+	/* Build Elektra's documentation with this image.
+	 * Also contains latex for pdf creation.
+	 */
+	DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
+	  "debian-bullseye-doc", dockerUtils.&idTesting,
+	  "./scripts/docker/debian/bullseye",
+	  "./scripts/docker/debian/bullseye/doc.Dockerfile"
+	)
 
     /* Our main target for compatibility is Debian stable
      * (currently buster).
@@ -820,7 +820,7 @@ def buildTodo() {
 '''
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid_doc) {
+      withDockerEnv(DOCKER_IMAGES.bullseye_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         recordIssues(tools: [taskScanner(ignoreCase: true, includePattern: openTaskPatterns, lowTags: 'TODO,FIXME')])
@@ -910,7 +910,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid_doc) {
+      withDockerEnv(DOCKER_IMAGES.bullseye_doc) {
         dir('build') {
           deleteDir()
           utils.cmake(env.WORKSPACE, cmakeFlags)
