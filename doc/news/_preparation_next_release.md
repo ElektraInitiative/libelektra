@@ -334,7 +334,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Docker
 
 - Bump Alpine Linux to 3.16.0. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
+- The Docker image for building the documentation is now [based on Debian Bullseye](../../scripts/docker/debian/bullseye/doc.Dockerfile). _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
