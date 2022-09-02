@@ -61,9 +61,9 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin>>
+### csvstorage
 
-- <<TODO>>
+- Remove superfluous if-conditions that lead to a build error on Debian Unstable _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
