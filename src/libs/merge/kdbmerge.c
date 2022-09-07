@@ -181,13 +181,21 @@ static int getTotalNonOverlaps (Key * informationKey)
 	       getNonOverlapOnlyBaseConflicts (informationKey);
 }
 
+
+int ELEKTRA_SYMVER (getConflicts, v1) (Key * informationKey)
+{
+	return elektraMergeGetConflicts (informationKey);
+}
+
+ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", getConflicts, v1)
+
 /**
  * This function returns the number of conflicts that is store in the key
  *
  * @param informationKey contains the statistics in its meta information
  * @returns the number of conflicts stored in the key
  */
-int getConflicts (Key * informationKey)
+int elektraMergeGetConflicts (Key * informationKey)
 {
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
 }
@@ -1016,13 +1024,13 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not delete a key set.");
 		return NULL;
 	}
-	if (getConflicts (informationKey) > 0)
+	if (elektraMergeGetConflicts (informationKey) > 0)
 	{
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			ksDel (result);
 			ELEKTRA_SET_INTERNAL_ERRORF (informationKey, "Abort strategy was set and %d conflicts occured.",
-						     getConflicts (informationKey));
+						     elektraMergeGetConflicts (informationKey));
 			return NULL;
 		}
 	}
