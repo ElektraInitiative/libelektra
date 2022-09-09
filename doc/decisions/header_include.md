@@ -74,7 +74,7 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
 
 The rules for including headers are:
 
-- To include a private non-installed header (i.e. a file that is only available in the source repo) use:
+- To include a private non-installed header (i.e., a file that is only available in the source repo) use:
   ```c
   #include "./header.h"
   // or
@@ -98,7 +98,7 @@ We will set up the `build/include` directory to mirror the installed layout of h
 This makes the `#include <>`s work correctly, without having to add any extra include paths except `build/include`.
 
 We will also enforce that the path in a `#include ""` always starts with a `./` and does not contain any `/../`.
-To do this, we will use a simple `grep` based script that runs as a test case and as an early part of the CI (like e.g. the formatting check).
+To do this, we will use a simple `grep` based script that runs as a test case and as an early part of the CI (like e.g., the formatting check).
 
 The rules for `#include ""` do not apply to tests.
 Tests can include anything from anywhere within the code base to allow testing private APIs.
@@ -106,8 +106,7 @@ Tests can include anything from anywhere within the code base to allow testing p
 ## Rationale
 
 The decision highlights the difference between installed and non-installed headers.
-The main driving factor for using `""` at all was that including a non-installed private header with `<>` would be unexpected.
-Since non-installed headers shouldn't be in the (standard) include-path.
+The main driving factor for using `""` at all was that including a non-installed private header with `<>` would be unexpected, since non-installed headers shouldn't be in the (standard) include-path.
 
 See also considered alternatives.
 

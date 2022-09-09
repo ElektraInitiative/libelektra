@@ -71,25 +71,25 @@ A monolithic library `foo` may have these headers (covering categories 3 & 4 fro
 
 A modularized library `bar` may have these headers (covering categories 3 & 4 from above):
 
-- (B) `src/include/elektra/foo/public.h`:
+- `src/include/elektra/foo/public.h`:
   Declares the public API of `libelektra-foo`, by including `#include <elektra/foo/*.h>`.
   Will be installed as `<include-root>/elektra/public/foo.h`.
 
   Such a header may only include `#include <elektra/foo/*.h>` lines.
 
-- (B) `src/include/elektra/foo/*.h`:
+- `src/include/elektra/foo/*.h`:
   Additional public API header of `libelektra-foo`.
   Will be installed as `<include-root>/elektra/foo/*.h`.
 
   All of these installed headers `installed.h` must be included from `src/lib/foo/public.h` via a line `#include <elektra/foo/installed.h>`.
 
-- (B) `src/include/elektra/foo/internal.h`:
+- `src/include/elektra/foo/internal.h`:
   Declares the internal (i.e., non-stable) API of `libelektra-foo`, by including `#include <elektra/foo/*.h>`.
   Will be installed as `<include-root>/elektra/internal/foo.h`.
 
   Such a header may only include `#include <elektra/foo/*.h>` lines.
 
-- (B) `src/include/elektra/foo/internal/*.h`:
+- `src/include/elektra/foo/internal/*.h`:
   Additional header of `libelektra-foo`.
   Will be installed as `<include-root>/elektra/foo/internal/*.h`.
 
