@@ -25,14 +25,14 @@ The big problem is kdbprivate.h. It has two main problems:
 
 - There are different categories of "private":
 
-  1.  Some parts are truly private, i.e. shouldn't be used outside the library that defines them.
+  1.  Some parts are truly private, i.e., shouldn't be used outside the library that defines them.
       These things are only there because a library was split into multiple `.c` files.
-      This includes e.g. `splitNew` and `struct _Split`.
+      This includes e.g., `splitNew` and `struct _Split`.
 
       Symbols belonging to this category should not appear at all in the `symbols.map` file.
 
   2.  Other things are truly private, but must be tested.
-      This includes e.g. most other `split*` functions or the `elektraKeyName*` functions.
+      This includes e.g., most other `split*` functions or the `elektraKeyName*` functions.
 
       Symbols belonging to this category should not appear in at all in the `symbols.map` file.
 
@@ -45,7 +45,7 @@ The big problem is kdbprivate.h. It has two main problems:
       Symbols belonging to this category should not appear in a public section of the `symbols.map` file.
 
   4.  Finally, there things that aren't part of the public API, but may be in future.
-      This includes e.g. `ksFindHierarchy` or `elektraReadArrayNumber`.
+      This includes e.g., `ksFindHierarchy` or `elektraReadArrayNumber`.
       These functions could be public, but for various reasons are not.
       Maybe they are not well-tested, or maybe we just don't want to commit to the function yet.
 
@@ -55,38 +55,63 @@ The big problem is kdbprivate.h. It has two main problems:
 
 ## Decision
 
-A library `foo` may have these headers (covering categories 1, 3 & 4 from above):
+### Libraries
 
-- `src/lib/foo.h`:
-  Contains the public API of `libelektra-foo`.
+A library can be monolithic or modularized.
+Monolithic libraries should be small and bigger libraries with large APIs should be modularized.
+
+A monolithic library `foo` may have these headers (covering categories 3 & 4 from above):
+
+- `src/include/elektra/foo.h`:
+  Contains the full public API of `libelektra-foo`.
   Will be installed as `<include-root>/elektra/foo.h`.
-- `src/lib/foo/internal.h`:
-  Contains the unstable API of `libelektra-foo`.
+- `src/include/elektra/foo/internal.h`:
+  Contains the internal (i.e., non-stable) API of `libelektra-foo`.
   Will be installed as `<include-root>/elektra/foo/internal.h`.
+
+A modularized library `bar` may have these headers (covering categories 3 & 4 from above):
+
+- (B) `src/include/elektra/foo/public.h`:
+  Declares the public API of `libelektra-foo`, by including `#include <elektra/foo/*.h>`.
+  Will be installed as `<include-root>/elektra/public/foo.h`.
+
+  Such a header may only include `#include <elektra/foo/*.h>` lines.
+
+- (B) `src/include/elektra/foo/*.h`:
+  Additional public API header of `libelektra-foo`.
+  Will be installed as `<include-root>/elektra/foo/*.h`.
+
+  All of these installed headers `installed.h` must be included from `src/lib/foo/public.h` via a line `#include <elektra/foo/installed.h>`.
+
+- (B) `src/include/elektra/foo/internal.h`:
+  Declares the internal (i.e., non-stable) API of `libelektra-foo`, by including `#include <elektra/foo/*.h>`.
+  Will be installed as `<include-root>/elektra/internal/foo.h`.
+
+  Such a header may only include `#include <elektra/foo/*.h>` lines.
+
+- (B) `src/include/elektra/foo/internal/*.h`:
+  Additional header of `libelektra-foo`.
+  Will be installed as `<include-root>/elektra/foo/internal/*.h`.
+
+  All of these installed headers `installed.h` must be included from `src/lib/foo/internal.h` via a line `#include <elektra/foo/internal/installed.h>`.
+
+Additionally, all libraries may also have private headers:
+
 - `src/lib/foo/**/*.h`:
   Additional headers may be present.
-  By default, they are private API and will not be installed.
+  These headers may only be used by other files within `src/lib/foo`, according to the rules in [Including Headers](header_include.md).
 
-  CMake can be used to install additional headers.
-  Any of these installed headers `installed.h` must be included from `src/lib/foo/public.h`, or `src/lib/foo/internal.h` via a line `#include <elektra/foo/installed.h>`.
-  This inclusion determines what kind of API the header contains.
-  If `src/lib/foo/public.h` or `src/lib/foo/internal.h` include multiple of these extra headers, it must not declare any API itself.
-  This is called a modularized library.
-  Libraries that only install the default `src/lib/foo/public.h` or `src/lib/foo/internal.h` headers are called monolithic.
-
-  The non-installed private headers must (of course) not be included in any of the installed headers (including the default ones).
-
-Moving symbols between (non-private) headers is always a breaking change.
+### Plugins
 
 Plugins do not declare their API via header files.
-Their headers are never installed and can be named and included any way the developer wants.
+Their headers are never installed and can be named any way the developer wants.
 
-As seen above, all headers will be installed into a subfolder of `<include-root>/elektra`, where `<include-root>` is e.g. `/usr/include`.
+### Tests
 
-For category 2 from above (private but needs to be tested), there are two options:
+For category 2 from above (private but needs to be tested), one of the following should be done:
 
 1. Declare functions as `static` in a `.c` file and `#include ""` this file from the test.
-2. Add a private non-installed header that declares the API that needs testing, `#include ""` that and compile the test sources together with the `.o` files from the library (static linking).
+2. Add a private non-installed header (e.g. `src/lib/foo/testapi.h`) that declares the API that needs testing, `#include ""` that and compile the test sources together with the `.o` files from the library (static linking).
 
 If a symbol is needed in only one file and for tests, option 1 should be preferred.
 For symbols that are used in multiple files, a header needs to exist anyway.
@@ -95,20 +120,20 @@ This way we don't pollute our `symbols.map` files and keep the number of exporte
 
 ## Rationale
 
-- This structure makes the `#includes` simple and works nicely with our directory structure.
+- This structure makes the `#include`s simple and works nicely with our directory structure.
 - Having a uniform naming convention simplifies things, both for developers writing Elektra and those using Elektra.
-- Requiring libraries must either be fully modularized (main headers are only `#includes`) or completely monolithic, avoids the situation where a library has some stuff in extra headers, but sometimes you need the main `public.h`.
+- Requiring libraries must either be fully modularized (main headers are only `#includes`) or completely monolithic, avoids the situation where a library has some parts in `public.h` and other parts in extra headers.
   This is bad, because it encourages users to simply include `public.h`, which defeats the point of modularized headers.
 
 ## Implications
 
-- CMake must do validation of `#includes`. This can be done via simple `grep`.
+- The location of a header file within the source tree determines what API it contains (public, internal, or private).
+- Some libraries are currently neither fully modularized nor fully monolithic.
+  The headers for these libraries must be restructured.
 
 ## Related Decisions
 
-- [Header Include](header_include.md)
+- [Including Headers](header_include.md)
 - [Library Directory Structure](library_directory_structure.md)
 
 ## Notes
-
-Initial text copied from @kodebach https://github.com/ElektraInitiative/libelektra/issues/4219

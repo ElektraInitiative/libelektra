@@ -76,11 +76,11 @@ The rules for including headers are:
 
 - To include a private non-installed header (i.e. a file that is only available in the source repo) use:
   ```c
-  #include "header.h"
+  #include "./header.h"
   // or
-  #include "subdir/header.h"
+  #include "./subdir/header.h"
   ```
-  It should not be necessary, to include a private non-installed header from another directory (i.e. `../` shouldn't be needed).
+  It should not be necessary, to include a private non-installed header from another directory.
 - Installed headers are included with their full path as if they are installed already:
   ```c
   #include <elektra/somelib.h>
@@ -94,15 +94,16 @@ The rules for including headers are:
   // etc.
   ```
 
-To facilitate these rules we will utilize CMake.
-Specifically, we will set up the `build/include` directory to mirror the installed layout of header files.
-This makes the `#include <>`s work correctly.
-We will enforce that `#include ""` cannot go from one library/plugin/tool to another.
+We will set up the `build/include` directory to mirror the installed layout of header files.
+This makes the `#include <>`s work correctly, without having to add any extra include paths except `build/include`.
+
+We will also enforce that the path in a `#include ""` always starts with a `./` and does not contain any `/../`.
+To do this, we will use a simple `grep` based script that runs as a test case and as an early part of the CI (like e.g. the formatting check).
+
+The rules for `#include ""` do not apply to tests.
+Tests can include anything from anywhere within the code base to allow testing private APIs.
 
 ## Rationale
-
-When using `<>` the given paths must match the way the headers will be installed, relative to the include-root (e.g. `/usr/include`).
-But with `""`, we just need to set up CMake correctly to preserve the relative file layout of our header files during install.
 
 The decision highlights the difference between installed and non-installed headers.
 The main driving factor for using `""` at all was that including a non-installed private header with `<>` would be unexpected.
@@ -112,8 +113,8 @@ See also considered alternatives.
 
 ## Implications
 
-- All libraries and plugins keep their own headers next to the `.c` files in one directory per library (see also [Library Directory Structure](library_directory_structure.md)).
-- We must set up CMake such that the relative includes work as expected within the build directory.
+- All installed headers must be put into `build/include`.
+- Non-installed headers meanwhile must be kept next to the `.c` files that use them (e.g. `src/libs/mylib`).
 
 ## Related Decisions
 
