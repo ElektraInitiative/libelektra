@@ -30,23 +30,25 @@ task:
       freebsd_instance:
         cpu: 4
         memory: 8G
-        image_family: freebsd-12-2
+        image_family: freebsd-12-3
 
     - name: 😈 FreeBSD 13
       freebsd_instance:
         cpu: 4
         memory: 8G
-        image_family: freebsd-13-0
+        image_family: freebsd-13-1
 
     - name: 😈 ASAN
       freebsd_instance:
         cpu: 8
         memory: 8G
-        image_family: freebsd-13-0
+        image_family: freebsd-13-1
       env:
         ENABLE_ASAN: ON
 
   install_script:
+    - pkg update -f
+    - pkg upgrade -y
     - >
       pkg install -y
       bison
