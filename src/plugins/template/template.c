@@ -30,22 +30,22 @@ int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey 
 
 int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/template"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/template"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/template", ELEKTRA_KEY_VALUE, "template plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports/open", ELEKTRA_KEY_FUNC, elektraTemplateOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports/close", ELEKTRA_KEY_FUNC, elektraTemplateClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports/get", ELEKTRA_KEY_FUNC, elektraTemplateGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports/set", ELEKTRA_KEY_FUNC, elektraTemplateSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports/commit", ELEKTRA_KEY_FUNC, elektraTemplateCommit, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports/error", ELEKTRA_KEY_FUNC, elektraTemplateError, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/template/exports/checkconf", ELEKTRA_KEY_FUNC, elektraTemplateCheckConf, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/template", ELEKTRA_KEY_VALUE, "template plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports/open", ELEKTRA_KEY_FUNC, elektraTemplateOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports/close", ELEKTRA_KEY_FUNC, elektraTemplateClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports/get", ELEKTRA_KEY_FUNC, elektraTemplateGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports/set", ELEKTRA_KEY_FUNC, elektraTemplateSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports/commit", ELEKTRA_KEY_FUNC, elektraTemplateCommit, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports/error", ELEKTRA_KEY_FUNC, elektraTemplateError, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/template/exports/checkconf", ELEKTRA_KEY_FUNC, elektraTemplateCheckConf, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/template/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/template/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}

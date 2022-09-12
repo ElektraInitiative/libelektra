@@ -15,7 +15,7 @@ void printNamespace (ElektraKey const * k)
 {
 	// clang-format off
 //! [namespace]
-switch (keyGetNamespace (k))
+switch (elektraKeyGetNamespace (k))
 {
 case ELEKTRA_NS_SPEC:
 	printf ("spec namespace\n");
@@ -64,7 +64,7 @@ int main (void)
 		return EXIT_FAILURE;
 	}
 
-	ElektraKey * k = keyNew (s, ELEKTRA_KEY_END);
+	ElektraKey * k = elektraKeyNew (s, ELEKTRA_KEY_END);
 	printNamespace (k);
-	keyDel (k);
+	elektraKeyDel (k);
 }

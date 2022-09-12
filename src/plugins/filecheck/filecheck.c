@@ -44,13 +44,13 @@ int elektraFilecheckOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey 
 	// plugin initialization logic
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	checkStruct * checkConf = (checkStruct *) elektraMalloc (sizeof (checkStruct));
-	checkConf->checkLineEnding = ksLookupByName (config, "/check/lineending", 0) != NULL;
-	checkConf->validLE = strToLE (keyString (ksLookupByName (config, "/valid/lineending", 0)));
-	checkConf->rejectNullByte = ksLookupByName (config, "/reject/null", 0) != NULL;
-	checkConf->checkEncoding = ksLookupByName (config, "/check/encoding", 0) != NULL;
-	checkConf->encoding = (char *) keyString (ksLookupByName (config, "/valid/encoding", 0));
-	checkConf->rejectBom = ksLookupByName (config, "/reject/bom", 0) != NULL;
-	checkConf->rejectUnprintable = ksLookupByName (config, "reject/unprintable", 0) != NULL;
+	checkConf->checkLineEnding = elektraKeysetLookupByName (config, "/check/lineending", 0) != NULL;
+	checkConf->validLE = strToLE (elektraKeyString (elektraKeysetLookupByName (config, "/valid/lineending", 0)));
+	checkConf->rejectNullByte = elektraKeysetLookupByName (config, "/reject/null", 0) != NULL;
+	checkConf->checkEncoding = elektraKeysetLookupByName (config, "/check/encoding", 0) != NULL;
+	checkConf->encoding = (char *) elektraKeyString (elektraKeysetLookupByName (config, "/valid/encoding", 0));
+	checkConf->rejectBom = elektraKeysetLookupByName (config, "/reject/bom", 0) != NULL;
+	checkConf->rejectUnprintable = elektraKeysetLookupByName (config, "reject/unprintable", 0) != NULL;
 	elektraPluginSetData (handle, checkConf);
 	return 1; // success
 }
@@ -306,25 +306,25 @@ static long checkFile (ElektraKey * parentKey, const char * filename, checkStruc
 
 int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/filecheck"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/filecheck"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/filecheck", ELEKTRA_KEY_VALUE, "filecheck plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/open", ELEKTRA_KEY_FUNC, elektraFilecheckOpen, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/close", ELEKTRA_KEY_FUNC, elektraFilecheckClose, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/get", ELEKTRA_KEY_FUNC, elektraFilecheckGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/set", ELEKTRA_KEY_FUNC, elektraFilecheckSet, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/filecheck", ELEKTRA_KEY_VALUE, "filecheck plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/filecheck/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/filecheck/exports/open", ELEKTRA_KEY_FUNC, elektraFilecheckOpen, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/filecheck/exports/close", ELEKTRA_KEY_FUNC, elektraFilecheckClose, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/filecheck/exports/get", ELEKTRA_KEY_FUNC, elektraFilecheckGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/filecheck/exports/set", ELEKTRA_KEY_FUNC, elektraFilecheckSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/filecheck/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/filecheck/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
 	// get all keys
 	checkStruct * checkConf = elektraPluginGetData (handle);
-	const char * filename = keyString (parentKey);
+	const char * filename = elektraKeyString (parentKey);
 	int ret = checkFile (parentKey, filename, checkConf);
 	if (ret != 0) return -1;
 	return 1; // success
@@ -334,7 +334,7 @@ int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 {
 	// get all keys
 	checkStruct * checkConf = elektraPluginGetData (handle);
-	const char * filename = keyString (parentKey);
+	const char * filename = elektraKeyString (parentKey);
 	int ret = checkFile (parentKey, filename, checkConf);
 	if (ret != 0) return -1;
 	return 1; // success

@@ -15,26 +15,26 @@ int main (void)
 	// clang-format off
 {
 //! [set base basic]
-ElektraKey * k = keyNew ("user:/my/long/name", ELEKTRA_KEY_END);
-keySetBaseName (k, "myname");
-printf ("%s\n", keyName (k)); // will print user:/my/long/myname
-keyDel (k);
+ElektraKey * k = elektraKeyNew ("user:/my/long/name", ELEKTRA_KEY_END);
+elektraKeySetBaseName (k, "myname");
+printf ("%s\n", elektraKeyName (k)); // will print user:/my/long/myname
+elektraKeyDel (k);
 //! [set base basic]
 }
 {
 //! [add base basic]
-ElektraKey * k = keyNew ("user:/my/long", ELEKTRA_KEY_END);
-keyAddBaseName (k, "myname");
-printf ("%s\n", keyName (k)); // will print user:/my/long/myname
-keyDel (k);
+ElektraKey * k = elektraKeyNew ("user:/my/long", ELEKTRA_KEY_END);
+elektraKeyAddBaseName (k, "myname");
+printf ("%s\n", elektraKeyName (k)); // will print user:/my/long/myname
+elektraKeyDel (k);
 //! [add base basic]
 }
 {
 //! [add base escaped]
-ElektraKey * k = keyNew ("user:/my/long", ELEKTRA_KEY_END);
-keyAddBaseName (k, "myname");
-printf ("%s\n", keyName (k)); // will print user:/my/long/myname
-keyDel (k);
+ElektraKey * k = elektraKeyNew ("user:/my/long", ELEKTRA_KEY_END);
+elektraKeyAddBaseName (k, "myname");
+printf ("%s\n", elektraKeyName (k)); // will print user:/my/long/myname
+elektraKeyDel (k);
 //! [add base escaped]
 }
 }

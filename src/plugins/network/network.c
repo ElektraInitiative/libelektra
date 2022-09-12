@@ -18,19 +18,19 @@ int elektraNetworkAddrInfo (ElektraKey * toCheck)
 	struct addrinfo * result;
 	int s;
 
-	const ElektraKey * meta = keyGetMeta (toCheck, "check/ipaddr");
+	const ElektraKey * meta = elektraKeyGetMeta (toCheck, "check/ipaddr");
 
 	if (!meta) return 0; /* No check to do */
 
 	struct addrinfo hints;
 	memset (&hints, 0, sizeof (struct addrinfo));
 	hints.ai_family = AF_UNSPEC; /* Allow IPv4 or IPv6 */
-	if (!strcmp (keyString (meta), "ipv4"))
+	if (!strcmp (elektraKeyString (meta), "ipv4"))
 	{
 		hints.ai_family = AF_INET;
 		hints.ai_flags = AI_NUMERICHOST; /* Only accept numeric hosts */
 	}
-	else if (!strcmp (keyString (meta), "ipv6"))
+	else if (!strcmp (elektraKeyString (meta), "ipv6"))
 	{
 		hints.ai_family = AF_INET6;
 		hints.ai_flags = AI_NUMERICHOST; /* Only accept numeric hosts */
@@ -38,7 +38,7 @@ int elektraNetworkAddrInfo (ElektraKey * toCheck)
 	hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
 	hints.ai_protocol = 0;		/* Any protocol */
 
-	s = getaddrinfo (keyString (toCheck), NULL, &hints, &result);
+	s = getaddrinfo (elektraKeyString (toCheck), NULL, &hints, &result);
 
 	if (s != 0)
 	{
@@ -52,11 +52,11 @@ int elektraNetworkAddrInfo (ElektraKey * toCheck)
 
 int elektraPortInfo (ElektraKey * toCheck, ElektraKey * parentKey)
 {
-	const ElektraKey * meta = keyGetMeta (toCheck, "check/port");
-	const ElektraKey * listenMeta = keyGetMeta (toCheck, "check/port/listen");
+	const ElektraKey * meta = elektraKeyGetMeta (toCheck, "check/port");
+	const ElektraKey * listenMeta = elektraKeyGetMeta (toCheck, "check/port/listen");
 	if (!meta && !listenMeta) return 0; /* No check to do */
 	char * endptr = NULL;
-	long portNumber = strtol (keyString (toCheck), &endptr, 10);
+	long portNumber = strtol (elektraKeyString (toCheck), &endptr, 10);
 	int portNumberNetworkByteOrder;
 
 	if (*endptr == '\0')
@@ -64,7 +64,7 @@ int elektraPortInfo (ElektraKey * toCheck, ElektraKey * parentKey)
 		if (portNumber < 0 || portNumber > 65535)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Port %ld on key %s was not within 0 - 65535", portNumber,
-								keyName (toCheck));
+								elektraKeyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = htons (portNumber);
@@ -72,12 +72,12 @@ int elektraPortInfo (ElektraKey * toCheck, ElektraKey * parentKey)
 	else
 	{
 		struct servent * service;
-		service = getservbyname (keyString (toCheck), NULL); // NULL means we accept both tcp and udp
+		service = getservbyname (elektraKeyString (toCheck), NULL); // NULL means we accept both tcp and udp
 		if (service == NULL)
 		{
 			// `getservbyname` does not set any errno
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not find service with name %s on key %s",
-								keyString (toCheck), keyName (toCheck));
+								elektraKeyString (toCheck), elektraKeyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = service->s_port;
@@ -126,13 +126,13 @@ int elektraPortInfo (ElektraKey * toCheck, ElektraKey * parentKey)
 		if (errno == EADDRINUSE)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Port %s is already in use which was specified on key %s",
-								keyString (toCheck), keyName (toCheck));
+								elektraKeyString (toCheck), elektraKeyName (toCheck));
 		}
 		else
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
 								"Could not bind to port %s which was specified on key %s. Reason: %s",
-								keyString (toCheck), keyName (toCheck), strerror (errno));
+								elektraKeyString (toCheck), elektraKeyName (toCheck), strerror (errno));
 		}
 		return -1;
 	}
@@ -145,19 +145,19 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 {
 	/* configuration only */
 	ElektraKeyset * n;
-	ksAppend (returned,
-		  n = ksNew (30, keyNew ("system:/elektra/modules/network", ELEKTRA_KEY_VALUE, "network plugin waits for your orders", ELEKTRA_KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports", ELEKTRA_KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/get", ELEKTRA_KEY_FUNC, elektraNetworkGet, ELEKTRA_KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/set", ELEKTRA_KEY_FUNC, elektraNetworkSet, ELEKTRA_KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/elektraNetworkAddrInfo", ELEKTRA_KEY_FUNC, elektraNetworkAddrInfo,
+	elektraKeysetAppend (returned,
+		  n = elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/network", ELEKTRA_KEY_VALUE, "network plugin waits for your orders", ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/elektra/modules/network/exports", ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/elektra/modules/network/exports/get", ELEKTRA_KEY_FUNC, elektraNetworkGet, ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/elektra/modules/network/exports/set", ELEKTRA_KEY_FUNC, elektraNetworkSet, ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/elektra/modules/network/exports/elektraNetworkAddrInfo", ELEKTRA_KEY_FUNC, elektraNetworkAddrInfo,
 				     ELEKTRA_KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/elektraPortInfo", ELEKTRA_KEY_FUNC, elektraNetworkAddrInfo, ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/elektra/modules/network/exports/elektraPortInfo", ELEKTRA_KEY_FUNC, elektraNetworkAddrInfo, ELEKTRA_KEY_END),
 
 #include "readme_network.c"
 
-			     keyNew ("system:/elektra/modules/network/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
-	ksDel (n);
+			     elektraKeyNew ("system:/elektra/modules/network/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
+	elektraKeysetDel (n);
 
 	return 1; /* success */
 }
@@ -166,19 +166,19 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 {
 	/* check all keys */
 	ElektraKey * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
 		int s = elektraNetworkAddrInfo (cur);
 		if (s != 0)
 		{
 			const char * gaimsg = gai_strerror (s);
-			char * errmsg = elektraMalloc (strlen (gaimsg) + keyGetNameSize (cur) + keyGetValueSize (cur) +
+			char * errmsg = elektraMalloc (strlen (gaimsg) + elektraKeyGetNameSize (cur) + elektraKeyGetValueSize (cur) +
 						       sizeof ("name:  value:  message: "));
 			strcpy (errmsg, "name: ");
-			strcat (errmsg, keyName (cur));
+			strcat (errmsg, elektraKeyName (cur));
 			strcat (errmsg, " value: ");
-			strcat (errmsg, keyValue (cur));
+			strcat (errmsg, elektraKeyValue (cur));
 			strcat (errmsg, " message: ");
 			strcat (errmsg, gaimsg);
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey, errmsg);

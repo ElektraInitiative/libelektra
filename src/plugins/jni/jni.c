@@ -168,31 +168,31 @@ int elektraJniOpen (Plugin * handle, ElektraKey * errorKey)
 	elektraPluginSetData (handle, data);
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * k = ksLookupByName (config, "/module", 0);
+	ElektraKey * k = elektraKeysetLookupByName (config, "/module", 0);
 	if (k)
 	{
 		data->module = 1;
 		return 0;
 	}
 
-	k = ksLookupByName (config, "/print", 0);
+	k = elektraKeysetLookupByName (config, "/print", 0);
 	if (k)
 	{
 		data->printException = 1;
 	}
 
-	k = ksLookupByName (config, "/classpath", 0);
+	k = elektraKeysetLookupByName (config, "/classpath", 0);
 	if (!k)
 	{
 		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not find plugin config /classpath");
 		return -1;
 	}
 	char classpatharg[] = "-Djava.class.path=";
-	char * classpath = elektraMalloc (sizeof (classpatharg) + keyGetValueSize (k));
+	char * classpath = elektraMalloc (sizeof (classpatharg) + elektraKeyGetValueSize (k));
 	strcpy (classpath, classpatharg);
-	strcat (classpath, keyString (k));
+	strcat (classpath, elektraKeyString (k));
 
-	k = ksLookupByName (config, "/option", 0);
+	k = elektraKeysetLookupByName (config, "/option", 0);
 	char * option = 0;
 	if (!k)
 	{
@@ -200,10 +200,10 @@ int elektraJniOpen (Plugin * handle, ElektraKey * errorKey)
 	}
 	else
 	{
-		option = (char *) keyString (k);
+		option = (char *) elektraKeyString (k);
 	}
 
-	k = ksLookupByName (config, "/ignore", 0);
+	k = elektraKeysetLookupByName (config, "/ignore", 0);
 	jboolean ign = JNI_FALSE;
 	if (k) ign = JNI_TRUE;
 
@@ -250,14 +250,14 @@ int elektraJniOpen (Plugin * handle, ElektraKey * errorKey)
 		}
 	}
 
-	k = ksLookupByName (config, "/classname", 0);
+	k = elektraKeysetLookupByName (config, "/classname", 0);
 	if (!k)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not find plugin config /classname");
 		return -1;
 	}
 
-	const char * classname = keyString (k);
+	const char * classname = elektraKeyString (k);
 
 	data->clsPlugin = (*data->env)->FindClass (data->env, classname);
 	if (data->clsPlugin == 0)
@@ -349,20 +349,20 @@ int elektraJniClose (Plugin * handle, ElektraKey * errorKey)
 
 int elektraJniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/jni"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/jni"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/jni", ELEKTRA_KEY_VALUE, "jni plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/jni/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/jni/exports/open", ELEKTRA_KEY_FUNC, elektraJniOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/jni/exports/close", ELEKTRA_KEY_FUNC, elektraJniClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/jni/exports/get", ELEKTRA_KEY_FUNC, elektraJniGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/jni/exports/set", ELEKTRA_KEY_FUNC, elektraJniSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/jni/exports/error", ELEKTRA_KEY_FUNC, elektraJniError, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/jni", ELEKTRA_KEY_VALUE, "jni plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/jni/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/jni/exports/open", ELEKTRA_KEY_FUNC, elektraJniOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/jni/exports/close", ELEKTRA_KEY_FUNC, elektraJniClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/jni/exports/get", ELEKTRA_KEY_FUNC, elektraJniGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/jni/exports/set", ELEKTRA_KEY_FUNC, elektraJniSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/jni/exports/error", ELEKTRA_KEY_FUNC, elektraJniError, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/jni/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/jni/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 	}
 
 	Data * data = elektraPluginGetData (handle);

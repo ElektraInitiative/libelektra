@@ -186,10 +186,10 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, ElektraKeyset * conf
 	*gpgBin = NULL;
 
 	// plugin configuration has highest priority
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_BIN, 0);
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_BIN, 0);
 	if (k)
 	{
-		const char * configPath = keyString (k);
+		const char * configPath = elektraKeyString (k);
 		const size_t configPathLen = strlen (configPath) + 1; // NULL-terminator
 		if (configPathLen > 0)
 		{
@@ -308,8 +308,8 @@ static void freeKeyList (struct gpgKeyListElement * head)
 static struct gpgKeyListElement * parseGpgKeyIdFromOutput (ElektraKey * msgKey, size_t * totalChars, size_t * keyCount)
 {
 	// generate a list of secret key IDs
-	const char * input = (char *) keyValue (msgKey);
-	const ssize_t inputLen = keyGetValueSize (msgKey);
+	const char * input = (char *) elektraKeyValue (msgKey);
+	const ssize_t inputLen = elektraKeyGetValueSize (msgKey);
 	*totalChars = 0;
 	*keyCount = 0;
 	struct gpgKeyListElement * keylistHead = NULL;
@@ -418,13 +418,13 @@ static int isValidGpgKey (ElektraKeyset * conf, const char * value)
 {
 	// NOTE it is save to discard the const modifier (although it is not pretty) - the value is not being modified
 	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *) value, NULL };
-	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
-	ElektraKey * msgKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * msgKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
 	int status = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
 
-	keyDel (msgKey);
-	keyDel (errorKey);
+	elektraKeyDel (msgKey);
+	elektraKeyDel (errorKey);
 
 	return status;
 }
@@ -442,7 +442,7 @@ static int verifyGpgKeysInConf (ElektraKey * root, ElektraKeyset * conf, Elektra
 	if (!root) return 1; // success
 
 	// verify top level key elements
-	const char * rootValue = keyString (root);
+	const char * rootValue = elektraKeyString (root);
 	if (strlen (rootValue) > 0)
 	{
 		if (isValidGpgKey (conf, rootValue) != 1)
@@ -454,12 +454,12 @@ static int verifyGpgKeysInConf (ElektraKey * root, ElektraKeyset * conf, Elektra
 
 	// verify child elements
 	ElektraKey * k;
-	ksRewind (conf);
-	while ((k = ksNext (conf)) != 0)
+	elektraKeysetRewind (conf);
+	while ((k = elektraKeysetNext (conf)) != 0)
 	{
-		if (keyIsBelow (k, root))
+		if (elektraKeyIsBelow (k, root))
 		{
-			const char * childValue = keyString (k);
+			const char * childValue = elektraKeyString (k);
 			if (isValidGpgKey (conf, childValue) != 1)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, GPG_ERROR_INVALID_KEY, childValue);
@@ -482,14 +482,14 @@ static int verifyGpgKeysInConf (ElektraKey * root, ElektraKeyset * conf, Elektra
  */
 int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (ElektraKeyset * conf, ElektraKey * errorKey)
 {
-	ElektraKey * rootEncrypting = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
+	ElektraKey * rootEncrypting = elektraKeysetLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
 	if (verifyGpgKeysInConf (rootEncrypting, conf, errorKey) != 1)
 	{
 		// errorKey has been set by verifyGpgKeysInConf
 		return -1; // failure
 	}
 
-	ElektraKey * rootSignature = ksLookupByName (conf, ELEKTRA_SIGNATURE_KEY, 0);
+	ElektraKey * rootSignature = elektraKeysetLookupByName (conf, ELEKTRA_SIGNATURE_KEY, 0);
 	if (verifyGpgKeysInConf (rootSignature, conf, errorKey) != 1)
 	{
 		// errorKey has been set by verifyGpgKeysInConf
@@ -506,13 +506,13 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (ElektraKeyset * conf, El
  */
 char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (ElektraKeyset * conf)
 {
-	ElektraKey * msgKey = keyNew ("/", ELEKTRA_KEY_END);
-	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * msgKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
 	char * errorBuffer;
 	size_t errorBufferLen = 0;
 
-	keySetBinary (msgKey, NULL, 0);
+	elektraKeySetBinary (msgKey, NULL, 0);
 	char * argv[] = { "", "--batch", "--list-secret-keys", "--with-fingerprint", "--with-colons", "--fixed-list-mode", NULL };
 	if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7) == 1)
 	{
@@ -531,7 +531,7 @@ char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (ElektraKeyset * conf
 				return NULL;
 			}
 
-			const char * content = (const char *) keyValue (msgKey);
+			const char * content = (const char *) elektraKeyValue (msgKey);
 
 			size_t index = strlen (GPG_ERROR_MISSING_KEY_LIST);
 			strncpy (errorBuffer, GPG_ERROR_MISSING_KEY_LIST, errorBufferLen);
@@ -552,8 +552,8 @@ char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (ElektraKeyset * conf
 			errorBuffer[index] = '\0';
 
 			freeKeyList (listHead);
-			keyDel (msgKey);
-			keyDel (errorKey);
+			elektraKeyDel (msgKey);
+			elektraKeyDel (errorKey);
 			return errorBuffer;
 		}
 	}
@@ -565,8 +565,8 @@ char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (ElektraKeyset * conf
 	{
 		strncpy (errorBuffer, GPG_ERROR_MISSING_KEY, errorBufferLen);
 	}
-	keyDel (msgKey);
-	keyDel (errorKey);
+	elektraKeyDel (msgKey);
+	elektraKeyDel (errorKey);
 	return errorBuffer;
 }
 
@@ -591,7 +591,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (ElektraKeyset * conf, ElektraKey * errorK
 	int pipe_stderr[2];
 	char errorBuffer[512] = "";
 	kdb_octet_t * buffer = NULL;
-	ssize_t bufferSize = 2 * keyGetValueSize (msgKey);
+	ssize_t bufferSize = 2 * elektraKeyGetValueSize (msgKey);
 	ssize_t outputLen;
 
 	assert (argc > 1);
@@ -715,10 +715,10 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (ElektraKeyset * conf, ElektraKey * errorK
 	close (pipe_stderr[1]);
 
 	// pass the message to the gpg process
-	const ssize_t sendMessageSize = keyGetValueSize (msgKey);
+	const ssize_t sendMessageSize = elektraKeyGetValueSize (msgKey);
 	if (msgKey && sendMessageSize > 0)
 	{
-		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
+		if (write (pipe_stdin[1], elektraKeyValue (msgKey), sendMessageSize) != sendMessageSize)
 		{
 			ELEKTRA_SET_RESOURCE_ERROR (errorKey, "The communication with the GPG process failed");
 			closePipe (pipe_stdin);
@@ -743,7 +743,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (ElektraKeyset * conf, ElektraKey * errorK
 		if (msgKey)
 		{
 			outputLen = read (pipe_stdout[0], buffer, bufferSize);
-			keySetBinary (msgKey, buffer, outputLen);
+			elektraKeySetBinary (msgKey, buffer, outputLen);
 		}
 		retval = 1;
 		break;

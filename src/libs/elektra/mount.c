@@ -55,15 +55,15 @@ int mountOpen (ElektraKdb * kdb, ElektraKeyset * config, ElektraKeyset * modules
 	ElektraKey * root;
 	ElektraKey * cur;
 
-	ksRewind (config);
-	root = ksLookupByName (config, "system:/elektra/mountpoints", ELEKTRA_KDB_O_CREATE);
+	elektraKeysetRewind (config);
+	root = elektraKeysetLookupByName (config, "system:/elektra/mountpoints", ELEKTRA_KDB_O_CREATE);
 
 	int ret = 0;
-	while ((cur = ksNext (config)) != 0)
+	while ((cur = elektraKeysetNext (config)) != 0)
 	{
-		if (keyIsDirectlyBelow (root, cur) == 1)
+		if (elektraKeyIsDirectlyBelow (root, cur) == 1)
 		{
-			ElektraKeyset * cut = ksCut (config, cur);
+			ElektraKeyset * cut = elektraKeysetCut (config, cur);
 			Plugin * backend = backendOpen (cut, modules, kdb->global, errorKey);
 
 			if (!backend)
@@ -73,7 +73,7 @@ int mountOpen (ElektraKdb * kdb, ElektraKeyset * config, ElektraKeyset * modules
 				continue;
 			}
 
-			if (!strcmp (keyString (backendGetMountpoint (backend)), ""))
+			if (!strcmp (elektraKeyString (backendGetMountpoint (backend)), ""))
 			{
 				ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Backend has no mount point");
 				ret = -1;
@@ -81,9 +81,9 @@ int mountOpen (ElektraKdb * kdb, ElektraKeyset * config, ElektraKeyset * modules
 				continue;
 			}
 
-			ElektraKey * mountpoint = keyNew (keyBaseName (cur), ELEKTRA_KEY_END);
+			ElektraKey * mountpoint = elektraKeyNew (elektraKeyBaseName (cur), ELEKTRA_KEY_END);
 			ret = mountBackend (kdb, mountpoint, backend);
-			keyDel (mountpoint);
+			elektraKeyDel (mountpoint);
 			if (ret == -1)
 			{
 				ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting of backend failed");
@@ -95,7 +95,7 @@ int mountOpen (ElektraKdb * kdb, ElektraKeyset * config, ElektraKeyset * modules
 			}
 		}
 	}
-	ksDel (config);
+	elektraKeysetDel (config);
 
 	return ret;
 }
@@ -123,15 +123,15 @@ int mountDefault (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 	}
 	BackendData defaultBackendData = {
 		.backend = defaultBackend,
-		.keys = ksNew (0, ELEKTRA_KS_END),
+		.keys = elektraKeysetNew (0, ELEKTRA_KS_END),
 		.plugins = NULL,
 		.definition = NULL,
 		.getSize = 0,
 		.initialized = false,
 		.keyNeedsSync = false,
 	};
-	ksAppendKey (kdb->backends,
-		     keyNew ("default:/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (BackendData), ELEKTRA_KEY_VALUE, &defaultBackendData, ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (kdb->backends,
+		     elektraKeyNew ("default:/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (BackendData), ELEKTRA_KEY_VALUE, &defaultBackendData, ELEKTRA_KEY_END));
 
 	/* Reopen the init Backend for fresh user experience (update issue) */
 	Plugin * initBackend = backendOpenDefault (modules, kdb->global, KDB_DB_INIT, errorKey);
@@ -142,17 +142,17 @@ int mountDefault (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 	}
 	BackendData initBackendData = {
 		.backend = initBackend,
-		.keys = ksNew (0, ELEKTRA_KS_END),
+		.keys = elektraKeysetNew (0, ELEKTRA_KS_END),
 		.plugins = NULL,
 		.definition = NULL,
 		.getSize = 0,
 		.initialized = false,
 		.keyNeedsSync = false,
 	};
-	ksAppendKey (kdb->backends,
-		     keyNew ("system:/elektra", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (BackendData), ELEKTRA_KEY_VALUE, &initBackendData, ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (kdb->backends,
+		     elektraKeyNew ("system:/elektra", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (BackendData), ELEKTRA_KEY_VALUE, &initBackendData, ELEKTRA_KEY_END));
 
-	ElektraKey * lookupKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * lookupKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	for (elektraNamespace ns = ELEKTRA_NS_FIRST; ns <= ELEKTRA_NS_LAST; ++ns)
 	{
 		Plugin * backend;
@@ -162,22 +162,22 @@ int mountDefault (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 		case ELEKTRA_NS_DIR:
 		case ELEKTRA_NS_USER:
 		case ELEKTRA_NS_SYSTEM:
-			keySetNamespace (lookupKey, ns);
+			elektraKeySetNamespace (lookupKey, ns);
 			backend = mountGetBackend (kdb, lookupKey);
 			if (backend == NULL || backend == defaultBackend)
 			{
-				ElektraKey * backendKey = keyDup (lookupKey, ELEKTRA_KEY_CP_NAME);
+				ElektraKey * backendKey = elektraKeyDup (lookupKey, ELEKTRA_KEY_CP_NAME);
 				BackendData backendData = {
 					.backend = defaultBackend,
-					.keys = ksNew (0, ELEKTRA_KS_END),
+					.keys = elektraKeysetNew (0, ELEKTRA_KS_END),
 					.plugins = NULL,
 					.definition = NULL,
 					.getSize = 0,
 					.initialized = false,
 					.keyNeedsSync = false,
 				};
-				keySetBinary (backendKey, &backendData, sizeof (BackendData));
-				ksAppendKey (kdb->backends, backendKey);
+				elektraKeySetBinary (backendKey, &backendData, sizeof (BackendData));
+				elektraKeysetAppendKey (kdb->backends, backendKey);
 			}
 			break;
 		case ELEKTRA_NS_PROC:
@@ -195,23 +195,23 @@ int mountDefault (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 ElektraKeyset * elektraMountGlobalsGetConfig (ElektraKey * cur, ElektraKeyset * global)
 {
 	// putting together the plugins configuration KeySet.
-	ElektraKey * sysConfigCutKey = keyDup (cur, ELEKTRA_KEY_CP_ALL);
-	keyAddBaseName (sysConfigCutKey, "system");
-	ElektraKey * usrConfigCutKey = keyDup (cur, ELEKTRA_KEY_CP_ALL);
-	keyAddBaseName (usrConfigCutKey, "user");
-	ElektraKeyset * sysConfigKS = ksCut (global, sysConfigCutKey);
-	ElektraKeyset * usrConfigKS = ksCut (global, usrConfigCutKey);
-	ElektraKeyset * renamedSysConfig = ksRenameKeys (sysConfigKS, "system:/");
-	ElektraKeyset * renamedUsrConfig = ksRenameKeys (usrConfigKS, "user:/");
-	ksDel (sysConfigKS);
-	ksDel (usrConfigKS);
-	keyDel (usrConfigCutKey);
-	keyDel (sysConfigCutKey);
-	ElektraKeyset * config = ksNew (0, ELEKTRA_KS_END);
-	ksAppend (config, renamedSysConfig);
-	ksAppend (config, renamedUsrConfig);
-	ksDel (renamedSysConfig);
-	ksDel (renamedUsrConfig);
+	ElektraKey * sysConfigCutKey = elektraKeyDup (cur, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddBaseName (sysConfigCutKey, "system");
+	ElektraKey * usrConfigCutKey = elektraKeyDup (cur, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddBaseName (usrConfigCutKey, "user");
+	ElektraKeyset * sysConfigKS = elektraKeysetCut (global, sysConfigCutKey);
+	ElektraKeyset * usrConfigKS = elektraKeysetCut (global, usrConfigCutKey);
+	ElektraKeyset * renamedSysConfig = elektraKeysetRenameKeys (sysConfigKS, "system:/");
+	ElektraKeyset * renamedUsrConfig = elektraKeysetRenameKeys (usrConfigKS, "user:/");
+	elektraKeysetDel (sysConfigKS);
+	elektraKeysetDel (usrConfigKS);
+	elektraKeyDel (usrConfigCutKey);
+	elektraKeyDel (sysConfigCutKey);
+	ElektraKeyset * config = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKeysetAppend (config, renamedSysConfig);
+	elektraKeysetAppend (config, renamedUsrConfig);
+	elektraKeysetDel (renamedSysConfig);
+	elektraKeysetDel (renamedUsrConfig);
 
 	return config;
 }
@@ -219,10 +219,10 @@ ElektraKeyset * elektraMountGlobalsGetConfig (ElektraKey * cur, ElektraKeyset * 
 ElektraKey * elektraMountGlobalsFindPlugin (ElektraKeyset * referencePlugins, ElektraKey * cur)
 {
 	ElektraKey * refKey;
-	ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
-	keyAddBaseName (searchKey, keyString (cur));
-	refKey = ksLookup (referencePlugins, searchKey, 0);
-	keyDel (searchKey);
+	ElektraKey * searchKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (searchKey, elektraKeyString (cur));
+	refKey = elektraKeysetLookup (referencePlugins, searchKey, 0);
+	elektraKeyDel (searchKey);
 	return refKey;
 }
 
@@ -237,12 +237,12 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, ElektraKeyset * referencePl
 				   ElektraKeyset * modules, ElektraKey * errorKey)
 {
 	ElektraKey * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
-	ElektraKey * openKey = keyDup (errorKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * openKey = elektraKeyDup (errorKey, ELEKTRA_KEY_CP_ALL);
 
 	if (refKey)
 	{
 		// plugin already loaded, just reference it
-		*plugin = *(Plugin **) keyValue (refKey);
+		*plugin = *(Plugin **) elektraKeyValue (refKey);
 		(*plugin)->refcounter += 1;
 	}
 	else
@@ -250,74 +250,74 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, ElektraKeyset * referencePl
 		ElektraKeyset * config = elektraMountGlobalsGetConfig (cur, global);
 		ELEKTRA_NOT_NULL (config);
 		// config holds a newly allocated KeySet
-		const char * pluginName = keyString (cur);
+		const char * pluginName = elektraKeyString (cur);
 		if (!pluginName || pluginName[0] == '\0')
 		{
-			keyDel (openKey);
-			ksDel (config);
+			elektraKeyDel (openKey);
+			elektraKeysetDel (config);
 			return 0;
 		}
 
 		// loading the new plugin
 		*plugin = elektraPluginOpen (pluginName, modules, config, openKey);
-		if (!(*plugin) && !elektraStrCmp (pluginName, "cache") && !ksLookupByName (system, "system:/elektra/cache/enabled", 0))
+		if (!(*plugin) && !elektraStrCmp (pluginName, "cache") && !elektraKeysetLookupByName (system, "system:/elektra/cache/enabled", 0))
 		{
-			keyDel (openKey);
+			elektraKeyDel (openKey);
 			return 0;
 		}
 		else if (!(*plugin))
 		{
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not load plugin '%s'", pluginName);
-			keyCopyAllMeta (errorKey, openKey);
-			keyDel (openKey);
+			elektraKeyCopyAllMeta (errorKey, openKey);
+			elektraKeyDel (openKey);
 			return -1;
 		}
 
 		// saving the plugin reference to avoid having to load the plugin multiple times
-		refKey = keyNew ("/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (Plugin *), ELEKTRA_KEY_VALUE, &(*plugin), ELEKTRA_KEY_END);
-		keyAddBaseName (refKey, keyString (cur));
-		ksAppendKey (referencePlugins, refKey);
+		refKey = elektraKeyNew ("/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (Plugin *), ELEKTRA_KEY_VALUE, &(*plugin), ELEKTRA_KEY_END);
+		elektraKeyAddBaseName (refKey, elektraKeyString (cur));
+		elektraKeysetAppendKey (referencePlugins, refKey);
 	}
 
-	keyCopyAllMeta (errorKey, openKey);
-	keyDel (openKey);
+	elektraKeyCopyAllMeta (errorKey, openKey);
+	elektraKeyDel (openKey);
 	return 1;
 }
 
 ElektraKeyset * elektraDefaultGlobalConfig (ElektraKeyset * keys)
 {
-	ElektraKeyset * config = ksNew (
-		24, keyNew ("system:/elektra/globalplugins", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/placements", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/placements/error", ELEKTRA_KEY_VALUE, "prerollback postrollback", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/placements/get", ELEKTRA_KEY_VALUE,
+	ElektraKeyset * config = elektraKeysetNew (
+		24, elektraKeyNew ("system:/elektra/globalplugins", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/placements", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/placements/error", ELEKTRA_KEY_VALUE, "prerollback postrollback", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/placements/get", ELEKTRA_KEY_VALUE,
 			"pregetstorage procgetstorage postgetstorage", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/placements/set", ELEKTRA_KEY_VALUE, "presetstorage precommit postcommit",
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/placements/set", ELEKTRA_KEY_VALUE, "presetstorage precommit postcommit",
 			ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0", ELEKTRA_KEY_VALUE, "spec", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements", ELEKTRA_KEY_VALUE, "spec", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", ELEKTRA_KEY_VALUE, "postgetstorage", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", ELEKTRA_KEY_VALUE, "presetstorage", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postgetcleanup", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postgetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postgetcache", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/postrollback", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/precommit", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/pregetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/pregetcache", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/prerollback", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/presetcleanup", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/presetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/globalplugins/procgetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/plugins", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0", ELEKTRA_KEY_VALUE, "spec", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements", ELEKTRA_KEY_VALUE, "spec", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", ELEKTRA_KEY_VALUE, "postgetstorage", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", ELEKTRA_KEY_VALUE, "presetstorage", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postgetcleanup", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postgetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postgetcache", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/postrollback", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/precommit", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/pregetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/pregetcache", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/prerollback", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/presetcleanup", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/presetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/globalplugins/procgetstorage", ELEKTRA_KEY_VALUE, "list", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKey * cacheEnabled = ksLookupByName (keys, "system:/elektra/cache/enabled", 0);
-	if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (keyString (cacheEnabled), "1")))
+	ElektraKey * cacheEnabled = elektraKeysetLookupByName (keys, "system:/elektra/cache/enabled", 0);
+	if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (elektraKeyString (cacheEnabled), "1")))
 	{
-		ksAppendKey (config, keyNew ("system:/elektra/globalplugins/postgetcache", ELEKTRA_KEY_VALUE, "cache", ELEKTRA_KEY_END));
-		ksAppendKey (config, keyNew ("system:/elektra/globalplugins/pregetcache", ELEKTRA_KEY_VALUE, "cache", ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (config, elektraKeyNew ("system:/elektra/globalplugins/postgetcache", ELEKTRA_KEY_VALUE, "cache", ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (config, elektraKeyNew ("system:/elektra/globalplugins/pregetcache", ELEKTRA_KEY_VALUE, "cache", ELEKTRA_KEY_END));
 	}
 
 	return config;
@@ -326,27 +326,27 @@ ElektraKeyset * elektraDefaultGlobalConfig (ElektraKeyset * keys)
 int mountGlobals (ElektraKdb * kdb, ElektraKeyset * keys, ElektraKeyset * modules, ElektraKey * errorKey)
 {
 	int retval = 0;
-	ElektraKey * root = ksLookupByName (keys, "system:/elektra/globalplugins", 0);
-	ElektraKeyset * system = ksDup (keys);
+	ElektraKey * root = elektraKeysetLookupByName (keys, "system:/elektra/globalplugins", 0);
+	ElektraKeyset * system = elektraKeysetDup (keys);
 	if (!root)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
 		ElektraKeyset * tmp = keys;
 		keys = elektraDefaultGlobalConfig (keys);
-		ksDel (tmp);
-		root = ksHead (keys);
+		elektraKeysetDel (tmp);
+		root = elektraKeysetHead (keys);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
 
-	ElektraKeyset * global = ksCut (keys, root);
+	ElektraKeyset * global = elektraKeysetCut (keys, root);
 	ElektraKey * cur;
-	ElektraKeyset * referencePlugins = ksNew (0, ELEKTRA_KS_END);
-	while ((cur = ksNext (global)) != NULL)
+	ElektraKeyset * referencePlugins = elektraKeysetNew (0, ELEKTRA_KS_END);
+	while ((cur = elektraKeysetNext (global)) != NULL)
 	{
 		// the cutpoints for the plugin configs are always directly below the "root", ignore everything else
-		if (keyIsDirectlyBelow (root, cur) != 1) continue;
+		if (elektraKeyIsDirectlyBelow (root, cur) != 1) continue;
 
-		char * placement = elektraStrDup (keyBaseName (cur));
+		char * placement = elektraStrDup (elektraKeyBaseName (cur));
 
 		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_POSITIONS; ++i)
 		{
@@ -372,14 +372,14 @@ int mountGlobals (ElektraKdb * kdb, ElektraKeyset * keys, ElektraKeyset * module
 				}
 
 				// load plugins in explicit placements
-				const char * placementName = keyName (cur);
-				ElektraKey * placementKey = ksLookupByName (global, placementName, 0);
-				ElektraKeyset * subPositions = ksCut (global, placementKey);
+				const char * placementName = elektraKeyName (cur);
+				ElektraKey * placementKey = elektraKeysetLookupByName (global, placementName, 0);
+				ElektraKeyset * subPositions = elektraKeysetCut (global, placementKey);
 				ElektraKey * curSubPosition;
-				while ((curSubPosition = ksNext (subPositions)) != NULL)
+				while ((curSubPosition = elektraKeysetNext (subPositions)) != NULL)
 				{
-					if (keyIsDirectlyBelow (placementKey, curSubPosition) != 1) continue;
-					const char * subPlacement = keyBaseName (curSubPosition);
+					if (elektraKeyIsDirectlyBelow (placementKey, curSubPosition) != 1) continue;
+					const char * subPlacement = elektraKeyBaseName (curSubPosition);
 
 					for (GlobalpluginSubPositions j = 0; j < NR_GLOBAL_SUBPOSITIONS; ++j)
 					{
@@ -404,15 +404,15 @@ int mountGlobals (ElektraKdb * kdb, ElektraKeyset * keys, ElektraKeyset * module
 						}
 					}
 				}
-				ksDel (subPositions);
+				elektraKeysetDel (subPositions);
 			}
 		}
 		elektraFree (placement);
 	}
-	ksDel (global);
-	ksDel (keys);
-	ksDel (referencePlugins);
-	ksDel (system);
+	elektraKeysetDel (global);
+	elektraKeysetDel (keys);
+	elektraKeysetDel (referencePlugins);
+	elektraKeysetDel (system);
 	return retval;
 }
 
@@ -430,7 +430,7 @@ int mountModules (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 	ElektraKey * root;
 	ElektraKey * cur;
 
-	root = ksLookupByName (modules, "system:/elektra/modules", 0);
+	root = elektraKeysetLookupByName (modules, "system:/elektra/modules", 0);
 
 	if (!root)
 	{
@@ -438,12 +438,12 @@ int mountModules (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 		return -1;
 	}
 
-	ElektraKeyset * alreadyMounted = ksNew (5, ELEKTRA_KS_END);
+	ElektraKeyset * alreadyMounted = elektraKeysetNew (5, ELEKTRA_KS_END);
 	ssize_t oldSize = 0;
 
-	while ((cur = ksNext (modules)) != 0)
+	while ((cur = elektraKeysetNext (modules)) != 0)
 	{
-		if (!strcmp (keyName (cur), "system:/elektra/modules/backend"))
+		if (!strcmp (elektraKeyName (cur), "system:/elektra/modules/backend"))
 		{
 			// the backend plugin does not need its own backend
 			continue;
@@ -457,8 +457,8 @@ int mountModules (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 			continue;
 		}
 
-		ksAppendKey (alreadyMounted, backendGetMountpoint (backend));
-		if (ksGetSize (alreadyMounted) == oldSize)
+		elektraKeysetAppendKey (alreadyMounted, backendGetMountpoint (backend));
+		if (elektraKeysetGetSize (alreadyMounted) == oldSize)
 		{
 			// we already mounted that before
 			elektraPluginClose (backend, errorKey);
@@ -468,7 +468,7 @@ int mountModules (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 		mountBackend (kdb, cur, backend);
 	}
 
-	ksDel (alreadyMounted);
+	elektraKeysetDel (alreadyMounted);
 
 	return 0;
 }
@@ -483,9 +483,9 @@ int mountModules (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorK
 int mountVersion (ElektraKdb * kdb, ElektraKey * errorKey)
 {
 	Plugin * backend = backendOpenVersion (kdb->global, kdb->modules, errorKey);
-	ElektraKey * mountpoint = keyNew (KDB_SYSTEM_ELEKTRA "/version", ELEKTRA_KEY_END);
+	ElektraKey * mountpoint = elektraKeyNew (KDB_SYSTEM_ELEKTRA "/version", ELEKTRA_KEY_END);
 	mountBackend (kdb, mountpoint, backend);
-	keyDel (mountpoint);
+	elektraKeyDel (mountpoint);
 
 	return 0;
 }
@@ -503,54 +503,54 @@ int mountVersion (ElektraKdb * kdb, ElektraKey * errorKey)
  */
 int mountBackend (ElektraKdb * kdb, const ElektraKey * mountpoint, Plugin * backend)
 {
-	if (strcmp (keyName (mountpoint), "system:/elektra") == 0)
+	if (strcmp (elektraKeyName (mountpoint), "system:/elektra") == 0)
 	{
 		return -1;
 	}
 
-	ElektraKey * backendKey = keyDup (mountpoint, ELEKTRA_KEY_CP_NAME);
+	ElektraKey * backendKey = elektraKeyDup (mountpoint, ELEKTRA_KEY_CP_NAME);
 	BackendData backendData = {
 		.backend = backend,
-		.keys = ksNew (0, ELEKTRA_KS_END),
+		.keys = elektraKeysetNew (0, ELEKTRA_KS_END),
 		.plugins = NULL,
 		.definition = NULL,
 		.getSize = 0,
 		.initialized = false,
 		.keyNeedsSync = false,
 	};
-	keySetBinary (backendKey, &backendData, sizeof (BackendData));
+	elektraKeySetBinary (backendKey, &backendData, sizeof (BackendData));
 
-	if (keyGetNamespace (mountpoint) == ELEKTRA_NS_CASCADING)
+	if (elektraKeyGetNamespace (mountpoint) == ELEKTRA_NS_CASCADING)
 	{
-		ElektraKey * backendKeyDir = keyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
-		keySetNamespace (backendKeyDir, ELEKTRA_NS_DIR);
-		((BackendData *) keyValue (backendKeyDir))->keys = ksNew (0, ELEKTRA_KS_END);
-		ksAppendKey (kdb->backends, backendKeyDir);
+		ElektraKey * backendKeyDir = elektraKeyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
+		elektraKeySetNamespace (backendKeyDir, ELEKTRA_NS_DIR);
+		((BackendData *) elektraKeyValue (backendKeyDir))->keys = elektraKeysetNew (0, ELEKTRA_KS_END);
+		elektraKeysetAppendKey (kdb->backends, backendKeyDir);
 
-		ElektraKey * backendKeyUser = keyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
-		keySetNamespace (backendKeyUser, ELEKTRA_NS_USER);
-		((BackendData *) keyValue (backendKeyUser))->keys = ksNew (0, ELEKTRA_KS_END);
-		ksAppendKey (kdb->backends, backendKeyUser);
+		ElektraKey * backendKeyUser = elektraKeyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
+		elektraKeySetNamespace (backendKeyUser, ELEKTRA_NS_USER);
+		((BackendData *) elektraKeyValue (backendKeyUser))->keys = elektraKeysetNew (0, ELEKTRA_KS_END);
+		elektraKeysetAppendKey (kdb->backends, backendKeyUser);
 
-		ElektraKey * backendKeySystem = keyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
-		keySetNamespace (backendKeySystem, ELEKTRA_NS_SYSTEM);
-		((BackendData *) keyValue (backendKeySystem))->keys = ksNew (0, ELEKTRA_KS_END);
-		ksAppendKey (kdb->backends, backendKeySystem);
+		ElektraKey * backendKeySystem = elektraKeyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
+		elektraKeySetNamespace (backendKeySystem, ELEKTRA_NS_SYSTEM);
+		((BackendData *) elektraKeyValue (backendKeySystem))->keys = elektraKeysetNew (0, ELEKTRA_KS_END);
+		elektraKeysetAppendKey (kdb->backends, backendKeySystem);
 
-		if (keyGetUnescapedNameSize (mountpoint) == 3)
+		if (elektraKeyGetUnescapedNameSize (mountpoint) == 3)
 		{
 			// root key
-			ElektraKey * backendKeySpec = keyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
-			keySetNamespace (backendKeySpec, ELEKTRA_NS_SPEC);
-			((BackendData *) keyValue (backendKeySpec))->keys = ksNew (0, ELEKTRA_KS_END);
-			ksAppendKey (kdb->backends, backendKeySpec);
+			ElektraKey * backendKeySpec = elektraKeyDup (backendKey, ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE);
+			elektraKeySetNamespace (backendKeySpec, ELEKTRA_NS_SPEC);
+			((BackendData *) elektraKeyValue (backendKeySpec))->keys = elektraKeysetNew (0, ELEKTRA_KS_END);
+			elektraKeysetAppendKey (kdb->backends, backendKeySpec);
 		}
 
-		keyDel (backendKey);
+		elektraKeyDel (backendKey);
 	}
 	else
 	{
-		ksAppendKey (kdb->backends, backendKey);
+		elektraKeysetAppendKey (kdb->backends, backendKey);
 	}
 
 	return 1;
@@ -584,11 +584,11 @@ kdbClose (handle);
  */
 const ElektraKey * mountGetMountpoint (ElektraKdb * handle, ElektraKey * where)
 {
-	const ElektraKey * backendKey = where == NULL ? ksLookupByName (handle->backends, "default:/", 0) : ksLookup (handle->backends, where, 0);
+	const ElektraKey * backendKey = where == NULL ? elektraKeysetLookupByName (handle->backends, "default:/", 0) : elektraKeysetLookup (handle->backends, where, 0);
 
 	if (backendKey == NULL)
 	{
-		return ksLookupByName (handle->backends, "default:/", 0);
+		return elektraKeysetLookupByName (handle->backends, "default:/", 0);
 	}
 
 	return backendKey;
@@ -620,6 +620,6 @@ Plugin * mountGetBackend (ElektraKdb * handle, ElektraKey * where)
 		return NULL;
 	}
 
-	const BackendData * backendData = keyValue (backendKey);
+	const BackendData * backendData = elektraKeyValue (backendKey);
 	return backendData->backend;
 }

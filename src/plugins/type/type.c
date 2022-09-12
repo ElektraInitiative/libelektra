@@ -64,10 +64,10 @@ static const Type * findType (const char * name)
 
 static const char * getTypeName (const ElektraKey * key)
 {
-	const ElektraKey * meta = keyGetMeta (key, "check/type");
+	const ElektraKey * meta = elektraKeyGetMeta (key, "check/type");
 	if (meta == NULL)
 	{
-		meta = keyGetMeta (key, "type");
+		meta = elektraKeyGetMeta (key, "type");
 	}
 
 	if (meta == NULL)
@@ -75,7 +75,7 @@ static const char * getTypeName (const ElektraKey * key)
 		return NULL;
 	}
 
-	const char * type = keyString (meta);
+	const char * type = elektraKeyString (meta);
 	return strlen (type) == 0 ? NULL : type;
 }
 
@@ -94,7 +94,7 @@ bool elektraTypeCheckType (const ElektraKey * key)
 static void elektraTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey, const ElektraKey * key)
 {
 	ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The type '%s' failed to match for '%s' with string '%s'", getTypeName (key),
-						keyName (key), keyString (key));
+						elektraKeyName (key), elektraKeyString (key));
 }
 
 bool elektraTypeValidateKey (Plugin * handle, ElektraKey * key, ElektraKey * errorKey)
@@ -108,14 +108,14 @@ bool elektraTypeValidateKey (Plugin * handle, ElektraKey * key, ElektraKey * err
 	const Type * type = findType (typeName);
 	if (type == NULL)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Unknown type '%s' for key '%s'", typeName, keyName (key));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Unknown type '%s' for key '%s'", typeName, elektraKeyName (key));
 		return false;
 	}
 
 	if (type->normalize != NULL && !type->normalize (handle, key))
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (errorKey, "The value '%s' of key '%s' could not be converted into a %s",
-							 keyString (key), keyName (key), typeName);
+							 elektraKeyString (key), elektraKeyName (key), typeName);
 		return false;
 	}
 
@@ -129,7 +129,7 @@ bool elektraTypeValidateKey (Plugin * handle, ElektraKey * key, ElektraKey * err
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
 							"The normalized value '%s' of key '%s' could not be restored (type is '%s')",
-							keyString (key), keyName (key), typeName);
+							elektraKeyString (key), elektraKeyName (key), typeName);
 		return false;
 	}
 
@@ -138,8 +138,8 @@ bool elektraTypeValidateKey (Plugin * handle, ElektraKey * key, ElektraKey * err
 
 static kdb_long_long_t readBooleans (ElektraKeyset * config, struct boolean_pair ** result, ElektraKey * errorKey)
 {
-	ElektraKey * parent = ksLookupByName (config, "/booleans", 0);
-	const char * max = keyString (parent);
+	ElektraKey * parent = elektraKeysetLookupByName (config, "/booleans", 0);
+	const char * max = elektraKeyString (parent);
 	if (parent == NULL || strlen (max) == 0)
 	{
 		*result = NULL;
@@ -164,9 +164,9 @@ static kdb_long_long_t readBooleans (ElektraKeyset * config, struct boolean_pair
 	{
 		char * subPos = &buffer[strlen (buffer)];
 		strcpy (subPos, "/true");
-		ElektraKey * trueKey = ksLookupByName (config, buffer, 0);
+		ElektraKey * trueKey = elektraKeysetLookupByName (config, buffer, 0);
 		strcpy (subPos, "/false");
-		ElektraKey * falseKey = ksLookupByName (config, buffer, 0);
+		ElektraKey * falseKey = elektraKeysetLookupByName (config, buffer, 0);
 
 		*subPos = '\0';
 		if ((trueKey == NULL) != (falseKey == NULL))
@@ -181,8 +181,8 @@ static kdb_long_long_t readBooleans (ElektraKeyset * config, struct boolean_pair
 
 		elektraRealloc ((void **) result, (size + 1) * sizeof (struct boolean_pair));
 
-		(*result)[size].trueValue = keyString (trueKey);
-		(*result)[size].falseValue = keyString (falseKey);
+		(*result)[size].trueValue = elektraKeyString (trueKey);
+		(*result)[size].falseValue = elektraKeyString (falseKey);
 		++size;
 
 		++index;
@@ -204,13 +204,13 @@ static kdb_long_long_t readBooleans (ElektraKeyset * config, struct boolean_pair
  */
 static kdb_long_long_t readBooleanRestore (ElektraKeyset * config)
 {
-	ElektraKey * restore = ksLookupByName (config, "/boolean/restoreas", 0);
+	ElektraKey * restore = elektraKeysetLookupByName (config, "/boolean/restoreas", 0);
 	if (restore == NULL)
 	{
 		return -1;
 	}
 
-	const char * restoreString = keyString (restore);
+	const char * restoreString = elektraKeyString (restore);
 
 	if (strcmp (restoreString, "none") == 0)
 	{
@@ -223,16 +223,16 @@ static kdb_long_long_t readBooleanRestore (ElektraKeyset * config)
 		return -3;
 	}
 
-	ElektraKey * restoreKey = keyNew ("/", ELEKTRA_KEY_VALUE, &restoreString[digitStart], ELEKTRA_KEY_END);
+	ElektraKey * restoreKey = elektraKeyNew ("/", ELEKTRA_KEY_VALUE, &restoreString[digitStart], ELEKTRA_KEY_END);
 
 	kdb_long_long_t size;
 	if (!elektraKeyToLongLong (restoreKey, &size))
 	{
-		keyDel (restoreKey);
+		elektraKeyDel (restoreKey);
 		return -3;
 	}
 
-	keyDel (restoreKey);
+	elektraKeyDel (restoreKey);
 
 	return size;
 }
@@ -279,31 +279,31 @@ int elektraTypeOpen (Plugin * handle, ElektraKey * errorKey)
 
 int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/type"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/type"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/type", ELEKTRA_KEY_VALUE, "type plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/open", ELEKTRA_KEY_FUNC, elektraTypeOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/get", ELEKTRA_KEY_FUNC, elektraTypeGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/set", ELEKTRA_KEY_FUNC, elektraTypeSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/close", ELEKTRA_KEY_FUNC, elektraTypeClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/checkconf", ELEKTRA_KEY_FUNC, elektraTypeCheckConf, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/validateKey", ELEKTRA_KEY_FUNC, elektraTypeValidateKey, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/type", ELEKTRA_KEY_VALUE, "type plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/type/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/type/exports/open", ELEKTRA_KEY_FUNC, elektraTypeOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/type/exports/get", ELEKTRA_KEY_FUNC, elektraTypeGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/type/exports/set", ELEKTRA_KEY_FUNC, elektraTypeSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/type/exports/close", ELEKTRA_KEY_FUNC, elektraTypeClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/type/exports/checkconf", ELEKTRA_KEY_FUNC, elektraTypeCheckConf, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/type/exports/validateKey", ELEKTRA_KEY_FUNC, elektraTypeValidateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/type/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/type/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	elektraCursor cursor = ksGetCursor (returned);
+	elektraCursor cursor = elektraKeysetGetCursor (returned);
 
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 
 	ElektraKey * cur = NULL;
-	while ((cur = ksNext (returned)))
+	while ((cur = elektraKeysetNext (returned)))
 	{
 		const char * typeName = getTypeName (cur);
 		if (typeName == NULL)
@@ -314,22 +314,22 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 		const Type * type = findType (typeName);
 		if (type == NULL)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Unknown type '%s' for key '%s'", typeName, keyName (cur));
-			ksSetCursor (returned, cursor);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Unknown type '%s' for key '%s'", typeName, elektraKeyName (cur));
+			elektraKeysetSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (type->normalize != NULL)
 		{
-			const ElektraKey * orig = keyGetMeta (cur, "origvalue");
+			const ElektraKey * orig = elektraKeyGetMeta (cur, "origvalue");
 			if (orig != NULL)
 			{
 				ELEKTRA_SET_INSTALLATION_ERRORF (
 					parentKey,
 					"The key '%s' was already normalized by a different plugin. Please ensure that there is "
 					"only one plugin active that will normalize this key",
-					keyName (cur));
-				ksSetCursor (returned, cursor);
+					elektraKeyName (cur));
+				elektraKeysetSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
@@ -337,8 +337,8 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
 									"The value '%s' of key '%s' could not be converted into a %s",
-									keyString (cur), keyName (cur), typeName);
-				ksSetCursor (returned, cursor);
+									elektraKeyString (cur), elektraKeyName (cur), typeName);
+				elektraKeysetSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
@@ -346,24 +346,24 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 		if (!type->check (cur))
 		{
 			type->setError (handle, parentKey, cur);
-			ksSetCursor (returned, cursor);
+			elektraKeysetSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
-	ksSetCursor (returned, cursor);
+	elektraKeysetSetCursor (returned, cursor);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	elektraCursor cursor = ksGetCursor (returned);
+	elektraCursor cursor = elektraKeysetGetCursor (returned);
 
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 
 	ElektraKey * cur = NULL;
-	while ((cur = ksNext (returned)))
+	while ((cur = elektraKeysetNext (returned)))
 	{
 		const char * typeName = getTypeName (cur);
 		if (typeName == NULL)
@@ -374,21 +374,21 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 		const Type * type = findType (typeName);
 		if (type == NULL)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Unknown type '%s' for key '%s'", typeName, keyName (cur));
-			ksSetCursor (returned, cursor);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Unknown type '%s' for key '%s'", typeName, elektraKeyName (cur));
+			elektraKeysetSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (type->normalize != NULL)
 		{
-			const ElektraKey * orig = keyGetMeta (cur, "origvalue");
+			const ElektraKey * orig = elektraKeyGetMeta (cur, "origvalue");
 			// skip normalization origvalue already set
 			if (orig == NULL && !type->normalize (handle, cur))
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
 									"The value '%s' of key '%s' could not be converted into a %s",
-									keyString (cur), keyName (cur), typeName);
-				ksSetCursor (returned, cursor);
+									elektraKeyString (cur), elektraKeyName (cur), typeName);
+				elektraKeysetSetCursor (returned, cursor);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
@@ -396,21 +396,21 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 		if (!type->check (cur))
 		{
 			type->setError (handle, parentKey, cur);
-			ksSetCursor (returned, cursor);
+			elektraKeysetSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (type->restore != NULL && !type->restore (handle, cur))
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				parentKey, "The normalized value '%s' of key '%s' could not be restored (type is '%s')", keyString (cur),
-				keyName (cur), typeName);
-			ksSetCursor (returned, cursor);
+				parentKey, "The normalized value '%s' of key '%s' could not be restored (type is '%s')", elektraKeyString (cur),
+				elektraKeyName (cur), typeName);
+			elektraKeysetSetCursor (returned, cursor);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
-	ksSetCursor (returned, cursor);
+	elektraKeysetSetCursor (returned, cursor);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

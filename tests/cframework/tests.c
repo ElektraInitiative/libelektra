@@ -115,11 +115,11 @@ int init (int argc, char ** argv)
  * @return an allocated root key */
 ElektraKey * create_root_key (const char * backendName)
 {
-	ElektraKey * root = keyNew ("user:/tests", ELEKTRA_KEY_END);
+	ElektraKey * root = elektraKeyNew ("user:/tests", ELEKTRA_KEY_END);
 	/*Make mountpoint beneath root, and do all tests here*/
-	keyAddBaseName (root, backendName);
-	keySetString (root, backendName);
-	keySetString (root, backendName);
+	elektraKeyAddBaseName (root, backendName);
+	elektraKeySetString (root, backendName);
+	elektraKeySetString (root, backendName);
 	return root;
 }
 
@@ -128,7 +128,7 @@ ElektraKey * create_root_key (const char * backendName)
  * @return an allocated configuration keyset for a backend*/
 ElektraKeyset * create_conf (const char * filename)
 {
-	return ksNew (2, keyNew ("system:/path", ELEKTRA_KEY_VALUE, filename, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (2, elektraKeyNew ("system:/path", ELEKTRA_KEY_VALUE, filename, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
@@ -312,19 +312,19 @@ void elektraUnlink (const char * filename)
 void clear_sync (ElektraKeyset * ks)
 {
 	ElektraKey * k;
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-		keyClearSync (k);
+	elektraKeysetRewind (ks);
+	while ((k = elektraKeysetNext (ks)) != 0)
+		elektraKeyClearSync (k);
 }
 
 void output_meta (ElektraKey * k)
 {
 	const ElektraKey * meta;
 
-	keyRewindMeta (k);
-	while ((meta = keyNextMeta (k)) != 0)
+	elektraKeyRewindMeta (k);
+	while ((meta = elektraKeyNextMeta (k)) != 0)
 	{
-		printf (", %s: %s", keyName (meta), (const char *) keyValue (meta));
+		printf (", %s: %s", elektraKeyName (meta), (const char *) elektraKeyValue (meta));
 	}
 	printf ("\n");
 }
@@ -332,15 +332,15 @@ void output_meta (ElektraKey * k)
 void output_key (ElektraKey * k)
 {
 	// output_meta will print endline
-	printf ("%p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
+	printf ("%p key: %s, string: %s", (void *) k, elektraKeyName (k), elektraKeyString (k));
 	output_meta (k);
 }
 
 void output_keyset (ElektraKeyset * ks)
 {
 	ElektraKey * k;
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
+	elektraKeysetRewind (ks);
+	while ((k = elektraKeysetNext (ks)) != 0)
 	{
 		output_key (k);
 	}
@@ -362,15 +362,15 @@ void output_trie (Trie * trie)
 	{
 		if (trie->value[i])
 		{
-			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], keyName (trie->value[i]->mountpoint),
-				keyString (trie->value[i]->mountpoint), i);
+			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], elektraKeyName (trie->value[i]->mountpoint),
+				elektraKeyString (trie->value[i]->mountpoint), i);
 		}
 		if (trie->children[i]) output_trie (trie->children[i]);
 	}
 	if (trie->empty_value)
 	{
-		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, keyName (trie->empty_value->mountpoint),
-			keyString (trie->empty_value->mountpoint));
+		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, elektraKeyName (trie->empty_value->mountpoint),
+			elektraKeyString (trie->empty_value->mountpoint));
 	}
 }
 
@@ -383,13 +383,13 @@ void output_split (Split * split)
 		{
 			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
-				i, ksGetSize (split->keysets[i]), (void *) split->handles[i], split->syncbits[i],
-				keyName (split->parents[i]), keyString (split->parents[i]), split->specsizes[i], split->dirsizes[i],
+				i, elektraKeysetGetSize (split->keysets[i]), (void *) split->handles[i], split->syncbits[i],
+				elektraKeyName (split->parents[i]), elektraKeyString (split->parents[i]), split->specsizes[i], split->dirsizes[i],
 				split->usersizes[i], split->systemsizes[i]);
 		}
 		else
 		{
-			printf ("split #%zu, size: %zd, default split, sync: %d\n", i, ksGetSize (split->keysets[i]), split->syncbits[i]);
+			printf ("split #%zu, size: %zd, default split, sync: %d\n", i, elektraKeysetGetSize (split->keysets[i]), split->syncbits[i]);
 		}
 	}
 }
@@ -400,7 +400,7 @@ void generate_split (Split * split)
 	for (size_t i = 0; i < split->size; ++i)
 	{
 		printf ("succeed_if (split->syncbits[%zu]== %d, \"size of split not correct\");\n", i, split->syncbits[i]);
-		printf ("succeed_if (ksGetSize(split->keysets[%zu]) == %zd, \"wrong size\");\n", i, ksGetSize (split->keysets[i]));
+		printf ("succeed_if (ksGetSize(split->keysets[%zu]) == %zd, \"wrong size\");\n", i, elektraKeysetGetSize (split->keysets[i]));
 	}
 }
 #endif
@@ -420,32 +420,32 @@ void generate_split (Split * split)
 int output_warnings (ElektraKey * warningKey)
 {
 	//! [warnings]
-	ElektraKey * cutpoint = keyNew ("meta:/warnings", ELEKTRA_KEY_END);
-	ElektraKeyset * warnings = ksCut (keyMeta (warningKey), cutpoint);
+	ElektraKey * cutpoint = elektraKeyNew ("meta:/warnings", ELEKTRA_KEY_END);
+	ElektraKeyset * warnings = elektraKeysetCut (elektraKeyMeta (warningKey), cutpoint);
 
-	if (!warningKey || ksGetSize (warnings) == 0)
+	if (!warningKey || elektraKeysetGetSize (warnings) == 0)
 	{
-		ksDel (warnings);
-		keyDel (cutpoint);
+		elektraKeysetDel (warnings);
+		elektraKeyDel (cutpoint);
 		return 1;
 	}
 
-	printf ("There are %zu warnings\n", ksGetSize (warnings));
+	printf ("There are %zu warnings\n", elektraKeysetGetSize (warnings));
 	elektraCursor i = 1;
-	while (i < ksGetSize (warnings))
+	while (i < elektraKeysetGetSize (warnings))
 	{
 		++i;
-		ElektraKey * cur = ksAtCursor (warnings, i);
-		while (!keyIsDirectlyBelow (cutpoint, cur))
+		ElektraKey * cur = elektraKeysetAtCursor (warnings, i);
+		while (!elektraKeyIsDirectlyBelow (cutpoint, cur))
 		{
-			printf ("%s: %s\n", keyName (cur) + keyGetNameSize (cutpoint), keyString (cur));
+			printf ("%s: %s\n", elektraKeyName (cur) + elektraKeyGetNameSize (cutpoint), elektraKeyString (cur));
 			++i;
-			cur = ksAtCursor (warnings, i);
+			cur = elektraKeysetAtCursor (warnings, i);
 		}
 		printf ("\n");
 	}
-	ksDel (warnings);
-	keyDel (cutpoint);
+	elektraKeysetDel (warnings);
+	elektraKeyDel (cutpoint);
 	//! [warnings]
 
 	return 0;
@@ -464,16 +464,16 @@ int output_warnings (ElektraKey * warningKey)
 int output_error (ElektraKey * errorKey)
 {
 	//! [error]
-	const ElektraKey * metaError = keyGetMeta (errorKey, "error");
+	const ElektraKey * metaError = elektraKeyGetMeta (errorKey, "error");
 	if (!metaError) return 1; /* There is no current error */
 
-	printf ("number: %s\n", keyString (keyGetMeta (errorKey, "error/number")));
-	printf ("description: : %s\n", keyString (keyGetMeta (errorKey, "error/description")));
-	printf ("module: : %s\n", keyString (keyGetMeta (errorKey, "error/module")));
-	printf ("at: %s:%s\n", keyString (keyGetMeta (errorKey, "error/file")), keyString (keyGetMeta (errorKey, "error/line")));
-	printf ("reason: : %s\n", keyString (keyGetMeta (errorKey, "error/reason")));
-	printf ("mountpoint: : %s\n", keyString (keyGetMeta (errorKey, "error/mountpoint")));
-	printf ("configfile: : %s\n", keyString (keyGetMeta (errorKey, "error/configfile")));
+	printf ("number: %s\n", elektraKeyString (elektraKeyGetMeta (errorKey, "error/number")));
+	printf ("description: : %s\n", elektraKeyString (elektraKeyGetMeta (errorKey, "error/description")));
+	printf ("module: : %s\n", elektraKeyString (elektraKeyGetMeta (errorKey, "error/module")));
+	printf ("at: %s:%s\n", elektraKeyString (elektraKeyGetMeta (errorKey, "error/file")), elektraKeyString (elektraKeyGetMeta (errorKey, "error/line")));
+	printf ("reason: : %s\n", elektraKeyString (elektraKeyGetMeta (errorKey, "error/reason")));
+	printf ("mountpoint: : %s\n", elektraKeyString (elektraKeyGetMeta (errorKey, "error/mountpoint")));
+	printf ("configfile: : %s\n", elektraKeyString (elektraKeyGetMeta (errorKey, "error/configfile")));
 	//! [error]
 
 	return 0;

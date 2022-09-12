@@ -32,11 +32,11 @@ void test_latin1_to_utf8 (void)
 	ElektraKeyset * utf8 = 0;
 
 	ElektraKeyset * conf =
-		ksNew (2, keyNew ("user:/from", ELEKTRA_KEY_VALUE, "ISO8859-1", ELEKTRA_KEY_END), keyNew ("user:/to", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (2, elektraKeyNew ("user:/from", ELEKTRA_KEY_VALUE, "ISO8859-1", ELEKTRA_KEY_END), elektraKeyNew ("user:/to", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
-	ElektraKey * parentKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
 	Plugin * plugin = elektraPluginOpen ("iconv", modules, conf, 0);
 
@@ -48,8 +48,8 @@ void test_latin1_to_utf8 (void)
 #include "data_utf8.c"
 			succeed_if (plugin->kdbSet (plugin, latin1, 0) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (latin1, utf8);
-	ksDel (latin1);
-	ksDel (utf8);
+	elektraKeysetDel (latin1);
+	elektraKeysetDel (utf8);
 
 	latin1 =
 #include "data_latin1.c"
@@ -57,25 +57,25 @@ void test_latin1_to_utf8 (void)
 #include "data_utf8.c"
 			succeed_if (plugin->kdbGet (plugin, utf8, parentKey) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (utf8, latin1);
-	ksDel (latin1);
-	ksDel (utf8);
+	elektraKeysetDel (latin1);
+	elektraKeysetDel (utf8);
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 void test_utf8_to_latin1 (void)
 {
 	ElektraKeyset * latin1 = 0;
 	ElektraKeyset * utf8 = 0;
-	ElektraKey * parentKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
 	ElektraKeyset * conf =
-		ksNew (2, keyNew ("user:/from", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), keyNew ("user:/to", ELEKTRA_KEY_VALUE, "ISO8859-1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (2, elektraKeyNew ("user:/from", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), elektraKeyNew ("user:/to", ELEKTRA_KEY_VALUE, "ISO8859-1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 
@@ -89,8 +89,8 @@ void test_utf8_to_latin1 (void)
 #include "data_utf8.c"
 			succeed_if (plugin->kdbGet (plugin, latin1, parentKey) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (latin1, utf8);
-	ksDel (latin1);
-	ksDel (utf8);
+	elektraKeysetDel (latin1);
+	elektraKeysetDel (utf8);
 
 	latin1 =
 #include "data_latin1.c"
@@ -98,23 +98,23 @@ void test_utf8_to_latin1 (void)
 #include "data_utf8.c"
 			succeed_if (plugin->kdbSet (plugin, utf8, 0) == NR_KEYS, "not the correct number of keys");
 	compare_keyset (utf8, latin1);
-	ksDel (latin1);
-	ksDel (utf8);
+	elektraKeysetDel (latin1);
+	elektraKeysetDel (utf8);
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 void test_utf8_needed (void)
 {
 	printf ("Test if utf8 conversation is needed\n");
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	ElektraKeyset * conf =
-		ksNew (2, keyNew ("user:/from", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), keyNew ("user:/to", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (2, elektraKeyNew ("user:/from", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), elektraKeyNew ("user:/to", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 
 	Plugin * plugin = elektraPluginOpen ("iconv", modules, conf, 0);
@@ -137,7 +137,7 @@ void test_utf8_needed (void)
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 static void set_str (char ** str, size_t * len, char * newstr)
@@ -149,11 +149,11 @@ static void set_str (char ** str, size_t * len, char * newstr)
 
 void test_utf8_conversation (void)
 {
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	ElektraKeyset * conf =
-		ksNew (2, keyNew ("user:/from", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), keyNew ("user:/to", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (2, elektraKeyNew ("user:/from", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), elektraKeyNew ("user:/to", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 
 	Plugin * plugin = elektraPluginOpen ("iconv", modules, conf, 0);
@@ -178,7 +178,7 @@ void test_utf8_conversation (void)
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 

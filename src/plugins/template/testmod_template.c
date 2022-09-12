@@ -18,11 +18,11 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/template", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/template", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("template");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 
@@ -36,8 +36,8 @@ static void test_basics (void)
 
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 

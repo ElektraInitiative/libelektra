@@ -13,25 +13,25 @@
 
 static void test_unit_normalization (const char * unitstring, const char * unitexpected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/unit", ELEKTRA_KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/unit/unittestval", ELEKTRA_KEY_VALUE, unitstring, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (20, hexkey, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/unit", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = elektraKeyNew ("user:/test/unit/unittestval", ELEKTRA_KEY_VALUE, unitstring, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, hexkey, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("unit");
 
 	succeed_if ((plugin->kdbGet (plugin, ks, parentKey) >= 1), "kdbGet did not succeed");
-	ElektraKey * foundKey = ksLookupByName (ks, "user:/test/unit/unittestval", 0);
-	succeed_if (!strcmp (keyString (foundKey), unitexpected), "Values dont match");
-	printf ("test unit plugin normalization test - returned value: %s, expected value: %s\n", keyString (foundKey), unitexpected);
+	ElektraKey * foundKey = elektraKeysetLookupByName (ks, "user:/test/unit/unittestval", 0);
+	succeed_if (!strcmp (elektraKeyString (foundKey), unitexpected), "Values dont match");
+	printf ("test unit plugin normalization test - returned value: %s, expected value: %s\n", elektraKeyString (foundKey), unitexpected);
 
 	succeed_if ((plugin->kdbSet (plugin, ks, parentKey) >= 1), "kdbSet did not succeed");
-	foundKey = ksLookupByName (ks, "user:/test/unit/unittestval", 0);
-	succeed_if (!strcmp (keyString (foundKey), unitstring), "Values dont match");
-	printf ("test unit plugin restoration test - returned value: %s, expected value: %s\n", keyString (foundKey), unitstring);
+	foundKey = elektraKeysetLookupByName (ks, "user:/test/unit/unittestval", 0);
+	succeed_if (!strcmp (elektraKeyString (foundKey), unitstring), "Values dont match");
+	printf ("test unit plugin restoration test - returned value: %s, expected value: %s\n", elektraKeyString (foundKey), unitstring);
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
@@ -39,10 +39,10 @@ static void test_unit_normalization (const char * unitstring, const char * unite
 
 static void test_unit_normalization_error_expected (const char * unitstring, const char * unitexpected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/unit", ELEKTRA_KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/unit/unittestval", ELEKTRA_KEY_VALUE, unitstring, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (20, hexkey, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/unit", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = elektraKeyNew ("user:/test/unit/unittestval", ELEKTRA_KEY_VALUE, unitstring, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, hexkey, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("unit");
 	printf ("Testing usage of false value %s\n", unitstring);
@@ -54,8 +54,8 @@ static void test_unit_normalization_error_expected (const char * unitstring, con
 	succeed_if (statusCode < 1, "kdbSet did succeed, despite it should not\n");
 	printf ("kdbSet status code %s expected, result: %d\n", unitexpected, statusCode);
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
@@ -63,10 +63,10 @@ static void test_unit_normalization_error_expected (const char * unitstring, con
 
 static void test_unit_validation (const char * unit, const short e_ret)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/unit", ELEKTRA_KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/unit/testvalue", ELEKTRA_KEY_VALUE, unit, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (20, hexkey, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/unit", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = elektraKeyNew ("user:/test/unit/testvalue", ELEKTRA_KEY_VALUE, unit, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, hexkey, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("unit");
 
@@ -75,8 +75,8 @@ static void test_unit_validation (const char * unit, const short e_ret)
 	printf ("Test unit Validity %s, returned value: %d, expected value: %d\n", unit, ret, e_ret);
 	succeed_if (ret == e_ret, "Test failed");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }

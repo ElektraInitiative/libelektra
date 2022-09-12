@@ -123,7 +123,7 @@ TYPE_CONVERSION_SIGNATURE (TYPE, TYPE_NAME, NAME_MACRO)
 {
 #endif
 	char * end ELEKTRA_UNUSED;
-	const char * string = keyValue (KEY_PARAM_NAME);
+	const char * string = elektraKeyValue (KEY_PARAM_NAME);
 	errno = 0;
 	PRE_CHECK_BLOCK
 	if (!PRE_CHECK_CONVERSION)

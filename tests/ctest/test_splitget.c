@@ -15,42 +15,42 @@
 #if 1 == 0
 ElektraKeyset * modules_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 ElektraKeyset * simple_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 ElektraKeyset * simple_cascading (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "/cascading/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "/cascading/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * set_realworld (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/users", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/users/mountpoint", ELEKTRA_KEY_VALUE, "system:/users", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/groups", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/groups/mountpoint", ELEKTRA_KEY_VALUE, "system:/groups", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/hosts", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/hosts/mountpoint", ELEKTRA_KEY_VALUE, "system:/hosts", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/kde", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/kde/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/kde/default", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app1", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app1/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app1/default", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app2", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app2/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (50, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/users", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/users/mountpoint", ELEKTRA_KEY_VALUE, "system:/users", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/groups", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/groups/mountpoint", ELEKTRA_KEY_VALUE, "system:/groups", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/hosts", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/hosts/mountpoint", ELEKTRA_KEY_VALUE, "system:/hosts", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/kde", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/kde/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/kde/default", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app1", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app1/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app1/default", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app2", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app2/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 // FIXME: lots of commented out tests
@@ -218,11 +218,11 @@ static void test_get (void)
 	ElektraKeyset * modules = modules_config ();
 	/* So we had 2 keys before in the keyset */
 
-	ElektraKeyset * ks = ksNew (15, keyNew ("user:/testkey1/below/here", ELEKTRA_KEY_END), keyNew ("user:/testkey/below1/here", ELEKTRA_KEY_END),
-			     keyNew ("user:/testkey/below2/here", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (15, elektraKeyNew ("user:/testkey1/below/here", ELEKTRA_KEY_END), elektraKeyNew ("user:/testkey/below1/here", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/testkey/below2/here", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	Split * split = splitNew ();
-	ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
@@ -263,23 +263,23 @@ static void test_get (void)
 	}
 
 	succeed_if (split->size == 2, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 3, "wrong size");
-	succeed_if (keyNeedSync (split->keysets[0]->array[0]) == 0, "key should not need sync");
-	succeed_if (keyNeedSync (split->keysets[0]->array[1]) == 0, "key should not need sync");
-	succeed_if (keyNeedSync (split->keysets[0]->array[2]) == 0, "key should not need sync");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 3, "wrong size");
+	succeed_if (elektraKeyNeedSync (split->keysets[0]->array[0]) == 0, "key should not need sync");
+	succeed_if (elektraKeyNeedSync (split->keysets[0]->array[1]) == 0, "key should not need sync");
+	succeed_if (elektraKeyNeedSync (split->keysets[0]->array[2]) == 0, "key should not need sync");
 	compare_keyset (split->keysets[0], ks);
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	compare_key (split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 3, "should be marked as sync");
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 
 	split = splitNew ();
-	parentKey = keyNew ("system:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "system backend should be added");
 	succeed_if (output_error (parentKey), "error found");
@@ -291,8 +291,8 @@ static void test_get (void)
 	succeed_if (output_warnings (parentKey), "warning(s) found");
 
 	succeed_if (split->size == 2, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 3, "keys with other domain should go to default keyset");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 3, "keys with other domain should go to default keyset");
 	compare_keyset (split->keysets[1], ks);
 	compare_key (split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
@@ -301,11 +301,11 @@ static void test_get (void)
 
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	ksDel (ks);
-	kdbClose (handle, 0);
-	ksDel (modules);
+	elektraKeysetDel (ks);
+	elektraKdbClose (handle, 0);
+	elektraKeysetDel (modules);
 }
 
 static void test_limit (void)
@@ -316,11 +316,11 @@ static void test_limit (void)
 	/* So we had 2 keys before in the keyset */
 	ElektraKeyset * modules = modules_config ();
 
-	ElektraKeyset * ks = ksNew (15, keyNew ("user:/testkey1/below/here", ELEKTRA_KEY_END), keyNew ("user:/testkey/below1/here", ELEKTRA_KEY_END),
-			     keyNew ("user:/testkey/below2/here", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (15, elektraKeyNew ("user:/testkey1/below/here", ELEKTRA_KEY_END), elektraKeyNew ("user:/testkey/below1/here", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/testkey/below2/here", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	Split * split = splitNew ();
-	ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
@@ -329,16 +329,16 @@ static void test_limit (void)
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
-	ksAppendKey (split->keysets[0], keyNew ("system:/wrong", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (split->keysets[0], elektraKeyNew ("system:/wrong", ELEKTRA_KEY_END));
 	succeed_if (splitGet (split, parentKey, handle) == 1, "could not postprocess get");
 
 	succeed_if (split->size == 2, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 3, "wrong size");
-	succeed_if (keyNeedSync (split->keysets[0]->array[0]) == 0, "key should not need sync");
-	succeed_if (keyNeedSync (split->keysets[0]->array[1]) == 0, "key should not need sync");
-	succeed_if (keyNeedSync (split->keysets[0]->array[2]) == 0, "key should not need sync");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 3, "wrong size");
+	succeed_if (elektraKeyNeedSync (split->keysets[0]->array[0]) == 0, "key should not need sync");
+	succeed_if (elektraKeyNeedSync (split->keysets[0]->array[1]) == 0, "key should not need sync");
+	succeed_if (elektraKeyNeedSync (split->keysets[0]->array[2]) == 0, "key should not need sync");
 	compare_keyset (split->keysets[0], ks);
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 
 	// we know that system:/wrong will produce a warning
 	compare_key_name (split->parents[0], parentKey);
@@ -347,11 +347,11 @@ static void test_limit (void)
 	succeed_if (split->syncbits[0] == 3, "should be marked as root");
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 
 	split = splitNew ();
-	parentKey = keyNew ("system:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "system backend should be added");
 	succeed_if (output_error (parentKey), "error found");
@@ -359,29 +359,29 @@ static void test_limit (void)
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[1] = 1; /* Simulate a kdbGet() */
-	ksAppendKey (split->keysets[1], keyNew ("user:/wrong", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (split->keysets[1], elektraKeyNew ("user:/wrong", ELEKTRA_KEY_END));
 	succeed_if (splitGet (split, parentKey, handle) == 1, "could not postprocess get");
 	succeed_if (output_error (parentKey), "error found");
 	succeed_if (output_warnings (parentKey), "warning(s) found");
 
 	succeed_if (split->size == 2, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 4, "default should stay untouched");
-	succeed_if (keyNeedSync (split->keysets[1]->array[0]) == 0, "key should not need sync");
-	succeed_if (keyNeedSync (split->keysets[1]->array[1]) == 0, "key should not need sync");
-	succeed_if (keyNeedSync (split->keysets[1]->array[2]) == 0, "key should not need sync");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 4, "default should stay untouched");
+	succeed_if (elektraKeyNeedSync (split->keysets[1]->array[0]) == 0, "key should not need sync");
+	succeed_if (elektraKeyNeedSync (split->keysets[1]->array[1]) == 0, "key should not need sync");
+	succeed_if (elektraKeyNeedSync (split->keysets[1]->array[2]) == 0, "key should not need sync");
 	compare_key (split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 
-	ksDel (ks);
-	kdbClose (handle, 0);
-	ksDel (modules);
+	elektraKeysetDel (ks);
+	elektraKdbClose (handle, 0);
+	elektraKeysetDel (modules);
 }
 
 
@@ -396,9 +396,9 @@ static void test_nobackend (void)
 
 	mountOpen (handle, simple_config (), modules, 0);
 
-	ElektraKeyset * ks = ksNew (15, keyNew ("user:/testkey1/below/here", ELEKTRA_KEY_END), keyNew ("user:/testkey/below1/here", ELEKTRA_KEY_END),
-			     keyNew ("user:/testkey/below2/here", ELEKTRA_KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down", ELEKTRA_KEY_END),
-			     keyNew ("user:/tests/simple/testkey/b1/b2/up", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (15, elektraKeyNew ("user:/testkey1/below/here", ELEKTRA_KEY_END), elektraKeyNew ("user:/testkey/below1/here", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/testkey/below2/here", ELEKTRA_KEY_END), elektraKeyNew ("user:/tests/simple/testkey/b1/b2/down", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/tests/simple/testkey/b1/b2/up", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	Split * split;
 	ElektraKey * parentKey;
@@ -406,15 +406,15 @@ static void test_nobackend (void)
 
 	split = splitNew ();
 
-	parentKey = keyNew ("user:/tests/simple/below", ELEKTRA_KEY_END);
-	mp = keyNew ("user:/tests/simple", ELEKTRA_KEY_VALUE, "simple", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("user:/tests/simple/below", ELEKTRA_KEY_END);
+	mp = elektraKeyNew ("user:/tests/simple", ELEKTRA_KEY_VALUE, "simple", ELEKTRA_KEY_END);
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (output_error (parentKey), "error found");
 	succeed_if (output_warnings (parentKey), "warning(s) found");
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	split->syncbits[0] = 1; /* Simulate a kdbGet() */
-	ksAppendKey (split->keysets[0], keyNew ("system:/wrong", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (split->keysets[0], elektraKeyNew ("system:/wrong", ELEKTRA_KEY_END));
 
 	succeed_if (splitGet (split, parentKey, handle) == 1, "could not postprocess get");
 	succeed_if (output_error (parentKey), "error found");
@@ -422,8 +422,8 @@ static void test_nobackend (void)
 	// succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (split->size == 2, "not correct size after appointing");
-	succeed_if (ksGetSize (split->keysets[0]) == 2, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 3, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 2, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 3, "wrong size");
 	compare_key (split->parents[0], mp);
 	backend = trieLookup (handle->trie, parentKey);
 	succeed_if (split->handles[0] == backend, "should be user backend");
@@ -431,14 +431,14 @@ static void test_nobackend (void)
 
 
 	splitDel (split);
-	keyDel (parentKey);
-	keyDel (mp);
+	elektraKeyDel (parentKey);
+	elektraKeyDel (mp);
 
 	// output_trie(trie);
 
-	ksDel (ks);
-	kdbClose (handle, 0);
-	ksDel (modules);
+	elektraKeysetDel (ks);
+	elektraKdbClose (handle, 0);
+	elektraKeysetDel (modules);
 }
 
 
@@ -730,39 +730,39 @@ static void test_realworld (void)
 	ElektraKey * parent = 0;
 	ElektraKdb * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->split = splitNew ();
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	mountOpen (handle, set_realworld (), modules, 0);
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 
-	ElektraKeyset * ks = ksNew (
-		18, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/new", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/mountpoints/new/mountpoint", ELEKTRA_KEY_VALUE, "something", ELEKTRA_KEY_END), keyNew ("system:/users", ELEKTRA_KEY_END),
-		keyNew ("system:/users/markus", ELEKTRA_KEY_END), keyNew ("system:/users/harald", ELEKTRA_KEY_END), keyNew ("system:/users/n", ELEKTRA_KEY_END),
-		keyNew ("system:/users/albert", ELEKTRA_KEY_END), keyNew ("system:/hosts", ELEKTRA_KEY_END),
-		keyNew ("system:/hosts/markusbyte", ELEKTRA_KEY_VALUE, "127.0.0.1", ELEKTRA_KEY_END), keyNew ("system:/hosts/mobilebyte", ELEKTRA_KEY_END),
-		keyNew ("system:/hosts/n900", ELEKTRA_KEY_END), keyNew ("user:/sw/apps/app1/default", ELEKTRA_KEY_END),
-		keyNew ("user:/sw/apps/app1/default/maximize", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-		keyNew ("user:/sw/apps/app1/default/download", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
-		keyNew ("user:/sw/apps/app1/default/keys/a", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_END),
-		keyNew ("user:/sw/apps/app1/default/keys/b", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END),
-		keyNew ("user:/sw/apps/app1/default/keys/c", ELEKTRA_KEY_VALUE, "c", ELEKTRA_KEY_END), keyNew ("user:/outside", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END),
+	ElektraKeyset * ks = elektraKeysetNew (
+		18, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/new", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/mountpoints/new/mountpoint", ELEKTRA_KEY_VALUE, "something", ELEKTRA_KEY_END), elektraKeyNew ("system:/users", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/users/markus", ELEKTRA_KEY_END), elektraKeyNew ("system:/users/harald", ELEKTRA_KEY_END), elektraKeyNew ("system:/users/n", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/users/albert", ELEKTRA_KEY_END), elektraKeyNew ("system:/hosts", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/hosts/markusbyte", ELEKTRA_KEY_VALUE, "127.0.0.1", ELEKTRA_KEY_END), elektraKeyNew ("system:/hosts/mobilebyte", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/hosts/n900", ELEKTRA_KEY_END), elektraKeyNew ("user:/sw/apps/app1/default", ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/sw/apps/app1/default/maximize", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/sw/apps/app1/default/download", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/sw/apps/app1/default/keys/a", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/sw/apps/app1/default/keys/b", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/sw/apps/app1/default/keys/c", ELEKTRA_KEY_VALUE, "c", ELEKTRA_KEY_END), elektraKeyNew ("user:/outside", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END),
 		ELEKTRA_KS_END);
-	ElektraKeyset * split0 = ksNew (9, keyNew ("user:/sw/apps/app1/default", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/maximize", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/download", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/keys/a", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/keys/b", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/keys/c", ELEKTRA_KEY_VALUE, "c", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split3 = ksNew (9, keyNew ("system:/hosts", ELEKTRA_KEY_END), keyNew ("system:/hosts/markusbyte", ELEKTRA_KEY_VALUE, "127.0.0.1", ELEKTRA_KEY_END),
-				 keyNew ("system:/hosts/mobilebyte", ELEKTRA_KEY_END), keyNew ("system:/hosts/n900", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split7 = ksNew (3, keyNew ("user:/outside", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split9 = ksNew (9, keyNew ("system:/users", ELEKTRA_KEY_END), keyNew ("system:/users/markus", ELEKTRA_KEY_END),
-				 keyNew ("system:/users/harald", ELEKTRA_KEY_END), keyNew ("system:/users/n", ELEKTRA_KEY_END),
-				 keyNew ("system:/users/albert", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split10 = ksNew (9, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/new", ELEKTRA_KEY_END),
-				  keyNew ("system:/elektra/mountpoints/new/mountpoint", ELEKTRA_KEY_VALUE, "something", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split0 = elektraKeysetNew (9, elektraKeyNew ("user:/sw/apps/app1/default", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/maximize", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/download", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/keys/a", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/keys/b", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/keys/c", ELEKTRA_KEY_VALUE, "c", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split3 = elektraKeysetNew (9, elektraKeyNew ("system:/hosts", ELEKTRA_KEY_END), elektraKeyNew ("system:/hosts/markusbyte", ELEKTRA_KEY_VALUE, "127.0.0.1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/hosts/mobilebyte", ELEKTRA_KEY_END), elektraKeyNew ("system:/hosts/n900", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split7 = elektraKeysetNew (3, elektraKeyNew ("user:/outside", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split9 = elektraKeysetNew (9, elektraKeyNew ("system:/users", ELEKTRA_KEY_END), elektraKeyNew ("system:/users/markus", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/users/harald", ELEKTRA_KEY_END), elektraKeyNew ("system:/users/n", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/users/albert", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split10 = elektraKeysetNew (9, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/new", ELEKTRA_KEY_END),
+				  elektraKeyNew ("system:/elektra/mountpoints/new/mountpoint", ELEKTRA_KEY_VALUE, "something", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 
 	Split * split = splitNew ();
@@ -775,17 +775,17 @@ static void test_realworld (void)
 	succeed_if (split->handles[5] == split->handles[6], "root backends have same handle");
 	succeed_if (split->syncbits[5] == 2, "sync state for root not correct");
 	succeed_if (split->syncbits[6] == 2, "sync state for root not correct");
-	succeed_if_same_string (keyName (split->parents[0]), "user:/sw/apps/app1/default");
-	succeed_if_same_string (keyName (split->parents[1]), "user:/sw/apps/app2");
-	succeed_if_same_string (keyName (split->parents[2]), "system:/groups");
-	succeed_if_same_string (keyName (split->parents[3]), "system:/hosts");
-	succeed_if_same_string (keyName (split->parents[4]), "user:/sw/kde/default");
-	succeed_if_same_string (keyName (split->parents[5]), "spec:/");
-	succeed_if_same_string (keyName (split->parents[6]), "dir:/");
-	succeed_if_same_string (keyName (split->parents[7]), "user:/");
-	succeed_if_same_string (keyName (split->parents[8]), "system:/");
-	succeed_if_same_string (keyName (split->parents[9]), "system:/users");
-	succeed_if_same_string (keyName (split->parents[10]), "system:/elektra");
+	succeed_if_same_string (elektraKeyName (split->parents[0]), "user:/sw/apps/app1/default");
+	succeed_if_same_string (elektraKeyName (split->parents[1]), "user:/sw/apps/app2");
+	succeed_if_same_string (elektraKeyName (split->parents[2]), "system:/groups");
+	succeed_if_same_string (elektraKeyName (split->parents[3]), "system:/hosts");
+	succeed_if_same_string (elektraKeyName (split->parents[4]), "user:/sw/kde/default");
+	succeed_if_same_string (elektraKeyName (split->parents[5]), "spec:/");
+	succeed_if_same_string (elektraKeyName (split->parents[6]), "dir:/");
+	succeed_if_same_string (elektraKeyName (split->parents[7]), "user:/");
+	succeed_if_same_string (elektraKeyName (split->parents[8]), "system:/");
+	succeed_if_same_string (elektraKeyName (split->parents[9]), "system:/users");
+	succeed_if_same_string (elektraKeyName (split->parents[10]), "system:/elektra");
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "should need sync");
 
@@ -821,27 +821,27 @@ static void test_realworld (void)
 	succeed_if (split->systemsizes[9] == 5, "wrong size");
 
 
-	ElektraKeyset * dest = ksNew (5, keyNew ("user:/test", ELEKTRA_KEY_VALUE, "should be gone", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ksClear (dest);
+	ElektraKeyset * dest = elektraKeysetNew (5, elektraKeyNew ("user:/test", ELEKTRA_KEY_VALUE, "should be gone", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	elektraKeysetClear (dest);
 	succeed_if (splitMergeBackends (split, dest) == 1, "split merge backends");
 	succeed_if (splitMergeDefault (split, dest) == 1, "split merge default");
 	compare_keyset (dest, ks);
-	ksDel (dest);
+	elektraKeysetDel (dest);
 
 	splitDel (split);
 
 
-	ksDel (ks);
-	ksDel (split0);
-	ksDel (split3);
-	ksDel (split7);
-	ksDel (split9);
-	ksDel (split10);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (split0);
+	elektraKeysetDel (split3);
+	elektraKeysetDel (split7);
+	elektraKeysetDel (split9);
+	elektraKeysetDel (split10);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 
-	kdbClose (handle, parent);
-	keyDel (parent);
+	elektraKdbClose (handle, parent);
+	elektraKeyDel (parent);
 }
 #endif
 

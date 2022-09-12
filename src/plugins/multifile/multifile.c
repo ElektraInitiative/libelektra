@@ -136,7 +136,7 @@ static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfil
 		goto RESOLVE_FAILED;
 	}
 
-	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+	resolved = resolveFunc (elektraKeyGetNamespace (parentKey), elektraKeyString (parentKey), tmpFile, parentKey);
 
 	if (!resolved)
 	{
@@ -145,7 +145,7 @@ static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfil
 	}
 	else
 	{
-		keySetString (parentKey, resolved->fullPath);
+		elektraKeySetString (parentKey, resolved->fullPath);
 		freeHandle (resolved);
 	}
 
@@ -182,18 +182,18 @@ static void closeBackend (SingleConfig * s)
 	if (s->tmpFilename) elektraFree (s->tmpFilename);
 	if (s->resolver) elektraPluginClose (s->resolver, NULL);
 	if (s->storage) elektraPluginClose (s->storage, NULL);
-	if (s->ks) ksDel (s->ks);
+	if (s->ks) elektraKeysetDel (s->ks);
 	elektraFree (s);
 	s = NULL;
 }
 
 static void closeBackends (ElektraKeyset * b)
 {
-	ksRewind (b);
+	elektraKeysetRewind (b);
 	ElektraKey * k;
-	while ((k = ksNext (b)) != NULL)
+	while ((k = elektraKeysetNext (b)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (k);
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (k);
 		// fprintf (stderr, "closing backend %s:(%s)\n", s->parentString, s->fullPath);
 		closeBackend (s);
 	}
@@ -212,9 +212,9 @@ int elektraMultifileClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey
 	if (mc->storage) elektraFree (mc->storage);
 	if (mc->originalPath) elektraFree (mc->originalPath);
 	elektraModulesClose (mc->modules, NULL);
-	ksDel (mc->modules);
-	ksDel (mc->childBackends);
-	ksDel (mc->childConfig);
+	elektraKeysetDel (mc->modules);
+	elektraKeysetDel (mc->childBackends);
+	elektraKeysetDel (mc->childConfig);
 	elektraFree (mc);
 	elektraPluginSetData (handle, NULL);
 	return 1; // success
@@ -224,22 +224,22 @@ static MultiConfig * initialize (Plugin * handle, ElektraKey * parentKey)
 {
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * origPath = ksLookupByName (config, "/path", 0);
-	keySetString (parentKey, keyString (origPath));
+	ElektraKey * origPath = elektraKeysetLookupByName (config, "/path", 0);
+	elektraKeySetString (parentKey, elektraKeyString (origPath));
 	if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 	{
 		return NULL;
 	}
-	ElektraKey * patternKey = ksLookupByName (config, "/pattern", 0);
-	ElektraKey * storageKey = ksLookupByName (config, "/storage", 0);
-	ElektraKey * resolverKey = ksLookupByName (config, "/resolver", 0);
-	ElektraKey * stayAliveKey = ksLookupByName (config, "/stayalive", 0);
+	ElektraKey * patternKey = elektraKeysetLookupByName (config, "/pattern", 0);
+	ElektraKey * storageKey = elektraKeysetLookupByName (config, "/storage", 0);
+	ElektraKey * resolverKey = elektraKeysetLookupByName (config, "/resolver", 0);
+	ElektraKey * stayAliveKey = elektraKeysetLookupByName (config, "/stayalive", 0);
 	MultiConfig * mc = elektraCalloc (sizeof (MultiConfig));
-	mc->directory = elektraStrDup (keyString (parentKey));
-	mc->originalPath = elektraStrDup (keyString (origPath));
+	mc->directory = elektraStrDup (elektraKeyString (parentKey));
+	mc->originalPath = elektraStrDup (elektraKeyString (origPath));
 	if (resolverKey)
 	{
-		mc->resolver = elektraStrDup (keyString (resolverKey));
+		mc->resolver = elektraStrDup (elektraKeyString (resolverKey));
 	}
 	else
 	{
@@ -247,7 +247,7 @@ static MultiConfig * initialize (Plugin * handle, ElektraKey * parentKey)
 	}
 	if (storageKey)
 	{
-		mc->storage = elektraStrDup (keyString (storageKey));
+		mc->storage = elektraStrDup (elektraKeyString (storageKey));
 	}
 	else
 	{
@@ -255,21 +255,21 @@ static MultiConfig * initialize (Plugin * handle, ElektraKey * parentKey)
 	}
 	if (patternKey)
 	{
-		mc->pattern = elektraStrDup (keyString (patternKey));
+		mc->pattern = elektraStrDup (elektraKeyString (patternKey));
 	}
 	else
 	{
 		mc->pattern = elektraStrDup (DEFAULT_PATTERN);
 	}
 	if (stayAliveKey) mc->stayAlive = 1;
-	ElektraKey * cutKey = keyNew ("/child", ELEKTRA_KEY_END);
-	ElektraKeyset * childConfig = ksCut (config, cutKey);
-	keyDel (cutKey);
-	mc->childConfig = ksRenameKeys (childConfig, "system");
-	ksAppend (config, childConfig);
-	ksDel (childConfig);
-	mc->childBackends = ksNew (0, ELEKTRA_KS_END);
-	mc->modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * cutKey = elektraKeyNew ("/child", ELEKTRA_KEY_END);
+	ElektraKeyset * childConfig = elektraKeysetCut (config, cutKey);
+	elektraKeyDel (cutKey);
+	mc->childConfig = elektraKeysetRenameKeys (childConfig, "system");
+	elektraKeysetAppend (config, childConfig);
+	elektraKeysetDel (childConfig);
+	mc->childBackends = elektraKeysetNew (0, ELEKTRA_KS_END);
+	mc->modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (mc->modules, NULL);
 	elektraPluginSetData (handle, mc);
 	return mc;
@@ -282,14 +282,14 @@ static Codes initBackend (Plugin * handle, MultiConfig * mc, SingleConfig * s, E
 	char * fullPath = elektraCalloc (fullPathLen);
 	snprintf (fullPath, fullPathLen, "%s/%s", mc->originalPath, s->filename);
 	s->fullPath = fullPath;
-	unsigned long childParentStringLen = strlen (keyName (parentKey)) + strlen (s->filename) + 2;
+	unsigned long childParentStringLen = strlen (elektraKeyName (parentKey)) + strlen (s->filename) + 2;
 	char * childParentString = elektraCalloc (childParentStringLen);
-	snprintf (childParentString, childParentStringLen, "%s/%s", keyName (parentKey), s->filename);
+	snprintf (childParentString, childParentStringLen, "%s/%s", elektraKeyName (parentKey), s->filename);
 	s->parentString = childParentString;
 	// fprintf (stderr, "Added file %s:(%s)\n\tChildParentKey: %s\n", s->fullPath, s->filename, s->parentString);
 	Plugin * resolver = NULL;
-	ElektraKeyset * resolverChildConfig = ksDup (mc->childConfig);
-	ksAppendKey (resolverChildConfig, keyNew ("/path", ELEKTRA_KEY_VALUE, s->fullPath, ELEKTRA_KEY_END));
+	ElektraKeyset * resolverChildConfig = elektraKeysetDup (mc->childConfig);
+	elektraKeysetAppendKey (resolverChildConfig, elektraKeyNew ("/path", ELEKTRA_KEY_VALUE, s->fullPath, ELEKTRA_KEY_END));
 	resolver = elektraPluginOpen (mc->resolver, mc->modules, resolverChildConfig, parentKey);
 	// fprintf (stderr, "%s:(%s)\n", keyName (parentKey), keyString (parentKey));
 	if (!resolver)
@@ -303,8 +303,8 @@ static Codes initBackend (Plugin * handle, MultiConfig * mc, SingleConfig * s, E
 		resolver->global = elektraPluginGetGlobalKeySet (handle);
 	}
 	Plugin * storage = NULL;
-	ElektraKeyset * storageChildConfig = ksDup (mc->childConfig);
-	ksAppendKey (storageChildConfig, keyNew ("system:/path", ELEKTRA_KEY_VALUE, s->fullPath, ELEKTRA_KEY_END));
+	ElektraKeyset * storageChildConfig = elektraKeysetDup (mc->childConfig);
+	elektraKeysetAppendKey (storageChildConfig, elektraKeyNew ("system:/path", ELEKTRA_KEY_VALUE, s->fullPath, ELEKTRA_KEY_END));
 	storage = elektraPluginOpen (mc->storage, mc->modules, storageChildConfig, parentKey);
 	if (!storage)
 	{
@@ -326,7 +326,7 @@ static Codes resolverGet (SingleConfig * s, ElektraKeyset * returned, ElektraKey
 	s->rcResolver = rvToRc (rc);
 	;
 	if (s->fullPath) elektraFree (s->fullPath);
-	s->fullPath = elektraStrDup (keyString (parentKey));
+	s->fullPath = elektraStrDup (elektraKeyString (parentKey));
 	return s->rcResolver;
 }
 
@@ -362,12 +362,12 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, ElektraKeyset *
 		ret = stat (results.gl_pathv[i], &sb);
 		if (S_ISREG (sb.st_mode))
 		{
-			ElektraKey * lookup = keyNew ("/", ELEKTRA_KEY_END);
-			keyAddBaseName (lookup, (results.gl_pathv[i]) + strlen (mc->directory));
+			ElektraKey * lookup = elektraKeyNew ("/", ELEKTRA_KEY_END);
+			elektraKeyAddBaseName (lookup, (results.gl_pathv[i]) + strlen (mc->directory));
 			ElektraKey * k;
-			if ((k = ksLookup (mc->childBackends, lookup, ELEKTRA_KDB_O_NONE)) != NULL)
+			if ((k = elektraKeysetLookup (mc->childBackends, lookup, ELEKTRA_KDB_O_NONE)) != NULL)
 			{
-				ksAppendKey (found, k);
+				elektraKeysetAppendKey (found, k);
 			}
 			else
 			{
@@ -378,7 +378,7 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, ElektraKeyset *
 				{
 					if (!mc->stayAlive)
 					{
-						keyDel (lookup);
+						elektraKeyDel (lookup);
 						globfree (&results);
 						return ERROR;
 					}
@@ -389,14 +389,14 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, ElektraKeyset *
 				}
 				else
 				{
-					ElektraKey * childKey = keyNew (keyName (lookup), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (SingleConfig *), ELEKTRA_KEY_VALUE,
+					ElektraKey * childKey = elektraKeyNew (elektraKeyName (lookup), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (SingleConfig *), ELEKTRA_KEY_VALUE,
 								 &s, ELEKTRA_KEY_END);
-					ksAppendKey (mc->childBackends, childKey);
-					ksAppendKey (found, childKey);
+					elektraKeysetAppendKey (mc->childBackends, childKey);
+					elektraKeysetAppendKey (found, childKey);
 					rc = SUCCESS;
 				}
 			}
-			keyDel (lookup);
+			elektraKeyDel (lookup);
 		}
 	}
 	globfree (&results);
@@ -406,40 +406,40 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, ElektraKeyset *
 static Codes updateFiles (Plugin * handle, MultiConfig * mc, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	Codes rc = NOUPDATE;
-	ElektraKeyset * found = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKeyset * found = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 
 	rc = updateFilesGlob (handle, mc, found, parentKey);
 	if (rc == ERROR)
 	{
-		ksDel (found);
-		keyDel (initialParent);
+		elektraKeysetDel (found);
+		elektraKeyDel (initialParent);
 		return ERROR;
 	}
 
-	ksRewind (mc->childBackends);
-	ksRewind (found);
+	elektraKeysetRewind (mc->childBackends);
+	elektraKeysetRewind (found);
 	ElektraKey * c;
 	ssize_t cacheHits = 0;
-	ssize_t numBackends = ksGetSize (found);
-	while ((c = ksNext (found)) != NULL)
+	ssize_t numBackends = elektraKeysetGetSize (found);
+	while ((c = elektraKeysetNext (found)) != NULL)
 	{
-		if (ksLookup (mc->childBackends, c, ELEKTRA_KDB_O_POP))
+		if (elektraKeysetLookup (mc->childBackends, c, ELEKTRA_KDB_O_POP))
 		{
-			SingleConfig * s = *(SingleConfig **) keyValue (c);
-			keySetName (parentKey, s->parentString);
-			keySetString (parentKey, s->fullPath);
+			SingleConfig * s = *(SingleConfig **) elektraKeyValue (c);
+			elektraKeySetName (parentKey, s->parentString);
+			elektraKeySetString (parentKey, s->fullPath);
 			int r = resolverGet (s, returned, parentKey);
 			elektraFree (s->fullPath);
-			s->fullPath = elektraStrDup (keyString (parentKey));
+			s->fullPath = elektraStrDup (elektraKeyString (parentKey));
 			s->rcResolver = rvToRc (r);
 			if (s->rcResolver == ERROR)
 			{
 				if (mc->stayAlive)
 				{
-					elektraCursor savedCursor = ksGetCursor (found);
-					ksAppendKey (found, c);
-					ksSetCursor (found, savedCursor);
+					elektraCursor savedCursor = elektraKeysetGetCursor (found);
+					elektraKeysetAppendKey (found, c);
+					elektraKeysetSetCursor (found, savedCursor);
 				}
 				else
 				{
@@ -459,17 +459,17 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, ElektraKeyset * ret
 			}
 		}
 	}
-	if (ksGetSize (mc->childBackends) > 0 && rc != -1)
+	if (elektraKeysetGetSize (mc->childBackends) > 0 && rc != -1)
 	{
 		rc = SUCCESS;
 		mc->hasDeleted = 1;
 	}
 	closeBackends (mc->childBackends);
-	ksDel (mc->childBackends);
+	elektraKeysetDel (mc->childBackends);
 	if (rc == ERROR)
 	{
 		closeBackends (found);
-		ksDel (found);
+		elektraKeysetDel (found);
 	}
 	else
 	{
@@ -479,80 +479,80 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, ElektraKeyset * ret
 	{
 		rc = CACHE_HIT;
 	}
-	keySetName (parentKey, keyName (initialParent));
-	keySetString (parentKey, keyString (initialParent));
-	keyDel (initialParent);
+	elektraKeySetName (parentKey, elektraKeyName (initialParent));
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	elektraKeyDel (initialParent);
 	return rc;
 }
 
 static Codes doGetStorage (MultiConfig * mc, ElektraKey * parentKey)
 {
-	ksRewind (mc->childBackends);
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeysetRewind (mc->childBackends);
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	ElektraKey * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+	while ((k = elektraKeysetNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (k);
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (k);
 		// When we reach this stage, we will need to load
 		// any successfully resolved files (as it is done in the kdb core)
 		if (s->rcResolver < 0) continue;
-		keySetName (parentKey, s->parentString);
-		keySetString (parentKey, s->fullPath);
+		elektraKeySetName (parentKey, s->parentString);
+		elektraKeySetString (parentKey, s->fullPath);
 		Plugin * storage = s->storage;
-		ElektraKeyset * readKS = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * readKS = elektraKeysetNew (0, ELEKTRA_KS_END);
 		int r = storage->kdbGet (storage, readKS, parentKey);
 		if (r > 0)
 		{
-			if (s->ks) ksDel (s->ks);
-			s->ks = ksDup (readKS);
+			if (s->ks) elektraKeysetDel (s->ks);
+			s->ks = elektraKeysetDup (readKS);
 			rc = SUCCESS;
 		}
 		else
 		{
 			rc = ERROR;
 		}
-		ksDel (readKS);
+		elektraKeysetDel (readKS);
 	}
-	keySetName (parentKey, keyName (initialParent));
-	keySetString (parentKey, keyString (initialParent));
-	keyDel (initialParent);
+	elektraKeySetName (parentKey, elektraKeyName (initialParent));
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	elektraKeyDel (initialParent);
 	return rc;
 }
 
 static void fillReturned (MultiConfig * mc, ElektraKeyset * returned)
 {
-	ksRewind (mc->childBackends);
-	ksClear (returned);
+	elektraKeysetRewind (mc->childBackends);
+	elektraKeysetClear (returned);
 	ElektraKey * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+	while ((k = elektraKeysetNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		ksAppend (returned, s->ks);
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (k);
+		elektraKeysetAppend (returned, s->ks);
 	}
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 }
 
 int elektraMultifileGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/multifile"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/multifile"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/multifile", ELEKTRA_KEY_VALUE, "multifile plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/open", ELEKTRA_KEY_FUNC, elektraMultifileOpen, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/close", ELEKTRA_KEY_FUNC, elektraMultifileClose, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/get", ELEKTRA_KEY_FUNC, elektraMultifileGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/set", ELEKTRA_KEY_FUNC, elektraMultifileSet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/commit", ELEKTRA_KEY_FUNC, elektraMultifileCommit, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/error", ELEKTRA_KEY_FUNC, elektraMultifileError, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/checkconf", ELEKTRA_KEY_FUNC, elektraMultifileCheckConf, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/multifile/exports/checkfile", ELEKTRA_KEY_FUNC, elektraMultifileCheckFile, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/multifile", ELEKTRA_KEY_VALUE, "multifile plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/open", ELEKTRA_KEY_FUNC, elektraMultifileOpen, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/close", ELEKTRA_KEY_FUNC, elektraMultifileClose, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/get", ELEKTRA_KEY_FUNC, elektraMultifileGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/set", ELEKTRA_KEY_FUNC, elektraMultifileSet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/commit", ELEKTRA_KEY_FUNC, elektraMultifileCommit, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/error", ELEKTRA_KEY_FUNC, elektraMultifileError, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/checkconf", ELEKTRA_KEY_FUNC, elektraMultifileCheckConf, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/multifile/exports/checkfile", ELEKTRA_KEY_FUNC, elektraMultifileCheckFile, ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/multifile/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/multifile/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
@@ -608,13 +608,13 @@ int elektraMultifileGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 
 static Codes resolverSet (MultiConfig * mc, ElektraKey * parentKey)
 {
-	ksRewind (mc->childBackends);
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeysetRewind (mc->childBackends);
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	ElektraKey * k;
 	Codes rc = NOUPDATE;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+	while ((k = elektraKeysetNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (k);
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (k);
 		if (s->rcResolver == NOUPDATE)
 		{
 			// fprintf (stderr, "SKIPPING %s:(%s)\n", s->parentString, s->fullPath);
@@ -632,30 +632,30 @@ static Codes resolverSet (MultiConfig * mc, ElektraKey * parentKey)
 		}
 
 		Plugin * resolver = s->resolver;
-		keySetName (parentKey, s->parentString);
-		keySetString (parentKey, s->fullPath);
+		elektraKeySetName (parentKey, s->parentString);
+		elektraKeySetString (parentKey, s->fullPath);
 		int r = resolver->kdbSet (resolver, s->ks, parentKey);
 		s->rcResolver = rc = rvToRc (r);
 		if (rc == ERROR) break;
 		if (s->tmpFilename) elektraFree (s->tmpFilename);
-		s->tmpFilename = elektraStrDup (keyString (parentKey));
+		s->tmpFilename = elektraStrDup (elektraKeyString (parentKey));
 		// fprintf (stderr, "tmp filename for %s: %s\n", s->fullPath, s->tmpFilename);
 	}
-	keySetName (parentKey, keyName (initialParent));
-	keySetString (parentKey, keyString (initialParent));
-	keyDel (initialParent);
+	elektraKeySetName (parentKey, elektraKeyName (initialParent));
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	elektraKeyDel (initialParent);
 	return rc;
 }
 
 static Codes doSetStorage (MultiConfig * mc, ElektraKey * parentKey)
 {
-	ksRewind (mc->childBackends);
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeysetRewind (mc->childBackends);
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	ElektraKey * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+	while ((k = elektraKeysetNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (k);
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (k);
 		if (s->rcResolver == EMPTY)
 		{
 			rc = SUCCESS;
@@ -667,8 +667,8 @@ static Codes doSetStorage (MultiConfig * mc, ElektraKey * parentKey)
 			continue;
 		}
 
-		keySetName (parentKey, s->parentString);
-		keySetString (parentKey, s->tmpFilename);
+		elektraKeySetName (parentKey, s->parentString);
+		elektraKeySetString (parentKey, s->tmpFilename);
 		Plugin * storage = s->storage;
 		int r = storage->kdbSet (storage, s->ks, parentKey);
 		s->rcStorage = rc = rvToRc (r);
@@ -677,21 +677,21 @@ static Codes doSetStorage (MultiConfig * mc, ElektraKey * parentKey)
 
 		if (rc == ERROR) break;
 	}
-	keySetName (parentKey, keyName (initialParent));
-	keySetString (parentKey, keyString (initialParent));
-	keyDel (initialParent);
+	elektraKeySetName (parentKey, elektraKeyName (initialParent));
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	elektraKeyDel (initialParent);
 	return rc;
 }
 
 static Codes doCommit (MultiConfig * mc, ElektraKey * parentKey)
 {
-	ksRewind (mc->childBackends);
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeysetRewind (mc->childBackends);
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	ElektraKey * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+	while ((k = elektraKeysetNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (k);
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (k);
 		if (s->rcStorage == EMPTY)
 		{
 			unlink (s->fullPath);
@@ -702,32 +702,32 @@ static Codes doCommit (MultiConfig * mc, ElektraKey * parentKey)
 			continue;
 		}
 
-		keySetName (parentKey, s->parentString);
-		keySetString (parentKey, s->fullPath);
+		elektraKeySetName (parentKey, s->parentString);
+		elektraKeySetString (parentKey, s->fullPath);
 		Plugin * resolver = s->resolver;
 		int r = resolver->kdbSet (resolver, s->ks, parentKey);
 		rc = rvToRc (r);
 		if (rc == ERROR) break;
 		// fprintf (stderr, "%s ->kdbSet returned %d\n", mc->resolver, r);
 	}
-	keySetName (parentKey, keyName (initialParent));
-	keySetString (parentKey, keyString (initialParent));
-	keyDel (initialParent);
+	elektraKeySetName (parentKey, elektraKeyName (initialParent));
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	elektraKeyDel (initialParent);
 	return rc;
 }
 
 static int diffOrNeedSync (ElektraKeyset * ks, ElektraKeyset * checkKS)
 {
-	if (ksGetSize (ks) != ksGetSize (checkKS)) return 1;
-	ksRewind (ks);
-	ksRewind (checkKS);
+	if (elektraKeysetGetSize (ks) != elektraKeysetGetSize (checkKS)) return 1;
+	elektraKeysetRewind (ks);
+	elektraKeysetRewind (checkKS);
 	ElektraKey * key = NULL;
 	ElektraKey * check = NULL;
 	int ret = -1;
 	while (ret == -1)
 	{
-		key = ksNext (ks);
-		check = ksNext (checkKS);
+		key = elektraKeysetNext (ks);
+		check = elektraKeysetNext (checkKS);
 		if (!key && !check)
 		{
 			ret = 0;
@@ -736,11 +736,11 @@ static int diffOrNeedSync (ElektraKeyset * ks, ElektraKeyset * checkKS)
 		{
 			ret = 1;
 		}
-		else if (keyCmp (key, check))
+		else if (elektraKeyCmp (key, check))
 		{
 			ret = 1;
 		}
-		else if (keyNeedSync (check))
+		else if (elektraKeyNeedSync (check))
 		{
 			ret = 1;
 		}
@@ -750,31 +750,31 @@ static int diffOrNeedSync (ElektraKeyset * ks, ElektraKeyset * checkKS)
 
 static void flagUpdateBackends (MultiConfig * mc, ElektraKeyset * returned)
 {
-	ksRewind (mc->childBackends);
+	elektraKeysetRewind (mc->childBackends);
 	ElektraKey * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+	while ((k = elektraKeysetNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (k);
-		ElektraKey * cutKey = keyNew (s->parentString, ELEKTRA_KEY_END);
-		ElektraKeyset * cutKS = ksCut (returned, cutKey);
-		if (ksGetSize (cutKS) == 0)
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (k);
+		ElektraKey * cutKey = elektraKeyNew (s->parentString, ELEKTRA_KEY_END);
+		ElektraKeyset * cutKS = elektraKeysetCut (returned, cutKey);
+		if (elektraKeysetGetSize (cutKS) == 0)
 		{
 			s->rcResolver = EMPTY;
-			if (s->ks) ksDel (s->ks);
+			if (s->ks) elektraKeysetDel (s->ks);
 			s->ks = NULL;
 		}
 		else if (diffOrNeedSync (s->ks, cutKS))
 		{
 			s->rcResolver = SUCCESS;
-			if (s->ks) ksDel (s->ks);
-			s->ks = ksDup (cutKS);
+			if (s->ks) elektraKeysetDel (s->ks);
+			s->ks = elektraKeysetDup (cutKS);
 		}
 		else
 		{
 			s->rcResolver = NOUPDATE;
 		}
-		keyDel (cutKey);
-		ksDel (cutKS);
+		elektraKeyDel (cutKey);
+		elektraKeysetDel (cutKS);
 	}
 }
 
@@ -826,23 +826,23 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retur
 {
 	MultiConfig * mc = elektraPluginGetData (handle);
 	if (!mc) return 0;
-	ksRewind (mc->childBackends);
+	elektraKeysetRewind (mc->childBackends);
 	ElektraKey * key;
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	while ((key = ksNext (mc->childBackends)) != NULL)
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	while ((key = elektraKeysetNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **) keyValue (key);
+		SingleConfig * s = *(SingleConfig **) elektraKeyValue (key);
 		Plugin * resolver = s->resolver;
-		keySetName (parentKey, s->parentString);
-		keySetString (parentKey, s->fullPath);
+		elektraKeySetName (parentKey, s->parentString);
+		elektraKeySetString (parentKey, s->fullPath);
 		if (resolver->kdbError)
 		{
 			resolver->kdbError (resolver, returned, parentKey);
 		}
 	}
-	keySetName (parentKey, keyName (initialParent));
-	keySetString (parentKey, keyString (initialParent));
-	keyDel (initialParent);
+	elektraKeySetName (parentKey, elektraKeyName (initialParent));
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	elektraKeyDel (initialParent);
 
 
 	return 1; // success

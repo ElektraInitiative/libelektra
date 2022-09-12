@@ -45,19 +45,19 @@ extern "C" {
 ElektraKey * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 {
 	elektraSetLookupKey (elektra, name);
-	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = elektraKeysetLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
-		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey)));
+		elektraFatalError (elektra, elektraErrorKeyNotFound (elektraKeyName (elektra->lookupKey)));
 		return NULL;
 	}
 
 	if (type != NULL)
 	{
-		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
+		const char * actualType = elektraKeyString (elektraKeyGetMeta (resultKey, "type"));
 		if (strcmp (actualType, type) != 0)
 		{
-			elektraFatalError (elektra, elektraErrorWrongType (keyName (elektra->lookupKey), type, actualType));
+			elektraFatalError (elektra, elektraErrorWrongType (elektraKeyName (elektra->lookupKey), type, actualType));
 			return NULL;
 		}
 	}
@@ -85,13 +85,13 @@ ElektraKey * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 const char * elektraFindReference (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
-	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = elektraKeysetLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
 		return NULL;
 	}
 
-	const char * reference = keyString (resultKey);
+	const char * reference = elektraKeyString (resultKey);
 
 	if (strlen (reference) == 0)
 	{
@@ -108,7 +108,7 @@ const char * elektraFindReference (Elektra * elektra, const char * name)
 
 	size_t len = strlen (elektra->resolvedReference);
 	if (len < elektra->parentKeyLength ||
-	    strncmp (keyName (elektra->parentKey), elektra->resolvedReference, elektra->parentKeyLength) != 0)
+	    strncmp (elektraKeyName (elektra->parentKey), elektra->resolvedReference, elektra->parentKeyLength) != 0)
 	{
 		return NULL;
 	}
@@ -127,8 +127,8 @@ KDBType elektraGetType (Elektra * elektra, const char * keyname)
 {
 	elektraSetLookupKey (elektra, keyname);
 	const ElektraKey * key = elektraFindKey (elektra, keyname, NULL);
-	const ElektraKey * metaKey = keyGetMeta (key, "type");
-	return metaKey == NULL ? NULL : keyString (metaKey);
+	const ElektraKey * metaKey = elektraKeyGetMeta (key, "type");
+	return metaKey == NULL ? NULL : elektraKeyString (metaKey);
 }
 
 /**
@@ -144,8 +144,8 @@ KDBType elektraGetType (Elektra * elektra, const char * keyname)
 const char * elektraGetRawString (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
-	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
-	return resultKey == NULL ? NULL : keyString (resultKey);
+	ElektraKey * const resultKey = elektraKeysetLookup (elektra->config, elektra->lookupKey, 0);
+	return resultKey == NULL ? NULL : elektraKeyString (resultKey);
 }
 
 /**
@@ -161,9 +161,9 @@ void elektraSetRawString (Elektra * elektra, const char * name, const char * val
 {
 	CHECK_ERROR (elektra, error);
 	elektraSetLookupKey (elektra, name);
-	ElektraKey * const key = keyDup (elektra->lookupKey, ELEKTRA_KEY_CP_NAME);
-	keySetMeta (key, "type", type);
-	keySetString (key, value);
+	ElektraKey * const key = elektraKeyDup (elektra->lookupKey, ELEKTRA_KEY_CP_NAME);
+	elektraKeySetMeta (key, "type", type);
+	elektraKeySetString (key, value);
 	elektraSaveKey (elektra, key, error);
 }
 

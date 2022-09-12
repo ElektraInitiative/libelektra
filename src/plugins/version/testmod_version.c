@@ -20,35 +20,35 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	ElektraKey * parentKey = keyNew ("system:/elektra/version", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/elektra/version", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("version");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", ELEKTRA_KEY_VALUE, ELEKTRA_KDB_GET_PHASE_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	plugin->global = elektraKeysetNew (1, elektraKeyNew ("system:/elektra/kdb/backend/phase", ELEKTRA_KEY_VALUE, ELEKTRA_KDB_GET_PHASE_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
 	ElektraKeyset * expectedKs = elektraVersionKeySet ();
-	succeed_if (ksGetSize (ks) == ksGetSize (expectedKs), "wrong number of keys returned");
+	succeed_if (elektraKeysetGetSize (ks) == elektraKeysetGetSize (expectedKs), "wrong number of keys returned");
 
-	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
+	for (elektraCursor i = 0; i < elektraKeysetGetSize (ks); i++)
 	{
-		ElektraKey * cur = ksAtCursor (ks, i);
-		ElektraKey * expected = ksAtCursor (expectedKs, i);
+		ElektraKey * cur = elektraKeysetAtCursor (ks, i);
+		ElektraKey * expected = elektraKeysetAtCursor (expectedKs, i);
 
-		succeed_if (strcmp (keyName (expected), keyName (cur)) == 0, "key with wrong name returned");
-		succeed_if (strcmp (keyString (expected), keyString (cur)) == 0, "key with wrong value returned");
+		succeed_if (strcmp (elektraKeyName (expected), elektraKeyName (cur)) == 0, "key with wrong name returned");
+		succeed_if (strcmp (elektraKeyString (expected), elektraKeyString (cur)) == 0, "key with wrong value returned");
 
-		succeed_if (keyGetMeta (cur, "restrict/write") != NULL, "missing restrict/write metadata");
-		succeed_if (keyGetMeta (cur, "restrict/remove") != NULL, "missing restrict/remove metadata");
+		succeed_if (elektraKeyGetMeta (cur, "restrict/write") != NULL, "missing restrict/write metadata");
+		succeed_if (elektraKeyGetMeta (cur, "restrict/remove") != NULL, "missing restrict/remove metadata");
 	}
 
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (plugin->global);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -56,38 +56,38 @@ static void test_rename (void)
 {
 	printf ("test rename\n");
 
-	ElektraKey * parentKey = keyNew ("user:/somewhere/else", ELEKTRA_KEY_END);
-	size_t parentSize = keyGetNameSize (parentKey) - 1;
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/somewhere/else", ELEKTRA_KEY_END);
+	size_t parentSize = elektraKeyGetNameSize (parentKey) - 1;
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("version");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", ELEKTRA_KEY_VALUE, ELEKTRA_KDB_GET_PHASE_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	plugin->global = elektraKeysetNew (1, elektraKeyNew ("system:/elektra/kdb/backend/phase", ELEKTRA_KEY_VALUE, ELEKTRA_KDB_GET_PHASE_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
 	ElektraKeyset * expectedKs = elektraVersionKeySet ();
-	succeed_if (ksGetSize (ks) == ksGetSize (expectedKs), "wrong number of keys returned");
+	succeed_if (elektraKeysetGetSize (ks) == elektraKeysetGetSize (expectedKs), "wrong number of keys returned");
 
-	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
+	for (elektraCursor i = 0; i < elektraKeysetGetSize (ks); i++)
 	{
-		ElektraKey * cur = ksAtCursor (ks, i);
-		ElektraKey * expected = ksAtCursor (expectedKs, i);
+		ElektraKey * cur = elektraKeysetAtCursor (ks, i);
+		ElektraKey * expected = elektraKeysetAtCursor (expectedKs, i);
 
-		succeed_if (strncmp ("user:/somewhere/else", keyName (cur), parentSize) == 0, "key with wrong name returned");
-		succeed_if (strcmp (keyName (expected) + sizeof ("system:/elektra/version") - 1, keyName (cur) + parentSize) == 0,
+		succeed_if (strncmp ("user:/somewhere/else", elektraKeyName (cur), parentSize) == 0, "key with wrong name returned");
+		succeed_if (strcmp (elektraKeyName (expected) + sizeof ("system:/elektra/version") - 1, elektraKeyName (cur) + parentSize) == 0,
 			    "key with wrong name returned");
-		succeed_if (strcmp (keyString (expected), keyString (cur)) == 0, "key with wrong value returned");
+		succeed_if (strcmp (elektraKeyString (expected), elektraKeyString (cur)) == 0, "key with wrong value returned");
 
-		succeed_if (keyGetMeta (cur, "restrict/write") != NULL, "missing restrict/write metadata");
-		succeed_if (keyGetMeta (cur, "restrict/remove") != NULL, "missing restrict/remove metadata");
+		succeed_if (elektraKeyGetMeta (cur, "restrict/write") != NULL, "missing restrict/write metadata");
+		succeed_if (elektraKeyGetMeta (cur, "restrict/remove") != NULL, "missing restrict/remove metadata");
 	}
 
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (plugin->global);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 

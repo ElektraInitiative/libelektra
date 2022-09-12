@@ -40,30 +40,30 @@
 
 static ElektraKeyset * create_ks (const char * res, const char * meta)
 {
-	return ksNew (5, keyNew ("user:/tests/mathcheck/sum", ELEKTRA_KEY_VALUE, res, ELEKTRA_KEY_META, "check/math", meta, ELEKTRA_KEY_END),
-		      keyNew ("user:/tests/mathcheck/bla/val1", ELEKTRA_KEY_VALUE, "100", ELEKTRA_KEY_END),
-		      keyNew ("user:/tests/mathcheck/bla/val2", ELEKTRA_KEY_VALUE, "50", ELEKTRA_KEY_END),
-		      keyNew ("user:/tests/mathcheck/bla/val3", ELEKTRA_KEY_VALUE, "3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("user:/tests/mathcheck/sum", ELEKTRA_KEY_VALUE, res, ELEKTRA_KEY_META, "check/math", meta, ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/tests/mathcheck/bla/val1", ELEKTRA_KEY_VALUE, "100", ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/tests/mathcheck/bla/val2", ELEKTRA_KEY_VALUE, "50", ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/tests/mathcheck/bla/val3", ELEKTRA_KEY_VALUE, "3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_multiUp (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (5,
-			     keyNew ("user:/tests/mathcheck/up/sum", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_META, "check/math",
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/mathcheck", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (5,
+			     elektraKeyNew ("user:/tests/mathcheck/up/sum", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_META, "check/math",
 				     ":= + ../val1 + ../../val2 ../val3", ELEKTRA_KEY_END),
-			     keyNew ("user:/tests/mathcheck/up/val1", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-			     keyNew ("user:/tests/mathcheck/val2", ELEKTRA_KEY_VALUE, "2", ELEKTRA_KEY_END),
-			     keyNew ("user:/tests/mathcheck/up/val3", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+			     elektraKeyNew ("user:/tests/mathcheck/up/val1", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/tests/mathcheck/val2", ELEKTRA_KEY_VALUE, "2", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/tests/mathcheck/up/val3", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("mathcheck");
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	plugin->kdbSet (plugin, ks, parentKey);
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/mathcheck/up/sum", 0)), "13"), "error");
-	keyDel (parentKey);
+	succeed_if (!strcmp (elektraKeyString (elektraKeysetLookupByName (ks, "user:/tests/mathcheck/up/sum", 0)), "13"), "error");
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
-	ksDel (ks);
+	elektraKeysetDel (ks);
 }
 
 int main (int argc, char ** argv)
@@ -75,75 +75,75 @@ int main (int argc, char ** argv)
 
 	ElektraKeyset * ks = create_ks ("153", "== + ../bla/val1 + ../bla/val2 ../bla/val3");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("250", "< + ../bla/val1 + ../bla/val2 ../bla/val3");
 	test (ks, (-1));
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("250", ">= + @/bla/val1 + @/bla/val2 @/bla/val3");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("2", "== / @/bla/val1 @/bla/val2");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("", ":= / @/bla/val1 @/bla/val2");
 	testSet (ks, "2");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("1", "== / ../bla/val1 ../bla/val3");
 	test (ks, (-1));
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("3", "== + '1.5' '1.5'");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("4.5", "== + '1.5' + '1.5' '1.5'");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("", ":= + '1.5' + '1.5' '1.5'");
 	testSet (ks, "4.5");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("1", "== + '1.5' '1.5'");
 	test (ks, (-1));
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("10", "== + ../bla/val3 '7'");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("7", "== + @/bla/nonExisting '7'");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("", ":= + @/bla/nonExisting '7'");
 	testSet (ks, "7");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("7", "== * @/bla/nonExisting '7'");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("3", "== + ../bla/nonExisting + ../bla/nonExistingToo ../bla/val3");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("", ":= + ../bla/nonExisting + ../bla/nonExistingToo ../bla/val3");
 	testSet (ks, "3");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("3", "== / @/bla/nonExisting / ../bla/nonExistingToo @/bla/val3");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	ks = create_ks ("3", "== + @/bla/nonExisting / ../bla/val3 ../bla/nonExistingToo");
 	test (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	test_multiUp ();
 

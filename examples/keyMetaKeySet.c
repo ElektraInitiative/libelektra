@@ -14,25 +14,25 @@ int main (void)
 {
 
 	//! [Basic keyMeta]
-	ElektraKey * key = keyNew ("user:/test/key", ELEKTRA_KEY_END);
+	ElektraKey * key = elektraKeyNew ("user:/test/key", ELEKTRA_KEY_END);
 
-	keySetMeta (key, "meta1", "value1");
-	keySetMeta (key, "meta2", "value2");
+	elektraKeySetMeta (key, "meta1", "value1");
+	elektraKeySetMeta (key, "meta2", "value2");
 	//! [Basic keyMeta]
 
 	//! [Iterate keyMeta]
 	ElektraKey * cur;
-	ksRewind (keyMeta (key));
-	while ((cur = ksNext (keyMeta (key))) != NULL)
+	elektraKeysetRewind (elektraKeyMeta (key));
+	while ((cur = elektraKeysetNext (elektraKeyMeta (key))) != NULL)
 	{
-		printf ("meta name: %s, meta value: %s\n", keyName (cur), keyString (cur));
+		printf ("meta name: %s, meta value: %s\n", elektraKeyName (cur), elektraKeyString (cur));
 	}
 	//! [Iterate keyMeta]
 
 	//! [Lookup keyMeta]
-	ElektraKey * lookupKey = ksLookupByName (keyMeta (key), "meta2", 0);
-	printf ("meta name: %s, meta value: %s\n", keyName (lookupKey), keyString (lookupKey));
-	keyDel (key);
+	ElektraKey * lookupKey = elektraKeysetLookupByName (elektraKeyMeta (key), "meta2", 0);
+	printf ("meta name: %s, meta value: %s\n", elektraKeyName (lookupKey), elektraKeyString (lookupKey));
+	elektraKeyDel (key);
 	//! [Lookup keyMeta]
 
 	return 0;

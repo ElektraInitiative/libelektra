@@ -27,7 +27,7 @@
  */
 static int unescape (ElektraKey * key, ElektraKey * parent)
 {
-	const char * strVal = keyString (key);
+	const char * strVal = elektraKeyString (key);
 	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
 
 	if (strlen (strVal) < 2 || strncmp (strVal, escapedPrefix, 2) != 0) return 0;
@@ -39,7 +39,7 @@ static int unescape (ElektraKey * key, ElektraKey * parent)
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent);
 		return -1;
 	}
-	keySetString (key, unescaped);
+	elektraKeySetString (key, unescaped);
 	elektraFree (unescaped);
 	return 1;
 }
@@ -57,9 +57,9 @@ static int unescape (ElektraKey * key, ElektraKey * parent)
  */
 static bool shouldDecode (ElektraKey * key, bool metaMode)
 {
-	if (metaMode) return keyGetMeta (key, "type") && strcmp (keyValue (keyGetMeta (key, "type")), "binary") == 0;
+	if (metaMode) return elektraKeyGetMeta (key, "type") && strcmp (elektraKeyValue (elektraKeyGetMeta (key, "type")), "binary") == 0;
 
-	const char * strVal = keyString (key);
+	const char * strVal = elektraKeyString (key);
 	return strlen (strVal) >= ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH &&
 	       strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) == 0;
 }
@@ -85,7 +85,7 @@ static bool shouldDecode (ElektraKey * key, bool metaMode)
  */
 static int decode (ElektraKey * key, ElektraKey * parent, bool metaMode)
 {
-	if (!keyIsString (key)) return 0;
+	if (!elektraKeyIsString (key)) return 0;
 
 	if (!shouldDecode (key, metaMode))
 	{
@@ -97,17 +97,17 @@ static int decode (ElektraKey * key, ElektraKey * parent, bool metaMode)
 
 	kdb_octet_t * buffer;
 	size_t bufferLen;
-	const char * strVal = keyString (key);
+	const char * strVal = elektraKeyString (key);
 	int result = base64Decode (strVal + (metaMode ? 0 : ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH), &buffer, &bufferLen);
 	if (result == 1)
 	{
 		// Success
-		keySetBinary (key, buffer, bufferLen);
+		elektraKeySetBinary (key, buffer, bufferLen);
 	}
 	else if (result == -1)
 	{
 		// Decoding error
-		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parent, "Key %s was not Base64 encoded: %s", keyName (key), strVal);
+		ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parent, "Key %s was not Base64 encoded: %s", elektraKeyName (key), strVal);
 	}
 	else if (result == -2)
 	{
@@ -133,9 +133,9 @@ static int decode (ElektraKey * key, ElektraKey * parent, bool metaMode)
  */
 static int encode (ElektraKey * key, ElektraKey * parent, bool metaMode)
 {
-	if (!keyIsBinary (key) || (keyGetValueSize (key) == 0 && metaMode)) return 0;
+	if (!elektraKeyIsBinary (key) || (elektraKeyGetValueSize (key) == 0 && metaMode)) return 0;
 
-	char * base64 = base64Encode (keyValue (key), (size_t) keyGetValueSize (key));
+	char * base64 = base64Encode (elektraKeyValue (key), (size_t) elektraKeyGetValueSize (key));
 	if (!base64)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent);
@@ -144,7 +144,7 @@ static int encode (ElektraKey * key, ElektraKey * parent, bool metaMode)
 
 	if (metaMode)
 	{
-		keySetString (key, base64);
+		elektraKeySetString (key, base64);
 	}
 	else
 	{
@@ -157,7 +157,7 @@ static int encode (ElektraKey * key, ElektraKey * parent, bool metaMode)
 			return -1;
 		}
 		snprintf (newVal, newValLen, "%s%s", ELEKTRA_PLUGIN_BASE64_PREFIX, base64); //! OCLint (constant conditional operator)
-		keySetString (key, newVal);
+		elektraKeySetString (key, newVal);
 		elektraFree (newVal);
 	}
 
@@ -180,10 +180,10 @@ static int encode (ElektraKey * key, ElektraKey * parent, bool metaMode)
  */
 static int escape (ElektraKey * key, ElektraKey * parent)
 {
-	if (keyIsString (key) == 0) return 0;
+	if (elektraKeyIsString (key) == 0) return 0;
 
 	// escape the prefix character
-	const char * strVal = keyString (key);
+	const char * strVal = elektraKeyString (key);
 	const size_t strValLen = strlen (strVal);
 	if (strValLen <= 0 || strVal[0] != ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR) return 0;
 
@@ -199,7 +199,7 @@ static int escape (ElektraKey * key, ElektraKey * parent)
 	// add the escape character in front of the original value
 	escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
 	strncpy (&escapedVal[1], strVal, strValLen + 1); //! OCLint (constant conditional operator)
-	keySetString (key, escapedVal);
+	elektraKeySetString (key, escapedVal);
 	elektraFree (escapedVal);
 	return 1;
 }
@@ -215,7 +215,7 @@ static int escape (ElektraKey * key, ElektraKey * parent)
 static bool useMetaMode (Plugin * handle)
 {
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * metaMode = ksLookupByName (config, "/binary/meta", 0);
+	ElektraKey * metaMode = elektraKeysetLookupByName (config, "/binary/meta", 0);
 
 	ELEKTRA_LOG ("Using %s mode", metaMode ? "meta" : "escaping");
 	return metaMode ? true : false;
@@ -235,13 +235,13 @@ static bool useMetaMode (Plugin * handle)
 int PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * keySet, ElektraKey * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		ElektraKeyset * moduleConfig = ksNew (30,
+		ElektraKeyset * moduleConfig = elektraKeysetNew (30,
 #include "contract.h"
 					       ELEKTRA_KS_END);
-		ksAppend (keySet, moduleConfig);
-		ksDel (moduleConfig);
+		elektraKeysetAppend (keySet, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1;
 	}
 
@@ -249,9 +249,9 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * keySet, ElektraKey *
 
 	// base64 decoding
 	ElektraKey * key;
-	ksRewind (keySet);
+	elektraKeysetRewind (keySet);
 	int status = 0;
-	while (status >= 0 && (key = ksNext (keySet)))
+	while (status >= 0 && (key = elektraKeysetNext (keySet)))
 	{
 		status |= decode (key, parentKey, metaMode);
 	}
@@ -273,12 +273,12 @@ int PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * keySet, ElektraKey *
 {
 	ElektraKey * key;
 
-	ksRewind (keySet);
+	elektraKeysetRewind (keySet);
 
 	bool metaMode = useMetaMode (handle);
 
 	int status = 0;
-	while (status >= 0 && (key = ksNext (keySet)))
+	while (status >= 0 && (key = elektraKeysetNext (keySet)))
 	{
 		if (!metaMode)
 		{

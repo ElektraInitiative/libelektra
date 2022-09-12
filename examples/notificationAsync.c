@@ -45,7 +45,7 @@ static void wakeupCallback (uv_async_t * async ELEKTRA_UNUSED, int unknown ELEKT
 
 static void setTerminalColor (ElektraKey * color, void * context ELEKTRA_UNUSED)
 {
-	const char * value = keyString (color);
+	const char * value = elektraKeyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
 
 	if (elektraStrCmp (value, "red") == 0)
@@ -93,17 +93,17 @@ int main (void)
 	// Cleanup on SIGINT
 	signal (SIGINT, onSIGNAL);
 
-	ElektraKeyset * config = ksNew (20, ELEKTRA_KS_END);
+	ElektraKeyset * config = elektraKeysetNew (20, ELEKTRA_KS_END);
 
 	uv_loop_t * loop = uv_default_loop ();
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * contract = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraIoContract (contract, binding);
 	elektraNotificationContract (contract);
 
-	ElektraKey * key = keyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
-	ElektraKdb * kdb = kdbOpen (contract, key);
+	ElektraKey * key = elektraKeyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
+	ElektraKdb * kdb = elektraKdbOpen (contract, key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
@@ -111,7 +111,7 @@ int main (void)
 	}
 
 	int value = 0;
-	ElektraKey * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
+	ElektraKey * intKeyToWatch = elektraKeyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
 	int result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
@@ -119,7 +119,7 @@ int main (void)
 		return -1;
 	}
 
-	ElektraKey * callbackKeyToWatch = keyNew ("/sw/example/notification/#0/current/color", ELEKTRA_KEY_END);
+	ElektraKey * callbackKeyToWatch = elektraKeyNew ("/sw/example/notification/#0/current/color", ELEKTRA_KEY_END);
 	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor, NULL);
 	if (!result)
 	{
@@ -134,12 +134,12 @@ int main (void)
 	printf ("Asynchronous Notification Example Application\n");
 	printf ("Please note that notification transport plugins are required see\n"
 		" https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
-	printf ("- Set \"%s\" to red, blue or green to change the text color\n", keyName (callbackKeyToWatch));
-	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
+	printf ("- Set \"%s\" to red, blue or green to change the text color\n", elektraKeyName (callbackKeyToWatch));
+	printf ("- Set \"%s\" to any integer value\n", elektraKeyName (intKeyToWatch));
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
 
 	// Get configuration
-	kdbGet (kdb, config, key);
+	elektraKdbGet (kdb, config, key);
 	printVariable (timer); // "value" was automatically updated
 
 	// This allows us to wake the loop from our signal handler
@@ -155,7 +155,7 @@ int main (void)
 	resetTerminalColor ();
 	elektraIoBindingRemoveTimer (timer);
 	elektraFree (timer);
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 
 	elektraIoBindingCleanup (binding);
 	uv_run (loop, UV_RUN_NOWAIT);
@@ -165,9 +165,9 @@ int main (void)
 	uv_loop_delete (uv_default_loop ());
 #endif
 
-	ksDel (config);
-	keyDel (intKeyToWatch);
-	keyDel (callbackKeyToWatch);
-	keyDel (key);
+	elektraKeysetDel (config);
+	elektraKeyDel (intKeyToWatch);
+	elektraKeyDel (callbackKeyToWatch);
+	elektraKeyDel (key);
 	printf ("cleanup done!\n");
 }

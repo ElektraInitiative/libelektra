@@ -323,7 +323,7 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
  * @retval -2 on subscription timeout
  * @retval 0 on other errors
  */
-int elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data)
+int elektraZeroMqSendPublish (const char * changeType, const char * elektraKeyName, ElektraZeroMqSendPluginData * data)
 {
 	if (!elektraZeroMqSendConnect (data))
 	{
@@ -360,7 +360,7 @@ int elektraZeroMqSendPublish (const char * changeType, const char * keyName, Ele
 	}
 
 	// send notification
-	if (!elektraZeroMqSendNotification (data->zmqPublisher, changeType, keyName))
+	if (!elektraZeroMqSendNotification (data->zmqPublisher, changeType, elektraKeyName))
 	{
 		ELEKTRA_LOG_WARNING ("could not send notification");
 		return 0;
@@ -382,7 +382,7 @@ int elektraZeroMqSendPublish (const char * changeType, const char * keyName, Ele
  * @retval 1 on success
  * @retval 0 on error
  */
-int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * keyName)
+int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * elektraKeyName)
 {
 	unsigned int size;
 
@@ -393,8 +393,8 @@ int elektraZeroMqSendNotification (void * socket, const char * changeType, const
 		return 0;
 	}
 
-	size = zmq_send (socket, keyName, elektraStrLen (keyName), 0);
-	if (size != elektraStrLen (keyName))
+	size = zmq_send (socket, elektraKeyName, elektraStrLen (elektraKeyName), 0);
+	if (size != elektraStrLen (elektraKeyName))
 	{
 		return 0;
 	}

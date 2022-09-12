@@ -26,20 +26,20 @@
  */
 static void elektraNotificationKdbUpdate (ElektraKdb * kdb, ElektraKey * changedKey)
 {
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	kdbGet (kdb, ks, changedKey);
-	ksDel (ks);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKdbGet (kdb, ks, changedKey);
+	elektraKeysetDel (ks);
 }
 
 int elektraNotificationContract (ElektraKeyset * contract)
 {
 	if (contract == NULL) return -1;
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/internalnotification", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (contract, elektraKeyNew ("system:/elektra/contract/mountglobal/internalnotification", ELEKTRA_KEY_END));
 
 	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof (*context));
 	context->kdbUpdate = &elektraNotificationKdbUpdate;
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/internalnotification/context", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE,
+	elektraKeysetAppendKey (contract, elektraKeyNew ("system:/elektra/contract/mountglobal/internalnotification/context", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE,
 				       sizeof (context), ELEKTRA_KEY_VALUE, &context, ELEKTRA_KEY_END));
 
 	return 0;

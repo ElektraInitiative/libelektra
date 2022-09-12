@@ -20,17 +20,17 @@
 
 int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/file"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/file"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/file", ELEKTRA_KEY_VALUE, "file plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/file/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/file/exports/get", ELEKTRA_KEY_FUNC, elektraFileGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/file/exports/set", ELEKTRA_KEY_FUNC, elektraFileSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/file", ELEKTRA_KEY_VALUE, "file plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/file/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/file/exports/get", ELEKTRA_KEY_FUNC, elektraFileGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/file/exports/set", ELEKTRA_KEY_FUNC, elektraFileSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/file/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/file/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
@@ -38,12 +38,12 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	short binary = 0;
 	short info = 0;
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * lookup = ksLookupByName (config, "/info", ELEKTRA_KDB_O_NONE);
+	ElektraKey * lookup = elektraKeysetLookupByName (config, "/info", ELEKTRA_KDB_O_NONE);
 	if (lookup) info = 1;
-	lookup = ksLookupByName (config, "/binary", ELEKTRA_KDB_O_NONE);
+	lookup = elektraKeysetLookupByName (config, "/binary", ELEKTRA_KDB_O_NONE);
 	if (lookup) binary = 1;
 
-	const char * fileName = keyString (parentKey);
+	const char * fileName = elektraKeyString (parentKey);
 
 	struct stat sb;
 	if (stat (fileName, &sb) == -1)
@@ -95,15 +95,15 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	}
 	fclose (fp);
 
-	ElektraKey * key = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
+	ElektraKey * key = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_END);
 	if (binary)
 	{
-		keySetBinary (key, (const void *) buffer, (size_t) fileSize);
+		elektraKeySetBinary (key, (const void *) buffer, (size_t) fileSize);
 	}
 	else
 	{
 		buffer[fileSize] = '\0';
-		keySetString (key, (char *) buffer);
+		elektraKeySetString (key, (char *) buffer);
 	}
 	if (info)
 	{
@@ -111,20 +111,20 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 		size_t maxChars = snprintf (NULL, 0, "%llu", maxValue);
 		char tmp[maxChars + 1]; //
 		snprintf (tmp, sizeof (tmp), "%lld", fileSize);
-		keySetMeta (key, "info/size", tmp);
-		keySetMeta (key, "info/ctime", ctime (&sb.st_ctime));
-		keySetMeta (key, "info/atime", ctime (&sb.st_atime));
-		keySetMeta (key, "info/mtime", ctime (&sb.st_mtime));
+		elektraKeySetMeta (key, "info/size", tmp);
+		elektraKeySetMeta (key, "info/ctime", ctime (&sb.st_ctime));
+		elektraKeySetMeta (key, "info/atime", ctime (&sb.st_atime));
+		elektraKeySetMeta (key, "info/mtime", ctime (&sb.st_mtime));
 		snprintf (tmp, sizeof (tmp), "%ld", (long) sb.st_uid);
-		keySetMeta (key, "info/uid", tmp);
+		elektraKeySetMeta (key, "info/uid", tmp);
 		snprintf (tmp, sizeof (tmp), "%ld", (long) sb.st_gid);
-		keySetMeta (key, "info/gid", tmp);
+		elektraKeySetMeta (key, "info/gid", tmp);
 		snprintf (tmp, sizeof (tmp), "%o", (unsigned int) sb.st_mode);
-		keySetMeta (key, "info/mode", tmp);
+		elektraKeySetMeta (key, "info/mode", tmp);
 		snprintf (tmp, sizeof (tmp), "%ld", (long) sb.st_ino);
-		keySetMeta (key, "info/inode", tmp);
+		elektraKeySetMeta (key, "info/inode", tmp);
 	}
-	ksAppendKey (returned, key);
+	elektraKeysetAppendKey (returned, key);
 
 	elektraFree (buffer);
 	return 1; // success
@@ -134,9 +134,9 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 {
 	// set all keys
 	// this function is optional
-	const ElektraKey * key = ksLookup (returned, parentKey, ELEKTRA_KDB_O_NONE);
+	const ElektraKey * key = elektraKeysetLookup (returned, parentKey, ELEKTRA_KDB_O_NONE);
 	if (!key) return 0;
-	const char * fileName = keyString (parentKey);
+	const char * fileName = elektraKeyString (parentKey);
 
 	FILE * fp = NULL;
 	fp = fopen (fileName, "wb");
@@ -145,7 +145,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for writing. Reason: %s", fileName, strerror (errno));
 		return -1;
 	}
-	ssize_t svalueSize = keyGetValueSize (key);
+	ssize_t svalueSize = elektraKeyGetValueSize (key);
 	if (svalueSize <= 0)
 	{
 		fclose (fp);
@@ -159,14 +159,14 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 		fclose (fp);
 		return -1;
 	}
-	if (!keyIsBinary (key))
+	if (!elektraKeyIsBinary (key))
 	{
-		keyGetString (key, (char *) value, valueSize);
+		elektraKeyGetString (key, (char *) value, valueSize);
 		valueSize -= 1; // don't write the null terminator to the file
 	}
 	else
 	{
-		keyGetBinary (key, value, valueSize);
+		elektraKeyGetBinary (key, value, valueSize);
 	}
 	size_t bytesWritten = 0;
 	while (bytesWritten < valueSize)

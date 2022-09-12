@@ -26,13 +26,13 @@
  */
 static int getStatisticalValue (ElektraKey * informationKey, char * metaName)
 {
-	const ElektraKey * metaKey = keyGetMeta (informationKey, metaName);
+	const ElektraKey * metaKey = elektraKeyGetMeta (informationKey, metaName);
 	if (metaKey == NULL)
 	{
 		return 0;
 	}
-	char * test = elektraMalloc (keyGetValueSize (metaKey));
-	if (keyGetString (metaKey, test, keyGetValueSize (metaKey)) < 0)
+	char * test = elektraMalloc (elektraKeyGetValueSize (metaKey));
+	if (elektraKeyGetString (metaKey, test, elektraKeyGetValueSize (metaKey)) < 0)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not get statistical value.");
 		return -1;
@@ -74,7 +74,7 @@ static int setStatisticalValue (ElektraKey * informationKey, char * metaName, in
 		}
 		return -1;
 	}
-	ssize_t size = keySetMeta (informationKey, metaName, stringy);
+	ssize_t size = elektraKeySetMeta (informationKey, metaName, stringy);
 	if (size <= 0)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set statistical value.");
@@ -242,10 +242,10 @@ static int prependStringToAllKeyNames (ElektraKeyset * result, ElektraKeyset * i
 		return -1;
 	}
 	ElektraKey * key;
-	ksRewind (input);
-	while ((key = ksNext (input)) != NULL)
+	elektraKeysetRewind (input);
+	while ((key = elektraKeysetNext (input)) != NULL)
 	{
-		bool isRoot = strcmp (keyName (key), "/root") == 0;
+		bool isRoot = strcmp (elektraKeyName (key), "/root") == 0;
 		size_t size = strlen (string);
 		if (isRoot)
 		{
@@ -253,22 +253,22 @@ static int prependStringToAllKeyNames (ElektraKeyset * result, ElektraKeyset * i
 		}
 		else
 		{
-			size += keyGetNameSize (key);
+			size += elektraKeyGetNameSize (key);
 		}
 		char * newName = elektraMalloc (size);
 		strcpy (newName, string);
 		if (!isRoot)
 		{
-			strcat (newName, keyName (key));
+			strcat (newName, elektraKeyName (key));
 		}
-		ElektraKey * duplicateKey = keyDup (key, ELEKTRA_KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
-		int status = keySetName (duplicateKey, newName);
+		ElektraKey * duplicateKey = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
+		int status = elektraKeySetName (duplicateKey, newName);
 		elektraFree (newName);
 		if (status < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set key name.");
 		}
-		status = ksAppendKey (result, duplicateKey);
+		status = elektraKeysetAppendKey (result, duplicateKey);
 		if (status < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
@@ -289,49 +289,49 @@ static int prependStringToAllKeyNames (ElektraKeyset * result, ElektraKeyset * i
  */
 static ElektraKeyset * removeRoot (ElektraKeyset * original, ElektraKey * root, ElektraKey * informationKey)
 {
-	ksRewind (original);
-	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
-	const char * rootKeyNameString = keyName (root);
+	elektraKeysetRewind (original);
+	ElektraKeyset * result = elektraKeysetNew (0, ELEKTRA_KS_END);
+	const char * rootKeyNameString = elektraKeyName (root);
 	ElektraKey * currentKey;
-	while ((currentKey = ksNext (original)) != NULL)
+	while ((currentKey = elektraKeysetNext (original)) != NULL)
 	{
-		char * currentKeyNameString = elektraMalloc (keyGetNameSize (currentKey));
-		if (keyGetName (currentKey, currentKeyNameString, keyGetNameSize (currentKey)) < 0)
+		char * currentKeyNameString = elektraMalloc (elektraKeyGetNameSize (currentKey));
+		if (elektraKeyGetName (currentKey, currentKeyNameString, elektraKeyGetNameSize (currentKey)) < 0)
 		{
 			ELEKTRA_ASSERT (false, "ERROR: This should not happen");
 			elektraFree (currentKeyNameString);
-			ksDel (result);
+			elektraKeysetDel (result);
 			return NULL;
 		};
-		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
+		if (elektraKeyIsBelow (root, currentKey) || elektraKeyCmp (currentKey, root) == 0)
 		{
-			ElektraKey * duplicateKey = keyDup (currentKey, ELEKTRA_KEY_CP_ALL);
+			ElektraKey * duplicateKey = elektraKeyDup (currentKey, ELEKTRA_KEY_CP_ALL);
 			int retVal;
-			if (keyIsBelow (root, currentKey))
+			if (elektraKeyIsBelow (root, currentKey))
 			{
 				currentKeyNameString = strremove (currentKeyNameString, rootKeyNameString);
-				retVal = keySetName (duplicateKey, currentKeyNameString);
+				retVal = elektraKeySetName (duplicateKey, currentKeyNameString);
 			}
 			else
 			{
 				// If the root itself is in the keyset then create a special name for it as it would be empty otherwise
-				retVal = keySetName (duplicateKey, "/root");
+				retVal = elektraKeySetName (duplicateKey, "/root");
 			}
 			if (retVal < 0)
 			{
 				elektraFree (currentKeyNameString);
-				ksDel (result);
-				keyDel (duplicateKey);
+				elektraKeysetDel (result);
+				elektraKeyDel (duplicateKey);
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
 				return NULL;
 			}
-			ksAppendKey (result, duplicateKey);
+			elektraKeysetAppendKey (result, duplicateKey);
 			elektraFree (currentKeyNameString);
 		}
 		else
 		{
 			elektraFree (currentKeyNameString);
-			ksDel (result);
+			elektraKeysetDel (result);
 			ELEKTRA_SET_INTERNAL_ERROR (
 				informationKey,
 				"Setting new key name was not possible. The current key is not below or equal to the root key.");
@@ -353,11 +353,11 @@ static bool keysAreEqual (ElektraKey * a, ElektraKey * b)
 	{
 		return false;
 	}
-	if (keyGetValueSize (a) != keyGetValueSize (b))
+	if (elektraKeyGetValueSize (a) != elektraKeyGetValueSize (b))
 	{
 		return false;
 	}
-	if (0 != memcmp (keyValue (a), keyValue (b), keyGetValueSize (a)))
+	if (0 != memcmp (elektraKeyValue (a), elektraKeyValue (b), elektraKeyGetValueSize (a)))
 	{
 		return false;
 	}
@@ -402,7 +402,7 @@ static int twoOfThreeExistHelper (ElektraKey * checkedKey, ElektraKey * keyInFir
 		increaseStatisticalValue (informationKey, "overlap1empty");
 		if (checkedIsDominant)
 		{
-			if (ksAppendKey (result, checkedKey) < 0)
+			if (elektraKeysetAppendKey (result, checkedKey) < 0)
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 				return -1;
@@ -427,7 +427,7 @@ static int twoOfThreeExistHelper (ElektraKey * checkedKey, ElektraKey * keyInFir
 			increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
 			if (checkedIsDominant)
 			{
-				if (ksAppendKey (result, checkedKey) < 0)
+				if (elektraKeysetAppendKey (result, checkedKey) < 0)
 				{
 					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 					return -1;
@@ -473,7 +473,7 @@ static bool twoOfThoseKeysAreEqual (ElektraKey * checkedKey, ElektraKey * keyInF
 			if (checkedIsDominant)
 			{
 				// If base is also dominant then append it's key
-				if (ksAppendKey (result, checkedKey) < 0)
+				if (elektraKeysetAppendKey (result, checkedKey) < 0)
 				{
 					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 				}
@@ -485,7 +485,7 @@ static bool twoOfThoseKeysAreEqual (ElektraKey * checkedKey, ElektraKey * keyInF
 	{
 		if (baseIndicator == 0)
 		{
-			if (ksAppendKey (result, keyInSecond) < 0)
+			if (elektraKeysetAppendKey (result, keyInSecond) < 0)
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 			}
@@ -502,7 +502,7 @@ static bool twoOfThoseKeysAreEqual (ElektraKey * checkedKey, ElektraKey * keyInF
 				if (checkedIsDominant)
 				{
 					// If base is also dominant then append it's key
-					if (ksAppendKey (result, checkedKey) < 0)
+					if (elektraKeysetAppendKey (result, checkedKey) < 0)
 					{
 						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 					}
@@ -516,7 +516,7 @@ static bool twoOfThoseKeysAreEqual (ElektraKey * checkedKey, ElektraKey * keyInF
 
 		if (baseIndicator == 0)
 		{
-			if (ksAppendKey (result, keyInFirst) < 0)
+			if (elektraKeysetAppendKey (result, keyInFirst) < 0)
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 			}
@@ -533,7 +533,7 @@ static bool twoOfThoseKeysAreEqual (ElektraKey * checkedKey, ElektraKey * keyInF
 				if (checkedIsDominant)
 				{
 					// If base is also dominant then append it's key
-					if (ksAppendKey (result, checkedKey) < 0)
+					if (elektraKeysetAppendKey (result, checkedKey) < 0)
 					{
 						ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 					}
@@ -562,7 +562,7 @@ static int allExistHelper (ElektraKey * checkedKey, ElektraKey * keyInFirst, Ele
 		 * append any of the three keys
 		 * will be appended multiple times, but that doesn't matter for the result
 		 */
-		if (ksAppendKey (result, checkedKey) < 0)
+		if (elektraKeysetAppendKey (result, checkedKey) < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 			return -1;
@@ -582,7 +582,7 @@ static int allExistHelper (ElektraKey * checkedKey, ElektraKey * keyInFirst, Ele
 			increaseStatisticalValue (informationKey, "overlap3different");
 			if (checkedIsDominant)
 			{
-				if (ksAppendKey (result, checkedKey) < 0)
+				if (elektraKeysetAppendKey (result, checkedKey) < 0)
 				{
 					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 					return -1;
@@ -612,18 +612,18 @@ static int allExistHelper (ElektraKey * checkedKey, ElektraKey * keyInFirst, Ele
 static int checkSingleSet (ElektraKeyset * checkedSet, ElektraKeyset * firstCompared, ElektraKeyset * secondCompared, ElektraKeyset * result, bool checkedIsDominant,
 			   int baseIndicator, ElektraKey * informationKey)
 {
-	ksRewind (checkedSet);
-	ksRewind (firstCompared);
-	ksRewind (secondCompared);
+	elektraKeysetRewind (checkedSet);
+	elektraKeysetRewind (firstCompared);
+	elektraKeysetRewind (secondCompared);
 	ElektraKey * checkedKey;
-	while ((checkedKey = ksNext (checkedSet)) != NULL)
+	while ((checkedKey = elektraKeysetNext (checkedSet)) != NULL)
 	{
 		/**
 		 * Check if a key with the same name exists
 		 * Nothing about values is said yet
 		 */
-		ElektraKey * keyInFirst = ksLookup (firstCompared, checkedKey, 0);
-		ElektraKey * keyInSecond = ksLookup (secondCompared, checkedKey, 0);
+		ElektraKey * keyInFirst = elektraKeysetLookup (firstCompared, checkedKey, 0);
+		ElektraKey * keyInSecond = elektraKeysetLookup (secondCompared, checkedKey, 0);
 		if (keyInFirst != NULL && keyInSecond != NULL)
 		{
 			allExistHelper (checkedKey, keyInFirst, keyInSecond, result, checkedIsDominant, baseIndicator, informationKey);
@@ -641,7 +641,7 @@ static int checkSingleSet (ElektraKeyset * checkedSet, ElektraKeyset * firstComp
 			}
 			else
 			{
-				if (ksAppendKey (result, checkedKey) < 0)
+				if (elektraKeysetAppendKey (result, checkedKey) < 0)
 				{
 					ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 				}
@@ -687,7 +687,7 @@ static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStar
 	 *  The elektraArrayIncName would then change the name of the real key.
 	 *  We don't want that as we only increase the name to loop over all keys.
 	 */
-	ElektraKey * iterator = keyDup (arrayStart, ELEKTRA_KEY_CP_NAME);
+	ElektraKey * iterator = elektraKeyDup (arrayStart, ELEKTRA_KEY_CP_NAME);
 	if (iterator == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not duplicate key to iterate.");
@@ -696,10 +696,10 @@ static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStar
 	}
 	ElektraKey * lookup;
 	int counter = 0;
-	while ((lookup = ksLookup (ks, iterator, ELEKTRA_KDB_O_POP)) != 0)
+	while ((lookup = elektraKeysetLookup (ks, iterator, ELEKTRA_KDB_O_POP)) != 0)
 	{
 		counter++;
-		int tmpSize = keyGetValueSize (lookup);
+		int tmpSize = elektraKeyGetValueSize (lookup);
 		stringSize += tmpSize; // keyGetValueSize includes size for \0 which we use for \n instead
 		if (stringSize > bufferSize)
 		{
@@ -715,18 +715,18 @@ static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStar
 			{
 				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 				elektraFree (buffer);
-				keyDel (iterator);
+				elektraKeyDel (iterator);
 				return NULL;
 			}
 		}
-		strncat (buffer, keyString (lookup), tmpSize);
+		strncat (buffer, elektraKeyString (lookup), tmpSize);
 		// LibGit2 later operates on the newlines. This also ensures
 		// that there is a null terminator at the end of all the
 		// concatenated lines
 		strcat (buffer, "\n");
 		if (counter >= 2)
 		{
-			int retval = keyDel (lookup);
+			int retval = elektraKeyDel (lookup);
 			if (retval != 0)
 			{
 				if (retval < 0)
@@ -739,10 +739,10 @@ static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStar
 					ELEKTRA_SET_INTERNAL_ERRORF (
 						informationKey,
 						"Could not delete key with name %s from key set. There are %d references left.",
-						keyName (lookup), retval);
+						elektraKeyName (lookup), retval);
 				}
 				elektraFree (buffer);
-				keyDel (iterator);
+				elektraKeyDel (iterator);
 				return NULL;
 			}
 		}
@@ -750,11 +750,11 @@ static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStar
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Increasing array key failed.");
 			elektraFree (buffer);
-			keyDel (iterator);
+			elektraKeyDel (iterator);
 			return NULL;
 		}
 	}
-	keyDel (iterator);
+	elektraKeyDel (iterator);
 	return buffer;
 }
 
@@ -774,16 +774,16 @@ static ElektraKeyset * ksFromArray (const char * array, int length, ElektraKey *
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter must not be null.");
 		return NULL;
 	}
-	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * result = elektraKeysetNew (0, ELEKTRA_KS_END);
 	if (result == NULL)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 		return NULL;
 	}
-	ElektraKey * iterator = keyNew ("/#0", ELEKTRA_KEY_END);
+	ElektraKey * iterator = elektraKeyNew ("/#0", ELEKTRA_KEY_END);
 	if (iterator == NULL)
 	{
-		ksDel (result);
+		elektraKeysetDel (result);
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 		return NULL;
 	}
@@ -793,17 +793,17 @@ static ElektraKeyset * ksFromArray (const char * array, int length, ElektraKey *
 	char * token = strtok_r (buffer, "\n", &saveptr);
 	do
 	{
-		ksAppendKey (result, keyNew (keyName (iterator), ELEKTRA_KEY_VALUE, token, ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (result, elektraKeyNew (elektraKeyName (iterator), ELEKTRA_KEY_VALUE, token, ELEKTRA_KEY_END));
 		if (elektraArrayIncName (iterator) < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Increasing array key failed.");
 			elektraFree (result);
-			keyDel (iterator);
+			elektraKeyDel (iterator);
 			return NULL;
 		}
 	} while ((token = strtok_r (NULL, "\n", &saveptr)) != NULL);
 	elektraFree (buffer);
-	keyDel (iterator);
+	elektraKeyDel (iterator);
 	return result;
 }
 
@@ -839,18 +839,18 @@ static int handleArrays (ElektraKeyset * ourSet, ElektraKeyset * theirSet, Elekt
 	ELEKTRA_LOG ("cmerge now handles arrays");
 	ElektraKey * checkedKey;
 	ElektraKeyset * toAppend = NULL;
-	while ((checkedKey = ksNext (baseSet)) != NULL)
+	while ((checkedKey = elektraKeysetNext (baseSet)) != NULL)
 	{
 		if (elektraArrayValidateName (checkedKey) >= 0)
 		{
-			ElektraKey * keyInOur = ksLookup (ourSet, checkedKey, 0);
-			ElektraKey * keyInTheir = ksLookup (theirSet, checkedKey, 0);
+			ElektraKey * keyInOur = elektraKeysetLookup (ourSet, checkedKey, 0);
+			ElektraKey * keyInTheir = elektraKeysetLookup (theirSet, checkedKey, 0);
 			char * baseArray = getValuesAsArray (baseSet, checkedKey, informationKey);
 			if (baseArray == NULL)
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `base` KeySet into char[] for LibGit.");
-				keyDel (checkedKey);
-				ksDel (toAppend);
+				elektraKeyDel (checkedKey);
+				elektraKeysetDel (toAppend);
 				return -1;
 			}
 			char * ourArray = getValuesAsArray (ourSet, keyInOur, informationKey);
@@ -858,8 +858,8 @@ static int handleArrays (ElektraKeyset * ourSet, ElektraKeyset * theirSet, Elekt
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `our` KeySet into char[] for LibGit.");
 				elektraFree (baseArray);
-				keyDel (checkedKey);
-				ksDel (toAppend);
+				elektraKeyDel (checkedKey);
+				elektraKeysetDel (toAppend);
 				return -1;
 			}
 			char * theirArray = getValuesAsArray (theirSet, keyInTheir, informationKey);
@@ -868,9 +868,9 @@ static int handleArrays (ElektraKeyset * ourSet, ElektraKeyset * theirSet, Elekt
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `their` KeySet into char[] for LibGit.");
 				elektraFree (ourArray);
 				elektraFree (baseArray);
-				ELEKTRA_ASSERT (keyGetRef (checkedKey) > 0, "WTF 3");
-				keyDel (checkedKey);
-				ksDel (toAppend);
+				ELEKTRA_ASSERT (elektraKeyGetRef (checkedKey) > 0, "WTF 3");
+				elektraKeyDel (checkedKey);
+				elektraKeysetDel (toAppend);
 				return -1;
 			}
 			git_merge_file_result out = { 0 }; // out.ptr will not receive a terminating null character
@@ -921,15 +921,15 @@ static int handleArrays (ElektraKeyset * ourSet, ElektraKeyset * theirSet, Elekt
 			elektraFree (ourArray);
 			elektraFree (theirArray);
 			elektraFree (baseArray);
-			keyDel (keyInOur);
-			keyDel (keyInTheir);
-			keyDel (checkedKey);
+			elektraKeyDel (keyInOur);
+			elektraKeyDel (keyInTheir);
+			elektraKeyDel (checkedKey);
 		}
 	}
 	if (toAppend != NULL)
 	{
-		ksAppend (resultSet, toAppend);
-		ksDel (toAppend);
+		elektraKeysetAppend (resultSet, toAppend);
+		elektraKeysetDel (toAppend);
 	}
 	return 0;
 }
@@ -967,20 +967,20 @@ ElektraKeyset * elektraMerge (ElektraKeyset * our, ElektraKey * ourRoot, Elektra
 	ElektraKeyset * theirCropped = removeRoot (their, theirRoot, informationKey);
 	if (theirCropped == NULL)
 	{
-		ksDel (ourCropped);
+		elektraKeysetDel (ourCropped);
 		return NULL;
 	}
 	ElektraKeyset * baseCropped = removeRoot (base, baseRoot, informationKey);
 	if (baseCropped == NULL)
 	{
-		ksDel (ourCropped);
-		ksDel (theirCropped);
+		elektraKeysetDel (ourCropped);
+		elektraKeysetDel (theirCropped);
 		return NULL;
 	}
-	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
-	ksRewind (ourCropped);
-	ksRewind (theirCropped);
-	ksRewind (baseCropped);
+	ElektraKeyset * result = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKeysetRewind (ourCropped);
+	elektraKeysetRewind (theirCropped);
+	elektraKeysetRewind (baseCropped);
 	bool ourDominant = false;
 	bool theirDominant = false;
 	switch (strategy)
@@ -998,24 +998,24 @@ ElektraKeyset * elektraMerge (ElektraKeyset * our, ElektraKey * ourRoot, Elektra
 	ELEKTRA_LOG ("cmerge can use libgit2 to handle arrays");
 	if (handleArrays (ourCropped, theirCropped, baseCropped, result, informationKey, strategy) > 0)
 	{
-		ksDel (result);
+		elektraKeysetDel (result);
 		return NULL;
 	}
 #else
 	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
 #endif
 
-	ksRewind (ourCropped);
-	ksRewind (theirCropped);
-	ksRewind (baseCropped);
+	elektraKeysetRewind (ourCropped);
+	elektraKeysetRewind (theirCropped);
+	elektraKeysetRewind (baseCropped);
 	checkSingleSet (baseCropped, ourCropped, theirCropped, result, false, 0, informationKey); // base is never dominant
 	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1, informationKey);
 	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
-	ksRewind (ourCropped);
+	elektraKeysetRewind (ourCropped);
 
-	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
+	if (elektraKeysetDel (ourCropped) != 0 || elektraKeysetDel (theirCropped) != 0 || elektraKeysetDel (baseCropped) != 0)
 	{
-		ksDel (result);
+		elektraKeysetDel (result);
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not delete a key set.");
 		return NULL;
 	}
@@ -1023,15 +1023,15 @@ ElektraKeyset * elektraMerge (ElektraKeyset * our, ElektraKey * ourRoot, Elektra
 	{
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
-			ksDel (result);
+			elektraKeysetDel (result);
 			ELEKTRA_SET_INTERNAL_ERRORF (informationKey, "Abort strategy was set and %d conflicts occured.",
 						     getConflicts (informationKey));
 			return NULL;
 		}
 	}
 
-	ElektraKeyset * resultWithRoot = ksNew (0, ELEKTRA_KS_END);
-	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot), informationKey);
-	ksDel (result);
+	ElektraKeyset * resultWithRoot = elektraKeysetNew (0, ELEKTRA_KS_END);
+	prependStringToAllKeyNames (resultWithRoot, result, elektraKeyName (resultRoot), informationKey);
+	elektraKeysetDel (result);
 	return resultWithRoot;
 }

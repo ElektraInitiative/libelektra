@@ -59,15 +59,15 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], ElektraKeyset *
 	sha_256_init (&sha_256, hash);
 
 	// Duplicate ks, then cut out parentKey and all keys below. These are the ones we take into account for token calculation.
-	ElektraKeyset * dupKs = ksDup (ks);
-	ElektraKeyset * cutKs = ksCut (dupKs, parentKey);
+	ElektraKeyset * dupKs = elektraKeysetDup (ks);
+	ElektraKeyset * cutKs = elektraKeysetCut (dupKs, parentKey);
 
 	/**
 	 * Loop through all keys relevant for token calculation.
 	 */
-	for (elektraCursor it = 0; it < ksGetSize (cutKs); ++it)
+	for (elektraCursor it = 0; it < elektraKeysetGetSize (cutKs); ++it)
 	{
-		ElektraKey * currentKey = ksAtCursor (cutKs, it);
+		ElektraKey * currentKey = elektraKeysetAtCursor (cutKs, it);
 
 		/**
 		 * Ignore array parents for token calculation.
@@ -75,31 +75,31 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], ElektraKeyset *
 		 * It leads to array parents vanishing from the spec namespace and thus a different token.
 		 * See https://github.com/ElektraInitiative/libelektra/issues/4061
 		 */
-		if (strcmp (keyBaseName (currentKey), "#") == 0)
+		if (strcmp (elektraKeyBaseName (currentKey), "#") == 0)
 		{
 			continue;
 		}
 
 		// Feed key name into sha_256_write() without NULL terminator (hence -1).
 		// This makes it easier to compare expected results with other sha256 tools.
-		sha_256_write (&sha_256, keyName (currentKey), keyGetNameSize (currentKey) - 1);
+		sha_256_write (&sha_256, elektraKeyName (currentKey), elektraKeyGetNameSize (currentKey) - 1);
 		// Note: The value of the key itself is not relevant / part of specification. Only the key's name + its metadata!
 
-		ElektraKeyset * currentMetaKeys = keyMeta (currentKey);
+		ElektraKeyset * currentMetaKeys = elektraKeyMeta (currentKey);
 		// Feed name + values from meta keys into sha_256_write().
-		for (elektraCursor metaIt = 0; metaIt < ksGetSize (currentMetaKeys); metaIt++)
+		for (elektraCursor metaIt = 0; metaIt < elektraKeysetGetSize (currentMetaKeys); metaIt++)
 		{
-			ElektraKey * currentMetaKey = ksAtCursor (currentMetaKeys, metaIt);
-			sha_256_write (&sha_256, keyName (currentMetaKey), keyGetNameSize (currentMetaKey) - 1);
-			sha_256_write (&sha_256, keyString (currentMetaKey), keyGetValueSize (currentMetaKey) - 1);
+			ElektraKey * currentMetaKey = elektraKeysetAtCursor (currentMetaKeys, metaIt);
+			sha_256_write (&sha_256, elektraKeyName (currentMetaKey), elektraKeyGetNameSize (currentMetaKey) - 1);
+			sha_256_write (&sha_256, elektraKeyString (currentMetaKey), elektraKeyGetValueSize (currentMetaKey) - 1);
 		}
 	}
 
 	sha_256_close (&sha_256);
 	hash_to_string (hash_string, hash);
 
-	ksDel (dupKs);
-	ksDel (cutKs);
+	elektraKeysetDel (dupKs);
+	elektraKeysetDel (cutKs);
 
 	return true;
 }

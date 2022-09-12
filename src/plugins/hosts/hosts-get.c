@@ -59,10 +59,10 @@ static void addAddressHierarchy (ElektraKey * key, char * fieldbuffer)
 	switch (family)
 	{
 	case AF_INET6:
-		keyAddBaseName (key, "ipv6");
+		elektraKeyAddBaseName (key, "ipv6");
 		break;
 	default:
-		keyAddBaseName (key, "ipv4");
+		elektraKeyAddBaseName (key, "ipv4");
 	}
 }
 
@@ -95,7 +95,7 @@ static void setOrderMeta (ElektraKey * key, int order)
 {
 	char buffer[MAX_ORDER_SIZE];
 	snprintf (buffer, MAX_ORDER_SIZE, "%d", order);
-	keySetMeta (key, "order", buffer);
+	elektraKeySetMeta (key, "order", buffer);
 }
 
 static int parseComment (ElektraKeyset * comments, char * line, const char * commentStart, CommentConstructor constructor)
@@ -142,7 +142,7 @@ static char * parseCanonicalName (ElektraKey * result, char * line)
 	addAddressHierarchy (result, fieldBuffer);
 
 	/* store the ip address */
-	keySetString (result, fieldBuffer);
+	elektraKeySetString (result, fieldBuffer);
 
 	elektraFree (fieldBuffer);
 
@@ -152,7 +152,7 @@ static char * parseCanonicalName (ElektraKey * result, char * line)
 	if (sret == 0) return 0;
 
 	tokenPointer += sret;
-	keyAddBaseName (result, fieldBuffer);
+	elektraKeyAddBaseName (result, fieldBuffer);
 	elektraFree (fieldBuffer);
 
 	return tokenPointer;
@@ -165,18 +165,18 @@ static char * parseAlias (ElektraKeyset * append, const ElektraKey * hostParent,
 	sret = elektraParseToken (&fieldBuffer, tokenPointer);
 	if (sret == 0) return 0;
 
-	ElektraKey * alias = keyDup (hostParent, ELEKTRA_KEY_CP_ALL);
-	keyAddBaseName (alias, fieldBuffer);
+	ElektraKey * alias = elektraKeyDup (hostParent, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddBaseName (alias, fieldBuffer);
 	elektraFree (fieldBuffer);
 
 	/* only add the alias if it does not exist already */
-	if (ksLookup (append, alias, ELEKTRA_KDB_O_NONE))
+	if (elektraKeysetLookup (append, alias, ELEKTRA_KDB_O_NONE))
 	{
-		keyDel (alias);
+		elektraKeyDel (alias);
 	}
 	else
 	{
-		ksAppendKey (append, alias);
+		elektraKeysetAppendKey (append, alias);
 	}
 
 	return tokenPointer + sret;
@@ -188,14 +188,14 @@ static int elektraKeySetMetaKeySet (ElektraKey * key, ElektraKeyset * metaKeySet
 	if (!metaKeySet) return 0;
 
 	ElektraKey * currentMeta;
-	elektraCursor initialCursor = ksGetCursor (metaKeySet);
-	ksRewind (metaKeySet);
-	while ((currentMeta = ksNext (metaKeySet)))
+	elektraCursor initialCursor = elektraKeysetGetCursor (metaKeySet);
+	elektraKeysetRewind (metaKeySet);
+	while ((currentMeta = elektraKeysetNext (metaKeySet)))
 	{
-		keySetMeta (key, keyName (currentMeta), keyString (currentMeta));
+		elektraKeySetMeta (key, elektraKeyName (currentMeta), elektraKeyString (currentMeta));
 	}
 
-	ksSetCursor (metaKeySet, initialCursor);
+	elektraKeysetSetCursor (metaKeySet, initialCursor);
 
 	return 1;
 }
@@ -205,16 +205,16 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 	int errnosave = errno;
 	char readBuffer[HOSTS_KDB_BUFFER_SIZE];
 
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hosts"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/hosts"))
 	{
 		ElektraKeyset * moduleConfig =
 #include "contract.h"
-			ksAppend (returned, moduleConfig);
-		ksDel (moduleConfig);
+			elektraKeysetAppend (returned, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1;
 	}
 
-	FILE * fp = fopen (keyValue (parentKey), "r");
+	FILE * fp = fopen (elektraKeyValue (parentKey), "r");
 
 	if (fp == 0)
 	{
@@ -223,14 +223,14 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 		return -1;
 	}
 
-	ksClear (returned);
-	ElektraKeyset * append = ksNew (ksGetSize (returned) * 2, ELEKTRA_KS_END);
+	elektraKeysetClear (returned);
+	ElektraKeyset * append = elektraKeysetNew (elektraKeysetGetSize (returned) * 2, ELEKTRA_KS_END);
 
-	ElektraKey * key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	ksAppendKey (append, key);
+	ElektraKey * key = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeysetAppendKey (append, key);
 
 	ElektraKey * currentKey = 0;
-	ElektraKeyset * comments = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * comments = elektraKeysetNew (0, ELEKTRA_KS_END);
 	size_t order = 1;
 	char * tokenPointer = 0;
 	while (1)
@@ -241,7 +241,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 
 		if (!currentKey)
 		{
-			currentKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+			currentKey = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 		}
 
 		if (parseComment (comments, readBuffer, "#", &elektraAddLineComment)) continue;
@@ -253,11 +253,11 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 		 * duplicates, we honor only the first entry. This mirrors the
 		 * behaviour of most name resolution implementations
 		 */
-		if (ksLookup (append, currentKey, ELEKTRA_KDB_O_NONE))
+		if (elektraKeysetLookup (append, currentKey, ELEKTRA_KDB_O_NONE))
 		{
-			keyDel (currentKey);
+			elektraKeyDel (currentKey);
 			currentKey = 0;
-			ksClear (comments);
+			elektraKeysetClear (comments);
 			continue;
 		}
 
@@ -265,7 +265,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 		setOrderMeta (currentKey, order);
 		++order;
 
-		ksAppendKey (append, currentKey);
+		elektraKeysetAppendKey (append, currentKey);
 
 		/* Read in aliases */
 		while (1)
@@ -280,32 +280,32 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 
 		/* flush collected comments and start over with a new entry */
 		elektraKeySetMetaKeySet (currentKey, comments);
-		ksClear (comments);
+		elektraKeysetClear (comments);
 		currentKey = 0;
 	}
 
-	keyDel (currentKey);
+	elektraKeyDel (currentKey);
 
 	if (comments)
 	{
 		/* save comments without a matching entry to the parentkey */
 		elektraKeySetMetaKeySet (parentKey, comments);
-		ksClear (comments);
-		ksDel (comments);
+		elektraKeysetClear (comments);
+		elektraKeysetDel (comments);
 	}
 
 	int ret;
 	if (!ferror (fp))
 	{
-		ksClear (returned);
-		ksAppend (returned, append);
-		ksDel (append);
+		elektraKeysetClear (returned);
+		elektraKeysetAppend (returned, append);
+		elektraKeysetDel (append);
 		ret = 1;
 	}
 	else
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "General parse error. Reason: %s", strerror (errno));
-		ksDel (append);
+		elektraKeysetDel (append);
 		ret = -1;
 	}
 

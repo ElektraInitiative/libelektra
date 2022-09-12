@@ -34,7 +34,7 @@ typedef struct
 	DBusConnection * sessionBus;
 } ElektraDbusPluginData;
 
-int elektraDbusSendMessage (ElektraDbusPluginData * data, DBusBusType type, const char * keyName, const char * signalName);
+int elektraDbusSendMessage (ElektraDbusPluginData * data, DBusBusType type, const char * elektraKeyName, const char * signalName);
 int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filter_func);
 int elektraDbusSetupReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);
 int elektraDbusTeardownReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);

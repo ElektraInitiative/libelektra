@@ -48,8 +48,8 @@ typedef struct
 } ElektraZeroMqSendPluginData;
 
 int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data);
-int elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data);
-int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * keyName);
+int elektraZeroMqSendPublish (const char * changeType, const char * elektraKeyName, ElektraZeroMqSendPluginData * data);
+int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * elektraKeyName);
 
 int elektraZeroMqSendOpen (Plugin * handle, ElektraKey * errorKey);
 int elektraZeroMqSendClose (Plugin * handle, ElektraKey * errorKey);

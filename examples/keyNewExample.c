@@ -11,54 +11,54 @@
 
 int main (void)
 {
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraKey * key = 0;
 
 	printf ("Generate some keys...");
 
-	ksAppendKey (ks, keyNew ("user:/sw", ELEKTRA_KEY_END)); /* a simple key */
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/sw", ELEKTRA_KEY_END)); /* a simple key */
 
-	ksAppendKey (ks, keyNew ("/", ELEKTRA_KEY_END)); /* an empty key */
+	elektraKeysetAppendKey (ks, elektraKeyNew ("/", ELEKTRA_KEY_END)); /* an empty key */
 
-	ksAppendKey (ks, keyNew ("system:/sw", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("system:/sw", ELEKTRA_KEY_END));
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex1", ELEKTRA_KEY_VALUE, "some data", /* with a simple value */
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/tmp/ex1", ELEKTRA_KEY_VALUE, "some data", /* with a simple value */
 				 ELEKTRA_KEY_END));				  /* end of args */
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex4", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_COMMENT, "value is truncated", ELEKTRA_KEY_SIZE, 7, ELEKTRA_KEY_VALUE,
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/tmp/ex4", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_COMMENT, "value is truncated", ELEKTRA_KEY_SIZE, 7, ELEKTRA_KEY_VALUE,
 				 "some data", /* value that will be truncated to 7 bytes */
 				 ELEKTRA_KEY_END));   /* end of args */
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex5", ELEKTRA_KEY_VALUE, "some data", /* value  */
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/tmp/ex5", ELEKTRA_KEY_VALUE, "some data", /* value  */
 				 ELEKTRA_KEY_COMMENT, "some comment",		  /* a comment */
 				 ELEKTRA_KEY_END));				  /* end of args */
 
-	ksAppendKey (ks, keyNew ("user:/env/alias/ls", /* a key we know we have */
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/env/alias/ls", /* a key we know we have */
 				 ELEKTRA_KEY_END));	       /* do nothing more */
 
-	ksAppendKey (ks, keyNew ("user:/env/alias/ls",	     /* same key, to compare in output */
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/env/alias/ls",	     /* same key, to compare in output */
 				 ELEKTRA_KEY_COMMENT, "new comment", /* set new comment */
 				 ELEKTRA_KEY_END));		     /* end of args */
 
-	key = keyNew ("user:/test//", ELEKTRA_KEY_END);
+	key = elektraKeyNew ("user:/test//", ELEKTRA_KEY_END);
 
 	/* we are providing a lot of '/' to see it being removed */
-	keySetName (key, "system:/");
-	keySetName (key, "user:/");
-	keySetName (key, "user:aviram");
-	keySetName (key, "user:///abc//////def///");
-	keySetName (key, "user:root///aaa//////bbb///");
+	elektraKeySetName (key, "system:/");
+	elektraKeySetName (key, "user:/");
+	elektraKeySetName (key, "user:aviram");
+	elektraKeySetName (key, "user:///abc//////def///");
+	elektraKeySetName (key, "user:root///aaa//////bbb///");
 
-	keyAddBaseName (key, "tmp");
-	keyAddBaseName (key, "////ex6///exx7///");
-	keySetBaseName (key, "ex8");
-	keySetBaseName (key, "ex9");
-	keyAddBaseName (key, "///exxx9///ex10///ex\\/11///");
-	keySetBaseName (key, "ex12");
-	keySetBaseName (key, "ex13///");
-	ksAppendKey (ks, key);
+	elektraKeyAddBaseName (key, "tmp");
+	elektraKeyAddBaseName (key, "////ex6///exx7///");
+	elektraKeySetBaseName (key, "ex8");
+	elektraKeySetBaseName (key, "ex9");
+	elektraKeyAddBaseName (key, "///exxx9///ex10///ex\\/11///");
+	elektraKeySetBaseName (key, "ex12");
+	elektraKeySetBaseName (key, "ex13///");
+	elektraKeysetAppendKey (ks, key);
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
 	printf ("finished\n");
 

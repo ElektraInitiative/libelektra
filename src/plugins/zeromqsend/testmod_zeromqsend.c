@@ -184,20 +184,20 @@ static void test_commit (void)
 {
 	printf ("test commit notification\n");
 
-	ElektraKey * parentKey = keyNew ("system:/tests/foo", ELEKTRA_KEY_END);
-	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * toAdd = elektraKeyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
-			       keyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
-			       keyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (3, elektraKeyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
+			       elektraKeyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
+			       elektraKeyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// add key to keyset
-	ksAppendKey (ks, toAdd);
+	elektraKeysetAppendKey (ks, toAdd);
 
 	receiveTimeout = 0;
 	receivedKeyName = NULL;
@@ -208,12 +208,12 @@ static void test_commit (void)
 	pthread_join (*thread, NULL);
 
 	succeed_if (receiveTimeout == 0, "receiving did time out");
-	succeed_if (!keyGetMeta (parentKey, "warnings"), "warning meta key was set");
+	succeed_if (!elektraKeyGetMeta (parentKey, "warnings"), "warning meta key was set");
 	succeed_if_same_string ("Commit", receivedChangeType);
-	succeed_if_same_string (keyName (parentKey), receivedKeyName);
+	succeed_if_same_string (elektraKeyName (parentKey), receivedKeyName);
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 	elektraFree (receivedKeyName);
 	elektraFree (receivedChangeType);
@@ -224,29 +224,29 @@ static void test_timeoutConnect (void)
 {
 	printf ("test connect timeout\n");
 
-	ElektraKey * parentKey = keyNew ("system:/tests/foo", ELEKTRA_KEY_END);
-	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * toAdd = elektraKeyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
-			       keyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
-			       keyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (3, elektraKeyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
+			       elektraKeyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
+			       elektraKeyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// add key to keyset
-	ksAppendKey (ks, toAdd);
+	elektraKeysetAppendKey (ks, toAdd);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 
 	char * expectedWarningNumber = elektraFormat ("%s", ELEKTRA_ERROR_INSTALLATION);
-	succeed_if (keyGetMeta (parentKey, "warnings"), "warning meta key was not set");
-	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#0/number")));
+	succeed_if (elektraKeyGetMeta (parentKey, "warnings"), "warning meta key was not set");
+	succeed_if_same_string (expectedWarningNumber, elektraKeyValue (elektraKeyGetMeta (parentKey, "warnings/#0/number")));
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 	elektraFree (expectedWarningNumber);
 }
@@ -255,20 +255,20 @@ static void test_timeoutSubscribe (void)
 {
 	printf ("test subscribe message timeout\n");
 
-	ElektraKey * parentKey = keyNew ("system:/tests/foo", ELEKTRA_KEY_END);
-	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * toAdd = elektraKeyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
-			       keyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
-			       keyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (3, elektraKeyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
+			       elektraKeyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
+			       elektraKeyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// add key to keyset
-	ksAppendKey (ks, toAdd);
+	elektraKeysetAppendKey (ks, toAdd);
 
 	receiveTimeout = 0;
 	receivedKeyName = NULL;
@@ -286,8 +286,8 @@ static void test_timeoutSubscribe (void)
 	succeed_if (receivedKeyName == NULL, "received key name should be unchanged");
 	succeed_if (receivedChangeType == NULL, "received change type should be unchanged");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 	elektraFree (receivedKeyName);
 	elektraFree (receivedChangeType);

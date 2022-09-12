@@ -65,7 +65,7 @@ ElektraKey * elektraKsPopAtCursor (ElektraKeyset * ks, elektraCursor pos)
 		// so do nothing..
 	}
 
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 
-	return ksPop (ks);
+	return elektraKeysetPop (ks);
 }

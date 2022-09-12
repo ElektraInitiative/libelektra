@@ -400,12 +400,12 @@ static int rfc822StringValidation (const char * date)
 
 static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 {
-	const ElektraKey * standard = keyGetMeta (key, "check/date");
-	const ElektraKey * formatStringMeta = keyGetMeta (key, "check/date/format");
-	const char * date = keyString (key);
+	const ElektraKey * standard = elektraKeyGetMeta (key, "check/date");
+	const ElektraKey * formatStringMeta = elektraKeyGetMeta (key, "check/date/format");
+	const char * date = elektraKeyString (key);
 	int rc = 0;
-	const char * stdString = keyString (standard);
-	const char * formatString = formatStringMeta ? keyString (formatStringMeta) : NULL;
+	const char * stdString = elektraKeyString (standard);
+	const char * formatString = formatStringMeta ? elektraKeyString (formatStringMeta) : NULL;
 	if (!strcasecmp (stdString, "POSIX"))
 	{
 		rc = formatStringValidation (date, formatString);
@@ -457,27 +457,27 @@ static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 
 int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/date"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/date"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/date", ELEKTRA_KEY_VALUE, "date plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports/get", ELEKTRA_KEY_FUNC, elektraDateGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports/set", ELEKTRA_KEY_FUNC, elektraDateSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/date", ELEKTRA_KEY_VALUE, "date plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/date/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/date/exports/get", ELEKTRA_KEY_FUNC, elektraDateGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/date/exports/set", ELEKTRA_KEY_FUNC, elektraDateSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/date/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/date/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/date/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
 	// get all keys
 	ElektraKey * cur;
 	int rc = 1;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/date");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/date");
 		if (meta)
 		{
 			int r = validateKey (cur, parentKey);
@@ -496,9 +496,9 @@ int elektraDateSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	// this function is optional
 	ElektraKey * cur;
 	int rc = 1;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/date");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/date");
 		if (meta)
 		{
 			int r = validateKey (cur, parentKey);

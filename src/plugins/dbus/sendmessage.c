@@ -55,7 +55,7 @@ static DBusConnection * dbusGetConnection (DBusBusType type)
  * @retval 1 on success
  * @retval -1 on error
  */
-int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type, const char * keyName, const char * signalName)
+int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type, const char * elektraKeyName, const char * signalName)
 {
 	DBusConnection * connection;
 	DBusMessage * message;
@@ -102,7 +102,7 @@ int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type
 		return -1;
 	}
 
-	if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID))
+	if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &elektraKeyName, DBUS_TYPE_INVALID))
 	{
 		ELEKTRA_LOG_WARNING ("Couldn't add message argument");
 		dbus_message_unref (message);

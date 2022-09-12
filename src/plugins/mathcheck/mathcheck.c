@@ -54,21 +54,21 @@ typedef struct
 
 int elektraMathcheckGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/mathcheck"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/mathcheck"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/mathcheck", ELEKTRA_KEY_VALUE, "mathcheck plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/exports/get", ELEKTRA_KEY_FUNC, elektraMathcheckGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/exports/set", ELEKTRA_KEY_FUNC, elektraMathcheckSet, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/mathcheck", ELEKTRA_KEY_VALUE, "mathcheck plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/mathcheck/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/mathcheck/exports/get", ELEKTRA_KEY_FUNC, elektraMathcheckGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/mathcheck/exports/set", ELEKTRA_KEY_FUNC, elektraMathcheckSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/mathcheck/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/export/constants", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/export/constants/EPSILON", ELEKTRA_KEY_VALUE, ELEKTRA_STRINGIFY (EPSILON),
+			elektraKeyNew ("system:/elektra/modules/mathcheck/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/mathcheck/export/constants", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/mathcheck/export/constants/EPSILON", ELEKTRA_KEY_VALUE, ELEKTRA_STRINGIFY (EPSILON),
 				ELEKTRA_KEY_END),
 			ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
@@ -212,7 +212,7 @@ static PNElem parsePrefixString (const char * prefixString, ElektraKey * curKey,
 	int ret;
 	if ((ret = regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE)))
 	{
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return result;
 	}
 	regmatch_t match;
@@ -297,7 +297,7 @@ static PNElem parsePrefixString (const char * prefixString, ElektraKey * curKey,
 					elektraFree (searchKey);
 				}
 				elektraFree (stack);
-				ksDel (ks);
+				elektraKeysetDel (ks);
 				return result;
 				break;
 			}
@@ -316,18 +316,18 @@ static PNElem parsePrefixString (const char * prefixString, ElektraKey * curKey,
 			}
 			else
 			{
-				ksRewind (ks);
+				elektraKeysetRewind (ks);
 				if (subString[0] == '@')
 				{
-					searchKey = realloc (searchKey, len + 2 + strlen (keyName (parentKey)));
-					strcpy (searchKey, keyName (parentKey));
+					searchKey = realloc (searchKey, len + 2 + strlen (elektraKeyName (parentKey)));
+					strcpy (searchKey, elektraKeyName (parentKey));
 					strcat (searchKey, "/");
 					strcat (searchKey, subString + 2);
 				}
 				else if (subString[0] == '.')
 				{
-					searchKey = realloc (searchKey, len + 2 + strlen (keyName (curKey)));
-					strcpy (searchKey, keyName (curKey));
+					searchKey = realloc (searchKey, len + 2 + strlen (elektraKeyName (curKey)));
+					strcpy (searchKey, elektraKeyName (curKey));
 					strcat (searchKey, "/");
 					strcat (searchKey, subString);
 				}
@@ -336,7 +336,7 @@ static PNElem parsePrefixString (const char * prefixString, ElektraKey * curKey,
 					searchKey = realloc (searchKey, len + 1);
 					strcpy (searchKey, subString);
 				}
-				key = ksLookupByName (ks, searchKey, 0);
+				key = elektraKeysetLookupByName (ks, searchKey, 0);
 				if (!key)
 				{
 					stackPtr->value = 0;
@@ -344,7 +344,7 @@ static PNElem parsePrefixString (const char * prefixString, ElektraKey * curKey,
 				}
 				else
 				{
-					stackPtr->value = elektraEFtoF (keyString (key));
+					stackPtr->value = elektraEFtoF (elektraKeyString (key));
 				}
 				elektraFree (subString);
 			}
@@ -359,7 +359,7 @@ static PNElem parsePrefixString (const char * prefixString, ElektraKey * curKey,
 	}
 	regfree (&regex);
 	elektraFree (searchKey);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	stackPtr->op = END;
 	result = doPrefixCalculation (stack, stackPtr);
 	if (result.op != ERROR)
@@ -378,16 +378,16 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 {
 	ElektraKey * cur;
 	PNElem result;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/math");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/math");
 		if (!meta) continue;
-		ELEKTRA_LOG_DEBUG ("Check key “%s” with value “%s”", keyName (cur), keyString (meta));
-		result = parsePrefixString (keyString (meta), cur, ksDup (returned), parentKey);
+		ELEKTRA_LOG_DEBUG ("Check key “%s” with value “%s”", elektraKeyName (cur), elektraKeyString (meta));
+		result = parsePrefixString (elektraKeyString (meta), cur, elektraKeysetDup (returned), parentKey);
 		ELEKTRA_LOG_DEBUG ("Result: “%f”", result.value);
 		char val1[MAX_CHARS_DOUBLE + 1]; // Include storage for trailing `\0` character
 		char val2[MAX_CHARS_DOUBLE];
-		strncpy (val1, keyString (cur), MAX_CHARS_DOUBLE);
+		strncpy (val1, elektraKeyString (cur), MAX_CHARS_DOUBLE);
 		elektraFtoA (val2, sizeof (val2), result.value);
 		if (result.op == ERROR)
 		{
@@ -395,7 +395,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		}
 		else if (result.op == EQU)
 		{
-			if (fabs (elektraEFtoF (keyString (cur)) - result.value) > EPSILON)
+			if (fabs (elektraEFtoF (elektraKeyString (cur)) - result.value) > EPSILON)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s != %s", val1, val2);
 				return -1;
@@ -403,7 +403,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		}
 		else if (result.op == NOT)
 		{
-			if (fabs (elektraEFtoF (keyString (cur)) - result.value) < EPSILON)
+			if (fabs (elektraEFtoF (elektraKeyString (cur)) - result.value) < EPSILON)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
 									"Mathcheck failed: %s == %s but requirement was !=", val1, val2);
@@ -412,7 +412,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		}
 		else if (result.op == LT)
 		{
-			if (elektraEFtoF (keyString (cur)) >= result.value)
+			if (elektraEFtoF (elektraKeyString (cur)) >= result.value)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not < %s", val1, val2);
 				return -1;
@@ -420,7 +420,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		}
 		else if (result.op == GT)
 		{
-			if (elektraEFtoF (keyString (cur)) <= result.value)
+			if (elektraEFtoF (elektraKeyString (cur)) <= result.value)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not > %s", val1, val2);
 				return -1;
@@ -428,7 +428,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		}
 		else if (result.op == LE)
 		{
-			if (elektraEFtoF (keyString (cur)) > result.value)
+			if (elektraEFtoF (elektraKeyString (cur)) > result.value)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not <=	%s", val1, val2);
 				return -1;
@@ -436,7 +436,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		}
 		else if (result.op == GE)
 		{
-			if (elektraEFtoF (keyString (cur)) < result.value)
+			if (elektraEFtoF (elektraKeyString (cur)) < result.value)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Mathcheck failed: %s not >= %s", val1, val2);
 				return -1;
@@ -444,8 +444,8 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		}
 		else if (result.op == SET)
 		{
-			ELEKTRA_LOG_DEBUG ("Set value of “%s” to “%s”", keyName (cur), val2);
-			keySetString (cur, val2);
+			ELEKTRA_LOG_DEBUG ("Set value of “%s” to “%s”", elektraKeyName (cur), val2);
+			elektraKeySetString (cur, val2);
 		}
 	}
 	return 1; /* success */

@@ -152,25 +152,25 @@ void test_internal_change_whitebox (void)
 
 void test_ks_flag (void)
 {
-	ElektraKeyset * ks = ksNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (10, ELEKTRA_KS_END);
 	succeed_if (ks->flags & ELEKTRA_KS_FLAG_NAME_CHANGE, "flag not set at fresh ks");
 
-	ElektraKeyset * copy = ksDup (ks);
+	ElektraKeyset * copy = elektraKeysetDup (ks);
 	exit_if_fail (copy, "copy");
 	succeed_if (copy->flags & ELEKTRA_KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
-	ksDel (copy);
+	elektraKeysetDel (copy);
 
-	copy = ksDeepDup (ks);
+	copy = elektraKeysetDeepDup (ks);
 	exit_if_fail (copy, "copy");
 	succeed_if (copy->flags & ELEKTRA_KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
-	ksDel (copy);
+	elektraKeysetDel (copy);
 
-	copy = ksNew (0, ELEKTRA_KS_END);
-	succeed_if (ksCopy (copy, ks) == 1, "copy");
+	copy = elektraKeysetNew (0, ELEKTRA_KS_END);
+	succeed_if (elektraKeysetCopy (copy, ks) == 1, "copy");
 	succeed_if (copy->flags & ELEKTRA_KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
-	ksDel (copy);
+	elektraKeysetDel (copy);
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 }
 
 
@@ -179,70 +179,70 @@ void test_ks (void)
 	ElektraKey * found;
 
 	// create keyset just under opmphmPredictorActionLimit
-	ElektraKeyset * ks = ksNew (opmphmPredictorActionLimit, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (opmphmPredictorActionLimit, ELEKTRA_KS_END);
 	char name[11]; // "/test" + "10000" + "\0"
 	for (size_t i = 0; i < opmphmPredictorActionLimit; ++i)
 	{
 		snprintf (name, 11, "/test%zu", i);
-		succeed_if (ksAppendKey (ks, keyNew (name, ELEKTRA_KEY_END)) > 0, "ksAppendKey failed");
+		succeed_if (elektraKeysetAppendKey (ks, elektraKeyNew (name, ELEKTRA_KEY_END)) > 0, "ksAppendKey failed");
 	}
 
 	// predictor under limit
-	found = ksLookupByName (ks, "/test0", ELEKTRA_KDB_O_NONE);
+	found = elektraKeysetLookupByName (ks, "/test0", ELEKTRA_KDB_O_NONE);
 	succeed_if (found, "key found");
 	exit_if_fail (!ks->opmphmPredictor, "predictor here");
 
 	// append to be over opmphmPredictorActionLimit
 	snprintf (name, 11, "/test%zu", opmphmPredictorActionLimit);
-	succeed_if (ksAppendKey (ks, keyNew (name, ELEKTRA_KEY_END)) > 0, "ksAppendKey failed");
+	succeed_if (elektraKeysetAppendKey (ks, elektraKeyNew (name, ELEKTRA_KEY_END)) > 0, "ksAppendKey failed");
 
 	// predictor over limit
-	found = ksLookupByName (ks, "/test0", ELEKTRA_KDB_O_NOCASCADING);
+	found = elektraKeysetLookupByName (ks, "/test0", ELEKTRA_KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
 	exit_if_fail (ks->opmphmPredictor, "predictor not here");
 
 	// overrule with binary search
-	found = ksLookupByName (ks, "/test0", ELEKTRA_KDB_O_BINSEARCH | ELEKTRA_KDB_O_NOCASCADING);
+	found = elektraKeysetLookupByName (ks, "/test0", ELEKTRA_KDB_O_BINSEARCH | ELEKTRA_KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
 
 	succeed_if (ks->opmphmPredictor->lookupCount == 1, "predictor touched");
 	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
 
 	// overrule with OPMPHM
-	found = ksLookupByName (ks, "/test0", ELEKTRA_KDB_O_OPMPHM);
+	found = elektraKeysetLookupByName (ks, "/test0", ELEKTRA_KDB_O_OPMPHM);
 	succeed_if (found, "key found");
 
 	succeed_if (ks->opmphmPredictor->lookupCount == 1, "predictor touched");
 	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
 
 	// use predictor again
-	found = ksLookupByName (ks, "/test0", ELEKTRA_KDB_O_NONE | ELEKTRA_KDB_O_NOCASCADING);
+	found = elektraKeysetLookupByName (ks, "/test0", ELEKTRA_KDB_O_NONE | ELEKTRA_KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
 	succeed_if (ks->opmphmPredictor->lookupCount == 2, "predictor not touched");
 
 	// copy
-	ElektraKeyset * copy = ksDup (ks);
+	ElektraKeyset * copy = elektraKeysetDup (ks);
 	exit_if_fail (copy, "copy");
 	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
 	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
 	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
-	ksDel (copy);
+	elektraKeysetDel (copy);
 
-	copy = ksDeepDup (ks);
+	copy = elektraKeysetDeepDup (ks);
 	exit_if_fail (copy, "copy");
 	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
 	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
 	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
-	ksDel (copy);
+	elektraKeysetDel (copy);
 
-	copy = ksNew (0, ELEKTRA_KS_END);
-	succeed_if (ksCopy (copy, ks) == 1, "copy");
+	copy = elektraKeysetNew (0, ELEKTRA_KS_END);
+	succeed_if (elektraKeysetCopy (copy, ks) == 1, "copy");
 	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
 	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
 	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
-	ksDel (copy);
+	elektraKeysetDel (copy);
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 }
 
 

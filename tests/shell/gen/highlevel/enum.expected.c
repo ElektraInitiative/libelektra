@@ -41,13 +41,13 @@
 
 static ElektraKeyset * embeddedSpec (void)
 {
-	return ksNew (6,
-	keyNew ("/", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", ELEKTRA_KEY_END),
-	keyNew ("/disjointed", ELEKTRA_KEY_META, "check/enum", "#__255", ELEKTRA_KEY_META, "check/enum/#0", "black", ELEKTRA_KEY_META, "check/enum/#__255", "white", ELEKTRA_KEY_META, "default", "black", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
-	keyNew ("/existinggentype", ELEKTRA_KEY_META, "check/enum", "#2", ELEKTRA_KEY_META, "check/enum/#0", "cyan", ELEKTRA_KEY_META, "check/enum/#1", "magenta", ELEKTRA_KEY_META, "check/enum/#2", "yellow", ELEKTRA_KEY_META, "default", "cyan", ELEKTRA_KEY_META, "gen/enum/create", "0", ELEKTRA_KEY_META, "gen/enum/type", "ExistingColors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
-	keyNew ("/gentype", ELEKTRA_KEY_META, "check/enum", "#3", ELEKTRA_KEY_META, "check/enum/#0", "none", ELEKTRA_KEY_META, "check/enum/#1", "red", ELEKTRA_KEY_META, "check/enum/#2", "green", ELEKTRA_KEY_META, "check/enum/#3", "blue", ELEKTRA_KEY_META, "default", "blue", ELEKTRA_KEY_META, "gen/enum/#0/value", "NO_VALUE", ELEKTRA_KEY_META, "gen/enum/#1/value", "1", ELEKTRA_KEY_META, "gen/enum/#2/value", "1 << 1", ELEKTRA_KEY_META, "gen/enum/#3/value", "1 << 2", ELEKTRA_KEY_META, "gen/enum/type", "Colors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
-	keyNew ("/gentype2", ELEKTRA_KEY_META, "check/enum", "#3", ELEKTRA_KEY_META, "check/enum/#0", "none", ELEKTRA_KEY_META, "check/enum/#1", "red", ELEKTRA_KEY_META, "check/enum/#2", "green", ELEKTRA_KEY_META, "check/enum/#3", "blue", ELEKTRA_KEY_META, "default", "red", ELEKTRA_KEY_META, "gen/enum/#0/value", "NO_VALUE", ELEKTRA_KEY_META, "gen/enum/#1/value", "1", ELEKTRA_KEY_META, "gen/enum/#2/value", "1 << 1", ELEKTRA_KEY_META, "gen/enum/#3/value", "1 << 2", ELEKTRA_KEY_META, "gen/enum/type", "Colors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
-	keyNew ("/myenum", ELEKTRA_KEY_META, "check/enum", "#5", ELEKTRA_KEY_META, "check/enum/#0", "red", ELEKTRA_KEY_META, "check/enum/#1", "green", ELEKTRA_KEY_META, "check/enum/#2", "blue", ELEKTRA_KEY_META, "check/enum/#3", "blueish", ELEKTRA_KEY_META, "check/enum/#4", "brown", ELEKTRA_KEY_META, "check/enum/#5", "gray", ELEKTRA_KEY_META, "default", "blue", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	return elektraKeysetNew (6,
+	elektraKeyNew ("/", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", ELEKTRA_KEY_END),
+	elektraKeyNew ("/disjointed", ELEKTRA_KEY_META, "check/enum", "#__255", ELEKTRA_KEY_META, "check/enum/#0", "black", ELEKTRA_KEY_META, "check/enum/#__255", "white", ELEKTRA_KEY_META, "default", "black", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	elektraKeyNew ("/existinggentype", ELEKTRA_KEY_META, "check/enum", "#2", ELEKTRA_KEY_META, "check/enum/#0", "cyan", ELEKTRA_KEY_META, "check/enum/#1", "magenta", ELEKTRA_KEY_META, "check/enum/#2", "yellow", ELEKTRA_KEY_META, "default", "cyan", ELEKTRA_KEY_META, "gen/enum/create", "0", ELEKTRA_KEY_META, "gen/enum/type", "ExistingColors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	elektraKeyNew ("/gentype", ELEKTRA_KEY_META, "check/enum", "#3", ELEKTRA_KEY_META, "check/enum/#0", "none", ELEKTRA_KEY_META, "check/enum/#1", "red", ELEKTRA_KEY_META, "check/enum/#2", "green", ELEKTRA_KEY_META, "check/enum/#3", "blue", ELEKTRA_KEY_META, "default", "blue", ELEKTRA_KEY_META, "gen/enum/#0/value", "NO_VALUE", ELEKTRA_KEY_META, "gen/enum/#1/value", "1", ELEKTRA_KEY_META, "gen/enum/#2/value", "1 << 1", ELEKTRA_KEY_META, "gen/enum/#3/value", "1 << 2", ELEKTRA_KEY_META, "gen/enum/type", "Colors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	elektraKeyNew ("/gentype2", ELEKTRA_KEY_META, "check/enum", "#3", ELEKTRA_KEY_META, "check/enum/#0", "none", ELEKTRA_KEY_META, "check/enum/#1", "red", ELEKTRA_KEY_META, "check/enum/#2", "green", ELEKTRA_KEY_META, "check/enum/#3", "blue", ELEKTRA_KEY_META, "default", "red", ELEKTRA_KEY_META, "gen/enum/#0/value", "NO_VALUE", ELEKTRA_KEY_META, "gen/enum/#1/value", "1", ELEKTRA_KEY_META, "gen/enum/#2/value", "1 << 1", ELEKTRA_KEY_META, "gen/enum/#3/value", "1 << 2", ELEKTRA_KEY_META, "gen/enum/type", "Colors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	elektraKeyNew ("/myenum", ELEKTRA_KEY_META, "check/enum", "#5", ELEKTRA_KEY_META, "check/enum/#0", "red", ELEKTRA_KEY_META, "check/enum/#1", "green", ELEKTRA_KEY_META, "check/enum/#2", "blue", ELEKTRA_KEY_META, "check/enum/#3", "blueish", ELEKTRA_KEY_META, "check/enum/#4", "brown", ELEKTRA_KEY_META, "check/enum/#5", "gray", ELEKTRA_KEY_META, "default", "blue", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
 }
@@ -96,30 +96,30 @@ int loadConfiguration (Elektra ** elektra,
 	ElektraKeyset * defaults = embeddedSpec ();
 	
 
-	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "fbb054456ff70fde7e4f184ec86eb130a99b4b3712d0c9d496e78bd262fb8c8d", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ElektraKeyset * contract = elektraKeysetNew (4,
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "fbb054456ff70fde7e4f184ec86eb130a99b4b3712d0c9d496e78bd262fb8c8d", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/enum", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/script/gen/highlevel/enum", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/enum", defaults, contract, error);
 
 	if (defaults != NULL)
 	{
-		ksDel (defaults);
+		elektraKeysetDel (defaults);
 	}
 
 	if (contract != NULL)
 	{
-		ksDel (contract);
+		elektraKeysetDel (contract);
 	}
 
 	if (e == NULL)
@@ -136,7 +136,7 @@ int loadConfiguration (Elektra ** elektra,
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (elektraKeyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -160,17 +160,17 @@ void exitForSpecload (int argc, const char * const * argv)
 
 	ElektraKeyset * spec = embeddedSpec ();
 
-	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/enum", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("spec:/tests/script/gen/highlevel/enum", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * specloadConf = elektraKeysetNew (1, elektraKeyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
 
 	elektraInvokeClose (specload, parentKey);
-	keyDel (parentKey);
-	ksDel (specloadConf);
-	ksDel (spec);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (specloadConf);
+	elektraKeysetDel (spec);
 
 	exit (result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE);
 }
@@ -480,7 +480,7 @@ ELEKTRA_GET_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumDisjointed) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (ElektraEnumDisjointed) 0;
 	}
 	return result;
@@ -492,7 +492,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumDisjointed) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (ElektraEnumDisjointed) 0;
 	}
 	return result;
@@ -527,7 +527,7 @@ ELEKTRA_GET_SIGNATURE (ExistingColors, EnumExistingColors)
 	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumExistingColors) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (ExistingColors) 0;
 	}
 	return result;
@@ -539,7 +539,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors)
 	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumExistingColors) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (ExistingColors) 0;
 	}
 	return result;
@@ -574,7 +574,7 @@ ELEKTRA_GET_SIGNATURE (Colors, EnumColors)
 	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumColors) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (Colors) 0;
 	}
 	return result;
@@ -586,7 +586,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Colors, EnumColors)
 	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumColors) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (Colors) 0;
 	}
 	return result;
@@ -621,7 +621,7 @@ ELEKTRA_GET_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumMyenum) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (ElektraEnumMyenum) 0;
 	}
 	return result;
@@ -633,7 +633,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumMyenum) (key, &result))
 	{
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, elektraKeyString (key)));
 		return (ElektraEnumMyenum) 0;
 	}
 	return result;

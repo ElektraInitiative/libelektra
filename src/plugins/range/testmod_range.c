@@ -19,88 +19,88 @@
 
 void testInt (const char * value, int ret, const char * rangeString)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (10, keyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (10, elektraKeyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d,  range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 void testUInt (const char * value, int ret, const char * rangeString)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (10,
-			     keyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (10,
+			     elektraKeyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
 				     "check/type", "unsigned long", ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d,  range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 void testFloat (const char * value, int ret, const char * rangeString)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (10,
-			     keyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (10,
+			     elektraKeyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
 				     "check/type", "float", ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d,  range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 void testHex (const char * value, int ret, const char * rangeString)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (10,
-			     keyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (10,
+			     elektraKeyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
 				     "check/type", "HEX", ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d, range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 void testChar (const char * value, int ret, const char * rangeString)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (10,
-			     keyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/range", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (10,
+			     elektraKeyNew ("user:/tests/range/key", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "check/range", rangeString, ELEKTRA_KEY_META,
 				     "check/type", "char", ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("range");
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	int rc = plugin->kdbSet (plugin, ks, parentKey);
 	//	fprintf (stderr, "testing: value: %s, expected: %d, got: %d, range: %s\n", value, ret, rc, rangeString);
 	succeed_if (rc == ret, "failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 

@@ -32,7 +32,7 @@ static volatile int keepRunning = 0;
 
 static void setTerminalColor (ElektraKey * color, void * context ELEKTRA_UNUSED)
 {
-	const char * value = keyString (color);
+	const char * value = elektraKeyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
 
 	if (strcmp (value, "red") == 0)
@@ -61,15 +61,15 @@ static void resetTerminalColor (void)
 
 static void printKeyValue (ElektraKeyset * ks, ElektraKey * search, char * messageNotSet)
 {
-	ElektraKey * found = ksLookup (ks, search, 0);
-	printf ("Key \"%s\"", keyName (search));
+	ElektraKey * found = elektraKeysetLookup (ks, search, 0);
+	printf ("Key \"%s\"", elektraKeyName (search));
 	if (!found)
 	{
 		printf (" not set. %s", messageNotSet);
 	}
 	else
 	{
-		printf (" has value \"%s\"", keyString (found));
+		printf (" has value \"%s\"", elektraKeyString (found));
 	}
 	printf ("\n");
 }
@@ -87,13 +87,13 @@ int main (void)
 	// Cleanup on SIGINT
 	signal (SIGINT, onSIGINT);
 
-	ElektraKeyset * config = ksNew (20, ELEKTRA_KS_END);
+	ElektraKeyset * config = elektraKeysetNew (20, ELEKTRA_KS_END);
 
-	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * contract = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraNotificationContract (contract);
 
-	ElektraKey * key = keyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
-	ElektraKdb * kdb = kdbOpen (contract, key);
+	ElektraKey * key = elektraKeyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
+	ElektraKdb * kdb = elektraKdbOpen (contract, key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
@@ -101,7 +101,7 @@ int main (void)
 	}
 
 	int value = 0;
-	ElektraKey * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
+	ElektraKey * intKeyToWatch = elektraKeyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
 	int result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
@@ -109,7 +109,7 @@ int main (void)
 		return -1;
 	}
 
-	ElektraKey * callbackKeyToWatch = keyNew ("/sw/example/notification/#0/current/color", ELEKTRA_KEY_END);
+	ElektraKey * callbackKeyToWatch = elektraKeyNew ("/sw/example/notification/#0/current/color", ELEKTRA_KEY_END);
 	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor, NULL);
 	if (!result)
 	{
@@ -124,7 +124,7 @@ int main (void)
 	{
 		// After this kdbGet the integer variable is updated and the callback was called.
 		// see "notificationAsync" for an example without polling
-		kdbGet (kdb, config, key);
+		elektraKdbGet (kdb, config, key);
 
 		// Print values
 		printf ("My integer value is %d\n", value);
@@ -137,10 +137,10 @@ int main (void)
 
 	// Cleanup
 	resetTerminalColor ();
-	kdbClose (kdb, key);
-	ksDel (config);
-	keyDel (intKeyToWatch);
-	keyDel (callbackKeyToWatch);
-	keyDel (key);
+	elektraKdbClose (kdb, key);
+	elektraKeysetDel (config);
+	elektraKeyDel (intKeyToWatch);
+	elektraKeyDel (callbackKeyToWatch);
+	elektraKeyDel (key);
 	printf ("cleanup done!\n");
 }

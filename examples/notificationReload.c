@@ -74,15 +74,15 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	if (data->kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-		kdbClose (data->kdb, data->parentKey);
+		elektraKdbClose (data->kdb, data->parentKey);
 		didReload = 1;
 	}
 
-	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * contract = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraIoContract (contract, data->binding);
 	elektraNotificationContract (contract);
 
-	data->kdb = kdbOpen (contract, data->parentKey);
+	data->kdb = elektraKdbOpen (contract, data->parentKey);
 	if (data->kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
@@ -96,16 +96,16 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		exit (1);
 	}
 
-	ElektraKey * elektraKey = keyNew ("/elektra", ELEKTRA_KEY_END);
+	ElektraKey * elektraKey = elektraKeyNew ("/elektra", ELEKTRA_KEY_END);
 	if (!elektraNotificationRegisterCallbackSameOrBelow (data->kdb, elektraKey, elektraChangedCallback, data))
 	{
 		printf ("could not register for changes to Elektra's configuration, aborting\n");
 		exit (1);
 	}
-	keyDel (elektraKey);
+	elektraKeyDel (elektraKey);
 
 	// Get configuration
-	kdbGet (data->kdb, data->config, data->parentKey);
+	elektraKdbGet (data->kdb, data->config, data->parentKey);
 
 	if (didReload)
 	{
@@ -121,7 +121,7 @@ static gboolean onSIGNAL (gpointer user_data)
 	elektraFree (data->timer);
 	elektraIoBindingRemoveTimer (data->reload);
 	elektraFree (data->reload);
-	kdbClose (data->kdb, data->parentKey);
+	elektraKdbClose (data->kdb, data->parentKey);
 	elektraIoBindingCleanup (data->binding);
 
 	g_main_loop_quit (data->loop);
@@ -168,9 +168,9 @@ int main (void)
 	// Signal Handling
 	g_unix_signal_add (SIGINT, onSIGNAL, data);
 
-	data->config = ksNew (20, ELEKTRA_KS_END);
-	data->parentKey = keyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
-	data->intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
+	data->config = elektraKeysetNew (20, ELEKTRA_KS_END);
+	data->parentKey = elektraKeyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
+	data->intKeyToWatch = elektraKeyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
 
 	// Setup timer that repeatedly prints the variable
 	data->timer = elektraIoNewTimerOperation (TWO_SECONDS, 1, printVariable, data);
@@ -183,7 +183,7 @@ int main (void)
 	printf ("Reloading Notification Example Application\n");
 	printf ("Please note that notification transport plugins are required see\n"
 		" https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
-	printf ("- Set \"%s\" to any integer value\n", keyName (data->intKeyToWatch));
+	printf ("- Set \"%s\" to any integer value\n", elektraKeyName (data->intKeyToWatch));
 	printf ("- Try to add additional transport plugins and remove the original pair afterwards\n");
 	printf ("- Mount a file which sets the key above to a different value and unmount it\n");
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
@@ -196,9 +196,9 @@ int main (void)
 
 	g_main_loop_unref (data->loop);
 
-	ksDel (data->config);
-	keyDel (data->intKeyToWatch);
-	keyDel (data->parentKey);
+	elektraKeysetDel (data->config);
+	elektraKeyDel (data->intKeyToWatch);
+	elektraKeyDel (data->parentKey);
 	elektraFree (data);
 	printf ("cleanup done!\n");
 }

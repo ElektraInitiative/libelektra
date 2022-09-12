@@ -155,12 +155,12 @@ while ((meta = keyNextMeta (key))!=0)
  * @see keyNextMeta(), keyCurrentMeta() for iterating after rewinding
  * @see ksRewind() KeySet's equivalent function for rewinding
  **/
-int keyRewindMeta (ElektraKey * key)
+int elektraKeyRewindMeta (ElektraKey * key)
 {
 	if (!key) return -1;
 	if (!key->meta) return 0;
 
-	return ksRewind (key->meta);
+	return elektraKeysetRewind (key->meta);
 }
 
 /**
@@ -194,13 +194,13 @@ int keyRewindMeta (ElektraKey * key)
  * @see keyRewindMeta() for rewinding the internal iterator
  * @see keyCurrentMeta() for getting the current metadata Key
  **/
-const ElektraKey * keyNextMeta (ElektraKey * key)
+const ElektraKey * elektraKeyNextMeta (ElektraKey * key)
 {
 	ElektraKey * ret;
 	if (!key) return 0;
 	if (!key->meta) return 0;
 
-	ret = ksNext (key->meta);
+	ret = elektraKeysetNext (key->meta);
 
 	return ret;
 }
@@ -226,13 +226,13 @@ const ElektraKey * keyNextMeta (ElektraKey * key)
  * @see keyRewindMeta() for rewinding the internal iterator
  * @see ksCurrent() KeySets's equivalent function for getting the current Key
  **/
-const ElektraKey * keyCurrentMeta (const ElektraKey * key)
+const ElektraKey * elektraKeyCurrentMeta (const ElektraKey * key)
 {
 	ElektraKey * ret;
 	if (!key) return 0;
 	if (!key->meta) return 0;
 
-	ret = ksCurrent (key->meta);
+	ret = elektraKeysetCurrent (key->meta);
 
 	return ret;
 }
@@ -300,7 +300,7 @@ void o(KeySet *ks)
  *
  * @see keyCopyAllMeta() copies all metadata from @p dest to @p src
  */
-int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * metaName)
+int elektraKeyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * metaName)
 {
 	ElektraKey * ret;
 
@@ -308,7 +308,7 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 	if (!dest) return -1;
 	if (dest->flags & ELEKTRA_KEY_FLAG_RO_META) return -1;
 
-	ret = (ElektraKey *) keyGetMeta (source, metaName);
+	ret = (ElektraKey *) elektraKeyGetMeta (source, metaName);
 
 	if (!ret)
 	{
@@ -316,11 +316,11 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 		if (dest->meta)
 		{
 			ElektraKey * r;
-			r = ksLookup (dest->meta, ret, ELEKTRA_KDB_O_POP);
+			r = elektraKeysetLookup (dest->meta, ret, ELEKTRA_KDB_O_POP);
 			if (r)
 			{
 				/*It was already there, so lets drop that one*/
-				keyDel (r);
+				elektraKeyDel (r);
 			}
 		}
 		return 0;
@@ -330,17 +330,17 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 	if (dest->meta)
 	{
 		ElektraKey * r;
-		r = ksLookup (dest->meta, ret, ELEKTRA_KDB_O_POP);
+		r = elektraKeysetLookup (dest->meta, ret, ELEKTRA_KDB_O_POP);
 		if (r && r != ret)
 		{
 			/*It was already there, so lets drop that one*/
-			keyDel (r);
+			elektraKeyDel (r);
 		}
 	}
 	else
 	{
 		/*Create a new place for meta information.*/
-		dest->meta = ksNew (0, ELEKTRA_KS_END);
+		dest->meta = elektraKeysetNew (0, ELEKTRA_KS_END);
 		if (!dest->meta)
 		{
 			return -1;
@@ -348,7 +348,7 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 	}
 
 	// now we can simply append that key
-	ksAppendKey (dest->meta, ret);
+	elektraKeysetAppendKey (dest->meta, ret);
 
 	return 1;
 }
@@ -395,22 +395,22 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
  * @ingroup keymeta
  * @see keyCopyMeta() for copying one metadata Key from @p dest to @p source
  */
-int keyCopyAllMeta (ElektraKey * dest, const ElektraKey * source)
+int elektraKeyCopyAllMeta (ElektraKey * dest, const ElektraKey * source)
 {
 	if (!source) return -1;
 	if (!dest) return -1;
 	if (dest->flags & ELEKTRA_KEY_FLAG_RO_META) return -1;
 
-	if (ksGetSize (source->meta) > 0)
+	if (elektraKeysetGetSize (source->meta) > 0)
 	{
 		/*Make sure that dest also does not have metaName*/
 		if (dest->meta)
 		{
-			ksAppend (dest->meta, source->meta);
+			elektraKeysetAppend (dest->meta, source->meta);
 		}
 		else
 		{
-			dest->meta = ksDup (source->meta);
+			dest->meta = elektraKeysetDup (source->meta);
 		}
 		return 1;
 	}
@@ -450,7 +450,7 @@ char keyType[] = keyValue(metaData)
  * @see keySetMeta() for setting metadata
  * @see keyMeta() for getting the KeySet containing metadata
  **/
-const ElektraKey * keyGetMeta (const ElektraKey * key, const char * metaName)
+const ElektraKey * elektraKeyGetMeta (const ElektraKey * key, const char * metaName)
 {
 	ElektraKey * ret;
 	ElektraKey * search;
@@ -461,17 +461,17 @@ const ElektraKey * keyGetMeta (const ElektraKey * key, const char * metaName)
 
 	if (strncmp (metaName, "meta:/", sizeof ("meta:/") - 1) == 0)
 	{
-		search = keyNew (metaName, ELEKTRA_KEY_END);
+		search = elektraKeyNew (metaName, ELEKTRA_KEY_END);
 	}
 	else
 	{
-		search = keyNew ("meta:/", ELEKTRA_KEY_END);
-		keyAddName (search, metaName);
+		search = elektraKeyNew ("meta:/", ELEKTRA_KEY_END);
+		elektraKeyAddName (search, metaName);
 	}
 
-	ret = ksLookup (key->meta, search, 0);
+	ret = elektraKeysetLookup (key->meta, search, 0);
 
-	keyDel (search);
+	elektraKeyDel (search);
 
 	return ret;
 }
@@ -513,7 +513,7 @@ const ElektraKey * keyGetMeta (const ElektraKey * key, const char * metaName)
  * @see keyGetMeta() for getting the value of a metadata Key
  * @see keyMeta() for getting the KeySet containing metadata
  **/
-ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMetaString)
+ssize_t elektraKeySetMeta (ElektraKey * key, const char * metaName, const char * newMetaString)
 {
 	ElektraKey * toSet;
 	char * metaStringDup;
@@ -532,12 +532,12 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 
 	if (strncmp (metaName, "meta:/", sizeof ("meta:/") - 1) == 0)
 	{
-		toSet = keyNew (metaName, ELEKTRA_KEY_END);
+		toSet = elektraKeyNew (metaName, ELEKTRA_KEY_END);
 	}
 	else
 	{
-		toSet = keyNew ("meta:/", ELEKTRA_KEY_END);
-		keyAddName (toSet, metaName);
+		toSet = elektraKeyNew ("meta:/", ELEKTRA_KEY_END);
+		elektraKeyAddName (toSet, metaName);
 	}
 	if (!toSet) return -1;
 
@@ -545,11 +545,11 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 	if (key->meta)
 	{
 		ElektraKey * ret;
-		ret = ksLookup (key->meta, toSet, ELEKTRA_KDB_O_POP);
+		ret = elektraKeysetLookup (key->meta, toSet, ELEKTRA_KDB_O_POP);
 		if (ret)
 		{
 			/*It was already there, so lets drop that one*/
-			keyDel (ret);
+			elektraKeyDel (ret);
 			key->flags |= ELEKTRA_KEY_FLAG_SYNC;
 		}
 	}
@@ -562,7 +562,7 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 		{
 			// TODO: actually we might already have changed
 			// the key
-			keyDel (toSet);
+			elektraKeyDel (toSet);
 			return -1;
 		}
 
@@ -575,17 +575,17 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 	{
 		/*The request is to remove the meta string.
 		  So simply drop it.*/
-		keyDel (toSet);
+		elektraKeyDel (toSet);
 		return 0;
 	}
 
 	if (!key->meta)
 	{
 		/*Create a new place for meta information.*/
-		key->meta = ksNew (0, ELEKTRA_KS_END);
+		key->meta = elektraKeysetNew (0, ELEKTRA_KS_END);
 		if (!key->meta)
 		{
-			keyDel (toSet);
+			elektraKeyDel (toSet);
 			return -1;
 		}
 	}
@@ -594,7 +594,7 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 	set_bit (toSet->flags, ELEKTRA_KEY_FLAG_RO_VALUE);
 	set_bit (toSet->flags, ELEKTRA_KEY_FLAG_RO_META);
 
-	ksAppendKey (key->meta, toSet);
+	elektraKeysetAppendKey (key->meta, toSet);
 	key->flags |= ELEKTRA_KEY_FLAG_SYNC;
 	return metaStringSize;
 }
@@ -633,10 +633,10 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
  * @see keySetMeta() for setting a metadata Key
  * @see keyGetMeta() for getting a metadata Key
  **/
-ElektraKeyset * keyMeta (ElektraKey * key)
+ElektraKeyset * elektraKeyMeta (ElektraKey * key)
 {
 	if (!key) return 0;
-	if (!key->meta) key->meta = ksNew (0, ELEKTRA_KS_END);
+	if (!key->meta) key->meta = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	return key->meta;
 }

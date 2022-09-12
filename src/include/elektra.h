@@ -135,7 +135,7 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname)
  **************************************/
 
 void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
-void elektraSetString (Elektra * elektra, const char * keyName, const char * value, ElektraError ** error);
+void elektraSetString (Elektra * elektra, const char * elektraKeyName, const char * value, ElektraError ** error);
 void elektraSetBoolean (Elektra * elektra, const char * keyname, kdb_boolean_t value, ElektraError ** error);
 void elektraSetChar (Elektra * elektra, const char * keyname, kdb_char_t value, ElektraError ** error);
 void elektraSetOctet (Elektra * elektra, const char * keyname, kdb_octet_t value, ElektraError ** error);
@@ -163,7 +163,7 @@ void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_dou
  *
  **************************************/
 
-kdb_long_long_t elektraArraySize (Elektra * elektra, const char * keyName);
+kdb_long_long_t elektraArraySize (Elektra * elektra, const char * elektraKeyName);
 
 // endregion Array-Helpers
 

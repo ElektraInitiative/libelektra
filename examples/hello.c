@@ -11,9 +11,9 @@
 
 int main (void)
 {
-	ElektraKey * k = keyNew ("user:/hello", ELEKTRA_KEY_VALUE, "Hello World", ELEKTRA_KEY_END);
-	printf ("%s\n", (char *) keyValue (k));
-	keyDel (k);
+	ElektraKey * k = elektraKeyNew ("user:/hello", ELEKTRA_KEY_VALUE, "Hello World", ELEKTRA_KEY_END);
+	printf ("%s\n", (char *) elektraKeyValue (k));
+	elektraKeyDel (k);
 
 	return 0;
 }

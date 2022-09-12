@@ -65,9 +65,9 @@ int elektraTimeofdayOpen (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED
 	ti->last = ti->start;
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	if (ksLookupByName (config, "/module", 0))
+	if (elektraKeysetLookupByName (config, "/module", 0))
 	{
-		if (ksLookupByName (config, "/logmodule", 0))
+		if (elektraKeysetLookupByName (config, "/logmodule", 0))
 		{
 			fprintf (stderr, "open (module)\t%s\n", elektraTimeofdayHelper (t, ti));
 		}
@@ -86,9 +86,9 @@ int elektraTimeofdayClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSE
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	if (ksLookupByName (config, "/module", 0))
+	if (elektraKeysetLookupByName (config, "/module", 0))
 	{
-		if (ksLookupByName (config, "/logmodule", 0))
+		if (elektraKeysetLookupByName (config, "/logmodule", 0))
 		{
 			fprintf (stderr, "close (module)\t%s\n", elektraTimeofdayHelper (t, ti));
 		}
@@ -119,23 +119,23 @@ int elektraTimeofdayGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 		position = "postgetstorage";
 	}
 
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/timeofday"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/timeofday"))
 	{
-		ElektraKeyset * pluginConfig = ksNew (
-			30, keyNew ("system:/elektra/modules/timeofday", ELEKTRA_KEY_VALUE, "timeofday plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/open", ELEKTRA_KEY_FUNC, elektraTimeofdayOpen, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/close", ELEKTRA_KEY_FUNC, elektraTimeofdayClose, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/get", ELEKTRA_KEY_FUNC, elektraTimeofdayGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/set", ELEKTRA_KEY_FUNC, elektraTimeofdaySet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/error", ELEKTRA_KEY_FUNC, elektraTimeofdayError, ELEKTRA_KEY_END),
+		ElektraKeyset * pluginConfig = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/timeofday", ELEKTRA_KEY_VALUE, "timeofday plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/timeofday/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/timeofday/exports/open", ELEKTRA_KEY_FUNC, elektraTimeofdayOpen, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/timeofday/exports/close", ELEKTRA_KEY_FUNC, elektraTimeofdayClose, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/timeofday/exports/get", ELEKTRA_KEY_FUNC, elektraTimeofdayGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/timeofday/exports/set", ELEKTRA_KEY_FUNC, elektraTimeofdaySet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/timeofday/exports/error", ELEKTRA_KEY_FUNC, elektraTimeofdayError, ELEKTRA_KEY_END),
 #include "readme_timeofday.c"
-			keyNew ("system:/elektra/modules/timeofday/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, pluginConfig);
-		ksDel (pluginConfig);
+			elektraKeyNew ("system:/elektra/modules/timeofday/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, pluginConfig);
+		elektraKeysetDel (pluginConfig);
 
 		ElektraKeyset * config = elektraPluginGetConfig (handle);
-		if (ksLookupByName (config, "/logmodule", 0))
+		if (elektraKeysetLookupByName (config, "/logmodule", 0))
 		{
 			fprintf (stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
 		}

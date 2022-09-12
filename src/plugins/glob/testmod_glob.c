@@ -27,43 +27,43 @@ void test_match (void)
 
 void testKeys (ElektraKeyset * ks)
 {
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/glob/test1", 0);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/glob/test1", 0);
 	exit_if_fail (key, "key user:/tests/glob/test1 not found");
-	const ElektraKey * metaKey = keyGetMeta (key, "testmetakey1");
+	const ElektraKey * metaKey = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (metaKey, "testmetakey1 not found");
-	succeed_if (strcmp ("testvalue1", keyValue (metaKey)) == 0, "value of metakey testmetakey1 not correct");
-	metaKey = keyGetMeta (key, "testmetakey2");
+	succeed_if (strcmp ("testvalue1", elektraKeyValue (metaKey)) == 0, "value of metakey testmetakey1 not correct");
+	metaKey = elektraKeyGetMeta (key, "testmetakey2");
 	exit_if_fail (metaKey, "testmetakey2 not found");
-	succeed_if (strcmp ("testvalue2", keyValue (metaKey)) == 0, "value of metakey testmetakey2 not correct");
+	succeed_if (strcmp ("testvalue2", elektraKeyValue (metaKey)) == 0, "value of metakey testmetakey2 not correct");
 
-	key = ksLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
 	exit_if_fail (key, "key user:/test1/subtest1 not found");
-	succeed_if (!keyGetMeta (key, "testmetakey1"), "testmetakey1 copied to wrong key");
-	succeed_if (!keyGetMeta (key, "testmetakey2"), "testmetakey2 copied to wrong key");
+	succeed_if (!elektraKeyGetMeta (key, "testmetakey1"), "testmetakey1 copied to wrong key");
+	succeed_if (!elektraKeyGetMeta (key, "testmetakey2"), "testmetakey2 copied to wrong key");
 
-	key = ksLookupByName (ks, "user:/tests/glob/test3", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/glob/test3", 0);
 	exit_if_fail (key, "key user:/tests/glob/test3 not found");
-	metaKey = keyGetMeta (key, "testmetakey1");
+	metaKey = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (metaKey, "testmetakey1 not found");
-	succeed_if (strcmp ("testvalue1", keyValue (metaKey)) == 0, "value of metakey testmetakey1 not correct");
-	metaKey = keyGetMeta (key, "testmetakey2");
+	succeed_if (strcmp ("testvalue1", elektraKeyValue (metaKey)) == 0, "value of metakey testmetakey1 not correct");
+	metaKey = elektraKeyGetMeta (key, "testmetakey2");
 	exit_if_fail (metaKey, "testmetakey2 not found");
-	succeed_if (strcmp ("testvalue2", keyValue (metaKey)) == 0, "value of metakey testmetakey2 not correct");
+	succeed_if (strcmp ("testvalue2", elektraKeyValue (metaKey)) == 0, "value of metakey testmetakey2 not correct");
 }
 
 ElektraKeyset * createKeys (void)
 {
-	ElektraKeyset * ks = ksNew (30, keyNew ("user:/tests/glob/test1", ELEKTRA_KEY_END), keyNew ("user:/tests/glob/test2/subtest1", ELEKTRA_KEY_END),
-			     keyNew ("user:/tests/glob/test3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (30, elektraKeyNew ("user:/tests/glob/test1", ELEKTRA_KEY_END), elektraKeyNew ("user:/tests/glob/test2/subtest1", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/tests/glob/test3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	return ks;
 }
 
 void test_zeroMatchFlags (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (20, keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "*test1", ELEKTRA_KEY_META, "testmetakey1", "testvalue1", ELEKTRA_KEY_END),
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (20, elektraKeyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "*test1", ELEKTRA_KEY_META, "testmetakey1", "testvalue1", ELEKTRA_KEY_END),
 			       /* disable default pathname globbing behaviour */
-			       keyNew ("user:/glob/#1/flags", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+			       elektraKeyNew ("user:/glob/#1/flags", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("glob");
 
 	ElektraKeyset * ks = createKeys ();
@@ -73,33 +73,33 @@ void test_zeroMatchFlags (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/glob/test1", 0);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/glob/test1", 0);
 	exit_if_fail (key, "key user:/tests/glob/test1 not found");
-	const ElektraKey * metaKey1 = keyGetMeta (key, "testmetakey1");
+	const ElektraKey * metaKey1 = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (metaKey1, "testmetakey1 not found");
-	succeed_if (strcmp ("testvalue1", keyValue (metaKey1)) == 0, "value of metakey testmetakey1 not correct");
+	succeed_if (strcmp ("testvalue1", elektraKeyValue (metaKey1)) == 0, "value of metakey testmetakey1 not correct");
 
-	key = ksLookupByName (ks, "user:/tests/glob/test3", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/glob/test3", 0);
 	exit_if_fail (key, "user:/tests/glob/test3 not found");
-	succeed_if (!keyGetMeta (key, "testmetakey1"), "testmetakey1 copied to wrong key");
+	succeed_if (!elektraKeyGetMeta (key, "testmetakey1"), "testmetakey1 copied to wrong key");
 
-	key = ksLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
 	exit_if_fail (key, "user:/tests/glob/test2/subtest1 not found");
-	const ElektraKey * metaKey2 = keyGetMeta (key, "testmetakey1");
+	const ElektraKey * metaKey2 = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (metaKey2, "testmetakey1 not found");
-	succeed_if (strcmp ("testvalue1", keyValue (metaKey2)) == 0, "value of metakey testmetakey1 not correct");
+	succeed_if (strcmp ("testvalue1", elektraKeyValue (metaKey2)) == 0, "value of metakey testmetakey1 not correct");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 void test_setGlobalMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
-	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "/*",
+	ElektraKeyset *conf = elektraKeysetNew (20,
+			elektraKeyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "/*",
 					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
 					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
 					ELEKTRA_KEY_END),
@@ -114,18 +114,18 @@ void test_setGlobalMatch (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
 	testKeys (ks);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_getGlobalMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
-	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "/*",
+	ElektraKeyset *conf = elektraKeysetNew (20,
+			elektraKeyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "/*",
 					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
 					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
 					ELEKTRA_KEY_END),
@@ -140,22 +140,22 @@ void test_getGlobalMatch (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	testKeys (ks);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_getDirectionMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
-	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/get/#1", ELEKTRA_KEY_VALUE, "/*",
+	ElektraKeyset *conf = elektraKeysetNew (20,
+			elektraKeyNew ("user:/glob/get/#1", ELEKTRA_KEY_VALUE, "/*",
 					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
 					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/glob/set/#1", ELEKTRA_KEY_VALUE, "/*/*",
+			elektraKeyNew ("user:/glob/set/#1", ELEKTRA_KEY_VALUE, "/*/*",
 					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
 					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
 					ELEKTRA_KEY_END),
@@ -170,22 +170,22 @@ void test_getDirectionMatch (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	testKeys (ks);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_setDirectionMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
-	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/set/#1", ELEKTRA_KEY_VALUE, "/*",
+	ElektraKeyset *conf = elektraKeysetNew (20,
+			elektraKeyNew ("user:/glob/set/#1", ELEKTRA_KEY_VALUE, "/*",
 					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
 					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/glob/get/#1", ELEKTRA_KEY_VALUE, "/*/*",
+			elektraKeyNew ("user:/glob/get/#1", ELEKTRA_KEY_VALUE, "/*/*",
 					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
 					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
 					ELEKTRA_KEY_END),
@@ -200,19 +200,19 @@ void test_setDirectionMatch (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
 	testKeys (ks);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_namedMatchFlags (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	ElektraKeyset * conf =
-		ksNew (20, keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "user:/tests/glob/*", ELEKTRA_KEY_META, "testmetakey1", "testvalue1", ELEKTRA_KEY_END),
+		elektraKeysetNew (20, elektraKeyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "user:/tests/glob/*", ELEKTRA_KEY_META, "testmetakey1", "testvalue1", ELEKTRA_KEY_END),
 		       /* explicitly request pathname matching */
-		       keyNew ("user:/glob/#1/flags", ELEKTRA_KEY_VALUE, "pathname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		       elektraKeyNew ("user:/glob/#1/flags", ELEKTRA_KEY_VALUE, "pathname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("glob");
 
 	ElektraKeyset * ks = createKeys ();
@@ -221,44 +221,44 @@ void test_namedMatchFlags (void)
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/glob/test1", 0);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/glob/test1", 0);
 	exit_if_fail (key, "key user:/tests/glob/test1 not found");
-	const ElektraKey * metaKey1 = keyGetMeta (key, "testmetakey1");
+	const ElektraKey * metaKey1 = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (metaKey1, "testmetakey1 not found");
 
-	key = ksLookupByName (ks, "user:/tests/glob/test3", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/glob/test3", 0);
 	exit_if_fail (key, "user:/tests/glob/test3 not found");
-	const ElektraKey * metaKey2 = keyGetMeta (key, "testmetakey1");
+	const ElektraKey * metaKey2 = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (metaKey2, "testmetakey1 not found");
 
-	key = ksLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
 	exit_if_fail (key, "user:/tests/glob/test2/subtest1 not found");
-	const ElektraKey * metaKey3 = keyGetMeta (key, "testmetakey1");
+	const ElektraKey * metaKey3 = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (!metaKey3, "testmetakey1 was copied to subtest1, but subtest1 should not be matched with pathname flag");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 void test_onlyFirstMatchIsApplied (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
-	ElektraKeyset * conf = ksNew (20,
-				keyNew ("user:/glob/#1",
+	ElektraKeyset * conf = elektraKeysetNew (20,
+				elektraKeyNew ("user:/glob/#1",
 						ELEKTRA_KEY_VALUE, "user:/tests/glob/test1*",
 						ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
 						ELEKTRA_KEY_END),
-				keyNew ("user:/glob/#2",
+				elektraKeyNew ("user:/glob/#2",
 						ELEKTRA_KEY_VALUE, "user:/tests/glob/*",
 						ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
 						ELEKTRA_KEY_END),
 			       /* disable all flags */
-			    keyNew ("user:/glob/#1/flags",
+			    elektraKeyNew ("user:/glob/#1/flags",
 			    		ELEKTRA_KEY_VALUE, "",
 						ELEKTRA_KEY_END),
-				keyNew ("user:/glob/#2/flags",
+				elektraKeyNew ("user:/glob/#2/flags",
 				   		ELEKTRA_KEY_VALUE, "",
 						ELEKTRA_KEY_END),
 				ELEKTRA_KS_END);
@@ -271,23 +271,23 @@ void test_onlyFirstMatchIsApplied (void)
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/glob/test1", 0);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/glob/test1", 0);
 	exit_if_fail (key, "key user:/tests/glob/test1 not found");
-	const ElektraKey * firstMatchKey = keyGetMeta (key, "testmetakey1");
+	const ElektraKey * firstMatchKey = elektraKeyGetMeta (key, "testmetakey1");
 	exit_if_fail (firstMatchKey, "testmetakey1 not found");
-	const ElektraKey * secondMatchKey = keyGetMeta (key, "testmetakey2");
+	const ElektraKey * secondMatchKey = elektraKeyGetMeta (key, "testmetakey2");
 	exit_if_fail (!secondMatchKey, "testmetakey2 was applied to testmetakey1 although another match was already applied")
 
-		key = ksLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
+		key = elektraKeysetLookupByName (ks, "user:/tests/glob/test2/subtest1", 0);
 	exit_if_fail (key, "user:/tests/glob/test2/subtest1 not found");
-	exit_if_fail (keyGetMeta (key, "testmetakey2"), "testmetakey2 not found");
+	exit_if_fail (elektraKeyGetMeta (key, "testmetakey2"), "testmetakey2 not found");
 
-	key = ksLookupByName (ks, "user:/tests/glob/test3", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/glob/test3", 0);
 	exit_if_fail (key, "user:/tests/glob/test3 not found");
-	exit_if_fail (keyGetMeta (key, "testmetakey2"), "testmetakey2 not found");
+	exit_if_fail (elektraKeyGetMeta (key, "testmetakey2"), "testmetakey2 not found");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 

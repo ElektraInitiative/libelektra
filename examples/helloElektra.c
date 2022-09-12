@@ -12,31 +12,31 @@
 
 int main (void)
 {
-	ElektraKeyset * config = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * root = keyNew ("user:/test", ELEKTRA_KEY_END);
+	ElektraKeyset * config = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * root = elektraKeyNew ("user:/test", ELEKTRA_KEY_END);
 
 	printf ("Open key database\n");
-	ElektraKdb * handle = kdbOpen (NULL, root);
+	ElektraKdb * handle = elektraKdbOpen (NULL, root);
 
 	printf ("Retrieve key set\n");
-	kdbGet (handle, config, root);
+	elektraKdbGet (handle, config, root);
 
-	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));
+	printf ("Number of key-value pairs: %zd\n", elektraKeysetGetSize (config));
 
-	ElektraKey * key = keyNew ("user:/test/hello", ELEKTRA_KEY_VALUE, "elektra", ELEKTRA_KEY_END);
-	printf ("Add key %s\n", keyName (key));
-	ksAppendKey (config, key);
-	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));
-	printf ("\n%s, %s\n\n", keyBaseName (key), keyString (key));
+	ElektraKey * key = elektraKeyNew ("user:/test/hello", ELEKTRA_KEY_VALUE, "elektra", ELEKTRA_KEY_END);
+	printf ("Add key %s\n", elektraKeyName (key));
+	elektraKeysetAppendKey (config, key);
+	printf ("Number of key-value pairs: %zd\n", elektraKeysetGetSize (config));
+	printf ("\n%s, %s\n\n", elektraKeyBaseName (key), elektraKeyString (key));
 
 	// If you want to store the key database on disk, then please uncomment the following two lines
 	// printf ("Write key set to disk\n");
 	// kdbSet (handle, config, root);
 
 	printf ("Delete key-value pairs inside memory\n");
-	ksDel (config);
+	elektraKeysetDel (config);
 	printf ("Close key database\n");
-	kdbClose (handle, 0);
+	elektraKdbClose (handle, 0);
 
 	return 0;
 }

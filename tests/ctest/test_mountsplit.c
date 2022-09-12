@@ -79,12 +79,12 @@ static void test_mount (void)
 
 ElektraKeyset * modules_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 ElektraKeyset * minimal_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
@@ -110,8 +110,8 @@ static void test_minimaltrie (void)
 
 ElektraKeyset * simple_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_simple (void)
@@ -166,10 +166,10 @@ static void test_simple (void)
 
 ElektraKeyset * set_us (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/user:\\/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/user:\\//mountpoint", ELEKTRA_KEY_VALUE, "user:/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system:\\/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system:\\//mountpoint", ELEKTRA_KEY_VALUE, "system:/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (50, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/user:\\/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/user:\\//mountpoint", ELEKTRA_KEY_VALUE, "user:/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/system:\\/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/system:\\//mountpoint", ELEKTRA_KEY_VALUE, "system:/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_us (void)
@@ -230,8 +230,8 @@ static void test_us (void)
 
 ElektraKeyset * cascading_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_cascading (void)
@@ -324,10 +324,10 @@ static void test_cascading (void)
 
 ElektraKeyset * root_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_root (void)

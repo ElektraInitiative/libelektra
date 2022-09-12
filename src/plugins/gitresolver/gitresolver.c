@@ -84,7 +84,7 @@ static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfil
 		goto RESOLVE_FAILED;
 	}
 
-	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+	resolved = resolveFunc (elektraKeyGetNamespace (parentKey), elektraKeyString (parentKey), tmpFile, parentKey);
 
 	if (!resolved)
 	{
@@ -93,7 +93,7 @@ static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfil
 	}
 	else
 	{
-		keySetString (parentKey, resolved->fullPath);
+		elektraKeySetString (parentKey, resolved->fullPath);
 		freeHandle (resolved);
 	}
 
@@ -171,33 +171,33 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 		ElektraKeyset * config = elektraPluginGetConfig (handle);
 		data = elektraCalloc (sizeof (GitData));
 
-		ElektraKey * key = ksLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
-		keySetString (parentKey, keyString (key));
+		ElektraKey * key = elektraKeysetLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
+		elektraKeySetString (parentKey, elektraKeyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
 			return -1;
 		}
-		data->repo = elektraStrDup (keyString (parentKey));
+		data->repo = elektraStrDup (elektraKeyString (parentKey));
 
 		// default to master branch when no branchname is supplied
 		const char * defaultBranch = "master";
-		key = ksLookupByName (config, "/branch", ELEKTRA_KDB_O_NONE);
+		key = elektraKeysetLookupByName (config, "/branch", ELEKTRA_KDB_O_NONE);
 		if (!key)
 			data->branch = (char *) defaultBranch;
 		else
-			data->branch = (char *) keyString (key);
+			data->branch = (char *) elektraKeyString (key);
 
-		key = ksLookupByName (config, "/tracking", ELEKTRA_KDB_O_NONE);
+		key = elektraKeysetLookupByName (config, "/tracking", ELEKTRA_KDB_O_NONE);
 		if (!key)
 			data->tracking = HEAD;
 		else
 		{
-			if (!strcmp (keyString (key), "object"))
+			if (!strcmp (elektraKeyString (key), "object"))
 				data->tracking = OBJECT;
 			else
 				data->tracking = HEAD;
 		}
-		key = ksLookupByName (config, "/pull", ELEKTRA_KDB_O_NONE);
+		key = elektraKeysetLookupByName (config, "/pull", ELEKTRA_KDB_O_NONE);
 		if (!key)
 		{
 			data->pull = 0;
@@ -209,7 +209,7 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 		size_t refLen = strlen (REFSTRING) + strlen (data->branch) + 1;
 		data->refName = elektraCalloc (refLen);
 		snprintf (data->refName, refLen, "%s%s", REFSTRING, data->branch);
-		key = ksLookupByName (config, "/checkout", ELEKTRA_KDB_O_NONE);
+		key = elektraKeysetLookupByName (config, "/checkout", ELEKTRA_KDB_O_NONE);
 		if (!key)
 		{
 			data->checkout = 0;
@@ -614,23 +614,23 @@ PULL_CLEANUP:
 
 int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gitresolver"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/gitresolver"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/gitresolver", ELEKTRA_KEY_VALUE, "gitresolver plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/open", ELEKTRA_KEY_FUNC, elektraGitresolverOpen, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/close", ELEKTRA_KEY_FUNC, elektraGitresolverClose, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/get", ELEKTRA_KEY_FUNC, elektraGitresolverGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/set", ELEKTRA_KEY_FUNC, elektraGitresolverSet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraGitresolverCommit, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/error", ELEKTRA_KEY_FUNC, elektraGitresolverError, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraGitresolverCheckFile, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/gitresolver", ELEKTRA_KEY_VALUE, "gitresolver plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports/open", ELEKTRA_KEY_FUNC, elektraGitresolverOpen, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports/close", ELEKTRA_KEY_FUNC, elektraGitresolverClose, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports/get", ELEKTRA_KEY_FUNC, elektraGitresolverGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports/set", ELEKTRA_KEY_FUNC, elektraGitresolverSet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraGitresolverCommit, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports/error", ELEKTRA_KEY_FUNC, elektraGitresolverError, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/gitresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraGitresolverCheckFile, ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/gitresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/gitresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
@@ -737,17 +737,17 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retur
 	FILE * outFile;
 	if (!data->checkout)
 	{
-		keySetString (parentKey, data->tmpFile);
+		elektraKeySetString (parentKey, data->tmpFile);
 	}
 	else
 	{
-		keySetString (parentKey, data->repo);
+		elektraKeySetString (parentKey, data->repo);
 		if (data->subdirs) makePath (data);
 	}
-	outFile = fopen (keyString (parentKey), "w+");
+	outFile = fopen (elektraKeyString (parentKey), "w+");
 	if (!outFile)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to check out file %s to %s\n", data->file, keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to check out file %s to %s\n", data->file, elektraKeyString (parentKey));
 		git_object_free (blob);
 		git_repository_free (repo);
 		git_libgit2_shutdown ();
@@ -828,7 +828,7 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retur
 	// this function is optional
 	GitData * data = elektraPluginGetData (handle);
 	if (!data) return -1;
-	keySetString (parentKey, data->tmpFile);
+	elektraKeySetString (parentKey, data->tmpFile);
 	git_repository * repo = connectToLocalRepo (data);
 	if (!repo)
 	{

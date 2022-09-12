@@ -33,19 +33,19 @@ int elektraDbusOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 
 int elektraDbusGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbus"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/dbus"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/dbus", ELEKTRA_KEY_VALUE, "dbus plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/open", ELEKTRA_KEY_FUNC, elektraDbusOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/get", ELEKTRA_KEY_FUNC, elektraDbusGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/set", ELEKTRA_KEY_FUNC, elektraDbusSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/close", ELEKTRA_KEY_FUNC, elektraDbusClose, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/dbus", ELEKTRA_KEY_VALUE, "dbus plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dbus/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dbus/exports/open", ELEKTRA_KEY_FUNC, elektraDbusOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dbus/exports/get", ELEKTRA_KEY_FUNC, elektraDbusGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dbus/exports/set", ELEKTRA_KEY_FUNC, elektraDbusSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dbus/exports/close", ELEKTRA_KEY_FUNC, elektraDbusClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/dbus/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/dbus/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
@@ -55,8 +55,8 @@ int elektraDbusGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	ELEKTRA_NOT_NULL (pluginData);
 
 	ElektraKeyset * ks = pluginData->keys;
-	if (ks) ksDel (ks);
-	pluginData->keys = ksDup (returned);
+	if (ks) elektraKeysetDel (ks);
+	pluginData->keys = elektraKeysetDup (returned);
 
 	return 1; /* success */
 }
@@ -76,11 +76,11 @@ static void announceKeys (ElektraKeyset * ks, const char * signalName, DBusBusTy
 	ELEKTRA_NOT_NULL (signalName);
 	ELEKTRA_NOT_NULL (data);
 
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	ElektraKey * k = 0;
-	while ((k = ksNext (ks)) != 0)
+	while ((k = elektraKeysetNext (ks)) != 0)
 	{
-		elektraDbusSendMessage (data, busType, keyName (k), signalName);
+		elektraDbusSendMessage (data, busType, elektraKeyName (k), signalName);
 	}
 }
 
@@ -92,49 +92,49 @@ int elektraDbusSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	ElektraKeyset * oldKeys = pluginData->keys;
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
-	ksRewind (oldKeys);
-	ksRewind (returned);
+	elektraKeysetRewind (oldKeys);
+	elektraKeysetRewind (returned);
 
-	ElektraKeyset * addedKeys = ksDup (returned);
-	ElektraKeyset * changedKeys = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * removedKeys = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * addedKeys = elektraKeysetDup (returned);
+	ElektraKeyset * changedKeys = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * removedKeys = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	ElektraKey * k = 0;
-	while ((k = ksNext (oldKeys)) != 0)
+	while ((k = elektraKeysetNext (oldKeys)) != 0)
 	{
-		ElektraKey * p = ksLookup (addedKeys, k, ELEKTRA_KDB_O_POP);
+		ElektraKey * p = elektraKeysetLookup (addedKeys, k, ELEKTRA_KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)
 		{
-			if (keyNeedSync (p))
+			if (elektraKeyNeedSync (p))
 			{
-				ksAppendKey (changedKeys, p);
+				elektraKeysetAppendKey (changedKeys, p);
 			}
 		}
 		else
 		{
-			ksAppendKey (removedKeys, k);
+			elektraKeysetAppendKey (removedKeys, k);
 		}
 	}
 
 	ElektraKey * resolvedParentKey = parentKey;
 	// Resolve cascaded parent key to get its namespace
-	if (!strncmp (keyName (parentKey), "/", 1))
+	if (!strncmp (elektraKeyName (parentKey), "/", 1))
 	{
-		resolvedParentKey = ksLookup (returned, parentKey, 0);
+		resolvedParentKey = elektraKeysetLookup (returned, parentKey, 0);
 	}
 	int announceSession = 0;
 	int announceSystem = 0;
 	if (resolvedParentKey != NULL)
 	{
-		announceSession = !strncmp (keyName (resolvedParentKey), "user", 4);
-		announceSystem = !strncmp (keyName (resolvedParentKey), "system", 6);
+		announceSession = !strncmp (elektraKeyName (resolvedParentKey), "user", 4);
+		announceSystem = !strncmp (elektraKeyName (resolvedParentKey), "system", 6);
 	}
 
-	if (!strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/announce", 0)), "once", 4))
+	if (!strncmp (elektraKeyString (elektraKeysetLookupByName (elektraPluginGetConfig (handle), "/announce", 0)), "once", 4))
 	{
-		if (announceSession) elektraDbusSendMessage (pluginData, DBUS_BUS_SESSION, keyName (resolvedParentKey), "Commit");
-		if (announceSystem) elektraDbusSendMessage (pluginData, DBUS_BUS_SYSTEM, keyName (resolvedParentKey), "Commit");
+		if (announceSession) elektraDbusSendMessage (pluginData, DBUS_BUS_SESSION, elektraKeyName (resolvedParentKey), "Commit");
+		if (announceSystem) elektraDbusSendMessage (pluginData, DBUS_BUS_SYSTEM, elektraKeyName (resolvedParentKey), "Commit");
 	}
 	else
 	{
@@ -153,13 +153,13 @@ int elektraDbusSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	}
 
 
-	ksDel (oldKeys);
-	ksDel (addedKeys);
-	ksDel (changedKeys);
-	ksDel (removedKeys);
+	elektraKeysetDel (oldKeys);
+	elektraKeysetDel (addedKeys);
+	elektraKeysetDel (changedKeys);
+	elektraKeysetDel (removedKeys);
 
 	// for next invocation of elektraLogchangeSet, remember our current keyset
-	pluginData->keys = ksDup (returned);
+	pluginData->keys = elektraKeysetDup (returned);
 
 	return 1; /* success */
 }
@@ -173,7 +173,7 @@ int elektraDbusClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 	}
 
 	ElektraKeyset * ks = pluginData->keys;
-	if (ks) ksDel (ks);
+	if (ks) elektraKeysetDel (ks);
 
 	if (pluginData->systemBus)
 	{

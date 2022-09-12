@@ -121,7 +121,7 @@ Plugin * elektraPluginOpen (const char * name, ElektraKeyset * modules, ElektraK
 
 err_clup:
 	ELEKTRA_LOG ("Failed to load plugin %s\n", name);
-	ksDel (config);
+	elektraKeysetDel (config);
 	return 0;
 }
 
@@ -142,7 +142,7 @@ int elektraPluginClose (Plugin * handle, ElektraKey * errorKey)
 		if (rc == -1) ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "Method 'kdbClose()' failed");
 	}
 
-	ksDel (handle->config);
+	elektraKeysetDel (handle->config);
 	elektraFree (handle);
 
 	return rc;
@@ -161,28 +161,28 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	ELEKTRA_NOT_NULL (plugin);
 	ELEKTRA_NOT_NULL (name);
 
-	ElektraKeyset * exports = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * pk = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
-	keyAddBaseName (pk, plugin->name);
+	ElektraKeyset * exports = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * pk = elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (pk, plugin->name);
 	plugin->kdbGet (plugin, exports, pk);
-	ksRewind (exports);
-	keyAddBaseName (pk, "exports");
-	keyAddBaseName (pk, name);
-	ElektraKey * keyFunction = ksLookup (exports, pk, 0);
+	elektraKeysetRewind (exports);
+	elektraKeyAddBaseName (pk, "exports");
+	elektraKeyAddBaseName (pk, name);
+	ElektraKey * keyFunction = elektraKeysetLookup (exports, pk, 0);
 	if (!keyFunction)
 	{
 		ELEKTRA_LOG_DEBUG ("function \"%s\" from plugin \"%s\" not found", name, plugin->name);
-		ksDel (exports);
-		keyDel (pk);
+		elektraKeysetDel (exports);
+		elektraKeyDel (pk);
 		return 0;
 	}
 
 	size_t * buffer;
-	size_t bufferSize = keyGetValueSize (keyFunction);
+	size_t bufferSize = elektraKeyGetValueSize (keyFunction);
 	buffer = elektraMalloc (bufferSize);
 	if (buffer)
 	{
-		int result = keyGetBinary (keyFunction, buffer, bufferSize);
+		int result = elektraKeyGetBinary (keyFunction, buffer, bufferSize);
 		if (result == -1 || buffer == NULL)
 		{
 			ELEKTRA_LOG_WARNING ("could not get function \"%s\" from plugin \"%s\"", name, plugin->name);
@@ -193,8 +193,8 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	size_t func = *buffer;
 
 	elektraFree (buffer);
-	ksDel (exports);
-	keyDel (pk);
+	elektraKeysetDel (exports);
+	elektraKeyDel (pk);
 
 	return func;
 }

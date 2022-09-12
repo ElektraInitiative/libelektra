@@ -260,24 +260,24 @@ static void test_keySetNamespace (void)
 {
 	printf ("test keySetNamespace\n");
 
-	ElektraKey * k = keyNew ("/test/123", ELEKTRA_KEY_END);
-	succeed_if (keySetNamespace (k, ELEKTRA_NS_CASCADING) == 10, "new size wrong");
-	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_CASCADING, "new namespace wrong");
-	succeed_if_same_string (keyName (k), "/test/123");
+	ElektraKey * k = elektraKeyNew ("/test/123", ELEKTRA_KEY_END);
+	succeed_if (elektraKeySetNamespace (k, ELEKTRA_NS_CASCADING) == 10, "new size wrong");
+	succeed_if (elektraKeyGetNamespace (k) == ELEKTRA_NS_CASCADING, "new namespace wrong");
+	succeed_if_same_string (elektraKeyName (k), "/test/123");
 
-	succeed_if (keySetNamespace (k, ELEKTRA_NS_USER) == 15, "new size wrong");
-	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_USER, "new namespace wrong");
-	succeed_if_same_string (keyName (k), "user:/test/123");
+	succeed_if (elektraKeySetNamespace (k, ELEKTRA_NS_USER) == 15, "new size wrong");
+	succeed_if (elektraKeyGetNamespace (k) == ELEKTRA_NS_USER, "new namespace wrong");
+	succeed_if_same_string (elektraKeyName (k), "user:/test/123");
 
-	succeed_if (keySetNamespace (k, ELEKTRA_NS_SPEC) == 15, "new size wrong");
-	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_SPEC, "new namespace wrong");
-	succeed_if_same_string (keyName (k), "spec:/test/123");
+	succeed_if (elektraKeySetNamespace (k, ELEKTRA_NS_SPEC) == 15, "new size wrong");
+	succeed_if (elektraKeyGetNamespace (k) == ELEKTRA_NS_SPEC, "new namespace wrong");
+	succeed_if_same_string (elektraKeyName (k), "spec:/test/123");
 
-	succeed_if (keySetNamespace (k, ELEKTRA_NS_SYSTEM) == 17, "new size wrong");
-	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_SYSTEM, "new namespace wrong");
-	succeed_if_same_string (keyName (k), "system:/test/123");
+	succeed_if (elektraKeySetNamespace (k, ELEKTRA_NS_SYSTEM) == 17, "new size wrong");
+	succeed_if (elektraKeyGetNamespace (k) == ELEKTRA_NS_SYSTEM, "new namespace wrong");
+	succeed_if_same_string (elektraKeyName (k), "system:/test/123");
 
-	keyDel (k);
+	elektraKeyDel (k);
 }
 
 int main (int argc, char ** argv)

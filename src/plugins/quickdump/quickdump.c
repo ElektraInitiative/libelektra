@@ -99,23 +99,23 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 
 int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/quickdump"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/quickdump"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/quickdump", ELEKTRA_KEY_VALUE, "quickdump plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/quickdump/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/quickdump/exports/get", ELEKTRA_KEY_FUNC, elektraQuickdumpGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/quickdump/exports/set", ELEKTRA_KEY_FUNC, elektraQuickdumpSet, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/quickdump", ELEKTRA_KEY_VALUE, "quickdump plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/quickdump/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/quickdump/exports/get", ELEKTRA_KEY_FUNC, elektraQuickdumpGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/quickdump/exports/set", ELEKTRA_KEY_FUNC, elektraQuickdumpSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/quickdump/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/quickdump/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	// get all keys
 
-	FILE * file = fopen (keyString (parentKey), "rb");
+	FILE * file = fopen (elektraKeyString (parentKey), "rb");
 
 	if (file == NULL)
 	{
@@ -166,10 +166,10 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 	// setup name buffer with parent key
 	struct stringbuffer nameBuffer;
 
-	size_t parentSize = keyGetNameSize (parentKey); // includes null terminator
+	size_t parentSize = elektraKeyGetNameSize (parentKey); // includes null terminator
 	setupBuffer (&nameBuffer, parentSize + 4);
 
-	keyGetName (parentKey, nameBuffer.string, parentSize);
+	elektraKeyGetName (parentKey, nameBuffer.string, parentSize);
 	nameBuffer.string[parentSize - 1] = '/'; // replaces null terminator
 	nameBuffer.string[parentSize] = '\0';	 // set new null terminator
 	nameBuffer.offset = parentSize;		 // set offset to null terminator
@@ -218,7 +218,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 			if (valueSize == 0)
 			{
-				k = keyNew (nameBuffer.string, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, valueSize, ELEKTRA_KEY_END);
+				k = elektraKeyNew (nameBuffer.string, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, valueSize, ELEKTRA_KEY_END);
 			}
 			else
 			{
@@ -231,7 +231,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Error while reading file");
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
-				k = keyNew (nameBuffer.string, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, (size_t) valueSize, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END);
+				k = elektraKeyNew (nameBuffer.string, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, (size_t) valueSize, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END);
 				elektraFree (value);
 			}
 			break;
@@ -246,7 +246,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 				fclose (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
-			k = keyNew (nameBuffer.string, ELEKTRA_KEY_VALUE, valueBuffer.string, ELEKTRA_KEY_END);
+			k = elektraKeyNew (nameBuffer.string, ELEKTRA_KEY_VALUE, valueBuffer.string, ELEKTRA_KEY_END);
 			break;
 		}
 		default:
@@ -262,7 +262,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		{
 			if (c == EOF)
 			{
-				keyDel (k);
+				elektraKeyDel (k);
 				fclose (file);
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Missing key end");
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -274,7 +274,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 				// meta key
 				if (!readStringIntoBuffer (file, &metaNameBuffer, parentKey))
 				{
-					keyDel (k);
+					elektraKeyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					elektraFree (valueBuffer.string);
@@ -284,7 +284,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 				if (!readStringIntoBuffer (file, &valueBuffer, parentKey))
 				{
-					keyDel (k);
+					elektraKeyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					elektraFree (valueBuffer.string);
@@ -293,14 +293,14 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 				}
 				const char * metaValue = valueBuffer.string;
 
-				keySetMeta (k, metaNameBuffer.string, metaValue);
+				elektraKeySetMeta (k, metaNameBuffer.string, metaValue);
 				break;
 			}
 			case 'c': {
 				// copy meta
 				if (!readStringIntoBuffer (file, &nameBuffer, parentKey))
 				{
-					keyDel (k);
+					elektraKeyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					elektraFree (valueBuffer.string);
@@ -310,7 +310,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 				if (!readStringIntoBuffer (file, &metaNameBuffer, parentKey))
 				{
-					keyDel (k);
+					elektraKeyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					elektraFree (valueBuffer.string);
@@ -318,12 +318,12 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				const ElektraKey * sourceKey = ksLookupByName (returned, nameBuffer.string, 0);
+				const ElektraKey * sourceKey = elektraKeysetLookupByName (returned, nameBuffer.string, 0);
 				if (sourceKey == NULL)
 				{
 					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not copy meta data from key '%s': Key not found",
 								     nameBuffer.string);
-					keyDel (k);
+					elektraKeyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					elektraFree (valueBuffer.string);
@@ -331,11 +331,11 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				if (keyCopyMeta (k, sourceKey, metaNameBuffer.string) != 1)
+				if (elektraKeyCopyMeta (k, sourceKey, metaNameBuffer.string) != 1)
 				{
 					ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Could not copy meta data from key '%s': Error during copy",
 								     &nameBuffer.string[nameBuffer.offset]);
-					keyDel (k);
+					elektraKeyDel (k);
 					elektraFree (nameBuffer.string);
 					elektraFree (metaNameBuffer.string);
 					elektraFree (valueBuffer.string);
@@ -345,7 +345,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 				break;
 			}
 			default:
-				keyDel (k);
+				elektraKeyDel (k);
 				elektraFree (nameBuffer.string);
 				elektraFree (metaNameBuffer.string);
 				elektraFree (valueBuffer.string);
@@ -355,7 +355,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 			}
 		}
 
-		ksAppendKey (returned, k);
+		elektraKeysetAppendKey (returned, k);
 	}
 
 	elektraFree (nameBuffer.string);
@@ -369,19 +369,19 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	elektraCursor cursor = ksGetCursor (returned);
-	ksRewind (returned);
+	elektraCursor cursor = elektraKeysetGetCursor (returned);
+	elektraKeysetRewind (returned);
 
 	FILE * file;
 
 	// cannot open stdout for writing, because its already open
-	if (elektraStrCmp (keyString (parentKey), STDOUT_FILENAME) == 0)
+	if (elektraStrCmp (elektraKeyString (parentKey), STDOUT_FILENAME) == 0)
 	{
 		file = stdout;
 	}
 	else
 	{
-		file = fopen (keyString (parentKey), "wb");
+		file = fopen (elektraKeyString (parentKey), "wb");
 	}
 
 	if (file == NULL)
@@ -404,20 +404,20 @@ int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	metaKeys.array = elektraMalloc (metaKeys.alloc * sizeof (struct metaLink *));
 
 	// we assume all keys in returned are below parentKey
-	size_t parentOffset = keyGetNameSize (parentKey);
+	size_t parentOffset = elektraKeyGetNameSize (parentKey);
 
 	// ... unless /noparent is in config, then we just take the full
 	// (cascading) keynames as relative to the parentKey
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	if (ksLookupByName (config, "/noparent", 0) != NULL)
+	if (elektraKeysetLookupByName (config, "/noparent", 0) != NULL)
 	{
 		parentOffset = 1;
 	}
 
 	ElektraKey * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		size_t fullNameSize = keyGetNameSize (cur);
+		size_t fullNameSize = elektraKeyGetNameSize (cur);
 		if (fullNameSize < parentOffset)
 		{
 			fclose (file);
@@ -425,13 +425,13 @@ int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 		}
 
 		kdb_unsigned_long_long_t nameSize = fullNameSize == parentOffset ? 0 : fullNameSize - 1 - parentOffset;
-		if (!writeData (file, keyName (cur) + parentOffset, nameSize, parentKey))
+		if (!writeData (file, elektraKeyName (cur) + parentOffset, nameSize, parentKey))
 		{
 			fclose (file);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		if (keyIsBinary (cur))
+		if (elektraKeyIsBinary (cur))
 		{
 			if (fputc ('b', file) == EOF)
 			{
@@ -439,13 +439,13 @@ int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
-			kdb_unsigned_long_long_t valueSize = keyGetValueSize (cur);
+			kdb_unsigned_long_long_t valueSize = elektraKeyGetValueSize (cur);
 
 			char * value = NULL;
 			if (valueSize > 0)
 			{
 				value = elektraMalloc (valueSize);
-				if (keyGetBinary (cur, value, valueSize) == -1)
+				if (elektraKeyGetBinary (cur, value, valueSize) == -1)
 				{
 					fclose (file);
 					elektraFree (value);
@@ -469,17 +469,17 @@ int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
-			kdb_unsigned_long_long_t valueSize = keyGetValueSize (cur) - 1;
-			if (!writeData (file, keyString (cur), valueSize, parentKey))
+			kdb_unsigned_long_long_t valueSize = elektraKeyGetValueSize (cur) - 1;
+			if (!writeData (file, elektraKeyString (cur), valueSize, parentKey))
 			{
 				fclose (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
 
-		keyRewindMeta (cur);
+		elektraKeyRewindMeta (cur);
 		const ElektraKey * meta;
-		while ((meta = keyNextMeta (cur)) != NULL)
+		while ((meta = elektraKeyNextMeta (cur)) != NULL)
 		{
 			ssize_t result = findMetaLink (&metaKeys, meta);
 			if (result < 0)
@@ -491,15 +491,15 @@ int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 				}
 
 				// ignore meta namespace when writing to file
-				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
-				if (!writeData (file, keyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
+				kdb_unsigned_long_long_t metaNameSize = elektraKeyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
+				if (!writeData (file, elektraKeyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
 				{
 					fclose (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				kdb_unsigned_long_long_t metaValueSize = keyGetValueSize (meta) - 1;
-				if (!writeData (file, keyString (meta), metaValueSize, parentKey))
+				kdb_unsigned_long_long_t metaValueSize = elektraKeyGetValueSize (meta) - 1;
+				if (!writeData (file, elektraKeyString (meta), metaValueSize, parentKey))
 				{
 					fclose (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -523,8 +523,8 @@ int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 				}
 
 				// ignore meta namespace when writing to file
-				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
-				if (!writeData (file, keyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
+				kdb_unsigned_long_long_t metaNameSize = elektraKeyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
+				if (!writeData (file, elektraKeyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
 				{
 					fclose (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -547,7 +547,7 @@ int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 
 	fclose (file);
 
-	ksSetCursor (returned, cursor);
+	elektraKeysetSetCursor (returned, cursor);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -604,9 +604,9 @@ void insertMetaLink (struct list * list, size_t index, const ElektraKey * meta, 
 
 	struct metaLink * link = elektraMalloc (sizeof (struct metaLink));
 	link->meta = meta;
-	size_t fullNameSize = keyGetNameSize (key);
+	size_t fullNameSize = elektraKeyGetNameSize (key);
 	link->keyNameSize = fullNameSize <= parentOffset ? 0 : fullNameSize - 1 - parentOffset;
-	link->keyName = keyName (key) + parentOffset;
+	link->keyName = elektraKeyName (key) + parentOffset;
 
 	if (index < list->size)
 	{

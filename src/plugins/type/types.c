@@ -46,24 +46,24 @@ bool elektraTypeCheckAny (const ElektraKey * key ELEKTRA_UNUSED)
 
 bool elektraTypeCheckChar (const ElektraKey * key)
 {
-	return strlen (keyString (key)) == 1;
+	return strlen (elektraKeyString (key)) == 1;
 }
 
 
 bool elektraTypeCheckWChar (const ElektraKey * key)
 {
 	wchar_t out[2];
-	return mbstowcs (out, keyString (key), 2) == 1;
+	return mbstowcs (out, elektraKeyString (key), 2) == 1;
 }
 
 bool elektraTypeCheckString (const ElektraKey * key)
 {
-	return keyIsString (key) == 1;
+	return elektraKeyIsString (key) == 1;
 }
 
 bool elektraTypeCheckWString (const ElektraKey * key)
 {
-	const char * value = keyString (key);
+	const char * value = elektraKeyString (key);
 	size_t max = strlen (value) + 1;
 	wchar_t * wvalue = elektraCalloc (sizeof (wchar_t) * max);
 	size_t result = mbstowcs (wvalue, value, max);
@@ -73,12 +73,12 @@ bool elektraTypeCheckWString (const ElektraKey * key)
 
 bool elektraTypeNormalizeBoolean (Plugin * handle, ElektraKey * key)
 {
-	const char * value = keyString (key);
+	const char * value = elektraKeyString (key);
 
 	TypeData * data = elektraPluginGetData (handle);
 
-	const ElektraKey * trueOverride = keyGetMeta (key, "check/boolean/true");
-	const ElektraKey * falseOverride = keyGetMeta (key, "check/boolean/false");
+	const ElektraKey * trueOverride = elektraKeyGetMeta (key, "check/boolean/true");
+	const ElektraKey * falseOverride = elektraKeyGetMeta (key, "check/boolean/false");
 
 	if ((trueOverride == NULL) != (falseOverride == NULL))
 	{
@@ -86,16 +86,16 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, ElektraKey * key)
 	}
 	else if (trueOverride != NULL)
 	{
-		if (strcasecmp (keyString (trueOverride), value) == 0 || strcmp ("1", value) == 0)
+		if (strcasecmp (elektraKeyString (trueOverride), value) == 0 || strcmp ("1", value) == 0)
 		{
-			keySetString (key, "1");
-			keySetMeta (key, "origvalue", keyString (trueOverride));
+			elektraKeySetString (key, "1");
+			elektraKeySetMeta (key, "origvalue", elektraKeyString (trueOverride));
 			return true;
 		}
-		else if (strcasecmp (keyString (falseOverride), value) == 0 || strcmp ("0", value) == 0)
+		else if (strcasecmp (elektraKeyString (falseOverride), value) == 0 || strcmp ("0", value) == 0)
 		{
-			keySetString (key, "0");
-			keySetMeta (key, "origvalue", keyString (falseOverride));
+			elektraKeySetString (key, "0");
+			elektraKeySetMeta (key, "origvalue", elektraKeyString (falseOverride));
 			return true;
 		}
 		return false;
@@ -110,7 +110,7 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, ElektraKey * key)
 	{
 		if (restore)
 		{
-			keySetMeta (key, "origvalue", data->booleans[data->booleanRestore].trueValue);
+			elektraKeySetMeta (key, "origvalue", data->booleans[data->booleanRestore].trueValue);
 		}
 
 		return true;
@@ -120,7 +120,7 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, ElektraKey * key)
 	{
 		if (restore)
 		{
-			keySetMeta (key, "origvalue", data->booleans[data->booleanRestore].falseValue);
+			elektraKeySetMeta (key, "origvalue", data->booleans[data->booleanRestore].falseValue);
 		}
 
 		return true;
@@ -135,20 +135,20 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, ElektraKey * key)
 	{
 		if (strcasecmp (data->booleans[i].trueValue, value) == 0)
 		{
-			keySetString (key, "1");
+			elektraKeySetString (key, "1");
 			if (data->booleanRestore != -2)
 			{
-				keySetMeta (key, "origvalue", origTrueValue);
+				elektraKeySetMeta (key, "origvalue", origTrueValue);
 			}
 			elektraFree (origValue);
 			return true;
 		}
 		else if (strcasecmp (data->booleans[i].falseValue, value) == 0)
 		{
-			keySetString (key, "0");
+			elektraKeySetString (key, "0");
 			if (data->booleanRestore != -2)
 			{
-				keySetMeta (key, "origvalue", origFalseValue);
+				elektraKeySetMeta (key, "origvalue", origFalseValue);
 			}
 			elektraFree (origValue);
 			return true;
@@ -161,16 +161,16 @@ bool elektraTypeNormalizeBoolean (Plugin * handle, ElektraKey * key)
 
 bool elektraTypeCheckBoolean (const ElektraKey * key)
 {
-	const char * value = keyString (key);
+	const char * value = elektraKeyString (key);
 	return (value[0] == '1' || value[0] == '0') && value[1] == '\0';
 }
 
 bool elektraTypeRestoreBoolean (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 {
-	const ElektraKey * orig = keyGetMeta (key, "origvalue");
+	const ElektraKey * orig = elektraKeyGetMeta (key, "origvalue");
 	if (orig != NULL)
 	{
-		keySetString (key, keyString (orig));
+		elektraKeySetString (key, elektraKeyString (orig));
 	}
 
 	return true;
@@ -251,8 +251,8 @@ bool elektraTypeCheckUnsignedLongLong (const ElektraKey * key)
 static bool enumValidValues (const ElektraKey * key, ElektraKeyset * validValues, char * delim)
 {
 
-	const ElektraKey * maxKey = keyGetMeta (key, "check/enum");
-	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
+	const ElektraKey * maxKey = elektraKeyGetMeta (key, "check/enum");
+	const char * max = maxKey == NULL ? NULL : elektraKeyString (maxKey);
 
 	if (max == NULL)
 	{
@@ -267,28 +267,28 @@ static bool enumValidValues (const ElektraKey * key, ElektraKeyset * validValues
 	elektraWriteArrayNumber (indexStart, index);
 	while (strcmp (indexStart, max) <= 0)
 	{
-		const ElektraKey * enumKey = keyGetMeta (key, elem);
-		const char * name = enumKey != NULL ? keyString (enumKey) : "";
+		const ElektraKey * enumKey = elektraKeyGetMeta (key, elem);
+		const char * name = enumKey != NULL ? elektraKeyString (enumKey) : "";
 		if (strlen (name) > 0)
 		{
 			kdb_unsigned_long_long_t val = index;
-			ElektraKey * k = keyNew ("user:/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (kdb_unsigned_long_long_t), ELEKTRA_KEY_VALUE, &val, ELEKTRA_KEY_END);
-			keyAddName (k, name);
-			ksAppendKey (validValues, k);
+			ElektraKey * k = elektraKeyNew ("user:/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (kdb_unsigned_long_long_t), ELEKTRA_KEY_VALUE, &val, ELEKTRA_KEY_END);
+			elektraKeyAddName (k, name);
+			elektraKeysetAppendKey (validValues, k);
 		}
 
 		++index;
 		elektraWriteArrayNumber (indexStart, index);
 	}
 
-	const ElektraKey * multiEnum = keyGetMeta (key, "check/enum/delimiter");
+	const ElektraKey * multiEnum = elektraKeyGetMeta (key, "check/enum/delimiter");
 	if (multiEnum != NULL)
 	{
-		const char * delimString = keyString (multiEnum);
+		const char * delimString = elektraKeyString (multiEnum);
 
 		if (strlen (delimString) != 1)
 		{
-			ksDel (validValues);
+			elektraKeysetDel (validValues);
 			return false;
 		}
 		*delim = delimString[0];
@@ -301,12 +301,12 @@ static char * calculateStringValue (ElektraKeyset * validValues, char delimiter,
 {
 	char * stringValue = elektraStrDup ("");
 
-	ksRewind (validValues);
+	elektraKeysetRewind (validValues);
 	ElektraKey * cur = NULL;
-	while ((cur = ksNext (validValues)) != NULL)
+	while ((cur = elektraKeysetNext (validValues)) != NULL)
 	{
-		const kdb_unsigned_long_long_t * val = keyValue (cur);
-		const char * name = keyName (cur) + sizeof ("user:/") - 1;
+		const kdb_unsigned_long_long_t * val = elektraKeyValue (cur);
+		const char * name = elektraKeyName (cur) + sizeof ("user:/") - 1;
 		if (delimiter == 0 && *val == value)
 		{
 			elektraFree (stringValue);
@@ -336,20 +336,20 @@ static char * calculateStringValue (ElektraKeyset * validValues, char delimiter,
 
 bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 {
-	const ElektraKey * normalize = keyGetMeta (key, "check/enum/normalize");
-	if (normalize == NULL || strcmp (keyString (normalize), "1") != 0)
+	const ElektraKey * normalize = elektraKeyGetMeta (key, "check/enum/normalize");
+	if (normalize == NULL || strcmp (elektraKeyString (normalize), "1") != 0)
 	{
 		return true;
 	}
 
-	ElektraKeyset * validValues = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * validValues = elektraKeysetNew (0, ELEKTRA_KS_END);
 	char delim = 0;
 	if (!enumValidValues (key, validValues, &delim))
 	{
 		return false;
 	}
 
-	char * values = elektraStrDup (keyString (key));
+	char * values = elektraStrDup (elektraKeyString (key));
 	char * value = values;
 	char * next;
 
@@ -359,20 +359,20 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 		char * origValue = calculateStringValue (validValues, delim, val);
 		if (origValue == NULL)
 		{
-			ksDel (validValues);
+			elektraKeysetDel (validValues);
 			elektraFree (values);
 			return false;
 		}
 
-		keySetMeta (key, "origvalue", origValue);
+		elektraKeySetMeta (key, "origvalue", origValue);
 
 		elektraFree (origValue);
-		ksDel (validValues);
+		elektraKeysetDel (validValues);
 		elektraFree (values);
 		return true;
 	}
 
-	ElektraKey * valueKey = keyNew ("user:/0", ELEKTRA_KEY_END);
+	ElektraKey * valueKey = elektraKeyNew ("user:/0", ELEKTRA_KEY_END);
 
 	kdb_unsigned_long_long_t normalized = 0;
 	if (delim != 0)
@@ -380,43 +380,43 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 		while ((next = strchr (value, delim)) != NULL)
 		{
 			*next = '\0';
-			keySetBaseName (valueKey, value);
-			ElektraKey * cur = ksLookup (validValues, valueKey, 0);
+			elektraKeySetBaseName (valueKey, value);
+			ElektraKey * cur = elektraKeysetLookup (validValues, valueKey, 0);
 			if (cur == NULL)
 			{
-				keyDel (valueKey);
-				ksDel (validValues);
+				elektraKeyDel (valueKey);
+				elektraKeysetDel (validValues);
 				elektraFree (values);
 				return false;
 			}
 
-			const kdb_unsigned_long_long_t * val = keyValue (cur);
+			const kdb_unsigned_long_long_t * val = elektraKeyValue (cur);
 			normalized |= *val;
 			value = next + 1;
 		}
 	}
 
-	keySetBaseName (valueKey, value);
-	ElektraKey * cur = ksLookup (validValues, valueKey, 0);
-	keyDel (valueKey);
+	elektraKeySetBaseName (valueKey, value);
+	ElektraKey * cur = elektraKeysetLookup (validValues, valueKey, 0);
+	elektraKeyDel (valueKey);
 	if (cur == NULL)
 	{
-		ksDel (validValues);
+		elektraKeysetDel (validValues);
 		elektraFree (values);
 		return false;
 	}
 
-	const kdb_unsigned_long_long_t * val = keyValue (cur);
+	const kdb_unsigned_long_long_t * val = elektraKeyValue (cur);
 	normalized |= *val;
 
-	ksDel (validValues);
+	elektraKeysetDel (validValues);
 	elektraFree (values);
 
-	char * origValue = elektraStrDup (keyString (key));
+	char * origValue = elektraStrDup (elektraKeyString (key));
 	char * normValue = elektraFormat (ELEKTRA_UNSIGNED_LONG_LONG_F, normalized);
 
-	keySetString (key, normValue);
-	keySetMeta (key, "origvalue", origValue);
+	elektraKeySetString (key, normValue);
+	elektraKeySetMeta (key, "origvalue", origValue);
 
 	elektraFree (origValue);
 	elektraFree (normValue);
@@ -426,44 +426,44 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 
 bool elektraTypeCheckEnum (const ElektraKey * key)
 {
-	const ElektraKey * normalize = keyGetMeta (key, "check/enum/normalize");
-	if (normalize != NULL && strcmp (keyString (normalize), "1") == 0)
+	const ElektraKey * normalize = elektraKeyGetMeta (key, "check/enum/normalize");
+	if (normalize != NULL && strcmp (elektraKeyString (normalize), "1") == 0)
 	{
 		// was already implicitly checked during normalization
 		return true;
 	}
 
-	const ElektraKey * maxKey = keyGetMeta (key, "check/enum");
-	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
+	const ElektraKey * maxKey = elektraKeyGetMeta (key, "check/enum");
+	const char * max = maxKey == NULL ? NULL : elektraKeyString (maxKey);
 
 	if (max == NULL)
 	{
 		return false;
 	}
 
-	ElektraKeyset * validValues = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * validValues = elektraKeysetNew (0, ELEKTRA_KS_END);
 	char delim = 0;
 	if (!enumValidValues (key, validValues, &delim))
 	{
 		return false;
 	}
 
-	char * values = elektraStrDup (keyString (key));
+	char * values = elektraStrDup (elektraKeyString (key));
 	char * value = values;
 	char * next;
 
-	ElektraKey * valueKey = keyNew ("user:/0", ELEKTRA_KEY_END);
+	ElektraKey * valueKey = elektraKeyNew ("user:/0", ELEKTRA_KEY_END);
 
 	if (delim != 0)
 	{
 		while ((next = strchr (value, delim)) != NULL)
 		{
 			*next = '\0';
-			keySetBaseName (valueKey, value);
-			if (ksLookup (validValues, valueKey, 0) == NULL)
+			elektraKeySetBaseName (valueKey, value);
+			if (elektraKeysetLookup (validValues, valueKey, 0) == NULL)
 			{
-				keyDel (valueKey);
-				ksDel (validValues);
+				elektraKeyDel (valueKey);
+				elektraKeysetDel (validValues);
 				elektraFree (values);
 				return false;
 			}
@@ -471,18 +471,18 @@ bool elektraTypeCheckEnum (const ElektraKey * key)
 		}
 	}
 
-	keySetBaseName (valueKey, value);
-	if (ksLookup (validValues, valueKey, 0) == NULL)
+	elektraKeySetBaseName (valueKey, value);
+	if (elektraKeysetLookup (validValues, valueKey, 0) == NULL)
 	{
-		keyDel (valueKey);
-		ksDel (validValues);
+		elektraKeyDel (valueKey);
+		elektraKeysetDel (validValues);
 		elektraFree (values);
 		return false;
 	}
 
 
-	keyDel (valueKey);
-	ksDel (validValues);
+	elektraKeyDel (valueKey);
+	elektraKeysetDel (validValues);
 	elektraFree (values);
 
 	return true;
@@ -490,10 +490,10 @@ bool elektraTypeCheckEnum (const ElektraKey * key)
 
 bool elektraTypeRestoreEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 {
-	const ElektraKey * orig = keyGetMeta (key, "origvalue");
+	const ElektraKey * orig = elektraKeyGetMeta (key, "origvalue");
 	if (orig != NULL)
 	{
-		keySetString (key, keyString (orig));
+		elektraKeySetString (key, elektraKeyString (orig));
 	}
 
 	return true;
@@ -501,8 +501,8 @@ bool elektraTypeRestoreEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 
 void elektraTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey, const ElektraKey * key)
 {
-	const ElektraKey * maxKey = keyGetMeta (key, "check/enum");
-	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
+	const ElektraKey * maxKey = elektraKeyGetMeta (key, "check/enum");
+	const char * max = maxKey == NULL ? NULL : elektraKeyString (maxKey);
 
 	if (max == NULL)
 	{
@@ -510,14 +510,14 @@ void elektraTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * error
 			errorKey,
 			"The type 'enum' failed to match for '%s' with string: '%s'\n"
 			"No values are allowed (check/enum is an empty array, or parent isn't set to last element)",
-			keyName (key), keyString (key));
+			elektraKeyName (key), elektraKeyString (key));
 		return;
 	}
 
 	char * errorMessage = elektraFormat (
 		"The type 'enum' failed to match for '%s' with string: '%s'\n"
 		"Allowed values:",
-		keyName (key), keyString (key));
+		elektraKeyName (key), elektraKeyString (key));
 
 	char elem[sizeof ("check/enum/") + ELEKTRA_MAX_ARRAY_SIZE];
 	strcpy (elem, "check/enum/");
@@ -527,8 +527,8 @@ void elektraTypeSetErrorEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * error
 	elektraWriteArrayNumber (indexStart, index);
 	while (strcmp (indexStart, max) <= 0)
 	{
-		const ElektraKey * enumKey = keyGetMeta (key, elem);
-		const char * name = enumKey != NULL ? keyString (enumKey) : "";
+		const ElektraKey * enumKey = elektraKeyGetMeta (key, elem);
+		const char * name = enumKey != NULL ? elektraKeyString (enumKey) : "";
 		if (strlen (name) > 0)
 		{
 			char * newErrorMessage = elektraFormat ("%s '%s'", errorMessage, name);

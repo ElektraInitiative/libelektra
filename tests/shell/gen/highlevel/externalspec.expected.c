@@ -86,30 +86,30 @@ int loadConfiguration (Elektra ** elektra,
 	
 	ElektraKeyset * defaults = NULL;
 
-	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "28025ee44839c1274cfbdffc51b42e8b37b485e149168de78f52c2081fc1c1fa", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ElektraKeyset * contract = elektraKeysetNew (4,
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "28025ee44839c1274cfbdffc51b42e8b37b485e149168de78f52c2081fc1c1fa", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/externalspec", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/script/gen/highlevel/externalspec", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/externalspec", defaults, contract, error);
 
 	if (defaults != NULL)
 	{
-		ksDel (defaults);
+		elektraKeysetDel (defaults);
 	}
 
 	if (contract != NULL)
 	{
-		ksDel (contract);
+		elektraKeysetDel (contract);
 	}
 
 	if (e == NULL)
@@ -126,7 +126,7 @@ int loadConfiguration (Elektra ** elektra,
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (elektraKeyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**

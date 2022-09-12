@@ -79,8 +79,8 @@ void test_global (void)
 {
 	printf ("test global\n");
 
-	ElektraKey * parentKey = keyNew ("/tests/gopts", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/gopts", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("gopts");
 
@@ -89,28 +89,28 @@ void test_global (void)
 	char ** envp = (char **) (char *[]){ "ENV_VAR=carrot", "OTHER_ENV_VAR=strawberry", NULL };
 
 	plugin->global =
-		ksNew (4, keyNew ("system:/elektra/gopts/parent", ELEKTRA_KEY_VALUE, keyName (parentKey), ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/gopts/argc", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (int), ELEKTRA_KEY_VALUE, &argc, ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/gopts/argv", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (char **), ELEKTRA_KEY_VALUE, &argv, ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/gopts/envp", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (char **), ELEKTRA_KEY_VALUE, &envp, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (4, elektraKeyNew ("system:/elektra/gopts/parent", ELEKTRA_KEY_VALUE, elektraKeyName (parentKey), ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/gopts/argc", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (int), ELEKTRA_KEY_VALUE, &argc, ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/gopts/argv", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (char **), ELEKTRA_KEY_VALUE, &argv, ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/gopts/envp", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (char **), ELEKTRA_KEY_VALUE, &envp, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * ks = ksNew (5, keyNew ("spec:/tests/gopts/apple", ELEKTRA_KEY_META, "opt", "c", ELEKTRA_KEY_END),
-			     keyNew ("spec:/tests/gopts/banana", ELEKTRA_KEY_META, "opt/long", "longopt", ELEKTRA_KEY_END),
-			     keyNew ("spec:/tests/gopts/raspberry", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
-			     keyNew ("spec:/tests/gopts/carrot", ELEKTRA_KEY_META, "env", "ENV_VAR", ELEKTRA_KEY_END),
-			     keyNew ("spec:/tests/gopts/strawberry", ELEKTRA_KEY_META, "env", "OTHER_ENV_VAR", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (5, elektraKeyNew ("spec:/tests/gopts/apple", ELEKTRA_KEY_META, "opt", "c", ELEKTRA_KEY_END),
+			     elektraKeyNew ("spec:/tests/gopts/banana", ELEKTRA_KEY_META, "opt/long", "longopt", ELEKTRA_KEY_END),
+			     elektraKeyNew ("spec:/tests/gopts/raspberry", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			     elektraKeyNew ("spec:/tests/gopts/carrot", ELEKTRA_KEY_META, "env", "ENV_VAR", ELEKTRA_KEY_END),
+			     elektraKeyNew ("spec:/tests/gopts/strawberry", ELEKTRA_KEY_META, "env", "OTHER_ENV_VAR", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	output_error (parentKey);
 
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/apple", 0)), "apple");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/banana", 0)), "banana");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/raspberry", 0)), "raspberry");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/carrot", 0)), "carrot");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/strawberry", 0)), "strawberry");
+	succeed_if_same_string (elektraKeyString (elektraKeysetLookupByName (ks, "/tests/gopts/apple", 0)), "apple");
+	succeed_if_same_string (elektraKeyString (elektraKeysetLookupByName (ks, "/tests/gopts/banana", 0)), "banana");
+	succeed_if_same_string (elektraKeyString (elektraKeysetLookupByName (ks, "/tests/gopts/raspberry", 0)), "raspberry");
+	succeed_if_same_string (elektraKeyString (elektraKeysetLookupByName (ks, "/tests/gopts/carrot", 0)), "carrot");
+	succeed_if_same_string (elektraKeyString (elektraKeysetLookupByName (ks, "/tests/gopts/strawberry", 0)), "strawberry");
 
-	ksDel (plugin->global);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (plugin->global);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 

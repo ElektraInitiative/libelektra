@@ -14,32 +14,32 @@
 
 ElektraKeyset * modules_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * simple_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * set_us (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/user", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/user/mountpoint", ELEKTRA_KEY_VALUE, "user", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (50, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/user", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/user/mountpoint", ELEKTRA_KEY_VALUE, "user", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * root_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (5, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 #if 1 == 0
@@ -165,19 +165,19 @@ void addBackendForDivide (ElektraKeyset * backends, const char * mountpoint)
 {
 	BackendData data = {
 		.backend = NULL,
-		.keys = ksNew (0, ELEKTRA_KS_END),
+		.keys = elektraKeysetNew (0, ELEKTRA_KS_END),
 		.definition = NULL,
 		.plugins = NULL,
 		.initialized = false,
 	};
-	ksAppendKey (backends, keyNew (mountpoint, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (data), ELEKTRA_KEY_VALUE, &data, ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (backends, elektraKeyNew (mountpoint, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (data), ELEKTRA_KEY_VALUE, &data, ELEKTRA_KEY_END));
 }
 
 void test_backendsDivide (void)
 {
 	printf ("Test backendsDivide");
 
-	ElektraKeyset * backends = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * backends = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	addBackendForDivide (backends, "dir:/");
 	addBackendForDivide (backends, "user:/");
@@ -191,21 +191,21 @@ void test_backendsDivide (void)
 	addBackendForDivide (backends, "default:/");
 
 	// clang-format off
-	ElektraKeyset * ks = ksNew (20,
-				keyNew ("spec:/xyz", ELEKTRA_KEY_END),
-				keyNew ("user:/abc", ELEKTRA_KEY_END),
-				keyNew ("user:/bak/abc", ELEKTRA_KEY_END),
-				keyNew ("user:/bar/abc", ELEKTRA_KEY_END),
-				keyNew ("user:/bar/bar/abc", ELEKTRA_KEY_END),
-				keyNew ("user:/bar/bar/def", ELEKTRA_KEY_END),
-				keyNew ("user:/bar/bar/xyz", ELEKTRA_KEY_END),
-				keyNew ("user:/bar/foo/abc", ELEKTRA_KEY_END),
-				keyNew ("user:/bar/foo/xyz", ELEKTRA_KEY_END),
-				keyNew ("user:/bar/xyz", ELEKTRA_KEY_END),
-				keyNew ("user:/foo/abc", ELEKTRA_KEY_END),
-				keyNew ("user:/foo/xyz", ELEKTRA_KEY_END),
-				keyNew ("user:/xyz", ELEKTRA_KEY_END),
-				keyNew ("default:/xyz", ELEKTRA_KEY_END),
+	ElektraKeyset * ks = elektraKeysetNew (20,
+				elektraKeyNew ("spec:/xyz", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/abc", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bak/abc", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bar/abc", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bar/bar/abc", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bar/bar/def", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bar/bar/xyz", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bar/foo/abc", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bar/foo/xyz", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/bar/xyz", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/foo/abc", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/foo/xyz", ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/xyz", ELEKTRA_KEY_END),
+				elektraKeyNew ("default:/xyz", ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
 	// clang-format on
 
@@ -213,44 +213,44 @@ void test_backendsDivide (void)
 
 	// TODO: more thorough tests
 
-	ElektraKeyset * ks0 = ksNew (10, ELEKTRA_KS_END);
-	ElektraKeyset * ks1 = ksNew (10, keyNew ("user:/abc", ELEKTRA_KEY_END), keyNew ("user:/bak/abc", ELEKTRA_KEY_END), keyNew ("user:/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * ks2 = ksNew (10, keyNew ("user:/bar/abc", ELEKTRA_KEY_END), keyNew ("user:/bar/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * ks3 = ksNew (10, keyNew ("user:/bar/bar/abc", ELEKTRA_KEY_END), keyNew ("user:/bar/bar/def", ELEKTRA_KEY_END),
-			      keyNew ("user:/bar/bar/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * ks4 = ksNew (10, ELEKTRA_KS_END);
-	ElektraKeyset * ks5 = ksNew (10, keyNew ("user:/bar/foo/abc", ELEKTRA_KEY_END), keyNew ("user:/bar/foo/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * ks6 = ksNew (10, ELEKTRA_KS_END);
-	ElektraKeyset * ks7 = ksNew (10, keyNew ("user:/foo/abc", ELEKTRA_KEY_END), keyNew ("user:/foo/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * ks8 = ksNew (10, ELEKTRA_KS_END);
-	ElektraKeyset * ks9 = ksNew (10, keyNew ("default:/xyz", ELEKTRA_KEY_END), keyNew ("spec:/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks0 = elektraKeysetNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks1 = elektraKeysetNew (10, elektraKeyNew ("user:/abc", ELEKTRA_KEY_END), elektraKeyNew ("user:/bak/abc", ELEKTRA_KEY_END), elektraKeyNew ("user:/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks2 = elektraKeysetNew (10, elektraKeyNew ("user:/bar/abc", ELEKTRA_KEY_END), elektraKeyNew ("user:/bar/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks3 = elektraKeysetNew (10, elektraKeyNew ("user:/bar/bar/abc", ELEKTRA_KEY_END), elektraKeyNew ("user:/bar/bar/def", ELEKTRA_KEY_END),
+			      elektraKeyNew ("user:/bar/bar/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks4 = elektraKeysetNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks5 = elektraKeysetNew (10, elektraKeyNew ("user:/bar/foo/abc", ELEKTRA_KEY_END), elektraKeyNew ("user:/bar/foo/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks6 = elektraKeysetNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks7 = elektraKeysetNew (10, elektraKeyNew ("user:/foo/abc", ELEKTRA_KEY_END), elektraKeyNew ("user:/foo/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks8 = elektraKeysetNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks9 = elektraKeysetNew (10, elektraKeyNew ("default:/xyz", ELEKTRA_KEY_END), elektraKeyNew ("spec:/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	compare_keyset (ks0, ((const BackendData *) keyValue (ksLookupByName (backends, "dir:/", 0)))->keys);
-	compare_keyset (ks1, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/", 0)))->keys);
-	compare_keyset (ks2, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar", 0)))->keys);
-	compare_keyset (ks3, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/bar", 0)))->keys);
-	compare_keyset (ks4, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/baz", 0)))->keys);
-	compare_keyset (ks5, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/foo", 0)))->keys);
-	compare_keyset (ks6, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/baz", 0)))->keys);
-	compare_keyset (ks7, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/foo", 0)))->keys);
-	compare_keyset (ks8, ((const BackendData *) keyValue (ksLookupByName (backends, "system:/", 0)))->keys);
-	compare_keyset (ks9, ((const BackendData *) keyValue (ksLookupByName (backends, "default:/", 0)))->keys);
+	compare_keyset (ks0, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "dir:/", 0)))->keys);
+	compare_keyset (ks1, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/", 0)))->keys);
+	compare_keyset (ks2, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar", 0)))->keys);
+	compare_keyset (ks3, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar/bar", 0)))->keys);
+	compare_keyset (ks4, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar/baz", 0)))->keys);
+	compare_keyset (ks5, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar/foo", 0)))->keys);
+	compare_keyset (ks6, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/baz", 0)))->keys);
+	compare_keyset (ks7, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/foo", 0)))->keys);
+	compare_keyset (ks8, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "system:/", 0)))->keys);
+	compare_keyset (ks9, ((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "default:/", 0)))->keys);
 
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "dir:/", 0)))->keyNeedsSync == false, "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/", 0)))->keyNeedsSync == true, "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar", 0)))->keyNeedsSync == true, "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/bar", 0)))->keyNeedsSync == true,
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "dir:/", 0)))->keyNeedsSync == false, "shouldn't need sync");
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/", 0)))->keyNeedsSync == true, "should need sync");
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar", 0)))->keyNeedsSync == true, "should need sync");
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar/bar", 0)))->keyNeedsSync == true,
 		    "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/baz", 0)))->keyNeedsSync == false,
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar/baz", 0)))->keyNeedsSync == false,
 		    "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/bar/foo", 0)))->keyNeedsSync == true,
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/bar/foo", 0)))->keyNeedsSync == true,
 		    "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/baz", 0)))->keyNeedsSync == false,
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/baz", 0)))->keyNeedsSync == false,
 		    "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "user:/foo", 0)))->keyNeedsSync == true, "should need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "system:/", 0)))->keyNeedsSync == false,
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "user:/foo", 0)))->keyNeedsSync == true, "should need sync");
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "system:/", 0)))->keyNeedsSync == false,
 		    "shouldn't need sync");
-	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "default:/", 0)))->keyNeedsSync == true, "should need sync");
+	succeed_if (((const BackendData *) elektraKeyValue (elektraKeysetLookupByName (backends, "default:/", 0)))->keyNeedsSync == true, "should need sync");
 }
 
 int main (int argc, char ** argv)

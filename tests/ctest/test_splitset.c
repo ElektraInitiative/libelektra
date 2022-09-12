@@ -14,42 +14,42 @@
 
 ElektraKeyset * set_us (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/user", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/user/mountpoint", ELEKTRA_KEY_VALUE, "user:/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system:/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (50, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/user", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/user/mountpoint", ELEKTRA_KEY_VALUE, "user:/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system:/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * set_three (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system:/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/userin", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/userin/mountpoint", ELEKTRA_KEY_VALUE, "user:/invalid", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/userva", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/userva/mountpoint", ELEKTRA_KEY_VALUE, "user:/valid", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (50, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system:/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/userin", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/userin/mountpoint", ELEKTRA_KEY_VALUE, "user:/invalid", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/userva", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/userva/mountpoint", ELEKTRA_KEY_VALUE, "user:/valid", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * set_realworld (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/default", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/default/mountpoint", ELEKTRA_KEY_VALUE, "system:/elektra", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/users", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/users/mountpoint", ELEKTRA_KEY_VALUE, "system:/users", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/groups", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/groups/mountpoint", ELEKTRA_KEY_VALUE, "system:/groups", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/hosts", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/hosts/mountpoint", ELEKTRA_KEY_VALUE, "system:/hosts", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/kde", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/kde/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/kde/default", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app1", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app1/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app1/default", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app2", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/mountpoints/app2/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (50, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/default", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/default/mountpoint", ELEKTRA_KEY_VALUE, "system:/elektra", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/users", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/users/mountpoint", ELEKTRA_KEY_VALUE, "system:/users", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/groups", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/groups/mountpoint", ELEKTRA_KEY_VALUE, "system:/groups", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/hosts", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/hosts/mountpoint", ELEKTRA_KEY_VALUE, "system:/hosts", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/kde", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/kde/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/kde/default", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app1", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app1/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app1/default", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app2", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/mountpoints/app2/mountpoint", ELEKTRA_KEY_VALUE, "user:/sw/apps/app2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 #if 1 == 0
@@ -57,14 +57,14 @@ ElektraKdb * kdb_open (void)
 {
 	ElektraKdb * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->split = splitNew ();
-	handle->modules = ksNew (0, ELEKTRA_KS_END);
+	handle->modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (handle->modules, 0);
 	return handle;
 }
 
 static void kdb_close (ElektraKdb * kdb)
 {
-	kdbClose (kdb, 0);
+	elektraKdbClose (kdb, 0);
 }
 
 void simulateGet (Split * split)
@@ -86,10 +86,10 @@ static void test_needsync (void)
 	ElektraKdb * handle = kdb_open ();
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not mount default backends");
 
-	ElektraKeyset * ks = ksNew (5, keyNew ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (5, elektraKeyNew ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	Split * split = splitNew ();
 
-	ElektraKey * parent = keyNew ("user:/", ELEKTRA_KEY_VALUE, "parent", ELEKTRA_KEY_END);
+	ElektraKey * parent = elektraKeyNew ("user:/", ELEKTRA_KEY_VALUE, "parent", ELEKTRA_KEY_END);
 
 	succeed_if (split->size == 0, "size should be zero");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
@@ -127,11 +127,11 @@ static void test_needsync (void)
 
 	split = splitNew ();
 
-	ksAppendKey (ks, keyNew ("user:/key1", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("user:/key2", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("user:/key3", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("user:/key4", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("user:/key5", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/key1", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/key2", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/key3", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/key4", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("user:/key5", ELEKTRA_KEY_END));
 
 	succeed_if (splitBuildup (split, handle, parent) == 1, "buildup failure");
 	succeed_if (splitDivide (split, handle, ks) == 1, "there should be a need sync");
@@ -141,8 +141,8 @@ static void test_needsync (void)
 	splitDel (split);
 
 
-	keyDel (parent);
-	ksDel (ks);
+	elektraKeyDel (parent);
+	elektraKeysetDel (ks);
 	kdb_close (handle);
 }
 
@@ -156,10 +156,10 @@ static void test_mount (void)
 	succeed_if (mountOpen (handle, set_us (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	ElektraKeyset * ks = ksNew (5, keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END),
-			     keyNew ("system:/valid/key1", ELEKTRA_KEY_END), keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split1 = ksNew (3, keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split2 = ksNew (3, keyNew ("system:/valid/key1", ELEKTRA_KEY_END), keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (5, elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key2", ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split1 = elektraKeysetNew (3, elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split2 = elektraKeysetNew (3, elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 
 	Split * split = splitNew ();
@@ -175,10 +175,10 @@ static void test_mount (void)
 	succeed_if (split->syncbits[4] == 2, "system:/elektra part need to by synced");
 	if (split->keysets)
 	{
-		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "size of keyset not correct");
 		compare_keyset (split->keysets[1], split1);
 		compare_keyset (split->keysets[0], split2);
 	}
@@ -199,14 +199,14 @@ static void test_mount (void)
 	succeed_if (split->syncbits[4] == 2, "user part does not need to by synced");
 	if (split->keysets)
 	{
-		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[1]) == 2, "size of keyset not correct");
 	}
 	succeed_if (split->size == 5, "not split according user, system");
 	splitDel (split);
 
 	split = splitNew ();
-	keySetString (ksLookupByName (ks, "user:/valid/key2", 0), "value");
+	elektraKeySetString (elektraKeysetLookupByName (ks, "user:/valid/key2", 0), "value");
 	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -218,14 +218,14 @@ static void test_mount (void)
 	succeed_if (split->syncbits[4] == 2, "user part does not need to by synced");
 	if (split->keysets)
 	{
-		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[1]) == 2, "size of keyset not correct");
 	}
 	succeed_if (split->size == 5, "not split according user, system");
 	splitDel (split);
 
 	split = splitNew ();
-	keySetString (ksLookupByName (ks, "system:/valid/key2", 0), "value");
+	elektraKeySetString (elektraKeysetLookupByName (ks, "system:/valid/key2", 0), "value");
 	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -237,16 +237,16 @@ static void test_mount (void)
 	succeed_if (split->syncbits[4] == 2, "user part does not need to by synced");
 	if (split->keysets)
 	{
-		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[1]) == 2, "size of keyset not correct");
 	}
 	succeed_if (split->size == 5, "not split according user, system");
 	splitDel (split);
 
 
-	ksDel (ks);
-	ksDel (split1);
-	ksDel (split2);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (split1);
+	elektraKeysetDel (split2);
 	kdb_close (handle);
 }
 
@@ -256,18 +256,18 @@ static void test_easyparent (void)
 
 	ElektraKdb * handle = kdb_open ();
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
-	ElektraKeyset * ks = ksNew (8, keyNew ("user:/valid", ELEKTRA_KEY_END), keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END),
-			     keyNew ("system:/valid", ELEKTRA_KEY_END), keyNew ("system:/valid/key1", ELEKTRA_KEY_END),
-			     keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split1 = ksNew (5, keyNew ("system:/valid", ELEKTRA_KEY_END), keyNew ("system:/valid/key1", ELEKTRA_KEY_END),
-				 keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split2 = ksNew (5, keyNew ("user:/valid", ELEKTRA_KEY_END), keyNew ("user:/valid/key1", ELEKTRA_KEY_END),
-				 keyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (8, elektraKeyNew ("user:/valid", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key2", ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/valid", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END),
+			     elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split1 = elektraKeysetNew (5, elektraKeyNew ("system:/valid", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split2 = elektraKeysetNew (5, elektraKeyNew ("user:/valid", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKey * parentKey;
 	Split * split;
 
 
-	parentKey = keyNew ("user:/", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_END);
 	split = splitNew ();
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
@@ -276,16 +276,16 @@ static void test_easyparent (void)
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "user part need not to by synced");
-	succeed_if_same_string (keyName (split->parents[0]), "user:/");
+	succeed_if_same_string (elektraKeyName (split->parents[0]), "user:/");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split2);
 	}
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
 	split = splitNew ();
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
@@ -294,18 +294,18 @@ static void test_easyparent (void)
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "system part need to by synced");
-	succeed_if_same_string (keyName (split->parents[0]), "system:/");
+	succeed_if_same_string (elektraKeyName (split->parents[0]), "system:/");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split1);
 	}
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	ksDel (ks);
-	ksDel (split1);
-	ksDel (split2);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (split1);
+	elektraKeysetDel (split2);
 	kdb_close (handle);
 }
 
@@ -318,18 +318,18 @@ static void test_optimize (void)
 	succeed_if (mountOpen (handle, set_us (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	ElektraKeyset * ks = ksNew (5, keyNew ("system:/valid/key1", ELEKTRA_KEY_END), keyNew ("system:/valid/key2", ELEKTRA_KEY_END),
-			     keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split1 = ksNew (3, keyNew ("system:/valid/key1", ELEKTRA_KEY_END), keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split2 = ksNew (3, keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (5, elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split1 = elektraKeysetNew (3, elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split2 = elektraKeysetNew (3, elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	Split * split = splitNew ();
 	ElektraKey * key;
 
 
-	ksRewind (ks);
-	while ((key = ksNext (ks)) != 0)
+	elektraKeysetRewind (ks);
+	while ((key = elektraKeysetNext (ks)) != 0)
 	{
-		if (keyIsUser (key) == 1) keyClearSync (key);
+		if (elektraKeyIsUser (key) == 1) elektraKeyClearSync (key);
 	}
 
 	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
@@ -347,9 +347,9 @@ static void test_optimize (void)
 	compare_keyset (split->keysets[1], split2);
 	if (split->keysets)
 	{
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[4]) == 0, "size of keyset not correct");
 	}
 	splitDel (split);
 
@@ -372,15 +372,15 @@ static void test_optimize (void)
 	{
 		compare_keyset (split->keysets[0], split1);
 		compare_keyset (split->keysets[1], split2);
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[4]) == 0, "size of keyset not correct");
 	}
 	splitDel (split);
 
 
-	ksRewind (ks);
-	while ((key = ksNext (ks)) != 0)
+	elektraKeysetRewind (ks);
+	while ((key = elektraKeysetNext (ks)) != 0)
 	{
 		key->flags = ELEKTRA_KEY_FLAG_SYNC;
 	}
@@ -402,16 +402,16 @@ static void test_optimize (void)
 	{
 		compare_keyset (split->keysets[0], split1);
 		compare_keyset (split->keysets[1], split2);
-		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[4]) == 0, "size of keyset not correct");
 	}
 	splitDel (split);
 
 
-	ksDel (ks);
-	ksDel (split1);
-	ksDel (split2);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (split1);
+	elektraKeysetDel (split2);
 
 	kdb_close (handle);
 }
@@ -426,16 +426,16 @@ static void test_three (void)
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	ElektraKeyset * ks =
-		ksNew (18, keyNew ("system:/valid", ELEKTRA_KEY_END), keyNew ("system:/valid/key1", ELEKTRA_KEY_END),
-		       keyNew ("system:/valid/key2", ELEKTRA_KEY_END), keyNew ("system:/valid/key3", ELEKTRA_KEY_END), keyNew ("user:/invalid", ELEKTRA_KEY_END),
-		       keyNew ("user:/invalid/key1", ELEKTRA_KEY_END), keyNew ("user:/invalid/key2", ELEKTRA_KEY_END), keyNew ("user:/valid", ELEKTRA_KEY_END),
-		       keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/outside", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split0 = ksNew (9, keyNew ("system:/valid", ELEKTRA_KEY_END), keyNew ("system:/valid/key1", ELEKTRA_KEY_END),
-				 keyNew ("system:/valid/key2", ELEKTRA_KEY_END), keyNew ("system:/valid/key3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split1 = ksNew (9, keyNew ("user:/invalid", ELEKTRA_KEY_END), keyNew ("user:/invalid/key1", ELEKTRA_KEY_END),
-				 keyNew ("user:/invalid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split2 = ksNew (9, keyNew ("user:/valid", ELEKTRA_KEY_END), keyNew ("user:/valid/key1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split5 = ksNew (9, keyNew ("user:/outside", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (18, elektraKeyNew ("system:/valid", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key3", ELEKTRA_KEY_END), elektraKeyNew ("user:/invalid", ELEKTRA_KEY_END),
+		       elektraKeyNew ("user:/invalid/key1", ELEKTRA_KEY_END), elektraKeyNew ("user:/invalid/key2", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid", ELEKTRA_KEY_END),
+		       elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END), elektraKeyNew ("user:/outside", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split0 = elektraKeysetNew (9, elektraKeyNew ("system:/valid", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/valid/key2", ELEKTRA_KEY_END), elektraKeyNew ("system:/valid/key3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split1 = elektraKeysetNew (9, elektraKeyNew ("user:/invalid", ELEKTRA_KEY_END), elektraKeyNew ("user:/invalid/key1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/invalid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split2 = elektraKeysetNew (9, elektraKeyNew ("user:/valid", ELEKTRA_KEY_END), elektraKeyNew ("user:/valid/key1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split5 = elektraKeysetNew (9, elektraKeyNew ("user:/outside", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 
 	Split * split = splitNew ();
@@ -454,13 +454,13 @@ static void test_three (void)
 	succeed_if (split->syncbits[6] == 2, "system:/elektra default part need to by synced");
 	if (split->keysets)
 	{
-		succeed_if (ksGetSize (split->keysets[0]) == 4, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[1]) == 3, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[2]) == 2, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[5]) == 1, "size of keyset not correct");
-		succeed_if (ksGetSize (split->keysets[6]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[0]) == 4, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[1]) == 3, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[2]) == 2, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[5]) == 1, "size of keyset not correct");
+		succeed_if (elektraKeysetGetSize (split->keysets[6]) == 0, "size of keyset not correct");
 		compare_keyset (split->keysets[0], split0);
 		compare_keyset (split->keysets[1], split1);
 		compare_keyset (split->keysets[2], split2);
@@ -478,10 +478,10 @@ static void test_three (void)
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
 	succeed_if (split->syncbits[2] == 1, "user part need to by synced");
 	succeed_if (split->syncbits[3] == 3, "user default part need to by synced");
-	succeed_if (ksGetSize (split->keysets[0]) == 4, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 3, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 2, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 1, "size of keyset not correct");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 4, "size of keyset not correct");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 3, "size of keyset not correct");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 2, "size of keyset not correct");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 1, "size of keyset not correct");
 	compare_keyset (split->keysets[0], split0);
 	compare_keyset (split->keysets[1], split1);
 	compare_keyset (split->keysets[2], split2);
@@ -490,11 +490,11 @@ static void test_three (void)
 	splitDel (split);
 
 
-	ksDel (ks);
-	ksDel (split0);
-	ksDel (split1);
-	ksDel (split2);
-	ksDel (split5);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (split0);
+	elektraKeysetDel (split1);
+	elektraKeysetDel (split2);
+	elektraKeysetDel (split5);
 	kdb_close (handle);
 }
 
@@ -893,32 +893,32 @@ static void test_realworld (void)
 	succeed_if (mountOpen (handle, set_realworld (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	ElektraKeyset * split0 = ksNew (9, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/new", ELEKTRA_KEY_END),
-				 keyNew ("system:/elektra/mountpoints/new/mountpoint", ELEKTRA_KEY_VALUE, "something", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split2 = ksNew (9, keyNew ("system:/hosts", ELEKTRA_KEY_END), keyNew ("system:/hosts/markusbyte", ELEKTRA_KEY_VALUE, "127.0.0.1", ELEKTRA_KEY_END),
-				 keyNew ("system:/hosts/mobilebyte", ELEKTRA_KEY_END), keyNew ("system:/hosts/n900", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split3 = ksNew (9, keyNew ("system:/users", ELEKTRA_KEY_END), keyNew ("system:/users/markus", ELEKTRA_KEY_END),
-				 keyNew ("system:/users/harald", ELEKTRA_KEY_END), keyNew ("system:/users/n", ELEKTRA_KEY_END),
-				 keyNew ("system:/users/albert", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split4 = ksNew (9, keyNew ("user:/sw/apps/app1/default", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/maximize", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/download", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/keys/a", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/keys/b", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END),
-				 keyNew ("user:/sw/apps/app1/default/keys/c", ELEKTRA_KEY_VALUE, "c", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * split7 = ksNew (3, keyNew ("user:/outside", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * splitX = ksNew (3, keyNew ("spec:/testS", ELEKTRA_KEY_VALUE, "testS", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * splitY = ksNew (3, keyNew ("dir:/testD", ELEKTRA_KEY_VALUE, "testD", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * tmp = ksNew (30, ELEKTRA_KS_END);
-	ksAppend (tmp, split0);
-	ksAppend (tmp, split2);
-	ksAppend (tmp, split3);
-	ksAppend (tmp, split4);
-	ksAppend (tmp, split7);
-	ksAppend (tmp, splitX);
-	ksAppend (tmp, splitY);
-	ElektraKeyset * ks = ksDeepDup (tmp);
-	ksDel (tmp);
+	ElektraKeyset * split0 = elektraKeysetNew (9, elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), elektraKeyNew ("system:/elektra/mountpoints/new", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/elektra/mountpoints/new/mountpoint", ELEKTRA_KEY_VALUE, "something", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split2 = elektraKeysetNew (9, elektraKeyNew ("system:/hosts", ELEKTRA_KEY_END), elektraKeyNew ("system:/hosts/markusbyte", ELEKTRA_KEY_VALUE, "127.0.0.1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/hosts/mobilebyte", ELEKTRA_KEY_END), elektraKeyNew ("system:/hosts/n900", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split3 = elektraKeysetNew (9, elektraKeyNew ("system:/users", ELEKTRA_KEY_END), elektraKeyNew ("system:/users/markus", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/users/harald", ELEKTRA_KEY_END), elektraKeyNew ("system:/users/n", ELEKTRA_KEY_END),
+				 elektraKeyNew ("system:/users/albert", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split4 = elektraKeysetNew (9, elektraKeyNew ("user:/sw/apps/app1/default", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/maximize", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/download", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/keys/a", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/keys/b", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END),
+				 elektraKeyNew ("user:/sw/apps/app1/default/keys/c", ELEKTRA_KEY_VALUE, "c", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split7 = elektraKeysetNew (3, elektraKeyNew ("user:/outside", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * splitX = elektraKeysetNew (3, elektraKeyNew ("spec:/testS", ELEKTRA_KEY_VALUE, "testS", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * splitY = elektraKeysetNew (3, elektraKeyNew ("dir:/testD", ELEKTRA_KEY_VALUE, "testD", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * tmp = elektraKeysetNew (30, ELEKTRA_KS_END);
+	elektraKeysetAppend (tmp, split0);
+	elektraKeysetAppend (tmp, split2);
+	elektraKeysetAppend (tmp, split3);
+	elektraKeysetAppend (tmp, split4);
+	elektraKeysetAppend (tmp, split7);
+	elektraKeysetAppend (tmp, splitX);
+	elektraKeysetAppend (tmp, splitY);
+	ElektraKeyset * ks = elektraKeysetDeepDup (tmp);
+	elektraKeysetDel (tmp);
 
 
 	Split * split = splitNew ();
@@ -926,56 +926,56 @@ static void test_realworld (void)
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (split->size == 12, "size of split not correct");
 	succeed_if (split->syncbits[0] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 0, "wrong size");
 	succeed_if (split->syncbits[1] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	succeed_if (split->syncbits[2] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "wrong size");
 	succeed_if (split->syncbits[3] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "wrong size");
 	succeed_if (split->syncbits[4] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[4]) == 0, "wrong size");
 	succeed_if (split->syncbits[5] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[5]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[5]) == 0, "wrong size");
 	succeed_if (split->syncbits[6] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[6]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[6]) == 0, "wrong size");
 	succeed_if (split->syncbits[7] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[7]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[7]) == 0, "wrong size");
 	succeed_if (split->syncbits[8] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[8]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[8]) == 0, "wrong size");
 	succeed_if (split->syncbits[9] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[9]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[9]) == 0, "wrong size");
 	succeed_if (split->syncbits[10] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[10]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[10]) == 0, "wrong size");
 	succeed_if (split->syncbits[11] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[11]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[11]) == 0, "wrong size");
 
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
 	succeed_if (split->size == 12, "size of split not correct");
 	succeed_if (split->syncbits[0] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[0]) == 6, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 6, "wrong size");
 	succeed_if (split->syncbits[1] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	succeed_if (split->syncbits[2] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "wrong size");
 	succeed_if (split->syncbits[3] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "wrong size");
 	succeed_if (split->syncbits[4] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 4, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[4]) == 4, "wrong size");
 	succeed_if (split->syncbits[5] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[5]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[5]) == 0, "wrong size");
 	succeed_if (split->syncbits[6] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[6]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[6]) == 1, "wrong size");
 	succeed_if (split->syncbits[7] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[7]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[8]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[8]) == 1, "wrong size");
 	succeed_if (split->syncbits[9] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[9]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[9]) == 0, "wrong size");
 	succeed_if (split->syncbits[10] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[10]) == 5, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[10]) == 5, "wrong size");
 	succeed_if (split->syncbits[11] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[11]) == 3, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[11]) == 3, "wrong size");
 
 	simulateGet (split);
 	split->usersizes[5] = 5;
@@ -983,29 +983,29 @@ static void test_realworld (void)
 	succeed_if (splitSync (split) == 1, "should need sync");
 	succeed_if (split->size == 12, "size of split not correct");
 	succeed_if (split->syncbits[0] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[0]) == 6, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 6, "wrong size");
 	succeed_if (split->syncbits[1] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	succeed_if (split->syncbits[2] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "wrong size");
 	succeed_if (split->syncbits[3] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "wrong size");
 	succeed_if (split->syncbits[4] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 4, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[4]) == 4, "wrong size");
 	succeed_if (split->syncbits[5] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[5]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[5]) == 0, "wrong size");
 	succeed_if (split->syncbits[6] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[6]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[6]) == 1, "wrong size");
 	succeed_if (split->syncbits[7] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[7]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[8]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[8]) == 1, "wrong size");
 	succeed_if (split->syncbits[9] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[9]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[9]) == 0, "wrong size");
 	succeed_if (split->syncbits[10] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[10]) == 5, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[10]) == 5, "wrong size");
 	succeed_if (split->syncbits[11] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[11]) == 3, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[11]) == 3, "wrong size");
 
 
 	split->usersizes[5] = 0;
@@ -1018,83 +1018,83 @@ static void test_realworld (void)
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (split->size == 12, "size of split not correct");
 	succeed_if (split->syncbits[0] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 0, "wrong size");
 	succeed_if (split->syncbits[1] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	succeed_if (split->syncbits[2] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "wrong size");
 	succeed_if (split->syncbits[3] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "wrong size");
 	succeed_if (split->syncbits[4] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[4]) == 0, "wrong size");
 	succeed_if (split->syncbits[5] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[5]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[5]) == 0, "wrong size");
 	succeed_if (split->syncbits[6] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[6]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[6]) == 0, "wrong size");
 	succeed_if (split->syncbits[7] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[7]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[7]) == 0, "wrong size");
 	succeed_if (split->syncbits[8] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[8]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[8]) == 0, "wrong size");
 	succeed_if (split->syncbits[9] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[9]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[9]) == 0, "wrong size");
 	succeed_if (split->syncbits[10] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[10]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[10]) == 0, "wrong size");
 	succeed_if (split->syncbits[11] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[11]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[11]) == 0, "wrong size");
 
 	succeed_if (splitDivide (split, handle, ks) == 0, "does not need sync anymore");
 	succeed_if (split->size == 12, "size of split not correct");
 	succeed_if (split->syncbits[0] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[0]) == 6, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 6, "wrong size");
 	succeed_if (split->syncbits[1] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	succeed_if (split->syncbits[2] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "wrong size");
 	succeed_if (split->syncbits[3] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "wrong size");
 	succeed_if (split->syncbits[4] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 4, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[4]) == 4, "wrong size");
 	succeed_if (split->syncbits[5] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[5]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[5]) == 0, "wrong size");
 	succeed_if (split->syncbits[6] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[6]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[6]) == 1, "wrong size");
 	succeed_if (split->syncbits[7] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[7]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[8]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[8]) == 1, "wrong size");
 	succeed_if (split->syncbits[9] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[9]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[9]) == 0, "wrong size");
 	succeed_if (split->syncbits[10] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[10]) == 5, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[10]) == 5, "wrong size");
 	succeed_if (split->syncbits[11] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[11]) == 3, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[11]) == 3, "wrong size");
 
 	succeed_if (splitSync (split) == 1, "should need sync, because of removes");
 	succeed_if (split->size == 12, "size of split not correct");
 	succeed_if (split->syncbits[0] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[0]) == 6, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 6, "wrong size");
 	succeed_if (split->syncbits[1] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	succeed_if (split->syncbits[2] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "wrong size");
 	succeed_if (split->syncbits[3] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "wrong size");
 	succeed_if (split->syncbits[4] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 4, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[4]) == 4, "wrong size");
 	succeed_if (split->syncbits[5] == 0, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[5]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[5]) == 0, "wrong size");
 	succeed_if (split->syncbits[6] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[6]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[6]) == 1, "wrong size");
 	succeed_if (split->syncbits[7] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[7]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[8]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[8]) == 1, "wrong size");
 	succeed_if (split->syncbits[9] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[9]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[9]) == 0, "wrong size");
 	succeed_if (split->syncbits[10] == 1, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[10]) == 5, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[10]) == 5, "wrong size");
 	succeed_if (split->syncbits[11] == 3, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[11]) == 3, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[11]) == 3, "wrong size");
 
 	splitDel (split);
 
@@ -1129,21 +1129,21 @@ static void test_realworld (void)
 
 	splitPrepare (split);
 	succeed_if (split->size == 1, "should be 1, only system:/hosts to sync");
-	succeed_if_same_string (keyName (split->parents[0]), "system:/hosts");
-	succeed_if_same_string (keyValue (split->parents[0]), "hosts");
+	succeed_if_same_string (elektraKeyName (split->parents[0]), "system:/hosts");
+	succeed_if_same_string (elektraKeyValue (split->parents[0]), "hosts");
 
 	splitDel (split);
 
 
-	ksDel (ks);
-	ksDel (split0);
-	ksDel (split2);
-	ksDel (split3);
-	ksDel (split4);
-	ksDel (split7);
-	ksDel (splitX);
-	ksDel (splitY);
-	keyDel (parent);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (split0);
+	elektraKeysetDel (split2);
+	elektraKeysetDel (split3);
+	elektraKeysetDel (split4);
+	elektraKeysetDel (split7);
+	elektraKeysetDel (splitX);
+	elektraKeysetDel (splitY);
+	elektraKeyDel (parent);
 	kdb_close (handle);
 }
 
@@ -1155,7 +1155,7 @@ static void test_emptysplit (void)
 	ElektraKdb * handle = kdb_open ();
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Split * split = splitNew ();
 	ElektraKey * parentKey;
 
@@ -1165,29 +1165,29 @@ static void test_emptysplit (void)
 	succeed_if (splitBuildup (split, handle, 0) == 1, "default backend should be added");
 	succeed_if (split->size == 4, "size of split not correct");
 	succeed_if (split->syncbits[0] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 0, "wrong size");
 	succeed_if (split->syncbits[1] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[1]) == 0, "wrong size");
 	succeed_if (split->syncbits[2] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[2]) == 0, "wrong size");
 	succeed_if (split->syncbits[3] == 2, "size of split not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[3]) == 0, "wrong size");
 
-	parentKey = keyNew ("spec:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("spec:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 	compare_key (split->parents[0], parentKey);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	parentKey = keyNew ("dir:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("dir:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 	compare_key (split->parents[1], parentKey);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	parentKey = keyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 	compare_key (split->parents[2], parentKey);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	parentKey = keyNew ("system:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 	compare_key (split->parents[3], parentKey);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->handles[1] == handle->defaultBackend, "not correct backend");
@@ -1205,7 +1205,7 @@ static void test_emptysplit (void)
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
 
 	splitDel (split);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	kdb_close (handle);
 }
 
@@ -1215,15 +1215,15 @@ static void test_nothingsync (void)
 	ElektraKdb * handle = kdb_open ();
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	Split * split = splitNew ();
-	ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 
 	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 0, "wrong size");
 	compare_key (split->parents[0], parentKey);
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
@@ -1235,9 +1235,9 @@ static void test_nothingsync (void)
 	succeed_if (split->size == 0, "there should be nothing to sync");
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	kdb_close (handle);
 }
 
@@ -1248,15 +1248,15 @@ static void test_state (void)
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	ElektraKey * k;
-	ElektraKeyset * ks = ksNew (2, k = keyNew ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (2, k = elektraKeyNew ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	Split * split = splitNew ();
-	ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_VALUE, "default", ELEKTRA_KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 
 	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong init size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 0, "wrong init size");
 	compare_key (split->parents[0], parentKey);
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
@@ -1265,11 +1265,11 @@ static void test_state (void)
 	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
 
-	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 1, "wrong size");
 	succeed_if (splitSync (split) == -2, "state error: should fail");
 
 	split->usersizes[0] = 1;
-	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+	succeed_if (elektraKeysetGetSize (split->keysets[0]) == 1, "wrong size");
 	// output_split (split);
 	succeed_if (splitSync (split) == 0, "state nothing to do: same size");
 
@@ -1279,9 +1279,9 @@ static void test_state (void)
 	succeed_if (split->size == 1, "there should be nothing to sync");
 
 	splitDel (split);
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	kdb_close (handle);
 }
 #endif

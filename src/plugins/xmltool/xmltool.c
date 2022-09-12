@@ -19,25 +19,25 @@
 
 int elektraXmltoolGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/xmltool"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/xmltool"))
 	{
 		ElektraKeyset * moduleConfig =
-			ksNew (30, keyNew ("system:/elektra/modules/xmltool", ELEKTRA_KEY_VALUE, "xmltool plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/get", ELEKTRA_KEY_FUNC, elektraXmltoolGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/set", ELEKTRA_KEY_FUNC, elektraXmltoolSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/ksFromXML", ELEKTRA_KEY_FUNC, ksFromXMLfile, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/ksToStream", ELEKTRA_KEY_FUNC, ksToStream, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/xmltool", ELEKTRA_KEY_VALUE, "xmltool plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/xmltool/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/xmltool/exports/get", ELEKTRA_KEY_FUNC, elektraXmltoolGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/xmltool/exports/set", ELEKTRA_KEY_FUNC, elektraXmltoolSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/xmltool/exports/ksFromXML", ELEKTRA_KEY_FUNC, ksFromXMLfile, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/xmltool/exports/ksToStream", ELEKTRA_KEY_FUNC, ksToStream, ELEKTRA_KEY_END),
 #include "readme_xmltool.c"
-			       keyNew ("system:/elektra/modules/xmltool/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, moduleConfig);
-		ksDel (moduleConfig);
+			       elektraKeyNew ("system:/elektra/modules/xmltool/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1;
 	}
 
 	/* get all keys */
 	int errnosave = errno;
-	if (ksFromXMLfile (returned, keyString (parentKey)) == -1)
+	if (ksFromXMLfile (returned, elektraKeyString (parentKey)) == -1)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -51,7 +51,7 @@ int elektraXmltoolSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 	/* set all keys */
 
 	int errnosave = errno;
-	FILE * fout = fopen (keyString (parentKey), "w");
+	FILE * fout = fopen (elektraKeyString (parentKey), "w");
 
 	if (fout == 0)
 	{

@@ -11,30 +11,30 @@
 
 int main (void)
 {
-	ElektraKeyset * myConfig = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * myConfig = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	// for error handling see kdbget_error.c
 
 	// clang-format off
 //! [basic usage]
-ElektraKey * key = keyNew ("/sw/tests/myapp/#0/current/",  ELEKTRA_KEY_END);
-ElektraKdb * handle = kdbOpen (NULL, key);
-kdbGet (handle, myConfig, key);
-ElektraKey * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
+ElektraKey * key = elektraKeyNew ("/sw/tests/myapp/#0/current/",  ELEKTRA_KEY_END);
+ElektraKdb * handle = elektraKdbOpen (NULL, key);
+elektraKdbGet (handle, myConfig, key);
+ElektraKey * result = elektraKeysetLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
 //! [basic usage]
 	// clang-format on
 
-	keyDel (key);
+	elektraKeyDel (key);
 
-	const char * key_name = keyName (result);
-	const char * key_value = keyString (result);
-	const char * key_comment = keyString (keyGetMeta (result, "comment"));
+	const char * key_name = elektraKeyName (result);
+	const char * key_value = elektraKeyString (result);
+	const char * key_comment = elektraKeyString (elektraKeyGetMeta (result, "comment"));
 	printf ("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 
-	ksDel (myConfig); // delete the in-memory configuration
+	elektraKeysetDel (myConfig); // delete the in-memory configuration
 
 
 	// maybe you want kdbSet() myConfig here
 
-	kdbClose (handle, 0); // no more affairs with the key database.
+	elektraKdbClose (handle, 0); // no more affairs with the key database.
 }

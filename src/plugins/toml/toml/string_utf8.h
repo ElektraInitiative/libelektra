@@ -1,13 +1,13 @@
 // clang-format off
-ksNew (16,
-	keyNew (PREFIX "/emojis",
+elektraKeysetNew (16,
+	elektraKeyNew (PREFIX "/emojis",
 		ELEKTRA_KEY_VALUE, "😀😅😇🥰🤪🤐🤥🤢🙆🙋🚶‍♀️🏃🍟⚓🔆📶◾",
 		ELEKTRA_KEY_META, "tomltype", "string_basic",
 		ELEKTRA_KEY_META, "type", "string",
 		ELEKTRA_KEY_META, "order", "0", 
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/utf8_basic_multiline",
+	elektraKeyNew (PREFIX "/utf8_basic_multiline",
 		ELEKTRA_KEY_VALUE,
 			"Runes: ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ\n"
 			"ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗᛁᚳᛚᚢᚾ᛫ᚻᛦᛏ᛫ᛞᚫᛚᚪᚾ\n"
@@ -20,7 +20,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "comment/#1/space", "",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/utf8_literal_multiline",
+	elektraKeyNew (PREFIX "/utf8_literal_multiline",
 		ELEKTRA_KEY_VALUE,
 			"Middle English: An preost wes on leoden, Laȝamon was ihoten\n"
 			"He wes Leovenaðes sone -- liðe him be Drihten.\n"
@@ -32,7 +32,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "order", "2",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/utf8_literal",
+	elektraKeyNew (PREFIX "/utf8_literal",
 		ELEKTRA_KEY_VALUE,
 			"Middle High German: Sîne klâwen durh die wolken sint geslagen, "
 			"er stîget ûf mit grôzer kraft, ich sih in grâwen tägelîch als er wil tagen, "
@@ -43,7 +43,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "order", "3",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/utf8_basic",
+	elektraKeyNew (PREFIX "/utf8_basic",
 		ELEKTRA_KEY_VALUE,
 			"Greek Monotonic: Τη γλώσσα μου έδωσαν ελληνική το σπίτι φτωχικό στις α"
 			"μμουδιές του Ομήρου.Μονάχη έγνοια η γλώσσα μου στις αμμουδιές του Ομήρ"
@@ -53,7 +53,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "order", "4",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/in_keyname (russian)/На берегу пустынных волн/Стоял он, дум великих полн",
+	elektraKeyNew (PREFIX "/in_keyname (russian)/На берегу пустынных волн/Стоял он, дум великих полн",
 		ELEKTRA_KEY_VALUE,
 			"И вдаль глядел. Пред ним широко\n"
 			"Река неслася; бедный чёлн\n"
@@ -85,7 +85,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "comment/#1/space", "",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/tamil",
+	elektraKeyNew (PREFIX "/tamil",
 		ELEKTRA_KEY_VALUE,
 			"யாமறிந்த மொழிகளிலே தமிழ்மொழி போல் இனிதாவது எங்கும் காணோம்,\n"
 			"பாமரராய் விலங்குகளாய், உலகனைத்தும் இகழ்ச்சிசொலப் பான்மை கெட்டு,\n"
@@ -96,7 +96,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "order", "6",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/kannada",
+	elektraKeyNew (PREFIX "/kannada",
 		ELEKTRA_KEY_VALUE,
 			"ಬಾ ಇಲ್ಲಿ ಸಂಭವಿಸು ಇಂದೆನ್ನ ಹೃದಯದಲಿ\n"
 			"ನಿತ್ಯವೂ ಅವತರಿಪ ಸತ್ಯಾವತಾರ\n\n"
@@ -109,12 +109,12 @@ ksNew (16,
 		ELEKTRA_KEY_META, "order", "7",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/in_table/georgian/ვეპხის",
+	elektraKeyNew (PREFIX "/in_table/georgian/ვეპხის",
 		ELEKTRA_KEY_META, "order", "8",
 		ELEKTRA_KEY_META, "tomltype", "simpletable",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/in_table/georgian/ვეპხის/more_georgian",
+	elektraKeyNew (PREFIX "/in_table/georgian/ვეპხის/more_georgian",
 		ELEKTRA_KEY_VALUE,
 			"ტყაოსანი შოთა რუსთაველი ღმერთსი შემვედრე, ნუთუ კვლა დამხსნა"
 			"ს სოფლისა შრომასა, ცეცხლს, წყალსა და მიწასა, ჰაერთა თანა მრ"
@@ -125,7 +125,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "order", "9",
 	ELEKTRA_KEY_END),
 
-	keyNew (PREFIX "/in_table_array/sanskrit/ ﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥ ",
+	elektraKeyNew (PREFIX "/in_table_array/sanskrit/ ﻿काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥ ",
 		ELEKTRA_KEY_META, "order", "10",
 		ELEKTRA_KEY_META, "tomltype" , "tablearray",
 		ELEKTRA_KEY_META, "array", "#0",

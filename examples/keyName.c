@@ -15,15 +15,15 @@ int main (void)
 {
 	// clang-format off
 //! [add name]
-ElektraKey * k = keyNew ("user:/x/r", ELEKTRA_KEY_END);
-keyAddName (k, "../y/a//././z");
-assert (!strcmp (keyName (k), "user:/x/y/a/z"));
-keyDel (k);
+ElektraKey * k = elektraKeyNew ("user:/x/r", ELEKTRA_KEY_END);
+elektraKeyAddName (k, "../y/a//././z");
+assert (!strcmp (elektraKeyName (k), "user:/x/y/a/z"));
+elektraKeyDel (k);
 //! [add name]
 //! [namespace]
-ElektraKey * n = keyNew ("user:/away", ELEKTRA_KEY_END);
-keyAddName (n, "../../../new/name");
-assert (!strcmp (keyName (n), "user:/new/name"));
-keyDel (n);
+ElektraKey * n = elektraKeyNew ("user:/away", ELEKTRA_KEY_END);
+elektraKeyAddName (n, "../../../new/name");
+assert (!strcmp (elektraKeyName (n), "user:/new/name"));
+elektraKeyDel (n);
 //! [namespace]
 }

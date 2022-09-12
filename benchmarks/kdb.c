@@ -18,7 +18,7 @@
 
 static void benchmarkDel (void)
 {
-	ksDel (large);
+	elektraKeysetDel (large);
 }
 
 int main (void)
@@ -28,39 +28,39 @@ int main (void)
 
 	fprintf (stdout, "%s;%s;%s\n", "plugin", "operation", "microseconds");
 	{
-		ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
-		ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_END);
+		ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_END);
 
 		timeInit ();
-		ElektraKdb * handle = kdbOpen (NULL, parentKey);
+		ElektraKdb * handle = elektraKdbOpen (NULL, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbOpen", timeGetDiffMicroseconds ());
 
-		kdbGet (handle, returned, parentKey);
+		elektraKdbGet (handle, returned, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbGet", timeGetDiffMicroseconds ());
 
 		// ksAppend (returned, large);
-		kdbSet (handle, large, parentKey);
+		elektraKdbSet (handle, large, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbSet", timeGetDiffMicroseconds ());
-		kdbClose (handle, parentKey);
-		keyDel (parentKey);
-		ksDel (returned);
+		elektraKdbClose (handle, parentKey);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (returned);
 	}
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
 		timeInit ();
-		ElektraKey * parentKey = keyNew ("user:/benchmark", ELEKTRA_KEY_END);
-		ElektraKdb * handle = kdbOpen (NULL, parentKey);
+		ElektraKey * parentKey = elektraKeyNew ("user:/benchmark", ELEKTRA_KEY_END);
+		ElektraKdb * handle = elektraKdbOpen (NULL, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbOpen", timeGetDiffMicroseconds ());
 
-		ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 		timeInit ();
-		kdbGet (handle, returned, parentKey);
+		elektraKdbGet (handle, returned, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbGet", timeGetDiffMicroseconds ());
 
-		kdbClose (handle, parentKey);
-		ksDel (returned);
-		keyDel (parentKey);
+		elektraKdbClose (handle, parentKey);
+		elektraKeysetDel (returned);
+		elektraKeyDel (parentKey);
 	}
 
 	benchmarkDel ();

@@ -98,21 +98,21 @@ ElektraError * elektraErrorFromKey (ElektraKey * key)
 	}
 
 	ElektraError * error;
-	if (keyGetMeta (key, "error") == NULL)
+	if (elektraKeyGetMeta (key, "error") == NULL)
 	{
 		error = elektraErrorPureWarning ();
 	}
 	else
 	{
-		const ElektraKey * reasonMeta = keyGetMeta (key, "error/reason");
+		const ElektraKey * reasonMeta = elektraKeyGetMeta (key, "error/reason");
 
-		const char * codeFromKey = elektraStrDup (keyString (keyGetMeta (key, "error/number")));
-		const char * description = elektraStrDup (keyString (keyGetMeta (key, "error/description")));
-		const char * module = elektraStrDup (keyString (keyGetMeta (key, "error/module")));
-		const char * file = elektraStrDup (keyString (keyGetMeta (key, "error/file")));
+		const char * codeFromKey = elektraStrDup (elektraKeyString (elektraKeyGetMeta (key, "error/number")));
+		const char * description = elektraStrDup (elektraKeyString (elektraKeyGetMeta (key, "error/description")));
+		const char * module = elektraStrDup (elektraKeyString (elektraKeyGetMeta (key, "error/module")));
+		const char * file = elektraStrDup (elektraKeyString (elektraKeyGetMeta (key, "error/file")));
 
 		char * fullDescription =
-			reasonMeta != NULL ? elektraFormat ("%s: %s", description, keyString (reasonMeta)) : elektraStrDup (description);
+			reasonMeta != NULL ? elektraFormat ("%s: %s", description, elektraKeyString (reasonMeta)) : elektraStrDup (description);
 
 		kdb_long_t line = 0;
 		elektraKeyToLong (key, &line);
@@ -125,14 +125,14 @@ ElektraError * elektraErrorFromKey (ElektraKey * key)
 
 
 	// Code for extracting warnings was adapted from src/tools/kdb/coloredkdbio.h:printWarnings()
-	ElektraKeyset * metaKeys = keyMeta (key);
-	ElektraKey * warningsParent = keyNew ("meta:/warnings", ELEKTRA_KEY_END);
-	ElektraKeyset * warningKeys = ksCut (metaKeys, warningsParent);
-	if (ksGetSize (warningKeys) > 0)
+	ElektraKeyset * metaKeys = elektraKeyMeta (key);
+	ElektraKey * warningsParent = elektraKeyNew ("meta:/warnings", ELEKTRA_KEY_END);
+	ElektraKeyset * warningKeys = elektraKeysetCut (metaKeys, warningsParent);
+	if (elektraKeysetGetSize (warningKeys) > 0)
 	{
-		for (elektraCursor it = 0; it < ksGetSize (warningKeys); it++)
+		for (elektraCursor it = 0; it < elektraKeysetGetSize (warningKeys); it++)
 		{
-			if (!keyIsDirectlyBelow (warningsParent, ksAtCursor (warningKeys, it)))
+			if (!elektraKeyIsDirectlyBelow (warningsParent, elektraKeysetAtCursor (warningKeys, it)))
 			{
 				// Warning details are sub-keys of the warning key. (e.g. .../warnings/#0/line, .../warnings/#0/reason, ...)
 				// For the extraction to work, we have to ignore the warningsParent itself and only look at keys directly
@@ -142,38 +142,38 @@ ElektraError * elektraErrorFromKey (ElektraKey * key)
 
 			// Extract warning details set by errors.c
 
-			ElektraKey * warningKey = ksAtCursor (warningKeys, it);
-			const char * warningKeyName = keyName (warningKey);
+			ElektraKey * warningKey = elektraKeysetAtCursor (warningKeys, it);
+			const char * warningKeyName = elektraKeyName (warningKey);
 
 			char * lookupName = elektraFormat ("%s/number", warningKeyName);
 			// "number" and "code" are used interchangeably for the error code. "line" is the line number.
-			const char * code = keyString (ksLookupByName (warningKeys, lookupName, 0));
+			const char * code = elektraKeyString (elektraKeysetLookupByName (warningKeys, lookupName, 0));
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/reason", warningKeyName);
-			const ElektraKey * reasonKey = ksLookupByName (warningKeys, lookupName, 0);
+			const ElektraKey * reasonKey = elektraKeysetLookupByName (warningKeys, lookupName, 0);
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/description", warningKeyName);
-			const char * description = keyString (ksLookupByName (warningKeys, lookupName, 0));
+			const char * description = elektraKeyString (elektraKeysetLookupByName (warningKeys, lookupName, 0));
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/module", warningKeyName);
-			const char * module = keyString (ksLookupByName (warningKeys, lookupName, 0));
+			const char * module = elektraKeyString (elektraKeysetLookupByName (warningKeys, lookupName, 0));
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/file", warningKeyName);
-			const char * file = keyString (ksLookupByName (warningKeys, lookupName, 0));
+			const char * file = elektraKeyString (elektraKeysetLookupByName (warningKeys, lookupName, 0));
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/line", warningKeyName);
-			ElektraKey * lineKey = ksLookupByName (warningKeys, lookupName, 0);
+			ElektraKey * lineKey = elektraKeysetLookupByName (warningKeys, lookupName, 0);
 			elektraFree (lookupName);
 			kdb_long_t lineNumber = -1;
 			elektraKeyToLong (lineKey, &lineNumber);
 
 			// Generate fullDescription out of reason and description. Reason might be null.
-			char * fullDescription = reasonKey != NULL ? elektraFormat ("%s: %s", description, keyString (reasonKey)) :
+			char * fullDescription = reasonKey != NULL ? elektraFormat ("%s: %s", description, elektraKeyString (reasonKey)) :
 									   elektraStrDup (description);
 
 			// Code, module, file and lineNumber are compile-time constants, no need to strDup().
@@ -186,8 +186,8 @@ ElektraError * elektraErrorFromKey (ElektraKey * key)
 		}
 	}
 
-	keyDel (warningsParent);
-	ksDel (warningKeys);
+	elektraKeyDel (warningsParent);
+	elektraKeysetDel (warningKeys);
 
 	return error;
 }

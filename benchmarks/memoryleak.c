@@ -19,17 +19,17 @@ int main (void)
 	ElektraKdb * handles[NUM_RUNS];
 	ElektraKeyset * keysets[NUM_RUNS];
 
-	ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/", ELEKTRA_KEY_END);
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
-		ElektraKdb * handle = kdbOpen (NULL, parentKey);
+		ElektraKdb * handle = elektraKdbOpen (NULL, parentKey);
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-		kdbGet (handle, ks, parentKey);
+		elektraKdbGet (handle, ks, parentKey);
 
-		printf ("Retrieved %d keys\n", (int) ksGetSize (ks));
+		printf ("Retrieved %d keys\n", (int) elektraKeysetGetSize (ks));
 
 		handles[i] = handle;
 		keysets[i] = ks;
@@ -37,11 +37,11 @@ int main (void)
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
-		printf ("Freeing %d keys\n", (int) ksGetSize (keysets[i]));
+		printf ("Freeing %d keys\n", (int) elektraKeysetGetSize (keysets[i]));
 
-		kdbClose (handles[i], parentKey);
-		ksDel (keysets[i]);
+		elektraKdbClose (handles[i], parentKey);
+		elektraKeysetDel (keysets[i]);
 	}
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 }

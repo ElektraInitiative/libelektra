@@ -37,16 +37,16 @@ static void cleanupEnvp (char ** envp);
 
 int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gopts"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/gopts"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/gopts", ELEKTRA_KEY_VALUE, "gopts plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/gopts/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/gopts/exports/get", ELEKTRA_KEY_FUNC, elektraGOptsGet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/gopts", ELEKTRA_KEY_VALUE, "gopts plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/gopts/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/gopts/exports/get", ELEKTRA_KEY_FUNC, elektraGOptsGet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/gopts/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/gopts/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
@@ -61,18 +61,18 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 	bool freeEnv;
 
 	ElektraKeyset * global = elektraPluginGetGlobalKeySet (handle);
-	ElektraKey * globalParent = ksLookupByName (global, "system:/elektra/gopts/parent", 0);
+	ElektraKey * globalParent = elektraKeysetLookupByName (global, "system:/elektra/gopts/parent", 0);
 
 	if (globalParent != NULL)
 	{
-		optsParent = keyNew (keyString (globalParent), ELEKTRA_KEY_END);
+		optsParent = elektraKeyNew (elektraKeyString (globalParent), ELEKTRA_KEY_END);
 
-		ElektraKey * kArgc = ksLookupByName (global, "system:/elektra/gopts/argc", 0);
-		ElektraKey * kArgv = ksLookupByName (global, "system:/elektra/gopts/argv", 0);
-		ElektraKey * kEnvp = ksLookupByName (global, "system:/elektra/gopts/envp", 0);
+		ElektraKey * kArgc = elektraKeysetLookupByName (global, "system:/elektra/gopts/argc", 0);
+		ElektraKey * kArgv = elektraKeysetLookupByName (global, "system:/elektra/gopts/argv", 0);
+		ElektraKey * kEnvp = elektraKeysetLookupByName (global, "system:/elektra/gopts/envp", 0);
 
-		ElektraKey * kArgs = ksLookupByName (global, "system:/elektra/gopts/args", 0);
-		ElektraKey * kEnv = ksLookupByName (global, "system:/elektra/gopts/env", 0);
+		ElektraKey * kArgs = elektraKeysetLookupByName (global, "system:/elektra/gopts/args", 0);
+		ElektraKey * kEnv = elektraKeysetLookupByName (global, "system:/elektra/gopts/env", 0);
 
 
 		if ((kArgc == NULL) != (kArgv == NULL))
@@ -83,16 +83,16 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 
 		if (kArgc != NULL && kArgv != NULL)
 		{
-			keyGetBinary (kArgc, &argc, sizeof (int));
-			keyGetBinary (kArgv, &argv, sizeof (char **));
+			elektraKeyGetBinary (kArgc, &argc, sizeof (int));
+			elektraKeyGetBinary (kArgv, &argv, sizeof (char **));
 
 			freeArgs = false;
 			cleanupArgData = false;
 		}
 		else if (kArgs != NULL)
 		{
-			const char * argsString = keyValue (kArgs);
-			size_t argsSize = keyGetValueSize (kArgs) - 1;
+			const char * argsString = elektraKeyValue (kArgs);
+			size_t argsSize = elektraKeyGetValueSize (kArgs) - 1;
 			const char * argPtr = argsString;
 
 			argc = 0;
@@ -124,14 +124,14 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 
 		if (kEnvp != NULL)
 		{
-			keyGetBinary (kEnvp, &envp, sizeof (char **));
+			elektraKeyGetBinary (kEnvp, &envp, sizeof (char **));
 			freeEnv = false;
 			cleanupEnv = false;
 		}
 		else if (kEnv != NULL)
 		{
-			const char * envString = keyValue (kEnv);
-			size_t envSize = keyGetValueSize (kEnv) - 1;
+			const char * envString = elektraKeyValue (kEnv);
+			size_t envSize = elektraKeyGetValueSize (kEnv) - 1;
 			const char * envPtr = envString;
 
 			size_t envCount = 0;
@@ -163,7 +163,7 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 	}
 	else
 	{
-		optsParent = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
+		optsParent = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_END);
 		argv = NULL;
 		argc = loadArgs (&argv);
 		envp = loadEnvp ();
@@ -181,9 +181,9 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
 
-	const ElektraKey * offsetKey = ksLookupByName (config, "/offset", 0);
-	const ElektraKey * usageKey = ksLookupByName (config, "/help/usage", 0);
-	const ElektraKey * prefixKey = ksLookupByName (config, "/help/prefix", 0);
+	const ElektraKey * offsetKey = elektraKeysetLookupByName (config, "/offset", 0);
+	const ElektraKey * usageKey = elektraKeysetLookupByName (config, "/help/usage", 0);
+	const ElektraKey * prefixKey = elektraKeysetLookupByName (config, "/help/prefix", 0);
 
 	kdb_long_long_t offset;
 	if (offsetKey != NULL)
@@ -191,7 +191,7 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 		if (!elektraKeyToLongLong (offsetKey, &offset) || offset < 0)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "config key offset must be a non-negative integer, not %s",
-								keyString (offsetKey));
+								elektraKeyString (offsetKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -209,27 +209,27 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 
 	if (ret == -1)
 	{
-		keyCopyAllMeta (parentKey, optsParent);
-		keyDel (optsParent);
+		elektraKeyCopyAllMeta (parentKey, optsParent);
+		elektraKeyDel (optsParent);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	ElektraKey * helpKey = keyNew ("proc:/elektra/gopts/help", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END);
-	keyCopyAllMeta (helpKey, optsParent);
-	ksAppendKey (returned, helpKey);
-	keyDel (optsParent);
+	ElektraKey * helpKey = elektraKeyNew ("proc:/elektra/gopts/help", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END);
+	elektraKeyCopyAllMeta (helpKey, optsParent);
+	elektraKeysetAppendKey (returned, helpKey);
+	elektraKeyDel (optsParent);
 
 	if (ret == 1)
 	{
-		keySetString (helpKey, "1");
+		elektraKeySetString (helpKey, "1");
 
-		const char * usage = usageKey == NULL ? NULL : keyString (usageKey);
-		const char * prefix = prefixKey == NULL ? NULL : keyString (prefixKey);
+		const char * usage = usageKey == NULL ? NULL : elektraKeyString (usageKey);
+		const char * prefix = prefixKey == NULL ? NULL : elektraKeyString (prefixKey);
 
 		char * message = elektraGetOptsHelpMessage (helpKey, usage, prefix);
-		ElektraKey * messageKey = keyNew ("proc:/elektra/gopts/help/message", ELEKTRA_KEY_VALUE, message, ELEKTRA_KEY_END);
+		ElektraKey * messageKey = elektraKeyNew ("proc:/elektra/gopts/help/message", ELEKTRA_KEY_VALUE, message, ELEKTRA_KEY_END);
 		elektraFree (message);
-		ksAppendKey (returned, messageKey);
+		elektraKeysetAppendKey (returned, messageKey);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 

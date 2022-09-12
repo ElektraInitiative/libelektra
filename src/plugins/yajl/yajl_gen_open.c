@@ -178,7 +178,7 @@ static void elektraGenOpenLast (yajl_gen g, const ElektraKey * key)
  */
 void elektraGenOpenInitial (yajl_gen g, ElektraKey * parentKey, const ElektraKey * first)
 {
-	const char * pfirst = keyName (first);
+	const char * pfirst = elektraKeyName (first);
 	size_t csize = 0;
 
 	int equalLevels = elektraKeyCountEqualLevel (parentKey, first);
@@ -436,8 +436,8 @@ static void elektraGenOpenFirst (yajl_gen g, const char * cur, const char * next
  */
 void elektraGenOpen (yajl_gen g, const ElektraKey * cur, const ElektraKey * next)
 {
-	const char * pcur = keyName (cur);
-	const char * pnext = keyName (next);
+	const char * pcur = elektraKeyName (cur);
+	const char * pnext = elektraKeyName (next);
 	// size_t curLevels = elektraKeyCountLevel(cur);
 	size_t nextLevels = elektraKeyCountLevel (next);
 	size_t size = 0;

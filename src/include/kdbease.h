@@ -24,8 +24,8 @@ const char * elektraKeyGetRelativeName (ElektraKey const * cur, ElektraKey const
 ElektraKeyset * elektraArrayGet (const ElektraKey * arrayParent, ElektraKeyset * keys);
 ElektraKey * elektraArrayGetNextKey (ElektraKeyset * arrayKeys);
 
-elektraKeyFlags keyCompare (const ElektraKey * key1, const ElektraKey * key2);
-elektraKeyFlags keyCompareMeta (const ElektraKey * key1, const ElektraKey * key2);
+elektraKeyFlags elektraKeyCompare (const ElektraKey * key1, const ElektraKey * key2);
+elektraKeyFlags elektraKeyCompareMeta (const ElektraKey * key1, const ElektraKey * key2);
 
 int elektraIsReferenceRedundant (const char * reference);
 char * elektraResolveReference (const char * reference, const ElektraKey * baseKey, const ElektraKey * parentKey);

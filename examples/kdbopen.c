@@ -12,17 +12,17 @@
 //! [open]
 void thread1 (void)
 {
-	ElektraKey * parent = keyNew ("/app/part1", ELEKTRA_KEY_END);
-	ElektraKdb * h = kdbOpen (NULL, parent);
+	ElektraKey * parent = elektraKeyNew ("/app/part1", ELEKTRA_KEY_END);
+	ElektraKdb * h = elektraKdbOpen (NULL, parent);
 	// fetch keys and work with them
-	kdbClose (h, parent);
+	elektraKdbClose (h, parent);
 }
 void thread2 (void)
 {
-	ElektraKey * parent = keyNew ("/app/part2", ELEKTRA_KEY_END);
-	ElektraKdb * h = kdbOpen (NULL, parent);
+	ElektraKey * parent = elektraKeyNew ("/app/part2", ELEKTRA_KEY_END);
+	ElektraKdb * h = elektraKdbOpen (NULL, parent);
 	// fetch keys and work with them
-	kdbClose (h, parent);
+	elektraKdbClose (h, parent);
 }
 //! [open]
 

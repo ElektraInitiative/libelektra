@@ -65,14 +65,14 @@ static inline void freeArgv (char ** argv)
 
 static int copyError (ElektraKey * dest, ElektraKey * src)
 {
-	keyRewindMeta (src);
-	const ElektraKey * metaKey = keyGetMeta (src, "error");
+	elektraKeyRewindMeta (src);
+	const ElektraKey * metaKey = elektraKeyGetMeta (src, "error");
 	if (!metaKey) return 0;
-	keySetMeta (dest, keyName (metaKey), keyString (metaKey));
-	while ((metaKey = keyNextMeta (src)) != NULL)
+	elektraKeySetMeta (dest, elektraKeyName (metaKey), elektraKeyString (metaKey));
+	while ((metaKey = elektraKeyNextMeta (src)) != NULL)
 	{
-		if (strncmp (keyName (metaKey), "error/", 6) != 0) break;
-		keySetMeta (dest, keyName (metaKey), keyString (metaKey));
+		if (strncmp (elektraKeyName (metaKey), "error/", 6) != 0) break;
+		elektraKeySetMeta (dest, elektraKeyName (metaKey), elektraKeyString (metaKey));
 	}
 	return 1;
 }
@@ -82,7 +82,7 @@ int elektraSpecloadOpen (Plugin * handle, ElektraKey * errorKey)
 	Specload * specload = elektraMalloc (sizeof (Specload));
 
 	ElektraKeyset * conf = elektraPluginGetConfig (handle);
-	if (ksLookupByName (conf, "system:/module", 0) != NULL || ksLookupByName (conf, "system:/sendspec", 0) != NULL)
+	if (elektraKeysetLookupByName (conf, "system:/module", 0) != NULL || elektraKeysetLookupByName (conf, "system:/sendspec", 0) != NULL)
 	{
 		elektraFree (specload);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -94,7 +94,7 @@ int elektraSpecloadOpen (Plugin * handle, ElektraKey * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	specload->quickDumpConfig = ksNew (0, ELEKTRA_KS_END);
+	specload->quickDumpConfig = elektraKeysetNew (0, ELEKTRA_KS_END);
 	specload->quickDump = elektraInvokeOpen ("quickdump", specload->quickDumpConfig, errorKey);
 
 	if (!specload->quickDump)
@@ -116,7 +116,7 @@ int elektraSpecloadClose (Plugin * handle, ElektraKey * errorKey)
 	{
 		elektraInvokeClose (specload->quickDump, errorKey);
 
-		ksDel (specload->quickDumpConfig);
+		elektraKeysetDel (specload->quickDumpConfig);
 
 		if (specload->directFile != NULL)
 		{
@@ -152,51 +152,51 @@ int elektraSpecloadClose (Plugin * handle, ElektraKey * errorKey)
  */
 int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * spec, ElektraKey * parentKey)
 {
-	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
-	ElektraKeyset * quickDumpConf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * quickDumpConf = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	if (keyGetMeta (parentKey, "system:/elektra/quickdump/noparent") != NULL)
+	if (elektraKeyGetMeta (parentKey, "system:/elektra/quickdump/noparent") != NULL)
 	{
-		ksAppendKey (quickDumpConf, keyNew ("system:/noparent", ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (quickDumpConf, elektraKeyNew ("system:/noparent", ELEKTRA_KEY_END));
 	}
 
 	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConf, errorKey);
 
-	ElektraKey * quickDumpParent = keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, STDOUT_FILENAME, ELEKTRA_KEY_END);
+	ElektraKey * quickDumpParent = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_VALUE, STDOUT_FILENAME, ELEKTRA_KEY_END);
 
 	int result = elektraInvoke2Args (quickDump, "set", spec, quickDumpParent);
 
 	elektraInvokeClose (quickDump, errorKey);
-	keyDel (errorKey);
-	keyDel (quickDumpParent);
-	ksDel (quickDumpConf);
+	elektraKeyDel (errorKey);
+	elektraKeyDel (quickDumpParent);
+	elektraKeysetDel (quickDumpConf);
 
 	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 int elektraSpecloadGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/specload"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/specload"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/specload", ELEKTRA_KEY_VALUE, "specload plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/specload/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/specload/exports/open", ELEKTRA_KEY_FUNC, elektraSpecloadOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/specload/exports/close", ELEKTRA_KEY_FUNC, elektraSpecloadClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/specload/exports/get", ELEKTRA_KEY_FUNC, elektraSpecloadGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/specload/exports/set", ELEKTRA_KEY_FUNC, elektraSpecloadSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/specload/exports/checkconf", ELEKTRA_KEY_FUNC, elektraSpecloadCheckConf, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/specload/exports/sendspec", ELEKTRA_KEY_FUNC, elektraSpecloadSendSpec, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/specload", ELEKTRA_KEY_VALUE, "specload plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/specload/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/specload/exports/open", ELEKTRA_KEY_FUNC, elektraSpecloadOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/specload/exports/close", ELEKTRA_KEY_FUNC, elektraSpecloadClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/specload/exports/get", ELEKTRA_KEY_FUNC, elektraSpecloadGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/specload/exports/set", ELEKTRA_KEY_FUNC, elektraSpecloadSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/specload/exports/checkconf", ELEKTRA_KEY_FUNC, elektraSpecloadCheckConf, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/specload/exports/sendspec", ELEKTRA_KEY_FUNC, elektraSpecloadSendSpec, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/specload/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/specload/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	if (keyGetNamespace (parentKey) != ELEKTRA_NS_SPEC)
+	if (elektraKeyGetNamespace (parentKey) != ELEKTRA_NS_SPEC)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "This plugin can only be used for the spec namespace");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -204,43 +204,43 @@ int elektraSpecloadGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * 
 
 	Specload * specload = elektraPluginGetData (handle);
 
-	ElektraKeyset * spec = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * spec = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	if (!loadSpec (spec, specload->directFile, specload->app, specload->argv, parentKey, specload->quickDump))
 	{
-		ksDel (spec);
+		elektraKeysetDel (spec);
 		ELEKTRA_SET_INSTALLATION_ERROR (
 			parentKey, "Couldn't load the base specification. Make sure the app is available and the arguments are correct");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	const char * overlayFile = keyString (parentKey);
+	const char * overlayFile = elektraKeyString (parentKey);
 	if (overlayFile[0] != '/')
 	{
 		char * path = elektraFormat ("%s/%s", KDB_DB_SPEC, overlayFile);
-		keySetString (parentKey, path);
+		elektraKeySetString (parentKey, path);
 		elektraFree (path);
 	}
 
-	if (access (keyString (parentKey), F_OK) != -1)
+	if (access (elektraKeyString (parentKey), F_OK) != -1)
 	{
 		if (elektraInvoke2Args (specload->quickDump, "get", spec, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
-			ksDel (spec);
+			elektraKeysetDel (spec);
 			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't load the overlay specification");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
-	ksAppend (returned, spec);
-	ksDel (spec);
+	elektraKeysetAppend (returned, spec);
+	elektraKeysetDel (spec);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraSpecloadSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (keyGetNamespace (parentKey) != ELEKTRA_NS_SPEC)
+	if (elektraKeyGetNamespace (parentKey) != ELEKTRA_NS_SPEC)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "This plugin can only be used for the spec namespace");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -248,85 +248,85 @@ int elektraSpecloadSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * 
 
 	Specload * specload = elektraPluginGetData (handle);
 
-	ElektraKeyset * spec = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * spec = elektraKeysetNew (0, ELEKTRA_KS_END);
 	if (!loadSpec (spec, specload->directFile, specload->app, specload->argv, parentKey, specload->quickDump))
 	{
-		ksDel (spec);
+		elektraKeysetDel (spec);
 		ELEKTRA_SET_INSTALLATION_ERROR (
 			parentKey, "Couldn't load the base specification. Make sure the app is available and the arguments are correct");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	const char * overlayFile = keyString (parentKey);
+	const char * overlayFile = elektraKeyString (parentKey);
 	if (overlayFile[0] != '/')
 	{
 		char * path = elektraFormat ("%s/%s", KDB_DB_SPEC, overlayFile);
-		keySetString (parentKey, path);
+		elektraKeySetString (parentKey, path);
 		elektraFree (path);
 	}
 
-	ElektraKeyset * oldData = ksNew (ksGetSize (returned), ELEKTRA_KS_END);
-	if (access (keyString (parentKey), F_OK) != -1)
+	ElektraKeyset * oldData = elektraKeysetNew (elektraKeysetGetSize (returned), ELEKTRA_KS_END);
+	if (access (elektraKeyString (parentKey), F_OK) != -1)
 	{
 		if (elektraInvoke2Args (specload->quickDump, "get", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
-			ksDel (oldData);
+			elektraKeysetDel (oldData);
 			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Couldn't load the overlay specification");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
-	ElektraKeyset * overrides = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * overrides = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	elektraCursor cursor = ksGetCursor (returned);
-	ksRewind (returned);
+	elektraCursor cursor = elektraKeysetGetCursor (returned);
+	elektraKeysetRewind (returned);
 	ElektraKey * new;
 	ElektraKey * old;
-	while ((new = ksNext (returned)) != NULL)
+	while ((new = elektraKeysetNext (returned)) != NULL)
 	{
-		old = ksLookup (oldData, new, ELEKTRA_KDB_O_POP);
+		old = elektraKeysetLookup (oldData, new, ELEKTRA_KDB_O_POP);
 		if (old == NULL)
 		{
-			old = ksLookup (spec, new, 0);
+			old = elektraKeysetLookup (spec, new, 0);
 		}
 
 		int changeAllowed = isChangeAllowed (old, new);
-		keyDel (old);
+		elektraKeyDel (old);
 
 		if (changeAllowed < 0)
 		{
 			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "This kind of change is not allowed");
-			ksSetCursor (returned, cursor);
-			ksDel (overrides);
-			ksDel (oldData);
-			ksDel (spec);
+			elektraKeysetSetCursor (returned, cursor);
+			elektraKeysetDel (overrides);
+			elektraKeysetDel (oldData);
+			elektraKeysetDel (spec);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (changeAllowed > 0)
 		{
-			ksAppendKey (overrides, new);
+			elektraKeysetAppendKey (overrides, new);
 		}
 	}
-	ksDel (spec);
+	elektraKeysetDel (spec);
 
 	// check if remaining old keys can be removed
-	while ((old = ksNext (oldData)) != NULL)
+	while ((old = elektraKeysetNext (oldData)) != NULL)
 	{
 		if (isChangeAllowed (old, NULL) > 0)
 		{
-			ksSetCursor (returned, cursor);
-			ksDel (overrides);
-			ksDel (oldData);
+			elektraKeysetSetCursor (returned, cursor);
+			elektraKeysetDel (overrides);
+			elektraKeysetDel (oldData);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
-	ksDel (oldData);
+	elektraKeysetDel (oldData);
 
-	ksSetCursor (returned, cursor);
+	elektraKeysetSetCursor (returned, cursor);
 
 	int result = elektraInvoke2Args (specload->quickDump, "set", overrides, parentKey);
-	ksDel (overrides);
+	elektraKeysetDel (overrides);
 	return result;
 }
 
@@ -343,19 +343,19 @@ int elektraSpecloadCheckConf (ElektraKey * errorKey, ElektraKeyset * conf)
 
 	bool directFileMode = directFile != NULL;
 
-	ElektraKeyset * quickDumpConfig = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * quickDumpConfig = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConfig, errorKey);
 
-	ElektraKeyset * spec = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * spec = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	bool result = loadSpec (spec, directFile, app, argv, errorKey, quickDump);
 
 	elektraInvokeClose (quickDump, errorKey);
-	ksDel (quickDumpConfig);
+	elektraKeysetDel (quickDumpConfig);
 	elektraFree (directFile);
 	elektraFree (app);
 	freeArgv (argv);
-	ksDel (spec);
+	elektraKeysetDel (spec);
 
 	if (!result)
 	{
@@ -377,11 +377,11 @@ int elektraSpecloadCheckConf (ElektraKey * errorKey, ElektraKeyset * conf)
 
 bool readConfig (ElektraKeyset * conf, char ** directFilePtr, char ** appPtr, char *** argvPtr, ElektraKey * errorKey)
 {
-	ElektraKey * fileKey = ksLookupByName (conf, "/file", 0);
+	ElektraKey * fileKey = elektraKeysetLookupByName (conf, "/file", 0);
 
 	if (fileKey != NULL)
 	{
-		const char * directFile = keyString (fileKey);
+		const char * directFile = elektraKeyString (fileKey);
 
 		if (directFile[0] != '/')
 		{
@@ -403,7 +403,7 @@ bool readConfig (ElektraKeyset * conf, char ** directFilePtr, char ** appPtr, ch
 		return true;
 	}
 
-	ElektraKey * appKey = ksLookupByName (conf, "/app", 0);
+	ElektraKey * appKey = elektraKeysetLookupByName (conf, "/app", 0);
 
 	if (appKey == NULL)
 	{
@@ -411,7 +411,7 @@ bool readConfig (ElektraKeyset * conf, char ** directFilePtr, char ** appPtr, ch
 		return false;
 	}
 
-	const char * app = keyString (appKey);
+	const char * app = elektraKeyString (appKey);
 
 	if (app[0] != '/')
 	{
@@ -426,31 +426,31 @@ bool readConfig (ElektraKeyset * conf, char ** directFilePtr, char ** appPtr, ch
 	}
 
 	ElektraKeyset * args;
-	if (ksLookupByName (conf, "/app/args", 0) == NULL)
+	if (elektraKeysetLookupByName (conf, "/app/args", 0) == NULL)
 	{
-		args = ksNew (1, keyNew ("user:/app/args/#0", ELEKTRA_KEY_VALUE, "--elektra-spec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		args = elektraKeysetNew (1, elektraKeyNew ("user:/app/args/#0", ELEKTRA_KEY_VALUE, "--elektra-spec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
-		ElektraKey * parentKey = keyNew ("/app/args", ELEKTRA_KEY_END);
+		ElektraKey * parentKey = elektraKeyNew ("/app/args", ELEKTRA_KEY_END);
 		args = elektraArrayGet (parentKey, conf);
-		keyDel (parentKey);
+		elektraKeyDel (parentKey);
 	}
 
-	ssize_t size = ksGetSize (args);
+	ssize_t size = elektraKeysetGetSize (args);
 	char ** argv = elektraMalloc ((size + 2) * sizeof (char *));
 	argv[0] = elektraStrDup (app);
 
 	size_t index = 1;
-	ksRewind (args);
+	elektraKeysetRewind (args);
 	ElektraKey * cur;
-	while ((cur = ksNext (args)) != NULL)
+	while ((cur = elektraKeysetNext (args)) != NULL)
 	{
-		argv[index] = elektraStrDup (keyString (cur));
+		argv[index] = elektraStrDup (elektraKeyString (cur));
 		++index;
 	}
 	argv[index] = NULL;
-	ksDel (args);
+	elektraKeysetDel (args);
 
 	*directFilePtr = NULL;
 	*appPtr = elektraStrDup (app);
@@ -464,14 +464,14 @@ bool loadSpec (ElektraKeyset * returned, const char * directFile, const char * a
 {
 	if (directFile != NULL)
 	{
-		ElektraKey * quickDumpParent = keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, directFile, ELEKTRA_KEY_END);
+		ElektraKey * quickDumpParent = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_VALUE, directFile, ELEKTRA_KEY_END);
 		int result = elektraInvoke2Args (quickDump, "get", returned, quickDumpParent);
 
 		if (result != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 		{
 			copyError (parentKey, quickDumpParent);
 		}
-		keyDel (quickDumpParent);
+		elektraKeyDel (quickDumpParent);
 
 		return result == ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
@@ -522,7 +522,7 @@ bool loadSpec (ElektraKeyset * returned, const char * directFile, const char * a
 
 	close (fd[0]);
 
-	ElektraKey * quickDumpParent = keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, STDIN_FILENAME, ELEKTRA_KEY_END);
+	ElektraKey * quickDumpParent = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_VALUE, STDIN_FILENAME, ELEKTRA_KEY_END);
 
 	int result = elektraInvoke2Args (quickDump, "get", returned, quickDumpParent);
 
@@ -530,7 +530,7 @@ bool loadSpec (ElektraKeyset * returned, const char * directFile, const char * a
 	{
 		copyError (parentKey, quickDumpParent);
 	}
-	keyDel (quickDumpParent);
+	elektraKeyDel (quickDumpParent);
 
 	if (dup2 (stdin_copy, STDIN_FILENO) == -1)
 	{
@@ -564,7 +564,7 @@ int isChangeAllowed (ElektraKey * oldKey, ElektraKey * newKey)
 		return 0;
 	}
 
-	elektraKeyFlags changes = keyCompare (oldKey, newKey);
+	elektraKeyFlags changes = elektraKeyCompare (oldKey, newKey);
 	if (changes == 0)
 	{
 		// equal keys
@@ -585,79 +585,79 @@ int isChangeAllowed (ElektraKey * oldKey, ElektraKey * newKey)
 
 	if (oldKey == NULL)
 	{
-		if (keyIsBinary (newKey) ? keyValue (newKey) != NULL : strlen (keyString (newKey)) > 0)
+		if (elektraKeyIsBinary (newKey) ? elektraKeyValue (newKey) != NULL : strlen (elektraKeyString (newKey)) > 0)
 		{
 			// adding values not allowed
 			return -1;
 		}
 
-		oldKey = keyNew (keyName (newKey), ELEKTRA_KEY_END);
+		oldKey = elektraKeyNew (elektraKeyName (newKey), ELEKTRA_KEY_END);
 	}
 	else
 	{
-		oldKey = keyDup (oldKey, ELEKTRA_KEY_CP_ALL);
+		oldKey = elektraKeyDup (oldKey, ELEKTRA_KEY_CP_ALL);
 	}
 
 	if (newKey == NULL)
 	{
-		if (keyIsBinary (oldKey) ? keyValue (oldKey) != NULL : strlen (keyString (oldKey)) > 0)
+		if (elektraKeyIsBinary (oldKey) ? elektraKeyValue (oldKey) != NULL : strlen (elektraKeyString (oldKey)) > 0)
 		{
 			// removing values not allowed
 			return -1;
 		}
 
-		newKey = keyNew (keyName (oldKey), ELEKTRA_KEY_END);
+		newKey = elektraKeyNew (elektraKeyName (oldKey), ELEKTRA_KEY_END);
 	}
 	else
 	{
-		newKey = keyDup (newKey, ELEKTRA_KEY_CP_ALL);
+		newKey = elektraKeyDup (newKey, ELEKTRA_KEY_CP_ALL);
 	}
 
 	ElektraKeyset * metaDiff = calculateMetaDiff (oldKey, newKey);
 
-	keyDel (oldKey);
-	keyDel (newKey);
+	elektraKeyDel (oldKey);
+	elektraKeyDel (newKey);
 
 	for (int i = 0; allowedChanges[i].meta != NULL; ++i)
 	{
 		struct change cur = allowedChanges[i];
-		ElektraKey * diff = ksLookupByName (metaDiff, cur.meta, ELEKTRA_KDB_O_POP);
+		ElektraKey * diff = elektraKeysetLookupByName (metaDiff, cur.meta, ELEKTRA_KDB_O_POP);
 
 		if (diff == NULL)
 		{
 			continue;
 		}
 
-		if (strcmp (keyString (diff), "add") == 0 && !cur.add)
+		if (strcmp (elektraKeyString (diff), "add") == 0 && !cur.add)
 		{
-			keyDel (diff);
-			ksDel (metaDiff);
+			elektraKeyDel (diff);
+			elektraKeysetDel (metaDiff);
 			// add not allowed
 			return -1;
 		}
 
-		if (strcmp (keyString (diff), "edit") == 0 && !cur.edit)
+		if (strcmp (elektraKeyString (diff), "edit") == 0 && !cur.edit)
 		{
-			keyDel (diff);
-			ksDel (metaDiff);
+			elektraKeyDel (diff);
+			elektraKeysetDel (metaDiff);
 			// edit not allowed
 			return -1;
 		}
 
-		if (strcmp (keyString (diff), "remove") == 0 && !cur.remove)
+		if (strcmp (elektraKeyString (diff), "remove") == 0 && !cur.remove)
 		{
-			keyDel (diff);
-			ksDel (metaDiff);
+			elektraKeyDel (diff);
+			elektraKeysetDel (metaDiff);
 			// remove not allowed
 			return -1;
 		}
 
-		keyDel (diff);
+		elektraKeyDel (diff);
 	}
 
-	size_t size = ksGetSize (metaDiff);
+	size_t size = elektraKeysetGetSize (metaDiff);
 
-	ksDel (metaDiff);
+	elektraKeysetDel (metaDiff);
 
 	return size == 0 ? 1 : -1;
 }
@@ -681,52 +681,52 @@ int isChangeAllowed (ElektraKey * oldKey, ElektraKey * newKey)
  */
 ElektraKeyset * calculateMetaDiff (ElektraKey * oldKey, ElektraKey * newKey)
 {
-	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * result = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	keyRewindMeta (oldKey);
-	keyRewindMeta (newKey);
+	elektraKeyRewindMeta (oldKey);
+	elektraKeyRewindMeta (newKey);
 
-	const ElektraKey * oldMeta = keyNextMeta (oldKey);
-	const ElektraKey * newMeta = keyNextMeta (newKey);
+	const ElektraKey * oldMeta = elektraKeyNextMeta (oldKey);
+	const ElektraKey * newMeta = elektraKeyNextMeta (newKey);
 
 	while (oldMeta != NULL && newMeta != NULL)
 	{
-		const char * oldName = keyName (oldMeta);
-		const char * newName = keyName (newMeta);
+		const char * oldName = elektraKeyName (oldMeta);
+		const char * newName = elektraKeyName (newMeta);
 
 		int cmp = elektraStrCmp (oldName, newName);
 		if (cmp < 0)
 		{
 			// oldKey has to "catch up"
-			ksAppendKey (result, keyNew (oldName, ELEKTRA_KEY_VALUE, "remove", ELEKTRA_KEY_META, "old", keyString (oldMeta), ELEKTRA_KEY_END));
-			oldMeta = keyNextMeta (oldKey);
+			elektraKeysetAppendKey (result, elektraKeyNew (oldName, ELEKTRA_KEY_VALUE, "remove", ELEKTRA_KEY_META, "old", elektraKeyString (oldMeta), ELEKTRA_KEY_END));
+			oldMeta = elektraKeyNextMeta (oldKey);
 		}
 		else if (cmp > 0)
 		{
 			// newKey has to "catch up"
-			ksAppendKey (result, keyNew (newName, ELEKTRA_KEY_VALUE, "add", ELEKTRA_KEY_META, "new", keyString (newMeta), ELEKTRA_KEY_END));
-			newMeta = keyNextMeta (newKey);
+			elektraKeysetAppendKey (result, elektraKeyNew (newName, ELEKTRA_KEY_VALUE, "add", ELEKTRA_KEY_META, "new", elektraKeyString (newMeta), ELEKTRA_KEY_END));
+			newMeta = elektraKeyNextMeta (newKey);
 		}
 		else
 		{
 			// same name
-			ksAppendKey (result, keyNew (oldName, ELEKTRA_KEY_VALUE, "edit", ELEKTRA_KEY_META, "old", keyString (oldMeta), ELEKTRA_KEY_META, "new",
-						     keyString (newMeta), ELEKTRA_KEY_END));
-			oldMeta = keyNextMeta (oldKey);
-			newMeta = keyNextMeta (newKey);
+			elektraKeysetAppendKey (result, elektraKeyNew (oldName, ELEKTRA_KEY_VALUE, "edit", ELEKTRA_KEY_META, "old", elektraKeyString (oldMeta), ELEKTRA_KEY_META, "new",
+						     elektraKeyString (newMeta), ELEKTRA_KEY_END));
+			oldMeta = elektraKeyNextMeta (oldKey);
+			newMeta = elektraKeyNextMeta (newKey);
 		}
 	}
 
 	// remaining metadata in oldKey was removed
-	while ((oldMeta = keyNextMeta (oldKey)) != NULL)
+	while ((oldMeta = elektraKeyNextMeta (oldKey)) != NULL)
 	{
-		ksAppendKey (result, keyNew (keyName (oldMeta), ELEKTRA_KEY_VALUE, "remove", ELEKTRA_KEY_META, "old", keyString (oldMeta), ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (result, elektraKeyNew (elektraKeyName (oldMeta), ELEKTRA_KEY_VALUE, "remove", ELEKTRA_KEY_META, "old", elektraKeyString (oldMeta), ELEKTRA_KEY_END));
 	}
 
 	// remaining metadata in newKey was added
-	while ((newMeta = keyNextMeta (newKey)) != NULL)
+	while ((newMeta = elektraKeyNextMeta (newKey)) != NULL)
 	{
-		ksAppendKey (result, keyNew (keyName (newMeta), ELEKTRA_KEY_VALUE, "add", ELEKTRA_KEY_META, "new", keyString (newMeta), ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (result, elektraKeyNew (elektraKeyName (newMeta), ELEKTRA_KEY_VALUE, "add", ELEKTRA_KEY_META, "new", elektraKeyString (newMeta), ELEKTRA_KEY_END));
 	}
 
 	return result;

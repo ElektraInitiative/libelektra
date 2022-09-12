@@ -41,22 +41,22 @@
 
 static ElektraKeyset * embeddedSpec (void)
 {
-	return ksNew (15,
-	keyNew ("/", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", ELEKTRA_KEY_END),
-	keyNew ("/myotherstruct", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/struct/depth", "2", ELEKTRA_KEY_META, "type", "struct", ELEKTRA_KEY_END),
-	keyNew ("/myotherstruct/x", ELEKTRA_KEY_META, "default", "4", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
-	keyNew ("/myotherstruct/x/y", ELEKTRA_KEY_META, "default", "6", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
-	keyNew ("/mystruct", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "struct", ELEKTRA_KEY_END),
-	keyNew ("/mystruct/a", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/mystruct/b", ELEKTRA_KEY_META, "default", "8", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
-	keyNew ("/people", ELEKTRA_KEY_META, "check/reference", "single", ELEKTRA_KEY_META, "check/reference/restrict", "../person/_", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_END),
-	keyNew ("/people/#", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "struct_ref", ELEKTRA_KEY_END),
-	keyNew ("/person/_", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/struct/alloc", "1", ELEKTRA_KEY_META, "gen/struct/type", "Person", ELEKTRA_KEY_META, "type", "struct", ELEKTRA_KEY_END),
-	keyNew ("/person/_/age", ELEKTRA_KEY_META, "default", "30", ELEKTRA_KEY_META, "type", "short", ELEKTRA_KEY_END),
-	keyNew ("/person/_/children", ELEKTRA_KEY_META, "check/reference", "recursive", ELEKTRA_KEY_META, "check/reference/restrict", "../../../person/_", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_END),
-	keyNew ("/person/_/children/#", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "struct_ref", ELEKTRA_KEY_END),
-	keyNew ("/person/_/height", ELEKTRA_KEY_META, "default", "1.80", ELEKTRA_KEY_META, "type", "float", ELEKTRA_KEY_END),
-	keyNew ("/person/_/name", ELEKTRA_KEY_META, "default", "Max", ELEKTRA_KEY_META, "gen/struct/field", "fullName", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	return elektraKeysetNew (15,
+	elektraKeyNew ("/", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_struct.ini", ELEKTRA_KEY_END),
+	elektraKeyNew ("/myotherstruct", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/struct/depth", "2", ELEKTRA_KEY_META, "type", "struct", ELEKTRA_KEY_END),
+	elektraKeyNew ("/myotherstruct/x", ELEKTRA_KEY_META, "default", "4", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
+	elektraKeyNew ("/myotherstruct/x/y", ELEKTRA_KEY_META, "default", "6", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
+	elektraKeyNew ("/mystruct", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "struct", ELEKTRA_KEY_END),
+	elektraKeyNew ("/mystruct/a", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/mystruct/b", ELEKTRA_KEY_META, "default", "8", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
+	elektraKeyNew ("/people", ELEKTRA_KEY_META, "check/reference", "single", ELEKTRA_KEY_META, "check/reference/restrict", "../person/_", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_END),
+	elektraKeyNew ("/people/#", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "struct_ref", ELEKTRA_KEY_END),
+	elektraKeyNew ("/person/_", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/struct/alloc", "1", ELEKTRA_KEY_META, "gen/struct/type", "Person", ELEKTRA_KEY_META, "type", "struct", ELEKTRA_KEY_END),
+	elektraKeyNew ("/person/_/age", ELEKTRA_KEY_META, "default", "30", ELEKTRA_KEY_META, "type", "short", ELEKTRA_KEY_END),
+	elektraKeyNew ("/person/_/children", ELEKTRA_KEY_META, "check/reference", "recursive", ELEKTRA_KEY_META, "check/reference/restrict", "../../../person/_", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_END),
+	elektraKeyNew ("/person/_/children/#", ELEKTRA_KEY_META, "check/type", "any", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "struct_ref", ELEKTRA_KEY_END),
+	elektraKeyNew ("/person/_/height", ELEKTRA_KEY_META, "default", "1.80", ELEKTRA_KEY_META, "type", "float", ELEKTRA_KEY_END),
+	elektraKeyNew ("/person/_/name", ELEKTRA_KEY_META, "default", "Max", ELEKTRA_KEY_META, "gen/struct/field", "fullName", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
 }
@@ -105,30 +105,30 @@ int loadConfiguration (Elektra ** elektra,
 	ElektraKeyset * defaults = embeddedSpec ();
 	
 
-	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "ead719cafcfe60b9f86e10836b4bc9759f9ca581cb4ca61bcf202c57ea788a53", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ElektraKeyset * contract = elektraKeysetNew (4,
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "ead719cafcfe60b9f86e10836b4bc9759f9ca581cb4ca61bcf202c57ea788a53", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/struct", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/script/gen/highlevel/struct", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/struct", defaults, contract, error);
 
 	if (defaults != NULL)
 	{
-		ksDel (defaults);
+		elektraKeysetDel (defaults);
 	}
 
 	if (contract != NULL)
 	{
-		ksDel (contract);
+		elektraKeysetDel (contract);
 	}
 
 	if (e == NULL)
@@ -145,7 +145,7 @@ int loadConfiguration (Elektra ** elektra,
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (elektraKeyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -169,17 +169,17 @@ void exitForSpecload (int argc, const char * const * argv)
 
 	ElektraKeyset * spec = embeddedSpec ();
 
-	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/struct", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("spec:/tests/script/gen/highlevel/struct", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * specloadConf = elektraKeysetNew (1, elektraKeyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
 
 	elektraInvokeClose (specload, parentKey);
-	keyDel (parentKey);
-	ksDel (specloadConf);
-	ksDel (spec);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (specloadConf);
+	elektraKeysetDel (spec);
 
 	exit (result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE);
 }

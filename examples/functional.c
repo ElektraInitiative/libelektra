@@ -34,15 +34,15 @@ int ksForEach (ElektraKeyset * ks, int (*func) (ElektraKey * k))
 	int ret = 0;
 	ElektraKey * current;
 
-	elektraCursor cursor = ksGetCursor (ks);
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
+	elektraCursor cursor = elektraKeysetGetCursor (ks);
+	elektraKeysetRewind (ks);
+	while ((current = elektraKeysetNext (ks)) != 0)
 	{
 		int rc = func (current);
 		if (rc == -1) return -1;
 		ret += rc;
 	}
-	ksSetCursor (ks, cursor);
+	elektraKeysetSetCursor (ks, cursor);
 	return ret;
 }
 
@@ -71,9 +71,9 @@ int ksFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter) (Elek
 	int ret = 0;
 	ElektraKey * current;
 
-	elektraCursor cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
+	elektraCursor cursor = elektraKeysetGetCursor (input);
+	elektraKeysetRewind (input);
+	while ((current = elektraKeysetNext (input)) != 0)
 	{
 		int rc = filter (current);
 		if (rc == -1)
@@ -81,10 +81,10 @@ int ksFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter) (Elek
 		else if (rc != 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current, ELEKTRA_KEY_CP_ALL));
+			elektraKeysetAppendKey (result, elektraKeyDup (current, ELEKTRA_KEY_CP_ALL));
 		}
 	}
-	ksSetCursor (input, cursor);
+	elektraKeysetSetCursor (input, cursor);
 	return ret;
 }
 
@@ -93,84 +93,84 @@ ElektraKey * global_a;
 
 int add_string (ElektraKey * check)
 {
-	return keySetString (check, "string");
+	return elektraKeySetString (check, "string");
 }
 int add_comment (ElektraKey * check)
 {
-	return keySetMeta (check, "comment", "comment");
+	return elektraKeySetMeta (check, "comment", "comment");
 }
 int has_a (ElektraKey * check)
 {
-	return keyName (check)[5] == 'a';
+	return elektraKeyName (check)[5] == 'a';
 }
 int below_a (ElektraKey * check)
 {
-	return keyIsBelow (global_a, check);
+	return elektraKeyIsBelow (global_a, check);
 }
 int direct_below_a (ElektraKey * check)
 {
-	return keyIsDirectlyBelow (global_a, check);
+	return elektraKeyIsDirectlyBelow (global_a, check);
 }
 
 int sum_helper (ElektraKey * check)
 {
-	return atoi (keyValue (check));
+	return atoi (elektraKeyValue (check));
 }
 int below_30 (ElektraKey * check)
 {
-	return atoi (keyValue (check)) < 30;
+	return atoi (elektraKeyValue (check)) < 30;
 }
 int find_80 (ElektraKey * check)
 {
-	int n = atoi (keyValue (check));
+	int n = atoi (elektraKeyValue (check));
 	return n > 70 ? -1 : 1;
 }
 
 int main (void)
 {
 	ElektraKeyset * out;
-	ElektraKeyset * ks = ksNew (64, keyNew ("user:/a/1", ELEKTRA_KEY_END), keyNew ("user:/a/2", ELEKTRA_KEY_END), keyNew ("user:/a/b/1", ELEKTRA_KEY_END),
-			     keyNew ("user:/a/b/2", ELEKTRA_KEY_END), keyNew ("user:/ab/2", ELEKTRA_KEY_END), keyNew ("user:/b/1", ELEKTRA_KEY_END),
-			     keyNew ("user:/b/2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (64, elektraKeyNew ("user:/a/1", ELEKTRA_KEY_END), elektraKeyNew ("user:/a/2", ELEKTRA_KEY_END), elektraKeyNew ("user:/a/b/1", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/a/b/2", ELEKTRA_KEY_END), elektraKeyNew ("user:/ab/2", ELEKTRA_KEY_END), elektraKeyNew ("user:/b/1", ELEKTRA_KEY_END),
+			     elektraKeyNew ("user:/b/2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKeyset * values = 0;
 	ElektraKeyset * values_below_30 = 0;
 
-	global_a = keyNew ("user:/a", ELEKTRA_KEY_END);
+	global_a = elektraKeyNew ("user:/a", ELEKTRA_KEY_END);
 
 	ksForEach (ks, add_string);
 	ksForEach (ks, add_comment);
 
-	out = ksNew (0, ELEKTRA_KS_END);
+	out = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, has_a);
-	ksDel (out);
+	elektraKeysetDel (out);
 
-	out = ksNew (0, ELEKTRA_KS_END);
+	out = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, below_a);
-	ksDel (out);
+	elektraKeysetDel (out);
 
-	out = ksNew (0, ELEKTRA_KS_END);
+	out = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, direct_below_a);
-	ksDel (out);
+	elektraKeysetDel (out);
 
-	ksDel (ks);
-	keyDel (global_a);
+	elektraKeysetDel (ks);
+	elektraKeyDel (global_a);
 	global_a = 0;
 
-	values = ksNew (64, keyNew ("user:/a", ELEKTRA_KEY_VALUE, "40", ELEKTRA_KEY_END), keyNew ("user:/b", ELEKTRA_KEY_VALUE, "20", ELEKTRA_KEY_END),
-			keyNew ("user:/c", ELEKTRA_KEY_VALUE, "80", ELEKTRA_KEY_END), keyNew ("user:/d", ELEKTRA_KEY_VALUE, "24", ELEKTRA_KEY_END),
-			keyNew ("user:/e", ELEKTRA_KEY_VALUE, "32", ELEKTRA_KEY_END), keyNew ("user:/f", ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END),
-			keyNew ("user:/g", ELEKTRA_KEY_VALUE, "43", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	values = elektraKeysetNew (64, elektraKeyNew ("user:/a", ELEKTRA_KEY_VALUE, "40", ELEKTRA_KEY_END), elektraKeyNew ("user:/b", ELEKTRA_KEY_VALUE, "20", ELEKTRA_KEY_END),
+			elektraKeyNew ("user:/c", ELEKTRA_KEY_VALUE, "80", ELEKTRA_KEY_END), elektraKeyNew ("user:/d", ELEKTRA_KEY_VALUE, "24", ELEKTRA_KEY_END),
+			elektraKeyNew ("user:/e", ELEKTRA_KEY_VALUE, "32", ELEKTRA_KEY_END), elektraKeyNew ("user:/f", ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END),
+			elektraKeyNew ("user:/g", ELEKTRA_KEY_VALUE, "43", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	/* add together */
 	ksForEach (values, sum_helper);
 
-	values_below_30 = ksNew (0, ELEKTRA_KS_END);
+	values_below_30 = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ksFilter (values_below_30, values, below_30);
 	ksForEach (values_below_30, sum_helper);
 
 	ksForEach (values, find_80);
-	ksCurrent (values);		       /* here is user:/c */
-	ksLookupByName (values, "user:/c", 0); /* should find the same */
-	ksDel (values);
-	ksDel (values_below_30);
+	elektraKeysetCurrent (values);		       /* here is user:/c */
+	elektraKeysetLookupByName (values, "user:/c", 0); /* should find the same */
+	elektraKeysetDel (values);
+	elektraKeysetDel (values_below_30);
 }

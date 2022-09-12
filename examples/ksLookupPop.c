@@ -11,26 +11,26 @@
 //! [f]
 void f (ElektraKeyset * iterator, ElektraKeyset * lookup)
 {
-	ElektraKeyset * append = ksNew (ksGetSize (lookup), ELEKTRA_KS_END);
+	ElektraKeyset * append = elektraKeysetNew (elektraKeysetGetSize (lookup), ELEKTRA_KS_END);
 	ElektraKey * current;
 
-	ksRewind (iterator);
-	while ((current = ksNext (iterator)))
+	elektraKeysetRewind (iterator);
+	while ((current = elektraKeysetNext (iterator)))
 	{
-		ElektraKey * key = ksLookup (lookup, current, ELEKTRA_KDB_O_POP);
+		ElektraKey * key = elektraKeysetLookup (lookup, current, ELEKTRA_KDB_O_POP);
 		// do something...
-		ksAppendKey (append, key); // now append it to append, not lookup!
-		keyDel (key);		   // make sure to ALWAYS delete poped keys.
+		elektraKeysetAppendKey (append, key); // now append it to append, not lookup!
+		elektraKeyDel (key);		   // make sure to ALWAYS delete poped keys.
 	}
-	ksAppend (lookup, append);
+	elektraKeysetAppend (lookup, append);
 	// now lookup needs to be sorted only once, append never
-	ksDel (append);
+	elektraKeysetDel (append);
 }
 //! [f]
 
 int main (void)
 {
-	ElektraKeyset * ks1 = ksNew (20, ELEKTRA_KS_END);
-	ElektraKeyset * ks2 = ksNew (20, ELEKTRA_KS_END);
+	ElektraKeyset * ks1 = elektraKeysetNew (20, ELEKTRA_KS_END);
+	ElektraKeyset * ks2 = elektraKeysetNew (20, ELEKTRA_KS_END);
 	f (ks1, ks2);
 }

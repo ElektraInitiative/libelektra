@@ -14,7 +14,7 @@ ElektraKey * copy;
 void l (ElektraKey * k)
 {
 	// receive copy
-	keyCopyAllMeta (k, copy);
+	elektraKeyCopyAllMeta (k, copy);
 	// the caller will see the changed key k
 	// with all the metadata from copy
 }
@@ -29,30 +29,30 @@ int needsSharedData (ElektraKey * k)
 void o (ElektraKeyset * ks)
 {
 	ElektraKey * current;
-	ElektraKey * shared = keyNew ("/", ELEKTRA_KEY_END);
-	keySetMeta (shared, "shared1", "this metadata should be shared among many keys");
-	keySetMeta (shared, "shared2", "this metadata should be shared among many keys also");
-	keySetMeta (shared, "shared3", "this metadata should be shared among many keys too");
+	ElektraKey * shared = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetMeta (shared, "shared1", "this metadata should be shared among many keys");
+	elektraKeySetMeta (shared, "shared2", "this metadata should be shared among many keys also");
+	elektraKeySetMeta (shared, "shared3", "this metadata should be shared among many keys too");
 
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
+	elektraKeysetRewind (ks);
+	while ((current = elektraKeysetNext (ks)) != 0)
 	{
-		if (needsSharedData (current)) keyCopyAllMeta (current, shared);
+		if (needsSharedData (current)) elektraKeyCopyAllMeta (current, shared);
 	}
 
-	keyDel (shared);
+	elektraKeyDel (shared);
 }
 //! [Shared Meta All]
 
 int main (void)
 {
-	ElektraKey * k = keyNew ("user:/key", ELEKTRA_KEY_END);
-	copy = keyNew ("user:/copy", ELEKTRA_KEY_END);
+	ElektraKey * k = elektraKeyNew ("user:/key", ELEKTRA_KEY_END);
+	copy = elektraKeyNew ("user:/copy", ELEKTRA_KEY_END);
 	l (k);
-	keyDel (k);
-	keyDel (copy);
+	elektraKeyDel (k);
+	elektraKeyDel (copy);
 
-	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, ELEKTRA_KS_END);
 	o (ks);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 }

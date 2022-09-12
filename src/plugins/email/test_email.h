@@ -15,16 +15,16 @@
 
 static void testEmail (char const * const email, const int ret)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/email", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (10, keyNew ("user:/tests/email/totest", ELEKTRA_KEY_VALUE, email, ELEKTRA_KEY_META, "check/email", "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/email", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (10, elektraKeyNew ("user:/tests/email/totest", ELEKTRA_KEY_VALUE, email, ELEKTRA_KEY_META, "check/email", "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[300];
 	(void) snprintf (message, 300, "validation of email address “%s” returned %d instead of %d", email, pluginStatus, ret);
 	succeed_if (pluginStatus == ret, message);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 

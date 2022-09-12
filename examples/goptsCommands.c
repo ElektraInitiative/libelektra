@@ -34,52 +34,52 @@ extern char ** environ;
 
 static ElektraKeyset * createSpec (void)
 {
-	return ksNew (10, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/printversion", ELEKTRA_KEY_META, "description",
+	return elektraKeysetNew (10, elektraKeyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END),
+		      elektraKeyNew (SPEC_BASE_KEY "/printversion", ELEKTRA_KEY_META, "description",
 			      "print version information and exit (ignoring all other options/commands/parameters)", ELEKTRA_KEY_META, "opt", "v",
 			      ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/getter", ELEKTRA_KEY_META, "description", "get a key's value", ELEKTRA_KEY_META, "command", "get", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/getter/verbose", ELEKTRA_KEY_META, "description",
+		      elektraKeyNew (SPEC_BASE_KEY "/getter", ELEKTRA_KEY_META, "description", "get a key's value", ELEKTRA_KEY_META, "command", "get", ELEKTRA_KEY_END),
+		      elektraKeyNew (SPEC_BASE_KEY "/getter/verbose", ELEKTRA_KEY_META, "description",
 			      "print additional information about where the value comes from", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long",
 			      "verbose", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/getter/keyname", ELEKTRA_KEY_META, "description", "name of the key to read", ELEKTRA_KEY_META, "args",
+		      elektraKeyNew (SPEC_BASE_KEY "/getter/keyname", ELEKTRA_KEY_META, "description", "name of the key to read", ELEKTRA_KEY_META, "args",
 			      "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter", ELEKTRA_KEY_META, "description", "set a key's value", ELEKTRA_KEY_META, "command", "set", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter/verbose", ELEKTRA_KEY_META, "description",
+		      elektraKeyNew (SPEC_BASE_KEY "/setter", ELEKTRA_KEY_META, "description", "set a key's value", ELEKTRA_KEY_META, "command", "set", ELEKTRA_KEY_END),
+		      elektraKeyNew (SPEC_BASE_KEY "/setter/verbose", ELEKTRA_KEY_META, "description",
 			      "print additional information about where the value will be stored", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META,
 			      "opt/long", "verbose", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter/keyname", ELEKTRA_KEY_META, "description", "name of the key to write", ELEKTRA_KEY_META, "args",
+		      elektraKeyNew (SPEC_BASE_KEY "/setter/keyname", ELEKTRA_KEY_META, "description", "name of the key to write", ELEKTRA_KEY_META, "args",
 			      "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter/value", ELEKTRA_KEY_META, "description", "value to be written", ELEKTRA_KEY_META, "args", "indexed",
+		      elektraKeyNew (SPEC_BASE_KEY "/setter/value", ELEKTRA_KEY_META, "description", "value to be written", ELEKTRA_KEY_META, "args", "indexed",
 			      ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_END),
-		      keyNew (SPEC_BASE_KEY "/dynamic/#", ELEKTRA_KEY_META, "description", "dynamically call a user-supplied command", ELEKTRA_KEY_META,
+		      elektraKeyNew (SPEC_BASE_KEY "/dynamic/#", ELEKTRA_KEY_META, "description", "dynamically call a user-supplied command", ELEKTRA_KEY_META,
 			      "args", "remaining", ELEKTRA_KEY_END),
 		      ELEKTRA_KS_END);
 }
 
 static int setupSpec (void)
 {
-	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
-	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	kdbGet (kdb, ks, parentKey);
+	ElektraKey * parentKey = elektraKeyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
+	ElektraKdb * kdb = elektraKdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKdbGet (kdb, ks, parentKey);
 
-	ElektraKeyset * existing = ksCut (ks, parentKey);
-	if (ksGetSize (existing) > 0)
+	ElektraKeyset * existing = elektraKeysetCut (ks, parentKey);
+	if (elektraKeysetGetSize (existing) > 0)
 	{
-		kdbClose (kdb, parentKey);
-		ksDel (ks);
-		ksDel (existing);
+		elektraKdbClose (kdb, parentKey);
+		elektraKeysetDel (ks);
+		elektraKeysetDel (existing);
 		return 0;
 	}
-	ksDel (existing);
+	elektraKeysetDel (existing);
 
 	ElektraKeyset * spec = createSpec ();
-	ksAppend (ks, spec);
-	ksDel (spec);
-	kdbSet (kdb, ks, parentKey);
-	kdbClose (kdb, parentKey);
-	ksDel (ks);
+	elektraKeysetAppend (ks, spec);
+	elektraKeysetDel (spec);
+	elektraKdbSet (kdb, ks, parentKey);
+	elektraKdbClose (kdb, parentKey);
+	elektraKeysetDel (ks);
 
 	return 1;
 }
@@ -87,15 +87,15 @@ static int setupSpec (void)
 
 static void removeSpec (void)
 {
-	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
-	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	kdbGet (kdb, ks, parentKey);
-	ElektraKeyset * spec = ksCut (ks, parentKey);
-	ksDel (spec);
-	kdbSet (kdb, ks, parentKey);
-	kdbClose (kdb, parentKey);
-	ksDel (ks);
+	ElektraKey * parentKey = elektraKeyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
+	ElektraKdb * kdb = elektraKdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKdbGet (kdb, ks, parentKey);
+	ElektraKeyset * spec = elektraKeysetCut (ks, parentKey);
+	elektraKeysetDel (spec);
+	elektraKdbSet (kdb, ks, parentKey);
+	elektraKdbClose (kdb, parentKey);
+	elektraKeysetDel (ks);
 }
 
 // -----------------
@@ -113,120 +113,120 @@ int main (int argc, const char ** argv)
 		return EXIT_FAILURE;
 	}
 
-	ElektraKey * parentKey = keyNew (BASE_KEY, ELEKTRA_KEY_END);
-	ElektraKeyset * goptsConfig = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (BASE_KEY, ELEKTRA_KEY_END);
+	ElektraKeyset * goptsConfig = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * contract = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	elektraGOptsContract (contract, argc, argv, (const char * const *) environ, parentKey, goptsConfig);
 
-	ElektraKdb * kdb = kdbOpen (contract, parentKey);
+	ElektraKdb * kdb = elektraKdbOpen (contract, parentKey);
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	int rc = kdbGet (kdb, ks, parentKey);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	int rc = elektraKdbGet (kdb, ks, parentKey);
 
 	if (rc == -1)
 	{
-		fprintf (stderr, "ERROR: kdbGet failed! %s\n", keyString (keyGetMeta (parentKey, "error/reason")));
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		ksDel (ks);
+		fprintf (stderr, "ERROR: kdbGet failed! %s\n", elektraKeyString (elektraKeyGetMeta (parentKey, "error/reason")));
+		elektraKdbClose (kdb, parentKey);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		removeSpec ();
 		return EXIT_FAILURE;
 	}
 
-	ElektraKey * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
-	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
+	ElektraKey * helpKey = elektraKeysetLookupByName (ks, "proc:/elektra/gopts/help", 0);
+	if (helpKey != NULL && elektraStrCmp (elektraKeyString (helpKey), "1") == 0)
 	{
-		const char * help = keyString (ksLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
+		const char * help = elektraKeyString (elektraKeysetLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
 		printf ("%s\n", help);
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKdbClose (kdb, parentKey);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		removeSpec ();
 		return EXIT_SUCCESS;
 	}
 
 	printf ("A real implementation would now\n");
 
-	ElektraKey * lookup = ksLookupByName (ks, BASE_KEY "/printversion", 0);
-	if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
+	ElektraKey * lookup = elektraKeysetLookupByName (ks, BASE_KEY "/printversion", 0);
+	if (lookup != NULL && elektraStrCmp (elektraKeyString (lookup), "1") == 0)
 	{
 		printf ("print version information\n");
 
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKdbClose (kdb, parentKey);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		removeSpec ();
 		return EXIT_SUCCESS;
 	}
 
-	lookup = ksLookupByName (ks, BASE_KEY "", 0);
-	if (lookup != NULL && elektraStrCmp (keyString (lookup), "getter") == 0)
+	lookup = elektraKeysetLookupByName (ks, BASE_KEY "", 0);
+	if (lookup != NULL && elektraStrCmp (elektraKeyString (lookup), "getter") == 0)
 	{
-		lookup = ksLookupByName (ks, BASE_KEY "/getter/keyname", 0);
-		if (lookup == NULL || strlen (keyString (lookup)) == 0)
+		lookup = elektraKeysetLookupByName (ks, BASE_KEY "/getter/keyname", 0);
+		if (lookup == NULL || strlen (elektraKeyString (lookup)) == 0)
 		{
 			printf ("report the error 'empty parameter: keyname'\n");
-			kdbClose (kdb, parentKey);
-			keyDel (parentKey);
-			ksDel (ks);
+			elektraKdbClose (kdb, parentKey);
+			elektraKeyDel (parentKey);
+			elektraKeysetDel (ks);
 			removeSpec ();
 			return EXIT_SUCCESS;
 		}
-		printf ("get the key '%s'\n", keyString (lookup));
+		printf ("get the key '%s'\n", elektraKeyString (lookup));
 
-		lookup = ksLookupByName (ks, BASE_KEY "/getter/verbose", 0);
-		if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
+		lookup = elektraKeysetLookupByName (ks, BASE_KEY "/getter/verbose", 0);
+		if (lookup != NULL && elektraStrCmp (elektraKeyString (lookup), "1") == 0)
 		{
 			printf ("print where the read key value comes from\n");
 		}
 	}
-	else if (lookup != NULL && elektraStrCmp (keyString (lookup), "setter") == 0)
+	else if (lookup != NULL && elektraStrCmp (elektraKeyString (lookup), "setter") == 0)
 	{
 		const char * keyname;
 
-		lookup = ksLookupByName (ks, BASE_KEY "/setter/keyname", 0);
-		if (lookup == NULL || strlen (keyname = keyString (lookup)) == 0)
+		lookup = elektraKeysetLookupByName (ks, BASE_KEY "/setter/keyname", 0);
+		if (lookup == NULL || strlen (keyname = elektraKeyString (lookup)) == 0)
 		{
 			printf ("report the error 'missing parameter: keyname'\n");
-			kdbClose (kdb, parentKey);
-			keyDel (parentKey);
-			ksDel (ks);
+			elektraKdbClose (kdb, parentKey);
+			elektraKeyDel (parentKey);
+			elektraKeysetDel (ks);
 			removeSpec ();
 			return EXIT_SUCCESS;
 		}
-		lookup = ksLookupByName (ks, BASE_KEY "/setter/value", 0);
+		lookup = elektraKeysetLookupByName (ks, BASE_KEY "/setter/value", 0);
 		if (lookup == NULL)
 		{
 			printf ("report the error 'missing parameter: value'\n");
-			kdbClose (kdb, parentKey);
-			keyDel (parentKey);
-			ksDel (ks);
+			elektraKdbClose (kdb, parentKey);
+			elektraKeyDel (parentKey);
+			elektraKeysetDel (ks);
 			removeSpec ();
 			return EXIT_SUCCESS;
 		}
-		printf ("set the key '%s' with the value '%s'\n", keyname, keyString (lookup));
+		printf ("set the key '%s' with the value '%s'\n", keyname, elektraKeyString (lookup));
 
-		lookup = ksLookupByName (ks, BASE_KEY "/setter/verbose", 0);
-		if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
+		lookup = elektraKeysetLookupByName (ks, BASE_KEY "/setter/verbose", 0);
+		if (lookup != NULL && elektraStrCmp (elektraKeyString (lookup), "1") == 0)
 		{
 			printf ("print where the key value is stored now\n");
 		}
 	}
 	else
 	{
-		ElektraKey * arrayParent = ksLookupByName (ks, BASE_KEY "/dynamic", 0);
+		ElektraKey * arrayParent = elektraKeysetLookupByName (ks, BASE_KEY "/dynamic", 0);
 		ElektraKeyset * dynamicCommand = elektraArrayGet (arrayParent, ks);
 
-		if (ksGetSize (dynamicCommand) > 0)
+		if (elektraKeysetGetSize (dynamicCommand) > 0)
 		{
 			printf ("dynamically invoke the command '");
-			ksRewind (dynamicCommand);
-			printf ("%s' with arguments:", keyString (ksNext (dynamicCommand)));
+			elektraKeysetRewind (dynamicCommand);
+			printf ("%s' with arguments:", elektraKeyString (elektraKeysetNext (dynamicCommand)));
 			ElektraKey * cur = NULL;
-			while ((cur = ksNext (dynamicCommand)) != NULL)
+			while ((cur = elektraKeysetNext (dynamicCommand)) != NULL)
 			{
-				printf (" %s", keyString (cur));
+				printf (" %s", elektraKeyString (cur));
 			}
 			printf ("\n");
 		}
@@ -236,9 +236,9 @@ int main (int argc, const char ** argv)
 		}
 	}
 
-	kdbClose (kdb, parentKey);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKdbClose (kdb, parentKey);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 
 	// normally, you shouldn't remove the spec,
 	// because you shouldn't have mounted it inside the application,

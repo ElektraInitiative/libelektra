@@ -12,17 +12,17 @@
 
 int main (void)
 {
-	ElektraKeyset * myConfig = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * key = keyNew ("system:/test/myapp", ELEKTRA_KEY_END);
-	ElektraKdb * handle = kdbOpen (NULL, key);
+	ElektraKeyset * myConfig = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * key = elektraKeyNew ("system:/test/myapp", ELEKTRA_KEY_END);
+	ElektraKdb * handle = elektraKdbOpen (NULL, key);
 
-	kdbGet (handle, myConfig, key);
+	elektraKdbGet (handle, myConfig, key);
 
-	keySetName (key, "user:/test/myapp");
-	kdbGet (handle, myConfig, key);
+	elektraKeySetName (key, "user:/test/myapp");
+	elektraKdbGet (handle, myConfig, key);
 
 	// check for errors in key
-	keyDel (key);
+	elektraKeyDel (key);
 
 	/*
 	ksRewind(myConfig);
@@ -32,19 +32,19 @@ int main (void)
 	}
 	*/
 
-	key = ksLookupByName (myConfig, "/test/myapp/key", 0);
+	key = elektraKeysetLookupByName (myConfig, "/test/myapp/key", 0);
 
 	// check if key is not 0 and work with it...
 	if (key)
 	{
-		printf ("%s\n", keyString (key));
+		printf ("%s\n", elektraKeyString (key));
 	}
 
-	ksDel (myConfig); // delete the in-memory configuration
+	elektraKeysetDel (myConfig); // delete the in-memory configuration
 
 
 	// maybe you want kdbSet() myConfig here
 
-	kdbClose (handle, 0); // no more affairs with the key database.
+	elektraKdbClose (handle, 0); // no more affairs with the key database.
 	return 0;
 }

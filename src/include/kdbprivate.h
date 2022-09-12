@@ -495,7 +495,7 @@ struct _Split
  *
  **************************************/
 
-ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize);
+ssize_t elektraKeySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize);
 
 #if 1 == 0
 /*Methods for split keysets */
@@ -570,17 +570,17 @@ Plugin * mountGetBackend (ElektraKdb * handle, ElektraKey * key);
 
 void keyInit (ElektraKey * key);
 
-int keyClearSync (ElektraKey * key);
+int elektraKeyClearSync (ElektraKey * key);
 
-int keyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const ElektraKey * newPrefix);
+int elektraKeyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const ElektraKey * newPrefix);
 
 /*Private helper for keyset*/
-int ksInit (ElektraKeyset * ks);
-int ksClose (ElektraKeyset * ks);
+int elektraKeysetInit (ElektraKeyset * ks);
+int elektraKeysetClose (ElektraKeyset * ks);
 
-int ksResize (ElektraKeyset * ks, size_t size);
-size_t ksGetAlloc (const ElektraKeyset * ks);
-ElektraKeyset * ksDeepDup (const ElektraKeyset * source);
+int elektraKeysetResize (ElektraKeyset * ks, size_t size);
+size_t elektraKeysetGetAlloc (const ElektraKeyset * ks);
+ElektraKeyset * elektraKeysetDeepDup (const ElektraKeyset * source);
 
 ElektraKey * elektraKsPopAtCursor (ElektraKeyset * ks, elektraCursor pos);
 
@@ -592,21 +592,21 @@ ssize_t elektraMemmove (ElektraKey ** array1, ElektraKey ** array2, size_t size)
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 
-ElektraKeyset * ksRenameKeys (ElektraKeyset * config, const char * name);
+ElektraKeyset * elektraKeysetRenameKeys (ElektraKeyset * config, const char * name);
 
 ssize_t ksRename (ElektraKeyset * ks, const ElektraKey * root, const ElektraKey * newRoot);
 
-elektraCursor ksFindHierarchy (const ElektraKeyset * ks, const ElektraKey * root, elektraCursor * end);
+elektraCursor elektraKeysetFindHierarchy (const ElektraKeyset * ks, const ElektraKey * root, elektraCursor * end);
 ElektraKeyset * ksBelow (const ElektraKeyset * ks, const ElektraKey * root);
 
 
 /* Conveniences Methods for Making Tests */
 
-int keyIsSpec (const ElektraKey * key);
-int keyIsProc (const ElektraKey * key);
-int keyIsDir (const ElektraKey * key);
-int keyIsSystem (const ElektraKey * key);
-int keyIsUser (const ElektraKey * key);
+int elektraKeyIsSpec (const ElektraKey * key);
+int elektraKeyIsProc (const ElektraKey * key);
+int elektraKeyIsDir (const ElektraKey * key);
+int elektraKeyIsSystem (const ElektraKey * key);
+int elektraKeyIsUser (const ElektraKey * key);
 
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
 

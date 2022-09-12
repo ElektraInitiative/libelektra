@@ -33,16 +33,16 @@
  */
 static inline ElektraKeyset * elektraMiniContract (void)
 {
-	return ksNew (30, keyNew ("system:/elektra/modules/mini", ELEKTRA_KEY_VALUE, "mini plugin waits for your orders", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/modules/mini/exports", ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/modules/mini/exports/get", ELEKTRA_KEY_FUNC, elektraMiniGet, ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/modules/mini/exports/set", ELEKTRA_KEY_FUNC, elektraMiniSet, ELEKTRA_KEY_END),
+	return elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/mini", ELEKTRA_KEY_VALUE, "mini plugin waits for your orders", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/modules/mini/exports", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/modules/mini/exports/get", ELEKTRA_KEY_FUNC, elektraMiniGet, ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/modules/mini/exports/set", ELEKTRA_KEY_FUNC, elektraMiniSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-		      keyNew ("system:/elektra/modules/mini/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/23", ELEKTRA_KEY_VALUE, "23", ELEKTRA_KEY_END), // 23 ↔︎ `#`
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3B", ELEKTRA_KEY_VALUE, "3B", ELEKTRA_KEY_END), // 3B ↔︎ `;`
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3D", ELEKTRA_KEY_VALUE, "3D", ELEKTRA_KEY_END), // 3D ↔︎ `=`
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/5C", ELEKTRA_KEY_VALUE, "5C", ELEKTRA_KEY_END), // 5C ↔︎ `\`
+		      elektraKeyNew ("system:/elektra/modules/mini/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/elektra/modules/mini/config/needs/chars/23", ELEKTRA_KEY_VALUE, "23", ELEKTRA_KEY_END), // 23 ↔︎ `#`
+		      elektraKeyNew ("system:/elektra/modules/mini/config/needs/chars/3B", ELEKTRA_KEY_VALUE, "3B", ELEKTRA_KEY_END), // 3B ↔︎ `;`
+		      elektraKeyNew ("system:/elektra/modules/mini/config/needs/chars/3D", ELEKTRA_KEY_VALUE, "3D", ELEKTRA_KEY_END), // 3D ↔︎ `=`
+		      elektraKeyNew ("system:/elektra/modules/mini/config/needs/chars/5C", ELEKTRA_KEY_VALUE, "5C", ELEKTRA_KEY_END), // 5C ↔︎ `\`
 		      ELEKTRA_KS_END);
 }
 
@@ -147,13 +147,13 @@ static inline void parseLine (char * line, size_t lineNumber, ElektraKeyset * ke
 	char * name = elektraRstrip (pair, NULL);
 	char * value = elektraLskip (equals + 1);
 
-	ElektraKey * key = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
-	keyAddName (key, name);
-	keySetString (key, value);
-	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));
-	ELEKTRA_LOG_DEBUG ("Value: “%s”", keyString (key));
+	ElektraKey * key = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_END);
+	elektraKeyAddName (key, name);
+	elektraKeySetString (key, value);
+	ELEKTRA_LOG_DEBUG ("Name:  “%s”", elektraKeyName (key));
+	ELEKTRA_LOG_DEBUG ("Value: “%s”", elektraKeyString (key));
 
-	ksAppendKey (keySet, key);
+	elektraKeysetAppendKey (keySet, key);
 }
 
 /**
@@ -191,7 +191,7 @@ static int parseINI (FILE * file, ElektraKeyset * keySet, ElektraKey * parentKey
 
 	if (!feof (file))
 	{
-		ELEKTRA_LOG_WARNING ("%s:%zu: Unable to read line", keyString (parentKey), lineNumber);
+		ELEKTRA_LOG_WARNING ("%s:%zu: Unable to read line", elektraKeyString (parentKey), lineNumber);
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unable to read line %zu: %s", lineNumber, strerror (errno));
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -221,7 +221,7 @@ static int parseFile (ElektraKeyset * returned, ElektraKey * parentKey)
 
 	ELEKTRA_LOG ("Read configuration data");
 	int errorNumber = errno;
-	FILE * source = fopen (keyString (parentKey), "r");
+	FILE * source = fopen (elektraKeyString (parentKey), "r");
 
 	if (!source || (parseINI (source, returned, parentKey) < 0) | (int) (fclose (source) != 0)) //! OCLint
 	{
@@ -285,13 +285,13 @@ static inline int writeFile (FILE * file, ElektraKeyset * keySet, ElektraKey * p
 
 	int status = 0;
 	int errorNumber = errno;
-	ksRewind (keySet);
-	for (ElektraKey * key; (key = ksNext (keySet)) != 0 && status >= 0;)
+	elektraKeysetRewind (keySet);
+	for (ElektraKey * key; (key = elektraKeysetNext (keySet)) != 0 && status >= 0;)
 	{
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
-		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
+		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, elektraKeyString (key));
 
-		status = fprintf (file, "%s=%s\n", name, keyString (key));
+		status = fprintf (file, "%s=%s\n", name, elektraKeyString (key));
 	}
 	return checkWrite (status, errorNumber, parentKey);
 }
@@ -303,12 +303,12 @@ static inline int writeFile (FILE * file, ElektraKeyset * keySet, ElektraKey * p
 /** @see elektraDocGet */
 int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/mini"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/mini"))
 	{
 		ELEKTRA_LOG_DEBUG ("Retrieve plugin contract");
 		ElektraKeyset * contract = elektraMiniContract ();
-		ksAppend (returned, contract);
-		ksDel (contract);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
@@ -321,7 +321,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 {
 	ELEKTRA_LOG ("Write configuration data");
 	int errorNumber = errno;
-	FILE * destination = fopen (keyString (parentKey), "w");
+	FILE * destination = fopen (elektraKeyString (parentKey), "w");
 
 	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (int) (fclose (destination) == EOF)) //! OCLint
 	{

@@ -15,8 +15,8 @@
 static void blacklistValidValues (const ElektraKey * key, ElektraKeyset * validValues)
 {
 
-	const ElektraKey * maxKey = keyGetMeta (key, "check/blacklist");
-	const char * max = keyString (maxKey);
+	const ElektraKey * maxKey = elektraKeyGetMeta (key, "check/blacklist");
+	const char * max = elektraKeyString (maxKey);
 
 	char elem[sizeof ("check/blacklist/") + ELEKTRA_MAX_ARRAY_SIZE];
 	strcpy (elem, "check/blacklist/");
@@ -26,11 +26,11 @@ static void blacklistValidValues (const ElektraKey * key, ElektraKeyset * validV
 	elektraWriteArrayNumber (indexStart, index);
 	while (strcmp (indexStart, max) <= 0)
 	{
-		const ElektraKey * blacklistKey = keyGetMeta (key, elem);
-		const char * name = keyString (blacklistKey);
-		ElektraKey * k = keyNew ("user:/0", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (kdb_unsigned_long_long_t), ELEKTRA_KEY_END);
-		keySetBaseName (k, name);
-		ksAppendKey (validValues, k);
+		const ElektraKey * blacklistKey = elektraKeyGetMeta (key, elem);
+		const char * name = elektraKeyString (blacklistKey);
+		ElektraKey * k = elektraKeyNew ("user:/0", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (kdb_unsigned_long_long_t), ELEKTRA_KEY_END);
+		elektraKeySetBaseName (k, name);
+		elektraKeysetAppendKey (validValues, k);
 		++index;
 		elektraWriteArrayNumber (indexStart, index);
 	}
@@ -39,26 +39,26 @@ static void blacklistValidValues (const ElektraKey * key, ElektraKeyset * validV
 static bool elektraCheckBlacklist (const ElektraKey * key)
 {
 
-	ElektraKeyset * validValues = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * validValues = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	blacklistValidValues (key, validValues);
 
-	char * values = elektraStrDup (keyString (key));
+	char * values = elektraStrDup (elektraKeyString (key));
 	char * value = values;
 
-	ElektraKey * valueKey = keyNew ("user:/0", ELEKTRA_KEY_END);
+	ElektraKey * valueKey = elektraKeyNew ("user:/0", ELEKTRA_KEY_END);
 
-	keySetBaseName (valueKey, value);
-	if (ksLookup (validValues, valueKey, 0) != NULL)
+	elektraKeySetBaseName (valueKey, value);
+	if (elektraKeysetLookup (validValues, valueKey, 0) != NULL)
 	{
-		keyDel (valueKey);
-		ksDel (validValues);
+		elektraKeyDel (valueKey);
+		elektraKeysetDel (validValues);
 		elektraFree (values);
 		return false;
 	}
 
-	keyDel (valueKey);
-	ksDel (validValues);
+	elektraKeyDel (valueKey);
+	elektraKeysetDel (validValues);
 	elektraFree (values);
 
 	return true;
@@ -66,13 +66,13 @@ static bool elektraCheckBlacklist (const ElektraKey * key)
 
 static void elektraSetErrorBlacklist (Plugin * handle ELEKTRA_UNUSED, const ElektraKey * key, ElektraKey * errorKey)
 {
-	const ElektraKey * maxKey = keyGetMeta (key, "check/blacklist");
-	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
+	const ElektraKey * maxKey = elektraKeyGetMeta (key, "check/blacklist");
+	const char * max = maxKey == NULL ? NULL : elektraKeyString (maxKey);
 
 	char * errorMessage = elektraFormat (
 		"The key '%s' with string: '%s' is not allowed\n"
 		"Blacklisted values:",
-		keyName (key), keyString (key));
+		elektraKeyName (key), elektraKeyString (key));
 
 	char elem[sizeof ("check/blacklist/") + ELEKTRA_MAX_ARRAY_SIZE];
 	strcpy (elem, "check/blacklist/");
@@ -82,8 +82,8 @@ static void elektraSetErrorBlacklist (Plugin * handle ELEKTRA_UNUSED, const Elek
 	elektraWriteArrayNumber (indexStart, index);
 	while (strcmp (indexStart, max) <= 0)
 	{
-		const ElektraKey * blacklistKey = keyGetMeta (key, elem);
-		const char * name = blacklistKey != NULL ? keyString (blacklistKey) : "";
+		const ElektraKey * blacklistKey = elektraKeyGetMeta (key, elem);
+		const char * name = blacklistKey != NULL ? elektraKeyString (blacklistKey) : "";
 		char * newErrorMessage = elektraFormat ("%s '%s'", errorMessage, name);
 		elektraFree (errorMessage);
 		errorMessage = newErrorMessage;
@@ -109,25 +109,25 @@ bool elektraBlacklistValidateKey (Plugin * handle, ElektraKey * key, ElektraKey 
 
 int elektraBlacklistGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/blacklist"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/blacklist"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/blacklist", ELEKTRA_KEY_VALUE, "blacklist plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports/get", ELEKTRA_KEY_FUNC, elektraBlacklistGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports/set", ELEKTRA_KEY_FUNC, elektraBlacklistSet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports/validateKey", ELEKTRA_KEY_FUNC, elektraBlacklistValidateKey, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/blacklist", ELEKTRA_KEY_VALUE, "blacklist plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blacklist/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blacklist/exports/get", ELEKTRA_KEY_FUNC, elektraBlacklistGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blacklist/exports/set", ELEKTRA_KEY_FUNC, elektraBlacklistSet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blacklist/exports/validateKey", ELEKTRA_KEY_FUNC, elektraBlacklistValidateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/blacklist/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/blacklist/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	for (elektraCursor it = 0; it < elektraKeysetGetSize (returned); ++it)
 	{
-		ElektraKey * cur = ksAtCursor (returned, it);
-		const ElektraKey * meta = keyGetMeta (cur, "check/blacklist");
+		ElektraKey * cur = elektraKeysetAtCursor (returned, it);
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/blacklist");
 		if (!meta) continue;
 		if (!elektraCheckBlacklist (cur))
 		{
@@ -141,10 +141,10 @@ int elektraBlacklistGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 int elektraBlacklistSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	for (elektraCursor it = 0; it < elektraKeysetGetSize (returned); ++it)
 	{
-		ElektraKey * cur = ksAtCursor (returned, it);
-		const ElektraKey * meta = keyGetMeta (cur, "check/blacklist");
+		ElektraKey * cur = elektraKeysetAtCursor (returned, it);
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/blacklist");
 		if (!meta) continue;
 		if (!elektraCheckBlacklist (cur))
 		{

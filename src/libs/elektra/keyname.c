@@ -251,7 +251,7 @@ keyDel(key);
  * @see keyGetName() as alternative to get a copy
  * @see keyUnescapedName to get an unescaped key name
  */
-const char * keyName (const ElektraKey * key)
+const char * elektraKeyName (const ElektraKey * key)
 {
 	if (!key) return 0;
 
@@ -277,7 +277,7 @@ const char * keyName (const ElektraKey * key)
  * @see keyGetName() for getting the Key's name
  * @see keyGetUnescapedNameSize() for getting the size of the unescaped name
  */
-ssize_t keyGetNameSize (const ElektraKey * key)
+ssize_t elektraKeyGetNameSize (const ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -308,7 +308,7 @@ ssize_t keyGetNameSize (const ElektraKey * key)
  * @see keyGetUnescapedNameSize() for getting the size of the unescaped name
  * @see keyName() for getting the escaped name of the Key
  */
-const void * keyUnescapedName (const ElektraKey * key)
+const void * elektraKeyUnescapedName (const ElektraKey * key)
 {
 	if (!key) return 0;
 	ELEKTRA_ASSERT (key->ukey != NULL, "invalid name");
@@ -332,7 +332,7 @@ const void * keyUnescapedName (const ElektraKey * key)
  * @see keyGetUnescapedName() for getting a copy of the unescaped name
  * @see keyGetNameSize() for getting the size of the escaped name
  */
-ssize_t keyGetUnescapedNameSize (const ElektraKey * key)
+ssize_t elektraKeyGetUnescapedNameSize (const ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -376,7 +376,7 @@ keyGetName(key, getBack, keyGetNameSize(key));
  * @see keyGetBaseName() for getting a Key's base name
  * @see keyGetNamespace() for getting the namespace of a Key's name
  */
-ssize_t keyGetName (const ElektraKey * key, char * returnedName, size_t maxSize)
+ssize_t elektraKeyGetName (const ElektraKey * key, char * returnedName, size_t maxSize)
 {
 	if (!key) return -1;
 
@@ -492,7 +492,7 @@ ssize_t keyGetUnescapedName (const ElektraKey * key, char * returnedName, size_t
  * @see keyName() for getting a pointer to the Key's name
  * @see keySetBaseName(), keyAddBaseName() for manipulating the base name
  */
-ssize_t keySetName (ElektraKey * key, const char * newName)
+ssize_t elektraKeySetName (ElektraKey * key, const char * newName)
 {
 	if (!key) return -1;
 	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
@@ -563,7 +563,7 @@ ssize_t keySetName (ElektraKey * key, const char * newName)
  * @see keySetName() for setting a Key's name
  * @see keyAddBaseName() for adding a basename to a Key
  */
-ssize_t keyAddName (ElektraKey * key, const char * newName)
+ssize_t elektraKeyAddName (ElektraKey * key, const char * newName)
 {
 	if (!key) return -1;
 	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
@@ -674,22 +674,22 @@ static size_t replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, 
  *            i.e. there is no prefix to replace
  * @retval  1 if the prefix was sucessfully replaced
  */
-int keyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const ElektraKey * newPrefix)
+int elektraKeyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const ElektraKey * newPrefix)
 {
 	if (key == NULL || oldPrefix == NULL || newPrefix == NULL) return -1;
 	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
 
 	// check namespace manually, because keyIsBelowOrSame has special handling for cascading keys
-	if (keyGetNamespace (key) != keyGetNamespace (oldPrefix)) return 0;
-	if (keyIsBelowOrSame (oldPrefix, key) != 1) return 0;
+	if (elektraKeyGetNamespace (key) != elektraKeyGetNamespace (oldPrefix)) return 0;
+	if (elektraKeyIsBelowOrSame (oldPrefix, key) != 1) return 0;
 
 	// same prefix -> nothing to do
-	if (keyCmp (oldPrefix, newPrefix) == 0) return 1;
+	if (elektraKeyCmp (oldPrefix, newPrefix) == 0) return 1;
 
 	if (key->keyUSize == oldPrefix->keyUSize)
 	{
 		// key is same as oldPrefix -> just copy name
-		keyCopy (key, newPrefix, ELEKTRA_KEY_CP_NAME);
+		elektraKeyCopy (key, newPrefix, ELEKTRA_KEY_CP_NAME);
 		return 1;
 	}
 
@@ -1237,7 +1237,7 @@ void elektraKeyNameUnescape (const char * canonicalName, char * unescapedName)
  * @see keyGetBaseNameSize() for getting the size of the Key's basename
  * @see keyName() for getting a pointer to the Key's name
  */
-const char * keyBaseName (const ElektraKey * key)
+const char * elektraKeyBaseName (const ElektraKey * key)
 {
 	if (!key) return 0;
 	if (!key->key) return "";
@@ -1275,9 +1275,9 @@ const char * keyBaseName (const ElektraKey * key)
  * @see keyName(), keyGetName() for getting a pointer / copy of the whole name
  * @see keySetName() for setting a Key's name
  */
-ssize_t keyGetBaseNameSize (const ElektraKey * key)
+ssize_t elektraKeyGetBaseNameSize (const ElektraKey * key)
 {
-	const char * baseName = keyBaseName (key);
+	const char * baseName = elektraKeyBaseName (key);
 	if (!baseName) return -1;
 
 	return elektraStrLen (baseName);
@@ -1312,7 +1312,7 @@ ssize_t keyGetBaseNameSize (const ElektraKey * key)
  * @see keyName(), keyGetName() for getting a pointer / copy of the whole name
  * @see keySetName() for setting a Key's name
  */
-ssize_t keyGetBaseName (const ElektraKey * key, char * returned, size_t maxSize)
+ssize_t elektraKeyGetBaseName (const ElektraKey * key, char * returned, size_t maxSize)
 {
 	if (key == NULL || returned == NULL) return -1;
 	if (maxSize == 0 || maxSize > SSIZE_MAX) return -1;
@@ -1323,7 +1323,7 @@ ssize_t keyGetBaseName (const ElektraKey * key, char * returned, size_t maxSize)
 		return 1;
 	}
 
-	const char * baseName = keyBaseName (key);
+	const char * baseName = elektraKeyBaseName (key);
 	if (baseName == NULL)
 	{
 		return -1;
@@ -1583,7 +1583,7 @@ static size_t keyAddBaseNameInternal (ElektraKey * key, const char * baseName)
  * @see keySetName() for setting the name of a key
  *
  */
-ssize_t keyAddBaseName (ElektraKey * key, const char * baseName)
+ssize_t elektraKeyAddBaseName (ElektraKey * key, const char * baseName)
 {
 	if (!key) return -1;
 	if (!baseName) return -1;
@@ -1641,7 +1641,7 @@ ssize_t keyAddBaseName (ElektraKey * key, const char * baseName)
  * @see keySetName() for setting a completely new name
  * @see keyname for more details on special names
  */
-ssize_t keySetBaseName (ElektraKey * key, const char * baseName)
+ssize_t elektraKeySetBaseName (ElektraKey * key, const char * baseName)
 {
 	if (!key) return -1;
 	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
@@ -1697,7 +1697,7 @@ ssize_t keySetBaseName (ElektraKey * key, const char * baseName)
  * @ingroup keyname
  * @see keySetNamespace() for setting a Key's namespace
  */
-elektraNamespace keyGetNamespace (const ElektraKey * key)
+elektraNamespace elektraKeyGetNamespace (const ElektraKey * key)
 {
 	if (!key) return ELEKTRA_NS_NONE;
 	return (elektraNamespace) key->ukey[0];
@@ -1721,7 +1721,7 @@ elektraNamespace keyGetNamespace (const ElektraKey * key)
  * @ingroup keyname
  * @see keyGetNamespace() for getting a Key's namespace
  */
-ssize_t keySetNamespace (ElektraKey * key, elektraNamespace ns)
+ssize_t elektraKeySetNamespace (ElektraKey * key, elektraNamespace ns)
 {
 	if (!key) return -1;
 	if (ns == ELEKTRA_NS_NONE) return -1;

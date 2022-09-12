@@ -38,20 +38,20 @@ int lift (ElektraKeyset * conf)
 
 void kdbGetByName (ElektraKdb * kdb, ElektraKeyset * conf, ElektraKey * parentKey, char * where)
 {
-	keySetName (parentKey, "system");
-	keyAddName (parentKey, where);
-	kdbGet (kdb, conf, parentKey);
+	elektraKeySetName (parentKey, "system");
+	elektraKeyAddName (parentKey, where);
+	elektraKdbGet (kdb, conf, parentKey);
 
-	keySetName (parentKey, "user");
-	keyAddName (parentKey, where);
-	kdbGet (kdb, conf, parentKey);
+	elektraKeySetName (parentKey, "user");
+	elektraKeyAddName (parentKey, where);
+	elektraKdbGet (kdb, conf, parentKey);
 }
 
 int main (int argc, char ** argv)
 {
-	ElektraKey * parentKey = keyNew ("", ELEKTRA_KEY_END);
-	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("", ELEKTRA_KEY_END);
+	ElektraKdb * kdb = elektraKdbOpen (NULL, parentKey);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	// get all config files
 	kdbGetByName (kdb, conf, parentKey, "/test/lift");
@@ -85,12 +85,12 @@ int main (int argc, char ** argv)
 	if (lift (conf))
 	{
 		printf ("Write out config\n");
-		keySetName (parentKey, "user:/test/lift");
-		kdbSet (kdb, conf, parentKey);
+		elektraKeySetName (parentKey, "user:/test/lift");
+		elektraKdbSet (kdb, conf, parentKey);
 	}
 
-	ksDel (conf);
-	kdbClose (kdb, parentKey);
-	keyDel (parentKey);
+	elektraKeysetDel (conf);
+	elektraKdbClose (kdb, parentKey);
+	elektraKeyDel (parentKey);
 	return retval;
 }

@@ -23,22 +23,22 @@ char * pluginNames[NUM_PLUGINS] = { "dump", "mmapstorage_crc", "mmapstorage", "q
 
 static void benchmarkDel (void)
 {
-	ksDel (large);
+	elektraKeysetDel (large);
 }
 
 static int benchmarkOpenPlugins (void)
 {
 	for (size_t i = 0; i < NUM_PLUGINS; ++i)
 	{
-		modules[i] = ksNew (0, ELEKTRA_KS_END);
+		modules[i] = elektraKeysetNew (0, ELEKTRA_KS_END);
 		elektraModulesInit (modules[i], 0);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-		ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+		ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginNames[i], modules[i], conf, errorKey);
 
-		const ElektraKey * metaWarnings = keyGetMeta (errorKey, "warnings");
+		const ElektraKey * metaWarnings = elektraKeyGetMeta (errorKey, "warnings");
 		if (metaWarnings) printf ("There are warnings for plugin: %s\n", pluginNames[i]);
-		const ElektraKey * metaError = keyGetMeta (errorKey, "error");
+		const ElektraKey * metaError = elektraKeyGetMeta (errorKey, "error");
 		if (metaError) printf ("There are errors for plugin: %s\n", pluginNames[i]);
 
 		if (plugin == 0)
@@ -48,16 +48,16 @@ static int benchmarkOpenPlugins (void)
 		}
 
 		plugins[i] = plugin;
-		keyDel (errorKey);
+		elektraKeyDel (errorKey);
 	}
 	return 0;
 }
 
 static void benchmarkIterate (ElektraKeyset * ks)
 {
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	ElektraKey * cur;
-	while ((cur = ksNext (ks)))
+	while ((cur = elektraKeysetNext (ks)))
 	{
 		__asm__("");
 	}
@@ -65,26 +65,26 @@ static void benchmarkIterate (ElektraKeyset * ks)
 
 static int benchmarkIterateName (ElektraKeyset * ks)
 {
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	ElektraKey * cur;
 	const char * test = "foo";
 	int i = 0;
-	while ((cur = ksNext (ks)))
+	while ((cur = elektraKeysetNext (ks)))
 	{
-		i = strncmp (test, keyName (cur), 3);
+		i = strncmp (test, elektraKeyName (cur), 3);
 	}
 	return i;
 }
 
 static int benchmarkIterateValue (ElektraKeyset * ks)
 {
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	ElektraKey * cur;
 	const char * test = "bar";
 	int i = 0;
-	while ((cur = ksNext (ks)))
+	while ((cur = elektraKeysetNext (ks)))
 	{
-		i = strncmp (test, keyString (cur), 3);
+		i = strncmp (test, elektraKeyString (cur), 3);
 	}
 	return i;
 }
@@ -102,7 +102,7 @@ int main (int argc, char ** argv)
 		init (argc, argv);
 
 		Plugin * plugin = plugins[i];
-		ElektraKey * parentKey = keyNew ("user:/benchmarks/storage", ELEKTRA_KEY_VALUE, tmpfilename, ELEKTRA_KEY_END);
+		ElektraKey * parentKey = elektraKeyNew ("user:/benchmarks/storage", ELEKTRA_KEY_VALUE, tmpfilename, ELEKTRA_KEY_END);
 
 		for (size_t run = 0; run < NUM_RUNS; ++run)
 		{
@@ -114,7 +114,7 @@ int main (int argc, char ** argv)
 			}
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "write keyset", timeGetDiffMicroseconds ());
 
-			ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+			ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
@@ -123,20 +123,20 @@ int main (int argc, char ** argv)
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "read keyset", timeGetDiffMicroseconds ());
 			benchmarkIterate (returned);
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "iterate keyset", timeGetDiffMicroseconds ());
-			ksDel (returned);
+			elektraKeysetDel (returned);
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "delete keyset", timeGetDiffMicroseconds ());
 
-			ElektraKeyset * returned2 = ksNew (0, ELEKTRA_KS_END);
+			ElektraKeyset * returned2 = elektraKeysetNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned2, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
 				return -1;
 			}
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "re-read keyset", timeGetDiffMicroseconds ());
-			ksDel (returned2);
+			elektraKeysetDel (returned2);
 			timeInit ();
 
-			ElektraKeyset * returned3 = ksNew (0, ELEKTRA_KS_END);
+			ElektraKeyset * returned3 = elektraKeysetNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned3, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
@@ -145,10 +145,10 @@ int main (int argc, char ** argv)
 			timeInit ();
 			benchmarkIterateName (returned3);
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "strcmp key name", timeGetDiffMicroseconds ());
-			ksDel (returned3);
+			elektraKeysetDel (returned3);
 			timeInit ();
 
-			ElektraKeyset * returned4 = ksNew (0, ELEKTRA_KS_END);
+			ElektraKeyset * returned4 = elektraKeysetNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned4, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
@@ -157,11 +157,11 @@ int main (int argc, char ** argv)
 			timeInit ();
 			benchmarkIterateValue (returned4);
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "strcmp key value", timeGetDiffMicroseconds ());
-			ksDel (returned4);
+			elektraKeysetDel (returned4);
 			timeInit ();
 		}
 		clean_temp_home ();
-		keyDel (parentKey);
+		elektraKeyDel (parentKey);
 	}
 
 	benchmarkDel ();

@@ -16,7 +16,7 @@
 
 static void testBom (const char * filename, int reject, int expected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (!reject)
 	{
@@ -24,20 +24,20 @@ static void testBom (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system:/reject/bom", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		conf = elektraKeysetNew (10, elektraKeyNew ("system:/reject/bom", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
 	PLUGIN_CLOSE ();
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 }
 
 static void testNull (const char * filename, int reject, int expected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (!reject)
 	{
@@ -45,20 +45,20 @@ static void testNull (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system:/reject/null", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		conf = elektraKeysetNew (10, elektraKeyNew ("system:/reject/null", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
 	PLUGIN_CLOSE ();
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 }
 
 static void testLEConsistency (const char * filename, int reject, int expected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (!reject)
 	{
@@ -66,20 +66,20 @@ static void testLEConsistency (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system:/check/lineending", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		conf = elektraKeysetNew (10, elektraKeyNew ("system:/check/lineending", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
 	PLUGIN_CLOSE ();
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 }
 
 static void testLEcrlf (const char * filename, int reject, int expected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (!reject)
 	{
@@ -87,21 +87,21 @@ static void testLEcrlf (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system:/check/lineending", ELEKTRA_KEY_END),
-			      keyNew ("system:/valid/lineending", ELEKTRA_KEY_VALUE, "CRLF", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		conf = elektraKeysetNew (10, elektraKeyNew ("system:/check/lineending", ELEKTRA_KEY_END),
+			      elektraKeyNew ("system:/valid/lineending", ELEKTRA_KEY_VALUE, "CRLF", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
 	PLUGIN_CLOSE ();
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 }
 
 static void testEncoding (const char * filename, int reject, int expected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/filecheck", ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (!reject)
 	{
@@ -109,16 +109,16 @@ static void testEncoding (const char * filename, int reject, int expected)
 	}
 	else
 	{
-		conf = ksNew (10, keyNew ("system:/check/encoding", ELEKTRA_KEY_END),
-			      keyNew ("system:/valid/encoding", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		conf = elektraKeysetNew (10, elektraKeyNew ("system:/check/encoding", ELEKTRA_KEY_END),
+			      elektraKeyNew ("system:/valid/encoding", ELEKTRA_KEY_VALUE, "UTF-8", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
 	PLUGIN_CLOSE ();
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 }
 
 int main (int argc, char ** argv)

@@ -67,10 +67,10 @@ static void * createTestSocket (void)
  * @param changeType change type
  * @param keyName    key name
  */
-static void sendTestNotification (void * socket, char * changeType, char * keyName)
+static void sendTestNotification (void * socket, char * changeType, char * elektraKeyName)
 {
 	succeed_if (zmq_send (socket, changeType, elektraStrLen (changeType), ZMQ_SNDMORE) != -1, "failed to send change type");
-	succeed_if (zmq_send (socket, keyName, elektraStrLen (keyName), 0) != -1, "failed to send key name");
+	succeed_if (zmq_send (socket, elektraKeyName, elektraStrLen (elektraKeyName), 0) != -1, "failed to send key name");
 }
 
 /**
@@ -120,15 +120,15 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test commit notification\n");
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqrecv");
 
 	void * pubSocket = createTestSocket ();
 
-	ksDel (plugin->global);
+	elektraKeysetDel (plugin->global);
 	plugin->global =
-		ksNew (5, keyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (5, elektraKeyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 
@@ -145,14 +145,14 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	test_callbackLoop = loop;
 	uv_run (loop, UV_RUN_DEFAULT);
 
-	succeed_if_same_string (expectedKeyName, keyName (test_callbackKey));
+	succeed_if_same_string (expectedKeyName, elektraKeyName (test_callbackKey));
 
 	zmq_close (pubSocket);
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
-	keyDel (test_callbackKey);
-	ksDel (plugin->global);
+	elektraKeyDel (test_callbackKey);
+	elektraKeysetDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -160,15 +160,15 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 {
 	printf ("test incomplete message\n");
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqrecv");
 
 	void * pubSocket = createTestSocket ();
 
-	ksDel (plugin->global);
+	elektraKeysetDel (plugin->global);
 	plugin->global =
-		ksNew (5, keyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (5, elektraKeyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 
@@ -196,7 +196,7 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
-	ksDel (plugin->global);
+	elektraKeysetDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 

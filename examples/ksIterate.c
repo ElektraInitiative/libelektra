@@ -14,9 +14,9 @@ void iterate_for (ElektraKeyset * ks)
 {
 	//! [iterate for]
 	ElektraKey * cur;
-	for (elektraCursor cursor = 0; (cur = ksAtCursor (ks, cursor)) != NULL; ++cursor)
+	for (elektraCursor cursor = 0; (cur = elektraKeysetAtCursor (ks, cursor)) != NULL; ++cursor)
 	{
-		printf ("%s\n", keyName (cur));
+		printf ("%s\n", elektraKeyName (cur));
 	}
 	//! [iterate for]
 }
@@ -28,9 +28,9 @@ void iterate_while (ElektraKeyset * ks)
 	elektraCursor cursor = 0;
 	ElektraKey * cur;
 
-	while ((cur = ksAtCursor (ks, cursor)) != 0)
+	while ((cur = elektraKeysetAtCursor (ks, cursor)) != 0)
 	{
-		printf ("%s\n", keyName (cur));
+		printf ("%s\n", elektraKeyName (cur));
 		++cursor;
 	}
 	//! [iterate while]
@@ -38,7 +38,7 @@ void iterate_while (ElektraKeyset * ks)
 
 int main (void)
 {
-	ElektraKeyset * ks = ksNew (20, keyNew ("user:/name1", ELEKTRA_KEY_END), keyNew ("user:/name2", ELEKTRA_KEY_END), keyNew ("user:/name3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, elektraKeyNew ("user:/name1", ELEKTRA_KEY_END), elektraKeyNew ("user:/name2", ELEKTRA_KEY_END), elektraKeyNew ("user:/name3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	iterate_while (ks);
 	iterate_for (ks);
 }

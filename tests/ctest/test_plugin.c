@@ -117,18 +117,18 @@ static void test_process (void)
 
 ElektraKeyset * set_pluginconf (void)
 {
-	return ksNew (10, keyNew ("system:/anything", ELEKTRA_KEY_VALUE, "backend", ELEKTRA_KEY_END), keyNew ("system:/more", ELEKTRA_KEY_END),
-		      keyNew ("system:/more/config", ELEKTRA_KEY_END), keyNew ("system:/more/config/below", ELEKTRA_KEY_END),
-		      keyNew ("system:/path", ELEKTRA_KEY_END), keyNew ("user:/anything", ELEKTRA_KEY_VALUE, "plugin", ELEKTRA_KEY_END),
-		      keyNew ("user:/more", ELEKTRA_KEY_END), keyNew ("user:/more/config", ELEKTRA_KEY_END), keyNew ("user:/more/config/below", ELEKTRA_KEY_END),
-		      keyNew ("user:/path", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (10, elektraKeyNew ("system:/anything", ELEKTRA_KEY_VALUE, "backend", ELEKTRA_KEY_END), elektraKeyNew ("system:/more", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/more/config", ELEKTRA_KEY_END), elektraKeyNew ("system:/more/config/below", ELEKTRA_KEY_END),
+		      elektraKeyNew ("system:/path", ELEKTRA_KEY_END), elektraKeyNew ("user:/anything", ELEKTRA_KEY_VALUE, "plugin", ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/more", ELEKTRA_KEY_END), elektraKeyNew ("user:/more/config", ELEKTRA_KEY_END), elektraKeyNew ("user:/more/config/below", ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/path", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_simple (void)
 {
 	printf ("Test plugin\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin * plugin = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, set_pluginconf (), 0);
@@ -138,21 +138,21 @@ static void test_simple (void)
 	ElektraKeyset * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
-	ksDel (test_config);
+	elektraKeysetDel (test_config);
 
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 static void test_name (void)
 {
 	printf ("Test name\n");
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	;
 
 	succeed_if (elektraPluginOpen (0, modules, set_pluginconf (), errorKey) == 0, "should fail with no name");
@@ -162,8 +162,8 @@ static void test_name (void)
 	succeed_if (elektraPluginOpen ("/////////////", modules, set_pluginconf (), errorKey) == 0, "should fail with slashes only");
 	// output_errors (errorKey);
 
-	keyDel (errorKey);
-	ksDel (modules);
+	elektraKeyDel (errorKey);
+	elektraKeysetDel (modules);
 }
 
 int main (int argc, char ** argv)

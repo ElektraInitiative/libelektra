@@ -22,7 +22,7 @@ extern char ** environ;
 
 static ElektraKeyset * getSpec (const char * name, ElektraKey ** parentKey)
 {
-	*parentKey = keyNew ("spec:/tests/gopts", ELEKTRA_KEY_END);
+	*parentKey = elektraKeyNew ("spec:/tests/gopts", ELEKTRA_KEY_END);
 
 	if (strcmp (name, TEST_EMPTY) == 0)
 	{
@@ -69,11 +69,11 @@ int main (int argc, const char ** argv)
 	ElektraKeyset * ks = getSpec (specname, &parentKey);
 
 	bool libFailed = elektraGetOpts (ks, argc - 1, &argv[1], (const char **) environ, parentKey) != 0;
-	ElektraKey * libHelpKey = keyNew ("proc:/elektra/gopts/help", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END);
-	keyCopyAllMeta (libHelpKey, parentKey);
-	ksAppendKey (ks, libHelpKey);
+	ElektraKey * libHelpKey = elektraKeyNew ("proc:/elektra/gopts/help", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END);
+	elektraKeyCopyAllMeta (libHelpKey, parentKey);
+	elektraKeysetAppendKey (ks, libHelpKey);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("gopts");
 
@@ -85,10 +85,10 @@ int main (int argc, const char ** argv)
 	if (pluginFailed != libFailed)
 	{
 		PLUGIN_CLOSE ();
-		ksDel (ks);
-		keyDel (parentKey);
-		ksDel (ks2);
-		keyDel (parentKey2);
+		elektraKeysetDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks2);
+		elektraKeyDel (parentKey2);
 		char buf[256];
 		strcpy (buf, "elektraGetOpts (");
 		strcat (buf, libFailed ? "FAIL" : "OK");
@@ -106,10 +106,10 @@ int main (int argc, const char ** argv)
 
 	PLUGIN_CLOSE ();
 
-	ksDel (ks);
-	keyDel (parentKey);
-	ksDel (ks2);
-	keyDel (parentKey2);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks2);
+	elektraKeyDel (parentKey2);
 
 	return nbError;
 }

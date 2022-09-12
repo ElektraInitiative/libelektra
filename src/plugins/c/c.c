@@ -97,12 +97,12 @@ static char * escapeString (char ** str)
  */
 int keyGenerate (const ElektraKey * key, FILE * stream)
 {
-	size_t n = keyGetNameSize (key);
+	size_t n = elektraKeyGetNameSize (key);
 	if (n > 1)
 	{
 		char * nam = (char *) elektraMalloc (n);
 		if (nam == NULL) return -1;
-		keyGetName (key, nam, n);
+		elektraKeyGetName (key, nam, n);
 		fprintf (stream, "\tkeyNew (\"%s\"", escapeString (&nam));
 		elektraFree (nam);
 	}
@@ -111,36 +111,36 @@ int keyGenerate (const ElektraKey * key, FILE * stream)
 		fprintf (stream, "\tkeyNew(\"\"");
 	}
 
-	size_t s = keyGetValueSize (key);
+	size_t s = elektraKeyGetValueSize (key);
 	if (s > 1)
 	{
 		char * str = (char *) elektraMalloc (s);
 		if (str == NULL) return -1;
-		if (keyIsBinary (key))
+		if (elektraKeyIsBinary (key))
 		{
-			keyGetBinary (key, str, s);
-			fprintf (stream, ", KEY_SIZE, \"%zd\"", keyGetValueSize (key));
+			elektraKeyGetBinary (key, str, s);
+			fprintf (stream, ", KEY_SIZE, \"%zd\"", elektraKeyGetValueSize (key));
 		}
 		else
 		{
-			keyGetString (key, str, s);
+			elektraKeyGetString (key, str, s);
 		}
 		fprintf (stream, ", KEY_VALUE, \"%s\"", escapeString (&str));
 		elektraFree (str);
 	}
 
 	const ElektraKey * meta;
-	ElektraKey * dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
-	keyRewindMeta (dup);
-	while ((meta = keyNextMeta (dup)))
+	ElektraKey * dup = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
+	elektraKeyRewindMeta (dup);
+	while ((meta = elektraKeyNextMeta (dup)))
 	{
-		char * metaName = elektraStrDup (keyName (meta) + sizeof ("meta:/") - 1);
-		char * metaStr = elektraStrDup (keyString (meta));
+		char * metaName = elektraStrDup (elektraKeyName (meta) + sizeof ("meta:/") - 1);
+		char * metaStr = elektraStrDup (elektraKeyString (meta));
 		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaName), escapeString (&metaStr));
 		elektraFree (metaName);
 		elektraFree (metaStr);
 	}
-	keyDel (dup);
+	elektraKeyDel (dup);
 
 	fprintf (stream, ", KEY_END)");
 	return 1;
@@ -161,35 +161,35 @@ int keyGenerate (const ElektraKey * key, FILE * stream)
 int ksGenerate (const ElektraKeyset * ks, FILE * stream)
 {
 	ElektraKey * key;
-	ElektraKeyset * cks = ksDup (ks);
+	ElektraKeyset * cks = elektraKeysetDup (ks);
 
-	ksRewind (cks);
+	elektraKeysetRewind (cks);
 
-	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (cks));
-	while ((key = ksNext (cks)) != 0)
+	fprintf (stream, "ksNew (%d,\n", (int) elektraKeysetGetSize (cks));
+	while ((key = elektraKeysetNext (cks)) != 0)
 	{
 		keyGenerate (key, stream);
 		fprintf (stream, ",\n");
 	}
 	fprintf (stream, "\tKS_END);\n");
 
-	ksDel (cks);
+	elektraKeysetDel (cks);
 	return 1;
 }
 
 int elektraCGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/c"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/c"))
 	{
-		ElektraKeyset * contract = ksNew (30, keyNew ("system:/elektra/modules/c", ELEKTRA_KEY_VALUE, "c plugin waits for your orders", ELEKTRA_KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports", ELEKTRA_KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports/get", ELEKTRA_KEY_FUNC, elektraCGet, ELEKTRA_KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports/set", ELEKTRA_KEY_FUNC, elektraCSet, ELEKTRA_KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports/checkconf", ELEKTRA_KEY_FUNC, elektraCCheckConf, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/c", ELEKTRA_KEY_VALUE, "c plugin waits for your orders", ELEKTRA_KEY_END),
+					   elektraKeyNew ("system:/elektra/modules/c/exports", ELEKTRA_KEY_END),
+					   elektraKeyNew ("system:/elektra/modules/c/exports/get", ELEKTRA_KEY_FUNC, elektraCGet, ELEKTRA_KEY_END),
+					   elektraKeyNew ("system:/elektra/modules/c/exports/set", ELEKTRA_KEY_FUNC, elektraCSet, ELEKTRA_KEY_END),
+					   elektraKeyNew ("system:/elektra/modules/c/exports/checkconf", ELEKTRA_KEY_FUNC, elektraCCheckConf, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-					   keyNew ("system:/elektra/modules/c/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+					   elektraKeyNew ("system:/elektra/modules/c/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
@@ -200,7 +200,7 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTR
 
 int elektraCSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	FILE * fp = fopen (keyString (parentKey), "w");
+	FILE * fp = fopen (elektraKeyString (parentKey), "w");
 
 	if (!fp)
 	{

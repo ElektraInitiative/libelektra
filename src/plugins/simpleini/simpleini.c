@@ -44,7 +44,7 @@ static struct lineFormat getFormat (Plugin * handle)
 {
 	struct lineFormat ret;
 	// char * format;
-	ElektraKey * key = ksLookupByName (elektraPluginGetConfig (handle), "/format", 0);
+	ElektraKey * key = elektraKeysetLookupByName (elektraPluginGetConfig (handle), "/format", 0);
 	if (!key)
 	{
 		ret.format = elektraStrDup ("%s = %s\n");
@@ -54,14 +54,14 @@ static struct lineFormat getFormat (Plugin * handle)
 	{
 		const size_t maxFactor = 2; // at maximum every char is a %, %% -> %%%%
 		const size_t newLineAtEnd = 2;
-		const size_t userFormatSize = keyGetValueSize (key);
+		const size_t userFormatSize = elektraKeyGetValueSize (key);
 		ret.format = elektraMalloc (userFormatSize * maxFactor + newLineAtEnd);
 
 		char * delimiterStart = NULL;
 		char * delimiterEnd = NULL;
 		int numFormatSpecifier = 0;
 
-		const char * userFormat = keyString (key);
+		const char * userFormat = elektraKeyString (key);
 		int gotPercent = 0;
 		size_t j = 0;
 		for (size_t i = 0; i < userFormatSize; ++i, ++j)
@@ -212,18 +212,18 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 {
 	/* get all keys */
 
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/simpleini"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/simpleini"))
 	{
-		ElektraKeyset * moduleConfig = ksNew (
-			30, keyNew ("system:/elektra/modules/simpleini", ELEKTRA_KEY_VALUE, "simpleini plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/exports/get", ELEKTRA_KEY_FUNC, elektraSimpleiniGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/exports/set", ELEKTRA_KEY_FUNC, elektraSimpleiniSet, ELEKTRA_KEY_END),
+		ElektraKeyset * moduleConfig = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/simpleini", ELEKTRA_KEY_VALUE, "simpleini plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/simpleini/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/simpleini/exports/get", ELEKTRA_KEY_FUNC, elektraSimpleiniGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/simpleini/exports/set", ELEKTRA_KEY_FUNC, elektraSimpleiniSet, ELEKTRA_KEY_END),
 #include "readme_simpleini.c"
-			keyNew ("system:/elektra/modules/simpleini/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/config/needs", ELEKTRA_KEY_VALUE,
+			elektraKeyNew ("system:/elektra/modules/simpleini/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/simpleini/config/needs", ELEKTRA_KEY_VALUE,
 				"the needed configuration to work in a backend", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/config/needs/chars", ELEKTRA_KEY_VALUE, "Characters needed", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/simpleini/config/needs/chars", ELEKTRA_KEY_VALUE, "Characters needed", ELEKTRA_KEY_END),
 			// space in value now works:
 			// TODO: characters present in format should be escaped
 			/*
@@ -235,11 +235,11 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
 			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/5C", KEY_VALUE, "66", KEY_END), // \\ -> f
 			*/
-			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/0A", ELEKTRA_KEY_VALUE, "67", ELEKTRA_KEY_END), // enter (NL) -> g
-			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/0D", ELEKTRA_KEY_VALUE, "68", ELEKTRA_KEY_END), // CR -> h
-			keyNew ("system:/elektra/modules/simpleini/config/needs/escape", ELEKTRA_KEY_VALUE, "25", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, moduleConfig);
-		ksDel (moduleConfig);
+			elektraKeyNew ("system:/elektra/modules/simpleini/config/needs/chars/0A", ELEKTRA_KEY_VALUE, "67", ELEKTRA_KEY_END), // enter (NL) -> g
+			elektraKeyNew ("system:/elektra/modules/simpleini/config/needs/chars/0D", ELEKTRA_KEY_VALUE, "68", ELEKTRA_KEY_END), // CR -> h
+			elektraKeyNew ("system:/elektra/modules/simpleini/config/needs/escape", ELEKTRA_KEY_VALUE, "25", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1;
 	}
 
@@ -255,9 +255,9 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 		return -1;
 	}
 
-	ELEKTRA_LOG ("Read from '%s' with format '%s'", keyString (parentKey), format);
+	ELEKTRA_LOG ("Read from '%s' with format '%s'", elektraKeyString (parentKey), format);
 
-	const char * filename = keyString (parentKey);
+	const char * filename = elektraKeyString (parentKey);
 	FILE * fp = fopen (filename, "r");
 	if (!fp)
 	{
@@ -294,13 +294,13 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 			continue;
 		}
 
-		ElektraKey * read = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
+		ElektraKey * read = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_END);
 		strippedkey = elektraStrip (key);
 
-		if (keyAddName (read, strippedkey) == -1)
+		if (elektraKeyAddName (read, strippedkey) == -1)
 		{
 			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name '%s' is not valid, discarding key", strippedkey);
-			keyDel (read);
+			elektraKeyDel (read);
 			elektraFree (key);
 			if (n == 2)
 			{
@@ -311,7 +311,7 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 
 		if (n == 2)
 		{
-			keySetString (read, value);
+			elektraKeySetString (read, value);
 			elektraFree (value);
 			value = 0;
 		}
@@ -319,10 +319,10 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 		elektraFree (key);
 		key = 0;
 
-		if (ksAppendKey (returned, read) != ksize + 1)
+		if (elektraKeysetAppendKey (returned, read) != ksize + 1)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Duplicated key '%s' at position %ld in file %s",
-								 keyName (read), ftell (fp), filename);
+								 elektraKeyName (read), ftell (fp), filename);
 			elektraFree (format);
 			fclose (fp);
 			return -1;
@@ -349,7 +349,7 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 {
 	/* set all keys */
 
-	FILE * fp = fopen (keyString (parentKey), "w");
+	FILE * fp = fopen (elektraKeyString (parentKey), "w");
 	if (!fp)
 	{
 		ELEKTRA_SET_ERROR_SET (parentKey);
@@ -358,14 +358,14 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 	char * format = getWriteFormat (handle);
 
-	ELEKTRA_LOG ("Write to '%s' with format '%s'", keyString (parentKey), format);
+	ELEKTRA_LOG ("Write to '%s' with format '%s'", elektraKeyString (parentKey), format);
 
 	ElektraKey * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
 		const char * name = elektraKeyGetRelativeName (cur, parentKey);
-		fprintf (fp, format, name, keyString (cur));
+		fprintf (fp, format, name, elektraKeyString (cur));
 	}
 
 	fclose (fp);

@@ -1,6 +1,6 @@
 // clang-format off
-ksNew (16,
-	keyNew (PREFIX "/basic_escapes",
+elektraKeysetNew (16,
+	elektraKeyNew (PREFIX "/basic_escapes",
 		ELEKTRA_KEY_VALUE,
 			"backspace\b\n"
 			"tab\t\n"
@@ -22,7 +22,7 @@ ksNew (16,
 		ELEKTRA_KEY_META, "type", "string",
 		ELEKTRA_KEY_META, "order", "0",
 	ELEKTRA_KEY_END),
-	keyNew (PREFIX "/unicode_escape",
+	elektraKeyNew (PREFIX "/unicode_escape",
 		ELEKTRA_KEY_VALUE,
 			"0030: 0\n"
 			"00C0: \xC3\x80\n"

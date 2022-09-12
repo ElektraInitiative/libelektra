@@ -18,17 +18,17 @@
 
 int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/reference"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/reference"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/reference", ELEKTRA_KEY_VALUE, "reference plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/reference/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/reference/exports/get", ELEKTRA_KEY_FUNC, elektraReferenceGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/reference/exports/set", ELEKTRA_KEY_FUNC, elektraReferenceSet, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/reference", ELEKTRA_KEY_VALUE, "reference plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/reference/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/reference/exports/get", ELEKTRA_KEY_FUNC, elektraReferenceGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/reference/exports/set", ELEKTRA_KEY_FUNC, elektraReferenceSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/reference/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/reference/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
@@ -50,7 +50,7 @@ static ElektraKey * resolveReference (ElektraKeyset * allKeys, const char * refe
 	}
 
 	char * fullReference = elektraResolveReference (reference, baseKey, parentKey);
-	ElektraKey * result = ksLookupByName (allKeys, fullReference, 0);
+	ElektraKey * result = elektraKeysetLookupByName (allKeys, fullReference, 0);
 	elektraFree (fullReference);
 
 	return result;
@@ -84,29 +84,29 @@ static int checkSingleReference (const ElektraKey * key, ElektraKeyset * allKeys
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 
-	const char * reference = keyString (key);
+	const char * reference = elektraKeyString (key);
 	if (reference == NULL || strlen (reference) == 0)
 	{
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 
-	const ElektraKey * restrictKey = keyGetMeta (key, CHECK_REFERENCE_RESTRICT_KEYNAME);
+	const ElektraKey * restrictKey = elektraKeyGetMeta (key, CHECK_REFERENCE_RESTRICT_KEYNAME);
 	ElektraKeyset * restrictions;
 	if (restrictKey != NULL)
 	{
-		const char * restrictValue = keyString (restrictKey);
+		const char * restrictValue = elektraKeyString (restrictKey);
 		if (elektraArrayValidateBaseNameString (restrictValue) >= 0)
 		{
 			restrictions = elektraArrayGet (restrictKey, allKeys);
 		}
 		else
 		{
-			restrictions = ksNew (1, keyNew ("/#0", ELEKTRA_KEY_VALUE, restrictValue, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+			restrictions = elektraKeysetNew (1, elektraKeyNew ("/#0", ELEKTRA_KEY_VALUE, restrictValue, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		}
 	}
 	else
 	{
-		restrictions = ksNew (0, ELEKTRA_KS_END);
+		restrictions = elektraKeysetNew (0, ELEKTRA_KS_END);
 	}
 
 	ElektraKeyset * refArray;
@@ -116,20 +116,20 @@ static int checkSingleReference (const ElektraKey * key, ElektraKeyset * allKeys
 	}
 	else
 	{
-		refArray = ksNew (1, keyDup (key, ELEKTRA_KEY_CP_ALL), ELEKTRA_KS_END);
+		refArray = elektraKeysetNew (1, elektraKeyDup (key, ELEKTRA_KEY_CP_ALL), ELEKTRA_KS_END);
 	}
 
-	ksRewind (refArray);
+	elektraKeysetRewind (refArray);
 	const ElektraKey * arrayElement;
-	while ((arrayElement = ksNext (refArray)) != NULL)
+	while ((arrayElement = elektraKeysetNext (refArray)) != NULL)
 	{
-		const char * ref = keyString (arrayElement);
+		const char * ref = elektraKeyString (arrayElement);
 		if (ref == NULL || strlen (ref) == 0)
 		{
 			continue;
 		}
 
-		const char * elementName = keyName (arrayElement);
+		const char * elementName = elektraKeyName (arrayElement);
 
 		ElektraKey * refKey = resolveReference (allKeys, ref, arrayElement, parentKey);
 		bool error = false;
@@ -140,14 +140,14 @@ static int checkSingleReference (const ElektraKey * key, ElektraKeyset * allKeys
 			error = true;
 		}
 
-		if (ksGetSize (restrictions) > 0)
+		if (elektraKeysetGetSize (restrictions) > 0)
 		{
-			ksRewind (restrictions);
+			elektraKeysetRewind (restrictions);
 			ElektraKey * curRestriction;
 			bool anyMatch = false;
-			while ((curRestriction = ksNext (restrictions)) != NULL)
+			while ((curRestriction = elektraKeysetNext (restrictions)) != NULL)
 			{
-				char * restriction = resolveRestriction (keyString (curRestriction), key, parentKey);
+				char * restriction = resolveRestriction (elektraKeyString (curRestriction), key, parentKey);
 				if (checkRestriction (refKey, restriction))
 				{
 					anyMatch = true;
@@ -166,13 +166,13 @@ static int checkSingleReference (const ElektraKey * key, ElektraKeyset * allKeys
 
 		if (error)
 		{
-			ksDel (restrictions);
-			ksDel (refArray);
+			elektraKeysetDel (restrictions);
+			elektraKeysetDel (refArray);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
-	ksDel (restrictions);
-	ksDel (refArray);
+	elektraKeysetDel (restrictions);
+	elektraKeysetDel (refArray);
 
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
@@ -203,11 +203,11 @@ static bool checkReferenceGraphAcyclic (const RefGraph * referenceGraph, const c
 		}
 	}
 
-	ElektraKeyset * nodes = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * nodes = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ELEKTRA_LOG_NOTICE ("start of path with cycle: %s", root);
 
 	const char * node = root;
-	while (ksGetSize (nodes) != ksAppendKey (nodes, keyNew (node, ELEKTRA_KEY_END)))
+	while (elektraKeysetGetSize (nodes) != elektraKeysetAppendKey (nodes, elektraKeyNew (node, ELEKTRA_KEY_END)))
 	{
 		ELEKTRA_LOG_NOTICE ("refers to: %s", node);
 		node = rgGetEdge (curGraph, root, 0);
@@ -221,11 +221,11 @@ static bool checkReferenceGraphAcyclic (const RefGraph * referenceGraph, const c
 
 static int filterAlternatives (const ElektraKey * key, void * argument)
 {
-	const ElektraKey * metaKey = keyGetMeta (key, CHECK_REFERENCE_KEYNAME);
-	const char * metaValue = metaKey != NULL ? keyString (metaKey) : NULL;
+	const ElektraKey * metaKey = elektraKeyGetMeta (key, CHECK_REFERENCE_KEYNAME);
+	const char * metaValue = metaKey != NULL ? elektraKeyString (metaKey) : NULL;
 
 	const ElektraKey * referenceParent = (const ElektraKey *) argument;
-	return metaValue != NULL && keyIsDirectlyBelow (referenceParent, key) && strcmp (metaValue, CHECK_REFERNCE_VALUE_ALTERNATIVE) == 0;
+	return metaValue != NULL && elektraKeyIsDirectlyBelow (referenceParent, key) && strcmp (metaValue, CHECK_REFERNCE_VALUE_ALTERNATIVE) == 0;
 }
 
 static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * allKeys, ElektraKey * parentKey)
@@ -236,69 +236,69 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 	}
 
 	RefGraph * referenceGraph = rgNew ();
-	ElektraKeyset * allRefnames = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * refnameRoots = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * allRefnames = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * refnameRoots = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	ksAppendKey (refnameRoots, keyNew (keyName (rootKey), ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (refnameRoots, elektraKeyNew (elektraKeyName (rootKey), ELEKTRA_KEY_END));
 
 	ElektraKey * curRoot;
-	while ((curRoot = ksPop (refnameRoots)) != NULL)
+	while ((curRoot = elektraKeysetPop (refnameRoots)) != NULL)
 	{
-		ElektraKeyset * keysToCheck = ksNew (0, ELEKTRA_KS_END);
-		const char * refname = keyBaseName (curRoot);
+		ElektraKeyset * keysToCheck = elektraKeysetNew (0, ELEKTRA_KS_END);
+		const char * refname = elektraKeyBaseName (curRoot);
 
-		ElektraKey * rootParent = keyDup (curRoot, ELEKTRA_KEY_CP_ALL);
-		keySetBaseName (rootParent, NULL);
-		ksAppendKey (keysToCheck, rootParent);
+		ElektraKey * rootParent = elektraKeyDup (curRoot, ELEKTRA_KEY_CP_ALL);
+		elektraKeySetBaseName (rootParent, NULL);
+		elektraKeysetAppendKey (keysToCheck, rootParent);
 
 		ElektraKey * cur;
-		while ((cur = ksPop (keysToCheck)) != NULL)
+		while ((cur = elektraKeysetPop (keysToCheck)) != NULL)
 		{
-			const char * curName = keyName (cur);
-			ElektraKeyset * alternatives = ksNew (0, ELEKTRA_KS_END);
+			const char * curName = elektraKeyName (cur);
+			ElektraKeyset * alternatives = elektraKeysetNew (0, ELEKTRA_KS_END);
 			elektraKsFilter (alternatives, allKeys, filterAlternatives, cur);
 
 			ElektraKey * curAlternative;
-			while ((curAlternative = ksPop (alternatives)) != NULL)
+			while ((curAlternative = elektraKeysetPop (alternatives)) != NULL)
 			{
-				if (ksLookup (allRefnames, curAlternative, 0) == NULL)
+				if (elektraKeysetLookup (allRefnames, curAlternative, 0) == NULL)
 				{
-					ksAppendKey (refnameRoots, keyNew (keyName (curAlternative), ELEKTRA_KEY_END));
-					ksAppendKey (allRefnames, keyNew (keyName (curAlternative), ELEKTRA_KEY_END));
+					elektraKeysetAppendKey (refnameRoots, elektraKeyNew (elektraKeyName (curAlternative), ELEKTRA_KEY_END));
+					elektraKeysetAppendKey (allRefnames, elektraKeyNew (elektraKeyName (curAlternative), ELEKTRA_KEY_END));
 				}
-				keyDel (curAlternative);
+				elektraKeyDel (curAlternative);
 			}
-			ksDel (alternatives);
+			elektraKeysetDel (alternatives);
 
-			ElektraKey * tmp = keyNew (curName, ELEKTRA_KEY_END);
-			keyAddBaseName (tmp, refname);
-			ElektraKey * baseKey = ksLookup (allKeys, tmp, 0);
-			keyDel (tmp);
+			ElektraKey * tmp = elektraKeyNew (curName, ELEKTRA_KEY_END);
+			elektraKeyAddBaseName (tmp, refname);
+			ElektraKey * baseKey = elektraKeysetLookup (allKeys, tmp, 0);
+			elektraKeyDel (tmp);
 
-			const char * reference = keyString (baseKey);
+			const char * reference = elektraKeyString (baseKey);
 			if (reference == NULL || strlen (reference) == 0)
 			{
-				keyDel (cur);
+				elektraKeyDel (cur);
 				continue;
 			}
 
-			const ElektraKey * restrictKey = keyGetMeta (baseKey, CHECK_REFERENCE_RESTRICT_KEYNAME);
+			const ElektraKey * restrictKey = elektraKeyGetMeta (baseKey, CHECK_REFERENCE_RESTRICT_KEYNAME);
 			ElektraKeyset * restrictions;
 			if (restrictKey != NULL)
 			{
-				const char * restrictValue = keyString (restrictKey);
+				const char * restrictValue = elektraKeyString (restrictKey);
 				if (elektraArrayValidateBaseNameString (restrictValue) >= 0)
 				{
 					restrictions = elektraArrayGet (restrictKey, allKeys);
 				}
 				else
 				{
-					restrictions = ksNew (1, keyNew ("/#0", ELEKTRA_KEY_VALUE, restrictValue, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+					restrictions = elektraKeysetNew (1, elektraKeyNew ("/#0", ELEKTRA_KEY_VALUE, restrictValue, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 				}
 			}
 			else
 			{
-				restrictions = ksNew (0, ELEKTRA_KS_END);
+				restrictions = elektraKeysetNew (0, ELEKTRA_KS_END);
 			}
 
 			ElektraKeyset * refArray;
@@ -308,9 +308,9 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 			}
 			else
 			{
-				ElektraKey * element = keyDup (baseKey, ELEKTRA_KEY_CP_ALL);
-				keyAddBaseName (element, "#0");
-				refArray = ksNew (1, element, ELEKTRA_KS_END);
+				ElektraKey * element = elektraKeyDup (baseKey, ELEKTRA_KEY_CP_ALL);
+				elektraKeyAddBaseName (element, "#0");
+				refArray = elektraKeysetNew (1, element, ELEKTRA_KS_END);
 			}
 
 			if (!rgContains (referenceGraph, curName))
@@ -318,17 +318,17 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 				rgAddNode (referenceGraph, curName);
 			}
 
-			ksRewind (refArray);
+			elektraKeysetRewind (refArray);
 			const ElektraKey * arrayElement;
-			while ((arrayElement = ksNext (refArray)) != NULL)
+			while ((arrayElement = elektraKeysetNext (refArray)) != NULL)
 			{
-				const char * ref = keyString (arrayElement);
+				const char * ref = elektraKeyString (arrayElement);
 				if (ref == NULL || strlen (ref) == 0)
 				{
 					continue;
 				}
 
-				const char * elementName = keyName (arrayElement);
+				const char * elementName = elektraKeyName (arrayElement);
 
 				ElektraKey * refKey = resolveReference (allKeys, ref, arrayElement, parentKey);
 				bool error = false;
@@ -340,16 +340,16 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 					error = true;
 				}
 
-				const char * refKeyName = keyName (refKey);
+				const char * refKeyName = elektraKeyName (refKey);
 
-				if (ksGetSize (restrictions) > 0)
+				if (elektraKeysetGetSize (restrictions) > 0)
 				{
-					ksRewind (restrictions);
+					elektraKeysetRewind (restrictions);
 					ElektraKey * curRestriction;
 					bool anyMatch = false;
-					while ((curRestriction = ksNext (restrictions)) != NULL)
+					while ((curRestriction = elektraKeysetNext (restrictions)) != NULL)
 					{
-						char * restriction = resolveRestriction (keyString (curRestriction), baseKey, parentKey);
+						char * restriction = resolveRestriction (elektraKeyString (curRestriction), baseKey, parentKey);
 						if (checkRestriction (refKey, restriction))
 						{
 							anyMatch = true;
@@ -370,34 +370,34 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 				if (error)
 				{
 					rgDel (referenceGraph);
-					ksDel (keysToCheck);
-					ksDel (refnameRoots);
-					ksDel (allRefnames);
-					ksDel (refArray);
-					ksDel (restrictions);
-					keyDel (curRoot);
-					keyDel (cur);
+					elektraKeysetDel (keysToCheck);
+					elektraKeysetDel (refnameRoots);
+					elektraKeysetDel (allRefnames);
+					elektraKeysetDel (refArray);
+					elektraKeysetDel (restrictions);
+					elektraKeyDel (curRoot);
+					elektraKeyDel (cur);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
 				if (!rgContains (referenceGraph, refKeyName))
 				{
-					ksAppendKey (keysToCheck, keyDup (refKey, ELEKTRA_KEY_CP_ALL));
+					elektraKeysetAppendKey (keysToCheck, elektraKeyDup (refKey, ELEKTRA_KEY_CP_ALL));
 					rgAddNode (referenceGraph, refKeyName);
 				}
 				rgAddEdge (referenceGraph, curName, refKeyName);
 			}
-			ksDel (refArray);
-			ksDel (restrictions);
-			keyDel (cur);
+			elektraKeysetDel (refArray);
+			elektraKeysetDel (restrictions);
+			elektraKeyDel (cur);
 		}
-		ksDel (keysToCheck);
-		keyDel (curRoot);
+		elektraKeysetDel (keysToCheck);
+		elektraKeyDel (curRoot);
 	}
-	ksDel (refnameRoots);
-	ksDel (allRefnames);
+	elektraKeysetDel (refnameRoots);
+	elektraKeysetDel (allRefnames);
 
-	char * rootName = elektraStrDup (keyName (rootKey));
+	char * rootName = elektraStrDup (elektraKeyName (rootKey));
 	*strrchr (rootName, '/') = '\0';
 	if (!checkReferenceGraphAcyclic (referenceGraph, rootName))
 	{
@@ -416,20 +416,20 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ElektraKey * cur;
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * metaKey = keyGetMeta (cur, CHECK_REFERENCE_KEYNAME);
+		const ElektraKey * metaKey = elektraKeyGetMeta (cur, CHECK_REFERENCE_KEYNAME);
 		if (metaKey == NULL)
 		{
 			continue;
 		}
 
-		const char * metaValue = keyString (metaKey);
+		const char * metaValue = elektraKeyString (metaKey);
 
-		elektraCursor cursor = ksGetCursor (returned);
+		elektraCursor cursor = elektraKeysetGetCursor (returned);
 		if (strcmp (metaValue, CHECK_REFERNCE_VALUE_SINGLE) == 0)
 		{
 			status |= checkSingleReference (cur, returned, parentKey);
@@ -439,7 +439,7 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 		{
 			status |= checkRecursiveReference (cur, returned, parentKey);
 		}
-		ksSetCursor (returned, cursor);
+		elektraKeysetSetCursor (returned, cursor);
 	}
 
 

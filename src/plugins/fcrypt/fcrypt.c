@@ -67,10 +67,10 @@ static char * getTemporaryFileName (ElektraKeyset * conf, const char * file, int
 	// read the temporary directory to use from the plugin configuration
 	// NOTE the string contained in tmpDir must not be modified!
 	const char * tmpDir = NULL;
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
 	if (k)
 	{
-		tmpDir = keyString (k);
+		tmpDir = elektraKeyString (k);
 	}
 
 	if (!tmpDir)
@@ -162,8 +162,8 @@ error:
  */
 static int inTestMode (ElektraKeyset * conf)
 {
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
-	if (k && !strcmp (keyString (k), "1"))
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
+	if (k && !strcmp (elektraKeyString (k), "1"))
 	{
 		return 1;
 	}
@@ -179,8 +179,8 @@ static int inTestMode (ElektraKeyset * conf)
  */
 static int inTextMode (ElektraKeyset * conf)
 {
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TEXTMODE, 0);
-	if (k && !strcmp (keyString (k), "0"))
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TEXTMODE, 0);
+	if (k && !strcmp (elektraKeyString (k), "0"))
 	{
 		return 0;
 	}
@@ -193,24 +193,24 @@ static int inTextMode (ElektraKeyset * conf)
  * @param keyName holds the name of the root key to look up
  * @returns the number of GPG recipient keys.
  */
-static size_t getRecipientCount (ElektraKeyset * config, const char * keyName)
+static size_t getRecipientCount (ElektraKeyset * config, const char * elektraKeyName)
 {
 	ElektraKey * k;
 	size_t recipientCount = 0;
-	ElektraKey * root = ksLookupByName (config, keyName, 0);
+	ElektraKey * root = elektraKeysetLookupByName (config, elektraKeyName, 0);
 
 	if (!root) return 0;
 
 	// toplevel
-	if (strlen (keyString (root)) > 0)
+	if (strlen (elektraKeyString (root)) > 0)
 	{
 		recipientCount++;
 	}
 
-	ksRewind (config);
-	while ((k = ksNext (config)) != 0)
+	elektraKeysetRewind (config);
+	while ((k = elektraKeysetNext (config)) != 0)
 	{
-		if (keyIsBelow (k, root) && strlen (keyString (k)) > 0)
+		if (elektraKeyIsBelow (k, root) && strlen (elektraKeyString (k)) > 0)
 		{
 			recipientCount++;
 		}
@@ -230,10 +230,10 @@ static int fcryptGpgCallAndCleanup (ElektraKey * parentKey, ElektraKeyset * plug
 
 	if (result == 1)
 	{
-		parentKeyFd = open (keyString (parentKey), O_WRONLY);
+		parentKeyFd = open (elektraKeyString (parentKey), O_WRONLY);
 
 		// gpg call returned success, overwrite the original file with the gpg payload data
-		if (rename (tmpFile, keyString (parentKey)) != 0)
+		if (rename (tmpFile, elektraKeyString (parentKey)) != 0)
 		{
 			// if rename failed we can still try to copy the file content manually
 			if (lseek (tmpFileFd, 0, SEEK_SET))
@@ -276,7 +276,7 @@ static int fcryptGpgCallAndCleanup (ElektraKey * parentKey, ElektraKeyset * plug
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 					     "Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s",
-					     tmpFile, keyString (parentKey), strerror (transferErrno));
+					     tmpFile, elektraKeyString (parentKey), strerror (transferErrno));
 	}
 
 	if (result == 1 && parentKeyFd >= 0 && !manualCopy)
@@ -334,7 +334,7 @@ static int fcryptEncrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey)
 	}
 
 	int tmpFileFd = -1;
-	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
+	char * tmpFile = getTemporaryFileName (pluginConfig, elektraKeyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
@@ -364,24 +364,24 @@ static int fcryptEncrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey)
 	argv[i++] = "--yes"; // overwrite files if they exist
 
 	// add recipients
-	ElektraKey * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_RECIPIENT_KEY, 0);
+	ElektraKey * gpgRecipientRoot = elektraKeysetLookupByName (pluginConfig, ELEKTRA_RECIPIENT_KEY, 0);
 
 	// append root (gpg/key) as gpg recipient
-	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
+	if (gpgRecipientRoot && strlen (elektraKeyString (gpgRecipientRoot)) > 0)
 	{
 		argv[i++] = "-r";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i++] = (char *) keyString (gpgRecipientRoot);
+		argv[i++] = (char *) elektraKeyString (gpgRecipientRoot);
 	}
 
 	// append keys beneath root (crypto/key/#_) as gpg recipients
 	if (gpgRecipientRoot)
 	{
-		ksRewind (pluginConfig);
-		while ((k = ksNext (pluginConfig)) != 0)
+		elektraKeysetRewind (pluginConfig);
+		while ((k = elektraKeysetNext (pluginConfig)) != 0)
 		{
-			const char * kStringVal = keyString (k);
-			if (keyIsBelow (k, gpgRecipientRoot) && strlen (kStringVal) > 0)
+			const char * kStringVal = elektraKeyString (k);
+			if (elektraKeyIsBelow (k, gpgRecipientRoot) && strlen (kStringVal) > 0)
 			{
 				argv[i++] = "-r";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
@@ -392,24 +392,24 @@ static int fcryptEncrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey)
 
 
 	// add signature keys
-	ElektraKey * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_SIGNATURE_KEY, 0);
+	ElektraKey * gpgSignatureRoot = elektraKeysetLookupByName (pluginConfig, ELEKTRA_SIGNATURE_KEY, 0);
 
 	// append root signature key
-	if (gpgSignatureRoot && strlen (keyString (gpgSignatureRoot)) > 0)
+	if (gpgSignatureRoot && strlen (elektraKeyString (gpgSignatureRoot)) > 0)
 	{
 		argv[i++] = "-u";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i++] = (char *) keyString (gpgSignatureRoot);
+		argv[i++] = (char *) elektraKeyString (gpgSignatureRoot);
 	}
 
 	// append keys beneath root (fcrypt/sign/#_) as gpg signature keys
 	if (gpgSignatureRoot)
 	{
-		ksRewind (pluginConfig);
-		while ((k = ksNext (pluginConfig)) != 0)
+		elektraKeysetRewind (pluginConfig);
+		while ((k = elektraKeysetNext (pluginConfig)) != 0)
 		{
-			const char * kStringVal = keyString (k);
-			if (keyIsBelow (k, gpgSignatureRoot) && strlen (kStringVal) > 0)
+			const char * kStringVal = elektraKeyString (k);
+			if (elektraKeyIsBelow (k, gpgSignatureRoot) && strlen (kStringVal) > 0)
 			{
 				argv[i++] = "-u";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
@@ -452,7 +452,7 @@ static int fcryptEncrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey)
 		}
 	}
 
-	argv[i++] = (char *) keyString (parentKey);
+	argv[i++] = (char *) elektraKeyString (parentKey);
 	argv[i++] = NULL;
 
 	// NOTE the encryption process works like this:
@@ -473,7 +473,7 @@ static int fcryptEncrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey)
 static int fcryptDecrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey, fcryptState * state)
 {
 	int tmpFileFd = -1;
-	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
+	char * tmpFile = getTemporaryFileName (pluginConfig, elektraKeyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
@@ -511,7 +511,7 @@ static int fcryptDecrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey, 
 	argv[i++] = tmpFile;
 	argv[i++] = "-d";
 	// safely discarding const from keyString() return value
-	argv[i++] = (char *) keyString (parentKey);
+	argv[i++] = (char *) elektraKeyString (parentKey);
 	argv[i++] = NULL;
 
 	// NOTE the decryption process works like this:
@@ -519,10 +519,10 @@ static int fcryptDecrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey, 
 	int result = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 	if (result == 1)
 	{
-		state->originalFilePath = elektraStrDup (keyString (parentKey));
+		state->originalFilePath = elektraStrDup (elektraKeyString (parentKey));
 		state->tmpFilePath = tmpFile;
 		state->tmpFileFd = tmpFileFd;
-		keySetString (parentKey, tmpFile);
+		elektraKeySetString (parentKey, tmpFile);
 	}
 	else
 	{
@@ -604,13 +604,13 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKeyset * ks ELEKTRA
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		ElektraKeyset * moduleConfig = ksNew (30,
+		ElektraKeyset * moduleConfig = elektraKeysetNew (30,
 #include "contract.h"
 					       ELEKTRA_KS_END);
-		ksAppend (ks, moduleConfig);
-		ksDel (moduleConfig);
+		elektraKeysetAppend (ks, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1;
 	}
 
@@ -628,7 +628,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks ELEKTRA_U
 		// postgetstorage call will re-direct the parent key to the original encrypted/signed file
 		if (s->originalFilePath)
 		{
-			keySetString (parentKey, s->originalFilePath);
+			elektraKeySetString (parentKey, s->originalFilePath);
 		}
 		else
 		{
@@ -677,7 +677,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks ELEKTRA_U
 	if (encryptionResult != 1) return encryptionResult;
 
 	/* set all keys */
-	const char * configFile = keyString (parentKey);
+	const char * configFile = elektraKeyString (parentKey);
 	if (!strcmp (configFile, "")) return 1; // no underlying config file
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)

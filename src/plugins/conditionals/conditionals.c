@@ -64,7 +64,7 @@ static int isValidSuffix (char * suffix, const ElektraKey * suffixList)
 	char * searchString = elektraMalloc (strlen (suffix) + 3);
 	snprintf (searchString, strlen (suffix) + 3, "'%s'", suffix);
 	int ret = 0;
-	if (strstr (keyString (suffixList), searchString))
+	if (strstr (elektraKeyString (suffixList), searchString))
 	{
 		ret = 1;
 	}
@@ -218,9 +218,9 @@ static CondResult evalCondition (const ElektraKey * curKey, const char * leftSid
 		{
 			// not a literal, it has to be a key
 			if (rightSide[0] == '@')
-				len = (int) ((size_t) keyGetNameSize (parentKey) + elektraStrLen (rightSide));
+				len = (int) ((size_t) elektraKeyGetNameSize (parentKey) + elektraStrLen (rightSide));
 			else if (!strncmp (rightSide, "..", 2) || (rightSide[0] == '.'))
-				len = (int) ((size_t) keyGetNameSize (curKey) + elektraStrLen (rightSide));
+				len = (int) ((size_t) elektraKeyGetNameSize (curKey) + elektraStrLen (rightSide));
 			else
 				len = (int) elektraStrLen (rightSide);
 
@@ -231,16 +231,16 @@ static CondResult evalCondition (const ElektraKey * curKey, const char * leftSid
 				goto Cleanup;
 			}
 			if (rightSide[0] == '@')
-				snprintf (lookupName, (size_t) len, "%s/%s", keyName (parentKey), rightSide + 1);
+				snprintf (lookupName, (size_t) len, "%s/%s", elektraKeyName (parentKey), rightSide + 1);
 			else if (rightSide[0] == '.') // either starts with . or .., doesn't matter at this point
-				snprintf (lookupName, (size_t) len, "%s/%s", keyName (curKey), rightSide);
+				snprintf (lookupName, (size_t) len, "%s/%s", elektraKeyName (curKey), rightSide);
 			else
 				snprintf (lookupName, (size_t) len, "%s", rightSide);
 
-			key = ksLookupByName (ks, lookupName, 0);
+			key = elektraKeysetLookupByName (ks, lookupName, 0);
 			if (!key)
 			{
-				if (!keyGetMeta (parentKey, "error"))
+				if (!elektraKeyGetMeta (parentKey, "error"))
 				{
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
 										"Key %s not found but is required for the evaluation of %s",
@@ -249,19 +249,19 @@ static CondResult evalCondition (const ElektraKey * curKey, const char * leftSid
 				result = FALSE;
 				goto Cleanup;
 			}
-			if (elektraRealloc ((void **) &compareTo, (size_t) keyGetValueSize (key)) < 0)
+			if (elektraRealloc ((void **) &compareTo, (size_t) elektraKeyGetValueSize (key)) < 0)
 			{
 				ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 				result = ERROR;
 				goto Cleanup;
 			}
-			strcpy (compareTo, keyString (key));
+			strcpy (compareTo, elektraKeyString (key));
 		}
 	}
 	if (leftSide[0] == '@')
-		len = (int) ((size_t) keyGetNameSize (parentKey) + elektraStrLen (leftSide));
+		len = (int) ((size_t) elektraKeyGetNameSize (parentKey) + elektraStrLen (leftSide));
 	else if (!strncmp (leftSide, "..", 2) || (leftSide[0] == '.'))
-		len = (int) ((size_t) keyGetNameSize (curKey) + elektraStrLen (leftSide));
+		len = (int) ((size_t) elektraKeyGetNameSize (curKey) + elektraStrLen (leftSide));
 	else
 		len = (int) elektraStrLen (leftSide);
 
@@ -272,12 +272,12 @@ static CondResult evalCondition (const ElektraKey * curKey, const char * leftSid
 		goto Cleanup;
 	}
 	if (leftSide[0] == '@')
-		snprintf (lookupName, (size_t) len, "%s/%s", keyName (parentKey), leftSide + 1);
+		snprintf (lookupName, (size_t) len, "%s/%s", elektraKeyName (parentKey), leftSide + 1);
 	else if (leftSide[0] == '.') // either . or .., doesn't matter here
-		snprintf (lookupName, (size_t) len, "%s/%s", keyName (curKey), leftSide);
+		snprintf (lookupName, (size_t) len, "%s/%s", elektraKeyName (curKey), leftSide);
 	else
 		snprintf (lookupName, (size_t) len, "%s", leftSide);
-	key = ksLookupByName (ks, lookupName, 0);
+	key = elektraKeysetLookupByName (ks, lookupName, 0);
 	if (cmpOp == NEX)
 	{
 		if (key)
@@ -288,7 +288,7 @@ static CondResult evalCondition (const ElektraKey * curKey, const char * leftSid
 	}
 	if (!key && cmpOp != OR && cmpOp != AND)
 	{
-		if (!keyGetMeta (parentKey, "error"))
+		if (!elektraKeyGetMeta (parentKey, "error"))
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Key %s not found but is required for the evaluation of %s",
 								lookupName, condition);
@@ -300,7 +300,7 @@ static CondResult evalCondition (const ElektraKey * curKey, const char * leftSid
 	if (cmpOp == OR || cmpOp == AND)
 		ret = compareStrings (leftSide, rightSide, NULL);
 	else
-		ret = compareStrings (keyString (key), compareTo, suffixList);
+		ret = compareStrings (elektraKeyString (key), compareTo, suffixList);
 	switch (cmpOp)
 	{
 	case EQU:
@@ -322,7 +322,7 @@ static CondResult evalCondition (const ElektraKey * curKey, const char * leftSid
 		if (ret >= 0) result = TRUE;
 		break;
 	case SET:
-		keySetString (key, compareTo);
+		elektraKeySetString (key, compareTo);
 		result = TRUE;
 		break;
 	case AND:
@@ -506,30 +506,30 @@ static const char * isAssign (ElektraKey * key, char * expr, ElektraKey * parent
 		ElektraKey * lookupKey;
 		if (*firstPtr == '@')
 		{
-			lookupKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+			lookupKey = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 			++firstPtr;
-			keyAddName (lookupKey, firstPtr);
+			elektraKeyAddName (lookupKey, firstPtr);
 		}
 		else if (!strncmp (firstPtr, "..", 2) || !strncmp (firstPtr, ".", 1))
 		{
-			lookupKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
-			keyAddName (lookupKey, firstPtr);
+			lookupKey = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
+			elektraKeyAddName (lookupKey, firstPtr);
 		}
 		else
 		{
-			lookupKey = keyNew (firstPtr, ELEKTRA_KEY_END);
+			lookupKey = elektraKeyNew (firstPtr, ELEKTRA_KEY_END);
 		}
-		ElektraKey * assign = ksLookup (ks, lookupKey, ELEKTRA_KDB_O_NONE);
+		ElektraKey * assign = elektraKeysetLookup (ks, lookupKey, ELEKTRA_KDB_O_NONE);
 		if (!assign)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Key %s not found", keyName (lookupKey));
-			keyDel (lookupKey);
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Key %s not found", elektraKeyName (lookupKey));
+			elektraKeyDel (lookupKey);
 			return NULL;
 		}
 		else
 		{
-			keyDel (lookupKey);
-			return keyString (assign);
+			elektraKeyDel (lookupKey);
+			return elektraKeyString (assign);
 		}
 	}
 	else
@@ -565,7 +565,7 @@ static CondResult parseCondition (ElektraKey * key, const char * condition, cons
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey); // the regex compiles so the only
 		// possible error would be out of
 		// memory
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 
@@ -608,7 +608,7 @@ static CondResult parseCondition (ElektraKey * key, const char * condition, cons
 
 static CondResult parseConditionString (const ElektraKey * meta, const ElektraKey * suffixList, ElektraKey * parentKey, ElektraKey * key, ElektraKeyset * ks, Operation op)
 {
-	const char * conditionString = keyString (meta);
+	const char * conditionString = elektraKeyString (meta);
 	const char * regexString1 = "(\\(((.*)?)\\))[[:space:]]*\\?";
 	const char * regexString2 = "\\?[[:space:]]*(\\(((.*)?)\\))";
 	const char * regexString3 = "[[:space:]]*:[[:space:]]*(\\(((.*)?)\\))";
@@ -619,7 +619,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey); // the regex compiles so the only
 		// possible error would be out of
 		// memory
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 	if ((ret = regcomp (&regex2, regexString2, REGEX_FLAGS_CONDITION)))
@@ -628,7 +628,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 		// possible error would be out of
 		// memory
 		regfree (&regex1);
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 	if ((ret = regcomp (&regex3, regexString3, REGEX_FLAGS_CONDITION)))
@@ -638,7 +638,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 		// memory
 		regfree (&regex1);
 		regfree (&regex2);
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 	size_t subMatches = 6;
@@ -651,7 +651,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 	if (m[1].rm_so == -1)
@@ -661,7 +661,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 	int startPos = (int) m[1].rm_so;
@@ -679,7 +679,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 	if (m[1].rm_so == -1)
@@ -689,7 +689,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 		regfree (&regex1);
 		regfree (&regex2);
 		regfree (&regex3);
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		return ERROR;
 	}
 
@@ -710,7 +710,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 			regfree (&regex1);
 			regfree (&regex2);
 			regfree (&regex3);
-			ksDel (ks);
+			elektraKeysetDel (ks);
 			return ERROR;
 		}
 		thenexpr[strlen (thenexpr) - (size_t) ((m[0].rm_eo - m[0].rm_so))] = '\0';
@@ -729,7 +729,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 			const char * assign = isAssign (key, thenexpr, parentKey, ks);
 			if (assign != NULL)
 			{
-				keySetString (key, assign);
+				elektraKeySetString (key, assign);
 				ret = TRUE;
 				goto CleanUp;
 			}
@@ -745,7 +745,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 			if (ret == FALSE)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Validation of Key %s: %s failed. (%s failed)",
-									keyName (key) + strlen (keyName (parentKey)) + 1, conditionString,
+									elektraKeyName (key) + strlen (elektraKeyName (parentKey)) + 1, conditionString,
 									thenexpr);
 			}
 			else if (ret == ERROR)
@@ -765,7 +765,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 				const char * assign = isAssign (key, elseexpr, parentKey, ks);
 				if (assign != NULL)
 				{
-					keySetString (key, assign);
+					elektraKeySetString (key, assign);
 					ret = TRUE;
 					goto CleanUp;
 				}
@@ -782,7 +782,7 @@ static CondResult parseConditionString (const ElektraKey * meta, const ElektraKe
 				if (ret == FALSE)
 				{
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Validation of Key %s: %s failed. (%s failed)",
-										keyName (key) + strlen (keyName (parentKey)) + 1,
+										elektraKeyName (key) + strlen (elektraKeyName (parentKey)) + 1,
 										conditionString, elseexpr);
 				}
 				else if (ret == ERROR)
@@ -812,14 +812,14 @@ CleanUp:
 	regfree (&regex1);
 	regfree (&regex2);
 	regfree (&regex3);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	return ret;
 }
 
 static CondResult evaluateKey (const ElektraKey * meta, const ElektraKey * suffixList, ElektraKey * parentKey, ElektraKey * key, ElektraKeyset * ks, Operation op)
 {
 	CondResult result;
-	result = parseConditionString (meta, suffixList, parentKey, key, ksDup (ks), op);
+	result = parseConditionString (meta, suffixList, parentKey, key, elektraKeysetDup (ks), op);
 	if (result == ERROR)
 	{
 		return ERROR;
@@ -844,12 +844,12 @@ static CondResult evalMultipleConditions (ElektraKey * key, const ElektraKey * m
 	int countSucceeded = 0;
 	int countFailed = 0;
 	int countNoexpr = 0;
-	ElektraKeyset * condKS = elektraMetaArrayToKS (key, keyName (meta));
+	ElektraKeyset * condKS = elektraMetaArrayToKS (key, elektraKeyName (meta));
 	ElektraKey * c;
 	CondResult result = FALSE;
-	while ((c = ksNext (condKS)) != NULL)
+	while ((c = elektraKeysetNext (condKS)) != NULL)
 	{
-		if (!keyCmp (c, meta)) continue;
+		if (!elektraKeyCmp (c, meta)) continue;
 		result = evaluateKey (c, suffixList, parentKey, key, returned, CONDITION);
 		if (result == TRUE)
 			++countSucceeded;
@@ -858,8 +858,8 @@ static CondResult evalMultipleConditions (ElektraKey * key, const ElektraKey * m
 		else if (result == NOEXPR)
 			++countNoexpr;
 	}
-	ksDel (condKS);
-	if (!strcmp (keyBaseName (meta), "all"))
+	elektraKeysetDel (condKS);
+	if (!strcmp (elektraKeyBaseName (meta), "all"))
 	{
 		// all conditions must evaluate to TRUE
 		if (countFailed || countNoexpr)
@@ -867,7 +867,7 @@ static CondResult evalMultipleConditions (ElektraKey * key, const ElektraKey * m
 		else
 			return TRUE;
 	}
-	else if (!strcmp (keyBaseName (meta), "any"))
+	else if (!strcmp (elektraKeyBaseName (meta), "any"))
 	{
 		// at least one conditional must evaluate to TRUE
 		if (countSucceeded)
@@ -887,32 +887,32 @@ static CondResult evalMultipleConditions (ElektraKey * key, const ElektraKey * m
 
 int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/conditionals"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/conditionals"))
 	{
-		ElektraKeyset * contract = ksNew (
+		ElektraKeyset * contract = elektraKeysetNew (
 			30,
-			keyNew ("system:/elektra/modules/conditionals", ELEKTRA_KEY_VALUE, "conditionals plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/conditionals/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/conditionals/exports/get", ELEKTRA_KEY_FUNC, elektraConditionalsGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/conditionals/exports/set", ELEKTRA_KEY_FUNC, elektraConditionalsSet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/conditionals", ELEKTRA_KEY_VALUE, "conditionals plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/conditionals/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/conditionals/exports/get", ELEKTRA_KEY_FUNC, elektraConditionalsGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/conditionals/exports/set", ELEKTRA_KEY_FUNC, elektraConditionalsSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/conditionals/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/conditionals/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
 	ElektraKey * cur;
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 	CondResult ret = FALSE;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		ElektraKey * conditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition");
-		ElektraKey * assignMeta = (ElektraKey *) keyGetMeta (cur, "assign/condition");
-		ElektraKey * suffixList = (ElektraKey *) keyGetMeta (cur, "condition/validsuffix");
-		ElektraKey * anyConditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition/any");
-		ElektraKey * allConditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition/all");
-		ElektraKey * noneConditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition/none");
+		ElektraKey * conditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition");
+		ElektraKey * assignMeta = (ElektraKey *) elektraKeyGetMeta (cur, "assign/condition");
+		ElektraKey * suffixList = (ElektraKey *) elektraKeyGetMeta (cur, "condition/validsuffix");
+		ElektraKey * anyConditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition/any");
+		ElektraKey * allConditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition/all");
+		ElektraKey * noneConditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition/none");
 
 		if (conditionMeta)
 		{
@@ -949,13 +949,13 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 
 		if (assignMeta)
 		{
-			if (keyString (assignMeta)[0] == '#')
+			if (elektraKeyString (assignMeta)[0] == '#')
 			{
 				ElektraKeyset * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
 				ElektraKey * a;
-				while ((a = ksNext (assignKS)) != NULL)
+				while ((a = elektraKeysetNext (assignKS)) != NULL)
 				{
-					if (keyCmp (a, assignMeta) == 0) continue;
+					if (elektraKeyCmp (a, assignMeta) == 0) continue;
 					CondResult result = evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
 					if (result == TRUE)
 					{
@@ -971,7 +971,7 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 						ret |= ERROR;
 					}
 				}
-				ksDel (assignKS);
+				elektraKeysetDel (assignKS);
 			}
 			else
 			{
@@ -979,7 +979,7 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 			}
 		}
 	}
-	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
+	if (ret == TRUE) elektraKeySetMeta (parentKey, "error", 0);
 	return ret; /* success */
 }
 
@@ -987,16 +987,16 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	ElektraKey * cur;
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 	CondResult ret = FALSE;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		ElektraKey * conditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition");
-		ElektraKey * assignMeta = (ElektraKey *) keyGetMeta (cur, "assign/condition");
-		ElektraKey * suffixList = (ElektraKey *) keyGetMeta (cur, "condition/validsuffix");
-		ElektraKey * anyConditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition/any");
-		ElektraKey * allConditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition/all");
-		ElektraKey * noneConditionMeta = (ElektraKey *) keyGetMeta (cur, "check/condition/none");
+		ElektraKey * conditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition");
+		ElektraKey * assignMeta = (ElektraKey *) elektraKeyGetMeta (cur, "assign/condition");
+		ElektraKey * suffixList = (ElektraKey *) elektraKeyGetMeta (cur, "condition/validsuffix");
+		ElektraKey * anyConditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition/any");
+		ElektraKey * allConditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition/all");
+		ElektraKey * noneConditionMeta = (ElektraKey *) elektraKeyGetMeta (cur, "check/condition/none");
 
 		if (conditionMeta)
 		{
@@ -1033,13 +1033,13 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 
 		if (assignMeta)
 		{
-			if (keyString (assignMeta)[0] == '#')
+			if (elektraKeyString (assignMeta)[0] == '#')
 			{
 				ElektraKeyset * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
 				ElektraKey * a;
-				while ((a = ksNext (assignKS)) != NULL)
+				while ((a = elektraKeysetNext (assignKS)) != NULL)
 				{
-					if (keyCmp (a, assignMeta) == 0) continue;
+					if (elektraKeyCmp (a, assignMeta) == 0) continue;
 					CondResult result = evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
 					if (result == TRUE)
 					{
@@ -1055,7 +1055,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 						ret |= ERROR;
 					}
 				}
-				ksDel (assignKS);
+				elektraKeysetDel (assignKS);
 			}
 			else
 			{
@@ -1063,7 +1063,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 			}
 		}
 	}
-	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
+	if (ret == TRUE) elektraKeySetMeta (parentKey, "error", 0);
 	return ret;
 }
 

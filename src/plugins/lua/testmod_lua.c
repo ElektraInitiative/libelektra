@@ -19,20 +19,20 @@ static void test_variable_passing (void)
 {
 	printf ("Testing simple variable passing...\n");
 
-	ElektraKeyset * conf = ksNew (1, keyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), ELEKTRA_KEY_END),
-			       keyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (1, elektraKeyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), ELEKTRA_KEY_END),
+			       elektraKeyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("lua");
 
-	ElektraKey * parentKey = keyNew ("user:/from_c", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/from_c", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	succeed_if (ksGetSize (ks) == 1, "keyset size is still 0");
-	succeed_if (ksGetSize (ks) == 1 && !strcmp (keyName (ksHead (ks)), "user:/from_lua"), "key in keyset has wrong name");
+	succeed_if (elektraKeysetGetSize (ks) == 1, "keyset size is still 0");
+	succeed_if (elektraKeysetGetSize (ks) == 1 && !strcmp (elektraKeyName (elektraKeysetHead (ks)), "user:/from_lua"), "key in keyset has wrong name");
 	succeed_if (output_warnings (parentKey), "warnings in kdbOpen");
 	succeed_if (output_error (parentKey), "errors in kdbOpen");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
@@ -42,33 +42,33 @@ static void test_two_scripts (void)
 {
 	printf ("Testing loading of two active lua plugins...\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
-	ElektraKeyset * conf = ksNew (2, keyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), ELEKTRA_KEY_END),
-			       keyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (2, elektraKeyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin.lua"), ELEKTRA_KEY_END),
+			       elektraKeyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * conf2 = ksNew (2, keyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin2.lua"), ELEKTRA_KEY_END),
-				keyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf2 = elektraKeysetNew (2, elektraKeyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin2.lua"), ELEKTRA_KEY_END),
+				elektraKeyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	Plugin * plugin = elektraPluginOpen ("lua", modules, conf, errorKey);
 	succeed_if (output_warnings (errorKey), "warnings in kdbOpen");
 	succeed_if (output_error (errorKey), "errors in kdbOpen");
 	exit_if_fail (plugin != NULL, "unable to load lua plugin");
-	keyDel (errorKey);
+	elektraKeyDel (errorKey);
 
-	ElektraKey * errorKey2 = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey2 = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	Plugin * plugin2 = elektraPluginOpen ("lua", modules, conf2, errorKey2);
 	succeed_if (output_warnings (errorKey2), "warnings in kdbOpen");
 	succeed_if (output_error (errorKey2), "errors in kdbOpen");
 	exit_if_fail (plugin2 != NULL, "unable to load lua plugin again");
-	keyDel (errorKey2);
+	elektraKeyDel (errorKey2);
 
 	elektraPluginClose (plugin2, 0);
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 // simple return value test
@@ -76,12 +76,12 @@ static void test_fail (void)
 {
 	printf ("Testing return values from lua functions...\n");
 
-	ElektraKeyset * conf = ksNew (2, keyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin_fail.lua"), ELEKTRA_KEY_END),
-			       keyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (2, elektraKeyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin_fail.lua"), ELEKTRA_KEY_END),
+			       elektraKeyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("lua");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/from_c", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/from_c", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "call to kdbGet didn't fail");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == -1, "call to kdbSet didn't fail");
@@ -89,8 +89,8 @@ static void test_fail (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbOpen");
 	succeed_if (output_error (parentKey), "errors in kdbOpen");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
@@ -100,21 +100,21 @@ static void test_wrong (void)
 {
 	printf ("Testing lua script with syntax error...\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
-	ElektraKeyset * conf = ksNew (2, keyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin_wrong.lua"), ELEKTRA_KEY_END),
-			       keyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (2, elektraKeyNew ("user:/script", ELEKTRA_KEY_VALUE, srcdir_file ("lua/lua_plugin_wrong.lua"), ELEKTRA_KEY_END),
+			       elektraKeyNew ("user:/print", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	Plugin * plugin = elektraPluginOpen ("lua", modules, conf, errorKey);
 	succeed_if (!output_warnings (errorKey), "we expect some warnings");
 	succeed_if (!output_error (errorKey), "we expect some errors");
 	succeed_if (plugin == NULL, "lua plugin shouldn't be loadable");
-	keyDel (errorKey);
+	elektraKeyDel (errorKey);
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 int main (int argc, char ** argv)

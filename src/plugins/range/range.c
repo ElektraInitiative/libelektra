@@ -380,7 +380,7 @@ static RangeType stringToType (const ElektraKey * typeMeta)
 			"long double",
 			NULL,
 		};
-		const char * strVal = keyString (typeMeta);
+		const char * strVal = elektraKeyString (typeMeta);
 		for (int i = 0; intTypes[i] != NULL; ++i)
 		{
 			if (!strcasecmp (strVal, intTypes[i])) return INT;
@@ -403,13 +403,13 @@ static RangeType stringToType (const ElektraKey * typeMeta)
 
 static RangeType getType (const ElektraKey * key)
 {
-	const ElektraKey * typeMeta = keyGetMeta (key, "check/type");
+	const ElektraKey * typeMeta = elektraKeyGetMeta (key, "check/type");
 
 	// If "check/type" is not specified, fall back to "type".
 	// As decided in https://github.com/ElektraInitiative/libelektra/issues/3984#issuecomment-909144492
 	if (typeMeta == NULL)
 	{
-		typeMeta = keyGetMeta (key, "type");
+		typeMeta = elektraKeyGetMeta (key, "type");
 	}
 
 	RangeType type = stringToType (typeMeta);
@@ -422,12 +422,12 @@ static RangeType getType (const ElektraKey * key)
 
 static int validateKey (ElektraKey * key, ElektraKey * parentKey, bool errorsAsWarnings)
 {
-	const ElektraKey * rangeMeta = keyGetMeta (key, "check/range");
-	const char * rangeString = keyString (rangeMeta);
+	const ElektraKey * rangeMeta = elektraKeyGetMeta (key, "check/range");
+	const char * rangeString = elektraKeyString (rangeMeta);
 	RangeType type = getType (key);
 	if (type == UINT)
 	{
-		const char * ptr = keyString (key);
+		const char * ptr = elektraKeyString (key);
 		while (*ptr)
 		{
 			if (*ptr == '-')
@@ -444,17 +444,17 @@ static int validateKey (ElektraKey * key, ElektraKey * parentKey, bool errorsAsW
 
 	if (!strchr (rangeString, ','))
 	{
-		int rc = validateSingleRange (keyString (key), rangeString, type);
+		int rc = validateSingleRange (elektraKeyString (key), rangeString, type);
 		if (rc == -1)
 		{
 			if (errorsAsWarnings)
 			{
-				ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Invalid syntax: %s", keyString (rangeMeta));
+				ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Invalid syntax: %s", elektraKeyString (rangeMeta));
 				return 1;
 			}
 			else
 			{
-				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", keyString (rangeMeta));
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Invalid syntax: %s", elektraKeyString (rangeMeta));
 				return -1;
 			}
 		}
@@ -462,13 +462,13 @@ static int validateKey (ElektraKey * key, ElektraKey * parentKey, bool errorsAsW
 		{
 			if (errorsAsWarnings)
 			{
-				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
+				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, RANGE_ERROR_MESSAGE, elektraKeyString (key), elektraKeyName (key),
 									  rangeString);
 				return 0;
 			}
 			else
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, RANGE_ERROR_MESSAGE, elektraKeyString (key), elektraKeyName (key),
 									rangeString);
 				return 0;
 			}
@@ -480,17 +480,17 @@ static int validateKey (ElektraKey * key, ElektraKey * parentKey, bool errorsAsW
 	}
 	else
 	{
-		int rc = validateMultipleRanges (keyString (key), rangeString, parentKey, type);
+		int rc = validateMultipleRanges (elektraKeyString (key), rangeString, parentKey, type);
 		if (rc == 0)
 		{
 			if (errorsAsWarnings)
 			{
-				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
+				ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, RANGE_ERROR_MESSAGE, elektraKeyString (key), elektraKeyName (key),
 									  rangeString);
 			}
 			else
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, RANGE_ERROR_MESSAGE, keyString (key), keyName (key),
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, RANGE_ERROR_MESSAGE, elektraKeyString (key), elektraKeyName (key),
 									rangeString);
 			}
 		}
@@ -500,27 +500,27 @@ static int validateKey (ElektraKey * key, ElektraKey * parentKey, bool errorsAsW
 
 int elektraRangeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/range"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/range"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/range", ELEKTRA_KEY_VALUE, "range plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports/get", ELEKTRA_KEY_FUNC, elektraRangeGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports/set", ELEKTRA_KEY_FUNC, elektraRangeSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/range", ELEKTRA_KEY_VALUE, "range plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/range/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/range/exports/get", ELEKTRA_KEY_FUNC, elektraRangeGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/range/exports/set", ELEKTRA_KEY_FUNC, elektraRangeSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/range/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/range/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/range/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
 
 	// Validate all keys, treat errors as warnings.
 	ElektraKey * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/range");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/range");
 		if (meta)
 		{
 			validateKey (cur, parentKey, true);
@@ -536,9 +536,9 @@ int elektraRangeSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned EL
 	// set all keys
 	// this function is optional
 	ElektraKey * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/range");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/range");
 		if (meta)
 		{
 			int rc = validateKey (cur, parentKey, false);

@@ -15,8 +15,8 @@ static ElektraKey * gelektra_key_swap (GElektraKey * key, ElektraKey * newkey);
 static void gelektra_key_init (GElektraKey * self)
 {
 	/* initialize the object */
-	self->key = keyNew ("/", ELEKTRA_KEY_END);
-	keyIncRef (self->key);
+	self->key = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeyIncRef (self->key);
 }
 
 static void gelektra_key_set_property (GObject * object, guint property_id, const GValue * value __attribute__ ((unused)),
@@ -32,10 +32,10 @@ static void gelektra_key_get_property (GObject * object, guint property_id, GVal
 	switch (property_id)
 	{
 	case PROP_KEY_NAME:
-		g_value_set_string (value, keyName (self->key));
+		g_value_set_string (value, elektraKeyName (self->key));
 		break;
 	case PROP_KEY_BASENAME:
-		g_value_set_string (value, keyBaseName (self->key));
+		g_value_set_string (value, elektraKeyBaseName (self->key));
 		break;
 	default:
 		/* We don't have any other property... */
@@ -48,8 +48,8 @@ static void gelektra_key_finalize (GObject * object)
 {
 	GElektraKey * self = GELEKTRA_KEY (object);
 
-	keyDecRef (self->key);
-	keyDel (self->key);
+	elektraKeyDecRef (self->key);
+	elektraKeyDel (self->key);
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
 	 * is guaranteed to exist on the parent's class virtual function table
@@ -99,12 +99,12 @@ GElektraKey * gelektra_key_new (const gchar * name, ...)
 	if (name)
 	{
 		va_start (va, name);
-		ElektraKey * newkey = keyVNew (name, va);
+		ElektraKey * newkey = elektraKeyVNew (name, va);
 		va_end (va);
 		if (newkey == NULL) return NULL;
 
 		ElektraKey * old = gelektra_key_swap (key, newkey);
-		keyDel (old);
+		elektraKeyDel (old);
 	}
 	return key;
 }
@@ -120,7 +120,7 @@ GElektraKey * gelektra_key_make (ElektraKey * key)
 	if (key == NULL) return NULL;
 	GElektraKey * ret = gelektra_key_new (NULL);
 	ElektraKey * old = gelektra_key_swap (ret, key);
-	keyDel (old);
+	elektraKeyDel (old);
 	return ret;
 }
 
@@ -144,12 +144,12 @@ static void gelektra_key_gi_init_va (GElektraKey * key, const gchar * name, ...)
 	if (!name) return;
 	va_list va;
 	va_start (va, name);
-	ElektraKey * newkey = keyVNew (name, va);
+	ElektraKey * newkey = elektraKeyVNew (name, va);
 	va_end (va);
 	if (newkey == NULL) return;
 
 	ElektraKey * old = gelektra_key_swap (key, newkey);
-	keyDel (old);
+	elektraKeyDel (old);
 }
 
 /**
@@ -172,17 +172,17 @@ void gelektra_key_gi_init (GElektraKey * key, const gchar * name, int flags, con
 /* reference handling */
 guint16 gelektra_key_incref (GElektraKey * key)
 {
-	return keyIncRef (key->key);
+	return elektraKeyIncRef (key->key);
 }
 
 guint16 gelektra_key_decref (GElektraKey * key)
 {
-	return keyDecRef (key->key);
+	return elektraKeyDecRef (key->key);
 }
 
 guint16 gelektra_key_getref (const GElektraKey * key)
 {
-	return keyGetRef (key->key);
+	return elektraKeyGetRef (key->key);
 }
 
 /* basic methods */
@@ -195,7 +195,7 @@ guint16 gelektra_key_getref (const GElektraKey * key)
  */
 GElektraKey * gelektra_key_dup (const GElektraKey * key, elektraCopyFlags flags)
 {
-	return gelektra_key_make (keyDup (key->key, flags));
+	return gelektra_key_make (elektraKeyDup (key->key, flags));
 }
 
 /**
@@ -204,13 +204,13 @@ GElektraKey * gelektra_key_dup (const GElektraKey * key, elektraCopyFlags flags)
  */
 GElektraKey * gelektra_key_copy (const GElektraKey * key, GElektraKey * dest, elektraCopyFlags flags)
 {
-	ElektraKey * ret = keyCopy (dest->key, key->key, flags);
+	ElektraKey * ret = elektraKeyCopy (dest->key, key->key, flags);
 	return ret == NULL ? NULL : dest;
 }
 
 gint gelektra_key_clear (GElektraKey * key)
 {
-	return keyClear (key->key);
+	return elektraKeyClear (key->key);
 }
 
 /**
@@ -224,59 +224,59 @@ gint gelektra_key_clear (GElektraKey * key)
  */
 static ElektraKey * gelektra_key_swap (GElektraKey * key, ElektraKey * newkey)
 {
-	keyDecRef (key->key);
+	elektraKeyDecRef (key->key);
 	ElektraKey * oldkey = key->key;
 	key->key = newkey;
-	keyIncRef (key->key);
+	elektraKeyIncRef (key->key);
 	return oldkey;
 }
 
 /* operators */
 gboolean gelektra_key_equal (const GElektraKey * key, const GElektraKey * other)
 {
-	return keyCmp (key->key, other->key) == 0;
+	return elektraKeyCmp (key->key, other->key) == 0;
 }
 
 gint gelektra_key_cmp (const GElektraKey * key, const GElektraKey * other)
 {
-	return keyCmp (key->key, other->key);
+	return elektraKeyCmp (key->key, other->key);
 }
 
 /* name manipulation */
 gssize gelektra_key_setname (GElektraKey * key, const char * name)
 {
-	return keySetName (key->key, name);
+	return elektraKeySetName (key->key, name);
 }
 
 const gchar * gelektra_key_name (const GElektraKey * key)
 {
-	return keyName (key->key);
+	return elektraKeyName (key->key);
 }
 
 gssize gelektra_key_setbasename (GElektraKey * key, const char * basename)
 {
-	return keySetBaseName (key->key, basename);
+	return elektraKeySetBaseName (key->key, basename);
 }
 
 gssize gelektra_key_addbasename (GElektraKey * key, const char * basename)
 {
-	return keyAddBaseName (key->key, basename);
+	return elektraKeyAddBaseName (key->key, basename);
 }
 
 gssize gelektra_key_getnamesize (const GElektraKey * key)
 {
-	return keyGetNameSize (key->key);
+	return elektraKeyGetNameSize (key->key);
 }
 
 gssize gelektra_key_getbasenamesize (const GElektraKey * key)
 {
-	return keyGetBaseNameSize (key->key);
+	return elektraKeyGetBaseNameSize (key->key);
 }
 
 /* value operations */
 gssize gelektra_key_setstring (GElektraKey * key, const gchar * value)
 {
-	return keySetString (key->key, value);
+	return elektraKeySetString (key->key, value);
 }
 
 /**
@@ -285,12 +285,12 @@ gssize gelektra_key_setstring (GElektraKey * key, const gchar * value)
  */
 gssize gelektra_key_getstring (const GElektraKey * key, gchar * out, gsize size)
 {
-	return keyGetString (key->key, out, size);
+	return elektraKeyGetString (key->key, out, size);
 }
 
 const gchar * gelektra_key_string (const GElektraKey * key)
 {
-	return keyString (key->key);
+	return elektraKeyString (key->key);
 }
 
 /**
@@ -304,11 +304,11 @@ const gchar * gelektra_key_string (const GElektraKey * key)
  */
 gchar * gelektra_key_gi_getstring (const GElektraKey * key)
 {
-	gssize size = keyGetValueSize (key->key);
+	gssize size = elektraKeyGetValueSize (key->key);
 	if (size <= 0) return NULL;
 
 	gchar * data = g_malloc0 (size);
-	if (keyGetString (key->key, data, size) <= 0)
+	if (elektraKeyGetString (key->key, data, size) <= 0)
 	{
 		g_free (data);
 		return NULL;
@@ -324,7 +324,7 @@ gchar * gelektra_key_gi_getstring (const GElektraKey * key)
  */
 gssize gelektra_key_setbinary (GElektraKey * key, const void * data, gsize size)
 {
-	return keySetBinary (key->key, data, size);
+	return elektraKeySetBinary (key->key, data, size);
 }
 
 /**
@@ -333,7 +333,7 @@ gssize gelektra_key_setbinary (GElektraKey * key, const void * data, gsize size)
  */
 gssize gelektra_key_getbinary (const GElektraKey * key, void * out, gsize size)
 {
-	return keyGetBinary (key->key, out, size);
+	return elektraKeyGetBinary (key->key, out, size);
 }
 
 
@@ -350,11 +350,11 @@ gssize gelektra_key_getbinary (const GElektraKey * key, void * out, gsize size)
 void * gelektra_key_gi_getbinary (const GElektraKey * key, gssize * data_size)
 {
 	*data_size = 0;
-	gssize size = keyGetValueSize (key->key);
+	gssize size = elektraKeyGetValueSize (key->key);
 	if (size <= 0) return NULL;
 
 	void * data = g_malloc0 (size);
-	if ((*data_size = keyGetBinary (key->key, data, size)) <= 0)
+	if ((*data_size = elektraKeyGetBinary (key->key, data, size)) <= 0)
 	{
 		g_free (data);
 		return NULL;
@@ -370,12 +370,12 @@ void * gelektra_key_gi_getbinary (const GElektraKey * key, gssize * data_size)
  */
 const void * gelektra_key_getvalue (const GElektraKey * key)
 {
-	return keyValue (key->key);
+	return elektraKeyValue (key->key);
 }
 
 gssize gelektra_key_getvaluesize (const GElektraKey * key)
 {
-	return keyGetValueSize (key->key);
+	return elektraKeyGetValueSize (key->key);
 }
 
 /**
@@ -392,19 +392,19 @@ gelektra_func_t gelektra_key_getfunc (const GElektraKey * key)
 		void * v;
 	} data;
 
-	if (keyGetBinary (key->key, &data.v, sizeof (data)) == sizeof (data)) return data.f;
+	if (elektraKeyGetBinary (key->key, &data.v, sizeof (data)) == sizeof (data)) return data.f;
 	return NULL;
 }
 
 /* metadata */
 gssize gelektra_key_setmeta (GElektraKey * key, const gchar * name, const gchar * value)
 {
-	return keySetMeta (key->key, name, value);
+	return elektraKeySetMeta (key->key, name, value);
 }
 
 gboolean gelektra_key_hasmeta (const GElektraKey * key, const gchar * name)
 {
-	return (keyValue (keyGetMeta (key->key, name)) != NULL);
+	return (elektraKeyValue (elektraKeyGetMeta (key->key, name)) != NULL);
 }
 
 /**
@@ -417,22 +417,22 @@ gboolean gelektra_key_hasmeta (const GElektraKey * key, const gchar * name)
  */
 GElektraKey * gelektra_key_getmeta (const GElektraKey * key, const gchar * name)
 {
-	return gelektra_key_make ((ElektraKey *) keyGetMeta (key->key, name));
+	return gelektra_key_make ((ElektraKey *) elektraKeyGetMeta (key->key, name));
 }
 
 gint gelektra_key_copymeta (const GElektraKey * key, GElektraKey * dest, const gchar * name)
 {
-	return keyCopyMeta (dest->key, key->key, name);
+	return elektraKeyCopyMeta (dest->key, key->key, name);
 }
 
 gint gelektra_key_copyallmeta (const GElektraKey * key, GElektraKey * dest)
 {
-	return keyCopyAllMeta (dest->key, key->key);
+	return elektraKeyCopyAllMeta (dest->key, key->key);
 }
 
 gint gelektra_key_rewindmeta (GElektraKey * key)
 {
-	return keyRewindMeta (key->key);
+	return elektraKeyRewindMeta (key->key);
 }
 
 /**
@@ -444,7 +444,7 @@ gint gelektra_key_rewindmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
 {
-	return gelektra_key_make ((ElektraKey *) keyNextMeta (key->key));
+	return gelektra_key_make ((ElektraKey *) elektraKeyNextMeta (key->key));
 }
 
 /**
@@ -456,7 +456,7 @@ GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_currentmeta (const GElektraKey * key)
 {
-	return gelektra_key_make ((ElektraKey *) keyCurrentMeta (key->key));
+	return gelektra_key_make ((ElektraKey *) elektraKeyCurrentMeta (key->key));
 }
 
 /* validating */
@@ -467,40 +467,40 @@ gboolean gelektra_key_isnull (const GElektraKey * key)
 
 gboolean gelektra_key_isvalid (const GElektraKey * key)
 {
-	return keyGetNameSize (key->key) > 1;
+	return elektraKeyGetNameSize (key->key) > 1;
 }
 
 gboolean gelektra_key_issystem (const GElektraKey * key)
 {
-	return !strncmp (keyName (key->key), "system:/", sizeof ("system:/") - 1);
+	return !strncmp (elektraKeyName (key->key), "system:/", sizeof ("system:/") - 1);
 }
 
 gboolean gelektra_key_isuser (const GElektraKey * key)
 {
-	return !strncmp (keyName (key->key), "user:/", sizeof ("user:/") - 1);
+	return !strncmp (elektraKeyName (key->key), "user:/", sizeof ("user:/") - 1);
 }
 
 gboolean gelektra_key_isstring (const GElektraKey * key)
 {
-	return keyIsString (key->key);
+	return elektraKeyIsString (key->key);
 }
 
 gboolean gelektra_key_isbinary (const GElektraKey * key)
 {
-	return keyIsBinary (key->key);
+	return elektraKeyIsBinary (key->key);
 }
 
 gboolean gelektra_key_isbelow (const GElektraKey * key, const GElektraKey * other)
 {
-	return keyIsBelow (other->key, key->key);
+	return elektraKeyIsBelow (other->key, key->key);
 }
 
 gboolean gelektra_key_isbeloworsame (const GElektraKey * key, const GElektraKey * other)
 {
-	return keyIsBelowOrSame (other->key, key->key);
+	return elektraKeyIsBelowOrSame (other->key, key->key);
 }
 
 gboolean gelektra_key_isdirectbelow (const GElektraKey * key, const GElektraKey * other)
 {
-	return keyIsDirectlyBelow (other->key, key->key);
+	return elektraKeyIsDirectlyBelow (other->key, key->key);
 }

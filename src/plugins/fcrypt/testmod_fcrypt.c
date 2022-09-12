@@ -46,11 +46,11 @@ static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0
 static ElektraKeyset * newPluginConfiguration (void)
 {
 	// clang-format off
-	return ksNew (3,
-		keyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
-		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-		keyNew (ELEKTRA_SIGNATURE_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
-		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+	return elektraKeysetNew (3,
+		elektraKeyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		elektraKeyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		elektraKeyNew (ELEKTRA_SIGNATURE_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		elektraKeyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
 		ELEKTRA_KS_END);
 	// clang-format on
 }
@@ -58,11 +58,11 @@ static ElektraKeyset * newPluginConfiguration (void)
 static ElektraKeyset * newPluginConfigurationWithTextmodeEnabled (void)
 {
 	// clang-format off
-	return ksNew (3,
-		keyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
-		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-		keyNew (ELEKTRA_SIGNATURE_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
-		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	return elektraKeysetNew (3,
+		elektraKeyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		elektraKeyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		elektraKeyNew (ELEKTRA_SIGNATURE_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		elektraKeyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
 		ELEKTRA_KS_END);
 	// clang-format on
 }
@@ -119,8 +119,8 @@ static int isTestFileCorrect (const char * file)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
@@ -142,34 +142,34 @@ static void test_init (void)
 	}
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (parentKey);
+	elektraKeysetDel (modules);
+	elektraKeyDel (parentKey);
 }
 
 static void test_gpg (void)
 {
 	// Plugin configuration
 	ElektraKeyset * conf = newPluginConfiguration ();
-	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
 	// install the gpg key
 	char * argv[] = { "", "-a", "--import", NULL };
 	const size_t argc = 4;
-	ElektraKey * msg = keyNew ("/", ELEKTRA_KEY_END);
-	keySetBinary (msg, test_key_asc, test_key_asc_len);
+	ElektraKey * msg = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetBinary (msg, test_key_asc, test_key_asc_len);
 
 	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
 
-	keyDel (msg);
-	keyDel (errorKey);
-	ksDel (conf);
+	elektraKeyDel (msg);
+	elektraKeyDel (errorKey);
+	elektraKeysetDel (conf);
 }
 
 static void test_file_crypto_operations (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
@@ -177,13 +177,13 @@ static void test_file_crypto_operations (void)
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		ElektraKeyset * data = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * data = elektraKeysetNew (0, ELEKTRA_KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
 			// prepare test file to be encrypted
 			writeTestFile (tmpFile);
-			keySetString (parentKey, tmpFile);
+			elektraKeySetString (parentKey, tmpFile);
 
 			// try to encrypt the file
 			succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
@@ -191,7 +191,7 @@ static void test_file_crypto_operations (void)
 
 			// try to decrypt the file again (simulating the pregetstorage call)
 			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (pregetstorage) failed");
-			succeed_if (isTestFileCorrect (keyString (parentKey)) == 1, "file content could not be restored during decryption");
+			succeed_if (isTestFileCorrect (elektraKeyString (parentKey)) == 1, "file content could not be restored during decryption");
 
 			// a second call to kdb get (the postgetstorage call) should re-encrypt the file again
 			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (postgetstorage) failed");
@@ -200,20 +200,20 @@ static void test_file_crypto_operations (void)
 			remove (tmpFile);
 		}
 
-		ksDel (data);
+		elektraKeysetDel (data);
 		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (parentKey);
+	elektraKeysetDel (modules);
+	elektraKeyDel (parentKey);
 }
 
 static void test_file_signature_operations (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
@@ -221,13 +221,13 @@ static void test_file_signature_operations (void)
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		ElektraKeyset * data = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * data = elektraKeysetNew (0, ELEKTRA_KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
 			// prepare test file to be encrypted
 			writeTestFile (tmpFile);
-			keySetString (parentKey, tmpFile);
+			elektraKeySetString (parentKey, tmpFile);
 
 			// try to encrypt the file
 			succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
@@ -239,20 +239,20 @@ static void test_file_signature_operations (void)
 			remove (tmpFile);
 		}
 
-		ksDel (data);
+		elektraKeysetDel (data);
 		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (parentKey);
+	elektraKeysetDel (modules);
+	elektraKeyDel (parentKey);
 }
 
 static void test_file_faulty_signature (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfigurationWithTextmodeEnabled ();
 
 	elektraModulesInit (modules, 0);
@@ -260,13 +260,13 @@ static void test_file_faulty_signature (void)
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		ElektraKeyset * data = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * data = elektraKeysetNew (0, ELEKTRA_KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
 			// prepare test file to be encrypted
 			writeFaultySignatureFile (tmpFile);
-			keySetString (parentKey, tmpFile);
+			elektraKeySetString (parentKey, tmpFile);
 
 			// try to decrypt/verify the file -- should fail
 			succeed_if (plugin->kdbGet (plugin, data, parentKey) == -1, "kdb get succeeded on a faulty signature");
@@ -274,13 +274,13 @@ static void test_file_faulty_signature (void)
 			remove (tmpFile);
 		}
 
-		ksDel (data);
+		elektraKeysetDel (data);
 		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (parentKey);
+	elektraKeysetDel (modules);
+	elektraKeyDel (parentKey);
 }
 
 int main (int argc, char ** argv)

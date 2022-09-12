@@ -20,7 +20,7 @@ TableArrayList * pushTableArray (TableArrayList * top, ElektraKey * key)
 {
 	TableArrayList * ta = elektraCalloc (sizeof (TableArrayList));
 	ta->key = key;
-	keyIncRef (key);
+	elektraKeyIncRef (key);
 	if (top != NULL)
 	{
 		ta->keyStr = getChildFraction (top->key, key);
@@ -31,7 +31,7 @@ TableArrayList * pushTableArray (TableArrayList * top, ElektraKey * key)
 	}
 	if (ta->keyStr == NULL)
 	{
-		ta->keyStr = elektraStrDup (keyName (key));
+		ta->keyStr = elektraStrDup (elektraKeyName (key));
 	}
 	ta->currIndex = 0;
 	ta->next = top;
@@ -42,8 +42,8 @@ TableArrayList * pushTableArray (TableArrayList * top, ElektraKey * key)
 TableArrayList * popTableArray (TableArrayList * top)
 {
 	TableArrayList * newTop = top->next;
-	keyDecRef (top->key);
-	keyDel (top->key);
+	elektraKeyDecRef (top->key);
+	elektraKeyDel (top->key);
 	elektraFree (top->keyStr);
 	elektraFree (top);
 	return newTop;
@@ -51,16 +51,16 @@ TableArrayList * popTableArray (TableArrayList * top)
 
 ElektraKey * buildTableArrayKeyName (const TableArrayList * ta)
 {
-	if (ta->next == NULL || !keyIsBelow (ta->next->key, ta->key))
+	if (ta->next == NULL || !elektraKeyIsBelow (ta->next->key, ta->key))
 	{
 		return keyAppendIndex (ta->currIndex, ta->key);
 	}
 	else
 	{
 		ElektraKey * key = buildTableArrayKeyName (ta->next);
-		keyAddName (key, ta->keyStr);
+		elektraKeyAddName (key, ta->keyStr);
 		char * index = indexToArrayString (ta->currIndex);
-		keyAddBaseName (key, index);
+		elektraKeyAddBaseName (key, index);
 		elektraFree (index);
 		return key;
 	}
@@ -68,13 +68,13 @@ ElektraKey * buildTableArrayKeyName (const TableArrayList * ta)
 
 static char * getChildFraction (const ElektraKey * parent, const ElektraKey * child)
 {
-	if (!keyIsBelow (parent, child))
+	if (!elektraKeyIsBelow (parent, child))
 	{
 		return NULL;
 	}
 	else
 	{
-		ElektraKey * childDup = keyDup (child, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * childDup = elektraKeyDup (child, ELEKTRA_KEY_CP_ALL);
 		size_t fracSize = 256;
 		char * fraction = elektraCalloc (sizeof (char) * fracSize);
 		if (fraction == NULL)
@@ -83,7 +83,7 @@ static char * getChildFraction (const ElektraKey * parent, const ElektraKey * ch
 		}
 		do
 		{
-			const char * baseName = keyBaseName (childDup);
+			const char * baseName = elektraKeyBaseName (childDup);
 			if (elektraStrLen (fraction) + elektraStrLen (baseName) - 1 >= fracSize)
 			{
 				fracSize *= 2;
@@ -97,10 +97,10 @@ static char * getChildFraction (const ElektraKey * parent, const ElektraKey * ch
 			char * fracDup = elektraStrDup (fraction); // TODO: avoid allocation
 			snprintf (fraction, fracSize, "%s/%s", baseName, fracDup);
 			elektraFree (fracDup);
-			keyAddName (childDup, "..");
-		} while (keyCmp (parent, childDup) != 0);
+			elektraKeyAddName (childDup, "..");
+		} while (elektraKeyCmp (parent, childDup) != 0);
 		fraction[elektraStrLen (fraction) - 2] = 0;
-		keyDel (childDup);
+		elektraKeyDel (childDup);
 		return fraction;
 	}
 }

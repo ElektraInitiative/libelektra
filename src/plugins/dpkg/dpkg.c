@@ -19,16 +19,16 @@
 static void appendToKey (ElektraKey * key, const char * line)
 {
 	char * buffer;
-	size_t len = keyGetValueSize (key) + elektraStrLen (line) - 1;
+	size_t len = elektraKeyGetValueSize (key) + elektraStrLen (line) - 1;
 	buffer = elektraMalloc (len);
-	snprintf (buffer, len, "%s%s", keyString (key), line);
-	keySetString (key, buffer);
+	snprintf (buffer, len, "%s%s", elektraKeyString (key), line);
+	elektraKeySetString (key, buffer);
 	elektraFree (buffer);
 }
 static ElektraKeyset * nextPackage (FILE * fp, ElektraKey * parentKey)
 {
 	char * line = elektraMalloc (DPKG_LINE_MAX);
-	ElektraKeyset * package = ksNew (500, ELEKTRA_KS_END);
+	ElektraKeyset * package = elektraKeysetNew (500, ELEKTRA_KS_END);
 	ElektraKey * lastKey = NULL;
 	ElektraKey * baseKey = NULL;
 	int notDone = 0;
@@ -59,18 +59,18 @@ static ElektraKeyset * nextPackage (FILE * fp, ElektraKey * parentKey)
 			strtok (data, "\n"); // remove newline
 			if (!strcmp (section, "Package"))
 			{
-				baseKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-				keyAddBaseName (baseKey, data);
+				baseKey = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+				elektraKeyAddBaseName (baseKey, data);
 				lastKey = baseKey;
-				ksAppendKey (package, baseKey);
+				elektraKeysetAppendKey (package, baseKey);
 			}
 			else
 			{
-				ElektraKey * key = keyDup (baseKey, ELEKTRA_KEY_CP_ALL);
-				keyAddBaseName (key, section);
-				keySetString (key, data);
+				ElektraKey * key = elektraKeyDup (baseKey, ELEKTRA_KEY_CP_ALL);
+				elektraKeyAddBaseName (key, section);
+				elektraKeySetString (key, data);
 				lastKey = key;
-				ksAppendKey (package, key);
+				elektraKeysetAppendKey (package, key);
 			}
 		}
 		memset (line, 0, DPKG_LINE_MAX);
@@ -80,38 +80,38 @@ static ElektraKeyset * nextPackage (FILE * fp, ElektraKey * parentKey)
 }
 static ElektraKeyset * readFile (ElektraKey * parentKey)
 {
-	FILE * fp = fopen (keyString (parentKey), "r");
-	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
+	FILE * fp = fopen (elektraKeyString (parentKey), "r");
+	ElektraKeyset * result = elektraKeysetNew (0, ELEKTRA_KS_END);
 	if (!fp) return result;
 	while (!feof (fp))
 	{
 		ElektraKeyset * package = nextPackage (fp, parentKey);
-		ksAppend (result, package);
-		ksDel (package);
+		elektraKeysetAppend (result, package);
+		elektraKeysetDel (package);
 	}
 	fclose (fp);
 	return result;
 }
 int elektraDpkgGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/dpkg"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/dpkg"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/dpkg", ELEKTRA_KEY_VALUE, "dpkg plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dpkg/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dpkg/exports/get", ELEKTRA_KEY_FUNC, elektraDpkgGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/dpkg/exports/set", ELEKTRA_KEY_FUNC, elektraDpkgSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/dpkg", ELEKTRA_KEY_VALUE, "dpkg plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dpkg/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dpkg/exports/get", ELEKTRA_KEY_FUNC, elektraDpkgGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/dpkg/exports/set", ELEKTRA_KEY_FUNC, elektraDpkgSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/dpkg/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/dpkg/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
 	// get all keys
 	ElektraKeyset * ks = readFile (parentKey);
-	ksAppend (returned, ks);
-	ksDel (ks);
+	elektraKeysetAppend (returned, ks);
+	elektraKeysetDel (ks);
 	return 1; // success
 }
 

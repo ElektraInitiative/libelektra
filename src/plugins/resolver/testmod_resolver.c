@@ -16,8 +16,8 @@
 
 ElektraKeyset * set_pluginconf (void)
 {
-	return ksNew (10, keyNew ("system:/path", ELEKTRA_KEY_VALUE, KDB_DB_FILE, ELEKTRA_KEY_END),
-		      keyNew ("user:/path", ELEKTRA_KEY_VALUE, "elektra.ecf", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (10, elektraKeyNew ("system:/path", ELEKTRA_KEY_VALUE, KDB_DB_FILE, ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/path", ELEKTRA_KEY_VALUE, "elektra.ecf", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
@@ -30,10 +30,10 @@ void test_resolve (void)
 
 	printf ("Resolve Filename\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
 
@@ -41,7 +41,7 @@ void test_resolve (void)
 	ElektraKeyset * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
-	ksDel (test_config);
+	elektraKeysetDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -89,10 +89,10 @@ void test_resolve (void)
 	succeed_if (h->user.filename == NULL, "user was initialized, but is not needed");
 	plugin->kdbClose (plugin, parentKey);
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 	elektraFree (path);
 }
 
@@ -100,7 +100,7 @@ void test_name (void)
 {
 	printf ("Resolve Name\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
@@ -110,7 +110,7 @@ void test_name (void)
 	ElektraKeyset * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
-	ksDel (test_config);
+	elektraKeysetDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -124,31 +124,31 @@ void test_name (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (KDB_DB_SYSTEM[0] == '~')
 	{
 		// only check filename and issue warning
-		const char * lastSlash = strrchr (keyString (parentKey), '/');
+		const char * lastSlash = strrchr (elektraKeyString (parentKey), '/');
 		warn_if_fail (0, "using home based KDB_DB_SYSTEM falls back to less strict testing");
 		succeed_if (lastSlash != NULL && strcmp (lastSlash, "/elektra.ecf") == 0, "wrong filename with home based KDB_DB_SYSTEM");
 	}
 	else
 	{
-		succeed_if_same_string (keyString (parentKey), KDB_DB_SYSTEM "/elektra.ecf");
+		succeed_if_same_string (elektraKeyString (parentKey), KDB_DB_SYSTEM "/elektra.ecf");
 	}
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 void test_lockname (void)
 {
 	printf ("Resolve Dirname\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
@@ -158,7 +158,7 @@ void test_lockname (void)
 	ElektraKeyset * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
-	ksDel (test_config);
+	elektraKeysetDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -172,7 +172,7 @@ void test_lockname (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
@@ -188,17 +188,17 @@ void test_lockname (void)
 		succeed_if (h && !strcmp (h->system.dirname, KDB_DB_SYSTEM), "resulting filename not correct");
 	}
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 void test_tempname (void)
 {
 	printf ("Resolve Tempname\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
@@ -208,7 +208,7 @@ void test_tempname (void)
 	ElektraKeyset * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
-	ksDel (test_config);
+	elektraKeysetDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -222,7 +222,7 @@ void test_tempname (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
@@ -239,29 +239,29 @@ void test_tempname (void)
 	}
 
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 void test_checkfile (void)
 {
 	printf ("Check file\n");
 
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
 	exit_if_fail (plugin, "did not find a resolver");
 
-	ElektraKey * root = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
-	keyAddBaseName (root, plugin->name);
+	ElektraKey * root = elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (root, plugin->name);
 
-	ElektraKeyset * contract = ksNew (5, ELEKTRA_KS_END);
+	ElektraKeyset * contract = elektraKeysetNew (5, ELEKTRA_KS_END);
 
 	plugin->kdbGet (plugin, contract, root);
-	keyAddName (root, "/exports/checkfile");
-	ElektraKey * found = ksLookup (contract, root, 0);
+	elektraKeyAddName (root, "/exports/checkfile");
+	ElektraKey * found = elektraKeysetLookup (contract, root, 0);
 	exit_if_fail (found, "did not find checkfile symbol");
 
 	typedef int (*func_t) (const char *);
@@ -271,7 +271,7 @@ void test_checkfile (void)
 		void * v;
 	} conversation;
 
-	succeed_if (keyGetBinary (found, &conversation.v, sizeof (conversation)) == sizeof (conversation), "could not get binary");
+	succeed_if (elektraKeyGetBinary (found, &conversation.v, sizeof (conversation)) == sizeof (conversation), "could not get binary");
 	func_t checkFile = conversation.f;
 
 
@@ -290,17 +290,17 @@ void test_checkfile (void)
 	succeed_if (checkFile (".") == -1, "invalid file not recognised");
 	succeed_if (checkFile ("..") == -1, "invalid file not recognised");
 
-	ksDel (contract);
-	keyDel (root);
+	elektraKeysetDel (contract);
+	elektraKeyDel (root);
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 }
 
 static void check_xdg (void)
 {
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
 	exit_if_fail (plugin, "did not find a resolver");
@@ -314,7 +314,7 @@ static void check_xdg (void)
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	elektraKeysetDel (modules);
 
 	if (abort)
 	{

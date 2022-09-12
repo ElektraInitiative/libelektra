@@ -18,8 +18,8 @@
 static void test_keySet (void)
 {
 	char hash_string[65];
-	ElektraKeyset * ks = ksNew (3, keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKey * parentKey = keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (3, elektraKeyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END);
 
 	calculateSpecificationToken (hash_string, ks, parentKey);
 
@@ -27,8 +27,8 @@ static void test_keySet (void)
 	succeed_if_fmt (strcmp (hash_string, expected) == 0, "Calculated token %s did not match expected result %s.", hash_string,
 			expected);
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 }
 
 
@@ -40,16 +40,16 @@ static void test_keySet (void)
 static void test_onlyKeysBelowParentKey (void)
 {
 	ElektraKeyset * ksOnlyWithKeysFromMyApp =
-		ksNew (3, keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_META, "mountpoint", "test.ecf", ELEKTRA_KEY_END),
-		       keyNew ("/sw/application/myapp/#0/current/mykey", ELEKTRA_KEY_META, "default", "1", ELEKTRA_KEY_END),
-		       keyNew ("/sw/application/myapp/#0/current/myotherkey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * ksWithKeysFromTwoApps = ksDup (ksOnlyWithKeysFromMyApp);
-	ksAppendKey (ksWithKeysFromTwoApps,
-		     keyNew ("/sw/application/myotherapp/#0/current/somekey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END));
-	ksAppendKey (ksOnlyWithKeysFromMyApp,
-		     keyNew ("/sw/application/myotherapp/#0/current/someotherkey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END));
+		elektraKeysetNew (3, elektraKeyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_META, "mountpoint", "test.ecf", ELEKTRA_KEY_END),
+		       elektraKeyNew ("/sw/application/myapp/#0/current/mykey", ELEKTRA_KEY_META, "default", "1", ELEKTRA_KEY_END),
+		       elektraKeyNew ("/sw/application/myapp/#0/current/myotherkey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ksWithKeysFromTwoApps = elektraKeysetDup (ksOnlyWithKeysFromMyApp);
+	elektraKeysetAppendKey (ksWithKeysFromTwoApps,
+		     elektraKeyNew ("/sw/application/myotherapp/#0/current/somekey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ksOnlyWithKeysFromMyApp,
+		     elektraKeyNew ("/sw/application/myotherapp/#0/current/someotherkey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END));
 
-	ElektraKey * parentKeyForMyApp = keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END);
+	ElektraKey * parentKeyForMyApp = elektraKeyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END);
 
 	char hash_ksWithKeysFroMyApp[65];
 	char hash_ksWithKeysFromTwoApps[65];
@@ -60,9 +60,9 @@ static void test_onlyKeysBelowParentKey (void)
 		    "Token calculation did not properly cut out irrelevant keys! The hash for two different KeySets that have the same set "
 		    "of Keys below the parentKey should be the same, but it was different!");
 
-	keyDel (parentKeyForMyApp);
-	ksDel (ksOnlyWithKeysFromMyApp);
-	ksDel (ksWithKeysFromTwoApps);
+	elektraKeyDel (parentKeyForMyApp);
+	elektraKeysetDel (ksOnlyWithKeysFromMyApp);
+	elektraKeysetDel (ksWithKeysFromTwoApps);
 }
 
 int main (int argc, char ** argv)

@@ -15,10 +15,10 @@
 
 static int validateEmail (ElektraKey * key, ElektraKey * parentKey)
 {
-	const ElektraKey * meta = keyGetMeta (key, "check/email");
+	const ElektraKey * meta = elektraKeyGetMeta (key, "check/email");
 	if (!meta) return 1;
 
-	const char * addr = keyString (key);
+	const char * addr = elektraKeyString (key);
 	if (!addr) return 0;
 	const char * regexString = // regex based on information from wikipedia and RFC5321 built in regex101.com
 		"^[a-zA-Z0-9!#$%&'*+\\/=?^_`{|}~-]+([a-zA-Z0-9!#$%&'*+\\/=?^_`{|}~.-][a-zA-Z0-9!#$%&'*+\\/=?^_`{|}~-])*"
@@ -29,7 +29,7 @@ static int validateEmail (ElektraKey * key, ElektraKey * parentKey)
 	int ret = regcomp (&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
 	if (ret)
 	{
-		ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Failed to compile regex for email validation on %s", keyString (key));
+		ELEKTRA_SET_INTERNAL_ERRORF (parentKey, "Failed to compile regex for email validation on %s", elektraKeyString (key));
 		return 0;
 	}
 
@@ -40,23 +40,23 @@ static int validateEmail (ElektraKey * key, ElektraKey * parentKey)
 		return 1;
 	}
 
-	ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Value %s of key %s was not a valid email", keyString (key), keyName (key));
+	ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Value %s of key %s was not a valid email", elektraKeyString (key), elektraKeyName (key));
 	return 0;
 }
 
 int elektraEmailGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/email"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/email"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/email", ELEKTRA_KEY_VALUE, "email plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/email/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/email/exports/get", ELEKTRA_KEY_FUNC, elektraEmailGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/email/exports/set", ELEKTRA_KEY_FUNC, elektraEmailSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/email", ELEKTRA_KEY_VALUE, "email plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/email/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/email/exports/get", ELEKTRA_KEY_FUNC, elektraEmailGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/email/exports/set", ELEKTRA_KEY_FUNC, elektraEmailSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/email/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/email/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
@@ -67,8 +67,8 @@ int elektraEmailSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned EL
 	// set all keys
 	// this function is optional
 	ElektraKey * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
 		int rc = validateEmail (cur, parentKey);
 		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;

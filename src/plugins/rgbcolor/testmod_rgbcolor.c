@@ -17,33 +17,33 @@
 
 static void test_normalize_color (const char * color, kdb_unsigned_long_t colorValue)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", ELEKTRA_KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", ELEKTRA_KEY_VALUE, color, ELEKTRA_KEY_META, "check/rgbcolor", "any", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/rgbcolor", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = elektraKeyNew ("user:/test/rgbcolor/testcolor", ELEKTRA_KEY_VALUE, color, ELEKTRA_KEY_META, "check/rgbcolor", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, ELEKTRA_KS_END);
 	// KeySet * ksGet = ks;
 
-	ksAppendKey (ks, hexkey);
+	elektraKeysetAppendKey (ks, hexkey);
 
 	PLUGIN_OPEN ("rgbcolor");
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "kdbSet did not succeed");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "kdbGet did not succeed");
 
-	ElektraKey * foundKey = ksLookupByName (ks, "user:/test/rgbcolor/testcolor", 0);
+	ElektraKey * foundKey = elektraKeysetLookupByName (ks, "user:/test/rgbcolor/testcolor", 0);
 
 	char colorStr[11];
 	snprintf (colorStr, 11, "%u", colorValue);
 
-	printf ("Test Color Normalization %s, returned value: %s, expected value: %s\n", color, keyString (foundKey), colorStr);
-	succeed_if (!strcmp (keyString (foundKey), colorStr), "Values dont match");
+	printf ("Test Color Normalization %s, returned value: %s, expected value: %s\n", color, elektraKeyString (foundKey), colorStr);
+	succeed_if (!strcmp (elektraKeyString (foundKey), colorStr), "Values dont match");
 
-	const ElektraKey * origValueKey = keyGetMeta (foundKey, "origvalue");
+	const ElektraKey * origValueKey = elektraKeyGetMeta (foundKey, "origvalue");
 	succeed_if (origValueKey != NULL, "origvalue is not set");
-	succeed_if (!strcmp (keyString (origValueKey), color), "origvalue does not match actual original value");
+	succeed_if (!strcmp (elektraKeyString (origValueKey), color), "origvalue does not match actual original value");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
@@ -51,12 +51,12 @@ static void test_normalize_color (const char * color, kdb_unsigned_long_t colorV
 
 static void test_color (const char * color, const int expected_ret)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", ELEKTRA_KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", ELEKTRA_KEY_VALUE, color, ELEKTRA_KEY_META, "check/rgbcolor", "any", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/rgbcolor", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = elektraKeyNew ("user:/test/rgbcolor/testcolor", ELEKTRA_KEY_VALUE, color, ELEKTRA_KEY_META, "check/rgbcolor", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, ELEKTRA_KS_END);
 
-	ksAppendKey (ks, hexkey);
+	elektraKeysetAppendKey (ks, hexkey);
 
 	PLUGIN_OPEN ("rgbcolor");
 
@@ -65,8 +65,8 @@ static void test_color (const char * color, const int expected_ret)
 	printf ("Test Color Validity %s, returned value: %d, expected value: %d\n", color, ret, expected_ret);
 	succeed_if (ret == expected_ret, "failed");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }

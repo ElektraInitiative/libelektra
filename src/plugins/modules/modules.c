@@ -31,10 +31,10 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, ElektraKey * errorKey ELEKT
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, ElektraKeyset * definition, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	ElektraKey * pluginKey = ksLookupByName (definition, "system:/plugin", 0);
+	ElektraKey * pluginKey = elektraKeysetLookupByName (definition, "system:/plugin", 0);
 	if (pluginKey != NULL)
 	{
-		elektraPluginSetData (handle, *(Plugin **) keyValue (pluginKey));
+		elektraPluginSetData (handle, *(Plugin **) elektraKeyValue (pluginKey));
 	}
 	// init as read-only
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
@@ -42,41 +42,41 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, ElektraKeyset * definition,
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/modules"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/modules"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/modules", ELEKTRA_KEY_VALUE, "modules plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/open", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/init", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/get", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/close", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/modules", ELEKTRA_KEY_VALUE, "modules plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/modules/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/modules/exports/open", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/modules/exports/init", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/modules/exports/get", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/modules/exports/close", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/modules/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/modules/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	ElektraKey * modulesRoot = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
-	if (keyCmp (modulesRoot, parentKey) == 0)
+	ElektraKey * modulesRoot = elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
+	if (elektraKeyCmp (modulesRoot, parentKey) == 0)
 	{
-		keyDel (modulesRoot);
+		elektraKeyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	if (keyIsDirectlyBelow (modulesRoot, parentKey) != 1)
+	if (elektraKeyIsDirectlyBelow (modulesRoot, parentKey) != 1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "The 'modules' plugin is intended for internal use by 'libelektra-kdb' only.");
-		keyDel (modulesRoot);
+		elektraKeyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	const char * phase = elektraPluginGetPhase (handle);
 	if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_RESOLVER) == 0)
 	{
-		keyDel (modulesRoot);
+		elektraKeyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_STORAGE) == 0)
@@ -85,9 +85,9 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 
 		// create separate parentKey so that symlinked/aliased plugins still work
 		// TODO (kodebach): use separate function for contract to avoid all of this
-		keyAddBaseName (modulesRoot, plugin->name);
+		elektraKeyAddBaseName (modulesRoot, plugin->name);
 		int ret = plugin->kdbGet (plugin, returned, modulesRoot);
-		keyDel (modulesRoot);
+		elektraKeyDel (modulesRoot);
 
 		if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
@@ -97,7 +97,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	}
 	else
 	{
-		keyDel (modulesRoot);
+		elektraKeyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 }

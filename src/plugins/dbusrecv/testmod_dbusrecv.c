@@ -60,7 +60,7 @@ static DBusConnection * getDbusConnection (DBusBusType type)
  * @param signalName signal name
  * @param keyName    key name
  */
-static void dbusSendMessage (const char * signalName, const char * keyName)
+static void dbusSendMessage (const char * signalName, const char * elektraKeyName)
 {
 	DBusMessage * message;
 	const char * interface = "org.libelektra";
@@ -72,7 +72,7 @@ static void dbusSendMessage (const char * signalName, const char * keyName)
 	message = dbus_message_new_signal (path, interface, signalName);
 	exit_if_fail (message, "could not allocate dbus message");
 
-	exit_if_fail (dbus_message_append_args (message, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID), "could not add message arguments");
+	exit_if_fail (dbus_message_append_args (message, DBUS_TYPE_STRING, &elektraKeyName, DBUS_TYPE_INVALID), "could not add message arguments");
 
 	dbus_connection_send (connection, message, NULL);
 
@@ -147,13 +147,13 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test commit\n");
 
-	ElektraKeyset * conf = ksNew (1, keyNew ("user:/announce", ELEKTRA_KEY_VALUE, "once", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (1, elektraKeyNew ("user:/announce", ELEKTRA_KEY_VALUE, "once", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbusrecv");
 
-	ksDel (plugin->global);
+	elektraKeysetDel (plugin->global);
 	plugin->global =
-		ksNew (5, keyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (5, elektraKeyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 
@@ -167,12 +167,12 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	test_callbackLoop = loop;
 	uv_run (loop, UV_RUN_DEFAULT);
 
-	succeed_if_same_string (expectedKeyName, keyName (test_callbackKey));
+	succeed_if_same_string (expectedKeyName, elektraKeyName (test_callbackKey));
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
-	keyDel (test_callbackKey);
-	ksDel (plugin->global);
+	elektraKeyDel (test_callbackKey);
+	elektraKeysetDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -180,13 +180,13 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test adding keys\n");
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbusrecv");
 
-	ksDel (plugin->global);
+	elektraKeysetDel (plugin->global);
 	plugin->global =
-		ksNew (5, keyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (5, elektraKeyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 
@@ -200,12 +200,12 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 	test_callbackLoop = loop;
 	uv_run (loop, UV_RUN_DEFAULT);
 
-	succeed_if_same_string (expectedKeyName, keyName (test_callbackKey));
+	succeed_if_same_string (expectedKeyName, elektraKeyName (test_callbackKey));
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
-	keyDel (test_callbackKey);
-	ksDel (plugin->global);
+	elektraKeyDel (test_callbackKey);
+	elektraKeysetDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -213,13 +213,13 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test changing keys\n");
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbusrecv");
 
-	ksDel (plugin->global);
+	elektraKeysetDel (plugin->global);
 	plugin->global =
-		ksNew (5, keyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
-		       keyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetNew (5, elektraKeyNew ("system:/elektra/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binding), ELEKTRA_KEY_VALUE, &binding, ELEKTRA_KEY_END),
+		       elektraKeyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, test_notificationCallback, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 
@@ -233,12 +233,12 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 	test_callbackLoop = loop;
 	uv_run (loop, UV_RUN_DEFAULT);
 
-	succeed_if_same_string (expectedKeyName, keyName (test_callbackKey));
+	succeed_if_same_string (expectedKeyName, elektraKeyName (test_callbackKey));
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
-	keyDel (test_callbackKey);
-	ksDel (plugin->global);
+	elektraKeyDel (test_callbackKey);
+	elektraKeysetDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 

@@ -11,12 +11,12 @@
 keyNameReverseIterator elektraKeyNameGetReverseIterator (const ElektraKey * k)
 {
 	keyNameReverseIterator it;
-	it.rend = keyName (k);
-	it.rbegin = it.rend + keyGetNameSize (k);
+	it.rend = elektraKeyName (k);
+	it.rbegin = it.rend + elektraKeyGetNameSize (k);
 	it.current = it.rbegin;
 	it.size = 0;
 
-	if (keyGetUnescapedNameSize (k) == 3)
+	if (elektraKeyGetUnescapedNameSize (k) == 3)
 	{
 		it.current -= 2;
 	}
@@ -90,11 +90,11 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
  */
 ElektraKey * elektraNextNotBelow (ElektraKeyset * ks)
 {
-	const ElektraKey * previous = ksNext (ks);
+	const ElektraKey * previous = elektraKeysetNext (ks);
 
 	if (!previous)
 	{
-		ksRewind (ks);
+		elektraKeysetRewind (ks);
 		return 0;
 	}
 
@@ -103,13 +103,13 @@ ElektraKey * elektraNextNotBelow (ElektraKeyset * ks)
 	const ElektraKey * current = previous; // current is same as ksCurrent()
 	do
 	{
-		pos = ksGetCursor (ks); // remember candidate
+		pos = elektraKeysetGetCursor (ks); // remember candidate
 		previous = current;	// and remember last key
-		current = ksNext (ks);	// look forward to next key
-	} while (current && keyIsBelow (previous, current));
+		current = elektraKeysetNext (ks);	// look forward to next key
+	} while (current && elektraKeyIsBelow (previous, current));
 
 	// jump to and return candidate, because next is known to be not
 	// below candidate
-	ksSetCursor (ks, pos);
-	return ksCurrent (ks);
+	elektraKeysetSetCursor (ks, pos);
+	return elektraKeysetCurrent (ks);
 }

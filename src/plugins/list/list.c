@@ -90,82 +90,82 @@ static char lastIndex[ELEKTRA_MAX_ARRAY_SIZE];
 static int listParseConfiguration (Placements * placements, ElektraKeyset * config)
 {
 	ElektraKey * cur;
-	ElektraKey * key = ksLookupByName (config, "/plugins", 0);
-	ElektraKeyset * cutKS = ksCut (config, key);
-	ksRewind (cutKS);
-	if (ksGetSize (cutKS) < 2)
+	ElektraKey * key = elektraKeysetLookupByName (config, "/plugins", 0);
+	ElektraKeyset * cutKS = elektraKeysetCut (config, key);
+	elektraKeysetRewind (cutKS);
+	if (elektraKeysetGetSize (cutKS) < 2)
 	{
-		ksDel (cutKS);
+		elektraKeysetDel (cutKS);
 		return 0;
 	}
 	int rc = 0;
-	while ((cur = ksNext (cutKS)) != NULL)
+	while ((cur = elektraKeysetNext (cutKS)) != NULL)
 	{
-		if (keyIsDirectlyBelow (key, cur) != 1)
+		if (elektraKeyIsDirectlyBelow (key, cur) != 1)
 		{
 			continue;
 		}
-		if (keyBaseName (cur)[0] == '#')
+		if (elektraKeyBaseName (cur)[0] == '#')
 		{
-			if (strcmp (lastIndex, keyBaseName (cur)) < 0)
+			if (strcmp (lastIndex, elektraKeyBaseName (cur)) < 0)
 			{
-				snprintf (lastIndex, ELEKTRA_MAX_ARRAY_SIZE, "%s", keyBaseName (cur));
+				snprintf (lastIndex, ELEKTRA_MAX_ARRAY_SIZE, "%s", elektraKeyBaseName (cur));
 			}
 		}
 		ElektraKey * sub;
-		ElektraKey * lookup = keyDup (cur, ELEKTRA_KEY_CP_ALL);
-		keyAddBaseName (lookup, "placements");
-		keyAddBaseName (lookup, "set");
-		sub = ksLookup (cutKS, lookup, 0);
+		ElektraKey * lookup = elektraKeyDup (cur, ELEKTRA_KEY_CP_ALL);
+		elektraKeyAddBaseName (lookup, "placements");
+		elektraKeyAddBaseName (lookup, "set");
+		sub = elektraKeysetLookup (cutKS, lookup, 0);
 		if (sub)
 		{
-			const char * setString = keyString (sub);
+			const char * setString = elektraKeyString (sub);
 			SetPlacements setPlacement = preSetStorage;
 			while (setPlacement != setEnd)
 			{
 				if (strstr (setString, setStrings[setPlacement]))
 				{
 					rc = 1;
-					ksAppendKey (placements->setKS[setPlacement], keyDup (cur, ELEKTRA_KEY_CP_ALL));
+					elektraKeysetAppendKey (placements->setKS[setPlacement], elektraKeyDup (cur, ELEKTRA_KEY_CP_ALL));
 				}
 				++setPlacement;
 			}
 		}
-		keySetBaseName (lookup, "get");
-		sub = ksLookup (cutKS, lookup, 0);
+		elektraKeySetBaseName (lookup, "get");
+		sub = elektraKeysetLookup (cutKS, lookup, 0);
 		if (sub)
 		{
-			const char * getString = keyString (sub);
+			const char * getString = elektraKeyString (sub);
 			GetPlacements getPlacement = preGetStorage;
 			while (getPlacement != getEnd)
 			{
 				if (strstr (getString, getStrings[getPlacement]))
 				{
 					rc = 1;
-					ksAppendKey (placements->getKS[getPlacement], keyDup (cur, ELEKTRA_KEY_CP_ALL));
+					elektraKeysetAppendKey (placements->getKS[getPlacement], elektraKeyDup (cur, ELEKTRA_KEY_CP_ALL));
 				}
 				++getPlacement;
 			}
 		}
-		keySetBaseName (lookup, "error");
-		sub = ksLookup (cutKS, lookup, 0);
+		elektraKeySetBaseName (lookup, "error");
+		sub = elektraKeysetLookup (cutKS, lookup, 0);
 		if (sub)
 		{
-			const char * errString = keyString (sub);
+			const char * errString = elektraKeyString (sub);
 			ErrPlacements errPlacement = preRollback;
 			while (errPlacement != errEnd)
 			{
 				if (strstr (errString, errStrings[errPlacement]))
 				{
 					rc = 1;
-					ksAppendKey (placements->errKS[errPlacement], keyDup (cur, ELEKTRA_KEY_CP_ALL));
+					elektraKeysetAppendKey (placements->errKS[errPlacement], elektraKeyDup (cur, ELEKTRA_KEY_CP_ALL));
 				}
 				++errPlacement;
 			}
 		}
-		keyDel (lookup);
+		elektraKeyDel (lookup);
 	}
-	ksDel (cutKS);
+	elektraKeysetDel (cutKS);
 	return rc;
 }
 
@@ -176,12 +176,12 @@ void elektraListDeferredCall (Plugin * plugin, const char * name, ElektraKeyset 
 	elektraDeferredCallAdd (placements->deferredCalls, name, parameters);
 
 	// Execute call immediately on already loaded plugins
-	ksRewind (placements->plugins);
+	elektraKeysetRewind (placements->plugins);
 	ElektraKey * current;
-	while ((current = ksNext (placements->plugins)) != NULL)
+	while ((current = elektraKeysetNext (placements->plugins)) != NULL)
 	{
 		Plugin * slave;
-		slave = *(Plugin **) keyValue (current);
+		slave = *(Plugin **) elektraKeyValue (current);
 		elektraDeferredCallsExecute (slave, placements->deferredCalls);
 	}
 }
@@ -197,28 +197,28 @@ int elektraListOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 		placements->errCurrent = preRollback;
 		placements->setCurrent = preSetStorage;
 		placements->getCurrent = preGetStorage;
-		placements->getKS[0] = ksNew (0, ELEKTRA_KS_END);
-		placements->getKS[1] = ksNew (0, ELEKTRA_KS_END);
-		placements->getKS[2] = ksNew (0, ELEKTRA_KS_END);
-		placements->setKS[0] = ksNew (0, ELEKTRA_KS_END);
-		placements->setKS[1] = ksNew (0, ELEKTRA_KS_END);
-		placements->setKS[2] = ksNew (0, ELEKTRA_KS_END);
-		placements->setKS[3] = ksNew (0, ELEKTRA_KS_END);
-		placements->errKS[0] = ksNew (0, ELEKTRA_KS_END);
-		placements->errKS[1] = ksNew (0, ELEKTRA_KS_END);
-		placements->plugins = ksNew (0, ELEKTRA_KS_END);
-		placements->modules = ksNew (0, ELEKTRA_KS_END);
+		placements->getKS[0] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->getKS[1] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->getKS[2] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->setKS[0] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->setKS[1] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->setKS[2] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->setKS[3] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->errKS[0] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->errKS[1] = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->plugins = elektraKeysetNew (0, ELEKTRA_KS_END);
+		placements->modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 		placements->deferredCalls = elektraDeferredCallCreateList ();
 	}
 	elektraPluginSetData (handle, placements);
 
 	elektraModulesInit (placements->modules, NULL);
-	ElektraKeyset * config = ksDup (elektraPluginGetConfig (handle));
-	ksRewind (config);
-	ElektraKey * key = ksLookupByName (config, "/placements/set", 0);
+	ElektraKeyset * config = elektraKeysetDup (elektraPluginGetConfig (handle));
+	elektraKeysetRewind (config);
+	ElektraKey * key = elektraKeysetLookupByName (config, "/placements/set", 0);
 	if (key)
 	{
-		const char * setString = keyString (key);
+		const char * setString = elektraKeyString (key);
 		SetPlacements setPlacement = preSetStorage;
 		while (setPlacement != setEnd)
 		{
@@ -229,10 +229,10 @@ int elektraListOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 			++setPlacement;
 		}
 	}
-	key = ksLookupByName (config, "/placements/get", 0);
+	key = elektraKeysetLookupByName (config, "/placements/get", 0);
 	if (key)
 	{
-		const char * getString = keyString (key);
+		const char * getString = elektraKeyString (key);
 		GetPlacements getPlacement = preGetStorage;
 		while (getPlacement != getEnd)
 		{
@@ -243,10 +243,10 @@ int elektraListOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 			++getPlacement;
 		}
 	}
-	key = ksLookupByName (config, "/placements/error", 0);
+	key = elektraKeysetLookupByName (config, "/placements/error", 0);
 	if (key)
 	{
-		const char * errString = keyString (key);
+		const char * errString = elektraKeyString (key);
 		ErrPlacements errPlacement = preRollback;
 		while (errPlacement != errEnd)
 		{
@@ -258,7 +258,7 @@ int elektraListOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 		}
 	}
 	listParseConfiguration (placements, config);
-	ksDel (config);
+	elektraKeysetDel (config);
 	return 1; /* success */
 }
 
@@ -266,26 +266,26 @@ int elektraListClose (Plugin * handle, ElektraKey * errorKey)
 {
 	/* free all plugin resources and shut it down */
 	Placements * placements = elektraPluginGetData (handle);
-	ksDel (placements->getKS[0]);
-	ksDel (placements->getKS[1]);
-	ksDel (placements->getKS[2]);
-	ksDel (placements->setKS[0]);
-	ksDel (placements->setKS[1]);
-	ksDel (placements->setKS[2]);
-	ksDel (placements->setKS[3]);
-	ksDel (placements->errKS[0]);
-	ksDel (placements->errKS[1]);
+	elektraKeysetDel (placements->getKS[0]);
+	elektraKeysetDel (placements->getKS[1]);
+	elektraKeysetDel (placements->getKS[2]);
+	elektraKeysetDel (placements->setKS[0]);
+	elektraKeysetDel (placements->setKS[1]);
+	elektraKeysetDel (placements->setKS[2]);
+	elektraKeysetDel (placements->setKS[3]);
+	elektraKeysetDel (placements->errKS[0]);
+	elektraKeysetDel (placements->errKS[1]);
 	ElektraKey * cur;
-	ksRewind (placements->plugins);
-	while ((cur = ksNext (placements->plugins)) != NULL)
+	elektraKeysetRewind (placements->plugins);
+	while ((cur = elektraKeysetNext (placements->plugins)) != NULL)
 	{
 		Plugin * slave;
-		slave = *(Plugin **) keyValue (cur);
+		slave = *(Plugin **) elektraKeyValue (cur);
 		elektraPluginClose (slave, errorKey);
 	}
-	ksDel (placements->plugins);
+	elektraKeysetDel (placements->plugins);
 	elektraModulesClose (placements->modules, NULL);
-	ksDel (placements->modules);
+	elektraKeysetDel (placements->modules);
 	elektraDeferredCallDeleteList (placements->deferredCalls);
 	elektraFree (placements);
 	elektraPluginSetData (handle, 0);
@@ -303,65 +303,65 @@ static int runPlugins (ElektraKeyset * pluginKS, ElektraKeyset * modules, Elektr
 	ElektraKeyset * realPluginConfig = NULL;
 	while ((current = traversalFunction (pluginKS)) != NULL)
 	{
-		const char * name = keyString (current);
+		const char * name = elektraKeyString (current);
 
-		ElektraKey * handleKey = keyDup (current, ELEKTRA_KEY_CP_ALL);
-		keyAddName (handleKey, "handle");
-		ElektraKey * handleLookup = ksLookup (configOrig, handleKey, 0);
-		keyDel (handleKey);
+		ElektraKey * handleKey = elektraKeyDup (current, ELEKTRA_KEY_CP_ALL);
+		elektraKeyAddName (handleKey, "handle");
+		ElektraKey * handleLookup = elektraKeysetLookup (configOrig, handleKey, 0);
+		elektraKeyDel (handleKey);
 		if (handleLookup)
 		{
-			slave = *(Plugin **) keyValue (handleLookup);
+			slave = *(Plugin **) elektraKeyValue (handleLookup);
 		}
 		else
 		{
-			ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
-			keyAddBaseName (searchKey, name);
-			ElektraKey * lookup = ksLookup (plugins, searchKey, 0);
-			keyDel (searchKey);
+			ElektraKey * searchKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+			elektraKeyAddBaseName (searchKey, name);
+			ElektraKey * lookup = elektraKeysetLookup (plugins, searchKey, 0);
+			elektraKeyDel (searchKey);
 			if (lookup)
 			{
-				slave = *(Plugin **) keyValue (lookup);
+				slave = *(Plugin **) elektraKeyValue (lookup);
 			}
 			else
 			{
-				ElektraKey * userCutPoint = keyNew ("user:/", ELEKTRA_KEY_END);
-				ElektraKey * globalConfCutPoint = keyNew ("/config", ELEKTRA_KEY_END);
-				ElektraKeyset * config = ksDup (configOrig);
-				ElektraKeyset * globalConfigAll = ksCut (config, globalConfCutPoint);
-				ElektraKeyset * userConfigAll = ksCut (config, userCutPoint);
-				ElektraKeyset * pluginConfig = ksCut (userConfigAll, current);
+				ElektraKey * userCutPoint = elektraKeyNew ("user:/", ELEKTRA_KEY_END);
+				ElektraKey * globalConfCutPoint = elektraKeyNew ("/config", ELEKTRA_KEY_END);
+				ElektraKeyset * config = elektraKeysetDup (configOrig);
+				ElektraKeyset * globalConfigAll = elektraKeysetCut (config, globalConfCutPoint);
+				ElektraKeyset * userConfigAll = elektraKeysetCut (config, userCutPoint);
+				ElektraKeyset * pluginConfig = elektraKeysetCut (userConfigAll, current);
 				// replace "user:/plugins/#X" with "user:/"
-				ElektraKeyset * pluginConfigWithConfigPrefix = ksRenameKeys (pluginConfig, "user:/");
-				ksDel (pluginConfig);
+				ElektraKeyset * pluginConfigWithConfigPrefix = elektraKeysetRenameKeys (pluginConfig, "user:/");
+				elektraKeysetDel (pluginConfig);
 				// append config below "/config" to all plugins
-				ElektraKeyset * globalPluginConfig = ksRenameKeys (globalConfigAll, "user:/config");
-				ksAppend (pluginConfigWithConfigPrefix, globalPluginConfig);
-				ksDel (globalPluginConfig);
+				ElektraKeyset * globalPluginConfig = elektraKeysetRenameKeys (globalConfigAll, "user:/config");
+				elektraKeysetAppend (pluginConfigWithConfigPrefix, globalPluginConfig);
+				elektraKeysetDel (globalPluginConfig);
 				// remove "placements" from plugin config
-				ElektraKey * toRemove = keyNew ("user:/placements", ELEKTRA_KEY_END);
-				ksDel (ksCut (pluginConfigWithConfigPrefix, toRemove));
-				ksRewind (pluginConfigWithConfigPrefix);
-				ksDel (globalConfigAll);
-				ksDel (userConfigAll);
-				ksDel (config);
-				keyDel (userCutPoint);
-				keyDel (globalConfCutPoint);
-				keyDel (toRemove);
+				ElektraKey * toRemove = elektraKeyNew ("user:/placements", ELEKTRA_KEY_END);
+				elektraKeysetDel (elektraKeysetCut (pluginConfigWithConfigPrefix, toRemove));
+				elektraKeysetRewind (pluginConfigWithConfigPrefix);
+				elektraKeysetDel (globalConfigAll);
+				elektraKeysetDel (userConfigAll);
+				elektraKeysetDel (config);
+				elektraKeyDel (userCutPoint);
+				elektraKeyDel (globalConfCutPoint);
+				elektraKeyDel (toRemove);
 				// replace "user:/config/" with "user:/"
-				realPluginConfig = ksRenameKeys (pluginConfigWithConfigPrefix, "user:/");
-				ksDel (pluginConfigWithConfigPrefix);
-				slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
-				ksDel (realPluginConfig);
+				realPluginConfig = elektraKeysetRenameKeys (pluginConfigWithConfigPrefix, "user:/");
+				elektraKeysetDel (pluginConfigWithConfigPrefix);
+				slave = elektraPluginOpen (name, modules, elektraKeysetDup (realPluginConfig), parentKey);
+				elektraKeysetDel (realPluginConfig);
 				if (!slave)
 				{
-					ksDel (configOrig);
+					elektraKeysetDel (configOrig);
 					return -1;
 				}
-				ElektraKey * slaveKey = keyNew ("/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (Plugin *), ELEKTRA_KEY_VALUE, &slave, ELEKTRA_KEY_END);
-				keyAddBaseName (slaveKey, name);
-				ksAppendKey (plugins, keyDup (slaveKey, ELEKTRA_KEY_CP_ALL));
-				keyDel (slaveKey);
+				ElektraKey * slaveKey = elektraKeyNew ("/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (Plugin *), ELEKTRA_KEY_VALUE, &slave, ELEKTRA_KEY_END);
+				elektraKeyAddBaseName (slaveKey, name);
+				elektraKeysetAppendKey (plugins, elektraKeyDup (slaveKey, ELEKTRA_KEY_CP_ALL));
+				elektraKeyDel (slaveKey);
 			}
 		}
 		slave->global = global;
@@ -371,52 +371,52 @@ static int runPlugins (ElektraKeyset * pluginKS, ElektraKeyset * modules, Elektr
 		    (op == SET && slave->kdbSet && (slave->kdbSet (slave, returned, parentKey)) == -1) ||
 		    (op == ERR && slave->kdbError && (slave->kdbError (slave, returned, parentKey)) == -1))
 		{
-			ksDel (configOrig);
+			elektraKeysetDel (configOrig);
 			return -1;
 		}
 	}
-	ksDel (configOrig);
+	elektraKeysetDel (configOrig);
 	return 1;
 }
 
 int elektraListGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/list"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/list"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/list", ELEKTRA_KEY_VALUE, "list plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/open", ELEKTRA_KEY_FUNC, elektraListOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/close", ELEKTRA_KEY_FUNC, elektraListClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/get", ELEKTRA_KEY_FUNC, elektraListGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/set", ELEKTRA_KEY_FUNC, elektraListSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/error", ELEKTRA_KEY_FUNC, elektraListError, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/addPlugin", ELEKTRA_KEY_FUNC, elektraListAddPlugin, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/editPlugin", ELEKTRA_KEY_FUNC, elektraListEditPlugin, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/deferredCall", ELEKTRA_KEY_FUNC, elektraListDeferredCall, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/mountplugin", ELEKTRA_KEY_FUNC, elektraListMountPlugin, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/unmountplugin", ELEKTRA_KEY_FUNC, elektraListUnmountPlugin, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/list/exports/findplugin", ELEKTRA_KEY_FUNC, elektraListFindPlugin, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/list", ELEKTRA_KEY_VALUE, "list plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/open", ELEKTRA_KEY_FUNC, elektraListOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/close", ELEKTRA_KEY_FUNC, elektraListClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/get", ELEKTRA_KEY_FUNC, elektraListGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/set", ELEKTRA_KEY_FUNC, elektraListSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/error", ELEKTRA_KEY_FUNC, elektraListError, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/addPlugin", ELEKTRA_KEY_FUNC, elektraListAddPlugin, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/editPlugin", ELEKTRA_KEY_FUNC, elektraListEditPlugin, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/deferredCall", ELEKTRA_KEY_FUNC, elektraListDeferredCall, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/mountplugin", ELEKTRA_KEY_FUNC, elektraListMountPlugin, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/unmountplugin", ELEKTRA_KEY_FUNC, elektraListUnmountPlugin, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/list/exports/findplugin", ELEKTRA_KEY_FUNC, elektraListFindPlugin, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/list/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/list/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1;
 	}
 	Placements * placements = elektraPluginGetData (handle);
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	GetPlacements currentPlacement = placements->getCurrent;
-	ElektraKeyset * pluginKS = ksDup ((placements)->getKS[currentPlacement]);
-	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned,
-			      elektraPluginGetGlobalKeySet (handle), parentKey, GET, ksNext, placements->deferredCalls);
+	ElektraKeyset * pluginKS = elektraKeysetDup ((placements)->getKS[currentPlacement]);
+	elektraKeysetRewind (pluginKS);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, elektraKeysetDup (config), returned,
+			      elektraPluginGetGlobalKeySet (handle), parentKey, GET, elektraKeysetNext, placements->deferredCalls);
 	placements->getCurrent = ((++currentPlacement) % getEnd);
 	while (currentPlacement < getEnd && !placements->getPlacements[currentPlacement])
 	{
 		placements->getCurrent = ((++currentPlacement) % getEnd);
 	}
-	ksDel (pluginKS);
+	elektraKeysetDel (pluginKS);
 	return ret;
 }
 
@@ -425,18 +425,18 @@ int elektraListSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	Placements * placements = elektraPluginGetData (handle);
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	SetPlacements currentPlacement = placements->setCurrent;
-	ElektraKeyset * pluginKS = ksDup ((placements)->setKS[currentPlacement]);
-	ksRewind (pluginKS);
+	ElektraKeyset * pluginKS = elektraKeysetDup ((placements)->setKS[currentPlacement]);
+	elektraKeysetRewind (pluginKS);
 	int ret = 0;
-	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned,
-			  elektraPluginGetGlobalKeySet (handle), parentKey, SET, ksPop, placements->deferredCalls);
+	ret = runPlugins (pluginKS, placements->modules, placements->plugins, elektraKeysetDup (config), returned,
+			  elektraPluginGetGlobalKeySet (handle), parentKey, SET, elektraKeysetPop, placements->deferredCalls);
 	placements->setCurrent = ((++currentPlacement) % setEnd);
 	while (currentPlacement < setEnd && !placements->setPlacements[currentPlacement])
 	{
 		placements->setCurrent = ((++currentPlacement) % setEnd);
 	}
 	elektraPluginSetData (handle, placements);
-	ksDel (pluginKS);
+	elektraKeysetDel (pluginKS);
 
 	return ret;
 }
@@ -446,16 +446,16 @@ int elektraListError (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	Placements * placements = elektraPluginGetData (handle);
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	ErrPlacements currentPlacement = placements->errCurrent;
-	ElektraKeyset * pluginKS = ksDup ((placements)->errKS[currentPlacement]);
-	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned,
-			      elektraPluginGetGlobalKeySet (handle), parentKey, ERR, ksPop, placements->deferredCalls);
+	ElektraKeyset * pluginKS = elektraKeysetDup ((placements)->errKS[currentPlacement]);
+	elektraKeysetRewind (pluginKS);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, elektraKeysetDup (config), returned,
+			      elektraPluginGetGlobalKeySet (handle), parentKey, ERR, elektraKeysetPop, placements->deferredCalls);
 	placements->errCurrent = ((++currentPlacement) % errEnd);
 	while (currentPlacement < errEnd && !placements->errPlacements[currentPlacement])
 	{
 		placements->errCurrent = ((++currentPlacement) % errEnd);
 	}
-	ksDel (pluginKS);
+	elektraKeysetDel (pluginKS);
 	return ret;
 }
 
@@ -465,25 +465,25 @@ int elektraListAddPlugin (Plugin * handle, ElektraKeyset * pluginConfig)
 	{
 		return 0;
 	}
-	ksRewind (pluginConfig);
-	ksNext (pluginConfig);
-	ElektraKey * lookup = ksNext (pluginConfig);
-	if (keyBaseName (lookup)[0] != '#')
+	elektraKeysetRewind (pluginConfig);
+	elektraKeysetNext (pluginConfig);
+	ElektraKey * lookup = elektraKeysetNext (pluginConfig);
+	if (elektraKeyBaseName (lookup)[0] != '#')
 	{
 		return -1;
 	}
 	else
 	{
-		if (strcmp (lastIndex, keyBaseName (lookup)) >= 0)
+		if (strcmp (lastIndex, elektraKeyBaseName (lookup)) >= 0)
 		{
 			return -1;
 		}
 	}
 	Placements * placements = elektraPluginGetData (handle);
-	ElektraKeyset * conf = ksDup (pluginConfig);
-	ksRewind (conf);
+	ElektraKeyset * conf = elektraKeysetDup (pluginConfig);
+	elektraKeysetRewind (conf);
 	int rc = listParseConfiguration (placements, conf);
-	ksDel (conf);
+	elektraKeysetDel (conf);
 	return rc;
 }
 
@@ -492,25 +492,25 @@ static char * getPluginPlacementList (Plugin * plugin)
 	ELEKTRA_NOT_NULL (plugin);
 
 	// Get placements from plugin
-	ElektraKey * pluginInfo = keyNew ("system:/elektra/modules/", ELEKTRA_KEY_END);
-	keyAddBaseName (pluginInfo, plugin->name);
-	ElektraKeyset * ksResult = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * pluginInfo = elektraKeyNew ("system:/elektra/modules/", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (pluginInfo, plugin->name);
+	ElektraKeyset * ksResult = elektraKeysetNew (0, ELEKTRA_KS_END);
 	plugin->kdbGet (plugin, ksResult, pluginInfo);
 
-	ElektraKey * placementsKey = keyDup (pluginInfo, ELEKTRA_KEY_CP_ALL);
-	keyAddBaseName (placementsKey, "infos");
-	keyAddBaseName (placementsKey, "placements");
-	ElektraKey * placements = ksLookup (ksResult, placementsKey, 0);
+	ElektraKey * placementsKey = elektraKeyDup (pluginInfo, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddBaseName (placementsKey, "infos");
+	elektraKeyAddBaseName (placementsKey, "placements");
+	ElektraKey * placements = elektraKeysetLookup (ksResult, placementsKey, 0);
 	if (placements == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("could not read placements from plugin");
 		return 0;
 	}
-	char * placementList = elektraStrDup (keyString (placements));
+	char * placementList = elektraStrDup (elektraKeyString (placements));
 
-	keyDel (pluginInfo);
-	keyDel (placementsKey);
-	ksDel (ksResult);
+	elektraKeyDel (pluginInfo);
+	elektraKeyDel (placementsKey);
+	elektraKeysetDel (ksResult);
 
 	return placementList;
 }
@@ -634,49 +634,49 @@ static char * extractErrorPlacements (const char * placementList)
 
 static ElektraKey * findPluginInConfig (ElektraKeyset * config, const char * pluginName)
 {
-	ElektraKey * configBase = keyNew ("user:/plugins", ELEKTRA_KEY_END);
+	ElektraKey * configBase = elektraKeyNew ("user:/plugins", ELEKTRA_KEY_END);
 	ElektraKeyset * array = elektraArrayGet (configBase, config);
 
-	ksRewind (array);
+	elektraKeysetRewind (array);
 	ElektraKey * cur = NULL;
-	while ((cur = ksNext (array)) != NULL)
+	while ((cur = elektraKeysetNext (array)) != NULL)
 	{
-		if (strcmp (keyString (cur), pluginName) == 0)
+		if (strcmp (elektraKeyString (cur), pluginName) == 0)
 		{
 			// found plugin
-			ElektraKey * result = keyDup (cur, ELEKTRA_KEY_CP_ALL);
-			keyDel (configBase);
-			ksDel (array);
+			ElektraKey * result = elektraKeyDup (cur, ELEKTRA_KEY_CP_ALL);
+			elektraKeyDel (configBase);
+			elektraKeysetDel (array);
 			return result;
 		}
 	}
 
-	keyDel (configBase);
-	ksDel (array);
+	elektraKeyDel (configBase);
+	elektraKeysetDel (array);
 	return NULL;
 }
 
 static void resetPlugins (Plugin * handle, ElektraKey * errorKey)
 {
 	Placements * placements = elektraPluginGetData (handle);
-	ksClear (placements->getKS[0]);
-	ksClear (placements->getKS[1]);
-	ksClear (placements->getKS[2]);
-	ksClear (placements->setKS[0]);
-	ksClear (placements->setKS[1]);
-	ksClear (placements->setKS[2]);
-	ksClear (placements->setKS[3]);
-	ksClear (placements->errKS[0]);
-	ksClear (placements->errKS[1]);
+	elektraKeysetClear (placements->getKS[0]);
+	elektraKeysetClear (placements->getKS[1]);
+	elektraKeysetClear (placements->getKS[2]);
+	elektraKeysetClear (placements->setKS[0]);
+	elektraKeysetClear (placements->setKS[1]);
+	elektraKeysetClear (placements->setKS[2]);
+	elektraKeysetClear (placements->setKS[3]);
+	elektraKeysetClear (placements->errKS[0]);
+	elektraKeysetClear (placements->errKS[1]);
 	ElektraKey * cur;
-	ksRewind (placements->plugins);
-	while ((cur = ksNext (placements->plugins)) != NULL)
+	elektraKeysetRewind (placements->plugins);
+	while ((cur = elektraKeysetNext (placements->plugins)) != NULL)
 	{
 		Plugin * slave;
-		slave = *(Plugin **) keyValue (cur);
+		slave = *(Plugin **) elektraKeyValue (cur);
 		elektraPluginClose (slave, errorKey);
 	}
-	ksClear (placements->plugins);
+	elektraKeysetClear (placements->plugins);
 }
 
 /**
@@ -707,57 +707,57 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, ElektraKey
 	ElektraKey * pluginKey = findPluginInConfig (config, pluginName);
 	if (pluginKey != NULL)
 	{
-		keyDel (pluginKey);
-		ksDel (pluginConfig); // consume config
+		elektraKeyDel (pluginKey);
+		elektraKeysetDel (pluginConfig); // consume config
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 
 	// Find name for next item in plugins array
-	ElektraKey * configBase = keyNew ("user:/plugins", ELEKTRA_KEY_END);
+	ElektraKey * configBase = elektraKeyNew ("user:/plugins", ELEKTRA_KEY_END);
 	ElektraKeyset * array = elektraArrayGet (configBase, config);
 	ElektraKey * pluginItem = elektraArrayGetNextKey (array);
 
 	if (pluginItem == NULL)
 	{
-		pluginItem = keyNew ("user:/plugins/#0", ELEKTRA_KEY_END);
+		pluginItem = elektraKeyNew ("user:/plugins/#0", ELEKTRA_KEY_END);
 	}
 
-	keySetString (pluginItem, pluginName);
+	elektraKeySetString (pluginItem, pluginName);
 
-	keyDel (configBase);
-	ksDel (array);
+	elektraKeyDel (configBase);
+	elektraKeysetDel (array);
 
 	Plugin * plugin = elektraPluginOpen (pluginName, placements->modules, pluginConfig, errorKey);
 
 	if (plugin == NULL)
 	{
-		keyDel (pluginItem);
+		elektraKeyDel (pluginItem);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	// Store key with plugin handle
-	ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
-	keyAddBaseName (searchKey, pluginName);
-	keySetBinary (searchKey, &plugin, sizeof (plugin));
+	ElektraKey * searchKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (searchKey, pluginName);
+	elektraKeySetBinary (searchKey, &plugin, sizeof (plugin));
 
 	// Find plugin placements
 	char * placementList = getPluginPlacementList (plugin);
 
-	ElektraKey * pluginPlacements = keyDup (pluginItem, ELEKTRA_KEY_CP_ALL);
-	keyAddBaseName (pluginPlacements, "placements");
+	ElektraKey * pluginPlacements = elektraKeyDup (pluginItem, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddBaseName (pluginPlacements, "placements");
 
 	// Append keys to list plugin configuration
-	ksAppendKey (config, pluginItem);
-	ksAppendKey (config, pluginPlacements);
+	elektraKeysetAppendKey (config, pluginItem);
+	elektraKeysetAppendKey (config, pluginPlacements);
 
 	// Add get placements
 	char * getPlacementsString = extractGetPlacements (placementList);
 	if (getPlacementsString != NULL)
 	{
-		ElektraKey * getPlacements = keyDup (pluginPlacements, ELEKTRA_KEY_CP_ALL);
-		keyAddBaseName (getPlacements, "get");
-		keySetString (getPlacements, getPlacementsString);
-		ksAppendKey (config, getPlacements);
+		ElektraKey * getPlacements = elektraKeyDup (pluginPlacements, ELEKTRA_KEY_CP_ALL);
+		elektraKeyAddBaseName (getPlacements, "get");
+		elektraKeySetString (getPlacements, getPlacementsString);
+		elektraKeysetAppendKey (config, getPlacements);
 	}
 	elektraFree (getPlacementsString);
 
@@ -766,10 +766,10 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, ElektraKey
 	char * setPlacementsString = extractSetPlacements (placementList);
 	if (setPlacementsString != NULL)
 	{
-		ElektraKey * setPlacements = keyDup (pluginPlacements, ELEKTRA_KEY_CP_ALL);
-		keyAddBaseName (setPlacements, "set");
-		keySetString (setPlacements, setPlacementsString);
-		ksAppendKey (config, setPlacements);
+		ElektraKey * setPlacements = elektraKeyDup (pluginPlacements, ELEKTRA_KEY_CP_ALL);
+		elektraKeyAddBaseName (setPlacements, "set");
+		elektraKeySetString (setPlacements, setPlacementsString);
+		elektraKeysetAppendKey (config, setPlacements);
 	}
 	elektraFree (setPlacementsString);
 
@@ -777,10 +777,10 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, ElektraKey
 	char * errorPlacementsString = extractErrorPlacements (placementList);
 	if (errorPlacementsString != NULL)
 	{
-		ElektraKey * errorPlacements = keyDup (pluginPlacements, ELEKTRA_KEY_CP_ALL);
-		keyAddBaseName (errorPlacements, "error");
-		keySetString (errorPlacements, errorPlacementsString);
-		ksAppendKey (config, errorPlacements);
+		ElektraKey * errorPlacements = elektraKeyDup (pluginPlacements, ELEKTRA_KEY_CP_ALL);
+		elektraKeyAddBaseName (errorPlacements, "error");
+		elektraKeySetString (errorPlacements, errorPlacementsString);
+		elektraKeysetAppendKey (config, errorPlacements);
 	}
 	elektraFree (errorPlacementsString);
 	elektraFree (placementList);
@@ -789,7 +789,7 @@ int elektraListMountPlugin (Plugin * handle, const char * pluginName, ElektraKey
 	resetPlugins (handle, errorKey);
 
 	// store new handle
-	ksAppendKey (placements->plugins, searchKey);
+	elektraKeysetAppendKey (placements->plugins, searchKey);
 	return elektraListOpen (handle, errorKey);
 }
 
@@ -823,34 +823,34 @@ int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, ElektraK
 	}
 
 	// Look for plugin via handle
-	ElektraKey * pluginHandle = keyDup (pluginItem, ELEKTRA_KEY_CP_ALL);
-	keyAddName (pluginHandle, "handle");
-	pluginHandle = ksLookup (config, pluginHandle, ELEKTRA_KDB_O_DEL);
+	ElektraKey * pluginHandle = elektraKeyDup (pluginItem, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (pluginHandle, "handle");
+	pluginHandle = elektraKeysetLookup (config, pluginHandle, ELEKTRA_KDB_O_DEL);
 
 	// unload plugin if loaded via handle
 	if (pluginHandle != NULL)
 	{
-		elektraPluginClose (*((Plugin **) keyValue (pluginHandle)), errorKey);
-		keyDel (pluginHandle);
+		elektraPluginClose (*((Plugin **) elektraKeyValue (pluginHandle)), errorKey);
+		elektraKeyDel (pluginHandle);
 	}
 
 	// Look for plugin via plugins
-	ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
-	keyAddBaseName (searchKey, pluginName);
+	ElektraKey * searchKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (searchKey, pluginName);
 
 	// pop if found
-	searchKey = ksLookup (placements->plugins, searchKey, ELEKTRA_KDB_O_DEL | ELEKTRA_KDB_O_POP);
+	searchKey = elektraKeysetLookup (placements->plugins, searchKey, ELEKTRA_KDB_O_DEL | ELEKTRA_KDB_O_POP);
 
 	// unload plugin if loaded via plugins
 	if (searchKey != NULL)
 	{
-		elektraPluginClose (*((Plugin **) keyValue (searchKey)), errorKey);
-		keyDel (searchKey);
+		elektraPluginClose (*((Plugin **) elektraKeyValue (searchKey)), errorKey);
+		elektraKeyDel (searchKey);
 	}
 
 	// Remove plugin data from config
-	ksDel (ksCut (config, pluginItem));
-	keyDel (pluginItem);
+	elektraKeysetDel (elektraKeysetCut (config, pluginItem));
+	elektraKeyDel (pluginItem);
 
 	// reload configuration
 	resetPlugins (handle, errorKey);
@@ -881,54 +881,54 @@ Plugin * elektraListFindPlugin (Plugin * handle, const char * pluginName)
 	Placements * placements = elektraPluginGetData (handle);
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
 
-	ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
-	keyAddBaseName (searchKey, pluginName);
-	ElektraKey * lookup = ksLookup (placements->plugins, searchKey, ELEKTRA_KDB_O_DEL);
+	ElektraKey * searchKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (searchKey, pluginName);
+	ElektraKey * lookup = elektraKeysetLookup (placements->plugins, searchKey, ELEKTRA_KDB_O_DEL);
 	if (lookup)
 	{
-		return *(Plugin **) keyValue (lookup);
+		return *(Plugin **) elektraKeyValue (lookup);
 	}
 
 
 	ElektraKey * current;
 	for (int i = 0; i < getEnd; ++i)
 	{
-		while ((current = ksNext (placements->getKS[i])) != NULL)
+		while ((current = elektraKeysetNext (placements->getKS[i])) != NULL)
 		{
-			ElektraKey * handleKey = keyDup (current, ELEKTRA_KEY_CP_ALL);
-			keyAddName (handleKey, "handle");
-			ElektraKey * handleLookup = ksLookup (config, handleKey, ELEKTRA_KDB_O_DEL);
+			ElektraKey * handleKey = elektraKeyDup (current, ELEKTRA_KEY_CP_ALL);
+			elektraKeyAddName (handleKey, "handle");
+			ElektraKey * handleLookup = elektraKeysetLookup (config, handleKey, ELEKTRA_KDB_O_DEL);
 			if (handleLookup)
 			{
-				return *(Plugin **) keyValue (handleLookup);
+				return *(Plugin **) elektraKeyValue (handleLookup);
 			}
 		}
 	}
 
 	for (int i = 0; i < setEnd; ++i)
 	{
-		while ((current = ksNext (placements->setKS[i])) != NULL)
+		while ((current = elektraKeysetNext (placements->setKS[i])) != NULL)
 		{
-			ElektraKey * handleKey = keyDup (current, ELEKTRA_KEY_CP_ALL);
-			keyAddName (handleKey, "handle");
-			ElektraKey * handleLookup = ksLookup (config, handleKey, ELEKTRA_KDB_O_DEL);
+			ElektraKey * handleKey = elektraKeyDup (current, ELEKTRA_KEY_CP_ALL);
+			elektraKeyAddName (handleKey, "handle");
+			ElektraKey * handleLookup = elektraKeysetLookup (config, handleKey, ELEKTRA_KDB_O_DEL);
 			if (handleLookup)
 			{
-				return *(Plugin **) keyValue (handleLookup);
+				return *(Plugin **) elektraKeyValue (handleLookup);
 			}
 		}
 	}
 
 	for (int i = 0; i < errEnd; ++i)
 	{
-		while ((current = ksNext (placements->errKS[i])) != NULL)
+		while ((current = elektraKeysetNext (placements->errKS[i])) != NULL)
 		{
-			ElektraKey * handleKey = keyDup (current, ELEKTRA_KEY_CP_ALL);
-			keyAddName (handleKey, "handle");
-			ElektraKey * handleLookup = ksLookup (config, handleKey, ELEKTRA_KDB_O_DEL);
+			ElektraKey * handleKey = elektraKeyDup (current, ELEKTRA_KEY_CP_ALL);
+			elektraKeyAddName (handleKey, "handle");
+			ElektraKey * handleLookup = elektraKeysetLookup (config, handleKey, ELEKTRA_KDB_O_DEL);
 			if (handleLookup)
 			{
-				return *(Plugin **) keyValue (handleLookup);
+				return *(Plugin **) elektraKeyValue (handleLookup);
 			}
 		}
 	}
@@ -942,25 +942,25 @@ int elektraListEditPlugin (Plugin * handle, ElektraKeyset * pluginConfig)
 	{
 		return 0;
 	}
-	ksRewind (pluginConfig);
-	ksNext (pluginConfig);
-	ElektraKey * lookup = ksNext (pluginConfig);
-	if (keyBaseName (lookup)[0] != '#')
+	elektraKeysetRewind (pluginConfig);
+	elektraKeysetNext (pluginConfig);
+	ElektraKey * lookup = elektraKeysetNext (pluginConfig);
+	if (elektraKeyBaseName (lookup)[0] != '#')
 	{
 		return -1;
 	}
 	else
 	{
-		if (strcmp (lastIndex, keyBaseName (lookup)) < 0)
+		if (strcmp (lastIndex, elektraKeyBaseName (lookup)) < 0)
 		{
 			return -1;
 		}
 	}
 	Placements * placements = elektraPluginGetData (handle);
-	ElektraKeyset * conf = ksDup (pluginConfig);
-	ksRewind (conf);
+	ElektraKeyset * conf = elektraKeysetDup (pluginConfig);
+	elektraKeysetRewind (conf);
 	int rc = listParseConfiguration (placements, conf);
-	ksDel (conf);
+	elektraKeysetDel (conf);
 	return rc;
 }
 

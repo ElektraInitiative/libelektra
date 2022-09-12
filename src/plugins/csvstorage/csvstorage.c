@@ -266,28 +266,28 @@ static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRe
 /// @returns a newly allocated keyset with the column names
 static ElektraKeyset * createHeaders (ElektraKey * parentKey, int columns, const char ** colNames)
 {
-	ElektraKeyset * header = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * header = elektraKeysetNew (0, ELEKTRA_KS_END);
 	int colCounter = 0;
 	// if no headerline exists name the columns 0..N where N is the number of columns
-	ElektraKey * orderKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (orderKey, "#");
+	ElektraKey * orderKey = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (orderKey, "#");
 	while (colCounter < columns)
 	{
 		if (elektraArrayIncName (orderKey) == -1)
 		{
-			keyDel (orderKey);
-			ksDel (header);
+			elektraKeyDel (orderKey);
+			elektraKeysetDel (header);
 			return NULL;
 		}
-		ElektraKey * key = keyDup (orderKey, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * key = elektraKeyDup (orderKey, ELEKTRA_KEY_CP_ALL);
 		if (colNames && (colNames + colCounter))
-			keySetString (key, colNames[colCounter]);
+			elektraKeySetString (key, colNames[colCounter]);
 		else
-			keySetString (key, keyBaseName (key));
-		ksAppendKey (header, key);
+			elektraKeySetString (key, elektraKeyBaseName (key));
+		elektraKeysetAppendKey (header, key);
 		++colCounter;
 	}
-	keyDel (orderKey);
+	elektraKeyDel (orderKey);
 	return header;
 }
 
@@ -298,32 +298,32 @@ static ElektraKeyset * readHeaders (ElektraKey * parentKey, char * lineBuffer, c
 	unsigned long offset = 0;
 	char * col;
 	offset = 0;
-	ElektraKey * orderKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (orderKey, "#");
-	ElektraKeyset * header = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * orderKey = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (orderKey, "#");
+	ElektraKeyset * header = elektraKeysetNew (0, ELEKTRA_KS_END);
 	while ((col = parseLine (lineBuffer, delim, offset, parentKey, lineCounter, lastLine)) != NULL)
 	{
 		offset += elektraStrLen (col);
 		if (elektraArrayIncName (orderKey) == -1)
 		{
 			elektraFree (lineBuffer);
-			keyDel (orderKey);
-			ksDel (header);
+			elektraKeyDel (orderKey);
+			elektraKeysetDel (header);
 			return NULL;
 		}
-		ElektraKey * key = keyDup (orderKey, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * key = elektraKeyDup (orderKey, ELEKTRA_KEY_CP_ALL);
 		if (colNames && (colNames + colCounter))
 		{
-			keySetString (key, colNames[colCounter]);
+			elektraKeySetString (key, colNames[colCounter]);
 		}
 		else
 		{
-			keySetString (key, col);
+			elektraKeySetString (key, col);
 		}
-		ksAppendKey (header, key);
+		elektraKeysetAppendKey (header, key);
 		++colCounter;
 	}
-	keyDel (orderKey);
+	elektraKeyDel (orderKey);
 	return header;
 }
 
@@ -331,7 +331,7 @@ static int csvRead (ElektraKeyset * returned, ElektraKey * parentKey, char delim
 		    const char ** colNames)
 {
 	const char * fileName;
-	fileName = keyString (parentKey);
+	fileName = elektraKeyString (parentKey);
 	FILE * fp = fopen (fileName, "rb");
 	if (!fp)
 	{
@@ -394,26 +394,26 @@ static int csvRead (ElektraKeyset * returned, ElektraKey * parentKey, char delim
 	}
 	ElektraKey * dirKey;
 	ElektraKey * cur;
-	dirKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (dirKey, "#");
+	dirKey = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (dirKey, "#");
 	elektraFree (lineBuffer);
-	ksRewind (header);
+	elektraKeysetRewind (header);
 	while (1)
 	{
 		lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
 		if (!lineBuffer)
 		{
 			fclose (fp);
-			keyDel (dirKey);
-			ksDel (header);
+			elektraKeyDel (dirKey);
+			elektraKeysetDel (header);
 			return (lineCounter > 0) ? 1 : 0;
 		}
 
 		if (elektraArrayIncName (dirKey) == -1)
 		{
 			elektraFree (lineBuffer);
-			keyDel (dirKey);
-			ksDel (header);
+			elektraKeyDel (dirKey);
+			elektraKeysetDel (header);
 			fclose (fp);
 			return -1;
 		}
@@ -422,26 +422,26 @@ static int csvRead (ElektraKeyset * returned, ElektraKey * parentKey, char delim
 		char * col;
 		colCounter = 0;
 		char * lastIndex = "#0";
-		ksRewind (header);
-		ElektraKeyset * tmpKs = ksNew (0, ELEKTRA_KS_END);
+		elektraKeysetRewind (header);
+		ElektraKeyset * tmpKs = elektraKeysetNew (0, ELEKTRA_KS_END);
 		while ((col = parseLine (lineBuffer, delim, offset, parentKey, lineCounter, lastLine)) != NULL)
 		{
-			cur = ksNext (header);
+			cur = elektraKeysetNext (header);
 			offset += elektraStrLen (col);
-			key = keyDup (dirKey, ELEKTRA_KEY_CP_ALL);
+			key = elektraKeyDup (dirKey, ELEKTRA_KEY_CP_ALL);
 			if (col[0] == '"')
 			{
 				if (col[elektraStrLen (col) - 2] == '"')
 				{
-					keySetMeta (key, "internal/csvstorage/quoted", "");
+					elektraKeySetMeta (key, "internal/csvstorage/quoted", "");
 					++col;
 					col[elektraStrLen (col) - 2] = '\0';
 				}
 			}
-			keyAddName (key, keyString (cur));
-			keySetString (key, col);
-			ksAppendKey (tmpKs, key);
-			lastIndex = (char *) keyBaseName (cur);
+			elektraKeyAddName (key, elektraKeyString (cur));
+			elektraKeySetString (key, col);
+			elektraKeysetAppendKey (tmpKs, key);
+			lastIndex = (char *) elektraKeyBaseName (cur);
 			++nr_keys;
 			++colCounter;
 		}
@@ -449,32 +449,32 @@ static int csvRead (ElektraKeyset * returned, ElektraKey * parentKey, char delim
 		{
 			if (!(lineCounter <= 1 && useHeader))
 			{
-				keySetString (dirKey, lastIndex);
-				ksAppendKey (tmpKs, keyDup (dirKey, ELEKTRA_KEY_CP_ALL));
-				ElektraKey * lookupKey = keyNew (keyName (dirKey), ELEKTRA_KEY_END);
-				keyAddName (lookupKey, keyString (colAsParent));
-				ElektraKey * indexKey = ksLookupByName (tmpKs, keyName (lookupKey), 0);
-				ElektraKey * renameKey = keyNew (keyName (dirKey), ELEKTRA_KEY_END);
-				keySetBaseName (renameKey, keyString (indexKey));
-				ksRewind (tmpKs);
-				ElektraKeyset * renamedKs = ksRenameKeys (tmpKs, keyName (renameKey));
-				ksAppendKey (renamedKs, keyDup (renameKey, ELEKTRA_KEY_CP_ALL));
-				ksRewind (renamedKs);
-				keyDel (lookupKey);
-				keyDel (renameKey);
-				ksRewind (renamedKs);
-				ksRewind (tmpKs);
-				ksAppend (returned, renamedKs);
-				ksDel (renamedKs);
+				elektraKeySetString (dirKey, lastIndex);
+				elektraKeysetAppendKey (tmpKs, elektraKeyDup (dirKey, ELEKTRA_KEY_CP_ALL));
+				ElektraKey * lookupKey = elektraKeyNew (elektraKeyName (dirKey), ELEKTRA_KEY_END);
+				elektraKeyAddName (lookupKey, elektraKeyString (colAsParent));
+				ElektraKey * indexKey = elektraKeysetLookupByName (tmpKs, elektraKeyName (lookupKey), 0);
+				ElektraKey * renameKey = elektraKeyNew (elektraKeyName (dirKey), ELEKTRA_KEY_END);
+				elektraKeySetBaseName (renameKey, elektraKeyString (indexKey));
+				elektraKeysetRewind (tmpKs);
+				ElektraKeyset * renamedKs = elektraKeysetRenameKeys (tmpKs, elektraKeyName (renameKey));
+				elektraKeysetAppendKey (renamedKs, elektraKeyDup (renameKey, ELEKTRA_KEY_CP_ALL));
+				elektraKeysetRewind (renamedKs);
+				elektraKeyDel (lookupKey);
+				elektraKeyDel (renameKey);
+				elektraKeysetRewind (renamedKs);
+				elektraKeysetRewind (tmpKs);
+				elektraKeysetAppend (returned, renamedKs);
+				elektraKeysetDel (renamedKs);
 			}
 		}
 		else
 		{
-			keySetString (dirKey, lastIndex);
-			ksAppend (returned, tmpKs);
-			ksAppendKey (returned, keyDup (dirKey, ELEKTRA_KEY_CP_ALL));
+			elektraKeySetString (dirKey, lastIndex);
+			elektraKeysetAppend (returned, tmpKs);
+			elektraKeysetAppendKey (returned, elektraKeyDup (dirKey, ELEKTRA_KEY_CP_ALL));
 		}
-		ksDel (tmpKs);
+		elektraKeysetDel (tmpKs);
 		tmpKs = NULL;
 		if (colCounter != columns)
 		{
@@ -484,8 +484,8 @@ static int csvRead (ElektraKeyset * returned, ElektraKey * parentKey, char delim
 									 colCounter, columns, lineCounter, lineBuffer);
 				elektraFree (lineBuffer);
 				fclose (fp);
-				keyDel (dirKey);
-				ksDel (header);
+				elektraKeyDel (dirKey);
+				elektraKeysetDel (header);
 				return -1;
 			}
 			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Illegal number of columns (%lu - %lu)  in line %lu: %s",
@@ -493,48 +493,48 @@ static int csvRead (ElektraKeyset * returned, ElektraKey * parentKey, char delim
 		}
 		lineCounter += linesRead;
 		elektraFree (lineBuffer);
-		ksDel (tmpKs);
+		elektraKeysetDel (tmpKs);
 	}
-	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keySetString (key, keyBaseName (dirKey));
-	ksAppendKey (returned, key);
-	keyDel (dirKey);
+	key = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeySetString (key, elektraKeyBaseName (dirKey));
+	elektraKeysetAppendKey (returned, key);
+	elektraKeyDel (dirKey);
 	fclose (fp);
-	ksDel (header);
+	elektraKeysetDel (header);
 	return 1;
 }
 
 int elektraCsvstorageGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/csvstorage"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/csvstorage"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/csvstorage", ELEKTRA_KEY_VALUE, "csvstorage plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/csvstorage/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/csvstorage/exports/get", ELEKTRA_KEY_FUNC, elektraCsvstorageGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/csvstorage/exports/set", ELEKTRA_KEY_FUNC, elektraCsvstorageSet, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/csvstorage", ELEKTRA_KEY_VALUE, "csvstorage plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/csvstorage/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/csvstorage/exports/get", ELEKTRA_KEY_FUNC, elektraCsvstorageGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/csvstorage/exports/set", ELEKTRA_KEY_FUNC, elektraCsvstorageSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/csvstorage/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/csvstorage/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * delimKey = ksLookupByName (config, "/delimiter", 0);
+	ElektraKey * delimKey = elektraKeysetLookupByName (config, "/delimiter", 0);
 	char delim = ',';
 	if (delimKey)
 	{
-		const char * delimString = keyString (delimKey);
+		const char * delimString = elektraKeyString (delimKey);
 		delim = delimString[0];
 	}
 
-	ElektraKey * readHeaderKey = ksLookupByName (config, "/header", 0);
+	ElektraKey * readHeaderKey = elektraKeysetLookupByName (config, "/header", 0);
 	short useHeader = 0;
 	if (readHeaderKey)
 	{
-		const char * printHeaderString = keyString (readHeaderKey);
+		const char * printHeaderString = elektraKeyString (readHeaderKey);
 		if (!strcmp (printHeaderString, "colname"))
 		{
 			useHeader = 1;
@@ -553,40 +553,40 @@ int elektraCsvstorageGet (Plugin * handle, ElektraKeyset * returned, ElektraKey 
 		}
 	}
 	unsigned long fixColumnCount = 0;
-	ElektraKey * fixColumnCountKey = ksLookupByName (config, "/columns", 0);
+	ElektraKey * fixColumnCountKey = elektraKeysetLookupByName (config, "/columns", 0);
 	if (fixColumnCountKey)
 	{
-		if (keyString (fixColumnCountKey))
+		if (elektraKeyString (fixColumnCountKey))
 		{
-			fixColumnCount = atol (keyString (fixColumnCountKey));
+			fixColumnCount = atol (elektraKeyString (fixColumnCountKey));
 		}
 	}
-	ElektraKey * colAsParent = ksLookupByName (config, "/columns/index", 0);
-	ElektraKey * setNamesKey = ksLookupByName (config, "/columns/names", 0);
+	ElektraKey * colAsParent = elektraKeysetLookupByName (config, "/columns/index", 0);
+	ElektraKey * setNamesKey = elektraKeysetLookupByName (config, "/columns/names", 0);
 	char * colNames = NULL;
 	if (setNamesKey)
 	{
 		if (fixColumnCountKey)
 		{
-			ElektraKeyset * namesKS = ksCut (config, setNamesKey);
-			unsigned long nrNames = (unsigned long) ksGetSize (namesKS) - 1;
+			ElektraKeyset * namesKS = elektraKeysetCut (config, setNamesKey);
+			unsigned long nrNames = (unsigned long) elektraKeysetGetSize (namesKS) - 1;
 			if (nrNames == fixColumnCount)
 			{
 				colNames = (char *) elektraMalloc (nrNames * sizeof (char *));
 				ElektraKey * cur;
 				char ** ptr = (char **) colNames;
-				while ((cur = ksNext (namesKS)) != NULL)
+				while ((cur = elektraKeysetNext (namesKS)) != NULL)
 				{
-					if (!strcmp (keyName (cur), keyName (setNamesKey))) continue;
-					if (!strcmp (keyString (cur), ""))
+					if (!strcmp (elektraKeyName (cur), elektraKeyName (setNamesKey))) continue;
+					if (!strcmp (elektraKeyString (cur), ""))
 						*ptr = NULL;
 					else
-						*ptr = (char *) keyString (cur);
+						*ptr = (char *) elektraKeyString (cur);
 					++ptr;
 				}
 			}
-			ksAppend (config, namesKS);
-			ksDel (namesKS);
+			elektraKeysetAppend (config, namesKS);
+			elektraKeysetDel (namesKS);
 		}
 	}
 	int nr_keys;
@@ -599,16 +599,16 @@ int elektraCsvstorageGet (Plugin * handle, ElektraKeyset * returned, ElektraKey 
 static int isExportKey (const ElektraKey * key, const ElektraKey * parent, ElektraKeyset * ks)
 {
 	if (!ks) return 1;
-	ElektraKey * lookupKey = keyNew ("/export", ELEKTRA_KEY_END);
-	keyAddName (lookupKey, keyName (key) + strlen (keyName (parent)) + 1);
-	if (!ksLookupByName (ks, keyName (lookupKey), ELEKTRA_KDB_O_NONE))
+	ElektraKey * lookupKey = elektraKeyNew ("/export", ELEKTRA_KEY_END);
+	elektraKeyAddName (lookupKey, elektraKeyName (key) + strlen (elektraKeyName (parent)) + 1);
+	if (!elektraKeysetLookupByName (ks, elektraKeyName (lookupKey), ELEKTRA_KDB_O_NONE))
 	{
-		keyDel (lookupKey);
+		elektraKeyDel (lookupKey);
 		return 0;
 	}
 	else
 	{
-		keyDel (lookupKey);
+		elektraKeyDel (lookupKey);
 		return 1;
 	}
 }
@@ -616,14 +616,14 @@ static int isExportKey (const ElektraKey * key, const ElektraKey * parent, Elekt
 static int csvWrite (ElektraKeyset * returned, ElektraKey * parentKey, ElektraKeyset * exportKS, ElektraKey * colAsParent, char delim, short useHeader)
 {
 	FILE * fp;
-	fp = fopen (keyString (parentKey), "w");
+	fp = fopen (elektraKeyString (parentKey), "w");
 	if (!fp)
 	{
 		ELEKTRA_SET_ERROR_SET (parentKey);
 		return -1;
 	}
 
-	keyDel (ksLookup (returned, parentKey, ELEKTRA_KDB_O_POP));
+	elektraKeyDel (elektraKeysetLookup (returned, parentKey, ELEKTRA_KDB_O_POP));
 
 	unsigned long colCounter = 0;
 	unsigned long columns = 0; // TODO: not needed?
@@ -632,10 +632,10 @@ static int csvWrite (ElektraKeyset * returned, ElektraKey * parentKey, ElektraKe
 	ElektraKeyset * toWriteKS;
 	ElektraKey * toWrite;
 
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		if (keyIsDirectlyBelow (parentKey, cur) != 1) continue;
+		if (elektraKeyIsDirectlyBelow (parentKey, cur) != 1) continue;
 		colCounter = 0;
 		if (useHeader)
 		{
@@ -644,32 +644,32 @@ static int csvWrite (ElektraKeyset * returned, ElektraKey * parentKey, ElektraKe
 		}
 		if (colAsParent)
 		{
-			ElektraKeyset * tmpKs = ksDup (returned);
-			ksRewind (tmpKs);
-			ElektraKeyset * headerKs = ksCut (tmpKs, cur);
-			ksRewind (headerKs);
-			ksDel (tmpKs);
-			ksNext (headerKs);
-			ElektraKey * tmp = ksNext (headerKs);
+			ElektraKeyset * tmpKs = elektraKeysetDup (returned);
+			elektraKeysetRewind (tmpKs);
+			ElektraKeyset * headerKs = elektraKeysetCut (tmpKs, cur);
+			elektraKeysetRewind (headerKs);
+			elektraKeysetDel (tmpKs);
+			elektraKeysetNext (headerKs);
+			ElektraKey * tmp = elektraKeysetNext (headerKs);
 			int printDelim = 0;
 			if (isExportKey (tmp, cur, exportKS))
 			{
-				fprintf (fp, "%s", keyName (tmp) + strlen (keyName (cur)) + 1);
+				fprintf (fp, "%s", elektraKeyName (tmp) + strlen (elektraKeyName (cur)) + 1);
 				printDelim = 1;
 				++colCounter;
 			}
-			while ((tmp = ksNext (headerKs)) != NULL)
+			while ((tmp = elektraKeysetNext (headerKs)) != NULL)
 			{
 				if (!isExportKey (tmp, cur, exportKS)) continue;
 				++colCounter;
 				if (printDelim) fprintf (fp, "%c", delim);
-				if ((strchr (keyName (tmp), '\n') != NULL) && (keyName (tmp)[0] != '"'))
+				if ((strchr (elektraKeyName (tmp), '\n') != NULL) && (elektraKeyName (tmp)[0] != '"'))
 				{
-					fprintf (fp, "\"%s\"", keyName (tmp) + strlen (keyName (cur)) + 1);
+					fprintf (fp, "\"%s\"", elektraKeyName (tmp) + strlen (elektraKeyName (cur)) + 1);
 				}
 				else
 				{
-					fprintf (fp, "%s", keyName (tmp) + strlen (keyName (cur)) + 1);
+					fprintf (fp, "%s", elektraKeyName (tmp) + strlen (elektraKeyName (cur)) + 1);
 				}
 				printDelim = 1;
 			}
@@ -679,16 +679,16 @@ static int csvWrite (ElektraKeyset * returned, ElektraKey * parentKey, ElektraKe
 				columns = colCounter;
 			}
 			colAsParent = NULL;
-			ksDel (headerKs);
+			elektraKeysetDel (headerKs);
 		}
 		colCounter = 0;
-		toWriteKS = ksCut (returned, cur);
-		ksRewind (toWriteKS);
+		toWriteKS = elektraKeysetCut (returned, cur);
+		elektraKeysetRewind (toWriteKS);
 		int printDelim = 0;
 		while (1)
 		{
-			toWrite = ksNext (toWriteKS);
-			if (!keyCmp (cur, toWrite)) continue;
+			toWrite = elektraKeysetNext (toWriteKS);
+			if (!elektraKeyCmp (cur, toWrite)) continue;
 			if (!toWrite) break;
 			if (!isExportKey (toWrite, cur, exportKS))
 			{
@@ -696,23 +696,23 @@ static int csvWrite (ElektraKeyset * returned, ElektraKey * parentKey, ElektraKe
 			}
 			if (printDelim) fprintf (fp, "%c", delim);
 			++colCounter;
-			if (keyGetMeta (toWrite, "internal/csvstorage/quoted"))
+			if (elektraKeyGetMeta (toWrite, "internal/csvstorage/quoted"))
 			{
-				fprintf (fp, "\"%s\"", keyString (toWrite));
+				fprintf (fp, "\"%s\"", elektraKeyString (toWrite));
 				printDelim = 1;
 			}
-			else if ((strchr (keyString (toWrite), '\n') != NULL) && (keyString (toWrite)[0] != '"'))
+			else if ((strchr (elektraKeyString (toWrite), '\n') != NULL) && (elektraKeyString (toWrite)[0] != '"'))
 			{
-				fprintf (fp, "\"%s\"", keyString (toWrite));
+				fprintf (fp, "\"%s\"", elektraKeyString (toWrite));
 				printDelim = 1;
 			}
 			else
 			{
-				fprintf (fp, "%s", keyString (toWrite));
+				fprintf (fp, "%s", elektraKeyString (toWrite));
 				printDelim = 1;
 			}
 		}
-		ksDel (toWriteKS);
+		elektraKeysetDel (toWriteKS);
 		fprintf (fp, "\n");
 		if (columns == 0)
 		{
@@ -734,32 +734,32 @@ static int csvWrite (ElektraKeyset * returned, ElektraKey * parentKey, ElektraKe
 int elektraCsvstorageSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * delimKey = ksLookupByName (config, "/delimiter", 0);
+	ElektraKey * delimKey = elektraKeysetLookupByName (config, "/delimiter", 0);
 	char outputDelim;
 	if (delimKey)
 	{
-		const char * delimString = keyString (delimKey);
+		const char * delimString = elektraKeyString (delimKey);
 		outputDelim = delimString[0];
 	}
 	else
 	{
 		outputDelim = ',';
 	}
-	ElektraKey * colAsParent = ksLookupByName (config, "/columns/index", 0);
-	ElektraKey * useHeaderKey = ksLookupByName (config, "/header", 0);
-	ElektraKey * exportKey = ksLookupByName (config, "/export", 0);
+	ElektraKey * colAsParent = elektraKeysetLookupByName (config, "/columns/index", 0);
+	ElektraKey * useHeaderKey = elektraKeysetLookupByName (config, "/header", 0);
+	ElektraKey * exportKey = elektraKeysetLookupByName (config, "/export", 0);
 	ElektraKeyset * exportKS = NULL;
 	if (exportKey)
 	{
-		exportKS = ksCut (config, exportKey);
-		ksAppend (config, exportKS);
-		keyDel (ksLookup (exportKS, exportKey, ELEKTRA_KDB_O_POP));
-		ksRewind (exportKS);
+		exportKS = elektraKeysetCut (config, exportKey);
+		elektraKeysetAppend (config, exportKS);
+		elektraKeyDel (elektraKeysetLookup (exportKS, exportKey, ELEKTRA_KDB_O_POP));
+		elektraKeysetRewind (exportKS);
 	}
 	short useHeader = 0;
-	if (!strcmp (keyString (useHeaderKey), "skip")) useHeader = -1;
+	if (!strcmp (elektraKeyString (useHeaderKey), "skip")) useHeader = -1;
 	int rc = csvWrite (returned, parentKey, exportKS, colAsParent, outputDelim, useHeader);
-	ksDel (exportKS);
+	elektraKeysetDel (exportKS);
 	return rc;
 }
 

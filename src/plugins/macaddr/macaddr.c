@@ -30,7 +30,7 @@
  */
 void transformMac (ElektraKey * key)
 {
-	const char * macKey = keyString (key);
+	const char * macKey = elektraKeyString (key);
 
 	char * macWithoutSeparators = elektraMalloc (13);
 
@@ -50,7 +50,7 @@ void transformMac (ElektraKey * key)
 	char * buffer = elektraMalloc (n + 1);
 	snprintf (buffer, n + 1, "%llu", intValue);
 
-	keySetString (key, buffer);
+	elektraKeySetString (key, buffer);
 	elektraFree (buffer);
 	elektraFree (macWithoutSeparators);
 }
@@ -101,10 +101,10 @@ int checkIntMac (const char * mac)
  */
 int validateMac (ElektraKey * key)
 {
-	const ElektraKey * metaKey = keyGetMeta (key, "check/macaddr");
+	const ElektraKey * metaKey = elektraKeyGetMeta (key, "check/macaddr");
 	if (!metaKey) return 1;
 
-	const char * mac = keyString (key);
+	const char * mac = elektraKeyString (key);
 
 	const char * regexColon = "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
 	const char * regexHyphen = "^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$";
@@ -128,41 +128,41 @@ int validateMac (ElektraKey * key)
 
 int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/macaddr"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/macaddr"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/macaddr", ELEKTRA_KEY_VALUE, "macaddr plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/macaddr/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/macaddr/exports/get", ELEKTRA_KEY_FUNC, elektraMacaddrGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/macaddr/exports/set", ELEKTRA_KEY_FUNC, elektraMacaddrSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/macaddr", ELEKTRA_KEY_VALUE, "macaddr plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/macaddr/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/macaddr/exports/get", ELEKTRA_KEY_FUNC, elektraMacaddrGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/macaddr/exports/set", ELEKTRA_KEY_FUNC, elektraMacaddrSet, ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
 
-			       keyNew ("system:/elektra/modules/macaddr/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/macaddr/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 	ElektraKey * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/macaddr");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
 
 		int rc = validateMac (cur);
 		if (rc == VALIDATION_ERROR)
 		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "String '%s' is not in a supported format", keyString (cur));
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "String '%s' is not in a supported format", elektraKeyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (rc != VALIDATION_ISINT)
 		{
-			char * origvalue = elektraStrDup (keyString (cur));
+			char * origvalue = elektraStrDup (elektraKeyString (cur));
 			transformMac (cur);
-			keySetMeta (cur, "origvalue", origvalue);
+			elektraKeySetMeta (cur, "origvalue", origvalue);
 			elektraFree (origvalue);
 		}
 	}
@@ -172,17 +172,17 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 
 int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 	ElektraKey * cur;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/macaddr");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
 
-		const ElektraKey * origValue = keyGetMeta (cur, "origvalue");
+		const ElektraKey * origValue = elektraKeyGetMeta (cur, "origvalue");
 		if (origValue)
 		{
-			keySetString (cur, keyString (origValue));
+			elektraKeySetString (cur, elektraKeyString (origValue));
 			continue;
 		}
 
@@ -193,7 +193,7 @@ int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 				parentKey,
 				"%s is not in a supported format. Supported formats are:\nXX:XX:XX:XX:XX:XX\n"
 				"XX-XX-XX-XX-XX-XX\nXXXXXX-XXXXXX\nInteger values (0 - 281474976710655)",
-				keyString (cur));
+				elektraKeyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}

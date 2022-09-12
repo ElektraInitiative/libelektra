@@ -174,7 +174,7 @@ ssize_t keyToStreamBasename (const ElektraKey * key, FILE * stream, const char *
 		if (options & KDB_O_FULLNAME)
 		{
 			char buffer[KDB_MAX_PATH_LENGTH];
-			keyGetName (key, buffer, sizeof (buffer));
+			elektraKeyGetName (key, buffer, sizeof (buffer));
 			written += fprintf (stream, "<key name=\"%s\"", buffer);
 		}
 		else
@@ -192,7 +192,7 @@ ssize_t keyToStreamBasename (const ElektraKey * key, FILE * stream, const char *
 	{
 		if (key->data.v)
 		{
-			if ((key->dataSize <= 16) && keyIsString (key) && /*TODO: is this for string?*/
+			if ((key->dataSize <= 16) && elektraKeyIsString (key) && /*TODO: is this for string?*/
 			    !strchr (key->data.c, '\n'))
 			{
 
@@ -223,7 +223,7 @@ ssize_t keyToStreamBasename (const ElektraKey * key, FILE * stream, const char *
 				if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n\n     ");
 
 				written += fprintf (stream, "<value>");
-				if (keyIsString (key))
+				if (elektraKeyIsString (key))
 				{ /*TODO: is this for string?*/
 					written += fprintf (stream, "<![CDATA[");
 					fflush (stream);
@@ -351,9 +351,9 @@ ssize_t ksToStream (const ElektraKeyset * ks, FILE * stream, KDBStream options)
 {
 	size_t written = 0;
 	ElektraKey * key = 0;
-	ElektraKeyset * cks = ksDup (ks);
+	ElektraKeyset * cks = elektraKeysetDup (ks);
 
-	ksRewind (cks);
+	elektraKeysetRewind (cks);
 
 	if (options & KDB_O_HEADER)
 	{
@@ -383,28 +383,28 @@ ssize_t ksToStream (const ElektraKeyset * ks, FILE * stream, KDBStream options)
 		if (commonParent[0])
 		{
 			written += fprintf (stream, "        parent=\"%s\">\n", commonParent);
-			ksRewind (cks);
-			while ((key = ksNext (cks)) != 0)
+			elektraKeysetRewind (cks);
+			while ((key = elektraKeysetNext (cks)) != 0)
 				written += keyToStreamBasename (key, stream, commonParent, 0, options);
 		}
 		else
 		{
 			written += fprintf (stream, ">\n");
-			ksRewind (cks);
-			while ((key = ksNext (cks)) != 0)
+			elektraKeysetRewind (cks);
+			while ((key = elektraKeysetNext (cks)) != 0)
 				written += keyToStream (key, stream, options);
 		}
 	}
 	else
 	{ /* No KDB_O_HIER*/
 		written += fprintf (stream, ">\n");
-		ksRewind (cks);
-		while ((key = ksNext (cks)) != 0)
+		elektraKeysetRewind (cks);
+		while ((key = elektraKeysetNext (cks)) != 0)
 			written += keyToStream (key, stream, options);
 	}
 
 	written += fprintf (stream, "</keyset>\n");
-	ksDel (cks);
+	elektraKeysetDel (cks);
 	return written;
 }
 
@@ -427,24 +427,24 @@ int keyOutput (const ElektraKey * k, FILE * stream, KDBStream options)
 {
 	size_t s, c, n;
 
-	n = keyGetNameSize (k);
+	n = elektraKeyGetNameSize (k);
 	if (n > 1)
 	{
 		char * nam = (char *) elektraMalloc (n);
 		if (nam == NULL) return -1;
-		keyGetName (k, nam, n);
+		elektraKeyGetName (k, nam, n);
 
 		fprintf (stream, "Name[%d]: %s : ", (int) n, nam);
 
 		elektraFree (nam);
 	}
 
-	s = keyGetValueSize (k);
+	s = elektraKeyGetValueSize (k);
 	if (options & ELEKTRA_KEY_VALUE && s > 1)
 	{
 		char * str = (char *) elektraMalloc (s);
 		if (str == NULL) return -1;
-		if (keyIsBinary (k))
+		if (elektraKeyIsBinary (k))
 		{
 			/*
 			char * bin;
@@ -453,12 +453,12 @@ int keyOutput (const ElektraKey * k, FILE * stream, KDBStream options)
 			kdbbEncode (str, s, bin);
 			elektraFree (bin);
 			*/
-			keyGetBinary (k, str, s);
+			elektraKeyGetBinary (k, str, s);
 			fprintf (stream, "Binary[%d]: %s : ", (int) s, str);
 		}
 		else
 		{
-			keyGetString (k, str, s);
+			elektraKeyGetString (k, str, s);
 			fprintf (stream, "String[%d]: %s : ", (int) s, str);
 		}
 
@@ -484,9 +484,9 @@ int keyOutput (const ElektraKey * k, FILE * stream, KDBStream options)
 	{
 		if (!(options & KDB_O_SHOWMETA)) fprintf (stream, " ");
 		fprintf (stream, "Flags: ");
-		if (keyIsBinary (k)) fprintf (stream, "b");
-		if (keyIsString (k)) fprintf (stream, "s");
-		if (keyNeedSync (k)) fprintf (stream, "s");
+		if (elektraKeyIsBinary (k)) fprintf (stream, "b");
+		if (elektraKeyIsString (k)) fprintf (stream, "s");
+		if (elektraKeyNeedSync (k)) fprintf (stream, "s");
 	}
 
 	fprintf (stream, "\n");
@@ -520,22 +520,22 @@ int keyOutput (const ElektraKey * k, FILE * stream, KDBStream options)
 int ksOutput (const ElektraKeyset * ks, FILE * stream, KDBStream options)
 {
 	ElektraKey * key;
-	ElektraKeyset * cks = ksDup (ks);
+	ElektraKeyset * cks = elektraKeysetDup (ks);
 	size_t size = 0;
 
-	ksRewind (cks);
+	elektraKeysetRewind (cks);
 
 	if (KDB_O_HEADER & options)
 	{
-		fprintf (stream, "Output keyset of size %d\n", (int) ksGetSize (cks));
+		fprintf (stream, "Output keyset of size %d\n", (int) elektraKeysetGetSize (cks));
 	}
-	while ((key = ksNext (cks)) != NULL)
+	while ((key = elektraKeysetNext (cks)) != NULL)
 	{
 		if (options & KDB_O_SHOWINDICES) fprintf (stream, "[%d] ", (int) size);
 		keyOutput (key, stream, options);
 		size++;
 	}
 
-	ksDel (cks);
+	elektraKeysetDel (cks);
 	return 1;
 }

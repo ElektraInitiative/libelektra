@@ -33,7 +33,7 @@ static int elektraDummyOpen (Plugin * handle, ElektraKey * errorKey)
 	}
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessOpen (pp, errorKey);
 
-	keySetMeta (errorKey, "user:/tests/pluginprocess/open", "");
+	elektraKeySetMeta (errorKey, "user:/tests/pluginprocess/open", "");
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -53,7 +53,7 @@ static int elektraDummyClose (Plugin * handle, ElektraKey * errorKey)
 		}
 	}
 
-	keySetMeta (errorKey, "user:/tests/pluginprocess/close", "");
+	elektraKeySetMeta (errorKey, "user:/tests/pluginprocess/close", "");
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -64,10 +64,10 @@ static int elektraDummyGet (Plugin * handle, ElektraKeyset * returned, ElektraKe
 
 	int * testData = (int *) elektraPluginProcessGetData (pp);
 
-	keySetMeta (parentKey, "user:/tests/pluginprocess/get", "");
+	elektraKeySetMeta (parentKey, "user:/tests/pluginprocess/get", "");
 	// Just check if the child can access its actual plugin data
-	if (*testData == 42) keySetMeta (parentKey, "user:/tests/pluginprocess/testdata", "");
-	ksAppendKey (returned, keyNew ("user:/tests/pluginprocess/get", ELEKTRA_KEY_END));
+	if (*testData == 42) elektraKeySetMeta (parentKey, "user:/tests/pluginprocess/testdata", "");
+	elektraKeysetAppendKey (returned, elektraKeyNew ("user:/tests/pluginprocess/get", ELEKTRA_KEY_END));
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -79,8 +79,8 @@ static int elektraDummySet (Plugin * handle, ElektraKeyset * returned, ElektraKe
 		return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 	}
 
-	keySetMeta (parentKey, "user:/tests/pluginprocess/set", "value");
-	ksAppendKey (returned, keyNew ("user:/tests/pluginprocess/set", ELEKTRA_KEY_END));
+	elektraKeySetMeta (parentKey, "user:/tests/pluginprocess/set", "value");
+	elektraKeysetAppendKey (returned, elektraKeyNew ("user:/tests/pluginprocess/set", ELEKTRA_KEY_END));
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -89,8 +89,8 @@ static int elektraDummyError (Plugin * handle, ElektraKeyset * returned, Elektra
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_ERROR, returned, parentKey);
 
-	keySetMeta (parentKey, "user:/tests/pluginprocess/error", "");
-	ksAppendKey (returned, keyNew ("user:/tests/pluginprocess/error", ELEKTRA_KEY_END));
+	elektraKeySetMeta (parentKey, "user:/tests/pluginprocess/error", "");
+	elektraKeysetAppendKey (returned, elektraKeyNew ("user:/tests/pluginprocess/error", ELEKTRA_KEY_END));
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -114,54 +114,54 @@ static void test_communication (void)
 {
 	printf ("test communication\n");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
-	keySetMeta (parentKey, "/hello/from/parent", "value");
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
+	elektraKeySetMeta (parentKey, "/hello/from/parent", "value");
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * plugin = createDummyPlugin (conf);
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
 	succeed_if (pp != NULL, "didn't store the pluginprocess struct in the plugin's data");
 	if (pp)
 	{
-		succeed_if (keyGetMeta (parentKey, "user:/tests/pluginprocess/open") != NULL,
+		succeed_if (elektraKeyGetMeta (parentKey, "user:/tests/pluginprocess/open") != NULL,
 			    "child process didn't set the open metadata on the parent key");
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-		const ElektraKey * parentMeta = keyGetMeta (parentKey, "/hello/from/parent");
+		const ElektraKey * parentMeta = elektraKeyGetMeta (parentKey, "/hello/from/parent");
 		succeed_if (parentMeta != NULL, "missing parent metadata on parent key") if (parentMeta != NULL)
 		{
-			succeed_if (elektraStrCmp (keyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
+			succeed_if (elektraStrCmp (elektraKeyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
 		}
-		const ElektraKey * childMeta = keyGetMeta (parentKey, "user:/tests/pluginprocess/set");
+		const ElektraKey * childMeta = elektraKeyGetMeta (parentKey, "user:/tests/pluginprocess/set");
 		succeed_if (childMeta != NULL, "missing child metadata on parent key");
 		if (childMeta != NULL)
 		{
-			succeed_if (elektraStrCmp (keyString (childMeta), "value") == 0, "missing child metadata value on parent key");
+			succeed_if (elektraStrCmp (elektraKeyString (childMeta), "value") == 0, "missing child metadata value on parent key");
 		}
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-		succeed_if (keyGetMeta (parentKey, "user:/tests/pluginprocess/get") != NULL,
+		succeed_if (elektraKeyGetMeta (parentKey, "user:/tests/pluginprocess/get") != NULL,
 			    "child process didn't set the get metadata on the parent key");
-		succeed_if (keyGetMeta (parentKey, "user:/tests/pluginprocess/testdata") != NULL,
+		succeed_if (elektraKeyGetMeta (parentKey, "user:/tests/pluginprocess/testdata") != NULL,
 			    "child process didn't receive the plugin data from the parent");
 		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			    "call to kdbError was not successful");
-		succeed_if (keyGetMeta (parentKey, "user:/tests/pluginprocess/error") != NULL,
+		succeed_if (elektraKeyGetMeta (parentKey, "user:/tests/pluginprocess/error") != NULL,
 			    "child process didn't set the error metadata on the parent key");
 	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
-	succeed_if (keyGetMeta (parentKey, "user:/tests/pluginprocess/close") != NULL,
+	succeed_if (elektraKeyGetMeta (parentKey, "user:/tests/pluginprocess/close") != NULL,
 		    "child process didn't set the close metadata on the parent key");
 	succeed_if (elektraPluginGetData (plugin) == NULL, "didn't free the pluginprocess struct in the plugin's data");
-	succeed_if (ksLookup (ks, parentKey, ELEKTRA_KDB_O_NONE) == NULL, "stored the parent key in the keyset");
+	succeed_if (elektraKeysetLookup (ks, parentKey, ELEKTRA_KDB_O_NONE) == NULL, "stored the parent key in the keyset");
 
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (conf);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (conf);
 	elektraFree (plugin);
 }
 
@@ -169,8 +169,8 @@ static void test_emptyKeySet (void)
 {
 	printf ("test emptyKeySet\n");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * plugin = createDummyPlugin (conf);
 
 	ElektraKeyset * ks = NULL;
@@ -191,9 +191,9 @@ static void test_emptyKeySet (void)
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (conf);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (conf);
 	elektraFree (plugin);
 }
 
@@ -201,17 +201,17 @@ static void test_reservedParentKeyName (void)
 {
 	printf ("test reservedParentKeyName\n");
 
-	ElektraKey * parentKey = keyNew ("/pluginprocess/parent/name", ELEKTRA_KEY_VALUE, "invalid", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("/pluginprocess/parent/name", ELEKTRA_KEY_VALUE, "invalid", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * plugin = createDummyPlugin (conf);
 
-	ElektraKeyset * ks = ksNew (6, ELEKTRA_KS_END);
-	ksAppendKey (ks, keyNew ("/pluginprocess/parent", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("/pluginprocess/parent/name", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("/pluginprocess/command", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("/pluginprocess/payload/exists", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("/pluginprocess/version", ELEKTRA_KEY_END));
-	ksAppendKey (ks, keyNew ("/pluginprocess/result", ELEKTRA_KEY_END));
+	ElektraKeyset * ks = elektraKeysetNew (6, ELEKTRA_KS_END);
+	elektraKeysetAppendKey (ks, elektraKeyNew ("/pluginprocess/parent", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("/pluginprocess/parent/name", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("/pluginprocess/command", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("/pluginprocess/payload/exists", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("/pluginprocess/version", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (ks, elektraKeyNew ("/pluginprocess/result", ELEKTRA_KEY_END));
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
@@ -224,9 +224,9 @@ static void test_reservedParentKeyName (void)
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (conf);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (conf);
 	elektraFree (plugin);
 }
 
@@ -234,43 +234,43 @@ static void test_keysetContainingParentKey (void)
 {
 	printf ("test keysetContainingParentKey\n");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
-	keySetMeta (parentKey, "/hello/from/parent", "value");
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
+	elektraKeySetMeta (parentKey, "/hello/from/parent", "value");
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * plugin = createDummyPlugin (conf);
 
-	ElektraKeyset * ks = ksNew (1, ELEKTRA_KS_END);
-	ksAppendKey (ks, parentKey);
+	ElektraKeyset * ks = elektraKeysetNew (1, ELEKTRA_KS_END);
+	elektraKeysetAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
 	if (pp)
 	{
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-		const ElektraKey * parentMeta = keyGetMeta (parentKey, "/hello/from/parent");
+		const ElektraKey * parentMeta = elektraKeyGetMeta (parentKey, "/hello/from/parent");
 		succeed_if (parentMeta != NULL, "missing parent metadata on parent key") if (parentMeta != NULL)
 		{
-			succeed_if (elektraStrCmp (keyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
+			succeed_if (elektraStrCmp (elektraKeyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
 		}
-		const ElektraKey * childMeta = keyGetMeta (parentKey, "user:/tests/pluginprocess/set");
+		const ElektraKey * childMeta = elektraKeyGetMeta (parentKey, "user:/tests/pluginprocess/set");
 		succeed_if (childMeta != NULL, "missing child metadata on parent key");
 		if (childMeta != NULL)
 		{
-			succeed_if (elektraStrCmp (keyString (childMeta), "value") == 0, "missing child metadata value on parent key");
+			succeed_if (elektraStrCmp (elektraKeyString (childMeta), "value") == 0, "missing child metadata value on parent key");
 		}
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			    "call to kdbError was not successful");
 	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
-	succeed_if (ksLookupByName (ks, "user:/tests/pluginprocess", ELEKTRA_KDB_O_NONE) != NULL,
+	succeed_if (elektraKeysetLookupByName (ks, "user:/tests/pluginprocess", ELEKTRA_KDB_O_NONE) != NULL,
 		    "parent key got removed from the keyset by pluginprocess");
 
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	ksDel (ks);
-	ksDel (conf);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (conf);
 	elektraFree (plugin);
 }
 
@@ -282,9 +282,9 @@ static int elektraDummySetAddingParentKey (Plugin * handle, ElektraKeyset * retu
 		return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 	}
 
-	keySetMeta (parentKey, "user:/tests/pluginprocess/set", "value");
-	ksAppendKey (returned, keyNew ("user:/tests/pluginprocess/set", ELEKTRA_KEY_END));
-	ksAppendKey (returned, parentKey);
+	elektraKeySetMeta (parentKey, "user:/tests/pluginprocess/set", "value");
+	elektraKeysetAppendKey (returned, elektraKeyNew ("user:/tests/pluginprocess/set", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (returned, parentKey);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -292,46 +292,46 @@ static void test_childAddingParentKey (void)
 {
 	printf ("test childAddingParentKey\n");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
-	keySetMeta (parentKey, "/hello/from/parent", "value");
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
+	elektraKeySetMeta (parentKey, "/hello/from/parent", "value");
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * plugin = createDummyPlugin (conf);
 	plugin->kdbSet = &elektraDummySetAddingParentKey;
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
 	if (pp)
 	{
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-		ElektraKey * addedParentKey = ksLookup (ks, parentKey, ELEKTRA_KDB_O_NONE);
+		ElektraKey * addedParentKey = elektraKeysetLookup (ks, parentKey, ELEKTRA_KDB_O_NONE);
 		succeed_if (addedParentKey != NULL, "parent key was not added to keyset");
-		const ElektraKey * parentMeta = keyGetMeta (addedParentKey, "/hello/from/parent");
+		const ElektraKey * parentMeta = elektraKeyGetMeta (addedParentKey, "/hello/from/parent");
 		succeed_if (parentMeta != NULL, "missing parent metadata on parent key") if (parentMeta != NULL)
 		{
-			succeed_if (elektraStrCmp (keyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
+			succeed_if (elektraStrCmp (elektraKeyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
 		}
-		const ElektraKey * childMeta = keyGetMeta (addedParentKey, "user:/tests/pluginprocess/set");
+		const ElektraKey * childMeta = elektraKeyGetMeta (addedParentKey, "user:/tests/pluginprocess/set");
 		succeed_if (childMeta != NULL, "missing child metadata on parent key");
 		if (childMeta != NULL)
 		{
-			succeed_if (elektraStrCmp (keyString (childMeta), "value") == 0, "missing child metadata value on parent key");
+			succeed_if (elektraStrCmp (elektraKeyString (childMeta), "value") == 0, "missing child metadata value on parent key");
 		}
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			    "call to kdbError was not successful");
 	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
-	succeed_if (ksLookupByName (ks, "user:/tests/pluginprocess", ELEKTRA_KDB_O_NONE) != NULL,
+	succeed_if (elektraKeysetLookupByName (ks, "user:/tests/pluginprocess", ELEKTRA_KDB_O_NONE) != NULL,
 		    "parent key got removed from the keyset by pluginprocess");
 
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (conf);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (conf);
 	elektraFree (plugin);
 }
 
@@ -363,20 +363,20 @@ static void test_closeWithoutOpen (void)
 {
 	printf ("test closeWithoutOpen\n");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * plugin = createDummyPlugin (conf);
 	plugin->kdbOpen = &elektraDummyOpenWithError;
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (conf);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (conf);
 	elektraFree (plugin);
 }
 
@@ -399,11 +399,11 @@ static void test_childDies (void)
 {
 	printf ("test childDies\n");
 
-	ElektraKey * parentKey = keyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/pluginprocess", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * plugin = createDummyPlugin (conf);
 	plugin->kdbOpen = &elektraDummyOpenAndDie;
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbOpen was successful");
 	// Child died, we still have to call close to cleanup the resources
@@ -413,9 +413,9 @@ static void test_childDies (void)
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	keyDel (parentKey);
-	ksDel (ks);
-	ksDel (conf);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (conf);
 	elektraFree (plugin);
 }
 

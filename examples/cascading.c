@@ -12,38 +12,38 @@
 
 void printError (char * what, ElektraKey const * parentKey)
 {
-	printf ("%s \"%s\" returned error: %s and reason %s\n", what, keyName (parentKey),
-		keyString (keyGetMeta (parentKey, "error/number")), keyString (keyGetMeta (parentKey, "error/reason")));
+	printf ("%s \"%s\" returned error: %s and reason %s\n", what, elektraKeyName (parentKey),
+		elektraKeyString (elektraKeyGetMeta (parentKey, "error/number")), elektraKeyString (elektraKeyGetMeta (parentKey, "error/reason")));
 }
 
 int main (void)
 {
-	ElektraKey * parentKey = keyNew ("/", ELEKTRA_KEY_END);
-	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	if (kdbGet (kdb, ks, parentKey) == -1)
+	ElektraKey * parentKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	ElektraKdb * kdb = elektraKdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	if (elektraKdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
 	}
-	keyDel (parentKey);
-	parentKey = keyNew ("meta:/", ELEKTRA_KEY_END);
-	if (kdbGet (kdb, ks, parentKey) == -1)
+	elektraKeyDel (parentKey);
+	parentKey = elektraKeyNew ("meta:/", ELEKTRA_KEY_END);
+	if (elektraKdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
 	}
-	keyDel (parentKey);
-	parentKey = keyNew ("/test/shell/somewhere", ELEKTRA_KEY_END);
-	if (kdbGet (kdb, ks, parentKey) == -1)
+	elektraKeyDel (parentKey);
+	parentKey = elektraKeyNew ("/test/shell/somewhere", ELEKTRA_KEY_END);
+	if (elektraKdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
 	}
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	ElektraKey * k;
-	while ((k = ksNext (ks)))
+	while ((k = elektraKeysetNext (ks)))
 	{
-		printf ("%s = %s\n", keyName (k), keyString (k));
+		printf ("%s = %s\n", elektraKeyName (k), elektraKeyString (k));
 	}
 
 	/*
@@ -52,25 +52,25 @@ int main (void)
 	keyDel(k);
 	*/
 
-	parentKey = keyNew ("/", ELEKTRA_KEY_END);
-	if (kdbSet (kdb, ks, parentKey) == -1)
+	parentKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	if (elektraKdbSet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbSet", parentKey);
 	}
-	keyDel (parentKey);
-	parentKey = keyNew ("meta:/", ELEKTRA_KEY_END);
-	if (kdbSet (kdb, ks, parentKey) == -1)
+	elektraKeyDel (parentKey);
+	parentKey = elektraKeyNew ("meta:/", ELEKTRA_KEY_END);
+	if (elektraKdbSet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbSet", parentKey);
 	}
-	keyDel (parentKey);
-	parentKey = keyNew ("/test/shell/somewhere", ELEKTRA_KEY_END);
-	if (kdbSet (kdb, ks, parentKey) == -1)
+	elektraKeyDel (parentKey);
+	parentKey = elektraKeyNew ("/test/shell/somewhere", ELEKTRA_KEY_END);
+	if (elektraKdbSet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbSet", parentKey);
 	}
 
-	ksDel (ks);
-	kdbClose (kdb, 0);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKdbClose (kdb, 0);
+	elektraKeyDel (parentKey);
 }

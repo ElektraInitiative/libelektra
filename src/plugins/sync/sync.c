@@ -26,17 +26,17 @@
 
 int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/sync"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/sync"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/sync", ELEKTRA_KEY_VALUE, "sync plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/sync/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/sync/exports/get", ELEKTRA_KEY_FUNC, elektraSyncGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/sync/exports/commit", ELEKTRA_KEY_FUNC, elektraSyncCommit, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/sync", ELEKTRA_KEY_VALUE, "sync plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/sync/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/sync/exports/get", ELEKTRA_KEY_FUNC, elektraSyncGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/sync/exports/commit", ELEKTRA_KEY_FUNC, elektraSyncCommit, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/sync/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/sync/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
@@ -48,7 +48,7 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 int elektraSyncCommit (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	/* set all keys */
-	const char * configFile = keyString (parentKey);
+	const char * configFile = elektraKeyString (parentKey);
 	if (!strcmp (configFile, "")) return 0; // no underlying config file
 
 		// Syncing requires different functions for mingw vs. POSIX builds.

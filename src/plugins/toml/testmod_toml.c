@@ -1404,10 +1404,10 @@ static void testRoundtrip (const char * filePath)
 static ElektraKeyset * readFile (const char * filename)
 {
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
@@ -1415,11 +1415,11 @@ static ElektraKeyset * readFile (const char * filename)
 	if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		output_error (parentKey);
-		ksDel (ks);
+		elektraKeysetDel (ks);
 		ks = NULL;
 	}
 	PLUGIN_CLOSE ();
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	return ks;
 }
 
@@ -1427,9 +1427,9 @@ static bool writeFile (const char * filename, ElektraKeyset * ksWrite)
 {
 	bool success = true;
 	ELEKTRA_LOG_DEBUG ("Writing '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
 
 	int setStatus = plugin->kdbSet (plugin, ksWrite, parentKey);
@@ -1440,7 +1440,7 @@ static bool writeFile (const char * filename, ElektraKeyset * ksWrite)
 		success = false;
 	}
 	PLUGIN_CLOSE ();
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	return success;
 }
 
@@ -1455,7 +1455,7 @@ static void testWriteReadCompare (ElektraKeyset * ksWrite, ElektraKeyset * expec
 			if (ksRead != NULL)
 			{
 				compare_keyset (expected, ksRead);
-				ksDel (ksRead);
+				elektraKeysetDel (ksRead);
 			}
 		}
 	}
@@ -1470,17 +1470,17 @@ static bool roundtripFile (const char * filenameIn, const char * filenameOut)
 		return false;
 	}
 	bool success = writeFile (filenameOut, ksRead);
-	ksDel (ksRead);
+	elektraKeysetDel (ksRead);
 	return success;
 }
 
 static void testReadCompare (const char * filename, ElektraKeyset * expected)
 {
 	printf ("Reading '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
@@ -1498,70 +1498,70 @@ static void testReadCompare (const char * filename, ElektraKeyset * expected)
 		output_keyset(ks);*/
 	}
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
-	keyDel (parentKey);
-	ksDel (expected);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (expected);
 }
 
 static void testReadMustError (const char * filename)
 {
 	printf ("Reading '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "Expected kdbGet to fail, but got success.");
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 }
 
 static ElektraKey * addKey (ElektraKeyset * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order)
 {
-	ElektraKey * key = keyNew (prefix, ELEKTRA_KEY_END);
+	ElektraKey * key = elektraKeyNew (prefix, ELEKTRA_KEY_END);
 	if (name != NULL)
 	{
-		keyAddName (key, name);
+		elektraKeyAddName (key, name);
 	}
 	if (value != NULL)
 	{
 		if (size == 0)
 		{
-			keySetString (key, value);
+			elektraKeySetString (key, value);
 		}
 		else
 		{
-			keySetBinary (key, (const void *) value, size);
+			elektraKeySetBinary (key, (const void *) value, size);
 		}
 	}
 	else if (tomltype == NULL && array == NULL)
 	{
-		keySetBinary (key, NULL, 0);
+		elektraKeySetBinary (key, NULL, 0);
 	}
 	if (orig != NULL)
 	{
-		keySetMeta (key, "origvalue", orig);
+		elektraKeySetMeta (key, "origvalue", orig);
 	}
 	if (type != NULL)
 	{
-		keySetMeta (key, "type", type);
+		elektraKeySetMeta (key, "type", type);
 	}
 	if (array != NULL)
 	{
-		keySetMeta (key, "array", array);
+		elektraKeySetMeta (key, "array", array);
 	}
 	if (tomltype != NULL)
 	{
-		keySetMeta (key, "tomltype", tomltype);
+		elektraKeySetMeta (key, "tomltype", tomltype);
 	}
 	if (order != -1)
 	{
 		setOrderForKey (key, order);
 	}
-	ksAppendKey (ks, key);
+	elektraKeysetAppendKey (ks, key);
 	return key;
 }
 
@@ -1574,17 +1574,17 @@ static void setComment (ElektraKey * key, const char * comment, const char * spa
 	elektraFree (indexStr);
 	if (comment != NULL)
 	{
-		keySetMeta (key, commentBase, comment);
+		elektraKeySetMeta (key, commentBase, comment);
 		snprintf (commentKey, 128, "%s/start", commentBase);
-		keySetMeta (key, commentKey, "#");
+		elektraKeySetMeta (key, commentKey, "#");
 	}
 	else
 	{
 		snprintf (commentKey, 128, "%s/start", commentBase);
-		keySetMeta (key, commentKey, "");
+		elektraKeySetMeta (key, commentKey, "");
 	}
 	snprintf (commentKey, 128, "%s/space", commentBase);
-	keySetMeta (key, commentKey, space);
+	elektraKeySetMeta (key, commentKey, space);
 }
 
 static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB)

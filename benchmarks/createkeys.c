@@ -10,15 +10,15 @@
 
 void benchmarkDel (void)
 {
-	ksDel (large);
+	elektraKeysetDel (large);
 }
 
 int benchmarkIterate (void)
 {
-	ksRewind (large);
+	elektraKeysetRewind (large);
 	ElektraKey * cur;
 	int c = 0;
-	while ((cur = ksNext (large)))
+	while ((cur = elektraKeysetNext (large)))
 	{
 		// count to make sure the loop is executed
 		++c;

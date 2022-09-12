@@ -25,46 +25,46 @@ static void convertLong (char * returned, unsigned long long i)
 
 static int setKey (ElektraKeyset * testKs)
 {
-	ElektraKey * parent = keyNew ("user:/tests/mac", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKey * parent = elektraKeyNew ("user:/tests/mac", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
-	ksRewind (testKs);
+	elektraKeysetRewind (testKs);
 	int ret = plugin->kdbSet (plugin, testKs, parent);
-	keyDel (parent);
+	elektraKeyDel (parent);
 	PLUGIN_CLOSE ();
 	return ret;
 }
 
-static const char * getKeyString (ElektraKeyset * ks, char * keyName)
+static const char * getKeyString (ElektraKeyset * ks, char * elektraKeyName)
 {
-	ElektraKey * parent = keyNew ("user:/tests/mac", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parent = elektraKeyNew ("user:/tests/mac", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
-	ksRewind (ks);
+	elektraKeysetRewind (ks);
 	plugin->kdbGet (plugin, ks, parent);
-	keyDel (parent);
+	elektraKeyDel (parent);
 	PLUGIN_CLOSE ();
-	return keyString (ksLookupByName (ks, keyName, 0));
+	return elektraKeyString (elektraKeysetLookupByName (ks, elektraKeyName, 0));
 }
 
-static void testAddressSet (const char * keyValue, int retValue)
+static void testAddressSet (const char * elektraKeyValue, int retValue)
 {
-	ElektraKeyset * testKs = ksNew (10, keyNew ("user:/tests/mac/addr", ELEKTRA_KEY_VALUE, keyValue, ELEKTRA_KEY_META, META, "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * testKs = elektraKeysetNew (10, elektraKeyNew ("user:/tests/mac/addr", ELEKTRA_KEY_VALUE, elektraKeyValue, ELEKTRA_KEY_META, META, "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (setKey (testKs) == retValue, "error");
-	ksDel (testKs);
+	elektraKeysetDel (testKs);
 }
 
-static void testAddressesSetGet (const char * keyValue, unsigned long long longValue)
+static void testAddressesSetGet (const char * elektraKeyValue, unsigned long long longValue)
 {
 	char intChar[21];
-	ElektraKey * key = keyNew ("user:/tests/mac/addr", ELEKTRA_KEY_VALUE, keyValue, ELEKTRA_KEY_META, META, "", ELEKTRA_KEY_END);
-	ElektraKeyset * testKs = ksNew (10, key, ELEKTRA_KS_END);
+	ElektraKey * key = elektraKeyNew ("user:/tests/mac/addr", ELEKTRA_KEY_VALUE, elektraKeyValue, ELEKTRA_KEY_META, META, "", ELEKTRA_KEY_END);
+	ElektraKeyset * testKs = elektraKeysetNew (10, key, ELEKTRA_KS_END);
 	setKey (testKs);
 	convertLong (intChar, longValue);
 	succeed_if (!strcmp (getKeyString (testKs, "user:/tests/mac/addr"), intChar), "error");
-	succeed_if (!strcmp (keyString (keyGetMeta (key, "origvalue")), keyValue), "error");
-	ksDel (testKs);
+	succeed_if (!strcmp (elektraKeyString (elektraKeyGetMeta (key, "origvalue")), elektraKeyValue), "error");
+	elektraKeysetDel (testKs);
 }
 
 static void testAddressesReturn (void)
@@ -138,13 +138,13 @@ static void testAddressesNumber (void)
 static void testRestoreValue (void)
 {
 	char * val = "00:11:55:AA:FF:CC";
-	ElektraKey * key = keyNew ("user:/tests/mac/addr", ELEKTRA_KEY_VALUE, val, ELEKTRA_KEY_META, META, "", ELEKTRA_KEY_END);
-	ElektraKeyset * testKs = ksNew (10, key, ELEKTRA_KS_END);
+	ElektraKey * key = elektraKeyNew ("user:/tests/mac/addr", ELEKTRA_KEY_VALUE, val, ELEKTRA_KEY_META, META, "", ELEKTRA_KEY_END);
+	ElektraKeyset * testKs = elektraKeysetNew (10, key, ELEKTRA_KS_END);
 	setKey (testKs);
 	getKeyString (testKs, "user:/tests/mac/addr");
 	setKey (testKs);
-	succeed_if (!strcmp (keyString (key), val), "error");
-	ksDel (testKs);
+	succeed_if (!strcmp (elektraKeyString (key), val), "error");
+	elektraKeysetDel (testKs);
 }
 
 static void testAll (void)

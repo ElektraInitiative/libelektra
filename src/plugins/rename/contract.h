@@ -11,20 +11,20 @@
 
 // clang-format off
 
-ksNew (30,
-	keyNew ("system:/elektra/modules/rename",
+elektraKeysetNew (30,
+	elektraKeyNew ("system:/elektra/modules/rename",
 		ELEKTRA_KEY_VALUE, "rename plugin waits for your orders", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/modules/rename/exports", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/modules/rename/exports/get",
+	elektraKeyNew ("system:/elektra/modules/rename/exports", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/modules/rename/exports/get",
 		ELEKTRA_KEY_FUNC, elektraRenameGet,
 		ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/modules/rename/exports/set",
+	elektraKeyNew ("system:/elektra/modules/rename/exports/set",
 		ELEKTRA_KEY_FUNC, elektraRenameSet,
 		ELEKTRA_KEY_END),
 #include "readme_rename.c"
-	keyNew ("system:/elektra/modules/rename/infos",
+	elektraKeyNew ("system:/elektra/modules/rename/infos",
 		ELEKTRA_KEY_VALUE, "All information you want to know", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/modules/rename/infos/version",
+	elektraKeyNew ("system:/elektra/modules/rename/infos/version",
 		ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 

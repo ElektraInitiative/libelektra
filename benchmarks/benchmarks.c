@@ -50,7 +50,7 @@ int timeGetDiffMicroseconds (void)
 
 void benchmarkCreate (void)
 {
-	large = ksNew (num_key * num_dir, ELEKTRA_KS_END);
+	large = elektraKeysetNew (num_key * num_dir, ELEKTRA_KS_END);
 }
 
 void benchmarkFillup (void)
@@ -62,11 +62,11 @@ void benchmarkFillup (void)
 	for (i = 0; i < num_dir; i++)
 	{
 		snprintf (name, KEY_NAME_LENGTH, "%s/%s%d", KEY_ROOT, "dir", i);
-		ksAppendKey (large, keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (large, elektraKeyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
 		for (j = 0; j < num_key; j++)
 		{
 			snprintf (name, KEY_NAME_LENGTH, "%s/%s%d/%s%d", KEY_ROOT, "dir", i, "key", j);
-			ksAppendKey (large, keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
+			elektraKeysetAppendKey (large, elektraKeyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
 		}
 	}
 }
@@ -448,24 +448,24 @@ static KsTreeVertex * recGenerateKsTree (KsTreeVertex * parent, const size_t siz
 static void recGenerateKeySet (ElektraKeyset * ks, ElektraKey * key, KsTreeVertex * vertex)
 {
 	// add name to key
-	if (keyAddBaseName (key, vertex->name) < 0)
+	if (elektraKeyAddBaseName (key, vertex->name) < 0)
 	{
 		printExit ("recGenerateKeySet: Can not add KeyBaseName ");
 	}
 	// add if Key
 	if (vertex->isKey)
 	{
-		ElektraKey * dupKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * dupKey = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");
 		}
-		ssize_t sizeBefore = ksGetSize (ks);
-		if (ksAppendKey (ks, dupKey) < 0)
+		ssize_t sizeBefore = elektraKeysetGetSize (ks);
+		if (elektraKeysetAppendKey (ks, dupKey) < 0)
 		{
 			printExit ("recGenerateKeySet: Can not add Key");
 		}
-		if (sizeBefore == ksGetSize (ks))
+		if (sizeBefore == elektraKeysetGetSize (ks))
 		{
 			printExit ("recGenerateKeySet: Add Key with on effect");
 		}
@@ -473,14 +473,14 @@ static void recGenerateKeySet (ElektraKeyset * ks, ElektraKey * key, KsTreeVerte
 	// go to children
 	for (size_t i = 0; i < vertex->numberofChildren; ++i)
 	{
-		ElektraKey * dupKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * dupKey = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");
 		}
 		recGenerateKeySet (ks, dupKey, vertex->children[i]);
 	}
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 /**
@@ -591,14 +591,14 @@ ElektraKeyset * generateKeySet (const size_t size, int32_t * seed, KeySetShape *
 		shape->shapeDel (data);
 	}
 	// generate KeySet out of KsTree
-	ElektraKeyset * ks = ksNew (size, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (size, ELEKTRA_KS_END);
 	if (!ks)
 	{
 		printExit ("generateKeySet: Can not create KeySet");
 	}
 	for (size_t i = 0; i < root->numberofChildren; ++i)
 	{
-		ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
+		ElektraKey * key = elektraKeyNew ("/", ELEKTRA_KEY_END);
 		if (!key)
 		{
 			printExit ("generateKeySet: Can not create Key");

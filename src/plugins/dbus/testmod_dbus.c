@@ -48,12 +48,12 @@ static DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEK
 	char * interface = "org.libelektra";
 	if (dbus_message_is_signal (message, interface, context->lookupSignalName))
 	{
-		char * keyName;
+		char * elektraKeyName;
 		DBusError error;
 		dbus_error_init (&error);
 
 		// read key name from message
-		dbus_message_get_args (message, &error, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID);
+		dbus_message_get_args (message, &error, DBUS_TYPE_STRING, &elektraKeyName, DBUS_TYPE_INVALID);
 		if (dbus_error_is_set (&error))
 		{
 			ELEKTRA_LOG_WARNING ("Failed to read message: %s", error.message);
@@ -61,7 +61,7 @@ static DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEK
 		else
 		{
 			// Message received, stop dispatching
-			context->receivedKeyName = keyName;
+			context->receivedKeyName = elektraKeyName;
 			context->stop = 1;
 		}
 
@@ -177,24 +177,24 @@ static void test_keyAdded (void)
 	printf ("test adding keys\n");
 
 	// (namespace)/tests/foo
-	ElektraKey * parentKey = keyNew (testKeyNamespace, ELEKTRA_KEY_END);
-	keyAddName (parentKey, "tests/foo");
+	ElektraKey * parentKey = elektraKeyNew (testKeyNamespace, ELEKTRA_KEY_END);
+	elektraKeyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	ElektraKey * toAdd = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (toAdd, "bar");
-	keySetString (toAdd, "test");
+	ElektraKey * toAdd = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (toAdd, "bar");
+	elektraKeySetString (toAdd, "test");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// add key to keyset
-	ksAppendKey (ks, toAdd);
+	elektraKeysetAppendKey (ks, toAdd);
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "KeyAdded");
@@ -203,13 +203,13 @@ static void test_keyAdded (void)
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
 
-	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
+	succeed_if_same_string (elektraKeyName (toAdd), context->receivedKeyName);
 
 	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
@@ -222,24 +222,24 @@ static void test_keyChanged (void)
 	// This flag is only cleared after kdbSet or when keys come from a backend.
 
 	// (namespace)/tests/foo
-	ElektraKey * parentKey = keyNew (testKeyNamespace, ELEKTRA_KEY_END);
-	keyAddName (parentKey, "tests/foo");
+	ElektraKey * parentKey = elektraKeyNew (testKeyNamespace, ELEKTRA_KEY_END);
+	elektraKeyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	ElektraKey * toChange = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (toChange, "bar");
-	keySetString (toChange, "test");
+	ElektraKey * toChange = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (toChange, "bar");
+	elektraKeySetString (toChange, "test");
 
-	ElektraKeyset * ks = ksNew (2, toChange, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (2, toChange, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// change key in keyset
-	keySetString (toChange, "new value");
+	elektraKeySetString (toChange, "new value");
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "KeyChanged");
@@ -248,13 +248,13 @@ static void test_keyChanged (void)
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
 
-	succeed_if_same_string (keyName (toChange), context->receivedKeyName);
+	succeed_if_same_string (elektraKeyName (toChange), context->receivedKeyName);
 
 	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
@@ -263,24 +263,24 @@ static void test_keyDeleted (void)
 	printf ("test deleting keys\n");
 
 	// (namespace)/tests/foo
-	ElektraKey * parentKey = keyNew (testKeyNamespace, ELEKTRA_KEY_END);
-	keyAddName (parentKey, "tests/foo");
+	ElektraKey * parentKey = elektraKeyNew (testKeyNamespace, ELEKTRA_KEY_END);
+	elektraKeyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	ElektraKey * toDelete = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (toDelete, "bar");
-	keySetString (toDelete, "test");
+	ElektraKey * toDelete = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (toDelete, "bar");
+	elektraKeySetString (toDelete, "test");
 
-	ElektraKeyset * ks = ksNew (1, keyDup (toDelete, ELEKTRA_KEY_CP_ALL), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (1, elektraKeyDup (toDelete, ELEKTRA_KEY_CP_ALL), ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// remove key from keyset
-	ElektraKey * deleted = ksLookup (ks, toDelete, ELEKTRA_KDB_O_POP);
+	ElektraKey * deleted = elektraKeysetLookup (ks, toDelete, ELEKTRA_KDB_O_POP);
 	succeed_if (deleted != NULL, "key was not found");
 
 	DBusConnection * connection = getDbusConnection (testBusType);
@@ -290,14 +290,14 @@ static void test_keyDeleted (void)
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
 
-	succeed_if_same_string (keyName (toDelete), context->receivedKeyName);
+	succeed_if_same_string (elektraKeyName (toDelete), context->receivedKeyName);
 
 	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
-	keyDel (toDelete);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeyDel (toDelete);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
@@ -306,35 +306,35 @@ static void test_announceOnce (void)
 	printf ("test announce once\n");
 
 	// (namespace)/tests/foo
-	ElektraKey * parentKey = keyNew (testKeyNamespace, ELEKTRA_KEY_END);
-	keyAddName (parentKey, "tests/foo");
+	ElektraKey * parentKey = elektraKeyNew (testKeyNamespace, ELEKTRA_KEY_END);
+	elektraKeyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar/#0
-	ElektraKey * toAdd1 = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (toAdd1, "bar/#0");
-	keySetString (toAdd1, "test");
+	ElektraKey * toAdd1 = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (toAdd1, "bar/#0");
+	elektraKeySetString (toAdd1, "test");
 
 	// (namespace)/tests/foo/bar/#1
-	ElektraKey * toAdd2 = keyDup (toAdd1, ELEKTRA_KEY_CP_ALL);
-	keySetBaseName (toAdd2, "#1");
+	ElektraKey * toAdd2 = elektraKeyDup (toAdd1, ELEKTRA_KEY_CP_ALL);
+	elektraKeySetBaseName (toAdd2, "#1");
 
 	// (namespace)/tests/foo/bar
-	ElektraKey * toChange = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (toChange, "bar");
-	keySetString (toChange, "test");
+	ElektraKey * toChange = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (toChange, "bar");
+	elektraKeySetString (toChange, "test");
 
-	ElektraKeyset * ks = ksNew (1, toChange, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (1, toChange, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (1, keyNew ("/announce", ELEKTRA_KEY_VALUE, "once", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (1, elektraKeyNew ("/announce", ELEKTRA_KEY_VALUE, "once", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// modify keyset
-	ksAppendKey (ks, toAdd1);
-	ksAppendKey (ks, toAdd2);
-	keySetString (toChange, "new value");
+	elektraKeysetAppendKey (ks, toAdd1);
+	elektraKeysetAppendKey (ks, toAdd2);
+	elektraKeySetString (toChange, "new value");
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "Commit");
@@ -343,13 +343,13 @@ static void test_announceOnce (void)
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
 
-	succeed_if_same_string (keyName (parentKey), context->receivedKeyName);
+	succeed_if_same_string (elektraKeyName (parentKey), context->receivedKeyName);
 
 	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
@@ -357,27 +357,27 @@ static void test_cascadedChangeNotification (void)
 {
 	printf ("test change notification with cascaded parent key\n");
 
-	ElektraKey * parentKey = keyNew ("/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/foo", ELEKTRA_KEY_END);
 
 	// (namespace)/tests/foo
-	ElektraKey * completeParentKey = keyNew (testKeyNamespace, ELEKTRA_KEY_END);
-	keyAddName (completeParentKey, "tests/foo");
+	ElektraKey * completeParentKey = elektraKeyNew (testKeyNamespace, ELEKTRA_KEY_END);
+	elektraKeyAddName (completeParentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	ElektraKey * toAdd = keyDup (completeParentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (toAdd, "bar");
-	keySetString (toAdd, "test");
+	ElektraKey * toAdd = elektraKeyDup (completeParentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (toAdd, "bar");
+	elektraKeySetString (toAdd, "test");
 
-	ElektraKeyset * ks = ksNew (1, completeParentKey, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (1, completeParentKey, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// add key to keyset
-	ksAppendKey (ks, toAdd);
+	elektraKeysetAppendKey (ks, toAdd);
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "KeyAdded");
@@ -386,13 +386,13 @@ static void test_cascadedChangeNotification (void)
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
 
-	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
+	succeed_if_same_string (elektraKeyName (toAdd), context->receivedKeyName);
 
 	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
@@ -400,27 +400,27 @@ static void test_cascadedAnnounceOnce (void)
 {
 	printf ("test announce once with cascaded parent key\n");
 
-	ElektraKey * parentKey = keyNew ("/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/foo", ELEKTRA_KEY_END);
 
 	// (namespace)/tests/foo
-	ElektraKey * completeParentKey = keyNew (testKeyNamespace, ELEKTRA_KEY_END);
-	keyAddName (completeParentKey, "tests/foo");
+	ElektraKey * completeParentKey = elektraKeyNew (testKeyNamespace, ELEKTRA_KEY_END);
+	elektraKeyAddName (completeParentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	ElektraKey * toAdd = keyDup (completeParentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddName (toAdd, "bar");
-	keySetString (toAdd, "test");
+	ElektraKey * toAdd = elektraKeyDup (completeParentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (toAdd, "bar");
+	elektraKeySetString (toAdd, "test");
 
-	ElektraKeyset * ks = ksNew (1, completeParentKey, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (1, completeParentKey, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (1, keyNew ("/announce", ELEKTRA_KEY_VALUE, "once", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (1, elektraKeyNew ("/announce", ELEKTRA_KEY_VALUE, "once", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// add key to keyset
-	ksAppendKey (ks, toAdd);
+	elektraKeysetAppendKey (ks, toAdd);
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "Commit");
@@ -429,13 +429,13 @@ static void test_cascadedAnnounceOnce (void)
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
 
-	succeed_if_same_string (keyName (completeParentKey), context->receivedKeyName);
+	succeed_if_same_string (elektraKeyName (completeParentKey), context->receivedKeyName);
 
 	elektraFree (context);
 	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 

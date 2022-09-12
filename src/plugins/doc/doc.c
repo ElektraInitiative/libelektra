@@ -42,16 +42,16 @@ int elektraDocOpen (Plugin * handle, ElektraKey * warningsKey ELEKTRA_UNUSED)
 {
 	GlobalData * data;
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * kg = ksLookupByName (config, "/global", 0);
+	ElektraKey * kg = elektraKeysetLookupByName (config, "/global", 0);
 
 	data = elektraMalloc (sizeof (GlobalData));
 	data->global = 0;
-	if (kg) data->global = atoi (keyString (kg));
+	if (kg) data->global = atoi (elektraKeyString (kg));
 	elektraPluginSetData (handle, data);
 	//! [doc open]
 
 	//! [doc module]
-	if (ksLookupByName (config, "/module", 0))
+	if (elektraKeysetLookupByName (config, "/module", 0))
 	{
 		return 0;
 	}
@@ -97,44 +97,44 @@ ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR ( parentKey, "Not at the end of file");
 //![get contract]
 int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/doc"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/doc"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/doc", ELEKTRA_KEY_VALUE, "doc plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/open", ELEKTRA_KEY_FUNC, elektraDocOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/close", ELEKTRA_KEY_FUNC, elektraDocClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/get", ELEKTRA_KEY_FUNC, elektraDocGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/set", ELEKTRA_KEY_FUNC, elektraDocSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/commit", ELEKTRA_KEY_FUNC, elektraDocCommit, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/error", ELEKTRA_KEY_FUNC, elektraDocError, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/checkconf", ELEKTRA_KEY_FUNC, elektraDocCheckConf, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/doc", ELEKTRA_KEY_VALUE, "doc plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports/open", ELEKTRA_KEY_FUNC, elektraDocOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports/close", ELEKTRA_KEY_FUNC, elektraDocClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports/get", ELEKTRA_KEY_FUNC, elektraDocGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports/set", ELEKTRA_KEY_FUNC, elektraDocSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports/commit", ELEKTRA_KEY_FUNC, elektraDocCommit, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports/error", ELEKTRA_KEY_FUNC, elektraDocError, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/doc/exports/checkconf", ELEKTRA_KEY_FUNC, elektraDocCheckConf, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/doc/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/doc/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
 	//![get contract]
 
 	//![get storage]
-	FILE * fp = fopen (keyString (parentKey), "r");
+	FILE * fp = fopen (elektraKeyString (parentKey), "r");
 	char * key = 0;
 	char * value = 0;
 
 	while (parseKey (fp, &key, &value) >= 1)
 	{
-		ElektraKey * read = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
-		if (keyAddName (read, key) == -1)
+		ElektraKey * read = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_END);
+		if (elektraKeyAddName (read, key) == -1)
 		{
 			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name %s is not valid, discarding key", key);
-			keyDel (read);
+			elektraKeyDel (read);
 			continue;
 		}
-		keySetString (read, value);
+		elektraKeySetString (read, value);
 
-		ksAppendKey (returned, read);
+		elektraKeysetAppendKey (returned, read);
 	}
 
 	if (feof (fp) == 0)
@@ -151,21 +151,21 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, Ele
 	ElektraKeyset * globalKS = elektraPluginGetGlobalKeySet (plugin);
 	// now we can read something from the global keyset
 	// or add something for us or others to read
-	ElektraKey * important = keyNew ("user:/global/myDocKey", ELEKTRA_KEY_VALUE, "global plugins can see me", ELEKTRA_KEY_END);
-	ksAppendKey (globalKS, important);
+	ElektraKey * important = elektraKeyNew ("user:/global/myDocKey", ELEKTRA_KEY_VALUE, "global plugins can see me", ELEKTRA_KEY_END);
+	elektraKeysetAppendKey (globalKS, important);
 	//![get global keyset]
 
 	//![get global keyset cleanup]
 	// clean up parts of the global keyset which we do not need
-	ElektraKey * cutKey = keyNew ("user:/global/myDocKey", ELEKTRA_KEY_END);
-	ElektraKeyset * notNeeded = ksCut (globalKS, cutKey);
-	ksDel (notNeeded);
+	ElektraKey * cutKey = elektraKeyNew ("user:/global/myDocKey", ELEKTRA_KEY_END);
+	ElektraKeyset * notNeeded = elektraKeysetCut (globalKS, cutKey);
+	elektraKeysetDel (notNeeded);
 	//![get global keyset cleanup]
 
 	//![get filter]
 	ElektraKey * k;
-	ksRewind (returned);
-	while ((k = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((k = elektraKeysetNext (returned)) != 0)
 	{
 		doAction (k);
 	}
@@ -181,7 +181,7 @@ int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEK
 
 
 	//![opening files]
-	FILE * fp = fopen (keyString (parentKey), "w");
+	FILE * fp = fopen (elektraKeyString (parentKey), "w");
 	if (!fp)
 	{
 		ELEKTRA_SET_ERROR_SET (parentKey);
@@ -229,9 +229,9 @@ int elektraDocCheckConf (ElektraKey * errorKey ELEKTRA_UNUSED, ElektraKeyset * c
 static void usercode (ElektraKdb * handle, ElektraKeyset * keyset, ElektraKey * key)
 {
 	// some more user code
-	keySetString (key, "mycomment"); // the user changes the key
-	ksAppendKey (keyset, key);	 // append the key to the keyset
-	kdbSet (handle, keyset, 0);	 // and syncs it to disc
+	elektraKeySetString (key, "mycomment"); // the user changes the key
+	elektraKeysetAppendKey (keyset, key);	 // append the key to the keyset
+	elektraKdbSet (handle, keyset, 0);	 // and syncs it to disc
 }
 
 // so now kdbSet is called
@@ -252,8 +252,8 @@ int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, 
 {
 	// the task of elektraPluginSet is now to store the keys
 	ElektraKey * k;
-	ksRewind (returned);
-	while ((k = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((k = elektraKeysetNext (returned)) != 0)
 	{
 		saveToDisc (k);
 	}

@@ -119,9 +119,9 @@ int elektraKeyGlob (const ElektraKey * key, const char * pattern)
 		return ELEKTRA_GLOB_NOMATCH;
 	}
 
-	size_t nameSize = (size_t) keyGetNameSize (key);
+	size_t nameSize = (size_t) elektraKeyGetNameSize (key);
 	char * name = elektraMalloc (nameSize);
-	keyGetName (key, name, nameSize);
+	elektraKeyGetName (key, name, nameSize);
 
 	size_t len = strlen (pattern);
 	bool prefixMode = len >= 2 && elektraStrCmp (pattern + len - 3, "/__") == 0;
@@ -208,17 +208,17 @@ int elektraKsGlob (ElektraKeyset * result, ElektraKeyset * input, const char * p
 	int ret = 0;
 	ElektraKey * current;
 
-	elektraCursor cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
+	elektraCursor cursor = elektraKeysetGetCursor (input);
+	elektraKeysetRewind (input);
+	while ((current = elektraKeysetNext (input)) != 0)
 	{
 		int rc = elektraKeyGlob (current, pattern);
 		if (rc == 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current, ELEKTRA_KEY_CP_ALL));
+			elektraKeysetAppendKey (result, elektraKeyDup (current, ELEKTRA_KEY_CP_ALL));
 		}
 	}
-	ksSetCursor (input, cursor);
+	elektraKeysetSetCursor (input, cursor);
 	return ret;
 }

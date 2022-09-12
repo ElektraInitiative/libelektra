@@ -24,9 +24,9 @@ int elektraCounterOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	elektraCountOpen += 1;
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	if (ksLookupByName (config, "/module", 0))
+	if (elektraKeysetLookupByName (config, "/module", 0))
 	{
-		if (ksLookupByName (config, "/logmodule", 0))
+		if (elektraKeysetLookupByName (config, "/logmodule", 0))
 		{
 			printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n", (void *) handle, elektraCountOpen);
 		}
@@ -45,9 +45,9 @@ int elektraCounterClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	elektraCountClose += 1;
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	if (ksLookupByName (config, "/module", 0))
+	if (elektraKeysetLookupByName (config, "/module", 0))
 	{
-		if (ksLookupByName (config, "/logmodule", 0))
+		if (elektraKeysetLookupByName (config, "/logmodule", 0))
 		{
 			printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n", (void *) handle, elektraCountClose);
 		}
@@ -62,20 +62,20 @@ int elektraCounterClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 
 int elektraCounterGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/counter"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/counter"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/counter", ELEKTRA_KEY_VALUE, "counter plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/open", ELEKTRA_KEY_FUNC, elektraCounterOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/close", ELEKTRA_KEY_FUNC, elektraCounterClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/get", ELEKTRA_KEY_FUNC, elektraCounterGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/set", ELEKTRA_KEY_FUNC, elektraCounterSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/error", ELEKTRA_KEY_FUNC, elektraCounterError, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/counter", ELEKTRA_KEY_VALUE, "counter plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/counter/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/counter/exports/open", ELEKTRA_KEY_FUNC, elektraCounterOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/counter/exports/close", ELEKTRA_KEY_FUNC, elektraCounterClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/counter/exports/get", ELEKTRA_KEY_FUNC, elektraCounterGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/counter/exports/set", ELEKTRA_KEY_FUNC, elektraCounterSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/counter/exports/error", ELEKTRA_KEY_FUNC, elektraCounterError, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/counter/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/counter/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}

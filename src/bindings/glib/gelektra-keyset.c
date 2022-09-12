@@ -7,14 +7,14 @@ static ElektraKeyset * gelektra_keyset_swap (GElektraKeySet * ks, ElektraKeyset 
 static void gelektra_keyset_init (GElektraKeySet * self)
 {
 	/* initialize the object */
-	self->keyset = ksNew (0, ELEKTRA_KS_END);
+	self->keyset = elektraKeysetNew (0, ELEKTRA_KS_END);
 }
 
 static void gelektra_keyset_finalize (GObject * object)
 {
 	GElektraKeySet * self = GELEKTRA_KEYSET (object);
 
-	ksDel (self->keyset);
+	elektraKeysetDel (self->keyset);
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
 	 * is guaranteed to exist on the parent's class virtual function table
@@ -71,7 +71,7 @@ GElektraKeySet * gelektra_keyset_make (ElektraKeyset * ks)
 	if (ks == NULL) return NULL;
 	GElektraKeySet * ret = gelektra_keyset_new (0);
 	ElektraKeyset * old = gelektra_keyset_swap (ret, ks);
-	ksDel (old);
+	elektraKeysetDel (old);
 	return ret;
 }
 
@@ -85,7 +85,7 @@ GElektraKeySet * gelektra_keyset_make (ElektraKeyset * ks)
  */
 GElektraKeySet * gelektra_keyset_dup (const GElektraKeySet * ks)
 {
-	return gelektra_keyset_make (ksDup (ks->keyset));
+	return gelektra_keyset_make (elektraKeysetDup (ks->keyset));
 }
 
 /**
@@ -94,12 +94,12 @@ GElektraKeySet * gelektra_keyset_dup (const GElektraKeySet * ks)
  */
 gint gelektra_keyset_copy (const GElektraKeySet * ks, GElektraKeySet * dest)
 {
-	return ksCopy (dest->keyset, ks->keyset);
+	return elektraKeysetCopy (dest->keyset, ks->keyset);
 }
 
 gint gelektra_keyset_clear (GElektraKeySet * ks)
 {
-	return ksClear (ks->keyset);
+	return elektraKeysetClear (ks->keyset);
 }
 
 /**
@@ -126,7 +126,7 @@ static ElektraKeyset * gelektra_keyset_swap (GElektraKeySet * ks, ElektraKeyset 
  */
 gssize gelektra_keyset_append (GElektraKeySet * ks, GElektraKey * key)
 {
-	gssize ret = ksAppendKey (ks->keyset, key->key);
+	gssize ret = elektraKeysetAppendKey (ks->keyset, key->key);
 	if (ret > 0) g_object_unref (key);
 	return ret;
 }
@@ -143,7 +143,7 @@ gssize gelektra_keyset_append (GElektraKeySet * ks, GElektraKey * key)
  */
 gssize gelektra_keyset_gi_append (GElektraKeySet * ks, GElektraKey * key)
 {
-	return ksAppendKey (ks->keyset, key->key);
+	return elektraKeysetAppendKey (ks->keyset, key->key);
 }
 
 /**
@@ -156,7 +156,7 @@ gssize gelektra_keyset_gi_append (GElektraKeySet * ks, GElektraKey * key)
  */
 gssize gelektra_keyset_append_keyset (GElektraKeySet * ks, GElektraKeySet * append)
 {
-	gssize ret = ksAppend (ks->keyset, append->keyset);
+	gssize ret = elektraKeysetAppend (ks->keyset, append->keyset);
 	if (ret > 0) g_object_unref (append);
 	return ret;
 }
@@ -173,7 +173,7 @@ gssize gelektra_keyset_append_keyset (GElektraKeySet * ks, GElektraKeySet * appe
  */
 gssize gelektra_keyset_gi_append_keyset (GElektraKeySet * ks, GElektraKeySet * append)
 {
-	return ksAppend (ks->keyset, append->keyset);
+	return elektraKeysetAppend (ks->keyset, append->keyset);
 }
 
 /**
@@ -185,7 +185,7 @@ gssize gelektra_keyset_gi_append_keyset (GElektraKeySet * ks, GElektraKeySet * a
  */
 GElektraKey * gelektra_keyset_pop (GElektraKeySet * ks)
 {
-	return gelektra_key_make (ksPop (ks->keyset));
+	return gelektra_key_make (elektraKeysetPop (ks->keyset));
 }
 
 /**
@@ -197,12 +197,12 @@ GElektraKey * gelektra_keyset_pop (GElektraKeySet * ks)
  */
 GElektraKeySet * gelektra_keyset_cut (GElektraKeySet * ks, const GElektraKey * point)
 {
-	return gelektra_keyset_make (ksCut (ks->keyset, point->key));
+	return gelektra_keyset_make (elektraKeysetCut (ks->keyset, point->key));
 }
 
 gssize gelektra_keyset_len (const GElektraKeySet * ks)
 {
-	return ksGetSize (ks->keyset);
+	return elektraKeysetGetSize (ks->keyset);
 }
 
 /* searching */
@@ -217,7 +217,7 @@ gssize gelektra_keyset_len (const GElektraKeySet * ks)
  */
 GElektraKey * gelektra_keyset_lookup (GElektraKeySet * ks, GElektraKey * key, GElektraKdbOptions options)
 {
-	return gelektra_key_make (ksLookup (ks->keyset, key->key, options));
+	return gelektra_key_make (elektraKeysetLookup (ks->keyset, key->key, options));
 }
 
 /**
@@ -231,7 +231,7 @@ GElektraKey * gelektra_keyset_lookup (GElektraKeySet * ks, GElektraKey * key, GE
  */
 GElektraKey * gelektra_keyset_lookup_byname (GElektraKeySet * ks, const char * name, GElektraKdbOptions options)
 {
-	return gelektra_key_make (ksLookupByName (ks->keyset, name, options));
+	return gelektra_key_make (elektraKeysetLookupByName (ks->keyset, name, options));
 }
 
 /* iterating */
@@ -244,7 +244,7 @@ GElektraKey * gelektra_keyset_lookup_byname (GElektraKeySet * ks, const char * n
  */
 GElektraKey * gelektra_keyset_head (const GElektraKeySet * ks)
 {
-	return gelektra_key_make (ksHead (ks->keyset));
+	return gelektra_key_make (elektraKeysetHead (ks->keyset));
 }
 
 /**
@@ -256,7 +256,7 @@ GElektraKey * gelektra_keyset_head (const GElektraKeySet * ks)
  */
 GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks)
 {
-	return gelektra_key_make (ksTail (ks->keyset));
+	return gelektra_key_make (elektraKeysetTail (ks->keyset));
 }
 
 /**
@@ -270,5 +270,5 @@ GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks)
 GElektraKey * gelektra_keyset_at (GElektraKeySet * ks, gssize pos)
 {
 	if (pos < 0) pos += gelektra_keyset_len (ks);
-	return gelektra_key_make (ksAtCursor (ks->keyset, pos));
+	return gelektra_key_make (elektraKeysetAtCursor (ks->keyset, pos));
 }

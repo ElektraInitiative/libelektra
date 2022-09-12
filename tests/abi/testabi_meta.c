@@ -11,107 +11,107 @@
 static void test_basic (void)
 {
 	ElektraKey * key;
-	key = keyNew ("user:/key_with_meta", ELEKTRA_KEY_END);
+	key = elektraKeyNew ("user:/key_with_meta", ELEKTRA_KEY_END);
 	exit_if_fail (key, "could not create new key");
-	succeed_if (keyGetMeta (key, "hello") == 0, "hello was not set up to now");
-	succeed_if (keyGetMeta (key, "error") == 0, "hello was not set up to now");
+	succeed_if (elektraKeyGetMeta (key, "hello") == 0, "hello was not set up to now");
+	succeed_if (elektraKeyGetMeta (key, "error") == 0, "hello was not set up to now");
 
-	keySetMeta (key, "hello", "hello_world");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "hello")), "hello_world");
+	elektraKeySetMeta (key, "hello", "hello_world");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "hello_world");
 
-	keySetMeta (key, "mode", "0644");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "hello")), "hello_world");
+	elektraKeySetMeta (key, "mode", "0644");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "hello_world");
 
-	keySetMeta (key, "time", "1271234264");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "hello")), "hello_world");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "0644");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "time")), "1271234264");
+	elektraKeySetMeta (key, "time", "1271234264");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "hello_world");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "mode")), "0644");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "time")), "1271234264");
 
-	keySetMeta (key, "hello", "between");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "hello")), "between");
+	elektraKeySetMeta (key, "hello", "between");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "between");
 
-	keySetMeta (key, "hello", 0);
-	succeed_if (keyValue (keyGetMeta (key, "hello")) == 0, "could not remove metadata");
+	elektraKeySetMeta (key, "hello", 0);
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "hello")) == 0, "could not remove metadata");
 
-	keySetMeta (key, "hello", "goodbye");
-	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "goodbye"), "could not set meta information again (2x)");
+	elektraKeySetMeta (key, "hello", "goodbye");
+	succeed_if (!strcmp (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "goodbye"), "could not set meta information again (2x)");
 
-	keySetMeta (key, "empty", "");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "empty")), "");
+	elektraKeySetMeta (key, "empty", "");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "empty")), "");
 
-	keySetMeta (key, "owner", "hugo");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "owner")), "hugo");
+	elektraKeySetMeta (key, "owner", "hugo");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "owner")), "hugo");
 
-	keySetMeta (key, "mode", "775");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "owner")), "hugo");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "775");
+	elektraKeySetMeta (key, "mode", "775");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "owner")), "hugo");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "mode")), "775");
 
-	keySetMeta (key, "", "empty");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "empty");
+	elektraKeySetMeta (key, "", "empty");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "empty");
 
-	keySetMeta (key, "", "");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "");
+	elektraKeySetMeta (key, "", "");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "");
 
-	keySetMeta (key, "", 0);
-	succeed_if (keyValue (keyGetMeta (key, "")) == 0, "could not remove empty metadata");
+	elektraKeySetMeta (key, "", 0);
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "")) == 0, "could not remove empty metadata");
 
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 static void test_null_pointer (void)
 {
 	ElektraKey * key;
 
-	key = keyNew ("user:/test1", ELEKTRA_KEY_END);
+	key = elektraKeyNew ("user:/test1", ELEKTRA_KEY_END);
 	exit_if_fail (key, "could not create new key");
 
-	succeed_if (keyRewindMeta (0) == -1, "Could rewind NULL Key");
+	succeed_if (elektraKeyRewindMeta (0) == -1, "Could rewind NULL Key");
 
-	succeed_if (keyGetMeta (0, "test") == 0, "Could get meta of NULL Key");
-	succeed_if (keyGetMeta (key, 0) == 0, "Could get meta of NULL metaName");
+	succeed_if (elektraKeyGetMeta (0, "test") == 0, "Could get meta of NULL Key");
+	succeed_if (elektraKeyGetMeta (key, 0) == 0, "Could get meta of NULL metaName");
 
-	succeed_if (keyMeta (0) == 0, "Could get metadata of NULL Key");
-	succeed_if (keyCurrentMeta (0) == 0, "Could get current meta Key of NULL key");
-	succeed_if (keyNextMeta (0) == 0, "Could get next meta Key of NULL key");
+	succeed_if (elektraKeyMeta (0) == 0, "Could get metadata of NULL Key");
+	succeed_if (elektraKeyCurrentMeta (0) == 0, "Could get current meta Key of NULL key");
+	succeed_if (elektraKeyNextMeta (0) == 0, "Could get next meta Key of NULL key");
 
-	succeed_if (keyCopyMeta (0, key, "test") == -1, "Could copy metadata to NULL Key");
-	succeed_if (keyCopyMeta (key, 0, "test") == -1, "Could copy metadata from NULL Key");
+	succeed_if (elektraKeyCopyMeta (0, key, "test") == -1, "Could copy metadata to NULL Key");
+	succeed_if (elektraKeyCopyMeta (key, 0, "test") == -1, "Could copy metadata from NULL Key");
 
-	succeed_if (keyCopyAllMeta (0, key) == -1, "Could copy all metadata to NULL Key");
-	succeed_if (keyCopyAllMeta (key, 0) == -1, "Could copy all metadata from NULL Key");
+	succeed_if (elektraKeyCopyAllMeta (0, key) == -1, "Could copy all metadata to NULL Key");
+	succeed_if (elektraKeyCopyAllMeta (key, 0) == -1, "Could copy all metadata from NULL Key");
 
-	succeed_if (keySetMeta (0, "test", "test"), "Could set metadata to NULL Key");
-	succeed_if (keySetMeta (key, 0, "test"), "Could set metadata with NULL metaName");
+	succeed_if (elektraKeySetMeta (0, "test", "test"), "Could set metadata to NULL Key");
+	succeed_if (elektraKeySetMeta (key, 0, "test"), "Could set metadata with NULL metaName");
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 static void test_iterate (void)
 {
 	ElektraKey * key;
 
-	key = keyNew ("user:/test", ELEKTRA_KEY_END);
+	key = elektraKeyNew ("user:/test", ELEKTRA_KEY_END);
 	exit_if_fail (key, "could not create new key");
-	succeed_if (keyRewindMeta (key) == 0, "Could not rewind empty key");
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty");
+	succeed_if (elektraKeyRewindMeta (key) == 0, "Could not rewind empty key");
+	succeed_if (elektraKeyNextMeta (key) == 0, "Could get next metaname, even if it is empty");
+	succeed_if (elektraKeyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty");
 
-	keySetMeta (key, "meta1", "meta_value");
-	succeed_if (keyRewindMeta (key) == 0, "Could not rewind key");
-	succeed_if_same_string (keyName (keyNextMeta (key)), "meta:/meta1");
-	succeed_if_same_string (keyValue (keyCurrentMeta (key)), "meta_value");
+	elektraKeySetMeta (key, "meta1", "meta_value");
+	succeed_if (elektraKeyRewindMeta (key) == 0, "Could not rewind key");
+	succeed_if_same_string (elektraKeyName (elektraKeyNextMeta (key)), "meta:/meta1");
+	succeed_if_same_string (elektraKeyValue (elektraKeyCurrentMeta (key)), "meta_value");
 
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 2. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 2. iteration");
+	succeed_if (elektraKeyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 2. iteration");
+	succeed_if (elektraKeyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 2. iteration");
 
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 3. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 3. iteration");
+	succeed_if (elektraKeyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 3. iteration");
+	succeed_if (elektraKeyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 3. iteration");
 
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 4. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 4. iteration");
+	succeed_if (elektraKeyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 4. iteration");
+	succeed_if (elektraKeyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 4. iteration");
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 static void test_size (void)
@@ -119,84 +119,84 @@ static void test_size (void)
 	ElektraKey * key;
 	char * buffer;
 
-	key = keyNew ("user:/test", ELEKTRA_KEY_END);
+	key = elektraKeyNew ("user:/test", ELEKTRA_KEY_END);
 	exit_if_fail (key, "could not create new key");
-	succeed_if (keyValue (keyGetMeta (key, "hello")) == 0, "hello was not set up to now");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == -1, "got wrong size for empty metavalue");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "hello")) == 0, "hello was not set up to now");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")) == -1, "got wrong size for empty metavalue");
 
-	keySetMeta (key, "hello", "hello_world");
-	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "hello_world"), "could not receive previously set meta information");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == sizeof ("hello_world"), "got wrong size");
+	elektraKeySetMeta (key, "hello", "hello_world");
+	succeed_if (!strcmp (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "hello_world"), "could not receive previously set meta information");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")) == sizeof ("hello_world"), "got wrong size");
 
-	keySetMeta (key, "mode", "0644");
-	keySetMeta (key, "time", "1271234264");
-	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "hello_world"), "meta info changed unexpectly");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "0644");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "mode")) == sizeof ("0644"), "got wrong size");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "time")), "1271234264");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "time")) == sizeof ("1271234264"), "got wrong size");
+	elektraKeySetMeta (key, "mode", "0644");
+	elektraKeySetMeta (key, "time", "1271234264");
+	succeed_if (!strcmp (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "hello_world"), "meta info changed unexpectly");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "mode")), "0644");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "mode")) == sizeof ("0644"), "got wrong size");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "time")), "1271234264");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "time")) == sizeof ("1271234264"), "got wrong size");
 
-	keySetMeta (key, "hello", "between");
-	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "between"), "could not set meta information again");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == sizeof ("between"), "got wrong size");
-	buffer = calloc (1, keyGetValueSize (keyGetMeta (key, "hello")));
-	succeed_if (keyGetString (keyGetMeta (key, "hello"), buffer, keyGetValueSize (keyGetMeta (key, "hello"))) ==
-			    keyGetValueSize (keyGetMeta (key, "hello")),
+	elektraKeySetMeta (key, "hello", "between");
+	succeed_if (!strcmp (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "between"), "could not set meta information again");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")) == sizeof ("between"), "got wrong size");
+	buffer = calloc (1, elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")));
+	succeed_if (elektraKeyGetString (elektraKeyGetMeta (key, "hello"), buffer, elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello"))) ==
+			    elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")),
 		    "could not get meta");
 	succeed_if_same_string (buffer, "between");
 	elektraFree (buffer);
 
 
-	keySetMeta (key, "hello", 0);
-	succeed_if (keyValue (keyGetMeta (key, "hello")) == 0, "could not remove metadata");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == -1, "got wrong size");
+	elektraKeySetMeta (key, "hello", 0);
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "hello")) == 0, "could not remove metadata");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")) == -1, "got wrong size");
 
-	keySetMeta (key, "hello", "goodbye");
-	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "goodbye"), "could not set meta information again (2x)");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == sizeof ("goodbye"), "got wrong size");
-	buffer = calloc (1, keyGetValueSize (keyGetMeta (key, "hello")));
-	succeed_if (keyGetString (keyGetMeta (key, "hello"), buffer, keyGetValueSize (keyGetMeta (key, "hello"))) ==
-			    keyGetValueSize (keyGetMeta (key, "hello")),
+	elektraKeySetMeta (key, "hello", "goodbye");
+	succeed_if (!strcmp (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "goodbye"), "could not set meta information again (2x)");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")) == sizeof ("goodbye"), "got wrong size");
+	buffer = calloc (1, elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")));
+	succeed_if (elektraKeyGetString (elektraKeyGetMeta (key, "hello"), buffer, elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello"))) ==
+			    elektraKeyGetValueSize (elektraKeyGetMeta (key, "hello")),
 		    "could not get meta");
 	succeed_if_same_string (buffer, "goodbye");
 	elektraFree (buffer);
 
-	keySetMeta (key, "empty", "");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "empty")), "");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "empty")) == sizeof (""), "got wrong size");
-	buffer = calloc (1, keyGetValueSize (keyGetMeta (key, "empty")));
-	succeed_if (keyGetString (keyGetMeta (key, "empty"), buffer, keyGetValueSize (keyGetMeta (key, "empty"))) ==
-			    keyGetValueSize (keyGetMeta (key, "empty")),
+	elektraKeySetMeta (key, "empty", "");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "empty")), "");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "empty")) == sizeof (""), "got wrong size");
+	buffer = calloc (1, elektraKeyGetValueSize (elektraKeyGetMeta (key, "empty")));
+	succeed_if (elektraKeyGetString (elektraKeyGetMeta (key, "empty"), buffer, elektraKeyGetValueSize (elektraKeyGetMeta (key, "empty"))) ==
+			    elektraKeyGetValueSize (elektraKeyGetMeta (key, "empty")),
 		    "could not get meta");
 	succeed_if_same_string (buffer, "");
 	elektraFree (buffer);
 
-	keySetMeta (key, "", "empty");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "empty");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "")) == sizeof ("empty"), "got wrong size");
-	buffer = calloc (1, keyGetValueSize (keyGetMeta (key, "")));
-	succeed_if (keyGetString (keyGetMeta (key, ""), buffer, keyGetValueSize (keyGetMeta (key, ""))) ==
-			    keyGetValueSize (keyGetMeta (key, "")),
+	elektraKeySetMeta (key, "", "empty");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "empty");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "")) == sizeof ("empty"), "got wrong size");
+	buffer = calloc (1, elektraKeyGetValueSize (elektraKeyGetMeta (key, "")));
+	succeed_if (elektraKeyGetString (elektraKeyGetMeta (key, ""), buffer, elektraKeyGetValueSize (elektraKeyGetMeta (key, ""))) ==
+			    elektraKeyGetValueSize (elektraKeyGetMeta (key, "")),
 		    "could not get meta");
 	succeed_if_same_string (buffer, "empty");
 	elektraFree (buffer);
 
-	keySetMeta (key, "", "");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "")) == sizeof (""), "got wrong size");
-	buffer = calloc (1, keyGetValueSize (keyGetMeta (key, "")));
-	succeed_if (keyGetString (keyGetMeta (key, ""), buffer, keyGetValueSize (keyGetMeta (key, ""))) ==
-			    keyGetValueSize (keyGetMeta (key, "")),
+	elektraKeySetMeta (key, "", "");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "")) == sizeof (""), "got wrong size");
+	buffer = calloc (1, elektraKeyGetValueSize (elektraKeyGetMeta (key, "")));
+	succeed_if (elektraKeyGetString (elektraKeyGetMeta (key, ""), buffer, elektraKeyGetValueSize (elektraKeyGetMeta (key, ""))) ==
+			    elektraKeyGetValueSize (elektraKeyGetMeta (key, "")),
 		    "could not get meta");
 	succeed_if_same_string (buffer, "");
 	elektraFree (buffer);
 
-	keySetMeta (key, "", 0);
-	succeed_if (keyValue (keyGetMeta (key, "")) == 0, "could not remove empty metadata");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "")) == -1, "got wrong size");
+	elektraKeySetMeta (key, "", 0);
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "")) == 0, "could not remove empty metadata");
+	succeed_if (elektraKeyGetValueSize (elektraKeyGetMeta (key, "")) == -1, "got wrong size");
 
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 static void test_dup (void)
@@ -204,35 +204,35 @@ static void test_dup (void)
 	ElektraKey * key;
 	ElektraKey * dup;
 
-	key = keyNew ("user:/orig", ELEKTRA_KEY_END);
-	succeed_if (keySetMeta (key, "test", "some_meta_test") == sizeof ("some_meta_test"), "could not set meta");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "test")), "some_meta_test");
+	key = elektraKeyNew ("user:/orig", ELEKTRA_KEY_END);
+	succeed_if (elektraKeySetMeta (key, "test", "some_meta_test") == sizeof ("some_meta_test"), "could not set meta");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "test")), "some_meta_test");
 
-	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
-	succeed_if_same_string (keyValue (keyGetMeta (dup, "test")), "some_meta_test");
-	succeed_if (keySetMeta (dup, "test", "some_other_meta_test") == sizeof ("some_other_meta_test"), "sizeof meta test wrong");
-	succeed_if_same_string (keyValue (keyGetMeta (dup, "test")), "some_other_meta_test");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "test")), "some_meta_test");
-	keyDel (dup);
+	dup = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (dup, "test")), "some_meta_test");
+	succeed_if (elektraKeySetMeta (dup, "test", "some_other_meta_test") == sizeof ("some_other_meta_test"), "sizeof meta test wrong");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (dup, "test")), "some_other_meta_test");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "test")), "some_meta_test");
+	elektraKeyDel (dup);
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 ElektraKey * g_c;
 
 static void j (ElektraKey * k)
 {
-	size_t size = keyGetValueSize (k);
+	size_t size = elektraKeyGetValueSize (k);
 	char * value = elektraMalloc (size);
-	int bstring = keyIsString (k);
+	int bstring = elektraKeyIsString (k);
 
 	// receive key g_c
-	memcpy (value, keyValue (k), size);
-	keyCopy (k, g_c, ELEKTRA_KEY_CP_ALL);
+	memcpy (value, elektraKeyValue (k), size);
+	elektraKeyCopy (k, g_c, ELEKTRA_KEY_CP_ALL);
 	if (bstring)
-		keySetString (k, value);
+		elektraKeySetString (k, value);
 	else
-		keySetBinary (k, value, size);
+		elektraKeySetBinary (k, value, size);
 	elektraFree (value);
 	// the caller will see the changed key k
 	// with the metadata from g_c
@@ -241,7 +241,7 @@ static void j (ElektraKey * k)
 static void l (ElektraKey * k)
 {
 	// receive g_c
-	keyCopyMeta (k, g_c, "type");
+	elektraKeyCopyMeta (k, g_c, "type");
 	// the caller will see the changed key k
 	// with the metadata "type" from g_c
 }
@@ -249,41 +249,41 @@ static void l (ElektraKey * k)
 static void test_examples (void)
 {
 	ElektraKey * key;
-	key = keyNew ("/", ELEKTRA_KEY_END);
-	keySetMeta (key, "def", "abc");
-	keySetMeta (key, "nop", "cup");
+	key = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetMeta (key, "def", "abc");
+	elektraKeySetMeta (key, "nop", "cup");
 
-	g_c = keyNew ("/", ELEKTRA_KEY_END);
-	keySetMeta (g_c, "xef", "ybc");
-	keySetMeta (g_c, "xop", "yup");
+	g_c = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetMeta (g_c, "xef", "ybc");
+	elektraKeySetMeta (g_c, "xop", "yup");
 
 	j (key);
 
-	succeed_if_same_string (keyValue (keyGetMeta (key, "xef")), "ybc");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "xop")), "yup");
-	succeed_if (keyValue (keyGetMeta (key, "def")) == 0, "old metadata remained");
-	succeed_if (keyValue (keyGetMeta (key, "nop")) == 0, "old metadata remained");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "xef")), "ybc");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "xop")), "yup");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "def")) == 0, "old metadata remained");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "nop")) == 0, "old metadata remained");
 
-	keyDel (key);
-	keyDel (g_c);
+	elektraKeyDel (key);
+	elektraKeyDel (g_c);
 
-	key = keyNew ("/", ELEKTRA_KEY_END);
-	keySetMeta (key, "def", "abc");
-	keySetMeta (key, "nop", "cup");
+	key = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetMeta (key, "def", "abc");
+	elektraKeySetMeta (key, "nop", "cup");
 
-	g_c = keyNew ("/", ELEKTRA_KEY_END);
-	keySetMeta (g_c, "type", "boolean");
-	keySetMeta (g_c, "xop", "yup");
+	g_c = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetMeta (g_c, "type", "boolean");
+	elektraKeySetMeta (g_c, "xop", "yup");
 
 	l (key);
 
-	succeed_if_same_string (keyValue (keyGetMeta (key, "def")), "abc");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "nop")), "cup");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "type")), "boolean");
-	succeed_if (keyValue (keyGetMeta (key, "xop")) == 0, "this metadata was not requested to be copied");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "def")), "abc");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "nop")), "cup");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "type")), "boolean");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "xop")) == 0, "this metadata was not requested to be copied");
 
-	keyDel (key);
-	keyDel (g_c);
+	elektraKeyDel (key);
+	elektraKeyDel (g_c);
 }
 
 static void test_copy (void)
@@ -293,126 +293,126 @@ static void test_copy (void)
 	ElektraKey * key1;
 	ElektraKey * key2;
 
-	succeed_if (key1 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-	succeed_if (key2 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key1 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key2 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
 
-	succeed_if (keyCopyMeta (key2, key1, "nonexist") == 0, "could not do anything");
+	succeed_if (elektraKeyCopyMeta (key2, key1, "nonexist") == 0, "could not do anything");
 
-	succeed_if (keyValue (keyGetMeta (key2, "nonexist")) == 0, "should not be there");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key2, "nonexist")) == 0, "should not be there");
 
-	keyDel (key1);
-	keyDel (key2);
-
-
-	succeed_if (key1 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-	succeed_if (key2 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
-	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
-
-	succeed_if (keyCopyMeta (key1, key2, "mymeta") == 1, "did nothing in the end");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
-
-	keyDel (key1);
-	keyDel (key2);
+	elektraKeyDel (key1);
+	elektraKeyDel (key2);
 
 
-	succeed_if (key1 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-	succeed_if (key2 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key1 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key2 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
-	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (elektraKeyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") == elektraKeyGetMeta (key2, "mymeta"), "reference to the same key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key");
+	succeed_if (elektraKeyCopyMeta (key1, key2, "mymeta") == 1, "did nothing in the end");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") == elektraKeyGetMeta (key2, "mymeta"), "reference to the same key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue2") == sizeof ("a longer metavalue2"), "could not set metavalue2");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue2");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key (with another value)");
+	elektraKeyDel (key1);
+	elektraKeyDel (key2);
 
-	keyDel (key1);
-	keyDel (key2);
+
+	succeed_if (key1 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key2 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (elektraKeyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") == elektraKeyGetMeta (key2, "mymeta"), "reference to the same key");
+
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") != elektraKeyGetMeta (key2, "mymeta"), "reference to another key");
+
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue2") == sizeof ("a longer metavalue2"), "could not set metavalue2");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue2");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") != elektraKeyGetMeta (key2, "mymeta"), "reference to another key (with another value)");
+
+	elektraKeyDel (key1);
+	elektraKeyDel (key2);
 
 	ElektraKey * k;
 	ElektraKey * c;
 
 	// clang-format off
-	k=keyNew ("user:/metakey",
+	k=elektraKeyNew ("user:/metakey",
 		ELEKTRA_KEY_META, "t", "test1",
 		ELEKTRA_KEY_META, "a", "another",
 		ELEKTRA_KEY_META, "cya", "see the metadata later",
 		ELEKTRA_KEY_META, "mode", "0775",
 		ELEKTRA_KEY_END);
 	// clang-format on
-	c = keyNew ("user:/metacopy", ELEKTRA_KEY_END);
+	c = elektraKeyNew ("user:/metacopy", ELEKTRA_KEY_END);
 
-	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
-	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
+	succeed_if (elektraKeyGetMeta (k, "t") != 0, "could not get metakey");
+	succeed_if (elektraKeyGetMeta (k, "a") != 0, "could not get metakey");
 
-	succeed_if (keyGetMeta (c, "t") == 0, "could get metakey not there");
-	succeed_if (keyGetMeta (c, "a") == 0, "could get metakey not there");
+	succeed_if (elektraKeyGetMeta (c, "t") == 0, "could get metakey not there");
+	succeed_if (elektraKeyGetMeta (c, "a") == 0, "could get metakey not there");
 
-	succeed_if (keyCopyMeta (c, k, "t") == 1, "could not copy metadata");
-	succeed_if (keyGetMeta (k, "t") == keyGetMeta (c, "t"), "not the same metadata after copy");
+	succeed_if (elektraKeyCopyMeta (c, k, "t") == 1, "could not copy metadata");
+	succeed_if (elektraKeyGetMeta (k, "t") == elektraKeyGetMeta (c, "t"), "not the same metadata after copy");
 
-	succeed_if (keyCopyMeta (c, k, "a") == 1, "could not copy metadata");
-	succeed_if (keyGetMeta (k, "a") == keyGetMeta (c, "a"), "not the same metadata after copy");
+	succeed_if (elektraKeyCopyMeta (c, k, "a") == 1, "could not copy metadata");
+	succeed_if (elektraKeyGetMeta (k, "a") == elektraKeyGetMeta (c, "a"), "not the same metadata after copy");
 
-	keyDel (k);
-	keyDel (c);
+	elektraKeyDel (k);
+	elektraKeyDel (c);
 
 
 	// clang-format off
-	k=keyNew ("user:/metakey",
+	k=elektraKeyNew ("user:/metakey",
 		ELEKTRA_KEY_META, "t", "test1",
 		ELEKTRA_KEY_META, "a", "another",
 		ELEKTRA_KEY_META, "cya", "see the metadata later",
 		ELEKTRA_KEY_META, "mode", "0775",
 		ELEKTRA_KEY_END);
-	c=keyNew ("user:/metacopy",
+	c=elektraKeyNew ("user:/metacopy",
 		ELEKTRA_KEY_META, "t", "test1",
 		ELEKTRA_KEY_META, "a", "wrong",
 		ELEKTRA_KEY_META, "old", "will stay",
 		ELEKTRA_KEY_END);
 	// clang-format on
 
-	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
-	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
+	succeed_if (elektraKeyGetMeta (k, "t") != 0, "could not get metakey");
+	succeed_if (elektraKeyGetMeta (k, "a") != 0, "could not get metakey");
 
-	succeed_if (keyCopyMeta (c, k, "t") == 1, "could not copy metadata");
-	succeed_if (keyGetMeta (k, "t") == keyGetMeta (c, "t"), "not the same metadata after copy");
-	succeed_if_same_string (keyValue (keyGetMeta (k, "t")), "test1");
-	succeed_if_same_string (keyValue (keyGetMeta (c, "t")), "test1");
+	succeed_if (elektraKeyCopyMeta (c, k, "t") == 1, "could not copy metadata");
+	succeed_if (elektraKeyGetMeta (k, "t") == elektraKeyGetMeta (c, "t"), "not the same metadata after copy");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (k, "t")), "test1");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (c, "t")), "test1");
 
-	succeed_if (keyCopyMeta (c, k, "a") == 1, "could not copy metadata");
-	succeed_if (keyGetMeta (k, "a") == keyGetMeta (c, "a"), "not the same metadata after copy");
-	succeed_if_same_string (keyValue (keyGetMeta (k, "a")), "another");
-	succeed_if_same_string (keyValue (keyGetMeta (c, "a")), "another");
+	succeed_if (elektraKeyCopyMeta (c, k, "a") == 1, "could not copy metadata");
+	succeed_if (elektraKeyGetMeta (k, "a") == elektraKeyGetMeta (c, "a"), "not the same metadata after copy");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (k, "a")), "another");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (c, "a")), "another");
 
-	succeed_if_same_string (keyValue (keyGetMeta (c, "old")), "will stay");
-	succeed_if (keyGetMeta (c, "cya") == 0, "metakey should not be there");
-	succeed_if (keyGetMeta (c, "mode") == 0, "metakey should not be there");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (c, "old")), "will stay");
+	succeed_if (elektraKeyGetMeta (c, "cya") == 0, "metakey should not be there");
+	succeed_if (elektraKeyGetMeta (c, "mode") == 0, "metakey should not be there");
 
-	keyDel (k);
-	keyDel (c);
+	elektraKeyDel (k);
+	elektraKeyDel (c);
 }
 
 static void test_new (void)
 {
 	ElektraKey * key;
 	// clang-format off
-	key = keyNew ("user:/test",
+	key = elektraKeyNew ("user:/test",
 		ELEKTRA_KEY_META, "hello", "hello_world",
 		ELEKTRA_KEY_META, "mode", "0644",
 		ELEKTRA_KEY_META, "time", "1271234264",
@@ -421,22 +421,22 @@ static void test_new (void)
 		ELEKTRA_KEY_END);
 	// clang-format on
 
-	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "hello_world"), "could not receive previously set meta information");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "0644");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "time")), "1271234264");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "empty")), "");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "empty");
+	succeed_if (!strcmp (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "hello_world"), "could not receive previously set meta information");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "mode")), "0644");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "time")), "1271234264");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "empty")), "");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "empty");
 
-	keySetMeta (key, "", "full");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "full");
+	elektraKeySetMeta (key, "", "full");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "full");
 
-	keySetMeta (key, "", 0);
-	succeed_if (keyValue (keyGetMeta (key, "")) == 0, "could not remove empty metadata");
+	elektraKeySetMeta (key, "", 0);
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "")) == 0, "could not remove empty metadata");
 
-	keyDel (key);
+	elektraKeyDel (key);
 
 	// clang-format off
-	key = keyNew ("user:/test",
+	key = elektraKeyNew ("user:/test",
 		ELEKTRA_KEY_META, "hello", "goodbye",
 		ELEKTRA_KEY_META, "mode", "0775",
 		ELEKTRA_KEY_META, "time", "1271939923",
@@ -445,19 +445,19 @@ static void test_new (void)
 		ELEKTRA_KEY_END);
 	// clang-format on
 
-	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "goodbye"), "could not receive previously set meta information");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "mode")), "0775");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "time")), "1271939923");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "empty")), "");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "");
+	succeed_if (!strcmp (elektraKeyValue (elektraKeyGetMeta (key, "hello")), "goodbye"), "could not receive previously set meta information");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "mode")), "0775");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "time")), "1271939923");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "empty")), "");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "");
 
-	keySetMeta (key, "", "full");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "")), "full");
+	elektraKeySetMeta (key, "", "full");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key, "")), "full");
 
-	keySetMeta (key, "", 0);
-	succeed_if (keyValue (keyGetMeta (key, "")) == 0, "could not remove empty metadata");
+	elektraKeySetMeta (key, "", 0);
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "")) == 0, "could not remove empty metadata");
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 
@@ -468,122 +468,122 @@ static void test_copyall (void)
 	ElektraKey * key1;
 	ElektraKey * key2;
 
-	succeed_if (key1 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-	succeed_if (key2 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key1 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key2 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
 
-	succeed_if (keyCopyAllMeta (key2, key1) == 0, "could not do anything");
+	succeed_if (elektraKeyCopyAllMeta (key2, key1) == 0, "could not do anything");
 
-	succeed_if (keyValue (keyGetMeta (key2, "nonexist")) == 0, "should not be there");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key2, "nonexist")) == 0, "should not be there");
 
-	keyDel (key1);
-	keyDel (key2);
-
-
-	succeed_if (key1 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-	succeed_if (key2 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
-	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
-
-	succeed_if (keyCopyAllMeta (key1, key2) == 1, "did nothing in the end");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
-
-	keyDel (key1);
-	keyDel (key2);
+	elektraKeyDel (key1);
+	elektraKeyDel (key2);
 
 
-	succeed_if (key1 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
-	succeed_if (key2 = keyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key1 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key2 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
-	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (elektraKeyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") == elektraKeyGetMeta (key2, "mymeta"), "reference to the same key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key");
+	succeed_if (elektraKeyCopyAllMeta (key1, key2) == 1, "did nothing in the end");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") == elektraKeyGetMeta (key2, "mymeta"), "reference to the same key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue2") == sizeof ("a longer metavalue2"), "could not set metavalue2");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue2");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key (with another value)");
+	elektraKeyDel (key1);
+	elektraKeyDel (key2);
 
-	keyDel (key1);
-	keyDel (key2);
+
+	succeed_if (key1 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+	succeed_if (key2 = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create key");
+
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (elektraKeyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") == elektraKeyGetMeta (key2, "mymeta"), "reference to the same key");
+
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") != elektraKeyGetMeta (key2, "mymeta"), "reference to another key");
+
+	succeed_if (elektraKeySetMeta (key1, "mymeta", "a longer metavalue2") == sizeof ("a longer metavalue2"), "could not set metavalue2");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key1, "mymeta")), "a longer metavalue2");
+	succeed_if_same_string (elektraKeyValue (elektraKeyGetMeta (key2, "mymeta")), "a longer metavalue");
+	succeed_if (elektraKeyGetMeta (key1, "mymeta") != elektraKeyGetMeta (key2, "mymeta"), "reference to another key (with another value)");
+
+	elektraKeyDel (key1);
+	elektraKeyDel (key2);
 
 	ElektraKey * k;
 	ElektraKey * c;
 
 	// clang-format off
-	k=keyNew ("user:/metakey",
+	k=elektraKeyNew ("user:/metakey",
 		ELEKTRA_KEY_META, "t", "test1",
 		ELEKTRA_KEY_META, "a", "another",
 		ELEKTRA_KEY_META, "cya", "see the metadata later",
 		ELEKTRA_KEY_META, "mode", "0775",
 		ELEKTRA_KEY_END);
 	// clang-format on
-	c = keyNew ("user:/metacopy", ELEKTRA_KEY_END);
+	c = elektraKeyNew ("user:/metacopy", ELEKTRA_KEY_END);
 
-	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
-	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
+	succeed_if (elektraKeyGetMeta (k, "t") != 0, "could not get metakey");
+	succeed_if (elektraKeyGetMeta (k, "a") != 0, "could not get metakey");
 
-	succeed_if (keyGetMeta (c, "t") == 0, "could get metakey not there");
-	succeed_if (keyGetMeta (c, "a") == 0, "could get metakey not there");
+	succeed_if (elektraKeyGetMeta (c, "t") == 0, "could get metakey not there");
+	succeed_if (elektraKeyGetMeta (c, "a") == 0, "could get metakey not there");
 
-	succeed_if (keyCopyAllMeta (c, k) == 1, "could not copy metadata");
-	succeed_if (keyGetMeta (k, "t") == keyGetMeta (c, "t"), "not the same metadata after copy");
-	succeed_if (keyGetMeta (k, "a") == keyGetMeta (c, "a"), "not the same metadata after copy");
-	succeed_if (keyGetMeta (k, "cya") == keyGetMeta (c, "cya"), "not the same metadata after copy");
-	succeed_if (keyGetMeta (k, "mode") == keyGetMeta (c, "mode"), "not the same metadata after copy");
-	succeed_if (keyValue (keyGetMeta (k, "nonexist")) == 0, "should not be there");
-	succeed_if (keyValue (keyGetMeta (c, "nonexist")) == 0, "should not be there");
+	succeed_if (elektraKeyCopyAllMeta (c, k) == 1, "could not copy metadata");
+	succeed_if (elektraKeyGetMeta (k, "t") == elektraKeyGetMeta (c, "t"), "not the same metadata after copy");
+	succeed_if (elektraKeyGetMeta (k, "a") == elektraKeyGetMeta (c, "a"), "not the same metadata after copy");
+	succeed_if (elektraKeyGetMeta (k, "cya") == elektraKeyGetMeta (c, "cya"), "not the same metadata after copy");
+	succeed_if (elektraKeyGetMeta (k, "mode") == elektraKeyGetMeta (c, "mode"), "not the same metadata after copy");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (k, "nonexist")) == 0, "should not be there");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (c, "nonexist")) == 0, "should not be there");
 
-	succeed_if (keyCopyAllMeta (c, k) == 1, "could not copy metadata (again)");
-	succeed_if (keyGetMeta (k, "t") == keyGetMeta (c, "t"), "not the same metadata after copy");
-	succeed_if (keyGetMeta (k, "a") == keyGetMeta (c, "a"), "not the same metadata after copy");
-	succeed_if (keyGetMeta (k, "cya") == keyGetMeta (c, "cya"), "not the same metadata after copy");
-	succeed_if (keyGetMeta (k, "mode") == keyGetMeta (c, "mode"), "not the same metadata after copy");
-	succeed_if (keyValue (keyGetMeta (k, "nonexist")) == 0, "should not be there");
-	succeed_if (keyValue (keyGetMeta (c, "nonexist")) == 0, "should not be there");
+	succeed_if (elektraKeyCopyAllMeta (c, k) == 1, "could not copy metadata (again)");
+	succeed_if (elektraKeyGetMeta (k, "t") == elektraKeyGetMeta (c, "t"), "not the same metadata after copy");
+	succeed_if (elektraKeyGetMeta (k, "a") == elektraKeyGetMeta (c, "a"), "not the same metadata after copy");
+	succeed_if (elektraKeyGetMeta (k, "cya") == elektraKeyGetMeta (c, "cya"), "not the same metadata after copy");
+	succeed_if (elektraKeyGetMeta (k, "mode") == elektraKeyGetMeta (c, "mode"), "not the same metadata after copy");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (k, "nonexist")) == 0, "should not be there");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (c, "nonexist")) == 0, "should not be there");
 
-	keyDel (k);
-	keyDel (c);
+	elektraKeyDel (k);
+	elektraKeyDel (c);
 }
 
 static void test_type (void)
 {
 	ElektraKey * key;
 
-	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create a new key");
-	succeed_if (keyValue (keyGetMeta (key, "binary")) == 0, "wrong type after key creation");
-	succeed_if (keySetString (key, "mystring") == sizeof ("mystring"), "could not set string");
-	succeed_if (keyValue (keyGetMeta (key, "binary")) == 0, "wrong type after setting string");
-	succeed_if (keySetBinary (key, "mystring", sizeof ("mystring")) == sizeof ("mystring"), "could not set binary");
-	succeed_if (keyValue (keyGetMeta (key, "binary")) != 0, "wrong type after setting string");
+	succeed_if (key = elektraKeyNew ("/", ELEKTRA_KEY_END), "could not create a new key");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "binary")) == 0, "wrong type after key creation");
+	succeed_if (elektraKeySetString (key, "mystring") == sizeof ("mystring"), "could not set string");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "binary")) == 0, "wrong type after setting string");
+	succeed_if (elektraKeySetBinary (key, "mystring", sizeof ("mystring")) == sizeof ("mystring"), "could not set binary");
+	succeed_if (elektraKeyValue (elektraKeyGetMeta (key, "binary")) != 0, "wrong type after setting string");
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 static void test_keyMeta (void)
 {
-	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * key = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
-	ElektraKeyset * meta = keyMeta (key);
+	ElektraKeyset * meta = elektraKeyMeta (key);
 
 	succeed_if (meta, "meta keyset is null");
-	succeed_if (ksGetSize (meta) == 0, "meta keyset is not empty");
-	keyDel (key);
+	succeed_if (elektraKeysetGetSize (meta) == 0, "meta keyset is not empty");
+	elektraKeyDel (key);
 
 	// clang-format off
-	key = keyNew ("user:/test",
+	key = elektraKeyNew ("user:/test",
 		ELEKTRA_KEY_META, "hello", "hello_world",
 		ELEKTRA_KEY_META, "mode", "0644",
 		ELEKTRA_KEY_META, "time", "1271234264",
@@ -592,26 +592,26 @@ static void test_keyMeta (void)
 		ELEKTRA_KEY_END);
 	// clang-format on
 
-	meta = keyMeta (key);
+	meta = elektraKeyMeta (key);
 
-	const char * value = keyString (ksLookupByName (meta, "meta:/hello", 0));
+	const char * value = elektraKeyString (elektraKeysetLookupByName (meta, "meta:/hello", 0));
 	succeed_if (!strcmp (value, "hello_world"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "meta:/mode", 0));
+	value = elektraKeyString (elektraKeysetLookupByName (meta, "meta:/mode", 0));
 	succeed_if (!strcmp (value, "0644"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "meta:/time", 0));
+	value = elektraKeyString (elektraKeysetLookupByName (meta, "meta:/time", 0));
 	succeed_if (!strcmp (value, "1271234264"), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "meta:/empty", 0));
+	value = elektraKeyString (elektraKeysetLookupByName (meta, "meta:/empty", 0));
 	succeed_if (!strcmp (value, ""), "unexpected value");
 
-	value = keyString (ksLookupByName (meta, "meta:/", 0));
+	value = elektraKeyString (elektraKeysetLookupByName (meta, "meta:/", 0));
 	succeed_if (!strcmp (value, "empty"), "unexpected value");
 
-	succeed_if (ksGetSize (meta) == 5, "unexpected meta keyset size");
+	succeed_if (elektraKeysetGetSize (meta) == 5, "unexpected meta keyset size");
 
-	keyDel (key);
+	elektraKeyDel (key);
 }
 
 int main (int argc, char ** argv)

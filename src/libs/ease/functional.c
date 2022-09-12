@@ -48,9 +48,9 @@ int elektraKsFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter
 	int ret = 0;
 	ElektraKey * current;
 
-	elektraCursor cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
+	elektraCursor cursor = elektraKeysetGetCursor (input);
+	elektraKeysetRewind (input);
+	while ((current = elektraKeysetNext (input)) != 0)
 	{
 		int rc = filter (current, argument);
 		if (rc <= -1)
@@ -58,10 +58,10 @@ int elektraKsFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter
 		else if (rc > 0)
 		{
 			++ret;
-			ksAppendKey (result, current);
+			elektraKeysetAppendKey (result, current);
 		}
 	}
-	ksSetCursor (input, cursor);
+	elektraKeysetSetCursor (input, cursor);
 	return ret;
 }
 
@@ -90,19 +90,19 @@ int elektraKsToMemArray (ElektraKeyset * ks, ElektraKey ** buffer)
 	if (!buffer) return -1;
 
 	/* clear the received buffer */
-	memset (buffer, 0, ksGetSize (ks) * sizeof (ElektraKey *));
+	memset (buffer, 0, elektraKeysetGetSize (ks) * sizeof (ElektraKey *));
 
-	elektraCursor cursor = ksGetCursor (ks);
-	ksRewind (ks);
+	elektraCursor cursor = elektraKeysetGetCursor (ks);
+	elektraKeysetRewind (ks);
 	size_t idx = 0;
 
 	ElektraKey * key;
-	while ((key = ksNext (ks)) != 0)
+	while ((key = elektraKeysetNext (ks)) != 0)
 	{
 		buffer[idx] = key;
 		++idx;
 	}
-	ksSetCursor (ks, cursor);
+	elektraKeysetSetCursor (ks, cursor);
 
 	return idx;
 }

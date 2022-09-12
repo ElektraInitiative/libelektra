@@ -44,9 +44,9 @@ Node * buildTree (Node * parent, ElektraKey * root, ElektraKeyset * keys)
 
 		if (node->type != NT_LEAF)
 		{
-			while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
+			while ((key = elektraKeysetCurrent (keys)) != NULL && elektraKeyIsBelow (root, key) == 1)
 			{
-				ksNext (keys);
+				elektraKeysetNext (keys);
 				Node * child = buildTree (node, key, keys);
 				if (child == NULL)
 				{
@@ -78,11 +78,11 @@ static Node * buildTreeTableArray (Node * parent, ElektraKey * root, ElektraKeys
 		// Check if, we have got the array element root in the keyset
 		// This happens, if comments are associated to the table array declaration in a TOML file.
 		// If we have, use this key as root instead.and forward to the next key in the keyset
-		if (keyCmp (ksCurrent (keys), elementName) == 0)
+		if (elektraKeyCmp (elektraKeysetCurrent (keys), elementName) == 0)
 		{
-			keyDel (elementName);
-			elementName = ksCurrent (keys);
-			ksNext (keys);
+			elektraKeyDel (elementName);
+			elementName = elektraKeysetCurrent (keys);
+			elektraKeysetNext (keys);
 		}
 		Node * element = buildTree (node, elementName, keys);
 		if (!addChild (node, element))
@@ -103,12 +103,12 @@ static Node * buildTreeArray (Node * parent, ElektraKey * root, ElektraKeyset * 
 	for (size_t i = 0; i <= max; i++)
 	{
 		ElektraKey * elementName = keyAppendIndex (i, root);
-		ElektraKey * elementKey = ksLookup (keys, elementName, 0);
+		ElektraKey * elementKey = elektraKeysetLookup (keys, elementName, 0);
 		if (elementKey != NULL)
 		{
 			if (!isLeaf (elementKey, keys))
 			{		       // true for array that contains inline tables
-				ksNext (keys); // we need to go to the first sub key of the element, since buildTree
+				elektraKeysetNext (keys); // we need to go to the first sub key of the element, since buildTree
 			}		       // loops while ksCurrent is below root key (and root != below root)
 					       // TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
 			if (!addChild (node, buildTree (node, elementKey, keys)))
@@ -118,12 +118,12 @@ static Node * buildTreeArray (Node * parent, ElektraKey * root, ElektraKeyset * 
 			}
 		} // else { TODO: Handle array holes }
 
-		keyDel (elementName);
+		elektraKeyDel (elementName);
 	}
 	ElektraKey * key;
-	while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
+	while ((key = elektraKeysetCurrent (keys)) != NULL && elektraKeyIsBelow (root, key) == 1)
 	{
-		ksNext (keys);
+		elektraKeysetNext (keys);
 	}
 	return node;
 }
@@ -134,7 +134,7 @@ void destroyTree (Node * node)
 	{
 		if (node->type == NT_LIST_ELEMENT)
 		{
-			keyDel (node->key);
+			elektraKeyDel (node->key);
 		}
 		if (node->relativeName != NULL)
 		{
@@ -280,7 +280,7 @@ static NodeType getNodeType (ElektraKey * key)
 	{
 		return NT_INLINE_TABLE;
 	}
-	else if (isArrayIndex (keyBaseName (key)))
+	else if (isArrayIndex (elektraKeyBaseName (key)))
 	{
 		return NT_LIST_ELEMENT;
 	}

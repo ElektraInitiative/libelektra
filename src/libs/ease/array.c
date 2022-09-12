@@ -33,7 +33,7 @@
 int elektraArrayValidateName (const ElektraKey * key)
 {
 	if (!key) return -1;
-	int offsetIndex = elektraArrayValidateBaseNameString (keyBaseName (key));
+	int offsetIndex = elektraArrayValidateBaseNameString (elektraKeyBaseName (key));
 	return offsetIndex >= 1 ? 1 : offsetIndex;
 }
 
@@ -116,7 +116,7 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
  */
 int elektraArrayIncName (ElektraKey * key)
 {
-	const char * baseName = keyBaseName (key);
+	const char * baseName = elektraKeyBaseName (key);
 
 	int offsetIndex = elektraArrayValidateBaseNameString (baseName);
 	if (offsetIndex == -1) return -1;
@@ -131,7 +131,7 @@ int elektraArrayIncName (ElektraKey * key)
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
 	elektraWriteArrayNumber (newName, newIndex);
-	keySetBaseName (key, newName);
+	elektraKeySetBaseName (key, newName);
 
 	return 0;
 }
@@ -149,7 +149,7 @@ int elektraArrayIncName (ElektraKey * key)
  */
 int elektraArrayDecName (ElektraKey * key)
 {
-	const char * baseName = keyBaseName (key);
+	const char * baseName = elektraKeyBaseName (key);
 
 	int offsetIndex = elektraArrayValidateBaseNameString (baseName);
 	if (offsetIndex == -1) return -1;
@@ -162,7 +162,7 @@ int elektraArrayDecName (ElektraKey * key)
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 	elektraWriteArrayNumber (newName, oldIndex - 1);
-	keySetBaseName (key, newName);
+	elektraKeySetBaseName (key, newName);
 
 	return 0;
 }
@@ -188,7 +188,7 @@ int elektraArrayDecName (ElektraKey * key)
 static int arrayFilter (const ElektraKey * key, void * argument)
 {
 	const ElektraKey * arrayParent = (const ElektraKey *) argument;
-	return keyIsDirectlyBelow (arrayParent, key) && elektraArrayValidateName (key) > 0;
+	return elektraKeyIsDirectlyBelow (arrayParent, key) && elektraArrayValidateName (key) > 0;
 }
 
 
@@ -217,7 +217,7 @@ ElektraKeyset * elektraArrayGet (const ElektraKey * arrayParent, ElektraKeyset *
 
 	if (!keys) return 0;
 
-	ElektraKeyset * arrayKeys = ksNew (ksGetSize (keys), ELEKTRA_KS_END);
+	ElektraKeyset * arrayKeys = elektraKeysetNew (elektraKeysetGetSize (keys), ELEKTRA_KS_END);
 	elektraKsFilter (arrayKeys, keys, &arrayFilter, (void *) arrayParent);
 	return arrayKeys;
 }
@@ -242,17 +242,17 @@ ElektraKey * elektraArrayGetNextKey (ElektraKeyset * arrayKeys)
 {
 	if (!arrayKeys) return 0;
 
-	ElektraKey * last = ksPop (arrayKeys);
+	ElektraKey * last = elektraKeysetPop (arrayKeys);
 
 	if (!last) return 0;
 
-	ksAppendKey (arrayKeys, last);
-	ElektraKey * newKey = keyDup (last, ELEKTRA_KEY_CP_NAME);
+	elektraKeysetAppendKey (arrayKeys, last);
+	ElektraKey * newKey = elektraKeyDup (last, ELEKTRA_KEY_CP_NAME);
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)
 	{
-		keyDel (newKey);
+		elektraKeyDel (newKey);
 		return 0;
 	}
 

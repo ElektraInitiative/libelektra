@@ -20,7 +20,7 @@
 
 int elektraModulesInit (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
-	ksAppendKey (modules, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (modules, elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END));
 
 	return 0;
 }
@@ -64,13 +64,13 @@ static kdblib_symbol * elektraStaticSym (kdblib_symbol * handle, const char * sy
 
 elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * name, ElektraKey * error)
 {
-	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
-	keyAddBaseName (moduleKey, name);
-	ElektraKey * lookup = ksLookup (modules, moduleKey, 0);
+	ElektraKey * moduleKey = elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (moduleKey, name);
+	ElektraKey * lookup = elektraKeysetLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
-		kdblib_symbol * module = (kdblib_symbol *) keyValue (lookup);
-		keyDel (moduleKey);
+		kdblib_symbol * module = (kdblib_symbol *) elektraKeyValue (lookup);
+		elektraKeyDel (moduleKey);
 		return (elektraPluginFactory) module->function;
 	}
 
@@ -79,7 +79,7 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 	if (handle == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (error, "Did not find module: %s", name);
-		keyDel (moduleKey);
+		elektraKeyDel (moduleKey);
 		return 0;
 	}
 
@@ -92,14 +92,14 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 		return 0;
 	}
 
-	keySetBinary (moduleKey, module, sizeof (kdblib_symbol));
-	ksAppendKey (modules, moduleKey);
+	elektraKeySetBinary (moduleKey, module, sizeof (kdblib_symbol));
+	elektraKeysetAppendKey (modules, moduleKey);
 
 	return (elektraPluginFactory) module->function;
 }
 
 int elektraModulesClose (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
-	ksClear (modules);
+	elektraKeysetClear (modules);
 	return 0;
 }

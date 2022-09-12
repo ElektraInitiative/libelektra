@@ -22,23 +22,23 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, Elek
 {
 	/* get all keys */
 
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/ni"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/ni"))
 	{
 		ElektraKeyset * moduleConfig =
-			ksNew (30, keyNew ("system:/elektra/modules/ni", ELEKTRA_KEY_VALUE, "ni plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/ni/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/ni/exports/get", ELEKTRA_KEY_FUNC, elektraNiGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/ni/exports/set", ELEKTRA_KEY_FUNC, elektraNiSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/ni", ELEKTRA_KEY_VALUE, "ni plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/ni/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/ni/exports/get", ELEKTRA_KEY_FUNC, elektraNiGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/ni/exports/set", ELEKTRA_KEY_FUNC, elektraNiSet, ELEKTRA_KEY_END),
 #include "readme_ni.c"
-			       keyNew ("system:/elektra/modules/ni/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, moduleConfig);
-		ksDel (moduleConfig);
+			       elektraKeyNew ("system:/elektra/modules/ni/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1;
 	}
 
 	elektraNi_node root = elektraNi_New ();
 	int errnosave = errno;
-	int error = elektraNi_ReadFile (root, keyString (parentKey), 0);
+	int error = elektraNi_ReadFile (root, elektraKeyString (parentKey), 0);
 	if (error == 0)
 	{
 		elektraNi_Free (root);
@@ -50,16 +50,16 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, Elek
 	elektraNi_node current = NULL;
 	while ((current = elektraNi_GetNextChild (root, current)) != NULL)
 	{
-		ElektraKey * k = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
-		keyAddName (k, elektraNi_GetName (current, NULL));
-		keySetString (k, elektraNi_GetValue (current, NULL));
+		ElektraKey * k = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_END);
+		elektraKeyAddName (k, elektraNi_GetName (current, NULL));
+		elektraKeySetString (k, elektraNi_GetValue (current, NULL));
 		elektraNi_node mcur = NULL;
 		while ((mcur = elektraNi_GetNextChild (current, mcur)) != NULL)
 		{
-			keySetMeta (k, elektraNi_GetName (mcur, NULL), elektraNi_GetValue (mcur, NULL));
+			elektraKeySetMeta (k, elektraNi_GetName (mcur, NULL), elektraNi_GetValue (mcur, NULL));
 			// printf("get meta %s %s from %s\n", elektraNi_GetName(mcur, NULL), elektraNi_GetValue (mcur, NULL), keyName(k));
 		}
-		ksAppendKey (returned, k);
+		elektraKeysetAppendKey (returned, k);
 	}
 
 	elektraNi_Free (root);
@@ -69,15 +69,15 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, Elek
 
 static void keyMetaToNi (elektraNi_node add, ElektraKey * cur)
 {
-	elektraNi_SetValue (add, keyString (cur), keyGetValueSize (cur) - 1);
+	elektraNi_SetValue (add, elektraKeyString (cur), elektraKeyGetValueSize (cur) - 1);
 
 	const ElektraKey * m;
-	keyRewindMeta (cur);
-	while ((m = keyNextMeta (cur)) != 0)
+	elektraKeyRewindMeta (cur);
+	while ((m = elektraKeyNextMeta (cur)) != 0)
 	{
 		// printf("set meta %s %s from %s\n", keyName(m), keyString(m), keyName(cur));
-		elektraNi_node madd = elektraNi_GetChild (add, keyName (m), keyGetNameSize (m) - 1, 1, 0);
-		elektraNi_SetValue (madd, keyString (m), keyGetValueSize (m) - 1);
+		elektraNi_node madd = elektraNi_GetChild (add, elektraKeyName (m), elektraKeyGetNameSize (m) - 1, 1, 0);
+		elektraNi_SetValue (madd, elektraKeyString (m), elektraKeyGetValueSize (m) - 1);
 	}
 }
 
@@ -88,17 +88,17 @@ int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, Elek
 	elektraNi_node root = elektraNi_New ();
 
 	ElektraKey * cur;
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 
-	if (keyCmp (ksHead (returned), parentKey) == 0)
+	if (elektraKeyCmp (elektraKeysetHead (returned), parentKey) == 0)
 	{
 		// printf ("found parentkey");
 		elektraNi_node add = elektraNi_GetChild (root, NULL, 0, 1, 0);
-		keyMetaToNi (add, ksHead (returned));
-		ksNext (returned); // do not process parent in loop again
+		keyMetaToNi (add, elektraKeysetHead (returned));
+		elektraKeysetNext (returned); // do not process parent in loop again
 	}
 
-	while ((cur = ksNext (returned)) != 0)
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
 		const char * name = elektraKeyGetRelativeName (cur, parentKey);
 		elektraNi_node add = elektraNi_GetChild (root, name, strlen (name), 1, 0);
@@ -106,7 +106,7 @@ int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, Elek
 	}
 
 	int errnosave = errno;
-	int error = elektraNi_WriteFile (root, keyString (parentKey), 0);
+	int error = elektraNi_WriteFile (root, elektraKeyString (parentKey), 0);
 	elektraNi_Free (root);
 
 	if (error == 0)

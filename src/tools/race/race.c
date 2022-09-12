@@ -25,27 +25,27 @@ pthread_barrier_t * bar;
 
 void * writer (void * pV_data ELEKTRA_UNUSED)
 {
-	ElektraKey * parent = keyNew ("user:/test/race", ELEKTRA_KEY_END);
-	ElektraKdb * h = kdbOpen (NULL, parent);
+	ElektraKey * parent = elektraKeyNew ("user:/test/race", ELEKTRA_KEY_END);
+	ElektraKdb * h = elektraKdbOpen (NULL, parent);
 	char buffer[BUFFER_SIZE];
 	unsigned long tid = (unsigned long) pthread_self ();
 	int pid = getpid ();
 	snprintf (buffer, BUFFER_SIZE - 1, "user:/test/race/keys/%d/%lu", pid, tid);
-	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, ELEKTRA_KS_END);
 
-	int retg = kdbGet (h, ks, parent);
-	ksAppendKey (ks, keyNew (buffer, ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_END));
+	int retg = elektraKdbGet (h, ks, parent);
+	elektraKeysetAppendKey (ks, elektraKeyNew (buffer, ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_END));
 
 	pthread_barrier_wait (bar);
-	int rets = kdbSet (h, ks, parent);
+	int rets = elektraKdbSet (h, ks, parent);
 
 	if (rets != -1)
 	{
-		int retg2 = kdbGet (h, ks, parent);
+		int retg2 = elektraKdbGet (h, ks, parent);
 		printf ("I (%d/%lu) won the race! Got return values from first get %d,"
 			" from set %d, from second get %d\n",
 			pid, tid, retg, rets, retg2);
-		ksRewind (ks);
+		elektraKeysetRewind (ks);
 		/*
 		Key * c;
 		while ((c = ksNext(ks)))
@@ -60,9 +60,9 @@ void * writer (void * pV_data ELEKTRA_UNUSED)
 		printf ("I (%d/%lu) lost the race! Got %d and from set %d\n", pid, tid, retg, rets);
 	}
 
-	ksDel (ks);
-	kdbClose (h, parent);
-	keyDel (parent);
+	elektraKeysetDel (ks);
+	elektraKdbClose (h, parent);
+	elektraKeyDel (parent);
 
 	// pthread_exit (NULL);
 	return 0;

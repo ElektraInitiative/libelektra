@@ -15,16 +15,16 @@ int main (void)
 //! [Full Example]
 // create a new keyset with 3 keys
 // with a hint that about 20 keys will be inside
-ElektraKeyset * myConfig = ksNew (20, keyNew ("user:/name1", ELEKTRA_KEY_END), keyNew ("user:/name2", ELEKTRA_KEY_END), keyNew ("user:/name3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+ElektraKeyset * myConfig = elektraKeysetNew (20, elektraKeyNew ("user:/name1", ELEKTRA_KEY_END), elektraKeyNew ("user:/name2", ELEKTRA_KEY_END), elektraKeyNew ("user:/name3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 // append a key in the keyset
-ksAppendKey (myConfig, keyNew ("user:/name4", ELEKTRA_KEY_END));
+elektraKeysetAppendKey (myConfig, elektraKeyNew ("user:/name4", ELEKTRA_KEY_END));
 
 ElektraKey * current;
-ksRewind (myConfig);
-while ((current = ksNext (myConfig)) != 0)
+elektraKeysetRewind (myConfig);
+while ((current = elektraKeysetNext (myConfig)) != 0)
 {
-	printf ("Key name is %s.\n", keyName (current));
+	printf ("Key name is %s.\n", elektraKeyName (current));
 }
-ksDel (myConfig); // delete keyset and all keys appended
+elektraKeysetDel (myConfig); // delete keyset and all keys appended
 //! [Full Example]
 }

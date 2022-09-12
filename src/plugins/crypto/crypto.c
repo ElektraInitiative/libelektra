@@ -37,8 +37,8 @@ static unsigned int ref_cnt = 0;
  */
 static int isMarkedForEncryption (const ElektraKey * k)
 {
-	const ElektraKey * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
+	const ElektraKey * metaEncrypt = elektraKeyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
+	if (metaEncrypt && strcmp (elektraKeyString (metaEncrypt), "1") == 0)
 	{
 		return 1;
 	}
@@ -52,7 +52,7 @@ static int isMarkedForEncryption (const ElektraKey * k)
  */
 static inline int isSpecNamespace (const ElektraKey * k)
 {
-	return (keyGetNamespace (k) == ELEKTRA_NS_SPEC);
+	return (elektraKeyGetNamespace (k) == ELEKTRA_NS_SPEC);
 }
 
 /**
@@ -64,25 +64,25 @@ static inline int isSpecNamespace (const ElektraKey * k)
  */
 static int checkPayloadVersion (ElektraKey * k, ElektraKey * errorKey)
 {
-	if (keyGetValueSize (k) < ((ssize_t) ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN))
+	if (elektraKeyGetValueSize (k) < ((ssize_t) ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN))
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			errorKey,
 			"The provided data could not be recognized as valid cryptographic payload. The data is possibly "
 			"corrupted. Keyname: %s",
-			keyName (k));
+			elektraKeyName (k));
 		return 0; // failure
 	}
 
 	// check the magic number without the version
-	const kdb_octet_t * value = (kdb_octet_t *) keyValue (k);
+	const kdb_octet_t * value = (kdb_octet_t *) elektraKeyValue (k);
 	if (memcmp (value, ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2))
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			errorKey,
 			"The provided data could not be recognized as valid cryptographic payload. The data is possibly "
 			"corrupted. Keyname: %s",
-			keyName (k));
+			elektraKeyName (k));
 		return 0; // failure
 	}
 
@@ -92,7 +92,7 @@ static int checkPayloadVersion (ElektraKey * k, ElektraKey * errorKey)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 			errorKey, "The version of the cryptographic payload is not compatible with the version of the plugin. Keyname: %s",
-			keyName (k));
+			elektraKeyName (k));
 		return 0; // failure
 	}
 
@@ -126,10 +126,10 @@ static void elektraCryptoTeardown (void)
  */
 static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (ElektraKey * errorKey, ElektraKeyset * conf)
 {
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN, 0);
-	if (k && keyIsString (k) > 0)
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN, 0);
+	if (k && elektraKeyIsString (k) > 0)
 	{
-		kdb_unsigned_short_t passwordLen = (kdb_unsigned_short_t) strtoul (keyString (k), NULL, 10);
+		kdb_unsigned_short_t passwordLen = (kdb_unsigned_short_t) strtoul (elektraKeyString (k), NULL, 10);
 		if (passwordLen > 0)
 		{
 			return passwordLen;
@@ -169,14 +169,14 @@ static void elektraCryptoSafelyReleaseKey (ElektraKey * key)
 	if (key)
 	{
 		// overwrite key content with zeroes
-		ssize_t length = keyGetValueSize (key);
+		ssize_t length = elektraKeyGetValueSize (key);
 		if (length > 0)
 		{
-			memset ((void *) keyValue (key), 0, length);
+			memset ((void *) elektraKeyValue (key), 0, length);
 		}
 
 		// release the key
-		keyDel (key);
+		elektraKeyDel (key);
 	}
 }
 
@@ -202,8 +202,8 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset *
 
 	elektraCryptoHandle * cryptoHandle = NULL;
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
+	elektraKeysetRewind (data);
+	while ((k = elektraKeysetNext (data)) != 0)
 	{
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
@@ -254,8 +254,8 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset *
 
 	elektraCryptoHandle * cryptoHandle = NULL;
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
+	elektraKeysetRewind (data);
+	while ((k = elektraKeysetNext (data)) != 0)
 	{
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
@@ -331,14 +331,14 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey ELEK
 		return -1; // failure because of missing plugin config
 	}
 
-	ElektraKey * shutdown = ksLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_SHUTDOWN, 0);
+	ElektraKey * shutdown = elektraKeysetLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_SHUTDOWN, 0);
 	if (!shutdown)
 	{
 		return 1; // applying default behaviour -> success
 	}
 	else
 	{
-		if (strcmp (keyString (shutdown), "1") != 0)
+		if (strcmp (elektraKeyString (shutdown), "1") != 0)
 		{
 			return 1; // applying default behaviour -> success
 		}
@@ -368,13 +368,13 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey ELEK
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		ElektraKeyset * moduleConfig = ksNew (30,
+		ElektraKeyset * moduleConfig = elektraKeysetNew (30,
 #include "contract.h"
 					       ELEKTRA_KS_END);
-		ksAppend (ks, moduleConfig);
-		ksDel (moduleConfig);
+		elektraKeysetAppend (ks, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1;
 	}
 
@@ -418,17 +418,17 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks, ElektraK
  */
 int ELEKTRA_PLUGIN_FUNCTION (checkconf) (ElektraKey * errorKey, ElektraKeyset * conf)
 {
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (k)
 	{
 		// call gpg module to verify that we own the required key
-		ElektraKey * msg = keyDup (k, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * msg = elektraKeyDup (k, ELEKTRA_KEY_CP_ALL);
 		if (ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (conf, errorKey, msg) != 1)
 		{
-			keyDel (msg);
+			elektraKeyDel (msg);
 			return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(gpgDecryptMasterPassword)()
 		}
-		keyDel (msg);
+		elektraKeyDel (msg);
 		return 0;
 	}
 	else
@@ -442,15 +442,15 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (ElektraKey * errorKey, ElektraKeyset * 
 		}
 
 		// store password in configuration
-		k = keyNew ("user:/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, ELEKTRA_KEY_END);
-		keySetString (k, r);
+		k = elektraKeyNew ("user:/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, ELEKTRA_KEY_END);
+		elektraKeySetString (k, r);
 		elektraFree (r);
 		if (ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (conf, errorKey, k) != 1)
 		{
-			keyDel (k);
+			elektraKeyDel (k);
 			return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(gpgEncryptMasterPassword)()
 		}
-		ksAppendKey (conf, k);
+		elektraKeysetAppendKey (conf, k);
 		return 1;
 	}
 }

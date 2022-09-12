@@ -24,21 +24,21 @@
 
 static int outputKeySet (ElektraKeyset * ks, int noparent)
 {
-	ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew (PARENT_KEY, ELEKTRA_KEY_END);
 
 	if (noparent)
 	{
-		keySetMeta (parentKey, "system:/elektra/quickdump/noparent", "");
+		elektraKeySetMeta (parentKey, "system:/elektra/quickdump/noparent", "");
 	}
 
-	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * specloadConf = elektraKeysetNew (1, elektraKeyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", ks, parentKey);
 
 	elektraInvokeClose (specload, parentKey);
-	keyDel (parentKey);
-	ksDel (specloadConf);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (specloadConf);
 
 	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE;
 }
@@ -47,7 +47,7 @@ static int outputDefaultSpec (void)
 {
 	ElektraKeyset * ks = DEFAULT_SPEC;
 	int result = outputKeySet (ks, 0);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	return result;
 }
 
@@ -55,7 +55,7 @@ static int outputNoParentSpec (void)
 {
 	ElektraKeyset * ks = NOPARENT_SPEC;
 	int result = outputKeySet (ks, 1);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	return result;
 }
 

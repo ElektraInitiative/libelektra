@@ -12,27 +12,27 @@
 
 void f (const ElektraKey * source)
 {
-	ElektraKey * dup = keyDup (source, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * dup = elektraKeyDup (source, ELEKTRA_KEY_CP_ALL);
 	printf ("\tin f\n");
 
-	keyDel (dup);
+	elektraKeyDel (dup);
 }
 
 void g (const ElektraKey * source, ElektraKeyset * ks)
 {
-	ElektraKey * dup = keyDup (source, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * dup = elektraKeyDup (source, ELEKTRA_KEY_CP_ALL);
 	printf ("\tin g\n");
 
-	ksAppendKey (ks, dup);
+	elektraKeysetAppendKey (ks, dup);
 }
 
 void h (ElektraKey * k)
 {
-	ElektraKey * c = keyNew ("user:/from/h", ELEKTRA_KEY_END);
+	ElektraKey * c = elektraKeyNew ("user:/from/h", ELEKTRA_KEY_END);
 	printf ("\tin h\n");
 
-	keyCopy (k, c, ELEKTRA_KEY_CP_ALL);
-	keyDel (c);
+	elektraKeyCopy (k, c, ELEKTRA_KEY_CP_ALL);
+	elektraKeyDel (c);
 	/* the caller will see the changed key k */
 }
 
@@ -41,9 +41,9 @@ void h (ElektraKey * k)
 void simpleAppend (void)
 {
 //! [simple append]
-ElektraKeyset * ks = ksNew (1, ELEKTRA_KS_END);
-ksAppendKey (ks, keyNew ("user:/my/new/key", ELEKTRA_KEY_END));
-ksDel (ks);
+ElektraKeyset * ks = elektraKeysetNew (1, ELEKTRA_KS_END);
+elektraKeysetAppendKey (ks, elektraKeyNew ("user:/my/new/key", ELEKTRA_KEY_END));
+elektraKeysetDel (ks);
 // key deleted, too!
 //! [simple append]
 }
@@ -52,59 +52,59 @@ ksDel (ks);
 void refAppend (void)
 {
 //! [ref append]
-ElektraKeyset * ks = ksNew (1, ELEKTRA_KS_END);
-ElektraKey * k = keyNew ("user:/ref/key", ELEKTRA_KEY_END);
-keyIncRef (k);
-ksAppendKey (ks, k);
-ksDel (ks);
+ElektraKeyset * ks = elektraKeysetNew (1, ELEKTRA_KS_END);
+ElektraKey * k = elektraKeyNew ("user:/ref/key", ELEKTRA_KEY_END);
+elektraKeyIncRef (k);
+elektraKeysetAppendKey (ks, k);
+elektraKeysetDel (ks);
 // now we still can work with the key k!
-keyDecRef (k);
-keyDel (k);
+elektraKeyDecRef (k);
+elektraKeyDel (k);
 //! [ref append]
 }
 
 void dupAppend (void)
 {
 //! [dup append]
-ElektraKeyset * ks = ksNew (1, ELEKTRA_KS_END);
-ElektraKey * k = keyNew ("user:/ref/key", ELEKTRA_KEY_END);
-ksAppendKey (ks, keyDup (k, ELEKTRA_KEY_CP_ALL));
-ksDel (ks);
+ElektraKeyset * ks = elektraKeysetNew (1, ELEKTRA_KS_END);
+ElektraKey * k = elektraKeyNew ("user:/ref/key", ELEKTRA_KEY_END);
+elektraKeysetAppendKey (ks, elektraKeyDup (k, ELEKTRA_KEY_CP_ALL));
+elektraKeysetDel (ks);
 // now we still can work with the key k!
-keyDel (k);
+elektraKeyDel (k);
 //! [dup append]
 }
 
 int main (void)
 {
 	ElektraKey * origKey;
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	ElektraKey * key = keyNew ("user:/test/name", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END);
-	printf ("Created key %s with value %s\n", keyName (key), keyString (key));
+	ElektraKey * key = elektraKeyNew ("user:/test/name", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END);
+	printf ("Created key %s with value %s\n", elektraKeyName (key), elektraKeyString (key));
 
 	f (key);
-	printf ("Key is unchanged with value %s\n", keyString (key));
+	printf ("Key is unchanged with value %s\n", elektraKeyString (key));
 
 	g (key, ks);
-	printf ("A duplication was appended in keyset with name %s\n", keyName (ksHead (ks)));
+	printf ("A duplication was appended in keyset with name %s\n", elektraKeyName (elektraKeysetHead (ks)));
 
 	h (key);
-	printf ("Key has changed to name %s with value %s\n", keyName (key), keyString (key));
+	printf ("Key has changed to name %s with value %s\n", elektraKeyName (key), elektraKeyString (key));
 
 	simpleAppend ();
 	refAppend ();
 	dupAppend ();
 
 	/* key is yet independent */
-	keyDel (key);
+	elektraKeyDel (key);
 
-	ksRewind (ks);
-	origKey = ksNext (ks);
-	key = keyDup (origKey, ELEKTRA_KEY_CP_ALL);
-	printf ("A duplication of the key %s with value %s\n", keyName (key), keyString (key));
+	elektraKeysetRewind (ks);
+	origKey = elektraKeysetNext (ks);
+	key = elektraKeyDup (origKey, ELEKTRA_KEY_CP_ALL);
+	printf ("A duplication of the key %s with value %s\n", elektraKeyName (key), elektraKeyString (key));
 
-	keyDel (key);
-	ksDel (ks);
+	elektraKeyDel (key);
+	elektraKeysetDel (ks);
 	return 0;
 }

@@ -68,14 +68,14 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, ElektraKey 
 	if (cacheDir)
 	{
 		cacheDir = elektraStrConcat (cacheDir, "/elektra");
-		ch->cachePath = keyNew ("system:/elektracache", ELEKTRA_KEY_END);
-		resolverConfig = ksNew (5, keyNew ("system:/path", ELEKTRA_KEY_VALUE, cacheDir, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		ch->cachePath = elektraKeyNew ("system:/elektracache", ELEKTRA_KEY_END);
+		resolverConfig = elektraKeysetNew (5, elektraKeyNew ("system:/path", ELEKTRA_KEY_VALUE, cacheDir, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		elektraFree (cacheDir);
 	}
 	else
 	{
-		ch->cachePath = keyNew ("user:/elektracache", ELEKTRA_KEY_END);
-		resolverConfig = ksNew (5, keyNew ("user:/path", ELEKTRA_KEY_VALUE, "/.cache/elektra", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		ch->cachePath = elektraKeyNew ("user:/elektracache", ELEKTRA_KEY_END);
+		resolverConfig = elektraKeysetNew (5, elektraKeyNew ("user:/path", ELEKTRA_KEY_VALUE, "/.cache/elektra", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
@@ -83,8 +83,8 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, ElektraKey 
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s", KDB_RESOLVER);
 		elektraModulesClose (ch->modules, 0);
-		ksDel (ch->modules);
-		keyDel (ch->cachePath);
+		elektraKeysetDel (ch->modules);
+		elektraKeyDel (ch->cachePath);
 		elektraFree (ch);
 		return -1;
 	}
@@ -97,15 +97,15 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, ElektraKey 
 
 static int loadCacheStoragePlugin (Plugin * handle, CacheHandle * ch, ElektraKey * errorKey)
 {
-	ElektraKeyset * mmapstorageConfig = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * mmapstorageConfig = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, ch->cachePath);
 	if (!ch->cacheStorage)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Open of plugin returned unsuccessfully: %s", KDB_CACHE_STORAGE);
 		elektraPluginClose (ch->resolver, 0);
 		elektraModulesClose (ch->modules, 0);
-		ksDel (ch->modules);
-		keyDel (ch->cachePath);
+		elektraKeysetDel (ch->modules);
+		elektraKeyDel (ch->cachePath);
 		elektraFree (ch);
 		return -1;
 	}
@@ -190,12 +190,12 @@ static char * elektraGenTempFilename (char * cacheFileName)
 static char * kdbCacheFileName (CacheHandle * ch, ElektraKey * parentKey, PathMode mode)
 {
 	char * cacheFileName = 0;
-	const char * directory = keyString (ch->cachePath);
+	const char * directory = elektraKeyString (ch->cachePath);
 	ELEKTRA_LOG_DEBUG ("cache dir: %s", directory);
 	if (mode == modeDirectory) return elektraStrDup (directory);
 
-	const char * name = keyName (parentKey);
-	elektraNamespace ns = keyGetNamespace (parentKey);
+	const char * name = elektraKeyName (parentKey);
+	elektraNamespace ns = elektraKeyGetNamespace (parentKey);
 	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
 	if (ns != ELEKTRA_NS_DEFAULT)
 	{
@@ -204,7 +204,7 @@ static char * kdbCacheFileName (CacheHandle * ch, ElektraKey * parentKey, PathMo
 		cacheFileName = elektraStrConcat (cacheFileName, name);
 		elektraFree (tmp);
 	}
-	else if (elektraStrCmp (keyString (parentKey), "default") == 0)
+	else if (elektraStrCmp (elektraKeyString (parentKey), "default") == 0)
 	{
 		cacheFileName = elektraStrConcat (directory, "/default");
 	}
@@ -222,7 +222,7 @@ static char * kdbCacheFileName (CacheHandle * ch, ElektraKey * parentKey, PathMo
 		}
 
 		char * tmp = cacheFileName;
-		if (keyGetMeta (parentKey, "cascading"))
+		if (elektraKeyGetMeta (parentKey, "cascading"))
 		{
 			cacheFileName = elektraStrConcat (cacheFileName, "/cache_cascading.mmap");
 		}
@@ -252,7 +252,7 @@ int elektraCacheOpen (Plugin * handle, ElektraKey * errorKey)
 	ELEKTRA_LOG_DEBUG ("cache open");
 	CacheHandle * ch = elektraMalloc (sizeof (CacheHandle));
 
-	ch->modules = ksNew (0, ELEKTRA_KS_END);
+	ch->modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (ch->modules, 0);
 
 	if (resolveCacheDirectory (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -273,8 +273,8 @@ int elektraCacheClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 		elektraPluginClose (ch->cacheStorage, 0);
 
 		elektraModulesClose (ch->modules, 0);
-		ksDel (ch->modules);
-		keyDel (ch->cachePath);
+		elektraKeysetDel (ch->modules);
+		elektraKeyDel (ch->cachePath);
 
 		elektraFree (ch);
 		elektraPluginSetData (handle, 0);
@@ -285,19 +285,19 @@ int elektraCacheClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 
 int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (elektraStrCmp (keyName (parentKey), "system:/elektra/modules/cache") == 0)
+	if (elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/cache") == 0)
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/cache", ELEKTRA_KEY_VALUE, "cache plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/cache/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/cache/exports/open", ELEKTRA_KEY_FUNC, elektraCacheOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/cache/exports/close", ELEKTRA_KEY_FUNC, elektraCacheClose, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/cache/exports/get", ELEKTRA_KEY_FUNC, elektraCacheGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/cache/exports/set", ELEKTRA_KEY_FUNC, elektraCacheSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/cache", ELEKTRA_KEY_VALUE, "cache plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/cache/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/cache/exports/open", ELEKTRA_KEY_FUNC, elektraCacheOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/cache/exports/close", ELEKTRA_KEY_FUNC, elektraCacheClose, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/cache/exports/get", ELEKTRA_KEY_FUNC, elektraCacheGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/cache/exports/set", ELEKTRA_KEY_FUNC, elektraCacheSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/cache/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/cache/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
@@ -308,67 +308,67 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 		ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
 	}
 
-	if (!elektraStrCmp (keyString (keyGetMeta (parentKey, "cache/clear")), "1"))
+	if (!elektraStrCmp (elektraKeyString (elektraKeyGetMeta (parentKey, "cache/clear")), "1"))
 	{
 		// clear all caches
-		ElektraKey * cacheFile = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * cacheFile = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 		char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeDirectory);
 		ELEKTRA_LOG_DEBUG ("CLEAR CACHES path: %s", cacheFileName);
 
-		keySetString (cacheFile, cacheFileName);
+		elektraKeySetString (cacheFile, cacheFileName);
 		nftw (cacheFileName, unlinkCacheFiles, MAX_FD_USED, FTW_DEPTH);
 		elektraFree (cacheFileName);
-		keyDel (cacheFile);
+		elektraKeyDel (cacheFile);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
-	ElektraKey * cacheFile = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * cacheFile = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
-	ELEKTRA_LOG_DEBUG ("CACHE get cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("CACHE get cacheFileName: %s, parentKey: %s, %s", cacheFileName, elektraKeyName (parentKey), elektraKeyString (parentKey));
 
 	// load cache from storage
-	keySetString (cacheFile, cacheFileName);
+	elektraKeySetString (cacheFile, cacheFileName);
 	elektraFree (cacheFileName);
 
 	// not the whole global keyset is cached
 	// -> backup existing data
 	ElektraKeyset * global = ch->cacheStorage->global;
-	ch->cacheStorage->global = ksNew (0, ELEKTRA_KS_END);
+	ch->cacheStorage->global = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	// now we load the cache
 	int result = ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile);
 
 	// extract the cached parts from the cache result
-	ElektraKey * cacheCutpoint = keyNew ("system:/elektra/cache", ELEKTRA_KEY_END);   // internal cache data
-	ElektraKey * cachedCutpoint = keyNew ("system:/elektra/cached", ELEKTRA_KEY_END); // other data that requests caching
+	ElektraKey * cacheCutpoint = elektraKeyNew ("system:/elektra/cache", ELEKTRA_KEY_END);   // internal cache data
+	ElektraKey * cachedCutpoint = elektraKeyNew ("system:/elektra/cached", ELEKTRA_KEY_END); // other data that requests caching
 
 	if (global != NULL)
 	{
-		ElektraKeyset * cut = ksCut (ch->cacheStorage->global, cacheCutpoint);
-		ksAppend (global, cut);
-		ksDel (cut);
+		ElektraKeyset * cut = elektraKeysetCut (ch->cacheStorage->global, cacheCutpoint);
+		elektraKeysetAppend (global, cut);
+		elektraKeysetDel (cut);
 
-		cut = ksCut (ch->cacheStorage->global, cachedCutpoint);
-		ksAppend (global, cut);
-		ksDel (cut);
+		cut = elektraKeysetCut (ch->cacheStorage->global, cachedCutpoint);
+		elektraKeysetAppend (global, cut);
+		elektraKeysetDel (cut);
 	}
 
-	keyDel (cacheCutpoint);
-	keyDel (cachedCutpoint);
+	elektraKeyDel (cacheCutpoint);
+	elektraKeyDel (cachedCutpoint);
 
 	// delete the rest and restore global keyset
-	ksDel (ch->cacheStorage->global);
+	elektraKeysetDel (ch->cacheStorage->global);
 	ch->cacheStorage->global = global;
 
 	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
-		keyDel (cacheFile);
+		elektraKeyDel (cacheFile);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	keyDel (cacheFile); // TODO: maybe propagate errors?
+	elektraKeyDel (cacheFile); // TODO: maybe propagate errors?
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
@@ -388,39 +388,39 @@ int elektraCacheSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
-	ElektraKey * cacheFile = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * cacheFile = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
-	ELEKTRA_LOG_DEBUG ("CACHE set cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("CACHE set cacheFileName: %s, parentKey: %s, %s", cacheFileName, elektraKeyName (parentKey), elektraKeyString (parentKey));
 
 	char * tmpFile = elektraGenTempFilename (cacheFileName);
 	ELEKTRA_ASSERT (tmpFile != 0, "Could not construct temp file name.");
 	ELEKTRA_LOG_DEBUG ("tmpFile: %s", tmpFile);
 
 	// write cache to temp file
-	keySetString (cacheFile, tmpFile);
+	elektraKeySetString (cacheFile, tmpFile);
 
 	// don't cache the whole global keyset
-	ElektraKey * cacheCutpoint = keyNew ("system:/elektra/cache", ELEKTRA_KEY_END);   // internal cache data
-	ElektraKey * cachedCutpoint = keyNew ("system:/elektra/cached", ELEKTRA_KEY_END); // other data that requests caching
+	ElektraKey * cacheCutpoint = elektraKeyNew ("system:/elektra/cache", ELEKTRA_KEY_END);   // internal cache data
+	ElektraKey * cachedCutpoint = elektraKeyNew ("system:/elektra/cached", ELEKTRA_KEY_END); // other data that requests caching
 
 	ElektraKeyset * global = ch->cacheStorage->global;
 
-	ch->cacheStorage->global = ksCut (global, cacheCutpoint);
+	ch->cacheStorage->global = elektraKeysetCut (global, cacheCutpoint);
 
-	ElektraKeyset * cut = ksCut (global, cachedCutpoint);
-	ksAppend (ch->cacheStorage->global, cut);
-	ksDel (cut);
+	ElektraKeyset * cut = elektraKeysetCut (global, cachedCutpoint);
+	elektraKeysetAppend (ch->cacheStorage->global, cut);
+	elektraKeysetDel (cut);
 
-	keyDel (cacheCutpoint);
-	keyDel (cachedCutpoint);
+	elektraKeyDel (cacheCutpoint);
+	elektraKeyDel (cachedCutpoint);
 
 	// now we can store the cache
 	int result = ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile);
 
 	// restore global keyset
-	ksAppend (global, ch->cacheStorage->global);
-	ksDel (ch->cacheStorage->global);
+	elektraKeysetAppend (global, ch->cacheStorage->global);
+	elektraKeysetDel (ch->cacheStorage->global);
 	ch->cacheStorage->global = global;
 
 	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
@@ -433,14 +433,14 @@ int elektraCacheSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 
 		elektraFree (cacheFileName);
 		elektraFree (tmpFile);
-		keyDel (cacheFile);
+		elektraKeyDel (cacheFile);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 error:
 	elektraFree (cacheFileName);
 	elektraFree (tmpFile);
-	keyDel (cacheFile);
+	elektraKeyDel (cacheFile);
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 

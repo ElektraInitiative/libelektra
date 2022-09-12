@@ -83,40 +83,40 @@ int loadConfiguration (Elektra ** elektra,
 				 ElektraError ** error)
 {
 	
-	ElektraKeyset * defaults = ksNew (5,
-	keyNew ("/mydouble", ELEKTRA_KEY_META, "default", "0.0", ELEKTRA_KEY_META, "type", "double", ELEKTRA_KEY_END),
-	keyNew ("/myfloatarray/#", ELEKTRA_KEY_META, "default", "2.5", ELEKTRA_KEY_META, "type", "float", ELEKTRA_KEY_END),
-	keyNew ("/myint", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
-	keyNew ("/mystring", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/print", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
+	ElektraKeyset * defaults = elektraKeysetNew (5,
+	elektraKeyNew ("/mydouble", ELEKTRA_KEY_META, "default", "0.0", ELEKTRA_KEY_META, "type", "double", ELEKTRA_KEY_END),
+	elektraKeyNew ("/myfloatarray/#", ELEKTRA_KEY_META, "default", "2.5", ELEKTRA_KEY_META, "type", "float", ELEKTRA_KEY_END),
+	elektraKeyNew ("/myint", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
+	elektraKeyNew ("/mystring", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/print", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
 	
 
-	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "97af78f96fb881d4949f8df0f61d38751fbc7c350cb7f8cc01c81f14695b66c0", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ElektraKeyset * contract = elektraKeysetNew (4,
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "97af78f96fb881d4949f8df0f61d38751fbc7c350cb7f8cc01c81f14695b66c0", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/externalwithdefaults", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/script/gen/highlevel/externalwithdefaults", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/externalwithdefaults", defaults, contract, error);
 
 	if (defaults != NULL)
 	{
-		ksDel (defaults);
+		elektraKeysetDel (defaults);
 	}
 
 	if (contract != NULL)
 	{
-		ksDel (contract);
+		elektraKeysetDel (contract);
 	}
 
 	if (e == NULL)
@@ -133,7 +133,7 @@ int loadConfiguration (Elektra ** elektra,
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (elektraKeyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**

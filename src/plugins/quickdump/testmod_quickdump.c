@@ -77,14 +77,14 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	char * infile = elektraStrDup (srcdir_file ("quickdump/test.quickdump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		ElektraKey * getKey = keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, infile, ELEKTRA_KEY_END);
+		ElektraKey * getKey = elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, infile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 		ElektraKeyset * expected = test_quickdump_expected ();
@@ -92,20 +92,20 @@ static void test_basics (void)
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
 
-		ElektraKey * k1 = ksLookupByName (ks, "dir:/tests/bench/__112", 0);
-		ElektraKey * k8 = ksLookupByName (ks, "dir:/tests/bench/__911", 0);
-		succeed_if (keyGetMeta (k1, "meta/_35") == keyGetMeta (k8, "meta/_35"), "copy meta failed");
+		ElektraKey * k1 = elektraKeysetLookupByName (ks, "dir:/tests/bench/__112", 0);
+		ElektraKey * k8 = elektraKeysetLookupByName (ks, "dir:/tests/bench/__911", 0);
+		succeed_if (elektraKeyGetMeta (k1, "meta/_35") == elektraKeyGetMeta (k8, "meta/_35"), "copy meta failed");
 
-		ksDel (expected);
+		elektraKeysetDel (expected);
 
-		keyDel (getKey);
+		elektraKeyDel (getKey);
 		PLUGIN_CLOSE ();
 	}
 
 	{
-		ElektraKey * setKey = keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
+		ElektraKey * setKey = elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -113,28 +113,28 @@ static void test_basics (void)
 		succeed_if (compare_binary_files (infile, outfile) == 0, "files differ");
 		remove (outfile);
 
-		keyDel (setKey);
+		elektraKeyDel (setKey);
 		PLUGIN_CLOSE ();
 	}
 
 	elektraFree (infile);
 	elektraFree (outfile);
-	ksDel (ks);
+	elektraKeysetDel (ks);
 }
 
 static void test_noParent (void)
 {
 	printf ("test noparent\n");
 
-	ElektraKeyset * input = ksNew (2, keyNew ("/", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), keyNew ("/a", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
-	ElektraKeyset * expected = ksNew (2, keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
-				   keyNew ("dir:/tests/bench/a", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * input = elektraKeysetNew (2, elektraKeyNew ("/", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), elektraKeyNew ("/a", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * expected = elektraKeysetNew (2, elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+				   elektraKeyNew ("dir:/tests/bench/a", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		ElektraKey * setKey = keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
+		ElektraKey * setKey = elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (1, keyNew ("user:/noparent", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (1, elektraKeyNew ("user:/noparent", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 		succeed_if (plugin->kdbSet (plugin, input, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -142,45 +142,45 @@ static void test_noParent (void)
 		succeed_if (check_binary_file (outfile, test_quickdump_noParent_data, test_quickdump_noParent_dataSize) == 0,
 			    "files differ");
 
-		keyDel (setKey);
+		elektraKeyDel (setKey);
 		PLUGIN_CLOSE ();
 	}
 
 	{
-		ElektraKey * getKey = keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
+		ElektraKey * getKey = elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 
-		ElektraKeyset * actual = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * actual = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, actual, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, actual);
 
-		ksDel (actual);
+		elektraKeysetDel (actual);
 
-		keyDel (getKey);
+		elektraKeyDel (getKey);
 		PLUGIN_CLOSE ();
 	}
 
 	remove (outfile);
 
 	elektraFree (outfile);
-	ksDel (input);
-	ksDel (expected);
+	elektraKeysetDel (input);
+	elektraKeysetDel (expected);
 }
 
 static void test_parentKeyValue (void)
 {
 	printf ("test parent key value\n");
 
-	ElektraKeyset * expected = ksNew (1, keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * expected = elektraKeysetNew (1, elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		ElektraKey * setKey = keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
+		ElektraKey * setKey = elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 		succeed_if (plugin->kdbSet (plugin, expected, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
@@ -189,31 +189,31 @@ static void test_parentKeyValue (void)
 		succeed_if (check_binary_file (outfile, test_quickdump_parentKeyValue_data, test_quickdump_parentKeyValue_dataSize) == 0,
 			    "files differ");
 
-		keyDel (setKey);
+		elektraKeyDel (setKey);
 		PLUGIN_CLOSE ();
 	}
 
 	{
-		ElektraKey * getKey = keyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
+		ElektraKey * getKey = elektraKeyNew ("dir:/tests/bench", ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 
-		ElektraKeyset * actual = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * actual = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, actual, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, actual);
 
-		ksDel (actual);
+		elektraKeysetDel (actual);
 
-		keyDel (getKey);
+		elektraKeyDel (getKey);
 		PLUGIN_CLOSE ();
 	}
 
 	remove (outfile);
 
 	elektraFree (outfile);
-	ksDel (expected);
+	elektraKeysetDel (expected);
 }
 
 #include "varint.c"

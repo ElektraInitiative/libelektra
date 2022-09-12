@@ -31,25 +31,25 @@ const char * elektraKeyGetRelativeName (ElektraKey const * cur, ElektraKey const
 
 	ssize_t offset = 0;
 
-	if (strcmp (keyName (parentKey), "/") != 0)
+	if (strcmp (elektraKeyName (parentKey), "/") != 0)
 	{
-		offset = keyGetNameSize (parentKey);
-		if (keyGetUnescapedNameSize (parentKey) == 3)
+		offset = elektraKeyGetNameSize (parentKey);
+		if (elektraKeyGetUnescapedNameSize (parentKey) == 3)
 		{
 			--offset;
 		}
-		if (keyName (parentKey)[0] == '/' && keyName (cur)[0] != '/')
+		if (elektraKeyName (parentKey)[0] == '/' && elektraKeyName (cur)[0] != '/')
 		{
-			offset += strstr (keyName (cur), keyName (parentKey)) - keyName (cur);
+			offset += strstr (elektraKeyName (cur), elektraKeyName (parentKey)) - elektraKeyName (cur);
 		}
 	}
-	if (offset == keyGetNameSize (cur))
+	if (offset == elektraKeyGetNameSize (cur))
 	{
-		offset = keyGetNameSize (cur) - 1; // equality of the keys
+		offset = elektraKeyGetNameSize (cur) - 1; // equality of the keys
 	}
-	else if (offset > keyGetNameSize (cur))
+	else if (offset > elektraKeyGetNameSize (cur))
 	{
 		offset = 0; // no relation or invalid arguments, return full name
 	}
-	return keyName (cur) + offset;
+	return elektraKeyName (cur) + offset;
 }

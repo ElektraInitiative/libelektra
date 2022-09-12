@@ -20,19 +20,19 @@ static int setupNotificationCallback (Plugin * handle)
 	ElektraKeyset * global = elektraPluginGetGlobalKeySet (handle);
 
 	ElektraNotificationCallback callback;
-	ElektraKey * callbackKey = ksLookupByName (global, "system:/elektra/notification/callback", 0);
-	const void * callbackPtr = keyValue (callbackKey);
+	ElektraKey * callbackKey = elektraKeysetLookupByName (global, "system:/elektra/notification/callback", 0);
+	const void * callbackPtr = elektraKeyValue (callbackKey);
 
 	if (callbackPtr == NULL)
 	{
 		return -1;
 	}
 
-	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
+	callback = *(ElektraNotificationCallback *) elektraKeyValue (callbackKey);
 
 	ElektraNotificationCallbackContext * context;
-	ElektraKey * contextKey = ksLookupByName (global, "system:/elektra/notification/context", 0);
-	const void * contextPtr = keyValue (contextKey);
+	ElektraKey * contextKey = elektraKeysetLookupByName (global, "system:/elektra/notification/context", 0);
+	const void * contextPtr = elektraKeyValue (contextKey);
 	context = contextPtr == NULL ? NULL : *(ElektraNotificationCallbackContext **) contextPtr;
 
 
@@ -105,7 +105,7 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
 	ELEKTRA_LOG_DEBUG ("received key name %s", changedKeyName);
 
 	// notify about changes
-	ElektraKey * changedKey = keyNew (changedKeyName, ELEKTRA_KEY_END);
+	ElektraKey * changedKey = elektraKeyNew (changedKeyName, ELEKTRA_KEY_END);
 	data->notificationCallback (changedKey, data->notificationContext);
 
 	zmq_msg_close (&message);

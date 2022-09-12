@@ -39,27 +39,27 @@ static long convertUnsignedLong (const char * string, long defaultValue)
 int elektraZeroMqSendOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// read endpoint from configuration
-	ElektraKey * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
+	ElektraKey * endpointKey = elektraKeysetLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
 	const char * endpoint = ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT;
 	if (endpointKey)
 	{
-		endpoint = keyString (endpointKey);
+		endpoint = elektraKeyString (endpointKey);
 	}
 
 	// read timeout for connections from plugin configuration
-	ElektraKey * connectTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/connectTimeout", 0);
+	ElektraKey * connectTimeoutKey = elektraKeysetLookupByName (elektraPluginGetConfig (handle), "/connectTimeout", 0);
 	long connectTimeout = ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT;
 	if (connectTimeoutKey)
 	{
-		connectTimeout = convertUnsignedLong (keyString (connectTimeoutKey), ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT);
+		connectTimeout = convertUnsignedLong (elektraKeyString (connectTimeoutKey), ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT);
 	}
 
 	// read timeout for subscriptions from plugin configuration
-	ElektraKey * subscribeTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/subscribeTimeout", 0);
+	ElektraKey * subscribeTimeoutKey = elektraKeysetLookupByName (elektraPluginGetConfig (handle), "/subscribeTimeout", 0);
 	long subscribeTimeout = ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT;
 	if (subscribeTimeoutKey)
 	{
-		subscribeTimeout = convertUnsignedLong (keyString (subscribeTimeoutKey), ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT);
+		subscribeTimeout = convertUnsignedLong (elektraKeyString (subscribeTimeoutKey), ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT);
 	}
 
 	ElektraZeroMqSendPluginData * data = elektraPluginGetData (handle);
@@ -80,19 +80,19 @@ int elektraZeroMqSendOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED
 
 int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/zeromqsend"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/zeromqsend"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/zeromqsend", ELEKTRA_KEY_VALUE, "zeromqsend plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/open", ELEKTRA_KEY_FUNC, elektraZeroMqSendOpen, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/get", ELEKTRA_KEY_FUNC, elektraZeroMqSendGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/set", ELEKTRA_KEY_FUNC, elektraZeroMqSendSet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/close", ELEKTRA_KEY_FUNC, elektraZeroMqSendClose, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/zeromqsend", ELEKTRA_KEY_VALUE, "zeromqsend plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/zeromqsend/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/zeromqsend/exports/open", ELEKTRA_KEY_FUNC, elektraZeroMqSendOpen, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/zeromqsend/exports/get", ELEKTRA_KEY_FUNC, elektraZeroMqSendGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/zeromqsend/exports/set", ELEKTRA_KEY_FUNC, elektraZeroMqSendSet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/zeromqsend/exports/close", ELEKTRA_KEY_FUNC, elektraZeroMqSendClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/zeromqsend/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/zeromqsend/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
@@ -105,7 +105,7 @@ int elektraZeroMqSendSet (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUS
 	ElektraZeroMqSendPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	int result = elektraZeroMqSendPublish ("Commit", keyName (parentKey), pluginData);
+	int result = elektraZeroMqSendPublish ("Commit", elektraKeyName (parentKey), pluginData);
 	switch (result)
 	{
 	case 1:

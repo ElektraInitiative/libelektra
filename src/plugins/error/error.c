@@ -28,24 +28,24 @@ int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * parentKey)
 	fclose(f);
 	*/
 
-	if (ksLookupByName (conf, "/module", 0))
+	if (elektraKeysetLookupByName (conf, "/module", 0))
 	{
 		// suppress warnings + errors if it is just a module
 		return 0;
 	}
 
-	ElektraKey * warning = ksLookupByName (conf, "/on_open/warnings", 0);
+	ElektraKey * warning = elektraKeysetLookupByName (conf, "/on_open/warnings", 0);
 	if (warning)
 	{
-		elektraTriggerWarnings (keyString (warning), parentKey, "from error plugin in kdbOpen");
+		elektraTriggerWarnings (elektraKeyString (warning), parentKey, "from error plugin in kdbOpen");
 	}
 
-	ElektraKey * error = ksLookupByName (conf, "/on_open/error", 0);
+	ElektraKey * error = elektraKeysetLookupByName (conf, "/on_open/error", 0);
 	if (error)
 	{
 		if (parentKey)
 		{
-			elektraTriggerError (keyString (error), parentKey, "from error plugin in kdbOpen");
+			elektraTriggerError (elektraKeyString (error), parentKey, "from error plugin in kdbOpen");
 		}
 		return -1;
 	}
@@ -54,21 +54,21 @@ int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * parentKey)
 
 int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/error"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/error"))
 	{
 		ElektraKeyset * n;
-		ksAppend (returned,
-			  n = ksNew (30, keyNew ("system:/elektra/modules/error", ELEKTRA_KEY_VALUE, "error plugin waits for your orders", ELEKTRA_KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports", ELEKTRA_KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports/open", ELEKTRA_KEY_FUNC, elektraErrorOpen, ELEKTRA_KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports/get", ELEKTRA_KEY_FUNC, elektraErrorGet, ELEKTRA_KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports/set", ELEKTRA_KEY_FUNC, elektraErrorSet, ELEKTRA_KEY_END),
+		elektraKeysetAppend (returned,
+			  n = elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/error", ELEKTRA_KEY_VALUE, "error plugin waits for your orders", ELEKTRA_KEY_END),
+				     elektraKeyNew ("system:/elektra/modules/error/exports", ELEKTRA_KEY_END),
+				     elektraKeyNew ("system:/elektra/modules/error/exports/open", ELEKTRA_KEY_FUNC, elektraErrorOpen, ELEKTRA_KEY_END),
+				     elektraKeyNew ("system:/elektra/modules/error/exports/get", ELEKTRA_KEY_FUNC, elektraErrorGet, ELEKTRA_KEY_END),
+				     elektraKeyNew ("system:/elektra/modules/error/exports/set", ELEKTRA_KEY_FUNC, elektraErrorSet, ELEKTRA_KEY_END),
 #include "readme_error.c"
-				     keyNew ("system:/elektra/modules/error/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
-		ksDel (n);
+				     elektraKeyNew ("system:/elektra/modules/error/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
+		elektraKeysetDel (n);
 
-		ksAppend (returned, n = elektraErrorSpecification ());
-		ksDel (n);
+		elektraKeysetAppend (returned, n = elektraErrorSpecification ());
+		elektraKeysetDel (n);
 	}
 	return 1;
 }
@@ -76,26 +76,26 @@ int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 int elektraErrorSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ElektraKey * cur;
-	while ((cur = ksNext (returned)) != 0)
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
 		const ElektraKey * meta = 0;
 
-		meta = keyGetMeta (cur, "trigger/warnings");
+		meta = elektraKeyGetMeta (cur, "trigger/warnings");
 		if (meta)
 		{
-			elektraTriggerWarnings (keyString (meta), parentKey, "from error plugin in kdbSet");
+			elektraTriggerWarnings (elektraKeyString (meta), parentKey, "from error plugin in kdbSet");
 		}
 
-		meta = keyGetMeta (cur, "trigger/error");
+		meta = elektraKeyGetMeta (cur, "trigger/error");
 		if (meta)
 		{
-			elektraTriggerError (keyString (meta), parentKey, "from error plugin in kdbSet");
+			elektraTriggerError (elektraKeyString (meta), parentKey, "from error plugin in kdbSet");
 			return -1; /* error */
 		}
-		meta = keyGetMeta (cur, "trigger/error/nofail");
+		meta = elektraKeyGetMeta (cur, "trigger/error/nofail");
 		if (meta)
 		{
-			elektraTriggerError (keyString (meta), parentKey, "from error plugin in kdbSet");
+			elektraTriggerError (elektraKeyString (meta), parentKey, "from error plugin in kdbSet");
 		}
 	}
 

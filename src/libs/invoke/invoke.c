@@ -102,34 +102,34 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, Elektra
 	{
 		return NULL;
 	}
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	handle->modules = modules;
 	elektraModulesInit (modules, NULL);
 
 	if (!config)
 	{
-		config = ksNew (0, ELEKTRA_KS_END);
+		config = elektraKeysetNew (0, ELEKTRA_KS_END);
 	}
 	else
 	{
-		config = ksDup (config);
+		config = elektraKeysetDup (config);
 	}
 
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew ("/", ELEKTRA_KEY_END);
+		errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	}
 
 	Plugin * plugin = elektraPluginOpen (elektraPluginName, modules, config, errorKey);
 	if (errorKeyMissing)
 	{
-		keyDel (errorKey);
+		elektraKeyDel (errorKey);
 	}
 	if (!plugin)
 	{
 		elektraModulesClose (modules, NULL);
-		ksDel (modules);
+		elektraKeysetDel (modules);
 		elektraFree (handle);
 		return NULL;
 	}
@@ -167,8 +167,8 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 	Plugin * plugin = handle->plugin;
 	ElektraKeyset * exports = NULL;
 
-	ElektraKey * exportParent = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
-	keyAddBaseName (exportParent, plugin->name);
+	ElektraKey * exportParent = elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (exportParent, plugin->name);
 
 	if (handle->exports)
 	{
@@ -176,21 +176,21 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 	}
 	else
 	{
-		exports = ksNew (0, ELEKTRA_KS_END);
+		exports = elektraKeysetNew (0, ELEKTRA_KS_END);
 		handle->exports = exports;
 		plugin->kdbGet (plugin, exports, exportParent);
 	}
-	keyAddBaseName (exportParent, "exports");
-	keyAddBaseName (exportParent, elektraPluginFunctionName);
-	ElektraKey * functionKey = ksLookup (exports, exportParent, 0);
-	keyDel (exportParent);
+	elektraKeyAddBaseName (exportParent, "exports");
+	elektraKeyAddBaseName (exportParent, elektraPluginFunctionName);
+	ElektraKey * functionKey = elektraKeysetLookup (exports, exportParent, 0);
+	elektraKeyDel (exportParent);
 	if (!functionKey)
 	{
 		return NULL;
 	}
 	else
 	{
-		return keyValue (functionKey);
+		return elektraKeyValue (functionKey);
 	}
 }
 
@@ -324,16 +324,16 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, ElektraKey * errorKey)
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew ("/", ELEKTRA_KEY_END);
+		errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	}
 	elektraPluginClose (handle->plugin, errorKey);
 	if (errorKeyMissing)
 	{
-		keyDel (errorKey);
+		elektraKeyDel (errorKey);
 	}
 	elektraModulesClose (handle->modules, NULL);
-	ksDel (handle->modules);
-	ksDel (handle->exports);
+	elektraKeysetDel (handle->modules);
+	elektraKeysetDel (handle->exports);
 	elektraFree (handle);
 }
 
@@ -445,7 +445,7 @@ int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, E
 		return 0;
 	}
 	item->name = elektraStrDup (name);
-	item->parameters = ksDup (parameters);
+	item->parameters = elektraKeysetDup (parameters);
 	item->next = NULL;
 
 	if (list->head == NULL)
@@ -497,7 +497,7 @@ void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)
 	while (item != NULL)
 	{
 		elektraFree (item->name);
-		ksDel (item->parameters);
+		elektraKeysetDel (item->parameters);
 
 		_ElektraDeferredCall * next = item->next;
 		elektraFree (item);

@@ -90,14 +90,14 @@ static bool needNewlineBeforeComment (Node * node);
 
 int tomlWrite (ElektraKeyset * keys, ElektraKey * parent)
 {
-	elektraCursor cursor = ksGetCursor (keys);
+	elektraCursor cursor = elektraKeysetGetCursor (keys);
 	prepareKeySet (keys, parent);
 
-	ksRewind (keys);
-	ksNext (keys);
-	if (keyCmp (ksCurrent (keys), parent) == 0)
+	elektraKeysetRewind (keys);
+	elektraKeysetNext (keys);
+	if (elektraKeyCmp (elektraKeysetCurrent (keys), parent) == 0)
 	{
-		ksNext (keys);
+		elektraKeysetNext (keys);
 	}
 	Node * root = buildTree (NULL, parent, keys);
 	if (root == NULL)
@@ -108,13 +108,13 @@ int tomlWrite (ElektraKeyset * keys, ElektraKey * parent)
 	if (writer == NULL)
 	{
 		destroyTree (root);
-		ELEKTRA_SET_RESOURCE_ERROR (parent, keyString (parent));
+		ELEKTRA_SET_RESOURCE_ERROR (parent, elektraKeyString (parent));
 		return 1;
 	}
 	int result = 0;
 
 	result |= writeTree (root, writer);
-	ElektraKey * parentKey = ksLookup (keys, parent, 0);
+	ElektraKey * parentKey = elektraKeysetLookup (keys, parent, 0);
 	if (parentKey != NULL)
 	{
 		result |= writeFileTrailingComments (parentKey, writer);
@@ -122,7 +122,7 @@ int tomlWrite (ElektraKeyset * keys, ElektraKey * parent)
 
 	destroyWriter (writer);
 	destroyTree (root);
-	ksSetCursor (keys, cursor);
+	elektraKeysetSetCursor (keys, cursor);
 	return result;
 }
 
@@ -133,7 +133,7 @@ static Writer * createWriter (ElektraKey * parent)
 	{
 		return NULL;
 	}
-	writer->filename = elektraStrDup (keyString (parent));
+	writer->filename = elektraStrDup (elektraKeyString (parent));
 	if (writer->filename == NULL)
 	{
 		destroyWriter (writer);
@@ -182,7 +182,7 @@ static int writeTree (Node * node, Writer * writer)
 	int result = 0;
 	CommentList * comments = NULL;
 
-	if (keyCmp (node->key, writer->rootKey) != 0)
+	if (elektraKeyCmp (node->key, writer->rootKey) != 0)
 	{
 		result |= collectComments (&comments, node->key, writer);
 		bool hasComments = comments != NULL;
@@ -314,7 +314,7 @@ static bool isListElement (Node * node)
 
 static bool hasInlineComment (Node * node)
 {
-	return keyGetMeta (node->key, "comment/#0/space") != NULL;
+	return elektraKeyGetMeta (node->key, "comment/#0/space") != NULL;
 }
 
 static bool isLastChild (Node * node)
@@ -399,29 +399,29 @@ static int writeScalar (ElektraKey * key, Writer * writer)
 	ELEKTRA_ASSERT (key != NULL, "key was NULL");
 	ELEKTRA_ASSERT (writer != NULL, "writer was NULL");
 
-	if (keyIsBinary (key))
+	if (elektraKeyIsBinary (key))
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (writer->rootKey,
 							"Detected binary key '%s' in toml plugin. Please ensure the 'base64' plugin is "
 							"mounted when using binary keys with TOML.",
-							keyName (key));
+							elektraKeyName (key));
 		return -1;
 	}
 
 	int result = 0;
 
-	const ElektraKey * origValue = keyGetMeta (key, "origvalue");
-	const ElektraKey * type = keyGetMeta (key, "type");
-	const ElektraKey * tomlTypeKey = keyGetMeta (key, "tomltype");
-	const char * tomlType = tomlTypeKey == NULL ? "" : keyString (tomlTypeKey);
-	const char * valueStr = keyString (key);
+	const ElektraKey * origValue = elektraKeyGetMeta (key, "origvalue");
+	const ElektraKey * type = elektraKeyGetMeta (key, "type");
+	const ElektraKey * tomlTypeKey = elektraKeyGetMeta (key, "tomltype");
+	const char * tomlType = tomlTypeKey == NULL ? "" : elektraKeyString (tomlTypeKey);
+	const char * valueStr = elektraKeyString (key);
 
 	if (origValue != NULL)
 	{
-		valueStr = keyString (origValue);
+		valueStr = elektraKeyString (origValue);
 	}
 
-	if (type != NULL && strcmp (keyString (type), "boolean") == 0)
+	if (type != NULL && strcmp (elektraKeyString (type), "boolean") == 0)
 	{
 		if (strcmp (valueStr, "0") == 0)
 		{
@@ -438,7 +438,7 @@ static int writeScalar (ElektraKey * key, Writer * writer)
 			result = 1;
 		}
 	}
-	else if ((type == NULL || strcmp (keyString (type), "string") != 0) &&
+	else if ((type == NULL || strcmp (elektraKeyString (type), "string") != 0) &&
 		 (isFloat (writer->checker, valueStr) || isValidIntegerAnyBase (valueStr) || isDateTime (writer->checker, valueStr)))
 	{
 		result |= fputs (valueStr, writer->f) == EOF;
@@ -584,7 +584,7 @@ static const char * writeUtf8Codepoint (int * result, bool * warnedUtf8, Elektra
 								  "sequences will be replaced with replacement "
 								  "character U+FFFD. Mark the key as binary and use base64 "
 								  "plugin to preserve non-UTF-8 values.",
-								  keyName (key));
+								  elektraKeyName (key));
 			*warnedUtf8 = true;
 		}
 
@@ -640,13 +640,13 @@ static int writeString (ElektraKey * key, StringType type, const char * value, W
 		if ((type & STRING_MULTILINE) == 0 && strchr (value, '\n') != NULL)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-				writer->rootKey, "Key with literal non-multiline cannot contain newline: %s", keyName (key));
+				writer->rootKey, "Key with literal non-multiline cannot contain newline: %s", elektraKeyName (key));
 			result |= -1;
 		}
-		else if (!isValidUtf8 ((uint8_t *) value, keyGetValueSize (key) - 1))
+		else if (!isValidUtf8 ((uint8_t *) value, elektraKeyGetValueSize (key) - 1))
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (writer->rootKey, "Key with literal string must contain valid UTF-8: %s",
-								 keyName (key));
+								 elektraKeyName (key));
 			result |= -1;
 		}
 		else if (checkLiteralAsciiControl (value, type & STRING_MULTILINE))
@@ -654,7 +654,7 @@ static int writeString (ElektraKey * key, StringType type, const char * value, W
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 				writer->rootKey,
 				"Key with literal string must not contain ASCII control characters except for tab (U+0009): %s",
-				keyName (key));
+				elektraKeyName (key));
 			result |= -1;
 		}
 		else
@@ -773,15 +773,15 @@ static int collectComments (CommentList ** comments, ElektraKey * key, Writer * 
 {
 	int result = 0;
 
-	keyRewindMeta (key);
+	elektraKeyRewindMeta (key);
 	const ElektraKey * meta;
 	CommentList * commentRoot = *comments;
 	CommentList * commentBack = NULL;
 	size_t currIndex = 0;
-	while ((meta = keyNextMeta (key)) != NULL)
+	while ((meta = elektraKeyNextMeta (key)) != NULL)
 	{
-		const char * pos = (const char *) keyUnescapedName (meta);
-		const char * stop = pos + keyGetUnescapedNameSize (meta);
+		const char * pos = (const char *) elektraKeyUnescapedName (meta);
+		const char * stop = pos + elektraKeyGetUnescapedNameSize (meta);
 		pos += 2; // skip namespace
 		if (elektraStrCmp (pos, "comment") == 0)
 		{
@@ -820,7 +820,7 @@ static int collectComments (CommentList ** comments, ElektraKey * key, Writer * 
 
 					if (pos + elektraStrLen (pos) >= stop)
 					{ // meta key holding the array content
-						commentBack->content = keyString (meta);
+						commentBack->content = elektraKeyString (meta);
 					}
 				}
 				else if (subDepth == 2)
@@ -828,7 +828,7 @@ static int collectComments (CommentList ** comments, ElektraKey * key, Writer * 
 					const char * fieldName = pos;
 					if (elektraStrCmp (fieldName, "start") == 0)
 					{
-						if (keyString (meta)[0] == '#')
+						if (elektraKeyString (meta)[0] == '#')
 						{
 							commentBack->start = '#';
 						}
@@ -839,14 +839,14 @@ static int collectComments (CommentList ** comments, ElektraKey * key, Writer * 
 					}
 					else if (elektraStrCmp (fieldName, "space") == 0)
 					{
-						const char * whitespace = keyString (meta);
+						const char * whitespace = elektraKeyString (meta);
 						if (whitespace[strspn (whitespace, " \t")] != '\0')
 						{
 							ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 								writer->rootKey,
 								"The '%s' metakey of '%s' contains an invalid whitespace character. Only "
 								"space and tab are allowed as whitespace characters in TOML files.",
-								keyName (meta), keyName (key));
+								elektraKeyName (meta), elektraKeyName (key));
 							result |= -1;
 						}
 

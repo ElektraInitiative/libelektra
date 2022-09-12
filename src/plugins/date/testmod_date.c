@@ -22,46 +22,46 @@
 
 static void testFmt (const char * date, const char * fmt, const short res)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/date", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (5,
-			     keyNew ("user:/tests/date/test", ELEKTRA_KEY_VALUE, date, ELEKTRA_KEY_META, "check/date", "POSIX", ELEKTRA_KEY_META,
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/date", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (5,
+			     elektraKeyNew ("user:/tests/date/test", ELEKTRA_KEY_VALUE, date, ELEKTRA_KEY_META, "check/date", "POSIX", ELEKTRA_KEY_META,
 				     "check/date/format", fmt, ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("date");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == res, "validation failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 static void testIso (const char * date, const char * isoString, const short res)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/date", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (5,
-			     keyNew ("user:/tests/date/test", ELEKTRA_KEY_VALUE, date, ELEKTRA_KEY_META, "check/date", "ISO8601", ELEKTRA_KEY_META,
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/date", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (5,
+			     elektraKeyNew ("user:/tests/date/test", ELEKTRA_KEY_VALUE, date, ELEKTRA_KEY_META, "check/date", "ISO8601", ELEKTRA_KEY_META,
 				     "check/date/format", isoString, ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("date");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == res, "validation failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 static void testRfc2822 (const char * date, const short res)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/date", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * ks = ksNew (5,
-			     keyNew ("user:/tests/date/test", ELEKTRA_KEY_VALUE, date, ELEKTRA_KEY_META, "check/date", "RFC2822", ELEKTRA_KEY_META,
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/date", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (5,
+			     elektraKeyNew ("user:/tests/date/test", ELEKTRA_KEY_VALUE, date, ELEKTRA_KEY_META, "check/date", "RFC2822", ELEKTRA_KEY_META,
 				     "check/date/format", "", ELEKTRA_KEY_END),
 			     ELEKTRA_KS_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("date");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == res, "validation failed");
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 

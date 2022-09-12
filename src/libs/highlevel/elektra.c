@@ -66,21 +66,21 @@ kdb_boolean_t checkSpec (ElektraKey * const parentKey, ElektraKeyset * contract,
  */
 Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, ElektraKeyset * contract, ElektraError ** error)
 {
-	ElektraKey * const parentKey = keyNew (application, ELEKTRA_KEY_END);
+	ElektraKey * const parentKey = elektraKeyNew (application, ELEKTRA_KEY_END);
 
 	// Before anything else: Verify that the specification is okay.
 	if (!checkSpec (parentKey, contract, error))
 	{
-		keyDel (parentKey);
+		elektraKeyDel (parentKey);
 		return NULL;
 	}
 
-	ElektraKdb * const kdb = kdbOpen (contract, parentKey);
+	ElektraKdb * const kdb = elektraKdbOpen (contract, parentKey);
 
 	if (kdb == NULL)
 	{
 		*error = elektraErrorFromKey (parentKey);
-		keyDel (parentKey);
+		elektraKeyDel (parentKey);
 		return NULL;
 	}
 
@@ -89,36 +89,36 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 	if (contract != NULL)
 	{
 		// TODO: set default spec config to use ERROR
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec", ELEKTRA_KEY_END));
-		ksAppendKey (contract,
-			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/get", ELEKTRA_KEY_VALUE, "ERROR", ELEKTRA_KEY_END));
-		ksAppendKey (contract,
-			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/set", ELEKTRA_KEY_VALUE, "ERROR", ELEKTRA_KEY_END));
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/missing/log", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (contract, elektraKeyNew ("system:/elektra/contract/mountglobal/spec", ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (contract,
+			     elektraKeyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/get", ELEKTRA_KEY_VALUE, "ERROR", ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (contract,
+			     elektraKeyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/set", ELEKTRA_KEY_VALUE, "ERROR", ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (contract, elektraKeyNew ("system:/elektra/contract/mountglobal/spec/config/missing/log", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END));
 
-		ElektraKey * contractCut = keyNew ("system:/elektra/contract/highlevel", ELEKTRA_KEY_END);
-		ElektraKeyset * highlevelContract = ksCut (contract, contractCut);
+		ElektraKey * contractCut = elektraKeyNew ("system:/elektra/contract/highlevel", ELEKTRA_KEY_END);
+		ElektraKeyset * highlevelContract = elektraKeysetCut (contract, contractCut);
 
-		if (ksGetSize (highlevelContract) > 0)
+		if (elektraKeysetGetSize (highlevelContract) > 0)
 		{
-			ksAppend (contract, highlevelContract);
-			if (ksLookupByName (highlevelContract, "system:/elektra/contract/highlevel/helpmode/ignore/require", 0) != NULL)
+			elektraKeysetAppend (contract, highlevelContract);
+			if (elektraKeysetLookupByName (highlevelContract, "system:/elektra/contract/highlevel/helpmode/ignore/require", 0) != NULL)
 			{
 				ignoreRequireInHelpMode = 1;
 			}
 		}
 
-		keyDel (contractCut);
-		ksDel (highlevelContract);
+		elektraKeyDel (contractCut);
+		elektraKeysetDel (highlevelContract);
 	}
 
-	ElektraKeyset * const config = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * const config = elektraKeysetNew (0, ELEKTRA_KS_END);
 	if (defaults != NULL)
 	{
 		insertDefaults (config, parentKey, defaults);
 	}
 
-	const int kdbGetResult = kdbGet (kdb, config, parentKey);
+	const int kdbGetResult = elektraKdbGet (kdb, config, parentKey);
 	// Note: if kdbGetResult is not -1, config now contains the defaults passed to this function and any keys that were found during
 	// kdbGet().
 
@@ -138,9 +138,9 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 						     errorFromKdbGet->warnings[0]->line);
 
 			elektraErrorReset (&errorFromKdbGet);
-			ksDel (config);
-			kdbClose (kdb, parentKey);
-			keyDel (parentKey);
+			elektraKeysetDel (config);
+			elektraKdbClose (kdb, parentKey);
+			elektraKeyDel (parentKey);
 			return NULL;
 		}
 		elektraErrorReset (&errorFromKdbGet);
@@ -148,8 +148,8 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 	// If kdbGet() returns -1, there was an error.
 	else if (kdbGetResult == -1)
 	{
-		ElektraKey * helpKey = ksLookupByName (config, "proc:/elektra/gopts/help", 0);
-		const ElektraKey * missingKeys = keyGetMeta (parentKey, "logs/spec/missing");
+		ElektraKey * helpKey = elektraKeysetLookupByName (config, "proc:/elektra/gopts/help", 0);
+		const ElektraKey * missingKeys = elektraKeyGetMeta (parentKey, "logs/spec/missing");
 		if (ignoreRequireInHelpMode == 1 && helpKey != NULL && missingKeys != NULL)
 		{
 			// proc:/elektra/gopts/help was set -> we know we are in help mode
@@ -160,18 +160,18 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 			// BUT: anything other than helpKey may be incorrect
 			// and only helpKey should be used anyway
 			// so create a new config KeySet
-			ElektraKey * helpKeyDup = keyDup (helpKey, ELEKTRA_KEY_CP_ALL);
-			ksClear (config);
-			ksAppendKey (config, helpKeyDup);
+			ElektraKey * helpKeyDup = elektraKeyDup (helpKey, ELEKTRA_KEY_CP_ALL);
+			elektraKeysetClear (config);
+			elektraKeysetAppendKey (config, helpKeyDup);
 		}
 		else
 		{
 			// We are in the error case that should not be ignored.
 			*error = elektraErrorFromKey (parentKey);
 
-			ksDel (config);
-			kdbClose (kdb, parentKey);
-			keyDel (parentKey);
+			elektraKeysetDel (config);
+			elektraKdbClose (kdb, parentKey);
+			elektraKeyDel (parentKey);
 			return NULL;
 		}
 	}
@@ -179,11 +179,11 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 	Elektra * const elektra = elektraCalloc (sizeof (struct _Elektra));
 	elektra->kdb = kdb;
 	elektra->parentKey = parentKey;
-	elektra->parentKeyLength = keyGetNameSize (parentKey) - 1;
+	elektra->parentKeyLength = elektraKeyGetNameSize (parentKey) - 1;
 	elektra->config = config;
-	elektra->lookupKey = keyNew ("/", ELEKTRA_KEY_END);
+	elektra->lookupKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
-	elektra->defaults = ksDup (defaults);
+	elektra->defaults = elektraKeysetDup (defaults);
 
 	return elektra;
 }
@@ -207,7 +207,7 @@ kdb_boolean_t checkSpec (ElektraKey * const parentKey, ElektraKeyset * contract,
 		// E.g., If the contract contains keys from elektraGOptsContract(), kdbGet() might fail, because the specification is not
 		// mounted or incorrect. Therefore, we first have to check, that the spec is properly mounted and hasn't been modified since
 		// compilation.
-		ElektraKdb * kdb = kdbOpen (NULL, parentKey);
+		ElektraKdb * kdb = elektraKdbOpen (NULL, parentKey);
 
 		if (kdb == NULL)
 		{
@@ -216,38 +216,38 @@ kdb_boolean_t checkSpec (ElektraKey * const parentKey, ElektraKeyset * contract,
 		}
 
 		// Verify that the specification is properly mounted, if contract requires it.
-		ElektraKey * checkSpecFromContract = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spec/mounted", 0);
+		ElektraKey * checkSpecFromContract = elektraKeysetLookupByName (contract, "system:/elektra/contract/highlevel/check/spec/mounted", 0);
 		kdb_boolean_t shouldCheckSpecProperlyMounted = false;
 		if (checkSpecFromContract != NULL && elektraKeyToBoolean (checkSpecFromContract, &shouldCheckSpecProperlyMounted) &&
 		    shouldCheckSpecProperlyMounted)
 		{
 			// If the specification was not properly mounted, we don't return an Elektra instance.
 			// Reason: the application won't function properly without a properly mounted specification.
-			if (!checkSpecProperlyMounted (kdb, keyName (parentKey), error))
+			if (!checkSpecProperlyMounted (kdb, elektraKeyName (parentKey), error))
 			{
-				kdbClose (kdb, parentKey);
-				keyDel (checkSpecFromContract);
+				elektraKdbClose (kdb, parentKey);
+				elektraKeyDel (checkSpecFromContract);
 				return false;
 			}
 
 			// If the contract contains a specification token, verify that is is equal to the current specification token.
-			ElektraKey * tokenFromContractKey = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spec/token", 0);
+			ElektraKey * tokenFromContractKey = elektraKeysetLookupByName (contract, "system:/elektra/contract/highlevel/check/spec/token", 0);
 			const char * tokenFromContract = NULL;
 			if (tokenFromContractKey != NULL && elektraKeyToString (tokenFromContractKey, &tokenFromContract) &&
 			    tokenFromContract != NULL && strlen (tokenFromContract) > 0)
 			{
 				if (!checkSpecToken (kdb, parentKey, tokenFromContract, error))
 				{
-					kdbClose (kdb, parentKey);
-					keyDel (checkSpecFromContract);
-					keyDel (tokenFromContractKey);
+					elektraKdbClose (kdb, parentKey);
+					elektraKeyDel (checkSpecFromContract);
+					elektraKeyDel (tokenFromContractKey);
 					return false;
 				}
 			}
-			keyDel (tokenFromContractKey);
+			elektraKeyDel (tokenFromContractKey);
 		}
-		keyDel (checkSpecFromContract);
-		kdbClose (kdb, parentKey);
+		elektraKeyDel (checkSpecFromContract);
+		elektraKdbClose (kdb, parentKey);
 	}
 	return true;
 }
@@ -264,16 +264,16 @@ kdb_boolean_t checkSpec (ElektraKey * const parentKey, ElektraKeyset * contract,
  */
 kdb_boolean_t checkSpecToken (ElektraKdb * const kdb, ElektraKey * parentKey, const char * tokenFromContract, ElektraError ** error)
 {
-	ElektraKeyset * const specificationKs = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * const specificationKs = elektraKeysetNew (0, ELEKTRA_KS_END);
 
-	ElektraKey * parentKeySpecNamespace = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * parentKeySpecNamespace = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	// For token calculation of an application using the HL API, only keys within the spec namespace are relevant.
-	keySetNamespace (parentKeySpecNamespace, ELEKTRA_NS_SPEC);
+	elektraKeySetNamespace (parentKeySpecNamespace, ELEKTRA_NS_SPEC);
 
-	const int kdbGetResult = kdbGet (kdb, specificationKs, parentKeySpecNamespace);
+	const int kdbGetResult = elektraKdbGet (kdb, specificationKs, parentKeySpecNamespace);
 	if (kdbGetResult == -1)
 	{
-		ksDel (specificationKs);
+		elektraKeysetDel (specificationKs);
 		*error = elektraErrorFromKey (parentKeySpecNamespace);
 		return false;
 	}
@@ -285,16 +285,16 @@ kdb_boolean_t checkSpecToken (ElektraKdb * const kdb, ElektraKey * parentKey, co
 		// If the token calculation failed, don't return an Elektra instance.
 		if (!success)
 		{
-			ksDel (specificationKs);
+			elektraKeysetDel (specificationKs);
 			*error = elektraErrorFromKey (parentKeySpecNamespace);
-			keyDel (parentKeySpecNamespace);
+			elektraKeyDel (parentKeySpecNamespace);
 			return false;
 		}
 
 		// If tokens aren't equal, report an error and fail
 		if (strcmp (tokenFromContract, calculatedToken) != 0)
 		{
-			char * errorMessage = generateSpecProblemErrorMessage (keyName (parentKey));
+			char * errorMessage = generateSpecProblemErrorMessage (elektraKeyName (parentKey));
 			char * description = elektraFormat (
 				"%s\n"
 				"Technical details: The configuration specification on your system was modified after installation.\n"
@@ -303,8 +303,8 @@ kdb_boolean_t checkSpecToken (ElektraKdb * const kdb, ElektraKey * parentKey, co
 			elektraFree (errorMessage);
 			*error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
 			elektraFree (description);
-			ksDel (specificationKs);
-			keyDel (parentKeySpecNamespace);
+			elektraKeysetDel (specificationKs);
+			elektraKeyDel (parentKeySpecNamespace);
 			return false;
 		}
 	}
@@ -372,15 +372,15 @@ static char * generateSpecProblemErrorMessage (const char * application)
  */
 static kdb_boolean_t checkSpecProperlyMounted (ElektraKdb * const kdb, const char * application, ElektraError ** error)
 {
-	ElektraKeyset * const mountPoints = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * const parentKey = keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END);
-	const int kdbGetResult = kdbGet (kdb, mountPoints, parentKey);
+	ElektraKeyset * const mountPoints = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * const parentKey = elektraKeyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END);
+	const int kdbGetResult = elektraKdbGet (kdb, mountPoints, parentKey);
 
 	if (kdbGetResult == -1)
 	{
-		ksDel (mountPoints);
+		elektraKeysetDel (mountPoints);
 		*error = elektraErrorFromKey (parentKey);
-		keyDel (parentKey);
+		elektraKeyDel (parentKey);
 		return false;
 	}
 	else
@@ -399,8 +399,8 @@ static kdb_boolean_t checkSpecProperlyMounted (ElektraKdb * const kdb, const cha
 		{
 			success = false;
 		}
-		ksDel (mountPoints);
-		keyDel (parentKey);
+		elektraKeysetDel (mountPoints);
+		elektraKeyDel (parentKey);
 		elektraFree (kdbMountMountPoint);
 		return success;
 	}
@@ -420,11 +420,11 @@ static kdb_boolean_t checkSpecificationMountPoint (ElektraKeyset * const mountPo
 {
 	// TODO (kodebach): update check
 	// Construct the lookup key
-	ElektraKey * mountPointLookupKey = keyNew ("system:/elektra/mountpoints/", ELEKTRA_KEY_END);
-	keyAddBaseName (mountPointLookupKey, mountPoint);
-	keyAddBaseName (mountPointLookupKey, "mountpoint");
+	ElektraKey * mountPointLookupKey = elektraKeyNew ("system:/elektra/mountpoints/", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (mountPointLookupKey, mountPoint);
+	elektraKeyAddBaseName (mountPointLookupKey, "mountpoint");
 
-	ElektraKey * mountPointKey = ksLookup (mountPointsKs, mountPointLookupKey, 0);
+	ElektraKey * mountPointKey = elektraKeysetLookup (mountPointsKs, mountPointLookupKey, 0);
 	// If the mountPointKey does not exist, the specification was not properly mounted.
 	if (mountPointKey == NULL)
 	{
@@ -434,15 +434,15 @@ static kdb_boolean_t checkSpecificationMountPoint (ElektraKeyset * const mountPo
 			"Technical details: \n"
 			"The mountPointKey \"%s\" should exist, but it does not.\n"
 			"This was likely caused by an incomplete installation of the application.\n",
-			errorMessage, keyName (mountPointLookupKey));
+			errorMessage, elektraKeyName (mountPointLookupKey));
 		elektraFree (errorMessage);
-		keyDel (mountPointLookupKey);
+		elektraKeyDel (mountPointLookupKey);
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
 		elektraFree (description);
 		return false;
 	}
 	// If the mountPointKey's value is not equal to "application", the specification was not properly mounted.
-	else if (elektraStrCmp (keyString (mountPointKey), mountPoint) != 0)
+	else if (elektraStrCmp (elektraKeyString (mountPointKey), mountPoint) != 0)
 	{
 		char * errorMessage = generateSpecProblemErrorMessage (application);
 		char * description = elektraFormat (
@@ -450,19 +450,19 @@ static kdb_boolean_t checkSpecificationMountPoint (ElektraKeyset * const mountPo
 			"Technical details: \n"
 			"The value of key \"%s\" should be \"%s\" but it is \"%s\".\n"
 			"This was likely caused by an incomplete installation of the application.\n",
-			errorMessage, keyName (mountPointKey), mountPoint, keyString (mountPointKey));
+			errorMessage, elektraKeyName (mountPointKey), mountPoint, elektraKeyString (mountPointKey));
 		elektraFree (errorMessage);
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
-		keyDel (mountPointLookupKey);
-		keyDel (mountPointKey);
+		elektraKeyDel (mountPointLookupKey);
+		elektraKeyDel (mountPointKey);
 		elektraFree (description);
 		return false;
 	}
 	// Both checks succeeded.
 	else
 	{
-		keyDel (mountPointLookupKey);
-		keyDel (mountPointKey);
+		elektraKeyDel (mountPointLookupKey);
+		elektraKeyDel (mountPointKey);
 		return true;
 	}
 }
@@ -482,7 +482,7 @@ static kdb_boolean_t checkSpecificationMountPoint (ElektraKeyset * const mountPo
  */
 ElektraKey * elektraHelpKey (Elektra * elektra)
 {
-	return ksLookupByName (elektra->config, "proc:/elektra/gopts/help", 0);
+	return elektraKeysetLookupByName (elektra->config, "proc:/elektra/gopts/help", 0);
 }
 
 /**
@@ -513,10 +513,10 @@ void elektraClose (Elektra * elektra)
 	{
 		return;
 	}
-	kdbClose (elektra->kdb, elektra->parentKey);
-	keyDel (elektra->parentKey);
-	ksDel (elektra->config);
-	keyDel (elektra->lookupKey);
+	elektraKdbClose (elektra->kdb, elektra->parentKey);
+	elektraKeyDel (elektra->parentKey);
+	elektraKeysetDel (elektra->config);
+	elektraKeyDel (elektra->lookupKey);
 
 	if (elektra->resolvedReference != NULL)
 	{
@@ -525,7 +525,7 @@ void elektraClose (Elektra * elektra)
 
 	if (elektra->defaults != NULL)
 	{
-		ksDel (elektra->defaults);
+		elektraKeysetDel (elektra->defaults);
 	}
 
 	elektraFree (elektra);
@@ -554,8 +554,8 @@ KDBType KDB_TYPE_ENUM = "enum";
 
 void elektraSetLookupKey (Elektra * elektra, const char * name)
 {
-	keySetName (elektra->lookupKey, keyName (elektra->parentKey));
-	keyAddName (elektra->lookupKey, name);
+	elektraKeySetName (elektra->lookupKey, elektraKeyName (elektra->parentKey));
+	elektraKeyAddName (elektra->lookupKey, name);
 }
 
 void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index)
@@ -563,7 +563,7 @@ void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_lo
 	elektraSetLookupKey (elektra, name);
 	char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
 	elektraWriteArrayNumber (arrayPart, index);
-	keyAddName (elektra->lookupKey, arrayPart);
+	elektraKeyAddName (elektra->lookupKey, arrayPart);
 }
 
 void elektraSaveKey (Elektra * elektra, ElektraKey * key, ElektraError ** error)
@@ -571,9 +571,9 @@ void elektraSaveKey (Elektra * elektra, ElektraKey * key, ElektraError ** error)
 	int ret = 0;
 	do
 	{
-		ksAppendKey (elektra->config, key);
+		elektraKeysetAppendKey (elektra->config, key);
 
-		ret = kdbSet (elektra->kdb, elektra->config, elektra->parentKey);
+		ret = elektraKdbSet (elektra->kdb, elektra->config, elektra->parentKey);
 		if (ret == -1)
 		{
 			ElektraError * kdbSetError = elektraErrorFromKey (elektra->parentKey);
@@ -585,38 +585,38 @@ void elektraSaveKey (Elektra * elektra, ElektraKey * key, ElektraError ** error)
 
 			elektraErrorReset (&kdbSetError);
 
-			ElektraKey * problemKey = ksCurrent (elektra->config);
+			ElektraKey * problemKey = elektraKeysetCurrent (elektra->config);
 			if (problemKey != NULL)
 			{
-				ELEKTRA_LOG_DEBUG ("problemKey: %s\n", keyName (problemKey));
+				ELEKTRA_LOG_DEBUG ("problemKey: %s\n", elektraKeyName (problemKey));
 			}
 
-			key = keyDup (key, ELEKTRA_KEY_CP_ALL);
-			kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
+			key = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
+			elektraKdbGet (elektra->kdb, elektra->config, elektra->parentKey);
 		}
 	} while (ret == -1);
 }
 
 void insertDefaults (ElektraKeyset * config, const ElektraKey * parentKey, ElektraKeyset * defaults)
 {
-	ksRewind (defaults);
-	for (ElektraKey * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+	elektraKeysetRewind (defaults);
+	for (ElektraKey * key = elektraKeysetNext (defaults); key != NULL; key = elektraKeysetNext (defaults))
 	{
-		ElektraKey * const dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
-		const char * name = keyName (key);
-		keySetName (dup, keyName (parentKey));
-		keyAddName (dup, name);
+		ElektraKey * const dup = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
+		const char * name = elektraKeyName (key);
+		elektraKeySetName (dup, elektraKeyName (parentKey));
+		elektraKeyAddName (dup, name);
 
-		if (strlen (keyString (dup)) == 0)
+		if (strlen (elektraKeyString (dup)) == 0)
 		{
-			const ElektraKey * defaultMeta = keyGetMeta (dup, "default");
+			const ElektraKey * defaultMeta = elektraKeyGetMeta (dup, "default");
 			if (defaultMeta != NULL)
 			{
-				keySetString (dup, keyString (defaultMeta));
+				elektraKeySetString (dup, elektraKeyString (defaultMeta));
 			}
 		}
 
-		ksAppendKey (config, dup);
+		elektraKeysetAppendKey (config, dup);
 	}
 }
 

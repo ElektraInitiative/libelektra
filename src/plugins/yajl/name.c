@@ -57,11 +57,11 @@ ssize_t elektraKeyCountEqualLevel (const ElektraKey * cmp1, const ElektraKey * c
 		return 0;
 	}
 
-	const char * pcmp1 = keyUnescapedName (cmp1);
-	const char * pcmp2 = keyUnescapedName (cmp2);
+	const char * pcmp1 = elektraKeyUnescapedName (cmp1);
+	const char * pcmp2 = elektraKeyUnescapedName (cmp2);
 
-	size_t size1 = keyGetUnescapedNameSize (cmp1);
-	size_t size2 = keyGetUnescapedNameSize (cmp2);
+	size_t size1 = elektraKeyGetUnescapedNameSize (cmp1);
+	size_t size2 = elektraKeyGetUnescapedNameSize (cmp2);
 
 	size_t counter = 0;
 	const char * cur1 = pcmp1;

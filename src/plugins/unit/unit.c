@@ -33,7 +33,7 @@ static void deblank (char * input)
 static kdb_unsigned_long_long_t isValidKey (ElektraKey * key)
 {
 
-	const char * value = keyString (key);
+	const char * value = elektraKeyString (key);
 	// else we manipulate the original
 	char * tempval = elektraStrDup (value);
 
@@ -89,7 +89,7 @@ static kdb_unsigned_long_long_t isValidKey (ElektraKey * key)
 static int elektraUnitConvertToByteString (ElektraKey * key, kdb_unsigned_long_long_t formatFactor)
 {
 
-	const char * str = keyString (key);
+	const char * str = elektraKeyString (key);
 	char * origvalue = elektraStrDup (str);
 	char * ptr;
 	kdb_unsigned_long_long_t ret;
@@ -112,44 +112,44 @@ static int elektraUnitConvertToByteString (ElektraKey * key, kdb_unsigned_long_l
 
 	snprintf (buf, n + 1, ELEKTRA_UNSIGNED_LONG_LONG_F, normalizedMemVal);
 
-	keySetString (key, buf);
-	keySetMeta (key, "origvalue", origvalue);
+	elektraKeySetString (key, buf);
+	elektraKeySetMeta (key, "origvalue", origvalue);
 	elektraFree (origvalue);
 	return 0;
 }
 
 static void elektraUnitRestore (ElektraKey * key)
 {
-	const ElektraKey * oldval = keyGetMeta (key, "origvalue");
+	const ElektraKey * oldval = elektraKeyGetMeta (key, "origvalue");
 	if (oldval != NULL)
 	{
-		keySetString (key, keyString (oldval));
+		elektraKeySetString (key, elektraKeyString (oldval));
 	}
 }
 
 
 int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/unit"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/unit"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/unit", ELEKTRA_KEY_VALUE, "unit plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/unit/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/unit/exports/get", ELEKTRA_KEY_FUNC, elektraUnitGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/unit/exports/set", ELEKTRA_KEY_FUNC, elektraUnitSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/unit", ELEKTRA_KEY_VALUE, "unit plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/unit/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/unit/exports/get", ELEKTRA_KEY_FUNC, elektraUnitGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/unit/exports/set", ELEKTRA_KEY_FUNC, elektraUnitSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/unit/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/unit/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	ElektraKey * cur;
 	int rc = 1;
-	while ((cur = ksNext (returned)) != NULL)
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/unit");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/unit");
 		if (meta)
 		{
 			kdb_unsigned_long_long_t format = isValidKey (cur);
@@ -160,7 +160,7 @@ int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 					parentKey,
 					"The string '%s' is not following the format guidelines of (<numerical value><optional "
 					"space><memory unit>, e.g. 128 MB) !",
-					keyString (cur));
+					elektraKeyString (cur));
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 			elektraUnitConvertToByteString (cur, format);
@@ -173,10 +173,10 @@ int elektraUnitSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 {
 
 	ElektraKey * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		const ElektraKey * meta = keyGetMeta (cur, "check/unit");
+		const ElektraKey * meta = elektraKeyGetMeta (cur, "check/unit");
 		if (!meta)
 		{
 			continue;
@@ -191,7 +191,7 @@ int elektraUnitSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 								 "The string '%s' is not following the format guidelines of (<numerical "
 								 "value><optional space><memory unit>, "
 								 "e.g. 128 MB) !",
-								 keyString (cur));
+								 elektraKeyString (cur));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}

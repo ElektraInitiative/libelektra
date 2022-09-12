@@ -45,10 +45,10 @@ int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 	strcat (buffer, filename);
 
 	/* Because of the outbreak bugs these tests are not enough */
-	ElektraKey * check = keyNew (buffer, ELEKTRA_KEY_END);
+	ElektraKey * check = elektraKeyNew (buffer, ELEKTRA_KEY_END);
 	if (!check) goto error;
-	if (!strcmp (keyName (check), "system:/")) goto error;
-	keyDel (check);
+	if (!strcmp (elektraKeyName (check), "system:/")) goto error;
+	elektraKeyDel (check);
 	elektraFree (buffer);
 
 	/* Be strict, don't allow any .., even if it would be ok sometimes */
@@ -59,7 +59,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 	return 1;
 
 error:
-	keyDel (check);
+	elektraKeyDel (check);
 	elektraFree (buffer);
 	return -1;
 }
@@ -113,19 +113,19 @@ static void elektraResolveFinishByFilename (ElektraResolved * handle, ElektraRes
 
 static void elektraResolveUsingHome (ElektraResolved * handle, const char * home, short addPostfix)
 {
-	ElektraKey * canonify = keyNew ("user:/", ELEKTRA_KEY_END);
-	keyAddName (canonify, home);
+	ElektraKey * canonify = elektraKeyNew ("user:/", ELEKTRA_KEY_END);
+	elektraKeyAddName (canonify, home);
 
-	size_t dirnameSize = keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
+	size_t dirnameSize = elektraKeyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 	char * dir = elektraMalloc (dirnameSize);
 
-	strcpy (dir, keyName (canonify) + sizeof ("user:") - 1);
+	strcpy (dir, elektraKeyName (canonify) + sizeof ("user:") - 1);
 	if (addPostfix && handle->relPath[0] != '/')
 	{
 		strcat (dir, "/" KDB_DB_USER);
 	}
 	handle->dirname = dir;
-	keyDel (canonify);
+	elektraKeyDel (canonify);
 }
 
 static char * elektraResolvePasswd (ElektraKey * warningsKey)
@@ -228,18 +228,18 @@ static int elektraResolveEnvUser (ElektraResolved * handle)
 		return 0;
 	}
 
-	ElektraKey * canonify = keyNew ("user:/", ELEKTRA_KEY_END);
-	keyAddName (canonify, user);
+	ElektraKey * canonify = elektraKeyNew ("user:/", ELEKTRA_KEY_END);
+	elektraKeyAddName (canonify, user);
 	size_t homeSize = sizeof (KDB_DB_HOME "/") + keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 
 	char * homeBuf = elektraMalloc (homeSize);
 	strcpy (homeBuf, KDB_DB_HOME "/");
-	strcat (homeBuf, keyName (canonify) + 6); // cut user:/
+	strcat (homeBuf, elektraKeyName (canonify) + 6); // cut user:/
 	if (handle->relPath[0] != '/')
 	{
 		strcat (homeBuf, "/" KDB_DB_USER);
 	}
-	keyDel (canonify);
+	elektraKeyDel (canonify);
 	handle->dirname = homeBuf;
 	return 1;
 }

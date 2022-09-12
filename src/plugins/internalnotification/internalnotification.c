@@ -76,10 +76,10 @@ static void elektraInternalnotificationSetConversionErrorCallback (Plugin * hand
 static int checkKeyIsSame (ElektraKey * key, ElektraKey * check)
 {
 	int result = 0;
-	if (keyGetNamespace (check) == ELEKTRA_NS_CASCADING || keyGetNamespace (key) == ELEKTRA_NS_CASCADING)
+	if (elektraKeyGetNamespace (check) == ELEKTRA_NS_CASCADING || elektraKeyGetNamespace (key) == ELEKTRA_NS_CASCADING)
 	{
-		const char * cascadingCheck = strrchr (keyName (check), '/');
-		const char * cascadingKey = strrchr (keyName (key), '/');
+		const char * cascadingCheck = strrchr (elektraKeyName (check), '/');
+		const char * cascadingKey = strrchr (elektraKeyName (key), '/');
 		if (cascadingCheck != NULL && cascadingKey != NULL)
 		{
 			result = elektraStrCmp (cascadingKey, cascadingCheck) == 0;
@@ -94,7 +94,7 @@ static int checkKeyIsSame (ElektraKey * key, ElektraKey * check)
 	}
 	else
 	{
-		result = elektraStrCmp (keyName (check), keyName (key)) == 0;
+		result = elektraStrCmp (elektraKeyName (check), elektraKeyName (key)) == 0;
 	}
 	return result;
 }
@@ -111,7 +111,7 @@ static int checkKeyIsSame (ElektraKey * key, ElektraKey * check)
 static int checkKeyIsBelowOrSame (ElektraKey * key, ElektraKey * check)
 {
 	int result = 0;
-	if (keyIsBelow (key, check))
+	if (elektraKeyIsBelow (key, check))
 	{
 		result = 1;
 	}
@@ -147,7 +147,7 @@ void elektraInternalnotificationDoUpdate (ElektraKey * changedKey, ElektraNotifi
 	KeyRegistration * keyRegistration = pluginState->head;
 	while (keyRegistration != NULL)
 	{
-		ElektraKey * registeredKey = keyNew (keyRegistration->name, ELEKTRA_KEY_END);
+		ElektraKey * registeredKey = elektraKeyNew (keyRegistration->name, ELEKTRA_KEY_END);
 
 		// check if registered key is same or below changed/commit key
 		kdbChanged |= checkKeyIsBelowOrSame (changedKey, registeredKey);
@@ -159,18 +159,18 @@ void elektraInternalnotificationDoUpdate (ElektraKey * changedKey, ElektraNotifi
 		}
 
 		keyRegistration = keyRegistration->next;
-		keyDel (registeredKey);
+		elektraKeyDel (registeredKey);
 	}
 
 	if (kdbChanged)
 	{
 		ElektraKeyset * global = elektraPluginGetGlobalKeySet (plugin);
-		ElektraKey * kdbKey = ksLookupByName (global, "system:/elektra/kdb", 0);
-		const void * kdbPtr = keyValue (kdbKey);
-		ElektraKdb * kdb = kdbPtr == NULL ? NULL : *(ElektraKdb **) keyValue (kdbKey);
+		ElektraKey * kdbKey = elektraKeysetLookupByName (global, "system:/elektra/kdb", 0);
+		const void * kdbPtr = elektraKeyValue (kdbKey);
+		ElektraKdb * kdb = kdbPtr == NULL ? NULL : *(ElektraKdb **) elektraKeyValue (kdbKey);
 		context->kdbUpdate (kdb, changedKey);
 	}
-	keyDel (changedKey);
+	elektraKeyDel (changedKey);
 }
 
 /**
@@ -196,7 +196,7 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 	}
 	item->next = NULL;
 	item->lastValue = NULL;
-	item->name = elektraStrDup (keyName (key));
+	item->name = elektraStrDup (elektraKeyName (key));
 	item->callback = callback;
 	item->context = context;
 	item->sameOrBelow = 0;
@@ -229,8 +229,8 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 static int keySetContainsSameOrBelow (ElektraKey * check, ElektraKeyset * ks)
 {
 	ElektraKey * current;
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != NULL)
+	elektraKeysetRewind (ks);
+	while ((current = elektraKeysetNext (ks)) != NULL)
 	{
 		if (checkKeyIsBelowOrSame (check, current))
 		{
@@ -261,7 +261,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, ElektraKe
 		ElektraKey * key;
 		if (registeredKey->sameOrBelow)
 		{
-			ElektraKey * checkKey = keyNew (registeredKey->name, ELEKTRA_KEY_END);
+			ElektraKey * checkKey = elektraKeyNew (registeredKey->name, ELEKTRA_KEY_END);
 			if (keySetContainsSameOrBelow (checkKey, keySet))
 			{
 				changed = 1;
@@ -269,23 +269,23 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, ElektraKe
 			}
 			else
 			{
-				keyDel (checkKey);
+				elektraKeyDel (checkKey);
 			}
 		}
 		else
 		{
-			key = ksLookupByName (keySet, registeredKey->name, 0);
+			key = elektraKeysetLookupByName (keySet, registeredKey->name, 0);
 			if (key != NULL)
 			{
 				// Detect changes for string keys
-				if (!keyIsString (key))
+				if (!elektraKeyIsString (key))
 				{
 					// always notify for binary keys
 					changed = 1;
 				}
 				else
 				{
-					const char * currentValue = keyString (key);
+					const char * currentValue = elektraKeyString (key);
 					changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
 
 					if (changed)
@@ -309,14 +309,14 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, ElektraKe
 		if (changed)
 		{
 			ELEKTRA_LOG_DEBUG ("found changed registeredKey=%s with string value \"%s\". using context or variable=%p",
-					   registeredKey->name, keyString (key), registeredKey->context);
+					   registeredKey->name, elektraKeyString (key), registeredKey->context);
 
 			// Invoke callback
 			ElektraNotificationChangeCallback callback = *(ElektraNotificationChangeCallback) registeredKey->callback;
 			callback (key, registeredKey->context);
 			if (registeredKey->sameOrBelow)
 			{
-				keyDel (key);
+				elektraKeyDel (key);
 			}
 		}
 
@@ -512,20 +512,20 @@ int elektraInternalnotificationRegisterCallbackSameOrBelow (Plugin * handle, Ele
  */
 int elektraInternalnotificationGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/internalnotification"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/internalnotification"))
 	{
-		ElektraKeyset * contract = ksNew (
+		ElektraKeyset * contract = elektraKeysetNew (
 			30,
-			keyNew ("system:/elektra/modules/internalnotification", ELEKTRA_KEY_VALUE,
+			elektraKeyNew ("system:/elektra/modules/internalnotification", ELEKTRA_KEY_VALUE,
 				"internalnotification plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports/get", ELEKTRA_KEY_FUNC, elektraInternalnotificationGet,
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports/get", ELEKTRA_KEY_FUNC, elektraInternalnotificationGet,
 				ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports/set", ELEKTRA_KEY_FUNC, elektraInternalnotificationSet,
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports/set", ELEKTRA_KEY_FUNC, elektraInternalnotificationSet,
 				ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports/open", ELEKTRA_KEY_FUNC, elektraInternalnotificationOpen,
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports/open", ELEKTRA_KEY_FUNC, elektraInternalnotificationOpen,
 				ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports/close", ELEKTRA_KEY_FUNC, elektraInternalnotificationClose,
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports/close", ELEKTRA_KEY_FUNC, elektraInternalnotificationClose,
 				ELEKTRA_KEY_END),
 
 			// Export register* functions
@@ -545,18 +545,18 @@ int elektraInternalnotificationGet (Plugin * handle, ElektraKeyset * returned, E
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLongDouble),
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-			keyNew ("system:/elektra/modules/internalnotification/exports/registerCallback", ELEKTRA_KEY_FUNC,
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports/registerCallback", ELEKTRA_KEY_FUNC,
 				elektraInternalnotificationRegisterCallback, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports/registerCallbackSameOrBelow", ELEKTRA_KEY_FUNC,
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports/registerCallbackSameOrBelow", ELEKTRA_KEY_FUNC,
 				elektraInternalnotificationRegisterCallbackSameOrBelow, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports/setConversionErrorCallback", ELEKTRA_KEY_FUNC,
+			elektraKeyNew ("system:/elektra/modules/internalnotification/exports/setConversionErrorCallback", ELEKTRA_KEY_FUNC,
 				elektraInternalnotificationSetConversionErrorCallback, ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
 
-			keyNew ("system:/elektra/modules/internalnotification/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/internalnotification/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1;
 	}
@@ -618,14 +618,14 @@ int elektraInternalnotificationOpen (Plugin * handle, ElektraKey * parentKey ELE
 
 	if (global != NULL)
 	{
-		ksAppendKey (global,
-			     keyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, elektraInternalnotificationDoUpdate, ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (global,
+			     elektraKeyNew ("system:/elektra/notification/callback", ELEKTRA_KEY_FUNC, elektraInternalnotificationDoUpdate, ELEKTRA_KEY_END));
 
-		ElektraKey * contextKey = ksLookupByName (config, "/context", 0);
+		ElektraKey * contextKey = elektraKeysetLookupByName (config, "/context", 0);
 		if (contextKey != NULL)
 		{
-			ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
-			ksAppendKey (global, keyNew ("system:/elektra/notification/context", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (context),
+			ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) elektraKeyValue (contextKey);
+			elektraKeysetAppendKey (global, elektraKeyNew ("system:/elektra/notification/context", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (context),
 						     ELEKTRA_KEY_VALUE, &context, ELEKTRA_KEY_END));
 		}
 	}
@@ -674,13 +674,13 @@ int elektraInternalnotificationClose (Plugin * handle, ElektraKey * parentKey EL
 	}
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * contextKey = ksLookupByName (config, "/context", ELEKTRA_KDB_O_POP);
+	ElektraKey * contextKey = elektraKeysetLookupByName (config, "/context", ELEKTRA_KDB_O_POP);
 	if (contextKey != NULL)
 	{
-		ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
+		ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) elektraKeyValue (contextKey);
 		elektraFree (context);
 	}
-	keyDel (contextKey);
+	elektraKeyDel (contextKey);
 
 	return 1;
 }

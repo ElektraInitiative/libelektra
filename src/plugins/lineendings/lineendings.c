@@ -113,26 +113,26 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 
 int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/lineendings"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/lineendings"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/lineendings", ELEKTRA_KEY_VALUE, "lineendings plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/lineendings/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/lineendings/exports/get", ELEKTRA_KEY_FUNC, elektraLineendingsGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/lineendings/exports/set", ELEKTRA_KEY_FUNC, elektraLineendingsSet, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/lineendings", ELEKTRA_KEY_VALUE, "lineendings plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/lineendings/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/lineendings/exports/get", ELEKTRA_KEY_FUNC, elektraLineendingsGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/lineendings/exports/set", ELEKTRA_KEY_FUNC, elektraLineendingsSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/lineendings/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/lineendings/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
 	/* get all keys */
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * valid = ksLookupByName (config, "/valid", 0);
-	Lineending validLineEnding = strToLE (keyString (valid));
+	ElektraKey * valid = elektraKeysetLookupByName (config, "/valid", 0);
+	Lineending validLineEnding = strToLE (elektraKeyString (valid));
 	int ret;
-	ret = checkLineEndings (keyString (parentKey), validLineEnding, parentKey);
+	ret = checkLineEndings (elektraKeyString (parentKey), validLineEnding, parentKey);
 	if (ret == (-3))
 	{
 		return -1;
@@ -144,14 +144,14 @@ int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retur
 int elektraLineendingsSet (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * valid = ksLookupByName (config, "/valid", 0);
-	Lineending validLineEnding = strToLE (keyString (valid));
+	ElektraKey * valid = elektraKeysetLookupByName (config, "/valid", 0);
+	Lineending validLineEnding = strToLE (elektraKeyString (valid));
 	int ret;
-	ret = checkLineEndings (keyString (parentKey), validLineEnding, parentKey);
+	ret = checkLineEndings (elektraKeyString (parentKey), validLineEnding, parentKey);
 	switch (ret)
 	{
 	case (-1):
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s\n", keyString (parentKey));
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Couldn't open file %s\n", elektraKeyString (parentKey));
 		return 1;
 		break;
 	case (-2):

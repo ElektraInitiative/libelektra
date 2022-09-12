@@ -73,11 +73,11 @@ typedef enum
 static int openFile (ElektraKey * parentKey, int flag, mode_t openMode, PluginMode mode)
 {
 	int fd;
-	ELEKTRA_LOG_DEBUG ("opening file %s", keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("opening file %s", elektraKeyString (parentKey));
 
-	if ((fd = open (keyString (parentKey), flag, openMode)) == -1)
+	if ((fd = open (elektraKeyString (parentKey), flag, openMode)) == -1)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("error opening file %s", keyString (parentKey));
+		ELEKTRA_MMAP_LOG_WARNING ("error opening file %s", elektraKeyString (parentKey));
 	}
 	return fd;
 }
@@ -95,11 +95,11 @@ static int openFile (ElektraKey * parentKey, int flag, mode_t openMode, PluginMo
  */
 static int truncateFile (int fd, size_t mmapsize, ElektraKey * parentKey ELEKTRA_UNUSED, PluginMode mode)
 {
-	ELEKTRA_LOG_DEBUG ("truncating file %s", keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("truncating file %s", elektraKeyString (parentKey));
 
 	if ((ftruncate (fd, mmapsize)) == -1)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("error truncating file %s", keyString (parentKey));
+		ELEKTRA_MMAP_LOG_WARNING ("error truncating file %s", elektraKeyString (parentKey));
 		return -1;
 	}
 	return 1;
@@ -118,12 +118,12 @@ static int truncateFile (int fd, size_t mmapsize, ElektraKey * parentKey ELEKTRA
  */
 static int fstatFile (int fd, struct stat * sbuf, ElektraKey * parentKey ELEKTRA_UNUSED, PluginMode mode)
 {
-	ELEKTRA_LOG_DEBUG ("fstat() on file %s", keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("fstat() on file %s", elektraKeyString (parentKey));
 
 	memset (sbuf, 0, sizeof (struct stat));
 	if (fstat (fd, sbuf) == -1)
 	{
-		ELEKTRA_MMAP_LOG_WARNING ("error on fstat() for file %s", keyString (parentKey));
+		ELEKTRA_MMAP_LOG_WARNING ("error on fstat() for file %s", elektraKeyString (parentKey));
 		return -1;
 	}
 	return 1;
@@ -143,7 +143,7 @@ static int fstatFile (int fd, struct stat * sbuf, ElektraKey * parentKey ELEKTRA
  */
 static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, ElektraKey * parentKey ELEKTRA_UNUSED, PluginMode mode)
 {
-	ELEKTRA_LOG_DEBUG ("mapping file %s", keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("mapping file %s", elektraKeyString (parentKey));
 
 	char * mappedRegion = MAP_FAILED;
 	if (test_bit (mode, MODE_NONREGULAR_FILE))
@@ -151,7 +151,7 @@ static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Elekt
 		mappedRegion = elektraCalloc (mmapSize);
 		if (!mappedRegion)
 		{
-			ELEKTRA_MMAP_LOG_WARNING ("error allocating buffer for file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
+			ELEKTRA_MMAP_LOG_WARNING ("error allocating buffer for file %s\nmmapSize: %zu", elektraKeyString (parentKey), mmapSize);
 			return MAP_FAILED;
 		}
 	}
@@ -160,7 +160,7 @@ static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Elekt
 		mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
 		if (mappedRegion == MAP_FAILED)
 		{
-			ELEKTRA_MMAP_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", keyString (parentKey), mmapSize);
+			ELEKTRA_MMAP_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", elektraKeyString (parentKey), mmapSize);
 			return MAP_FAILED;
 		}
 	}
@@ -236,7 +236,7 @@ static int copyToAnonymousTempfile (int fd, struct stat * sbuf, ElektraKey * par
 	}
 
 	ELEKTRA_LOG_DEBUG ("using anon tmp file: %s", name);
-	keySetString (parentKey, name);
+	elektraKeySetString (parentKey, name);
 	// use anonymous file
 	if (unlink (name) != 0)
 	{
@@ -631,12 +631,12 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 				   DynArray * dynArray)
 {
 	ElektraKey * cur;
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 	size_t dataBlocksSize = 0; // sum of keyName and keyValue sizes
 	mmapMetaData->numKeys = 0;
 	mmapMetaData->numKeySets = 3;		 // include the magic, global and main keyset
 	mmapMetaData->ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
-	while ((cur = ksNext (returned)) != 0)
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
 		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
 
@@ -645,8 +645,8 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 			++mmapMetaData->numKeySets;
 
 			ElektraKey * curMeta;
-			ksRewind (cur->meta);
-			while ((curMeta = ksNext (cur->meta)) != 0)
+			elektraKeysetRewind (cur->meta);
+			while ((curMeta = elektraKeysetNext (cur->meta)) != 0)
 			{
 				if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
 				{
@@ -665,8 +665,8 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 		mmapMetaData->numKeys += global->size;
 
 		ElektraKey * globalKey;
-		ksRewind (global);
-		while ((globalKey = ksNext (global)) != 0)
+		elektraKeysetRewind (global);
+		while ((globalKey = elektraKeysetNext (global)) != 0)
 		{
 			dataBlocksSize += (globalKey->keySize + globalKey->keyUSize + globalKey->dataSize);
 
@@ -675,8 +675,8 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 				++mmapMetaData->numKeySets;
 
 				ElektraKey * curMeta;
-				ksRewind (globalKey->meta);
-				while ((curMeta = ksNext (globalKey->meta)) != 0)
+				elektraKeysetRewind (globalKey->meta);
+				while ((curMeta = elektraKeysetNext (globalKey->meta)) != 0)
 				{
 					if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
 					{
@@ -805,11 +805,11 @@ static ElektraKeyset * writeMetaKeySet (ElektraKey * key, MmapAddr * mmapAddr, D
 	newMeta->array = (ElektraKey **) mmapAddr->metaKsArrayPtr;
 	mmapAddr->metaKsArrayPtr += SIZEOF_KEY_PTR * key->meta->alloc;
 
-	keyRewindMeta (key);
+	elektraKeyRewindMeta (key);
 	size_t metaKeyIndex = 0;
 	ElektraKey * mappedMetaKey = 0;
 	const ElektraKey * metaKey;
-	while ((metaKey = keyNextMeta (key)) != 0)
+	while ((metaKey = elektraKeyNextMeta (key)) != 0)
 	{
 		// get address of mapped key and store it in the new array
 		mappedMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) ((ElektraKey *) metaKey, dynArray)];
@@ -853,8 +853,8 @@ static void writeKeys (ElektraKeyset * keySet, MmapAddr * mmapAddr, DynArray * d
 		ksArray = (ElektraKey **) mmapAddr->globalKsArrayPtr;
 	}
 
-	ksRewind (keySet);
-	while ((cur = ksNext (keySet)) != 0)
+	elektraKeysetRewind (keySet);
+	while ((cur = elektraKeysetNext (keySet)) != 0)
 	{
 		ElektraKey * mmapKey = (ElektraKey *) mmapAddr->keyPtr; // new key location
 		mmapAddr->keyPtr += SIZEOF_KEY;
@@ -1109,7 +1109,7 @@ static void mmapOpmphmPredictorDel (OpmphmPredictor * op)
  */
 static void mmapFastReplace (ElektraKeyset * dest, ElektraKeyset * src)
 {
-	ksClose (dest);
+	elektraKeysetClose (dest);
 	dest->array = src->array;
 	dest->size = src->size;
 	dest->alloc = src->alloc;
@@ -1152,7 +1152,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, ElektraKeyset * 
 		ElektraKeyset * global = elektraPluginGetGlobalKeySet (handle);
 		ElektraKeyset * mmapTimeStamps = (ElektraKeyset *) (mappedRegion + OFFSET_GLOBAL_KEYSET);
 
-		if (ksGetSize (global) == 0)
+		if (elektraKeysetGetSize (global) == 0)
 		{
 			// fast replace KeySet, if Global KeySet was empty
 			mmapFastReplace (global, mmapTimeStamps);
@@ -1160,7 +1160,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, ElektraKeyset * 
 		else
 		{
 			// do not overwrite, but append Keys to existing Global KeySet
-			ksAppend (global, mmapTimeStamps);
+			elektraKeysetAppend (global, mmapTimeStamps);
 		}
 	}
 }
@@ -1334,23 +1334,23 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 		mode = MODE_GLOBALCACHE;
 	}
 
-	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
-	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
+	ElektraKey * root = elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
+	if (elektraKeyCmp (root, parentKey) == 0 || elektraKeyIsBelow (root, parentKey) == 1)
 	{
-		keyDel (root);
+		elektraKeyDel (root);
 		ElektraKeyset * contract =
 #include "contract.h"
-			ksAppend (ks, contract);
-		ksDel (contract);
+			elektraKeysetAppend (ks, contract);
+		elektraKeysetDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	keyDel (root);
+	elektraKeyDel (root);
 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 
-	if (elektraStrCmp (keyString (parentKey), STDIN_FILENAME) == 0)
+	if (elektraStrCmp (elektraKeyString (parentKey), STDIN_FILENAME) == 0)
 	{
 		fd = fileno (stdin);
 		ELEKTRA_LOG_DEBUG ("MODE_NONREGULAR_FILE");
@@ -1386,8 +1386,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 			ELEKTRA_MMAP_LOG_WARNING ("could not close");
 			goto error;
 		}
-		keySetString (parentKey, keyString (initialParent));
-		if (initialParent) keyDel (initialParent);
+		elektraKeySetString (parentKey, elektraKeyString (initialParent));
+		if (initialParent) elektraKeyDel (initialParent);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
@@ -1470,8 +1470,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 		goto error;
 	}
 
-	keySetString (parentKey, keyString (initialParent));
-	if (initialParent) keyDel (initialParent);
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	if (initialParent) elektraKeyDel (initialParent);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1490,8 +1490,8 @@ error:
 		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
-	keySetString (parentKey, keyString (initialParent));
-	if (initialParent) keyDel (initialParent);
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	if (initialParent) elektraKeyDel (initialParent);
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
@@ -1525,9 +1525,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
-	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * initialParent = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 
-	if (elektraStrCmp (keyString (parentKey), STDOUT_FILENAME) == 0)
+	if (elektraStrCmp (elektraKeyString (parentKey), STDOUT_FILENAME) == 0)
 	{
 		// keySetString (parentKey, keyString (initialParent));
 		fd = fileno (stdout);
@@ -1536,7 +1536,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 	}
 	else
 	{
-		if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
+		if (unlink (elektraKeyString (parentKey)) != 0 && errno != ENOENT)
 		{
 			ELEKTRA_MMAP_LOG_WARNING ("could not unlink");
 			goto error;
@@ -1614,8 +1614,8 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 	}
 
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
-	keySetString (parentKey, keyString (initialParent));
-	if (initialParent) keyDel (initialParent);
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	if (initialParent) elektraKeyDel (initialParent);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
@@ -1640,8 +1640,8 @@ error:
 		ELEKTRA_MMAP_LOG_WARNING ("could not close");
 	}
 
-	keySetString (parentKey, keyString (initialParent));
-	if (initialParent) keyDel (initialParent);
+	elektraKeySetString (parentKey, elektraKeyString (initialParent));
+	if (initialParent) elektraKeyDel (initialParent);
 	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
 
 	errno = errnosave;

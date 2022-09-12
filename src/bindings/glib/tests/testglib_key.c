@@ -27,7 +27,7 @@ static void test_ctor (void)
 	key = gelektra_key_new ("wrongname", GELEKTRA_KEY_END);
 	succeed_if (key == NULL, "created invalid key");
 
-	ElektraKey * ckey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * ckey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	key = gelektra_key_make (ckey);
 	succeed_if (key->key == ckey, "new key not wrapped");
 	g_object_unref (key);

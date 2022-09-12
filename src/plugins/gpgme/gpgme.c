@@ -32,8 +32,8 @@
  */
 static int isMarkedForEncryption (const ElektraKey * k)
 {
-	const ElektraKey * metaEncrypt = keyGetMeta (k, ELEKTRA_GPGME_META_ENCRYPT);
-	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
+	const ElektraKey * metaEncrypt = elektraKeyGetMeta (k, ELEKTRA_GPGME_META_ENCRYPT);
+	if (metaEncrypt && strcmp (elektraKeyString (metaEncrypt), "1") == 0)
 	{
 		return 1;
 	}
@@ -52,8 +52,8 @@ static int isMarkedForEncryption (const ElektraKey * k)
  */
 static int isOriginallyBinary (const ElektraKey * k)
 {
-	const ElektraKey * metaEncrypt = keyGetMeta (k, ELEKTRA_GPGME_META_BINARY);
-	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
+	const ElektraKey * metaEncrypt = elektraKeyGetMeta (k, ELEKTRA_GPGME_META_BINARY);
+	if (metaEncrypt && strcmp (elektraKeyString (metaEncrypt), "1") == 0)
 	{
 		return 1;
 	}
@@ -68,8 +68,8 @@ static int isOriginallyBinary (const ElektraKey * k)
  */
 static int inTestMode (ElektraKeyset * conf)
 {
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_GPGME_UNIT_TEST, 0);
-	if (k && !strcmp (keyString (k), "1"))
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_GPGME_UNIT_TEST, 0);
+	if (k && !strcmp (elektraKeyString (k), "1"))
 	{
 		return 1;
 	}
@@ -83,7 +83,7 @@ static int inTestMode (ElektraKeyset * conf)
  */
 static inline int isSpecNamespace (const ElektraKey * k)
 {
-	return (keyGetNamespace (k) == ELEKTRA_NS_SPEC);
+	return (elektraKeyGetNamespace (k) == ELEKTRA_NS_SPEC);
 }
 
 /**
@@ -93,7 +93,7 @@ static inline int isSpecNamespace (const ElektraKey * k)
  */
 static inline int isNullValue (const ElektraKey * k)
 {
-	return keyGetValueSize (k) == 0;
+	return elektraKeyGetValueSize (k) == 0;
 }
 
 /**
@@ -105,8 +105,8 @@ static inline int isNullValue (const ElektraKey * k)
  */
 static int isTextMode (ElektraKeyset * conf)
 {
-	ElektraKey * k = ksLookupByName (conf, ELEKTRA_GPGME_CONFIG_TEXTMODE, 0);
-	if (k && !strcmp (keyString (k), "0"))
+	ElektraKey * k = elektraKeysetLookupByName (conf, ELEKTRA_GPGME_CONFIG_TEXTMODE, 0);
+	if (k && !strcmp (elektraKeyString (k), "0"))
 	{
 		return 0;
 	}
@@ -143,14 +143,14 @@ static gpgme_key_t * extractRecipientFromPluginConfig (ElektraKeyset * config, E
 	gpgme_key_t key;
 
 	keylist_t list;
-	ElektraKey * gpgRecipientRoot = ksLookupByName (config, ELEKTRA_RECIPIENT_KEY, 0);
+	ElektraKey * gpgRecipientRoot = elektraKeysetLookupByName (config, ELEKTRA_RECIPIENT_KEY, 0);
 
 	elektraGpgmeKeylistInit (&list);
 
 	// append root (gpg/key) as recipient
-	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
+	if (gpgRecipientRoot && strlen (elektraKeyString (gpgRecipientRoot)) > 0)
 	{
-		err = gpgme_get_key (ctx, keyString (gpgRecipientRoot), &key, 0);
+		err = gpgme_get_key (ctx, elektraKeyString (gpgRecipientRoot), &key, 0);
 		if (err)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Failed to read the specified GPG key. Reason: %s",
@@ -175,12 +175,12 @@ static gpgme_key_t * extractRecipientFromPluginConfig (ElektraKeyset * config, E
 	{
 		ElektraKey * k;
 
-		ksRewind (config);
-		while ((k = ksNext (config)) != 0)
+		elektraKeysetRewind (config);
+		while ((k = elektraKeysetNext (config)) != 0)
 		{
-			if (keyIsBelow (k, gpgRecipientRoot))
+			if (elektraKeyIsBelow (k, gpgRecipientRoot))
 			{
-				err = gpgme_get_key (ctx, keyString (k), &key, 0);
+				err = gpgme_get_key (ctx, elektraKeyString (k), &key, 0);
 				if (err)
 				{
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
@@ -266,11 +266,11 @@ static int transferGpgmeDataToElektraKey (gpgme_data_t src, ElektraKey * dst, El
 
 	if (textMode)
 	{
-		keySetString (dst, buffer);
+		elektraKeySetString (dst, buffer);
 	}
 	else
 	{
-		keySetBinary (dst, buffer, ciphertextLen);
+		elektraKeySetBinary (dst, buffer, ciphertextLen);
 	}
 
 cleanup:
@@ -375,8 +375,8 @@ static int gpgEncrypt (Plugin * handle, ElektraKeyset * data, ElektraKey * error
 		encryptFlags |= GPGME_ENCRYPT_ALWAYS_TRUST;
 	}
 
-	ksRewind (data);
-	while ((k = ksNext (data)))
+	elektraKeysetRewind (data);
+	while ((k = elektraKeysetNext (data)))
 	{
 		gpgme_data_t input;
 		gpgme_data_t ciphertext;
@@ -389,14 +389,14 @@ static int gpgEncrypt (Plugin * handle, ElektraKeyset * data, ElektraKey * error
 		}
 
 		// preserve the data type of k (string, binary)
-		if (!keyIsBinary (k))
+		if (!elektraKeyIsBinary (k))
 		{
-			err = gpgme_data_new_from_mem (&input, keyString (k), strlen (keyString (k)) + 1, 0);
+			err = gpgme_data_new_from_mem (&input, elektraKeyString (k), strlen (elektraKeyString (k)) + 1, 0);
 		}
 		else
 		{
-			keySetMeta (k, ELEKTRA_GPGME_META_BINARY, "1");
-			err = gpgme_data_new_from_mem (&input, keyValue (k), keyGetValueSize (k), 0);
+			elektraKeySetMeta (k, ELEKTRA_GPGME_META_BINARY, "1");
+			err = gpgme_data_new_from_mem (&input, elektraKeyValue (k), elektraKeyGetValueSize (k), 0);
 		}
 		if (err)
 		{
@@ -489,8 +489,8 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, ElektraKeyset * data, Ele
 		return -1; // at this point nothing has been initialized
 	}
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
+	elektraKeysetRewind (data);
+	while ((k = elektraKeysetNext (data)) != 0)
 	{
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k) || isNullValue (k))
 		{
@@ -501,7 +501,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, ElektraKeyset * data, Ele
 		gpgme_data_t plaintext;
 		int originallyBinary = isOriginallyBinary (k);
 
-		err = gpgme_data_new_from_mem (&ciphertext, keyValue (k), keyGetValueSize (k), 0);
+		err = gpgme_data_new_from_mem (&ciphertext, elektraKeyValue (k), elektraKeyGetValueSize (k), 0);
 		if (err)
 		{
 			ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Internal error: %s", gpgme_strerror (err));
@@ -583,13 +583,13 @@ int elektraGpgmeClose (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED ElektraKey
 int elektraGpgmeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// publish the module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		ElektraKeyset * moduleConfig = ksNew (30,
+		ElektraKeyset * moduleConfig = elektraKeysetNew (30,
 #include "contract.h"
 					       ELEKTRA_KS_END);
-		ksAppend (ks, moduleConfig);
-		ksDel (moduleConfig);
+		elektraKeysetAppend (ks, moduleConfig);
+		elektraKeysetDel (moduleConfig);
 		return 1; // success
 	}
 

@@ -13,75 +13,75 @@ struct _RefGraph
 RefGraph * rgNew (void)
 {
 	RefGraph * graph = elektraCalloc (sizeof (struct _RefGraph));
-	graph->inner = ksNew (0, ELEKTRA_KS_END);
-	graph->leaves = ksNew (0, ELEKTRA_KS_END);
+	graph->inner = elektraKeysetNew (0, ELEKTRA_KS_END);
+	graph->leaves = elektraKeysetNew (0, ELEKTRA_KS_END);
 	return graph;
 }
 
 RefGraph * rgDup (const RefGraph * source)
 {
 	RefGraph * graph = elektraCalloc (sizeof (struct _RefGraph));
-	graph->inner = ksDup (source->inner);
-	graph->leaves = ksDup (source->leaves);
+	graph->inner = elektraKeysetDup (source->inner);
+	graph->leaves = elektraKeysetDup (source->leaves);
 	return graph;
 }
 
 bool rgHasLeaf (const RefGraph * graph)
 {
-	return ksGetSize (graph->leaves) > 0;
+	return elektraKeysetGetSize (graph->leaves) > 0;
 }
 
 bool rgContains (const RefGraph * graph, const char * nodeName)
 {
-	return ksLookupByName (graph->inner, nodeName, 0) != NULL;
+	return elektraKeysetLookupByName (graph->inner, nodeName, 0) != NULL;
 }
 
 bool rgEmpty (const RefGraph * graph)
 {
-	return ksGetSize (graph->inner) == 0 && ksGetSize (graph->leaves) == 0;
+	return elektraKeysetGetSize (graph->inner) == 0 && elektraKeysetGetSize (graph->leaves) == 0;
 }
 
 bool rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode)
 {
-	ElektraKey * node = ksLookupByName (graph->leaves, fromNode, ELEKTRA_KDB_O_POP);
+	ElektraKey * node = elektraKeysetLookupByName (graph->leaves, fromNode, ELEKTRA_KDB_O_POP);
 	if (node != NULL)
 	{
-		keySetMeta (node, "last", "#0");
-		keySetMeta (node, "#0", toNode);
+		elektraKeySetMeta (node, "last", "#0");
+		elektraKeySetMeta (node, "#0", toNode);
 
-		ksAppendKey (graph->inner, node);
+		elektraKeysetAppendKey (graph->inner, node);
 		return true;
 	}
 
-	node = ksLookupByName (graph->inner, fromNode, 0);
+	node = elektraKeysetLookupByName (graph->inner, fromNode, 0);
 	if (node == NULL)
 	{
 		return false;
 	}
 
-	ElektraKey * lastKey = keyDup (keyGetMeta (node, "last"), ELEKTRA_KEY_CP_ALL);
+	ElektraKey * lastKey = elektraKeyDup (elektraKeyGetMeta (node, "last"), ELEKTRA_KEY_CP_ALL);
 	if (elektraArrayIncName (lastKey) < 0)
 	{
-		keyDel (lastKey);
+		elektraKeyDel (lastKey);
 		return false;
 	}
 
-	keySetMeta (node, "last", keyName (lastKey));
-	keySetMeta (node, keyName (lastKey), toNode);
-	keyDel (lastKey);
+	elektraKeySetMeta (node, "last", elektraKeyName (lastKey));
+	elektraKeySetMeta (node, elektraKeyName (lastKey), toNode);
+	elektraKeyDel (lastKey);
 
 	return true;
 }
 
 void rgAddNode (RefGraph * graph, const char * nodeName)
 {
-	ElektraKey * node = keyNew (nodeName, ELEKTRA_KEY_END);
-	ksAppendKey (graph->leaves, node);
+	ElektraKey * node = elektraKeyNew (nodeName, ELEKTRA_KEY_END);
+	elektraKeysetAppendKey (graph->leaves, node);
 }
 
 const char * rgGetEdge (RefGraph * graph, const char * fromNode, int index)
 {
-	ElektraKey * node = ksLookupByName (graph->inner, fromNode, 0);
+	ElektraKey * node = elektraKeysetLookupByName (graph->inner, fromNode, 0);
 	if (node == NULL)
 	{
 		return NULL;
@@ -90,19 +90,19 @@ const char * rgGetEdge (RefGraph * graph, const char * fromNode, int index)
 	char elem[ELEKTRA_MAX_ARRAY_SIZE];
 	elektraWriteArrayNumber (elem, index);
 
-	const ElektraKey * k = keyGetMeta (node, elem);
-	return k == NULL ? NULL : keyString (k);
+	const ElektraKey * k = elektraKeyGetMeta (node, elem);
+	return k == NULL ? NULL : elektraKeyString (k);
 }
 
 void rgRemoveLeaves (RefGraph * graph)
 {
-	ElektraKeyset * newLeaves = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * newInner = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * newLeaves = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * newInner = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	ElektraKey * cur;
-	while ((cur = ksPop (graph->inner)) != NULL)
+	while ((cur = elektraKeysetPop (graph->inner)) != NULL)
 	{
-		const char * last = keyString (keyGetMeta (cur, "last"));
+		const char * last = elektraKeyString (elektraKeyGetMeta (cur, "last"));
 		last++;
 		while (*last == '_')
 		{
@@ -114,10 +114,10 @@ void rgRemoveLeaves (RefGraph * graph)
 		for (int i = 0; i < size; ++i)
 		{
 			elektraWriteArrayNumber (elem, i);
-			const ElektraKey * toNode = keyGetMeta (cur, elem);
-			if (ksLookupByName (graph->leaves, keyString (toNode), 0) != NULL)
+			const ElektraKey * toNode = elektraKeyGetMeta (cur, elem);
+			if (elektraKeysetLookupByName (graph->leaves, elektraKeyString (toNode), 0) != NULL)
 			{
-				keySetMeta (cur, elem, NULL);
+				elektraKeySetMeta (cur, elem, NULL);
 			}
 		}
 
@@ -127,7 +127,7 @@ void rgRemoveLeaves (RefGraph * graph)
 			elektraWriteArrayNumber (elem, read);
 
 			const ElektraKey * toNode;
-			while ((toNode = keyGetMeta (cur, elem)) == NULL && read < size)
+			while ((toNode = elektraKeyGetMeta (cur, elem)) == NULL && read < size)
 			{
 				read++;
 			}
@@ -138,35 +138,35 @@ void rgRemoveLeaves (RefGraph * graph)
 			}
 
 			elektraWriteArrayNumber (elem, write);
-			keySetMeta (cur, elem, keyString (toNode));
+			elektraKeySetMeta (cur, elem, elektraKeyString (toNode));
 		}
 		elektraWriteArrayNumber (elem, write);
-		keySetMeta (cur, "last", elem);
+		elektraKeySetMeta (cur, "last", elem);
 
 		if (write == 0)
 		{
-			ksAppendKey (newLeaves, cur);
+			elektraKeysetAppendKey (newLeaves, cur);
 		}
 		else
 		{
-			ksAppendKey (newInner, cur);
+			elektraKeysetAppendKey (newInner, cur);
 		}
 
-		keyDel (cur);
+		elektraKeyDel (cur);
 	}
 
-	ksClear (graph->leaves);
-	ksAppend (graph->leaves, newLeaves);
-	ksClear (graph->inner);
-	ksAppend (graph->inner, newInner);
+	elektraKeysetClear (graph->leaves);
+	elektraKeysetAppend (graph->leaves, newLeaves);
+	elektraKeysetClear (graph->inner);
+	elektraKeysetAppend (graph->inner, newInner);
 
-	ksDel (newLeaves);
-	ksDel (newInner);
+	elektraKeysetDel (newLeaves);
+	elektraKeysetDel (newInner);
 }
 
 void rgDel (RefGraph * graph)
 {
-	ksDel (graph->inner);
-	ksDel (graph->leaves);
+	elektraKeysetDel (graph->inner);
+	elektraKeysetDel (graph->leaves);
 	elektraFree (graph);
 }

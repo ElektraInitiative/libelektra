@@ -38,7 +38,7 @@ int elektraKeyCmpOrderWrapper (const void * a, const void * b)
 	/* comparing the order meta could not order the keys
 	 * revert to comparing the names instead
 	 */
-	if (orderResult == 0) return keyCmp (*ka, *kb);
+	if (orderResult == 0) return elektraKeyCmp (*ka, *kb);
 
 	return orderResult;
 }
@@ -49,11 +49,11 @@ int elektraKeyCmpOrderWrapper (const void * a, const void * b)
 static ElektraKey * findNearestParent (ElektraKey * key, ElektraKeyset * ks)
 {
 	ElektraKey * current;
-	ksSetCursor (ks, ksGetSize (ks) - 1);
+	elektraKeysetSetCursor (ks, elektraKeysetGetSize (ks) - 1);
 
-	for (elektraCursor cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
+	for (elektraCursor cursor = elektraKeysetGetCursor (ks) - 1; (current = elektraKeysetAtCursor (ks, cursor)) != NULL; --cursor)
 	{
-		if (keyIsBelow (current, key))
+		if (elektraKeyIsBelow (current, key))
 		{
 			return current;
 		}
@@ -85,32 +85,32 @@ int elektraKeyAppendMetaLine (ElektraKey * target, const char * metaName, const 
 	if (!metaName) return 0;
 	if (!line) return 0;
 
-	if (!keyGetMeta (target, metaName))
+	if (!elektraKeyGetMeta (target, metaName))
 	{
-		keySetMeta (target, metaName, line);
-		return keyGetValueSize (keyGetMeta (target, metaName));
+		elektraKeySetMeta (target, metaName, line);
+		return elektraKeyGetValueSize (elektraKeyGetMeta (target, metaName));
 	}
 
-	const ElektraKey * existingMeta = keyGetMeta (target, metaName);
-	char * buffer = elektraMalloc (keyGetValueSize (existingMeta) + strlen (line) + 1);
+	const ElektraKey * existingMeta = elektraKeyGetMeta (target, metaName);
+	char * buffer = elektraMalloc (elektraKeyGetValueSize (existingMeta) + strlen (line) + 1);
 	if (!buffer) return 0;
 
-	keyGetString (existingMeta, buffer, keyGetValueSize (existingMeta));
+	elektraKeyGetString (existingMeta, buffer, elektraKeyGetValueSize (existingMeta));
 	strcat (buffer, "\n");
 	strncat (buffer, line, elektraStrLen (line));
 
-	keySetMeta (target, metaName, buffer);
+	elektraKeySetMeta (target, metaName, buffer);
 	elektraFree (buffer);
-	return keyGetValueSize (keyGetMeta (target, metaName));
+	return elektraKeyGetValueSize (elektraKeyGetMeta (target, metaName));
 }
 
 static const char * getAppendMode (ElektraKey * key)
 {
-	const ElektraKey * appendModeKey = keyGetMeta (key, CONVERT_APPENDMODE);
+	const ElektraKey * appendModeKey = elektraKeyGetMeta (key, CONVERT_APPENDMODE);
 	const char * appendMode;
 
 	/* append to the next key is the default */
-	appendMode = appendModeKey != 0 ? keyString (appendModeKey) : "next";
+	appendMode = appendModeKey != 0 ? elektraKeyString (appendModeKey) : "next";
 	return appendMode;
 }
 
@@ -119,37 +119,37 @@ void removeKeyFromResult (ElektraKey * convertKey, ElektraKey * target, ElektraK
 	/* remember which key this key was converted to
 	 * before removing it from the result
 	 */
-	keySetMeta (convertKey, CONVERT_TARGET, keyName (target));
-	keyDel (ksLookup (orig, convertKey, ELEKTRA_KDB_O_POP));
+	elektraKeySetMeta (convertKey, CONVERT_TARGET, elektraKeyName (target));
+	elektraKeyDel (elektraKeysetLookup (orig, convertKey, ELEKTRA_KDB_O_POP));
 }
 
 static void flushConvertedKeys (ElektraKey * target, ElektraKeyset * converted, ElektraKeyset * orig)
 {
-	if (ksGetSize (converted) == 0) return;
+	if (elektraKeysetGetSize (converted) == 0) return;
 
-	ksRewind (converted);
+	elektraKeysetRewind (converted);
 	ElektraKey * current;
 
-	while ((current = ksNext (converted)))
+	while ((current = elektraKeysetNext (converted)))
 	{
 		ElektraKey * appendTarget = target;
-		const char * metaName = keyString (keyGetMeta (current, CONVERT_METANAME));
+		const char * metaName = elektraKeyString (elektraKeyGetMeta (current, CONVERT_METANAME));
 
-		ElektraKey * currentDup = keyDup (current, ELEKTRA_KEY_CP_ALL);
-		ElektraKey * targetDup = keyDup (appendTarget, ELEKTRA_KEY_CP_ALL);
-		keySetBaseName (currentDup, 0);
-		keySetBaseName (targetDup, 0);
+		ElektraKey * currentDup = elektraKeyDup (current, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * targetDup = elektraKeyDup (appendTarget, ELEKTRA_KEY_CP_ALL);
+		elektraKeySetBaseName (currentDup, 0);
+		elektraKeySetBaseName (targetDup, 0);
 
 		/* the convert key request to be converted to a key
 		 * on the same level, but the target is below or above
 		 */
-		if (keyGetMeta (current, CONVERT_APPEND_SAMELEVEL) && keyCmp (currentDup, targetDup))
+		if (elektraKeyGetMeta (current, CONVERT_APPEND_SAMELEVEL) && elektraKeyCmp (currentDup, targetDup))
 		{
 			appendTarget = 0;
 		}
 
-		keyDel (currentDup);
-		keyDel (targetDup);
+		elektraKeyDel (currentDup);
+		elektraKeyDel (targetDup);
 
 		/* no target key was found of the target
 		 * was discarded for some reason. Revert to the parent
@@ -159,75 +159,75 @@ static void flushConvertedKeys (ElektraKey * target, ElektraKeyset * converted, 
 			appendTarget = findNearestParent (current, orig);
 		}
 
-		elektraKeyAppendMetaLine (appendTarget, metaName, keyString (current));
+		elektraKeyAppendMetaLine (appendTarget, metaName, elektraKeyString (current));
 		removeKeyFromResult (current, target, orig);
 	}
 
-	ksClear (converted);
+	elektraKeysetClear (converted);
 }
 
 static ElektraKeyset * convertKeys (ElektraKey ** keyArray, size_t numKeys, ElektraKeyset * orig)
 {
 	ElektraKey * current = 0;
 	ElektraKey * prevAppendTarget = 0;
-	ElektraKeyset * prevConverted = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * nextConverted = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * prevConverted = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * nextConverted = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * result = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	for (size_t index = 0; index < numKeys; index++)
 	{
 		current = keyArray[index];
 
-		if (!keyGetMeta (current, CONVERT_METANAME))
+		if (!elektraKeyGetMeta (current, CONVERT_METANAME))
 		{
 			/* flush out "previous" and "next" keys which may have been collected
 			 * because the current key serves as a new border
 			 */
-			ksAppend (result, prevConverted);
+			elektraKeysetAppend (result, prevConverted);
 			flushConvertedKeys (prevAppendTarget, prevConverted, orig);
 			prevAppendTarget = current;
 
-			ksAppend (result, nextConverted);
+			elektraKeysetAppend (result, nextConverted);
 			flushConvertedKeys (current, nextConverted, orig);
 			continue;
 		}
 
 		const char * appendMode = getAppendMode (current);
-		const char * metaName = keyString (keyGetMeta (current, CONVERT_METANAME));
+		const char * metaName = elektraKeyString (elektraKeyGetMeta (current, CONVERT_METANAME));
 
 		ElektraKey * bufferKey = 0;
 		if (!strcmp (appendMode, "previous"))
 		{
-			ksAppendKey (prevConverted, current);
+			elektraKeysetAppendKey (prevConverted, current);
 		}
 
 		if (!strcmp (appendMode, "next"))
 		{
-			ksAppendKey (nextConverted, current);
+			elektraKeysetAppendKey (nextConverted, current);
 		}
 
 		if (!strcmp (appendMode, "parent"))
 		{
 			ElektraKey * parent = findNearestParent (current, orig);
-			elektraKeyAppendMetaLine (parent, metaName, keyString (current));
-			ksAppendKey (result, current);
+			elektraKeyAppendMetaLine (parent, metaName, elektraKeyString (current));
+			elektraKeysetAppendKey (result, current);
 			removeKeyFromResult (current, parent, orig);
 		}
 
 		if (bufferKey)
 		{
-			keySetString (bufferKey, keyName (current));
+			elektraKeySetString (bufferKey, elektraKeyName (current));
 		}
 	}
 
-	ksAppend (result, prevConverted);
+	elektraKeysetAppend (result, prevConverted);
 	flushConvertedKeys (prevAppendTarget, prevConverted, orig);
 
-	ksAppend (result, nextConverted);
+	elektraKeysetAppend (result, nextConverted);
 	flushConvertedKeys (0, nextConverted, orig);
 
-	ksDel (nextConverted);
-	ksDel (prevConverted);
+	elektraKeysetDel (nextConverted);
+	elektraKeysetDel (prevConverted);
 
 	return result;
 }
@@ -237,17 +237,17 @@ int elektraKeyToMetaGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	int errnosave = errno;
 
 	/* configuration only */
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/keytometa"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/keytometa"))
 	{
 		ElektraKeyset * info =
 #include "contract.h"
 
-			ksAppend (returned, info);
-		ksDel (info);
+			elektraKeysetAppend (returned, info);
+		elektraKeysetDel (info);
 		return 1;
 	}
 
-	ElektraKey ** keyArray = calloc (ksGetSize (returned), sizeof (ElektraKey *));
+	ElektraKey ** keyArray = calloc (elektraKeysetGetSize (returned), sizeof (ElektraKey *));
 	int ret = elektraKsToMemArray (returned, keyArray);
 
 	if (ret < 0)
@@ -258,7 +258,7 @@ int elektraKeyToMetaGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 		return 0;
 	}
 
-	size_t numKeys = ksGetSize (returned);
+	size_t numKeys = elektraKeysetGetSize (returned);
 	qsort (keyArray, numKeys, sizeof (ElektraKey *), elektraKeyCmpOrderWrapper);
 
 	ElektraKeyset * convertedKeys = convertKeys (keyArray, numKeys, returned);
@@ -269,7 +269,7 @@ int elektraKeyToMetaGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	ElektraKeyset * old = elektraPluginGetData (handle);
 	if (old)
 	{
-		ksDel (old);
+		elektraKeysetDel (old);
 	}
 
 	elektraPluginSetData (handle, convertedKeys);
@@ -286,21 +286,21 @@ int elektraKeyToMetaSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	/* nothing to do */
 	if (converted == 0) return 1;
 
-	ksRewind (converted);
+	elektraKeysetRewind (converted);
 
 	char * saveptr = 0;
 	char * value = 0;
 	ElektraKey * current;
 	ElektraKey * previous = 0;
-	while ((current = ksNext (converted)) != 0)
+	while ((current = elektraKeysetNext (converted)) != 0)
 	{
-		const ElektraKey * targetName = keyGetMeta (current, CONVERT_TARGET);
-		const ElektraKey * metaName = keyGetMeta (current, CONVERT_METANAME);
+		const ElektraKey * targetName = elektraKeyGetMeta (current, CONVERT_TARGET);
+		const ElektraKey * metaName = elektraKeyGetMeta (current, CONVERT_METANAME);
 
 		/* they should always exist, just to be sure */
 		if (targetName && metaName)
 		{
-			ElektraKey * target = ksLookupByName (returned, keyString (targetName), ELEKTRA_KDB_O_NONE);
+			ElektraKey * target = elektraKeysetLookupByName (returned, elektraKeyString (targetName), ELEKTRA_KDB_O_NONE);
 
 			/* this might be NULL as the key might have been deleted */
 			if (target)
@@ -311,11 +311,11 @@ int elektraKeyToMetaSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 				{
 					/* handle the first meta line this means initializing strtok and related buffers */
 					elektraFree (value);
-					const ElektraKey * valueKey = keyGetMeta (target, keyString (metaName));
-					size_t valueSize = keyGetValueSize (valueKey);
+					const ElektraKey * valueKey = elektraKeyGetMeta (target, elektraKeyString (metaName));
+					size_t valueSize = elektraKeyGetValueSize (valueKey);
 					value = elektraMalloc (valueSize);
-					keyGetString (valueKey, value, valueSize);
-					keySetMeta (target, keyString (metaName), 0);
+					elektraKeyGetString (valueKey, value, valueSize);
+					elektraKeySetMeta (target, elektraKeyString (metaName), 0);
 					result = strtok_r (value, "\n", &saveptr);
 				}
 				else
@@ -324,21 +324,21 @@ int elektraKeyToMetaSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 					result = strtok_r (NULL, "\n", &saveptr);
 				}
 
-				keySetString (current, result);
+				elektraKeySetString (current, result);
 
 				previous = target;
 			}
 		}
 
-		keySetMeta (current, CONVERT_TARGET, 0);
-		keySetMeta (current, CONVERT_METANAME, 0);
+		elektraKeySetMeta (current, CONVERT_TARGET, 0);
+		elektraKeySetMeta (current, CONVERT_METANAME, 0);
 
-		ksAppendKey (returned, current);
+		elektraKeysetAppendKey (returned, current);
 	}
 
 	elektraFree (value);
 
-	ksDel (converted);
+	elektraKeysetDel (converted);
 	elektraPluginSetData (handle, 0);
 
 	return 1; /* success */
@@ -350,7 +350,7 @@ int elektraKeyToMetaClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED
 
 	if (old)
 	{
-		ksDel (old);
+		elektraKeysetDel (old);
 	}
 
 	return 1;

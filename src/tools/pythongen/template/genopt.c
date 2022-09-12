@@ -187,16 +187,16 @@ int ksGetOpt(int argc, char **argv, ElektraKeyset *ks)
 					break;
 				}
 		@end if
-				found = ksLookupByName(ks, "$support.userkey(key)", 0);
+				found = elektraKeysetLookupByName(ks, "$support.userkey(key)", 0);
 				if (!found)
 				{
-					ksAppendKey(ks, keyNew("$support.userkey(key)",
+					elektraKeysetAppendKey(ks, elektraKeyNew("$support.userkey(key)",
 							ELEKTRA_KEY_VALUE, $optarg(info),
 							ELEKTRA_KEY_END));
 				}
 				else
 				{
-					keySetString(found, $optarg(info));
+					elektraKeySetString(found, $optarg(info));
 				}
 				break;
 	@end if

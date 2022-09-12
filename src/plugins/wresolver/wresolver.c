@@ -66,7 +66,7 @@ struct _resolverHandles
 static resolverHandle * elektraGetResolverHandle (Plugin * handle, ElektraKey * parentKey)
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
-	switch (keyGetNamespace (parentKey))
+	switch (elektraKeyGetNamespace (parentKey))
 	{
 	case ELEKTRA_NS_SPEC:
 		return &pks->spec;
@@ -83,7 +83,7 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, ElektraKey * 
 	case ELEKTRA_NS_DEFAULT:
 		break;
 	}
-	ELEKTRA_ASSERT (0, "namespace %d not valid for resolving", keyGetNamespace (parentKey));
+	ELEKTRA_ASSERT (0, "namespace %d not valid for resolving", elektraKeyGetNamespace (parentKey));
 	return 0;
 }
 
@@ -254,7 +254,7 @@ static void elektraResolveSystem (resolverHandle * p, ElektraKey * errorKey)
 int elektraWresolverOpen (Plugin * handle, ElektraKey * errorKey)
 {
 	ElektraKeyset * resolverConfig = elektraPluginGetConfig (handle);
-	const char * path = keyString (ksLookupByName (resolverConfig, "/path", 0));
+	const char * path = elektraKeyString (elektraKeysetLookupByName (resolverConfig, "/path", 0));
 
 	if (!path)
 	{
@@ -332,29 +332,29 @@ int elektraWresolverClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED
 
 int elektraWresolverGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/wresolver"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/wresolver"))
 	{
-		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/wresolver", ELEKTRA_KEY_VALUE, "wresolver plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/open", ELEKTRA_KEY_FUNC, elektraWresolverOpen, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/close", ELEKTRA_KEY_FUNC, elektraWresolverClose, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/get", ELEKTRA_KEY_FUNC, elektraWresolverGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/set", ELEKTRA_KEY_FUNC, elektraWresolverSet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraWresolverCommit, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/error", ELEKTRA_KEY_FUNC, elektraWresolverError, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraWresolverCheckFile, ELEKTRA_KEY_END),
+		ElektraKeyset * contract = elektraKeysetNew (
+			30, elektraKeyNew ("system:/elektra/modules/wresolver", ELEKTRA_KEY_VALUE, "wresolver plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports/open", ELEKTRA_KEY_FUNC, elektraWresolverOpen, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports/close", ELEKTRA_KEY_FUNC, elektraWresolverClose, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports/get", ELEKTRA_KEY_FUNC, elektraWresolverGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports/set", ELEKTRA_KEY_FUNC, elektraWresolverSet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraWresolverCommit, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports/error", ELEKTRA_KEY_FUNC, elektraWresolverError, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/wresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraWresolverCheckFile, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/wresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/wresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; /* success */
 	}
 	/* get all keys */
 
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
-	keySetString (parentKey, pk->filename);
+	elektraKeySetString (parentKey, pk->filename);
 
 	pk->state = 1;
 
@@ -382,7 +382,7 @@ int elektraWresolverGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 int elektraWresolverSet (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
-	keySetString (parentKey, pk->filename);
+	elektraKeySetString (parentKey, pk->filename);
 
 	switch (pk->state)
 	{

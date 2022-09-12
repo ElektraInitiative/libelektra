@@ -22,7 +22,7 @@ typedef struct
 	size_t bufalloc;
 } CHexData;
 
-ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize);
+ssize_t elektraKeySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize);
 
 void elektraHexcodeEncode (ElektraKey * cur, CHexData * hd);
 void elektraHexcodeDecode (ElektraKey * cur, CHexData * hd);

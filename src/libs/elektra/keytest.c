@@ -57,7 +57,7 @@
  * @ingroup keytest
  *
  */
-int keyClearSync (ElektraKey * key)
+int elektraKeyClearSync (ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -96,7 +96,7 @@ int keyClearSync (ElektraKey * key)
  * @ingroup keytest
  * @see keyNew(), keyDup() Keys need to be synced after calling those functions
  */
-int keyNeedSync (const ElektraKey * key)
+int elektraKeyNeedSync (const ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -104,20 +104,20 @@ int keyNeedSync (const ElektraKey * key)
 }
 
 
-int keyIsSpec (const ElektraKey * key)
+int elektraKeyIsSpec (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == ELEKTRA_NS_SPEC;
+	return elektraKeyGetNamespace (key) == ELEKTRA_NS_SPEC;
 }
 
-int keyIsProc (const ElektraKey * key)
+int elektraKeyIsProc (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == ELEKTRA_NS_PROC;
+	return elektraKeyGetNamespace (key) == ELEKTRA_NS_PROC;
 }
 
 
-int keyIsDir (const ElektraKey * key)
+int elektraKeyIsDir (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == ELEKTRA_NS_DIR;
+	return elektraKeyGetNamespace (key) == ELEKTRA_NS_DIR;
 }
 
 
@@ -132,9 +132,9 @@ int keyIsDir (const ElektraKey * key)
  * @ingroup keytest
  *
  */
-int keyIsSystem (const ElektraKey * key)
+int elektraKeyIsSystem (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == ELEKTRA_NS_SYSTEM;
+	return elektraKeyGetNamespace (key) == ELEKTRA_NS_SYSTEM;
 }
 
 
@@ -149,9 +149,9 @@ int keyIsSystem (const ElektraKey * key)
  * @ingroup keytest
  *
  */
-int keyIsUser (const ElektraKey * key)
+int elektraKeyIsUser (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == ELEKTRA_NS_USER;
+	return elektraKeyGetNamespace (key) == ELEKTRA_NS_USER;
 }
 
 /**
@@ -195,7 +195,7 @@ int keyIsUser (const ElektraKey * key)
  *
  */
 
-int keyIsBelow (const ElektraKey * key, const ElektraKey * check)
+int elektraKeyIsBelow (const ElektraKey * key, const ElektraKey * check)
 {
 	if (key == NULL || check == NULL)
 	{
@@ -204,9 +204,9 @@ int keyIsBelow (const ElektraKey * key, const ElektraKey * check)
 
 	// same key, only if namespace and size are equal
 	// size alone could be equal with cascading keys
-	return keyIsBelowOrSame (key, check) && keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check) &&
-	       (keyGetNamespace (key) == keyGetNamespace (check) || keyGetNamespace (check) == ELEKTRA_NS_CASCADING ||
-		keyGetNamespace (key) == ELEKTRA_NS_CASCADING);
+	return elektraKeyIsBelowOrSame (key, check) && elektraKeyGetUnescapedNameSize (key) != elektraKeyGetUnescapedNameSize (check) &&
+	       (elektraKeyGetNamespace (key) == elektraKeyGetNamespace (check) || elektraKeyGetNamespace (check) == ELEKTRA_NS_CASCADING ||
+		elektraKeyGetNamespace (key) == ELEKTRA_NS_CASCADING);
 }
 
 
@@ -216,18 +216,18 @@ int keyIsBelow (const ElektraKey * key, const ElektraKey * check)
  * @param key the key object to work with
  * @see keyIsBelow()
  */
-int keyIsBelowOrSame (const ElektraKey * key, const ElektraKey * check)
+int elektraKeyIsBelowOrSame (const ElektraKey * key, const ElektraKey * check)
 {
 	if (key == NULL || check == NULL)
 	{
 		return -1;
 	}
 
-	const char * above = keyUnescapedName (key);
-	const char * below = keyUnescapedName (check);
+	const char * above = elektraKeyUnescapedName (key);
+	const char * below = elektraKeyUnescapedName (check);
 
-	size_t sizeAbove = keyGetUnescapedNameSize (key);
-	size_t sizeBelow = keyGetUnescapedNameSize (check);
+	size_t sizeAbove = elektraKeyGetUnescapedNameSize (key);
+	size_t sizeBelow = elektraKeyGetUnescapedNameSize (check);
 
 	if ((sizeAbove == 3 && above[0] == ELEKTRA_NS_CASCADING && sizeBelow == 3 && below[0] != ELEKTRA_NS_CASCADING) ||
 	    (sizeBelow == 3 && below[0] == ELEKTRA_NS_CASCADING && sizeAbove == 3 && above[0] != ELEKTRA_NS_CASCADING))
@@ -302,18 +302,18 @@ check user:/sw/app/folder/key
  * @see keyGetName(), keySetName() for getting / setting the Key's name
  *
  */
-int keyIsDirectlyBelow (const ElektraKey * key, const ElektraKey * check)
+int elektraKeyIsDirectlyBelow (const ElektraKey * key, const ElektraKey * check)
 {
 	if (key == NULL || check == NULL)
 	{
 		return -1;
 	}
 
-	const char * above = keyUnescapedName (key);
-	const char * below = keyUnescapedName (check);
+	const char * above = elektraKeyUnescapedName (key);
+	const char * below = elektraKeyUnescapedName (check);
 
-	size_t sizeAbove = keyGetUnescapedNameSize (key);
-	size_t sizeBelow = keyGetUnescapedNameSize (check);
+	size_t sizeAbove = elektraKeyGetUnescapedNameSize (key);
+	size_t sizeBelow = elektraKeyGetUnescapedNameSize (check);
 
 	if (sizeAbove == 3)
 	{
@@ -366,11 +366,11 @@ int keyIsDirectlyBelow (const ElektraKey * key, const ElektraKey * check)
  * @ingroup keytest
  * @see keyGetBinary(), keySetBinary() for getting / setting a Key's value as binary
  */
-int keyIsBinary (const ElektraKey * key)
+int elektraKeyIsBinary (const ElektraKey * key)
 {
 	if (!key) return -1;
 
-	return keyGetMeta (key, "binary") != 0;
+	return elektraKeyGetMeta (key, "binary") != 0;
 }
 
 
@@ -392,11 +392,11 @@ int keyIsBinary (const ElektraKey * key)
  * @ingroup keytest
  * @see keyGetString(), keySetString() for getting / setting a Key's value as string
  */
-int keyIsString (const ElektraKey * key)
+int elektraKeyIsString (const ElektraKey * key)
 {
 	if (!key) return -1;
 
-	return keyGetMeta (key, "binary") == 0;
+	return elektraKeyGetMeta (key, "binary") == 0;
 }
 
 
@@ -467,27 +467,27 @@ keyDel(base);
 * @see #elektraKeyFlags
 * @ingroup keytest
 	*/
-elektraKeyFlags keyCompare (const ElektraKey * key1, const ElektraKey * key2)
+elektraKeyFlags elektraKeyCompare (const ElektraKey * key1, const ElektraKey * key2)
 {
 	if (!key1 && !key2) return 0;
 	if (!key1 || !key2) return ELEKTRA_KEY_NULL;
 
 	elektraKeyFlags ret = 0;
-	ssize_t nsize1 = keyGetNameSize (key1);
-	ssize_t nsize2 = keyGetNameSize (key2);
-	const char * name1 = keyName (key1);
-	const char * name2 = keyName (key2);
-	const ElektraKey * comment1 = keyGetMeta (key1, "comment");
-	const ElektraKey * comment2 = keyGetMeta (key2, "comment");
-	const void * value1 = keyValue (key1);
-	const void * value2 = keyValue (key2);
-	ssize_t size1 = keyGetValueSize (key1);
-	ssize_t size2 = keyGetValueSize (key2);
+	ssize_t nsize1 = elektraKeyGetNameSize (key1);
+	ssize_t nsize2 = elektraKeyGetNameSize (key2);
+	const char * name1 = elektraKeyName (key1);
+	const char * name2 = elektraKeyName (key2);
+	const ElektraKey * comment1 = elektraKeyGetMeta (key1, "comment");
+	const ElektraKey * comment2 = elektraKeyGetMeta (key2, "comment");
+	const void * value1 = elektraKeyValue (key1);
+	const void * value2 = elektraKeyValue (key2);
+	ssize_t size1 = elektraKeyGetValueSize (key1);
+	ssize_t size2 = elektraKeyGetValueSize (key2);
 
 	// TODO: might be (binary) by chance
-	if (strcmp (keyString (comment1), keyString (comment2))) ret |= ELEKTRA_KEY_COMMENT;
+	if (strcmp (elektraKeyString (comment1), elektraKeyString (comment2))) ret |= ELEKTRA_KEY_COMMENT;
 
-	if (keyCompareMeta (key1, key2)) ret |= ELEKTRA_KEY_META;
+	if (elektraKeyCompareMeta (key1, key2)) ret |= ELEKTRA_KEY_META;
 
 	if (nsize1 != nsize2)
 		ret |= ELEKTRA_KEY_NAME;
@@ -514,25 +514,25 @@ elektraKeyFlags keyCompare (const ElektraKey * key1, const ElektraKey * key2)
  * @retval KEY_META if there is a difference
  * @retval 0 if metadata is identical
  */
-int keyCompareMeta (const ElektraKey * k1, const ElektraKey * k2)
+int elektraKeyCompareMeta (const ElektraKey * k1, const ElektraKey * k2)
 {
 	const ElektraKey * meta1;
 
 	ElektraKey * key1 = (ElektraKey *) k1;
 	ElektraKey * key2 = (ElektraKey *) k2;
 
-	keyRewindMeta (key1);
-	keyRewindMeta (key2);
-	while ((meta1 = keyNextMeta (key1)) != 0)
+	elektraKeyRewindMeta (key1);
+	elektraKeyRewindMeta (key2);
+	while ((meta1 = elektraKeyNextMeta (key1)) != 0)
 	{
-		const ElektraKey * meta2 = keyNextMeta (key2);
+		const ElektraKey * meta2 = elektraKeyNextMeta (key2);
 		if (!meta2)
 		{
 			return ELEKTRA_KEY_META;
 		}
 
-		if (strcmp (keyName (meta1), keyName (meta2))) return ELEKTRA_KEY_META;
-		if (strcmp (keyString (meta1), keyString (meta2))) return ELEKTRA_KEY_META;
+		if (strcmp (elektraKeyName (meta1), elektraKeyName (meta2))) return ELEKTRA_KEY_META;
+		if (strcmp (elektraKeyString (meta1), elektraKeyString (meta2))) return ELEKTRA_KEY_META;
 	}
 
 	// TODO: rewind metadata to previous position

@@ -35,54 +35,54 @@ int main (int argc, char ** argv)
 	const char * parent = argv[2];
 	const char * pluginname = argv[3];
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	char * infile = elektraFormat ("%s/test.%s.in", path, pluginname);
 	char * outfile = elektraFormat ("%s/test.%s.out", path, pluginname);
 
 	{
-		ElektraKey * getKey = keyNew (parent, ELEKTRA_KEY_VALUE, infile, ELEKTRA_KEY_END);
+		ElektraKey * getKey = elektraKeyNew (parent, ELEKTRA_KEY_VALUE, infile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-		ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 		elektraModulesInit (modules, 0);
-		ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+		ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginname, modules, conf, errorKey);
-		keyDel (errorKey);
+		elektraKeyDel (errorKey);
 
 		plugin->kdbGet (plugin, ks, getKey);
 
-		keyDel (getKey);
+		elektraKeyDel (getKey);
 		elektraPluginClose (plugin, 0);
 		elektraModulesClose (modules, 0);
-		ksDel (modules);
+		elektraKeysetDel (modules);
 	}
 
-	if (ksGetSize (ks) <= 0)
+	if (elektraKeysetGetSize (ks) <= 0)
 	{
 		return 1;
 	}
 
 	if (direction == BOTH)
 	{
-		ElektraKey * setKey = keyNew (parent, ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
+		ElektraKey * setKey = elektraKeyNew (parent, ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-		ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 		elektraModulesInit (modules, 0);
-		ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+		ElektraKey * errorKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginname, modules, conf, errorKey);
-		keyDel (errorKey);
+		elektraKeyDel (errorKey);
 		plugin->kdbSet (plugin, ks, setKey);
 
-		keyDel (setKey);
+		elektraKeyDel (setKey);
 		elektraPluginClose (plugin, 0);
 		elektraModulesClose (modules, 0);
-		ksDel (modules);
+		elektraKeysetDel (modules);
 	}
 
 	elektraFree (infile);
 	elektraFree (outfile);
 
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	return 0;
 }

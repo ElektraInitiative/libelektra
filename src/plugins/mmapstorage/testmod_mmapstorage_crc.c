@@ -29,28 +29,28 @@ static void test_mmap_crc_no_checksum (const char * tmpFile)
 {
 	// regression test: write mmap file without checksum (=0L), then read with checksum
 	{
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 	// the following fails if the internal CRC on/off flag was not set
 	{
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage_crc");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 }
@@ -59,15 +59,15 @@ static void test_mmap_crc_wrong_checksum (const char * tmpFile)
 {
 	// first write a mmap file
 	{
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage_crc");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 
@@ -114,15 +114,15 @@ static void test_mmap_crc_wrong_checksum (const char * tmpFile)
 	// wrong checksum should be detected now
 	{
 		// we expect an error here
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage_crc");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet did not detect wrong checksum");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 }

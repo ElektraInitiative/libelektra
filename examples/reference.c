@@ -11,47 +11,47 @@
 
 void f (ElektraKey * k)
 {
-	printf ("\tf called with %s\n", keyName (k));
-	keySetName (k, "user:/delete");
-	keyDel (k);
+	printf ("\tf called with %s\n", elektraKeyName (k));
+	elektraKeySetName (k, "user:/delete");
+	elektraKeyDel (k);
 }
 
 void h (ElektraKey * k)
 {
-	printf ("\th called with %s\n", keyName (k));
-	keyIncRef (k);
+	printf ("\th called with %s\n", elektraKeyName (k));
+	elektraKeyIncRef (k);
 
 	f (k);
 
-	keyDecRef (k);
+	elektraKeyDecRef (k);
 }
 
 int main (void)
 {
-	ElektraKey * k = keyNew ("user:/key1", ELEKTRA_KEY_END);
-	printf ("key has ref %hu\n", keyGetRef (k));
+	ElektraKey * k = elektraKeyNew ("user:/key1", ELEKTRA_KEY_END);
+	printf ("key has ref %hu\n", elektraKeyGetRef (k));
 
 	f (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew ("user:/key2", ELEKTRA_KEY_END);
-	keyIncRef (k);
-	printf ("key has ref %hu\n", keyGetRef (k));
+	k = elektraKeyNew ("user:/key2", ELEKTRA_KEY_END);
+	elektraKeyIncRef (k);
+	printf ("key has ref %hu\n", elektraKeyGetRef (k));
 
 	f (k);
-	printf ("key renamed to %s\n", keyName (k));
+	printf ("key renamed to %s\n", elektraKeyName (k));
 
 	f (k);
 
-	keyDecRef (k);
-	printf ("key has ref %hu\n", keyGetRef (k));
-	keyDel (k);
+	elektraKeyDecRef (k);
+	printf ("key has ref %hu\n", elektraKeyGetRef (k));
+	elektraKeyDel (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew ("user:/key3", ELEKTRA_KEY_END);
-	printf ("key has ref %hu\n", keyGetRef (k));
+	k = elektraKeyNew ("user:/key3", ELEKTRA_KEY_END);
+	printf ("key has ref %hu\n", elektraKeyGetRef (k));
 	h (k);
-	keyDel (k);
+	elektraKeyDel (k);
 	printf ("key is now deleted\n");
 
 	return 0;

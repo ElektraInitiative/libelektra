@@ -41,7 +41,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 		int isbin = 0;
 		int end = 0;
 
-		ElektraKey * newKey = keyNew ("/", ELEKTRA_KEY_END);
+		ElektraKey * newKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
 		/* a <key> must have one of the following:
 		   - a "name" attribute, used as an absolute name overriding the context
@@ -53,7 +53,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 		if (buffer)
 		{
 			/* set absolute name */
-			keySetName (newKey, (char *) buffer);
+			elektraKeySetName (newKey, (char *) buffer);
 			xmlFree (buffer);
 			buffer = 0;
 		}
@@ -64,9 +64,9 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 			privateContext = xmlTextReaderGetAttribute (reader, (const xmlChar *) "parent");
 			buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *) "basename");
 
-			if (context) keySetName (newKey, context);
-			if (privateContext) keyAddName (newKey, (char *) privateContext);
-			if (buffer) keyAddName (newKey, (char *) buffer);
+			if (context) elektraKeySetName (newKey, context);
+			if (privateContext) elektraKeyAddName (newKey, (char *) privateContext);
+			if (buffer) elektraKeyAddName (newKey, (char *) buffer);
 
 			xmlFree (privateContext);
 			privateContext = 0;
@@ -79,7 +79,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *) "value");
 		if (buffer)
 		{
-			keySetRaw (newKey, buffer, elektraStrLen ((char *) buffer));
+			elektraKeySetRaw (newKey, buffer, elektraStrLen ((char *) buffer));
 			xmlFree (buffer);
 			buffer = 0;
 		}
@@ -89,7 +89,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 			/* we have a <key ..../> element */
 			if (newKey && !appended)
 			{
-				ksAppendKey (ks, newKey);
+				elektraKeysetAppendKey (ks, newKey);
 				appended = 1;
 				end = 1;
 			}
@@ -105,7 +105,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 		}
 		xmlFree (buffer);
 
-		if (isbin) keySetMeta (newKey, "binary", "");
+		if (isbin) elektraKeySetMeta (newKey, "binary", "");
 
 		// TODO: should parse arbitrary attributes as metadata
 
@@ -129,7 +129,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 				if (buffer)
 				{
 					/* Key's value type was already set above */
-					if (keyIsBinary (newKey))
+					if (elektraKeyIsBinary (newKey))
 					{
 						/* TODO binary values
 						char *unencoded=0;
@@ -144,7 +144,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 						*/
 					}
 					else
-						keySetRaw (newKey, buffer, elektraStrLen ((char *) buffer));
+						elektraKeySetRaw (newKey, buffer, elektraStrLen ((char *) buffer));
 				}
 				xmlFree (buffer);
 			}
@@ -190,7 +190,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 				   So include current key in the KeySet. */
 				if (newKey && !appended)
 				{
-					ksAppendKey (ks, newKey);
+					elektraKeysetAppendKey (ks, newKey);
 					appended = 1;
 				}
 
@@ -212,7 +212,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 		/* seems like we forgot the key, lets delete it */
 		if (newKey && !appended)
 		{
-			keyDel (newKey);
+			elektraKeyDel (newKey);
 		}
 	}
 

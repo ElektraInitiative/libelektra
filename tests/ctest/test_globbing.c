@@ -18,9 +18,9 @@
 
 static int check_key (const char * keyname, const char * pattern)
 {
-	ElektraKey * k = keyNew (keyname, ELEKTRA_KEY_END);
+	ElektraKey * k = elektraKeyNew (keyname, ELEKTRA_KEY_END);
 	int rc = elektraKeyGlob (k, pattern);
-	keyDel (k);
+	elektraKeyDel (k);
 	return rc;
 }
 
@@ -134,31 +134,31 @@ static void test_keyset (void)
 {
 	printf ("keyset");
 
-	ElektraKeyset * test = ksNew (4, keyNew (BASE_KEY "/yes/a", ELEKTRA_KEY_END), keyNew (BASE_KEY "/yes/b", ELEKTRA_KEY_END),
-			       keyNew (BASE_KEY "/no/a", ELEKTRA_KEY_END), keyNew (BASE_KEY "/no/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * test = elektraKeysetNew (4, elektraKeyNew (BASE_KEY "/yes/a", ELEKTRA_KEY_END), elektraKeyNew (BASE_KEY "/yes/b", ELEKTRA_KEY_END),
+			       elektraKeyNew (BASE_KEY "/no/a", ELEKTRA_KEY_END), elektraKeyNew (BASE_KEY "/no/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * expected = ksNew (2, keyNew (BASE_KEY "/yes/a", ELEKTRA_KEY_END), keyNew (BASE_KEY "/yes/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * expected = elektraKeysetNew (2, elektraKeyNew (BASE_KEY "/yes/a", ELEKTRA_KEY_END), elektraKeyNew (BASE_KEY "/yes/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * actual = ksNew (0, ELEKTRA_KS_END);
-	succeed_if (elektraKsGlob (actual, test, BASE_KEY "/yes/*") == ksGetSize (expected), "wrong number of matching keys");
+	ElektraKeyset * actual = elektraKeysetNew (0, ELEKTRA_KS_END);
+	succeed_if (elektraKsGlob (actual, test, BASE_KEY "/yes/*") == elektraKeysetGetSize (expected), "wrong number of matching keys");
 
-	ksRewind (expected);
-	ksRewind (actual);
+	elektraKeysetRewind (expected);
+	elektraKeysetRewind (actual);
 
-	ElektraKey * curA = ksNext (actual);
-	ElektraKey * curE = ksNext (expected);
+	ElektraKey * curA = elektraKeysetNext (actual);
+	ElektraKey * curE = elektraKeysetNext (expected);
 	while (curA != NULL && curE != NULL)
 	{
-		succeed_if (keyCmp (curA, curE) == 0, keyName (curE));
-		curA = ksNext (actual);
-		curE = ksNext (expected);
+		succeed_if (elektraKeyCmp (curA, curE) == 0, elektraKeyName (curE));
+		curA = elektraKeysetNext (actual);
+		curE = elektraKeysetNext (expected);
 	}
 
 	succeed_if (curA == NULL && curE == NULL, "not same number of keys");
 
-	ksDel (test);
-	ksDel (expected);
-	ksDel (actual);
+	elektraKeysetDel (test);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (actual);
 }
 
 int main (int argc, char ** argv)

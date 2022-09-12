@@ -47,7 +47,7 @@ struct _Module
 
 int elektraModulesInit (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
-	ksAppendKey (modules, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END));
+	elektraKeysetAppendKey (modules, elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END));
 
 	return 0;
 }
@@ -60,13 +60,13 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 	static const char elektraPluginPostfix[] = ".so";
 #endif
 
-	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
-	keyAddBaseName (moduleKey, name);
-	ElektraKey * lookup = ksLookup (modules, moduleKey, 0);
+	ElektraKey * moduleKey = elektraKeyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (moduleKey, name);
+	ElektraKey * lookup = elektraKeysetLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
-		Module * module = (Module *) keyValue (lookup);
-		keyDel (moduleKey);
+		Module * module = (Module *) elektraKeyValue (lookup);
+		elektraKeyDel (moduleKey);
 		return module->symbol.f;
 	}
 
@@ -88,7 +88,7 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 	if (module.handle == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Dlopen failed. Could not load module %s. Reason: %s", moduleName, dlerror ());
-		keyDel (moduleKey);
+		elektraKeyDel (moduleKey);
 		elektraFree (moduleName);
 		return 0;
 	}
@@ -99,13 +99,13 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 		ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "Dlsym failed. Could not get pointer to factory for module: %s. Reason: %s",
 					       moduleName, dlerror ());
 		dlclose (module.handle);
-		keyDel (moduleKey);
+		elektraKeyDel (moduleKey);
 		elektraFree (moduleName);
 		return 0;
 	}
 
-	keySetBinary (moduleKey, &module, sizeof (Module));
-	ksAppendKey (modules, moduleKey);
+	elektraKeySetBinary (moduleKey, &module, sizeof (Module));
+	elektraKeysetAppendKey (modules, moduleKey);
 	elektraFree (moduleName);
 
 	return module.symbol.f;
@@ -113,7 +113,7 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 
 int elektraModulesClose (ElektraKeyset * modules, ElektraKey * errorKey)
 {
-	ElektraKey * root = ksLookupByName (modules, "system:/elektra/modules", ELEKTRA_KDB_O_POP);
+	ElektraKey * root = elektraKeysetLookupByName (modules, "system:/elektra/modules", ELEKTRA_KDB_O_POP);
 	ElektraKey * cur;
 	ElektraKeyset * newModules = 0;
 	int ret = 0;
@@ -124,25 +124,25 @@ int elektraModulesClose (ElektraKeyset * modules, ElektraKey * errorKey)
 		return -1;
 	}
 
-	while ((cur = ksPop (modules)) != 0)
+	while ((cur = elektraKeysetPop (modules)) != 0)
 	{
-		Module * module = (Module *) keyValue (cur);
+		Module * module = (Module *) elektraKeyValue (cur);
 		if (dlclose (module->handle) != 0)
 		{
 			if (ret != -1)
 			{
 				/* First failure, start saving handles where close did not work */
-				newModules = ksNew (0, ELEKTRA_KS_END);
-				ksAppendKey (newModules, root);
+				newModules = elektraKeysetNew (0, ELEKTRA_KS_END);
+				elektraKeysetAppendKey (newModules, root);
 			}
 			ret = -1;
 			ELEKTRA_ADD_RESOURCE_WARNINGF (errorKey, "Could not close a module. Dlclose failed: %s", dlerror ());
 
-			ksAppendKey (newModules, cur);
+			elektraKeysetAppendKey (newModules, cur);
 		}
 		else
 		{
-			keyDel (cur);
+			elektraKeyDel (cur);
 		}
 	}
 
@@ -151,12 +151,12 @@ int elektraModulesClose (ElektraKeyset * modules, ElektraKey * errorKey)
 
 	if (ret == -1)
 	{
-		ksAppend (modules, newModules);
-		ksDel (newModules);
+		elektraKeysetAppend (modules, newModules);
+		elektraKeysetDel (newModules);
 	}
 	else
 	{
-		keyDel (root);
+		elektraKeyDel (root);
 	}
 
 	return ret;

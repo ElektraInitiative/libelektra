@@ -120,78 +120,78 @@ struct passwd *fgetpwent_l(FILE *f)
 
 static ElektraKeyset * pwentToKS (struct passwd * pwd, ElektraKey * parentKey, SortBy index)
 {
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * append = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * append = elektraKeyNew (elektraKeyName (parentKey), ELEKTRA_KEY_END);
 	char id[ID_MAX_CHARACTERS];
 	if (index == UID)
 	{
 		snprintf (id, sizeof (id), "%u", pwd->pw_uid);
-		keyAddBaseName (append, id);
-		keySetBinary (append, 0, 0);
-		ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
-		keyAddBaseName (append, "name");
-		keySetString (append, pwd->pw_name);
+		elektraKeyAddBaseName (append, id);
+		elektraKeySetBinary (append, 0, 0);
+		elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
+		elektraKeyAddBaseName (append, "name");
+		elektraKeySetString (append, pwd->pw_name);
 	}
 	else
 	{
-		keyAddBaseName (append, pwd->pw_name);
-		keySetBinary (append, 0, 0);
-		ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
+		elektraKeyAddBaseName (append, pwd->pw_name);
+		elektraKeySetBinary (append, 0, 0);
+		elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
 		snprintf (id, sizeof (id), "%u", pwd->pw_uid);
-		keyAddBaseName (append, "uid");
-		keySetString (append, id);
+		elektraKeyAddBaseName (append, "uid");
+		elektraKeySetString (append, id);
 	}
-	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
-	keySetString (append, 0);
-	keySetBaseName (append, "shell");
-	keySetString (append, pwd->pw_shell);
-	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
-	keySetString (append, 0);
-	keySetBaseName (append, "home");
-	keySetString (append, pwd->pw_dir);
-	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
-	keySetString (append, 0);
-	keySetBaseName (append, "gid");
+	elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
+	elektraKeySetString (append, 0);
+	elektraKeySetBaseName (append, "shell");
+	elektraKeySetString (append, pwd->pw_shell);
+	elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
+	elektraKeySetString (append, 0);
+	elektraKeySetBaseName (append, "home");
+	elektraKeySetString (append, pwd->pw_dir);
+	elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
+	elektraKeySetString (append, 0);
+	elektraKeySetBaseName (append, "gid");
 	snprintf (id, sizeof (id), "%u", pwd->pw_gid);
-	keySetString (append, id);
-	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
-	keySetString (append, 0);
-	keySetBaseName (append, "passwd");
-	keySetString (append, pwd->pw_passwd);
-	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
-	keySetString (append, 0);
-	keySetBaseName (append, "gecos");
-	keySetString (append, pwd->pw_gecos);
-	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
-	keyDel (append);
+	elektraKeySetString (append, id);
+	elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
+	elektraKeySetString (append, 0);
+	elektraKeySetBaseName (append, "passwd");
+	elektraKeySetString (append, pwd->pw_passwd);
+	elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
+	elektraKeySetString (append, 0);
+	elektraKeySetBaseName (append, "gecos");
+	elektraKeySetString (append, pwd->pw_gecos);
+	elektraKeysetAppendKey (ks, elektraKeyDup (append, ELEKTRA_KEY_CP_ALL));
+	elektraKeyDel (append);
 	return ks;
 }
 
 int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/passwd"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/passwd"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/passwd", ELEKTRA_KEY_VALUE, "passwd plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/passwd/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/passwd/exports/get", ELEKTRA_KEY_FUNC, elektraPasswdGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/passwd/exports/set", ELEKTRA_KEY_FUNC, elektraPasswdSet, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/passwd", ELEKTRA_KEY_VALUE, "passwd plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/passwd/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/passwd/exports/get", ELEKTRA_KEY_FUNC, elektraPasswdGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/passwd/exports/set", ELEKTRA_KEY_FUNC, elektraPasswdSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/passwd/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			       elektraKeyNew ("system:/elektra/modules/passwd/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
 	// get all keys
 	SortBy index;
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * sortByKey = ksLookupByName (config, "/index", 0);
+	ElektraKey * sortByKey = elektraKeysetLookupByName (config, "/index", 0);
 	if (sortByKey)
 	{
-		if (!strcmp (keyString (sortByKey), "uid"))
+		if (!strcmp (elektraKeyString (sortByKey), "uid"))
 			index = UID;
-		else if (!strcmp (keyString (sortByKey), "name"))
+		else if (!strcmp (elektraKeyString (sortByKey), "name"))
 			index = NAME;
 		else
 			index = UID;
@@ -199,10 +199,10 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned E
 	else
 		index = UID;
 	struct passwd * pwd;
-	FILE * pwfile = fopen (keyString (parentKey), "r");
+	FILE * pwfile = fopen (elektraKeyString (parentKey), "r");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open configuration file %s. Reason: %s\n", keyString (parentKey),
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open configuration file %s. Reason: %s\n", elektraKeyString (parentKey),
 					     strerror (errno));
 		return -1;
 	}
@@ -215,8 +215,8 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned E
 #endif
 	{
 		ElektraKeyset * ks = pwentToKS (pwd, parentKey, index);
-		ksAppend (returned, ks);
-		ksDel (ks);
+		elektraKeysetAppend (returned, ks);
+		elektraKeysetDel (ks);
 	}
 	fclose (pwfile);
 	return 1; // success
@@ -225,87 +225,87 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned E
 static struct passwd * KStoPasswd (ElektraKeyset * ks, SortBy index)
 {
 	struct passwd * pwd = elektraMalloc (sizeof (struct passwd));
-	ksRewind (ks);
-	ElektraKey * parent = ksNext (ks);
-	ElektraKey * lookup = keyDup (parent, ELEKTRA_KEY_CP_ALL);
+	elektraKeysetRewind (ks);
+	ElektraKey * parent = elektraKeysetNext (ks);
+	ElektraKey * lookup = elektraKeyDup (parent, ELEKTRA_KEY_CP_ALL);
 	ElektraKey * found = NULL;
 	if (index == UID)
 	{
-		found = ksLookup (ks, parent, 0);
+		found = elektraKeysetLookup (ks, parent, 0);
 		if (!found)
 			pwd->pw_uid = (uid_t) -1;
 		else
-			pwd->pw_uid = atoi (keyBaseName (found));
-		keyAddBaseName (lookup, "name");
-		found = ksLookup (ks, lookup, 0);
+			pwd->pw_uid = atoi (elektraKeyBaseName (found));
+		elektraKeyAddBaseName (lookup, "name");
+		found = elektraKeysetLookup (ks, lookup, 0);
 		if (!found)
 			pwd->pw_name = NULL;
 		else
-			pwd->pw_name = (char *) keyString (found);
+			pwd->pw_name = (char *) elektraKeyString (found);
 	}
 	else
 	{
-		found = ksLookup (ks, parent, 0);
+		found = elektraKeysetLookup (ks, parent, 0);
 		if (!found)
 			pwd->pw_name = NULL;
 		else
-			pwd->pw_name = (char *) keyBaseName (found);
-		keyAddBaseName (lookup, "uid");
-		found = ksLookup (ks, lookup, 0);
+			pwd->pw_name = (char *) elektraKeyBaseName (found);
+		elektraKeyAddBaseName (lookup, "uid");
+		found = elektraKeysetLookup (ks, lookup, 0);
 		if (!found)
 			pwd->pw_uid = (uid_t) -1;
 		else
-			pwd->pw_uid = atoi (keyString (found));
+			pwd->pw_uid = atoi (elektraKeyString (found));
 	}
-	keySetBaseName (lookup, "shell");
-	found = ksLookup (ks, lookup, 0);
+	elektraKeySetBaseName (lookup, "shell");
+	found = elektraKeysetLookup (ks, lookup, 0);
 	if (!found)
 		pwd->pw_shell = NULL;
 	else
-		pwd->pw_shell = (char *) keyString (found);
-	keySetBaseName (lookup, "gid");
-	found = ksLookup (ks, lookup, 0);
+		pwd->pw_shell = (char *) elektraKeyString (found);
+	elektraKeySetBaseName (lookup, "gid");
+	found = elektraKeysetLookup (ks, lookup, 0);
 	if (!found)
 		pwd->pw_gid = (gid_t) -1;
 	else
-		pwd->pw_gid = atoi (keyString (found));
-	keySetBaseName (lookup, "home");
-	found = ksLookup (ks, lookup, 0);
+		pwd->pw_gid = atoi (elektraKeyString (found));
+	elektraKeySetBaseName (lookup, "home");
+	found = elektraKeysetLookup (ks, lookup, 0);
 	if (!found)
 		pwd->pw_dir = NULL;
 	else
-		pwd->pw_dir = (char *) keyString (found);
-	keySetBaseName (lookup, "gecos");
-	found = ksLookup (ks, lookup, 0);
+		pwd->pw_dir = (char *) elektraKeyString (found);
+	elektraKeySetBaseName (lookup, "gecos");
+	found = elektraKeysetLookup (ks, lookup, 0);
 	if (!found)
 		pwd->pw_gecos = "";
 	else
-		pwd->pw_gecos = (char *) keyString (found);
-	keySetBaseName (lookup, "passwd");
-	found = ksLookup (ks, lookup, 0);
+		pwd->pw_gecos = (char *) elektraKeyString (found);
+	elektraKeySetBaseName (lookup, "passwd");
+	found = elektraKeysetLookup (ks, lookup, 0);
 	if (!found)
 		pwd->pw_passwd = "";
 	else
-		pwd->pw_passwd = (char *) keyString (found);
-	keyDel (lookup);
+		pwd->pw_passwd = (char *) elektraKeyString (found);
+	elektraKeyDel (lookup);
 	return pwd;
 }
 
 static int writeKS (ElektraKeyset * returned, ElektraKey * parentKey, SortBy index)
 {
-	FILE * pwfile = fopen (keyString (parentKey), "w");
+	FILE * pwfile = fopen (elektraKeyString (parentKey), "w");
 	if (!pwfile)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for writing\n. Reason: %s", keyString (parentKey),
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Failed to open %s for writing\n. Reason: %s", elektraKeyString (parentKey),
 					     strerror (errno));
 		return -1;
 	}
 	ElektraKey * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != NULL)
 	{
-		if (!keyIsDirectlyBelow (parentKey, cur)) continue;
-		ElektraKeyset * cutKS = ksCut (returned, cur);
+		if (!elektraKeyIsDirectlyBelow (parentKey, cur)) continue;
+		ElektraKeyset * cutKS = elektraKeysetCut (returned, cur);
 		struct passwd * pwd = KStoPasswd (cutKS, index);
 		if (validatepwent (pwd) == -1)
 		{
@@ -323,8 +323,8 @@ static int writeKS (ElektraKeyset * returned, ElektraKey * parentKey, SortBy ind
 #endif
 		}
 		elektraFree (pwd);
-		ksAppend (returned, cutKS);
-		ksDel (cutKS);
+		elektraKeysetAppend (returned, cutKS);
+		elektraKeysetDel (cutKS);
 	}
 	fclose (pwfile);
 	return 1;
@@ -336,12 +336,12 @@ int elektraPasswdSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned E
 	// this function is optional
 	SortBy index;
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * sortByKey = ksLookupByName (config, "/index", 0);
+	ElektraKey * sortByKey = elektraKeysetLookupByName (config, "/index", 0);
 	if (sortByKey)
 	{
-		if (!strcmp (keyString (sortByKey), "uid"))
+		if (!strcmp (elektraKeyString (sortByKey), "uid"))
 			index = UID;
-		else if (!strcmp (keyString (sortByKey), "name"))
+		else if (!strcmp (elektraKeyString (sortByKey), "name"))
 			index = NAME;
 		else
 			index = UID;

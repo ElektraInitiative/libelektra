@@ -85,9 +85,9 @@ ElektraKey * ksLookupRE (ElektraKeyset * ks, const regex_t * regexp)
 	regmatch_t offsets;
 	ElektraKey *walker = 0, *end = 0;
 
-	while ((walker = ksNext (ks)) != end)
+	while ((walker = elektraKeysetNext (ks)) != end)
 	{
-		if (!regexec (regexp, keyString (walker), 1, &offsets, 0)) return walker;
+		if (!regexec (regexp, elektraKeyString (walker), 1, &offsets, 0)) return walker;
 	}
 
 	return 0;

@@ -40,14 +40,14 @@ int main (void)
 	// exit on SIGINT
 	signal (SIGINT, onSignal);
 
-	ElektraKeyset * config = ksNew (2, ELEKTRA_KS_END);
+	ElektraKeyset * config = elektraKeysetNew (2, ELEKTRA_KS_END);
 
-	ElektraKey * parentKey = keyNew ("/sw/elektra/hub-zeromq/#0/current", ELEKTRA_KEY_END);
-	ElektraKey * configXSubEndpoint = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddBaseName (configXSubEndpoint, "bind_xsub");
-	ElektraKey * configXPubEndpoint = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	keyAddBaseName (configXPubEndpoint, "bind_xpub");
-	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
+	ElektraKey * parentKey = elektraKeyNew ("/sw/elektra/hub-zeromq/#0/current", ELEKTRA_KEY_END);
+	ElektraKey * configXSubEndpoint = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddBaseName (configXSubEndpoint, "bind_xsub");
+	ElektraKey * configXPubEndpoint = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddBaseName (configXPubEndpoint, "bind_xpub");
+	ElektraKdb * kdb = elektraKdbOpen (NULL, parentKey);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB. aborting\n");
@@ -56,22 +56,22 @@ int main (void)
 
 	const char * xSubEndpoint = "tcp://127.0.0.1:6000";
 	const char * xPubEndpoint = "tcp://127.0.0.1:6001";
-	kdbGet (kdb, config, parentKey);
-	ElektraKey * xSubEndpointKey = ksLookup (config, configXSubEndpoint, 0);
+	elektraKdbGet (kdb, config, parentKey);
+	ElektraKey * xSubEndpointKey = elektraKeysetLookup (config, configXSubEndpoint, 0);
 	if (xSubEndpointKey)
 	{
-		xSubEndpoint = keyString (xSubEndpointKey);
+		xSubEndpoint = elektraKeyString (xSubEndpointKey);
 	}
-	ElektraKey * xPubEndpointKey = ksLookup (config, configXPubEndpoint, 0);
+	ElektraKey * xPubEndpointKey = elektraKeysetLookup (config, configXPubEndpoint, 0);
 	if (xPubEndpointKey)
 	{
-		xPubEndpoint = keyString (xPubEndpointKey);
+		xPubEndpoint = elektraKeyString (xPubEndpointKey);
 	}
 
-	keyDel (configXSubEndpoint);
-	keyDel (configXPubEndpoint);
-	kdbClose (kdb, parentKey);
-	keyDel (parentKey);
+	elektraKeyDel (configXSubEndpoint);
+	elektraKeyDel (configXPubEndpoint);
+	elektraKdbClose (kdb, parentKey);
+	elektraKeyDel (parentKey);
 
 	context = zmq_ctx_new ();
 	xSubSocket = zmq_socket (context, ZMQ_XSUB);
@@ -99,7 +99,7 @@ int main (void)
 	printf ("listening on %s (XSUB for zeromqsend)\n", xSubEndpoint);
 	printf ("listening on %s (XPUB for zeromqrecv)\n", xPubEndpoint);
 	printf ("hub is running\n");
-	ksDel (config);
+	elektraKeysetDel (config);
 
 	// forward messages between sockets
 	// will return on zmq_ctx_destroy()

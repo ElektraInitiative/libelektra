@@ -41,19 +41,19 @@
 
 static ElektraKeyset * simpleTestKeySet (void)
 {
-	return ksNew (10, keyNew ("user:/tests/mmapstorage/simpleKey", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_END),
-		      keyNew ("user:/tests/mmapstorage/simpleKey/a", ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_END),
-		      keyNew ("user:/tests/mmapstorage/simpleKey/b", ELEKTRA_KEY_VALUE, "b value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (10, elektraKeyNew ("user:/tests/mmapstorage/simpleKey", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/tests/mmapstorage/simpleKey/a", ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_END),
+		      elektraKeyNew ("user:/tests/mmapstorage/simpleKey/b", ELEKTRA_KEY_VALUE, "b value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static ElektraKeyset * metaTestKeySet (void)
 {
-	return ksNew (10,
-		      keyNew ("user:/tests/mmapstorage", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_META, "a",
+	return elektraKeysetNew (10,
+		      elektraKeyNew ("user:/tests/mmapstorage", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_META, "a",
 			      "b aksdjfh aksjdhf aklsjdhf aksljdhf aklsjdhf aksljdhf ", ELEKTRA_KEY_END),
-		      keyNew ("user:/tests/mmapstorage/a", ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_META, "ab",
+		      elektraKeyNew ("user:/tests/mmapstorage/a", ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_META, "ab",
 			      "cd oiahsdkfhga sdjkfhgsuzdgf kashgdf aszgdf uashdf ", ELEKTRA_KEY_END),
-		      keyNew ("user:/tests/mmapstorage/b", ELEKTRA_KEY_VALUE, "b value", ELEKTRA_KEY_META, "longer val",
+		      elektraKeyNew ("user:/tests/mmapstorage/b", ELEKTRA_KEY_VALUE, "b value", ELEKTRA_KEY_META, "longer val",
 			      "here some even more with ugly €@\\1¹²³¼ chars", ELEKTRA_KEY_END),
 		      ELEKTRA_KS_END);
 }
@@ -67,14 +67,14 @@ static BinaryTest binaryTestA = { .A_size = SIZE_MAX, .B_ssize = -1 };
 
 static ElektraKeyset * otherMetaTestKeySet (void)
 {
-	return ksNew (
-		10, keyNew ("user:/tests/mmapstorage", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_META, "e", "other meta root", ELEKTRA_KEY_END),
-		keyNew ("user:/tests/mmapstorage/f", ELEKTRA_KEY_VALUE, "f value", ELEKTRA_KEY_META, "foo", "some other key in the other meta keyset",
+	return elektraKeysetNew (
+		10, elektraKeyNew ("user:/tests/mmapstorage", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_META, "e", "other meta root", ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/tests/mmapstorage/f", ELEKTRA_KEY_VALUE, "f value", ELEKTRA_KEY_META, "foo", "some other key in the other meta keyset",
 			ELEKTRA_KEY_END),
-		keyNew ("user:/tests/mmapstorage/i", ELEKTRA_KEY_VALUE, "i value", ELEKTRA_KEY_META, "i is quite valuable", "happy data is happy :)",
+		elektraKeyNew ("user:/tests/mmapstorage/i", ELEKTRA_KEY_VALUE, "i value", ELEKTRA_KEY_META, "i is quite valuable", "happy data is happy :)",
 			ELEKTRA_KEY_END),
-		keyNew ("user:/tests/mmapstorage/j/k/l", ELEKTRA_KEY_VALUE, "jkl value", ELEKTRA_KEY_META, "where is everyone?", "don't panic", ELEKTRA_KEY_END),
-		keyNew ("user:/tests/mmapstorage/m", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (BinaryTest), ELEKTRA_KEY_VALUE, &(binaryTestA), ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/tests/mmapstorage/j/k/l", ELEKTRA_KEY_VALUE, "jkl value", ELEKTRA_KEY_META, "where is everyone?", "don't panic", ELEKTRA_KEY_END),
+		elektraKeyNew ("user:/tests/mmapstorage/m", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (BinaryTest), ELEKTRA_KEY_VALUE, &(binaryTestA), ELEKTRA_KEY_END),
 		ELEKTRA_KS_END);
 }
 
@@ -83,16 +83,16 @@ static ElektraKeyset * largeTestKeySet (void)
 	int i, j;
 	char name[KEY_NAME_LENGTH + 1];
 	char value[] = "data";
-	ElektraKeyset * large = ksNew (NUM_KEY * NUM_DIR, ELEKTRA_KS_END);
+	ElektraKeyset * large = elektraKeysetNew (NUM_KEY * NUM_DIR, ELEKTRA_KS_END);
 
 	for (i = 0; i < NUM_DIR; i++)
 	{
 		snprintf (name, KEY_NAME_LENGTH, "%s/%s%d", TEST_ROOT_KEY, "dir", i);
-		ksAppendKey (large, keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
+		elektraKeysetAppendKey (large, elektraKeyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
 		for (j = 0; j < NUM_KEY; j++)
 		{
 			snprintf (name, KEY_NAME_LENGTH, "%s/%s%d/%s%d", TEST_ROOT_KEY, "dir", i, "key", j);
-			ksAppendKey (large, keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
+			elektraKeysetAppendKey (large, elektraKeyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
 		}
 	}
 	return large;
@@ -102,87 +102,87 @@ static ElektraKeyset * largeTestKeySet (void)
 
 static void test_mmap_get_set_empty (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_get_set (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 	ks = simpleTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
-	ks = ksNew (0, ELEKTRA_KS_END);
+	elektraKeysetDel (ks);
+	ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected = simpleTestKeySet ();
 	compare_keyset (expected, ks);
 	compare_keyset (ks, expected);
 
-	ksDel (expected);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (expected);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_set_get_global (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	plugin->global = 0;
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	plugin->global = ksNew (0, ELEKTRA_KS_END);
+	plugin->global = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
-	ksDel (plugin->global);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (plugin->global);
 
 	ks = metaTestKeySet ();
 	plugin->global = simpleTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
-	ksDel (plugin->global);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (plugin->global);
 
-	plugin->global = ksNew (0, ELEKTRA_KS_END);
-	ks = ksNew (0, ELEKTRA_KS_END);
+	plugin->global = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected = simpleTestKeySet ();
 	compare_keyset (expected, plugin->global);
 	compare_keyset (plugin->global, expected);
 
-	ksDel (plugin->global);
-	ksDel (expected);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (plugin->global);
+	elektraKeysetDel (expected);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_get_global_after_reopen (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	plugin->global = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	plugin->global = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
@@ -194,43 +194,43 @@ static void test_mmap_get_global_after_reopen (const char * tmpFile)
 	compare_keyset (expected, ks);
 	compare_keyset (ks, expected);
 
-	ksDel (expected_global);
-	ksDel (plugin->global);
-	ksDel (expected);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (expected_global);
+	elektraKeysetDel (plugin->global);
+	elektraKeysetDel (expected);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_set_get_global_metadata (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 
 	ElektraKeyset * ks = metaTestKeySet ();
 	plugin->global = otherMetaTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
-	ksDel (plugin->global);
+	elektraKeysetDel (ks);
+	elektraKeysetDel (plugin->global);
 
-	plugin->global = ksNew (0, ELEKTRA_KS_END);
-	ks = ksNew (0, ELEKTRA_KS_END);
+	plugin->global = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected_global = otherMetaTestKeySet ();
 	compare_keyset (expected_global, plugin->global);
 	compare_keyset (plugin->global, expected_global);
-	ksDel (expected_global);
+	elektraKeysetDel (expected_global);
 
 	ElektraKeyset * expected = metaTestKeySet ();
 	compare_keyset (expected, ks);
 	compare_keyset (ks, expected);
-	ksDel (expected);
+	elektraKeysetDel (expected);
 
-	ksDel (plugin->global);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (plugin->global);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
@@ -238,15 +238,15 @@ static void test_mmap_truncated_file (const char * tmpFile)
 {
 	// first write a mmap file
 	{
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
 		ElektraKeyset * ks = simpleTestKeySet ();
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 
@@ -275,15 +275,15 @@ static void test_mmap_truncated_file (const char * tmpFile)
 	// truncated file should be detected by mmapstorage
 	{
 		// after the file was truncated, we expect an error here
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet did not detect truncated file");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 }
@@ -292,15 +292,15 @@ static void test_mmap_wrong_magic_number (const char * tmpFile)
 {
 	// first write a mmap file
 	{
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
 		ElektraKeyset * ks = simpleTestKeySet ();
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 
@@ -347,16 +347,16 @@ static void test_mmap_wrong_magic_number (const char * tmpFile)
 	// manipulated magic number should be detected now
 	{
 		// we expect an error here
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
 			    "kdbGet did not detect wrong magic number");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 }
@@ -365,15 +365,15 @@ static void test_mmap_wrong_format_version (const char * tmpFile)
 {
 	// first write a mmap file
 	{
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
 		ElektraKeyset * ks = simpleTestKeySet ();
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 
@@ -420,16 +420,16 @@ static void test_mmap_wrong_format_version (const char * tmpFile)
 	// wrong format version should be detected now
 	{
 		// we expect an error here
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
 			    "kdbGet did not detect wrong format version");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 }
@@ -438,15 +438,15 @@ static void test_mmap_wrong_magic_keyset (const char * tmpFile)
 {
 	// first write a mmap file
 	{
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
 		ElektraKeyset * ks = simpleTestKeySet ();
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 
@@ -493,292 +493,292 @@ static void test_mmap_wrong_magic_keyset (const char * tmpFile)
 	// manipulated magic keyset should be detected now
 	{
 		// we expect an error here
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
-		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
 			    "kdbGet did not detect wrong magic keyset");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 }
 
 static void test_mmap_set_get (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * ks = simpleTestKeySet ();
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 	ElektraKeyset * expected = simpleTestKeySet ();
 	compare_keyset (expected, returned);
 
-	ksDel (expected);
-	ksDel (returned);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (returned);
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_get_after_reopen (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected = simpleTestKeySet ();
 	compare_keyset (expected, returned);
-	ksDel (expected);
-	ksDel (returned);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (returned);
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_set_get_large_keyset (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * ks = largeTestKeySet ();
-	ElektraKeyset * expected = ksDeepDup (ks);
+	ElektraKeyset * expected = elektraKeysetDeepDup (ks);
 
 	const char * name = "user:/tests/mmapstorage/dir7/key3";
-	ElektraKey * found = ksLookupByName (ks, name, ELEKTRA_KDB_O_OPMPHM);
+	ElektraKey * found = elektraKeysetLookupByName (ks, name, ELEKTRA_KDB_O_OPMPHM);
 	if (!found)
 	{
 		yield_error ("Key not found.")
 	}
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	compare_keyset (expected, returned);
 
-	ksDel (expected);
-	ksDel (returned);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (returned);
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_ks_copy (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * returned = simpleTestKeySet ();
 
 	succeed_if (plugin->kdbSet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
-	ksDel (returned);
+	elektraKeysetDel (returned);
 
-	returned = ksNew (0, ELEKTRA_KS_END);
+	returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected = simpleTestKeySet ();
 	compare_keyset (expected, returned);
 
-	ElektraKeyset * copiedKs = ksNew (0, ELEKTRA_KS_END);
-	ksCopy (copiedKs, returned);
+	ElektraKeyset * copiedKs = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKeysetCopy (copiedKs, returned);
 	compare_keyset (expected, copiedKs);
 
-	ksDel (copiedKs);
-	ksDel (expected);
-	ksDel (returned);
+	elektraKeysetDel (copiedKs);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (returned);
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_empty_after_clear (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
-	succeed_if (ksGetSize (returned) == 0, "KeySet not empty after clear (or nullptr)");
+	succeed_if (elektraKeysetGetSize (returned) == 0, "KeySet not empty after clear (or nullptr)");
 
-	ksDel (returned);
-	keyDel (parentKey);
+	elektraKeysetDel (returned);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_meta (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * ks = metaTestKeySet ();
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected = metaTestKeySet ();
 	compare_keyset (expected, returned);
 
-	ksDel (expected);
-	ksDel (returned);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (returned);
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_meta_get_after_reopen (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected = metaTestKeySet ();
 	compare_keyset (expected, ks);
 
-	ksDel (expected);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (expected);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_filter_meta (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * ks = metaTestKeySet ();
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKey * current;
-	ksRewind (returned);
-	while ((current = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((current = elektraKeysetNext (returned)) != 0)
 	{
 		succeed_if (current->meta != 0, "key had no metadata, but metadata was expected");
-		ksClear (current->meta);
+		elektraKeysetClear (current->meta);
 	}
 
 	succeed_if (plugin->kdbSet (plugin, returned, parentKey) == 1, "kdbSet was not successful");
-	ksDel (returned);
+	elektraKeysetDel (returned);
 
-	returned = ksNew (0, ELEKTRA_KS_END);
+	returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
-	ksRewind (returned);
-	while ((current = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((current = elektraKeysetNext (returned)) != 0)
 	{
 		succeed_if (current->meta == 0, "key had metadata, but metadata was expected to be filtered");
 	}
 
-	ksDel (returned);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (returned);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_metacopy (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * ks = metaTestKeySet ();
 
-	ElektraKey * shareMeta = keyNew ("/", ELEKTRA_KEY_END);
-	keySetMeta (shareMeta, "sharedmeta", "shared meta key test");
+	ElektraKey * shareMeta = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetMeta (shareMeta, "sharedmeta", "shared meta key test");
 
 	ElektraKey * current;
-	ksRewind (ks);
-	while ((current = ksNext (ks)) != 0)
+	elektraKeysetRewind (ks);
+	while ((current = elektraKeysetNext (ks)) != 0)
 	{
-		keyCopyMeta (current, shareMeta, "sharedmeta");
+		elektraKeyCopyMeta (current, shareMeta, "sharedmeta");
 	}
-	ElektraKeyset * expected = ksDeepDup (ks);
+	ElektraKeyset * expected = elektraKeysetDeepDup (ks);
 
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 
 	compare_keyset (expected, returned);
 
-	ksDel (expected);
-	ksDel (returned);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (returned);
 
-	keyDel (parentKey);
-	keyDel (shareMeta);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeyDel (shareMeta);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_ks_copy_with_meta (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * ks = metaTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
-	ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	ElektraKeyset * expected = metaTestKeySet ();
 	compare_keyset (expected, returned);
 
-	ElektraKeyset * copiedKs = ksNew (0, ELEKTRA_KS_END);
-	ksCopy (copiedKs, returned);
+	ElektraKeyset * copiedKs = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKeysetCopy (copiedKs, returned);
 	compare_keyset (expected, copiedKs);
 
-	ksDel (copiedKs);
-	ksDel (expected);
-	ksDel (returned);
+	elektraKeysetDel (copiedKs);
+	elektraKeysetDel (expected);
+	elektraKeysetDel (returned);
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 static void test_mmap_opmphm (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	ElektraKeyset * ks = largeTestKeySet ();
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
+	elektraKeysetDel (ks);
 
-	ks = ksNew (0, ELEKTRA_KS_END);
+	ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	const char * name = "user:/tests/mmapstorage/dir7/key3";
-	ElektraKey * found = ksLookupByName (ks, name, ELEKTRA_KDB_O_OPMPHM);
+	ElektraKey * found = elektraKeysetLookupByName (ks, name, ELEKTRA_KDB_O_OPMPHM);
 
 	if (!found)
 	{
@@ -787,34 +787,34 @@ static void test_mmap_opmphm (const char * tmpFile)
 
 	// write and re-read keyset with OPMPHM structures
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksClear (ks);
+	elektraKeysetClear (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	// try triggering memleaks by copies
-	ElektraKeyset * copy = ksNew (0, ELEKTRA_KS_END);
-	ksCopy (copy, ks);
-	ksDel (copy);
-	ElektraKeyset * dup = ksDup (ks);
-	ksDel (dup);
-	ElektraKeyset * deepDup = ksDeepDup (ks);
-	ksDel (deepDup);
+	ElektraKeyset * copy = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKeysetCopy (copy, ks);
+	elektraKeysetDel (copy);
+	ElektraKeyset * dup = elektraKeysetDup (ks);
+	elektraKeysetDel (dup);
+	ElektraKeyset * deepDup = elektraKeysetDeepDup (ks);
+	elektraKeysetDel (deepDup);
 
 	ElektraKeyset * returned = largeTestKeySet ();
 	// this lookup forces OPMPHM structures into the keyset
 	// to test the OPMPHM cleanup functions inside mmapstorage
-	ElektraKey * generateOpmphm = ksLookupByName (ks, name, ELEKTRA_KDB_O_OPMPHM);
+	ElektraKey * generateOpmphm = elektraKeysetLookupByName (ks, name, ELEKTRA_KDB_O_OPMPHM);
 	if (!generateOpmphm)
 	{
 		yield_error ("Key not found.")
 	}
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
-	ksDel (returned);
-	returned = ksNew (0, ELEKTRA_KS_END);
+	elektraKeysetDel (returned);
+	returned = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (returned->opmphm != 0, "opmphm not stored properly");
 
-	found = ksLookupByName (returned, name, ELEKTRA_KDB_O_OPMPHM);
+	found = elektraKeysetLookupByName (returned, name, ELEKTRA_KDB_O_OPMPHM);
 	if (!found)
 	{
 		yield_error ("Key not found.")
@@ -822,25 +822,25 @@ static void test_mmap_opmphm (const char * tmpFile)
 
 	// force re-generate the OPMPHM, tests cleanup and re-allocation after mmap
 	// i.e. tests if we broke the standard cleanup functions with our mmap flags
-	ElektraKey * key = keyNew ("user:/tests/mmapstorage/breakOpmphm", ELEKTRA_KEY_VALUE, "bad key", ELEKTRA_KEY_META, "e", "other meta root", ELEKTRA_KEY_END);
-	ksAppendKey (returned, key);
-	found = ksLookupByName (returned, name, ELEKTRA_KDB_O_OPMPHM);
+	ElektraKey * key = elektraKeyNew ("user:/tests/mmapstorage/breakOpmphm", ELEKTRA_KEY_VALUE, "bad key", ELEKTRA_KEY_META, "e", "other meta root", ELEKTRA_KEY_END);
+	elektraKeysetAppendKey (returned, key);
+	found = elektraKeysetLookupByName (returned, name, ELEKTRA_KDB_O_OPMPHM);
 	if (!found)
 	{
 		yield_error ("Key not found.")
 	}
 
-	ksDel (returned);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (returned);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 #endif
 
 static void test_mmap_ksDupFun (const char * tmpFile, ElektraKeyset * copyFunction (const ElektraKeyset * source))
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 
 	ElektraKeyset * ks = simpleTestKeySet ();
@@ -852,16 +852,16 @@ static void test_mmap_ksDupFun (const char * tmpFile, ElektraKeyset * copyFuncti
 	compare_keyset (dupKs, ks);
 	compare_keyset (ks, dupKs);
 
-	ksDel (dupKs);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (dupKs);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
 static void test_mmap_ksCopy (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 
 	ElektraKeyset * ks = simpleTestKeySet ();
@@ -869,8 +869,8 @@ static void test_mmap_ksCopy (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 	succeed_if ((ks->flags & ELEKTRA_KS_FLAG_MMAP_ARRAY) == ELEKTRA_KS_FLAG_MMAP_ARRAY, "KeySet array not in mmap");
 
-	ElektraKeyset * copyKs = ksNew (0, ELEKTRA_KS_END);
-	if (ksCopy (copyKs, ks) == 1)
+	ElektraKeyset * copyKs = elektraKeysetNew (0, ELEKTRA_KS_END);
+	if (elektraKeysetCopy (copyKs, ks) == 1)
 	{
 		compare_keyset (copyKs, ks);
 		compare_keyset (ks, copyKs);
@@ -880,9 +880,9 @@ static void test_mmap_ksCopy (const char * tmpFile)
 		yield_error ("ksCopy failed");
 	}
 
-	ksDel (copyKs);
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeysetDel (copyKs);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
@@ -898,15 +898,15 @@ static void test_mmap_open_pipe (void)
 	snprintf (pipeFile, 1024, "/dev/fd/%d", pipefd[1]);
 	pipeFile[1023] = '\0';
 
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, pipeFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, pipeFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 
 	ElektraKeyset * ks = simpleTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet could write to pipe, but should not");
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
@@ -919,10 +919,10 @@ static void test_mmap_bad_file_permissions (const char * tmpFile)
 		return;
 	}
 
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	FILE * fp;
 	if ((fp = fopen (tmpFile, "r+")) == 0)
@@ -950,8 +950,8 @@ static void test_mmap_bad_file_permissions (const char * tmpFile)
 		yield_error ("chmod() failed");
 	}
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
@@ -990,8 +990,8 @@ static void test_mmap_unlink (const char * tmpFile)
 		close (childPipe[0]);
 		close (parentPipe[1]);
 
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
 		ElektraKeyset * ks = simpleTestKeySet ();
@@ -1006,9 +1006,9 @@ static void test_mmap_unlink (const char * tmpFile)
 		ElektraKeyset * expected = simpleTestKeySet ();
 		compare_keyset (expected, ks);
 		compare_keyset (ks, expected);
-		ksDel (expected);
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeysetDel (expected);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 
 		_Exit (EXIT_SUCCESS);
@@ -1021,8 +1021,8 @@ static void test_mmap_unlink (const char * tmpFile)
 		if (read (childPipe[0], &buf, 1) != 1) _Exit (EXIT_FAILURE); // wait for child
 		close (childPipe[0]);
 
-		ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+		ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 		PLUGIN_OPEN ("mmapstorage");
 
 		ElektraKeyset * ks = metaTestKeySet ();
@@ -1034,23 +1034,23 @@ static void test_mmap_unlink (const char * tmpFile)
 		waitpid (pid, &status, 0);
 		if (status != 0) yield_error ("child process did not exit successfully.");
 
-		keyDel (parentKey);
-		ksDel (ks);
+		elektraKeyDel (parentKey);
+		elektraKeysetDel (ks);
 		PLUGIN_CLOSE ();
 	}
 }
 
 static void clearStorage (const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	keyDel (parentKey);
-	ksDel (ks);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (ks);
 	PLUGIN_CLOSE ();
 }
 
@@ -1152,10 +1152,10 @@ int main (int argc, char ** argv)
 #endif
 
 	clearStorage (tmpFile);
-	test_mmap_ksDupFun (tmpFile, ksDup);
+	test_mmap_ksDupFun (tmpFile, elektraKeysetDup);
 
 	clearStorage (tmpFile);
-	test_mmap_ksDupFun (tmpFile, ksDeepDup);
+	test_mmap_ksDupFun (tmpFile, elektraKeysetDeepDup);
 
 	clearStorage (tmpFile);
 	test_mmap_ksCopy (tmpFile);

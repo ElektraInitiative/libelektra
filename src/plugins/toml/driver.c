@@ -69,7 +69,7 @@ int tomlRead (ElektraKeyset * keys, ElektraKey * parent)
 		status = 1;
 	}
 
-	ksRewind (keys);
+	elektraKeysetRewind (keys);
 	return status;
 }
 
@@ -82,8 +82,8 @@ static Driver * createDriver (ElektraKey * parent, ElektraKeyset * keys)
 	}
 	driver->root = parent;
 	driver->keys = keys;
-	driver->parentStack = pushParent (NULL, keyDup (parent, ELEKTRA_KEY_CP_ALL));
-	driver->filename = elektraStrDup (keyString (parent));
+	driver->parentStack = pushParent (NULL, elektraKeyDup (parent, ELEKTRA_KEY_CP_ALL));
+	driver->filename = elektraStrDup (elektraKeyString (parent));
 	driver->simpleTableActive = false;
 	driver->drainCommentsOnKeyExit = true;
 	driver->errorSet = false;
@@ -126,7 +126,7 @@ static int driverParse (Driver * driver)
 	FILE * file = fopen (driver->filename, "rb");
 	if (file == NULL)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (driver->root, keyString (driver->root));
+		ELEKTRA_SET_RESOURCE_ERROR (driver->root, elektraKeyString (driver->root));
 		return 1;
 	}
 	initializeLexer (file);
@@ -144,8 +144,8 @@ void driverExitToml (Driver * driver)
 	}
 	if (driver->commentRoot != NULL)
 	{
-		ElektraKey * root = keyNew (keyName (driver->root), ELEKTRA_KEY_END);
-		ksAppendKey (driver->keys, root);
+		ElektraKey * root = elektraKeyNew (elektraKeyName (driver->root), ELEKTRA_KEY_END);
+		elektraKeysetAppendKey (driver->keys, root);
 		driverDrainCommentsToKey (root, driver);
 	}
 }
@@ -165,12 +165,12 @@ void driverExitKey (Driver * driver)
 	{
 		return;
 	}
-	ElektraKey * existing = ksLookup (driver->keys, driver->currKey, 0);
-	if (existing != NULL && !isTableArray (existing) && keyCmp (existing, driver->root) != 0)
+	ElektraKey * existing = elektraKeysetLookup (driver->keys, driver->currKey, 0);
+	if (existing != NULL && !isTableArray (existing) && elektraKeyCmp (existing, driver->root) != 0)
 	{
 		// Only allow table array keys to be read multiple times
 		driverError (driver, ERROR_SEMANTIC, driver->currLine,
-			     "Malformed input: Multiple occurences of keyname '%s', but keynames must be unique.", keyName (existing));
+			     "Malformed input: Multiple occurences of keyname '%s', but keynames must be unique.", elektraKeyName (existing));
 	}
 
 	pushCurrKey (driver);
@@ -192,16 +192,16 @@ void driverExitKeyValue (Driver * driver)
 
 	if (driver->prevKey != NULL)
 	{
-		keyDecRef (driver->prevKey);
-		keyDel (driver->prevKey);
+		elektraKeyDecRef (driver->prevKey);
+		elektraKeyDel (driver->prevKey);
 		driver->prevKey = NULL;
 	}
 	if (driver->prevKey != NULL)
 	{
-		keyDecRef (driver->prevKey);
+		elektraKeyDecRef (driver->prevKey);
 	}
 	driver->prevKey = driver->parentStack->key;
-	keyIncRef (driver->prevKey);
+	elektraKeyIncRef (driver->prevKey);
 
 	driver->parentStack = popParent (driver->parentStack);
 }
@@ -264,9 +264,9 @@ void driverExitOptCommentTable (Driver * driver)
 			// We need to emit the table array key ending with /#n (having no value)
 			// if none is existing yet (because of preceding comments)
 			// Otherwise, the inline comment we just added will be ignored, if the table array is empty
-			if (ksLookup (driver->keys, driver->parentStack->key, 0) == NULL)
+			if (elektraKeysetLookup (driver->keys, driver->parentStack->key, 0) == NULL)
 			{
-				ksAppendKey (driver->keys, driver->parentStack->key);
+				elektraKeysetAppendKey (driver->keys, driver->parentStack->key);
 			}
 		}
 	}
@@ -405,8 +405,8 @@ void driverExitSimpleTable (Driver * driver)
 	{
 		return;
 	}
-	keySetMeta (driver->parentStack->key, "tomltype", "simpletable");
-	ksAppendKey (driver->keys, driver->parentStack->key);
+	elektraKeySetMeta (driver->parentStack->key, "tomltype", "simpletable");
+	elektraKeysetAppendKey (driver->keys, driver->parentStack->key);
 }
 
 void driverEnterTableArray (Driver * driver)
@@ -436,18 +436,18 @@ void driverExitTableArray (Driver * driver)
 	}
 
 	if (driver->tableArrayStack != NULL &&
-	    keyCmp (driver->tableArrayStack->key, driver->parentStack->key) == 0) // same table array name -> next element
+	    elektraKeyCmp (driver->tableArrayStack->key, driver->parentStack->key) == 0) // same table array name -> next element
 	{
 		driver->tableArrayStack->currIndex++;
 	}
 	else if (driver->tableArrayStack != NULL &&
-		 keyIsBelow (driver->tableArrayStack->key, driver->parentStack->key)) // below top name -> push new sub table array
+		 elektraKeyIsBelow (driver->tableArrayStack->key, driver->parentStack->key)) // below top name -> push new sub table array
 	{
 		driver->tableArrayStack = pushTableArray (driver->tableArrayStack, driver->parentStack->key);
 	}
 	else // no relation, pop table array stack until some relation exists (or NULL)
 	{
-		while (driver->tableArrayStack != NULL && keyCmp (driver->tableArrayStack->key, driver->parentStack->key) != 0)
+		while (driver->tableArrayStack != NULL && elektraKeyCmp (driver->tableArrayStack->key, driver->parentStack->key) != 0)
 		{
 			driver->tableArrayStack = popTableArray (driver->tableArrayStack);
 		}
@@ -464,21 +464,21 @@ void driverExitTableArray (Driver * driver)
 	driver->order--;				       // Undo order increment
 
 	ElektraKey * key = buildTableArrayKeyName (driver->tableArrayStack);
-	ElektraKey * rootNameKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
-	keyAddName (rootNameKey, "..");
-	ElektraKey * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
+	ElektraKey * rootNameKey = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
+	elektraKeyAddName (rootNameKey, "..");
+	ElektraKey * existingRoot = elektraKeysetLookup (driver->keys, rootNameKey, 0);
 
 	if (existingRoot == NULL)
 	{
 		existingRoot = rootNameKey;
-		keySetMeta (existingRoot, "tomltype", "tablearray");
-		keySetMeta (existingRoot, "array", "#0");
+		elektraKeySetMeta (existingRoot, "tomltype", "tablearray");
+		elektraKeySetMeta (existingRoot, "array", "#0");
 		setOrderForKey (existingRoot, driver->order++);
-		ksAppendKey (driver->keys, existingRoot);
+		elektraKeysetAppendKey (driver->keys, existingRoot);
 	}
 	else
 	{
-		keyDel (rootNameKey);
+		elektraKeyDel (rootNameKey);
 		keyUpdateArrayMetakey (existingRoot, driver->tableArrayStack->currIndex);
 	}
 
@@ -486,7 +486,7 @@ void driverExitTableArray (Driver * driver)
 
 	if (driverDrainCommentsToKey (driver->parentStack->key, driver))
 	{ // we have to emit the array index key, because it has comments in previous lines
-		ksAppendKey (driver->keys, driver->parentStack->key);
+		elektraKeysetAppendKey (driver->keys, driver->parentStack->key);
 	}
 	driver->drainCommentsOnKeyExit = true; // only set to false while table array unindexed key is generated
 }
@@ -498,16 +498,16 @@ void driverEnterArray (Driver * driver)
 		return;
 	}
 	driver->indexStack = pushIndex (driver->indexStack, 0);
-	const ElektraKey * meta = keyGetMeta (driver->parentStack->key, "array"); // check for nested arrays
+	const ElektraKey * meta = elektraKeyGetMeta (driver->parentStack->key, "array"); // check for nested arrays
 	if (meta != NULL)
 	{
-		ELEKTRA_ASSERT (elektraStrCmp (keyString (meta), "") != 0,
+		ELEKTRA_ASSERT (elektraStrCmp (elektraKeyString (meta), "") != 0,
 				"Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
 		ElektraKey * key = keyAppendIndex (0, driver->parentStack->key);
 		setOrderForKey (key, driver->order++);
 		driver->parentStack = pushParent (driver->parentStack, key);
 	}
-	keySetMeta (driver->parentStack->key, "array", "");
+	elektraKeySetMeta (driver->parentStack->key, "array", "");
 }
 
 void driverExitArray (Driver * driver)
@@ -523,7 +523,7 @@ void driverExitArray (Driver * driver)
 	driverDrainCommentsToKey (NULL, driver);
 
 	driver->indexStack = popIndex (driver->indexStack);
-	ksAppendKey (driver->keys, driver->parentStack->key);
+	elektraKeysetAppendKey (driver->keys, driver->parentStack->key);
 }
 
 void driverEmptyArray (Driver * driver)
@@ -556,7 +556,7 @@ void driverEnterArrayElement (Driver * driver)
 	ElektraKey * key = keyAppendIndex (driver->indexStack->value, driver->parentStack->key);
 	// setOrderForKey (key, driver->order++); // TODO: no order for array elements
 
-	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
+	elektraKeySetMeta (driver->parentStack->key, "array", elektraKeyBaseName (key));
 	driver->parentStack = pushParent (driver->parentStack, key);
 
 	driver->indexStack->value++;
@@ -577,11 +577,11 @@ void driverExitArrayElement (Driver * driver)
 	}
 	if (driver->prevKey != NULL)
 	{
-		keyDecRef (driver->prevKey);
-		keyDel (driver->prevKey);
+		elektraKeyDecRef (driver->prevKey);
+		elektraKeyDel (driver->prevKey);
 	}
 	driver->prevKey = driver->parentStack->key;
-	keyIncRef (driver->prevKey);
+	elektraKeyIncRef (driver->prevKey);
 	driver->parentStack = popParent (driver->parentStack);
 }
 
@@ -591,8 +591,8 @@ void driverEnterInlineTable (Driver * driver)
 	{
 		return;
 	}
-	keySetMeta (driver->parentStack->key, "tomltype", "inlinetable");
-	ksAppendKey (driver->keys, driver->parentStack->key);
+	elektraKeySetMeta (driver->parentStack->key, "tomltype", "inlinetable");
+	elektraKeysetAppendKey (driver->keys, driver->parentStack->key);
 }
 
 void driverExitInlineTable (Driver * driver)
@@ -754,13 +754,13 @@ static void setCurrKey (Driver * driver, const ElektraKey * key)
 {
 	if (driver->currKey != NULL)
 	{
-		keyDecRef (driver->currKey);
-		keyDel (driver->currKey);
+		elektraKeyDecRef (driver->currKey);
+		elektraKeyDel (driver->currKey);
 	}
 	if (key != NULL)
 	{
-		driver->currKey = keyNew (keyName (key), ELEKTRA_KEY_END);
-		keyIncRef (driver->currKey);
+		driver->currKey = elektraKeyNew (elektraKeyName (key), ELEKTRA_KEY_END);
+		elektraKeyIncRef (driver->currKey);
 	}
 	else
 	{
@@ -772,13 +772,13 @@ static void setPrevKey (Driver * driver, ElektraKey * key)
 {
 	if (driver->prevKey != NULL)
 	{
-		keyDecRef (driver->prevKey);
-		keyDel (driver->prevKey);
+		elektraKeyDecRef (driver->prevKey);
+		elektraKeyDel (driver->prevKey);
 	}
 	driver->prevKey = key;
 	if (key != NULL)
 	{
-		keyIncRef (key);
+		elektraKeyIncRef (key);
 	}
 }
 
@@ -795,14 +795,14 @@ static void extendCurrKey (Driver * driver, const char * name)
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to extend current key, but current key is NULL.");
 		return;
 	}
-	keyAddBaseName (driver->currKey, name);
+	elektraKeyAddBaseName (driver->currKey, name);
 }
 
 static ParentList * pushParent (ParentList * top, ElektraKey * key)
 {
 	ParentList * parent = elektraCalloc (sizeof (ParentList));
 	parent->key = key;
-	keyIncRef (key);
+	elektraKeyIncRef (key);
 	parent->next = top;
 	return parent;
 }
@@ -810,8 +810,8 @@ static ParentList * pushParent (ParentList * top, ElektraKey * key)
 static ParentList * popParent (ParentList * top)
 {
 	ParentList * newTop = top->next;
-	keyDecRef (top->key);
-	keyDel (top->key);
+	elektraKeyDecRef (top->key);
+	elektraKeyDel (top->key);
 	elektraFree (top);
 	return newTop;
 }
@@ -850,7 +850,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		return;
 	}
 
-	keySetString (driver->parentStack->key, elektraStr);
+	elektraKeySetString (driver->parentStack->key, elektraStr);
 
 	switch (driver->lastScalar->type)
 	{
@@ -865,7 +865,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		assignStringTomlType (driver->parentStack->key, driver->lastScalar->type);
 		break;
 	case SCALAR_BOOLEAN:
-		keySetMeta (driver->parentStack->key, "type", "boolean");
+		elektraKeySetMeta (driver->parentStack->key, "type", "boolean");
 		break;
 	case SCALAR_FLOAT_NUM:
 	case SCALAR_FLOAT_INF:
@@ -874,17 +874,17 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	case SCALAR_FLOAT_NAN:
 	case SCALAR_FLOAT_POS_NAN:
 	case SCALAR_FLOAT_NEG_NAN:
-		keySetMeta (driver->parentStack->key, "type", "double");
+		elektraKeySetMeta (driver->parentStack->key, "type", "double");
 		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->orig);
 		break;
 	case SCALAR_INTEGER_DEC:
-		keySetMeta (driver->parentStack->key, "type", "long_long");
+		elektraKeySetMeta (driver->parentStack->key, "type", "long_long");
 		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->orig);
 		break;
 	case SCALAR_INTEGER_BIN:
 	case SCALAR_INTEGER_OCT:
 	case SCALAR_INTEGER_HEX:
-		keySetMeta (driver->parentStack->key, "type", "unsigned_long_long");
+		elektraKeySetMeta (driver->parentStack->key, "type", "unsigned_long_long");
 		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->orig);
 		break;
 	default:
@@ -894,15 +894,15 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 
 	elektraFree (elektraStr);
 
-	ksAppendKey (driver->keys, driver->parentStack->key);
+	elektraKeysetAppendKey (driver->keys, driver->parentStack->key);
 	driverClearLastScalar (driver);
 }
 
 static void assignOrigValueIfDifferent (ElektraKey * key, const char * origValue)
 {
-	if (elektraStrCmp (keyString (key), origValue) != 0)
+	if (elektraStrCmp (elektraKeyString (key), origValue) != 0)
 	{
-		keySetMeta (key, "origvalue", origValue);
+		elektraKeySetMeta (key, "origvalue", origValue);
 	}
 }
 
@@ -912,7 +912,7 @@ static bool handleSpecialStrings (const char * string, ElektraKey * key)
 {
 	if (isNullString (string))
 	{
-		keySetBinary (key, NULL, 0);
+		elektraKeySetBinary (key, NULL, 0);
 		return true;
 	}
 	else if (isBase64String (string))
@@ -927,13 +927,13 @@ static bool handleSpecialStrings (const char * string, ElektraKey * key)
 
 static void assignStringMetakeys (ElektraKey * key, const char * origStr, const char * translatedStr, Driver * driver)
 {
-	const ElektraKey * metaType = keyGetMeta (key, "type");
+	const ElektraKey * metaType = elektraKeyGetMeta (key, "type");
 	// Don't overwrite "binary" typed metakeys -> See base64 plugin meta mode
 	// Don't assign it empty strings, otherwise the type plugin complains
 	// TODO (kodebach): string length 0, once type allows zero length on type=string
-	if ((metaType == NULL || elektraStrCmp (keyString (metaType), "binary") != 0) && elektraStrLen (translatedStr) > 1)
+	if ((metaType == NULL || elektraStrCmp (elektraKeyString (metaType), "binary") != 0) && elektraStrLen (translatedStr) > 1)
 	{
-		keySetMeta (key, "type", "string");
+		elektraKeySetMeta (key, "type", "string");
 	}
 	if (strcmp (origStr, translatedStr) != 0)
 	{
@@ -943,7 +943,7 @@ static void assignStringMetakeys (ElektraKey * key, const char * origStr, const 
 			driverError (driver, ERROR_MEMORY, 0, "Could not allocate memory");
 			return;
 		}
-		keySetMeta (key, "origvalue", orig);
+		elektraKeySetMeta (key, "origvalue", orig);
 		elektraFree (orig);
 	}
 }
@@ -953,16 +953,16 @@ static void assignStringTomlType (ElektraKey * key, ScalarType stringType)
 	switch (stringType)
 	{
 	case SCALAR_STRING_BASIC:
-		keySetMeta (key, "tomltype", "string_basic");
+		elektraKeySetMeta (key, "tomltype", "string_basic");
 		break;
 	case SCALAR_STRING_ML_BASIC:
-		keySetMeta (key, "tomltype", "string_ml_basic");
+		elektraKeySetMeta (key, "tomltype", "string_ml_basic");
 		break;
 	case SCALAR_STRING_LITERAL:
-		keySetMeta (key, "tomltype", "string_literal");
+		elektraKeySetMeta (key, "tomltype", "string_literal");
 		break;
 	case SCALAR_STRING_ML_LITERAL:
-		keySetMeta (key, "tomltype", "string_ml_literal");
+		elektraKeySetMeta (key, "tomltype", "string_ml_literal");
 		break;
 	default:
 		ELEKTRA_ASSERT (0, "Not a valid string type %d", stringType);

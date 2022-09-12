@@ -96,17 +96,17 @@ static void benchmarkHashFunctionTime (char * name)
 			for (size_t r = 0; r < runs; ++r)
 			{
 				ElektraKey * key;
-				ksRewind (ks);
+				elektraKeysetRewind (ks);
 				struct timeval start;
 				struct timeval end;
 				__asm__("");
 				gettimeofday (&start, 0);
 				__asm__("");
 				// measure
-				while ((key = ksNext (ks)))
+				while ((key = elektraKeysetNext (ks)))
 				{
 					__asm__("");
-					opmphmHashfunction (keyName (key), strlen (keyName (key)), 1337);
+					opmphmHashfunction (elektraKeyName (key), strlen (elektraKeyName (key)), 1337);
 					__asm__("");
 				}
 				__asm__("");
@@ -115,7 +115,7 @@ static void benchmarkHashFunctionTime (char * name)
 				results[i * (numberOfShapes * runs) + s * runs + r] =
 					(end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 			}
-			ksDel (ks);
+			elektraKeysetDel (ks);
 		}
 	}
 	elektraFree (keySetShapes);
@@ -437,7 +437,7 @@ static void benchmarkMapping (char * name)
 	// cleanup
 	for (size_t i = 0; i < numberOfKeySets; ++i)
 	{
-		ksDel (keySetsCache[i]);
+		elektraKeysetDel (keySetsCache[i]);
 	}
 	elektraFree (keySetsCache);
 	fclose (out);
@@ -727,7 +727,7 @@ static void benchmarkMappingOpt (char * name)
 	// cleanup
 	for (size_t i = 0; i < numberOfKeySets; ++i)
 	{
-		ksDel (keySetsCache[i]);
+		elektraKeysetDel (keySetsCache[i]);
 	}
 	elektraFree (n);
 	elektraFree (keySetsCache);
@@ -979,7 +979,7 @@ static void benchmarkMappingAllSeeds (char * name)
 	// cleanup
 	for (size_t i = 0; i < nCount; ++i)
 	{
-		ksDel (keySetsCache[i]);
+		elektraKeysetDel (keySetsCache[i]);
 	}
 	elektraFree (n);
 	elektraFree (keySetsCache);
@@ -1037,7 +1037,7 @@ static size_t benchmarkOPMPHMBuildTimeMeasure (ElektraKeyset * ks, size_t * repe
 		gettimeofday (&start, 0);
 		__asm__("");
 
-		keyFound = ksLookup (ks, keySearchFor, ELEKTRA_KDB_O_OPMPHM | ELEKTRA_KDB_O_NOCASCADING);
+		keyFound = elektraKeysetLookup (ks, keySearchFor, ELEKTRA_KDB_O_OPMPHM | ELEKTRA_KDB_O_NOCASCADING);
 
 		__asm__("");
 		gettimeofday (&end, 0);
@@ -1176,7 +1176,7 @@ void benchmarkOPMPHMBuildTime (char * name)
 			// free ks
 			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
 			{
-				ksDel (keySetStorage[ksI]);
+				elektraKeysetDel (keySetStorage[ksI]);
 			}
 		}
 
@@ -1256,7 +1256,7 @@ static size_t benchmarkSearchTimeMeasure (ElektraKeyset * ks, size_t searches, i
 		{
 			// set seed to return by elektraRandGetInitSeed () in the lookup
 			elektraRandBenchmarkInitSeed = searchSeed;
-			(void) ksLookup (ks, ks->array[0], ELEKTRA_KDB_O_OPMPHM | ELEKTRA_KDB_O_NOCASCADING);
+			(void) elektraKeysetLookup (ks, ks->array[0], ELEKTRA_KDB_O_OPMPHM | ELEKTRA_KDB_O_NOCASCADING);
 			if (!opmphmIsBuild (ks->opmphm))
 			{
 				printExit ("trigger OPMPHM build");
@@ -1294,7 +1294,7 @@ static size_t benchmarkSearchTimeMeasure (ElektraKeyset * ks, size_t searches, i
 
 		for (size_t s = 1; s <= searches; ++s)
 		{
-			keyFound = ksLookup (ks, ks->array[actualSearchSeed % ks->size], option);
+			keyFound = elektraKeysetLookup (ks, ks->array[actualSearchSeed % ks->size], option);
 			if (!keyFound || keyFound != ks->array[actualSearchSeed % ks->size])
 			{
 				printExit ("Sanity Check Failed: found wrong Key");
@@ -1455,7 +1455,7 @@ static void benchmarkSearchTime (char * name, char * outFileName, elektraLookupF
 			// free ks
 			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
 			{
-				ksDel (keySetStorage[ksI]);
+				elektraKeysetDel (keySetStorage[ksI]);
 			}
 		}
 
@@ -1566,7 +1566,7 @@ static size_t benchmarkHsearchBuildTimeMeasure (ElektraKeyset * ks, size_t nI, d
 		struct timeval start;
 		struct timeval end;
 		ElektraKey * key;
-		ksRewind (ks);
+		elektraKeysetRewind (ks);
 		ENTRY e;
 		ENTRY * ep;
 		// fresh htab
@@ -1586,9 +1586,9 @@ static size_t benchmarkHsearchBuildTimeMeasure (ElektraKeyset * ks, size_t nI, d
 			printExit ("hcreate_r");
 		}
 
-		while ((key = ksNext (ks)))
+		while ((key = elektraKeysetNext (ks)))
 		{
-			e.key = (char *) keyName (key);
+			e.key = (char *) elektraKeyName (key);
 			e.data = key;
 			if (!hsearch_r (e, ENTER, &ep, htab))
 			{
@@ -1605,10 +1605,10 @@ static size_t benchmarkHsearchBuildTimeMeasure (ElektraKeyset * ks, size_t nI, d
 		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 
 		// sanity check
-		ksRewind (ks);
-		while ((key = ksNext (ks)))
+		elektraKeysetRewind (ks);
+		while ((key = elektraKeysetNext (ks)))
 		{
-			e.key = (char *) keyName (key);
+			e.key = (char *) elektraKeyName (key);
 			if (!hsearch_r (e, FIND, &ep, htab))
 			{
 				printExit ("Sanity Check Failed: hsearch can not find element");
@@ -1747,7 +1747,7 @@ void benchmarkHsearchBuildTime (char * name)
 			// free ks
 			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
 			{
-				ksDel (keySetStorage[ksI]);
+				elektraKeysetDel (keySetStorage[ksI]);
 			}
 		}
 
@@ -1950,7 +1950,7 @@ static void benchmarkPredictionTime (char * name)
 					// do the lookups
 					for (size_t lookups = 0; lookups < pattern[s]; ++lookups)
 					{
-						keyFound = ksLookup (ks, ks->array[searchHashSeed % ks->size], ELEKTRA_KDB_O_NOCASCADING);
+						keyFound = elektraKeysetLookup (ks, ks->array[searchHashSeed % ks->size], ELEKTRA_KDB_O_NOCASCADING);
 						if (!keyFound || keyFound != ks->array[searchHashSeed % ks->size])
 						{
 							printExit ("Sanity Check Failed: found wrong Key");
@@ -2002,7 +2002,7 @@ static void benchmarkPredictionTime (char * name)
 					// do the lookups
 					for (size_t lookups = 0; lookups < pattern[s]; ++lookups)
 					{
-						keyFound = ksLookup (ks, ks->array[searchHashSeed % ks->size],
+						keyFound = elektraKeysetLookup (ks, ks->array[searchHashSeed % ks->size],
 								     ELEKTRA_KDB_O_NOCASCADING | ELEKTRA_KDB_O_BINSEARCH);
 						if (!keyFound || keyFound != ks->array[searchHashSeed % ks->size])
 						{
@@ -2027,7 +2027,7 @@ static void benchmarkPredictionTime (char * name)
 			results[nI * patternsPerN * 2 + pI * 2] = resultPredition;
 			results[nI * patternsPerN * 2 + pI * 2 + 1] = resultBinarySearch;
 
-			ksDel (ks);
+			elektraKeysetDel (ks);
 		}
 	}
 	printf ("\n");
@@ -2083,14 +2083,14 @@ static void benchmarkPrintAllKeySetShapes (char * name)
 		{
 			printf (" ======================= shapeId %zu =======================\n\n", shapeId);
 			ElektraKey * key;
-			ksRewind (ks);
-			while ((key = ksNext (ks)))
+			elektraKeysetRewind (ks);
+			while ((key = elektraKeysetNext (ks)))
 			{
-				printf ("%s\n", keyName (key));
+				printf ("%s\n", elektraKeyName (key));
 			}
-			printf ("\n ======================== size %zd ========================\n\n", ksGetSize (ks));
+			printf ("\n ======================== size %zd ========================\n\n", elektraKeysetGetSize (ks));
 		}
-		ksDel (ks);
+		elektraKeysetDel (ks);
 	}
 	elektraFree (keySetShapes);
 }
@@ -2266,7 +2266,7 @@ static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r)
 
 static const char * getString (void * data)
 {
-	return keyName ((ElektraKey *) data);
+	return elektraKeyName ((ElektraKey *) data);
 }
 
 /**

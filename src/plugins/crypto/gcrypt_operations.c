@@ -61,14 +61,14 @@ static int getKeyIvForEncryption (ElektraKeyset * config, ElektraKey * errorKey,
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
-	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
+	elektraKeySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
 	elektraFree (saltHexString);
 
 	// read iteration count
 	const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	// generate/derive the cryptographic key and the IV
-	if ((gcry_err = gcry_kdf_derive (keyValue (masterKey), keyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt,
+	if ((gcry_err = gcry_kdf_derive (elektraKeyValue (masterKey), elektraKeyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt,
 					 sizeof (salt), iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
 		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to create a cryptographic key for encryption. Reason: %s",
@@ -76,8 +76,8 @@ static int getKeyIvForEncryption (ElektraKeyset * config, ElektraKey * errorKey,
 		return -1;
 	}
 
-	keySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_GCRY_KEYSIZE);
-	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	elektraKeySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_GCRY_KEYSIZE);
+	elektraKeySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	return 1;
 }
 
@@ -111,7 +111,7 @@ static int getKeyIvForDecryption (ElektraKeyset * config, ElektraKey * errorKey,
 	const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	// derive the cryptographic key and the IV
-	if ((gcry_err = gcry_kdf_derive (keyValue (masterKey), keyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, saltBuffer,
+	if ((gcry_err = gcry_kdf_derive (elektraKeyValue (masterKey), elektraKeyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, saltBuffer,
 					 saltBufferLen, iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
 		ELEKTRA_SET_INTERNAL_ERRORF (errorKey, "Failed to restore the cryptographic key for decryption. Reason: %s",
@@ -119,8 +119,8 @@ static int getKeyIvForDecryption (ElektraKeyset * config, ElektraKey * errorKey,
 		return -1;
 	}
 
-	keySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_GCRY_KEYSIZE);
-	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	elektraKeySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_GCRY_KEYSIZE);
+	elektraKeySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	return 1;
 }
 
@@ -166,15 +166,15 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, ElektraKeyset 
 	(*handle) = NULL;
 
 	// retrieve/derive the cryptographic material
-	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
-	ElektraKey * iv = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * key = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * iv = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	switch (op)
 	{
 	case ELEKTRA_CRYPTO_ENCRYPT:
 		if (getKeyIvForEncryption (config, errorKey, masterKey, k, key, iv) != 1)
 		{
-			keyDel (key);
-			keyDel (iv);
+			elektraKeyDel (key);
+			elektraKeyDel (iv);
 			return -1;
 		}
 		break;
@@ -182,20 +182,20 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, ElektraKeyset 
 	case ELEKTRA_CRYPTO_DECRYPT:
 		if (getKeyIvForDecryption (config, errorKey, masterKey, k, key, iv) != 1)
 		{
-			keyDel (key);
-			keyDel (iv);
+			elektraKeyDel (key);
+			elektraKeyDel (iv);
 			return -1;
 		}
 		break;
 
 	default: // not supported
-		keyDel (key);
-		keyDel (iv);
+		elektraKeyDel (key);
+		elektraKeyDel (iv);
 		return -1;
 	}
 
-	keyLength = keyGetBinary (key, keyBuffer, sizeof (keyBuffer));
-	ivLength = keyGetBinary (iv, ivBuffer, sizeof (ivBuffer));
+	keyLength = elektraKeyGetBinary (key, keyBuffer, sizeof (keyBuffer));
+	ivLength = elektraKeyGetBinary (iv, ivBuffer, sizeof (ivBuffer));
 
 	// create the handle
 	(*handle) = elektraMalloc (sizeof (elektraCryptoHandle));
@@ -203,8 +203,8 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, ElektraKeyset 
 	{
 		memset (keyBuffer, 0, sizeof (keyBuffer));
 		memset (ivBuffer, 0, sizeof (ivBuffer));
-		keyDel (key);
-		keyDel (iv);
+		elektraKeyDel (key);
+		elektraKeyDel (iv);
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
 		return -1;
 	}
@@ -226,8 +226,8 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, ElektraKeyset 
 
 	memset (keyBuffer, 0, sizeof (keyBuffer));
 	memset (ivBuffer, 0, sizeof (ivBuffer));
-	keyDel (key);
-	keyDel (iv);
+	elektraKeyDel (key);
+	elektraKeyDel (iv);
 	return 1;
 
 error:
@@ -237,8 +237,8 @@ error:
 	gcry_cipher_close (**handle);
 	elektraFree (*handle);
 	(*handle) = NULL;
-	keyDel (key);
-	keyDel (iv);
+	elektraKeyDel (key);
+	elektraKeyDel (iv);
 	return -1;
 }
 
@@ -257,14 +257,14 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, ElektraKey * k, Elek
 	}
 
 	// remove salt as metakey because it will be encoded into the crypto payload
-	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, NULL);
+	elektraKeySetMeta (k, ELEKTRA_CRYPTO_META_SALT, NULL);
 
 	// prepare the crypto header data
-	const kdb_octet_t * content = keyValue (k);
-	const kdb_unsigned_long_t contentLen = keyGetValueSize (k);
+	const kdb_octet_t * content = elektraKeyValue (k);
+	const kdb_unsigned_long_t contentLen = elektraKeyGetValueSize (k);
 	kdb_octet_t flags;
 
-	switch (keyIsString (k))
+	switch (elektraKeyIsString (k))
 	{
 	case 1: // string
 		flags = ELEKTRA_CRYPTO_FLAG_STRING;
@@ -339,7 +339,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, ElektraKey * k, Elek
 	}
 
 	// write back the cipher text to the key
-	keySetBinary (k, output, outputLen);
+	elektraKeySetBinary (k, output, outputLen);
 	memset (output, 0, outputLen);
 	elektraFree (output);
 	elektraFree (salt);
@@ -359,8 +359,8 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, ElektraKey * k, Elek
 	saltLen += sizeof (kdb_unsigned_long_t);
 
 	// set payload pointer
-	const kdb_octet_t * payload = ((kdb_octet_t *) keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
-	const size_t payloadLen = keyGetValueSize (k) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+	const kdb_octet_t * payload = ((kdb_octet_t *) elektraKeyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+	const size_t payloadLen = elektraKeyGetValueSize (k) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// plausibility check
 	if (payloadLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
@@ -413,15 +413,15 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, ElektraKey * k, Elek
 	// restore the key to its original status
 	if ((flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING && contentLen > 0)
 	{
-		keySetString (k, (const char *) data);
+		elektraKeySetString (k, (const char *) data);
 	}
 	else if ((flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || contentLen == 0)
 	{
-		keySetBinary (k, NULL, 0);
+		elektraKeySetBinary (k, NULL, 0);
 	}
 	else
 	{
-		keySetBinary (k, data, contentLen);
+		elektraKeySetBinary (k, data, contentLen);
 	}
 
 	memset (output, 0, payloadLen);

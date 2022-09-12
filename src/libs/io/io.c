@@ -21,7 +21,7 @@ int elektraIoContract (ElektraKeyset * contract, ElektraIoInterface * ioBinding)
 {
 	if (contract == NULL || ioBinding == NULL) return -1;
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (ioBinding),
+	elektraKeysetAppendKey (contract, elektraKeyNew ("system:/elektra/contract/globalkeyset/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (ioBinding),
 				       ELEKTRA_KEY_VALUE, &ioBinding, ELEKTRA_KEY_END));
 
 	return 0;
@@ -29,9 +29,9 @@ int elektraIoContract (ElektraKeyset * contract, ElektraIoInterface * ioBinding)
 
 ElektraIoInterface * elektraIoGetBinding (ElektraKdb * kdb)
 {
-	ElektraKey * ioBindingKey = ksLookupByName (kdb->global, "system:/elektra/io/binding", 0);
-	const void * bindingPtr = keyValue (ioBindingKey);
-	ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
+	ElektraKey * ioBindingKey = elektraKeysetLookupByName (kdb->global, "system:/elektra/io/binding", 0);
+	const void * bindingPtr = elektraKeyValue (ioBindingKey);
+	ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) elektraKeyValue (ioBindingKey);
 	return binding;
 }
 

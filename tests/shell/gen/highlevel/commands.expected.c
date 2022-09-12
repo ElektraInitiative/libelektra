@@ -41,21 +41,21 @@
 
 static ElektraKeyset * embeddedSpec (void)
 {
-	return ksNew (14,
-	keyNew ("/", ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdb", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/dynamic/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/get", ELEKTRA_KEY_META, "command", "get", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdbGet", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/get/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/get/maxlength", ELEKTRA_KEY_META, "default", "-1", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_META, "opt/long", "max-length", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
-	keyNew ("/get/meta", ELEKTRA_KEY_META, "command", "meta", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdbGetMeta", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/get/meta/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/get/meta/metaname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/get/meta/verbose", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
-	keyNew ("/get/verbose", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
-	keyNew ("/printversion", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
-	keyNew ("/setter", ELEKTRA_KEY_META, "command", "set", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdbSet", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/setter/keyname", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
-	keyNew ("/setter/value", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	return elektraKeysetNew (14,
+	elektraKeyNew ("/", ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdb", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/dynamic/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get", ELEKTRA_KEY_META, "command", "get", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdbGet", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get/maxlength", ELEKTRA_KEY_META, "default", "-1", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_META, "opt/long", "max-length", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get/meta", ELEKTRA_KEY_META, "command", "meta", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdbGetMeta", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get/meta/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get/meta/metaname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get/meta/verbose", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
+	elektraKeyNew ("/get/verbose", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
+	elektraKeyNew ("/printversion", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
+	elektraKeyNew ("/setter", ELEKTRA_KEY_META, "command", "set", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "gen/command/function", "commandKdbSet", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/setter/keyname", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	elektraKeyNew ("/setter/value", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
 }
@@ -104,30 +104,30 @@ int loadConfiguration (Elektra ** elektra,
 	ElektraKeyset * defaults = embeddedSpec ();
 	
 
-	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "e5e0c78ce9d88840d87ee32b9c9b2b6fe859231ea0b516fd9f3f40bec4b27d0a", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ElektraKeyset * contract = elektraKeysetNew (4,
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "e5e0c78ce9d88840d87ee32b9c9b2b6fe859231ea0b516fd9f3f40bec4b27d0a", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	elektraKeyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
 	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/commands", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("/tests/script/gen/highlevel/commands", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
 
-	keyDel (parentKey);
+	elektraKeyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/commands", defaults, contract, error);
 
 	if (defaults != NULL)
 	{
-		ksDel (defaults);
+		elektraKeysetDel (defaults);
 	}
 
 	if (contract != NULL)
 	{
-		ksDel (contract);
+		elektraKeysetDel (contract);
 	}
 
 	if (e == NULL)
@@ -144,7 +144,7 @@ int loadConfiguration (Elektra ** elektra,
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (elektraKeyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -168,17 +168,17 @@ void exitForSpecload (int argc, const char * const * argv)
 
 	ElektraKeyset * spec = embeddedSpec ();
 
-	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/commands", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("spec:/tests/script/gen/highlevel/commands", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * specloadConf = elektraKeysetNew (1, elektraKeyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
 
 	elektraInvokeClose (specload, parentKey);
-	keyDel (parentKey);
-	ksDel (specloadConf);
-	ksDel (spec);
+	elektraKeyDel (parentKey);
+	elektraKeysetDel (specloadConf);
+	elektraKeysetDel (spec);
 
 	exit (result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE);
 }
@@ -230,41 +230,41 @@ int runCommands (Elektra * elektra, void * userData)
 		return -1;
 	}
 
-	ElektraKeyset * commands = ksNew (4,
-				   keyNew ("/", ELEKTRA_KEY_FUNC, commandKdb, ELEKTRA_KEY_END),
-				   keyNew ("/get", ELEKTRA_KEY_FUNC, commandKdbGet, ELEKTRA_KEY_END),
-				   keyNew ("/get/meta", ELEKTRA_KEY_FUNC, commandKdbGetMeta, ELEKTRA_KEY_END),
-				   keyNew ("/setter", ELEKTRA_KEY_FUNC, commandKdbSet, ELEKTRA_KEY_END),
+	ElektraKeyset * commands = elektraKeysetNew (4,
+				   elektraKeyNew ("/", ELEKTRA_KEY_FUNC, commandKdb, ELEKTRA_KEY_END),
+				   elektraKeyNew ("/get", ELEKTRA_KEY_FUNC, commandKdbGet, ELEKTRA_KEY_END),
+				   elektraKeyNew ("/get/meta", ELEKTRA_KEY_FUNC, commandKdbGetMeta, ELEKTRA_KEY_END),
+				   elektraKeyNew ("/setter", ELEKTRA_KEY_FUNC, commandKdbSet, ELEKTRA_KEY_END),
 				   ELEKTRA_KS_END);
 
 	typedef int (*commandFunction) (Elektra *, kdb_boolean_t, void *);
 
-	ElektraKey * lastCommand = keyNew ("/", ELEKTRA_KEY_END);
-	const char * command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
+	ElektraKey * lastCommand = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	const char * command = ELEKTRA_GET (String) (elektra, elektraKeyName (lastCommand) + 1);
 	while (strlen (command) > 0)
 	{
-		ElektraKey * commandKey = ksLookup (commands, lastCommand, 0);
-		const void * rawFunc = keyValue (commandKey);
+		ElektraKey * commandKey = elektraKeysetLookup (commands, lastCommand, 0);
+		const void * rawFunc = elektraKeyValue (commandKey);
 		commandFunction func = *(commandFunction *) rawFunc;
 		int result = func (elektra, false, userData);
 		if (result != 0)
 		{
-			keyDel (lastCommand);
-			ksDel (commands);
+			elektraKeyDel (lastCommand);
+			elektraKeysetDel (commands);
 			return result;
 		}
 
-		keyAddBaseName (lastCommand, command);
-		command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
+		elektraKeyAddBaseName (lastCommand, command);
+		command = ELEKTRA_GET (String) (elektra, elektraKeyName (lastCommand) + 1);
 	}
 
-	ElektraKey * commandKey = ksLookup (commands, lastCommand, 0);
-	const void * rawFunc = keyValue (commandKey);
+	ElektraKey * commandKey = elektraKeysetLookup (commands, lastCommand, 0);
+	const void * rawFunc = elektraKeyValue (commandKey);
 	commandFunction func = *(commandFunction *) rawFunc;
 	int result = func (elektra, true, userData);
 
-	keyDel (lastCommand);
-	ksDel (commands);
+	elektraKeyDel (lastCommand);
+	elektraKeysetDel (commands);
 	return result;
 }
 

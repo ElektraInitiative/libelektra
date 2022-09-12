@@ -13,21 +13,21 @@ ElektraKey * key;
 
 void benchmarkOpen (void)
 {
-	kdb = kdbOpen (NULL, key);
+	kdb = elektraKdbOpen (NULL, key);
 }
 
 void benchmarkInread (void)
 {
-	ElektraKeyset * n = ksNew (0, ELEKTRA_KS_END);
-	kdbGet (kdb, n, key);
-	ksDel (n);
+	ElektraKeyset * n = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKdbGet (kdb, n, key);
+	elektraKeysetDel (n);
 }
 
 void benchmarkReadin (void)
 {
-	ElektraKeyset * n = ksNew (0, ELEKTRA_KS_END);
-	kdbGet (kdb, n, key);
-	ksDel (n);
+	ElektraKeyset * n = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKdbGet (kdb, n, key);
+	elektraKeysetDel (n);
 }
 
 void benchmarkLookupByName (void)
@@ -38,44 +38,44 @@ void benchmarkLookupByName (void)
 	for (i = 0; i < NUM_DIR; i++)
 	{
 		snprintf (name, KEY_NAME_LENGTH, "%s/%s%d", KEY_ROOT, "dir", i);
-		ksLookupByName (large, name, 0);
+		elektraKeysetLookupByName (large, name, 0);
 		for (j = 0; j < NUM_KEY; j++)
 		{
 			snprintf (name, KEY_NAME_LENGTH, "%s/%s%d/%s%d", KEY_ROOT, "dir", i, "key", j);
-			ksLookupByName (large, name, 0);
+			elektraKeysetLookupByName (large, name, 0);
 		}
 	}
 }
 
 void benchmarkReread (void)
 {
-	kdbGet (kdb, large, key);
+	elektraKdbGet (kdb, large, key);
 }
 
 void benchmarkInwrite (void)
 {
-	kdbSet (kdb, large, key);
+	elektraKdbSet (kdb, large, key);
 }
 
 void benchmarkRewrite (void)
 {
-	kdbSet (kdb, large, key);
+	elektraKdbSet (kdb, large, key);
 }
 
 void benchmarkWriteout (void)
 {
-	kdbSet (kdb, large, key);
+	elektraKdbSet (kdb, large, key);
 }
 
 void benchmarkClose (void)
 {
-	kdbClose (kdb, key);
+	elektraKdbClose (kdb, key);
 }
 
 
 int main (void)
 {
-	key = keyNew (KEY_ROOT, ELEKTRA_KEY_END);
+	key = elektraKeyNew (KEY_ROOT, ELEKTRA_KEY_END);
 
 	timeInit ();
 	benchmarkCreate ();
@@ -85,7 +85,7 @@ int main (void)
 	timePrint ("New large keyset");
 
 	benchmarkOpen ();
-	keySetName (key, KEY_ROOT);
+	elektraKeySetName (key, KEY_ROOT);
 	timePrint ("Opened key database");
 
 	benchmarkInread ();
@@ -112,6 +112,6 @@ int main (void)
 	benchmarkClose ();
 	timePrint ("Closed key database");
 
-	ksDel (large);
-	keyDel (key);
+	elektraKeysetDel (large);
+	elektraKeyDel (key);
 }

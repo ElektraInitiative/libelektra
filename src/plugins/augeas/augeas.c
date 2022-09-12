@@ -43,7 +43,7 @@ int keySetOrderMeta (ElektraKey * key, int order)
 
 	if (result < 0) return result;
 
-	result = (int) keySetMeta (key, "order", buffer);
+	result = (int) elektraKeySetMeta (key, "order", buffer);
 	elektraFree (buffer);
 	return result;
 }
@@ -56,8 +56,8 @@ static int keyCmpOrderWrapper (const void * a, const void * b)
 static const char * getLensPath (Plugin * handle)
 {
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * lensPathKey = ksLookupByName (config, "/lens", 0);
-	return keyString (lensPathKey);
+	ElektraKey * lensPathKey = elektraKeysetLookupByName (config, "/lens", 0);
+	return elektraKeyString (lensPathKey);
 }
 
 int elektraAugeasGenConf (ElektraKeyset * ks, ElektraKey * errorKey ELEKTRA_UNUSED)
@@ -165,7 +165,7 @@ static const char * getAugeasError (augeas * augeasHandle, const char * lensPath
 
 static ElektraKey * createKeyFromPath (ElektraKey * parentKey, const char * treePath)
 {
-	ElektraKey * key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	ElektraKey * key = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	char * baseName = elektraStrDup (treePath + strlen (AUGEAS_TREE_ROOT) + 1);
 	char * lastSlash = strrchr (baseName, '/');
 	const char * lastPart = lastSlash != NULL ? lastSlash + 1 : baseName;
@@ -175,26 +175,26 @@ static ElektraKey * createKeyFromPath (ElektraKey * parentKey, const char * tree
 		if (lastSlash != NULL)
 		{
 			*lastSlash = '\0';
-			if (keyAddName (key, baseName) < 0)
+			if (elektraKeyAddName (key, baseName) < 0)
 			{
-				keyDel (key);
+				elektraKeyDel (key);
 				elektraFree (baseName);
 				return NULL;
 			}
 		}
 
-		if (keyAddBaseName (key, lastPart) < 0)
+		if (elektraKeyAddBaseName (key, lastPart) < 0)
 		{
-			keyDel (key);
+			elektraKeyDel (key);
 			elektraFree (baseName);
 			return NULL;
 		}
 	}
 	else
 	{
-		if (keyAddName (key, baseName) < 0)
+		if (elektraKeyAddName (key, baseName) < 0)
 		{
-			keyDel (key);
+			elektraKeyDel (key);
 			elektraFree (baseName);
 			return NULL;
 		}
@@ -223,14 +223,14 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	if (key == NULL) return -1;
 
 	/* fill key values */
-	keySetString (key, value);
+	elektraKeySetString (key, value);
 	conversionData->currentOrder++;
 	result = keySetOrderMeta (key, conversionData->currentOrder);
 
 	/* setting the correct key order failed */
 	if (result < 0) return result;
 
-	result = (int) ksAppendKey (conversionData->ks, key);
+	result = (int) elektraKeysetAppendKey (conversionData->ks, key);
 
 	return result;
 }
@@ -247,7 +247,7 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 
 	ElektraKey * key = createKeyFromPath (orphanData->parentKey, treePath);
 
-	if (!ksLookup (orphanData->ks, key, ELEKTRA_KDB_O_NONE))
+	if (!elektraKeysetLookup (orphanData->ks, key, ELEKTRA_KDB_O_NONE))
 	{
 		char * nodeMatch;
 		char ** matches;
@@ -269,11 +269,11 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 			for (int i = 0; i < numChildNodes; i++)
 			{
 				ElektraKey * childKey = createKeyFromPath (orphanData->parentKey, matches[i]);
-				if (ksLookup (orphanData->ks, childKey, ELEKTRA_KDB_O_NONE))
+				if (elektraKeysetLookup (orphanData->ks, childKey, ELEKTRA_KDB_O_NONE))
 				{
 					pruneTree = 0;
 				}
-				keyDel (childKey);
+				elektraKeyDel (childKey);
 				elektraFree (matches[i]);
 			}
 			elektraFree (matches);
@@ -285,7 +285,7 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 		}
 	}
 
-	keyDel (key);
+	elektraKeyDel (key);
 
 	return 0;
 }
@@ -391,9 +391,9 @@ static int saveTree (augeas * augeasHandle, ElektraKeyset * ks, const char * len
 {
 	int ret = 0;
 
-	size_t prefixSize = (size_t) (keyGetNameSize (parentKey) - 1);
-	size_t arraySize = (size_t) ksGetSize (ks);
-	ElektraKey ** keyArray = calloc ((size_t) ksGetSize (ks), sizeof (ElektraKey *));
+	size_t prefixSize = (size_t) (elektraKeyGetNameSize (parentKey) - 1);
+	size_t arraySize = (size_t) elektraKeysetGetSize (ks);
+	ElektraKey ** keyArray = calloc ((size_t) elektraKeysetGetSize (ks), sizeof (ElektraKey *));
 	ret = elektraKsToMemArray (ks, keyArray);
 
 	if (ret < 0) goto memoryerror;
@@ -405,17 +405,17 @@ static int saveTree (augeas * augeasHandle, ElektraKeyset * ks, const char * len
 	{
 		ElektraKey * key = keyArray[i];
 		char * nodeName;
-		ret = asprintf (&nodeName, AUGEAS_TREE_ROOT "%s", (keyName (key) + prefixSize));
+		ret = asprintf (&nodeName, AUGEAS_TREE_ROOT "%s", (elektraKeyName (key) + prefixSize));
 
 		if (ret < 0) goto memoryerror;
 
-		if (strcmp (keyBaseName (key), "#comment") == 0)
+		if (strcmp (elektraKeyBaseName (key), "#comment") == 0)
 		{
 			size_t offset = strlen (nodeName) - sizeof ("#comment") + 1;
 			strcpy (nodeName + offset, "#comment");
 		}
 
-		aug_set (augeasHandle, nodeName, keyString (key));
+		aug_set (augeasHandle, nodeName, elektraKeyString (key));
 		elektraFree (nodeName);
 	}
 
@@ -494,13 +494,13 @@ int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	int errnosave = errno;
 	int ret = 0;
 
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/augeas"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/augeas"))
 	{
 		ElektraKeyset * info =
 #include "contract.h"
 
-			ksAppend (returned, info);
-		ksDel (info);
+			elektraKeysetAppend (returned, info);
+		elektraKeysetDel (info);
 		return 1;
 	}
 
@@ -510,11 +510,11 @@ int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	const char * lensPath = getLensPath (handle);
 	if (!lensPath)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "No Augeas lens was configured: %s", keyName (parentKey));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "No Augeas lens was configured: %s", elektraKeyName (parentKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	FILE * fh = fopen (keyString (parentKey), "r");
+	FILE * fh = fopen (elektraKeyString (parentKey), "r");
 
 	if (fh == 0)
 	{
@@ -546,11 +546,11 @@ int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	}
 
 	/* convert the augeas tree to an Elektra KeySet */
-	ksClear (returned);
-	ElektraKeyset * append = ksNew ((size_t) ksGetSize (returned) * 2, ELEKTRA_KS_END);
+	elektraKeysetClear (returned);
+	ElektraKeyset * append = elektraKeysetNew ((size_t) elektraKeysetGetSize (returned) * 2, ELEKTRA_KS_END);
 
-	ElektraKey * key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
-	ksAppendKey (append, key);
+	ElektraKey * key = elektraKeyDup (parentKey, ELEKTRA_KEY_CP_ALL);
+	elektraKeysetAppendKey (append, key);
 
 	struct KeyConversion * conversionData = elektraMalloc (sizeof (struct KeyConversion));
 
@@ -562,18 +562,18 @@ int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	}
 
 	conversionData->currentOrder = 0;
-	conversionData->parentKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
+	conversionData->parentKey = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
 	conversionData->ks = append;
 
 	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &convertToKey, conversionData);
 
-	keyDel (conversionData->parentKey);
+	elektraKeyDel (conversionData->parentKey);
 	elektraFree (conversionData);
 
 	if (ret < 0)
 	{
 		fclose (fh);
-		ksDel (append);
+		elektraKeysetDel (append);
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, getAugeasError (augeasHandle, lensPath));
 		errno = errnosave;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -581,8 +581,8 @@ int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 
 	fclose (fh);
 
-	ksAppend (returned, append);
-	ksDel (append);
+	elektraKeysetAppend (returned, append);
+	elektraKeysetDel (append);
 	errno = errnosave;
 	return 1;
 }
@@ -596,11 +596,11 @@ int elektraAugeasSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 
 	if (!lensPath)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "No Augeas lens was configured: %s", keyName (parentKey));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "No Augeas lens was configured: %s", elektraKeyName (parentKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	FILE * fh = fopen (keyValue (parentKey), "w+");
+	FILE * fh = fopen (elektraKeyValue (parentKey), "w+");
 
 	if (fh == 0)
 	{

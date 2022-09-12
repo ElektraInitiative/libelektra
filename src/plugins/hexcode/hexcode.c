@@ -67,8 +67,8 @@ static inline int elektraHexcodeConvFromHex (char c)
  */
 void elektraHexcodeDecode (ElektraKey * cur, CHexData * hd)
 {
-	size_t valsize = keyGetValueSize (cur);
-	const char * val = keyValue (cur);
+	size_t valsize = elektraKeyGetValueSize (cur);
+	const char * val = elektraKeyValue (cur);
 
 	if (!val) return;
 
@@ -98,7 +98,7 @@ void elektraHexcodeDecode (ElektraKey * cur, CHexData * hd)
 
 	hd->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw (cur, hd->buf, out + 1);
+	elektraKeySetRaw (cur, hd->buf, out + 1);
 }
 
 
@@ -106,19 +106,19 @@ int elektraHexcodeGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * p
 {
 	/* get all keys */
 
-	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hexcode"))
+	if (!strcmp (elektraKeyName (parentKey), "system:/elektra/modules/hexcode"))
 	{
 		ElektraKeyset * pluginConfig =
-			ksNew (30, keyNew ("system:/elektra/modules/hexcode", ELEKTRA_KEY_VALUE, "hexcode plugin waits for your orders", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports", ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/get", ELEKTRA_KEY_FUNC, elektraHexcodeGet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/set", ELEKTRA_KEY_FUNC, elektraHexcodeSet, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/open", ELEKTRA_KEY_FUNC, elektraHexcodeOpen, ELEKTRA_KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/close", ELEKTRA_KEY_FUNC, elektraHexcodeClose, ELEKTRA_KEY_END),
+			elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/hexcode", ELEKTRA_KEY_VALUE, "hexcode plugin waits for your orders", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/hexcode/exports", ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/hexcode/exports/get", ELEKTRA_KEY_FUNC, elektraHexcodeGet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/hexcode/exports/set", ELEKTRA_KEY_FUNC, elektraHexcodeSet, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/hexcode/exports/open", ELEKTRA_KEY_FUNC, elektraHexcodeOpen, ELEKTRA_KEY_END),
+			       elektraKeyNew ("system:/elektra/modules/hexcode/exports/close", ELEKTRA_KEY_FUNC, elektraHexcodeClose, ELEKTRA_KEY_END),
 #include "readme_hexcode.c"
-			       keyNew ("system:/elektra/modules/hexcode/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, pluginConfig);
-		ksDel (pluginConfig);
+			       elektraKeyNew ("system:/elektra/modules/hexcode/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, pluginConfig);
+		elektraKeysetDel (pluginConfig);
 		return 1;
 	}
 
@@ -130,10 +130,10 @@ int elektraHexcodeGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * p
 	}
 
 	ElektraKey * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
-		size_t valsize = keyGetValueSize (cur);
+		size_t valsize = elektraKeyGetValueSize (cur);
 		if (valsize > hd->bufalloc)
 		{
 			hd->bufalloc = valsize;
@@ -202,8 +202,8 @@ static inline char elektraHexcodeConvToHex (int c)
  */
 void elektraHexcodeEncode (ElektraKey * cur, CHexData * hd)
 {
-	size_t valsize = keyGetValueSize (cur);
-	const char * val = keyValue (cur);
+	size_t valsize = elektraKeyGetValueSize (cur);
+	const char * val = elektraKeyValue (cur);
 
 	if (!val) return;
 
@@ -233,7 +233,7 @@ void elektraHexcodeEncode (ElektraKey * cur, CHexData * hd)
 
 	hd->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw (cur, hd->buf, out + 1);
+	elektraKeySetRaw (cur, hd->buf, out + 1);
 }
 
 
@@ -248,10 +248,10 @@ int elektraHexcodeSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * p
 	}
 
 	ElektraKey * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	elektraKeysetRewind (returned);
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
-		size_t valsize = keyGetValueSize (cur);
+		size_t valsize = elektraKeyGetValueSize (cur);
 		if (valsize * 3 > hd->bufalloc)
 		{
 			hd->bufalloc = valsize * 3;
@@ -273,18 +273,18 @@ int elektraHexcodeOpen (Plugin * handle, ElektraKey * key ELEKTRA_UNUSED)
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
 
-	ElektraKey * escape = ksLookupByName (config, "/escape", 0);
+	ElektraKey * escape = elektraKeysetLookupByName (config, "/escape", 0);
 	hd->escape = '\\';
-	if (escape && keyGetBaseNameSize (escape) && keyGetValueSize (escape) == 3)
+	if (escape && elektraKeyGetBaseNameSize (escape) && elektraKeyGetValueSize (escape) == 3)
 	{
 		int res;
-		res = elektraHexcodeConvFromHex (keyString (escape)[1]);
-		res += elektraHexcodeConvFromHex (keyString (escape)[0]) * 16;
+		res = elektraHexcodeConvFromHex (elektraKeyString (escape)[1]);
+		res += elektraHexcodeConvFromHex (elektraKeyString (escape)[0]) * 16;
 
 		hd->escape = res & 255;
 	}
 
-	ElektraKey * root = ksLookupByName (config, "/chars", 0);
+	ElektraKey * root = elektraKeysetLookupByName (config, "/chars", 0);
 	if (!root)
 	{
 		/* Some default config */
@@ -296,17 +296,17 @@ int elektraHexcodeOpen (Plugin * handle, ElektraKey * key ELEKTRA_UNUSED)
 	else
 	{
 		ElektraKey * cur = 0;
-		while ((cur = ksNext (config)) != 0)
+		while ((cur = elektraKeysetNext (config)) != 0)
 		{
 			/* ignore all keys not direct below */
-			if (keyIsDirectlyBelow (root, cur) == 1)
+			if (elektraKeyIsDirectlyBelow (root, cur) == 1)
 			{
 				/* ignore invalid size */
-				if (keyGetBaseNameSize (cur) != 3) continue;
+				if (elektraKeyGetBaseNameSize (cur) != 3) continue;
 
 				int res;
-				res = elektraHexcodeConvFromHex (keyBaseName (cur)[1]);
-				res += elektraHexcodeConvFromHex (keyBaseName (cur)[0]) * 16;
+				res = elektraHexcodeConvFromHex (elektraKeyBaseName (cur)[1]);
+				res += elektraHexcodeConvFromHex (elektraKeyBaseName (cur)[0]) * 16;
 
 				/* Hexencode this character! */
 				hd->hd[res & 255] = 1;

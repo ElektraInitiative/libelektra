@@ -165,13 +165,13 @@ kdbClose (handle);
  * @see keyGetString() for getting the Key's value as string
  * @see keyGetBinary() for getting the Key's value as binary
  */
-const void * keyValue (const ElektraKey * key)
+const void * elektraKeyValue (const ElektraKey * key)
 {
 	if (!key) return 0;
 
 	if (!key->data.v)
 	{
-		if (keyIsBinary (key))
+		if (elektraKeyIsBinary (key))
 			return 0;
 		else
 			return "";
@@ -210,7 +210,7 @@ const void * keyValue (const ElektraKey * key)
  * @see keyGetBinary() for getting a copy of the Key's value as binary
  * @see keyValue() for getting a pointer to the Key's value as binary
  */
-const char * keyString (const ElektraKey * key)
+const char * elektraKeyString (const ElektraKey * key)
 {
 	if (!key) return "(null)";
 
@@ -219,7 +219,7 @@ const char * keyString (const ElektraKey * key)
 		return "";
 	}
 
-	if (keyIsBinary (key))
+	if (elektraKeyIsBinary (key))
 	{
 		return "(binary)";
 	}
@@ -268,13 +268,13 @@ buffer = elektraMalloc (keyGetValueSize (key));
  * @see keyGetBinary() for getting the Key's value as a binary
  * @see keyValue() for getting a pointer to the Key's value
  */
-ssize_t keyGetValueSize (const ElektraKey * key)
+ssize_t elektraKeyGetValueSize (const ElektraKey * key)
 {
 	if (!key) return -1;
 
 	if (!key->data.v)
 	{
-		if (keyIsBinary (key))
+		if (elektraKeyIsBinary (key))
 			return 0;
 		else
 			return 1;
@@ -323,7 +323,7 @@ if (keyGetString(key,buffer,sizeof(buffer)) == -1)
  * @see keyString() for getting a raw char pointer to the Key's value
  * @see keyGetBinary(), keyIsBinary() for working with binary data
  */
-ssize_t keyGetString (const ElektraKey * key, char * returnedString, size_t maxSize)
+ssize_t elektraKeyGetString (const ElektraKey * key, char * returnedString, size_t maxSize)
 {
 	if (!key) return -1;
 
@@ -331,7 +331,7 @@ ssize_t keyGetString (const ElektraKey * key, char * returnedString, size_t maxS
 	if (!returnedString) return -1;
 	if (maxSize > SSIZE_MAX) return -1;
 
-	if (!keyIsString (key))
+	if (!elektraKeyIsString (key))
 	{
 		return -1;
 	}
@@ -383,20 +383,20 @@ ssize_t keyGetString (const ElektraKey * key, char * returnedString, size_t maxS
  * @see keyGetString() for getting a copy of the Key's value
  * @see keySetBinary() for setting binary data
  */
-ssize_t keySetString (ElektraKey * key, const char * newStringValue)
+ssize_t elektraKeySetString (ElektraKey * key, const char * newStringValue)
 {
 	ssize_t ret = 0;
 
 	if (!key) return -1;
 
-	keySetMeta (key, "binary", 0);
+	elektraKeySetMeta (key, "binary", 0);
 
 	if (!newStringValue || newStringValue[0] == '\0')
-		ret = keySetRaw (key, 0, 0);
+		ret = elektraKeySetRaw (key, 0, 0);
 	else
-		ret = keySetRaw (key, newStringValue, elektraStrLen (newStringValue));
+		ret = elektraKeySetRaw (key, newStringValue, elektraStrLen (newStringValue));
 
-	keySetMeta (key, "origvalue", 0);
+	elektraKeySetMeta (key, "origvalue", 0);
 
 	return ret;
 }
@@ -445,7 +445,7 @@ if (keyGetBinary(key,buffer,sizeof(buffer)) == -1)
  * @see keyIsBinary() for checking whether a Key's value is binary
  * @see keyGetString(), keySetString() for working with string values
  */
-ssize_t keyGetBinary (const ElektraKey * key, void * returnedBinary, size_t maxSize)
+ssize_t elektraKeyGetBinary (const ElektraKey * key, void * returnedBinary, size_t maxSize)
 {
 	if (!key) return -1;
 	if (!returnedBinary) return -1;
@@ -453,7 +453,7 @@ ssize_t keyGetBinary (const ElektraKey * key, void * returnedBinary, size_t maxS
 
 	if (maxSize > SSIZE_MAX) return -1;
 
-	if (!keyIsBinary (key))
+	if (!elektraKeyIsBinary (key))
 	{
 		return -1;
 	}
@@ -516,7 +516,7 @@ ssize_t keyGetBinary (const ElektraKey * key, void * returnedBinary, size_t maxS
  * @see keyIsBinary() to check if the Key's value is binary
  * @see keyGetString() and keySetString() for working with string values
  */
-ssize_t keySetBinary (ElektraKey * key, const void * newBinary, size_t dataSize)
+ssize_t elektraKeySetBinary (ElektraKey * key, const void * newBinary, size_t dataSize)
 {
 	ssize_t ret = 0;
 
@@ -526,9 +526,9 @@ ssize_t keySetBinary (ElektraKey * key, const void * newBinary, size_t dataSize)
 	if (dataSize > SSIZE_MAX) return -1;
 	if (key->flags & ELEKTRA_KEY_FLAG_RO_VALUE) return -1;
 
-	keySetMeta (key, "binary", "");
+	elektraKeySetMeta (key, "binary", "");
 
-	ret = keySetRaw (key, newBinary, dataSize);
+	ret = elektraKeySetRaw (key, newBinary, dataSize);
 
 
 	return ret;
@@ -551,7 +551,7 @@ ssize_t keySetBinary (ElektraKey * key, const void * newBinary, size_t dataSize)
  * @see keySetType(), keySetString(), keySetBinary()
  * @ingroup keyvalue
  */
-ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize)
+ssize_t elektraKeySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize)
 {
 	if (!key) return -1;
 	if (key->flags & ELEKTRA_KEY_FLAG_RO_VALUE) return -1;
@@ -566,7 +566,7 @@ ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize)
 		}
 		key->dataSize = 0;
 		set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
-		if (keyIsBinary (key)) return 0;
+		if (elektraKeyIsBinary (key)) return 0;
 		return 1;
 	}
 
@@ -606,5 +606,5 @@ ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize)
 	}
 
 	set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
-	return keyGetValueSize (key);
+	return elektraKeyGetValueSize (key);
 }

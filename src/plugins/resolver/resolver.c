@@ -78,9 +78,9 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, ElektraKey * 
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for handle %p with parentKey %s", (void *) handle,
-			keyName (parentKey));
+			elektraKeyName (parentKey));
 
-	switch (keyGetNamespace (parentKey))
+	switch (elektraKeyGetNamespace (parentKey))
 	{
 	case ELEKTRA_NS_SPEC:
 		return &pks->spec;
@@ -298,17 +298,17 @@ static int needsMapping (ElektraKey * testKey, ElektraKey * errorKey)
 	// we don't need to always init everything, but lazy init doesn't work right now
 	return 1;
 
-	elektraNamespace ns = keyGetNamespace (errorKey);
+	elektraNamespace ns = elektraKeyGetNamespace (errorKey);
 
 	if (ns == ELEKTRA_NS_NONE) return 1;      // for unit tests
 	if (ns == ELEKTRA_NS_CASCADING) return 1; // init all namespaces for cascading
 
-	return ns == keyGetNamespace (testKey); // otherwise only init if same ns
+	return ns == elektraKeyGetNamespace (testKey); // otherwise only init if same ns
 }
 
 static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 {
-	ElektraKey * testKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * testKey = elektraKeyNew ("/", ELEKTRA_KEY_END);
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:
@@ -316,14 +316,14 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 	switch (ELEKTRA_NS_SPEC)
 	{
 	case ELEKTRA_NS_SPEC:
-		keySetName (testKey, "spec:/");
+		elektraKeySetName (testKey, "spec:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_SPEC, (p->spec).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
 									    errorKey)) == NULL)
 			{
 				resolverClose (p);
-				keyDel (testKey);
+				elektraKeyDel (testKey);
 				ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not resolve filename. Could not resolve spec key");
 				return -1;
 			}
@@ -338,14 +338,14 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 		// FALLTHROUGH
 
 	case ELEKTRA_NS_DIR:
-		keySetName (testKey, "dir:/");
+		elektraKeySetName (testKey, "dir:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_DIR, (p->dir).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
 									    errorKey)) == NULL)
 			{
 				resolverClose (p);
-				keyDel (testKey);
+				elektraKeyDel (testKey);
 				ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not resolve filename. Could not resolve dir key");
 				return -1;
 			}
@@ -359,14 +359,14 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 		}
 	// FALLTHROUGH
 	case ELEKTRA_NS_USER:
-		keySetName (testKey, "user:/");
+		elektraKeySetName (testKey, "user:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_USER, (p->user).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
 									    errorKey)) == NULL)
 			{
 				resolverClose (p);
-				keyDel (testKey);
+				elektraKeyDel (testKey);
 				ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not resolve user key with configuration %s",
 							     ELEKTRA_VARIANT_USER);
 				return -1;
@@ -381,14 +381,14 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 		}
 	// FALLTHROUGH
 	case ELEKTRA_NS_SYSTEM:
-		keySetName (testKey, "system:/");
+		elektraKeySetName (testKey, "system:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_SYSTEM, (p->system).path,
 									    ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
 			{
 				resolverClose (p);
-				keyDel (testKey);
+				elektraKeyDel (testKey);
 				ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not resolve system key with configuration %s",
 							     ELEKTRA_VARIANT_SYSTEM);
 				return -1;
@@ -409,7 +409,7 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 	case ELEKTRA_NS_DEFAULT:
 		break;
 	}
-	keyDel (testKey);
+	elektraKeyDel (testKey);
 	return 0;
 }
 
@@ -435,7 +435,7 @@ static char * elektraCacheKeyName (char * filename)
 
 static int initHandles (Plugin * handle, ElektraKey * parentKey)
 {
-	const char * path = keyString (parentKey);
+	const char * path = elektraKeyString (parentKey);
 
 	resolverHandles * p = elektraMalloc (sizeof (resolverHandles));
 	resolverInit (&p->spec, path);
@@ -519,18 +519,18 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey ELEK
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
+	ElektraKey * root = elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
 
-	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
+	if (elektraKeyCmp (root, parentKey) == 0 || elektraKeyIsBelow (root, parentKey) == 1)
 	{
-		keyDel (root);
+		elektraKeyDel (root);
 		ElektraKeyset * info =
 #include "contract.h"
-			ksAppend (returned, info);
-		ksDel (info);
+			elektraKeysetAppend (returned, info);
+		elektraKeysetDel (info);
 		return 1;
 	}
-	keyDel (root);
+	elektraKeyDel (root);
 
 	if (elektraPluginGetData (handle) == NULL)
 	{
@@ -541,7 +541,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	}
 
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
-	keySetString (parentKey, pk->filename);
+	elektraKeySetString (parentKey, pk->filename);
 
 	int errnoSave = errno;
 	struct stat buf;
@@ -616,8 +616,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	if (global != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modification times");
-		ElektraKey * time = keyNew (name, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (struct timespec), ELEKTRA_KEY_VALUE, &(pk->mtime), ELEKTRA_KEY_END);
-		ksAppendKey (global, time);
+		ElektraKey * time = elektraKeyNew (name, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (struct timespec), ELEKTRA_KEY_VALUE, &(pk->mtime), ELEKTRA_KEY_END);
+		elektraKeysetAppendKey (global, time);
 	}
 
 	if (name) elektraFree (name);
@@ -1095,9 +1095,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks, ElektraK
 		// no fd up to now, so we are in first phase
 
 		// we operate on the tmp file
-		keySetString (parentKey, pk->tempfile);
+		elektraKeySetString (parentKey, pk->tempfile);
 
-		if (ksGetSize (ks) == 0)
+		if (elektraKeysetGetSize (ks) == 0)
 		{
 			ret = 0;
 
@@ -1137,7 +1137,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks, ElektraK
 	{
 		// now we do not operate on the temporary file anymore,
 		// but on the real file
-		keySetString (parentKey, pk->filename);
+		elektraKeySetString (parentKey, pk->filename);
 
 		/* we have an fd, so we are in second phase*/
 		if (elektraSetCommit (pk, parentKey) == -1)

@@ -39,17 +39,17 @@ int main (int argc, char ** argv)
 
 static void testPort (char const * const port, const int ret, char const * const version, char const * const metaName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/port", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * ks = ksNew (10, keyNew ("user:/test/port/totest", ELEKTRA_KEY_VALUE, port, ELEKTRA_KEY_META, metaName, version, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/port", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (10, elektraKeyNew ("user:/test/port/totest", ELEKTRA_KEY_VALUE, port, ELEKTRA_KEY_META, metaName, version, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];
 	(void) snprintf (message, 200, "validation of %s “%s” returned %d instead of %d", version[0] == '\0' ? "Port" : version, port,
 			 pluginStatus, ret);
 	succeed_if (pluginStatus == ret, message);
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 

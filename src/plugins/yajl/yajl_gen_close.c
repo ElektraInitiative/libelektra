@@ -302,9 +302,9 @@ void elektraGenClose (yajl_gen g, const ElektraKey * cur, const ElektraKey * nex
 	// 1 for last level not to iterate, 1 before 1 after equal
 	int levels = curLevels - equalLevels - 2;
 
-	const char * pcur = keyName (cur);
+	const char * pcur = elektraKeyName (cur);
 	size_t csize = 0;
-	const char * pnext = keyName (next);
+	const char * pnext = elektraKeyName (next);
 	size_t nsize = 0;
 	for (int i = 0; i < equalLevels + 1; ++i)
 	{
@@ -345,9 +345,9 @@ void elektraGenCloseFinally (yajl_gen g, const ElektraKey * cur, const ElektraKe
 	// 1 for last level not to iterate, 1 after equal
 	int levels = curLevels - equalLevels - 1;
 
-	const char * pcur = keyName (cur);
+	const char * pcur = elektraKeyName (cur);
 	size_t csize = 0;
-	const char * pnext = keyName (next);
+	const char * pnext = elektraKeyName (next);
 	size_t nsize = 0;
 	for (int i = 0; i < equalLevels + 1; ++i)
 	{

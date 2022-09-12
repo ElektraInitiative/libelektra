@@ -23,7 +23,7 @@ static void test_ctor (void)
 	succeed_if (ks != NULL, "unable to create keyset");
 	g_object_unref (ks);
 
-	ElektraKeyset * cks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * cks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ks = gelektra_keyset_make (cks);
 	succeed_if (ks->keyset == cks, "new keyset not wrapped");
 	g_object_unref (ks);

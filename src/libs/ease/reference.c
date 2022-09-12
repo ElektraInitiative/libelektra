@@ -60,30 +60,30 @@ char * elektraResolveReference (const char * reference, const ElektraKey * baseK
 		return NULL;
 	}
 
-	ElektraKey * fullReference = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * fullReference = elektraKeyNew ("/", ELEKTRA_KEY_END);
 
 	if (elektraStrNCmp (reference, "@/", 2) == 0)
 	{
-		keySetName (fullReference, keyName (parentKey));
-		keyAddName (fullReference, &reference[2]);
+		elektraKeySetName (fullReference, elektraKeyName (parentKey));
+		elektraKeyAddName (fullReference, &reference[2]);
 	}
 	else if (elektraStrNCmp (reference, "./", 2) == 0)
 	{
-		keySetName (fullReference, keyName (baseKey));
-		keyAddName (fullReference, &reference[2]);
+		elektraKeySetName (fullReference, elektraKeyName (baseKey));
+		elektraKeyAddName (fullReference, &reference[2]);
 	}
 	else if (elektraStrNCmp (reference, "../", 3) == 0)
 	{
-		keySetName (fullReference, keyName (baseKey));
-		keyAddName (fullReference, reference);
+		elektraKeySetName (fullReference, elektraKeyName (baseKey));
+		elektraKeyAddName (fullReference, reference);
 	}
 	else
 	{
-		keySetName (fullReference, reference);
+		elektraKeySetName (fullReference, reference);
 	}
 
-	char * result = elektraStrDup (keyName (fullReference));
-	keyDel (fullReference);
+	char * result = elektraStrDup (elektraKeyName (fullReference));
+	elektraKeyDel (fullReference);
 
 	return result;
 }

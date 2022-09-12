@@ -175,19 +175,19 @@ ElektraKeyset * elektraPluginGetGlobalKeySet (Plugin * plugin)
 const char * elektraPluginGetPhase (Plugin * plugin)
 {
 	// TODO (kodebach): switch to integer value? (uint32_t?)
-	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
+	return elektraKeyString (elektraKeysetLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }
 
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 {
 	// TODO (kodebach): docs, precond checks
-	ElektraKeyset * plugins = *(ElektraKeyset **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
+	ElektraKeyset * plugins = *(ElektraKeyset **) elektraKeyValue (elektraKeysetLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
 
-	ElektraKey * lookupHelper = keyNew ("system:/", ELEKTRA_KEY_END);
-	keyAddBaseName (lookupHelper, ref);
+	ElektraKey * lookupHelper = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	elektraKeyAddBaseName (lookupHelper, ref);
 
-	ElektraKey * pluginKey = ksLookup (plugins, lookupHelper, 0);
-	keyDel (lookupHelper);
+	ElektraKey * pluginKey = elektraKeysetLookup (plugins, lookupHelper, 0);
+	elektraKeyDel (lookupHelper);
 
-	return pluginKey == NULL ? NULL : *(Plugin **) keyValue (pluginKey);
+	return pluginKey == NULL ? NULL : *(Plugin **) elektraKeyValue (pluginKey);
 }

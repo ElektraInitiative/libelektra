@@ -18,41 +18,41 @@ void printWarnings (ElektraKey * key);
 
 int main (void)
 {
-	ElektraKeyset * myConfig = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * key = keyNew ("/sw/MyApp", ELEKTRA_KEY_END);
-	ElektraKdb * handle = kdbOpen (NULL, key);
+	ElektraKeyset * myConfig = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * key = elektraKeyNew ("/sw/MyApp", ELEKTRA_KEY_END);
+	ElektraKdb * handle = elektraKdbOpen (NULL, key);
 
 	if (!handle) printError (key);
 
 
 	printWarnings (key);
 
-	if (kdbGet (handle, myConfig, key) < 0) printError (key);
+	if (elektraKdbGet (handle, myConfig, key) < 0) printError (key);
 
 
 	printWarnings (key);
 
-	keyDel (key);
+	elektraKeyDel (key);
 
 	// lookup
-	ElektraKey * result = ksLookupByName (myConfig, "/sw/MyApp/Tests/TestKey1", 0);
+	ElektraKey * result = elektraKeysetLookupByName (myConfig, "/sw/MyApp/Tests/TestKey1", 0);
 	if (!result)
 		printf ("Key not found in KeySet\n");
 	else
 	{
 		// do something with the key
-		const char * key_name = keyName (result);
-		const char * key_value = keyString (result);
-		const char * key_comment = keyString (keyGetMeta (result, "comment"));
+		const char * key_name = elektraKeyName (result);
+		const char * key_value = elektraKeyString (result);
+		const char * key_comment = elektraKeyString (elektraKeyGetMeta (result, "comment"));
 		printf ("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 	}
 
-	ksDel (myConfig); // delete the in-memory configuration
+	elektraKeysetDel (myConfig); // delete the in-memory configuration
 
 
 	// maybe you want kdbSet() myConfig here
 
-	kdbClose (handle, 0); // no more affairs with the key database.
+	elektraKdbClose (handle, 0); // no more affairs with the key database.
 }
 
 
@@ -64,12 +64,12 @@ int main (void)
  */
 void printError (ElektraKey * key)
 {
-	printf ("Error occurred: %s\n", keyString (keyGetMeta (key, "error/description")));
+	printf ("Error occurred: %s\n", elektraKeyString (elektraKeyGetMeta (key, "error/description")));
 
 	/*remove error*/
-	ElektraKey * cutpoint = keyNew ("meta:/error", ELEKTRA_KEY_END);
-	ksDel (ksCut (keyMeta (key), cutpoint));
-	keyDel (cutpoint);
+	ElektraKey * cutpoint = elektraKeyNew ("meta:/error", ELEKTRA_KEY_END);
+	elektraKeysetDel (elektraKeysetCut (elektraKeyMeta (key), cutpoint));
+	elektraKeyDel (cutpoint);
 }
 
 
@@ -82,22 +82,22 @@ void printError (ElektraKey * key)
  */
 void printWarnings (ElektraKey * key)
 {
-	ElektraKey * cutpoint = keyNew ("meta:/warnings", ELEKTRA_KEY_END);
-	ElektraKeyset * warnings = ksCut (keyMeta (key), cutpoint);
+	ElektraKey * cutpoint = elektraKeyNew ("meta:/warnings", ELEKTRA_KEY_END);
+	ElektraKeyset * warnings = elektraKeysetCut (elektraKeyMeta (key), cutpoint);
 
-	for (elektraCursor i = 1; i < ksGetSize (warnings); ++i)
+	for (elektraCursor i = 1; i < elektraKeysetGetSize (warnings); ++i)
 	{
-		ElektraKey * cur = ksAtCursor (warnings, i);
-		if (keyIsDirectlyBelow (cutpoint, cur))
+		ElektraKey * cur = elektraKeysetAtCursor (warnings, i);
+		if (elektraKeyIsDirectlyBelow (cutpoint, cur))
 		{
-			ElektraKey * lookup = keyNew (keyName (cur), ELEKTRA_KEY_END);
-			keyAddBaseName (cur, "description");
-			printf ("Warning occurred: %s\n", keyString (ksLookup (warnings, lookup, ELEKTRA_KDB_O_DEL)));
+			ElektraKey * lookup = elektraKeyNew (elektraKeyName (cur), ELEKTRA_KEY_END);
+			elektraKeyAddBaseName (cur, "description");
+			printf ("Warning occurred: %s\n", elektraKeyString (elektraKeysetLookup (warnings, lookup, ELEKTRA_KDB_O_DEL)));
 		}
 	}
 
-	keyDel (cutpoint);
-	ksDel (warnings);
+	elektraKeyDel (cutpoint);
+	elektraKeysetDel (warnings);
 }
 
 
@@ -108,13 +108,13 @@ void printWarnings (ElektraKey * key)
 void removeMetaData (ElektraKey * key, const char * searchfor)
 {
 	const ElektraKey * iter_key;
-	keyRewindMeta (key);
-	while ((iter_key = keyNextMeta (key)) != 0)
+	elektraKeyRewindMeta (key);
+	while ((iter_key = elektraKeyNextMeta (key)) != 0)
 	{
 		/*startsWith*/
-		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
+		if (strncmp (searchfor, elektraKeyName (iter_key), strlen (searchfor)) == 0)
 		{
-			if (keySetMeta (key, keyName (iter_key), 0) != 0) printf ("Error while deleting %s\n", searchfor);
+			if (elektraKeySetMeta (key, elektraKeyName (iter_key), 0) != 0) printf ("Error while deleting %s\n", searchfor);
 		}
 	}
 }

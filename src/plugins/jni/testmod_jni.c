@@ -25,15 +25,15 @@
 
 static void test_helloWorld (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/jni", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/jni", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
 
 	ElektraKeyset * conf;
 	if (access (CLASSPATH, F_OK) == 0)
 	{
 		printf ("Using classpath '%s'.\n", CLASSPATH);
-		conf = ksNew (20, keyNew ("system:/classpath", ELEKTRA_KEY_VALUE, CLASSPATH, ELEKTRA_KEY_END),
-			      keyNew ("system:/print", ELEKTRA_KEY_VALUE, "ON", ELEKTRA_KEY_END),
-			      keyNew ("system:/classname", ELEKTRA_KEY_VALUE, "org/libelektra/plugin/Return", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		conf = elektraKeysetNew (20, elektraKeyNew ("system:/classpath", ELEKTRA_KEY_VALUE, CLASSPATH, ELEKTRA_KEY_END),
+			      elektraKeyNew ("system:/print", ELEKTRA_KEY_VALUE, "ON", ELEKTRA_KEY_END),
+			      elektraKeyNew ("system:/classname", ELEKTRA_KEY_VALUE, "org/libelektra/plugin/Return", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
@@ -43,7 +43,7 @@ static void test_helloWorld (void)
 
 	PLUGIN_OPEN ("jni");
 
-	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (20, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 10, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 20, "call to kdbSet was not successful");
 	succeed_if (plugin->kdbError (plugin, ks, parentKey) == 30, "call to kdbError was not successful");
@@ -52,8 +52,8 @@ static void test_helloWorld (void)
 
 	PLUGIN_CLOSE ();
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 }
 
 int main (int argc, char ** argv)

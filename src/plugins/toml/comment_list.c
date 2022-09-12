@@ -121,7 +121,7 @@ static int keyAddComment (ElektraKey * key, const char * commentStr, const char 
 	elektraFree (indexStr);
 	if (commentStr != NULL)
 	{
-		keySetMeta (key, metaName, commentStr);
+		elektraKeySetMeta (key, metaName, commentStr);
 	}
 
 	// add start symbol
@@ -135,11 +135,11 @@ static int keyAddComment (ElektraKey * key, const char * commentStr, const char 
 	snprintf (metaInfoName, metaInfoLen, "%s/start", metaName);
 	if (commentStr != NULL)
 	{
-		keySetMeta (key, metaInfoName, "#");
+		elektraKeySetMeta (key, metaInfoName, "#");
 	}
 	else
 	{
-		keySetMeta (key, metaInfoName, "");
+		elektraKeySetMeta (key, metaInfoName, "");
 	}
 
 	// add preceding whitespace
@@ -154,12 +154,12 @@ static int keyAddComment (ElektraKey * key, const char * commentStr, const char 
 			return ERROR_MEMORY;
 		}
 
-		keySetMeta (key, metaInfoName, startSeq);
+		elektraKeySetMeta (key, metaInfoName, startSeq);
 		elektraFree (startSeq);
 	}
 	else
 	{
-		keySetMeta (key, metaInfoName, "");
+		elektraKeySetMeta (key, metaInfoName, "");
 	}
 
 	elektraFree (metaInfoName);

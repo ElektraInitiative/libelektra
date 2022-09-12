@@ -8,23 +8,23 @@
 
 // clang-format off
 
-ksNew( 17 ,
-	keyNew ("user:/tests/fstab/rootfs", ELEKTRA_KEY_END),
-	keyNew ("user:/tests/fstab/rootfs/device"
+elektraKeysetNew( 17 ,
+	elektraKeyNew ("user:/tests/fstab/rootfs", ELEKTRA_KEY_END),
+	elektraKeyNew ("user:/tests/fstab/rootfs/device"
 		, ELEKTRA_KEY_VALUE, "LABEL=/"
 	, ELEKTRA_KEY_END),
-	keyNew ("user:/tests/fstab/rootfs/dumpfreq"
+	elektraKeyNew ("user:/tests/fstab/rootfs/dumpfreq"
 		, ELEKTRA_KEY_VALUE, "1"
 	, ELEKTRA_KEY_END),
-	keyNew ("user:/tests/fstab/rootfs/mpoint"
+	elektraKeyNew ("user:/tests/fstab/rootfs/mpoint"
 		, ELEKTRA_KEY_VALUE, "/"
 	, ELEKTRA_KEY_END),
-	keyNew ("user:/tests/fstab/rootfs/options"
+	elektraKeyNew ("user:/tests/fstab/rootfs/options"
 		, ELEKTRA_KEY_VALUE, "defaults"
 	, ELEKTRA_KEY_END),
-	keyNew ("user:/tests/fstab/rootfs/passno"
+	elektraKeyNew ("user:/tests/fstab/rootfs/passno"
 		, ELEKTRA_KEY_VALUE, "1"
 	, ELEKTRA_KEY_END),
-	keyNew ("user:/tests/fstab/rootfs/type"
+	elektraKeyNew ("user:/tests/fstab/rootfs/type"
 		, ELEKTRA_KEY_VALUE, "ext3"
 	, ELEKTRA_KEY_END),ELEKTRA_KS_END);

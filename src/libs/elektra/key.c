@@ -140,13 +140,13 @@
  * @see keyDel() for deallocating a created Key object
  * @see keySetName() for rules about which names are considered valid
  */
-ElektraKey * keyNew (const char * name, ...)
+ElektraKey * elektraKeyNew (const char * name, ...)
 {
 	if (!name) return NULL;
 
 	va_list va;
 	va_start (va, name);
-	ElektraKey * k = keyVNew (name, va);
+	ElektraKey * k = elektraKeyVNew (name, va);
 	va_end (va);
 
 	return k;
@@ -158,7 +158,7 @@ ElektraKey * keyNew (const char * name, ...)
  * @pre caller must use va_start and va_end on va
  * @param va the variadic argument list
  */
-ElektraKey * keyVNew (const char * name, va_list va)
+ElektraKey * elektraKeyVNew (const char * name, va_list va)
 {
 	if (!name) return NULL;
 
@@ -183,30 +183,30 @@ ElektraKey * keyVNew (const char * name, va_list va)
 			break;
 		case ELEKTRA_KEY_VALUE:
 			value = va_arg (va, void *);
-			if (value_size && keyIsBinary (key))
-				keySetBinary (key, value, value_size);
-			else if (keyIsBinary (key))
-				keySetBinary (key, value, elektraStrLen (value));
+			if (value_size && elektraKeyIsBinary (key))
+				elektraKeySetBinary (key, value, value_size);
+			else if (elektraKeyIsBinary (key))
+				elektraKeySetBinary (key, value, elektraStrLen (value));
 			else
-				keySetString (key, value);
+				elektraKeySetString (key, value);
 			break;
 		case ELEKTRA_KEY_FUNC:
 			func = va_arg (va, void (*) (void));
-			keySetBinary (key, &func, sizeof (func));
+			elektraKeySetBinary (key, &func, sizeof (func));
 			break;
 		case ELEKTRA_KEY_META:
 			value = va_arg (va, char *);
 			/* First parameter is name */
-			keySetMeta (key, value, va_arg (va, char *));
+			elektraKeySetMeta (key, value, va_arg (va, char *));
 			break;
 
 		/* flags without an argument */
 		case ELEKTRA_KEY_FLAGS:
 			flags |= (va_arg (va, int) & allFlags);
-			if (test_bit (flags, ELEKTRA_KEY_BINARY)) keySetMeta (key, "binary", "");
+			if (test_bit (flags, ELEKTRA_KEY_BINARY)) elektraKeySetMeta (key, "binary", "");
 			break;
 		case ELEKTRA_KEY_BINARY:
-			keySetMeta (key, "binary", ""); // FALLTHROUGH
+			elektraKeySetMeta (key, "binary", ""); // FALLTHROUGH
 		case ELEKTRA_KEY_LOCK_NAME:
 		case ELEKTRA_KEY_LOCK_VALUE:
 		case ELEKTRA_KEY_LOCK_META:
@@ -218,7 +218,7 @@ ElektraKey * keyVNew (const char * name, va_list va)
 			name = va_arg (va, char *);
 			break;
 		case ELEKTRA_KEY_COMMENT:
-			keySetMeta (key, "comment", va_arg (va, char *));
+			elektraKeySetMeta (key, "comment", va_arg (va, char *));
 			break;
 
 		default:
@@ -227,14 +227,14 @@ ElektraKey * keyVNew (const char * name, va_list va)
 		}
 	}
 
-	if (keySetName (key, name) < 0)
+	if (elektraKeySetName (key, name) < 0)
 	{
 		ELEKTRA_LOG_WARNING ("Invalid name: %s", name);
 		elektraFree (key);
 		return NULL;
 	}
 
-	keyLock (key, flags);
+	elektraKeyLock (key, flags);
 	return key;
 }
 
@@ -324,7 +324,7 @@ ElektraKey * keyVNew (const char * name, va_list va)
  * @ingroup key
  * @see keyDup() for duplicating an existing Key
  */
-ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyFlags flags)
+ElektraKey * elektraKeyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyFlags flags)
 {
 	if (dest == NULL) return NULL;
 
@@ -338,20 +338,20 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 	{
 		if (test_bit (flags, ELEKTRA_KEY_CP_NAME))
 		{
-			keySetName (dest, "/");
+			elektraKeySetName (dest, "/");
 		}
 		if (test_bit (flags, ELEKTRA_KEY_CP_VALUE))
 		{
-			keySetRaw (dest, NULL, 0);
+			elektraKeySetRaw (dest, NULL, 0);
 		}
 		if (test_bit (flags, ELEKTRA_KEY_CP_META))
 		{
-			ksClear (dest->meta);
+			elektraKeysetClear (dest->meta);
 		}
 		return dest;
 	}
 
-	if (test_bit (flags, ELEKTRA_KEY_CP_STRING) && keyIsBinary (source)) return NULL;
+	if (test_bit (flags, ELEKTRA_KEY_CP_STRING) && elektraKeyIsBinary (source)) return NULL;
 
 	if (source == dest) return dest;
 
@@ -394,9 +394,9 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 
-			if (!test_bit (flags, ELEKTRA_KEY_CP_META) && keyIsBinary (source))
+			if (!test_bit (flags, ELEKTRA_KEY_CP_META) && elektraKeyIsBinary (source))
 			{
-				keySetMeta (dest, "binary", "");
+				elektraKeySetMeta (dest, "binary", "");
 			}
 		}
 		else
@@ -415,9 +415,9 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 
-			if (!test_bit (flags, ELEKTRA_KEY_CP_META) && keyIsBinary (source))
+			if (!test_bit (flags, ELEKTRA_KEY_CP_META) && elektraKeyIsBinary (source))
 			{
-				keySetMeta (dest, "binary", "");
+				elektraKeySetMeta (dest, "binary", "");
 			}
 		}
 		else
@@ -432,7 +432,7 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 	{
 		if (source->meta != NULL)
 		{
-			dest->meta = ksDup (source->meta);
+			dest->meta = elektraKeysetDup (source->meta);
 			if (!dest->meta) goto memerror;
 		}
 		else
@@ -448,14 +448,14 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 	if (test_bit (flags, ELEKTRA_KEY_CP_NAME) && !test_bit (orig.flags, ELEKTRA_KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
 	if (test_bit (flags, ELEKTRA_KEY_CP_NAME) && !test_bit (orig.flags, ELEKTRA_KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
 	if (test_bit (flags, ELEKTRA_KEY_CP_VALUE) && !test_bit (orig.flags, ELEKTRA_KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
-	if (test_bit (flags, ELEKTRA_KEY_CP_META)) ksDel (orig.meta);
+	if (test_bit (flags, ELEKTRA_KEY_CP_META)) elektraKeysetDel (orig.meta);
 
 	return dest;
 
 memerror:
 	elektraFree (dest->key);
 	elektraFree (dest->data.v);
-	ksDel (dest->meta);
+	elektraKeysetDel (dest->meta);
 
 	*dest = orig;
 	return NULL;
@@ -493,7 +493,7 @@ static void keyClearNameValue (ElektraKey * key)
  * @see keyNew()    for creating a new Key
  * @see keyIncRef() for more information about the reference counter
  */
-int keyDel (ElektraKey * key)
+int elektraKeyDel (ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -509,7 +509,7 @@ int keyDel (ElektraKey * key)
 
 	keyClearNameValue (key);
 
-	ksDel (key->meta);
+	elektraKeysetDel (key->meta);
 
 	if (!keyInMmap)
 	{
@@ -552,7 +552,7 @@ int f (Key *k)
  * @ingroup key
  * @see keyDel() for completely deleting a Key
  */
-int keyClear (ElektraKey * key)
+int elektraKeyClear (ElektraKey * key)
 {
 	if (!key)
 	{
@@ -567,12 +567,12 @@ int keyClear (ElektraKey * key)
 
 	keyClearNameValue (key);
 
-	ksDel (key->meta);
+	elektraKeysetDel (key->meta);
 
 	keyInit (key);
 	if (keyStructInMmap) key->flags |= ELEKTRA_KEY_FLAG_MMAP_STRUCT;
 
-	keySetName (key, "/");
+	elektraKeySetName (key, "/");
 
 	/* Set reference properties */
 	key->refs = ref;
@@ -615,7 +615,7 @@ int keyClear (ElektraKey * key)
  * @see keyDecRef() for decreasing the reference counter
  * @see keyDel()    for deleting a Key
  */
-uint16_t keyIncRef (ElektraKey * key)
+uint16_t elektraKeyIncRef (ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -654,7 +654,7 @@ uint16_t keyIncRef (ElektraKey * key)
  *                  explanation of the reference counting system
  * @see keyDel()    for deleting a Key
  */
-uint16_t keyDecRef (ElektraKey * key)
+uint16_t elektraKeyDecRef (ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -684,7 +684,7 @@ uint16_t keyDecRef (ElektraKey * key)
  *                  explanation of the reference counting system
  * @see keyDecRef() for decreasing the reference counter
  **/
-uint16_t keyGetRef (const ElektraKey * key)
+uint16_t elektraKeyGetRef (const ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -727,7 +727,7 @@ uint16_t keyGetRef (const ElektraKey * key)
  * @see keyDup() for duplicating an existing Key
  * @see ksAppendKey() appends a Key to a keyset (and locks it)
  */
-int keyLock (ElektraKey * key, elektraLockFlags what)
+int elektraKeyLock (ElektraKey * key, elektraLockFlags what)
 {
 	if (!key) return -1;
 	what &= (ELEKTRA_KEY_LOCK_NAME | ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META);
@@ -751,7 +751,7 @@ int keyLock (ElektraKey * key, elektraLockFlags what)
  * @ingroup key
  * @see keyLock() for locking a Key
  */
-int keyIsLocked (const ElektraKey * key, elektraLockFlags what)
+int elektraKeyIsLocked (const ElektraKey * key, elektraLockFlags what)
 {
 	if (!key) return -1;
 	what &= (ELEKTRA_KEY_LOCK_NAME | ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META);

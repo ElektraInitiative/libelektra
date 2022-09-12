@@ -45,29 +45,29 @@ static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 {
 	struct stat buf;
 	/* TODO: make exceptions configurable using path/allow */
-	if (!strcmp (keyString (key), "proc"))
+	if (!strcmp (elektraKeyString (key), "proc"))
 	{
 		return 1;
 	}
-	else if (!strcmp (keyString (key), "tmpfs"))
+	else if (!strcmp (elektraKeyString (key), "tmpfs"))
 	{
 		return 1;
 	}
-	else if (!strcmp (keyString (key), "none"))
+	else if (!strcmp (elektraKeyString (key), "none"))
 	{
 		return 1;
 	}
-	else if (keyString (key)[0] != '/')
+	else if (elektraKeyString (key)[0] != '/')
 	{
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Given path '%s' should be absolute for key %s", keyString (key),
-							 keyName (key));
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Given path '%s' should be absolute for key %s", elektraKeyString (key),
+							 elektraKeyName (key));
 		return 0;
 	}
 	int errnosave = errno;
-	const ElektraKey * meta = keyGetMeta (key, "check/path");
-	if (stat (keyString (key), &buf) == -1)
+	const ElektraKey * meta = elektraKeyGetMeta (key, "check/path");
+	if (stat (elektraKeyString (key), &buf) == -1)
 	{
-		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + keyGetNameSize (key) + keyGetValueSize (key) +
+		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + elektraKeyGetNameSize (key) + elektraKeyGetValueSize (key) +
 					       sizeof ("name:  value:  message: "));
 		if (!errmsg) return -1;
 		if (strerror_r (errno, errmsg, ERRORMSG_LENGTH) != 0)
@@ -75,26 +75,26 @@ static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 			strcpy (errmsg, "Unknown error");
 		}
 		strcat (errmsg, " from key: ");
-		strcat (errmsg, keyName (key));
+		strcat (errmsg, elektraKeyName (key));
 		strcat (errmsg, " with path: ");
-		strcat (errmsg, keyValue (key));
+		strcat (errmsg, elektraKeyValue (key));
 		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not find file, Reason: %s", errmsg);
 		elektraFree (errmsg);
 		errno = errnosave;
 		return -1;
 	}
-	else if (!strcmp (keyString (meta), "device"))
+	else if (!strcmp (elektraKeyString (meta), "device"))
 	{
 		if (!S_ISBLK (buf.st_mode))
 		{
-			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Device not found: %s", keyString (key));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Device not found: %s", elektraKeyString (key));
 		}
 	}
-	else if (!strcmp (keyString (meta), "directory"))
+	else if (!strcmp (elektraKeyString (meta), "directory"))
 	{
 		if (!S_ISDIR (buf.st_mode))
 		{
-			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Directory not found: %s", keyString (key));
+			ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Directory not found: %s", elektraKeyString (key));
 		}
 	}
 	return 1;
@@ -112,13 +112,13 @@ static int validatePermission (ElektraKey * key, ElektraKey * parentKey)
 
 	uid_t currentUID = geteuid ();
 
-	const ElektraKey * userMeta = keyGetMeta (key, "check/path/user");
-	const ElektraKey * userTypes = keyGetMeta (key, "check/path/mode");
+	const ElektraKey * userMeta = elektraKeyGetMeta (key, "check/path/user");
+	const ElektraKey * userTypes = elektraKeyGetMeta (key, "check/path/mode");
 
 	// ***** central variables *******
-	const char * validPath = keyString (key);
-	const char * name = keyString (userMeta);
-	const char * modes = keyString (userTypes);
+	const char * validPath = elektraKeyString (key);
+	const char * name = elektraKeyString (userMeta);
+	const char * modes = elektraKeyString (userTypes);
 	// ****************************
 
 	int modeMask = createModeBits (modes);
@@ -134,7 +134,7 @@ static int validatePermission (ElektraKey * key, ElektraKey * parentKey)
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
 								"Could not find user '%s' for key '%s'. "
 								"Does the user exist?",
-								name, keyName (key));
+								name, elektraKeyName (key));
 			return -1;
 		}
 		name = p->pw_name;
@@ -162,7 +162,7 @@ static int validatePermission (ElektraKey * key, ElektraKey * parentKey)
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 						     "To check permissions for %s I need to be the root user."
 						     " Are you running kdb as root?",
-						     keyName (key));
+						     elektraKeyName (key));
 			return -1;
 		}
 	}
@@ -215,7 +215,7 @@ static int validatePermission (ElektraKey * key, ElektraKey * parentKey)
 	{
 		// No Resource error per se because related to the specification check!
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User %s does not have required permission (%s) on '%s'. Key: %s", name,
-							modes, validPath, keyName (key));
+							modes, validPath, elektraKeyName (key));
 		return -1;
 	}
 
@@ -271,7 +271,7 @@ static int switchGroup (ElektraKey * key, ElektraKey * parentKey, const char * n
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 					     "Could not set egid of user '%s' for key '%s'."
 					     " Are you running kdb as root?",
-					     name, keyName (key));
+					     name, elektraKeyName (key));
 		return -1;
 	}
 	return 0;
@@ -294,7 +294,7 @@ static int switchUser (ElektraKey * key, ElektraKey * parentKey, const struct pa
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 					     "Could not set euid of user '%s' for key '%s'."
 					     " Are you running kdb as root?",
-					     p->pw_name, keyName (key));
+					     p->pw_name, elektraKeyName (key));
 		return -1;
 	}
 	return 0;
@@ -316,7 +316,7 @@ static int handleNoUserCase (ElektraKey * parentKey, const char * validPath, con
 	if (result != 0)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "User '%s' does not have required permission (%s) on '%s'. Key: %s",
-							p->pw_name, modes, validPath, keyName (key));
+							p->pw_name, modes, validPath, elektraKeyName (key));
 		return -1;
 	}
 	return 1;
@@ -349,16 +349,16 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 {
 	/* contract only */
 	ElektraKeyset * n;
-	ksAppend (returned, n = ksNew (30, keyNew ("system:/elektra/modules/path", ELEKTRA_KEY_VALUE, "path plugin waits for your orders", ELEKTRA_KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports", ELEKTRA_KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports/get", ELEKTRA_KEY_FUNC, elektraPathGet, ELEKTRA_KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports/set", ELEKTRA_KEY_FUNC, elektraPathSet, ELEKTRA_KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
+	elektraKeysetAppend (returned, n = elektraKeysetNew (30, elektraKeyNew ("system:/elektra/modules/path", ELEKTRA_KEY_VALUE, "path plugin waits for your orders", ELEKTRA_KEY_END),
+				       elektraKeyNew ("system:/elektra/modules/path/exports", ELEKTRA_KEY_END),
+				       elektraKeyNew ("system:/elektra/modules/path/exports/get", ELEKTRA_KEY_FUNC, elektraPathGet, ELEKTRA_KEY_END),
+				       elektraKeyNew ("system:/elektra/modules/path/exports/set", ELEKTRA_KEY_FUNC, elektraPathSet, ELEKTRA_KEY_END),
+				       elektraKeyNew ("system:/elektra/modules/path/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
 
 #include "readme_path.c"
 
-				       keyNew ("system:/elektra/modules/path/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
-	ksDel (n);
+				       elektraKeyNew ("system:/elektra/modules/path/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
+	elektraKeysetDel (n);
 
 	return 1; /* success */
 }
@@ -367,16 +367,16 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 {
 	/* set all keys */
 	ElektraKey * cur;
-	ksRewind (returned);
+	elektraKeysetRewind (returned);
 	int rc = 1;
-	while ((cur = ksNext (returned)) != 0)
+	while ((cur = elektraKeysetNext (returned)) != 0)
 	{
-		const ElektraKey * pathMeta = keyGetMeta (cur, "check/path");
+		const ElektraKey * pathMeta = elektraKeyGetMeta (cur, "check/path");
 		if (!pathMeta) continue;
 		rc = validateKey (cur, parentKey);
 		if (rc <= 0) return -1;
 
-		const ElektraKey * accessMeta = keyGetMeta (cur, "check/path/mode");
+		const ElektraKey * accessMeta = elektraKeyGetMeta (cur, "check/path/mode");
 		if (!accessMeta) continue;
 		rc = validatePermission (cur, parentKey);
 		if (!rc) return -1;

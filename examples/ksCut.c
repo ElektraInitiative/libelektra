@@ -12,10 +12,10 @@
 
 void outputKeySet (ElektraKeyset * returned)
 {
-	ksRewind (returned);
-	while (ksNext (returned))
+	elektraKeysetRewind (returned);
+	while (elektraKeysetNext (returned))
 	{
-		printf ("%s\n", keyName (ksCurrent (returned)));
+		printf ("%s\n", elektraKeyName (elektraKeysetCurrent (returned)));
 	}
 }
 
@@ -23,13 +23,13 @@ int main (void)
 {
 	// clang-format off
 	//! [cut]
-	ElektraKey * parentKey = keyNew ("system:/mountpoint/interest", ELEKTRA_KEY_END);
-	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	kdbGet (kdb, ks, parentKey);
-	ElektraKeyset * returned = ksCut (ks, parentKey);
-	kdbSet (kdb, ks, parentKey); // all keys below cutpoint are now removed
-	kdbClose (kdb, parentKey);
+	ElektraKey * parentKey = elektraKeyNew ("system:/mountpoint/interest", ELEKTRA_KEY_END);
+	ElektraKdb * kdb = elektraKdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKdbGet (kdb, ks, parentKey);
+	ElektraKeyset * returned = elektraKeysetCut (ks, parentKey);
+	elektraKdbSet (kdb, ks, parentKey); // all keys below cutpoint are now removed
+	elektraKdbClose (kdb, parentKey);
 	//! [cut]
 	outputKeySet (returned);
 	outputKeySet (ks);

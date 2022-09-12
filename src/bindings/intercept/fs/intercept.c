@@ -113,49 +113,49 @@ void init (void)
 {
 	char cwd[PATH_MAX];
 	getcwd (cwd, PATH_MAX);
-	ElektraKeyset * tmpKS = ksNew (0, ELEKTRA_KS_END);
-	ElektraKey * parentKey = keyNew (PRELOAD_PATH, ELEKTRA_KEY_END);
+	ElektraKeyset * tmpKS = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew (PRELOAD_PATH, ELEKTRA_KEY_END);
 	ElektraKey * key;
-	ElektraKdb * handle = kdbOpen (NULL, parentKey);
-	kdbGet (handle, tmpKS, parentKey);
-	ElektraKeyset * ks = ksCut (tmpKS, parentKey);
-	ksRewind (ks);
-	ssize_t size = ksGetSize (ks);
+	ElektraKdb * handle = elektraKdbOpen (NULL, parentKey);
+	elektraKdbGet (handle, tmpKS, parentKey);
+	ElektraKeyset * ks = elektraKeysetCut (tmpKS, parentKey);
+	elektraKeysetRewind (ks);
+	ssize_t size = elektraKeysetGetSize (ks);
 	if (size <= 1) goto CleanUp;
 	Node * current = head;
-	ksNext (ks); // skip head
-	while ((key = ksNext (ks)) != NULL)
+	elektraKeysetNext (ks); // skip head
+	while ((key = elektraKeysetNext (ks)) != NULL)
 	{
-		if (!keyIsDirectlyBelow (parentKey, key)) continue;
+		if (!elektraKeyIsDirectlyBelow (parentKey, key)) continue;
 		Node * tmp = calloc (1, sizeof (Node));
-		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
-		if (!strcmp (keyString (key), ""))
+		tmp->key = createAbsolutePath (elektraKeyBaseName (key), cwd);
+		if (!strcmp (elektraKeyString (key), ""))
 			tmp->value = NULL;
 		else
-			tmp->value = createAbsolutePath (keyString (key), cwd);
+			tmp->value = createAbsolutePath (elektraKeyString (key), cwd);
 		tmp->oflags = (unsigned short) -1;
-		ElektraKey * lookupKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
-		keyAddBaseName (lookupKey, "readonly");
-		ElektraKey * found = ksLookup (ks, lookupKey, 0);
+		ElektraKey * lookupKey = elektraKeyDup (key, ELEKTRA_KEY_CP_ALL);
+		elektraKeyAddBaseName (lookupKey, "readonly");
+		ElektraKey * found = elektraKeysetLookup (ks, lookupKey, 0);
 		if (found)
 		{
-			if (!strcmp (keyString (found), "1"))
+			if (!strcmp (elektraKeyString (found), "1"))
 			{
 				tmp->oflags = O_RDONLY;
 			}
 		}
-		keySetBaseName (lookupKey, 0);
-		keyAddBaseName (lookupKey, "generate");
-		found = ksLookup (ks, lookupKey, 0);
+		elektraKeySetBaseName (lookupKey, 0);
+		elektraKeyAddBaseName (lookupKey, "generate");
+		found = elektraKeysetLookup (ks, lookupKey, 0);
 		if (found)
 		{
 			if (tmp->value == NULL) tmp->value = (char *) genTemporaryFilename ();
-			tmp->exportKey = elektraStrDup (keyString (found));
-			keyAddBaseName (lookupKey, "plugin");
-			found = ksLookup (ks, lookupKey, 0);
+			tmp->exportKey = elektraStrDup (elektraKeyString (found));
+			elektraKeyAddBaseName (lookupKey, "plugin");
+			found = elektraKeysetLookup (ks, lookupKey, 0);
 			if (found)
 			{
-				tmp->exportType = elektraStrDup (keyString (found));
+				tmp->exportType = elektraStrDup (elektraKeyString (found));
 			}
 			else
 			{
@@ -168,8 +168,8 @@ void init (void)
 			tmp->exportKey = NULL;
 			tmp->exportType = NULL;
 		}
-		keyDel (lookupKey);
-		if (tmp->value == NULL) tmp->value = createAbsolutePath (keyBaseName (key), cwd);
+		elektraKeyDel (lookupKey);
+		if (tmp->value == NULL) tmp->value = createAbsolutePath (elektraKeyBaseName (key), cwd);
 		tmp->creationTime = 0;
 		tmp->next = NULL;
 		if (current == NULL)
@@ -184,11 +184,11 @@ void init (void)
 		}
 	}
 CleanUp:
-	ksAppend (tmpKS, ks);
-	ksDel (tmpKS);
-	ksDel (ks);
-	kdbClose (handle, parentKey);
-	keyDel (parentKey);
+	elektraKeysetAppend (tmpKS, ks);
+	elektraKeysetDel (tmpKS);
+	elektraKeysetDel (ks);
+	elektraKdbClose (handle, parentKey);
+	elektraKeyDel (parentKey);
 }
 
 
@@ -249,27 +249,27 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf);
 
 static void exportConfiguration (Node * node)
 {
-	ElektraKey * key = keyNew (node->exportKey, ELEKTRA_KEY_END);
-	ElektraKdb * handle = kdbOpen (NULL, key);
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
-	kdbGet (handle, ks, key);
+	ElektraKey * key = elektraKeyNew (node->exportKey, ELEKTRA_KEY_END);
+	ElektraKdb * handle = elektraKdbOpen (NULL, key);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
+	elektraKdbGet (handle, ks, key);
 	ElektraKeyset * exportKS;
-	exportKS = ksCut (ks, key);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	exportKS = elektraKeysetCut (ks, key);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	Plugin * check = elektraPluginOpen (node->exportType, modules, conf, key);
-	keySetString (key, node->value);
-	ksRewind (exportKS);
+	elektraKeySetString (key, node->value);
+	elektraKeysetRewind (exportKS);
 	check->kdbSet (check, exportKS, key);
-	ksDel (conf);
-	ksAppend (ks, exportKS);
-	ksDel (exportKS);
+	elektraKeysetDel (conf);
+	elektraKeysetAppend (ks, exportKS);
+	elektraKeysetDel (exportKS);
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (key);
-	ksDel (ks);
-	kdbClose (handle, 0);
+	elektraKeysetDel (modules);
+	elektraKeyDel (key);
+	elektraKeysetDel (ks);
+	elektraKdbClose (handle, 0);
 	struct stat buf;
 	if (!__xstat (3, node->value, &buf)) node->creationTime = buf.st_mtim.tv_sec;
 }

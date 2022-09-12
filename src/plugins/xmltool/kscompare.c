@@ -18,8 +18,8 @@ static ElektraKey * commonParent (ElektraKey * firstKey, ElektraKey * secondKey,
 	//   e.g. system:/abc/d is a common prefix of system:/abc/de and system:/abc/df,
 	//   but the common parent would be system:/abc
 
-	const char * firstName = keyName (firstKey);
-	const char * secondName = keyName (secondKey);
+	const char * firstName = elektraKeyName (firstKey);
+	const char * secondName = elektraKeyName (secondKey);
 
 	size_t commonLength = 0;
 	for (size_t i = 0; i < maxSize; ++i)
@@ -46,17 +46,17 @@ static ElektraKey * commonParent (ElektraKey * firstKey, ElektraKey * secondKey,
 	char * commonPrefix = strndup (firstName, commonLength);
 
 	// ... and adjust it to a common parent.
-	ElektraKey * common = keyNew (commonPrefix, ELEKTRA_KEY_END);
+	ElektraKey * common = elektraKeyNew (commonPrefix, ELEKTRA_KEY_END);
 	if (commonPrefix[commonLength - 1] != '/')
 	{
-		keySetBaseName (common, NULL);
+		elektraKeySetBaseName (common, NULL);
 	}
 
 	free (commonPrefix);
 
-	if ((size_t) keyGetNameSize (common) > maxSize)
+	if ((size_t) elektraKeyGetNameSize (common) > maxSize)
 	{
-		keyDel (common);
+		elektraKeyDel (common);
 		return NULL;
 	}
 
@@ -102,16 +102,16 @@ static ElektraKey * commonParent (ElektraKey * firstKey, ElektraKey * secondKey,
 size_t ksGetCommonParentName (ElektraKeyset * working, char * returnedCommonParent, size_t maxSize)
 {
 	if (maxSize > SSIZE_MAX) return 0;
-	if (ksGetSize (working) < 1) return 0;
+	if (elektraKeysetGetSize (working) < 1) return 0;
 
-	if (ksGetSize (working) == 1)
+	if (elektraKeysetGetSize (working) == 1)
 	{
-		return keyGetName (ksAtCursor (working, 0), returnedCommonParent, maxSize);
+		return elektraKeyGetName (elektraKeysetAtCursor (working, 0), returnedCommonParent, maxSize);
 	}
 
 	// Get common parent of first two keys in the KeySet.
 
-	ElektraKey * common = commonParent (ksAtCursor (working, 0), ksAtCursor (working, 1), maxSize);
+	ElektraKey * common = commonParent (elektraKeysetAtCursor (working, 0), elektraKeysetAtCursor (working, 1), maxSize);
 
 	if (common == NULL)
 	{
@@ -120,19 +120,19 @@ size_t ksGetCommonParentName (ElektraKeyset * working, char * returnedCommonPare
 	}
 
 	// We then check if all keys in the KeySet are below the parent we found.
-	ElektraKeyset * cut = ksCut (working, common);
+	ElektraKeyset * cut = elektraKeysetCut (working, common);
 
-	while (ksGetSize (working) != 0)
+	while (elektraKeysetGetSize (working) != 0)
 	{
 		// If not all keys match, we find the common prefix of common and the first non-matching key.
-		ElektraKey * nextKey = ksAtCursor (working, 0);
+		ElektraKey * nextKey = elektraKeysetAtCursor (working, 0);
 
-		ksAppend (working, cut);
-		ksDel (cut);
+		elektraKeysetAppend (working, cut);
+		elektraKeysetDel (cut);
 
 		ElektraKey * newCommon = commonParent (common, nextKey, maxSize);
 
-		keyDel (common);
+		elektraKeyDel (common);
 		common = newCommon;
 
 		if (common == NULL)
@@ -141,13 +141,13 @@ size_t ksGetCommonParentName (ElektraKeyset * working, char * returnedCommonPare
 			return 0;
 		}
 
-		cut = ksCut (working, common);
+		cut = elektraKeysetCut (working, common);
 	}
 
-	ksAppend (working, cut);
-	ksDel (cut);
+	elektraKeysetAppend (working, cut);
+	elektraKeysetDel (cut);
 
-	ssize_t ret = keyGetName (common, returnedCommonParent, maxSize);
-	keyDel (common);
+	ssize_t ret = elektraKeyGetName (common, returnedCommonParent, maxSize);
+	elektraKeyDel (common);
 	return ret;
 }

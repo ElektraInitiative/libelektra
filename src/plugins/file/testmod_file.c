@@ -17,45 +17,45 @@
 
 void testReadSingleLine (const char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("file");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	const ElektraKey * key = ksLookupByName (ks, "user:/tests/file", ELEKTRA_KDB_O_NONE);
+	const ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/file", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "key not found");
 
-	succeed_if (!strcmp ("this is a single line testfile\n", keyString (key)), "read single line data doesn't match expected string");
+	succeed_if (!strcmp ("this is a single line testfile\n", elektraKeyString (key)), "read single line data doesn't match expected string");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void testReadMultiLine (const char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("file");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	const ElektraKey * key = ksLookupByName (ks, "user:/tests/file", ELEKTRA_KDB_O_NONE);
+	const ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/file", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "key not found");
 
-	succeed_if (!strcmp ("\nthis\n\n\tis a\n   multi line test-\nfile\n\n", keyString (key)),
+	succeed_if (!strcmp ("\nthis\n\n\tis a\n   multi line test-\nfile\n\n", elektraKeyString (key)),
 		    "read multiline data doesn't match expected string");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
@@ -63,19 +63,19 @@ void testReadMultiLine (const char * fileName)
 
 void testWriteSingleLine (const char * compareTo)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("file");
 
-	ElektraKeyset * ks = ksNew (3, keyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, "this is a single line testfile\n", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (3, elektraKeyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, "this is a single line testfile\n", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
-	succeed_if (compare_line_files (srcdir_file (compareTo), keyString (parentKey)), "files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (compareTo), elektraKeyString (parentKey)), "files do not match as expected");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
@@ -83,42 +83,42 @@ void testWriteSingleLine (const char * compareTo)
 
 void testWriteMultiLine (const char * compareTo)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("file");
 
-	ElektraKeyset * ks = ksNew (3, keyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, "\nthis\n\n\tis a\n   multi line test-\nfile\n\n", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (3, elektraKeyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, "\nthis\n\n\tis a\n   multi line test-\nfile\n\n", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
-	succeed_if (compare_line_files (srcdir_file (compareTo), keyString (parentKey)), "files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (compareTo), elektraKeyString (parentKey)), "files do not match as expected");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void testRoundTrip (const char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/file", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * conf = elektraKeysetNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("file");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	keySetString (parentKey, elektraFilename ());
+	elektraKeySetString (parentKey, elektraFilename ());
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
-	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (fileName), elektraKeyString (parentKey)), "files do not match as expected");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }

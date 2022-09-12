@@ -28,40 +28,40 @@ int elektraNoresolverCheckFile (const char * filename)
 
 static ElektraKeyset * elektraNoresolverModules (void)
 {
-	return ksNew (
+	return elektraKeysetNew (
 		50,
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "", ELEKTRA_KEY_VALUE,
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "", ELEKTRA_KEY_VALUE,
 			"" ELEKTRA_PLUGIN_NAME " plugin waits for your orders", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports", ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get", ELEKTRA_KEY_FUNC, elektraNoresolverGet, ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", ELEKTRA_KEY_FUNC, elektraNoresolverSet, ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", ELEKTRA_KEY_FUNC, elektraNoresolverError, ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/commit", ELEKTRA_KEY_FUNC, elektraNoresolverCommit, ELEKTRA_KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile", ELEKTRA_KEY_FUNC, elektraNoresolverCheckFile, ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports", ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get", ELEKTRA_KEY_FUNC, elektraNoresolverGet, ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", ELEKTRA_KEY_FUNC, elektraNoresolverSet, ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", ELEKTRA_KEY_FUNC, elektraNoresolverError, ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/commit", ELEKTRA_KEY_FUNC, elektraNoresolverCommit, ELEKTRA_KEY_END),
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile", ELEKTRA_KEY_FUNC, elektraNoresolverCheckFile, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 // TODO: remove, handled by backend
 int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 
-	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
+	ElektraKey * root = elektraKeyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
 
-	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
+	if (elektraKeyCmp (root, parentKey) == 0 || elektraKeyIsBelow (root, parentKey) == 1)
 	{
-		keyDel (root);
+		elektraKeyDel (root);
 		ElektraKeyset * info = elektraNoresolverModules ();
-		ksAppend (returned, info);
-		ksDel (info);
+		elektraKeysetAppend (returned, info);
+		elektraKeysetDel (info);
 		return 1;
 	}
-	keyDel (root);
+	elektraKeyDel (root);
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * pathKey = ksLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
-	if (pathKey) keySetString (parentKey, keyString (pathKey));
+	ElektraKey * pathKey = elektraKeysetLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
+	if (pathKey) elektraKeySetString (parentKey, elektraKeyString (pathKey));
 
-	if (!strcmp (keyString (ksLookupByName (config, "/assume/unchanged", 0)), "1"))
+	if (!strcmp (elektraKeyString (elektraKeysetLookupByName (config, "/assume/unchanged", 0)), "1"))
 	{
 		// always return 0, except the first time
 		uintptr_t nr = (uintptr_t) elektraPluginGetData (handle);
@@ -80,8 +80,8 @@ int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * return
 int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * pathKey = ksLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
-	if (pathKey) keySetString (parentKey, keyString (pathKey));
+	ElektraKey * pathKey = elektraKeysetLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
+	if (pathKey) elektraKeySetString (parentKey, elektraKeyString (pathKey));
 
 	return 1; /* success */
 }

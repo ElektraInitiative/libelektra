@@ -24,346 +24,346 @@
 
 void test_readHostsSimple (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", 0);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/localhost", 0);
 	exit_if_fail (key, "hostname localhost not found");
-	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("127.0.0.1", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/gateway.markus-raab.org", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/gateway.markus-raab.org", 0);
 	exit_if_fail (key, "hostname gateway.markus-raab.org not found");
-	succeed_if (strcmp ("192.168.0.1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("192.168.0.1", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/kirabyte.markus-raab.org/kira", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/kirabyte.markus-raab.org/kira", 0);
 	exit_if_fail (key, "hostname alias kira not found");
-	succeed_if (strcmp ("192.168.0.5", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("192.168.0.5", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/wikipedia-sample", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv6/wikipedia-sample", 0);
 	exit_if_fail (key, "hostname wikipedia-sample not found");
-	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/wikipedia-sample/wikipedia-alias", 0);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv6/wikipedia-sample/wikipedia-alias", 0);
 	exit_if_fail (key, "hostname alias wikipedia-alias not found");
-	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", elektraKeyValue (key)) == 0, "address not correct");
 
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_readInvalidIpAddress (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", ELEKTRA_KDB_O_NONE);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/localhost", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
-	succeed_if (strcmp ("noipaddress", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("noipaddress", elektraKeyValue (key)) == 0, "address not correct");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_mixedAddresses (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host", ELEKTRA_KDB_O_NONE);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv4host not found");
-	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("127.0.0.1", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias1", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias1", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv4alias1 not found");
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias2", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias2", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv4alias2 not found");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv6host not found");
-	succeed_if (strcmp ("::1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("::1", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias1", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias1", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv6alias1 not found");
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias2", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias2", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv6alias2 not found");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_duplicateEntries (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", ELEKTRA_KDB_O_NONE);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/localhost", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
-	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("127.0.0.1", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/host", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname host not found");
-	succeed_if (strcmp ("192.168.0.1", keyValue (key)) == 0, "address not correct");
+	succeed_if (strcmp ("192.168.0.1", elektraKeyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias1", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/host/alias1", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "alias1 not found");
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias2", ELEKTRA_KDB_O_NONE);
+	key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/host/alias2", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "alias2 not found");
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_duplicateOrder (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
-	ElektraKeyset *ks = ksNew (20,
-			keyNew ("user:/tests/hosts/ipv4/host1",
+	ElektraKeyset *ks = elektraKeysetNew (20,
+			elektraKeyNew ("user:/tests/hosts/ipv4/host1",
 					ELEKTRA_KEY_VALUE, "192.168.0.1",
 					ELEKTRA_KEY_META, "order", "10",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv4/host2",
+			elektraKeyNew ("user:/tests/hosts/ipv4/host2",
 					ELEKTRA_KEY_VALUE, "192.168.0.2",
 					ELEKTRA_KEY_META, "order", "20",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv4/host3",
+			elektraKeyNew ("user:/tests/hosts/ipv4/host3",
 					ELEKTRA_KEY_VALUE, "192.168.0.3",
 					ELEKTRA_KEY_META, "order", "20",
 					ELEKTRA_KEY_END),
 			ELEKTRA_KS_END);
 	// clang-format on
 
-	ksAppendKey (ks, parentKey);
+	elektraKeysetAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (fileName), elektraKeyString (parentKey)), "files do not match as expected");
 
-	elektraUnlink (keyString (parentKey));
-	ksDel (ks);
+	elektraUnlink (elektraKeyString (parentKey));
+	elektraKeysetDel (ks);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_writeHostsSimple (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
-	ElektraKeyset *ks = ksNew (20,
-			keyNew ("user:/tests/hosts/ipv4/localhost",
+	ElektraKeyset *ks = elektraKeysetNew (20,
+			elektraKeyNew ("user:/tests/hosts/ipv4/localhost",
 					ELEKTRA_KEY_VALUE, "127.0.0.1",
 					ELEKTRA_KEY_META, "order", "10",
 					ELEKTRA_KEY_META, "comment/#0", "",
 					ELEKTRA_KEY_META, "comment/#1", " these are for ipv4",
 					ELEKTRA_KEY_META, "comment/#1/start", "#",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv4/testhost",
+			elektraKeyNew ("user:/tests/hosts/ipv4/testhost",
 					ELEKTRA_KEY_VALUE, "127.0.1.1",
 					ELEKTRA_KEY_META, "order", "20",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv4/testhost/testhostalias",
+			elektraKeyNew ("user:/tests/hosts/ipv4/testhost/testhostalias",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv6/localhost",
+			elektraKeyNew ("user:/tests/hosts/ipv6/localhost",
 					ELEKTRA_KEY_VALUE, "::1",
 					ELEKTRA_KEY_META, "order", "30",
 					ELEKTRA_KEY_META, "comment/#0", "",
 					ELEKTRA_KEY_META, "comment/#1", " The following lines are desirable for IPv6 capable hosts",
 					ELEKTRA_KEY_META, "comment/#1/start", "#",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv6/localhost/ip6-localhost",
+			elektraKeyNew ("user:/tests/hosts/ipv6/localhost/ip6-localhost",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv6/localhost/ip6-loopback",
+			elektraKeyNew ("user:/tests/hosts/ipv6/localhost/ip6-loopback",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv6/ip6-allnodes",
+			elektraKeyNew ("user:/tests/hosts/ipv6/ip6-allnodes",
 					ELEKTRA_KEY_VALUE, "ff02::1",
 					ELEKTRA_KEY_META, "order", "40",
 					ELEKTRA_KEY_END),
 			ELEKTRA_KS_END);
 	// clang-format on
 
-	ksAppendKey (ks, parentKey);
+	elektraKeysetAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (fileName), elektraKeyString (parentKey)), "files do not match as expected");
 
-	elektraUnlink (keyString (parentKey));
-	ksDel (ks);
+	elektraUnlink (elektraKeyString (parentKey));
+	elektraKeysetDel (ks);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_readHostsComments (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = elektraKeysetNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
 	/* FIRST ENTRY */
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", 0);
+	ElektraKey * key = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/localhost", 0);
 	exit_if_fail (key, "hostname localhost not found");
 
 	/* inline comment */
-	const ElektraKey * inlineComment1 = keyGetMeta (key, "comment/#0");
+	const ElektraKey * inlineComment1 = elektraKeyGetMeta (key, "comment/#0");
 	succeed_if (inlineComment1, "inline comment for first host does not exist");
-	succeed_if (!strcmp (keyString (inlineComment1), "inline comment0"), "inline comment for first host contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (inlineComment1), "inline comment0"), "inline comment for first host contains wrong text");
 
-	const ElektraKey * inlineComment1Start = keyGetMeta (key, "comment/#0/start");
+	const ElektraKey * inlineComment1Start = elektraKeyGetMeta (key, "comment/#0/start");
 	succeed_if (inlineComment1Start, "start key for inline  of first host does not exist");
-	succeed_if (!strcmp (keyString (inlineComment1Start), "#"), "start key for inline comment of first host contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (inlineComment1Start), "#"), "start key for inline comment of first host contains wrong text");
 
-	const ElektraKey * inlineComment1Space = keyGetMeta (key, "comment/#0/space");
+	const ElektraKey * inlineComment1Space = elektraKeyGetMeta (key, "comment/#0/space");
 	succeed_if (inlineComment1Space, "space key for inline comment of first host does not exist");
-	succeed_if (!strcmp (keyString (inlineComment1Space), "3"),
+	succeed_if (!strcmp (elektraKeyString (inlineComment1Space), "3"),
 		    "space key for inline comment of first host contains wrong number of spaces");
 
 
 	/* empty lines */
-	const ElektraKey * lineComment1 = keyGetMeta (key, "comment/#1");
+	const ElektraKey * lineComment1 = elektraKeyGetMeta (key, "comment/#1");
 	succeed_if (lineComment1, "comment for first empty line does not exist");
 
-	const ElektraKey * lineComment2 = keyGetMeta (key, "comment/#2");
+	const ElektraKey * lineComment2 = elektraKeyGetMeta (key, "comment/#2");
 	succeed_if (lineComment2, "comment for second empty line does not exist");
 
 
 	/* line comment */
-	const ElektraKey * lineComment3 = keyGetMeta (key, "comment/#3");
+	const ElektraKey * lineComment3 = elektraKeyGetMeta (key, "comment/#3");
 	succeed_if (lineComment3, "comment key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment3), " comment for localhost"), "comment key for line comment contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (lineComment3), " comment for localhost"), "comment key for line comment contains wrong text");
 
-	const ElektraKey * lineComment3Start = keyGetMeta (key, "comment/#3/start");
+	const ElektraKey * lineComment3Start = elektraKeyGetMeta (key, "comment/#3/start");
 	succeed_if (lineComment3Start, "start key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment3Start), "#"), "start key for line comment contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (lineComment3Start), "#"), "start key for line comment contains wrong text");
 
-	const ElektraKey * lineComment3Spaces = keyGetMeta (key, "comment/#3/space");
+	const ElektraKey * lineComment3Spaces = elektraKeyGetMeta (key, "comment/#3/space");
 	succeed_if (lineComment3Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment3Spaces), "0"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (elektraKeyString (lineComment3Spaces), "0"), "space key for line comment contains wrong number of spaces");
 
 	/* empty line */
-	const ElektraKey * emptyLine = keyGetMeta (key, "comment/#4");
+	const ElektraKey * emptyLine = elektraKeyGetMeta (key, "comment/#4");
 	succeed_if (emptyLine, "comment key for line comment does not exist");
-	succeed_if (!strcmp ("", keyString (emptyLine)), "line comment key contains data although it shouldn't");
+	succeed_if (!strcmp ("", elektraKeyString (emptyLine)), "line comment key contains data although it shouldn't");
 
 	/* SECOND ENTRY */
-	ElektraKey * key2 = ksLookupByName (ks, "user:/tests/hosts/ipv4/testentry", 0);
+	ElektraKey * key2 = elektraKeysetLookupByName (ks, "user:/tests/hosts/ipv4/testentry", 0);
 	exit_if_fail (key2, "hostname localhost not found");
 
 	/* inline comment */
-	const ElektraKey * inlineComment2 = keyGetMeta (key2, "comment/#0");
+	const ElektraKey * inlineComment2 = elektraKeyGetMeta (key2, "comment/#0");
 	succeed_if (inlineComment2, "inline comment for second host does not exist");
-	succeed_if (!strcmp (keyString (inlineComment2), " inline comment1"), "inline comment for second host contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (inlineComment2), " inline comment1"), "inline comment for second host contains wrong text");
 
-	const ElektraKey * inlineComment2Start = keyGetMeta (key2, "comment/#0/start");
+	const ElektraKey * inlineComment2Start = elektraKeyGetMeta (key2, "comment/#0/start");
 	succeed_if (inlineComment2Start, "start key for inline  of second host does not exist");
-	succeed_if (!strcmp (keyString (inlineComment2Start), "#"), "start key for inline comment of second host contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (inlineComment2Start), "#"), "start key for inline comment of second host contains wrong text");
 
-	const ElektraKey * inlineComment2Space = keyGetMeta (key2, "comment/#0/space");
+	const ElektraKey * inlineComment2Space = elektraKeyGetMeta (key2, "comment/#0/space");
 	succeed_if (inlineComment2Space, "space key for inline comment of second host does not exist");
-	succeed_if (!strcmp (keyString (inlineComment2Space), "1"),
+	succeed_if (!strcmp (elektraKeyString (inlineComment2Space), "1"),
 		    "space key for inline comment of second host contains wrong number of spaces");
 
 
 	/* empty line */
-	const ElektraKey * lineComment4 = keyGetMeta (key2, "comment/#1");
+	const ElektraKey * lineComment4 = elektraKeyGetMeta (key2, "comment/#1");
 	succeed_if (lineComment4, "comment key for line comment does not exist");
 
-	const ElektraKey * lineComment4Spaces = keyGetMeta (key2, "comment/#1/space");
+	const ElektraKey * lineComment4Spaces = elektraKeyGetMeta (key2, "comment/#1/space");
 	succeed_if (lineComment4Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment4Spaces), "2"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (elektraKeyString (lineComment4Spaces), "2"), "space key for line comment contains wrong number of spaces");
 
 
 	/* line comment */
-	const ElektraKey * lineComment5 = keyGetMeta (key2, "comment/#2");
+	const ElektraKey * lineComment5 = elektraKeyGetMeta (key2, "comment/#2");
 	succeed_if (lineComment5, "comment key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment5), " comment for testentry"), "comment key for line comment contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (lineComment5), " comment for testentry"), "comment key for line comment contains wrong text");
 
-	const ElektraKey * lineComment5Start = keyGetMeta (key2, "comment/#2/start");
+	const ElektraKey * lineComment5Start = elektraKeyGetMeta (key2, "comment/#2/start");
 	succeed_if (lineComment5Start, "start key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment5Start), "#"), "start key for line comment contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (lineComment5Start), "#"), "start key for line comment contains wrong text");
 
-	const ElektraKey * lineComment5Spaces = keyGetMeta (key2, "comment/#2/space");
+	const ElektraKey * lineComment5Spaces = elektraKeyGetMeta (key2, "comment/#2/space");
 	succeed_if (lineComment5Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment5Spaces), "2"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (elektraKeyString (lineComment5Spaces), "2"), "space key for line comment contains wrong number of spaces");
 
 
 	/* NO ENTRY */
 
 	/* empty line */
-	const ElektraKey * lineComment6 = keyGetMeta (parentKey, "comment/#1");
+	const ElektraKey * lineComment6 = elektraKeyGetMeta (parentKey, "comment/#1");
 	succeed_if (lineComment6, "comment key for line comment does not exist");
 
 
 	/* line comment */
-	const ElektraKey * lineComment7 = keyGetMeta (parentKey, "comment/#2");
+	const ElektraKey * lineComment7 = elektraKeyGetMeta (parentKey, "comment/#2");
 	succeed_if (lineComment7, "comment key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment7), " comment without entry"), "comment key for line comment contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (lineComment7), " comment without entry"), "comment key for line comment contains wrong text");
 
-	const ElektraKey * lineComment7Start = keyGetMeta (parentKey, "comment/#2/start");
+	const ElektraKey * lineComment7Start = elektraKeyGetMeta (parentKey, "comment/#2/start");
 	succeed_if (lineComment7Start, "start key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment7Start), "#"), "start key for line comment contains wrong text");
+	succeed_if (!strcmp (elektraKeyString (lineComment7Start), "#"), "start key for line comment contains wrong text");
 
-	const ElektraKey * lineComment7Spaces = keyGetMeta (parentKey, "comment/#2/space");
+	const ElektraKey * lineComment7Spaces = elektraKeyGetMeta (parentKey, "comment/#2/space");
 	succeed_if (lineComment7Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp (keyString (lineComment7Spaces), "0"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (elektraKeyString (lineComment7Spaces), "0"), "space key for line comment contains wrong number of spaces");
 
 
-	ksDel (ks);
-	keyDel (parentKey);
+	elektraKeysetDel (ks);
+	elektraKeyDel (parentKey);
 
 	PLUGIN_CLOSE ();
 }
 
 void test_writeHostsComments (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKey * parentKey = elektraKeyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
-	ElektraKeyset *ks = ksNew (20,
-			keyNew ("user:/tests/hosts/ipv4/localhost",
+	ElektraKeyset *ks = elektraKeysetNew (20,
+			elektraKeyNew ("user:/tests/hosts/ipv4/localhost",
 					ELEKTRA_KEY_VALUE, "127.0.0.1",
 					ELEKTRA_KEY_META, "order", "10",
 					ELEKTRA_KEY_META, "comment/#0", "inline comment0",
@@ -375,7 +375,7 @@ void test_writeHostsComments (char * fileName)
 					ELEKTRA_KEY_META, "comment/#3/start", "#",
 					ELEKTRA_KEY_META, "comment/#4", "",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv4/testentry",
+			elektraKeyNew ("user:/tests/hosts/ipv4/testentry",
 					ELEKTRA_KEY_VALUE, "192.168.0.1",
 					ELEKTRA_KEY_META, "order", "20",
 					ELEKTRA_KEY_META, "comment/#0", " inline comment1",
@@ -387,27 +387,27 @@ void test_writeHostsComments (char * fileName)
 					ELEKTRA_KEY_META, "comment/#2/space", "2",
 					ELEKTRA_KEY_META, "comment/#2/start", "#",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv4/testentry/alias1",
+			elektraKeyNew ("user:/tests/hosts/ipv4/testentry/alias1",
 					ELEKTRA_KEY_END),
-			keyNew ("user:/tests/hosts/ipv4/testentry/alias2",
+			elektraKeyNew ("user:/tests/hosts/ipv4/testentry/alias2",
 					ELEKTRA_KEY_END),
 			ELEKTRA_KS_END);
 	// clang-format on
 
-	keySetMeta (parentKey, "comment/#1", "");
-	keySetMeta (parentKey, "comment/#2", " comment without entry");
-	keySetMeta (parentKey, "comment/#2/start", "#");
+	elektraKeySetMeta (parentKey, "comment/#1", "");
+	elektraKeySetMeta (parentKey, "comment/#2", " comment without entry");
+	elektraKeySetMeta (parentKey, "comment/#2/start", "#");
 
-	ksAppendKey (ks, parentKey);
+	elektraKeysetAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (fileName), elektraKeyString (parentKey)), "files do not match as expected");
 
-	elektraUnlink (keyString (parentKey));
-	ksDel (ks);
+	elektraUnlink (elektraKeyString (parentKey));
+	elektraKeysetDel (ks);
 
 	PLUGIN_CLOSE ();
 }
@@ -416,22 +416,22 @@ static void test_format (void)
 {
 	printf ("Test key format\n");
 
-	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
-	keySetString (k, "huhu");
-	succeed_if_same_string (keyString (k), "huhu");
+	ElektraKey * k = elektraKeyNew ("/", ELEKTRA_KEY_END);
+	elektraKeySetString (k, "huhu");
+	succeed_if_same_string (elektraKeyString (k), "huhu");
 
 	keySetStringF (k, "huhu");
-	succeed_if_same_string (keyString (k), "huhu");
+	succeed_if_same_string (elektraKeyString (k), "huhu");
 
 	keySetStringF (k, "huhu %d", 20);
-	succeed_if_same_string (keyString (k), "huhu 20");
+	succeed_if_same_string (elektraKeyString (k), "huhu 20");
 
 	char c1[] = "huhu %d something";
 	keySetStringF (k, c1, 20);
 	c1[5] = '2';
 	c1[6] = '0';
-	succeed_if_same_string (keyString (k), c1);
-	succeed_if (keyGetValueSize (k) == sizeof (c1), "size wrong");
+	succeed_if_same_string (elektraKeyString (k), c1);
+	succeed_if (elektraKeyGetValueSize (k) == sizeof (c1), "size wrong");
 
 
 	char c2[] =
@@ -444,8 +444,8 @@ static void test_format (void)
 		"an extremely long string that is way longer then default capture size of 512 or something."
 		"an extremely long string that is way longer then default capture size of 512 or something!";
 	keySetStringF (k, c2);
-	succeed_if_same_string (keyString (k), c2);
-	succeed_if (keyGetValueSize (k) == sizeof (c2), "size wrong");
+	succeed_if_same_string (elektraKeyString (k), c2);
+	succeed_if (elektraKeyGetValueSize (k) == sizeof (c2), "size wrong");
 
 
 	char c3[] =
@@ -460,10 +460,10 @@ static void test_format (void)
 	keySetStringF (k, c3, "AN");
 	c3[0] = 'A';
 	c3[1] = 'N';
-	succeed_if_same_string (keyString (k), c3);
+	succeed_if_same_string (elektraKeyString (k), c3);
 	// printf ("%s\n\nXXX\n%s\n", keyString(k), c3);
 	// printf ("%d - %d\n", keyGetValueSize(k), sizeof(c3));
-	succeed_if (keyGetValueSize (k) == sizeof (c3), "size wrong");
+	succeed_if (elektraKeyGetValueSize (k) == sizeof (c3), "size wrong");
 
 
 	char c4[] =
@@ -478,10 +478,10 @@ static void test_format (void)
 	keySetStringF (k, c4, 20);
 	c4[0] = '2';
 	c4[1] = '0';
-	succeed_if_same_string (keyString (k), c4);
-	succeed_if (keyGetValueSize (k) == sizeof (c4), "size wrong");
+	succeed_if_same_string (elektraKeyString (k), c4);
+	succeed_if (elektraKeyGetValueSize (k) == sizeof (c4), "size wrong");
 
-	keyDel (k);
+	elektraKeyDel (k);
 }
 
 int main (int argc, char ** argv)

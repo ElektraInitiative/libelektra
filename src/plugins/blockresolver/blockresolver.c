@@ -67,7 +67,7 @@ static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfil
 		rc = -1;
 		goto RESOLVE_FAILED;
 	}
-	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+	resolved = resolveFunc (elektraKeyGetNamespace (parentKey), elektraKeyString (parentKey), tmpFile, parentKey);
 
 	if (!resolved)
 	{
@@ -76,7 +76,7 @@ static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfil
 	}
 	else
 	{
-		keySetString (parentKey, resolved->fullPath);
+		elektraKeySetString (parentKey, resolved->fullPath);
 		freeHandle (resolved);
 	}
 
@@ -108,18 +108,18 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 		data = elektraCalloc (sizeof (BlockData));
 		elektraPluginSetData (handle, data);
 		ElektraKeyset * config = elektraPluginGetConfig (handle);
-		ksRewind (config);
-		ElektraKey * key = ksLookupByName (config, "/identifier", ELEKTRA_KDB_O_NONE);
+		elektraKeysetRewind (config);
+		ElektraKey * key = elektraKeysetLookupByName (config, "/identifier", ELEKTRA_KDB_O_NONE);
 		if (!key) return -1;
-		data->identifier = (char *) keyString (key);
-		key = ksLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
+		data->identifier = (char *) elektraKeyString (key);
+		key = elektraKeysetLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
 		if (!key) return -1;
-		keySetString (parentKey, keyString (key));
+		elektraKeySetString (parentKey, elektraKeyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
 			return -1;
 		}
-		data->realFile = elektraStrDup (keyString (parentKey));
+		data->realFile = elektraStrDup (elektraKeyString (parentKey));
 		struct stat buf;
 		if (stat (data->realFile, &buf))
 		{
@@ -221,23 +221,23 @@ static const char * getBlock (FILE * fp, const long startPos, const long endPos)
 
 int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/blockresolver"))
+	if (!elektraStrCmp (elektraKeyName (parentKey), "system:/elektra/modules/blockresolver"))
 	{
-		ElektraKeyset * contract = ksNew (
+		ElektraKeyset * contract = elektraKeysetNew (
 			30,
-			keyNew ("system:/elektra/modules/blockresolver", ELEKTRA_KEY_VALUE, "blockresolver plugin waits for your orders", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports", ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/close", ELEKTRA_KEY_FUNC, elektraBlockresolverClose, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/error", ELEKTRA_KEY_FUNC, elektraBlockresolverError, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/get", ELEKTRA_KEY_FUNC, elektraBlockresolverGet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/set", ELEKTRA_KEY_FUNC, elektraBlockresolverSet, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraBlockresolverCommit, ELEKTRA_KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraBlockresolverCheckFile,
+			elektraKeyNew ("system:/elektra/modules/blockresolver", ELEKTRA_KEY_VALUE, "blockresolver plugin waits for your orders", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blockresolver/exports", ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blockresolver/exports/close", ELEKTRA_KEY_FUNC, elektraBlockresolverClose, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blockresolver/exports/error", ELEKTRA_KEY_FUNC, elektraBlockresolverError, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blockresolver/exports/get", ELEKTRA_KEY_FUNC, elektraBlockresolverGet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blockresolver/exports/set", ELEKTRA_KEY_FUNC, elektraBlockresolverSet, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blockresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraBlockresolverCommit, ELEKTRA_KEY_END),
+			elektraKeyNew ("system:/elektra/modules/blockresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraBlockresolverCheckFile,
 				ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/blockresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+			elektraKeyNew ("system:/elektra/modules/blockresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+		elektraKeysetAppend (returned, contract);
+		elektraKeysetDel (contract);
 
 		return 1; // success
 	}
@@ -246,7 +246,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * ret
 
 	int retVal = 0;
 	BlockData * data = elektraPluginGetData (handle);
-	keySetString (parentKey, data->tmpFile);
+	elektraKeySetString (parentKey, data->tmpFile);
 	FILE * fin = NULL;
 	FILE * fout = NULL;
 	char * block = NULL;
@@ -309,7 +309,7 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * ret
 {
 	BlockData * data = elektraPluginGetData (handle);
 	if (!data) return -1;
-	keySetString (parentKey, data->tmpFile);
+	elektraKeySetString (parentKey, data->tmpFile);
 	struct stat buf;
 	if (stat (data->realFile, &buf))
 	{

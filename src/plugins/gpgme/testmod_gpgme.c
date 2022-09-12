@@ -57,30 +57,30 @@ static void init_gpgme (void)
 
 static ElektraKeyset * newPluginConfiguration (void)
 {
-	return ksNew (3, keyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
-		      keyNew (ELEKTRA_GPGME_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
-		      keyNew (ELEKTRA_GPGME_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	return elektraKeysetNew (3, elektraKeyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		      elektraKeyNew (ELEKTRA_GPGME_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+		      elektraKeyNew (ELEKTRA_GPGME_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static ElektraKeyset * newTestdataKeySet (void)
 {
-	ElektraKey * kUnchanged = keyNew (KEYNAME_UNCHANGED, ELEKTRA_KEY_END);
-	ElektraKey * kNull = keyNew (KEYNAME_NULL, ELEKTRA_KEY_END);
-	ElektraKey * kString = keyNew (KEYNAME_STRING, ELEKTRA_KEY_END);
-	ElektraKey * kBin = keyNew (KEYNAME_BIN, ELEKTRA_KEY_END);
+	ElektraKey * kUnchanged = elektraKeyNew (KEYNAME_UNCHANGED, ELEKTRA_KEY_END);
+	ElektraKey * kNull = elektraKeyNew (KEYNAME_NULL, ELEKTRA_KEY_END);
+	ElektraKey * kString = elektraKeyNew (KEYNAME_STRING, ELEKTRA_KEY_END);
+	ElektraKey * kBin = elektraKeyNew (KEYNAME_BIN, ELEKTRA_KEY_END);
 
-	keySetString (kUnchanged, strVal);
+	elektraKeySetString (kUnchanged, strVal);
 
-	keySetBinary (kNull, NULL, 0);
-	keySetMeta (kNull, ELEKTRA_GPGME_META_ENCRYPT, "1");
+	elektraKeySetBinary (kNull, NULL, 0);
+	elektraKeySetMeta (kNull, ELEKTRA_GPGME_META_ENCRYPT, "1");
 
-	keySetString (kString, strVal);
-	keySetMeta (kString, ELEKTRA_GPGME_META_ENCRYPT, "1");
+	elektraKeySetString (kString, strVal);
+	elektraKeySetMeta (kString, ELEKTRA_GPGME_META_ENCRYPT, "1");
 
-	keySetBinary (kBin, binVal, sizeof (binVal));
-	keySetMeta (kBin, ELEKTRA_GPGME_META_ENCRYPT, "1");
+	elektraKeySetBinary (kBin, binVal, sizeof (binVal));
+	elektraKeySetMeta (kBin, ELEKTRA_GPGME_META_ENCRYPT, "1");
 
-	return ksNew (4, kUnchanged, kNull, kString, kBin, ELEKTRA_KS_END);
+	return elektraKeysetNew (4, kUnchanged, kNull, kString, kBin, ELEKTRA_KS_END);
 }
 
 static void test_import_key (void)
@@ -112,8 +112,8 @@ static void test_import_key (void)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
@@ -140,16 +140,16 @@ static void test_init (void)
 	}
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (parentKey);
+	elektraKeysetDel (modules);
+	elektraKeyDel (parentKey);
 }
 
 static void test_incomplete_config (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
-	ElektraKeyset * configKs = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * configKs = elektraKeysetNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (GPGME_PLUGIN_NAME, modules, configKs, 0);
@@ -158,20 +158,20 @@ static void test_incomplete_config (void)
 	{
 		ElektraKeyset * data = newTestdataKeySet ();
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == -1, "kdb set succeeded with incomplete configuration");
-		ksDel (data);
+		elektraKeysetDel (data);
 		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (parentKey);
+	elektraKeysetDel (modules);
+	elektraKeyDel (parentKey);
 }
 
 static void test_encryption_decryption (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
-	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = elektraKeyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = elektraKeysetNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
@@ -181,95 +181,95 @@ static void test_encryption_decryption (void)
 	{
 		ElektraKey * k;
 		ElektraKeyset * data = newTestdataKeySet ();
-		ElektraKeyset * original = ksDup (data);
+		ElektraKeyset * original = elektraKeysetDup (data);
 
 		// test encryption with kdb set
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
 
 		// - unchanged
-		k = ksLookupByName (data, KEYNAME_UNCHANGED, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_UNCHANGED, 0);
 		succeed_if (k, "missing key " KEYNAME_UNCHANGED " in dataset");
 		if (k)
 		{
-			succeed_if (keyIsString (k), "key type has been modified but was not marked for encryption");
-			succeed_if (strcmp (keyString (k), strVal) == 0, "Key value changed but was not marked for encryption");
+			succeed_if (elektraKeyIsString (k), "key type has been modified but was not marked for encryption");
+			succeed_if (strcmp (elektraKeyString (k), strVal) == 0, "Key value changed but was not marked for encryption");
 		}
 
 		// - string value
-		k = ksLookupByName (data, KEYNAME_STRING, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_STRING, 0);
 		succeed_if (k, "missing key " KEYNAME_STRING " in dataset");
 		if (k)
 		{
-			succeed_if (keyIsBinary (k), "key type not set to binary during encryption");
-			succeed_if (memcmp (keyValue (k), strVal, MIN (keyGetValueSize (k), strlen (strVal))) != 0,
+			succeed_if (elektraKeyIsBinary (k), "key type not set to binary during encryption");
+			succeed_if (memcmp (elektraKeyValue (k), strVal, MIN (elektraKeyGetValueSize (k), strlen (strVal))) != 0,
 				    "key content did not change during encryption");
 		}
 
 		// - binary value
-		k = ksLookupByName (data, KEYNAME_BIN, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_BIN, 0);
 		succeed_if (k, "missing key " KEYNAME_BIN " in dataset");
 		if (k)
 		{
-			succeed_if (keyIsBinary (k), "key type not set to binary during encryption");
-			succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), sizeof (binVal))) != 0,
+			succeed_if (elektraKeyIsBinary (k), "key type not set to binary during encryption");
+			succeed_if (memcmp (elektraKeyValue (k), binVal, MIN (elektraKeyGetValueSize (k), sizeof (binVal))) != 0,
 				    "key content did not change during encryption");
 		}
 
 		// - null value
-		k = ksLookupByName (data, KEYNAME_NULL, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_NULL, 0);
 		succeed_if (k, "missing key " KEYNAME_NULL " in dataset");
 		if (k)
 		{
-			succeed_if (keyGetValueSize (k) == 0, "null value was changed unexpectedly");
+			succeed_if (elektraKeyGetValueSize (k) == 0, "null value was changed unexpectedly");
 		}
 
 		// test decryption with kdb get
 		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");
 
 		// - unchanged
-		k = ksLookupByName (data, KEYNAME_UNCHANGED, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_UNCHANGED, 0);
 		succeed_if (k, "missing key " KEYNAME_UNCHANGED " in dataset");
 		if (k)
 		{
-			succeed_if (keyIsString (k), "key type has been modified but was not marked for decryption");
-			succeed_if (strcmp (keyString (k), strVal) == 0, "Key value changed but was not marked for decryption");
+			succeed_if (elektraKeyIsString (k), "key type has been modified but was not marked for decryption");
+			succeed_if (strcmp (elektraKeyString (k), strVal) == 0, "Key value changed but was not marked for decryption");
 		}
 
 		// - string value
-		k = ksLookupByName (data, KEYNAME_STRING, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_STRING, 0);
 		succeed_if (k, "missing key " KEYNAME_STRING " in dataset");
 		if (k)
 		{
-			succeed_if (keyIsString (k), "key type not restored to string during decryption");
-			succeed_if (strcmp (keyString (k), strVal) == 0, "key content not restored during decryption");
+			succeed_if (elektraKeyIsString (k), "key type not restored to string during decryption");
+			succeed_if (strcmp (elektraKeyString (k), strVal) == 0, "key content not restored during decryption");
 		}
 
 		// - binary value
-		k = ksLookupByName (data, KEYNAME_BIN, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_BIN, 0);
 		succeed_if (k, "missing key " KEYNAME_BIN " in dataset");
 		if (k)
 		{
-			succeed_if (keyIsBinary (k), "key type not restored to binary during decryption");
-			succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), sizeof (binVal))) == 0,
+			succeed_if (elektraKeyIsBinary (k), "key type not restored to binary during decryption");
+			succeed_if (memcmp (elektraKeyValue (k), binVal, MIN (elektraKeyGetValueSize (k), sizeof (binVal))) == 0,
 				    "key content not restored during decryption");
 		}
 
 		// - null value
-		k = ksLookupByName (data, KEYNAME_NULL, 0);
+		k = elektraKeysetLookupByName (data, KEYNAME_NULL, 0);
 		succeed_if (k, "missing key " KEYNAME_NULL " in dataset");
 		if (k)
 		{
-			succeed_if (keyGetValueSize (k) == 0, "null value was changed unexpectedly");
+			succeed_if (elektraKeyGetValueSize (k) == 0, "null value was changed unexpectedly");
 		}
 
-		ksDel (original);
-		ksDel (data);
+		elektraKeysetDel (original);
+		elektraKeysetDel (data);
 		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	keyDel (parentKey);
+	elektraKeysetDel (modules);
+	elektraKeyDel (parentKey);
 }
 
 int main (int argc, char ** argv)
