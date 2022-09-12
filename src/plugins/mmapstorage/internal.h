@@ -10,9 +10,9 @@
 #ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
 #define ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
 
-#define SIZEOF_KEY (sizeof (Key))
-#define SIZEOF_KEY_PTR (sizeof (Key *))
-#define SIZEOF_KEYSET (sizeof (KeySet))
+#define SIZEOF_KEY (sizeof (ElektraKey))
+#define SIZEOF_KEY_PTR (sizeof (ElektraKey *))
+#define SIZEOF_KEYSET (sizeof (ElektraKeyset))
 #define SIZEOF_MMAPHEADER (sizeof (MmapHeader))
 #define SIZEOF_MMAPMETADATA (sizeof (MmapMetaData))
 #define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))

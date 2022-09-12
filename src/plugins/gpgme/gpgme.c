@@ -574,7 +574,7 @@ int elektraGpgmeOpen (Plugin * handle, ElektraKey * errorKey)
 	return 1; // success
 }
 
-int elektraGpgmeClose (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED Key * errorKey)
+int elektraGpgmeClose (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED ElektraKey * errorKey)
 {
 	// at the moment there is nothing to do
 	return 1; // success

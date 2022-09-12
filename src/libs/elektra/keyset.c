@@ -250,7 +250,7 @@ ElektraKeyset * ksVNew (size_t alloc, va_list va)
 {
 	ElektraKeyset * keyset = 0;
 
-	keyset = (ElektraKeyset *) elektraMalloc (sizeof (KeySet));
+	keyset = (ElektraKeyset *) elektraMalloc (sizeof (ElektraKeyset));
 	if (!keyset)
 	{
 		return 0;

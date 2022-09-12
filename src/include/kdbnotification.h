@@ -105,7 +105,7 @@ int elektraNotificationContract (ElektraKeyset * contract);
 
 #define ELEKTRA_NOTIFICATION_REGISTER_SIGNATURE(TYPE, TYPE_NAME)                                                                           \
 	/** @copydoc elektraNotificationRegisterInt */                                                                                     \
-	int ELEKTRA_NOTIFICATION_REGISTER_NAME (TYPE_NAME) (KDB * kdb, Key * key, TYPE * variable)
+	int ELEKTRA_NOTIFICATION_REGISTER_NAME (TYPE_NAME) (ElektraKdb * kdb, ElektraKey * key, TYPE * variable)
 
 #define ELEKTRA_NOTIFICATION_TYPE_DECLARATION(TYPE, TYPE_NAME) ELEKTRA_NOTIFICATION_REGISTER_SIGNATURE (TYPE, TYPE_NAME);
 

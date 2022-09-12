@@ -14,9 +14,9 @@ char * namespaces[] = { "spec:/", "proc:/", "dir:/", "user:/", "system:/", 0 };
 
 static void test_ksNew (void)
 {
-	KeySet * ks = 0;
-	KeySet * keys = ksNew (15, KS_END);
-	KeySet * config;
+	ElektraKeyset * ks = 0;
+	ElektraKeyset * keys = ksNew (15, KS_END);
+	ElektraKeyset * config;
 
 	printf ("Test ks creation\n");
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
@@ -26,7 +26,7 @@ static void test_ksNew (void)
 	succeed_if (ksAppendKey (ks, keyNew ("user:/c", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after 3 keys");
 
-	KeySet * ks2 = ksNew (0, KS_END);
+	ElektraKeyset * ks2 = ksNew (0, KS_END);
 	ksCopy (ks2, ks);
 	compare_keyset (ks, ks2);
 
@@ -80,7 +80,7 @@ static void test_ksNew (void)
 	succeed_if (ksDel (config) == 0, "could not delete keyset");
 	succeed_if (ksDel (ks2) == 0, "could not delete keyset");
 
-	KeySet * ks_c = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+	ElektraKeyset * ks_c = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
 			       keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
 
 	succeed_if (ksCurrent (ks_c) == 0, "should be rewinded");
@@ -92,9 +92,9 @@ static void test_ksNew (void)
 static void test_ksEmpty (void)
 {
 	printf ("Test empty keysets\n");
-	KeySet * ks;
-	KeySet * ks2;
-	Key * current;
+	ElektraKeyset * ks;
+	ElektraKeyset * ks2;
+	ElektraKey * current;
 
 	ks = ksNew (0, KS_END);
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
@@ -163,10 +163,10 @@ static void test_ksEmpty (void)
 
 static void test_ksReference (void)
 {
-	KeySet * ks = 0;
-	KeySet * ks1;
-	Key *k1, *k2;
-	KeySet * kss[NR_KEYSETS];
+	ElektraKeyset * ks = 0;
+	ElektraKeyset * ks1;
+	ElektraKey *k1, *k2;
+	ElektraKeyset * kss[NR_KEYSETS];
 	int i;
 
 	printf ("Test reference of key\n");
@@ -276,8 +276,8 @@ static void test_ksReference (void)
 
 static void test_ksDup (void)
 {
-	KeySet * ks = 0;
-	KeySet * other = 0;
+	ElektraKeyset * ks = 0;
+	ElektraKeyset * other = 0;
 
 	printf ("Test ks duplication\n");
 
@@ -338,8 +338,8 @@ static void test_ksDup (void)
 
 static void test_ksCopy (void)
 {
-	KeySet * ks = 0;
-	KeySet * other = 0;
+	ElektraKeyset * ks = 0;
+	ElektraKeyset * other = 0;
 
 	printf ("Test ks copy\n");
 
@@ -443,9 +443,9 @@ static void test_ksCopy (void)
 
 static void test_ksIterate (void)
 {
-	KeySet * ks = ksNew (0, KS_END);
-	KeySet * other = ksNew (0, KS_END);
-	Key * key;
+	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * other = ksNew (0, KS_END);
+	ElektraKey * key;
 	int i;
 	char name[] = "user:/n";
 
@@ -536,10 +536,10 @@ static void test_ksIterate (void)
 
 static void test_ksCursor (void)
 {
-	KeySet * ks = ksNew (0, KS_END);
-	Key * key;
+	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * key;
 	elektraCursor cursor;
-	Key * cur;
+	ElektraKey * cur;
 	int i;
 	char name[] = "user:/n";
 
@@ -631,9 +631,9 @@ static void test_ksCursor (void)
 
 static void test_ksAtCursor (void)
 {
-	KeySet * ks;
-	Key * current;
-	Key * testKeys[5];
+	ElektraKeyset * ks;
+	ElektraKey * current;
+	ElektraKey * testKeys[5];
 	ks = ksNew (0, KS_END);
 
 	testKeys[0] = keyNew ("user:/test1", KEY_END);
@@ -657,7 +657,7 @@ static void test_ksAtCursor (void)
 		current = testKeys[index];
 		ksNext (ks);
 		cursor = ksGetCursor (ks);
-		Key * other = ksAtCursor (ks, cursor);
+		ElektraKey * other = ksAtCursor (ks, cursor);
 		succeed_if_same_string (keyName (current), keyName (other));
 	}
 
@@ -693,8 +693,8 @@ static void test_ksAtCursor (void)
 
 static void test_ksSort (void)
 {
-	KeySet * ks;
-	Key *key, *k1, *k2;
+	ElektraKeyset * ks;
+	ElektraKey *key, *k1, *k2;
 	int i;
 
 	printf ("Test ks sort\n");
@@ -969,17 +969,17 @@ static void test_ksSort (void)
 	ksDel (ks);
 }
 
-static void ksUnsort (KeySet * ks)
+static void ksUnsort (ElektraKeyset * ks)
 {
-	KeySet * randks = ksNew (0, KS_END); /*This is the final randomized keyset*/
-	KeySet * tempks = ksNew (0, KS_END); /*Temporary storage for keys not chosen to be inserted*/
+	ElektraKeyset * randks = ksNew (0, KS_END); /*This is the final randomized keyset*/
+	ElektraKeyset * tempks = ksNew (0, KS_END); /*Temporary storage for keys not chosen to be inserted*/
 
 	while (ksGetSize (ks) > 0)
 	{
 		ksRewind (ks);
 		size_t size = ksGetSize (ks);
 		/* printf ("iterating %d\n", size); */
-		Key * cur;
+		ElektraKey * cur;
 		while ((cur = ksPop (ks)) != 0)
 		{
 			/* printf ("\titerating %s\n", keyName(cur)); */
@@ -1002,13 +1002,13 @@ static void test_ksLookup (void)
 {
 	printf ("Test lookup\n");
 
-	Key * simpleKey = keyNew ("user:/find_me", KEY_END);
-	KeySet * simple = ksNew (5, simpleKey, KS_END);
+	ElektraKey * simpleKey = keyNew ("user:/find_me", KEY_END);
+	ElektraKeyset * simple = ksNew (5, simpleKey, KS_END);
 
-	Key * foundKey = ksLookup (simple, simpleKey, 0);
+	ElektraKey * foundKey = ksLookup (simple, simpleKey, 0);
 	succeed_if (foundKey == simpleKey, "could not find key in keyset");
 
-	Key * simpleKey2 = keyNew ("user:/find_me/a", KEY_END);
+	ElektraKey * simpleKey2 = keyNew ("user:/find_me/a", KEY_END);
 	ksAppendKey (simple, simpleKey2);
 
 	foundKey = ksLookup (simple, simpleKey, 0);
@@ -1021,8 +1021,8 @@ static void test_ksLookup (void)
 	ksDel (simple);
 
 	int i, j;
-	Key * k[1000];
-	KeySet * ks = ksNew (30,
+	ElektraKey * k[1000];
+	ElektraKeyset * ks = ksNew (30,
 			     // clang-format off
 		       /* keys that are searched */
 		       k[0] = keyNew ("user:/rem3", KEY_END),
@@ -1051,7 +1051,7 @@ static void test_ksLookup (void)
 			     // clang-format on
 			     KS_END);
 
-	KeySet * lookupKeys = ksNew (30,
+	ElektraKeyset * lookupKeys = ksNew (30,
 				     /* lookup keys, keyset only for ksDel */
 				     // clang-format off
 				     k[23] = keyNew ("user:/DiR1", KEY_END),
@@ -1106,8 +1106,8 @@ static void test_ksLookupByName (void)
 
 	int i, j;
 	char * name[1000];
-	Key * k[1000];
-	KeySet * ks = ksNew (30, k[0] = keyNew (name[0] = "user:/rem3", KEY_END), k[1] = keyNew (name[1] = "user:/rem2", KEY_END),
+	ElektraKey * k[1000];
+	ElektraKeyset * ks = ksNew (30, k[0] = keyNew (name[0] = "user:/rem3", KEY_END), k[1] = keyNew (name[1] = "user:/rem2", KEY_END),
 			     k[2] = keyNew (name[2] = "user:/rem1/key2", KEY_END), k[3] = keyNew (name[3] = "user:/rem1/key1", KEY_END),
 			     k[4] = keyNew (name[4] = "user:/rem1", KEY_END), k[5] = keyNew (name[5] = "user:/dir1", KEY_END),
 			     k[6] = keyNew (name[6] = "user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
@@ -1173,8 +1173,8 @@ ELEKTRA_UNUSED
 #endif
 static void test_ksLookupName (void)
 {
-	Key * found;
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * found;
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	printf ("Test lookup functions\n");
 
@@ -1268,8 +1268,8 @@ static void test_ksLookupName (void)
 
 static void test_ksLookupNameCascading (void)
 {
-	Key * found;
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * found;
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	printf ("Test cascading lookup functions\n");
 
@@ -1335,7 +1335,7 @@ static void test_ksLookupNameCascading (void)
 	ksAppendKey (ks, keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
 
 	succeed_if_same_string (keyString (ksLookupByName (ks, "/test/myapp/key", 0)), "correct");
-	Key * s = 0;
+	ElektraKey * s = 0;
 	succeed_if_same_string (keyString (s = ksLookupByName (ks, "/test/myapp/key", KDB_O_POP)), "correct");
 	keyDel (s);
 	succeed_if_same_string (keyString (s = ksLookupByName (ks, "/test/myapp/key", KDB_O_POP)), "wrong");
@@ -1344,8 +1344,8 @@ static void test_ksLookupNameCascading (void)
 
 
 	ks = ksNew (10, KS_END);
-	Key * k1;
-	Key * k2;
+	ElektraKey * k1;
+	ElektraKey * k2;
 	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
 	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
 	ksAppendKey (ks, keyDup ((s = keyNew ("/test/myapp/key", KEY_END)), KEY_CP_ALL));
@@ -1401,8 +1401,8 @@ static void test_ksLookupNameCascading (void)
 
 static void test_ksExample (void)
 {
-	KeySet * ks = ksNew (0, KS_END);
-	Key * key;
+	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * key;
 
 	ksAppendKey (ks, keyNew ("user:/test", KEY_END)); // an empty key
 
@@ -1456,32 +1456,32 @@ static void test_ksAppend (void)
 
 	printf ("Test appending keys\n");
 
-	Key * key = keyNew ("user:/test", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * key = keyNew ("user:/test", KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (ksAppendKey (0, key) == -1, "No error on NULL pointer");
 	succeed_if (ksAppendKey (ks, 0) == -1, "No error on NULL pointer");
 	ksDel (ks);
 	keyDel (key);
 
-	KeySet * returned =
+	ElektraKeyset * returned =
 #include "data_keyset.c"
-		KeySet * testDirectBelow =
+		ElektraKeyset * testDirectBelow =
 #include "data_dbelow.c"
-			KeySet * testReturned =
+			ElektraKeyset * testReturned =
 #include "data_others.c"
-				Key * parentKey[2];
+				ElektraKey * parentKey[2];
 	parentKey[0] = keyNew ("user:/test/keyset", KEY_END);
 	parentKey[1] = keyNew ("user:/test/keyset/dir1", KEY_END);
 
 	/* A real world example out in kdb.c */
 	for (i = 0; i < 2; i++)
 	{
-		KeySet * tmp = ksNew (ksGetSize (returned), KS_END);
-		KeySet * keys = ksNew (0, KS_END);
+		ElektraKeyset * tmp = ksNew (ksGetSize (returned), KS_END);
+		ElektraKeyset * keys = ksNew (0, KS_END);
 
 		/* add all keys direct below parentKey */
 		ksRewind (returned);
-		Key * current;
+		ElektraKey * current;
 		while ((current = ksPop (returned)) != 0)
 		{
 			if (keyIsDirectlyBelow (parentKey[i], current))
@@ -1532,7 +1532,7 @@ static void test_ksAppend (void)
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("user:/abc", KEY_META, "xyz", "egh", KEY_END));
 
-	KeySet * other = ksNew (0, KS_END);
+	ElektraKeyset * other = ksNew (0, KS_END);
 	ksAppend (other, ks);
 	compare_keyset (ks, other);
 	compare_keyset (ks, ks);
@@ -1561,10 +1561,10 @@ static void test_ksAppend (void)
  * 	ksCurrent() will tell you where it stopped.
  * @see ksFilter()
  */
-int ksForEach (KeySet * ks, int (*func) (Key * k))
+int ksForEach (ElektraKeyset * ks, int (*func) (ElektraKey * k))
 {
 	int ret = 0;
-	Key * current;
+	ElektraKey * current;
 
 	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
@@ -1598,10 +1598,10 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
  * 	be the problematic key.
  * @see ksForEach()
  **/
-int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
+int ksFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter) (ElektraKey * k))
 {
 	int ret = 0;
-	Key * current;
+	ElektraKey * current;
 
 	elektraCursor cursor = ksGetCursor (input);
 	ksRewind (input);
@@ -1621,35 +1621,35 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 }
 
 
-Key * global_a;
+ElektraKey * global_a;
 
-int add_string (Key * check)
+int add_string (ElektraKey * check)
 {
 	return keySetString (check, "string");
 }
 // int add_comment (Key *check) { return keySetComment (check, "comment"); }
-int has_a (Key * check)
+int has_a (ElektraKey * check)
 {
 	return keyName (check)[6] == 'a';
 }
-int below_a (Key * check)
+int below_a (ElektraKey * check)
 {
 	return keyIsBelow (global_a, check);
 }
-int direct_below_a (Key * check)
+int direct_below_a (ElektraKey * check)
 {
 	return keyIsDirectlyBelow (global_a, check);
 }
 
-int sum_helper (Key * check)
+int sum_helper (ElektraKey * check)
 {
 	return atoi (keyValue (check));
 }
-int below_30 (Key * check)
+int below_30 (ElektraKey * check)
 {
 	return atoi (keyValue (check)) < 30;
 }
-int find_80 (Key * check)
+int find_80 (ElektraKey * check)
 {
 	int n = atoi (keyValue (check));
 	return n > 70 ? -1 : 1;
@@ -1657,10 +1657,10 @@ int find_80 (Key * check)
 
 static void test_ksFunctional (void)
 {
-	Key * found;
-	Key * current;
-	KeySet * out;
-	KeySet * ks = ksNew (64, keyNew ("user:/a/1", KEY_END), keyNew ("user:/a/2", KEY_END), keyNew ("user:/a/b/1", KEY_END),
+	ElektraKey * found;
+	ElektraKey * current;
+	ElektraKeyset * out;
+	ElektraKeyset * ks = ksNew (64, keyNew ("user:/a/1", KEY_END), keyNew ("user:/a/2", KEY_END), keyNew ("user:/a/b/1", KEY_END),
 			     keyNew ("user:/a/b/2", KEY_END), keyNew ("user:/ab/2", KEY_END), keyNew ("user:/b/1", KEY_END),
 			     keyNew ("user:/b/2", KEY_END), KS_END);
 	global_a = keyNew ("user:/a", KEY_END);
@@ -1698,14 +1698,14 @@ static void test_ksFunctional (void)
 	keyDel (global_a);
 	global_a = 0;
 
-	KeySet * values = ksNew (64, keyNew ("user:/a", KEY_VALUE, "40", KEY_END), keyNew ("user:/b", KEY_VALUE, "20", KEY_END),
+	ElektraKeyset * values = ksNew (64, keyNew ("user:/a", KEY_VALUE, "40", KEY_END), keyNew ("user:/b", KEY_VALUE, "20", KEY_END),
 				 keyNew ("user:/c", KEY_VALUE, "80", KEY_END), keyNew ("user:/d", KEY_VALUE, "24", KEY_END),
 				 keyNew ("user:/e", KEY_VALUE, "32", KEY_END), keyNew ("user:/f", KEY_VALUE, "12", KEY_END),
 				 keyNew ("user:/g", KEY_VALUE, "43", KEY_END), KS_END);
 
 	succeed_if (ksForEach (values, sum_helper) == 251, "could not sum up");
 
-	KeySet * values_below_30 = ksNew (0, KS_END);
+	ElektraKeyset * values_below_30 = ksNew (0, KS_END);
 	ksFilter (values_below_30, values, below_30);
 	succeed_if (ksGetSize (values_below_30) == 3, "could not filter out everything above 30");
 	succeed_if (ksForEach (values_below_30, sum_helper) == 56, "could not sum up");
@@ -1725,9 +1725,9 @@ static void test_ksLookupPop (void)
 {
 	printf ("Test ksLookup with KDB_O_POP\n");
 
-	Key * found;
-	Key *a, *b, *c;
-	KeySet * small =
+	ElektraKey * found;
+	ElektraKey *a, *b, *c;
+	ElektraKeyset * small =
 		ksNew (5, a = keyNew ("user:/a", KEY_END), b = keyNew ("user:/b", KEY_END), c = keyNew ("user:/c", KEY_END), KS_END);
 
 	ksRewind (small);
@@ -1771,7 +1771,7 @@ static void test_ksLookupPop (void)
 
 	ksDel (small);
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
@@ -1885,13 +1885,13 @@ static void test_ksLookupPop (void)
 static void test_ksDoubleFree (void)
 {
 	/* Valgrind only test */
-	KeySet * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
+	ElektraKeyset * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
 			      keyNew ("user:/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
 
-	KeySet * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
+	ElektraKeyset * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
 			      keyNew ("user:/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (ks1);
 	while ((cur = ksNext (ks1)) != 0)
 	{
@@ -1906,10 +1906,10 @@ static void test_ksDoubleAppend (void)
 {
 	printf ("Test double appending\n");
 
-	KeySet * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
+	ElektraKeyset * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
 			      keyNew ("user:/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
 
-	KeySet * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
+	ElektraKeyset * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
 			      keyNew ("user:/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
 
 	ksAppend (ks1, ks2);
@@ -1924,8 +1924,8 @@ static void test_ksDoubleAppendKey (void)
 {
 	printf ("Test double appending of key\n");
 
-	Key * k = keyNew ("user:/my_double_key", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * k = keyNew ("user:/my_double_key", KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
@@ -1936,7 +1936,7 @@ static void test_ksDoubleAppendKey (void)
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
 
-	Key * k2 = keyNew ("user:/other", KEY_END);
+	ElektraKey * k2 = keyNew ("user:/other", KEY_END);
 
 	ksAppendKey (ks, k2);
 	succeed_if (ksGetSize (ks) == 2, "size not correct");
@@ -1950,8 +1950,8 @@ static void test_ksDoubleAppendKey (void)
 static void test_ksAppendKey (void)
 {
 	printf ("Test cursor after appending key\n");
-	KeySet * ks = 0;
-	Key * cur;
+	ElektraKeyset * ks = 0;
+	ElektraKey * cur;
 
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
@@ -1994,7 +1994,7 @@ static void test_ksAppendKey (void)
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 4, "size not correct after 4 keys");
 
-	Key * newKey = keyDup (cur, KEY_CP_ALL);
+	ElektraKey * newKey = keyDup (cur, KEY_CP_ALL);
 	keySetBaseName (newKey, "second_bool_key");
 
 	succeed_if (ksAppendKey (ks, newKey) == 5, "could not append a key");
@@ -2007,8 +2007,8 @@ static void test_ksModifyKey (void)
 {
 	printf ("Test modify key after insertion\n");
 
-	KeySet * ks = 0;
-	Key * cur;
+	ElektraKeyset * ks = 0;
+	ElektraKey * cur;
 
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
@@ -2024,7 +2024,7 @@ static void test_ksModifyKey (void)
 
 static void test_ksOrder (void)
 {
-	KeySet * ks = ksNew (20, keyNew ("user:/test/test", KEY_END), keyNew ("user:/test/test/bar", KEY_END),
+	ElektraKeyset * ks = ksNew (20, keyNew ("user:/test/test", KEY_END), keyNew ("user:/test/test/bar", KEY_END),
 			     keyNew ("user:/test/test/foo", KEY_END), keyNew ("user:/test/test-foo", KEY_END), KS_END);
 
 	ksNext (ks);
@@ -2097,16 +2097,16 @@ static void test_ksOrder (void)
 
 static void test_ksOrderNs (void)
 {
-	Key * cascadingKey = keyNew ("/key", KEY_END);
-	Key * metaKey = keyNew ("meta:/key", KEY_END);
-	Key * specKey = keyNew ("spec:/key", KEY_END);
-	Key * procKey = keyNew ("proc:/key", KEY_END);
-	Key * dirKey = keyNew ("dir:/key", KEY_END);
-	Key * userKey = keyNew ("user:/key", KEY_END);
-	Key * systemKey = keyNew ("system:/key", KEY_END);
-	Key * defaultKey = keyNew ("default:/key", KEY_END);
+	ElektraKey * cascadingKey = keyNew ("/key", KEY_END);
+	ElektraKey * metaKey = keyNew ("meta:/key", KEY_END);
+	ElektraKey * specKey = keyNew ("spec:/key", KEY_END);
+	ElektraKey * procKey = keyNew ("proc:/key", KEY_END);
+	ElektraKey * dirKey = keyNew ("dir:/key", KEY_END);
+	ElektraKey * userKey = keyNew ("user:/key", KEY_END);
+	ElektraKey * systemKey = keyNew ("system:/key", KEY_END);
+	ElektraKey * defaultKey = keyNew ("default:/key", KEY_END);
 
-	KeySet * ks = ksNew (8, systemKey, userKey, metaKey, defaultKey, cascadingKey, specKey, procKey, dirKey, KS_END);
+	ElektraKeyset * ks = ksNew (8, systemKey, userKey, metaKey, defaultKey, cascadingKey, specKey, procKey, dirKey, KS_END);
 
 	succeed_if (ksAtCursor (ks, 0) == cascadingKey, "cascading not first");
 	succeed_if (ksAtCursor (ks, 1) == metaKey, "meta not second");
@@ -2120,11 +2120,11 @@ static void test_ksOrderNs (void)
 	ksDel (ks);
 }
 
-KeySet * fill_vaargs (size_t size, ...)
+ElektraKeyset * fill_vaargs (size_t size, ...)
 {
 	va_list ap;
 	va_start (ap, size);
-	KeySet * ks = ksVNew (size, ap);
+	ElektraKeyset * ks = ksVNew (size, ap);
 	va_end (ap);
 	return ks;
 }
@@ -2133,7 +2133,7 @@ static void test_keyVNew (void)
 {
 	printf ("Test keyVNew\n");
 
-	KeySet * ks = 0;
+	ElektraKeyset * ks = 0;
 
 	/*
 		Not possible on some platforms:
@@ -2155,7 +2155,7 @@ static void test_keyVNew (void)
 }
 
 
-static KeySet * set_a (void)
+static ElektraKeyset * set_a (void)
 {
 	return ksNew (16, keyNew ("user:/0", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/a", KEY_END),
 		      keyNew ("user:/a/a/a", KEY_END), keyNew ("user:/a/a/b", KEY_END), keyNew ("user:/a/b", KEY_END),
@@ -2165,7 +2165,7 @@ static KeySet * set_a (void)
 		      keyNew ("user:/x", KEY_END), KS_END);
 }
 
-static KeySet * set_oa (void)
+static ElektraKeyset * set_oa (void)
 {
 	return ksNew (14, keyNew ("user:/a", KEY_END), keyNew ("user:/a/a", KEY_END), keyNew ("user:/a/a/a", KEY_END),
 		      keyNew ("user:/a/a/b", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/a", KEY_END),
@@ -2179,10 +2179,10 @@ static void test_cut (void)
 {
 	printf ("Testing operation cut\n");
 
-	KeySet * orig;
-	Key * cutpoint;
-	KeySet * result;
-	KeySet * real_orig;
+	ElektraKeyset * orig;
+	ElektraKey * cutpoint;
+	ElektraKeyset * result;
+	ElektraKeyset * real_orig;
 
 	orig = ksNew (0, KS_END);
 	cutpoint = keyNew ("user:/b", KEY_END);
@@ -2209,8 +2209,8 @@ static void test_cut (void)
 	keyDel (cutpoint);
 
 
-	KeySet * cmp_orig[16];
-	KeySet * cmp_result[16];
+	ElektraKeyset * cmp_orig[16];
+	ElektraKeyset * cmp_result[16];
 #include "data_cut.c"
 
 	for (int i = 0; i < 16; ++i)
@@ -2245,8 +2245,8 @@ static void test_cutpoint (void)
 {
 	printf ("Testing operation cut point\n");
 
-	Key * cutpoint = keyNew ("user:/a/b/c", KEY_END);
-	KeySet * orig =
+	ElektraKey * cutpoint = keyNew ("user:/a/b/c", KEY_END);
+	ElektraKeyset * orig =
 		ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), cutpoint, keyNew ("user:/a/b/c/d", KEY_END),
 		       keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	ksRewind (orig);
@@ -2255,16 +2255,16 @@ static void test_cutpoint (void)
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+	ElektraKeyset * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
 				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
@@ -2275,8 +2275,8 @@ static void test_cascadingCutpoint (void)
 {
 	printf ("Testing operation cascading cut point\n");
 
-	Key * cutpoint = keyNew ("/a/b/c", KEY_END);
-	KeySet * orig =
+	ElektraKey * cutpoint = keyNew ("/a/b/c", KEY_END);
+	ElektraKeyset * orig =
 #include <data_nscut.c>
 		ksRewind (orig);
 	ksNext (orig);
@@ -2284,11 +2284,11 @@ static void test_cascadingCutpoint (void)
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a/b");
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("spec:/a", KEY_END), keyNew ("spec:/a/b", KEY_END),
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("spec:/a", KEY_END), keyNew ("spec:/a/b", KEY_END),
 
 				   keyNew ("proc:/a", KEY_END), keyNew ("proc:/a/b", KEY_END),
 
@@ -2302,7 +2302,7 @@ static void test_cascadingCutpoint (void)
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part =
+	ElektraKeyset * cmp_part =
 		ksNew (25, keyNew ("spec:/a/b/c", KEY_END), keyNew ("spec:/a/b/c/d", KEY_END), keyNew ("spec:/a/b/c/d/e", KEY_END),
 		       keyNew ("spec:/a/b/c/e", KEY_END), keyNew ("spec:/a/b/c/e/d", KEY_END),
 
@@ -2328,8 +2328,8 @@ static void test_cascadingRootCutpoint (void)
 {
 	printf ("Testing operation cascading root cut point\n");
 
-	Key * cutpoint = keyNew ("/", KEY_END);
-	KeySet * orig =
+	ElektraKey * cutpoint = keyNew ("/", KEY_END);
+	ElektraKeyset * orig =
 #include <data_nscut.c>
 		ksRewind (orig);
 	ksNext (orig);
@@ -2337,13 +2337,13 @@ static void test_cascadingRootCutpoint (void)
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a/b");
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
 	succeed_if (ksGetSize (orig) == 0, "keyset not empty");
 	succeed_if (ksCurrent (orig) == 0, "empty keyset not rewinded");
 	ksDel (orig);
 
-	KeySet * cmp_part =
+	ElektraKeyset * cmp_part =
 #include <data_nscut.c>
 		compare_keyset (part, cmp_part);
 	// output_keyset(part);
@@ -2356,8 +2356,8 @@ static void test_cutpointRoot (void)
 {
 	printf ("Testing operation cut root point\n");
 
-	Key * cutpoint = keyNew ("user:/", KEY_END);
-	KeySet * orig = ksNew (30, keyNew ("dir:/a", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END),
+	ElektraKey * cutpoint = keyNew ("user:/", KEY_END);
+	ElektraKeyset * orig = ksNew (30, keyNew ("dir:/a", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END),
 			       keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
 			       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	ksRewind (orig);
@@ -2365,16 +2365,16 @@ static void test_cutpointRoot (void)
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a");
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "dir:/a");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("dir:/a", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("dir:/a", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
+	ElektraKeyset * cmp_part = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
 				   keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
 				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
@@ -2388,8 +2388,8 @@ static void test_cutpoint_1 (void)
 {
 	printf ("Testing operation cut point 1\n");
 
-	Key * cutpoint = keyNew ("user:/a/b/c", KEY_END);
-	KeySet * orig =
+	ElektraKey * cutpoint = keyNew ("user:/a/b/c", KEY_END);
+	ElektraKeyset * orig =
 		ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), cutpoint, keyNew ("user:/a/b/c/d", KEY_END),
 		       keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	ksRewind (orig);
@@ -2400,16 +2400,16 @@ static void test_cutpoint_1 (void)
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b/c");
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+	ElektraKeyset * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
 				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
@@ -2420,19 +2420,19 @@ static void test_unique_cutpoint (void)
 {
 	printf ("Testing operation cut with unique cutpoint\n");
 
-	Key * cutpoint = keyNew ("user:/a/b/c", KEY_END);
-	KeySet * orig = ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
+	ElektraKey * cutpoint = keyNew ("user:/a/b/c", KEY_END);
+	ElektraKeyset * orig = ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
 			       keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END),
 			       keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part =
+	ElektraKeyset * cmp_part =
 		ksNew (15, keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
 		       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
@@ -2445,8 +2445,8 @@ static void test_cutbelow (void)
 {
 	printf ("Testing cutting below some keys\n");
 
-	Key * cutpoint = keyNew ("user:/export", KEY_END);
-	KeySet * orig =
+	ElektraKey * cutpoint = keyNew ("user:/export", KEY_END);
+	ElektraKeyset * orig =
 		ksNew (30, keyNew ("user:/export/a", KEY_END), keyNew ("user:/export/c", KEY_END), keyNew ("user:/export/c/x", KEY_END),
 		       keyNew ("user:/export/c/x/b/blah", KEY_END), keyNew ("user:/export/xyz", KEY_END),
 		       keyNew ("user:/export-backup/b", KEY_END), keyNew ("user:/export-backup-2/x", KEY_END), KS_END);
@@ -2456,16 +2456,16 @@ static void test_cutbelow (void)
 	ksLookupByName (orig, "user:/export-backup/b", 0);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/export-backup/b");
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/export-backup/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user:/export-backup-2/x", KEY_END), keyNew ("user:/export-backup/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/export-backup-2/x", KEY_END), keyNew ("user:/export-backup/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part =
+	ElektraKeyset * cmp_part =
 		ksNew (15, keyNew ("user:/export/a", KEY_END), keyNew ("user:/export/c", KEY_END), keyNew ("user:/export/c/x", KEY_END),
 		       keyNew ("user:/export/c/x/b/blah", KEY_END), keyNew ("user:/export/xyz", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
@@ -2478,8 +2478,8 @@ static void test_cascading_cutbelow (void)
 {
 	printf ("Testing cutting below some keys (cascading)\n");
 
-	Key * cutpoint = keyNew ("/export", KEY_END);
-	KeySet * orig = ksNew (30, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+	ElektraKey * cutpoint = keyNew ("/export", KEY_END);
+	ElektraKeyset * orig = ksNew (30, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
 			       keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END),
 			       keyNew ("/export-backup/b", KEY_END), keyNew ("/export-backup-2/x", KEY_END), KS_END);
 	ksRewind (orig);
@@ -2488,16 +2488,16 @@ static void test_cascading_cutbelow (void)
 	ksLookupByName (orig, "/export-backup/b", 0);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "/export-backup/b");
 
-	KeySet * part = ksCut (orig, cutpoint);
+	ElektraKeyset * part = ksCut (orig, cutpoint);
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "/export-backup/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("/export-backup-2/x", KEY_END), keyNew ("/export-backup/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("/export-backup-2/x", KEY_END), keyNew ("/export-backup/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
+	ElektraKeyset * cmp_part = ksNew (15, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
 				   keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
@@ -2505,7 +2505,7 @@ static void test_cascading_cutbelow (void)
 	keyDel (cutpoint);
 }
 
-KeySet * set_simple (void)
+ElektraKeyset * set_simple (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 
@@ -2533,14 +2533,14 @@ KeySet * set_simple (void)
 
 static void test_simple (void)
 {
-	KeySet * config = set_simple ();
-	KeySet * result_res = ksNew (16, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
+	ElektraKeyset * config = set_simple ();
+	ElektraKeyset * result_res = ksNew (16, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
 				     keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
 				     keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
 				     keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
 				     keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
 				     keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END), KS_END);
-	KeySet * result_config =
+	ElektraKeyset * result_config =
 		ksNew (22, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 		       keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
 		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
@@ -2553,9 +2553,9 @@ static void test_simple (void)
 		       keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
 		       keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
 		       keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
-	Key * key = ksLookup (config, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
+	ElektraKey * key = ksLookup (config, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
 	succeed_if (ksGetCursor (config) == 1, "cursor not set correctly");
-	KeySet * res = ksCut (config, key);
+	ElektraKeyset * res = ksCut (config, key);
 	succeed_if (ksGetCursor (config) == 0, "cursor should stay as is");
 	compare_keyset (config, result_config);
 	compare_keyset (res, result_res);
@@ -2570,7 +2570,7 @@ static void test_cursor (void)
 {
 	printf ("test cut cursor\n");
 
-	KeySet * config = set_simple ();
+	ElektraKeyset * config = set_simple ();
 
 	succeed_if (ksGetCursor (0) == -1, "No error on NULL pointer");
 
@@ -2583,7 +2583,7 @@ static void test_cursor (void)
 	succeed_if (ksGetCursor (config) == 1, "cursor on config");
 	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple/config");
 
-	KeySet * res = ksCut (config, ksCurrent (config));
+	ElektraKeyset * res = ksCut (config, ksCurrent (config));
 	succeed_if (ksGetCursor (config) == 0, "cursor on first position");
 	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple");
 
@@ -2591,7 +2591,7 @@ static void test_cursor (void)
 	succeed_if (ksGetCursor (config) == 1, "cursor on getplugins");
 	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple/getplugins");
 
-	KeySet * getplugins = ksCut (config, ksCurrent (config));
+	ElektraKeyset * getplugins = ksCut (config, ksCurrent (config));
 	succeed_if (ksGetCursor (getplugins) == -1, "should be invalid cursor");
 	succeed_if (ksNext (getplugins) != 0, "should be root key");
 	succeed_if (ksGetCursor (getplugins) == 0, "cursor on first position");
@@ -2599,7 +2599,7 @@ static void test_cursor (void)
 	succeed_if (ksNext (getplugins) != 0, "should be tracer");
 	succeed_if (ksGetCursor (getplugins) == 1, "cursor not correct");
 
-	KeySet * gettracer = ksCut (getplugins, ksCurrent (getplugins));
+	ElektraKeyset * gettracer = ksCut (getplugins, ksCurrent (getplugins));
 	succeed_if (ksNext (getplugins) == 0, "should be no more getplugins");
 
 	succeed_if (ksNext (config) != 0, "next did not work");
@@ -2610,13 +2610,13 @@ static void test_cursor (void)
 	succeed_if (ksGetCursor (config) == 2, "cursor not correct");
 	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple/setplugins");
 
-	KeySet * setplugins = ksCut (config, ksCurrent (config));
+	ElektraKeyset * setplugins = ksCut (config, ksCurrent (config));
 	succeed_if (ksNext (config) == 0, "should be no more config");
 	succeed_if (ksNext (setplugins) != 0, "ksnext did not work");
 	succeed_if_same_string (keyName (ksCurrent (setplugins)), "system:/elektra/mountpoints/simple/setplugins");
 	succeed_if (ksNext (setplugins) != 0, "ksnext did not work");
 
-	KeySet * settracer = ksCut (setplugins, ksCurrent (setplugins));
+	ElektraKeyset * settracer = ksCut (setplugins, ksCurrent (setplugins));
 	succeed_if (ksNext (setplugins) == 0, "should be no more setplugins");
 	succeed_if (ksGetSize (settracer) == 1, "should be only one key");
 
@@ -2638,7 +2638,7 @@ static void test_morecut (void)
 {
 	printf ("More cut test cases\n");
 
-	KeySet * ks = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
 			     keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
 	succeed_if (ksCurrent (ks) == 0, "should be rewinded");
 	ksNext (ks);
@@ -2650,12 +2650,12 @@ static void test_morecut (void)
 	ksNext (ks);
 	succeed_if_same_string (keyName (ksCurrent (ks)), "system:/valid/key2");
 
-	KeySet * split1 = ksNew (3, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
-	KeySet * split2 = ksNew (3, keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
+	ElektraKeyset * split1 = ksNew (3, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
+	ElektraKeyset * split2 = ksNew (3, keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
 
-	Key * userKey = keyNew ("user:/", KEY_END);
+	ElektraKey * userKey = keyNew ("user:/", KEY_END);
 
-	KeySet * cut = ksCut (ks, userKey);
+	ElektraKeyset * cut = ksCut (ks, userKey);
 
 	compare_keyset (cut, split1);
 	compare_keyset (ks, split2);
@@ -2672,7 +2672,7 @@ static void test_cutafter (void)
 {
 	printf ("More cut after\n");
 
-	KeySet * ks = ksNew (5, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
 			     keyNew ("user:/b/valid/key", KEY_END), keyNew ("user:/b/x/valid/key", KEY_END),
 			     keyNew ("user:/c/valid/key", KEY_END), keyNew ("user:/c/x/valid/key", KEY_END), KS_END);
 	ksRewind (ks);
@@ -2688,13 +2688,13 @@ static void test_cutafter (void)
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/c/valid/key");
 	// printf ("%s\n", keyName(ksCurrent(ks)));
 
-	KeySet * split1 = ksNew (8, keyNew ("user:/b/valid/key", KEY_END), keyNew ("user:/b/x/valid/key", KEY_END), KS_END);
-	KeySet * split2 = ksNew (8, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
+	ElektraKeyset * split1 = ksNew (8, keyNew ("user:/b/valid/key", KEY_END), keyNew ("user:/b/x/valid/key", KEY_END), KS_END);
+	ElektraKeyset * split2 = ksNew (8, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
 				 keyNew ("user:/c/valid/key", KEY_END), keyNew ("user:/c/x/valid/key", KEY_END), KS_END);
 
-	Key * userKey = keyNew ("user:/b", KEY_END);
+	ElektraKey * userKey = keyNew ("user:/b", KEY_END);
 
-	KeySet * cut = ksCut (ks, userKey);
+	ElektraKeyset * cut = ksCut (ks, userKey);
 	// printf ("%s\n", keyName(ksCurrent(ks)));
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/c/valid/key");
 
@@ -2713,25 +2713,25 @@ static void test_simpleLookup (void)
 {
 	printf ("Test simple lookup\n");
 
-	KeySet * ks = ksNew (10, KS_END);
+	ElektraKeyset * ks = ksNew (10, KS_END);
 
-	Key * searchKey = keyNew ("user:/something", KEY_VALUE, "a value", KEY_END);
-	Key * k0 = ksLookup (ks, searchKey, 0);
+	ElektraKey * searchKey = keyNew ("user:/something", KEY_VALUE, "a value", KEY_END);
+	ElektraKey * k0 = ksLookup (ks, searchKey, 0);
 	succeed_if (!k0, "we have a problem: found not inserted key");
 
-	Key * dup = keyDup (searchKey, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (searchKey, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "user:/something");
 	succeed_if_same_string (keyString (dup), "a value");
 	ksAppendKey (ks, dup);
 	// output_keyset(ks);
 
-	Key * k1 = ksLookup (ks, searchKey, 0);
+	ElektraKey * k1 = ksLookup (ks, searchKey, 0);
 	succeed_if (k1, "we have a problem: did not find key");
 	succeed_if (k1 != searchKey, "same key, even though dup was used");
 	succeed_if_same_string (keyName (k1), "user:/something");
 	succeed_if_same_string (keyString (k1), "a value");
 
-	Key * returnedKey;
+	ElektraKey * returnedKey;
 	returnedKey = ksLookup (ks, searchKey, KDB_O_DEL);
 	succeed_if_same_string (keyName (returnedKey), keyName (dup));
 	succeed_if_same_string (keyString (returnedKey), keyString (dup));
@@ -2744,22 +2744,22 @@ static void test_nsLookup (void)
 {
 	printf ("Test lookup in all namespaces\n");
 
-	KeySet * ks =
+	ElektraKeyset * ks =
 #include <data_ns.c>
 
 		for (int i = 0; i < NUMBER_OF_NAMESPACES; ++i)
 	{
-		Key * searchKey = keyNew (namespaces[i], KEY_VALUE, "value1", KEY_COMMENT, "comment1", KEY_END);
+		ElektraKey * searchKey = keyNew (namespaces[i], KEY_VALUE, "value1", KEY_COMMENT, "comment1", KEY_END);
 		keyAddName (searchKey, "test/keyset/dir7/key1");
 
-		Key * lookupKey = keyNew (namespaces[i], KEY_END);
+		ElektraKey * lookupKey = keyNew (namespaces[i], KEY_END);
 		keyAddName (lookupKey, "something/not/found");
-		Key * k0 = ksLookup (ks, lookupKey, 0);
+		ElektraKey * k0 = ksLookup (ks, lookupKey, 0);
 		succeed_if (!k0, "we have a problem: found not inserted key");
 
 		keySetName (lookupKey, namespaces[i]);
 		keyAddName (lookupKey, "test/keyset/dir7/key1");
-		Key * k1 = ksLookup (ks, lookupKey, 0);
+		ElektraKey * k1 = ksLookup (ks, lookupKey, 0);
 		compare_key (k1, searchKey);
 
 		keySetName (lookupKey, "/test/keyset/dir7/key1");
@@ -2767,12 +2767,12 @@ static void test_nsLookup (void)
 		{
 			keySetName (searchKey, "proc:/");
 			keyAddName (searchKey, "test/keyset/dir7/key1");
-			Key * k2 = ksLookup (ks, lookupKey, 0);
+			ElektraKey * k2 = ksLookup (ks, lookupKey, 0);
 			compare_key (k2, searchKey);
 		}
 		else
 		{
-			Key * k2 = ksLookup (ks, lookupKey, 0);
+			ElektraKey * k2 = ksLookup (ks, lookupKey, 0);
 			compare_key (k2, searchKey);
 		}
 
@@ -2781,7 +2781,7 @@ static void test_nsLookup (void)
 
 		keySetName (lookupKey, namespaces[i]);
 		keyAddName (lookupKey, "test/keyset/dir7/key1");
-		Key * k3 = ksLookup (ks, lookupKey, 0);
+		ElektraKey * k3 = ksLookup (ks, lookupKey, 0);
 		succeed_if (!k3, "we have a problem: found key cut out");
 
 		keyDel (lookupKey);
@@ -2794,8 +2794,8 @@ static void test_ksAppend2 (void)
 {
 	printf ("Test more involved appending\n");
 
-	Key * inks = keyNew ("user:/key_with_meta_data", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * inks = keyNew ("user:/key_with_meta_data", KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	ksAppendKey (ks, inks);
 
 	succeed_if (keyGetMeta (inks, "hello") == 0, "hello was not set up to now");
@@ -2805,13 +2805,13 @@ static void test_ksAppend2 (void)
 	succeed_if_same_string (keyValue (keyGetMeta (inks, "hello")), "hello_world");
 	succeed_if (keyGetMeta (inks, "error") == 0, "hello was not set up to now");
 
-	KeySet * ks2 = ksDup (ks);
+	ElektraKeyset * ks2 = ksDup (ks);
 	ksRewind (ks2);
 	ksNext (ks2);
 	succeed_if_same_string (keyValue (keyGetMeta (ksCurrent (ks2), "hello")), "hello_world");
 	succeed_if (keyGetMeta (ksCurrent (ks2), "error") == 0, "hello was not set up to now");
 
-	Key * dup = keyDup (inks, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (inks, KEY_CP_ALL);
 	succeed_if_same_string (keyValue (keyGetMeta (inks, "hello")), "hello_world");
 	succeed_if (keyGetMeta (inks, "error") == 0, "hello was not set up to now");
 
@@ -2829,22 +2829,22 @@ static void test_ksAppend2 (void)
 	keyDel (dup);
 	ksDel (ks2);
 
-	Key * parent = keyNew ("user:/test/rename", KEY_END);
+	ElektraKey * parent = keyNew ("user:/test/rename", KEY_END);
 	succeed_if (keyGetRef (parent) == 0, "ref wrong");
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, parent);
 	succeed_if (keyGetRef (parent) == 1, "ref wrong");
-	KeySet * iter = ksDup (ks);
+	ElektraKeyset * iter = ksDup (ks);
 	succeed_if (keyGetRef (parent) == 2, "ref wrong");
 	ksRewind (iter);
-	Key * key = ksNext (iter);
+	ElektraKey * key = ksNext (iter);
 	succeed_if (keyGetMeta (key, "name") == 0, "no such meta exists");
-	Key * result = keyDup (key, KEY_CP_ALL);
+	ElektraKey * result = keyDup (key, KEY_CP_ALL);
 	succeed_if (keyGetRef (parent) == 2, "ref wrong");
 	succeed_if (keyGetRef (result) == 0, "ref wrong");
 	keySetName (result, keyName (parent));
 	keyAddBaseName (result, "cut");
-	Key * lok = ksLookup (ks, key, KDB_O_POP);
+	ElektraKey * lok = ksLookup (ks, key, KDB_O_POP);
 	keyDel (lok);
 	succeed_if (keyGetRef (parent) == 1, "ref wrong");
 	succeed_if (keyGetRef (key) == 1, "ref wrong");
@@ -2863,7 +2863,7 @@ static void test_ksAppend2 (void)
 	parent = keyNew ("user:/test/rename", KEY_END);
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, parent);
-	Key * lk = ksLookup (ks, parent, KDB_O_POP);
+	ElektraKey * lk = ksLookup (ks, parent, KDB_O_POP);
 	keyDel (lk);
 	ksDel (ks);
 }
@@ -2872,8 +2872,8 @@ static void test_ksAppend3 (void)
 {
 	printf ("Test appending same key\n");
 
-	Key * key = keyNew ("user:/key", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * key = keyNew ("user:/key", KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
 	succeed_if (ksLookupByName (ks, "user:/key", 0) == key, "did not find key");

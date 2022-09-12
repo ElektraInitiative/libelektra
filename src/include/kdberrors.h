@@ -16,8 +16,8 @@
 
 #ifdef __cplusplus
 extern "C" {
-using Key = ckdb::Key;
-using KeySet = ckdb::KeySet;
+using ElektraKey = ckdb::ElektraKey;
+using ElektraKeyset = ckdb::ElektraKeyset;
 #endif
 
 #ifndef ELEKTRA_MODULE_NAME
@@ -273,8 +273,8 @@ using KeySet = ckdb::KeySet;
 	extern const char * ELEKTRA_WARNING_##cname;                                                                                       \
 	extern const char * ELEKTRA_WARNING_##cname##_NAME;                                                                                \
                                                                                                                                            \
-	void elektraSetError##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...);      \
-	void elektraAddWarning##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...);
+	void elektraSetError##cname (ElektraKey * key, const char * file, const char * line, const char * module, const char * reason, ...);      \
+	void elektraAddWarning##cname (ElektraKey * key, const char * file, const char * line, const char * module, const char * reason, ...);
 
 DECLARE_ERROR_CODE (RESOURCE)
 DECLARE_ERROR_CODE (OUT_OF_MEMORY)

@@ -120,7 +120,7 @@ static void setError (ElektraKey * key, const char * code, const char * name, co
 	const char * ELEKTRA_WARNING_##cname = ELEKTRA_ERROR_CODE_##cname;                                                                 \
 	const char * ELEKTRA_WARNING_##cname##_NAME = ELEKTRA_ERROR_CODE_##cname##_NAME;                                                   \
                                                                                                                                            \
-	void elektraSetError##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...)       \
+	void elektraSetError##cname (ElektraKey * key, const char * file, const char * line, const char * module, const char * reason, ...)       \
 	{                                                                                                                                  \
 		va_list va;                                                                                                                \
 		va_start (va, reason);                                                                                                     \
@@ -128,7 +128,7 @@ static void setError (ElektraKey * key, const char * code, const char * name, co
 		va_end (va);                                                                                                               \
 	}                                                                                                                                  \
                                                                                                                                            \
-	void elektraAddWarning##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...)     \
+	void elektraAddWarning##cname (ElektraKey * key, const char * file, const char * line, const char * module, const char * reason, ...)     \
 	{                                                                                                                                  \
 		va_list va;                                                                                                                \
 		va_start (va, reason);                                                                                                     \
@@ -146,7 +146,7 @@ DEFINE_ERROR_AND_WARNING (CONFLICTING_STATE)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SYNTACTIC)
 DEFINE_ERROR_AND_WARNING (VALIDATION_SEMANTIC)
 
-KeySet * elektraErrorSpecification (void)
+ElektraKeyset * elektraErrorSpecification (void)
 {
 	return ksNew (30,
 		      keyNew ("system:/elektra/modules/error/specification", KEY_VALUE, "the specification of all error codes", KEY_END),

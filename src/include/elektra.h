@@ -48,8 +48,8 @@
  * @{
  */
 #ifdef __cplusplus
-#define Key ckdb::Key
-#define KeySet ckdb::KeySet
+#define ElektraKey ckdb::Key
+#define ElektraKeyset ckdb::KeySet
 extern "C" {
 #endif
 

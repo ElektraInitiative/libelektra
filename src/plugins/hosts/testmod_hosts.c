@@ -284,10 +284,10 @@ void test_readHostsComments (char * fileName)
 	/* empty line */
 	const ElektraKey * emptyLine = keyGetMeta (key, "comment/#4");
 	succeed_if (emptyLine, "comment key for line comment does not exist");
-	succeed_if (!strcmp ("", keyString (emptyLine)), "line comment key contains data although it shouldn't")
+	succeed_if (!strcmp ("", keyString (emptyLine)), "line comment key contains data although it shouldn't");
 
-		/* SECOND ENTRY */
-		Key * key2 = ksLookupByName (ks, "user:/tests/hosts/ipv4/testentry", 0);
+	/* SECOND ENTRY */
+	ElektraKey * key2 = ksLookupByName (ks, "user:/tests/hosts/ipv4/testentry", 0);
 	exit_if_fail (key2, "hostname localhost not found");
 
 	/* inline comment */

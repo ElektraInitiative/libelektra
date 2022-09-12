@@ -245,7 +245,7 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
 }
 
 #define ELEKTRA_GET_ARRAY_ELEMENT_VALUE(KEY_TO_VALUE, KDB_TYPE, elektra, keyname, index, result)                                           \
-	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
+	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
 	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyname, keyString (key)));                        \

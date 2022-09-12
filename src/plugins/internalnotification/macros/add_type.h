@@ -44,10 +44,10 @@
 #define INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME(TYPE_NAME) ELEKTRA_CONCAT (elektraInternalnotificationConvertCallback, TYPE_NAME)
 
 #define INTERNALNOTIFICATION_REGISTER_SIGNATURE(TYPE, TYPE_NAME)                                                                           \
-	int INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME) (Plugin * handle, Key * key, TYPE * variable)
+	int INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME) (Plugin * handle, ElektraKey * key, TYPE * variable)
 
 #define INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE(TYPE_NAME)                                                                      \
-	void INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME (TYPE_NAME) (Key * key, void * context)
+	void INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME (TYPE_NAME) (ElektraKey * key, void * context)
 
 #define DISABLE_UNDEF_PARAMETERS
 #define NAME_MACRO INTERNALNOTIFICATION_CONVERSION_FUNCTION_NAME

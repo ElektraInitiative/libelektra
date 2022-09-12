@@ -130,6 +130,11 @@ typedef struct _KDB	ElektraKdb;
 typedef struct _Key	ElektraKey;
 typedef struct _KeySet	ElektraKeyset;
 
+#ifdef __cplusplus
+using KDB = ckdb::ElektraKdb;
+using Key = ckdb::ElektraKey;
+using KeySet = ckdb::ElektraKeyset;
+#endif
 
 /**************************************
  *

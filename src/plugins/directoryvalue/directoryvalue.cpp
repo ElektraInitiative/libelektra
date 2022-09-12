@@ -22,6 +22,9 @@ using ckdb::Plugin;
 
 using elektra::DirectoryValueDelegate;
 
+using ckdb::Key;
+using ckdb::KeySet;
+
 namespace
 {
 

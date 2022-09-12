@@ -634,9 +634,9 @@ int elektraGlobalError (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * pa
 }
 }
 
-#define KDB ckdb::KDB
-#define Key ckdb::Key
-#define KeySet ckdb::KeySet
+#define ElektraKdb ckdb::KDB
+#define ElektraKey ckdb::Key
+#define ElektraKeyset ckdb::KeySet
 extern "C" {
 #endif
 

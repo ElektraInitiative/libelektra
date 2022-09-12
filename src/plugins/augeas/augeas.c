@@ -75,11 +75,11 @@ int elektraAugeasGenConf (ElektraKeyset * ks, ElektraKey * errorKey ELEKTRA_UNUS
 			if (l > 4)
 			{
 				p[l - 4] = '\0';
-				Key * k = keyNew ("system:/", KEY_END);
+				ElektraKey * k = keyNew ("system:/", KEY_END);
 				keyAddBaseName (k, p);
 				ksAppendKey (ks, keyDup (k, KEY_CP_ALL));
 
-				Key * b = keyDup (k, KEY_CP_ALL);
+				ElektraKey * b = keyDup (k, KEY_CP_ALL);
 				keyAddBaseName (b, "infos");
 				ksAppendKey (ks, keyDup (b, KEY_CP_ALL));
 				keyAddBaseName (b, "provides");

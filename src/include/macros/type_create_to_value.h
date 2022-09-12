@@ -98,7 +98,7 @@
 #include <errno.h> // errno
 
 #define TYPE_CONVERSION_SIGNATURE(TYPE, TYPE_NAME, NAME_MACRO)                                                                             \
-	int NAME_MACRO (TYPE_NAME) (const Key * KEY_PARAM_NAME, TYPE * VARIABLE_PARAM_NAME)
+	int NAME_MACRO (TYPE_NAME) (const ElektraKey * KEY_PARAM_NAME, TYPE * VARIABLE_PARAM_NAME)
 
 /**
  * Convert string to TYPE.

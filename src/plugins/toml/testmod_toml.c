@@ -21,9 +21,9 @@ static const char * prefix = NULL;
 
 #define TEST_WR_HEAD                                                                                                                       \
 	printf ("Start Test: %s\n", __func__);                                                                                             \
-	Key * lastKey = NULL;                                                                                                              \
-	KeySet * writeKs = ksNew (0, KS_END);                                                                                              \
-	KeySet * expectedKs = ksNew (0, KS_END)
+	ElektraKey * lastKey = NULL;                                                                                                              \
+	ElektraKeyset * writeKs = ksNew (0, KS_END);                                                                                              \
+	ElektraKeyset * expectedKs = ksNew (0, KS_END)
 #define TEST_WR_FOOT                                                                                                                       \
 	testWriteReadCompare (writeKs, expectedKs);                                                                                        \
 	ksDel (expectedKs);                                                                                                                \

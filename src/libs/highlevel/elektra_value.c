@@ -168,7 +168,7 @@ void elektraSetRawString (Elektra * elektra, const char * name, const char * val
 }
 
 #define ELEKTRA_GET_VALUE(KEY_TO_VALUE, KDB_TYPE, elektra, keyname, result)                                                                \
-	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE);                                                                     \
+	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE);                                                                     \
 	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyname, keyString (key)));                        \

@@ -198,14 +198,14 @@ static void test_simple_write (void)
 	keySetMeta (moreSpecialKeys, "more-s_päcials", "1 & 2 are < 3 \n");
 
 	ElektraKeyset * ks = ksNew (5, root, keyNew ("/sw/elektra/tests/xerces/userKey", KEY_VALUE, "withValue", KEY_END), keyWithMeta,
-			     specialKeys, moreSpecialKeys, KS_END);
+				    specialKeys, moreSpecialKeys, KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if (compare_line_files (srcdir_file ("xerces/escaping.xml"), keyString (parentKey)), "files do not match as expected")
-		// Its also another good deserialization test
-		Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
+	succeed_if (compare_line_files (srcdir_file ("xerces/escaping.xml"), keyString (parentKey)), "files do not match as expected");
+	// Its also another good deserialization test
+	ElektraKey * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
 	ElektraKeyset * result = ksNew (2, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
 	compare_keyset (ks, result);

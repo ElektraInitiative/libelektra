@@ -37,5 +37,5 @@
  */
 void keyInit (ElektraKey * key)
 {
-	memset (key, 0, sizeof (Key));
+	memset (key, 0, sizeof (ElektraKey));
 }

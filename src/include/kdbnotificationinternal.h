@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #define ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF(FUNC_TYPE_NAME, TYPE)                                                                    \
-	typedef int (*FUNC_TYPE_NAME) (Plugin * handle, Key * key, TYPE * variable);
+	typedef int (*FUNC_TYPE_NAME) (Plugin * handle, ElektraKey * key, TYPE * variable);
 
 #define ELEKTRA_NOTIFICATION_TYPE_DEFINITION(TYPE, TYPE_NAME)                                                                              \
 	ELEKTRA_NOTIFICATION_REGISTER_SIGNATURE (TYPE, TYPE_NAME)                                                                          \

@@ -73,12 +73,12 @@
 #define ELEKTRA_SET_ERROR_READ_ONLY(info, returned, error)                                                                                 \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		Key * k;                                                                                                                   \
+		ElektraKey * k;                                                                                                            \
 		ksRewind (info);                                                                                                           \
 		ksRewind (returned);                                                                                                       \
 		while ((k = ksNext (returned)))                                                                                            \
 		{                                                                                                                          \
-			Key * c = ksNext (info);                                                                                           \
+			ElektraKey * c = ksNext (info);                                                                                    \
 			if (!c)                                                                                                            \
 			{                                                                                                                  \
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (error,                                                             \

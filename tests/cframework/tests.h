@@ -108,8 +108,8 @@ int init (int argc, char ** argv);
 
 #define compare_key_name(pk1, pk2)                                                                                                         \
 	{                                                                                                                                  \
-		Key * nmmk1 = pk1;                                                                                                         \
-		Key * nmmk2 = pk2;                                                                                                         \
+		ElektraKey * nmmk1 = pk1;                                                                                                  \
+		ElektraKey * nmmk2 = pk2;                                                                                                  \
 		nbTest++;                                                                                                                  \
 		if (strcmp (keyName (nmmk1), keyName (nmmk2)) != 0)                                                                        \
 		{                                                                                                                          \
@@ -127,8 +127,8 @@ int init (int argc, char ** argv);
 
 #define compare_key_value(pk1, pk2)                                                                                                        \
 	{                                                                                                                                  \
-		Key * vmmk1 = pk1;                                                                                                         \
-		Key * vmmk2 = pk2;                                                                                                         \
+		ElektraKey * vmmk1 = pk1;                                                                                                  \
+		ElektraKey * vmmk2 = pk2;                                                                                                  \
 		nbTest++;                                                                                                                  \
 		int vmmk1binary = keyIsBinary (vmmk1);                                                                                     \
 		int vmmk2binary = keyIsBinary (vmmk2);                                                                                     \
@@ -156,8 +156,8 @@ int init (int argc, char ** argv);
 
 #define compare_key_string(pk1, pk2)                                                                                                       \
 	{                                                                                                                                  \
-		Key * smmk1 = pk1;                                                                                                         \
-		Key * smmk2 = pk2;                                                                                                         \
+		ElektraKey * smmk1 = pk1;                                                                                                  \
+		ElektraKey * smmk2 = pk2;                                                                                                  \
 		nbTest++;                                                                                                                  \
 		if (strcmp (keyString (smmk1), keyString (smmk2)) != 0)                                                                    \
 		{                                                                                                                          \
@@ -175,8 +175,8 @@ int init (int argc, char ** argv);
 
 #define compare_key_binary(pk1, pk2)                                                                                                       \
 	{                                                                                                                                  \
-		Key * bmmk1 = pk1;                                                                                                         \
-		Key * bmmk2 = pk2;                                                                                                         \
+		ElektraKey * bmmk1 = pk1;                                                                                                  \
+		ElektraKey * bmmk2 = pk2;                                                                                                  \
 		nbTest++;                                                                                                                  \
 		size_t bmmk1size = keyGetValueSize (pk1);                                                                                  \
 		size_t bmmk2size = keyGetValueSize (pk2);                                                                                  \
@@ -288,8 +288,8 @@ int init (int argc, char ** argv);
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
-		Key * mmk1 = (Key *) pk1;                                                                                                  \
-		Key * mmk2 = (Key *) pk2;                                                                                                  \
+		ElektraKey * mmk1 = (ElektraKey *) pk1;                                                                                    \
+		ElektraKey * mmk2 = (ElektraKey *) pk2;                                                                                    \
 		if (mmk1 == mmk2)                                                                                                          \
 		{                                                                                                                          \
 			break; /* same pointer */                                                                                          \
@@ -319,12 +319,12 @@ int init (int argc, char ** argv);
                                                                                                                                            \
 			compare_key_value (mmk1, mmk2);                                                                                    \
                                                                                                                                            \
-			const Key * meta;                                                                                                  \
+			const ElektraKey * meta;                                                                                           \
 			keyRewindMeta (mmk1);                                                                                              \
 			keyRewindMeta (mmk2);                                                                                              \
 			while ((meta = keyNextMeta (mmk1)) != 0)                                                                           \
 			{                                                                                                                  \
-				const Key * const metaCmp = keyNextMeta (mmk2);                                                            \
+				const ElektraKey * const metaCmp = keyNextMeta (mmk2);                                                     \
 				if (metaCmp == 0)                                                                                          \
 				{                                                                                                          \
 					nbError++;                                                                                         \
@@ -351,7 +351,7 @@ int init (int argc, char ** argv);
 				}                                                                                                          \
 			}                                                                                                                  \
                                                                                                                                            \
-			const Key * const metaCmp = keyNextMeta (mmk2);                                                                    \
+			const ElektraKey * const metaCmp = keyNextMeta (mmk2);                                                             \
 			if (metaCmp != 0)                                                                                                  \
 			{                                                                                                                  \
 				nbError++;                                                                                                 \
@@ -370,13 +370,13 @@ int init (int argc, char ** argv);
 #define compare_keyset(pks1, pks2)                                                                                                         \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
-		KeySet * mmks1 = (KeySet *) pks1;                                                                                          \
-		KeySet * mmks2 = (KeySet *) pks2;                                                                                          \
+		ElektraKeyset * mmks1 = (ElektraKeyset *) pks1;                                                                                   \
+		ElektraKeyset * mmks2 = (ElektraKeyset *) pks2;                                                                                   \
 		int bothEmpty = ksGetSize (mmks1) == 0 && ksGetSize (mmks1) == ksGetSize (mmks2);                                          \
 		if (mmks1 != mmks2 && !bothEmpty)                                                                                          \
 		{                                                                                                                          \
-			Key * cmmk1 = 0;                                                                                                   \
-			Key * cmmk2 = 0;                                                                                                   \
+			ElektraKey * cmmk1 = 0;                                                                                            \
+			ElektraKey * cmmk2 = 0;                                                                                            \
                                                                                                                                            \
 			if (ksGetSize (mmks1) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks1) " was 0");                          \
 			if (ksGetSize (mmks2) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks2) " was 0");                          \

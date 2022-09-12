@@ -24,8 +24,8 @@
 #define SETUP(name)                                                                                                                        \
 	printf ("test %s\n", #name);                                                                                                       \
                                                                                                                                            \
-	Key * parentKey = keyNew (BASE_KEY, KEY_END);                                                                                      \
-	KeySet * conf = ksNew (0, KS_END);                                                                                                 \
+	ElektraKey * parentKey = keyNew (BASE_KEY, KEY_END);                                                                               \
+	ElektraKeyset * conf = ksNew (0, KS_END);                                                                                          \
 	PLUGIN_OPEN ("reference");
 
 #define TEARDOWN()                                                                                                                         \
@@ -42,7 +42,7 @@
 
 #define WITH_KEYS(NAME, COUNT, ...)                                                                                                        \
 	struct __test * NAME = NULL;                                                                                                       \
-	KeySet * NAME##_keys = ksNew (COUNT, __VA_ARGS__, KS_END);
+	ElektraKeyset * NAME##_keys = ksNew (COUNT, __VA_ARGS__, KS_END);
 
 #define TEST_SET(NAME, EXPECTED)                                                                                                           \
 	dummy (NAME);                                                                                                                      \
@@ -301,16 +301,16 @@ static void test_restriction (void)
 
 static void test_basics (void)
 {
-	SETUP (basics)
+	SETUP (basics);
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
 
 	ksDel (ks);
 
-	TEARDOWN ()
+	TEARDOWN ();
 }
 
 

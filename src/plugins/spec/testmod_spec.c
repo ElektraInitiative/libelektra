@@ -14,9 +14,9 @@
 
 #define TEST_BEGIN                                                                                                                         \
 	{                                                                                                                                  \
-		KeySet * conf = ksDup (_conf);                                                                                             \
+		ElektraKeyset * conf = ksDup (_conf);                                                                                             \
 		PLUGIN_OPEN ("spec");                                                                                                      \
-		Key * parentKey = keyNew (PARENT_KEY, KEY_END);                                                                            \
+		ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_END);                                                                            \
 		bool success = 1;
 
 #define TEST_END                                                                                                                           \

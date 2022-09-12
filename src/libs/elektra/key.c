@@ -162,7 +162,7 @@ ElektraKey * keyVNew (const char * name, va_list va)
 {
 	if (!name) return NULL;
 
-	ElektraKey * key = elektraCalloc (sizeof (Key));
+	ElektraKey * key = elektraCalloc (sizeof (ElektraKey));
 
 	elektraKeyFlags action = 0;
 	size_t value_size = 0;

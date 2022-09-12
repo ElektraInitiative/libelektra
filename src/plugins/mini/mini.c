@@ -223,7 +223,7 @@ static int parseFile (ElektraKeyset * returned, ElektraKey * parentKey)
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
 
-	if (!source || (parseINI (source, returned, parentKey) < 0) | (fclose (source) != 0)) //! OCLint
+	if (!source || (parseINI (source, returned, parentKey) < 0) | (int) (fclose (source) != 0)) //! OCLint
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
@@ -323,7 +323,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");
 
-	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (fclose (destination) == EOF)) //! OCLint
+	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (int) (fclose (destination) == EOF)) //! OCLint
 	{
 		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errorNumber;
