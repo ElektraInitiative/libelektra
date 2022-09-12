@@ -22,15 +22,15 @@
 #include <grp.h>
 #include <pwd.h>
 
-int elektraPathOpen (Plugin * handle, Key * errorKey);
+int elektraPathOpen (Plugin * handle, ElektraKey * errorKey);
 
-int elektraPathClose (Plugin * handle, Key * errorKey);
+int elektraPathClose (Plugin * handle, ElektraKey * errorKey);
 
-int elektraPathGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraPathGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
-int elektraPathSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraPathSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
-int elektraPathError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraPathError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

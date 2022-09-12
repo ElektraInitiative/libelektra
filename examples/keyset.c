@@ -10,25 +10,25 @@
 #include <kdb.h>
 #include <stdio.h>
 
-void f (const Key * source)
+void f (const ElektraKey * source)
 {
-	Key * dup = keyDup (source, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (source, KEY_CP_ALL);
 	printf ("\tin f\n");
 
 	keyDel (dup);
 }
 
-void g (const Key * source, KeySet * ks)
+void g (const ElektraKey * source, ElektraKeyset * ks)
 {
-	Key * dup = keyDup (source, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (source, KEY_CP_ALL);
 	printf ("\tin g\n");
 
 	ksAppendKey (ks, dup);
 }
 
-void h (Key * k)
+void h (ElektraKey * k)
 {
-	Key * c = keyNew ("user:/from/h", KEY_END);
+	ElektraKey * c = keyNew ("user:/from/h", KEY_END);
 	printf ("\tin h\n");
 
 	keyCopy (k, c, KEY_CP_ALL);
@@ -41,7 +41,7 @@ void h (Key * k)
 void simpleAppend (void)
 {
 //! [simple append]
-KeySet * ks = ksNew (1, KS_END);
+ElektraKeyset * ks = ksNew (1, KS_END);
 ksAppendKey (ks, keyNew ("user:/my/new/key", KEY_END));
 ksDel (ks);
 // key deleted, too!
@@ -52,8 +52,8 @@ ksDel (ks);
 void refAppend (void)
 {
 //! [ref append]
-KeySet * ks = ksNew (1, KS_END);
-Key * k = keyNew ("user:/ref/key", KEY_END);
+ElektraKeyset * ks = ksNew (1, KS_END);
+ElektraKey * k = keyNew ("user:/ref/key", KEY_END);
 keyIncRef (k);
 ksAppendKey (ks, k);
 ksDel (ks);
@@ -66,8 +66,8 @@ keyDel (k);
 void dupAppend (void)
 {
 //! [dup append]
-KeySet * ks = ksNew (1, KS_END);
-Key * k = keyNew ("user:/ref/key", KEY_END);
+ElektraKeyset * ks = ksNew (1, KS_END);
+ElektraKey * k = keyNew ("user:/ref/key", KEY_END);
 ksAppendKey (ks, keyDup (k, KEY_CP_ALL));
 ksDel (ks);
 // now we still can work with the key k!
@@ -77,10 +77,10 @@ keyDel (k);
 
 int main (void)
 {
-	Key * origKey;
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * origKey;
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
-	Key * key = keyNew ("user:/test/name", KEY_VALUE, "myvalue", KEY_END);
+	ElektraKey * key = keyNew ("user:/test/name", KEY_VALUE, "myvalue", KEY_END);
 	printf ("Created key %s with value %s\n", keyName (key), keyString (key));
 
 	f (key);

@@ -31,7 +31,7 @@
  *
  * @return A contract describing the functionality of this plugin.
  */
-static inline KeySet * elektraMiniContract (void)
+static inline ElektraKeyset * elektraMiniContract (void)
 {
 	return ksNew (30, keyNew ("system:/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
 		      keyNew ("system:/elektra/modules/mini/exports", KEY_END),
@@ -121,7 +121,7 @@ static inline char * findUnescapedEquals (char * text)
  * @param parentKey This key is used by this function to store warnings about
  *                  invalid key value pairs
  */
-static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
+static inline void parseLine (char * line, size_t lineNumber, ElektraKeyset * keySet, ElektraKey * parentKey)
 {
 	ELEKTRA_NOT_NULL (line);
 	ELEKTRA_NOT_NULL (keySet);
@@ -147,7 +147,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	char * name = elektraRstrip (pair, NULL);
 	char * value = elektraLskip (equals + 1);
 
-	Key * key = keyNew (keyName (parentKey), KEY_END);
+	ElektraKey * key = keyNew (keyName (parentKey), KEY_END);
 	keyAddName (key, name);
 	keySetString (key, value);
 	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));
@@ -170,7 +170,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the parsing process finished successfully
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to parse `file`
  */
-static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
+static int parseINI (FILE * file, ElektraKeyset * keySet, ElektraKey * parentKey)
 {
 	ELEKTRA_NOT_NULL (file);
 	ELEKTRA_NOT_NULL (keySet);
@@ -214,7 +214,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the whole parsing process was successful
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if at least one part of the parsing process failed
  */
-static int parseFile (KeySet * returned, Key * parentKey)
+static int parseFile (ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ELEKTRA_NOT_NULL (returned);
 	ELEKTRA_NOT_NULL (parentKey);
@@ -249,7 +249,7 @@ static int parseFile (KeySet * returned, Key * parentKey)
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if status indicates success (`status >= 0`)
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there was a write error (`status < 0`)
  */
-static inline int checkWrite (int status, int errorNumber, Key * parentKey)
+static inline int checkWrite (int status, int errorNumber, ElektraKey * parentKey)
 {
 	ELEKTRA_NOT_NULL (parentKey);
 
@@ -277,7 +277,7 @@ static inline int checkWrite (int status, int errorNumber, Key * parentKey)
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to store all key value
  *                                     pairs in `file`
  */
-static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
+static inline int writeFile (FILE * file, ElektraKeyset * keySet, ElektraKey * parentKey)
 {
 	ELEKTRA_NOT_NULL (file);
 	ELEKTRA_NOT_NULL (keySet);
@@ -286,7 +286,7 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 	int status = 0;
 	int errorNumber = errno;
 	ksRewind (keySet);
-	for (Key * key; (key = ksNext (keySet)) != 0 && status >= 0;)
+	for (ElektraKey * key; (key = ksNext (keySet)) != 0 && status >= 0;)
 	{
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
@@ -301,12 +301,12 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 // ====================
 
 /** @see elektraDocGet */
-int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/mini"))
 	{
 		ELEKTRA_LOG_DEBUG ("Retrieve plugin contract");
-		KeySet * contract = elektraMiniContract ();
+		ElektraKeyset * contract = elektraMiniContract ();
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -317,7 +317,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 }
 
 /** @see elektraDocSet */
-int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ELEKTRA_LOG ("Write configuration data");
 	int errorNumber = errno;

@@ -20,12 +20,12 @@ typedef gcry_cipher_hd_t elektraCryptoHandle;
 #define ELEKTRA_CRYPTO_GCRY_KEYSIZE (32)
 #define ELEKTRA_CRYPTO_GCRY_BLOCKSIZE (16)
 
-char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length);
-int elektraCryptoGcryInit (Key * errorKey);
-int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * masterKey, Key * k,
+char * elektraCryptoGcryCreateRandomString (ElektraKey * errorKey, const kdb_unsigned_short_t length);
+int elektraCryptoGcryInit (ElektraKey * errorKey);
+int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, ElektraKeyset * config, ElektraKey * errorKey, ElektraKey * masterKey, ElektraKey * k,
 				   const enum ElektraCryptoOperation op);
 void elektraCryptoGcryHandleDestroy (elektraCryptoHandle * handle);
-int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);
-int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);
+int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, ElektraKey * k, ElektraKey * errorKey);
+int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, ElektraKey * k, ElektraKey * errorKey);
 
 #endif

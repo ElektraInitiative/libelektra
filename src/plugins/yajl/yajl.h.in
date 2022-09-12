@@ -46,8 +46,8 @@
 	typedef size_t yajl_size_type;
 #endif
 
-int elektraYajlGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraYajlSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraYajlGet(Plugin *handle, ElektraKeyset *ks, ElektraKey *parentKey);
+int elektraYajlSet(Plugin *handle, ElektraKeyset *ks, ElektraKey *parentKey);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT;
 

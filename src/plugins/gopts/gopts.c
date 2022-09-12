@@ -35,11 +35,11 @@ static void cleanupEnvp (char ** envp);
 #error "No implementation available"
 #endif
 
-int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gopts"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/gopts", KEY_VALUE, "gopts plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/gopts/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/gopts/exports/get", KEY_FUNC, elektraGOptsGet, KEY_END),
@@ -54,25 +54,25 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	char ** argv;
 	int argc;
 	char ** envp;
-	Key * optsParent;
+	ElektraKey * optsParent;
 	bool cleanupArgData;
 	bool cleanupEnv;
 	bool freeArgs;
 	bool freeEnv;
 
-	KeySet * global = elektraPluginGetGlobalKeySet (handle);
-	Key * globalParent = ksLookupByName (global, "system:/elektra/gopts/parent", 0);
+	ElektraKeyset * global = elektraPluginGetGlobalKeySet (handle);
+	ElektraKey * globalParent = ksLookupByName (global, "system:/elektra/gopts/parent", 0);
 
 	if (globalParent != NULL)
 	{
 		optsParent = keyNew (keyString (globalParent), KEY_END);
 
-		Key * kArgc = ksLookupByName (global, "system:/elektra/gopts/argc", 0);
-		Key * kArgv = ksLookupByName (global, "system:/elektra/gopts/argv", 0);
-		Key * kEnvp = ksLookupByName (global, "system:/elektra/gopts/envp", 0);
+		ElektraKey * kArgc = ksLookupByName (global, "system:/elektra/gopts/argc", 0);
+		ElektraKey * kArgv = ksLookupByName (global, "system:/elektra/gopts/argv", 0);
+		ElektraKey * kEnvp = ksLookupByName (global, "system:/elektra/gopts/envp", 0);
 
-		Key * kArgs = ksLookupByName (global, "system:/elektra/gopts/args", 0);
-		Key * kEnv = ksLookupByName (global, "system:/elektra/gopts/env", 0);
+		ElektraKey * kArgs = ksLookupByName (global, "system:/elektra/gopts/args", 0);
+		ElektraKey * kEnv = ksLookupByName (global, "system:/elektra/gopts/env", 0);
 
 
 		if ((kArgc == NULL) != (kArgv == NULL))
@@ -179,11 +179,11 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 
-	const Key * offsetKey = ksLookupByName (config, "/offset", 0);
-	const Key * usageKey = ksLookupByName (config, "/help/usage", 0);
-	const Key * prefixKey = ksLookupByName (config, "/help/prefix", 0);
+	const ElektraKey * offsetKey = ksLookupByName (config, "/offset", 0);
+	const ElektraKey * usageKey = ksLookupByName (config, "/help/usage", 0);
+	const ElektraKey * prefixKey = ksLookupByName (config, "/help/prefix", 0);
 
 	kdb_long_long_t offset;
 	if (offsetKey != NULL)
@@ -214,7 +214,7 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	Key * helpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
+	ElektraKey * helpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
 	keyCopyAllMeta (helpKey, optsParent);
 	ksAppendKey (returned, helpKey);
 	keyDel (optsParent);
@@ -227,7 +227,7 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		const char * prefix = prefixKey == NULL ? NULL : keyString (prefixKey);
 
 		char * message = elektraGetOptsHelpMessage (helpKey, usage, prefix);
-		Key * messageKey = keyNew ("proc:/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
+		ElektraKey * messageKey = keyNew ("proc:/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
 		elektraFree (message);
 		ksAppendKey (returned, messageKey);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

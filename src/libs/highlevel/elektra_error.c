@@ -90,7 +90,7 @@ void elektraErrorAddWarning (ElektraError * error, ElektraError * warning)
  *
  * @return A newly allocated ElektraError (free with elektraErrorReset()).
  */
-ElektraError * elektraErrorFromKey (Key * key)
+ElektraError * elektraErrorFromKey (ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -104,7 +104,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 	}
 	else
 	{
-		const Key * reasonMeta = keyGetMeta (key, "error/reason");
+		const ElektraKey * reasonMeta = keyGetMeta (key, "error/reason");
 
 		const char * codeFromKey = elektraStrDup (keyString (keyGetMeta (key, "error/number")));
 		const char * description = elektraStrDup (keyString (keyGetMeta (key, "error/description")));
@@ -125,9 +125,9 @@ ElektraError * elektraErrorFromKey (Key * key)
 
 
 	// Code for extracting warnings was adapted from src/tools/kdb/coloredkdbio.h:printWarnings()
-	KeySet * metaKeys = keyMeta (key);
-	Key * warningsParent = keyNew ("meta:/warnings", KEY_END);
-	KeySet * warningKeys = ksCut (metaKeys, warningsParent);
+	ElektraKeyset * metaKeys = keyMeta (key);
+	ElektraKey * warningsParent = keyNew ("meta:/warnings", KEY_END);
+	ElektraKeyset * warningKeys = ksCut (metaKeys, warningsParent);
 	if (ksGetSize (warningKeys) > 0)
 	{
 		for (elektraCursor it = 0; it < ksGetSize (warningKeys); it++)
@@ -142,7 +142,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 
 			// Extract warning details set by errors.c
 
-			Key * warningKey = ksAtCursor (warningKeys, it);
+			ElektraKey * warningKey = ksAtCursor (warningKeys, it);
 			const char * warningKeyName = keyName (warningKey);
 
 			char * lookupName = elektraFormat ("%s/number", warningKeyName);
@@ -151,7 +151,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/reason", warningKeyName);
-			const Key * reasonKey = ksLookupByName (warningKeys, lookupName, 0);
+			const ElektraKey * reasonKey = ksLookupByName (warningKeys, lookupName, 0);
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/description", warningKeyName);
@@ -167,7 +167,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 			elektraFree (lookupName);
 
 			lookupName = elektraFormat ("%s/line", warningKeyName);
-			Key * lineKey = ksLookupByName (warningKeys, lookupName, 0);
+			ElektraKey * lineKey = ksLookupByName (warningKeys, lookupName, 0);
 			elektraFree (lookupName);
 			kdb_long_t lineNumber = -1;
 			elektraKeyToLong (lineKey, &lineNumber);

@@ -38,7 +38,7 @@
 		PLUGIN_CLOSE ();                                                                                                           \
 	}
 
-static KeySet * create_ks (const char * res, const char * meta)
+static ElektraKeyset * create_ks (const char * res, const char * meta)
 {
 	return ksNew (5, keyNew ("user:/tests/mathcheck/sum", KEY_VALUE, res, KEY_META, "check/math", meta, KEY_END),
 		      keyNew ("user:/tests/mathcheck/bla/val1", KEY_VALUE, "100", KEY_END),
@@ -48,9 +48,9 @@ static KeySet * create_ks (const char * res, const char * meta)
 
 static void test_multiUp (void)
 {
-	Key * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/mathcheck/up/sum", KEY_VALUE, "0", KEY_META, "check/math",
 				     ":= + ../val1 + ../../val2 ../val3", KEY_END),
 			     keyNew ("user:/tests/mathcheck/up/val1", KEY_VALUE, "1", KEY_END),
@@ -73,7 +73,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	KeySet * ks = create_ks ("153", "== + ../bla/val1 + ../bla/val2 ../bla/val3");
+	ElektraKeyset * ks = create_ks ("153", "== + ../bla/val1 + ../bla/val2 ../bla/val3");
 	test (ks, 1);
 	ksDel (ks);
 

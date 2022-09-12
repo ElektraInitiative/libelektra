@@ -18,9 +18,9 @@
 
 #include <stdio.h>
 
-int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraZeroMqRecvOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
-	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
+	ElektraKey * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
 	const char * endpoint;
 	if (endpointKey)
 	{
@@ -47,9 +47,9 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 	if (data->ioBinding == NULL)
 	{
-		KeySet * global = elektraPluginGetGlobalKeySet (handle);
+		ElektraKeyset * global = elektraPluginGetGlobalKeySet (handle);
 
-		Key * ioBindingKey = ksLookupByName (global, "system:/elektra/io/binding", 0);
+		ElektraKey * ioBindingKey = ksLookupByName (global, "system:/elektra/io/binding", 0);
 		const void * bindingPtr = keyValue (ioBindingKey);
 		ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
 
@@ -69,11 +69,11 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/zeromqrecv"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/zeromqrecv", KEY_VALUE, "zeromqrecv plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/zeromqrecv/exports", KEY_END),
 			keyNew ("system:/elektra/modules/zeromqrecv/exports/open", KEY_FUNC, elektraZeroMqRecvOpen, KEY_END),
@@ -90,7 +90,7 @@ int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	return 1; /* success */
 }
 
-int elektraZeroMqRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraZeroMqRecvClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	elektraZeroMqRecvTeardown (handle);
 

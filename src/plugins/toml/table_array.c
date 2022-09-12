@@ -14,9 +14,9 @@
 
 #include "utility.h"
 
-static char * getChildFraction (const Key * parent, const Key * child);
+static char * getChildFraction (const ElektraKey * parent, const ElektraKey * child);
 
-TableArrayList * pushTableArray (TableArrayList * top, Key * key)
+TableArrayList * pushTableArray (TableArrayList * top, ElektraKey * key)
 {
 	TableArrayList * ta = elektraCalloc (sizeof (TableArrayList));
 	ta->key = key;
@@ -49,7 +49,7 @@ TableArrayList * popTableArray (TableArrayList * top)
 	return newTop;
 }
 
-Key * buildTableArrayKeyName (const TableArrayList * ta)
+ElektraKey * buildTableArrayKeyName (const TableArrayList * ta)
 {
 	if (ta->next == NULL || !keyIsBelow (ta->next->key, ta->key))
 	{
@@ -57,7 +57,7 @@ Key * buildTableArrayKeyName (const TableArrayList * ta)
 	}
 	else
 	{
-		Key * key = buildTableArrayKeyName (ta->next);
+		ElektraKey * key = buildTableArrayKeyName (ta->next);
 		keyAddName (key, ta->keyStr);
 		char * index = indexToArrayString (ta->currIndex);
 		keyAddBaseName (key, index);
@@ -66,7 +66,7 @@ Key * buildTableArrayKeyName (const TableArrayList * ta)
 	}
 }
 
-static char * getChildFraction (const Key * parent, const Key * child)
+static char * getChildFraction (const ElektraKey * parent, const ElektraKey * child)
 {
 	if (!keyIsBelow (parent, child))
 	{
@@ -74,7 +74,7 @@ static char * getChildFraction (const Key * parent, const Key * child)
 	}
 	else
 	{
-		Key * childDup = keyDup (child, KEY_CP_ALL);
+		ElektraKey * childDup = keyDup (child, KEY_CP_ALL);
 		size_t fracSize = 256;
 		char * fraction = elektraCalloc (sizeof (char) * fracSize);
 		if (fraction == NULL)

@@ -45,7 +45,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 	strcat (buffer, filename);
 
 	/* Because of the outbreak bugs these tests are not enough */
-	Key * check = keyNew (buffer, KEY_END);
+	ElektraKey * check = keyNew (buffer, KEY_END);
 	if (!check) goto error;
 	if (!strcmp (keyName (check), "system:/")) goto error;
 	keyDel (check);
@@ -113,7 +113,7 @@ static void elektraResolveFinishByFilename (ElektraResolved * handle, ElektraRes
 
 static void elektraResolveUsingHome (ElektraResolved * handle, const char * home, short addPostfix)
 {
-	Key * canonify = keyNew ("user:/", KEY_END);
+	ElektraKey * canonify = keyNew ("user:/", KEY_END);
 	keyAddName (canonify, home);
 
 	size_t dirnameSize = keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
@@ -128,7 +128,7 @@ static void elektraResolveUsingHome (ElektraResolved * handle, const char * home
 	keyDel (canonify);
 }
 
-static char * elektraResolvePasswd (Key * warningsKey)
+static char * elektraResolvePasswd (ElektraKey * warningsKey)
 {
 	ssize_t bufSize = sysconf (_SC_GETPW_R_SIZE_MAX);
 	if (bufSize == -1) bufSize = 16384; // man 3 getpwuid
@@ -154,7 +154,7 @@ static char * elektraResolvePasswd (Key * warningsKey)
 	return resolved;
 }
 
-static int elektraResolveUserPasswd (ElektraResolved * handle, Key * warningsKey)
+static int elektraResolveUserPasswd (ElektraResolved * handle, ElektraKey * warningsKey)
 {
 	char * dir = elektraResolvePasswd (warningsKey);
 	if (!dir) return 0;
@@ -163,7 +163,7 @@ static int elektraResolveUserPasswd (ElektraResolved * handle, Key * warningsKey
 	return 1;
 }
 
-static int elektraResolveSystemPasswd (ElektraResolved * handle, Key * warningsKey)
+static int elektraResolveSystemPasswd (ElektraResolved * handle, ElektraKey * warningsKey)
 {
 	char * dir = elektraResolvePasswd (warningsKey);
 	if (!dir) return -1;
@@ -175,7 +175,7 @@ static int elektraResolveSystemPasswd (ElektraResolved * handle, Key * warningsK
 	return 0;
 }
 
-static int elektraResolveUserXDGHome (ElektraResolved * handle, Key * warningsKey)
+static int elektraResolveUserXDGHome (ElektraResolved * handle, ElektraKey * warningsKey)
 {
 	const char * home = getenv ("XDG_CONFIG_HOME");
 
@@ -197,7 +197,7 @@ static int elektraResolveUserXDGHome (ElektraResolved * handle, Key * warningsKe
 	return 1;
 }
 
-static int elektraResolveEnvHome (ElektraResolved * handle, Key * warningsKey)
+static int elektraResolveEnvHome (ElektraResolved * handle, ElektraKey * warningsKey)
 {
 	const char * home = getenv ("HOME");
 
@@ -228,7 +228,7 @@ static int elektraResolveEnvUser (ElektraResolved * handle)
 		return 0;
 	}
 
-	Key * canonify = keyNew ("user:/", KEY_END);
+	ElektraKey * canonify = keyNew ("user:/", KEY_END);
 	keyAddName (canonify, user);
 	size_t homeSize = sizeof (KDB_DB_HOME "/") + keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 
@@ -258,7 +258,7 @@ static int elektraResolveUserBuildin (ElektraResolved * handle)
 	return 1;
 }
 
-static int elektraResolveUser (char variant, ElektraResolved * handle, Key * warningsKey)
+static int elektraResolveUser (char variant, ElektraResolved * handle, ElektraKey * warningsKey)
 {
 	switch (variant)
 	{
@@ -291,7 +291,7 @@ static void elektraResolveFinishByDirname (ElektraResolved * handle, ElektraReso
 	elektraResolveFinishByFilename (handle, tmpDir);
 }
 
-static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTempfile tmpDir, Key * warningsKey)
+static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTempfile tmpDir, ElektraKey * warningsKey)
 {
 	int finished = 0;
 	size_t i;
@@ -318,7 +318,7 @@ static int elektraResolveMapperUser (ElektraResolved * handle, ElektraResolveTem
 	return finished;
 }
 
-static int elektraResolveSystemBuildin (ElektraResolved * handle, ElektraResolveTempfile tmpDir, Key * warningsKey)
+static int elektraResolveSystemBuildin (ElektraResolved * handle, ElektraResolveTempfile tmpDir, ElektraKey * warningsKey)
 {
 	size_t filenameSize = sizeof (KDB_DB_SYSTEM) + elektraStrLen (handle->relPath) + sizeof ("/");
 	char * resolved = NULL;
@@ -358,7 +358,7 @@ static void elektraResolveSystemXDGHelper (char ** filename, const char * path, 
 	strcat (*filename, path);
 }
 
-static int elektraResolveSystemXDG (ElektraResolved * handle, ElektraResolveTempfile tmpDir, Key * warningsKey)
+static int elektraResolveSystemXDG (ElektraResolved * handle, ElektraResolveTempfile tmpDir, ElektraKey * warningsKey)
 {
 	const char * configDir = getenv ("XDG_CONFIG_DIRS");
 	const char * defaultDir = "/etc/xdg";
@@ -419,7 +419,7 @@ static int elektraResolveSystemXDG (ElektraResolved * handle, ElektraResolveTemp
  * @retval 0 if variant did not have a result
  * @retval 1 on success
  */
-static int elektraResolveSystem (char variant, ElektraResolved * handle, ElektraResolveTempfile tmpDir, Key * warningsKey)
+static int elektraResolveSystem (char variant, ElektraResolved * handle, ElektraResolveTempfile tmpDir, ElektraKey * warningsKey)
 {
 	// hardcoded path wins against variants for now
 	if (handle->relPath[0] == '/')
@@ -448,7 +448,7 @@ static int elektraResolveSystem (char variant, ElektraResolved * handle, Elektra
 	}
 	return -1;
 }
-static int elektraResolveMapperSystem (ElektraResolved * handle, ElektraResolveTempfile tmpDir, Key * warningsKey)
+static int elektraResolveMapperSystem (ElektraResolved * handle, ElektraResolveTempfile tmpDir, ElektraKey * warningsKey)
 {
 	int finished = 0;
 	size_t i;
@@ -478,7 +478,7 @@ static int elektraResolveMapperSystem (ElektraResolved * handle, ElektraResolveT
  *
  * @param warningsKey where warnings are added
  */
-static char * elektraGetCwd (Key * warningsKey)
+static char * elektraGetCwd (ElektraKey * warningsKey)
 {
 	int size = 4096;
 	char * cwd = elektraMalloc (size);
@@ -520,7 +520,7 @@ static char * elektraGetCwd (Key * warningsKey)
 }
 
 
-static int elektraResolveSpec (ElektraResolved * handle, ElektraResolveTempfile tmpDir, Key * warningsKey ELEKTRA_UNUSED)
+static int elektraResolveSpec (ElektraResolved * handle, ElektraResolveTempfile tmpDir, ElektraKey * warningsKey ELEKTRA_UNUSED)
 {
 	size_t filenameSize = sizeof (KDB_DB_SPEC) + strlen (handle->relPath) + sizeof ("/") + 1;
 	if (handle->relPath[0] == '/')
@@ -563,7 +563,7 @@ static int elektraResolveSpec (ElektraResolved * handle, ElektraResolveTempfile 
 }
 
 
-static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile tmpDir, Key * warningsKey)
+static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile tmpDir, ElektraKey * warningsKey)
 {
 	char * cwd = elektraGetCwd (warningsKey);
 	if (!cwd)
@@ -625,7 +625,7 @@ void ELEKTRA_PLUGIN_FUNCTION (freeHandle) (ElektraResolved * handle)
 }
 
 ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace, const char * path, ElektraResolveTempfile tmpDir,
-						      Key * warningsKey)
+						      ElektraKey * warningsKey)
 {
 
 	ElektraResolved * handle = elektraCalloc (sizeof (ElektraResolved));

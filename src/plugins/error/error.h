@@ -10,6 +10,6 @@
 #include <kdbplugin.h>
 
 
-int elektraErrorGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraErrorSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraErrorGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraErrorSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;

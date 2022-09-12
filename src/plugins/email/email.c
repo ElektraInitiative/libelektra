@@ -13,9 +13,9 @@
 
 #include "email.h"
 
-static int validateEmail (Key * key, Key * parentKey)
+static int validateEmail (ElektraKey * key, ElektraKey * parentKey)
 {
-	const Key * meta = keyGetMeta (key, "check/email");
+	const ElektraKey * meta = keyGetMeta (key, "check/email");
 	if (!meta) return 1;
 
 	const char * addr = keyString (key);
@@ -44,11 +44,11 @@ static int validateEmail (Key * key, Key * parentKey)
 	return 0;
 }
 
-int elektraEmailGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraEmailGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/email"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/email", KEY_VALUE, "email plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/email/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/email/exports/get", KEY_FUNC, elektraEmailGet, KEY_END),
@@ -62,11 +62,11 @@ int elektraEmailGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int elektraEmailSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraEmailSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{

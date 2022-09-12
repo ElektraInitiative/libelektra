@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 
-int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding)
+int elektraIoContract (ElektraKeyset * contract, ElektraIoInterface * ioBinding)
 {
 	if (contract == NULL || ioBinding == NULL) return -1;
 
@@ -27,9 +27,9 @@ int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding)
 	return 0;
 }
 
-ElektraIoInterface * elektraIoGetBinding (KDB * kdb)
+ElektraIoInterface * elektraIoGetBinding (ElektraKdb * kdb)
 {
-	Key * ioBindingKey = ksLookupByName (kdb->global, "system:/elektra/io/binding", 0);
+	ElektraKey * ioBindingKey = ksLookupByName (kdb->global, "system:/elektra/io/binding", 0);
 	const void * bindingPtr = keyValue (ioBindingKey);
 	ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
 	return binding;

@@ -19,13 +19,13 @@
 #include <kdbmacros.h>
 
 
-int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG ("get desktop %s from %s\n", keyName (parentKey), keyString (parentKey));
 
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/desktop"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/desktop", KEY_VALUE, "desktop plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/desktop/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/desktop/exports/get", KEY_FUNC, elektraDesktopGet, KEY_END),
@@ -70,11 +70,11 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
-int elektraDesktopSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDesktopSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG ("set desktop %s from %s\n", keyName (parentKey), keyString (parentKey));
 
-	KeySet * info = ksNew (0, KS_END);
+	ElektraKeyset * info = ksNew (0, KS_END);
 	elektraDesktopGet (handle, info, parentKey);
 	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;

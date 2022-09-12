@@ -39,10 +39,10 @@ static inline Lineending strToLE (const char * str)
 	return NA;
 }
 
-int elektraFilecheckOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraFilecheckOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	checkStruct * checkConf = (checkStruct *) elektraMalloc (sizeof (checkStruct));
 	checkConf->checkLineEnding = ksLookupByName (config, "/check/lineending", 0) != NULL;
 	checkConf->validLE = strToLE (keyString (ksLookupByName (config, "/valid/lineending", 0)));
@@ -55,7 +55,7 @@ int elektraFilecheckOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA
 	return 1; // success
 }
 
-int elektraFilecheckClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraFilecheckClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 	checkStruct * checkConf = (checkStruct *) elektraPluginGetData (handle);
@@ -201,7 +201,7 @@ static int checkUnprintable (const uint8_t * line)
 	}
 	return 0;
 }
-static long checkFile (Key * parentKey, const char * filename, checkStruct * checkConf)
+static long checkFile (ElektraKey * parentKey, const char * filename, checkStruct * checkConf)
 {
 	FILE * fp = fopen (filename, "rb");
 	if (fp == NULL)
@@ -304,11 +304,11 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 	return retVal;
 }
 
-int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/filecheck"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/filecheck", KEY_VALUE, "filecheck plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/filecheck/exports", KEY_END),
 			keyNew ("system:/elektra/modules/filecheck/exports/open", KEY_FUNC, elektraFilecheckOpen, KEY_END),
@@ -330,7 +330,7 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1; // success
 }
 
-int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// get all keys
 	checkStruct * checkConf = elektraPluginGetData (handle);

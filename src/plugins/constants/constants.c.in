@@ -15,20 +15,20 @@
 
 #include <kdberrors.h>
 
-int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);
-int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);
+int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED);
+int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED);
 
-static void elektraAddKeyValue (KeySet * ks, Key * parentKey, const char * key, const char * value)
+static void elektraAddKeyValue (ElektraKeyset * ks, ElektraKey * parentKey, const char * key, const char * value)
 {
-	Key * k = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * k = keyDup (parentKey, KEY_CP_ALL);
 	keyAddName (k, key);
 	keySetString (k, value);
 	ksAppendKey (ks, k);
 }
 
-static void elektraAddConstants (KeySet * ks, Key * parentKey)
+static void elektraAddConstants (ElektraKeyset * ks, ElektraKey * parentKey)
 {
-	Key * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (ks, key);
 
 	key = keyDup (parentKey, KEY_CP_ALL);
@@ -340,7 +340,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 }
 
 // TODO (kodebach): should be standalone backend
-int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/constants"))
 	{
@@ -349,7 +349,7 @@ int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * pare
 		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports", KEY_END));
 		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/get", KEY_FUNC, elektraConstantsGet, KEY_END));
 		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/set", KEY_FUNC, elektraConstantsSet, KEY_END));
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30,
 #include "readme_constants.c"
 			       keyNew ("system:/elektra/modules/constants/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -363,9 +363,9 @@ int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * pare
 	return 1; /* success */
 }
 
-int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	KeySet * info = ksNew (0, KS_END);
+	ElektraKeyset * info = ksNew (0, KS_END);
 	elektraAddConstants (info, parentKey);
 	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;

@@ -13,8 +13,8 @@
 static void test_ksResize (void)
 {
 	int i;
-	KeySet * ks = 0;
-	KeySet * copy = ksNew (0, KS_END);
+	ElektraKeyset * ks = 0;
+	ElektraKeyset * copy = ksNew (0, KS_END);
 	char name[NAME_SIZE];
 
 	ks = ksNew (20, keyNew ("user:/test01", KEY_END), keyNew ("user:/test02", KEY_END), keyNew ("user:/test03", KEY_END),

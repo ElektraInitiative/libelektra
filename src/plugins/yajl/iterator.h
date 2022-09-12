@@ -19,9 +19,9 @@ typedef struct _keyNameReverseIterator
 	size_t size;	      ///< size of current substring (beginning from position)
 } keyNameReverseIterator;
 
-keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k);
+keyNameReverseIterator elektraKeyNameGetReverseIterator (const ElektraKey * k);
 int elektraKeyNameReverseNext (keyNameReverseIterator * it);
 
-Key * elektraNextNotBelow (KeySet * ks);
+ElektraKey * elektraNextNotBelow (ElektraKeyset * ks);
 
 #endif

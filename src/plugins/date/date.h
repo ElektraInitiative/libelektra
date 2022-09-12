@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraDateGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDateSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDateGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraDateSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

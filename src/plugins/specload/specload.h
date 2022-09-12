@@ -18,17 +18,17 @@ typedef struct
 	char * directFile;
 	char * app;
 	char ** argv;
-	KeySet * quickDumpConfig;
+	ElektraKeyset * quickDumpConfig;
 	ElektraInvokeHandle * quickDump;
 } Specload;
 
-int elektraSpecloadOpen (Plugin * handle, Key * errorKey);
-int elektraSpecloadClose (Plugin * handle, Key * errorKey);
-int elektraSpecloadGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraSpecloadSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraSpecloadCheckConf (Key * errorKey, KeySet * conf);
+int elektraSpecloadOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraSpecloadClose (Plugin * handle, ElektraKey * errorKey);
+int elektraSpecloadGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraSpecloadSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraSpecloadCheckConf (ElektraKey * errorKey, ElektraKeyset * conf);
 
-int elektraSpecloadSendSpec (Plugin * handle, KeySet * spec, Key * parentKey);
+int elektraSpecloadSendSpec (Plugin * handle, ElektraKeyset * spec, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

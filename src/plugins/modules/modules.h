@@ -12,10 +12,10 @@
 
 #include <kdbplugin.h>
 
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

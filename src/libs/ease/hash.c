@@ -35,7 +35,7 @@ static void hash_to_string (char string[65], const uint8_t hash[32]);
  * @retval false If an error occurred.
  * @retval true If the computation was successful.
  */
-kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Key * parentKey)
+kdb_boolean_t calculateSpecificationToken (char hash_string[65], ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	if (parentKey == NULL)
 	{
@@ -59,15 +59,15 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 	sha_256_init (&sha_256, hash);
 
 	// Duplicate ks, then cut out parentKey and all keys below. These are the ones we take into account for token calculation.
-	KeySet * dupKs = ksDup (ks);
-	KeySet * cutKs = ksCut (dupKs, parentKey);
+	ElektraKeyset * dupKs = ksDup (ks);
+	ElektraKeyset * cutKs = ksCut (dupKs, parentKey);
 
 	/**
 	 * Loop through all keys relevant for token calculation.
 	 */
 	for (elektraCursor it = 0; it < ksGetSize (cutKs); ++it)
 	{
-		Key * currentKey = ksAtCursor (cutKs, it);
+		ElektraKey * currentKey = ksAtCursor (cutKs, it);
 
 		/**
 		 * Ignore array parents for token calculation.
@@ -85,11 +85,11 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 		sha_256_write (&sha_256, keyName (currentKey), keyGetNameSize (currentKey) - 1);
 		// Note: The value of the key itself is not relevant / part of specification. Only the key's name + its metadata!
 
-		KeySet * currentMetaKeys = keyMeta (currentKey);
+		ElektraKeyset * currentMetaKeys = keyMeta (currentKey);
 		// Feed name + values from meta keys into sha_256_write().
 		for (elektraCursor metaIt = 0; metaIt < ksGetSize (currentMetaKeys); metaIt++)
 		{
-			Key * currentMetaKey = ksAtCursor (currentMetaKeys, metaIt);
+			ElektraKey * currentMetaKey = ksAtCursor (currentMetaKeys, metaIt);
 			sha_256_write (&sha_256, keyName (currentMetaKey), keyGetNameSize (currentMetaKey) - 1);
 			sha_256_write (&sha_256, keyString (currentMetaKey), keyGetValueSize (currentMetaKey) - 1);
 		}

@@ -39,7 +39,7 @@
 
 #include <elektra/conversion.h>
 
-static KeySet * embeddedSpec (void)
+static ElektraKeyset * embeddedSpec (void)
 {
 	return ksNew (6,
 	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
@@ -93,17 +93,17 @@ int loadConfiguration (Elektra ** elektra,
 				 int argc, const char * const * argv, const char * const * envp,
 				 ElektraError ** error)
 {
-	KeySet * defaults = embeddedSpec ();
+	ElektraKeyset * defaults = embeddedSpec ();
 	
 
-	KeySet * contract = ksNew (4,
+	ElektraKeyset * contract = ksNew (4,
 	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "fbb054456ff70fde7e4f184ec86eb130a99b4b3712d0c9d496e78bd262fb8c8d", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
-	Key * parentKey = keyNew ("/tests/script/gen/highlevel/enum", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/enum", KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
@@ -158,11 +158,11 @@ void exitForSpecload (int argc, const char * const * argv)
 		return;
 	}
 
-	KeySet * spec = embeddedSpec ();
+	ElektraKeyset * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec:/tests/script/gen/highlevel/enum", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
+	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/enum", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
 
-	KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
+	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
@@ -191,7 +191,7 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 		return;
 	}
 
-	Key * helpKey = elektraHelpKey (elektra);
+	ElektraKey * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{
 		return;
@@ -477,7 +477,7 @@ ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 ELEKTRA_GET_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 {
 	ElektraEnumDisjointed result;
-	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumDisjointed) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
@@ -489,7 +489,7 @@ ELEKTRA_GET_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 {
 	ElektraEnumDisjointed result;
-	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumDisjointed) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
@@ -524,7 +524,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumDisjointed, EnumDisjointed)
 ELEKTRA_GET_SIGNATURE (ExistingColors, EnumExistingColors)
 {
 	ExistingColors result;
-	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumExistingColors) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
@@ -536,7 +536,7 @@ ELEKTRA_GET_SIGNATURE (ExistingColors, EnumExistingColors)
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors)
 {
 	ExistingColors result;
-	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumExistingColors) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
@@ -571,7 +571,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ExistingColors, EnumExistingColors)
 ELEKTRA_GET_SIGNATURE (Colors, EnumColors)
 {
 	Colors result;
-	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumColors) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
@@ -583,7 +583,7 @@ ELEKTRA_GET_SIGNATURE (Colors, EnumColors)
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Colors, EnumColors)
 {
 	Colors result;
-	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumColors) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
@@ -618,7 +618,7 @@ ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (Colors, EnumColors)
 ELEKTRA_GET_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 {
 	ElektraEnumMyenum result;
-	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindKey (elektra, keyname, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumMyenum) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));
@@ -630,7 +630,7 @@ ELEKTRA_GET_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum)
 {
 	ElektraEnumMyenum result;
-	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
+	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE_ENUM);
 	if (!ELEKTRA_KEY_TO (EnumMyenum) (key, &result))
 	{
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyname, keyString (key)));

@@ -425,15 +425,15 @@ char * bindir_file (const char * fileName);
 const char * elektraFilename (void);
 void elektraUnlink (const char * filename);
 
-Key * create_root_key (const char * backendName);
-KeySet * create_conf (const char * filename);
+ElektraKey * create_root_key (const char * backendName);
+ElektraKeyset * create_conf (const char * filename);
 
-void output_meta (Key * k);
-void output_key (Key * ks);
-void output_keyset (KeySet * ks);
+void output_meta (ElektraKey * k);
+void output_key (ElektraKey * ks);
+void output_keyset (ElektraKeyset * ks);
 
-int output_warnings (Key * errorKey);
-int output_error (Key * errorKey);
+int output_warnings (ElektraKey * errorKey);
+int output_error (ElektraKey * errorKey);
 
 void clean_temp_home (void);
 

@@ -22,15 +22,15 @@ typedef struct
 	size_t bufalloc;
 } CHexData;
 
-ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
+ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize);
 
-void elektraHexcodeEncode (Key * cur, CHexData * hd);
-void elektraHexcodeDecode (Key * cur, CHexData * hd);
+void elektraHexcodeEncode (ElektraKey * cur, CHexData * hd);
+void elektraHexcodeDecode (ElektraKey * cur, CHexData * hd);
 
-int elektraHexcodeGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraHexcodeSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraHexcodeOpen (Plugin * handle, Key *);
-int elektraHexcodeClose (Plugin * handle, Key * k);
+int elektraHexcodeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraHexcodeSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraHexcodeOpen (Plugin * handle, ElektraKey *);
+int elektraHexcodeClose (Plugin * handle, ElektraKey * k);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

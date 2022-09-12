@@ -25,7 +25,7 @@
 #include <tests_plugin.h>
 
 
-static KeySet * createSimpleTestKeys (void)
+static ElektraKeyset * createSimpleTestKeys (void)
 {
 	return ksNew (20, keyNew ("user:/tests/rename/will/be/stripped/key1", KEY_VALUE, "value1", KEY_END),
 		      keyNew ("user:/tests/rename/will/be/stripped/key2", KEY_VALUE, "value2", KEY_END),
@@ -33,7 +33,7 @@ static KeySet * createSimpleTestKeys (void)
 		      keyNew ("user:/tests/rename/will/not/be/stripped/key4", KEY_VALUE, "value4", KEY_END), KS_END);
 }
 
-static KeySet * createSimpleMetaTestKeys (void)
+static ElektraKeyset * createSimpleMetaTestKeys (void)
 {
 	// clang-format off
 	return ksNew (20,
@@ -55,10 +55,10 @@ static KeySet * createSimpleMetaTestKeys (void)
 	// clang-format on
 }
 
-static void checkSimpleTestKeys (KeySet * ks)
+static void checkSimpleTestKeys (ElektraKeyset * ks)
 {
 	/* the first two keys should have been renamed */
-	Key * key = ksLookupByName (ks, "user:/tests/rename/key1", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/key1", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly renamed");
 	key = ksLookupByName (ks, "user:/tests/rename/key2", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly renamed");
@@ -67,14 +67,14 @@ static void checkSimpleTestKeys (KeySet * ks)
 	succeed_if (key, "key4 was renamed although its prefix did not match");
 }
 
-static void compareKeySets (KeySet * ks, KeySet * expected)
+static void compareKeySets (ElektraKeyset * ks, ElektraKeyset * expected)
 {
 	succeed_if (ksGetSize (expected) == ksGetSize (ks), "KeySet on set does not contain the same amount of keys");
-	Key * current;
+	ElektraKey * current;
 	ksRewind (expected);
 	while ((current = ksNext (expected)))
 	{
-		Key * key = ksLookup (ks, current, KDB_O_NONE);
+		ElektraKey * key = ksLookup (ks, current, KDB_O_NONE);
 		succeed_if (key, "Expected key was not found in KeySet");
 		succeed_if (!strcmp (keyString (key), keyString (current)), "Value of key was modified");
 	}
@@ -82,11 +82,11 @@ static void compareKeySets (KeySet * ks, KeySet * expected)
 
 static void test_simpleCutOnGet (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
 	PLUGIN_OPEN ("rename");
 
-	KeySet * ks = createSimpleTestKeys ();
+	ElektraKeyset * ks = createSimpleTestKeys ();
 	ksAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
@@ -108,11 +108,11 @@ static void test_simpleCutOnGet (void)
 
 static void test_metaCutOnGet (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("rename");
 
-	KeySet * ks = createSimpleMetaTestKeys ();
+	ElektraKeyset * ks = createSimpleMetaTestKeys ();
 	ksAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
@@ -127,12 +127,12 @@ static void test_metaCutOnGet (void)
 
 static void test_simpleCutRestoreOnSet (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	Key * parentKeyCopy = keyDup (parentKey, KEY_CP_ALL);
-	KeySet * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKey * parentKeyCopy = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
 	PLUGIN_OPEN ("rename");
 
-	KeySet * ks = createSimpleTestKeys ();
+	ElektraKeyset * ks = createSimpleTestKeys ();
 	ksAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
@@ -144,7 +144,7 @@ static void test_simpleCutRestoreOnSet (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
 	/* test that the keys have been correctly restored */
-	KeySet * expected = createSimpleTestKeys ();
+	ElektraKeyset * expected = createSimpleTestKeys ();
 
 	/* the parent key is restored from user:/tests/rename/will/be/stripped
 	 * and therefore will have its key value
@@ -166,19 +166,19 @@ static void test_simpleCutRestoreOnSet (void)
 
 static void test_withoutConfig (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	Key * parentKeyCopy = keyDup (parentKey, KEY_CP_ALL);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKey * parentKeyCopy = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("rename");
 
-	KeySet * ks = createSimpleTestKeys ();
+	ElektraKeyset * ks = createSimpleTestKeys ();
 	ksAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	KeySet * expected = createSimpleTestKeys ();
+	ElektraKeyset * expected = createSimpleTestKeys ();
 	ksAppendKey (expected, parentKeyCopy);
 
 	compareKeySets (ks, expected);
@@ -189,11 +189,11 @@ static void test_withoutConfig (void)
 
 static void test_metaConfigTakesPrecedence (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be", KEY_END), KS_END);
 	PLUGIN_OPEN ("rename");
 
-	KeySet * ks = createSimpleMetaTestKeys ();
+	ElektraKeyset * ks = createSimpleMetaTestKeys ();
 	ksAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
@@ -201,7 +201,7 @@ static void test_metaConfigTakesPrecedence (void)
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	/* the first two keys should have been renamed by their metadata */
-	Key * key = ksLookupByName (ks, "user:/tests/rename/key1", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/key1", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly renamed");
 	key = ksLookupByName (ks, "user:/tests/rename/key2", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly renamed");
@@ -220,12 +220,12 @@ static void test_metaConfigTakesPrecedence (void)
 
 static void test_keyCutNamePart (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	Key * result = elektraKeyCreateNewName (parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL, 0);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKey * result = elektraKeyCreateNewName (parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (!result, "parentKey was modified although it should have been ignored");
 
 	/* cutting works correctly without trailing slash */
-	Key * testKey = keyNew ("user:/tests/rename/will/cut/this/key1", KEY_END);
+	ElektraKey * testKey = keyNew ("user:/tests/rename/will/cut/this/key1", KEY_END);
 	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (result, "key1 was not cut")
 		succeed_if (!strcmp (keyName (result), "user:/tests/rename/key1"), "cutting key1 did not yield the expected result");
@@ -250,12 +250,12 @@ static void test_keyCutNamePart (void)
 
 static void test_rebaseOfNewKeys (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
 	PLUGIN_OPEN ("rename");
 
 	// clang-format off
-	KeySet *ks = ksNew(20,
+	ElektraKeyset *ks = ksNew(20,
 			/* this key was seen by rename before and wont be changed */
 			keyNew("user:/tests/rename/key1",
 					KEY_VALUE, "value1",
@@ -272,7 +272,7 @@ static void test_rebaseOfNewKeys (void)
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	Key * key = ksLookupByName (ks, "user:/tests/rename/key1", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/key1", KDB_O_NONE);
 	succeed_if (key, "key1 was not found anymore, but it should not have been renamed");
 
 	key = ksLookupByName (ks, "user:/tests/rename/new/base/key2", KDB_O_NONE);
@@ -285,12 +285,12 @@ static void test_rebaseOfNewKeys (void)
 
 static void test_addNewBaseToParentKey (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
 
 	PLUGIN_OPEN ("rename");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	keyIncRef (parentKey);
 	ksAppendKey (ks, parentKey);
 
@@ -298,7 +298,7 @@ static void test_addNewBaseToParentKey (void)
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	Key * key = ksLookupByName (ks, "user:/tests/rename/new/base", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/new/base", 0);
 	succeed_if (key, "new base was not correctly appended to parent key");
 
 	ksDel (ks);
@@ -309,17 +309,17 @@ static void test_addNewBaseToParentKey (void)
 
 static void test_replaceString (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be/stripped", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be/stripped", KEY_END),
 			       keyNew ("system:/replacewith", KEY_VALUE, "stripped/it/is", KEY_END), KS_END);
 
-	KeySet * ks = createSimpleTestKeys ();
+	ElektraKeyset * ks = createSimpleTestKeys ();
 	ksAppendKey (ks, parentKey);
 
 	PLUGIN_OPEN ("rename");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/rename/stripped/it/is/key1", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/stripped/it/is/key1", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly rename");
 	key = ksLookupByName (ks, "user:/tests/rename/stripped/it/is/key2", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly rename");
@@ -332,13 +332,13 @@ static void test_replaceString (void)
 
 static void test_toUpper (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/toupper", KEY_VALUE, "0", KEY_END), KS_END);
-	KeySet * ks = createSimpleTestKeys ();
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/toupper", KEY_VALUE, "0", KEY_END), KS_END);
+	ElektraKeyset * ks = createSimpleTestKeys ();
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("rename");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/rename/WILL/BE/STRIPPED/KEY1", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/WILL/BE/STRIPPED/KEY1", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly rename");
 	key = ksLookupByName (ks, "user:/tests/rename/WILL/BE/STRIPPED/KEY2", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly rename");
@@ -351,14 +351,14 @@ static void test_toUpper (void)
 
 static void test_toLower (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/tolower", KEY_VALUE, "0", KEY_END), KS_END);
-	KeySet * ks = ksNew (20, keyNew ("user:/tests/rename/AM/I/LOWERCASE", KEY_VALUE, "val1", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/tolower", KEY_VALUE, "0", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (20, keyNew ("user:/tests/rename/AM/I/LOWERCASE", KEY_VALUE, "val1", KEY_END),
 			     keyNew ("user:/tests/rename/I/HOPE/IM/LOWERCASE/TOO", KEY_VALUE, "val2", KEY_END), KS_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("rename");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/rename/am/i/lowercase", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/am/i/lowercase", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly rename");
 	key = ksLookupByName (ks, "user:/tests/rename/i/hope/im/lowercase/too", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly rename");
@@ -369,16 +369,16 @@ static void test_toLower (void)
 
 static void test_mixCase (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system:/toupper", KEY_VALUE, "4", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system:/toupper", KEY_VALUE, "4", KEY_END),
 			       KS_END);
-	KeySet * ks =
+	ElektraKeyset * ks =
 		ksNew (20, keyNew ("user:/tests/rename/am/i/LOWERCASE", KEY_VALUE, "val1", KEY_END),
 		       keyNew ("user:/tests/rename/hopefullystilllower/upper/upper/upper/LOWERCASE", KEY_VALUE, "val2", KEY_END), KS_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("rename");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/rename/AM/I/lowercase", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/AM/I/lowercase", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly rename");
 	key = ksLookupByName (ks, "user:/tests/rename/hopefullystilllower/UPPER/UPPER/UPPER/lowercase", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly rename");
@@ -389,15 +389,15 @@ static void test_mixCase (void)
 
 static void test_write (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf =
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf =
 		ksNew (20, keyNew ("system:/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system:/get/case", KEY_VALUE, "toupper", KEY_END),
 		       keyNew ("system:/set/case", KEY_VALUE, "keyname", KEY_END), KS_END);
-	KeySet * ks = ksNew (20, keyNew ("user:/tests/rename/uppercase/uppercase/uppercase/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (20, keyNew ("user:/tests/rename/uppercase/uppercase/uppercase/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("rename");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/lowercase", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/lowercase", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly rename");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 	key = ksLookupByName (ks, "user:/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/lowercase", KDB_O_NONE);
@@ -409,15 +409,15 @@ static void test_write (void)
 
 static void test_write2 (void)
 {
-	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	KeySet * conf =
+	ElektraKey * parentKey = keyNew ("user:/tests/rename", KEY_END);
+	ElektraKeyset * conf =
 		ksNew (20, keyNew ("system:/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system:/get/case", KEY_VALUE, "tolower", KEY_END),
 		       keyNew ("system:/set/case", KEY_VALUE, "toupper", KEY_END), KS_END);
-	KeySet * ks = ksNew (20, keyNew ("user:/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (20, keyNew ("user:/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("rename");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/rename/uppercase/uppercase/uppercase/lowercase", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/rename/uppercase/uppercase/uppercase/lowercase", KDB_O_NONE);
 	succeed_if (key, "key1 was not correctly rename");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 	key = ksLookupByName (ks, "user:/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/LOWERCASE", KDB_O_NONE);

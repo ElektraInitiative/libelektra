@@ -17,11 +17,11 @@
 
 #include "journald.h"
 
-int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/journald"))
 	{
-		KeySet * n;
+		ElektraKeyset * n;
 		ksAppend (
 			returned,
 			n = ksNew (30,
@@ -47,7 +47,7 @@ int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return 1;
 }
 
-int elektraJournaldSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraJournaldSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	sd_journal_send ("MESSAGE=committed configuration %s with %zd keys", keyName (parentKey), ksGetSize (returned),
 			 "MESSAGE_ID=fc65eab25c18463f97e4f9b61ea31eae", "PRIORITY=5", /* notice priority */
@@ -56,7 +56,7 @@ int elektraJournaldSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return 1;
 }
 
-int elektraJournaldError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraJournaldError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	sd_journal_send ("MESSAGE=rollback configuration %s with %zd keys", keyName (parentKey), ksGetSize (returned),
 			 "MESSAGE_ID=fb3928ea453048649c61d62619847ef6", "PRIORITY=3", /* error priority */

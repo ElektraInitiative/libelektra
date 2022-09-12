@@ -20,9 +20,9 @@ extern "C" {
 
 typedef Plugin * (*elektraPluginFactory) (void);
 
-int elektraModulesInit (KeySet * modules, Key * error);
-elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * error);
-int elektraModulesClose (KeySet * modules, Key * error);
+int elektraModulesInit (ElektraKeyset * modules, ElektraKey * error);
+elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * name, ElektraKey * error);
+int elektraModulesClose (ElektraKeyset * modules, ElektraKey * error);
 
 
 #ifdef __cplusplus

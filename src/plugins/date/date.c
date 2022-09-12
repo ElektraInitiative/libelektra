@@ -398,10 +398,10 @@ static int rfc822StringValidation (const char * date)
 	return -1;
 }
 
-static int validateKey (Key * key, Key * parentKey)
+static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 {
-	const Key * standard = keyGetMeta (key, "check/date");
-	const Key * formatStringMeta = keyGetMeta (key, "check/date/format");
+	const ElektraKey * standard = keyGetMeta (key, "check/date");
+	const ElektraKey * formatStringMeta = keyGetMeta (key, "check/date/format");
 	const char * date = keyString (key);
 	int rc = 0;
 	const char * stdString = keyString (standard);
@@ -455,11 +455,11 @@ static int validateKey (Key * key, Key * parentKey)
 }
 
 
-int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/date"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/date", KEY_VALUE, "date plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/date/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/date/exports/get", KEY_FUNC, elektraDateGet, KEY_END),
@@ -473,11 +473,11 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		return 1; // success
 	}
 	// get all keys
-	Key * cur;
+	ElektraKey * cur;
 	int rc = 1;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/date");
+		const ElektraKey * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{
 			int r = validateKey (cur, parentKey);
@@ -490,15 +490,15 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return rc; // success
 }
 
-int elektraDateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDateSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
-	Key * cur;
+	ElektraKey * cur;
 	int rc = 1;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/date");
+		const ElektraKey * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{
 			int r = validateKey (cur, parentKey);

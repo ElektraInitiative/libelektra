@@ -19,12 +19,12 @@
 #define CHECK_REFERNCE_VALUE_RECURSIVE ("recursive")
 #define CHECK_REFERNCE_VALUE_ALTERNATIVE ("alternative")
 
-int elektraReferenceOpen (Plugin * handle, Key * errorKey);
-int elektraReferenceClose (Plugin * handle, Key * errorKey);
-int elektraReferenceGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraReferenceSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraReferenceError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraReferenceCheckConf (Key * errorKey, KeySet * conf);
+int elektraReferenceOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraReferenceClose (Plugin * handle, ElektraKey * errorKey);
+int elektraReferenceGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraReferenceSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraReferenceError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraReferenceCheckConf (ElektraKey * errorKey, ElektraKeyset * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

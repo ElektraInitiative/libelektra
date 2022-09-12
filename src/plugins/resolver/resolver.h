@@ -58,14 +58,14 @@ struct _resolverHandles
 
 void ELEKTRA_PLUGIN_FUNCTION (freeHandle) (ElektraResolved *);
 int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename);
-ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
+ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace, const char *, ElektraResolveTempfile, ElektraKey *);
 
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey);
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey);
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * returned, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, KeySet * ks, Key * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, ElektraKey * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

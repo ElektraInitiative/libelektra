@@ -13,11 +13,11 @@
 #include <kdbplugin.h>
 
 
-int elektraBlockresolverClose (Plugin * handle, Key * errorKey);
-int elektraBlockresolverGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraBlockresolverSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraBlockresolverError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraBlockresolverCommit (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraBlockresolverClose (Plugin * handle, ElektraKey * errorKey);
+int elektraBlockresolverGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraBlockresolverSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraBlockresolverError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraBlockresolverCommit (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -52,10 +52,10 @@ typedef enum
 
 lookahead_t elektraLookahead (const char * pnext, size_t size);
 
-void elektraGenOpenInitial (yajl_gen g, Key * parentKey, const Key * first);
-void elektraGenOpen (yajl_gen g, const Key * cur, const Key * next);
+void elektraGenOpenInitial (yajl_gen g, ElektraKey * parentKey, const ElektraKey * first);
+void elektraGenOpen (yajl_gen g, const ElektraKey * cur, const ElektraKey * next);
 
-void elektraGenClose (yajl_gen g, const Key * cur, const Key * next);
-void elektraGenCloseFinally (yajl_gen g, const Key * cur, const Key * next);
+void elektraGenClose (yajl_gen g, const ElektraKey * cur, const ElektraKey * next);
+void elektraGenCloseFinally (yajl_gen g, const ElektraKey * cur, const ElektraKey * next);
 
 #endif

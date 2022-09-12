@@ -38,21 +38,21 @@
  * @retval -1 if @p argc is 0 and @p argv is not NULL or if @p argc is not 0 and @p argv is NULL
  * @retval  0 on success
  */
-int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv, const char * const * envp, const Key * parentKey,
-			  KeySet * goptsConfig)
+int elektraGOptsContract (ElektraKeyset * contract, int argc, const char * const * argv, const char * const * envp, const ElektraKey * parentKey,
+			  ElektraKeyset * goptsConfig)
 {
 	if (contract == NULL || (argc == 0) != (argv == NULL) || parentKey == NULL) return -1;
 
 	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END));
 	if (goptsConfig != NULL)
 	{
-		Key * configRoot = keyNew ("user:/", KEY_END);
-		Key * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
+		ElektraKey * configRoot = keyNew ("user:/", KEY_END);
+		ElektraKey * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
 
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)
 		{
-			Key * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
+			ElektraKey * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
 			keyReplacePrefix (renamed, configRoot, contractRoot);
 			ksAppendKey (contract, renamed);
 		}
@@ -110,21 +110,21 @@ int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv
  * @retval -1 if any of @p contract or @p parentKey is NULL
  * @retval  0 on success
  */
-int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const char * args, size_t envSize, const char * env,
-				     const Key * parentKey, KeySet * goptsConfig)
+int elektraGOptsContractFromStrings (ElektraKeyset * contract, size_t argsSize, const char * args, size_t envSize, const char * env,
+				     const ElektraKey * parentKey, ElektraKeyset * goptsConfig)
 {
 	if (contract == NULL || parentKey == NULL) return -1;
 
 	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END));
 	if (goptsConfig != NULL)
 	{
-		Key * configRoot = keyNew ("user:/", KEY_END);
-		Key * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
+		ElektraKey * configRoot = keyNew ("user:/", KEY_END);
+		ElektraKey * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
 
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)
 		{
-			Key * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
+			ElektraKey * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
 			keyReplacePrefix (renamed, configRoot, contractRoot);
 			ksAppendKey (contract, renamed);
 		}

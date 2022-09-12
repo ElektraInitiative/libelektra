@@ -39,7 +39,7 @@
 
 #include <elektra/conversion.h>
 
-static KeySet * embeddedSpec (void)
+static ElektraKeyset * embeddedSpec (void)
 {
 	return ksNew (14,
 	keyNew ("/", KEY_META, "command", "", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdb", KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", KEY_META, "type", "string", KEY_END),
@@ -101,17 +101,17 @@ int loadConfiguration (Elektra ** elektra,
 				 int argc, const char * const * argv, const char * const * envp,
 				 ElektraError ** error)
 {
-	KeySet * defaults = embeddedSpec ();
+	ElektraKeyset * defaults = embeddedSpec ();
 	
 
-	KeySet * contract = ksNew (4,
+	ElektraKeyset * contract = ksNew (4,
 	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "e5e0c78ce9d88840d87ee32b9c9b2b6fe859231ea0b516fd9f3f40bec4b27d0a", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
-	Key * parentKey = keyNew ("/tests/script/gen/highlevel/commands", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/commands", KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
@@ -166,11 +166,11 @@ void exitForSpecload (int argc, const char * const * argv)
 		return;
 	}
 
-	KeySet * spec = embeddedSpec ();
+	ElektraKeyset * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec:/tests/script/gen/highlevel/commands", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
+	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/commands", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
 
-	KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
+	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
@@ -199,7 +199,7 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 		return;
 	}
 
-	Key * helpKey = elektraHelpKey (elektra);
+	ElektraKey * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{
 		return;
@@ -230,7 +230,7 @@ int runCommands (Elektra * elektra, void * userData)
 		return -1;
 	}
 
-	KeySet * commands = ksNew (4,
+	ElektraKeyset * commands = ksNew (4,
 				   keyNew ("/", KEY_FUNC, commandKdb, KEY_END),
 				   keyNew ("/get", KEY_FUNC, commandKdbGet, KEY_END),
 				   keyNew ("/get/meta", KEY_FUNC, commandKdbGetMeta, KEY_END),
@@ -239,11 +239,11 @@ int runCommands (Elektra * elektra, void * userData)
 
 	typedef int (*commandFunction) (Elektra *, kdb_boolean_t, void *);
 
-	Key * lastCommand = keyNew ("/", KEY_END);
+	ElektraKey * lastCommand = keyNew ("/", KEY_END);
 	const char * command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
 	while (strlen (command) > 0)
 	{
-		Key * commandKey = ksLookup (commands, lastCommand, 0);
+		ElektraKey * commandKey = ksLookup (commands, lastCommand, 0);
 		const void * rawFunc = keyValue (commandKey);
 		commandFunction func = *(commandFunction *) rawFunc;
 		int result = func (elektra, false, userData);
@@ -258,7 +258,7 @@ int runCommands (Elektra * elektra, void * userData)
 		command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
 	}
 
-	Key * commandKey = ksLookup (commands, lastCommand, 0);
+	ElektraKey * commandKey = ksLookup (commands, lastCommand, 0);
 	const void * rawFunc = keyValue (commandKey);
 	commandFunction func = *(commandFunction *) rawFunc;
 	int result = func (elektra, true, userData);

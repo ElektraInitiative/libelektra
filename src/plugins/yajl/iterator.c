@@ -8,7 +8,7 @@
 
 #include "iterator.h"
 
-keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k)
+keyNameReverseIterator elektraKeyNameGetReverseIterator (const ElektraKey * k)
 {
 	keyNameReverseIterator it;
 	it.rend = keyName (k);
@@ -88,9 +88,9 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
  * @return key after starting position which is not below (to any latter
  * one)
  */
-Key * elektraNextNotBelow (KeySet * ks)
+ElektraKey * elektraNextNotBelow (ElektraKeyset * ks)
 {
-	const Key * previous = ksNext (ks);
+	const ElektraKey * previous = ksNext (ks);
 
 	if (!previous)
 	{
@@ -100,7 +100,7 @@ Key * elektraNextNotBelow (KeySet * ks)
 
 	// uninitialized variables are ok, because do{}while guarantees initialisation
 	elektraCursor pos;		// always one before current
-	const Key * current = previous; // current is same as ksCurrent()
+	const ElektraKey * current = previous; // current is same as ksCurrent()
 	do
 	{
 		pos = ksGetCursor (ks); // remember candidate

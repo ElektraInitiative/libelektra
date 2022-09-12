@@ -12,9 +12,9 @@
 
 int main (void)
 {
-	Key * k;
-	Key * c;
-	const Key * meta;
+	ElektraKey * k;
+	ElektraKey * c;
+	const ElektraKey * meta;
 	k = keyNew ("user:/metakey", KEY_END);
 	c = keyNew ("user:/metacopy", KEY_END);
 

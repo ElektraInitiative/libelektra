@@ -95,7 +95,7 @@ static char * escapeString (char ** str)
  * @retval 1 on success
  * @ingroup stream
  */
-int keyGenerate (const Key * key, FILE * stream)
+int keyGenerate (const ElektraKey * key, FILE * stream)
 {
 	size_t n = keyGetNameSize (key);
 	if (n > 1)
@@ -129,8 +129,8 @@ int keyGenerate (const Key * key, FILE * stream)
 		elektraFree (str);
 	}
 
-	const Key * meta;
-	Key * dup = keyDup (key, KEY_CP_ALL);
+	const ElektraKey * meta;
+	ElektraKey * dup = keyDup (key, KEY_CP_ALL);
 	keyRewindMeta (dup);
 	while ((meta = keyNextMeta (dup)))
 	{
@@ -158,10 +158,10 @@ int keyGenerate (const Key * key, FILE * stream)
  * @retval 1 on success
  * @ingroup stream
  */
-int ksGenerate (const KeySet * ks, FILE * stream)
+int ksGenerate (const ElektraKeyset * ks, FILE * stream)
 {
-	Key * key;
-	KeySet * cks = ksDup (ks);
+	ElektraKey * key;
+	ElektraKeyset * cks = ksDup (ks);
 
 	ksRewind (cks);
 
@@ -177,11 +177,11 @@ int ksGenerate (const KeySet * ks, FILE * stream)
 	return 1;
 }
 
-int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/c"))
 	{
-		KeySet * contract = ksNew (30, keyNew ("system:/elektra/modules/c", KEY_VALUE, "c plugin waits for your orders", KEY_END),
+		ElektraKeyset * contract = ksNew (30, keyNew ("system:/elektra/modules/c", KEY_VALUE, "c plugin waits for your orders", KEY_END),
 					   keyNew ("system:/elektra/modules/c/exports", KEY_END),
 					   keyNew ("system:/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
 					   keyNew ("system:/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
@@ -198,7 +198,7 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 	return 1; // success
 }
 
-int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	FILE * fp = fopen (keyString (parentKey), "w");
 
@@ -214,7 +214,7 @@ int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 	return 1; // success
 }
 
-int elektraCCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraCCheckConf (ElektraKey * errorKey ELEKTRA_UNUSED, ElektraKeyset * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
 	// this function is optional

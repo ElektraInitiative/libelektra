@@ -14,10 +14,10 @@
  * This function demonstrates how easy it is to extend
  * elektra. We use ksNext() and keyIsBelow() to implement a function
  * which skips to the next directory. */
-Key * ksNextDir (KeySet * ks)
+ElektraKey * ksNextDir (ElektraKeyset * ks)
 {
-	Key * cur;
-	Key * startKey = ksCurrent (ks);
+	ElektraKey * cur;
+	ElektraKey * startKey = ksCurrent (ks);
 
 	if (!startKey) return (ksNext (ks));
 
@@ -31,9 +31,9 @@ Key * ksNextDir (KeySet * ks)
 
 int main (void)
 {
-	Key * cur = 0;
-	Key * found = 0;
-	KeySet * ks =
+	ElektraKey * cur = 0;
+	ElektraKey * found = 0;
+	ElektraKeyset * ks =
 		ksNew (30, keyNew ("user:/dir1", KEY_END), keyNew ("user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
 		       keyNew ("user:/dir1/key2", KEY_VALUE, "value2", KEY_END), keyNew ("user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
 		       keyNew ("user:/dir1/key4", KEY_VALUE, "value4", KEY_END),

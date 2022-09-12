@@ -13,10 +13,10 @@
 #include <kdbplugin.h>
 
 
-int elektraCurlgetGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCurlgetSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCurlgetCommit (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCurlgetOpen (Plugin * handle, Key * errorKey);
+int elektraCurlgetGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraCurlgetSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraCurlgetCommit (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

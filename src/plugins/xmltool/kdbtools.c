@@ -29,7 +29,7 @@
  *        if the XML node for the current key only provides a basename
  * @param reader where to read from
  */
-static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr reader)
+static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextReaderPtr reader)
 {
 	/* printf("%s", KDB_SCHEMA_PATH); */
 
@@ -41,7 +41,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		int isbin = 0;
 		int end = 0;
 
-		Key * newKey = keyNew ("/", KEY_END);
+		ElektraKey * newKey = keyNew ("/", KEY_END);
 
 		/* a <key> must have one of the following:
 		   - a "name" attribute, used as an absolute name overriding the context
@@ -222,7 +222,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 }
 
 
-static int consumeKeySetNode (KeySet * ks, const char * context, xmlTextReaderPtr reader)
+static int consumeKeySetNode (ElektraKeyset * ks, const char * context, xmlTextReaderPtr reader)
 {
 	xmlChar * keySetNodeName = xmlTextReaderName (reader);
 	if (!strcmp ((char *) keySetNodeName, "keyset"))
@@ -280,7 +280,7 @@ https://git.gnome.org/browse/libxml2/diff/include/libxml/xmlstring.h?id=4472c3a5
  *
  * This function is completely dependent on libxml.
  */
-static int ksFromXMLReader (KeySet * ks, xmlTextReaderPtr reader)
+static int ksFromXMLReader (ElektraKeyset * ks, xmlTextReaderPtr reader)
 {
 	int ret = xmlTextReaderRead (reader); /* go to first node */
 	while (ret == 1)
@@ -376,7 +376,7 @@ else ret = isValidXML(filename,KDB_SCHEMA_PATH);
  * @param filename the file to parse
  * @ingroup stream
  */
-int ksFromXMLfile (KeySet * ks, const char * filename)
+int ksFromXMLfile (ElektraKeyset * ks, const char * filename)
 {
 	xmlTextReaderPtr reader = 0;
 	xmlDocPtr doc = 0;
@@ -417,7 +417,7 @@ int ksFromXMLfile (KeySet * ks, const char * filename)
  * @param fd POSIX file descriptor
  * @ingroup stream
  */
-int ksFromXML (KeySet * ks, int fd)
+int ksFromXML (ElektraKeyset * ks, int fd)
 {
 	// a complete XML document is expected
 	xmlTextReaderPtr reader = 0;

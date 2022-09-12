@@ -288,10 +288,10 @@ DECLARE_ERROR_CODE (VALIDATION_SEMANTIC)
 
 #undef DECLARE_ERROR_CODE
 
-KeySet * elektraErrorSpecification (void);
+ElektraKeyset * elektraErrorSpecification (void);
 
-void elektraTriggerWarnings (const char * nr, Key * parentKey, const char * message);
-void elektraTriggerError (const char * nr, Key * parentKey, const char * message);
+void elektraTriggerWarnings (const char * nr, ElektraKey * parentKey, const char * message);
+void elektraTriggerError (const char * nr, ElektraKey * parentKey, const char * message);
 
 #ifdef __cplusplus
 }

@@ -39,7 +39,7 @@
 
 #include <elektra/conversion.h>
 
-static KeySet * embeddedSpec (void)
+static ElektraKeyset * embeddedSpec (void)
 {
 	return ksNew (2,
 	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
@@ -89,17 +89,17 @@ int loadConfiguration (Elektra ** elektra,
 				 int argc, const char * const * argv, const char * const * envp,
 				 ElektraError ** error)
 {
-	KeySet * defaults = embeddedSpec ();
+	ElektraKeyset * defaults = embeddedSpec ();
 	
 
-	KeySet * contract = ksNew (4,
+	ElektraKeyset * contract = ksNew (4,
 	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "1cbc70fee5ca4d36d9dbaf6b37e5595f8d12ad3fa39a6778b512bd2e4b3321bf", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
-	Key * parentKey = keyNew ("/tests/script/gen/highlevel/notype", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/notype", KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
@@ -154,11 +154,11 @@ void exitForSpecload (int argc, const char * const * argv)
 		return;
 	}
 
-	KeySet * spec = embeddedSpec ();
+	ElektraKeyset * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec:/tests/script/gen/highlevel/notype", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
+	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/notype", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
 
-	KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
+	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);
@@ -187,7 +187,7 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 		return;
 	}
 
-	Key * helpKey = elektraHelpKey (elektra);
+	ElektraKey * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{
 		return;

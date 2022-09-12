@@ -32,7 +32,7 @@ extern "C" {
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToString (const Key * key ELEKTRA_UNUSED, const char ** variable ELEKTRA_UNUSED)
+int elektraKeyToString (const ElektraKey * key ELEKTRA_UNUSED, const char ** variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME String
 #define TYPE const char *
@@ -64,7 +64,7 @@ int elektraKeyToString (const Key * key ELEKTRA_UNUSED, const char ** variable E
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToBoolean (const Key * key ELEKTRA_UNUSED, kdb_boolean_t * variable ELEKTRA_UNUSED)
+int elektraKeyToBoolean (const ElektraKey * key ELEKTRA_UNUSED, kdb_boolean_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME Boolean
 #define TYPE kdb_boolean_t
@@ -95,7 +95,7 @@ int elektraKeyToBoolean (const Key * key ELEKTRA_UNUSED, kdb_boolean_t * variabl
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToChar (const Key * key ELEKTRA_UNUSED, kdb_char_t * variable ELEKTRA_UNUSED)
+int elektraKeyToChar (const ElektraKey * key ELEKTRA_UNUSED, kdb_char_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME Char
 #define TYPE kdb_char_t
@@ -125,7 +125,7 @@ int elektraKeyToChar (const Key * key ELEKTRA_UNUSED, kdb_char_t * variable ELEK
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToOctet (const Key * key ELEKTRA_UNUSED, kdb_octet_t * variable ELEKTRA_UNUSED)
+int elektraKeyToOctet (const ElektraKey * key ELEKTRA_UNUSED, kdb_octet_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME Octet
 #define TYPE kdb_octet_t
@@ -159,7 +159,7 @@ int elektraKeyToOctet (const Key * key ELEKTRA_UNUSED, kdb_octet_t * variable EL
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToShort (const Key * key ELEKTRA_UNUSED, kdb_short_t * variable ELEKTRA_UNUSED)
+int elektraKeyToShort (const ElektraKey * key ELEKTRA_UNUSED, kdb_short_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME Short
 #define TYPE kdb_short_t
@@ -191,7 +191,7 @@ int elektraKeyToShort (const Key * key ELEKTRA_UNUSED, kdb_short_t * variable EL
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToUnsignedShort (const Key * key ELEKTRA_UNUSED, kdb_unsigned_short_t * variable ELEKTRA_UNUSED)
+int elektraKeyToUnsignedShort (const ElektraKey * key ELEKTRA_UNUSED, kdb_unsigned_short_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME UnsignedShort
 #define TYPE kdb_unsigned_short_t
@@ -225,7 +225,7 @@ int elektraKeyToUnsignedShort (const Key * key ELEKTRA_UNUSED, kdb_unsigned_shor
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToLong (const Key * key ELEKTRA_UNUSED, kdb_long_t * variable ELEKTRA_UNUSED)
+int elektraKeyToLong (const ElektraKey * key ELEKTRA_UNUSED, kdb_long_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME Long
 #define TYPE kdb_long_t
@@ -257,7 +257,7 @@ int elektraKeyToLong (const Key * key ELEKTRA_UNUSED, kdb_long_t * variable ELEK
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToUnsignedLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_long_t * variable ELEKTRA_UNUSED)
+int elektraKeyToUnsignedLong (const ElektraKey * key ELEKTRA_UNUSED, kdb_unsigned_long_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME UnsignedLong
 #define TYPE kdb_unsigned_long_t
@@ -291,7 +291,7 @@ int elektraKeyToUnsignedLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_long_
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToLongLong (const Key * key ELEKTRA_UNUSED, kdb_long_long_t * variable ELEKTRA_UNUSED)
+int elektraKeyToLongLong (const ElektraKey * key ELEKTRA_UNUSED, kdb_long_long_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME LongLong
 #define TYPE kdb_long_long_t
@@ -323,7 +323,7 @@ int elektraKeyToLongLong (const Key * key ELEKTRA_UNUSED, kdb_long_long_t * vari
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToUnsignedLongLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_long_long_t * variable ELEKTRA_UNUSED)
+int elektraKeyToUnsignedLongLong (const ElektraKey * key ELEKTRA_UNUSED, kdb_unsigned_long_long_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME UnsignedLongLong
 #define TYPE kdb_unsigned_long_long_t
@@ -357,7 +357,7 @@ int elektraKeyToUnsignedLongLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_l
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToFloat (const Key * key ELEKTRA_UNUSED, kdb_float_t * variable ELEKTRA_UNUSED)
+int elektraKeyToFloat (const ElektraKey * key ELEKTRA_UNUSED, kdb_float_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME Float
 #define TYPE kdb_float_t
@@ -388,7 +388,7 @@ int elektraKeyToFloat (const Key * key ELEKTRA_UNUSED, kdb_float_t * variable EL
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToDouble (const Key * key ELEKTRA_UNUSED, kdb_double_t * variable ELEKTRA_UNUSED)
+int elektraKeyToDouble (const ElektraKey * key ELEKTRA_UNUSED, kdb_double_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME Double
 #define TYPE kdb_double_t
@@ -421,7 +421,7 @@ int elektraKeyToDouble (const Key * key ELEKTRA_UNUSED, kdb_double_t * variable 
  * @retval 1 on success
  * @retval 0 otherwise
  */
-int elektraKeyToLongDouble (const Key * key ELEKTRA_UNUSED, kdb_long_double_t * variable ELEKTRA_UNUSED)
+int elektraKeyToLongDouble (const ElektraKey * key ELEKTRA_UNUSED, kdb_long_double_t * variable ELEKTRA_UNUSED)
 {
 #define TYPE_NAME LongDouble
 #define TYPE kdb_long_double_t

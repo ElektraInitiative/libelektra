@@ -63,7 +63,7 @@ extern "C" {
  * @retval 1 on success
  * @retval 0 on failure
  */
-typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback,
+typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, ElektraKey * key, ElektraNotificationChangeCallback callback,
 							  void * context);
 
 /**
@@ -78,7 +78,7 @@ typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key *
  * @retval 1 on success
  * @retval 0 on failure
  */
-typedef int (*ElektraNotificationPluginRegisterCallbackSameOrBelow) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback,
+typedef int (*ElektraNotificationPluginRegisterCallbackSameOrBelow) (Plugin * handle, ElektraKey * key, ElektraNotificationChangeCallback callback,
 								     void * context);
 
 /**
@@ -106,7 +106,7 @@ typedef struct _ElektraNotificationCallbackContext ElektraNotificationCallbackCo
  * @param  key      changed key
  * @param  context  additional data
  */
-typedef void (*ElektraNotificationCallback) (Key * key, ElektraNotificationCallbackContext * context);
+typedef void (*ElektraNotificationCallback) (ElektraKey * key, ElektraNotificationCallbackContext * context);
 
 /**
  * Used by notification plugins to get values from the key database.
@@ -114,7 +114,7 @@ typedef void (*ElektraNotificationCallback) (Key * key, ElektraNotificationCallb
  * @param  kdb        kdb handle
  * @param  changedKey which key was updated
  */
-typedef void (*ElektraNotificationKdbUpdate) (KDB * kdb, Key * changedKey);
+typedef void (*ElektraNotificationKdbUpdate) (ElektraKdb * kdb, ElektraKey * changedKey);
 
 /**
  * Private struct with information about for ElektraNotificationCallback.

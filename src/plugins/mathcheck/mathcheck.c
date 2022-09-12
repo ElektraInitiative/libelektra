@@ -52,11 +52,11 @@ typedef struct
 } PNElem;
 
 
-int elektraMathcheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraMathcheckGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/mathcheck"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/mathcheck", KEY_VALUE, "mathcheck plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/mathcheck/exports", KEY_END),
 			keyNew ("system:/elektra/modules/mathcheck/exports/get", KEY_FUNC, elektraMathcheckGet, KEY_END),
@@ -195,13 +195,13 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 	result.value = stackPtr->value;
 	return result;
 }
-static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet * ks, Key * parentKey)
+static PNElem parsePrefixString (const char * prefixString, ElektraKey * curKey, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	const char * regexString =
 		"(((((\\.)|(\\.\\.\\/)*|(@)|(\\/))([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|(==)|([-+:/<>=!{*]))";
 	char * ptr = (char *) prefixString;
 	regex_t regex;
-	Key * key;
+	ElektraKey * key;
 
 	PNElem * stack = elektraMalloc (MIN_VALID_STACK * sizeof (PNElem));
 
@@ -374,13 +374,13 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 	return result;
 }
 
-int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	Key * cur;
+	ElektraKey * cur;
 	PNElem result;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/math");
+		const ElektraKey * meta = keyGetMeta (cur, "check/math");
 		if (!meta) continue;
 		ELEKTRA_LOG_DEBUG ("Check key “%s” with value “%s”", keyName (cur), keyString (meta));
 		result = parsePrefixString (keyString (meta), cur, ksDup (returned), parentKey);

@@ -16,9 +16,9 @@
 #define ELEKTRA_HEXNUMBER_PLUGIN_NAME "hexnumber"
 #define ELEKTRA_HEXNUMBER_META_KEY "internal/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/ishex"
 
-int elektraHexnumberGet (Plugin * handle, KeySet * ks, Key * errorKey);
-int elektraHexnumberSet (Plugin * handle, KeySet * ks, Key * errorKey);
-int elektraHexnumberClose (Plugin * handle, Key * parentKey);
+int elektraHexnumberGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * errorKey);
+int elektraHexnumberSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * errorKey);
+int elektraHexnumberClose (Plugin * handle, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -19,7 +19,7 @@ typedef enum
 	INPUT_USE_THEIRS
 } input;
 
-int showElektraErrorDialog (Key * parentKey)
+int showElektraErrorDialog (ElektraKey * parentKey)
 {
 	printf ("dialog for %s\n", keyName (parentKey));
 	int a;
@@ -31,7 +31,7 @@ int showElektraErrorDialog (Key * parentKey)
 	return a;
 }
 
-KeySet * doElektraMerge (KeySet * ours, KeySet * theirs, KeySet * base)
+ElektraKeyset * doElektraMerge (ElektraKeyset * ours, ElektraKeyset * theirs, ElektraKeyset * base)
 {
 	printf ("see libelektra-tools for merging"
 		" sizes are: %d %d %d\n",
@@ -44,25 +44,25 @@ int main (void)
 {
 	// clang-format off
 //! [set]
-KeySet * myConfig = ksNew (0, KS_END);
-Key * parentKey = keyNew ("system:/sw/MyApp", KEY_END);
-KDB * handle = kdbOpen (NULL, parentKey);
+ElektraKeyset * myConfig = ksNew (0, KS_END);
+ElektraKey * parentKey = keyNew ("system:/sw/MyApp", KEY_END);
+ElektraKdb * handle = kdbOpen (NULL, parentKey);
 
 kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
-KeySet * base = ksDup (myConfig);     // save a copy of original keyset
+ElektraKeyset * base = ksDup (myConfig);     // save a copy of original keyset
 
 // change the keys within myConfig
 ksAppendKey (myConfig, keyNew ("system:/sw/MyApp/Test", KEY_VALUE, "5", KEY_END));
 
-KeySet * ours = ksDup (myConfig); // save a copy of our keyset
-KeySet * theirs;		  // needed for 3-way merging
+ElektraKeyset * ours = ksDup (myConfig); // save a copy of our keyset
+ElektraKeyset * theirs;		  // needed for 3-way merging
 int ret = kdbSet (handle, myConfig, parentKey);
 while (ret == -1) // as long as we have an error
 {
 	int strategy = showElektraErrorDialog (parentKey);
 	theirs = ksDup (ours);
 	kdbGet (handle, theirs, parentKey); // refresh key database
-	KeySet * result = elektraMerge(
+	ElektraKeyset * result = elektraMerge(
 		ksCut(ours, parentKey), parentKey,
 		ksCut(theirs, parentKey), parentKey,
 		ksCut(base, parentKey), parentKey,

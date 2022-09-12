@@ -115,7 +115,7 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
  * @ingroup plugin
  * @return keyset to the configuration for that plugin
  */
-KeySet * elektraPluginGetConfig (Plugin * handle)
+ElektraKeyset * elektraPluginGetConfig (Plugin * handle)
 {
 	return handle->config;
 }
@@ -167,7 +167,7 @@ void * elektraPluginGetData (Plugin * plugin)
  * @return a pointer to the global keyset
  * @ingroup plugin
  */
-KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
+ElektraKeyset * elektraPluginGetGlobalKeySet (Plugin * plugin)
 {
 	return plugin->global;
 }
@@ -181,12 +181,12 @@ const char * elektraPluginGetPhase (Plugin * plugin)
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 {
 	// TODO (kodebach): docs, precond checks
-	KeySet * plugins = *(KeySet **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
+	ElektraKeyset * plugins = *(ElektraKeyset **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
 
-	Key * lookupHelper = keyNew ("system:/", KEY_END);
+	ElektraKey * lookupHelper = keyNew ("system:/", KEY_END);
 	keyAddBaseName (lookupHelper, ref);
 
-	Key * pluginKey = ksLookup (plugins, lookupHelper, 0);
+	ElektraKey * pluginKey = ksLookup (plugins, lookupHelper, 0);
 	keyDel (lookupHelper);
 
 	return pluginKey == NULL ? NULL : *(Plugin **) keyValue (pluginKey);

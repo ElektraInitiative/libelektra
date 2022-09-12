@@ -41,7 +41,7 @@ void benchmarkFillup (void);
 
 extern int num_dir; // default = NUM_DIR;
 extern int num_key; // default = NUM_KEY;
-extern KeySet * large;
+extern ElektraKeyset * large;
 
 
 /**
@@ -144,7 +144,7 @@ typedef struct
 	KsShapeDel shapeDel;	    /*!< function pointer for the KeySet shape data deletion */
 } KeySetShape;
 
-KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape);
+ElektraKeyset * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape);
 
 void printExit (const char * msg);
 

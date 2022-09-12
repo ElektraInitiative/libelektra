@@ -17,7 +17,7 @@
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
-	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));
+	return elektraKeyCmpOrder (*((const ElektraKey **) a), *((const ElektraKey **) b));
 }
 
 static void writeComment (const char * spaces, const char * start, const char * comment, FILE * fp)
@@ -47,31 +47,31 @@ static void writeComment (const char * spaces, const char * start, const char * 
 	}
 }
 
-static const char * getMetaValue (Key * key, const char * metaName)
+static const char * getMetaValue (ElektraKey * key, const char * metaName)
 {
-	const Key * metaKey = keyGetMeta (key, metaName);
+	const ElektraKey * metaKey = keyGetMeta (key, metaName);
 
 	if (metaKey) return keyString (metaKey);
 
 	return 0;
 }
 
-static void writeLineComments (Key * key, FILE * fp)
+static void writeLineComments (ElektraKey * key, FILE * fp)
 {
-	KeySet * metaKeys = keyMeta (key);
-	Key * commentParent = keyNew ("meta:/comment", KEY_END);
-	KeySet * comments = elektraArrayGet (commentParent, metaKeys);
+	ElektraKeyset * metaKeys = keyMeta (key);
+	ElektraKey * commentParent = keyNew ("meta:/comment", KEY_END);
+	ElektraKeyset * comments = elektraArrayGet (commentParent, metaKeys);
 	keyDel (commentParent);
 
 	ksRewind (comments);
-	Key * current;
+	ElektraKey * current;
 	while ((current = ksNext (comments)))
 	{
 		if (strcmp (keyName (current), "meta:/comment/#0") != 0)
 		{
-			Key * spaceKey = keyDup (current, KEY_CP_ALL);
+			ElektraKey * spaceKey = keyDup (current, KEY_CP_ALL);
 			keyAddBaseName (spaceKey, "space");
-			Key * startKey = keyDup (current, KEY_CP_ALL);
+			ElektraKey * startKey = keyDup (current, KEY_CP_ALL);
 			keyAddBaseName (startKey, "start");
 			const char * spaces = getMetaValue (key, keyName (spaceKey));
 			const char * start = getMetaValue (key, keyName (startKey));
@@ -86,7 +86,7 @@ static void writeLineComments (Key * key, FILE * fp)
 	ksDel (comments);
 }
 
-static void writeInlineComment (Key * key, FILE * fp)
+static void writeInlineComment (ElektraKey * key, FILE * fp)
 {
 
 	const char * spaces = getMetaValue (key, "comment/#0/space");
@@ -96,14 +96,14 @@ static void writeInlineComment (Key * key, FILE * fp)
 	writeComment (spaces, start, comment, fp);
 }
 
-static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
+static void writeHostsEntry (ElektraKey * key, ElektraKeyset * returned, FILE * fp)
 {
 	fprintf (fp, "%s\t%s", (char *) keyValue (key), (char *) keyBaseName (key));
 	/* position the cursor at the current key and
 	 * iterate over its subkeys
 	 */
 	ksLookup (returned, key, KDB_O_NONE);
-	Key * alias;
+	ElektraKey * alias;
 	while ((alias = ksNext (returned)) != 0)
 	{
 		if (keyIsBelow (key, alias) != 1) break;
@@ -112,7 +112,7 @@ static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
 	}
 }
 
-int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	FILE * fp;
@@ -127,9 +127,9 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 
 	/* build an array of entries and sort them according to their order metadata */
-	Key ** keyArray;
+	ElektraKey ** keyArray;
 	size_t arraySize = ksGetSize (returned);
-	keyArray = calloc (arraySize, sizeof (Key *));
+	keyArray = calloc (arraySize, sizeof (ElektraKey *));
 
 	ksRewind (returned);
 	int ret = elektraKsToMemArray (returned, keyArray);
@@ -141,17 +141,17 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return -1;
 	}
 
-	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
+	qsort (keyArray, arraySize, sizeof (ElektraKey *), keyCmpOrderWrapper);
 
-	Key * ipv4Base = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * ipv4Base = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (ipv4Base, "ipv4");
-	Key * ipv6Base = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * ipv6Base = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (ipv6Base, "ipv6");
 
 	/* now write the hosts file */
 	for (size_t i = 0; i < arraySize; ++i)
 	{
-		Key * key = keyArray[i];
+		ElektraKey * key = keyArray[i];
 
 		/* only process canonical name keys */
 		if (!keyIsDirectlyBelow (ipv4Base, key) && !keyIsDirectlyBelow (ipv6Base, key)) continue;

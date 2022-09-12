@@ -49,9 +49,9 @@ typedef struct
 void elektraZeroMqRecvSetup (Plugin * handle);
 void elektraZeroMqRecvTeardown (Plugin * handle);
 
-int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey);
-int elektraZeroMqRecvClose (Plugin * handle, Key * errorKey);
-int elektraZeroMqRecvGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraZeroMqRecvOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraZeroMqRecvClose (Plugin * handle, ElektraKey * errorKey);
+int elektraZeroMqRecvGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

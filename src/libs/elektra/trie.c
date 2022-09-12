@@ -49,7 +49,7 @@ static Plugin * elektraTriePrefixLookup (Trie * trie, const char * name);
  * @param key the name of this key will be looked up
  * @ingroup trie
  */
-Plugin * trieLookup (Trie * trie, const Key * key)
+Plugin * trieLookup (Trie * trie, const ElektraKey * key)
 {
 	if (!key) return 0;
 	if (!trie) return 0;
@@ -74,7 +74,7 @@ Plugin * trieLookup (Trie * trie, const Key * key)
  * @ingroup trie
  * @retval 0 on success
  */
-int trieClose (Trie * trie, Key * errorKey)
+int trieClose (Trie * trie, ElektraKey * errorKey)
 {
 	size_t i;
 	if (trie == NULL) return 0;

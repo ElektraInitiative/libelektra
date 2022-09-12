@@ -10,8 +10,8 @@
 
 static void test_cmpOrder (void)
 {
-	Key * k1 = keyNew ("user:/a", KEY_META, "order", "20", KEY_END);
-	Key * k2 = keyNew ("user:/b", KEY_META, "order", "10", KEY_END);
+	ElektraKey * k1 = keyNew ("user:/a", KEY_META, "order", "20", KEY_END);
+	ElektraKey * k2 = keyNew ("user:/b", KEY_META, "order", "10", KEY_END);
 
 	succeed_if (elektraKeyCmpOrder (0, 0) == 0, "null keys are not equal");
 	succeed_if (elektraKeyCmpOrder (k1, 0) == 1, "not null key is not greater than null key");

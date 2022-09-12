@@ -12,7 +12,7 @@
 #include <kdbhelper.h>
 
 
-int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 	// this function is optional
@@ -20,7 +20,7 @@ int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 	// this function is optional
@@ -28,11 +28,11 @@ int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/template"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/template", KEY_VALUE, "template plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/template/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/template/exports/open", KEY_FUNC, elektraTemplateOpen, KEY_END),
@@ -54,7 +54,7 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
@@ -62,7 +62,7 @@ int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// handle errors (commit failed)
 	// this function is optional
@@ -70,7 +70,7 @@ int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTemplateCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraTemplateCommit (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// commit changes
 	// this function is optional
@@ -78,7 +78,7 @@ int elektraTemplateCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTemplateCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraTemplateCheckConf (ElektraKey * errorKey ELEKTRA_UNUSED, ElektraKeyset * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
 	// this function is optional

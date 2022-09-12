@@ -29,8 +29,8 @@
 int kdbbNeedsUTF8Conversion (Plugin * handle);
 int kdbbUTF8Engine (Plugin * handle, int direction, char ** string, size_t * inputOutputByteSize);
 
-int elektraIconvGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraIconvSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraIconvGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraIconvSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

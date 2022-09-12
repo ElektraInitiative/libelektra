@@ -41,7 +41,7 @@ struct _GElektraKey
 	GObject parent_instance;
 
 	/* instance members */
-	Key * key;
+	ElektraKey * key;
 };
 
 struct _GElektraKeyClass
@@ -61,7 +61,7 @@ GType gelektra_key_get_type (void);
 
 /* constructor */
 GElektraKey * gelektra_key_new (const gchar * name, ...);
-GElektraKey * gelektra_key_make (Key * key);
+GElektraKey * gelektra_key_make (ElektraKey * key);
 GElektraKey * gelektra_key_gi_make (GElektraKey * key);
 
 /* initialization */

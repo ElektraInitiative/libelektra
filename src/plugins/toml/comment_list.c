@@ -19,7 +19,7 @@
 #include "error.h"
 #include "utility.h"
 
-static int keyAddComment (Key * key, const char * commentStr, const char * origStr, size_t index);
+static int keyAddComment (ElektraKey * key, const char * commentStr, const char * origStr, size_t index);
 
 CommentList * commentListNew (const char * comment, const char * orig)
 {
@@ -81,7 +81,7 @@ CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount)
 	return newBack;
 }
 
-int keyAddCommentList (Key * key, CommentList * root)
+int keyAddCommentList (ElektraKey * key, CommentList * root)
 {
 	size_t index = 1;
 	int err = 0;
@@ -93,7 +93,7 @@ int keyAddCommentList (Key * key, CommentList * root)
 	return err;
 }
 
-int keyAddInlineComment (Key * key, CommentList * root)
+int keyAddInlineComment (ElektraKey * key, CommentList * root)
 {
 	if (root->next != NULL)
 	{
@@ -102,7 +102,7 @@ int keyAddInlineComment (Key * key, CommentList * root)
 	return keyAddComment (key, root->str, root->orig, 0);
 }
 
-static int keyAddComment (Key * key, const char * commentStr, const char * origStr, size_t index)
+static int keyAddComment (ElektraKey * key, const char * commentStr, const char * origStr, size_t index)
 {
 	// add comment str
 	char * indexStr = indexToArrayString (index);

@@ -20,10 +20,10 @@
 #include <kdberrors.h>
 #include <kdbmacros.h>
 
-static void elektraAddUname (KeySet * returned, Key * parentKey)
+static void elektraAddUname (ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	Key * dir;
-	Key * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * dir;
+	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (returned, key);
 
 	struct utsname buf;
@@ -56,14 +56,14 @@ static void elektraAddUname (KeySet * returned, Key * parentKey)
 	ksAppendKey (returned, dir);
 }
 
-int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	ELEKTRA_LOG ("get uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/uname"))
 	{
-		KeySet * moduleConfig =
+		ElektraKeyset * moduleConfig =
 			ksNew (50, keyNew ("system:/elektra/modules/uname", KEY_VALUE, "uname plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/uname/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/uname/exports/get", KEY_FUNC, elektraUnameGet, KEY_END),
@@ -81,11 +81,11 @@ int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return 1;
 }
 
-int elektraUnameSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraUnameSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	ELEKTRA_LOG ("set uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
-	KeySet * info = ksNew (0, KS_END);
+	ElektraKeyset * info = ksNew (0, KS_END);
 	elektraAddUname (info, parentKey);
 	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;

@@ -17,11 +17,11 @@
 #include <stdio.h>
 #include <string.h>
 
-int elektraXmltoolGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraXmltoolGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/xmltool"))
 	{
-		KeySet * moduleConfig =
+		ElektraKeyset * moduleConfig =
 			ksNew (30, keyNew ("system:/elektra/modules/xmltool", KEY_VALUE, "xmltool plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/xmltool/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/xmltool/exports/get", KEY_FUNC, elektraXmltoolGet, KEY_END),
@@ -46,7 +46,7 @@ int elektraXmltoolGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	return 1;
 }
 
-int elektraXmltoolSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraXmltoolSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* set all keys */
 

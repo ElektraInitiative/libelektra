@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 // The application (just print out some config values in this case)
-int lift (KeySet * conf)
+int lift (ElektraKeyset * conf)
 {
 	kdb_boolean_t stops = get_test_lift_emergency_action_stops (conf);
 	enum algorithm a = get_test_lift_algorithm (conf);
@@ -36,7 +36,7 @@ int lift (KeySet * conf)
 	return write;
 }
 
-void kdbGetByName (KDB * kdb, KeySet * conf, Key * parentKey, char * where)
+void kdbGetByName (ElektraKdb * kdb, ElektraKeyset * conf, ElektraKey * parentKey, char * where)
 {
 	keySetName (parentKey, "system");
 	keyAddName (parentKey, where);
@@ -49,9 +49,9 @@ void kdbGetByName (KDB * kdb, KeySet * conf, Key * parentKey, char * where)
 
 int main (int argc, char ** argv)
 {
-	Key * parentKey = keyNew ("", KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("", KEY_END);
+	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 
 	// get all config files
 	kdbGetByName (kdb, conf, parentKey, "/test/lift");

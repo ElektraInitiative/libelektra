@@ -26,7 +26,7 @@ extern "C" {
  * @param  plugin     plugin handle
  * @param  parameters contains the binary key "/ioBinding" with a pointer to ElektraIoInterface
  */
-typedef void (*ElektraIoPluginSetBinding) (Plugin * plugin, KeySet * parameters);
+typedef void (*ElektraIoPluginSetBinding) (Plugin * plugin, ElektraKeyset * parameters);
 
 #ifdef __cplusplus
 }

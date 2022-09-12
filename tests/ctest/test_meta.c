@@ -10,7 +10,7 @@
 
 static void test_ro (void)
 {
-	Key * key;
+	ElektraKey * key;
 
 	key = keyNew ("/", KEY_END);
 	key->flags |= KEY_FLAG_RO_VALUE;
@@ -29,7 +29,7 @@ static void test_ro (void)
 
 static void test_comment (void)
 {
-	Key * key;
+	ElektraKey * key;
 	char ret[10];
 
 	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
@@ -66,9 +66,9 @@ static void test_comment (void)
 
 static void test_metaArrayToKS (void)
 {
-	Key * test = keyNew ("/a", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END);
-	KeySet * ks = elektraMetaArrayToKS (test, "dep");
-	Key * cur;
+	ElektraKey * test = keyNew ("/a", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END);
+	ElektraKeyset * ks = elektraMetaArrayToKS (test, "dep");
+	ElektraKey * cur;
 	cur = ksNext (ks);
 	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep"), "failed!");
 	cur = ksNext (ks);
@@ -78,22 +78,22 @@ static void test_metaArrayToKS (void)
 	keyDel (test);
 	ksDel (ks);
 }
-static void checkTopArray (Key ** array, unsigned int size)
+static void checkTopArray (ElektraKey ** array, unsigned int size)
 {
 	unsigned int i;
-	KeySet * done = ksNew (size, KS_END);
+	ElektraKeyset * done = ksNew (size, KS_END);
 	for (i = 0; i < size; ++i)
 	{
-		Key * cur = array[i];
-		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
-		Key * dep;
+		ElektraKey * cur = array[i];
+		ElektraKeyset * deps = elektraMetaArrayToKS (cur, "dep");
+		ElektraKey * dep;
 		ksRewind (deps);
 		ksNext (deps);
 		ksRewind (done);
 		while ((dep = ksNext (deps)) != NULL)
 		{
 			if (!strcmp (keyName (cur), keyString (dep))) continue;
-			Key * ret = ksLookupByName (done, keyString (dep), KDB_O_NONE);
+			ElektraKey * ret = ksLookupByName (done, keyString (dep), KDB_O_NONE);
 			succeed_if (ret != NULL, "Failed, dependency not resolved correctly\n");
 		}
 		ksDel (deps);
@@ -114,7 +114,7 @@ static void checkTopArray (Key ** array, unsigned int size)
 	}
 
 
-static void checkTopOrder1 (Key ** array)
+static void checkTopOrder1 (ElektraKey ** array)
 {
 	succeed_if_top (0, "/d");
 	succeed_if_top (1, "/c");
@@ -122,7 +122,7 @@ static void checkTopOrder1 (Key ** array)
 	succeed_if_top (3, "/a");
 }
 
-static void checkTopOrder2 (Key ** array)
+static void checkTopOrder2 (ElektraKey ** array)
 {
 	succeed_if_top (0, "/d");
 	succeed_if_top (1, "/c");
@@ -130,7 +130,7 @@ static void checkTopOrder2 (Key ** array)
 	succeed_if_top (3, "/a");
 }
 
-static void checkTopOrder3 (Key ** array)
+static void checkTopOrder3 (ElektraKey ** array)
 {
 	succeed_if_top (0, "/b");
 	succeed_if_top (1, "/d");
@@ -139,13 +139,13 @@ static void checkTopOrder3 (Key ** array)
 }
 static void test_top (void)
 {
-	KeySet * test0 = ksNew (10, keyNew ("/a", KEY_VALUE, "whatever", KEY_END), KS_END);
-	KeySet * test1 = ksNew (
+	ElektraKeyset * test0 = ksNew (10, keyNew ("/a", KEY_VALUE, "whatever", KEY_END), KS_END);
+	ElektraKeyset * test1 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
 		keyNew ("/b", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
 		keyNew ("/c", KEY_VALUE, "-", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_END), KS_END);
-	KeySet * test2 = ksNew (
+	ElektraKeyset * test2 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b, d", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/d", KEY_END),
 		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
 		keyNew ("/c", KEY_VALUE, "-", KEY_END),
@@ -154,7 +154,7 @@ static void test_top (void)
 		keyNew ("/f", KEY_VALUE, "h", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/h", KEY_END),
 		keyNew ("/g", KEY_VALUE, "h", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/h", KEY_END),
 		keyNew ("/h", KEY_VALUE, "-", KEY_END), KS_END);
-	KeySet * test3 = ksNew (
+	ElektraKeyset * test3 = ksNew (
 		10, keyNew ("/5", KEY_VALUE, "11", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/11", KEY_END),
 		keyNew ("/7", KEY_VALUE, "8, 11", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/8", KEY_META, "dep/#1", "/11", KEY_END),
 		keyNew ("/3", KEY_VALUE, "8, 10", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/8", KEY_META, "dep/#1", "/10", KEY_END),
@@ -163,33 +163,33 @@ static void test_top (void)
 		keyNew ("/8", KEY_VALUE, "9", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/9", KEY_END),
 		keyNew ("/2", KEY_VALUE, "-", KEY_END), keyNew ("/9", KEY_VALUE, "-", KEY_END), keyNew ("/10", KEY_VALUE, "-", KEY_END),
 		KS_END);
-	Key ** array = elektraMalloc (ksGetSize (test1) * sizeof (Key *));
-	memset (array, 0, ksGetSize (test1) * sizeof (Key *));
+	ElektraKey ** array = elektraMalloc (ksGetSize (test1) * sizeof (ElektraKey *));
+	memset (array, 0, ksGetSize (test1) * sizeof (ElektraKey *));
 	elektraSortTopology (test1, array);
 
 	checkTopArray (array, ksGetSize (test1));
 
-	elektraRealloc ((void **) &array, ksGetSize (test2) * sizeof (Key *));
-	memset (array, 0, ksGetSize (test2) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (test2) * sizeof (ElektraKey *));
+	memset (array, 0, ksGetSize (test2) * sizeof (ElektraKey *));
 	elektraSortTopology (test2, array);
 
 	checkTopArray (array, ksGetSize (test2));
 
-	elektraRealloc ((void **) &array, ksGetSize (test3) * sizeof (Key *));
-	memset (array, 0, ksGetSize (test3) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (test3) * sizeof (ElektraKey *));
+	memset (array, 0, ksGetSize (test3) * sizeof (ElektraKey *));
 	elektraSortTopology (test3, array);
 
 	checkTopArray (array, ksGetSize (test3));
 
-	elektraRealloc ((void **) &array, ksGetSize (test0) * sizeof (Key *));
-	memset (array, 0, ksGetSize (test0) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (test0) * sizeof (ElektraKey *));
+	memset (array, 0, ksGetSize (test0) * sizeof (ElektraKey *));
 	elektraSortTopology (test0, array);
 
 	checkTopArray (array, ksGetSize (test0));
 
-	KeySet * testCycle = ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
+	ElektraKeyset * testCycle = ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
 				    keyNew ("/b", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_END), KS_END);
-	KeySet * testCycle2 = ksNew (
+	ElektraKeyset * testCycle2 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b, d", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/d", KEY_END),
 		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
 		keyNew ("/c", KEY_VALUE, "-", KEY_END),
@@ -199,14 +199,14 @@ static void test_top (void)
 		keyNew ("/g", KEY_VALUE, "h", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/h", KEY_END),
 		keyNew ("/h", KEY_VALUE, "e", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/e", KEY_END), KS_END);
 
-	KeySet * testCycle3 = ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
+	ElektraKeyset * testCycle3 = ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
 				     keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
 				     keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_END),
 				     keyNew ("/d", KEY_VALUE, "e", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/e", KEY_END),
 				     keyNew ("/e", KEY_VALUE, "f", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/f", KEY_END),
 				     keyNew ("/f", KEY_VALUE, "g", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/g", KEY_END),
 				     keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_END), KS_END);
-	KeySet * testCycle4 =
+	ElektraKeyset * testCycle4 =
 		ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
 		       keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
 		       keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_END),
@@ -216,66 +216,66 @@ static void test_top (void)
 		       keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_END), KS_END);
 
 
-	elektraRealloc ((void **) &array, ksGetSize (testCycle) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle) * sizeof (ElektraKey *));
 	succeed_if (elektraSortTopology (testCycle, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **) &array, ksGetSize (testCycle2) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle2) * sizeof (ElektraKey *));
 	succeed_if (elektraSortTopology (testCycle2, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **) &array, ksGetSize (testCycle3) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle3) * sizeof (ElektraKey *));
 	succeed_if (elektraSortTopology (testCycle3, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **) &array, ksGetSize (testCycle4) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle4) * sizeof (ElektraKey *));
 	succeed_if (elektraSortTopology (testCycle4, array) == 0, "Cycle detection failed\n");
 
-	KeySet * orderTest1 = ksNew (
+	ElektraKeyset * orderTest1 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
 		keyNew ("/b", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
 		keyNew ("/c", KEY_VALUE, "-", KEY_META, "order", "#1", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#0", KEY_END), KS_END);
-	elektraRealloc ((void **) &array, ksGetSize (orderTest1) * sizeof (Key *));
-	memset (array, 0, ksGetSize (orderTest1) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (orderTest1) * sizeof (ElektraKey *));
+	memset (array, 0, ksGetSize (orderTest1) * sizeof (ElektraKey *));
 	int ret = elektraSortTopology (orderTest1, array);
 	succeed_if (ret == 1, "sort failed");
 	if (ret == 1) checkTopOrder1 (array);
 
 
-	KeySet * orderTest2 = ksNew (
+	ElektraKeyset * orderTest2 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
 		keyNew ("/b", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_META,
 			"order", "#0", KEY_END),
 		keyNew ("/c", KEY_VALUE, "-", KEY_META, "order", "#3", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#1", KEY_END), KS_END);
-	memset (array, 0, ksGetSize (orderTest2) * sizeof (Key *));
+	memset (array, 0, ksGetSize (orderTest2) * sizeof (ElektraKey *));
 	ret = elektraSortTopology (orderTest2, array);
 	succeed_if (ret == 1, "sort failed");
 	if (ret == 1) checkTopOrder2 (array);
 
 
-	KeySet * orderTest3 = ksNew (
+	ElektraKeyset * orderTest3 = ksNew (
 		10,
 		keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/a", KEY_META, "dep/#1", "/b", KEY_META, "order",
 			"#2", KEY_END),
 		keyNew ("/b", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "#0", KEY_END),
 		keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#1", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#5", KEY_END), KS_END);
-	memset (array, 0, ksGetSize (orderTest3) * sizeof (Key *));
+	memset (array, 0, ksGetSize (orderTest3) * sizeof (ElektraKey *));
 	ret = elektraSortTopology (orderTest3, array);
 	succeed_if (ret == 1, "sort failed");
 	if (ret == 1) checkTopOrder3 (array);
 
 
-	KeySet * testCycleOrder1 = ksNew (
+	ElektraKeyset * testCycleOrder1 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "1", KEY_END),
 		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
 		keyNew ("/c", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_META, "order", "#0", KEY_END), KS_END);
 
-	KeySet * testCycleOrder2 = ksNew (
+	ElektraKeyset * testCycleOrder2 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "#2", KEY_END),
 		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_META, "order", "#0", KEY_END),
 		keyNew ("/c", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_META, "order", "#1", KEY_END), KS_END);
 
-	KeySet * testCycleOrder3 = ksNew (
+	ElektraKeyset * testCycleOrder3 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "#2", KEY_END),
 		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_META, "order", "#0", KEY_END),
 		keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#1", KEY_END),
@@ -284,13 +284,13 @@ static void test_top (void)
 		keyNew ("/f", KEY_VALUE, "g", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/g", KEY_META, "order", "#4", KEY_END),
 		keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_META, "order", "#6", KEY_END), KS_END);
 
-	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder1) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder1) * sizeof (ElektraKey *));
 	succeed_if (elektraSortTopology (testCycleOrder1, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder2) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder2) * sizeof (ElektraKey *));
 	succeed_if (elektraSortTopology (testCycleOrder2, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder3) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder3) * sizeof (ElektraKey *));
 	succeed_if (elektraSortTopology (testCycleOrder3, array) == 0, "Cycle detection failed\n");
 
 	ksDel (test0);

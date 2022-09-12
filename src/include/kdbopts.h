@@ -18,8 +18,8 @@ namespace ckdb
 extern "C" {
 #endif
 
-int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey);
-char * elektraGetOptsHelpMessage (Key * helpKey, const char * usage, const char * prefix);
+int elektraGetOpts (ElektraKeyset * ks, int argc, const char ** argv, const char ** envp, ElektraKey * parentKey);
+char * elektraGetOptsHelpMessage (ElektraKey * helpKey, const char * usage, const char * prefix);
 
 #ifdef __cplusplus
 }

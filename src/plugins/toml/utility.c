@@ -15,10 +15,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-Key * keyAppendIndex (size_t index, const Key * parent)
+ElektraKey * keyAppendIndex (size_t index, const ElektraKey * parent)
 {
 	// Key * indexKey = keyDup (parent);
-	Key * indexKey = keyNew (keyName (parent), KEY_END);
+	ElektraKey * indexKey = keyNew (keyName (parent), KEY_END);
 
 	char * indexStr = indexToArrayString (index);
 	keyAddBaseName (indexKey, indexStr);
@@ -26,7 +26,7 @@ Key * keyAppendIndex (size_t index, const Key * parent)
 	return indexKey;
 }
 
-void keyUpdateArrayMetakey (Key * key, size_t newIndex)
+void keyUpdateArrayMetakey (ElektraKey * key, size_t newIndex)
 {
 	char * indexStr = indexToArrayString (newIndex);
 	keySetMeta (key, "array", indexStr);
@@ -76,7 +76,7 @@ bool isArrayIndex (const char * basename)
 	return elektraArrayValidateBaseNameString (basename) == 1;
 }
 
-bool isArrayElement (const Key * key)
+bool isArrayElement (const ElektraKey * key)
 {
 	const char * part = (const char *) keyUnescapedName (key);
 	const char * stop = part + keyGetUnescapedNameSize (key);
@@ -91,23 +91,23 @@ bool isArrayElement (const Key * key)
 	return false;
 }
 
-bool isEmptyArray (Key * key)
+bool isEmptyArray (ElektraKey * key)
 {
-	const Key * meta = keyGetMeta (key, "array");
+	const ElektraKey * meta = keyGetMeta (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 	const char * sizeStr = keyString (meta);
 	return elektraStrLen (sizeStr) == 1;
 }
 
-size_t getArrayMax (Key * key)
+size_t getArrayMax (ElektraKey * key)
 {
-	const Key * meta = keyGetMeta (key, "array");
+	const ElektraKey * meta = keyGetMeta (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 
 	return arrayStringToIndex (keyString (meta));
 }
 
-void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value)
+void setPlainIntMeta (ElektraKey * key, const char * metaKeyName, size_t value)
 {
 	char * str = intToStr (value);
 	keySetMeta (key, metaKeyName, str);
@@ -121,34 +121,34 @@ char * intToStr (size_t i)
 	return str;
 }
 
-void setOrderForKey (Key * key, size_t order)
+void setOrderForKey (ElektraKey * key, size_t order)
 {
 	setPlainIntMeta (key, "order", order);
 }
 
-bool isArray (Key * key)
+bool isArray (ElektraKey * key)
 {
 	return keyGetMeta (key, "array") != NULL;
 }
 
-bool isInlineTable (Key * key)
+bool isInlineTable (ElektraKey * key)
 {
 	return isTomlType (key, "inlinetable");
 }
 
-bool isSimpleTable (Key * key)
+bool isSimpleTable (ElektraKey * key)
 {
 	return isTomlType (key, "simpletable");
 }
 
-bool isTableArray (Key * key)
+bool isTableArray (ElektraKey * key)
 {
 	return isTomlType (key, "tablearray");
 }
 
-bool isTomlType (Key * key, const char * type)
+bool isTomlType (ElektraKey * key, const char * type)
 {
-	const Key * meta = keyGetMeta (key, "tomltype");
+	const ElektraKey * meta = keyGetMeta (key, "tomltype");
 	if (meta == NULL)
 	{
 		return false;
@@ -170,7 +170,7 @@ bool isBareString (const char * str)
 	return true;
 }
 
-char * getRelativeName (Key * parent, Key * key)
+char * getRelativeName (ElektraKey * parent, ElektraKey * key)
 {
 	size_t nameSize = 64;
 	size_t pos = 0;
@@ -260,7 +260,7 @@ char * getRelativeName (Key * parent, Key * key)
 	return name;
 }
 
-char * getDirectSubKeyName (const Key * parent, const Key * key)
+char * getDirectSubKeyName (const ElektraKey * parent, const ElektraKey * key)
 {
 	if (keyIsBelow (parent, key) <= 0)
 	{
@@ -270,29 +270,29 @@ char * getDirectSubKeyName (const Key * parent, const Key * key)
 	return elektraStrDup (keyPart);
 }
 
-void keySetDiff (KeySet * whole, KeySet * part)
+void keySetDiff (ElektraKeyset * whole, ElektraKeyset * part)
 {
 	if (whole == NULL || part == NULL)
 	{
 		return;
 	}
 	ksRewind (part);
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (part)) != NULL)
 	{
 		ksLookup (whole, key, KDB_O_POP);
 	}
 }
 
-KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *))
+ElektraKeyset * keysByPredicate (ElektraKeyset * ks, bool (*pred) (ElektraKey *))
 {
-	KeySet * predicateKeys = ksNew (0, KS_END);
+	ElektraKeyset * predicateKeys = ksNew (0, KS_END);
 	if (predicateKeys == NULL)
 	{
 		return NULL;
 	}
 	ksRewind (ks);
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (ks)) != NULL)
 	{
 		if ((*pred) (key))
@@ -303,11 +303,11 @@ KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *))
 	return predicateKeys;
 }
 
-KeySet * collectSubKeys (KeySet * ks, Key * parent)
+ElektraKeyset * collectSubKeys (ElektraKeyset * ks, ElektraKey * parent)
 {
-	KeySet * subKeys = ksNew (0, KS_END);
+	ElektraKeyset * subKeys = ksNew (0, KS_END);
 	ksRewind (ks);
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (ks)) != NULL)
 	{
 		if (keyIsBelow (parent, key) == 1)
@@ -318,18 +318,18 @@ KeySet * collectSubKeys (KeySet * ks, Key * parent)
 	return subKeys;
 }
 
-KeySet * extractSubKeys (KeySet * ks, Key * parent)
+ElektraKeyset * extractSubKeys (ElektraKeyset * ks, ElektraKey * parent)
 {
-	KeySet * sub = collectSubKeys (ks, parent);
+	ElektraKeyset * sub = collectSubKeys (ks, parent);
 	keySetDiff (ks, sub);
 	return sub;
 }
 
-bool isLeaf (Key * leafCandidate, KeySet * ks)
+bool isLeaf (ElektraKey * leafCandidate, ElektraKeyset * ks)
 {
 	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (ks)) != NULL)
 	{
 		if (keyIsBelow (leafCandidate, key) == 1)

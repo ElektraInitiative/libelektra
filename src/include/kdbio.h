@@ -607,7 +607,7 @@ ElektraIoIdleCallback elektraIoIdleGetCallback (ElektraIoIdleOperation * idleOp)
  * @retval -1 if @p contract or @p ioBinding are NULL
  * @retval  0 on success
  */
-int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding);
+int elektraIoContract (ElektraKeyset * contract, ElektraIoInterface * ioBinding);
 
 /**
  * Get I/O binding for asynchronous I/O operations for KDB instance.
@@ -616,7 +616,7 @@ int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding);
  * @param  kdb KDB instance
  * @return I/O binding or NULL
  */
-ElektraIoInterface * elektraIoGetBinding (KDB * kdb);
+ElektraIoInterface * elektraIoGetBinding (ElektraKdb * kdb);
 
 #ifdef __cplusplus
 }

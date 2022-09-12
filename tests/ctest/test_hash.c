@@ -18,8 +18,8 @@
 static void test_keySet (void)
 {
 	char hash_string[65];
-	KeySet * ks = ksNew (3, keyNew ("/sw/application/myapp/#0/current", KEY_END), KS_END);
-	Key * parentKey = keyNew ("/sw/application/myapp/#0/current", KEY_END);
+	ElektraKeyset * ks = ksNew (3, keyNew ("/sw/application/myapp/#0/current", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("/sw/application/myapp/#0/current", KEY_END);
 
 	calculateSpecificationToken (hash_string, ks, parentKey);
 
@@ -39,17 +39,17 @@ static void test_keySet (void)
  */
 static void test_onlyKeysBelowParentKey (void)
 {
-	KeySet * ksOnlyWithKeysFromMyApp =
+	ElektraKeyset * ksOnlyWithKeysFromMyApp =
 		ksNew (3, keyNew ("/sw/application/myapp/#0/current", KEY_META, "mountpoint", "test.ecf", KEY_END),
 		       keyNew ("/sw/application/myapp/#0/current/mykey", KEY_META, "default", "1", KEY_END),
 		       keyNew ("/sw/application/myapp/#0/current/myotherkey", KEY_META, "opt/arg", "required", KEY_END), KS_END);
-	KeySet * ksWithKeysFromTwoApps = ksDup (ksOnlyWithKeysFromMyApp);
+	ElektraKeyset * ksWithKeysFromTwoApps = ksDup (ksOnlyWithKeysFromMyApp);
 	ksAppendKey (ksWithKeysFromTwoApps,
 		     keyNew ("/sw/application/myotherapp/#0/current/somekey", KEY_META, "opt/arg", "required", KEY_END));
 	ksAppendKey (ksOnlyWithKeysFromMyApp,
 		     keyNew ("/sw/application/myotherapp/#0/current/someotherkey", KEY_META, "opt/arg", "required", KEY_END));
 
-	Key * parentKeyForMyApp = keyNew ("/sw/application/myapp/#0/current", KEY_END);
+	ElektraKey * parentKeyForMyApp = keyNew ("/sw/application/myapp/#0/current", KEY_END);
 
 	char hash_ksWithKeysFroMyApp[65];
 	char hash_ksWithKeysFromTwoApps[65];

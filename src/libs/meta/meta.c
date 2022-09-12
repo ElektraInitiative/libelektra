@@ -88,7 +88,7 @@
  * @retval 0 on NULL pointer
  * @see keyGetCommentSize() for size and keyGetComment() as alternative
  */
-const char * keyComment (const Key * key)
+const char * keyComment (const ElektraKey * key)
 {
 	const char * comment;
 
@@ -129,7 +129,7 @@ const char * keyComment (const Key * key)
  * @retval -1 on NULL pointer
  * @see keyGetComment(), keySetComment()
  */
-ssize_t keyGetCommentSize (const Key * key)
+ssize_t keyGetCommentSize (const ElektraKey * key)
 {
 	ssize_t size;
 	if (!key) return -1;
@@ -170,7 +170,7 @@ ssize_t keyGetCommentSize (const Key * key)
  * @retval -1 if maxSize is 0, not enough to store the comment or when larger then SSIZE_MAX
  * @see keyGetCommentSize(), keySetComment()
  */
-ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
+ssize_t keyGetComment (const ElektraKey * key, char * returnedComment, size_t maxSize)
 {
 	const char * comment;
 	size_t commentSize;
@@ -211,7 +211,7 @@ ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
  * @retval -1 on NULL pointer or memory problems
  * @see keyGetComment()
  */
-ssize_t keySetComment (Key * key, const char * newComment)
+ssize_t keySetComment (ElektraKey * key, const char * newComment)
 {
 	if (!key) return -1;
 	if (!newComment || *newComment == 0)
@@ -239,7 +239,7 @@ ssize_t keySetComment (Key * key, const char * newComment)
  * @param ka key to compare with
  * @param kb other key to compare with
  */
-int elektraKeyCmpOrder (const Key * ka, const Key * kb)
+int elektraKeyCmpOrder (const ElektraKey * ka, const ElektraKey * kb)
 {
 
 	if (ka == NULL && kb == NULL)
@@ -257,8 +257,8 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 		return -1;
 	}
 
-	const Key * kam = keyGetMeta (ka, "order");
-	const Key * kbm = keyGetMeta (kb, "order");
+	const ElektraKey * kam = keyGetMeta (ka, "order");
+	const ElektraKey * kbm = keyGetMeta (kb, "order");
 
 	if (kam == NULL && kbm == NULL)
 	{
@@ -291,10 +291,10 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
  * @param value the value of the newly appended metakey
  */
 
-void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
+void elektraMetaArrayAdd (ElektraKey * key, const char * metaName, const char * value)
 {
-	const Key * meta = keyGetMeta (key, metaName);
-	Key * arrayKey;
+	const ElektraKey * meta = keyGetMeta (key, metaName);
+	ElektraKey * arrayKey;
 	if (!meta)
 	{
 		keySetMeta (key, metaName, "#0");
@@ -338,12 +338,12 @@ elektraMetaArrayToKS(
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  */
-KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
+ElektraKeyset * elektraMetaArrayToKS (ElektraKey * key, const char * metaName)
 {
-	const Key * meta = keyGetMeta (key, metaName);
+	const ElektraKey * meta = keyGetMeta (key, metaName);
 	if (!meta) return NULL;
 
-	KeySet * result;
+	ElektraKeyset * result;
 	if (keyString (meta)[0] != '#')
 	{
 		result = ksNew (1, meta, KS_END);
@@ -351,7 +351,7 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 	else
 	{
 		result = elektraArrayGet (meta, keyMeta (key));
-		ksAppendKey (result, (Key *) meta);
+		ksAppendKey (result, (ElektraKey *) meta);
 	}
 
 	ksRewind (result);
@@ -367,7 +367,7 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
  */
 typedef struct
 {
-	Key * key;
+	ElektraKey * key;
 	kdb_octet_t isResolved;
 	unsigned long * deps;
 } _adjMatrix;
@@ -380,15 +380,15 @@ typedef struct
  */
 static int topCmpOrder (const void * a, const void * b)
 {
-	const Key * ka = (*(const Key **) a);
-	const Key * kb = (*(const Key **) b);
+	const ElektraKey * ka = (*(const ElektraKey **) a);
+	const ElektraKey * kb = (*(const ElektraKey **) b);
 
 	if (!ka && !kb) return 0;
 	if (ka && !kb) return 1;
 	if (!ka && kb) return -1;
 
-	const Key * kam = keyGetMeta (ka, "order");
-	const Key * kbm = keyGetMeta (kb, "order");
+	const ElektraKey * kam = keyGetMeta (ka, "order");
+	const ElektraKey * kbm = keyGetMeta (kb, "order");
 
 	return strcmp (keyString (kam), keyString (kbm));
 }
@@ -400,7 +400,7 @@ static int topCmpOrder (const void * a, const void * b)
  * elektraSortTopology helper
  * returns the index of dependency depKey
  */
-static int getArrayIndex (Key * depKey, _adjMatrix * adjMatrix, size_t size)
+static int getArrayIndex (ElektraKey * depKey, _adjMatrix * adjMatrix, size_t size)
 {
 	for (unsigned int i = 0; i < size; ++i)
 	{
@@ -449,7 +449,7 @@ static int hasUnresolvedDependencies (unsigned int j, _adjMatrix * adjMatrix, si
  * elektraSortTopology helper
  * resolve all dependencies of the key with the index j in our matrix.
  */
-static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, KeySet * done, Key * orderCounter)
+static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, ElektraKeyset * done, ElektraKey * orderCounter)
 {
 	unsigned int loops = 0;
 	unsigned int frontier[size];
@@ -535,7 +535,7 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 static int isValidKeyName (const char * testName)
 {
 	int retVal = 0;
-	Key * testKey = keyNew (testName, KEY_END);
+	ElektraKey * testKey = keyNew (testName, KEY_END);
 	if (testKey && !strcmp (keyName (testKey), testName)) retVal = 1;
 	keyDel (testKey);
 	return retVal;
@@ -569,22 +569,22 @@ static int isValidKeyName (const char * testName)
  * @retval -1 for invalid dependencies
  */
 
-int elektraSortTopology (KeySet * ks, Key ** array)
+int elektraSortTopology (ElektraKeyset * ks, ElektraKey ** array)
 {
 	if (ks == NULL || array == NULL) return -1;
-	KeySet * done = ksNew (0, KS_END);
+	ElektraKeyset * done = ksNew (0, KS_END);
 	ksRewind (ks);
-	Key * cur;
+	ElektraKey * cur;
 	ssize_t size = ksGetSize (ks);
-	Key * orderCounter = keyNew ("/#", KEY_END);
+	ElektraKey * orderCounter = keyNew ("/#", KEY_END);
 	elektraArrayIncName (orderCounter);
 	_adjMatrix adjMatrix[size];
 	int i = 0;
 	int retVal = 1;
 	int depCount = 0;
-	Key ** localArray = elektraMalloc (size * sizeof (Key *));
+	ElektraKey ** localArray = elektraMalloc (size * sizeof (ElektraKey *));
 	elektraKsToMemArray (ks, localArray);
-	qsort (localArray, size, sizeof (Key *), topCmpOrder);
+	qsort (localArray, size, sizeof (ElektraKey *), topCmpOrder);
 	for (long j = 0; j < size; ++j)
 	{
 		adjMatrix[j].key = localArray[j];
@@ -597,9 +597,9 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	for (int j = 0; j < size; ++j)
 	{
 		cur = localArray[j];
-		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
+		ElektraKeyset * deps = elektraMetaArrayToKS (cur, "dep");
 		ksLookupByName (deps, "meta:/dep", KDB_O_POP);
-		Key * tmpDep;
+		ElektraKey * tmpDep;
 		switch (ksGetSize (deps))
 		{
 		case -1: {
@@ -747,7 +747,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		// everything resolved
 		// add dependencies in topological order to array
 		elektraKsToMemArray (ks, array);
-		qsort (array, size, sizeof (Key *), topCmpOrder);
+		qsort (array, size, sizeof (ElektraKey *), topCmpOrder);
 		retVal = 1;
 	}
 	else
@@ -777,19 +777,19 @@ TopSortCleanup:
  * @returns a string containing all metakey values separated by "delim"
  */
 
-char * elektraMetaArrayToString (const Key * key, const char * metaName, const char * delim)
+char * elektraMetaArrayToString (const ElektraKey * key, const char * metaName, const char * delim)
 {
 	char * result = NULL;
-	Key * lookupElem = keyDup (keyGetMeta (key, metaName), KEY_CP_ALL);
+	ElektraKey * lookupElem = keyDup (keyGetMeta (key, metaName), KEY_CP_ALL);
 	keyAddBaseName (lookupElem, "#0");
-	Key * elem = (Key *) keyGetMeta (key, keyName (lookupElem));
+	ElektraKey * elem = (ElektraKey *) keyGetMeta (key, keyName (lookupElem));
 	if (elem != NULL)
 	{
 		elektraRealloc ((void **) &result, keyGetValueSize (elem));
 		snprintf (result, keyGetValueSize (elem), "%s", keyString (elem));
 	}
 	elektraArrayIncName (lookupElem);
-	elem = (Key *) keyGetMeta (key, keyName (lookupElem));
+	elem = (ElektraKey *) keyGetMeta (key, keyName (lookupElem));
 	while (elem != NULL)
 	{
 		elektraRealloc ((void **) &result,
@@ -797,7 +797,7 @@ char * elektraMetaArrayToString (const Key * key, const char * metaName, const c
 		strcat (result, delim);
 		strcat (result, keyString (elem));
 		elektraArrayIncName (lookupElem);
-		elem = (Key *) keyGetMeta (key, keyName (lookupElem));
+		elem = (ElektraKey *) keyGetMeta (key, keyName (lookupElem));
 	}
 	keyDel (lookupElem);
 	return result;

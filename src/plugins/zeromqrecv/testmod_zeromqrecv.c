@@ -32,7 +32,7 @@ void * context;
 /** timeout for tests in seconds */
 #define TEST_TIMEOUT 10
 
-Key * test_callbackKey;
+ElektraKey * test_callbackKey;
 uv_loop_t * test_callbackLoop;
 int test_incompleteMessageTimeout;
 
@@ -84,7 +84,7 @@ static void sendTestNotification (void * socket, char * changeType, char * keyNa
  * @param key     changed key
  * @param context notification callback context
  */
-static void test_notificationCallback (Key * key, ElektraNotificationCallbackContext * callbackContext ELEKTRA_UNUSED)
+static void test_notificationCallback (ElektraKey * key, ElektraNotificationCallbackContext * callbackContext ELEKTRA_UNUSED)
 {
 	test_callbackKey = key;
 	uv_stop (test_callbackLoop);
@@ -120,7 +120,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test commit notification\n");
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("zeromqrecv");
 
 	void * pubSocket = createTestSocket ();
@@ -160,7 +160,7 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 {
 	printf ("test incomplete message\n");
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("zeromqrecv");
 
 	void * pubSocket = createTestSocket ();

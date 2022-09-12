@@ -28,7 +28,7 @@
  * Transforms a mac string into a 64 bit integer
  * @param key the key containing the mac address
  */
-void transformMac (Key * key)
+void transformMac (ElektraKey * key)
 {
 	const char * macKey = keyString (key);
 
@@ -99,9 +99,9 @@ int checkIntMac (const char * mac)
  * @param key the key containing the MAC address
  * @retval VALIDATION_SUCCESS if MAC address is valid, VALIDATION_ISINT if MAC address is a 64 bit integer and valid, else VALIDATION_ERROR
  */
-int validateMac (Key * key)
+int validateMac (ElektraKey * key)
 {
-	const Key * metaKey = keyGetMeta (key, "check/macaddr");
+	const ElektraKey * metaKey = keyGetMeta (key, "check/macaddr");
 	if (!metaKey) return 1;
 
 	const char * mac = keyString (key);
@@ -126,11 +126,11 @@ int validateMac (Key * key)
 	return ret;
 }
 
-int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/macaddr"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/macaddr", KEY_VALUE, "macaddr plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/macaddr/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/macaddr/exports/get", KEY_FUNC, elektraMacaddrGet, KEY_END),
@@ -145,10 +145,10 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	ksRewind (returned);
-	Key * cur;
+	ElektraKey * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/macaddr");
+		const ElektraKey * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
 
 		int rc = validateMac (cur);
@@ -170,16 +170,16 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMacaddrSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ksRewind (returned);
-	Key * cur;
+	ElektraKey * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/macaddr");
+		const ElektraKey * meta = keyGetMeta (cur, "check/macaddr");
 		if (!meta) continue;
 
-		const Key * origValue = keyGetMeta (cur, "origvalue");
+		const ElektraKey * origValue = keyGetMeta (cur, "origvalue");
 		if (origValue)
 		{
 			keySetString (cur, keyString (origValue));

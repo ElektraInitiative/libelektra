@@ -26,8 +26,8 @@
 #define MAX_ORDER_SIZE 50
 
 
-int elektraHostsGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraHostsSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraHostsGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraHostsSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

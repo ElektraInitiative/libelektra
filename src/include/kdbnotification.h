@@ -99,7 +99,7 @@ extern "C" {
  * @retval -1 if @p contract is NULL
  * @retval  0 on success
  */
-int elektraNotificationContract (KeySet * contract);
+int elektraNotificationContract (ElektraKeyset * contract);
 
 #define ELEKTRA_NOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraNotificationRegister##TYPE_NAME
 
@@ -156,7 +156,7 @@ ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_long_double_t, KdbLongDouble)
  * @param  key      key with invalid value
  * @param  context  user supplied callback context
  */
-typedef void (*ElektraNotificationConversionErrorCallback) (Key * key, void * context);
+typedef void (*ElektraNotificationConversionErrorCallback) (ElektraKey * key, void * context);
 
 /**
  * @ingroup kdbnotification
@@ -165,7 +165,7 @@ typedef void (*ElektraNotificationConversionErrorCallback) (Key * key, void * co
  * @param  key      changed key
  * @param  context  user supplied callback context
  */
-typedef void (*ElektraNotificationChangeCallback) (Key * key, void * context);
+typedef void (*ElektraNotificationChangeCallback) (ElektraKey * key, void * context);
 
 /**
  * @ingroup kdbnotification
@@ -179,7 +179,7 @@ typedef void (*ElektraNotificationChangeCallback) (Key * key, void * context);
  * @retval 1 on success
  * @retval 0 on failure
  */
-int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context);
+int elektraNotificationRegisterCallback (ElektraKdb * kdb, ElektraKey * key, ElektraNotificationChangeCallback callback, void * context);
 
 /**
  * @ingroup kdbnotification
@@ -193,7 +193,7 @@ int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificati
  * @retval 1 on success
  * @retval 0 on failure
  */
-int elektraNotificationRegisterCallbackSameOrBelow (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context);
+int elektraNotificationRegisterCallbackSameOrBelow (ElektraKdb * kdb, ElektraKey * key, ElektraNotificationChangeCallback callback, void * context);
 
 
 #ifdef __cplusplus

@@ -37,7 +37,7 @@
  * returned a positive value, -1 otherwise
  * @retval NULL on NULL pointer
  */
-int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key * k, void * argument), void * argument)
+int elektraKsFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter) (const ElektraKey * k, void * argument), void * argument)
 {
 	if (!result) return -1;
 
@@ -46,7 +46,7 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 	if (!filter) return -1;
 
 	int ret = 0;
-	Key * current;
+	ElektraKey * current;
 
 	elektraCursor cursor = ksGetCursor (input);
 	ksRewind (input);
@@ -84,19 +84,19 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
  * @return the number of elements in the array if successful
  * @return a negative number on null pointers or if an error occurred
  */
-int elektraKsToMemArray (KeySet * ks, Key ** buffer)
+int elektraKsToMemArray (ElektraKeyset * ks, ElektraKey ** buffer)
 {
 	if (!ks) return -1;
 	if (!buffer) return -1;
 
 	/* clear the received buffer */
-	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
+	memset (buffer, 0, ksGetSize (ks) * sizeof (ElektraKey *));
 
 	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	size_t idx = 0;
 
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (ks)) != 0)
 	{
 		buffer[idx] = key;

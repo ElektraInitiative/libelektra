@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static Key * commonParent (Key * firstKey, Key * secondKey, size_t maxSize)
+static ElektraKey * commonParent (ElektraKey * firstKey, ElektraKey * secondKey, size_t maxSize)
 {
 	// First we find the common prefix of the first two keys.
 	// NOTE: a common prefix is not necessarily a common parent
@@ -46,7 +46,7 @@ static Key * commonParent (Key * firstKey, Key * secondKey, size_t maxSize)
 	char * commonPrefix = strndup (firstName, commonLength);
 
 	// ... and adjust it to a common parent.
-	Key * common = keyNew (commonPrefix, KEY_END);
+	ElektraKey * common = keyNew (commonPrefix, KEY_END);
 	if (commonPrefix[commonLength - 1] != '/')
 	{
 		keySetBaseName (common, NULL);
@@ -99,7 +99,7 @@ static Key * commonParent (Key * firstKey, Key * secondKey, size_t maxSize)
  * @param maxSize size of the pre-allocated @p returnedCommonParent buffer
  * @return size in bytes of the parent name, or 0 if there is no common parent (with length <= maxSize)
  */
-size_t ksGetCommonParentName (KeySet * working, char * returnedCommonParent, size_t maxSize)
+size_t ksGetCommonParentName (ElektraKeyset * working, char * returnedCommonParent, size_t maxSize)
 {
 	if (maxSize > SSIZE_MAX) return 0;
 	if (ksGetSize (working) < 1) return 0;
@@ -111,7 +111,7 @@ size_t ksGetCommonParentName (KeySet * working, char * returnedCommonParent, siz
 
 	// Get common parent of first two keys in the KeySet.
 
-	Key * common = commonParent (ksAtCursor (working, 0), ksAtCursor (working, 1), maxSize);
+	ElektraKey * common = commonParent (ksAtCursor (working, 0), ksAtCursor (working, 1), maxSize);
 
 	if (common == NULL)
 	{
@@ -120,17 +120,17 @@ size_t ksGetCommonParentName (KeySet * working, char * returnedCommonParent, siz
 	}
 
 	// We then check if all keys in the KeySet are below the parent we found.
-	KeySet * cut = ksCut (working, common);
+	ElektraKeyset * cut = ksCut (working, common);
 
 	while (ksGetSize (working) != 0)
 	{
 		// If not all keys match, we find the common prefix of common and the first non-matching key.
-		Key * nextKey = ksAtCursor (working, 0);
+		ElektraKey * nextKey = ksAtCursor (working, 0);
 
 		ksAppend (working, cut);
 		ksDel (cut);
 
-		Key * newCommon = commonParent (common, nextKey, maxSize);
+		ElektraKey * newCommon = commonParent (common, nextKey, maxSize);
 
 		keyDel (common);
 		common = newCommon;

@@ -55,19 +55,19 @@ static void init_gpgme (void)
 	succeed_if (!err, "failed to initialize gpgme");
 }
 
-static KeySet * newPluginConfiguration (void)
+static ElektraKeyset * newPluginConfiguration (void)
 {
 	return ksNew (3, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		      keyNew (ELEKTRA_GPGME_CONFIG_TEXTMODE, KEY_VALUE, "0", KEY_END),
 		      keyNew (ELEKTRA_GPGME_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
 }
 
-static KeySet * newTestdataKeySet (void)
+static ElektraKeyset * newTestdataKeySet (void)
 {
-	Key * kUnchanged = keyNew (KEYNAME_UNCHANGED, KEY_END);
-	Key * kNull = keyNew (KEYNAME_NULL, KEY_END);
-	Key * kString = keyNew (KEYNAME_STRING, KEY_END);
-	Key * kBin = keyNew (KEYNAME_BIN, KEY_END);
+	ElektraKey * kUnchanged = keyNew (KEYNAME_UNCHANGED, KEY_END);
+	ElektraKey * kNull = keyNew (KEYNAME_NULL, KEY_END);
+	ElektraKey * kString = keyNew (KEYNAME_STRING, KEY_END);
+	ElektraKey * kBin = keyNew (KEYNAME_BIN, KEY_END);
 
 	keySetString (kUnchanged, strVal);
 
@@ -112,9 +112,9 @@ static void test_import_key (void)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * configKs = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (GPGME_PLUGIN_NAME, modules, configKs, 0);
@@ -123,7 +123,7 @@ static void test_init (void)
 	{
 		succeed_if (!strcmp (plugin->name, GPGME_PLUGIN_NAME), "got wrong name");
 
-		KeySet * config = elektraPluginGetConfig (plugin);
+		ElektraKeyset * config = elektraPluginGetConfig (plugin);
 		succeed_if (config != 0, "there should be a config");
 
 		succeed_if (plugin->kdbOpen != 0, "no open pointer");
@@ -147,16 +147,16 @@ static void test_init (void)
 static void test_incomplete_config (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * configKs = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * configKs = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (GPGME_PLUGIN_NAME, modules, configKs, 0);
 	succeed_if (plugin != 0, "failed to open the plugin");
 	if (plugin)
 	{
-		KeySet * data = newTestdataKeySet ();
+		ElektraKeyset * data = newTestdataKeySet ();
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == -1, "kdb set succeeded with incomplete configuration");
 		ksDel (data);
 		elektraPluginClose (plugin, 0);
@@ -170,18 +170,18 @@ static void test_incomplete_config (void)
 static void test_encryption_decryption (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (GPGME_PLUGIN_NAME, modules, config, 0);
 	if (plugin)
 	{
-		Key * k;
-		KeySet * data = newTestdataKeySet ();
-		KeySet * original = ksDup (data);
+		ElektraKey * k;
+		ElektraKeyset * data = newTestdataKeySet ();
+		ElektraKeyset * original = ksDup (data);
 
 		// test encryption with kdb set
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");

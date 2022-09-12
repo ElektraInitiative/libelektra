@@ -80,9 +80,9 @@ static int validateIPv6 (const char * addr)
 	}
 }
 
-static int validateKey (Key * key, Key * parentKey)
+static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 {
-	const Key * meta = keyGetMeta (key, "check/ipaddr");
+	const ElektraKey * meta = keyGetMeta (key, "check/ipaddr");
 	if (!meta) return 1;
 	int rc = 0;
 
@@ -114,11 +114,11 @@ static int validateKey (Key * key, Key * parentKey)
 	return rc;
 }
 
-int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/ipaddr"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/ipaddr", KEY_VALUE, "ipaddr plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/ipaddr/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/ipaddr/exports/get", KEY_FUNC, elektraIpaddrGet, KEY_END),
@@ -132,15 +132,15 @@ int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/ipaddr");
+		const ElektraKey * meta = keyGetMeta (cur, "check/ipaddr");
 		if (!meta) continue;
 		int rc = validateKey (cur, parentKey);
 		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;

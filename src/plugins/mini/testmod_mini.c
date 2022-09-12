@@ -21,11 +21,11 @@ static void test_basics (void)
 {
 	printf ("• Test basic functionality of plugin\n");
 
-	Key * parentKey = keyNew ("system:/elektra/modules/mini", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/elektra/modules/mini", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
 
 	keyDel (parentKey);
@@ -39,11 +39,11 @@ static void test_get (void)
 	printf ("• Parse file “%s”\n", fileName);
 
 	char const * const prefix = "user:/mini/tests/read";
-	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (fileName), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
 
-	KeySet * keySet = ksNew (0, KS_END);
+	ElektraKeyset * keySet = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open or parse file");
 	succeed_if (output_error (parentKey), "Received unexpected error while reading the configuration");
 
@@ -56,11 +56,11 @@ static void test_get (void)
 		{ "empty", "" },
 		{ "esc\\/a\\/ped/level1/level2", "🌻" },
 	};
-	Key * key;
+	ElektraKey * key;
 	char text[MAX_LENGTH_TEXT];
 	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
 	{
-		Key * reference = keyNew (prefix, KEY_VALUE, keyValues[pair][1], KEY_END);
+		ElektraKey * reference = keyNew (prefix, KEY_VALUE, keyValues[pair][1], KEY_END);
 		keyAddName (reference, keyValues[pair][0]);
 		key = ksLookupByName (keySet, keyName (reference), KDB_O_NONE);
 
@@ -83,15 +83,15 @@ static void test_set (void)
 	char const * const fileName = "mini/write.ini";
 	char const * const prefix = "user:/mini/tests/write";
 
-	Key * parentKey = keyNew (prefix, KEY_VALUE, elektraFilename (), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
 
 	char keyValues[][2][50] = {
 		{ "key", "value" }, { "space", "wide open	 spaces" }, { "empty", "" }, { "esc\\/aped/level1/", "🐌" }
 	};
 	char text[MAX_LENGTH_TEXT];
-	KeySet * keySet = ksNew (0, KS_END);
+	ElektraKeyset * keySet = ksNew (0, KS_END);
 	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
 	{
 		char * name = keyValues[pair][0];

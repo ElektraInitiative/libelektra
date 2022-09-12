@@ -15,7 +15,7 @@
 
 typedef struct _TableArrayList
 {
-	Key * key;
+	ElektraKey * key;
 	char * keyStr;
 	size_t currIndex;
 	struct _TableArrayList * next;
@@ -30,7 +30,7 @@ typedef struct _TableArrayList
  * @retval Pointer New table array top.
  * @retval NULL On error.
  */
-TableArrayList * pushTableArray (TableArrayList * top, Key * key);
+TableArrayList * pushTableArray (TableArrayList * top, ElektraKey * key);
 
 /*
  * @brief Pops a table array entry from the list.
@@ -54,6 +54,6 @@ TableArrayList * popTableArray (TableArrayList * top);
  * @retval NULL On error.
  */
 
-Key * buildTableArrayKeyName (const TableArrayList * ta);
+ElektraKey * buildTableArrayKeyName (const TableArrayList * ta);
 
 #endif // ELEKTRA_PLUGIN_TOML_TABLE_ARRAY_LIST_H

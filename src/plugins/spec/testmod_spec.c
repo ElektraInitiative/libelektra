@@ -42,16 +42,16 @@ static void test_default (void)
 {
 	printf ("test default\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	ElektraKeyset * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
 				     KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 
 		succeed_if (lookup != NULL, ".../a not found");
 		succeed_if_same_string (keyString (lookup), "17");
@@ -63,7 +63,7 @@ static void test_default (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_VALUE, "19", KEY_META, "default", "19", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should fail");
@@ -78,18 +78,18 @@ static void test_assign_condition (void)
 {
 	printf ("test assign/condition\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	ElektraKeyset * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (
+		ElektraKeyset * ks = ksNew (
 			10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "assign/condition", "17", KEY_META, "othermeta", "", KEY_END),
 			KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 
 		succeed_if (lookup != NULL, ".../a not found");
 		succeed_if_same_string (keyString (lookup), "");
@@ -106,17 +106,17 @@ static void test_wildcard (void)
 {
 	printf ("test wildcard (_)\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	ElektraKeyset * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/_", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/_", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a/x", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a/x", 0);
 
 		succeed_if (lookup != NULL, ".../a/x not found");
 		// succeed_if_same_string (keyString (lookup), "17"); // TODO: wildcard defaults, not possible right now
@@ -129,7 +129,7 @@ static void test_wildcard (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/_", KEY_META, "require/count", "2", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/_", KEY_META, "require/count", "2", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x", KEY_END), keyNew ("user:/" PARENT_KEY "/a/y", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
@@ -146,11 +146,11 @@ static void test_require (void)
 {
 	printf ("test require\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	ElektraKeyset * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
 
@@ -160,7 +160,7 @@ static void test_require (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
@@ -176,12 +176,12 @@ static void test_logMissing (void)
 {
 	printf ("test logMissing\n");
 
-	KeySet * _conf = ksNew (2, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END),
+	ElektraKeyset * _conf = ksNew (2, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END),
 				keyNew ("user:/missing/log", KEY_VALUE, "1", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
 
@@ -197,7 +197,7 @@ static void test_logMissing (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
@@ -215,17 +215,17 @@ static void test_array (void)
 {
 	printf ("test array\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	ElektraKeyset * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "7", KEY_META, "type", "long", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "7", KEY_META, "type", "long", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#5", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 		succeed_if (lookup != NULL, ".../a not found");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "array")), "#5");
 		succeed_if (keyGetMeta (lookup, "type") == NULL, "parent shouldn't have copied metadata");
@@ -272,14 +272,14 @@ static void test_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 		succeed_if (lookup != NULL, ".../a not found");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "array")), "#0");
 
@@ -308,14 +308,14 @@ static void test_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 		succeed_if (lookup != NULL, ".../a not found");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "array")), "#0");
 
@@ -344,7 +344,7 @@ static void test_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#3", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
@@ -352,7 +352,7 @@ static void test_array (void)
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
 		succeed_if (lookup != NULL, ".../a not found");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "array")), "#0");
 
@@ -381,7 +381,7 @@ static void test_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array/min", "#3", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
@@ -394,7 +394,7 @@ static void test_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "default", "7", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#3", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/c", KEY_END), KS_END);
@@ -411,11 +411,11 @@ static void test_require_array (void)
 {
 	printf ("test require array\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	ElektraKeyset * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "require", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "require", "", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#0", KEY_END), KS_END);
 
@@ -427,7 +427,7 @@ static void test_require_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "require", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "require", "", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/#0", KEY_END), KS_END);
@@ -441,7 +441,7 @@ static void test_require_array (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "require", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b/#", KEY_META, "require", "", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#1", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/#0", KEY_END), KS_END);
@@ -458,17 +458,17 @@ static void test_array_member (void)
 {
 	printf ("test array member\n");
 
-	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+	ElektraKeyset * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a/#0/b", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a/#0/b", 0);
 		succeed_if (lookup != NULL, ".../a/#0/b not found");
 		succeed_if_same_string (keyString (lookup), "x");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "x");
@@ -479,7 +479,7 @@ static void test_array_member (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
@@ -490,7 +490,7 @@ static void test_array_member (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("user:/" PARENT_KEY "/a/x", KEY_VALUE, "y", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("user:/" PARENT_KEY "/a/x", KEY_VALUE, "y", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "x", KEY_END), KS_END);
 
@@ -502,7 +502,7 @@ static void test_array_member (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b/c", KEY_META, "default", "y", KEY_END), KS_END);
 
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
@@ -514,7 +514,7 @@ static void test_array_member (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b/c", KEY_META, "default", "y", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
@@ -523,7 +523,7 @@ static void test_array_member (void)
 		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a/#0/b", 0);
+		ElektraKey * lookup = ksLookupByName (ks, PARENT_KEY "/a/#0/b", 0);
 		succeed_if (lookup != NULL, ".../a/#0/b not found");
 		succeed_if_same_string (keyString (lookup), "x");
 		succeed_if_same_string (keyString (keyGetMeta (lookup, "default")), "x");
@@ -539,7 +539,7 @@ static void test_array_member (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b/c", KEY_META, "default", "y", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x/b/c", KEY_VALUE, "z", KEY_END), KS_END);
 
@@ -551,7 +551,7 @@ static void test_array_member (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
+		ElektraKeyset * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b/c", KEY_META, "default", "y", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),

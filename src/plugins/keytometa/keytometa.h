@@ -15,9 +15,9 @@
 #include <kdbextension.h>
 #include <kdbplugin.h>
 
-int elektraKeyToMetaGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraKeyToMetaSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraKeyToMetaClose (Plugin * handle, Key * errorKey);
+int elektraKeyToMetaGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraKeyToMetaSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraKeyToMetaClose (Plugin * handle, ElektraKey * errorKey);
 
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

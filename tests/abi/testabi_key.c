@@ -68,7 +68,7 @@ static void test_keyNewSpecial (void)
 {
 	printf ("Test special key creation\n");
 
-	Key * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
 	succeed_if_same_string (keyName (k), "/");
 	keyDel (k);
 
@@ -101,11 +101,11 @@ static void test_keyNewSpecial (void)
 
 static void test_keyNewSystem (void)
 {
-	Key * key;
+	ElektraKey * key;
 	char array[] = "here is some data stored";
-	Key * k1;
-	Key * k2;
-	Key * k3;
+	ElektraKey * k1;
+	ElektraKey * k2;
+	ElektraKey * k3;
 	char * getBack;
 
 	printf ("Test system key creation\n");
@@ -174,9 +174,9 @@ static void test_keyNewSystem (void)
 
 static void test_keyNewUser (void)
 {
-	Key * k1;
-	Key * k2;
-	Key * k3;
+	ElektraKey * k1;
+	ElektraKey * k2;
+	ElektraKey * k3;
 
 	printf ("Test user key creation\n");
 	// testing multiple values at once
@@ -207,10 +207,10 @@ static void test_keyReference (void)
 {
 	printf ("Test key reference\n");
 
-	Key * key = keyNew ("user:/key", KEY_END);
-	Key * c = keyNew ("user:/c", KEY_END);
-	Key * d;
-	KeySet *ks1, *ks2;
+	ElektraKey * key = keyNew ("user:/key", KEY_END);
+	ElektraKey * c = keyNew ("user:/c", KEY_END);
+	ElektraKey * d;
+	ElektraKeyset *ks1, *ks2;
 
 	succeed_if (keyGetRef (0) == UINT16_MAX, "No error on getting refcount of NULL Key");
 	succeed_if (keyDecRef (0) == UINT16_MAX, "No error on decrementing NULL Key");
@@ -306,9 +306,9 @@ static void test_keyReference (void)
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	keyDel (key); // key is now deleted
 
-	Key * k = keyNew ("system:/proper_name", KEY_END); // ref counter = 0
+	ElektraKey * k = keyNew ("system:/proper_name", KEY_END); // ref counter = 0
 	succeed_if (keyGetRef (k) == 0, "ref should be zero");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 	succeed_if (keyGetRef (k) == 1, "ref should be one");
 	succeed_if (keyDel (k) == 1, "key will not be deleted, because its in the keyset");
 	succeed_if (keyGetRef (k) == 1, "ref should be one");
@@ -328,7 +328,7 @@ static void test_keyReference (void)
 
 static void test_keyName (void)
 {
-	Key * key;
+	ElektraKey * key;
 	char ret[1000];
 	size_t i;
 	char testName[] = "user:/name";
@@ -554,7 +554,7 @@ static void test_keyNameSlashes (void)
 	printf ("Test Slashes in Key Name\n");
 	char * buf;
 	char * getBack;
-	Key * key = 0;
+	ElektraKey * key = 0;
 	int i;
 
 
@@ -743,7 +743,7 @@ static void test_keyNameSlashes (void)
 
 	printf ("Test key's name manipulation\n");
 
-	Key * copy = keyNew ("/", KEY_END);
+	ElektraKey * copy = keyNew ("/", KEY_END);
 
 	for (i = 0; tstKeyName[i].testName != NULL; i++)
 	{
@@ -753,7 +753,7 @@ static void test_keyNameSlashes (void)
 		keyCopy (copy, key, KEY_CP_ALL);
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
 
-		Key * dup = keyDup (key, KEY_CP_ALL);
+		ElektraKey * dup = keyDup (key, KEY_CP_ALL);
 		succeed_if (keyGetRef (dup) == 0, "reference of dup not correct");
 
 		compare_key (copy, key);
@@ -801,7 +801,7 @@ static void test_keyNameSlashes (void)
 
 static void test_keyValue (void)
 {
-	Key * key;
+	ElektraKey * key;
 	char ret[1000];
 	size_t i;
 	char testString[] = "teststring";
@@ -1008,7 +1008,7 @@ static void test_keyValue (void)
 
 static void test_keyBinary (void)
 {
-	Key * key = 0;
+	ElektraKey * key = 0;
 	char ret[1000];
 	int i;
 	char binaryData[] = "\0binary \1\34data";
@@ -1128,8 +1128,8 @@ static void test_keyBinary (void)
 
 static void test_keyBelow (void)
 {
-	Key * key1 = keyNew ("/", KEY_END);
-	Key * key2 = keyNew ("/", KEY_END);
+	ElektraKey * key1 = keyNew ("/", KEY_END);
+	ElektraKey * key2 = keyNew ("/", KEY_END);
 
 	printf ("Test of relative positions of keys\n");
 
@@ -1398,7 +1398,7 @@ static void test_keyBelow (void)
 
 static void test_keyDup (void)
 {
-	Key *orig, *copy;
+	ElektraKey *orig, *copy;
 
 	printf ("Test key duplication\n");
 
@@ -1417,7 +1417,7 @@ static void test_keyDup (void)
 	succeed_if (keyIsBinary (copy), "keyDup: key type copy error");
 
 	// Dup the key again
-	Key * ccopy;
+	ElektraKey * ccopy;
 	succeed_if ((ccopy = keyDup (copy, KEY_CP_ALL)) != 0, "keyDup failed");
 	compare_key (copy, ccopy);
 	keyDel (copy); // everything independent from original!
@@ -1445,7 +1445,7 @@ static void test_keyDup (void)
 
 static void test_keyCopy (void)
 {
-	Key *orig, *copy;
+	ElektraKey *orig, *copy;
 	char origBuffer[5], copyBuffer[5];
 
 	printf ("Test key copy\n");
@@ -1572,7 +1572,7 @@ static void test_keyCopy (void)
 
 	orig = keyNew ("user:/orig", KEY_END);
 	succeed_if (keyNeedSync (orig), "fresh key does not need sync?");
-	KeySet * ks = ksNew (20, KS_END);
+	ElektraKeyset * ks = ksNew (20, KS_END);
 	ksAppendKey (ks, orig);
 	copy = keyNew ("user:/othername", KEY_END);
 	succeed_if (keyNeedSync (copy), "fresh key does not need sync?");
@@ -1604,7 +1604,7 @@ static void test_binary (void)
 {
 	printf ("Test binary values\n");
 
-	Key * k = 0;
+	ElektraKey * k = 0;
 
 	int i = 20;
 	int * p = &i;
@@ -1701,8 +1701,8 @@ static void test_binary (void)
 
 static void test_keyBelowOrSame (void)
 {
-	Key * key1 = keyNew ("/", KEY_END);
-	Key * key2 = keyNew ("/", KEY_END);
+	ElektraKey * key1 = keyNew ("/", KEY_END);
+	ElektraKey * key2 = keyNew ("/", KEY_END);
 
 	printf ("Test of keyBelowOrSame\n");
 
@@ -1787,7 +1787,7 @@ static void test_keyBelowOrSame (void)
 static void test_keyNameSpecial (void)
 {
 	printf ("Test special keynames\n");
-	Key * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
 	succeed_if_same_string (keyName (k), "/");
 
 	succeed_if (keySetName (k, "system:/"), "could not set key name with system");
@@ -1899,19 +1899,19 @@ static void test_keyClear (void)
 {
 	printf ("Test clear of key\n");
 
-	Key * k1 = keyNew ("system:/abc", KEY_END);
+	ElektraKey * k1 = keyNew ("system:/abc", KEY_END);
 	succeed_if_same_string (keyName (k1), "system:/abc");
 
 	succeed_if (keyGetRef (k1) == 0, "New key reference");
 	keyIncRef (k1);
 	succeed_if (keyGetRef (k1) == 1, "Incremented key reference");
-	Key * k2 = k1; // create an alias for k1
+	ElektraKey * k2 = k1; // create an alias for k1
 	succeed_if_same_string (keyName (k2), "system:/abc");
 	succeed_if (keyGetRef (k1) == 1, "Incremented key reference");
 	succeed_if (keyGetRef (k2) == 1, "Incremented key reference");
 
 	keyIncRef (k1);
-	Key * k3 = k1; // create an alias for k1
+	ElektraKey * k3 = k1; // create an alias for k1
 	succeed_if_same_string (keyName (k3), "system:/abc");
 	succeed_if (keyGetRef (k1) == 2, "Incremented key reference");
 	succeed_if (keyGetRef (k2) == 2, "Incremented key reference");
@@ -1963,7 +1963,7 @@ static void test_keyClear (void)
 static void test_keyBaseName (void)
 {
 	printf ("Test basename\n");
-	Key * k = keyNew ("user:///foo\\///bar\\/foo_bar\\/", KEY_END);
+	ElektraKey * k = keyNew ("user:///foo\\///bar\\/foo_bar\\/", KEY_END);
 	succeed_if_same_string (keyName (k), "user:/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string (keyBaseName (k), "bar/foo_bar/");
 	succeed_if (keyGetBaseNameSize (k) == 13, "wrong base name size");
@@ -2056,7 +2056,7 @@ static void test_keySetBaseName (void)
 {
 	printf ("Test set basename\n");
 
-	Key * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
 
 	succeed_if (keySetBaseName (0, "abc") == -1, "NULL key");
 	succeed_if_same_string (keyName (k), "/");
@@ -2290,7 +2290,7 @@ static void test_keyAddBaseName (void)
 {
 	printf ("Test add basename\n");
 
-	Key * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
 
 	//![base0 empty]
 	keySetName (k, "");
@@ -2366,8 +2366,8 @@ static void test_keyDirectBelow (void)
 {
 	printf ("Test direct below check\n");
 
-	Key * k1 = keyNew ("/dir", KEY_END);
-	Key * k2 = keyNew ("/dir/directbelow", KEY_END);
+	ElektraKey * k1 = keyNew ("/dir", KEY_END);
+	ElektraKey * k2 = keyNew ("/dir/directbelow", KEY_END);
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user:/dir");
@@ -2414,7 +2414,7 @@ static void test_keyEscape (void)
 {
 	printf ("test escape in basename\n");
 
-	Key * k = keyNew ("/valid", KEY_END);
+	ElektraKey * k = keyNew ("/valid", KEY_END);
 	char buffer[500];
 
 #define TEST_ESCAPE_PART(A, S)                                                                                                             \
@@ -2492,7 +2492,7 @@ static void test_keyEscape (void)
 	keyDel (k);
 }
 
-static void test_keyAdd_test (Key * k, const char * escaped, const char * unescaped)
+static void test_keyAdd_test (ElektraKey * k, const char * escaped, const char * unescaped)
 {
 	char buffer[500];
 	succeed_if_fmt (keyAddName (k, escaped) != -1, "keyAddName returned an error for '%s'", escaped);
@@ -2505,7 +2505,7 @@ static void test_keyAdd (void)
 {
 	printf ("test keyAdd\n");
 
-	Key * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
 	succeed_if (keyAddName (0, "valid") == -1, "cannot add to null name");
 
 	keySetName (k, "/");
@@ -2554,7 +2554,7 @@ void test_keyCascading (void)
 {
 	printf ("test cascading\n");
 
-	Key * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
 	succeed_if (keyGetNameSize (k) == 2, "size not correct");
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyBaseName (k), "");

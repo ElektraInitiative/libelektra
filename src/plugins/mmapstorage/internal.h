@@ -100,8 +100,8 @@
 struct _mmapAddr
 {
 	// clang-format off
-	KeySet * const globalKsPtr;	/**<Pointer to the global KeySet struct. */
-	KeySet * const ksPtr;		/**<Pointer to the (main) KeySet struct. */
+	ElektraKeyset * const globalKsPtr;	/**<Pointer to the global KeySet struct. */
+	ElektraKeyset * const ksPtr;		/**<Pointer to the (main) KeySet struct. */
 
 	char * metaKsPtr;		/**<Pointer to the current meta KeySet structs. */
 	char * globalKsArrayPtr;	/**<Pointer to the current global KeySet->array. */

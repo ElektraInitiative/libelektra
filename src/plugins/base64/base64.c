@@ -25,7 +25,7 @@
  * @retval 0 if the given key was not modified
  * @retval 1 if the function successfully unescaped `key`
  */
-static int unescape (Key * key, Key * parent)
+static int unescape (ElektraKey * key, ElektraKey * parent)
 {
 	const char * strVal = keyString (key);
 	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
@@ -55,7 +55,7 @@ static int unescape (Key * key, Key * parent)
  * @retval true if the plugin should decode the given key
  * @retval false otherwise
  */
-static bool shouldDecode (Key * key, bool metaMode)
+static bool shouldDecode (ElektraKey * key, bool metaMode)
 {
 	if (metaMode) return keyGetMeta (key, "type") && strcmp (keyValue (keyGetMeta (key, "type")), "binary") == 0;
 
@@ -83,7 +83,7 @@ static bool shouldDecode (Key * key, bool metaMode)
  * @retval 0 if the given key was not modified
  * @retval 1 if the function successfully modified `key`
  */
-static int decode (Key * key, Key * parent, bool metaMode)
+static int decode (ElektraKey * key, ElektraKey * parent, bool metaMode)
 {
 	if (!keyIsString (key)) return 0;
 
@@ -131,7 +131,7 @@ static int decode (Key * key, Key * parent, bool metaMode)
  * @retval 0 if no conversion has taken place
  * @retval 1 if the function successfully converted the value of `key`
  */
-static int encode (Key * key, Key * parent, bool metaMode)
+static int encode (ElektraKey * key, ElektraKey * parent, bool metaMode)
 {
 	if (!keyIsBinary (key) || (keyGetValueSize (key) == 0 && metaMode)) return 0;
 
@@ -178,7 +178,7 @@ static int encode (Key * key, Key * parent, bool metaMode)
  * @retval 0 if the function did not change the key value
  * @retval 1 if the function successfully escaped the value of `key`
  */
-static int escape (Key * key, Key * parent)
+static int escape (ElektraKey * key, ElektraKey * parent)
 {
 	if (keyIsString (key) == 0) return 0;
 
@@ -214,8 +214,8 @@ static int escape (Key * key, Key * parent)
  */
 static bool useMetaMode (Plugin * handle)
 {
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * metaMode = ksLookupByName (config, "/binary/meta", 0);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * metaMode = ksLookupByName (config, "/binary/meta", 0);
 
 	ELEKTRA_LOG ("Using %s mode", metaMode ? "meta" : "escaping");
 	return metaMode ? true : false;
@@ -232,12 +232,12 @@ static bool useMetaMode (Plugin * handle)
  * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
-int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
+int PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * keySet, ElektraKey * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		KeySet * moduleConfig = ksNew (30,
+		ElektraKeyset * moduleConfig = ksNew (30,
 #include "contract.h"
 					       KS_END);
 		ksAppend (keySet, moduleConfig);
@@ -248,7 +248,7 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
 	bool metaMode = useMetaMode (handle);
 
 	// base64 decoding
-	Key * key;
+	ElektraKey * key;
 	ksRewind (keySet);
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
@@ -269,9 +269,9 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
  * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
-int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * keySet, Key * parentKey)
+int PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * keySet, ElektraKey * parentKey)
 {
-	Key * key;
+	ElektraKey * key;
 
 	ksRewind (keySet);
 

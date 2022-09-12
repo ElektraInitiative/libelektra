@@ -15,8 +15,8 @@ struct _dynArray
 {
 	size_t size;
 	size_t alloc;
-	Key ** keyArray;
-	Key ** mappedKeyArray;
+	ElektraKey ** keyArray;
+	ElektraKey ** mappedKeyArray;
 };
 
 typedef struct _dynArray DynArray;
@@ -24,7 +24,7 @@ typedef struct _dynArray DynArray;
 // DynArray functions
 DynArray * ELEKTRA_PLUGIN_FUNCTION (dynArrayNew) (void);
 void ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (DynArray * dynArray);
-int ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (Key * key, DynArray * dynArray);
-ssize_t ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) (Key * key, DynArray * dynArray);
+int ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (ElektraKey * key, DynArray * dynArray);
+ssize_t ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) (ElektraKey * key, DynArray * dynArray);
 
 #endif

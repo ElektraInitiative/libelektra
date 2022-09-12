@@ -57,15 +57,15 @@
 		elektraFree (actual);                                                                                                      \
 	}
 
-static inline Key * keyWithOpt (const char * name, const char shortOpt, const char * longOpt, const char * envVar)
+static inline ElektraKey * keyWithOpt (const char * name, const char shortOpt, const char * longOpt, const char * envVar)
 {
 	return keyNew (name, KEY_META, "opt", (const char[]){ shortOpt, '\0' }, KEY_META, "opt/long", longOpt, KEY_META, "env", envVar,
 		       KEY_END);
 }
 
-static bool checkValue (KeySet * ks, const char * name, const char * expected)
+static bool checkValue (ElektraKeyset * ks, const char * name, const char * expected)
 {
-	Key * key = ksLookupByName (ks, name, 0);
+	ElektraKey * key = ksLookupByName (ks, name, 0);
 	if (key == NULL)
 	{
 		return expected == NULL;
@@ -75,15 +75,15 @@ static bool checkValue (KeySet * ks, const char * name, const char * expected)
 	return expected == NULL ? strlen (actual) == 0 : strcmp (actual, expected) == 0;
 }
 
-static bool checkMeta (KeySet * ks, const char * name, const char * meta, const char * expected)
+static bool checkMeta (ElektraKeyset * ks, const char * name, const char * meta, const char * expected)
 {
-	Key * key = ksLookupByName (ks, name, 0);
+	ElektraKey * key = ksLookupByName (ks, name, 0);
 	if (key == NULL)
 	{
 		return expected == NULL;
 	}
 
-	const Key * metaKey = keyGetMeta (key, meta);
+	const ElektraKey * metaKey = keyGetMeta (key, meta);
 	if (metaKey == NULL)
 	{
 		return expected == NULL;
@@ -93,9 +93,9 @@ static bool checkMeta (KeySet * ks, const char * name, const char * meta, const 
 	return expected == NULL ? strlen (actual) == 0 : strcmp (actual, expected) == 0;
 }
 
-static bool checkError (Key * errorKey, const char * expectedNumber, const char * expectedReason)
+static bool checkError (ElektraKey * errorKey, const char * expectedNumber, const char * expectedReason)
 {
-	const Key * metaError = keyGetMeta (errorKey, "error");
+	const ElektraKey * metaError = keyGetMeta (errorKey, "error");
 	if (metaError == NULL)
 	{
 		return false;
@@ -111,12 +111,12 @@ static bool checkError (Key * errorKey, const char * expectedNumber, const char 
 	return result;
 }
 
-static void clearValues (KeySet * ks)
+static void clearValues (ElektraKeyset * ks)
 {
 	elektraCursor cursor = ksGetCursor (ks);
 
 	ksRewind (ks);
-	Key * cur;
+	ElektraKey * cur;
 	while ((cur = ksNext (ks)) != NULL)
 	{
 		keySetString (cur, NULL);
@@ -128,7 +128,7 @@ static void clearValues (KeySet * ks)
 
 static void test_simple (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -159,7 +159,7 @@ static void test_simple (void)
 
 static void test_short_only (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -178,7 +178,7 @@ static void test_short_only (void)
 
 static void test_long_only (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, "apple", NULL), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, "apple", NULL), KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -197,7 +197,7 @@ static void test_long_only (void)
 
 static void test_env_only (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -212,9 +212,9 @@ static void test_env_only (void)
 
 static void test_flag (void)
 {
-	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
+	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "none");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag failed");
@@ -224,7 +224,7 @@ static void test_flag (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag (with arg) failed");
 	clearValues (ks);
 
-	Key * errorKey;
+	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag (with arg, combined) should have failed");
@@ -248,10 +248,10 @@ static void test_flag (void)
 
 static void test_flag_value (void)
 {
-	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
+	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "none");
 	keySetMeta (k, "opt/flagvalue", "set");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value failed");
@@ -261,7 +261,7 @@ static void test_flag_value (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value (with arg) failed");
 	clearValues (ks);
 
-	Key * errorKey;
+	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag with value (with arg, combined) should have failed");
@@ -285,9 +285,9 @@ static void test_flag_value (void)
 
 static void test_optional (void)
 {
-	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
+	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "optional");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag failed");
@@ -297,7 +297,7 @@ static void test_optional (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag (with arg) failed");
 	clearValues (ks);
 
-	Key * errorKey;
+	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag (with arg, combined) should have failed");
@@ -320,10 +320,10 @@ static void test_optional (void)
 
 static void test_optional_value (void)
 {
-	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
+	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "optional");
 	keySetMeta (k, "opt/flagvalue", "set");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value failed");
@@ -333,7 +333,7 @@ static void test_optional_value (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value (with arg) failed");
 	clearValues (ks);
 
-	Key * errorKey;
+	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown short option: -s"),
 		    "short flag with value (with arg, combined) should have failed");
@@ -356,7 +356,7 @@ static void test_optional_value (void)
 
 static void test_precedence (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
 
 	RUN_TEST (ks, ARGS ("--apple=long", "-ashort"), ENVP ("APPLE=env"));
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option didn't take precedence");
@@ -371,7 +371,7 @@ static void test_precedence (void)
 
 static void test_repeated (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short0", "-ashort1", "-a", "short2"), NO_ENVP);
 	succeed_if (checkMeta (ks, PROC_BASE_KEY "/apple", "array", "#2"), "short repeated failed (wrong count)");
@@ -399,7 +399,7 @@ static void test_repeated (void)
 
 static void test_multiple (void)
 {
-	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "#1");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
@@ -408,7 +408,7 @@ static void test_multiple (void)
 	keySetMeta (k, "env", "#1");
 	keySetMeta (k, "env/#0", "APPLE");
 	keySetMeta (k, "env/#1", "BANANA");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option failed");
@@ -455,7 +455,7 @@ static void test_multiple (void)
 
 static void test_precedence_repeated (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
 
 	RUN_TEST (ks, ARGS ("--apple=long1", "-a", "short0", "-a", "short1", "--apple", "long0", "--apple", "long2", "-ashort2"),
 		  ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
@@ -481,12 +481,12 @@ static void test_illegal_spec (void)
 	// illegal flagvalue
 	// ---
 
-	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "a");
 	keySetMeta (k, "opt/flagvalue", "set");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 
-	Key * errorKey;
+	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The flagvalue metadata can only be used, if the opt/arg metadata is set to 'none' or 'optional'. "
@@ -833,9 +833,9 @@ static void test_illegal_use (void)
 	// illegal repeat
 	// ---
 
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), KS_END);
 
-	Key * errorKey;
+	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort0", "-ashort1"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot be repeated: -a"),
 		    "repeat should be illegal (short)");
@@ -870,7 +870,7 @@ static void test_illegal_use (void)
 	// argument not allowed
 	// ---
 
-	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "a");
 	keySetMeta (k, "opt/long", "apple");
 	keySetMeta (k, "opt/arg", "none");
@@ -961,9 +961,9 @@ static void test_help (void)
 	// no options
 	// ---
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
-	Key * errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	ElektraKey * errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
 	const char * expectedHelpBase =
 		"Usage: prog [OPTION...]\n"
@@ -1006,7 +1006,7 @@ static void test_help (void)
 		"ENVIRONMENT VARIABLES\n"
 		"  APPLE, BANANA, CHERRY       Apple/Banana/Cherry description\n";
 
-	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "#3");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
@@ -1145,7 +1145,7 @@ static void test_help (void)
 
 static void test_stop (void)
 {
-	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"),
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"),
 			     keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
 
 	RUN_TEST (ks, ARGS ("--", "-a", "short"), NO_ENVP);
@@ -1175,7 +1175,7 @@ static void test_stop (void)
 	clearValues (ks);
 
 
-	Key * errorKey = keyNew ("spec:/tests/opts", KEY_META, "posixly", "1", KEY_END);
+	ElektraKey * errorKey = keyNew ("spec:/tests/opts", KEY_META, "posixly", "1", KEY_END);
 	if (elektraGetOpts (ks, ARGS ("-ashort", "other", "-a", "short2"), NO_ENVP, errorKey) != 0)
 	{
 		yield_error ("error found");
@@ -1194,14 +1194,14 @@ static void test_stop (void)
 
 static void test_mixed_config (void)
 {
-	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "#1");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
 	keySetMeta (k, "opt/#0/arg", "none");
 	keySetMeta (k, "opt/#1", "b");
 	keySetMeta (k, "opt/#1/long", "banana");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "mixed config failed");
@@ -1232,7 +1232,7 @@ static void test_mixed_config (void)
 
 static void test_args_remaining (void)
 {
-	KeySet * ks = ksNew (1, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
 
 	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
 	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#4"), "args remaining (wrong count)");
@@ -1252,7 +1252,7 @@ static void test_args_remaining (void)
 
 static void test_args_indexed (void)
 {
-	KeySet * ks = ksNew (5, keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+	ElektraKeyset * ks = ksNew (5, keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest3", KEY_META, "args", "indexed", KEY_META, "args/index", "3", KEY_END),
@@ -1271,7 +1271,7 @@ static void test_args_indexed (void)
 
 static void test_args_indexed_and_remaining (void)
 {
-	KeySet * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END),
+	ElektraKeyset * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END), KS_END);
@@ -1289,7 +1289,7 @@ static void test_args_indexed_and_remaining (void)
 
 static void test_commands (void)
 {
-	KeySet * ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
+	ElektraKeyset * ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META,
 				     "opt/arg", "none", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/get", KEY_META, "command", "get", KEY_END),

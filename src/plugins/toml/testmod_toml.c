@@ -149,9 +149,9 @@ static void testRoundtrip (const char * filePath);
 static void testRead (void);
 static void testReadRoot (void);
 static void testWriteRead (const char * _prefix);
-static void testReadCompare (const char * filename, KeySet * expected);
+static void testReadCompare (const char * filename, ElektraKeyset * expected);
 static void testReadMustError (const char * filename);
-static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected);
+static void testWriteReadCompare (ElektraKeyset * ksWrite, ElektraKeyset * expected);
 static void testWriteReadAssignments (void);
 static void testWriteReadEmptyKeyName (void);
 static void testWriteReadArray (void);
@@ -177,9 +177,9 @@ static void testWriteReadCommentsArray (void);
 static void testWriteReadOrderTableNonTable (void);
 static void testWriteReadNull (void);
 // static void testWriteReadBase64(void);
-static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
+static ElektraKey * addKey (ElektraKeyset * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order);
-static void setComment (Key * key, const char * comment, const char * start, size_t index);
+static void setComment (ElektraKey * key, const char * comment, const char * start, size_t index);
 
 static bool roundtripFile (const char * filenameIn, const char * filenameOut);
 static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB);
@@ -1401,13 +1401,13 @@ static void testRoundtrip (const char * filePath)
 	remove (fileOut);
 }
 
-static KeySet * readFile (const char * filename)
+static ElektraKeyset * readFile (const char * filename)
 {
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
-	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
@@ -1423,13 +1423,13 @@ static KeySet * readFile (const char * filename)
 	return ks;
 }
 
-static bool writeFile (const char * filename, KeySet * ksWrite)
+static bool writeFile (const char * filename, ElektraKeyset * ksWrite)
 {
 	bool success = true;
 	ELEKTRA_LOG_DEBUG ("Writing '%s'\n", filename);
-	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
 
 	int setStatus = plugin->kdbSet (plugin, ksWrite, parentKey);
@@ -1444,14 +1444,14 @@ static bool writeFile (const char * filename, KeySet * ksWrite)
 	return success;
 }
 
-static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
+static void testWriteReadCompare (ElektraKeyset * ksWrite, ElektraKeyset * expected)
 {
 	const char * filename = "test_write_read.toml";
 
 	if (writeFile (filename, ksWrite))
 	{
 		{
-			KeySet * ksRead = readFile (filename);
+			ElektraKeyset * ksRead = readFile (filename);
 			if (ksRead != NULL)
 			{
 				compare_keyset (expected, ksRead);
@@ -1464,7 +1464,7 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 
 static bool roundtripFile (const char * filenameIn, const char * filenameOut)
 {
-	KeySet * ksRead = readFile (filenameIn);
+	ElektraKeyset * ksRead = readFile (filenameIn);
 	if (ksRead == NULL)
 	{
 		return false;
@@ -1474,13 +1474,13 @@ static bool roundtripFile (const char * filenameIn, const char * filenameOut)
 	return success;
 }
 
-static void testReadCompare (const char * filename, KeySet * expected)
+static void testReadCompare (const char * filename, ElektraKeyset * expected)
 {
 	printf ("Reading '%s'\n", filename);
-	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
@@ -1507,10 +1507,10 @@ static void testReadCompare (const char * filename, KeySet * expected)
 static void testReadMustError (const char * filename)
 {
 	printf ("Reading '%s'\n", filename);
-	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "Expected kdbGet to fail, but got success.");
 
 	ksDel (ks);
@@ -1518,10 +1518,10 @@ static void testReadMustError (const char * filename)
 	keyDel (parentKey);
 }
 
-static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
+static ElektraKey * addKey (ElektraKeyset * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order)
 {
-	Key * key = keyNew (prefix, KEY_END);
+	ElektraKey * key = keyNew (prefix, KEY_END);
 	if (name != NULL)
 	{
 		keyAddName (key, name);
@@ -1565,7 +1565,7 @@ static Key * addKey (KeySet * ks, const char * name, const char * value, size_t 
 	return key;
 }
 
-static void setComment (Key * key, const char * comment, const char * space, size_t index)
+static void setComment (ElektraKey * key, const char * comment, const char * space, size_t index)
 {
 	char commentBase[64];
 	char commentKey[128];

@@ -17,23 +17,23 @@
 
 typedef struct ArrayInfo_
 {
-	Key * name;
+	ElektraKey * name;
 	size_t maxIndex;
 	struct ArrayInfo_ * next;
 } ArrayInfo;
 
-static void completeKeySetComments (KeySet * keys);
-static void completeKeyComments (Key * key);
-static void addMissingArrayKeys (KeySet * keys, Key * parent);
-static void pruneInvalidArrayKeys (KeySet * keys);
-static bool orderUnorderedKeys (KeySet * keys);
-static KeySet * collectUnorderedKeys (KeySet * ks);
-static int getMaxOrder (KeySet * ks);
-static void assignContinuousOrder (KeySet * ksUnordered, int startOrder);
-static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index);
-static bool predNeedsOrder (Key * key);
+static void completeKeySetComments (ElektraKeyset * keys);
+static void completeKeyComments (ElektraKey * key);
+static void addMissingArrayKeys (ElektraKeyset * keys, ElektraKey * parent);
+static void pruneInvalidArrayKeys (ElektraKeyset * keys);
+static bool orderUnorderedKeys (ElektraKeyset * keys);
+static ElektraKeyset * collectUnorderedKeys (ElektraKeyset * ks);
+static int getMaxOrder (ElektraKeyset * ks);
+static void assignContinuousOrder (ElektraKeyset * ksUnordered, int startOrder);
+static ArrayInfo * updateArrayInfo (ArrayInfo * root, ElektraKey * name, size_t index);
+static bool predNeedsOrder (ElektraKey * key);
 
-bool prepareKeySet (KeySet * keys, Key * parent)
+bool prepareKeySet (ElektraKeyset * keys, ElektraKey * parent)
 {
 	elektraCursor cursor = ksGetCursor (keys);
 	addMissingArrayKeys (keys, parent);
@@ -48,17 +48,17 @@ bool prepareKeySet (KeySet * keys, Key * parent)
 	return false;
 }
 
-static void completeKeySetComments (KeySet * keys)
+static void completeKeySetComments (ElektraKeyset * keys)
 {
 	ksRewind (keys);
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (keys)) != NULL)
 	{
 		completeKeyComments (key);
 	}
 }
 
-static void completeKeyComments (Key * key)
+static void completeKeyComments (ElektraKey * key)
 {
 	keyRewindMeta (key);
 	for (size_t index = 0;; index++)
@@ -95,10 +95,10 @@ static void completeKeyComments (Key * key)
 	}
 }
 
-static bool orderUnorderedKeys (KeySet * keys)
+static bool orderUnorderedKeys (ElektraKeyset * keys)
 {
 	ksRewind (keys);
-	KeySet * unordered = collectUnorderedKeys (keys);
+	ElektraKeyset * unordered = collectUnorderedKeys (keys);
 	if (unordered == NULL)
 	{
 		return false;
@@ -109,11 +109,11 @@ static bool orderUnorderedKeys (KeySet * keys)
 	return true;
 }
 
-static void addMissingArrayKeys (KeySet * keys, Key * parent)
+static void addMissingArrayKeys (ElektraKeyset * keys, ElektraKey * parent)
 {
 	ArrayInfo * arrays = NULL;
 	ksRewind (keys);
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (keys)) != NULL)
 	{
 		if (keyCmp (key, parent) == 0)
@@ -124,7 +124,7 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 		{
 			arrays = updateArrayInfo (arrays, key, 0);
 		}
-		Key * name = keyNew (keyName (key), KEY_END);
+		ElektraKey * name = keyNew (keyName (key), KEY_END);
 		if (name == NULL)
 		{
 			return;
@@ -146,7 +146,7 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 	}
 	while (arrays != NULL)
 	{
-		Key * arrayRoot = ksLookup (keys, arrays->name, 0);
+		ElektraKey * arrayRoot = ksLookup (keys, arrays->name, 0);
 		if (arrayRoot == NULL)
 		{
 			keyUpdateArrayMetakey (arrays->name, arrays->maxIndex);
@@ -163,17 +163,17 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 	}
 }
 
-static void pruneInvalidArrayKeys (KeySet * keys)
+static void pruneInvalidArrayKeys (ElektraKeyset * keys)
 {
 	ksRewind (keys);
-	KeySet * pruneSet = ksNew (8, KS_END);
-	Key * key = ksNext (keys);
+	ElektraKeyset * pruneSet = ksNew (8, KS_END);
+	ElektraKey * key = ksNext (keys);
 	while (key != NULL)
 	{
-		const Key * meta = keyGetMeta (key, "array");
+		const ElektraKey * meta = keyGetMeta (key, "array");
 		if (meta != NULL)
 		{
-			Key * sub;
+			ElektraKey * sub;
 			while ((sub = ksNext (keys)) != NULL && keyIsBelow (key, sub) == 1)
 			{
 				char * directSub = getDirectSubKeyName (key, sub);
@@ -194,14 +194,14 @@ static void pruneInvalidArrayKeys (KeySet * keys)
 	ksRewind (pruneSet);
 	while ((key = ksNext (pruneSet)) != NULL)
 	{
-		Key * prune = ksLookup (keys, key, KDB_O_POP);
+		ElektraKey * prune = ksLookup (keys, key, KDB_O_POP);
 		ELEKTRA_ASSERT (prune != NULL, "Key must exist in keyset");
 		keyDel (prune);
 	}
 	ksDel (pruneSet);
 }
 
-static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
+static ArrayInfo * updateArrayInfo (ArrayInfo * root, ElektraKey * name, size_t index)
 {
 	ArrayInfo * ptr = root;
 	while (ptr != NULL)
@@ -227,29 +227,29 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
 	return element;
 }
 
-static KeySet * collectUnorderedKeys (KeySet * ks)
+static ElektraKeyset * collectUnorderedKeys (ElektraKeyset * ks)
 {
 	return keysByPredicate (ks, predNeedsOrder);
 }
 
-static void assignContinuousOrder (KeySet * ksUnordered, int startOrder)
+static void assignContinuousOrder (ElektraKeyset * ksUnordered, int startOrder)
 {
 	ksRewind (ksUnordered);
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (ksUnordered)) != NULL)
 	{
 		setOrderForKey (key, startOrder++);
 	}
 }
 
-static int getMaxOrder (KeySet * ks)
+static int getMaxOrder (ElektraKeyset * ks)
 {
 	ksRewind (ks);
 	int maxOrder = 0;
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (ks)) != NULL)
 	{
-		const Key * meta = keyGetMeta (key, "order");
+		const ElektraKey * meta = keyGetMeta (key, "order");
 		if (meta != NULL)
 		{
 			int order = atoi (keyString (meta));
@@ -263,7 +263,7 @@ static int getMaxOrder (KeySet * ks)
 	return maxOrder;
 }
 
-static bool predNeedsOrder (Key * key)
+static bool predNeedsOrder (ElektraKey * key)
 {
 	return keyGetMeta (key, "order") == NULL && !isArrayIndex (keyBaseName (key));
 }

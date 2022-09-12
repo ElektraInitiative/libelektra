@@ -9,15 +9,15 @@
 #include <kdb.h>
 
 //! [f]
-void f (KeySet * iterator, KeySet * lookup)
+void f (ElektraKeyset * iterator, ElektraKeyset * lookup)
 {
-	KeySet * append = ksNew (ksGetSize (lookup), KS_END);
-	Key * current;
+	ElektraKeyset * append = ksNew (ksGetSize (lookup), KS_END);
+	ElektraKey * current;
 
 	ksRewind (iterator);
 	while ((current = ksNext (iterator)))
 	{
-		Key * key = ksLookup (lookup, current, KDB_O_POP);
+		ElektraKey * key = ksLookup (lookup, current, KDB_O_POP);
 		// do something...
 		ksAppendKey (append, key); // now append it to append, not lookup!
 		keyDel (key);		   // make sure to ALWAYS delete poped keys.
@@ -30,7 +30,7 @@ void f (KeySet * iterator, KeySet * lookup)
 
 int main (void)
 {
-	KeySet * ks1 = ksNew (20, KS_END);
-	KeySet * ks2 = ksNew (20, KS_END);
+	ElektraKeyset * ks1 = ksNew (20, KS_END);
+	ElektraKeyset * ks2 = ksNew (20, KS_END);
 	f (ks1, ks2);
 }

@@ -18,13 +18,13 @@
 #include <errno.h>
 #include <string.h>
 
-int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* get all keys */
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/ni"))
 	{
-		KeySet * moduleConfig =
+		ElektraKeyset * moduleConfig =
 			ksNew (30, keyNew ("system:/elektra/modules/ni", KEY_VALUE, "ni plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/ni/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/ni/exports/get", KEY_FUNC, elektraNiGet, KEY_END),
@@ -50,7 +50,7 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 	elektraNi_node current = NULL;
 	while ((current = elektraNi_GetNextChild (root, current)) != NULL)
 	{
-		Key * k = keyNew (keyName (parentKey), KEY_END);
+		ElektraKey * k = keyNew (keyName (parentKey), KEY_END);
 		keyAddName (k, elektraNi_GetName (current, NULL));
 		keySetString (k, elektraNi_GetValue (current, NULL));
 		elektraNi_node mcur = NULL;
@@ -67,11 +67,11 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 	return 1; /* success */
 }
 
-static void keyMetaToNi (elektraNi_node add, Key * cur)
+static void keyMetaToNi (elektraNi_node add, ElektraKey * cur)
 {
 	elektraNi_SetValue (add, keyString (cur), keyGetValueSize (cur) - 1);
 
-	const Key * m;
+	const ElektraKey * m;
 	keyRewindMeta (cur);
 	while ((m = keyNextMeta (cur)) != 0)
 	{
@@ -81,13 +81,13 @@ static void keyMetaToNi (elektraNi_node add, Key * cur)
 	}
 }
 
-int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* set all keys */
 
 	elektraNi_node root = elektraNi_New ();
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 
 	if (keyCmp (ksHead (returned), parentKey) == 0)

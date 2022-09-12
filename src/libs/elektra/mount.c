@@ -50,10 +50,10 @@
  * @retval 0 on success
  * @ingroup mount
  */
-int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
+int mountOpen (ElektraKdb * kdb, ElektraKeyset * config, ElektraKeyset * modules, ElektraKey * errorKey)
 {
-	Key * root;
-	Key * cur;
+	ElektraKey * root;
+	ElektraKey * cur;
 
 	ksRewind (config);
 	root = ksLookupByName (config, "system:/elektra/mountpoints", KDB_O_CREATE);
@@ -63,7 +63,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 	{
 		if (keyIsDirectlyBelow (root, cur) == 1)
 		{
-			KeySet * cut = ksCut (config, cur);
+			ElektraKeyset * cut = ksCut (config, cur);
 			Plugin * backend = backendOpen (cut, modules, kdb->global, errorKey);
 
 			if (!backend)
@@ -81,7 +81,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 				continue;
 			}
 
-			Key * mountpoint = keyNew (keyBaseName (cur), KEY_END);
+			ElektraKey * mountpoint = keyNew (keyBaseName (cur), KEY_END);
 			ret = mountBackend (kdb, mountpoint, backend);
 			keyDel (mountpoint);
 			if (ret == -1)
@@ -112,7 +112,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
  * @retval 0 on success
  * @ingroup mount
  */
-int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
+int mountDefault (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorKey)
 {
 	// open the defaultBackend the first time
 	Plugin * defaultBackend = backendOpenDefault (modules, kdb->global, KDB_DB_FILE, errorKey);
@@ -152,7 +152,7 @@ int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
 	ksAppendKey (kdb->backends,
 		     keyNew ("system:/elektra", KEY_BINARY, KEY_SIZE, sizeof (BackendData), KEY_VALUE, &initBackendData, KEY_END));
 
-	Key * lookupKey = keyNew ("/", KEY_END);
+	ElektraKey * lookupKey = keyNew ("/", KEY_END);
 	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 	{
 		Plugin * backend;
@@ -166,7 +166,7 @@ int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
 			backend = mountGetBackend (kdb, lookupKey);
 			if (backend == NULL || backend == defaultBackend)
 			{
-				Key * backendKey = keyDup (lookupKey, KEY_CP_NAME);
+				ElektraKey * backendKey = keyDup (lookupKey, KEY_CP_NAME);
 				BackendData backendData = {
 					.backend = defaultBackend,
 					.keys = ksNew (0, KS_END),
@@ -192,22 +192,22 @@ int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
 	return 0;
 }
 
-KeySet * elektraMountGlobalsGetConfig (Key * cur, KeySet * global)
+ElektraKeyset * elektraMountGlobalsGetConfig (ElektraKey * cur, ElektraKeyset * global)
 {
 	// putting together the plugins configuration KeySet.
-	Key * sysConfigCutKey = keyDup (cur, KEY_CP_ALL);
+	ElektraKey * sysConfigCutKey = keyDup (cur, KEY_CP_ALL);
 	keyAddBaseName (sysConfigCutKey, "system");
-	Key * usrConfigCutKey = keyDup (cur, KEY_CP_ALL);
+	ElektraKey * usrConfigCutKey = keyDup (cur, KEY_CP_ALL);
 	keyAddBaseName (usrConfigCutKey, "user");
-	KeySet * sysConfigKS = ksCut (global, sysConfigCutKey);
-	KeySet * usrConfigKS = ksCut (global, usrConfigCutKey);
-	KeySet * renamedSysConfig = ksRenameKeys (sysConfigKS, "system:/");
-	KeySet * renamedUsrConfig = ksRenameKeys (usrConfigKS, "user:/");
+	ElektraKeyset * sysConfigKS = ksCut (global, sysConfigCutKey);
+	ElektraKeyset * usrConfigKS = ksCut (global, usrConfigCutKey);
+	ElektraKeyset * renamedSysConfig = ksRenameKeys (sysConfigKS, "system:/");
+	ElektraKeyset * renamedUsrConfig = ksRenameKeys (usrConfigKS, "user:/");
 	ksDel (sysConfigKS);
 	ksDel (usrConfigKS);
 	keyDel (usrConfigCutKey);
 	keyDel (sysConfigCutKey);
-	KeySet * config = ksNew (0, KS_END);
+	ElektraKeyset * config = ksNew (0, KS_END);
 	ksAppend (config, renamedSysConfig);
 	ksAppend (config, renamedUsrConfig);
 	ksDel (renamedSysConfig);
@@ -216,10 +216,10 @@ KeySet * elektraMountGlobalsGetConfig (Key * cur, KeySet * global)
 	return config;
 }
 
-Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
+ElektraKey * elektraMountGlobalsFindPlugin (ElektraKeyset * referencePlugins, ElektraKey * cur)
 {
-	Key * refKey;
-	Key * searchKey = keyNew ("/", KEY_END);
+	ElektraKey * refKey;
+	ElektraKey * searchKey = keyNew ("/", KEY_END);
 	keyAddBaseName (searchKey, keyString (cur));
 	refKey = ksLookup (referencePlugins, searchKey, 0);
 	keyDel (searchKey);
@@ -233,11 +233,11 @@ Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
  * @retval 0 on empty plugin name (nothing configured at given position)
  * @retval 1 on success
  */
-int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * system,
-				   KeySet * modules, Key * errorKey)
+int elektraMountGlobalsLoadPlugin (Plugin ** plugin, ElektraKeyset * referencePlugins, ElektraKey * cur, ElektraKeyset * global, ElektraKeyset * system,
+				   ElektraKeyset * modules, ElektraKey * errorKey)
 {
-	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
-	Key * openKey = keyDup (errorKey, KEY_CP_ALL);
+	ElektraKey * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
+	ElektraKey * openKey = keyDup (errorKey, KEY_CP_ALL);
 
 	if (refKey)
 	{
@@ -247,7 +247,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 	}
 	else
 	{
-		KeySet * config = elektraMountGlobalsGetConfig (cur, global);
+		ElektraKeyset * config = elektraMountGlobalsGetConfig (cur, global);
 		ELEKTRA_NOT_NULL (config);
 		// config holds a newly allocated KeySet
 		const char * pluginName = keyString (cur);
@@ -284,9 +284,9 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 	return 1;
 }
 
-KeySet * elektraDefaultGlobalConfig (KeySet * keys)
+ElektraKeyset * elektraDefaultGlobalConfig (ElektraKeyset * keys)
 {
-	KeySet * config = ksNew (
+	ElektraKeyset * config = ksNew (
 		24, keyNew ("system:/elektra/globalplugins", KEY_VALUE, "", KEY_END),
 		keyNew ("system:/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system:/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
@@ -313,7 +313,7 @@ KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 		keyNew ("system:/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system:/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
 
-	Key * cacheEnabled = ksLookupByName (keys, "system:/elektra/cache/enabled", 0);
+	ElektraKey * cacheEnabled = ksLookupByName (keys, "system:/elektra/cache/enabled", 0);
 	if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (keyString (cacheEnabled), "1")))
 	{
 		ksAppendKey (config, keyNew ("system:/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
@@ -323,24 +323,24 @@ KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 	return config;
 }
 
-int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
+int mountGlobals (ElektraKdb * kdb, ElektraKeyset * keys, ElektraKeyset * modules, ElektraKey * errorKey)
 {
 	int retval = 0;
-	Key * root = ksLookupByName (keys, "system:/elektra/globalplugins", 0);
-	KeySet * system = ksDup (keys);
+	ElektraKey * root = ksLookupByName (keys, "system:/elektra/globalplugins", 0);
+	ElektraKeyset * system = ksDup (keys);
 	if (!root)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
-		KeySet * tmp = keys;
+		ElektraKeyset * tmp = keys;
 		keys = elektraDefaultGlobalConfig (keys);
 		ksDel (tmp);
 		root = ksHead (keys);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
 
-	KeySet * global = ksCut (keys, root);
-	Key * cur;
-	KeySet * referencePlugins = ksNew (0, KS_END);
+	ElektraKeyset * global = ksCut (keys, root);
+	ElektraKey * cur;
+	ElektraKeyset * referencePlugins = ksNew (0, KS_END);
 	while ((cur = ksNext (global)) != NULL)
 	{
 		// the cutpoints for the plugin configs are always directly below the "root", ignore everything else
@@ -373,9 +373,9 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 
 				// load plugins in explicit placements
 				const char * placementName = keyName (cur);
-				Key * placementKey = ksLookupByName (global, placementName, 0);
-				KeySet * subPositions = ksCut (global, placementKey);
-				Key * curSubPosition;
+				ElektraKey * placementKey = ksLookupByName (global, placementName, 0);
+				ElektraKeyset * subPositions = ksCut (global, placementKey);
+				ElektraKey * curSubPosition;
 				while ((curSubPosition = ksNext (subPositions)) != NULL)
 				{
 					if (keyIsDirectlyBelow (placementKey, curSubPosition) != 1) continue;
@@ -425,10 +425,10 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
  * @retval -1 if not rootkey was found
  * @retval 0 otherwise
  */
-int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
+int mountModules (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorKey)
 {
-	Key * root;
-	Key * cur;
+	ElektraKey * root;
+	ElektraKey * cur;
 
 	root = ksLookupByName (modules, "system:/elektra/modules", 0);
 
@@ -438,7 +438,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 		return -1;
 	}
 
-	KeySet * alreadyMounted = ksNew (5, KS_END);
+	ElektraKeyset * alreadyMounted = ksNew (5, KS_END);
 	ssize_t oldSize = 0;
 
 	while ((cur = ksNext (modules)) != 0)
@@ -480,10 +480,10 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
  * @ingroup mount
  * @retval 0 on success
  */
-int mountVersion (KDB * kdb, Key * errorKey)
+int mountVersion (ElektraKdb * kdb, ElektraKey * errorKey)
 {
 	Plugin * backend = backendOpenVersion (kdb->global, kdb->modules, errorKey);
-	Key * mountpoint = keyNew (KDB_SYSTEM_ELEKTRA "/version", KEY_END);
+	ElektraKey * mountpoint = keyNew (KDB_SYSTEM_ELEKTRA "/version", KEY_END);
 	mountBackend (kdb, mountpoint, backend);
 	keyDel (mountpoint);
 
@@ -501,14 +501,14 @@ int mountVersion (KDB * kdb, Key * errorKey)
  * @retval 1 on success
  * @ingroup mount
  */
-int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend)
+int mountBackend (ElektraKdb * kdb, const ElektraKey * mountpoint, Plugin * backend)
 {
 	if (strcmp (keyName (mountpoint), "system:/elektra") == 0)
 	{
 		return -1;
 	}
 
-	Key * backendKey = keyDup (mountpoint, KEY_CP_NAME);
+	ElektraKey * backendKey = keyDup (mountpoint, KEY_CP_NAME);
 	BackendData backendData = {
 		.backend = backend,
 		.keys = ksNew (0, KS_END),
@@ -522,17 +522,17 @@ int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend)
 
 	if (keyGetNamespace (mountpoint) == KEY_NS_CASCADING)
 	{
-		Key * backendKeyDir = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+		ElektraKey * backendKeyDir = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
 		keySetNamespace (backendKeyDir, KEY_NS_DIR);
 		((BackendData *) keyValue (backendKeyDir))->keys = ksNew (0, KS_END);
 		ksAppendKey (kdb->backends, backendKeyDir);
 
-		Key * backendKeyUser = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+		ElektraKey * backendKeyUser = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
 		keySetNamespace (backendKeyUser, KEY_NS_USER);
 		((BackendData *) keyValue (backendKeyUser))->keys = ksNew (0, KS_END);
 		ksAppendKey (kdb->backends, backendKeyUser);
 
-		Key * backendKeySystem = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+		ElektraKey * backendKeySystem = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
 		keySetNamespace (backendKeySystem, KEY_NS_SYSTEM);
 		((BackendData *) keyValue (backendKeySystem))->keys = ksNew (0, KS_END);
 		ksAppendKey (kdb->backends, backendKeySystem);
@@ -540,7 +540,7 @@ int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend)
 		if (keyGetUnescapedNameSize (mountpoint) == 3)
 		{
 			// root key
-			Key * backendKeySpec = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+			ElektraKey * backendKeySpec = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
 			keySetNamespace (backendKeySpec, KEY_NS_SPEC);
 			((BackendData *) keyValue (backendKeySpec))->keys = ksNew (0, KS_END);
 			ksAppendKey (kdb->backends, backendKeySpec);
@@ -582,9 +582,9 @@ kdbClose (handle);
  * @return the mountpoint associated with the key
  * @ingroup mount
  */
-const Key * mountGetMountpoint (KDB * handle, Key * where)
+const ElektraKey * mountGetMountpoint (ElektraKdb * handle, ElektraKey * where)
 {
-	const Key * backendKey = where == NULL ? ksLookupByName (handle->backends, "default:/", 0) : ksLookup (handle->backends, where, 0);
+	const ElektraKey * backendKey = where == NULL ? ksLookupByName (handle->backends, "default:/", 0) : ksLookup (handle->backends, where, 0);
 
 	if (backendKey == NULL)
 	{
@@ -611,9 +611,9 @@ const Key * mountGetMountpoint (KDB * handle, Key * where)
  * @return the backend handle associated with the key
  * @ingroup mount
  */
-Plugin * mountGetBackend (KDB * handle, Key * where)
+Plugin * mountGetBackend (ElektraKdb * handle, ElektraKey * where)
 {
-	const Key * backendKey = mountGetMountpoint (handle, where);
+	const ElektraKey * backendKey = mountGetMountpoint (handle, where);
 
 	if (backendKey == NULL)
 	{

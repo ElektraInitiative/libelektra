@@ -16,12 +16,12 @@
 
 void test_read (void)
 {
-	Key * parentKey = keyNew ("user:/tests/passwd-read", KEY_VALUE, srcdir_file ("passwd/passwd_in"), KEY_END);
-	KeySet * conf = ksNew (10, keyNew ("system:/index", KEY_VALUE, "name", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/passwd-read", KEY_VALUE, srcdir_file ("passwd/passwd_in"), KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/index", KEY_VALUE, "name", KEY_END), KS_END);
 	PLUGIN_OPEN ("passwd");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet failed\n");
-	Key * key = ksLookupByName (ks, "user:/tests/passwd-read/root/uid", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/passwd-read/root/uid", 0);
 	succeed_if (key, "key root/uid not found\n");
 	succeed_if (strcmp (keyString (key), "32") == 0, "root/uid doesn't match\n");
 	ksDel (ks);
@@ -31,10 +31,10 @@ void test_read (void)
 
 void test_write (void)
 {
-	Key * parentKey = keyNew ("user:/tests/passwd-write", KEY_VALUE, elektraFilename (), KEY_END);
-	KeySet * conf = ksNew (30, keyNew ("system:/index", KEY_VALUE, "name", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/passwd-write", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKeyset * conf = ksNew (30, keyNew ("system:/index", KEY_VALUE, "name", KEY_END), KS_END);
 	PLUGIN_OPEN ("passwd");
-	KeySet * ks = ksNew (30, keyNew ("user:/tests/passwd-write/root", KEY_BINARY, KEY_END),
+	ElektraKeyset * ks = ksNew (30, keyNew ("user:/tests/passwd-write/root", KEY_BINARY, KEY_END),
 			     keyNew ("user:/tests/passwd-write/root/gecos", KEY_VALUE, "root", KEY_END),
 			     keyNew ("user:/tests/passwd-write/root/gid", KEY_VALUE, "1024", KEY_END),
 			     keyNew ("user:/tests/passwd-write/root/home", KEY_VALUE, "/root", KEY_END),
@@ -50,11 +50,11 @@ void test_write (void)
 
 void test_read_write (void)
 {
-	Key * parentKeyRead = keyNew ("user:/tests/passwd-write", KEY_VALUE, srcdir_file ("passwd/passwd_in"), KEY_END);
-	Key * parentKeyWrite = keyNew ("user:/tests/passwd-write", KEY_VALUE, elektraFilename (), KEY_END);
-	KeySet * conf = ksNew (10, keyNew ("system:/index", KEY_VALUE, "name", KEY_END), KS_END);
+	ElektraKey * parentKeyRead = keyNew ("user:/tests/passwd-write", KEY_VALUE, srcdir_file ("passwd/passwd_in"), KEY_END);
+	ElektraKey * parentKeyWrite = keyNew ("user:/tests/passwd-write", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/index", KEY_VALUE, "name", KEY_END), KS_END);
 	PLUGIN_OPEN ("passwd");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKeyRead) == 1, "kdbGet failed\n");
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKeyWrite) == 1, "kdbSet failed\n");

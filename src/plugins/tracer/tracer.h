@@ -10,10 +10,10 @@
 
 #include <stdio.h>
 
-int elektraTracerOpen (Plugin * handle, Key * errorKey);
-int elektraTracerClose (Plugin * handle, Key * errorKey);
-int elektraTracerGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraTracerSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraTracerError (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraTracerOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraTracerClose (Plugin * handle, ElektraKey * errorKey);
+int elektraTracerGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraTracerSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraTracerError (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

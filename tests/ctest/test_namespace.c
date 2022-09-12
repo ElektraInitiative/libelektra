@@ -10,7 +10,7 @@
 
 static void test_keyNamespace (void)
 {
-	Key * key;
+	ElektraKey * key;
 
 	printf ("Test namespaces\n");
 
@@ -59,7 +59,7 @@ static void test_keyNamespace (void)
 
 static void test_keySetNamespace (void)
 {
-	Key * key;
+	ElektraKey * key;
 
 	printf ("Test set namespaces\n");
 

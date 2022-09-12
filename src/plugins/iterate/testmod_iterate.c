@@ -18,11 +18,11 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user:/tests/iterate", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/iterate", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("iterate");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == 1, "call to kdbOpen was not successful");
 

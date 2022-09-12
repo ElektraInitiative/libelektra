@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraUnitGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraUnitSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraUnitGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraUnitSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

@@ -17,10 +17,10 @@
 
 static void test_normalize_color (const char * color, kdb_unsigned_long_t colorValue)
 {
-	Key * parentKey = keyNew ("user:/tests/rgbcolor", KEY_END);
-	Key * hexkey = keyNew ("user:/test/rgbcolor/testcolor", KEY_VALUE, color, KEY_META, "check/rgbcolor", "any", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (20, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", KEY_END);
+	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", KEY_VALUE, color, KEY_META, "check/rgbcolor", "any", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (20, KS_END);
 	// KeySet * ksGet = ks;
 
 	ksAppendKey (ks, hexkey);
@@ -30,7 +30,7 @@ static void test_normalize_color (const char * color, kdb_unsigned_long_t colorV
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "kdbSet did not succeed");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "kdbGet did not succeed");
 
-	Key * foundKey = ksLookupByName (ks, "user:/test/rgbcolor/testcolor", 0);
+	ElektraKey * foundKey = ksLookupByName (ks, "user:/test/rgbcolor/testcolor", 0);
 
 	char colorStr[11];
 	snprintf (colorStr, 11, "%u", colorValue);
@@ -38,7 +38,7 @@ static void test_normalize_color (const char * color, kdb_unsigned_long_t colorV
 	printf ("Test Color Normalization %s, returned value: %s, expected value: %s\n", color, keyString (foundKey), colorStr);
 	succeed_if (!strcmp (keyString (foundKey), colorStr), "Values dont match");
 
-	const Key * origValueKey = keyGetMeta (foundKey, "origvalue");
+	const ElektraKey * origValueKey = keyGetMeta (foundKey, "origvalue");
 	succeed_if (origValueKey != NULL, "origvalue is not set");
 	succeed_if (!strcmp (keyString (origValueKey), color), "origvalue does not match actual original value");
 
@@ -51,10 +51,10 @@ static void test_normalize_color (const char * color, kdb_unsigned_long_t colorV
 
 static void test_color (const char * color, const int expected_ret)
 {
-	Key * parentKey = keyNew ("user:/tests/rgbcolor", KEY_END);
-	Key * hexkey = keyNew ("user:/test/rgbcolor/testcolor", KEY_VALUE, color, KEY_META, "check/rgbcolor", "any", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (20, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", KEY_END);
+	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", KEY_VALUE, color, KEY_META, "check/rgbcolor", "any", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, hexkey);
 

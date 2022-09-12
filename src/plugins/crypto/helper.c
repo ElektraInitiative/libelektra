@@ -21,9 +21,9 @@
  * @retval 0 test mode is not enabled
  * @retval 1 test mode is enabled
  */
-static int inTestMode (KeySet * conf)
+static int inTestMode (ElektraKeyset * conf)
 {
-	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
+	ElektraKey * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
 	if (k && !strcmp (keyString (k), "1"))
 	{
 		return 1;
@@ -41,7 +41,7 @@ static int inTestMode (KeySet * conf)
  * @retval 1 on success
  * @retval -1 if libinvoke reported an error (errorKey is being set).
  */
-int ELEKTRA_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output)
+int ELEKTRA_PLUGIN_FUNCTION (base64Encode) (ElektraKey * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output)
 {
 	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
 	if (!handle)
@@ -75,7 +75,7 @@ int ELEKTRA_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * 
  * @retval -2 if the output buffer allocation failed
  * @retval -3 if libinvoke reported an error (errorKey is being set).
  */
-int ELEKTRA_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength)
+int ELEKTRA_PLUGIN_FUNCTION (base64Decode) (ElektraKey * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength)
 {
 	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
 	if (!handle)
@@ -106,10 +106,10 @@ int ELEKTRA_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, 
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
  */
-int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (ElektraKey * errorKey, ElektraKey * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	size_t saltLenInternal = 0;
-	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
+	const ElektraKey * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Missing salt as metakey %s in key %s", ELEKTRA_CRYPTO_META_SALT,
@@ -147,7 +147,7 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_o
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
  */
-int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (ElektraKey * errorKey, ElektraKey * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	static const size_t headerLen = sizeof (kdb_unsigned_long_t);
 	const ssize_t payloadLen = keyGetValueSize (k) - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
@@ -190,15 +190,15 @@ int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_o
  * @param config holds the plugin configuration.
  * @returns the decrypted master password as (Elektra) Key or NULL in case of error. Must be freed by the caller.
  */
-Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config)
+ElektraKey * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (ElektraKey * errorKey, ElektraKeyset * config)
 {
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
+	ElektraKey * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
 	{
 		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Missing %s in plugin configuration", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
 		return NULL;
 	}
-	Key * msg = keyDup (master, KEY_CP_ALL);
+	ElektraKey * msg = keyDup (master, KEY_CP_ALL);
 	if (ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (config, errorKey, msg) != 1)
 	{
 		keyDel (msg);
@@ -213,9 +213,9 @@ Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * conf
  * @param config KeySet holding the plugin configuration
  * @returns the number of iterations for the key derivation function
  */
-kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey, KeySet * config)
+kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (ElektraKey * errorKey, ElektraKeyset * config)
 {
-	Key * k = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT, 0);
+	ElektraKey * k = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT, 0);
 	if (k)
 	{
 		const kdb_unsigned_long_t iterations = strtoul (keyString (k), NULL, 10);
@@ -242,16 +242,16 @@ kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey,
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (ElektraKeyset * conf, ElektraKey * errorKey, ElektraKey * msgKey)
 {
 	// [0]: <path to binary>, [argc-3]: --batch, [argc-2]: -e, [argc-1]: NULL-terminator
 	static const kdb_unsigned_short_t staticArgumentsCount = 4;
-	Key * k;
+	ElektraKey * k;
 
 	// determine the number of total GPG keys to be used
 	kdb_unsigned_short_t recipientCount = 0;
 	kdb_unsigned_short_t testMode = 0;
-	Key * root = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
+	ElektraKey * root = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
 
 	// check root key crypto/key
 	if (root && strlen (keyString (root)) > 0)
@@ -351,7 +351,7 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * err
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (ElektraKeyset * conf, ElektraKey * errorKey, ElektraKey * msgKey)
 {
 	kdb_octet_t * binaryData = NULL;
 	size_t binaryDataLength;

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void printNamespace (Key const * k)
+void printNamespace (ElektraKey const * k)
 {
 	// clang-format off
 //! [namespace]
@@ -64,7 +64,7 @@ int main (void)
 		return EXIT_FAILURE;
 	}
 
-	Key * k = keyNew (s, KEY_END);
+	ElektraKey * k = keyNew (s, KEY_END);
 	printNamespace (k);
 	keyDel (k);
 }

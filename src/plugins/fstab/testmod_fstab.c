@@ -23,11 +23,11 @@
 
 void test_readfstab (const char * file)
 {
-	Key * parentKey = keyNew ("user:/tests/fstab", KEY_VALUE, srcdir_file (file), KEY_END);
-	KeySet * conf = 0;
+	ElektraKey * parentKey = keyNew ("user:/tests/fstab", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("fstab");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	printf ("Reading fstab using file: %s\n", file);
 
@@ -35,7 +35,7 @@ void test_readfstab (const char * file)
 
 	// output_keyset(ks);
 
-	Key * key = ksLookupByName (ks, "user:/tests/fstab/\\//device", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/fstab/\\//device", 0);
 	exit_if_fail (key, "rootfs device not found");
 	succeed_if (strcmp ("/dev/sda1", keyValue (key)) == 0, "device not correct");
 
@@ -54,12 +54,12 @@ void test_readfstab (const char * file)
 
 void test_writefstab (const char * file)
 {
-	KeySet * conf = 0;
+	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("fstab");
 
 	printf ("Writing fstab using file: %s\n", file);
 
-	KeySet * ks = ksNew (
+	ElektraKeyset * ks = ksNew (
 		22, keyNew ("user:/tests/filesystems", KEY_VALUE, "filesystems", KEY_COMMENT, "", KEY_END),
 		keyNew ("user:/tests/filesystems/\\/", KEY_VALUE, "the root fs", KEY_COMMENT, "pseudo name", KEY_END),
 		keyNew ("user:/tests/filesystems/\\//device", KEY_VALUE, "/dev/sda6", KEY_COMMENT, "Device or Label", KEY_END),
@@ -79,7 +79,7 @@ void test_writefstab (const char * file)
 		keyNew ("user:/tests/filesystems/swap00/type", KEY_VALUE, "swap", KEY_COMMENT, "Fileuser/tests type. See fs(5)", KEY_END),
 		KS_END);
 
-	Key * parentKey = keyNew ("user:/tests/filesystems", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/filesystems", KEY_VALUE, elektraFilename (), KEY_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");

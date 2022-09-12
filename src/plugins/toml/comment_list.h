@@ -75,7 +75,7 @@ CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount);
  * @retval 0 On success, when all metakeys could be added
  * @retval Non-Zero On Error
  */
-int keyAddCommentList (Key * key, CommentList * root);
+int keyAddCommentList (ElektraKey * key, CommentList * root);
 
 
 /**
@@ -91,6 +91,6 @@ int keyAddCommentList (Key * key, CommentList * root);
  * @retval 0 On success
  * @retval ERROR_MEMORY On allocation errors.
  */
-int keyAddInlineComment (Key * key, CommentList * root);
+int keyAddInlineComment (ElektraKey * key, CommentList * root);
 
 #endif // ELEKTRA_PLUGIN_TOML_COMMENT_LIST_H

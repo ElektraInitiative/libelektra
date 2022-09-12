@@ -57,7 +57,7 @@
  * @ingroup keytest
  *
  */
-int keyClearSync (Key * key)
+int keyClearSync (ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -96,7 +96,7 @@ int keyClearSync (Key * key)
  * @ingroup keytest
  * @see keyNew(), keyDup() Keys need to be synced after calling those functions
  */
-int keyNeedSync (const Key * key)
+int keyNeedSync (const ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -104,18 +104,18 @@ int keyNeedSync (const Key * key)
 }
 
 
-int keyIsSpec (const Key * key)
+int keyIsSpec (const ElektraKey * key)
 {
 	return keyGetNamespace (key) == KEY_NS_SPEC;
 }
 
-int keyIsProc (const Key * key)
+int keyIsProc (const ElektraKey * key)
 {
 	return keyGetNamespace (key) == KEY_NS_PROC;
 }
 
 
-int keyIsDir (const Key * key)
+int keyIsDir (const ElektraKey * key)
 {
 	return keyGetNamespace (key) == KEY_NS_DIR;
 }
@@ -132,7 +132,7 @@ int keyIsDir (const Key * key)
  * @ingroup keytest
  *
  */
-int keyIsSystem (const Key * key)
+int keyIsSystem (const ElektraKey * key)
 {
 	return keyGetNamespace (key) == KEY_NS_SYSTEM;
 }
@@ -149,7 +149,7 @@ int keyIsSystem (const Key * key)
  * @ingroup keytest
  *
  */
-int keyIsUser (const Key * key)
+int keyIsUser (const ElektraKey * key)
 {
 	return keyGetNamespace (key) == KEY_NS_USER;
 }
@@ -195,7 +195,7 @@ int keyIsUser (const Key * key)
  *
  */
 
-int keyIsBelow (const Key * key, const Key * check)
+int keyIsBelow (const ElektraKey * key, const ElektraKey * check)
 {
 	if (key == NULL || check == NULL)
 	{
@@ -216,7 +216,7 @@ int keyIsBelow (const Key * key, const Key * check)
  * @param key the key object to work with
  * @see keyIsBelow()
  */
-int keyIsBelowOrSame (const Key * key, const Key * check)
+int keyIsBelowOrSame (const ElektraKey * key, const ElektraKey * check)
 {
 	if (key == NULL || check == NULL)
 	{
@@ -302,7 +302,7 @@ check user:/sw/app/folder/key
  * @see keyGetName(), keySetName() for getting / setting the Key's name
  *
  */
-int keyIsDirectlyBelow (const Key * key, const Key * check)
+int keyIsDirectlyBelow (const ElektraKey * key, const ElektraKey * check)
 {
 	if (key == NULL || check == NULL)
 	{
@@ -366,7 +366,7 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
  * @ingroup keytest
  * @see keyGetBinary(), keySetBinary() for getting / setting a Key's value as binary
  */
-int keyIsBinary (const Key * key)
+int keyIsBinary (const ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -392,7 +392,7 @@ int keyIsBinary (const Key * key)
  * @ingroup keytest
  * @see keyGetString(), keySetString() for getting / setting a Key's value as string
  */
-int keyIsString (const Key * key)
+int keyIsString (const ElektraKey * key)
 {
 	if (!key) return -1;
 
@@ -467,7 +467,7 @@ keyDel(base);
 * @see #elektraKeyFlags
 * @ingroup keytest
 	*/
-elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
+elektraKeyFlags keyCompare (const ElektraKey * key1, const ElektraKey * key2)
 {
 	if (!key1 && !key2) return 0;
 	if (!key1 || !key2) return KEY_NULL;
@@ -477,8 +477,8 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 	ssize_t nsize2 = keyGetNameSize (key2);
 	const char * name1 = keyName (key1);
 	const char * name2 = keyName (key2);
-	const Key * comment1 = keyGetMeta (key1, "comment");
-	const Key * comment2 = keyGetMeta (key2, "comment");
+	const ElektraKey * comment1 = keyGetMeta (key1, "comment");
+	const ElektraKey * comment2 = keyGetMeta (key2, "comment");
 	const void * value1 = keyValue (key1);
 	const void * value2 = keyValue (key2);
 	ssize_t size1 = keyGetValueSize (key1);
@@ -514,18 +514,18 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
  * @retval KEY_META if there is a difference
  * @retval 0 if metadata is identical
  */
-int keyCompareMeta (const Key * k1, const Key * k2)
+int keyCompareMeta (const ElektraKey * k1, const ElektraKey * k2)
 {
-	const Key * meta1;
+	const ElektraKey * meta1;
 
-	Key * key1 = (Key *) k1;
-	Key * key2 = (Key *) k2;
+	ElektraKey * key1 = (ElektraKey *) k1;
+	ElektraKey * key2 = (ElektraKey *) k2;
 
 	keyRewindMeta (key1);
 	keyRewindMeta (key2);
 	while ((meta1 = keyNextMeta (key1)) != 0)
 	{
-		const Key * meta2 = keyNextMeta (key2);
+		const ElektraKey * meta2 = keyNextMeta (key2);
 		if (!meta2)
 		{
 			return KEY_META;

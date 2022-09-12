@@ -36,15 +36,15 @@ typedef struct ElektraPluginProcessCloseResult
 	int result, cleanedUp;
 } ElektraPluginProcessCloseResult;
 
-ElektraPluginProcess * elektraPluginProcessInit (Key *);
+ElektraPluginProcess * elektraPluginProcessInit (ElektraKey *);
 void elektraPluginProcessStart (Plugin *, ElektraPluginProcess *);
 
-int elektraPluginProcessOpen (ElektraPluginProcess *, Key *);
+int elektraPluginProcessOpen (ElektraPluginProcess *, ElektraKey *);
 
 int elektraPluginProcessIsParent (const ElektraPluginProcess *);
-int elektraPluginProcessSend (const ElektraPluginProcess *, pluginprocess_t, KeySet *, Key *);
+int elektraPluginProcessSend (const ElektraPluginProcess *, pluginprocess_t, ElektraKeyset *, ElektraKey *);
 
-ElektraPluginProcessCloseResult elektraPluginProcessClose (ElektraPluginProcess *, Key *);
+ElektraPluginProcessCloseResult elektraPluginProcessClose (ElektraPluginProcess *, ElektraKey *);
 
 void elektraPluginProcessSetData (ElektraPluginProcess *, void *);
 void * elektraPluginProcessGetData (const ElektraPluginProcess *);

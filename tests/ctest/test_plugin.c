@@ -115,7 +115,7 @@ static void test_process (void)
 	//	keyDel (k);
 }
 
-KeySet * set_pluginconf (void)
+ElektraKeyset * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system:/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system:/more", KEY_END),
 		      keyNew ("system:/more/config", KEY_END), keyNew ("system:/more/config/below", KEY_END),
@@ -128,14 +128,14 @@ static void test_simple (void)
 {
 	printf ("Test plugin\n");
 
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin * plugin = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, set_pluginconf (), 0);
 	exit_if_fail (plugin, "KDB_DEFAULT_STORAGE: " KDB_DEFAULT_STORAGE " plugin could not be loaded");
 
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin);
+	ElektraKeyset * test_config = set_pluginconf ();
+	ElektraKeyset * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset (config, test_config);
 	ksDel (test_config);
@@ -151,8 +151,8 @@ static void test_simple (void)
 static void test_name (void)
 {
 	printf ("Test name\n");
-	KeySet * modules = ksNew (0, KS_END);
-	Key * errorKey = keyNew ("/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * errorKey = keyNew ("/", KEY_END);
 	;
 
 	succeed_if (elektraPluginOpen (0, modules, set_pluginconf (), errorKey) == 0, "should fail with no name");

@@ -23,11 +23,11 @@
 #define ELEKTRA_GPGME_UNIT_TEST "/gpgme/unit_test"
 
 // kdb functions
-int elektraGpgmeOpen (Plugin * handle, Key * errorKey);
-int elektraGpgmeClose (Plugin * handle, Key * errorKey);
-int elektraGpgmeGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraGpgmeSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf);
+int elektraGpgmeOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraGpgmeClose (Plugin * handle, ElektraKey * errorKey);
+int elektraGpgmeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraGpgmeSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraGpgmeCheckconf (ElektraKey * errorKey, ElektraKeyset * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

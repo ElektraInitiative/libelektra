@@ -15,7 +15,7 @@
 
 #include <kdbhelper.h>
 
-int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraDbusOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	ElektraDbusPluginData * data = elektraPluginGetData (handle);
 
@@ -31,11 +31,11 @@ int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraDbusGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbus"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/dbus", KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/dbus/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/dbus/exports/open", KEY_FUNC, elektraDbusOpen, KEY_END),
@@ -54,7 +54,7 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	KeySet * ks = pluginData->keys;
+	ElektraKeyset * ks = pluginData->keys;
 	if (ks) ksDel (ks);
 	pluginData->keys = ksDup (returned);
 
@@ -70,39 +70,39 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
  * @param busType    D-Bus bus type
  * @param data       plugin data containing D-Bus connections, etc.
  */
-static void announceKeys (KeySet * ks, const char * signalName, DBusBusType busType, ElektraDbusPluginData * data)
+static void announceKeys (ElektraKeyset * ks, const char * signalName, DBusBusType busType, ElektraDbusPluginData * data)
 {
 	ELEKTRA_NOT_NULL (ks);
 	ELEKTRA_NOT_NULL (signalName);
 	ELEKTRA_NOT_NULL (data);
 
 	ksRewind (ks);
-	Key * k = 0;
+	ElektraKey * k = 0;
 	while ((k = ksNext (ks)) != 0)
 	{
 		elektraDbusSendMessage (data, busType, keyName (k), signalName);
 	}
 }
 
-int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraDbusSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	KeySet * oldKeys = pluginData->keys;
+	ElektraKeyset * oldKeys = pluginData->keys;
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
 	ksRewind (oldKeys);
 	ksRewind (returned);
 
-	KeySet * addedKeys = ksDup (returned);
-	KeySet * changedKeys = ksNew (0, KS_END);
-	KeySet * removedKeys = ksNew (0, KS_END);
+	ElektraKeyset * addedKeys = ksDup (returned);
+	ElektraKeyset * changedKeys = ksNew (0, KS_END);
+	ElektraKeyset * removedKeys = ksNew (0, KS_END);
 
-	Key * k = 0;
+	ElektraKey * k = 0;
 	while ((k = ksNext (oldKeys)) != 0)
 	{
-		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
+		ElektraKey * p = ksLookup (addedKeys, k, KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)
 		{
@@ -117,7 +117,7 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 	}
 
-	Key * resolvedParentKey = parentKey;
+	ElektraKey * resolvedParentKey = parentKey;
 	// Resolve cascaded parent key to get its namespace
 	if (!strncmp (keyName (parentKey), "/", 1))
 	{
@@ -164,7 +164,7 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraDbusClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
 	if (pluginData == NULL)
@@ -172,7 +172,7 @@ int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 		return 1;
 	}
 
-	KeySet * ks = pluginData->keys;
+	ElektraKeyset * ks = pluginData->keys;
 	if (ks) ksDel (ks);
 
 	if (pluginData->systemBus)

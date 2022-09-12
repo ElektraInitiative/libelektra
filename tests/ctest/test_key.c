@@ -15,7 +15,7 @@
 
 static void test_keyRefcounter (void)
 {
-	Key * key = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", KEY_END);
 	key->refs = 5;
 	succeed_if (key->refs == 5, "wrong ref");
 	succeed_if (keyGetRef (key) == 5, "wrong ref");
@@ -31,7 +31,7 @@ static void test_keyRefcounter (void)
 
 static void test_keyHelpers (void)
 {
-	Key *k1, *k2;
+	ElektraKey *k1, *k2;
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
 
@@ -145,7 +145,7 @@ static void test_keyPlugin (void)
 {
 	Plugin * plug = (Plugin *) 1222243;
 
-	Key * k = keyNew ("system:/name", KEY_BINARY, KEY_SIZE, sizeof (plug), KEY_VALUE, &plug, KEY_END);
+	ElektraKey * k = keyNew ("system:/name", KEY_BINARY, KEY_SIZE, sizeof (plug), KEY_VALUE, &plug, KEY_END);
 	Plugin * xlug = *(Plugin **) keyValue (k);
 
 	succeed_if (xlug == plug, "should point to the same");
@@ -231,8 +231,8 @@ static void test_keyNameUnescape (void)
 static void test_keyCompare (void)
 {
 	printf ("test keyCompare\n");
-	Key * key1 = keyNew ("/", KEY_END);
-	Key * key2 = keyNew ("/", KEY_END);
+	ElektraKey * key1 = keyNew ("/", KEY_END);
+	ElektraKey * key2 = keyNew ("/", KEY_END);
 
 	succeed_if (keyCompare (key1, key2) == 0, "the keys don't differ of course");
 
@@ -260,7 +260,7 @@ static void test_keyNewExtensions (void)
 {
 	printf ("test keyNewExtensions\n");
 
-	Key * key;
+	ElektraKey * key;
 
 	key = keyNew ("/", KEY_END);
 	succeed_if (keyIsUser (key) == 0, "empty user key");
@@ -270,7 +270,7 @@ static void test_keyNewExtensions (void)
 
 static void test_keyComment (void)
 {
-	Key * key;
+	ElektraKey * key;
 	char ret[1000];
 	size_t i;
 	char testComment[] = "testcomment";
@@ -365,8 +365,8 @@ static void test_keySetName (void)
 {
 	printf ("test keySetName\n");
 
-	Key * key = keyNew ("/", KEY_END);
-	Key * dup = 0;
+	ElektraKey * key = keyNew ("/", KEY_END);
+	ElektraKey * dup = 0;
 
 	succeed_if (keySetName (key, "/") != -1, "could not set cascading name");
 	succeed_if_same_string (keyName (key), "/");
@@ -498,8 +498,8 @@ static void test_keyLock (void)
 	succeed_if (keyIsLocked (0, KEY_LOCK_VALUE) == -1, "no error on NULL Key");
 	succeed_if (keyIsLocked (0, KEY_LOCK_META) == -1, "no error on NULL Key");
 
-	Key * key = keyNew ("/", KEY_LOCK_NAME, KEY_END);
-	Key * key2 = keyNew ("/", KEY_LOCK_NAME, KEY_END);
+	ElektraKey * key = keyNew ("/", KEY_LOCK_NAME, KEY_END);
+	ElektraKey * key2 = keyNew ("/", KEY_LOCK_NAME, KEY_END);
 
 	succeed_if (keySetName (key, "user:/") == -1, "read only name, not allowed to set");
 
@@ -556,7 +556,7 @@ static void test_keyLock (void)
 
 static void test_keyAddName (void)
 {
-	Key * k = keyNew ("user:/", KEY_END);
+	ElektraKey * k = keyNew ("user:/", KEY_END);
 	keyAddName (k, "something");
 	succeed_if_same_string (keyName (k), "user:/something");
 
@@ -692,7 +692,7 @@ static void test_keyNeedSync (void)
 
 	succeed_if (keyNeedSync (0) == -1, "No error on NULL Key");
 
-	Key * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
 	succeed_if (keyNeedSync (k), "fresh key should need sync");
 
 	set_bit (k->flags, KEY_FLAG_SYNC);
@@ -720,7 +720,7 @@ static void test_keyNeedSync (void)
 	succeed_if (keyNeedSync (k), "new meta, should definitely need sync");
 
 	clear_bit (k->flags, KEY_FLAG_SYNC);
-	Key * d = keyDup (k, KEY_CP_ALL);
+	ElektraKey * d = keyDup (k, KEY_CP_ALL);
 	succeed_if (keyNeedSync (d), "dup key, should definitely need sync");
 
 	clear_bit (k->flags, KEY_FLAG_SYNC);
@@ -763,8 +763,8 @@ static void test_keyNeedSync (void)
 static void test_keyCopy (void)
 {
 	printf ("test copy key\n");
-	Key * k = keyNew ("/", KEY_END);
-	Key * c = keyNew ("user:/name", KEY_END);
+	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * c = keyNew ("user:/name", KEY_END);
 
 	succeed_if (keyCopy (c, k, KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/");
@@ -790,8 +790,8 @@ static void test_keyCopy (void)
 	keyDel (k);
 	keyDel (c);
 
-	Key * keyLock = keyNew ("user:/foo", KEY_FLAGS, KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META, KEY_END);
-	Key * keyNorm = keyNew ("user:/test", KEY_END);
+	ElektraKey * keyLock = keyNew ("user:/foo", KEY_FLAGS, KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META, KEY_END);
+	ElektraKey * keyNorm = keyNew ("user:/test", KEY_END);
 
 	succeed_if (keyCopy (keyNorm, keyLock, KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (keyNorm), "user:/foo");
@@ -807,7 +807,7 @@ static void test_keyCopy (void)
 	succeed_if_same_string (keyName (keyNorm), "user:/test");
 	succeed_if_same_string (keyName (keyLock), "user:/foo");
 
-	Key * keyBin = keyNew ("user:/binary/foo", KEY_FLAGS, KEY_BINARY, KEY_END);
+	ElektraKey * keyBin = keyNew ("user:/binary/foo", KEY_FLAGS, KEY_BINARY, KEY_END);
 	succeed_if (keyIsBinary (keyBin), "error creating binary key");
 
 	keySetString (keyNorm, "This is a string");
@@ -825,8 +825,8 @@ static void test_keyCopy (void)
 	keyDel (keyLock);
 	keyDel (keyBin);
 
-	Key * keyValSource = keyNew ("user:/hello", KEY_VALUE, "hello", KEY_END);
-	Key * keyValDest = keyNew ("user:/hi", KEY_END);
+	ElektraKey * keyValSource = keyNew ("user:/hello", KEY_VALUE, "hello", KEY_END);
+	ElektraKey * keyValDest = keyNew ("user:/hi", KEY_END);
 	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
 	compare_key (keyValDest, keyValSource);
 
@@ -849,8 +849,8 @@ static void test_keyCopy (void)
 static void test_keyFixedNew (void)
 {
 	printf ("test fixed new\n");
-	Key * k1 = keyNew ("/", KEY_END);
-	Key * k2 = keyNew ("/", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	ElektraKey * k1 = keyNew ("/", KEY_END);
+	ElektraKey * k2 = keyNew ("/", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
 	compare_key (k1, k2);
 	keyDel (k1);
 	keyDel (k2);
@@ -872,8 +872,8 @@ static void test_keyFlags (void)
 {
 	printf ("Test KEY_FLAGS\n");
 
-	Key * key = keyNew ("user:/foo", KEY_FLAGS, KEY_BINARY | KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META, KEY_END);
-	Key * key2 = NULL;
+	ElektraKey * key = keyNew ("user:/foo", KEY_FLAGS, KEY_BINARY | KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META, KEY_END);
+	ElektraKey * key2 = NULL;
 
 	succeed_if (keyIsBinary (key), "Could not set type to binary");
 
@@ -896,7 +896,7 @@ static void test_warnings (void)
 {
 	printf ("Test ADD_WARNING\n");
 
-	Key * key = keyNew ("user:/bar", KEY_VALUE, "config", KEY_END);
+	ElektraKey * key = keyNew ("user:/bar", KEY_VALUE, "config", KEY_END);
 	for (int i = 0; i < 200; i++)
 	{
 #define WITH_LINENO(code)                                                                                                                  \
@@ -911,7 +911,7 @@ static void test_warnings (void)
 		printf ("  -- warning %d -> %s\n", i, index);
 		succeed_if_same_string (keyString (keyGetMeta (key, "meta:/warnings")), index);
 
-		Key * k = keyNew ("meta:/warnings", KEY_END);
+		ElektraKey * k = keyNew ("meta:/warnings", KEY_END);
 		keyAddBaseName (k, index);
 
 		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))),
@@ -951,9 +951,9 @@ static void test_keyReplacePrefix (void)
 {
 	printf ("Test keyReplacePrefix\n");
 
-	Key * key = keyNew ("user:/", KEY_END);
-	Key * oldPrefix = keyNew ("user:/", KEY_END);
-	Key * newPrefix = keyNew ("user:/", KEY_END);
+	ElektraKey * key = keyNew ("user:/", KEY_END);
+	ElektraKey * oldPrefix = keyNew ("user:/", KEY_END);
+	ElektraKey * newPrefix = keyNew ("user:/", KEY_END);
 
 	succeed_if (keyReplacePrefix (NULL, oldPrefix, newPrefix) == -1, "should not accept NULL argument");
 	succeed_if (keyReplacePrefix (key, NULL, newPrefix) == -1, "should not accept NULL argument");

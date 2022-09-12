@@ -25,7 +25,7 @@
  *
  * @return a pointer to the relative part name of the key cur
  */
-const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey)
+const char * elektraKeyGetRelativeName (ElektraKey const * cur, ElektraKey const * parentKey)
 {
 	if (cur == NULL || parentKey == NULL) return NULL;
 

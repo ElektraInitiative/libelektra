@@ -18,16 +18,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-static Node * createNode (Key * key, Node * parent);
+static Node * createNode (ElektraKey * key, Node * parent);
 static bool addChild (Node * parent, Node * child);
-static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys);
-static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys);
+static Node * buildTreeTableArray (Node * parent, ElektraKey * root, ElektraKeyset * keys);
+static Node * buildTreeArray (Node * parent, ElektraKey * root, ElektraKeyset * keys);
 static void sortChildren (Node * node);
 static int nodeCmpWrapper (const void * a, const void * b);
-static NodeType getNodeType (Key * key);
+static NodeType getNodeType (ElektraKey * key);
 static bool isTable (const Node * node);
 
-Node * buildTree (Node * parent, Key * root, KeySet * keys)
+Node * buildTree (Node * parent, ElektraKey * root, ElektraKeyset * keys)
 {
 	if (isTableArray (root))
 	{
@@ -40,7 +40,7 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys)
 	else
 	{
 		Node * node = createNode (root, parent);
-		Key * key;
+		ElektraKey * key;
 
 		if (node->type != NT_LEAF)
 		{
@@ -65,7 +65,7 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys)
 	}
 }
 
-static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys)
+static Node * buildTreeTableArray (Node * parent, ElektraKey * root, ElektraKeyset * keys)
 {
 	ELEKTRA_ASSERT (isTableArray (root), "Root must be a table array, but wasn't");
 	Node * node = createNode (root, parent);
@@ -73,7 +73,7 @@ static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys)
 	size_t max = getArrayMax (root);
 	for (size_t i = 0; i <= max; i++)
 	{
-		Key * elementName = keyAppendIndex (i, root);
+		ElektraKey * elementName = keyAppendIndex (i, root);
 
 		// Check if, we have got the array element root in the keyset
 		// This happens, if comments are associated to the table array declaration in a TOML file.
@@ -94,7 +94,7 @@ static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys)
 	return node;
 }
 
-static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
+static Node * buildTreeArray (Node * parent, ElektraKey * root, ElektraKeyset * keys)
 {
 	ELEKTRA_ASSERT (isArray (root) && !isTableArray (root), "Root must be array, but no table array, but wasn't");
 	Node * node = createNode (root, parent);
@@ -102,8 +102,8 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 	size_t max = getArrayMax (root);
 	for (size_t i = 0; i <= max; i++)
 	{
-		Key * elementName = keyAppendIndex (i, root);
-		Key * elementKey = ksLookup (keys, elementName, 0);
+		ElektraKey * elementName = keyAppendIndex (i, root);
+		ElektraKey * elementKey = ksLookup (keys, elementName, 0);
 		if (elementKey != NULL)
 		{
 			if (!isLeaf (elementKey, keys))
@@ -120,7 +120,7 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 
 		keyDel (elementName);
 	}
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
 	{
 		ksNext (keys);
@@ -149,7 +149,7 @@ void destroyTree (Node * node)
 	}
 }
 
-static Node * createNode (Key * key, Node * parent)
+static Node * createNode (ElektraKey * key, Node * parent)
 {
 	Node * node = (Node *) elektraCalloc (sizeof (Node));
 	if (node == NULL)
@@ -259,7 +259,7 @@ static bool isTable (const Node * node)
 	return node->type == NT_SIMPLE_TABLE || node->type == NT_TABLE_ARRAY;
 }
 
-static NodeType getNodeType (Key * key)
+static NodeType getNodeType (ElektraKey * key)
 {
 	if (isArray (key))
 	{

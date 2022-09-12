@@ -71,7 +71,7 @@
  * @retval 0 if nothing was done
  * @return size how many keys were copied
  */
-ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
+ssize_t elektraMemcpy (ElektraKey ** array1, ElektraKey ** array2, size_t size)
 {
 	if (!array1) return -1;
 	if (!array2) return -1;
@@ -85,7 +85,7 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", (void *) a, (void *) b, size);
 	}
 #endif
-	memcpy (array1, array2, size * sizeof (Key *));
+	memcpy (array1, array2, size * sizeof (ElektraKey *));
 	return size;
 }
 
@@ -103,13 +103,13 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
  * @retval 0 if nothing was done
  * @return size how many keys were copied
  */
-ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
+ssize_t elektraMemmove (ElektraKey ** array1, ElektraKey ** array2, size_t size)
 {
 	if (!array1) return -1;
 	if (!array2) return -1;
 	if (size > SSIZE_MAX) return -1;
 	if (size == 0) return 0;
-	memmove (array1, array2, size * sizeof (Key *));
+	memmove (array1, array2, size * sizeof (ElektraKey *));
 	return size;
 }
 

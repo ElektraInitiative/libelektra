@@ -211,9 +211,9 @@ static const NamedColor * findNamedColor (const char * colorName)
  * @param key the key whose value should be checked
  * @param parentKey the parent key
  */
-static ColorVariant is_valid_key (Key * key, Key * parentKey)
+static ColorVariant is_valid_key (ElektraKey * key, ElektraKey * parentKey)
 {
-	const Key * meta = keyGetMeta (key, "check/rgbcolor");
+	const ElektraKey * meta = keyGetMeta (key, "check/rgbcolor");
 	if (!meta) return 1;
 	const char * value = keyString (key);
 
@@ -256,7 +256,7 @@ static ColorVariant is_valid_key (Key * key, Key * parentKey)
  * @param key the key to set the value for
  * @param c the integer to set as the new value
  */
-static void elektraColorSetInteger (Key * key, kdb_unsigned_long_t c)
+static void elektraColorSetInteger (ElektraKey * key, kdb_unsigned_long_t c)
 {
 	char colorStr[11];
 	snprintf (colorStr, 11, "%u", c);
@@ -304,7 +304,7 @@ static void elektraColorExpand (const char * str, ColorVariant colVar, char * ex
  * @param key the key to normalize
  * @param colVar the ColorVariant of the string in key
  */
-static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
+static void elektraColorNormalizeHexString (ElektraKey * key, ColorVariant colVar)
 {
 	const char * str = keyString (key);
 	char * origvalue = elektraStrDup (str);
@@ -338,9 +338,9 @@ static void elektraColorNormalizeHexString (Key * key, ColorVariant colVar)
  *
  * @param key the key to restore the value for
  */
-static void elektraColorRestore (Key * key)
+static void elektraColorRestore (ElektraKey * key)
 {
-	const Key * orig = keyGetMeta (key, "origvalue");
+	const ElektraKey * orig = keyGetMeta (key, "origvalue");
 	if (orig != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("Restore %s to %s", keyName (key), keyString (orig));
@@ -348,11 +348,11 @@ static void elektraColorRestore (Key * key)
 	}
 }
 
-int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/rgbcolor"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/rgbcolor", KEY_VALUE, "rgbcolor plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/rgbcolor/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/rgbcolor/exports/get", KEY_FUNC, elektraRgbcolorGet, KEY_END),
@@ -365,11 +365,11 @@ int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
+		const ElektraKey * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
 		ColorVariant colVar = is_valid_key (cur, parentKey);
 		elektraColorNormalizeHexString (cur, colVar);
@@ -378,15 +378,15 @@ int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraRgbcolorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraRgbcolorSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/rgbcolor");
+		const ElektraKey * meta = keyGetMeta (cur, "check/rgbcolor");
 		if (!meta) continue;
 
 		elektraColorRestore (cur);

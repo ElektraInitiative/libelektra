@@ -16,14 +16,14 @@
 
 static void test_ifthenelseint (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
 				     "(../totest== '153') ? (../bla/val1 == '100') : (../bla/val2 == '100')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -33,14 +33,14 @@ static void test_ifthenelseint (void)
 }
 static void test_ifthenint (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
 				     "(     ../totest   !=     '15'  ) ? (../bla/val1 == '100')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -50,14 +50,14 @@ static void test_ifthenint (void)
 }
 static void test_ifthenltint (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
 				     "(     ./   <    '153'    ) ? (../bla/val1 == '100')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -67,14 +67,14 @@ static void test_ifthenltint (void)
 }
 static void test_ifthengtint (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
 				     "(./>'153') ? (../bla/val1 == '100') : (../bla/val2 <= '1')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
@@ -85,14 +85,14 @@ static void test_ifthengtint (void)
 
 static void test_ifthenkey (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
 				     "(../totest>@/bla/val3) ? (../bla/val1 == '100') :  (../bla/val2 <= '1')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -104,14 +104,14 @@ static void test_ifthenkey (void)
 
 static void test_emptyisempty (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "", KEY_META, "check/condition",
 				     "(../totest=='') ? (../bla/val1 == '100') : (../bla/val2 <= '1')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -123,14 +123,14 @@ static void test_emptyisempty (void)
 
 static void test_notempty (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
 				     "(../totest!='') ? (../bla/val1 == '100') : (../bla/val2 <= '1')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -141,18 +141,18 @@ static void test_notempty (void)
 
 static void test_ifsetthenval (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "", KEY_META, "check/condition",
 				     "(../totest=='') ? (../totest := 'BLA')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "BLA") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -160,18 +160,18 @@ static void test_ifsetthenval (void)
 }
 static void test_ifsetthenkey (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "", KEY_META, "check/condition",
 				     "(./=='') ? (./ := ../bla/val1)", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "100") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -179,16 +179,16 @@ static void test_ifsetthenkey (void)
 }
 static void test_assignThen (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
 				     "(../totest=='Hello') ? ('World')", KEY_END),
 			     KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "World") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -196,16 +196,16 @@ static void test_assignThen (void)
 }
 static void test_assignThen2 (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
 				     "(../totest=='Hello') ? ('World') : ('Fail')", KEY_END),
 			     KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "World") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -213,16 +213,16 @@ static void test_assignThen2 (void)
 }
 static void test_assignElse (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
 				     "(../totest=='Hell') ? ('World') : ('Fail')", KEY_END),
 			     KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Fail") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -231,17 +231,17 @@ static void test_assignElse (void)
 
 static void test_assignKeyThen (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
 				     "(../totest=='Hello') ? (../then/key)", KEY_END),
 			     keyNew ("user:/tests/conditionals/then/key", KEY_VALUE, "World", KEY_END),
 			     keyNew ("user:/tests/conditionals/elseVal", KEY_VALUE, "Fail", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "World") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -250,17 +250,17 @@ static void test_assignKeyThen (void)
 
 static void test_assignKeyElse (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
 				     "(../totest=='Hell') ? (../then/key) : (../elseVal)", KEY_END),
 			     keyNew ("user:/tests/conditionals/then/key", KEY_VALUE, "World", KEY_END),
 			     keyNew ("user:/tests/conditionals/elseVal", KEY_VALUE, "Fail", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Fail") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -269,8 +269,8 @@ static void test_assignKeyElse (void)
 
 static void test_doesntExistSuccess (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
 				     "(../totest<../bla/val1) ? (! ../bla/val4)", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
@@ -278,7 +278,7 @@ static void test_doesntExistSuccess (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -289,8 +289,8 @@ static void test_doesntExistSuccess (void)
 
 static void test_doesntExistFail (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
 				     "(../totest<../bla/val1) ? (! ../bla/val1)", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
@@ -298,7 +298,7 @@ static void test_doesntExistFail (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
@@ -309,8 +309,8 @@ static void test_doesntExistFail (void)
 
 static void test_nested1Success (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
 				     "(../totest<../bla/val1) ? ((../bla/result == 'result1') || (../bla/result == 'result3'))", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
@@ -318,7 +318,7 @@ static void test_nested1Success (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -329,15 +329,15 @@ static void test_nested1Success (void)
 
 static void test_nested1Fail (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
 				     "(../totest<../bla/val1) ? ((../bla/result == 'result1') || (../bla/result == 'result2'))", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
@@ -349,8 +349,8 @@ static void test_nested1Fail (void)
 
 static void test_nested2Success (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
 				     "(../totest<../bla/val1) ? ((../bla/val1 == '100') && ((../bla/result == 'result1') || "
 				     "(../bla/result == 'result3')))",
@@ -360,7 +360,7 @@ static void test_nested2Success (void)
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -371,8 +371,8 @@ static void test_nested2Success (void)
 
 static void test_nested2Fail (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
 				     "(../totest<../bla/val1) ? ((../bla/val1 == '100') && ((../bla/result == 'result1') || "
 				     "(../bla/result == 'result2')))",
@@ -381,7 +381,7 @@ static void test_nested2Fail (void)
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
@@ -392,15 +392,15 @@ static void test_nested2Fail (void)
 
 static void test_suffix (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "2%", KEY_META, "check/condition",
 				     "(../totest >= '10%') ? (../bla/val1 == '50%') : (../bla/val3 == '3%')", KEY_META,
 				     "condition/validsuffix", "'%', '$'", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100%", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50%", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3%", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -411,14 +411,14 @@ static void test_suffix (void)
 
 static void test_elseWhitespace (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "2", KEY_META, "check/condition",
 				     "(../totest >= '10') ? (../bla/val1 == '50'): (../bla/val3 == '3')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -429,14 +429,14 @@ static void test_elseWhitespace (void)
 
 static void test_elseWhitespace2 (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "2", KEY_META, "check/condition",
 				     "(../totest >= '10') ? (../bla/val1 == '50') :(../bla/val3 == '3')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -447,14 +447,14 @@ static void test_elseWhitespace2 (void)
 
 static void test_elseWhitespace3 (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "2", KEY_META, "check/condition",
 				     "(../totest >= '10') ? (../bla/val1 == '50'):(../bla/val3 == '3')", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
@@ -465,8 +465,8 @@ static void test_elseWhitespace3 (void)
 
 static void test_doubleUp (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks =
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks =
 		ksNew (5,
 		       keyNew ("user:/tests/conditionals/bla/totest", KEY_VALUE, "5", KEY_META, "check/condition",
 			       "(../../bla/totest<../../bla/val1) ? ((../../bla/val1 == '100') && ((../../bla/result == 'result1') || "
@@ -476,7 +476,7 @@ static void test_doubleUp (void)
 		       keyNew ("user:/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 		       keyNew ("user:/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 		       keyNew ("user:/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
@@ -488,14 +488,14 @@ static void test_doubleUp (void)
 
 static void test_multiCondAny (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition/any", "#1", KEY_META,
 				     "check/condition/any/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
 				     "check/condition/any/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
@@ -506,14 +506,14 @@ static void test_multiCondAny (void)
 
 static void test_multiCond2Any (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition/any", "#1", KEY_META,
 				     "check/condition/any/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
 				     "check/condition/any/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
@@ -524,14 +524,14 @@ static void test_multiCond2Any (void)
 
 static void test_multiCondAll (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition/all", "#1", KEY_META,
 				     "check/condition/all/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
 				     "check/condition/all/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == -1, "error");
@@ -542,14 +542,14 @@ static void test_multiCondAll (void)
 
 static void test_multiCond2All (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition/all", "#1", KEY_META,
 				     "check/condition/all/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
 				     "check/condition/all/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == -1, "error");
@@ -560,14 +560,14 @@ static void test_multiCond2All (void)
 
 static void test_multiCondNoFail (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition/none", "#1",
 				     KEY_META, "check/condition/none/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
 				     "check/condition/none/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
@@ -578,14 +578,14 @@ static void test_multiCondNoFail (void)
 
 static void test_multiCond2NoFail (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition/none", "#1", KEY_META,
 				     "check/condition/none/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
 				     "check/condition/none/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "error");
@@ -595,18 +595,18 @@ static void test_multiCond2NoFail (void)
 }
 static void test_multiAssign (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition", "#1", KEY_META,
 				     "assign/condition/#0", "(../totest=='Bye') ? ('Moon')", KEY_META, "assign/condition/#1",
 				     "(../totest=='Hello') ? ('Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Sun") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -615,18 +615,18 @@ static void test_multiAssign (void)
 
 static void test_multiAssign2 (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "assign/condition", "#1", KEY_META,
 				     "assign/condition/#0", "(../totest=='Bye') ? ('Moon')", KEY_META, "assign/condition/#1",
 				     "(../totest=='Hello') ? ('Sun') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Moon") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -635,18 +635,18 @@ static void test_multiAssign2 (void)
 
 static void test_multiAssign3 (void)
 {
-	Key * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
+	ElektraKey * parentKey = keyNew ("user:/tests/conditionals", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * ks = ksNew (5,
 			     keyNew ("user:/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "assign/condition", "#1", KEY_META,
 				     "assign/condition/#0", "(../totest=='Bye') ? ('Moon')", KEY_META, "assign/condition/#1",
 				     "(../totest=='Bye') ? ('FAIL') ", KEY_END),
 			     KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
-	Key * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/conditionals/totest", 0);
 	succeed_if (strcmp (keyString (key), "Moon") == 0, "error setting then value");
 	ksDel (ks);
 	keyDel (parentKey);

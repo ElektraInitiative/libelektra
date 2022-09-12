@@ -10,10 +10,10 @@
 #include <stddef.h>
 #include <stdio.h>
 
-void iterate_for (KeySet * ks)
+void iterate_for (ElektraKeyset * ks)
 {
 	//! [iterate for]
-	Key * cur;
+	ElektraKey * cur;
 	for (elektraCursor cursor = 0; (cur = ksAtCursor (ks, cursor)) != NULL; ++cursor)
 	{
 		printf ("%s\n", keyName (cur));
@@ -22,11 +22,11 @@ void iterate_for (KeySet * ks)
 }
 
 
-void iterate_while (KeySet * ks)
+void iterate_while (ElektraKeyset * ks)
 {
 	//! [iterate while]
 	elektraCursor cursor = 0;
-	Key * cur;
+	ElektraKey * cur;
 
 	while ((cur = ksAtCursor (ks, cursor)) != 0)
 	{
@@ -38,7 +38,7 @@ void iterate_while (KeySet * ks)
 
 int main (void)
 {
-	KeySet * ks = ksNew (20, keyNew ("user:/name1", KEY_END), keyNew ("user:/name2", KEY_END), keyNew ("user:/name3", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (20, keyNew ("user:/name1", KEY_END), keyNew ("user:/name2", KEY_END), keyNew ("user:/name3", KEY_END), KS_END);
 	iterate_while (ks);
 	iterate_for (ks);
 }

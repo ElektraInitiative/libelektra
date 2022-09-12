@@ -126,11 +126,11 @@
  * @{
  */
 
-static bool closeBackends (KeySet * backends, Key * errorKey)
+static bool closeBackends (ElektraKeyset * backends, ElektraKey * errorKey)
 {
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
 		for (elektraCursor p = 0; p < ksGetSize (backendData->plugins); p++)
@@ -159,10 +159,10 @@ static bool closeBackends (KeySet * backends, Key * errorKey)
  *
  * The first key is removed in the resulting keyset.
  */
-KeySet * ksRenameKeys (KeySet * config, const char * name)
+ElektraKeyset * ksRenameKeys (ElektraKeyset * config, const char * name)
 {
-	Key * root;
-	Key * cur;
+	ElektraKey * root;
+	ElektraKey * cur;
 	ssize_t rootSize = 0;
 
 	ksRewind (config);
@@ -172,12 +172,12 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 
 	keyDel (ksLookup (config, root, KDB_O_POP));
 
-	KeySet * newConfig = ksNew (ksGetSize (config), KS_END);
+	ElektraKeyset * newConfig = ksNew (ksGetSize (config), KS_END);
 	if (rootSize == -1) return newConfig;
 
 	while ((cur = ksPop (config)) != 0)
 	{
-		Key * dupKey = keyDup (cur, KEY_CP_ALL);
+		ElektraKey * dupKey = keyDup (cur, KEY_CP_ALL);
 		keySetName (dupKey, name);
 		keyAddName (dupKey, keyName (cur) + rootSize - 1);
 		ksAppendKey (newConfig, dupKey);
@@ -187,9 +187,9 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 	return newConfig;
 }
 
-static void clearErrorAndWarnings (Key * key)
+static void clearErrorAndWarnings (ElektraKey * key)
 {
-	Key * cutRoot = keyNew ("meta:/error", KEY_END);
+	ElektraKey * cutRoot = keyNew ("meta:/error", KEY_END);
 	ksDel (ksCut (keyMeta (key), cutRoot));
 	keySetName (cutRoot, "meta:/warnings");
 	ksDel (ksCut (keyMeta (key), cutRoot));
@@ -209,7 +209,7 @@ static void clearErrorAndWarnings (Key * key)
  * @retval 1 if list is mounted everywhere
  * @retval 0 otherwise
  */
-static int ensureListPluginMountedEverywhere (KDB * handle, Key * errorKey)
+static int ensureListPluginMountedEverywhere (ElektraKdb * handle, ElektraKey * errorKey)
 {
 	GlobalpluginPositions expectedPositions[] = { PREGETSTORAGE,
 						      PROCGETSTORAGE,
@@ -253,12 +253,12 @@ static int ensureListPluginMountedEverywhere (KDB * handle, Key * errorKey)
  *
  * @see kdbOpen()
  */
-static void ensureContractGlobalKs (KDB * handle, KeySet * contract)
+static void ensureContractGlobalKs (ElektraKdb * handle, ElektraKeyset * contract)
 {
-	Key * globalKsContractRoot = keyNew ("system:/elektra/contract/globalkeyset", KEY_END);
-	Key * globalKsRoot = keyNew ("system:/elektra", KEY_END);
+	ElektraKey * globalKsContractRoot = keyNew ("system:/elektra/contract/globalkeyset", KEY_END);
+	ElektraKey * globalKsRoot = keyNew ("system:/elektra", KEY_END);
 
-	KeySet * globalKs = ksCut (contract, globalKsContractRoot);
+	ElektraKeyset * globalKs = ksCut (contract, globalKsContractRoot);
 
 	ksRename (globalKs, globalKsContractRoot, globalKsRoot);
 
@@ -276,7 +276,7 @@ static void ensureContractGlobalKs (KDB * handle, KeySet * contract)
  *
  * @see kdbOpen()
  */
-static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * parentKey)
+static int ensureContractMountGlobal (ElektraKdb * handle, ElektraKeyset * contract, ElektraKey * parentKey)
 {
 	if (!ensureListPluginMountedEverywhere (handle, parentKey))
 	{
@@ -284,22 +284,22 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 	}
 
 	Plugin * listPlugin = handle->globalPlugins[PREGETSTORAGE][MAXONCE];
-	typedef int (*mountPluginFun) (Plugin *, const char *, KeySet *, Key *);
+	typedef int (*mountPluginFun) (Plugin *, const char *, ElektraKeyset *, ElektraKey *);
 	mountPluginFun listAddPlugin = (mountPluginFun) elektraPluginGetFunction (listPlugin, "mountplugin");
-	typedef int (*unmountPluginFun) (Plugin *, const char *, Key *);
+	typedef int (*unmountPluginFun) (Plugin *, const char *, ElektraKey *);
 	unmountPluginFun listRemovePlugin = (unmountPluginFun) elektraPluginGetFunction (listPlugin, "unmountplugin");
 
 
-	Key * mountContractRoot = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
-	Key * pluginConfigRoot = keyNew ("user:/", KEY_END);
+	ElektraKey * mountContractRoot = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
+	ElektraKey * pluginConfigRoot = keyNew ("user:/", KEY_END);
 
 	for (elektraCursor it = ksFindHierarchy (contract, mountContractRoot, NULL); it < ksGetSize (contract); it++)
 	{
-		Key * cur = ksAtCursor (contract, it);
+		ElektraKey * cur = ksAtCursor (contract, it);
 		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
 		{
 			const char * pluginName = keyBaseName (cur);
-			KeySet * pluginConfig = ksCut (contract, cur);
+			ElektraKeyset * pluginConfig = ksCut (contract, cur);
 
 			// increment ref count, because cur is part of pluginConfig and
 			// we hold a reference to cur that is still needed (via pluginName)
@@ -340,11 +340,11 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
  *
  * @see kdbOpen()
  */
-static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
+static bool ensureContract (ElektraKdb * handle, const ElektraKeyset * contract, ElektraKey * parentKey)
 {
 	// TODO (kodebach): tests
 	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
-	KeySet * dup = ksDeepDup (contract);
+	ElektraKeyset * dup = ksDeepDup (contract);
 
 	ensureContractGlobalKs (handle, dup);
 	int ret = ensureContractMountGlobal (handle, dup, parentKey);
@@ -361,9 +361,9 @@ static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentK
  *
  * @see kdbOpen()
  */
-static KDB * kdbNew (Key * errorKey)
+static ElektraKdb * kdbNew (ElektraKey * errorKey)
 {
-	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	ElektraKdb * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, errorKey) == -1)
 	{
@@ -382,7 +382,7 @@ static KDB * kdbNew (Key * errorKey)
 	return handle;
 }
 
-static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend, KeySet * plugins, KeySet * definition)
+static void addMountpoint (ElektraKeyset * backends, ElektraKey * mountpoint, Plugin * backend, ElektraKeyset * plugins, ElektraKeyset * definition)
 {
 	BackendData backendData = {
 		.backend = backend,
@@ -397,7 +397,7 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 	ksAppendKey (backends, mountpoint);
 }
 
-static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * global, Key * errorKey)
+static bool addElektraMountpoint (ElektraKeyset * backends, ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey)
 {
 	// TODO (kodebach): implement user:/elektra and dir:/elektra
 	// FIXME (kodebach): replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
@@ -433,12 +433,12 @@ static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * 
 	backend->global = global;
 
 	// clang-format off
-	KeySet * plugins =
+	ElektraKeyset * plugins =
 		ksNew (1,
 			keyNew ("system:/#0", KEY_BINARY, KEY_SIZE, sizeof (resolver), KEY_VALUE, &resolver, KEY_END),
 			keyNew ("system:/#1", KEY_BINARY, KEY_SIZE, sizeof (storage), KEY_VALUE, &storage, KEY_END),
 		KS_END);
-	KeySet * definition =
+	ElektraKeyset * definition =
 		ksNew (3,
 			keyNew ("system:/path", KEY_VALUE, KDB_DB_INIT, KEY_END),
 			keyNew ("system:/positions/get/resolver", KEY_VALUE, "#0", KEY_END),
@@ -455,10 +455,10 @@ static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * 
 	return true;
 }
 
-static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
+static ElektraKeyset * elektraBoostrap (ElektraKdb * handle, ElektraKey * errorKey)
 {
-	KeySet * elektraKs = ksNew (0, KS_END);
-	Key * bootstrapParent = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
+	ElektraKeyset * elektraKs = ksNew (0, KS_END);
+	ElektraKey * bootstrapParent = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
 
 	if (kdbGet (handle, elektraKs, bootstrapParent) == -1)
 	{
@@ -466,7 +466,7 @@ static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
 						"Bootstrapping failed, please fix '" KDB_DB_SYSTEM "/" KDB_DB_INIT
 						"'. If the error persists, please report this bug at https://issues.libelektra.org.");
 
-		Key * warningsRoot = keyNew ("meta:/warnings", KEY_END);
+		ElektraKey * warningsRoot = keyNew ("meta:/warnings", KEY_END);
 		ksAppend (keyMeta (errorKey), ksBelow (keyMeta (bootstrapParent), warningsRoot));
 		keyDel (warningsRoot);
 		elektraTriggerWarnings (keyString (keyGetMeta (bootstrapParent, "meta:/error/number")), errorKey,
@@ -481,19 +481,19 @@ static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
 	return elektraKs;
 }
 
-static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * modules, KeySet * global, const KeySet * systemConfig,
-			 Key * errorKey)
+static bool openPlugins (ElektraKeyset * plugins, const ElektraKey * pluginsRoot, ElektraKeyset * modules, ElektraKeyset * global, const ElektraKeyset * systemConfig,
+			 ElektraKey * errorKey)
 {
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
 	{
-		Key * cur = ksAtCursor (plugins, i);
+		ElektraKey * cur = ksAtCursor (plugins, i);
 		if (keyIsDirectlyBelow (pluginsRoot, cur) == 1)
 		{
-			Key * lookupHelper = keyDup (cur, KEY_CP_NAME);
+			ElektraKey * lookupHelper = keyDup (cur, KEY_CP_NAME);
 			keyAddBaseName (lookupHelper, "name");
 
-			Key * nameKey = ksLookup (plugins, lookupHelper, 0);
+			ElektraKey * nameKey = ksLookup (plugins, lookupHelper, 0);
 			const char * pluginName = nameKey == NULL ? NULL : keyString (nameKey);
 			if (nameKey == NULL || strlen (pluginName) == 0)
 			{
@@ -507,8 +507,8 @@ static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * mod
 			}
 
 			keySetBaseName (lookupHelper, "config");
-			KeySet * config = ksBelow (plugins, lookupHelper);
-			Key * configRoot = keyNew ("user:/", KEY_END);
+			ElektraKeyset * config = ksBelow (plugins, lookupHelper);
+			ElektraKey * configRoot = keyNew ("user:/", KEY_END);
 			ksRename (config, lookupHelper, configRoot);
 			keyDel (configRoot);
 
@@ -528,7 +528,7 @@ static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * mod
 			plugin->global = global;
 
 			// create Plugin * key ...
-			Key * pluginKey = keyDup (cur, KEY_CP_NAME);
+			ElektraKey * pluginKey = keyDup (cur, KEY_CP_NAME);
 			keySetBinary (pluginKey, &plugin, sizeof (plugin));
 
 			// ... remove definition (includes cur) ...
@@ -551,13 +551,13 @@ static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * mod
 	return success;
 }
 
-static KeySet * dupPluginSet (KeySet * plugins, Key * errorKey)
+static ElektraKeyset * dupPluginSet (ElektraKeyset * plugins, ElektraKey * errorKey)
 {
-	KeySet * dupPlugins = ksNew (ksGetSize (plugins), KS_END);
+	ElektraKeyset * dupPlugins = ksNew (ksGetSize (plugins), KS_END);
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
 	{
-		Key * cur = ksAtCursor (plugins, i);
+		ElektraKey * cur = ksAtCursor (plugins, i);
 		const Plugin * plugin = *(const Plugin **) keyValue (cur);
 		Plugin * dup = elektraPluginOpen (plugin->name, plugin->modules, ksDup (plugin->config), errorKey);
 		if (dup == NULL)
@@ -570,7 +570,7 @@ static KeySet * dupPluginSet (KeySet * plugins, Key * errorKey)
 		}
 		dup->global = plugin->global;
 
-		Key * dupKey = keyDup (cur, KEY_CP_NAME);
+		ElektraKey * dupKey = keyDup (cur, KEY_CP_NAME);
 		keySetBinary (dupKey, &dup, sizeof (dup));
 		ksAppendKey (dupPlugins, dupKey);
 	}
@@ -586,10 +586,10 @@ static KeySet * dupPluginSet (KeySet * plugins, Key * errorKey)
 	}
 }
 
-static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, Key * backendPluginKey, KeySet * plugins, KeySet * definition,
-			      Key * errorKey)
+static bool addDupMountpoint (ElektraKeyset * mountpoints, ElektraKey * mountpoint, ElektraKey * backendPluginKey, ElektraKeyset * plugins, ElektraKeyset * definition,
+			      ElektraKey * errorKey)
 {
-	KeySet * dupPlugins = dupPluginSet (plugins, errorKey);
+	ElektraKeyset * dupPlugins = dupPluginSet (plugins, errorKey);
 	if (dupPlugins == NULL)
 	{
 		keyDel (mountpoint);
@@ -600,10 +600,10 @@ static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, Key * back
 	return true;
 }
 
-static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySet * elektraKs, KeySet * global, Key * root, Key * errorKey)
+static bool parseAndAddMountpoint (ElektraKeyset * mountpoints, ElektraKeyset * modules, ElektraKeyset * elektraKs, ElektraKeyset * global, ElektraKey * root, ElektraKey * errorKey)
 {
 	// check that the base name is a key name
-	Key * mountpoint = keyNew (keyBaseName (root), KEY_END);
+	ElektraKey * mountpoint = keyNew (keyBaseName (root), KEY_END);
 	if (mountpoint == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "'%s' is not a valid key name, but is used for the mountpoint '%s'",
@@ -612,7 +612,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	}
 
 	// FIXME (kodebach): reserve /elektra/... in every namespace
-	Key * elektraRoot = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
+	ElektraKey * elektraRoot = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
 	if (keyIsBelowOrSame (elektraRoot, mountpoint) != 0)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
@@ -625,17 +625,17 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 
 
 	// load mountpoint level config
-	Key * lookupHelper = keyDup (root, KEY_CP_NAME);
+	ElektraKey * lookupHelper = keyDup (root, KEY_CP_NAME);
 	keyAddBaseName (lookupHelper, "config");
-	KeySet * systemConfig = ksBelow (elektraKs, lookupHelper);
-	Key * configRoot = keyNew ("system:/", KEY_END);
+	ElektraKeyset * systemConfig = ksBelow (elektraKs, lookupHelper);
+	ElektraKey * configRoot = keyNew ("system:/", KEY_END);
 	ksRename (systemConfig, lookupHelper, configRoot);
 	keyDel (configRoot);
 
 
 	// get the plugin list and remove the common prefix
 	keySetBaseName (lookupHelper, "plugins");
-	KeySet * plugins = ksBelow (elektraKs, lookupHelper);
+	ElektraKeyset * plugins = ksBelow (elektraKs, lookupHelper);
 
 	// open all plugins (replaces key values with Plugin *)
 	if (!openPlugins (plugins, lookupHelper, modules, global, systemConfig, errorKey))
@@ -650,12 +650,12 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	// TODO (kodebach): read and process config/needs from contract
 	ksDel (systemConfig);
 
-	Key * pluginsRoot = keyNew ("system:/", KEY_END);
+	ElektraKey * pluginsRoot = keyNew ("system:/", KEY_END);
 	ksRename (plugins, lookupHelper, pluginsRoot);
 	keyDel (pluginsRoot);
 
 	// find backend plugin
-	Key * backendPluginKey = ksLookupByName (plugins, "system:/backend", 0);
+	ElektraKey * backendPluginKey = ksLookupByName (plugins, "system:/backend", 0);
 	if (backendPluginKey == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "The mountpoint '%s' defined in '%s' does not specify a backend plugin.",
@@ -668,8 +668,8 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 
 	// get definition section
 	keySetBaseName (lookupHelper, "definition");
-	KeySet * definition = ksBelow (elektraKs, lookupHelper);
-	Key * definitionRoot = keyNew ("system:/", KEY_END);
+	ElektraKeyset * definition = ksBelow (elektraKs, lookupHelper);
+	ElektraKey * definitionRoot = keyNew ("system:/", KEY_END);
 	ksRename (definition, lookupHelper, definitionRoot);
 	keyDel (definitionRoot);
 
@@ -714,16 +714,16 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 }
 
 // FIXME (kodebach): write tests
-KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey)
+ElektraKeyset * elektraMountpointsParse (ElektraKeyset * elektraKs, ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey)
 {
-	KeySet * mountpoints = ksNew (0, KS_END);
+	ElektraKeyset * mountpoints = ksNew (0, KS_END);
 
-	Key * mountpointsRoot = keyNew (KDB_SYSTEM_ELEKTRA "/mountpoints", KEY_END);
+	ElektraKey * mountpointsRoot = keyNew (KDB_SYSTEM_ELEKTRA "/mountpoints", KEY_END);
 
 	bool error = false;
 	for (elektraCursor end, i = ksFindHierarchy (elektraKs, mountpointsRoot, &end); i < end;)
 	{
-		Key * cur = ksAtCursor (elektraKs, i);
+		ElektraKey * cur = ksAtCursor (elektraKs, i);
 		if (keyIsDirectlyBelow (mountpointsRoot, cur) == 1)
 		{
 			if (!parseAndAddMountpoint (mountpoints, modules, elektraKs, global, cur, errorKey))
@@ -732,7 +732,7 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 			}
 
 			// skip over the keys we just parsed
-			Key * lookup = keyDup (cur, KEY_CP_NAME);
+			ElektraKey * lookup = keyDup (cur, KEY_CP_NAME);
 			ksFindHierarchy (elektraKs, lookup, &i);
 			keyDel (lookup);
 		}
@@ -758,9 +758,9 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 	return mountpoints;
 }
 
-static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+static bool addRootMountpoint (ElektraKeyset * backends, elektraNamespace ns, ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey)
 {
-	Key * rootKey = keyNew ("/", KEY_END);
+	ElektraKey * rootKey = keyNew ("/", KEY_END);
 	keySetNamespace (rootKey, ns);
 	if (ksLookup (backends, rootKey, 0) != NULL)
 	{
@@ -787,13 +787,13 @@ static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * 
 	defaultStorage->global = global;
 
 	// clang-format off
-	KeySet * rootPlugins =
+	ElektraKeyset * rootPlugins =
 		ksNew (2,
 			keyNew ("system:/resolver", KEY_BINARY, KEY_SIZE, sizeof (defaultResolver), KEY_VALUE, &defaultResolver, KEY_END),
 			keyNew ("system:/storage", KEY_BINARY, KEY_SIZE, sizeof (defaultStorage), KEY_VALUE, &defaultStorage, KEY_END),
 		KS_END);
 
-	KeySet * rootDefinition =
+	ElektraKeyset * rootDefinition =
 		ksNew (7,
 			keyNew ("system:/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
 			keyNew ("system:/positions/get/resolver", KEY_VALUE, "resolver", KEY_END),
@@ -822,7 +822,7 @@ static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * 
 	return true;
 }
 
-static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey)
+static bool addModulesMountpoint (ElektraKdb * handle, ElektraKey * mountpoint, ElektraKey * errorKey)
 {
 	Plugin * modules = elektraPluginOpen ("modules", handle->modules, ksNew (0, KS_END), errorKey);
 	if (modules == NULL)
@@ -848,7 +848,7 @@ static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey
 	return true;
 }
 
-static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
+static bool addHardcodedMountpoints (ElektraKdb * handle, ElektraKey * errorKey)
 {
 	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
 	{
@@ -876,7 +876,7 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 		return false;
 	}
 
-	Key * modulesRoot = keyNew (KDB_SYSTEM_ELEKTRA "/modules", KEY_END);
+	ElektraKey * modulesRoot = keyNew (KDB_SYSTEM_ELEKTRA "/modules", KEY_END);
 	Plugin * modules = elektraPluginOpen ("modules", handle->modules, ksNew (0, KS_END), errorKey);
 	if (modules == NULL)
 	{
@@ -888,7 +888,7 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 
 	for (elektraCursor i = 0; i < ksGetSize (handle->modules); i++)
 	{
-		Key * cur = ksAtCursor (handle->modules, i);
+		ElektraKey * cur = ksAtCursor (handle->modules, i);
 		if (keyIsDirectlyBelow (modulesRoot, cur) != 1)
 		{
 			continue;
@@ -956,7 +956,7 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
  * @ingroup kdb
  * @see kdbClose() to close the session of a Key database opened by kdbOpen()
  */
-KDB * kdbOpen (const KeySet * contract, Key * errorKey)
+ElektraKdb * kdbOpen (const ElektraKeyset * contract, ElektraKey * errorKey)
 {
 	if (!errorKey)
 	{
@@ -965,12 +965,12 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	ELEKTRA_LOG ("called with %s", keyName (errorKey));
-	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
+	ElektraKey * initialParent = keyDup (errorKey, KEY_CP_ALL);
 
 	int errnosave = errno; // TODO (kodebach) [Q]: really needed?
 
 	// Step 1: create empty KDB instance
-	KDB * handle = kdbNew (errorKey);
+	ElektraKdb * handle = kdbNew (errorKey);
 	if (handle == NULL)
 	{
 		goto error;
@@ -983,7 +983,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// Step 3: execute bootstrap
-	KeySet * elektraKs = elektraBoostrap (handle, errorKey);
+	ElektraKeyset * elektraKs = elektraBoostrap (handle, errorKey);
 	if (elektraKs == NULL)
 	{
 		goto error;
@@ -1007,7 +1007,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// Step 6: parse mountpoints
-	KeySet * backends = elektraMountpointsParse (elektraKs, handle->modules, handle->global, errorKey);
+	ElektraKeyset * backends = elektraMountpointsParse (elektraKs, handle->modules, handle->global, errorKey);
 	if (backends == NULL)
 	{
 		ksDel (elektraKs);
@@ -1040,7 +1040,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 error:
 	if (handle != NULL)
 	{
-		Key * closeKey = keyNew ("/", KEY_END);
+		ElektraKey * closeKey = keyNew ("/", KEY_END);
 		kdbClose (handle, closeKey);
 		keyDel (closeKey);
 	}
@@ -1078,14 +1078,14 @@ error:
  * @ingroup kdb
  * @see kdbOpen() for opening a session with a Key database
  */
-int kdbClose (KDB * handle, Key * errorKey)
+int kdbClose (ElektraKdb * handle, ElektraKey * errorKey)
 {
 	if (!handle)
 	{
 		return -1;
 	}
 
-	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
+	ElektraKey * initialParent = keyDup (errorKey, KEY_CP_ALL);
 	int errnosave = errno;
 #if 1 == 0
 	if (handle->split)
@@ -1144,25 +1144,25 @@ int kdbClose (KDB * handle, Key * errorKey)
 }
 
 #if 2 == 0
-static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * initialParent)
+static int elektraCacheCheckParent (ElektraKeyset * global, ElektraKey * cacheParent, ElektraKey * initialParent)
 {
 	const char * cacheName = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "" : keyName (cacheParent);
 
 	// first check if parentkey matches
-	Key * lastParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentName", KDB_O_NONE);
+	ElektraKey * lastParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
 	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", cacheName);
 	if (!lastParentName || elektraStrCmp (keyString (lastParentName), cacheName)) return -1;
 
 	const char * cacheValue = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "default" : keyString (cacheParent);
 
-	Key * lastParentValue = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentValue", KDB_O_NONE);
+	ElektraKey * lastParentValue = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
 	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", cacheValue);
 	if (!lastParentValue || elektraStrCmp (keyString (lastParentValue), cacheValue)) return -1;
 
-	Key * lastInitalParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastInitialParentName", KDB_O_NONE);
-	Key * lastInitialParent = keyNew (keyString (lastInitalParentName), KEY_END);
+	ElektraKey * lastInitalParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastInitialParentName", KDB_O_NONE);
+	ElektraKey * lastInitialParent = keyNew (keyString (lastInitalParentName), KEY_END);
 	ELEKTRA_LOG_DEBUG ("LAST initial PARENT name: %s", keyName (lastInitialParent));
 	ELEKTRA_LOG_DEBUG ("CURR initial PARENT name: %s", keyName (initialParent));
 
@@ -1177,28 +1177,28 @@ static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * in
 	return 0;
 }
 
-static void elektraCacheCutMeta (KDB * handle)
+static void elektraCacheCutMeta (ElektraKdb * handle)
 {
-	Key * parentKey = keyNew (KDB_CACHE_PREFIX, KEY_END);
+	ElektraKey * parentKey = keyNew (KDB_CACHE_PREFIX, KEY_END);
 	ksDel (ksCut (handle->global, parentKey));
 	keyDel (parentKey);
 }
 
-KeySet * elektraCutProc (KeySet * ks)
+ElektraKeyset * elektraCutProc (ElektraKeyset * ks)
 {
-	Key * parentKey = keyNew ("proc:/", KEY_END);
-	KeySet * ret = ksCut (ks, parentKey);
+	ElektraKey * parentKey = keyNew ("proc:/", KEY_END);
+	ElektraKeyset * ret = ksCut (ks, parentKey);
 	keyDel (parentKey);
 	return ret;
 }
 
-static void elektraRestoreProc (KeySet * ks, KeySet * proc)
+static void elektraRestoreProc (ElektraKeyset * ks, ElektraKeyset * proc)
 {
 	ksAppend (ks, proc);
 	ksDel (proc);
 }
 
-static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key * initialParent ELEKTRA_UNUSED, Key * cacheParent)
+static void elektraCacheLoad (ElektraKdb * handle, ElektraKeyset * cache, ElektraKey * parentKey, ElektraKey * initialParent ELEKTRA_UNUSED, ElektraKey * cacheParent)
 {
 	// prune old cache info
 	elektraCacheCutMeta (handle);
@@ -1263,8 +1263,8 @@ static void cacheOpmphmPredictorDel (OpmphmPredictor * op)
 }
 #endif
 
-static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeySet ** cache, Key ** cacheParent, Key * parentKey,
-				  Key * initialParent, int debugGlobalPositions)
+static int elektraCacheLoadSplit (ElektraKdb * handle, Split * split, ElektraKeyset * ks, ElektraKeyset ** cache, ElektraKey ** cacheParent, ElektraKey * parentKey,
+				  ElektraKey * initialParent, int debugGlobalPositions)
 {
 	ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (*cacheParent), keyString (*cacheParent));
 
@@ -1335,14 +1335,14 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 }
 #endif
 
-static bool initBackends (KeySet * backends, Key * parentKey)
+static bool initBackends (ElektraKeyset * backends, ElektraKey * parentKey)
 {
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		// TODO (kodebach): lazy open
 
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		keySetMeta (backendKey, "meta:/internal/kdbreadonly", NULL);
 
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
@@ -1416,12 +1416,12 @@ static bool initBackends (KeySet * backends, Key * parentKey)
 	return success;
 }
 
-static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
+static bool resolveBackendsForGet (ElektraKeyset * backends, ElektraKey * parentKey)
 {
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		keySetMeta (backendKey, "meta:/internal/kdbmountpoint", NULL);
 		keySetMeta (backendKey, "meta:/internal/kdbneedsupdate", NULL);
 
@@ -1501,7 +1501,7 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 	return success;
 }
 
-static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
+static bool runGetPhase (ElektraKeyset * backends, ElektraKey * parentKey, const char * phase)
 {
 	// TODO (kodebach): better solution?
 	bool speconly = false;
@@ -1516,7 +1516,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 		if (speconly && keyGetNamespace (backendKey) != KEY_NS_SPEC)
@@ -1674,7 +1674,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
  * @see kdbSet() to save the configuration afterwards
  * @see kdbClose() to finish affairs with the key database.
  */
-int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
+int kdbGet (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// TODO (kodebach): different handling of namespaces
 	// FIXME (kodebach): write tests
@@ -1727,7 +1727,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
-	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
+	ElektraKey * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -1735,7 +1735,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	Split * split = splitNew ();
 #endif
 	// Step 1: find backends for parentKey
-	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
+	ElektraKeyset * backends = backendsForParentKey (handle->backends, parentKey);
 	bool goptsActive = handle->globalPlugins[PROCGETSTORAGE][MAXONCE] != NULL;
 	if (goptsActive)
 	{
@@ -1744,7 +1744,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		// TODO (kodebach): handle other keys outside backend
 		ksAppendKey (backends, ksLookupByName (handle->backends, "proc:/", 0));
 	}
-	KeySet * allBackends = ksDup (backends);
+	ElektraKeyset * allBackends = ksDup (backends);
 
 	// Step 2: run open operation where needed (happens within step 3)
 	// Step 3: run init phase where needed
@@ -1828,7 +1828,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 11: run poststorage phase for spec:/
-	Key * specRoot = keyNew ("spec:/", KEY_END);
+	ElektraKey * specRoot = keyNew ("spec:/", KEY_END);
 	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_SPEC))
 	{
 		keyDel (specRoot);
@@ -1838,7 +1838,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// TODO (kodebach) [Q]: can we avoid this merge and the split in step 15?
 	// Step 12: merge data from all backends
-	KeySet * dataKs = ksNew (ksGetSize (ks), KS_END);
+	ElektraKeyset * dataKs = ksNew (ksGetSize (ks), KS_END);
 	backendsMerge (backends, dataKs);
 
 	// Step 13: run procgetstorage global plugins
@@ -1933,12 +1933,12 @@ error:
 	return -1;
 }
 
-static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
+static bool resolveBackendsForSet (ElektraKeyset * backends, ElektraKey * parentKey)
 {
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		keySetMeta (backendKey, "meta:/internal/kdbmountpoint", NULL);
 
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
@@ -2019,7 +2019,7 @@ enum KdbSetFn
 	KDB_SET_FN_ERROR,
 };
 
-static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase, bool blockErrors, enum KdbSetFn function)
+static bool runSetPhase (ElektraKeyset * backends, ElektraKey * parentKey, const char * phase, bool blockErrors, enum KdbSetFn function)
 {
 	bool existingError = keyGetMeta (parentKey, "error") != NULL;
 
@@ -2033,7 +2033,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 		// check if function exists
@@ -2214,7 +2214,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
  * @see kdbClose() that must be called afterwards
  * @see ksCurrent() contains the error Key
  */
-int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
+int kdbSet (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// TODO (kodebach): different handling of namespaces
 	// FIXME (kodebach): write tests
@@ -2269,16 +2269,16 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
 	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
-	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
+	ElektraKey * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
 	// Step 1: find backends for parentKey
-	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
+	ElektraKeyset * backends = backendsForParentKey (handle->backends, parentKey);
 
 	// Step 2: check that backends are initialized
 	bool backendsInit = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
 		// check that backend is initialized
@@ -2313,10 +2313,10 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 4: create deep-copy of ks
 	// Note: This is needed so that ks retains its in-process state,
 	//       after we transform the data into its on-disk state.
-	KeySet * setKs = ksNew (0, KS_END);
+	ElektraKeyset * setKs = ksNew (0, KS_END);
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 
 		ksAppend (setKs, ksDeepDup (ksBelow (ks, backendKey)));
 	}
@@ -2333,7 +2333,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 6: remove read-only backends and backends that haven't changed since kdbGet()
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (backends, i);
+		ElektraKey * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;

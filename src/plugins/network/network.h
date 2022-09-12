@@ -22,13 +22,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int elektraNetworkAddrInfo (Key * toCheck);
+int elektraNetworkAddrInfo (ElektraKey * toCheck);
 
-int elektraPortInfo (Key * toCheck, Key * parentKey);
+int elektraPortInfo (ElektraKey * toCheck, ElektraKey * parentKey);
 
-int elektraNetworkGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraNetworkGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
-int elektraNetworkSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraNetworkSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

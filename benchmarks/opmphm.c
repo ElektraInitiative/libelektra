@@ -92,10 +92,10 @@ static void benchmarkHashFunctionTime (char * name)
 			fflush (stdout);
 			int32_t seed;
 			if (getRandomSeed (&seed) != &seed) printExit ("Seed Parsing Error or feed me more seeds");
-			KeySet * ks = generateKeySet (n[i], &seed, &keySetShapes[s]);
+			ElektraKeyset * ks = generateKeySet (n[i], &seed, &keySetShapes[s]);
 			for (size_t r = 0; r < runs; ++r)
 			{
-				Key * key;
+				ElektraKey * key;
 				ksRewind (ks);
 				struct timeval start;
 				struct timeval end;
@@ -238,7 +238,7 @@ static void benchmarkMapping (char * name)
 
 	// Generate all KeySets
 	KeySetShape * keySetShapes = getKeySetShapes ();
-	KeySet ** keySetsCache = elektraMalloc (numberOfKeySets * sizeof (KeySet *));
+	ElektraKeyset ** keySetsCache = elektraMalloc (numberOfKeySets * sizeof (ElektraKeyset *));
 	if (!keySetsCache)
 	{
 		printExit ("malloc");
@@ -306,7 +306,7 @@ static void benchmarkMapping (char * name)
 			// go through all KeySets from n
 			for (size_t ksCacheI = 0; ksCacheI < numberOfShapes * keySetsPerShape; ++ksCacheI)
 			{
-				KeySet * ks = keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI];
+				ElektraKeyset * ks = keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI];
 #ifdef USE_OPENMP
 #pragma omp parallel
 #endif
@@ -526,7 +526,7 @@ static void benchmarkMappingOpt (char * name)
 
 	// Generate all KeySets
 	KeySetShape * keySetShapes = getKeySetShapes ();
-	KeySet ** keySetsCache = elektraMalloc (numberOfKeySets * sizeof (KeySet *));
+	ElektraKeyset ** keySetsCache = elektraMalloc (numberOfKeySets * sizeof (ElektraKeyset *));
 	if (!keySetsCache)
 	{
 		printExit ("malloc");
@@ -592,7 +592,7 @@ static void benchmarkMappingOpt (char * name)
 		// go through all KeySets from n
 		for (size_t ksCacheI = 0; ksCacheI < numberOfShapes * keySetsPerShape; ++ksCacheI)
 		{
-			KeySet * ks = keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI];
+			ElektraKeyset * ks = keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI];
 #ifdef USE_OPENMP
 #pragma omp parallel
 #endif
@@ -787,7 +787,7 @@ static void benchmarkMappingAllSeeds (char * name)
 
 	// Generate all KeySets
 	KeySetShape * keySetShapes = getKeySetShapes ();
-	KeySet ** keySetsCache = elektraMalloc (nCount * sizeof (KeySet *));
+	ElektraKeyset ** keySetsCache = elektraMalloc (nCount * sizeof (ElektraKeyset *));
 	if (!keySetsCache)
 	{
 		printExit ("malloc");
@@ -855,7 +855,7 @@ static void benchmarkMappingAllSeeds (char * name)
 		}
 		// OPMPHM
 
-		KeySet * ks = keySetsCache[nI];
+		ElektraKeyset * ks = keySetsCache[nI];
 #ifdef USE_OPENMP
 #pragma omp parallel
 #endif
@@ -1016,15 +1016,15 @@ static void benchmarkMappingAllSeeds (char * name)
  *
  * @retval median time
  */
-static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, size_t numberOfRepeats)
+static size_t benchmarkOPMPHMBuildTimeMeasure (ElektraKeyset * ks, size_t * repeats, size_t numberOfRepeats)
 {
 	for (size_t repeatsI = 0; repeatsI < numberOfRepeats; ++repeatsI)
 	{
 		// preparation for measurement
 		struct timeval start;
 		struct timeval end;
-		Key * keySearchFor = ks->array[0]; // just some key
-		Key * keyFound;
+		ElektraKey * keySearchFor = ks->array[0]; // just some key
+		ElektraKey * keyFound;
 		// fresh OPMPHM
 		if (ks->opmphm)
 		{
@@ -1116,7 +1116,7 @@ void benchmarkOPMPHMBuildTime (char * name)
 		printExit ("malloc");
 	}
 	// init KeySetStorage
-	KeySet ** keySetStorage = elektraMalloc (ksPerN * sizeof (KeySet *));
+	ElektraKeyset ** keySetStorage = elektraMalloc (ksPerN * sizeof (ElektraKeyset *));
 	if (!keySetStorage)
 	{
 		printExit ("malloc");
@@ -1246,7 +1246,7 @@ void benchmarkOPMPHMBuildTime (char * name)
  *
  * @retval median time
  */
-static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t searchSeed, elektraLookupFlags option, size_t * repeats,
+static size_t benchmarkSearchTimeMeasure (ElektraKeyset * ks, size_t searches, int32_t searchSeed, elektraLookupFlags option, size_t * repeats,
 					  size_t numberOfRepeats)
 {
 	if (option & KDB_O_OPMPHM)
@@ -1284,7 +1284,7 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		// preparation for measurement
 		struct timeval start;
 		struct timeval end;
-		Key * keyFound;
+		ElektraKey * keyFound;
 		int32_t actualSearchSeed = searchSeed;
 
 		// START MEASUREMENT
@@ -1394,7 +1394,7 @@ static void benchmarkSearchTime (char * name, char * outFileName, elektraLookupF
 		printExit ("malloc");
 	}
 	// init KeySetStorage
-	KeySet ** keySetStorage = elektraMalloc (ksPerN * sizeof (KeySet *));
+	ElektraKeyset ** keySetStorage = elektraMalloc (ksPerN * sizeof (ElektraKeyset *));
 	if (!keySetStorage)
 	{
 		printExit ("malloc");
@@ -1558,14 +1558,14 @@ static void benchmarkBinarySearchTime (char * name)
  *
  * @retval median time
  */
-static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double load, size_t * repeats, size_t numberOfRepeats)
+static size_t benchmarkHsearchBuildTimeMeasure (ElektraKeyset * ks, size_t nI, double load, size_t * repeats, size_t numberOfRepeats)
 {
 	for (size_t repeatsI = 0; repeatsI < numberOfRepeats; ++repeatsI)
 	{
 		// preparation for measurement
 		struct timeval start;
 		struct timeval end;
-		Key * key;
+		ElektraKey * key;
 		ksRewind (ks);
 		ENTRY e;
 		ENTRY * ep;
@@ -1678,7 +1678,7 @@ void benchmarkHsearchBuildTime (char * name)
 		printExit ("malloc");
 	}
 	// init KeySetStorage
-	KeySet ** keySetStorage = elektraMalloc (ksPerN * sizeof (KeySet *));
+	ElektraKeyset ** keySetStorage = elektraMalloc (ksPerN * sizeof (ElektraKeyset *));
 	if (!keySetStorage)
 	{
 		printExit ("malloc");
@@ -1913,7 +1913,7 @@ static void benchmarkPredictionTime (char * name)
 			// generate KeySet
 			int32_t genSeed = 0;
 			if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
-			KeySet * ks = generateKeySet (n[nI], &genSeed, usedKeySetShape);
+			ElektraKeyset * ks = generateKeySet (n[nI], &genSeed, usedKeySetShape);
 
 			// get seeds for OPMPHM
 			for (size_t s = 0; s < numberOfSequences; ++s)
@@ -1932,7 +1932,7 @@ static void benchmarkPredictionTime (char * name)
 				// preparation for measurement
 				struct timeval start;
 				struct timeval end;
-				Key * keyFound;
+				ElektraKey * keyFound;
 
 				// START MEASUREMENT
 				__asm__("");
@@ -1986,7 +1986,7 @@ static void benchmarkPredictionTime (char * name)
 				// preparation for measurement
 				struct timeval start;
 				struct timeval end;
-				Key * keyFound;
+				ElektraKey * keyFound;
 
 				// START MEASUREMENT
 				__asm__("");
@@ -2076,13 +2076,13 @@ static void benchmarkPrintAllKeySetShapes (char * name)
 	{
 		int32_t s = seed;
 		//~ timeInit ();
-		KeySet * ks = generateKeySet (n, &s, &keySetShapes[shapeId]);
+		ElektraKeyset * ks = generateKeySet (n, &s, &keySetShapes[shapeId]);
 		//~ timePrint ("generateKeySet:");
 		// print KS
 		if (1)
 		{
 			printf (" ======================= shapeId %zu =======================\n\n", shapeId);
-			Key * key;
+			ElektraKey * key;
 			ksRewind (ks);
 			while ((key = ksNext (ks)))
 			{
@@ -2266,7 +2266,7 @@ static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r)
 
 static const char * getString (void * data)
 {
-	return keyName ((Key *) data);
+	return keyName ((ElektraKey *) data);
 }
 
 /**

@@ -12,8 +12,8 @@
 
 #include <kdbplugin.h>
 
-int elektraMissingGet (Plugin * plugin, KeySet * returned, Key * parentKey);
-int elektraMissingSet (Plugin * plugin, KeySet * returned, Key * parentKey);
+int elektraMissingGet (Plugin * plugin, ElektraKeyset * returned, ElektraKey * parentKey);
+int elektraMissingSet (Plugin * plugin, ElektraKeyset * returned, ElektraKey * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif // ELEKTRA_MISSING_H

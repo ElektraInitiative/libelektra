@@ -2,7 +2,7 @@
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKeySet, gelektra_keyset, G_TYPE_OBJECT)
-static KeySet * gelektra_keyset_swap (GElektraKeySet * ks, KeySet * newks);
+static ElektraKeyset * gelektra_keyset_swap (GElektraKeySet * ks, ElektraKeyset * newks);
 
 static void gelektra_keyset_init (GElektraKeySet * self)
 {
@@ -66,11 +66,11 @@ GElektraKeySet * gelektra_keyset_new (gsize alloc, ...)
  *
  * Returns: (transfer full): A new #GElektraKeySet holding the ownership of @ks
  */
-GElektraKeySet * gelektra_keyset_make (KeySet * ks)
+GElektraKeySet * gelektra_keyset_make (ElektraKeyset * ks)
 {
 	if (ks == NULL) return NULL;
 	GElektraKeySet * ret = gelektra_keyset_new (0);
-	KeySet * old = gelektra_keyset_swap (ret, ks);
+	ElektraKeyset * old = gelektra_keyset_swap (ret, ks);
 	ksDel (old);
 	return ret;
 }
@@ -109,9 +109,9 @@ gint gelektra_keyset_clear (GElektraKeySet * ks)
  *
  * Returns: The old underlying keyset
  */
-static KeySet * gelektra_keyset_swap (GElektraKeySet * ks, KeySet * newks)
+static ElektraKeyset * gelektra_keyset_swap (GElektraKeySet * ks, ElektraKeyset * newks)
 {
-	KeySet * oldks = ks->keyset;
+	ElektraKeyset * oldks = ks->keyset;
 	ks->keyset = newks;
 	return oldks;
 }

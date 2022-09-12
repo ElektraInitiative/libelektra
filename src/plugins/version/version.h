@@ -12,8 +12,8 @@
 
 #include <kdbplugin.h>
 
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, ElektraKeyset * definition, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -24,10 +24,10 @@ static int setupNotificationCallback (Plugin * handle)
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	KeySet * global = elektraPluginGetGlobalKeySet (handle);
+	ElektraKeyset * global = elektraPluginGetGlobalKeySet (handle);
 
 	ElektraNotificationCallback callback;
-	Key * callbackKey = ksLookupByName (global, "system:/elektra/notification/callback", 0);
+	ElektraKey * callbackKey = ksLookupByName (global, "system:/elektra/notification/callback", 0);
 	const void * callbackPtr = keyValue (callbackKey);
 
 	if (callbackPtr == NULL)
@@ -38,7 +38,7 @@ static int setupNotificationCallback (Plugin * handle)
 	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
 
 	ElektraNotificationCallbackContext * context;
-	Key * contextKey = ksLookupByName (global, "system:/elektra/notification/context", 0);
+	ElektraKey * contextKey = ksLookupByName (global, "system:/elektra/notification/context", 0);
 	const void * contextPtr = keyValue (contextKey);
 	context = contextPtr == NULL ? NULL : *(ElektraNotificationCallbackContext **) contextPtr;
 
@@ -95,7 +95,7 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 		}
 		else
 		{
-			Key * changed = keyNew (keyName, KEY_END);
+			ElektraKey * changed = keyNew (keyName, KEY_END);
 			pluginData->notificationCallback (changed, pluginData->notificationContext);
 		}
 
@@ -105,7 +105,7 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-int elektraDbusRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraDbusRecvOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	ElektraDbusRecvPluginData * data = (ElektraDbusRecvPluginData *) elektraPluginGetData (handle);
 	if (data == NULL)
@@ -122,9 +122,9 @@ int elektraDbusRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 	if (data->ioBinding == NULL)
 	{
-		KeySet * global = elektraPluginGetGlobalKeySet (handle);
+		ElektraKeyset * global = elektraPluginGetGlobalKeySet (handle);
 
-		Key * ioBindingKey = ksLookupByName (global, "system:/elektra/io/binding", 0);
+		ElektraKey * ioBindingKey = ksLookupByName (global, "system:/elektra/io/binding", 0);
 		const void * bindingPtr = keyValue (ioBindingKey);
 		ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
 
@@ -157,11 +157,11 @@ int elektraDbusRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbusrecv"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/dbusrecv", KEY_VALUE, "dbusrecv plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/dbusrecv/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/dbusrecv/exports/open", KEY_FUNC, elektraDbusRecvOpen, KEY_END),
@@ -178,7 +178,7 @@ int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return 1; /* success */
 }
 
-int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraDbusRecvClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
 	if (pluginData == NULL)

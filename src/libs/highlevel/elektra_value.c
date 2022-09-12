@@ -42,10 +42,10 @@ extern "C" {
  *   The returned pointer remains valid until the KeySet inside @p elektra is modified. Calls to elektraSet*() functions may
  *   cause such modifications. In any case, it becomes invalid when elektraClose() is called on @p elektra.
  */
-Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
+ElektraKey * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 {
 	elektraSetLookupKey (elektra, name);
-	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
 		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey)));
@@ -85,7 +85,7 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 const char * elektraFindReference (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
-	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
 		return NULL;
@@ -126,8 +126,8 @@ const char * elektraFindReference (Elektra * elektra, const char * name)
 KDBType elektraGetType (Elektra * elektra, const char * keyname)
 {
 	elektraSetLookupKey (elektra, keyname);
-	const Key * key = elektraFindKey (elektra, keyname, NULL);
-	const Key * metaKey = keyGetMeta (key, "type");
+	const ElektraKey * key = elektraFindKey (elektra, keyname, NULL);
+	const ElektraKey * metaKey = keyGetMeta (key, "type");
 	return metaKey == NULL ? NULL : keyString (metaKey);
 }
 
@@ -144,7 +144,7 @@ KDBType elektraGetType (Elektra * elektra, const char * keyname)
 const char * elektraGetRawString (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
-	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	return resultKey == NULL ? NULL : keyString (resultKey);
 }
 
@@ -161,7 +161,7 @@ void elektraSetRawString (Elektra * elektra, const char * name, const char * val
 {
 	CHECK_ERROR (elektra, error);
 	elektraSetLookupKey (elektra, name);
-	Key * const key = keyDup (elektra->lookupKey, KEY_CP_NAME);
+	ElektraKey * const key = keyDup (elektra->lookupKey, KEY_CP_NAME);
 	keySetMeta (key, "type", type);
 	keySetString (key, value);
 	elektraSaveKey (elektra, key, error);

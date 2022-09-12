@@ -12,7 +12,7 @@
 
 #include <kdbplugin.h>
 
-int elektraGOptsGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraGOptsGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

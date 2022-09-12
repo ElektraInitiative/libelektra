@@ -42,8 +42,8 @@ struct stringbuffer
 	char * string;
 };
 
-static ssize_t findMetaLink (struct list * list, const Key * meta);
-static void insertMetaLink (struct list * list, size_t index, const Key * meta, Key * key, size_t parentOffset);
+static ssize_t findMetaLink (struct list * list, const ElektraKey * meta);
+static void insertMetaLink (struct list * list, size_t index, const ElektraKey * meta, ElektraKey * key, size_t parentOffset);
 
 static void setupBuffer (struct stringbuffer * buffer, size_t initialAlloc);
 static void ensureBufferSize (struct stringbuffer * buffer, size_t minSize);
@@ -57,7 +57,7 @@ static void ensureBufferSize (struct stringbuffer * buffer, size_t minSize);
 
 #include "varint.c"
 
-static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_long_t size, Key * errorKey)
+static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_long_t size, ElektraKey * errorKey)
 {
 	if (!varintWrite (file, size))
 	{
@@ -76,7 +76,7 @@ static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_
 	return true;
 }
 
-static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buffer, Key * errorKey)
+static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buffer, ElektraKey * errorKey)
 {
 	kdb_unsigned_long_long_t size = 0;
 	if (!varintRead (file, &size))
@@ -97,11 +97,11 @@ static inline bool readStringIntoBuffer (FILE * file, struct stringbuffer * buff
 	return true;
 }
 
-int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/quickdump"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/quickdump", KEY_VALUE, "quickdump plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/quickdump/exports", KEY_END),
 			keyNew ("system:/elektra/modules/quickdump/exports/get", KEY_FUNC, elektraQuickdumpGet, KEY_END),
@@ -199,7 +199,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		Key * k;
+		ElektraKey * k;
 
 		switch (type)
 		{
@@ -318,7 +318,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				const Key * sourceKey = ksLookupByName (returned, nameBuffer.string, 0);
+				const ElektraKey * sourceKey = ksLookupByName (returned, nameBuffer.string, 0);
 				if (sourceKey == NULL)
 				{
 					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not copy meta data from key '%s': Key not found",
@@ -367,7 +367,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraQuickdumpSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	elektraCursor cursor = ksGetCursor (returned);
 	ksRewind (returned);
@@ -408,13 +408,13 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// ... unless /noparent is in config, then we just take the full
 	// (cascading) keynames as relative to the parentKey
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/noparent", 0) != NULL)
 	{
 		parentOffset = 1;
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		size_t fullNameSize = keyGetNameSize (cur);
@@ -478,7 +478,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 
 		keyRewindMeta (cur);
-		const Key * meta;
+		const ElektraKey * meta;
 		while ((meta = keyNextMeta (cur)) != NULL)
 		{
 			ssize_t result = findMetaLink (&metaKeys, meta);
@@ -552,7 +552,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-ssize_t findMetaLink (struct list * list, const Key * meta)
+ssize_t findMetaLink (struct list * list, const ElektraKey * meta)
 {
 	const void * search = meta;
 
@@ -594,7 +594,7 @@ ssize_t findMetaLink (struct list * list, const Key * meta)
 	return -insertpos - 1;
 }
 
-void insertMetaLink (struct list * list, size_t index, const Key * meta, Key * key, size_t parentOffset)
+void insertMetaLink (struct list * list, size_t index, const ElektraKey * meta, ElektraKey * key, size_t parentOffset)
 {
 	if (list->size + 1 >= list->alloc)
 	{

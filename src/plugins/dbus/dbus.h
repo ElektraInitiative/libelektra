@@ -27,7 +27,7 @@
 typedef struct
 {
 	// remember all keys
-	KeySet * keys;
+	ElektraKeyset * keys;
 
 	// D-Bus connections (may be NULL)
 	DBusConnection * systemBus;
@@ -39,10 +39,10 @@ int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filte
 int elektraDbusSetupReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);
 int elektraDbusTeardownReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);
 
-int elektraDbusOpen (Plugin * handle, Key * errorKey);
-int elektraDbusClose (Plugin * handle, Key * errorKey);
-int elektraDbusGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDbusSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDbusOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraDbusClose (Plugin * handle, ElektraKey * errorKey);
+int elektraDbusGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraDbusSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

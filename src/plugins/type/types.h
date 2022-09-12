@@ -16,34 +16,34 @@
 #include <kdbplugin.h>
 #include <kdbtypes.h>
 
-bool elektraTypeCheckAny (const Key * key);
-bool elektraTypeCheckEmpty (const Key * key);
-bool elektraTypeCheckChar (const Key * key);
-bool elektraTypeCheckWChar (const Key * key);
-bool elektraTypeCheckString (const Key * key);
-bool elektraTypeCheckWString (const Key * key);
+bool elektraTypeCheckAny (const ElektraKey * key);
+bool elektraTypeCheckEmpty (const ElektraKey * key);
+bool elektraTypeCheckChar (const ElektraKey * key);
+bool elektraTypeCheckWChar (const ElektraKey * key);
+bool elektraTypeCheckString (const ElektraKey * key);
+bool elektraTypeCheckWString (const ElektraKey * key);
 
-bool elektraTypeNormalizeBoolean (Plugin * handle, Key * key);
-bool elektraTypeCheckBoolean (const Key * key);
-bool elektraTypeRestoreBoolean (Plugin * handle, Key * key);
+bool elektraTypeNormalizeBoolean (Plugin * handle, ElektraKey * key);
+bool elektraTypeCheckBoolean (const ElektraKey * key);
+bool elektraTypeRestoreBoolean (Plugin * handle, ElektraKey * key);
 
-bool elektraTypeCheckFloat (const Key * key);
-bool elektraTypeCheckDouble (const Key * key);
+bool elektraTypeCheckFloat (const ElektraKey * key);
+bool elektraTypeCheckDouble (const ElektraKey * key);
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
-bool elektraTypeCheckLongDouble (const Key * key);
+bool elektraTypeCheckLongDouble (const ElektraKey * key);
 #endif
 
-bool elektraTypeCheckShort (const Key * key);
-bool elektraTypeCheckLong (const Key * key);
-bool elektraTypeCheckLongLong (const Key * key);
-bool elektraTypeCheckUnsignedShort (const Key * key);
-bool elektraTypeCheckUnsignedLong (const Key * key);
-bool elektraTypeCheckUnsignedLongLong (const Key * key);
+bool elektraTypeCheckShort (const ElektraKey * key);
+bool elektraTypeCheckLong (const ElektraKey * key);
+bool elektraTypeCheckLongLong (const ElektraKey * key);
+bool elektraTypeCheckUnsignedShort (const ElektraKey * key);
+bool elektraTypeCheckUnsignedLong (const ElektraKey * key);
+bool elektraTypeCheckUnsignedLongLong (const ElektraKey * key);
 
-bool elektraTypeNormalizeEnum (Plugin * handle, Key * key);
-bool elektraTypeCheckEnum (const Key * key);
-bool elektraTypeRestoreEnum (Plugin * handle, Key * key);
-void elektraTypeSetErrorEnum (Plugin * handle, Key * errorKey, const Key * key);
+bool elektraTypeNormalizeEnum (Plugin * handle, ElektraKey * key);
+bool elektraTypeCheckEnum (const ElektraKey * key);
+bool elektraTypeRestoreEnum (Plugin * handle, ElektraKey * key);
+void elektraTypeSetErrorEnum (Plugin * handle, ElektraKey * errorKey, const ElektraKey * key);
 
 #endif

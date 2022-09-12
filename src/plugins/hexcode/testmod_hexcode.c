@@ -42,7 +42,7 @@ void test_encode (void)
 	char buf[1000];
 	hd->buf = buf;
 
-	Key * test = keyNew ("user:/test", KEY_VALUE, decoded_string, KEY_END);
+	ElektraKey * test = keyNew ("user:/test", KEY_VALUE, decoded_string, KEY_END);
 	elektraHexcodeEncode (test, hd);
 	succeed_if (!memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1), "string not correctly encoded");
 
@@ -60,7 +60,7 @@ void test_decode (void)
 	char buf[1000];
 	hd->buf = buf;
 
-	Key * test = keyNew ("user:/test", KEY_SIZE, sizeof (encoded_string) - 1, KEY_VALUE, encoded_string, KEY_END);
+	ElektraKey * test = keyNew ("user:/test", KEY_SIZE, sizeof (encoded_string) - 1, KEY_VALUE, encoded_string, KEY_END);
 	elektraHexcodeDecode (test, hd);
 	succeed_if (!strcmp (keyString (test), decoded_string), "string not correctly encoded");
 
@@ -70,7 +70,7 @@ void test_decode (void)
 
 void check_reversibility (const char * msg)
 {
-	Key * decode = keyNew ("user:/test", KEY_VALUE, msg, KEY_END);
+	ElektraKey * decode = keyNew ("user:/test", KEY_VALUE, msg, KEY_END);
 
 	CHexData * hd = calloc (1, sizeof (CHexData));
 	hd->hd['\0'] = 1;
@@ -85,7 +85,7 @@ void check_reversibility (const char * msg)
 	char buf[1000];
 	hd->buf = buf;
 
-	Key * encode = keyDup (decode, KEY_CP_ALL);
+	ElektraKey * encode = keyDup (decode, KEY_CP_ALL);
 	elektraHexcodeEncode (encode, hd);
 
 	elektraHexcodeDecode (encode, hd);
@@ -115,11 +115,11 @@ void test_reversibility (void)
 
 void test_config (void)
 {
-	KeySet * config =
+	ElektraKeyset * config =
 		ksNew (20, keyNew ("user:/chars", KEY_END), keyNew ("user:/chars/20", KEY_END), keyNew ("user:/chars/23", KEY_END),
 		       keyNew ("user:/chars/5C", KEY_END), keyNew ("user:/chars/3D", KEY_END), keyNew ("user:/chars/3B", KEY_END), KS_END);
 
-	KeySet * returned = ksNew (20, keyNew ("user:/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
+	ElektraKeyset * returned = ksNew (20, keyNew ("user:/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
 
 	Plugin * p = calloc (1, sizeof (Plugin));
 	p->config = config;
@@ -128,7 +128,7 @@ void test_config (void)
 
 	elektraHexcodeSet (p, returned, 0);
 
-	Key * test = ksLookupByName (returned, "user:/something", 0);
+	ElektraKey * test = ksLookupByName (returned, "user:/something", 0);
 	succeed_if (!memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1), "string not correctly encoded");
 
 	elektraHexcodeClose (p, 0);

@@ -14,11 +14,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-int elektraGlobOpen (Plugin * handle, Key * errorKey);
-int elektraGlobClose (Plugin * handle, Key * errorKey);
-int elektraGlobGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraGlobSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraGlobError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraGlobOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraGlobClose (Plugin * handle, ElektraKey * errorKey);
+int elektraGlobGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraGlobSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraGlobError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

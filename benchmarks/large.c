@@ -8,8 +8,8 @@
 
 #include <benchmarks.h>
 
-KDB * kdb;
-Key * key;
+ElektraKdb * kdb;
+ElektraKey * key;
 
 void benchmarkOpen (void)
 {
@@ -18,14 +18,14 @@ void benchmarkOpen (void)
 
 void benchmarkInread (void)
 {
-	KeySet * n = ksNew (0, KS_END);
+	ElektraKeyset * n = ksNew (0, KS_END);
 	kdbGet (kdb, n, key);
 	ksDel (n);
 }
 
 void benchmarkReadin (void)
 {
-	KeySet * n = ksNew (0, KS_END);
+	ElektraKeyset * n = ksNew (0, KS_END);
 	kdbGet (kdb, n, key);
 	ksDel (n);
 }

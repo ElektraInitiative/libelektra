@@ -13,11 +13,11 @@
 #include <kdbplugin.h>
 
 
-int elektraShellOpen (Plugin * handle, Key * errorKey);
-int elektraShellClose (Plugin * handle, Key * errorKey);
-int elektraShellGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraShellSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraShellError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraShellOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraShellClose (Plugin * handle, ElektraKey * errorKey);
+int elektraShellGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraShellSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraShellError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

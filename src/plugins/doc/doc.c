@@ -38,11 +38,11 @@ typedef struct
 
 
 //! [doc open]
-int elektraDocOpen (Plugin * handle, Key * warningsKey ELEKTRA_UNUSED)
+int elektraDocOpen (Plugin * handle, ElektraKey * warningsKey ELEKTRA_UNUSED)
 {
 	GlobalData * data;
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * kg = ksLookupByName (config, "/global", 0);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * kg = ksLookupByName (config, "/global", 0);
 
 	data = elektraMalloc (sizeof (GlobalData));
 	data->global = 0;
@@ -63,7 +63,7 @@ int elektraDocOpen (Plugin * handle, Key * warningsKey ELEKTRA_UNUSED)
 
 
 //! [doc close]
-int elektraDocClose (Plugin * handle, Key * warningsKey ELEKTRA_UNUSED)
+int elektraDocClose (Plugin * handle, ElektraKey * warningsKey ELEKTRA_UNUSED)
 {
 	elektraFree (elektraPluginGetData (handle));
 
@@ -76,7 +76,7 @@ static int parseKey (FILE * fp ELEKTRA_UNUSED, char ** key ELEKTRA_UNUSED, char 
 	return 0;
 }
 
-static void doAction (Key * k ELEKTRA_UNUSED)
+static void doAction (ElektraKey * k ELEKTRA_UNUSED)
 {
 }
 
@@ -95,11 +95,11 @@ ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR ( parentKey, "Not at the end of file");
 */
 
 //![get contract]
-int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/doc"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/doc", KEY_VALUE, "doc plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/doc/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/doc/exports/open", KEY_FUNC, elektraDocOpen, KEY_END),
@@ -125,7 +125,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 
 	while (parseKey (fp, &key, &value) >= 1)
 	{
-		Key * read = keyNew (keyName (parentKey), KEY_END);
+		ElektraKey * read = keyNew (keyName (parentKey), KEY_END);
 		if (keyAddName (read, key) == -1)
 		{
 			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name %s is not valid, discarding key", key);
@@ -148,22 +148,22 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 	//![get storage]
 
 	//![get global keyset]
-	KeySet * globalKS = elektraPluginGetGlobalKeySet (plugin);
+	ElektraKeyset * globalKS = elektraPluginGetGlobalKeySet (plugin);
 	// now we can read something from the global keyset
 	// or add something for us or others to read
-	Key * important = keyNew ("user:/global/myDocKey", KEY_VALUE, "global plugins can see me", KEY_END);
+	ElektraKey * important = keyNew ("user:/global/myDocKey", KEY_VALUE, "global plugins can see me", KEY_END);
 	ksAppendKey (globalKS, important);
 	//![get global keyset]
 
 	//![get global keyset cleanup]
 	// clean up parts of the global keyset which we do not need
-	Key * cutKey = keyNew ("user:/global/myDocKey", KEY_END);
-	KeySet * notNeeded = ksCut (globalKS, cutKey);
+	ElektraKey * cutKey = keyNew ("user:/global/myDocKey", KEY_END);
+	ElektraKeyset * notNeeded = ksCut (globalKS, cutKey);
 	ksDel (notNeeded);
 	//![get global keyset cleanup]
 
 	//![get filter]
-	Key * k;
+	ElektraKey * k;
 	ksRewind (returned);
 	while ((k = ksNext (returned)) != 0)
 	{
@@ -174,7 +174,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 }
 //![get filter]
 
-int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
@@ -193,27 +193,27 @@ int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNU
 	return nr_keys;
 }
 
-int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDocError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }
 
-int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDocCommit (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }
 
-static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
+static Plugin * findPlugin (ElektraKdb * handle ELEKTRA_UNUSED)
 {
 	return 0;
 }
 
-static void saveToDisc (Key * k ELEKTRA_UNUSED)
+static void saveToDisc (ElektraKey * k ELEKTRA_UNUSED)
 {
 }
 
 //![validate configuration]
-int elektraDocCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraDocCheckConf (ElektraKey * errorKey ELEKTRA_UNUSED, ElektraKeyset * conf ELEKTRA_UNUSED)
 {
 	/* validate plugin configuration */
 
@@ -226,7 +226,7 @@ int elektraDocCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UN
 //![validate configuration]
 
 //![set full]
-static void usercode (KDB * handle, KeySet * keyset, Key * key)
+static void usercode (ElektraKdb * handle, ElektraKeyset * keyset, ElektraKey * key)
 {
 	// some more user code
 	keySetString (key, "mycomment"); // the user changes the key
@@ -235,7 +235,7 @@ static void usercode (KDB * handle, KeySet * keyset, Key * key)
 }
 
 // so now kdbSet is called
-int elektraKdbSet (KDB * handle, KeySet * keyset, Key * parentKey)
+int elektraKdbSet (ElektraKdb * handle, ElektraKeyset * keyset, ElektraKey * parentKey)
 {
 	int ret = 0;
 	// find appropriate plugin and then call it:
@@ -248,10 +248,10 @@ int elektraKdbSet (KDB * handle, KeySet * keyset, Key * parentKey)
 
 // so now elektraPluginSet(), which is the function described here,
 // is called:
-int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// the task of elektraPluginSet is now to store the keys
-	Key * k;
+	ElektraKey * k;
 	ksRewind (returned);
 	while ((k = ksNext (returned)) != 0)
 	{

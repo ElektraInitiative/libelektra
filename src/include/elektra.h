@@ -62,9 +62,9 @@ typedef struct _Elektra Elektra;
  *
  **************************************/
 
-Elektra * ELEKTRA_SYMVER (elektraOpen, v1) (const char * application, KeySet * defaults, ElektraError ** error);
+Elektra * ELEKTRA_SYMVER (elektraOpen, v1) (const char * application, ElektraKeyset * defaults, ElektraError ** error);
 
-Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error);
+Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, ElektraKeyset * contract, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 
 // endregion Basics
@@ -87,14 +87,14 @@ void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalError
  *
  **************************************/
 
-Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
-Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type);
+ElektraKey * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
+ElektraKey * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type);
 void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
 
 const char * elektraFindReference (Elektra * elektra, const char * name);
 const char * elektraFindReferenceArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index);
 
-Key * elektraHelpKey (Elektra * elektra);
+ElektraKey * elektraHelpKey (Elektra * elektra);
 
 // endregion Helpers for code generation
 

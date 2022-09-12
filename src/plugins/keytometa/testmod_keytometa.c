@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 
-static Key * createMergingKey (int i)
+static ElektraKey * createMergingKey (int i)
 {
 	char * name;
 	char * value;
@@ -37,7 +37,7 @@ static Key * createMergingKey (int i)
 		fprintf (stderr, "Unable to create key attributes");
 		exit (EXIT_FAILURE);
 	}
-	Key * key = keyNew (name, KEY_VALUE, value, KEY_META, "order", order, KEY_END);
+	ElektraKey * key = keyNew (name, KEY_VALUE, value, KEY_META, "order", order, KEY_END);
 	elektraFree (name);
 	elektraFree (value);
 	elektraFree (order);
@@ -45,7 +45,7 @@ static Key * createMergingKey (int i)
 }
 
 // clang-format off
-static KeySet* createSimpleTestKeys(void)
+static ElektraKeyset* createSimpleTestKeys(void)
 {
 	/* the keys to be converted are simply appended to the next
 	 * or the previous key.
@@ -80,15 +80,15 @@ static KeySet* createSimpleTestKeys(void)
 			KS_END);
 }
 
-static KeySet* createMergeTestkeys(void)
+static ElektraKeyset* createMergeTestkeys(void)
 {
 	/* the keys to be converted are merged together
 	 * into a single metadata
 	 */
-	KeySet* ks = ksNew(0, KS_END);
+	ElektraKeyset* ks = ksNew(0, KS_END);
 	for (int i = 1; i <= 3; i++)
 	{
-		Key* key = createMergingKey (i);
+		ElektraKey* key = createMergingKey (i);
 		keySetMeta (key, "convert/metaname", "testmeta");
 		keySetMeta (key, "convert/append", "next");
 		ksAppendKey (ks, key);
@@ -99,7 +99,7 @@ static KeySet* createMergeTestkeys(void)
 			keyNew ("user:/normalkey2", KEY_META, "order", "20", KEY_END));
 	for (int i = 30; i <= 32; i++)
 	{
-		Key* key = createMergingKey (i);
+		ElektraKey* key = createMergingKey (i);
 		keySetMeta (key, "convert/metaname", "testmeta");
 		keySetMeta (key, "convert/append", "previous");
 		ksAppendKey (ks, key);
@@ -107,7 +107,7 @@ static KeySet* createMergeTestkeys(void)
 	return ks;
 }
 
-static KeySet* createSkipMergeTestKeys(void)
+static ElektraKeyset* createSkipMergeTestKeys(void)
 {
 	/* the keys to be converted are interweaved with keys
 	 * of the other directio
@@ -145,7 +145,7 @@ static KeySet* createSkipMergeTestKeys(void)
 			KS_END);
 }
 
-static KeySet *createParentTestKeys(void)
+static ElektraKeyset *createParentTestKeys(void)
 {
 
 	/* all keys to be converted are appended to the
@@ -197,7 +197,7 @@ static KeySet *createParentTestKeys(void)
 			KS_END);
 }
 
-static KeySet* createDifferentMetaNameTestKeys(void)
+static ElektraKeyset* createDifferentMetaNameTestKeys(void)
 {
 	return ksNew (20,
 			keyNew ("user:/convertkey1",
@@ -218,7 +218,7 @@ static KeySet* createDifferentMetaNameTestKeys(void)
 			KS_END);
 }
 
-static KeySet* createSameLevelTestKeys(void)
+static ElektraKeyset* createSameLevelTestKeys(void)
 {
 	return ksNew (20,
 			keyNew ("user:/levelkey1",
@@ -250,21 +250,21 @@ static KeySet* createSameLevelTestKeys(void)
 
 void test_parentAppendMode (void)
 {
-	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
-	KeySet * ks = createParentTestKeys ();
+	ElektraKeyset * ks = createParentTestKeys ();
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	/* parentkey1 must contain meta information generated from convertkeydirect (via parent) */
-	Key * key = ksLookupByName (ks, "user:/parentkey1", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/parentkey1", 0);
 	succeed_if (key, "parentkey1 was removed");
 
-	const Key * metaKey1 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey1 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey1, "parentkey1 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey1), "testvalue1"), "metakey of parentkey1 contained incorrect data");
 
@@ -272,7 +272,7 @@ void test_parentAppendMode (void)
 	key = ksLookupByName (ks, "user:/parentkey2", 0);
 	succeed_if (key, "parentkey2 was removed");
 
-	const Key * metaKey2 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey2 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey2, "parentkey2 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey2), "testvalue2"), "metakey of parentkey2 contained incorrect data");
 
@@ -281,7 +281,7 @@ void test_parentAppendMode (void)
 	key = ksLookupByName (ks, "user:/parentkey3", 0);
 	succeed_if (key, "parentkey3 was removed");
 
-	const Key * metaKey3 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey3 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey3, "parentkey3 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey3), "testvalue3"), "metakey of parentkey3 contained incorrect data");
 
@@ -295,7 +295,7 @@ void test_parentAppendMode (void)
 	key = ksLookupByName (ks, "user:/parentkey4", 0);
 	succeed_if (key, "parentkey4 was removed");
 
-	const Key * metaKey4 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey4 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey4, "parentkey4 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey4), "testvalue4"), "metakey of parentkey4 contained incorrect data");
 
@@ -313,12 +313,12 @@ void test_parentAppendMode (void)
 
 void test_simpleAppendModes (void)
 {
-	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 
-	KeySet * ks = createSimpleTestKeys ();
+	ElektraKeyset * ks = createSimpleTestKeys ();
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
@@ -329,10 +329,10 @@ void test_simpleAppendModes (void)
 	succeed_if (!ksLookupByName (ks, "user:/convertkey2", 0), "convertkey2 was not converted");
 
 	/* normalkey2 must contain meta information generated from convertkey1 (via next) */
-	Key * key = ksLookupByName (ks, "user:/normalkey2", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
-	const Key * metaKey1 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey1 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey1, "normalkey2 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey1), "testvalue1"), "metakey of normalkey2 contained incorrect data");
 
@@ -340,7 +340,7 @@ void test_simpleAppendModes (void)
 	key = ksLookupByName (ks, "user:/normalkey3", 0);
 	succeed_if (key, "normalkey3 was removed");
 
-	const Key * metaKey2 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey2 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey2, "normalkey3 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey2), "testvalue2"), "metakey of normalkey3 contained incorrect data");
 
@@ -348,7 +348,7 @@ void test_simpleAppendModes (void)
 	key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
-	const Key * metaKey3 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey3 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey3, "normalkey1 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey3), "testvalue3"), "metakey of normalkey1 contained incorrect data");
 
@@ -361,19 +361,19 @@ void test_simpleAppendModes (void)
 
 void test_metaMerging (void)
 {
-	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
-	KeySet * ks = createMergeTestkeys ();
+	ElektraKeyset * ks = createMergeTestkeys ();
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user:/normalkey1", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
-	const Key * metaKey1 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey1 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey1, "normalkey1 contained no metakey");
 	const char * expected1 = "meta line 1\nmeta line 2\nmeta line 3";
 	succeed_if (!strcmp (keyString (metaKey1), expected1), "metakey of normalkey1 contained incorrect data");
@@ -381,7 +381,7 @@ void test_metaMerging (void)
 	key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
-	const Key * metaKey2 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey2 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey2, "normalkey2 contained no metakey");
 	const char * expected2 = "meta line 30\nmeta line 31\nmeta line 32";
 	succeed_if (!strcmp (keyString (metaKey2), expected2), "metakey of normalkey2 contained incorrect data");
@@ -412,19 +412,19 @@ void test_metaMerging (void)
 
 void test_metaSkipMerge (void)
 {
-	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
-	KeySet * ks = createSkipMergeTestKeys ();
+	ElektraKeyset * ks = createSkipMergeTestKeys ();
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user:/normalkey1", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
-	const Key * metaKey1 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey1 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey1, "normalkey1 contained no metakey");
 	const char * expected1 = "meta line1\nmeta line3";
 	succeed_if (!strcmp (keyString (metaKey1), expected1), "metakey of normalkey1 contained incorrect data");
@@ -432,7 +432,7 @@ void test_metaSkipMerge (void)
 	key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
-	const Key * metaKey2 = keyGetMeta (key, "testmeta");
+	const ElektraKey * metaKey2 = keyGetMeta (key, "testmeta");
 	succeed_if (metaKey2, "normalkey2 contained no metakey");
 	const char * expected2 = "meta line2\nmeta line4";
 	succeed_if (!strcmp (keyString (metaKey2), expected2), "metakey of normalkey2 contained incorrect data");
@@ -444,24 +444,24 @@ void test_metaSkipMerge (void)
 
 void test_differentMetaNames (void)
 {
-	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
-	KeySet * ks = createDifferentMetaNameTestKeys ();
+	ElektraKeyset * ks = createDifferentMetaNameTestKeys ();
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user:/normalkey1", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
 
-	const Key * metaKey1 = keyGetMeta (key, "testmeta1");
+	const ElektraKey * metaKey1 = keyGetMeta (key, "testmeta1");
 	succeed_if (metaKey1, "normalkey1 contained no meta testmeta1");
 	const char * expected1 = "meta line1";
 	succeed_if (!strcmp (keyString (metaKey1), expected1), "metakey testmeta1 of normalkey1 contained incorrect data");
 
-	const Key * metaKey2 = keyGetMeta (key, "testmeta2");
+	const ElektraKey * metaKey2 = keyGetMeta (key, "testmeta2");
 	succeed_if (metaKey2, "normalkey1 contained no meta testmeta1");
 	const char * expected2 = "meta line2";
 	succeed_if (!strcmp (keyString (metaKey2), expected2), "metakey testmeta1 of normalkey1 contained incorrect data");
@@ -473,29 +473,29 @@ void test_differentMetaNames (void)
 
 void test_appendSameLevel (void)
 {
-	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
-	KeySet * ks = createSameLevelTestKeys ();
+	ElektraKeyset * ks = createSameLevelTestKeys ();
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	/* convertkey1 should be converted to childkey1 as childkey1 is on the same level as requested */
-	Key * childKey = ksLookupByName (ks, "user:/levelkey1/childkey1", 0);
+	ElektraKey * childKey = ksLookupByName (ks, "user:/levelkey1/childkey1", 0);
 	succeed_if (childKey, "childkey1 was removed");
 
-	const Key * metaKey1 = keyGetMeta (childKey, "testmeta");
+	const ElektraKey * metaKey1 = keyGetMeta (childKey, "testmeta");
 	succeed_if (metaKey1, "childkey1 contained no meta testmeta");
 	const char * expected1 = "convertkey1value";
 	succeed_if (!strcmp (keyString (metaKey1), expected1), "metakey testmeta of childkey1 contained incorrect data");
 
 	/* convertkey2 should be converted to levelkey as the next key in order is not on the same level */
-	Key * levelkey1 = ksLookupByName (ks, "user:/levelkey1", 0);
+	ElektraKey * levelkey1 = ksLookupByName (ks, "user:/levelkey1", 0);
 	succeed_if (levelkey1, "levelkey1 was removed");
 
-	const Key * metaKey2 = keyGetMeta (levelkey1, "testmeta");
+	const ElektraKey * metaKey2 = keyGetMeta (levelkey1, "testmeta");
 	succeed_if (metaKey2, "levelkey1 contained no meta testmeta");
 	const char * expected2 = "convertkey2value";
 	succeed_if (!strcmp (keyString (metaKey2), expected2), "metakey testmeta of levelkey1 contained incorrect data");
@@ -507,17 +507,17 @@ void test_appendSameLevel (void)
 
 void test_restoreOnSet (void)
 {
-	Key * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
-	KeySet * ks = createSimpleTestKeys ();
+	ElektraKeyset * ks = createSimpleTestKeys ();
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user:/normalkey2", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
 
 	/* change the meta information stored in normalkey2

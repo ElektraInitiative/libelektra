@@ -90,16 +90,16 @@ typedef struct _Split Split;
 
 
 /* These define the type for pointers to all the kdb functions */
-typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
-typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
+typedef int (*kdbOpenPtr) (Plugin *, ElektraKey * errorKey);
+typedef int (*kdbClosePtr) (Plugin *, ElektraKey * errorKey);
 
-typedef int (*kdbInitPtr) (Plugin * handle, KeySet * definition, Key * parentKey);
-typedef int (*kdbGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
-typedef int (*kdbSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
-typedef int (*kdbErrorPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
-typedef int (*kdbCommitPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+typedef int (*kdbInitPtr) (Plugin * handle, ElektraKeyset * definition, ElektraKey * parentKey);
+typedef int (*kdbGetPtr) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
+typedef int (*kdbSetPtr) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
+typedef int (*kdbErrorPtr) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
+typedef int (*kdbCommitPtr) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
-typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
+typedef Plugin * (*OpenMapper) (const char *, const char *, ElektraKeyset *);
 typedef int (*CloseMapper) (Plugin *);
 
 
@@ -256,7 +256,7 @@ struct _Key
 	/**
 	 * All the key's meta information.
 	 */
-	KeySet * meta;
+	ElektraKeyset * meta;
 
 	/**
 	 * Some control and internal flags.
@@ -349,7 +349,7 @@ struct _KDB
 #endif
 
 	// TODO (kodebach) [Q]: use global KeySet for modules?
-	KeySet * modules; /*!< A list of all modules loaded at the moment.*/
+	ElektraKeyset * modules; /*!< A list of all modules loaded at the moment.*/
 
 #if 1 == 0
 	Plugin * defaultBackend; /*!< The default backend as fallback when nothing else is found.*/
@@ -357,13 +357,13 @@ struct _KDB
 	Plugin * initBackend; /*!< The init backend for bootstrapping.*/
 #endif
 
-	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+	ElektraKeyset * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
 
 	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 
-	KeySet * backends;
+	ElektraKeyset * backends;
 };
 
 /**
@@ -379,7 +379,7 @@ struct _KDB
  */
 struct _Plugin
 {
-	KeySet * config; /*!< This keyset contains configuration for the plugin.
+	ElektraKeyset * config; /*!< This keyset contains configuration for the plugin.
 	 Direct below system:/ there is the configuration supplied for the backend.
 	 Direct below user:/ there is the configuration supplied just for the
 	 plugin, which should be of course preferred to the backend configuration.
@@ -404,11 +404,11 @@ struct _Plugin
 	void * data; /*!< This handle can be used for a plugin to store
 	 any data its want to. */
 
-	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+	ElektraKeyset * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
 
-	KeySet * modules; /*!< A list of all currently loaded modules.*/
+	ElektraKeyset * modules; /*!< A list of all currently loaded modules.*/
 };
 
 // FIXME (kodebach): document
@@ -465,9 +465,9 @@ struct _Split
 {
 	size_t size;		/*!< Number of keysets */
 	size_t alloc;		/*!< How large the arrays are allocated  */
-	KeySet ** keysets;		/*!< The keysets */
+	ElektraKeyset ** keysets;		/*!< The keysets */
 	Plugin ** handles;		/*!< The KDB for the keyset */
-	Key ** parents;		/*!< The parentkey for the keyset.
+	ElektraKey ** parents;		/*!< The parentkey for the keyset.
 				Is either the mountpoint of the backend
 				or "user", "system", "spec" for the split root/cascading backends */
 	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
@@ -495,118 +495,118 @@ struct _Split
  *
  **************************************/
 
-ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
+ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize);
 
 #if 1 == 0
 /*Methods for split keysets */
 Split * splitNew (void);
 void splitDel (Split * keysets);
 void splitRemove (Split * split, size_t where);
-ssize_t splitAppend (Split * split, Plugin * backend, Key * parentKey, int syncbits);
-int splitBuildup (Split * split, KDB * handle, Key * parentKey);
-void splitUpdateFileName (Split * split, KDB * handle, Key * key);
+ssize_t splitAppend (Split * split, Plugin * backend, ElektraKey * parentKey, int syncbits);
+int splitBuildup (Split * split, ElektraKdb * handle, ElektraKey * parentKey);
+void splitUpdateFileName (Split * split, ElektraKdb * handle, ElektraKey * key);
 
 /* for kdbGet() algorithm */
-int splitAppoint (Split * split, KDB * handle, KeySet * ks);
-int splitGet (Split * split, Key * warningKey, KDB * handle);
-int splitMergeBackends (Split * split, KeySet * dest);
-int splitMergeDefault (Split * split, KeySet * dest);
+int splitAppoint (Split * split, ElektraKdb * handle, ElektraKeyset * ks);
+int splitGet (Split * split, ElektraKey * warningKey, ElektraKdb * handle);
+int splitMergeBackends (Split * split, ElektraKeyset * dest);
+int splitMergeDefault (Split * split, ElektraKeyset * dest);
 
 /* for kdbSet() algorithm */
-int splitDivide (Split * split, KDB * handle, KeySet * ks);
+int splitDivide (Split * split, ElektraKdb * handle, ElektraKeyset * ks);
 int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
 
 /* for cache: store/load state to/from global keyset */
-void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
-int splitCacheCheckState (Split * split, KeySet * global);
-int splitCacheLoadState (Split * split, KeySet * global);
+void splitCacheStoreState (ElektraKdb * handle, Split * split, ElektraKeyset * global, ElektraKey * parentKey, ElektraKey * initialParent);
+int splitCacheCheckState (Split * split, ElektraKeyset * global);
+int splitCacheLoadState (Split * split, ElektraKeyset * global);
 #endif
 
-Key * backendsFindParent (KeySet * backends, const Key * key);
-KeySet * backendsForParentKey (KeySet * backends, Key * parentKey);
-bool backendsDivide (KeySet * backends, const KeySet * ks);
-void backendsMerge (KeySet * backends, KeySet * ks);
+ElektraKey * backendsFindParent (ElektraKeyset * backends, const ElektraKey * key);
+ElektraKeyset * backendsForParentKey (ElektraKeyset * backends, ElektraKey * parentKey);
+bool backendsDivide (ElektraKeyset * backends, const ElektraKeyset * ks);
+void backendsMerge (ElektraKeyset * backends, ElektraKeyset * ks);
 
-KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey);
+ElektraKeyset * elektraMountpointsParse (ElektraKeyset * elektraKs, ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey);
 
 /*Backend handling*/
-Plugin * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
-Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);
-Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey);
-Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey);
-Key * backendGetMountpoint (const Plugin * backend);
+Plugin * backendOpen (ElektraKeyset * elektra_config, ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey);
+Plugin * backendOpenDefault (ElektraKeyset * modules, ElektraKeyset * global, const char * file, ElektraKey * errorKey);
+Plugin * backendOpenModules (ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey);
+Plugin * backendOpenVersion (ElektraKeyset * global, ElektraKeyset * modules, ElektraKey * errorKey);
+ElektraKey * backendGetMountpoint (const Plugin * backend);
 
 #if 1 == 0
-int backendUpdateSize (Split * split, int index, Key * parent, int size);
+int backendUpdateSize (Split * split, int index, ElektraKey * parent, int size);
 #endif
 
 /*Plugin handling*/
-Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
-int elektraPluginClose (Plugin * handle, Key * errorKey);
-int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
+Plugin * elektraPluginOpen (const char * backendname, ElektraKeyset * modules, ElektraKeyset * config, ElektraKey * errorKey);
+int elektraPluginClose (Plugin * handle, ElektraKey * errorKey);
+int elektraProcessPlugin (ElektraKey * cur, int * pluginNumber, char ** pluginName, char ** referenceName, ElektraKey * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
-Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
+Plugin * elektraPluginFindGlobal (ElektraKdb * handle, const char * pluginName);
 
 
 #if 1 == 0
 /*Trie handling*/
-int trieClose (Trie * trie, Key * errorKey);
-Plugin * trieLookup (Trie * trie, const Key * key);
+int trieClose (Trie * trie, ElektraKey * errorKey);
+Plugin * trieLookup (Trie * trie, const ElektraKey * key);
 Trie * trieInsert (Trie * trie, const char * name, Plugin * value);
 #endif
 
 /*Mounting handling */
-int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
-int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey);
-int mountModules (KDB * kdb, KeySet * modules, Key * errorKey);
-int mountVersion (KDB * kdb, Key * errorKey);
-int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
-int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend);
+int mountOpen (ElektraKdb * kdb, ElektraKeyset * config, ElektraKeyset * modules, ElektraKey * errorKey);
+int mountDefault (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorKey);
+int mountModules (ElektraKdb * kdb, ElektraKeyset * modules, ElektraKey * errorKey);
+int mountVersion (ElektraKdb * kdb, ElektraKey * errorKey);
+int mountGlobals (ElektraKdb * kdb, ElektraKeyset * keys, ElektraKeyset * modules, ElektraKey * errorKey);
+int mountBackend (ElektraKdb * kdb, const ElektraKey * mountpoint, Plugin * backend);
 
-const Key * mountGetMountpoint (KDB * handle, Key * where);
-Plugin * mountGetBackend (KDB * handle, Key * key);
+const ElektraKey * mountGetMountpoint (ElektraKdb * handle, ElektraKey * where);
+Plugin * mountGetBackend (ElektraKdb * handle, ElektraKey * key);
 
-void keyInit (Key * key);
+void keyInit (ElektraKey * key);
 
-int keyClearSync (Key * key);
+int keyClearSync (ElektraKey * key);
 
-int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
+int keyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const ElektraKey * newPrefix);
 
 /*Private helper for keyset*/
-int ksInit (KeySet * ks);
-int ksClose (KeySet * ks);
+int ksInit (ElektraKeyset * ks);
+int ksClose (ElektraKeyset * ks);
 
-int ksResize (KeySet * ks, size_t size);
-size_t ksGetAlloc (const KeySet * ks);
-KeySet * ksDeepDup (const KeySet * source);
+int ksResize (ElektraKeyset * ks, size_t size);
+size_t ksGetAlloc (const ElektraKeyset * ks);
+ElektraKeyset * ksDeepDup (const ElektraKeyset * source);
 
-Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos);
+ElektraKey * elektraKsPopAtCursor (ElektraKeyset * ks, elektraCursor pos);
 
 /*Used for internal memcpy/memmove*/
-ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
-ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
+ssize_t elektraMemcpy (ElektraKey ** array1, ElektraKey ** array2, size_t size);
+ssize_t elektraMemmove (ElektraKey ** array1, ElektraKey ** array2, size_t size);
 
 /*Internally used for array handling*/
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 
-KeySet * ksRenameKeys (KeySet * config, const char * name);
+ElektraKeyset * ksRenameKeys (ElektraKeyset * config, const char * name);
 
-ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
+ssize_t ksRename (ElektraKeyset * ks, const ElektraKey * root, const ElektraKey * newRoot);
 
-elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
-KeySet * ksBelow (const KeySet * ks, const Key * root);
+elektraCursor ksFindHierarchy (const ElektraKeyset * ks, const ElektraKey * root, elektraCursor * end);
+ElektraKeyset * ksBelow (const ElektraKeyset * ks, const ElektraKey * root);
 
 
 /* Conveniences Methods for Making Tests */
 
-int keyIsSpec (const Key * key);
-int keyIsProc (const Key * key);
-int keyIsDir (const Key * key);
-int keyIsSystem (const Key * key);
-int keyIsUser (const Key * key);
+int keyIsSpec (const ElektraKey * key);
+int keyIsProc (const ElektraKey * key);
+int keyIsDir (const ElektraKey * key);
+int keyIsSystem (const ElektraKey * key);
+int keyIsUser (const ElektraKey * key);
 
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
 
@@ -619,9 +619,9 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 int elektraIsArrayPart (const char * namePart);
 
 /* global plugin calls */
-int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalGet (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * parentKey, int position, int subPosition);
+int elektraGlobalSet (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * parentKey, int position, int subPosition);
+int elektraGlobalError (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
@@ -642,11 +642,11 @@ extern "C" {
 
 struct _Elektra
 {
-	KDB * kdb;
-	Key * parentKey;
-	KeySet * config;
-	KeySet * defaults;
-	Key * lookupKey;
+	ElektraKdb * kdb;
+	ElektraKey * parentKey;
+	ElektraKeyset * config;
+	ElektraKeyset * defaults;
+	ElektraKey * lookupKey;
 	ElektraErrorHandler fatalErrorHandler;
 	char * resolvedReference;
 	size_t parentKeyLength;
@@ -663,17 +663,17 @@ struct _ElektraError
 	kdb_long_t warningCount;
 	kdb_long_t warningAlloc;
 	struct _ElektraError ** warnings;
-	Key * errorKey;
+	ElektraKey * errorKey;
 };
 
 /* high-level API */
-void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
+void elektraSaveKey (Elektra * elektra, ElektraKey * key, ElektraError ** error);
 void elektraSetLookupKey (Elektra * elektra, const char * name);
 void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
 
 ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line);
 void elektraErrorAddWarning (ElektraError * error, ElektraError * warning);
-ElektraError * elektraErrorFromKey (Key * key);
+ElektraError * elektraErrorFromKey (ElektraKey * key);
 
 ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);

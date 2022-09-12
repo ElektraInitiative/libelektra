@@ -13,12 +13,12 @@
 #include <tests_internal.h>
 
 #if 1 == 0
-KeySet * modules_config (void)
+ElektraKeyset * modules_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/modules", KEY_END), KS_END);
 }
 
-KeySet * simple_config (void)
+ElektraKeyset * simple_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
@@ -26,7 +26,7 @@ KeySet * simple_config (void)
 		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/simple", KEY_END), KS_END);
 }
 
-KeySet * simple_cascading (void)
+ElektraKeyset * simple_cascading (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
@@ -35,7 +35,7 @@ KeySet * simple_cascading (void)
 }
 
 
-KeySet * set_realworld (void)
+ElektraKeyset * set_realworld (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
@@ -213,16 +213,16 @@ static void test_cascading (void)
 static void test_get (void)
 {
 	printf ("Test basic get\n");
-	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	ElektraKdb * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->split = splitNew ();
-	KeySet * modules = modules_config ();
+	ElektraKeyset * modules = modules_config ();
 	/* So we had 2 keys before in the keyset */
 
-	KeySet * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
+	ElektraKeyset * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
 			     keyNew ("user:/testkey/below2/here", KEY_END), KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
@@ -311,16 +311,16 @@ static void test_get (void)
 static void test_limit (void)
 {
 	printf ("Test limit\n");
-	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	ElektraKdb * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->split = splitNew ();
 	/* So we had 2 keys before in the keyset */
-	KeySet * modules = modules_config ();
+	ElektraKeyset * modules = modules_config ();
 
-	KeySet * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
+	ElektraKeyset * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
 			     keyNew ("user:/testkey/below2/here", KEY_END), KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
@@ -389,20 +389,20 @@ static void test_nobackend (void)
 {
 	printf ("Test keys without backends in split\n");
 
-	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	ElektraKdb * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->split = splitNew ();
-	KeySet * modules = modules_config ();
+	ElektraKeyset * modules = modules_config ();
 	Plugin * backend;
 
 	mountOpen (handle, simple_config (), modules, 0);
 
-	KeySet * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
+	ElektraKeyset * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
 			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down", KEY_END),
 			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
 
 	Split * split;
-	Key * parentKey;
-	Key * mp;
+	ElektraKey * parentKey;
+	ElektraKey * mp;
 
 	split = splitNew ();
 
@@ -727,16 +727,16 @@ static void test_realworld (void)
 {
 	printf ("Test real world example\n");
 
-	Key * parent = 0;
-	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	ElektraKey * parent = 0;
+	ElektraKdb * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->split = splitNew ();
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	mountOpen (handle, set_realworld (), modules, 0);
 	succeed_if (mountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 
-	KeySet * ks = ksNew (
+	ElektraKeyset * ks = ksNew (
 		18, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/new", KEY_END),
 		keyNew ("system:/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END), keyNew ("system:/users", KEY_END),
 		keyNew ("system:/users/markus", KEY_END), keyNew ("system:/users/harald", KEY_END), keyNew ("system:/users/n", KEY_END),
@@ -749,19 +749,19 @@ static void test_realworld (void)
 		keyNew ("user:/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
 		keyNew ("user:/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END), keyNew ("user:/outside", KEY_VALUE, "test", KEY_END),
 		KS_END);
-	KeySet * split0 = ksNew (9, keyNew ("user:/sw/apps/app1/default", KEY_END),
+	ElektraKeyset * split0 = ksNew (9, keyNew ("user:/sw/apps/app1/default", KEY_END),
 				 keyNew ("user:/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
 				 keyNew ("user:/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),
 				 keyNew ("user:/sw/apps/app1/default/keys/a", KEY_VALUE, "a", KEY_END),
 				 keyNew ("user:/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
 				 keyNew ("user:/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END), KS_END);
-	KeySet * split3 = ksNew (9, keyNew ("system:/hosts", KEY_END), keyNew ("system:/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END),
+	ElektraKeyset * split3 = ksNew (9, keyNew ("system:/hosts", KEY_END), keyNew ("system:/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END),
 				 keyNew ("system:/hosts/mobilebyte", KEY_END), keyNew ("system:/hosts/n900", KEY_END), KS_END);
-	KeySet * split7 = ksNew (3, keyNew ("user:/outside", KEY_VALUE, "test", KEY_END), KS_END);
-	KeySet * split9 = ksNew (9, keyNew ("system:/users", KEY_END), keyNew ("system:/users/markus", KEY_END),
+	ElektraKeyset * split7 = ksNew (3, keyNew ("user:/outside", KEY_VALUE, "test", KEY_END), KS_END);
+	ElektraKeyset * split9 = ksNew (9, keyNew ("system:/users", KEY_END), keyNew ("system:/users/markus", KEY_END),
 				 keyNew ("system:/users/harald", KEY_END), keyNew ("system:/users/n", KEY_END),
 				 keyNew ("system:/users/albert", KEY_END), KS_END);
-	KeySet * split10 = ksNew (9, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/new", KEY_END),
+	ElektraKeyset * split10 = ksNew (9, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/new", KEY_END),
 				  keyNew ("system:/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END), KS_END);
 
 
@@ -821,7 +821,7 @@ static void test_realworld (void)
 	succeed_if (split->systemsizes[9] == 5, "wrong size");
 
 
-	KeySet * dest = ksNew (5, keyNew ("user:/test", KEY_VALUE, "should be gone", KEY_END), KS_END);
+	ElektraKeyset * dest = ksNew (5, keyNew ("user:/test", KEY_VALUE, "should be gone", KEY_END), KS_END);
 	ksClear (dest);
 	succeed_if (splitMergeBackends (split, dest) == 1, "split merge backends");
 	succeed_if (splitMergeDefault (split, dest) == 1, "split merge default");

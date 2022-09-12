@@ -93,7 +93,7 @@
  * @see ksToStream()
  * @return number of bytes written to output
  */
-ssize_t keyToStream (const Key * key, FILE * stream, KDBStream options)
+ssize_t keyToStream (const ElektraKey * key, FILE * stream, KDBStream options)
 {
 	return keyToStreamBasename (key, stream, 0, 0, options);
 }
@@ -147,7 +147,7 @@ ssize_t keyToStream (const Key * key, FILE * stream, KDBStream options)
  *
  * @return number of bytes written to output
  */
-ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, KDBStream options)
+ssize_t keyToStreamBasename (const ElektraKey * key, FILE * stream, const char * parent, const size_t parentSize, KDBStream options)
 {
 	ssize_t written = 0;
 
@@ -347,11 +347,11 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
  * @param stream the file pointer where to send the stream
  * @param options see above text
  */
-ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options)
+ssize_t ksToStream (const ElektraKeyset * ks, FILE * stream, KDBStream options)
 {
 	size_t written = 0;
-	Key * key = 0;
-	KeySet * cks = ksDup (ks);
+	ElektraKey * key = 0;
+	ElektraKeyset * cks = ksDup (ks);
 
 	ksRewind (cks);
 
@@ -423,7 +423,7 @@ ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options)
  * @retval -1 on allocation errors
  * @ingroup stream
  */
-int keyOutput (const Key * k, FILE * stream, KDBStream options)
+int keyOutput (const ElektraKey * k, FILE * stream, KDBStream options)
 {
 	size_t s, c, n;
 
@@ -517,10 +517,10 @@ int keyOutput (const Key * k, FILE * stream, KDBStream options)
  * @retval -1 on allocation errors
  * @ingroup stream
  */
-int ksOutput (const KeySet * ks, FILE * stream, KDBStream options)
+int ksOutput (const ElektraKeyset * ks, FILE * stream, KDBStream options)
 {
-	Key * key;
-	KeySet * cks = ksDup (ks);
+	ElektraKey * key;
+	ElektraKeyset * cks = ksDup (ks);
 	size_t size = 0;
 
 	ksRewind (cks);

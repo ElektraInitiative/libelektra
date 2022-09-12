@@ -15,7 +15,7 @@
 
 void test_readwrite (void)
 {
-	KeySet * ks;
+	ElektraKeyset * ks;
 	FILE * fout;
 
 	printf ("Testing Read and write xml\n");
@@ -34,7 +34,7 @@ void test_readwrite (void)
 
 void test_readwrite_hier (void)
 {
-	KeySet * ks;
+	ElektraKeyset * ks;
 	FILE * fout;
 
 	printf ("Testing Read and write xml\n");
@@ -54,8 +54,8 @@ void test_readwrite_hier (void)
 
 void test_key (void)
 {
-	KeySet * ks;
-	Key * cur;
+	ElektraKeyset * ks;
+	ElektraKey * cur;
 	int counter;
 
 	printf ("Testing Key from xml\n");
@@ -141,8 +141,8 @@ void test_key (void)
 
 void test_keyset (void)
 {
-	KeySet * ks;
-	Key * cur;
+	ElektraKeyset * ks;
+	ElektraKey * cur;
 	int counter;
 
 	printf ("Testing KeySet from xml\n");
@@ -209,7 +209,7 @@ void test_keyset (void)
 static void test_ksCommonParentName (void)
 {
 	char ret[MAX_SIZE + 1];
-	KeySet * ks = ksNew (10, keyNew ("system:/sw/xorg/Monitors/Monitor1/vrefresh", KEY_END),
+	ElektraKeyset * ks = ksNew (10, keyNew ("system:/sw/xorg/Monitors/Monitor1/vrefresh", KEY_END),
 			     keyNew ("system:/sw/xorg/Monitors/Monitor1/hrefresh", KEY_END),
 			     keyNew ("system:/sw/xorg/Monitors/Monitor2/vrefresh", KEY_END),
 			     keyNew ("system:/sw/xorg/Monitors/Monitor2/hrefresh", KEY_END),

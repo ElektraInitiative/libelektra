@@ -80,7 +80,7 @@ lookahead_t elektraLookahead (const char * pnext, size_t size)
  * @retval 0 no value needed afterwards
  * @retval 1 value is needed
  */
-static int elektraGenOpenValue (yajl_gen g, const Key * next)
+static int elektraGenOpenValue (yajl_gen g, const ElektraKey * next)
 {
 	keyNameReverseIterator last = elektraKeyNameGetReverseIterator (next);
 	elektraKeyNameReverseNext (&last);
@@ -127,7 +127,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
  * @param parentKey needed for adding warnings/errors
  * @param cur the key to generate the value from
  */
-static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
+static void elektraGenValue (yajl_gen g, ElektraKey * parentKey, const ElektraKey * cur)
 {
 	if (strcmp (keyName (parentKey), keyName (cur)) && !elektraGenOpenValue (g, cur))
 	{
@@ -137,7 +137,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 
 	ELEKTRA_LOG_DEBUG ("GEN value %s for %s", keyString (cur), keyName (cur));
 
-	const Key * type = keyGetMeta (cur, "type");
+	const ElektraKey * type = keyGetMeta (cur, "type");
 	if (!type && keyGetValueSize (cur) == 0) // empty binary type is null
 	{
 		yajl_gen_null (g);
@@ -174,7 +174,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 	}
 }
 
-int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
+int elektraGenEmpty (yajl_gen g, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int did_something = 0;
 	// TODO: do all these situations actually occur?
@@ -197,7 +197,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	}
 	else if (ksGetSize (returned) == 2) // maybe just parent+specialkey
 	{
-		Key * toCheck = keyDup (parentKey, KEY_CP_ALL);
+		ElektraKey * toCheck = keyDup (parentKey, KEY_CP_ALL);
 
 		keyAddBaseName (toCheck, "###empty_array");
 		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
@@ -222,7 +222,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	return did_something;
 }
 
-int elektraGenWriteFile (yajl_gen g, Key * parentKey)
+int elektraGenWriteFile (yajl_gen g, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	FILE * fp = fopen (keyString (parentKey), "w");
@@ -246,9 +246,9 @@ int elektraGenWriteFile (yajl_gen g, Key * parentKey)
 	return 1; /* success */
 }
 
-static void elektraCheckForEmptyArray (KeySet * ks)
+static void elektraCheckForEmptyArray (ElektraKeyset * ks)
 {
-	Key * curr = 0;
+	ElektraKey * curr = 0;
 	ksRewind (ks);
 
 	while ((curr = ksNext (ks)) != 0)
@@ -259,7 +259,7 @@ static void elektraCheckForEmptyArray (KeySet * ks)
 		{
 			elektraCursor cursor = ksGetCursor (ks);
 
-			Key * k = keyNew (keyName (curr), KEY_END);
+			ElektraKey * k = keyNew (keyName (curr), KEY_END);
 			keyAddBaseName (k, "###empty_array");
 
 			ELEKTRA_LOG_DEBUG ("Add empty array: %s", keyName (k));
@@ -271,7 +271,7 @@ static void elektraCheckForEmptyArray (KeySet * ks)
 	}
 }
 
-int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 #if YAJL_MAJOR == 1
 	yajl_gen_config conf = { 1, "    " };
@@ -300,7 +300,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	ksRewind (returned);
-	Key * cur = elektraNextNotBelow (returned);
+	ElektraKey * cur = elektraNextNotBelow (returned);
 	if (!cur)
 	{
 		// empty config should be handled by resolver
@@ -312,7 +312,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	ELEKTRA_LOG_DEBUG ("parentKey: %s, cur: %s", keyName (parentKey), keyName (cur));
 	elektraGenOpenInitial (g, parentKey, cur);
 
-	Key * next = 0;
+	ElektraKey * next = 0;
 	while ((next = elektraNextNotBelow (returned)) != 0)
 	{
 		elektraGenValue (g, parentKey, cur);

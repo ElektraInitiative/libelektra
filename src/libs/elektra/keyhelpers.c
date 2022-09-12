@@ -35,7 +35,7 @@
  * clears key (all data members are set to zero)
  * Initializes an empty metadata keyset if null or clears it.
  */
-void keyInit (Key * key)
+void keyInit (ElektraKey * key)
 {
 	memset (key, 0, sizeof (Key));
 }

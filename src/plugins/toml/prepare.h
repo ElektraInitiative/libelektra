@@ -24,6 +24,6 @@
  * @retval true On success
  * @retval false If unordered keys could not be prepared.
  */
-bool prepareKeySet (KeySet * keys, Key * parent);
+bool prepareKeySet (ElektraKeyset * keys, ElektraKey * parent);
 
 #endif // ELEKTRA_PLUGIN_TOML_PREPARE_H

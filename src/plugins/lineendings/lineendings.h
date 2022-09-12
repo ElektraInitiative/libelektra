@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraLineendingsGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraLineendingsSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraLineendingsGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraLineendingsSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

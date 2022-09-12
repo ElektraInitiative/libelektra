@@ -24,14 +24,14 @@ void test_readline (void)
 {
 
 	char * filename = srcdir_file ("line/linetest");
-	Key * parentKey = keyNew ("user:/tests/line", KEY_VALUE, filename, KEY_END);
-	KeySet * conf = 0;
+	ElektraKey * parentKey = keyNew ("user:/tests/line", KEY_VALUE, filename, KEY_END);
+	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("line");
 	printf ("%s\n", filename);
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/line/#0", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/line/#0", 0);
 	exit_if_fail (key, "line1 key not found");
 	succeed_if (strcmp ("test1", keyValue (key)) == 0, "line ´ does not match");
 

@@ -118,10 +118,10 @@ struct passwd *fgetpwent_l(FILE *f)
 // clang-format on
 #endif
 
-static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
+static ElektraKeyset * pwentToKS (struct passwd * pwd, ElektraKey * parentKey, SortBy index)
 {
-	KeySet * ks = ksNew (0, KS_END);
-	Key * append = keyNew (keyName (parentKey), KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * append = keyNew (keyName (parentKey), KEY_END);
 	char id[ID_MAX_CHARACTERS];
 	if (index == UID)
 	{
@@ -167,11 +167,11 @@ static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
 	return ks;
 }
 
-int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/passwd"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/passwd", KEY_VALUE, "passwd plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/passwd/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/passwd/exports/get", KEY_FUNC, elektraPasswdGet, KEY_END),
@@ -185,8 +185,8 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	}
 	// get all keys
 	SortBy index;
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * sortByKey = ksLookupByName (config, "/index", 0);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * sortByKey = ksLookupByName (config, "/index", 0);
 	if (sortByKey)
 	{
 		if (!strcmp (keyString (sortByKey), "uid"))
@@ -214,7 +214,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 #error Configuration error in CMakeLists.txt. Neither fgetpwent nor getline were provided. Please open an issue at https://issue.libelektra.org.
 #endif
 	{
-		KeySet * ks = pwentToKS (pwd, parentKey, index);
+		ElektraKeyset * ks = pwentToKS (pwd, parentKey, index);
 		ksAppend (returned, ks);
 		ksDel (ks);
 	}
@@ -222,13 +222,13 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return 1; // success
 }
 
-static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
+static struct passwd * KStoPasswd (ElektraKeyset * ks, SortBy index)
 {
 	struct passwd * pwd = elektraMalloc (sizeof (struct passwd));
 	ksRewind (ks);
-	Key * parent = ksNext (ks);
-	Key * lookup = keyDup (parent, KEY_CP_ALL);
-	Key * found = NULL;
+	ElektraKey * parent = ksNext (ks);
+	ElektraKey * lookup = keyDup (parent, KEY_CP_ALL);
+	ElektraKey * found = NULL;
 	if (index == UID)
 	{
 		found = ksLookup (ks, parent, 0);
@@ -291,7 +291,7 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 	return pwd;
 }
 
-static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
+static int writeKS (ElektraKeyset * returned, ElektraKey * parentKey, SortBy index)
 {
 	FILE * pwfile = fopen (keyString (parentKey), "w");
 	if (!pwfile)
@@ -300,12 +300,12 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 					     strerror (errno));
 		return -1;
 	}
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		if (!keyIsDirectlyBelow (parentKey, cur)) continue;
-		KeySet * cutKS = ksCut (returned, cur);
+		ElektraKeyset * cutKS = ksCut (returned, cur);
 		struct passwd * pwd = KStoPasswd (cutKS, index);
 		if (validatepwent (pwd) == -1)
 		{
@@ -330,13 +330,13 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 	return 1;
 }
 
-int elektraPasswdSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraPasswdSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// get all keys
 	// this function is optional
 	SortBy index;
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * sortByKey = ksLookupByName (config, "/index", 0);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * sortByKey = ksLookupByName (config, "/index", 0);
 	if (sortByKey)
 	{
 		if (!strcmp (keyString (sortByKey), "uid"))

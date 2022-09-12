@@ -140,13 +140,13 @@
  * @see keyDel() for deallocating a created Key object
  * @see keySetName() for rules about which names are considered valid
  */
-Key * keyNew (const char * name, ...)
+ElektraKey * keyNew (const char * name, ...)
 {
 	if (!name) return NULL;
 
 	va_list va;
 	va_start (va, name);
-	Key * k = keyVNew (name, va);
+	ElektraKey * k = keyVNew (name, va);
 	va_end (va);
 
 	return k;
@@ -158,11 +158,11 @@ Key * keyNew (const char * name, ...)
  * @pre caller must use va_start and va_end on va
  * @param va the variadic argument list
  */
-Key * keyVNew (const char * name, va_list va)
+ElektraKey * keyVNew (const char * name, va_list va)
 {
 	if (!name) return NULL;
 
-	Key * key = elektraCalloc (sizeof (Key));
+	ElektraKey * key = elektraCalloc (sizeof (Key));
 
 	elektraKeyFlags action = 0;
 	size_t value_size = 0;
@@ -324,7 +324,7 @@ Key * keyVNew (const char * name, va_list va)
  * @ingroup key
  * @see keyDup() for duplicating an existing Key
  */
-Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
+ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyFlags flags)
 {
 	if (dest == NULL) return NULL;
 
@@ -356,7 +356,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	if (source == dest) return dest;
 
 	// remember original data of dest
-	Key orig = *dest;
+	ElektraKey orig = *dest;
 
 	// duplicate dynamic properties
 	if (test_bit (flags, KEY_CP_NAME))
@@ -461,7 +461,7 @@ memerror:
 	return NULL;
 }
 
-static void keyClearNameValue (Key * key)
+static void keyClearNameValue (ElektraKey * key)
 {
 	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
 	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
@@ -493,7 +493,7 @@ static void keyClearNameValue (Key * key)
  * @see keyNew()    for creating a new Key
  * @see keyIncRef() for more information about the reference counter
  */
-int keyDel (Key * key)
+int keyDel (ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -552,7 +552,7 @@ int f (Key *k)
  * @ingroup key
  * @see keyDel() for completely deleting a Key
  */
-int keyClear (Key * key)
+int keyClear (ElektraKey * key)
 {
 	if (!key)
 	{
@@ -615,7 +615,7 @@ int keyClear (Key * key)
  * @see keyDecRef() for decreasing the reference counter
  * @see keyDel()    for deleting a Key
  */
-uint16_t keyIncRef (Key * key)
+uint16_t keyIncRef (ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -654,7 +654,7 @@ uint16_t keyIncRef (Key * key)
  *                  explanation of the reference counting system
  * @see keyDel()    for deleting a Key
  */
-uint16_t keyDecRef (Key * key)
+uint16_t keyDecRef (ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -684,7 +684,7 @@ uint16_t keyDecRef (Key * key)
  *                  explanation of the reference counting system
  * @see keyDecRef() for decreasing the reference counter
  **/
-uint16_t keyGetRef (const Key * key)
+uint16_t keyGetRef (const ElektraKey * key)
 {
 	if (key == NULL)
 	{
@@ -727,7 +727,7 @@ uint16_t keyGetRef (const Key * key)
  * @see keyDup() for duplicating an existing Key
  * @see ksAppendKey() appends a Key to a keyset (and locks it)
  */
-int keyLock (Key * key, elektraLockFlags what)
+int keyLock (ElektraKey * key, elektraLockFlags what)
 {
 	if (!key) return -1;
 	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
@@ -751,7 +751,7 @@ int keyLock (Key * key, elektraLockFlags what)
  * @ingroup key
  * @see keyLock() for locking a Key
  */
-int keyIsLocked (const Key * key, elektraLockFlags what)
+int keyIsLocked (const ElektraKey * key, elektraLockFlags what)
 {
 	if (!key) return -1;
 	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);

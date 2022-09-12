@@ -13,8 +13,8 @@
 #include "base64_functions.h"
 
 // kdb functions
-int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
-int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
+int PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

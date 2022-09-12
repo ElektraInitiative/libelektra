@@ -13,9 +13,9 @@
 #include <kdbplugin.h>
 
 
-int elektraLogchangeGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraLogchangeSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraLogchangeClose (Plugin * handle, Key * parentKey);
+int elektraLogchangeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraLogchangeSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraLogchangeClose (Plugin * handle, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

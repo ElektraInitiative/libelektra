@@ -16,8 +16,8 @@
 
 static void testBom (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf;
+	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf;
 	if (!reject)
 	{
 		conf = NULL;
@@ -26,7 +26,7 @@ static void testBom (const char * filename, int reject, int expected)
 	{
 		conf = ksNew (10, keyNew ("system:/reject/bom", KEY_END), KS_END);
 	}
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
@@ -37,8 +37,8 @@ static void testBom (const char * filename, int reject, int expected)
 
 static void testNull (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf;
+	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf;
 	if (!reject)
 	{
 		conf = NULL;
@@ -47,7 +47,7 @@ static void testNull (const char * filename, int reject, int expected)
 	{
 		conf = ksNew (10, keyNew ("system:/reject/null", KEY_END), KS_END);
 	}
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
@@ -58,8 +58,8 @@ static void testNull (const char * filename, int reject, int expected)
 
 static void testLEConsistency (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf;
+	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf;
 	if (!reject)
 	{
 		conf = NULL;
@@ -68,7 +68,7 @@ static void testLEConsistency (const char * filename, int reject, int expected)
 	{
 		conf = ksNew (10, keyNew ("system:/check/lineending", KEY_END), KS_END);
 	}
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
@@ -79,8 +79,8 @@ static void testLEConsistency (const char * filename, int reject, int expected)
 
 static void testLEcrlf (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf;
+	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf;
 	if (!reject)
 	{
 		conf = NULL;
@@ -90,7 +90,7 @@ static void testLEcrlf (const char * filename, int reject, int expected)
 		conf = ksNew (10, keyNew ("system:/check/lineending", KEY_END),
 			      keyNew ("system:/valid/lineending", KEY_VALUE, "CRLF", KEY_END), KS_END);
 	}
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");
@@ -101,8 +101,8 @@ static void testLEcrlf (const char * filename, int reject, int expected)
 
 static void testEncoding (const char * filename, int reject, int expected)
 {
-	Key * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
-	KeySet * conf;
+	ElektraKey * parentKey = keyNew ("user:/tests/filecheck", KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKeyset * conf;
 	if (!reject)
 	{
 		conf = NULL;
@@ -112,7 +112,7 @@ static void testEncoding (const char * filename, int reject, int expected)
 		conf = ksNew (10, keyNew ("system:/check/encoding", KEY_END),
 			      keyNew ("system:/valid/encoding", KEY_VALUE, "UTF-8", KEY_END), KS_END);
 	}
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("filecheck");
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == expected, "kdbGet failed");

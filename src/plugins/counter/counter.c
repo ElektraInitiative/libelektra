@@ -20,10 +20,10 @@ typedef int Counter;
 
 static Counter elektraCountOpen = 0;
 
-int elektraCounterOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraCounterOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	elektraCountOpen += 1;
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
@@ -41,10 +41,10 @@ int elektraCounterOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 static Counter elektraCountClose = 0;
 
-int elektraCounterClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraCounterClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	elektraCountClose += 1;
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
@@ -60,11 +60,11 @@ int elektraCounterClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-int elektraCounterGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCounterGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/counter"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/counter", KEY_VALUE, "counter plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/counter/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/counter/exports/open", KEY_FUNC, elektraCounterOpen, KEY_END),
@@ -84,14 +84,14 @@ int elektraCounterGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; /* success */
 }
 
-int elektraCounterSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCounterSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 
 	return 1; /* success */
 }
 
-int elektraCounterError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCounterError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 

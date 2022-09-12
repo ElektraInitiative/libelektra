@@ -37,8 +37,8 @@ static void test_relative_root (void)
 {
 	printf ("Get relative name of key with backend mounted at `/`\n");
 
-	Key * parent = keyNew ("/", KEY_END);
-	Key * child = keyNew ("spec:/ni/test", KEY_END);
+	ElektraKey * parent = keyNew ("/", KEY_END);
+	ElektraKey * child = keyNew ("spec:/ni/test", KEY_END);
 
 	test_relative ("spec:/ni/test", child, parent);
 	keyDel (child);
@@ -55,8 +55,8 @@ static void test_relative_cascading (void)
 {
 	printf ("Get relative name of key with cascading mountpoint\n");
 
-	Key * parent = keyNew ("/cascading", KEY_END);
-	Key * child = keyNew ("/cascading/k", KEY_END);
+	ElektraKey * parent = keyNew ("/cascading", KEY_END);
+	ElektraKey * child = keyNew ("/cascading/k", KEY_END);
 
 	test_relative ("k", child, parent);
 	keyDel (child);
@@ -78,8 +78,8 @@ static void test_relative_generic (void)
 {
 	printf ("Get relative name of key with generic mountpoint\n");
 
-	Key * parent = keyNew ("system:/", KEY_END);
-	Key * child = keyNew ("system:/key//", KEY_END);
+	ElektraKey * parent = keyNew ("system:/", KEY_END);
+	ElektraKey * child = keyNew ("system:/key//", KEY_END);
 
 	test_relative ("key", child, parent);
 	keyDel (child);
@@ -102,8 +102,8 @@ static void test_relative_equal (void)
 {
 	printf ("Get relative name of key which is the same as the parent key\n");
 
-	Key * parent = keyNew ("system:/parentChild", KEY_END);
-	Key * child = keyNew ("system:/parentChild", KEY_END);
+	ElektraKey * parent = keyNew ("system:/parentChild", KEY_END);
+	ElektraKey * child = keyNew ("system:/parentChild", KEY_END);
 	test_relative ("", child, parent);
 
 	keyDel (parent);

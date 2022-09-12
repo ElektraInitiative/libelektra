@@ -20,11 +20,11 @@
 #include <kdbplugin.h>
 
 // forward declarations
-int elektraJniOpen (Plugin * handle, Key * errorKey);
-int elektraJniClose (Plugin * handle, Key * errorKey);
-int elektraJniGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraJniSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraJniError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraJniOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraJniClose (Plugin * handle, ElektraKey * errorKey);
+int elektraJniGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraJniSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraJniError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 // plugin's data handle
 typedef struct
@@ -43,7 +43,7 @@ typedef struct
 	jobject plugin;
 } Data;
 
-static void checkException (Data * data, const char * when, Key * warningKey)
+static void checkException (Data * data, const char * when, ElektraKey * warningKey)
 {
 	if ((*data->env)->ExceptionCheck (data->env))
 	{
@@ -74,7 +74,7 @@ static void checkException (Data * data, const char * when, Key * warningKey)
 	}
 }
 
-static int call1Arg (Data * data, Key * errorKey, const char * method)
+static int call1Arg (Data * data, ElektraKey * errorKey, const char * method)
 {
 	jobject jerrorKey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey, true);
 	checkException (data, method, errorKey);
@@ -112,7 +112,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	return result;
 }
 
-static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * method)
+static int call2Arg (Data * data, ElektraKeyset * ks, ElektraKey * errorKey, const char * method)
 {
 	jobject jks = (*data->env)->NewObject (data->env, data->clsKeySet, data->midKeySetConstr, ks, true);
 	checkException (data, method, errorKey);
@@ -160,15 +160,15 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	return result;
 }
 
-int elektraJniOpen (Plugin * handle, Key * errorKey)
+int elektraJniOpen (Plugin * handle, ElektraKey * errorKey)
 {
 	Data * data = elektraMalloc (sizeof (Data));
 	data->module = 0;
 	data->printException = 0;
 	elektraPluginSetData (handle, data);
 
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * k = ksLookupByName (config, "/module", 0);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * k = ksLookupByName (config, "/module", 0);
 	if (k)
 	{
 		data->module = 1;
@@ -320,7 +320,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	return call2Arg (data, config, errorKey, "open");
 }
 
-int elektraJniClose (Plugin * handle, Key * errorKey)
+int elektraJniClose (Plugin * handle, ElektraKey * errorKey)
 {
 	Data * data = elektraPluginGetData (handle);
 
@@ -347,11 +347,11 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 	return ret;
 }
 
-int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraJniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/jni"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/jni", KEY_VALUE, "jni plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/jni/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/jni/exports/open", KEY_FUNC, elektraJniOpen, KEY_END),
@@ -375,13 +375,13 @@ int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return call2Arg (data, returned, parentKey, "get");
 }
 
-int elektraJniSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraJniSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	Data * data = elektraPluginGetData (handle);
 	return call2Arg (data, returned, parentKey, "set");
 }
 
-int elektraJniError (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraJniError (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	Data * data = elektraPluginGetData (handle);
 	return call2Arg (data, returned, parentKey, "error");

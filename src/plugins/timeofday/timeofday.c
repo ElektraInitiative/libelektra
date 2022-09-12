@@ -53,7 +53,7 @@ const char * elektraTimeofdayHelper (char * t, TimeofdayInfo * ti)
 	return t;
 }
 
-int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraTimeofdayOpen (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	TimeofdayInfo * ti = calloc (1, sizeof (TimeofdayInfo));
 	char t[ARRAY_LENGTH];
@@ -64,7 +64,7 @@ int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	gettimeofday (&ti->start, 0);
 	ti->last = ti->start;
 
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
@@ -80,12 +80,12 @@ int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0; /* success */
 }
 
-int elektraTimeofdayClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraTimeofdayClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
 
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
@@ -103,7 +103,7 @@ int elektraTimeofdayClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0; /* success */
 }
 
-int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraTimeofdayGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
@@ -121,7 +121,7 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/timeofday"))
 	{
-		KeySet * pluginConfig = ksNew (
+		ElektraKeyset * pluginConfig = ksNew (
 			30, keyNew ("system:/elektra/modules/timeofday", KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports", KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/open", KEY_FUNC, elektraTimeofdayOpen, KEY_END),
@@ -134,7 +134,7 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 
-		KeySet * config = elektraPluginGetConfig (handle);
+		ElektraKeyset * config = elektraPluginGetConfig (handle);
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
 			fprintf (stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
@@ -148,7 +148,7 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1;
 }
 
-int elektraTimeofdaySet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraTimeofdaySet (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
@@ -171,7 +171,7 @@ int elektraTimeofdaySet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	return 1;
 }
 
-int elektraTimeofdayError (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraTimeofdayError (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);

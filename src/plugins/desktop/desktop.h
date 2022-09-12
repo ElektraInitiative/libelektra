@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraDesktopGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDesktopSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDesktopGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraDesktopSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

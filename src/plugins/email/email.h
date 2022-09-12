@@ -12,8 +12,8 @@
 
 #include <kdbplugin.h>
 
-int elektraEmailGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraEmailSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraEmailGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraEmailSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

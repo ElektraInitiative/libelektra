@@ -30,9 +30,9 @@
  * @retval 0 if the Key has not been marked for encryption
  * @retval 1 if the Key has been marked for encryption
  */
-static int isMarkedForEncryption (const Key * k)
+static int isMarkedForEncryption (const ElektraKey * k)
 {
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_GPGME_META_ENCRYPT);
+	const ElektraKey * metaEncrypt = keyGetMeta (k, ELEKTRA_GPGME_META_ENCRYPT);
 	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
 	{
 		return 1;
@@ -50,9 +50,9 @@ static int isMarkedForEncryption (const Key * k)
  * @retval 0 if the Key contained a string value before encryption
  * @retval 1 if the Key contained a binary value before encryption
  */
-static int isOriginallyBinary (const Key * k)
+static int isOriginallyBinary (const ElektraKey * k)
 {
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_GPGME_META_BINARY);
+	const ElektraKey * metaEncrypt = keyGetMeta (k, ELEKTRA_GPGME_META_BINARY);
 	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
 	{
 		return 1;
@@ -66,9 +66,9 @@ static int isOriginallyBinary (const Key * k)
  * @retval 0 test mode is not enabled
  * @retval 1 test mode is enabled
  */
-static int inTestMode (KeySet * conf)
+static int inTestMode (ElektraKeyset * conf)
 {
-	Key * k = ksLookupByName (conf, ELEKTRA_GPGME_UNIT_TEST, 0);
+	ElektraKey * k = ksLookupByName (conf, ELEKTRA_GPGME_UNIT_TEST, 0);
 	if (k && !strcmp (keyString (k), "1"))
 	{
 		return 1;
@@ -81,7 +81,7 @@ static int inTestMode (KeySet * conf)
  * @retval 0 if the Key k is in the spec namespace.
  * @retval 1 if the Key k is NOT in the spec namespace.
  */
-static inline int isSpecNamespace (const Key * k)
+static inline int isSpecNamespace (const ElektraKey * k)
 {
 	return (keyGetNamespace (k) == KEY_NS_SPEC);
 }
@@ -91,7 +91,7 @@ static inline int isSpecNamespace (const Key * k)
  * @retval 0 if the Key k does not hold a null value.
  * @retval 1 if the Key k holds a null value.
  */
-static inline int isNullValue (const Key * k)
+static inline int isNullValue (const ElektraKey * k)
 {
 	return keyGetValueSize (k) == 0;
 }
@@ -103,9 +103,9 @@ static inline int isNullValue (const Key * k)
  * @retval 0 text mode is not enabled
  * @retval 1 text mode is enabled
  */
-static int isTextMode (KeySet * conf)
+static int isTextMode (ElektraKeyset * conf)
 {
-	Key * k = ksLookupByName (conf, ELEKTRA_GPGME_CONFIG_TEXTMODE, 0);
+	ElektraKey * k = ksLookupByName (conf, ELEKTRA_GPGME_CONFIG_TEXTMODE, 0);
 	if (k && !strcmp (keyString (k), "0"))
 	{
 		return 0;
@@ -137,13 +137,13 @@ static void freeRecipientArray (gpgme_key_t * recipients)
  * @return the recipients as NULL-terminated array of gpgme_key_t, or just NULL if no recipients is specified in config. Must be freed by
  * the caller.
  */
-static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * errorKey, gpgme_ctx_t ctx)
+static gpgme_key_t * extractRecipientFromPluginConfig (ElektraKeyset * config, ElektraKey * errorKey, gpgme_ctx_t ctx)
 {
 	gpgme_error_t err;
 	gpgme_key_t key;
 
 	keylist_t list;
-	Key * gpgRecipientRoot = ksLookupByName (config, ELEKTRA_RECIPIENT_KEY, 0);
+	ElektraKey * gpgRecipientRoot = ksLookupByName (config, ELEKTRA_RECIPIENT_KEY, 0);
 
 	elektraGpgmeKeylistInit (&list);
 
@@ -173,7 +173,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 	// append keys beneath root (crypto/key/#_) as recipients
 	if (gpgRecipientRoot)
 	{
-		Key * k;
+		ElektraKey * k;
 
 		ksRewind (config);
 		while ((k = ksNext (config)) != 0)
@@ -239,7 +239,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * errorKey, int textMode)
+static int transferGpgmeDataToElektraKey (gpgme_data_t src, ElektraKey * dst, ElektraKey * errorKey, int textMode)
 {
 	int returnValue = 1; // success
 	off_t ciphertextLen;
@@ -336,11 +336,11 @@ static void generateInvalidKeyErrorMsg (char ** result, gpgme_invalid_key_t inva
  * @retval 1 on success.
  * @retval -1 on failure. In this case errorKey will provide a description.
  */
-static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
+static int gpgEncrypt (Plugin * handle, ElektraKeyset * data, ElektraKey * errorKey)
 {
 	int returnValue = 1; // success per default
 	int textMode;
-	Key * k;
+	ElektraKey * k;
 
 	gpgme_key_t * recipients;
 	gpgme_ctx_t ctx;
@@ -354,7 +354,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		return -1; // at this point nothing has been initialized
 	}
 
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	ElektraKeyset * pluginConfig = elektraPluginGetConfig (handle);
 
 	textMode = isTextMode (pluginConfig);
 	if (textMode)
@@ -474,10 +474,10 @@ cleanup:
  * @retval 1 on success.
  * @retval -1 on failure. In this case errorKey will provide a description.
  */
-static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * errorKey)
+static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, ElektraKeyset * data, ElektraKey * errorKey)
 {
 	int returnValue = 1; // success
-	Key * k;
+	ElektraKey * k;
 
 	gpgme_ctx_t ctx;
 	gpgme_error_t err;
@@ -546,12 +546,12 @@ cleanup:
 	return returnValue;
 }
 
-int elektraGpgmeOpen (Plugin * handle, Key * errorKey)
+int elektraGpgmeOpen (Plugin * handle, ElektraKey * errorKey)
 {
 	gpgme_error_t err;
 
 	// if the plugin is used by the unit test, initialization of libgpgme is done by the test code
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	ElektraKeyset * pluginConfig = elektraPluginGetConfig (handle);
 	if (inTestMode (pluginConfig))
 	{
 		return 1; // success
@@ -580,12 +580,12 @@ int elektraGpgmeClose (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED Key * erro
 	return 1; // success
 }
 
-int elektraGpgmeGet (Plugin * handle, KeySet * ks, Key * parentKey)
+int elektraGpgmeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// publish the module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		KeySet * moduleConfig = ksNew (30,
+		ElektraKeyset * moduleConfig = ksNew (30,
 #include "contract.h"
 					       KS_END);
 		ksAppend (ks, moduleConfig);
@@ -596,12 +596,12 @@ int elektraGpgmeGet (Plugin * handle, KeySet * ks, Key * parentKey)
 	return gpgDecrypt (handle, ks, parentKey);
 }
 
-int elektraGpgmeSet (Plugin * handle, KeySet * ks, Key * parentKey)
+int elektraGpgmeSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	return gpgEncrypt (handle, ks, parentKey);
 }
 
-int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
+int elektraGpgmeCheckconf (ElektraKey * errorKey, ElektraKeyset * conf)
 {
 	gpgme_ctx_t ctx;
 	gpgme_error_t err;

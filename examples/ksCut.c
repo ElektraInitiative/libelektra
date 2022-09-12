@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 
-void outputKeySet (KeySet * returned)
+void outputKeySet (ElektraKeyset * returned)
 {
 	ksRewind (returned);
 	while (ksNext (returned))
@@ -23,11 +23,11 @@ int main (void)
 {
 	// clang-format off
 	//! [cut]
-	Key * parentKey = keyNew ("system:/mountpoint/interest", KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/mountpoint/interest", KEY_END);
+	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
-	KeySet * returned = ksCut (ks, parentKey);
+	ElektraKeyset * returned = ksCut (ks, parentKey);
 	kdbSet (kdb, ks, parentKey); // all keys below cutpoint are now removed
 	kdbClose (kdb, parentKey);
 	//! [cut]

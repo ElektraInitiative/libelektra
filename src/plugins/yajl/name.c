@@ -20,7 +20,7 @@
  *
  * @return number of levels in key name
  */
-ssize_t elektraKeyCountLevel (const Key * cur)
+ssize_t elektraKeyCountLevel (const ElektraKey * cur)
 {
 	if (!cur)
 	{
@@ -46,7 +46,7 @@ ssize_t elektraKeyCountLevel (const Key * cur)
  * @retval 0 on null pointers or nothing equal
  * @retval -1 when too many equal levels
  */
-ssize_t elektraKeyCountEqualLevel (const Key * cmp1, const Key * cmp2)
+ssize_t elektraKeyCountEqualLevel (const ElektraKey * cmp1, const ElektraKey * cmp2)
 {
 	if (!cmp1)
 	{

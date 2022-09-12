@@ -24,9 +24,9 @@
  * @retval the statistical value
  * @retval -1 on error
  */
-static int getStatisticalValue (Key * informationKey, char * metaName)
+static int getStatisticalValue (ElektraKey * informationKey, char * metaName)
 {
-	const Key * metaKey = keyGetMeta (informationKey, metaName);
+	const ElektraKey * metaKey = keyGetMeta (informationKey, metaName);
 	if (metaKey == NULL)
 	{
 		return 0;
@@ -52,7 +52,7 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
  *
  * This enforces that a number is set.
  */
-static int setStatisticalValue (Key * informationKey, char * metaName, int value)
+static int setStatisticalValue (ElektraKey * informationKey, char * metaName, int value)
 {
 	char stringy[INT_BUF_SIZE];
 	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
@@ -89,7 +89,7 @@ static int setStatisticalValue (Key * informationKey, char * metaName, int value
  * @param metaName which statistic to increase
  * @retval new value
  */
-static int increaseStatisticalValue (Key * informationKey, char * metaName)
+static int increaseStatisticalValue (ElektraKey * informationKey, char * metaName)
 {
 	int value = getStatisticalValue (informationKey, metaName);
 	value++;
@@ -101,7 +101,7 @@ static int increaseStatisticalValue (Key * informationKey, char * metaName)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlap conflicts where only base exists
  */
-static int getNonOverlapOnlyBaseConflicts (Key * informationKey)
+static int getNonOverlapOnlyBaseConflicts (ElektraKey * informationKey)
 {
 	return getStatisticalValue (informationKey, "nonOverlapOnlyBaseCounter");
 }
@@ -110,7 +110,7 @@ static int getNonOverlapOnlyBaseConflicts (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlap conflicts where all keys existed
  */
-static int getNonOverlapAllExistConflicts (Key * informationKey)
+static int getNonOverlapAllExistConflicts (ElektraKey * informationKey)
 {
 	int nonOverlapAllExistCounter = getStatisticalValue (informationKey, "nonOverlapAllExistCounter");
 	if (nonOverlapAllExistCounter % 3 != 0)
@@ -124,7 +124,7 @@ static int getNonOverlapAllExistConflicts (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlap conflicts where the key in the base set was empty
  */
-static int getNonOverlapBaseEmptyConflicts (Key * informationKey)
+static int getNonOverlapBaseEmptyConflicts (ElektraKey * informationKey)
 {
 	int nonOverlapBaseEmptyCounter = getStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
 	if (nonOverlapBaseEmptyCounter % 2 != 0)
@@ -138,7 +138,7 @@ static int getNonOverlapBaseEmptyConflicts (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of overlaps where all 3 keys were different
  */
-static int getOverlap3different (Key * informationKey)
+static int getOverlap3different (ElektraKey * informationKey)
 {
 	int overlap3different = getStatisticalValue (informationKey, "overlap3different");
 	if (overlap3different % 3 != 0)
@@ -152,7 +152,7 @@ static int getOverlap3different (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of overlaps where one key was empty, thus the other two keys had different values
  */
-static int getOverlap1empty (Key * informationKey)
+static int getOverlap1empty (ElektraKey * informationKey)
 {
 	int overlap1empty = getStatisticalValue (informationKey, "overlap1empty");
 	if (overlap1empty % 2 != 0)
@@ -166,7 +166,7 @@ static int getOverlap1empty (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of overlaps that happened
  */
-static int getTotalOverlaps (Key * informationKey)
+static int getTotalOverlaps (ElektraKey * informationKey)
 {
 	return getOverlap1empty (informationKey) + getOverlap3different (informationKey);
 }
@@ -175,7 +175,7 @@ static int getTotalOverlaps (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @retval the number of non-overlaps that happened
  */
-static int getTotalNonOverlaps (Key * informationKey)
+static int getTotalNonOverlaps (ElektraKey * informationKey)
 {
 	return getNonOverlapBaseEmptyConflicts (informationKey) + getNonOverlapAllExistConflicts (informationKey) +
 	       getNonOverlapOnlyBaseConflicts (informationKey);
@@ -187,7 +187,7 @@ static int getTotalNonOverlaps (Key * informationKey)
  * @param informationKey contains the statistics in its meta information
  * @returns the number of conflicts stored in the key
  */
-int getConflicts (Key * informationKey)
+int getConflicts (ElektraKey * informationKey)
 {
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
 }
@@ -224,7 +224,7 @@ static char * strremove (char * string, const char * sub)
  *  @retval -1 on error
  *  @retval  0 on success
  */
-static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const char * string, Key * informationKey)
+static int prependStringToAllKeyNames (ElektraKeyset * result, ElektraKeyset * input, const char * string, ElektraKey * informationKey)
 {
 	if (input == NULL)
 	{
@@ -241,7 +241,7 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter string must not be null.");
 		return -1;
 	}
-	Key * key;
+	ElektraKey * key;
 	ksRewind (input);
 	while ((key = ksNext (input)) != NULL)
 	{
@@ -261,7 +261,7 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 		{
 			strcat (newName, keyName (key));
 		}
-		Key * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
+		ElektraKey * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
 		int status = keySetName (duplicateKey, newName);
 		elektraFree (newName);
 		if (status < 0)
@@ -287,12 +287,12 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
  * Example: If root is user:/example and the KeySet contains a key with the name user:/example/something then
  * the returned KeySet will contain the key /something.
  */
-static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
+static ElektraKeyset * removeRoot (ElektraKeyset * original, ElektraKey * root, ElektraKey * informationKey)
 {
 	ksRewind (original);
-	KeySet * result = ksNew (0, KS_END);
+	ElektraKeyset * result = ksNew (0, KS_END);
 	const char * rootKeyNameString = keyName (root);
-	Key * currentKey;
+	ElektraKey * currentKey;
 	while ((currentKey = ksNext (original)) != NULL)
 	{
 		char * currentKeyNameString = elektraMalloc (keyGetNameSize (currentKey));
@@ -305,7 +305,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		};
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * duplicateKey = keyDup (currentKey, KEY_CP_ALL);
+			ElektraKey * duplicateKey = keyDup (currentKey, KEY_CP_ALL);
 			int retVal;
 			if (keyIsBelow (root, currentKey))
 			{
@@ -346,7 +346,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
  * @retval true if two keys are equal
  * @retval false otherwise
  */
-static bool keysAreEqual (Key * a, Key * b)
+static bool keysAreEqual (ElektraKey * a, ElektraKey * b)
 {
 	// Two nothings are not keys and thus false too
 	if (a == NULL || b == NULL)
@@ -369,10 +369,10 @@ static bool keysAreEqual (Key * a, Key * b)
  * @retval -1 on error
  * @retval 0 on success
  */
-static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
-				  int baseIndicator, Key * informationKey)
+static int twoOfThreeExistHelper (ElektraKey * checkedKey, ElektraKey * keyInFirst, ElektraKey * keyInSecond, ElektraKeyset * result, bool checkedIsDominant,
+				  int baseIndicator, ElektraKey * informationKey)
 {
-	Key * existingKey;
+	ElektraKey * existingKey;
 	bool thisConflict = false;
 	/** This if or the else if happen when our and their set have a key that
 	 *  base does not have. This is a conflict case.
@@ -443,8 +443,8 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
  * @retval true if exactly two of the three keys have the same value
  * @retval false otherwise
  */
-static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
-				    int baseIndicator, Key * informationKey)
+static bool twoOfThoseKeysAreEqual (ElektraKey * checkedKey, ElektraKey * keyInFirst, ElektraKey * keyInSecond, ElektraKeyset * result, bool checkedIsDominant,
+				    int baseIndicator, ElektraKey * informationKey)
 {
 	/**
 	 * One example for the next 3 ifs
@@ -553,8 +553,8 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
  * @retval -1 on error
  * @retval 0 on success
  */
-static int allExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
-			   int baseIndicator, Key * informationKey)
+static int allExistHelper (ElektraKey * checkedKey, ElektraKey * keyInFirst, ElektraKey * keyInSecond, ElektraKeyset * result, bool checkedIsDominant,
+			   int baseIndicator, ElektraKey * informationKey)
 {
 	if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
 	{
@@ -609,21 +609,21 @@ static int allExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond
  * @retval 0 on success
  *
  */
-static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
-			   int baseIndicator, Key * informationKey)
+static int checkSingleSet (ElektraKeyset * checkedSet, ElektraKeyset * firstCompared, ElektraKeyset * secondCompared, ElektraKeyset * result, bool checkedIsDominant,
+			   int baseIndicator, ElektraKey * informationKey)
 {
 	ksRewind (checkedSet);
 	ksRewind (firstCompared);
 	ksRewind (secondCompared);
-	Key * checkedKey;
+	ElektraKey * checkedKey;
 	while ((checkedKey = ksNext (checkedSet)) != NULL)
 	{
 		/**
 		 * Check if a key with the same name exists
 		 * Nothing about values is said yet
 		 */
-		Key * keyInFirst = ksLookup (firstCompared, checkedKey, 0);
-		Key * keyInSecond = ksLookup (secondCompared, checkedKey, 0);
+		ElektraKey * keyInFirst = ksLookup (firstCompared, checkedKey, 0);
+		ElektraKey * keyInSecond = ksLookup (secondCompared, checkedKey, 0);
 		if (keyInFirst != NULL && keyInSecond != NULL)
 		{
 			allExistHelper (checkedKey, keyInFirst, keyInSecond, result, checkedIsDominant, baseIndicator, informationKey);
@@ -668,7 +668,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
  * @param informationKey the key for error codes
  * @returns pointer to the string, NULL on error
  * */
-static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * informationKey)
+static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStart, ElektraKey * informationKey)
 {
 	ELEKTRA_LOG_DEBUG ("Converting key set to char array");
 	if (ks == NULL || arrayStart == NULL || informationKey == NULL)
@@ -687,14 +687,14 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 	 *  The elektraArrayIncName would then change the name of the real key.
 	 *  We don't want that as we only increase the name to loop over all keys.
 	 */
-	Key * iterator = keyDup (arrayStart, KEY_CP_NAME);
+	ElektraKey * iterator = keyDup (arrayStart, KEY_CP_NAME);
 	if (iterator == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not duplicate key to iterate.");
 		elektraFree (buffer);
 		return NULL;
 	}
-	Key * lookup;
+	ElektraKey * lookup;
 	int counter = 0;
 	while ((lookup = ksLookup (ks, iterator, KDB_O_POP)) != 0)
 	{
@@ -767,20 +767,20 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
  * @param informationKey for errors
  * @returns the KeySet
  */
-static KeySet * ksFromArray (const char * array, int length, Key * informationKey)
+static ElektraKeyset * ksFromArray (const char * array, int length, ElektraKey * informationKey)
 {
 	if (array == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter must not be null.");
 		return NULL;
 	}
-	KeySet * result = ksNew (0, KS_END);
+	ElektraKeyset * result = ksNew (0, KS_END);
 	if (result == NULL)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 		return NULL;
 	}
-	Key * iterator = keyNew ("/#0", KEY_END);
+	ElektraKey * iterator = keyNew ("/#0", KEY_END);
 	if (iterator == NULL)
 	{
 		ksDel (result);
@@ -834,17 +834,17 @@ static int numberOfConflictMarkers (const char * text)
  * @retval 0 on success
  * @retval -1 on error
  */
-static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
+static int handleArrays (ElektraKeyset * ourSet, ElektraKeyset * theirSet, ElektraKeyset * baseSet, ElektraKeyset * resultSet, ElektraKey * informationKey, int strategy)
 {
 	ELEKTRA_LOG ("cmerge now handles arrays");
-	Key * checkedKey;
-	KeySet * toAppend = NULL;
+	ElektraKey * checkedKey;
+	ElektraKeyset * toAppend = NULL;
 	while ((checkedKey = ksNext (baseSet)) != NULL)
 	{
 		if (elektraArrayValidateName (checkedKey) >= 0)
 		{
-			Key * keyInOur = ksLookup (ourSet, checkedKey, 0);
-			Key * keyInTheir = ksLookup (theirSet, checkedKey, 0);
+			ElektraKey * keyInOur = ksLookup (ourSet, checkedKey, 0);
+			ElektraKey * keyInTheir = ksLookup (theirSet, checkedKey, 0);
 			char * baseArray = getValuesAsArray (baseSet, checkedKey, informationKey);
 			if (baseArray == NULL)
 			{
@@ -954,30 +954,30 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
  * @param informationKey stores errors as well as statistics
  * @returns the merged key set and NULL on error
  */
-KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
-		       int strategy, Key * informationKey)
+ElektraKeyset * elektraMerge (ElektraKeyset * our, ElektraKey * ourRoot, ElektraKeyset * their, ElektraKey * theirRoot, ElektraKeyset * base, ElektraKey * baseRoot, ElektraKey * resultRoot,
+		       int strategy, ElektraKey * informationKey)
 {
 	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
 
-	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
+	ElektraKeyset * ourCropped = removeRoot (our, ourRoot, informationKey);
 	if (ourCropped == NULL)
 	{
 		return NULL;
 	}
-	KeySet * theirCropped = removeRoot (their, theirRoot, informationKey);
+	ElektraKeyset * theirCropped = removeRoot (their, theirRoot, informationKey);
 	if (theirCropped == NULL)
 	{
 		ksDel (ourCropped);
 		return NULL;
 	}
-	KeySet * baseCropped = removeRoot (base, baseRoot, informationKey);
+	ElektraKeyset * baseCropped = removeRoot (base, baseRoot, informationKey);
 	if (baseCropped == NULL)
 	{
 		ksDel (ourCropped);
 		ksDel (theirCropped);
 		return NULL;
 	}
-	KeySet * result = ksNew (0, KS_END);
+	ElektraKeyset * result = ksNew (0, KS_END);
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
@@ -1030,7 +1030,7 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		}
 	}
 
-	KeySet * resultWithRoot = ksNew (0, KS_END);
+	ElektraKeyset * resultWithRoot = ksNew (0, KS_END);
 	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot), informationKey);
 	ksDel (result);
 	return resultWithRoot;

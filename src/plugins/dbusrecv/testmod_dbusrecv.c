@@ -20,7 +20,7 @@
 
 #define TEST_TIMEOUT 1000
 
-Key * test_callbackKey;
+ElektraKey * test_callbackKey;
 uv_loop_t * test_callbackLoop;
 
 /** D-Bus bus type used by tests  */
@@ -106,7 +106,7 @@ static void test_timerCallback (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED
  * @param key     changed key
  * @param context notification callback context
  */
-static void test_notificationCallback (Key * key, ElektraNotificationCallbackContext * context ELEKTRA_UNUSED)
+static void test_notificationCallback (ElektraKey * key, ElektraNotificationCallbackContext * context ELEKTRA_UNUSED)
 {
 	test_callbackKey = key;
 	uv_stop (test_callbackLoop);
@@ -147,7 +147,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test commit\n");
 
-	KeySet * conf = ksNew (1, keyNew ("user:/announce", KEY_VALUE, "once", KEY_END), KS_END);
+	ElektraKeyset * conf = ksNew (1, keyNew ("user:/announce", KEY_VALUE, "once", KEY_END), KS_END);
 	PLUGIN_OPEN ("dbusrecv");
 
 	ksDel (plugin->global);
@@ -180,7 +180,7 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test adding keys\n");
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbusrecv");
 
 	ksDel (plugin->global);
@@ -213,7 +213,7 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 {
 	printf ("test changing keys\n");
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbusrecv");
 
 	ksDel (plugin->global);

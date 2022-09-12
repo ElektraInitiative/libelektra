@@ -17,15 +17,15 @@
 
 static void test_readPref (char * fileName)
 {
-	Key * parentKey = keyNew ("user:/tests/pref-read", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/pref-read", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 
 	PLUGIN_OPEN ("mozprefs");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key * key = ksLookupByName (ks, "user:/tests/pref-read/user/a/user/key", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/pref-read/user/a/user/key", KDB_O_NONE);
 	exit_if_fail (key, "Key a.user.key not found");
 	succeed_if (!strcmp (keyString (key), "usertest"), "Key a.user.key contains invalid data");
 	key = ksLookupByName (ks, "user:/tests/pref-read/lock/a/lock/key", KDB_O_NONE);
@@ -44,12 +44,12 @@ static void test_readPref (char * fileName)
 
 static void test_writePref (char * fileName)
 {
-	Key * parentKey = keyNew ("user:/tests/pref-write", KEY_VALUE, elektraFilename (), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/pref-write", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 
 	PLUGIN_OPEN ("mozprefs");
 
-	KeySet * ks = ksNew (
+	ElektraKeyset * ks = ksNew (
 		30, keyNew ("user:/tests/pref-write/user/a/user/key", KEY_VALUE, "usertest", KEY_META, "type", "string", KEY_END),
 		keyNew ("user:/tests/pref-write/lock/a/lock/key", KEY_VALUE, "true", KEY_META, "type", "boolean", KEY_END),
 		keyNew ("user:/tests/pref-write/pref/a/default/key", KEY_VALUE, "1", KEY_META, "type", "integer", KEY_END),

@@ -45,7 +45,7 @@ struct _GElektraKdb
 	GObject parent_instance;
 
 	/* instance members */
-	KDB *handle;
+	ElektraKdb *handle;
 };
 
 struct _GElektraKdbClass
@@ -67,7 +67,7 @@ GType gelektra_kdb_get_type(void);
 
 /* constructor */
 GElektraKdb *gelektra_kdb_open(GElektraKeySet * contract, GElektraKey *error);
-GElektraKdb *gelektra_kdb_make(KDB *handle);
+GElektraKdb *gelektra_kdb_make(ElektraKdb *handle);
 
 /* destructor */
 gint gelektra_kdb_close(GElektraKdb *kdb, GElektraKey *error);

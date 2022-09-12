@@ -12,7 +12,7 @@
 
 #include "log.h"
 
-int elektraSyslogOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraSyslogOpen (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic */
 
@@ -24,7 +24,7 @@ int elektraSyslogOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0; /* success */
 }
 
-int elektraSyslogClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraSyslogClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* free all plugin resources and shut it down */
 
@@ -36,11 +36,11 @@ int elektraSyslogClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0; /* success */
 }
 
-int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraSyslogGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/syslog"))
 	{
-		KeySet * n;
+		ElektraKeyset * n;
 		ksAppend (returned,
 			  n = ksNew (30,
 				     keyNew ("system:/elektra/modules/syslog", KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
@@ -65,10 +65,10 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1;
 }
 
-int elektraSyslogSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraSyslogSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	size_t changed = 0;
-	Key * k = 0;
+	ElektraKey * k = 0;
 	ksRewind (returned);
 	while ((k = ksNext (returned)))
 	{
@@ -84,7 +84,7 @@ int elektraSyslogSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	return 1;
 }
 
-int elektraSyslogError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraSyslogError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	syslog (LOG_NOTICE, "rollback configuration %s with %zd keys", keyName (parentKey), ksGetSize (returned));
 

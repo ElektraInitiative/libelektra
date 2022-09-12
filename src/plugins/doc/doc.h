@@ -307,7 +307,7 @@
  * @see elektraDocClose()
  * @ingroup plugin
  */
-int elektraDocOpen (Plugin * handle, Key * warningsKey);
+int elektraDocOpen (Plugin * handle, ElektraKey * warningsKey);
 
 
 /**
@@ -342,7 +342,7 @@ int elektraDocOpen (Plugin * handle, Key * warningsKey);
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocClose (Plugin * handle, Key * warningsKey);
+int elektraDocClose (Plugin * handle, ElektraKey * warningsKey);
 
 /**
  * @brief Get data from storage to application.
@@ -470,7 +470,7 @@ int elektraDocClose (Plugin * handle, Key * warningsKey);
  *
  * @ingroup plugin
  */
-int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraDocGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
 /**
  * @brief Set data from application to storage.
@@ -531,7 +531,7 @@ int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraDocSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
 /**
  * @brief Make changes to storage final.
@@ -566,7 +566,7 @@ int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocCommit (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraDocCommit (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
 /**
  * @brief Rollback in case of errors.
@@ -593,7 +593,7 @@ int elektraDocCommit (Plugin * handle, KeySet * returned, Key * parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocError (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraDocError (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
 /**
  * @brief Validate plugin configuration at mount time.
@@ -616,7 +616,7 @@ int elektraDocError (Plugin * handle, KeySet * returned, Key * parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocCheckConf (Key * errorKey, KeySet * conf);
+int elektraDocCheckConf (ElektraKey * errorKey, ElektraKeyset * conf);
 
 /**
  * @}

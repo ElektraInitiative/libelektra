@@ -17,7 +17,7 @@
 #include "toml.h"
 #include "write.h"
 
-KeySet * getContract (void)
+ElektraKeyset * getContract (void)
 {
 	return ksNew (30, keyNew ("system:/elektra/modules/toml", KEY_VALUE, "toml plugin waits for your orders", KEY_END),
 		      keyNew ("system:/elektra/modules/toml/exports", KEY_END),
@@ -28,11 +28,11 @@ KeySet * getContract (void)
 }
 
 
-int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (strcmp (keyName (parentKey), "system:/elektra/modules/toml") == 0)
 	{
-		KeySet * contract = getContract ();
+		ElektraKeyset * contract = getContract ();
 		ksAppend (returned, contract);
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -44,7 +44,7 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 }
 
-int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int result = tomlWrite (returned, parentKey);
 	return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;

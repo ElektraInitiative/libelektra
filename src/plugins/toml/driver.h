@@ -25,7 +25,7 @@
 
 typedef struct _ParentList
 {
-	Key * key;
+	ElektraKey * key;
 	struct _ParentList * next;
 } ParentList;
 
@@ -37,11 +37,11 @@ typedef struct _IndexList
 
 typedef struct
 {
-	KeySet * keys;
-	Key * root;
+	ElektraKeyset * keys;
+	ElektraKey * root;
 	ParentList * parentStack;
-	Key * currKey;
-	Key * prevKey;
+	ElektraKey * currKey;
+	ElektraKey * prevKey;
 	IndexList * indexStack;
 	TableArrayList * tableArrayStack;
 	CommentList * commentRoot;
@@ -66,7 +66,7 @@ typedef struct
  * @retval 0 If the file could be read successfully.
  * @retval non-zero If the file could not be opened or parsed without errors.
  */
-int tomlRead (KeySet * keys, Key * parent);
+int tomlRead (ElektraKeyset * keys, ElektraKey * parent);
 
 
 /**

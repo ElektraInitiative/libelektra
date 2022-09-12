@@ -16,10 +16,10 @@
 
 void testvalid (const char * file)
 {
-	Key * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
-	KeySet * conf = 0;
+	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("lineendings");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbget failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbset failed");
 	ksDel (ks);
@@ -29,10 +29,10 @@ void testvalid (const char * file)
 
 void testinconsistent (const char * file)
 {
-	Key * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
-	KeySet * conf = 0;
+	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("lineendings");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == (-1), "should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "should have failed");
 	ksDel (ks);
@@ -42,10 +42,10 @@ void testinconsistent (const char * file)
 
 void testinvalid (const char * file)
 {
-	Key * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/valid", KEY_VALUE, "CRLF", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/valid", KEY_VALUE, "CRLF", KEY_END), KS_END);
 	PLUGIN_OPEN ("lineendings");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbget failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "should have failed");
 	ksDel (ks);

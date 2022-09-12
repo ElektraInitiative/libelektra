@@ -13,12 +13,12 @@
 #endif
 
 /* Obtain address(es) matching host/port */
-int elektraNetworkAddrInfo (Key * toCheck)
+int elektraNetworkAddrInfo (ElektraKey * toCheck)
 {
 	struct addrinfo * result;
 	int s;
 
-	const Key * meta = keyGetMeta (toCheck, "check/ipaddr");
+	const ElektraKey * meta = keyGetMeta (toCheck, "check/ipaddr");
 
 	if (!meta) return 0; /* No check to do */
 
@@ -50,10 +50,10 @@ int elektraNetworkAddrInfo (Key * toCheck)
 	return 0;
 }
 
-int elektraPortInfo (Key * toCheck, Key * parentKey)
+int elektraPortInfo (ElektraKey * toCheck, ElektraKey * parentKey)
 {
-	const Key * meta = keyGetMeta (toCheck, "check/port");
-	const Key * listenMeta = keyGetMeta (toCheck, "check/port/listen");
+	const ElektraKey * meta = keyGetMeta (toCheck, "check/port");
+	const ElektraKey * listenMeta = keyGetMeta (toCheck, "check/port/listen");
 	if (!meta && !listenMeta) return 0; /* No check to do */
 	char * endptr = NULL;
 	long portNumber = strtol (keyString (toCheck), &endptr, 10);
@@ -141,10 +141,10 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	return 0;
 }
 
-int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* configuration only */
-	KeySet * n;
+	ElektraKeyset * n;
 	ksAppend (returned,
 		  n = ksNew (30, keyNew ("system:/elektra/modules/network", KEY_VALUE, "network plugin waits for your orders", KEY_END),
 			     keyNew ("system:/elektra/modules/network/exports", KEY_END),
@@ -162,10 +162,10 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	return 1; /* success */
 }
 
-int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* check all keys */
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{

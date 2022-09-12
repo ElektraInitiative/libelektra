@@ -15,8 +15,8 @@
 struct _ElektraInvokeHandle
 {
 	Plugin * plugin;
-	KeySet * modules;
-	KeySet * exports;
+	ElektraKeyset * modules;
+	ElektraKeyset * exports;
 };
 
 /**
@@ -26,7 +26,7 @@ struct _ElektraInvokeHandle
 typedef struct _ElektraDeferredCall
 {
 	char * name;
-	KeySet * parameters;
+	ElektraKeyset * parameters;
 	struct _ElektraDeferredCall * next;
 } _ElektraDeferredCall;
 
@@ -91,7 +91,7 @@ ElektraInvokeHandle * elektraInvokeInitialize (const char * elektraPluginName)
  * @return the handle
  * @retval 0 on errors
  */
-ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet * config, Key * errorKey)
+ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, ElektraKeyset * config, ElektraKey * errorKey)
 {
 	if (!elektraPluginName)
 	{
@@ -102,7 +102,7 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet 
 	{
 		return NULL;
 	}
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	handle->modules = modules;
 	elektraModulesInit (modules, NULL);
 
@@ -165,9 +165,9 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 		return NULL;
 	}
 	Plugin * plugin = handle->plugin;
-	KeySet * exports = NULL;
+	ElektraKeyset * exports = NULL;
 
-	Key * exportParent = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * exportParent = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (exportParent, plugin->name);
 
 	if (handle->exports)
@@ -182,7 +182,7 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 	}
 	keyAddBaseName (exportParent, "exports");
 	keyAddBaseName (exportParent, elektraPluginFunctionName);
-	Key * functionKey = ksLookup (exports, exportParent, 0);
+	ElektraKey * functionKey = ksLookup (exports, exportParent, 0);
 	keyDel (exportParent);
 	if (!functionKey)
 	{
@@ -203,7 +203,7 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
  *
  * @return the config of the plugin.
  */
-KeySet * elektraInvokeGetPluginConfig (ElektraInvokeHandle * handle)
+ElektraKeyset * elektraInvokeGetPluginConfig (ElektraInvokeHandle * handle)
 {
 	if (!handle) return NULL;
 	return handle->plugin->config;
@@ -255,7 +255,7 @@ void * elektraInvokeGetPluginData (ElektraInvokeHandle * handle)
  *
  * @return the modules used for invoking.
  */
-KeySet * elektraInvokeGetModules (ElektraInvokeHandle * handle)
+ElektraKeyset * elektraInvokeGetModules (ElektraInvokeHandle * handle)
 {
 	if (!handle) return NULL;
 	return handle->modules;
@@ -270,7 +270,7 @@ KeySet * elektraInvokeGetModules (ElektraInvokeHandle * handle)
  *
  * @return the exports of the plugin.
  */
-KeySet * elektraInvokeGetExports (ElektraInvokeHandle * handle)
+ElektraKeyset * elektraInvokeGetExports (ElektraInvokeHandle * handle)
 {
 	if (!handle) return NULL;
 	return handle->exports;
@@ -290,7 +290,7 @@ KeySet * elektraInvokeGetExports (ElektraInvokeHandle * handle)
  * @return the return value of the invoked function (i.e. -1, 0, or 1)
  * @retval -2 if the function was not found.
  */
-int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * ks, Key * k)
+int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, ElektraKeyset * ks, ElektraKey * k)
 {
 	if (!handle || !elektraPluginFunctionName) return -2;
 
@@ -299,7 +299,7 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
 
 	if (!rawFunc) return -2;
 
-	typedef int (*elektra2Args) (Plugin *, KeySet *, Key *);
+	typedef int (*elektra2Args) (Plugin *, ElektraKeyset *, ElektraKey *);
 	elektra2Args func = *(elektra2Args *) rawFunc;
 
 	return func (handle->plugin, ks, k);
@@ -315,7 +315,7 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
  *
  * @pre handle must be as returned from elektraInvokeOpen()
  */
-void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
+void elektraInvokeClose (ElektraInvokeHandle * handle, ElektraKey * errorKey)
 {
 	if (!handle)
 	{
@@ -350,7 +350,7 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
  * @retval 0 on success
  * @retval -1 when the call failed (direct call and deferring not available)
  */
-int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * parameters)
+int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, ElektraKeyset * parameters)
 {
 	if (!handle)
 	{
@@ -389,7 +389,7 @@ void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDef
  * @retval 0 on success
  * @retval -1 when the call failed (direct call and deferring not available)
  */
-int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName, KeySet * parameters)
+int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName, ElektraKeyset * parameters)
 {
 	ELEKTRA_NOT_NULL (handle);
 	ELEKTRA_NOT_NULL (elektraPluginFunctionName);
@@ -435,7 +435,7 @@ int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName
  * @retval 1 on success
  * @retval 0 when malloc failed
  */
-int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, KeySet * parameters)
+int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, ElektraKeyset * parameters)
 {
 	ELEKTRA_NOT_NULL (list);
 	ELEKTRA_NOT_NULL (name);

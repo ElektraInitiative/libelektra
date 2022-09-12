@@ -14,9 +14,9 @@ static void test_lookupSingle (void)
 {
 	printf ("Test lookup single\n");
 
-	Key * specKey = keyNew ("user:/abc", KEY_META, "override/#0", "user:/something", KEY_END);
-	Key * k = 0;
-	KeySet * ks = ksNew (20, k = keyNew ("user:/else", KEY_END), KS_END);
+	ElektraKey * specKey = keyNew ("user:/abc", KEY_META, "override/#0", "user:/something", KEY_END);
+	ElektraKey * k = 0;
+	ElektraKeyset * ks = ksNew (20, k = keyNew ("user:/else", KEY_END), KS_END);
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 	keySetMeta (specKey, "fallback/#0", "user:/else");
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k, "did not find fallback key");
@@ -35,12 +35,12 @@ static void test_lookupChain (void)
 {
 	printf ("Test lookup chain\n");
 
-	Key * specKey = keyNew ("user:/4", KEY_META, "override/#0", "user:/something", KEY_END);
-	Key * k1 = 0;
-	Key * k2 = 0;
-	Key * k3 = 0;
-	Key * k4 = 0;
-	KeySet * ks = ksNew (20, k1 = keyNew ("user:/1", KEY_END), k2 = keyNew ("user:/2", KEY_END), k3 = keyNew ("user:/3", KEY_END),
+	ElektraKey * specKey = keyNew ("user:/4", KEY_META, "override/#0", "user:/something", KEY_END);
+	ElektraKey * k1 = 0;
+	ElektraKey * k2 = 0;
+	ElektraKey * k3 = 0;
+	ElektraKey * k4 = 0;
+	ElektraKeyset * ks = ksNew (20, k1 = keyNew ("user:/1", KEY_END), k2 = keyNew ("user:/2", KEY_END), k3 = keyNew ("user:/3", KEY_END),
 			     k4 = keyNew ("user:/4", KEY_END), KS_END);
 
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
@@ -63,12 +63,12 @@ static void test_lookupChainLast (void)
 {
 	printf ("Test lookup chain last\n");
 
-	Key * k1 = 0;
-	Key * k2 = 0;
-	Key * k3 = 0;
-	Key * k4 = 0;
+	ElektraKey * k1 = 0;
+	ElektraKey * k2 = 0;
+	ElektraKey * k3 = 0;
+	ElektraKey * k4 = 0;
 	// clang-format off
-	KeySet *ks= ksNew(20,
+	ElektraKeyset *ks= ksNew(20,
 		k1 = keyNew("spec:/key",
 			KEY_VALUE, "spec value",
 			KEY_META, "override/#0", "/something",
@@ -81,12 +81,12 @@ static void test_lookupChainLast (void)
 		KS_END);
 	// clang-format on
 
-	Key * found = ksLookupByName (ks, "/key", 0);
+	ElektraKey * found = ksLookupByName (ks, "/key", 0);
 	succeed_if (found == k4, "found wrong key");
 	succeed_if_same_string (keyName (found), "user:/override");
 	succeed_if_same_string (keyString (found), "ok");
 
-	Key * searchKey = keyNew ("/key", KEY_END);
+	ElektraKey * searchKey = keyNew ("/key", KEY_END);
 	found = ksLookup (ks, searchKey, 0);
 	succeed_if (found == k4, "found wrong key");
 	succeed_if_same_string (keyName (found), "user:/override");
@@ -101,12 +101,12 @@ static void test_lookupChainRealWorld (void)
 {
 	printf ("Test lookup chain real world\n");
 
-	Key * k1 = 0;
-	Key * k2 = 0;
-	Key * k3 = 0;
-	Key * k4 = 0;
+	ElektraKey * k1 = 0;
+	ElektraKey * k2 = 0;
+	ElektraKey * k3 = 0;
+	ElektraKey * k4 = 0;
 	// clang-format off
-	KeySet *ks= ksNew(20,
+	ElektraKeyset *ks= ksNew(20,
 		k1 = keyNew("spec:/sw/P/current/editor",
 			KEY_META, "example", "vim",
 			KEY_META, "override/#0", "/sw/P/override/editor",
@@ -119,12 +119,12 @@ static void test_lookupChainRealWorld (void)
 		KS_END);
 	// clang-format on
 
-	Key * found = ksLookupByName (ks, "/sw/P/current/editor", 0);
+	ElektraKey * found = ksLookupByName (ks, "/sw/P/current/editor", 0);
 	succeed_if (found == k2, "found wrong key");
 	succeed_if_same_string (keyName (found), "user:/sw/defaults/editor");
 	succeed_if_same_string (keyString (found), "ok");
 
-	Key * searchKey = keyNew ("/sw/P/current/editor", KEY_END);
+	ElektraKey * searchKey = keyNew ("/sw/P/current/editor", KEY_END);
 	found = ksLookup (ks, searchKey, 0);
 	succeed_if (found == k2, "found wrong key");
 	succeed_if_same_string (keyName (found), "user:/sw/defaults/editor");
@@ -139,18 +139,18 @@ static void test_lookupNoOverride (void)
 	printf ("Test lookup with override not found\n");
 
 	// clang-format off
-	Key *specKey = keyNew("/test/lift/limit",
+	ElektraKey *specKey = keyNew("/test/lift/limit",
 			KEY_META, "default", "1",
 			KEY_META, "override/#0", "/test/person_lift/limit",
 			KEY_META, "override/#1", "/test/material_lift/limit",
 			KEY_META, "override/#2", "/test/heavy_material_lift/limit",
 			KEY_END);
 	// clang-format on
-	Key * dup = keyDup (specKey, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (specKey, KEY_CP_ALL);
 
-	Key * k1 = 0;
-	Key * k2 = 0;
-	KeySet * ks = ksNew (20, k1 = keyNew ("user:/test/lift/limit", KEY_VALUE, "22", KEY_END),
+	ElektraKey * k1 = 0;
+	ElektraKey * k2 = 0;
+	ElektraKeyset * ks = ksNew (20, k1 = keyNew ("user:/test/lift/limit", KEY_VALUE, "22", KEY_END),
 			     k2 = keyNew ("/test/person_lift/limit", KEY_VALUE, "10", KEY_END), KS_END);
 
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k1, "found wrong key");
@@ -168,9 +168,9 @@ static void test_lookupDefault (void)
 {
 	printf ("Test lookup default\n");
 
-	Key * specKey = keyNew ("user:/abc", KEY_END);
-	Key * k = 0;
-	KeySet * ks = ksNew (20, KS_END);
+	ElektraKey * specKey = keyNew ("user:/abc", KEY_END);
+	ElektraKey * k = 0;
+	ElektraKeyset * ks = ksNew (20, KS_END);
 
 	succeed_if (ksGetSize (ks) == 0, "wrong size");
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
@@ -197,9 +197,9 @@ static void test_lookupNoascading (void)
 {
 	printf ("Test lookup without cascading\n");
 
-	Key * specKey = keyNew ("/abc", KEY_END);
+	ElektraKey * specKey = keyNew ("/abc", KEY_END);
 
-	Key * d = keyDup (specKey, KEY_CP_ALL);
+	ElektraKey * d = keyDup (specKey, KEY_CP_ALL);
 	keySetString (d, "dup");
 	succeed_if_same_string (keyName (specKey), "/abc");
 	succeed_if_same_string (keyName (d), "/abc");
@@ -208,15 +208,15 @@ static void test_lookupNoascading (void)
 	succeed_if_same_string (keyName (d), "/abc");
 	succeed_if_same_string (keyName (specKey), "/abc");
 
-	KeySet * ks = ksNew (20, d, KS_END);
+	ElektraKeyset * ks = ksNew (20, d, KS_END);
 
-	Key * k = ksLookup (ks, specKey, KDB_O_NOCASCADING);
+	ElektraKey * k = ksLookup (ks, specKey, KDB_O_NOCASCADING);
 	succeed_if_same_string (keyName (specKey), "/abc");
 	succeed_if (k != 0, "did not find cascading key");
 	succeed_if (k != specKey, "should not be specKey");
 	succeed_if (k == d, "should be dup key");
 
-	Key * a = keyNew (keyName (specKey), KEY_VALUE, "a", KEY_END);
+	ElektraKey * a = keyNew (keyName (specKey), KEY_VALUE, "a", KEY_END);
 	ksAppendKey (ks, a);
 
 	for (int i = 0; i < 5; ++i)
@@ -245,9 +245,9 @@ static void test_lookupDefaultCascading (void)
 {
 	printf ("Test lookup default with cascading\n");
 
-	Key * specKey = keyNew ("/abc", KEY_END);
-	Key * k = 0;
-	KeySet * ks = ksNew (20, KS_END);
+	ElektraKey * specKey = keyNew ("/abc", KEY_END);
+	ElektraKey * k = 0;
+	ElektraKeyset * ks = ksNew (20, KS_END);
 
 	succeed_if (ksGetSize (ks) == 0, "wrong size");
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
@@ -274,7 +274,7 @@ static void test_lookupLongChain (void)
 	printf ("Test lookup long chain\n");
 
 	// clang-format off
-	Key *specKey = keyNew("user:/4",
+	ElektraKey *specKey = keyNew("user:/4",
 			KEY_META, "override/#0", "user:/something",
 			KEY_META, "override/#1", "user:/something",
 			KEY_META, "override/#2", "user:/something",
@@ -294,11 +294,11 @@ static void test_lookupLongChain (void)
 			KEY_META, "override/#_15", "user:/something",
 			KEY_END);
 	// clang-format on
-	Key * k1 = 0;
-	Key * k2 = 0;
-	Key * k3 = 0;
-	Key * k4 = 0;
-	KeySet * ks = ksNew (20, k1 = keyNew ("user:/1", KEY_END), k2 = keyNew ("user:/2", KEY_END), k3 = keyNew ("user:/3", KEY_END),
+	ElektraKey * k1 = 0;
+	ElektraKey * k2 = 0;
+	ElektraKey * k3 = 0;
+	ElektraKey * k4 = 0;
+	ElektraKeyset * ks = ksNew (20, k1 = keyNew ("user:/1", KEY_END), k2 = keyNew ("user:/2", KEY_END), k3 = keyNew ("user:/3", KEY_END),
 			     k4 = keyNew ("user:/4", KEY_END), KS_END);
 
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
@@ -321,9 +321,9 @@ static void test_lookupCascading (void)
 {
 	printf ("Test lookup cascading\n");
 
-	Key * specKey = keyNew ("/abc", KEY_META, "override/#0", "/something", KEY_END);
-	Key * k = 0;
-	KeySet * ks = ksNew (20, k = keyNew ("user:/else", KEY_END), KS_END);
+	ElektraKey * specKey = keyNew ("/abc", KEY_META, "override/#0", "/something", KEY_END);
+	ElektraKey * k = 0;
+	ElektraKeyset * ks = ksNew (20, k = keyNew ("user:/else", KEY_END), KS_END);
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 	keySetMeta (specKey, "fallback/#0", "/else");
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k, "did not find fallback key");
@@ -344,10 +344,10 @@ static void test_lookupNamespace (void)
 {
 	printf ("Test lookup namespace\n");
 
-	Key * specKey = keyNew ("/abc", KEY_META, "namespace/#0", "system", KEY_END);
-	Key * k = 0;
+	ElektraKey * specKey = keyNew ("/abc", KEY_META, "namespace/#0", "system", KEY_END);
+	ElektraKey * k = 0;
 
-	KeySet * ks = ksNew (20, k = keyNew ("user:/abc", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (20, k = keyNew ("user:/abc", KEY_END), KS_END);
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == 0, "found wrong key of other namespace");
 	keySetMeta (specKey, "namespace/#0", "user");
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k, "did not find key in correct namespace");
@@ -381,18 +381,18 @@ static void test_lookupIndirect (void)
 {
 	printf ("Test lookup by indirect spec\n");
 
-	Key * s;
-	Key * p;
-	Key * d;
-	Key * u;
-	Key * y;
-	Key * e;
-	KeySet * ks = ksNew (20, s = keyNew ("spec:/abc", KEY_END), p = keyNew ("proc:/abc", KEY_END), d = keyNew ("dir:/abc", KEY_END),
+	ElektraKey * s;
+	ElektraKey * p;
+	ElektraKey * d;
+	ElektraKey * u;
+	ElektraKey * y;
+	ElektraKey * e;
+	ElektraKeyset * ks = ksNew (20, s = keyNew ("spec:/abc", KEY_END), p = keyNew ("proc:/abc", KEY_END), d = keyNew ("dir:/abc", KEY_END),
 			     u = keyNew ("user:/abc", KEY_END), y = keyNew ("system:/abc", KEY_END), e = keyNew ("system:/else", KEY_END),
 			     KS_END);
 	succeed_if (ksGetSize (ks) == 6, "wrong size");
 
-	Key * k = ksLookupByName (ks, "/abc", 0);
+	ElektraKey * k = ksLookupByName (ks, "/abc", 0);
 	succeed_if (k == p, "did not find proc key");
 
 	keySetMeta (s, "namespace/#0", "no");
@@ -402,7 +402,7 @@ static void test_lookupIndirect (void)
 	succeed_if (ksGetSize (ks) == 7, "default key not added");
 	succeed_if_same_string (keyString (k), "80");
 
-	Key * k2 = ksLookupByName (ks, "/abc", 0);
+	ElektraKey * k2 = ksLookupByName (ks, "/abc", 0);
 	succeed_if (k == k2, "did not get same default");
 
 	keySetMeta (s, "fallback/#0", "/else");
@@ -434,19 +434,19 @@ static void test_lookupDoubleIndirect (void)
 {
 	printf ("Test lookup by double indirect spec\n");
 
-	Key * s;
-	Key * p;
-	Key * d;
-	Key * u;
-	Key * y;
-	Key * se;
-	Key * pe;
-	KeySet * ks = ksNew (20, se = keyNew ("spec:/first", KEY_END), pe = keyNew ("proc:/first", KEY_END),
+	ElektraKey * s;
+	ElektraKey * p;
+	ElektraKey * d;
+	ElektraKey * u;
+	ElektraKey * y;
+	ElektraKey * se;
+	ElektraKey * pe;
+	ElektraKeyset * ks = ksNew (20, se = keyNew ("spec:/first", KEY_END), pe = keyNew ("proc:/first", KEY_END),
 			     s = keyNew ("spec:/abc", KEY_END), p = keyNew ("proc:/abc", KEY_END), d = keyNew ("dir:/abc", KEY_END),
 			     u = keyNew ("user:/abc", KEY_END), y = keyNew ("system:/abc", KEY_END), KS_END);
 	succeed_if (ksGetSize (ks) == 7, "wrong size");
 
-	Key * k = ksLookupByName (ks, "/first", 0);
+	ElektraKey * k = ksLookupByName (ks, "/first", 0);
 	succeed_if (k == pe, "did not find proc key");
 
 	keySetMeta (se, "override/#0", "/abc");
@@ -478,20 +478,20 @@ static void test_lookupDoubleIndirectDefault (void)
 {
 	printf ("Test lookup by double indirect spec with default\n");
 
-	Key * s;
-	Key * p;
-	Key * u;
-	Key * y;
-	Key * se;
-	Key * pe;
-	KeySet * ks =
+	ElektraKey * s;
+	ElektraKey * p;
+	ElektraKey * u;
+	ElektraKey * y;
+	ElektraKey * se;
+	ElektraKey * pe;
+	ElektraKeyset * ks =
 		ksNew (20, se = keyNew ("spec:/first", KEY_END), pe = keyNew ("proc:/first", KEY_END), s = keyNew ("spec:/abc", KEY_END),
 		       p = keyNew ("proc:/abc", KEY_END), u = keyNew ("user:/abc", KEY_END), y = keyNew ("system:/abc", KEY_END), KS_END);
 	succeed_if (ksGetSize (ks) == 6, "wrong size");
 	keySetMeta (se, "default", "default is ok");
 	keySetMeta (s, "default", "default is NOT ok");
 
-	Key * k = ksLookupByName (ks, "/first", 0);
+	ElektraKey * k = ksLookupByName (ks, "/first", 0);
 	succeed_if (k == pe, "did not find proc key");
 
 	keySetMeta (se, "namespace/#0", "system");

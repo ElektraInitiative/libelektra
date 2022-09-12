@@ -16,9 +16,9 @@
 
 // #include <stdio.h>
 
-int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey)
+int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
-	KeySet * conf = elektraPluginGetConfig (handle);
+	ElektraKeyset * conf = elektraPluginGetConfig (handle);
 
 	/*
 	FILE *f = fopen("error_plugin_debug.log", "a");
@@ -34,13 +34,13 @@ int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey)
 		return 0;
 	}
 
-	Key * warning = ksLookupByName (conf, "/on_open/warnings", 0);
+	ElektraKey * warning = ksLookupByName (conf, "/on_open/warnings", 0);
 	if (warning)
 	{
 		elektraTriggerWarnings (keyString (warning), parentKey, "from error plugin in kdbOpen");
 	}
 
-	Key * error = ksLookupByName (conf, "/on_open/error", 0);
+	ElektraKey * error = ksLookupByName (conf, "/on_open/error", 0);
 	if (error)
 	{
 		if (parentKey)
@@ -52,11 +52,11 @@ int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey)
 	return 0;
 }
 
-int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/error"))
 	{
-		KeySet * n;
+		ElektraKeyset * n;
 		ksAppend (returned,
 			  n = ksNew (30, keyNew ("system:/elektra/modules/error", KEY_VALUE, "error plugin waits for your orders", KEY_END),
 				     keyNew ("system:/elektra/modules/error/exports", KEY_END),
@@ -73,12 +73,12 @@ int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return 1;
 }
 
-int elektraErrorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraErrorSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	Key * cur;
+	ElektraKey * cur;
 	while ((cur = ksNext (returned)) != 0)
 	{
-		const Key * meta = 0;
+		const ElektraKey * meta = 0;
 
 		meta = keyGetMeta (cur, "trigger/warnings");
 		if (meta)

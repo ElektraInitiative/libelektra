@@ -40,14 +40,14 @@ int main (void)
 	// exit on SIGINT
 	signal (SIGINT, onSignal);
 
-	KeySet * config = ksNew (2, KS_END);
+	ElektraKeyset * config = ksNew (2, KS_END);
 
-	Key * parentKey = keyNew ("/sw/elektra/hub-zeromq/#0/current", KEY_END);
-	Key * configXSubEndpoint = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * parentKey = keyNew ("/sw/elektra/hub-zeromq/#0/current", KEY_END);
+	ElektraKey * configXSubEndpoint = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (configXSubEndpoint, "bind_xsub");
-	Key * configXPubEndpoint = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * configXPubEndpoint = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (configXPubEndpoint, "bind_xpub");
-	KDB * kdb = kdbOpen (NULL, parentKey);
+	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB. aborting\n");
@@ -57,12 +57,12 @@ int main (void)
 	const char * xSubEndpoint = "tcp://127.0.0.1:6000";
 	const char * xPubEndpoint = "tcp://127.0.0.1:6001";
 	kdbGet (kdb, config, parentKey);
-	Key * xSubEndpointKey = ksLookup (config, configXSubEndpoint, 0);
+	ElektraKey * xSubEndpointKey = ksLookup (config, configXSubEndpoint, 0);
 	if (xSubEndpointKey)
 	{
 		xSubEndpoint = keyString (xSubEndpointKey);
 	}
-	Key * xPubEndpointKey = ksLookup (config, configXPubEndpoint, 0);
+	ElektraKey * xPubEndpointKey = ksLookup (config, configXPubEndpoint, 0);
 	if (xPubEndpointKey)
 	{
 		xPubEndpoint = keyString (xPubEndpointKey);

@@ -63,12 +63,12 @@ const char *elektraGenHelpText(void)
 	;
 }
 
-int ksGetOpt(int argc, char **argv, KeySet *ks)
+int ksGetOpt(int argc, char **argv, ElektraKeyset *ks)
 {
 	int c;
 	int retval = 0;
 	opterr = 0;
-	Key *found = 0;
+	ElektraKey *found = 0;
 
 @set counter = 502
 #ifdef _GNU_SOURCE

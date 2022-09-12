@@ -10,14 +10,14 @@
 
 static void test_ksNew (void)
 {
-	KeySet * ks = 0;
-	KeySet * keys = ksNew (15, KS_END);
-	KeySet * config;
+	ElektraKeyset * ks = 0;
+	ElektraKeyset * keys = ksNew (15, KS_END);
+	ElektraKeyset * config;
 
 	printf ("Test ks creation\n");
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
-	KeySet * ks2 = ksNew (0, KS_END);
+	ElektraKeyset * ks2 = ksNew (0, KS_END);
 	ksCopy (ks2, ks);
 	succeed_if (ksGetSize (ks2) == 0, "size not correct after copy");
 
@@ -65,7 +65,7 @@ static void test_ksNew (void)
 static void test_ksDuplicate (void)
 {
 	printf ("Test bug duplicate\n");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (ksAppendKey (ks, keyNew ("system:/duplicate", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (!strcmp (keyValue (ksLookupByName (ks, "system:/duplicate", 0)), "abc"), "wrong value for inserted key");
@@ -79,7 +79,7 @@ static void test_ksDuplicate (void)
 static void test_ksHole (void)
 {
 	printf ("Test holes in keysets\n");
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (ksAppendKey (ks, keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksAppendKey (ks, keyNew ("system:/sw/new/sub", KEY_VALUE, "xyz", KEY_END)) == 2, "could not append key");
@@ -100,7 +100,7 @@ int fac (int i)
 }
 
 /* Buggy, does not really yield all permutations */
-static void per (int k, Key ** pool, Key ** result)
+static void per (int k, ElektraKey ** pool, ElektraKey ** result)
 {
 	int i;
 	int cursize = size - 1;
@@ -118,7 +118,7 @@ static void per (int k, Key ** pool, Key ** result)
 		// remove the selected from the pool
 		memmove (pool + selected,	// destination
 			 pool + (selected + 1), // source
-			 (size - selected - 1) * sizeof (struct Key *));
+			 (size - selected - 1) * sizeof (struct ElektraKey *));
 	}
 	result[size - 1] = 0;
 }
@@ -127,10 +127,10 @@ static void test_append (void)
 {
 	printf ("Test if keyset is sorted after appending\n");
 
-	Key * key;
-	Key * n;
-	Key *s1, *s2, *s3;
-	KeySet * ks;
+	ElektraKey * key;
+	ElektraKey * n;
+	ElektraKey *s1, *s2, *s3;
+	ElektraKeyset * ks;
 
 	ks = ksNew (0, KS_END);
 
@@ -189,14 +189,14 @@ static void test_append (void)
 	keyIncRef (s2);
 	keyIncRef (s3);
 
-	Key * solution[size] = { key, s1, s2, s3, 0 };
-	Key * solutioncopy[size];
-	Key * next[size];
+	ElektraKey * solution[size] = { key, s1, s2, s3, 0 };
+	ElektraKey * solutioncopy[size];
+	ElektraKey * next[size];
 	int i, j;
 
 	for (i = 0; i < fac (size - 1); ++i)
 	{
-		memcpy (solutioncopy, solution, size * sizeof (struct Key *));
+		memcpy (solutioncopy, solution, size * sizeof (struct ElektraKey *));
 		per (i, solutioncopy, next);
 
 		ks = ksNew (0, KS_END);
@@ -303,8 +303,8 @@ static void test_append (void)
 
 static void test_equal (void)
 {
-	Key * k1 = keyNew ("/", KEY_END);
-	Key * k2 = keyNew ("/", KEY_END);
+	ElektraKey * k1 = keyNew ("/", KEY_END);
+	ElektraKey * k2 = keyNew ("/", KEY_END);
 
 	succeed_if (keyCmp (0, 0) == 0, "null pointers should be same");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
@@ -333,8 +333,8 @@ static void test_cmp (void)
 {
 	printf ("Compare two keys\n");
 
-	Key * k1 = keyNew ("/", KEY_END);
-	Key * k2 = keyNew ("/", KEY_END);
+	ElektraKey * k1 = keyNew ("/", KEY_END);
+	ElektraKey * k2 = keyNew ("/", KEY_END);
 
 	succeed_if (keyCmp (0, 0) == 0, "null keys comparision");
 

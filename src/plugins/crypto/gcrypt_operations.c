@@ -39,7 +39,7 @@ GCRY_THREAD_OPTION_PTHREAD_IMPL;
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
-static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterKey, Key * k, Key * cKey, Key * cIv)
+static int getKeyIvForEncryption (ElektraKeyset * config, ElektraKey * errorKey, ElektraKey * masterKey, ElektraKey * k, ElektraKey * cKey, ElektraKey * cIv)
 {
 	gcry_error_t gcry_err;
 	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
@@ -92,7 +92,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
-static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterKey, Key * k, Key * cKey, Key * cIv)
+static int getKeyIvForDecryption (ElektraKeyset * config, ElektraKey * errorKey, ElektraKey * masterKey, ElektraKey * k, ElektraKey * cKey, ElektraKey * cIv)
 {
 	gcry_error_t gcry_err;
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
@@ -133,7 +133,7 @@ void elektraCryptoGcryHandleDestroy (elektraCryptoHandle * handle)
 	}
 }
 
-int elektraCryptoGcryInit (Key * errorKey)
+int elektraCryptoGcryInit (ElektraKey * errorKey)
 {
 	// check if gcrypt has already been initialized (possibly by the application)
 	if (gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P))
@@ -156,7 +156,7 @@ int elektraCryptoGcryInit (Key * errorKey)
 	return 1;
 }
 
-int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * masterKey, Key * k,
+int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, ElektraKeyset * config, ElektraKey * errorKey, ElektraKey * masterKey, ElektraKey * k,
 				   const enum ElektraCryptoOperation op)
 {
 	gcry_error_t gcry_err;
@@ -166,8 +166,8 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 	(*handle) = NULL;
 
 	// retrieve/derive the cryptographic material
-	Key * key = keyNew ("/", KEY_END);
-	Key * iv = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", KEY_END);
+	ElektraKey * iv = keyNew ("/", KEY_END);
 	switch (op)
 	{
 	case ELEKTRA_CRYPTO_ENCRYPT:
@@ -242,7 +242,7 @@ error:
 	return -1;
 }
 
-int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey)
+int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, ElektraKey * k, ElektraKey * errorKey)
 {
 	size_t outputLen;
 	gcry_error_t gcry_err;
@@ -346,7 +346,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	return 1;
 }
 
-int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey)
+int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, ElektraKey * k, ElektraKey * errorKey)
 {
 	gcry_error_t gcry_err;
 
@@ -435,7 +435,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
  * @param length the number of random bytes to be generated.
  * @returns allocated buffer holding a hex-encoded random string or NULL in case of error. Must be freed by the caller.
  */
-char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
+char * elektraCryptoGcryCreateRandomString (ElektraKey * errorKey, const kdb_unsigned_short_t length)
 {
 	char * encoded = NULL;
 	kdb_octet_t buffer[length];

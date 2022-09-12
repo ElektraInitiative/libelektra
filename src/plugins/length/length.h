@@ -12,8 +12,8 @@
 
 #include <kdbplugin.h>
 
-int elektraLengthGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraLengthSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraLengthGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraLengthSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -51,10 +51,10 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data);
 int elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data);
 int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * keyName);
 
-int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey);
-int elektraZeroMqSendClose (Plugin * handle, Key * errorKey);
-int elektraZeroMqSendGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraZeroMqSendSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraZeroMqSendOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraZeroMqSendClose (Plugin * handle, ElektraKey * errorKey);
+int elektraZeroMqSendGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraZeroMqSendSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

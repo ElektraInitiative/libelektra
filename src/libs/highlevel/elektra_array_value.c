@@ -36,7 +36,7 @@ extern "C" {
 static void elektraArraySetSize (Elektra * elektra, const char * name, kdb_long_long_t size, ElektraError ** error)
 {
 	elektraSetLookupKey (elektra, name);
-	Key * arrayParent = keyDup (elektra->lookupKey, KEY_CP_NAME);
+	ElektraKey * arrayParent = keyDup (elektra->lookupKey, KEY_CP_NAME);
 
 	char sizeString[ELEKTRA_MAX_ARRAY_SIZE];
 	elektraWriteArrayNumber (sizeString, size - 1);
@@ -61,13 +61,13 @@ static void elektraArraySetSize (Elektra * elektra, const char * name, kdb_long_
 kdb_long_long_t elektraArraySize (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
-	Key * const arrayParent = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const arrayParent = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (arrayParent == NULL)
 	{
 		return 0;
 	}
 
-	const Key * const metaKey = keyGetMeta (arrayParent, "array");
+	const ElektraKey * const metaKey = keyGetMeta (arrayParent, "array");
 	if (metaKey == NULL)
 	{
 		return 0;
@@ -99,10 +99,10 @@ kdb_long_long_t elektraArraySize (Elektra * elektra, const char * name)
  *   The returned pointer remains valid until the KeySet inside @p elektra is modified. Calls to elektraSet*() functions may
  *   cause such modifications. In any case, it becomes invalid when elektraClose() is called on @p elektra.
  */
-Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type)
+ElektraKey * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type)
 {
 	elektraSetArrayLookupKey (elektra, name, index);
-	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
 		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey)));
@@ -143,7 +143,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long
 const char * elektraFindReferenceArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index)
 {
 	elektraSetArrayLookupKey (elektra, name, index);
-	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
 		return NULL;
@@ -185,8 +185,8 @@ const char * elektraFindReferenceArrayElement (Elektra * elektra, const char * n
 KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	elektraSetArrayLookupKey (elektra, keyname, index);
-	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, NULL);
-	const Key * metaKey = keyGetMeta (key, "type");
+	const ElektraKey * key = elektraFindArrayElementKey (elektra, keyname, index, NULL);
+	const ElektraKey * metaKey = keyGetMeta (key, "type");
 	return metaKey == NULL ? NULL : keyString (metaKey);
 }
 
@@ -204,7 +204,7 @@ KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, kdb
 const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index)
 {
 	elektraSetArrayLookupKey (elektra, name, index);
-	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	return resultKey == NULL ? NULL : keyString (resultKey);
 }
 
@@ -233,7 +233,7 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
 	}
 
 	elektraSetArrayLookupKey (elektra, name, index);
-	Key * key = ksLookup (elektra->config, elektra->lookupKey, 0);
+	ElektraKey * key = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (key == NULL)
 	{
 		key = keyDup (elektra->lookupKey, KEY_CP_ALL);

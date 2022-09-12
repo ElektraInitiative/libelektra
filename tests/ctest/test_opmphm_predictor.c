@@ -152,10 +152,10 @@ void test_internal_change_whitebox (void)
 
 void test_ks_flag (void)
 {
-	KeySet * ks = ksNew (10, KS_END);
+	ElektraKeyset * ks = ksNew (10, KS_END);
 	succeed_if (ks->flags & KS_FLAG_NAME_CHANGE, "flag not set at fresh ks");
 
-	KeySet * copy = ksDup (ks);
+	ElektraKeyset * copy = ksDup (ks);
 	exit_if_fail (copy, "copy");
 	succeed_if (copy->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
 	ksDel (copy);
@@ -176,10 +176,10 @@ void test_ks_flag (void)
 
 void test_ks (void)
 {
-	Key * found;
+	ElektraKey * found;
 
 	// create keyset just under opmphmPredictorActionLimit
-	KeySet * ks = ksNew (opmphmPredictorActionLimit, KS_END);
+	ElektraKeyset * ks = ksNew (opmphmPredictorActionLimit, KS_END);
 	char name[11]; // "/test" + "10000" + "\0"
 	for (size_t i = 0; i < opmphmPredictorActionLimit; ++i)
 	{
@@ -221,7 +221,7 @@ void test_ks (void)
 	succeed_if (ks->opmphmPredictor->lookupCount == 2, "predictor not touched");
 
 	// copy
-	KeySet * copy = ksDup (ks);
+	ElektraKeyset * copy = ksDup (ks);
 	exit_if_fail (copy, "copy");
 	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
 	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");

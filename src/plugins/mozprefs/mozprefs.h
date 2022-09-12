@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraMozprefsGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraMozprefsSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraMozprefsGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraMozprefsSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -19,13 +19,13 @@
 typedef struct
 {
 	bool forceConversion;
-	KeySet * integerTypes;
+	ElektraKeyset * integerTypes;
 } HexnumberData;
 
 /**
  * Creates a KeySet representing the contract of this plugin.
  */
-static KeySet * elektraContract (void)
+static ElektraKeyset * elektraContract (void)
 {
 	return ksNew (
 		30,
@@ -54,7 +54,7 @@ static KeySet * elektraContract (void)
  * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS if the Key was successfully converted
  * @retval #ELEKTRA_PLUGIN_STATUS_ERROR if the Key could not be converted
  */
-static int convertHexToDec (Key * key, Key * parentKey)
+static int convertHexToDec (ElektraKey * key, ElektraKey * parentKey)
 {
 	// get hex string from key
 	const char * hexValue = keyString (key);
@@ -124,7 +124,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
  * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS if the Key was successfully converted
  * @retval #ELEKTRA_PLUGIN_STATUS_ERROR if the Key could not be converted
  */
-static int convertDecToHex (Key * key, Key * parentKey)
+static int convertDecToHex (ElektraKey * key, ElektraKey * parentKey)
 {
 	// get decimal string from key
 	const char * decValue = keyString (key);
@@ -190,7 +190,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
  * @retval #true if the Key's value starts with 0x
  * @retval #false otherwise
  */
-static bool isHexString (const Key * key)
+static bool isHexString (const ElektraKey * key)
 {
 	return elektraStrNCaseCmp (keyString (key), "0x", 2) == 0;
 }
@@ -203,16 +203,16 @@ static bool isHexString (const Key * key)
  * @retval #true if the Key's metadata contains the key /unit/base and its value is hex
  * @retval #false otherwise
  */
-static bool isHexUnitBase (const Key * key)
+static bool isHexUnitBase (const ElektraKey * key)
 {
-	const Key * unitBaseMeta = keyGetMeta (key, "unit/base");
+	const ElektraKey * unitBaseMeta = keyGetMeta (key, "unit/base");
 	return elektraStrCmp (keyString (unitBaseMeta), "hex") == 0;
 }
 
 /**
  * Filter function used in hasType() for call to elektraKsFilter()
  */
-static int __hasTypeFilter (const Key * key, void * argument)
+static int __hasTypeFilter (const ElektraKey * key, void * argument)
 {
 	const char * type = (const char *) argument;
 	return keyIsString (key) && strcmp (type, keyString (key)) == 0;
@@ -228,16 +228,16 @@ static int __hasTypeFilter (const Key * key, void * argument)
  * @retval #true if the Key's type metadata is contained in the types list
  * @retval #false otherwise
  */
-static bool hasType (const Key * key, KeySet * types)
+static bool hasType (const ElektraKey * key, ElektraKeyset * types)
 {
-	const Key * typeMeta = keyGetMeta (key, "type");
+	const ElektraKey * typeMeta = keyGetMeta (key, "type");
 	if (!typeMeta || !types)
 	{
 		return false;
 	}
 
 	const char * type = keyString (typeMeta);
-	KeySet * res = ksNew ((size_t) ksGetSize (types), KS_END);
+	ElektraKeyset * res = ksNew ((size_t) ksGetSize (types), KS_END);
 	elektraKsFilter (res, types, &__hasTypeFilter, (void *) type);
 
 	const ssize_t size = ksGetSize (res);
@@ -254,9 +254,9 @@ static bool hasType (const Key * key, KeySet * types)
  * @retval #true if the Key's type metadata is #ELEKTRA_HEXNUMBER_META_TYPE
  * @retval #false otherwise
  */
-static bool hasHexType (const Key * key)
+static bool hasHexType (const ElektraKey * key)
 {
-	const Key * typeMeta = keyGetMeta (key, ELEKTRA_HEXNUMBER_META_KEY);
+	const ElektraKey * typeMeta = keyGetMeta (key, ELEKTRA_HEXNUMBER_META_KEY);
 	return typeMeta && elektraStrCmp (keyString (typeMeta), "1") == 0;
 }
 
@@ -266,16 +266,16 @@ static bool hasHexType (const Key * key)
  * @param data pointer to the struct to store the configuration in
  * @param errorKey Key used to store error information
  */
-int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
+int parseConfig (ElektraKeyset * config, HexnumberData * data, ElektraKey * errorKey)
 {
-	Key * forceKey = ksLookupByName (config, "/force", 0);
+	ElektraKey * forceKey = ksLookupByName (config, "/force", 0);
 	if (forceKey)
 	{
 		data->forceConversion = true;
 	}
 
-	Key * typesKey = keyNew ("/accept/type", KEY_END);
-	KeySet * types = elektraArrayGet (typesKey, config);
+	ElektraKey * typesKey = keyNew ("/accept/type", KEY_END);
+	ElektraKeyset * types = elektraArrayGet (typesKey, config);
 	keyDel (typesKey);
 
 	if (!types)
@@ -300,11 +300,11 @@ int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
  * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if \p returned was not modified
  * @retval #ELEKTRA_PLUGIN_STATUS_ERROR on failure
  */
-int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraHexnumberGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME))
 	{
-		KeySet * contract = elektraContract ();
+		ElektraKeyset * contract = elektraContract ();
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -314,7 +314,7 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	HexnumberData * data = elektraPluginGetData (handle);
 	if (!data)
 	{
-		KeySet * config = elektraPluginGetConfig (handle);
+		ElektraKeyset * config = elektraPluginGetConfig (handle);
 		data = elektraCalloc (sizeof (HexnumberData));
 		if (parseConfig (config, data, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
@@ -324,10 +324,10 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		elektraPluginSetData (handle, data);
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 
-	KeySet * defaultIntegerTypes = ksNew (7, keyNew ("system:/accept/type/#0", KEY_VALUE, "byte", KEY_END),
+	ElektraKeyset * defaultIntegerTypes = ksNew (7, keyNew ("system:/accept/type/#0", KEY_VALUE, "byte", KEY_END),
 					      keyNew ("system:/accept/type/#1", KEY_VALUE, "short", KEY_END),
 					      keyNew ("system:/accept/type/#2", KEY_VALUE, "long", KEY_END),
 					      keyNew ("system:/accept/type/#3", KEY_VALUE, "long_long", KEY_END),
@@ -380,12 +380,12 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
  * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if \p returned was not modified
  * @retval #ELEKTRA_PLUGIN_STATUS_ERROR on failure
  */
-int elektraHexnumberSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraHexnumberSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	HexnumberData * data = elektraPluginGetData (handle);
 	if (!data)
 	{
-		KeySet * config = elektraPluginGetConfig (handle);
+		ElektraKeyset * config = elektraPluginGetConfig (handle);
 		data = elektraCalloc (sizeof (HexnumberData));
 		if (parseConfig (config, data, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
@@ -395,7 +395,7 @@ int elektraHexnumberSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		elektraPluginSetData (handle, data);
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
@@ -410,7 +410,7 @@ int elektraHexnumberSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return status;
 }
 
-int elektraHexnumberClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraHexnumberClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	HexnumberData * data = elektraPluginGetData (handle);
 	if (data)

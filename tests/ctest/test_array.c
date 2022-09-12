@@ -14,7 +14,7 @@ static void test_array (void)
 {
 	printf ("Test array\n");
 
-	Key * k = keyNew ("user:/array/#0", KEY_END);
+	ElektraKey * k = keyNew ("user:/array/#0", KEY_END);
 	succeed_if (!elektraArrayIncName (k), "increment array entry name returned error");
 	succeed_if_same_string (keyName (k), "user:/array/#1");
 	succeed_if (!elektraArrayIncName (k), "increment array entry name returned error");
@@ -98,7 +98,7 @@ static void test_arrayDec (void)
 {
 	printf ("Decrement array indizes\n");
 
-	Key * k = keyNew ("user:/array/#0", KEY_END);
+	ElektraKey * k = keyNew ("user:/array/#0", KEY_END);
 	succeed_if (elektraArrayDecName (k) == -1, "Decrementing array index 0 did not fail");
 	keyDel (k);
 
@@ -118,7 +118,7 @@ static void test_arrayDec (void)
 static void test_noArray (void)
 {
 	printf ("Test no array\n");
-	Key * k = keyNew ("user:/noarray", KEY_END);
+	ElektraKey * k = keyNew ("user:/noarray", KEY_END);
 
 	succeed_if (elektraArrayIncName (0) == -1, "null pointer");
 	succeed_if (elektraArrayIncName (k) == -1, "no array");
@@ -129,7 +129,7 @@ static void test_noArray (void)
 static void test_startArray (void)
 {
 	printf ("Test start array\n");
-	Key * k = keyNew ("user:/startarray/#", KEY_END);
+	ElektraKey * k = keyNew ("user:/startarray/#", KEY_END);
 
 	succeed_if (elektraArrayIncName (k) == 0, "no array start");
 	succeed_if_same_string (keyName (k), "user:/startarray/#0");
@@ -143,13 +143,13 @@ static void test_getArray (void)
 {
 	printf ("Test get array");
 
-	KeySet * keys =
+	ElektraKeyset * keys =
 		ksNew (10, keyNew ("user:/test/key1", KEY_END), keyNew ("user:/test/key2", KEY_END), keyNew ("user:/test/array", KEY_END),
 		       keyNew ("user:/test/array/#0", KEY_END), keyNew ("user:/test/array/#0/below", KEY_END),
 		       keyNew ("user:/test/array/#1", KEY_END), keyNew ("user:/test/yetanotherkey", KEY_END), KS_END);
 
-	Key * arrayParent = keyNew ("user:/test/array", KEY_END);
-	KeySet * array = elektraArrayGet (arrayParent, keys);
+	ElektraKey * arrayParent = keyNew ("user:/test/array", KEY_END);
+	ElektraKeyset * array = elektraArrayGet (arrayParent, keys);
 
 	succeed_if (array, "The getarray function did not return a proper keyset");
 	succeed_if (ksGetSize (array) == 2, "the array contains a wrong number of elements");
@@ -166,11 +166,11 @@ static void test_getArrayNext (void)
 {
 	printf ("Test get array next");
 
-	KeySet * array = ksNew (10, keyNew ("user:/test/array/#0", KEY_END), keyNew ("user:/test/array/#1", KEY_END),
+	ElektraKeyset * array = ksNew (10, keyNew ("user:/test/array/#0", KEY_END), keyNew ("user:/test/array/#1", KEY_END),
 
 				KS_END);
 
-	Key * nextKey = elektraArrayGetNextKey (array);
+	ElektraKey * nextKey = elektraArrayGetNextKey (array);
 	exit_if_fail (array, "The getnext function did not return a proper key");
 	succeed_if (!strcmp (keyName (nextKey), "user:/test/array/#2"), "The getnext function did not use the correct keyname");
 	succeed_if (!strcmp (keyString (nextKey), ""), "The getnext function did not return an empty key");

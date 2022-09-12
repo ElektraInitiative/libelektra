@@ -14,10 +14,10 @@
 #define ELEKTRA_PLUGIN_NAME "noresolver"
 
 
-int elektraNoresolverGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraNoresolverSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraNoresolverError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraNoresolverCommit (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraNoresolverGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraNoresolverSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraNoresolverError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraNoresolverCommit (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -53,14 +53,14 @@ int elektraIsReferenceRedundant (const char * reference)
  * @return a newly allocated string, containing the full keyname;
  *         has to be disposed with elektraFree()
  */
-char * elektraResolveReference (const char * reference, const Key * baseKey, const Key * parentKey)
+char * elektraResolveReference (const char * reference, const ElektraKey * baseKey, const ElektraKey * parentKey)
 {
 	if (reference == NULL || strlen (reference) == 0)
 	{
 		return NULL;
 	}
 
-	Key * fullReference = keyNew ("/", KEY_END);
+	ElektraKey * fullReference = keyNew ("/", KEY_END);
 
 	if (elektraStrNCmp (reference, "@/", 2) == 0)
 	{

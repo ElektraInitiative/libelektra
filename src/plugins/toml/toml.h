@@ -12,8 +12,8 @@
 
 #include <kdbplugin.h>
 
-int elektraTomlGet (Plugin * handle, KeySet * returned, Key * parentKey);
-int elektraTomlSet (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraTomlGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
+int elektraTomlSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

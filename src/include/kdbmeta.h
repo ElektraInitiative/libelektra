@@ -19,20 +19,20 @@ namespace ckdb
 extern "C" {
 #endif
 
-const char * keyComment (const Key * key);
-ssize_t keyGetCommentSize (const Key * key);
-ssize_t keyGetComment (const Key * key, char * returnedDesc, size_t maxSize);
-ssize_t keySetComment (Key * key, const char * newDesc);
+const char * keyComment (const ElektraKey * key);
+ssize_t keyGetCommentSize (const ElektraKey * key);
+ssize_t keyGetComment (const ElektraKey * key, char * returnedDesc, size_t maxSize);
+ssize_t keySetComment (ElektraKey * key, const char * newDesc);
 
-int elektraKeyCmpOrder (const Key * a, const Key * b);
+int elektraKeyCmpOrder (const ElektraKey * a, const ElektraKey * b);
 
-KeySet * elektraMetaArrayToKS (Key *, const char *);
+ElektraKeyset * elektraMetaArrayToKS (ElektraKey *, const char *);
 
-void elektraMetaArrayAdd (Key *, const char *, const char *);
+void elektraMetaArrayAdd (ElektraKey *, const char *, const char *);
 
-char * elektraMetaArrayToString (const Key *, const char *, const char *);
+char * elektraMetaArrayToString (const ElektraKey *, const char *, const char *);
 
-int elektraSortTopology (KeySet *, Key **);
+int elektraSortTopology (ElektraKeyset *, ElektraKey **);
 
 #ifdef __cplusplus
 }

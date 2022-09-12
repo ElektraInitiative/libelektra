@@ -43,7 +43,7 @@ typedef struct
 {
 	char * filename;
 	FILE * f;
-	Key * rootKey;
+	ElektraKey * rootKey;
 	TypeChecker * checker;
 	bool errorSet;
 } Writer;
@@ -64,7 +64,7 @@ typedef enum
 	STRING_MULTILINE = 0x2,
 } StringType;
 
-static Writer * createWriter (Key * parent);
+static Writer * createWriter (ElektraKey * parent);
 
 static void destroyWriter (Writer * writer);
 static int writeTree (Node * node, Writer * writer);
@@ -72,14 +72,14 @@ static int writeSimpleTableHeader (const char * name, Writer * writer);
 static int writeOpeningSequence (Node * node, Writer * writer);
 static int writeClosingSequence (Node * node, Writer * writer);
 static int writeTableArrayHeader (const char * name, Writer * writer);
-static int writeScalar (Key * key, Writer * writer);
-static int writeString (Key * key, StringType stringType, const char * value, Writer * writer);
+static int writeScalar (ElektraKey * key, Writer * writer);
+static int writeString (ElektraKey * key, StringType stringType, const char * value, Writer * writer);
 static int writePrecedingComments (const CommentList * commentList, Writer * writer);
 static int writeInlineComment (const CommentList * commentList, bool emitNewline, Writer * writer);
 static int writeComment (const CommentList * comment, Writer * writer);
 static int writeNewline (Writer * writer);
-static int writeFileTrailingComments (Key * parent, Writer * writer);
-static int collectComments (CommentList ** comments, Key * key, Writer * writer);
+static int writeFileTrailingComments (ElektraKey * parent, Writer * writer);
+static int collectComments (CommentList ** comments, ElektraKey * key, Writer * writer);
 static void freeComments (CommentList * comments);
 static bool shouldWriteValue (Node * node);
 static bool needsKeyAssignment (Node * node);
@@ -88,7 +88,7 @@ static bool isLastChild (Node * node);
 static bool hasInlineComment (Node * node);
 static bool needNewlineBeforeComment (Node * node);
 
-int tomlWrite (KeySet * keys, Key * parent)
+int tomlWrite (ElektraKeyset * keys, ElektraKey * parent)
 {
 	elektraCursor cursor = ksGetCursor (keys);
 	prepareKeySet (keys, parent);
@@ -114,7 +114,7 @@ int tomlWrite (KeySet * keys, Key * parent)
 	int result = 0;
 
 	result |= writeTree (root, writer);
-	Key * parentKey = ksLookup (keys, parent, 0);
+	ElektraKey * parentKey = ksLookup (keys, parent, 0);
 	if (parentKey != NULL)
 	{
 		result |= writeFileTrailingComments (parentKey, writer);
@@ -126,7 +126,7 @@ int tomlWrite (KeySet * keys, Key * parent)
 	return result;
 }
 
-static Writer * createWriter (Key * parent)
+static Writer * createWriter (ElektraKey * parent)
 {
 	Writer * writer = elektraCalloc (sizeof (Writer));
 	if (writer == NULL)
@@ -394,7 +394,7 @@ static int writeTableArrayHeader (const char * name, Writer * writer)
 	return result;
 }
 
-static int writeScalar (Key * key, Writer * writer)
+static int writeScalar (ElektraKey * key, Writer * writer)
 {
 	ELEKTRA_ASSERT (key != NULL, "key was NULL");
 	ELEKTRA_ASSERT (writer != NULL, "writer was NULL");
@@ -410,9 +410,9 @@ static int writeScalar (Key * key, Writer * writer)
 
 	int result = 0;
 
-	const Key * origValue = keyGetMeta (key, "origvalue");
-	const Key * type = keyGetMeta (key, "type");
-	const Key * tomlTypeKey = keyGetMeta (key, "tomltype");
+	const ElektraKey * origValue = keyGetMeta (key, "origvalue");
+	const ElektraKey * type = keyGetMeta (key, "type");
+	const ElektraKey * tomlTypeKey = keyGetMeta (key, "tomltype");
 	const char * tomlType = tomlTypeKey == NULL ? "" : keyString (tomlTypeKey);
 	const char * valueStr = keyString (key);
 
@@ -572,7 +572,7 @@ static const char * writeEscapeSequence (int * result, StringType type, const ch
 	return value + 1;
 }
 
-static const char * writeUtf8Codepoint (int * result, bool * warnedUtf8, Key * key, const char * value, Writer * writer)
+static const char * writeUtf8Codepoint (int * result, bool * warnedUtf8, ElektraKey * key, const char * value, Writer * writer)
 {
 	size_t utf8Len = utf8LenFromHeadChar ((uint8_t) *value);
 	if (utf8Len == 0 || !isValidUtf8 ((uint8_t *) value, utf8Len))
@@ -630,7 +630,7 @@ static bool checkLiteralAsciiControl (const char * value, bool allowNewline)
 	return false;
 }
 
-static int writeString (Key * key, StringType type, const char * value, Writer * writer)
+static int writeString (ElektraKey * key, StringType type, const char * value, Writer * writer)
 {
 	int result = 0;
 	result |= fputs (stringQuotes (type), writer->f) == EOF;
@@ -754,7 +754,7 @@ static int writeNewline (Writer * writer)
 	return fputc ('\n', writer->f) == EOF;
 }
 
-static int writeFileTrailingComments (Key * parent, Writer * writer)
+static int writeFileTrailingComments (ElektraKey * parent, Writer * writer)
 {
 	int result = 0;
 
@@ -769,12 +769,12 @@ static int writeFileTrailingComments (Key * parent, Writer * writer)
 	return result;
 }
 
-static int collectComments (CommentList ** comments, Key * key, Writer * writer)
+static int collectComments (CommentList ** comments, ElektraKey * key, Writer * writer)
 {
 	int result = 0;
 
 	keyRewindMeta (key);
-	const Key * meta;
+	const ElektraKey * meta;
 	CommentList * commentRoot = *comments;
 	CommentList * commentBack = NULL;
 	size_t currIndex = 0;

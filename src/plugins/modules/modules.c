@@ -23,15 +23,15 @@
  * with 'system:/elektra/modules' it does nothing. For all other parentKeys the plugin reports an error.
  */
 
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	elektraPluginSetData (handle, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, ElektraKeyset * definition, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	Key * pluginKey = ksLookupByName (definition, "system:/plugin", 0);
+	ElektraKey * pluginKey = ksLookupByName (definition, "system:/plugin", 0);
 	if (pluginKey != NULL)
 	{
 		elektraPluginSetData (handle, *(Plugin **) keyValue (pluginKey));
@@ -40,11 +40,11 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/modules"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/modules", KEY_VALUE, "modules plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/modules/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/modules/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
@@ -59,7 +59,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * modulesRoot = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * modulesRoot = keyNew ("system:/elektra/modules", KEY_END);
 	if (keyCmp (modulesRoot, parentKey) == 0)
 	{
 		keyDel (modulesRoot);
@@ -102,7 +102,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	}
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey)
 {
 	Plugin * plugin = elektraPluginGetData (handle);
 	if (!elektraPluginClose (plugin, errorKey))

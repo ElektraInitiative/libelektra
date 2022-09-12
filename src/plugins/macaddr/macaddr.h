@@ -12,8 +12,8 @@
 
 #include <kdbplugin.h>
 
-int elektraMacaddrGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraMacaddrSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraMacaddrGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraMacaddrSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

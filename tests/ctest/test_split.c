@@ -12,13 +12,13 @@
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
-KeySet * modules_config (void)
+ElektraKeyset * modules_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/modules", KEY_END), KS_END);
 }
 
 
-KeySet * simple_config (void)
+ElektraKeyset * simple_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
@@ -27,7 +27,7 @@ KeySet * simple_config (void)
 }
 
 
-KeySet * set_us (void)
+ElektraKeyset * set_us (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
@@ -36,7 +36,7 @@ KeySet * set_us (void)
 }
 
 
-KeySet * root_config (void)
+ElektraKeyset * root_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END), KS_END);
@@ -161,7 +161,7 @@ static void test_remove (void)
 }
 #endif
 
-void addBackendForDivide (KeySet * backends, const char * mountpoint)
+void addBackendForDivide (ElektraKeyset * backends, const char * mountpoint)
 {
 	BackendData data = {
 		.backend = NULL,
@@ -177,7 +177,7 @@ void test_backendsDivide (void)
 {
 	printf ("Test backendsDivide");
 
-	KeySet * backends = ksNew (0, KS_END);
+	ElektraKeyset * backends = ksNew (0, KS_END);
 
 	addBackendForDivide (backends, "dir:/");
 	addBackendForDivide (backends, "user:/");
@@ -191,7 +191,7 @@ void test_backendsDivide (void)
 	addBackendForDivide (backends, "default:/");
 
 	// clang-format off
-	KeySet * ks = ksNew (20,
+	ElektraKeyset * ks = ksNew (20,
 				keyNew ("spec:/xyz", KEY_END),
 				keyNew ("user:/abc", KEY_END),
 				keyNew ("user:/bak/abc", KEY_END),
@@ -213,17 +213,17 @@ void test_backendsDivide (void)
 
 	// TODO: more thorough tests
 
-	KeySet * ks0 = ksNew (10, KS_END);
-	KeySet * ks1 = ksNew (10, keyNew ("user:/abc", KEY_END), keyNew ("user:/bak/abc", KEY_END), keyNew ("user:/xyz", KEY_END), KS_END);
-	KeySet * ks2 = ksNew (10, keyNew ("user:/bar/abc", KEY_END), keyNew ("user:/bar/xyz", KEY_END), KS_END);
-	KeySet * ks3 = ksNew (10, keyNew ("user:/bar/bar/abc", KEY_END), keyNew ("user:/bar/bar/def", KEY_END),
+	ElektraKeyset * ks0 = ksNew (10, KS_END);
+	ElektraKeyset * ks1 = ksNew (10, keyNew ("user:/abc", KEY_END), keyNew ("user:/bak/abc", KEY_END), keyNew ("user:/xyz", KEY_END), KS_END);
+	ElektraKeyset * ks2 = ksNew (10, keyNew ("user:/bar/abc", KEY_END), keyNew ("user:/bar/xyz", KEY_END), KS_END);
+	ElektraKeyset * ks3 = ksNew (10, keyNew ("user:/bar/bar/abc", KEY_END), keyNew ("user:/bar/bar/def", KEY_END),
 			      keyNew ("user:/bar/bar/xyz", KEY_END), KS_END);
-	KeySet * ks4 = ksNew (10, KS_END);
-	KeySet * ks5 = ksNew (10, keyNew ("user:/bar/foo/abc", KEY_END), keyNew ("user:/bar/foo/xyz", KEY_END), KS_END);
-	KeySet * ks6 = ksNew (10, KS_END);
-	KeySet * ks7 = ksNew (10, keyNew ("user:/foo/abc", KEY_END), keyNew ("user:/foo/xyz", KEY_END), KS_END);
-	KeySet * ks8 = ksNew (10, KS_END);
-	KeySet * ks9 = ksNew (10, keyNew ("default:/xyz", KEY_END), keyNew ("spec:/xyz", KEY_END), KS_END);
+	ElektraKeyset * ks4 = ksNew (10, KS_END);
+	ElektraKeyset * ks5 = ksNew (10, keyNew ("user:/bar/foo/abc", KEY_END), keyNew ("user:/bar/foo/xyz", KEY_END), KS_END);
+	ElektraKeyset * ks6 = ksNew (10, KS_END);
+	ElektraKeyset * ks7 = ksNew (10, keyNew ("user:/foo/abc", KEY_END), keyNew ("user:/foo/xyz", KEY_END), KS_END);
+	ElektraKeyset * ks8 = ksNew (10, KS_END);
+	ElektraKeyset * ks9 = ksNew (10, keyNew ("default:/xyz", KEY_END), keyNew ("spec:/xyz", KEY_END), KS_END);
 
 	compare_keyset (ks0, ((const BackendData *) keyValue (ksLookupByName (backends, "dir:/", 0)))->keys);
 	compare_keyset (ks1, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/", 0)))->keys);

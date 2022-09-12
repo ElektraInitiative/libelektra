@@ -101,11 +101,11 @@ typedef struct _Plugin Plugin;
 
 Plugin * elektraPluginExport (const char * pluginName, ...);
 
-KeySet * elektraPluginGetConfig (Plugin * handle);
+ElektraKeyset * elektraPluginGetConfig (Plugin * handle);
 void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
 
-KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
+ElektraKeyset * elektraPluginGetGlobalKeySet (Plugin * plugin);
 const char * elektraPluginGetPhase (Plugin * plugin);
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref);
 

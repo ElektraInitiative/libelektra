@@ -20,23 +20,23 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("system:/elektra/version", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/elektra/version", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("version");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
-	KeySet * expectedKs = elektraVersionKeySet ();
+	ElektraKeyset * expectedKs = elektraVersionKeySet ();
 	succeed_if (ksGetSize (ks) == ksGetSize (expectedKs), "wrong number of keys returned");
 
 	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
-		Key * cur = ksAtCursor (ks, i);
-		Key * expected = ksAtCursor (expectedKs, i);
+		ElektraKey * cur = ksAtCursor (ks, i);
+		ElektraKey * expected = ksAtCursor (expectedKs, i);
 
 		succeed_if (strcmp (keyName (expected), keyName (cur)) == 0, "key with wrong name returned");
 		succeed_if (strcmp (keyString (expected), keyString (cur)) == 0, "key with wrong value returned");
@@ -56,24 +56,24 @@ static void test_rename (void)
 {
 	printf ("test rename\n");
 
-	Key * parentKey = keyNew ("user:/somewhere/else", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/somewhere/else", KEY_END);
 	size_t parentSize = keyGetNameSize (parentKey) - 1;
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("version");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
-	KeySet * expectedKs = elektraVersionKeySet ();
+	ElektraKeyset * expectedKs = elektraVersionKeySet ();
 	succeed_if (ksGetSize (ks) == ksGetSize (expectedKs), "wrong number of keys returned");
 
 	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
-		Key * cur = ksAtCursor (ks, i);
-		Key * expected = ksAtCursor (expectedKs, i);
+		ElektraKey * cur = ksAtCursor (ks, i);
+		ElektraKey * expected = ksAtCursor (expectedKs, i);
 
 		succeed_if (strncmp ("user:/somewhere/else", keyName (cur), parentSize) == 0, "key with wrong name returned");
 		succeed_if (strcmp (keyName (expected) + sizeof ("system:/elektra/version") - 1, keyName (cur) + parentSize) == 0,

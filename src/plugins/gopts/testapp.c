@@ -20,7 +20,7 @@
 
 extern char ** environ;
 
-static KeySet * getSpec (const char * name, Key ** parentKey)
+static ElektraKeyset * getSpec (const char * name, ElektraKey ** parentKey)
 {
 	*parentKey = keyNew ("spec:/tests/gopts", KEY_END);
 
@@ -65,20 +65,20 @@ int main (int argc, const char ** argv)
 	const char * appname = argv[0];
 	argv[1] = appname;
 
-	Key * parentKey;
-	KeySet * ks = getSpec (specname, &parentKey);
+	ElektraKey * parentKey;
+	ElektraKeyset * ks = getSpec (specname, &parentKey);
 
 	bool libFailed = elektraGetOpts (ks, argc - 1, &argv[1], (const char **) environ, parentKey) != 0;
-	Key * libHelpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
+	ElektraKey * libHelpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
 	keyCopyAllMeta (libHelpKey, parentKey);
 	ksAppendKey (ks, libHelpKey);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 
 	PLUGIN_OPEN ("gopts");
 
-	Key * parentKey2;
-	KeySet * ks2 = getSpec (specname, &parentKey2);
+	ElektraKey * parentKey2;
+	ElektraKeyset * ks2 = getSpec (specname, &parentKey2);
 
 	bool pluginFailed = plugin->kdbGet (plugin, ks2, parentKey2) == ELEKTRA_PLUGIN_STATUS_ERROR;
 

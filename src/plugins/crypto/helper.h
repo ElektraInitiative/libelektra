@@ -14,15 +14,15 @@
 #include <kdb.h>
 #include <kdbtypes.h>
 
-int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);
-int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);
-Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config);
-kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey, KeySet * config);
+int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (ElektraKey * errorKey, ElektraKey * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);
+int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (ElektraKey * errorKey, ElektraKey * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);
+ElektraKey * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (ElektraKey * errorKey, ElektraKeyset * config);
+kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (ElektraKey * errorKey, ElektraKeyset * config);
 
-int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey);
-int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey);
+int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (ElektraKeyset * conf, ElektraKey * errorKey, ElektraKey * msgKey);
+int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (ElektraKeyset * conf, ElektraKey * errorKey, ElektraKey * msgKey);
 
-int ELEKTRA_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output);
-int ELEKTRA_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength);
+int ELEKTRA_PLUGIN_FUNCTION (base64Encode) (ElektraKey * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output);
+int ELEKTRA_PLUGIN_FUNCTION (base64Decode) (ElektraKey * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength);
 
 #endif

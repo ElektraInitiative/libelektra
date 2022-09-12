@@ -14,8 +14,8 @@
 #include <kdbplugin.h>
 
 
-int elektraRangeGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraRangeSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraRangeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraRangeSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

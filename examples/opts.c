@@ -19,7 +19,7 @@ extern char ** environ;
 #define BASE_KEY "/sw/org/erm/#0/current"
 #define SPEC_BASE_KEY "spec:" BASE_KEY
 
-static KeySet * createSpec (void)
+static ElektraKeyset * createSpec (void)
 {
 	return ksNew (
 		10,
@@ -67,8 +67,8 @@ int main (int argc, const char ** argv)
 	 * be considered stable.
 	 */
 
-	KeySet * ks = createSpec ();
-	Key * errorKey = keyNew (BASE_KEY, KEY_END);
+	ElektraKeyset * ks = createSpec ();
+	ElektraKey * errorKey = keyNew (BASE_KEY, KEY_END);
 
 	int result = elektraGetOpts (ks, argc, argv, (const char **) environ, errorKey);
 	if (result == -1)
@@ -91,7 +91,7 @@ int main (int argc, const char ** argv)
 
 	printf ("When called with the same arguments 'rm' \n");
 
-	Key * lookup = ksLookupByName (ks, BASE_KEY "/emptydirs", 0);
+	ElektraKey * lookup = ksLookupByName (ks, BASE_KEY "/emptydirs", 0);
 	if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
 	{
 		printf ("will delete empty directories\n");
@@ -159,11 +159,11 @@ int main (int argc, const char ** argv)
 
 	printf ("will remove the following files:\n");
 
-	Key * arrayParent = ksLookupByName (ks, BASE_KEY "/files", 0);
-	KeySet * files = elektraArrayGet (arrayParent, ks);
+	ElektraKey * arrayParent = ksLookupByName (ks, BASE_KEY "/files", 0);
+	ElektraKeyset * files = elektraArrayGet (arrayParent, ks);
 
 	ksRewind (files);
-	Key * cur = NULL;
+	ElektraKey * cur = NULL;
 	while ((cur = ksNext (files)) != NULL)
 	{
 		printf ("  %s\n", keyString (cur));

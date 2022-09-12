@@ -14,16 +14,16 @@
 
 #include <string.h>
 
-int elektraTracerOpen (Plugin * handle, Key * errorKey)
+int elektraTracerOpen (Plugin * handle, ElektraKey * errorKey)
 {
 	ssize_t nr_keys = 0;
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			Key * k;
+			ElektraKey * k;
 			printf ("tracer: openmodule(%p, %s = %s): ", (void *) handle, keyName (errorKey), keyString (errorKey));
 			while ((k = ksNext (config)) != 0)
 			{
@@ -35,7 +35,7 @@ int elektraTracerOpen (Plugin * handle, Key * errorKey)
 	}
 	else
 	{
-		Key * k;
+		ElektraKey * k;
 		printf ("tracer: open(%p, %s = %s): ", (void *) handle, keyName (errorKey), keyString (errorKey));
 		while ((k = ksNext (config)) != 0)
 		{
@@ -49,9 +49,9 @@ int elektraTracerOpen (Plugin * handle, Key * errorKey)
 	return 0;
 }
 
-int elektraTracerClose (Plugin * handle, Key * errorKey)
+int elektraTracerClose (Plugin * handle, ElektraKey * errorKey)
 {
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 
 	if (ksLookupByName (config, "/module", 0))
 	{
@@ -68,14 +68,14 @@ int elektraTracerClose (Plugin * handle, Key * errorKey)
 	return 0;
 }
 
-int elektraTracerGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraTracerGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ssize_t nr_keys = 0;
-	Key * k = 0;
+	ElektraKey * k = 0;
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/tracer"))
 	{
-		KeySet * info =
+		ElektraKeyset * info =
 			ksNew (50, keyNew ("system:/elektra/modules/tracer", KEY_VALUE, "tracer plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/tracer/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/tracer/exports/open", KEY_FUNC, elektraTracerOpen, KEY_END),
@@ -101,10 +101,10 @@ int elektraTracerGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return nr_keys;
 }
 
-int elektraTracerSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraTracerSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ssize_t nr_keys = 0;
-	Key * k = 0;
+	ElektraKey * k = 0;
 
 	printf ("tracer: set(%p, %s, %s): ", (void *) handle, keyName (parentKey), keyString (parentKey));
 	while ((k = ksNext (returned)) != 0)
@@ -117,10 +117,10 @@ int elektraTracerSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return nr_keys;
 }
 
-int elektraTracerError (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraTracerError (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	ssize_t nr_keys = 0;
-	Key * k = 0;
+	ElektraKey * k = 0;
 
 	printf ("tracer: error(%p, %s, %s): ", (void *) handle, keyName (parentKey), keyString (parentKey));
 	while ((k = ksNext (returned)) != 0)

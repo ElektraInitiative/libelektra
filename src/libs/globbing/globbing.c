@@ -112,7 +112,7 @@ static int checkElektraExtensions (const char * name, const char * pattern)
  *
  * @see isArrayName(), for info on valid array items
  */
-int elektraKeyGlob (const Key * key, const char * pattern)
+int elektraKeyGlob (const ElektraKey * key, const char * pattern)
 {
 	if (key == NULL || pattern == NULL)
 	{
@@ -197,7 +197,7 @@ int elektraKeyGlob (const Key * key, const char * pattern)
  *
  * @see elektraKeyGlob(), for explanation of globbing pattern
  */
-int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern)
+int elektraKsGlob (ElektraKeyset * result, ElektraKeyset * input, const char * pattern)
 {
 	if (!result) return ELEKTRA_GLOB_NOMATCH;
 
@@ -206,7 +206,7 @@ int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern)
 	if (!pattern) return ELEKTRA_GLOB_NOMATCH;
 
 	int ret = 0;
-	Key * current;
+	ElektraKey * current;
 
 	elektraCursor cursor = ksGetCursor (input);
 	ksRewind (input);

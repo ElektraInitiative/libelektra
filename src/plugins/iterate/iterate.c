@@ -12,27 +12,27 @@
 #include <kdbhelper.h>
 
 
-int elektraIterateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraIterateOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 
 	return 1; // success
 }
 
-int elektraIterateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraIterateClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 
 	return 1; // success
 }
 
-static int doIterate (KeySet * returned)
+static int doIterate (ElektraKeyset * returned)
 {
 	int ret = 0;
-	Key * k;
+	ElektraKey * k;
 	while ((k = ksNext (returned)))
 	{
-		const Key * m = keyGetMeta (k, "iterate");
+		const ElektraKey * m = keyGetMeta (k, "iterate");
 		if (m)
 		{
 			ret = 1;
@@ -42,11 +42,11 @@ static int doIterate (KeySet * returned)
 	return ret;
 }
 
-int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/iterate"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/iterate", KEY_VALUE, "iterate plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/iterate/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/iterate/exports/open", KEY_FUNC, elektraIterateOpen, KEY_END),
@@ -65,12 +65,12 @@ int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return doIterate (returned);
 }
 
-int elektraIterateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraIterateSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	return doIterate (returned);
 }
 
-int elektraIterateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraIterateError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 

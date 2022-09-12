@@ -14,11 +14,11 @@
 #include <bohr/ni.h>
 
 
-int elektraNiOpen (Plugin * handle, Key * errorKey);
-int elektraNiClose (Plugin * handle, Key * errorKey);
-int elektraNiGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraNiSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraNiError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraNiOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraNiClose (Plugin * handle, ElektraKey * errorKey);
+int elektraNiGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraNiSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraNiError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

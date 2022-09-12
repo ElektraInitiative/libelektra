@@ -17,10 +17,10 @@ namespace ckdb
 extern "C" {
 #endif
 
-int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv, const char * const * envp, const Key * parentKey,
-			  KeySet * goptsConfig);
-int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const char * args, size_t envSize, const char * env,
-				     const Key * parentKey, KeySet * goptsConfig);
+int elektraGOptsContract (ElektraKeyset * contract, int argc, const char * const * argv, const char * const * envp, const ElektraKey * parentKey,
+			  ElektraKeyset * goptsConfig);
+int elektraGOptsContractFromStrings (ElektraKeyset * contract, size_t argsSize, const char * args, size_t envSize, const char * env,
+				     const ElektraKey * parentKey, ElektraKeyset * goptsConfig);
 
 #ifdef __cplusplus
 }

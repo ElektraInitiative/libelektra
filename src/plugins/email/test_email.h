@@ -15,9 +15,9 @@
 
 static void testEmail (char const * const email, const int ret)
 {
-	Key * parentKey = keyNew ("user:/tests/email", KEY_VALUE, "", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user:/tests/email/totest", KEY_VALUE, email, KEY_META, "check/email", "", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/email", KEY_VALUE, "", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (10, keyNew ("user:/tests/email/totest", KEY_VALUE, email, KEY_META, "check/email", "", KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[300];

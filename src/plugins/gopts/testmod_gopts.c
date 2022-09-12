@@ -79,8 +79,8 @@ void test_global (void)
 {
 	printf ("test global\n");
 
-	Key * parentKey = keyNew ("/tests/gopts", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("/tests/gopts", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 
 	PLUGIN_OPEN ("gopts");
 
@@ -94,7 +94,7 @@ void test_global (void)
 		       keyNew ("system:/elektra/gopts/argv", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &argv, KEY_END),
 		       keyNew ("system:/elektra/gopts/envp", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &envp, KEY_END), KS_END);
 
-	KeySet * ks = ksNew (5, keyNew ("spec:/tests/gopts/apple", KEY_META, "opt", "c", KEY_END),
+	ElektraKeyset * ks = ksNew (5, keyNew ("spec:/tests/gopts/apple", KEY_META, "opt", "c", KEY_END),
 			     keyNew ("spec:/tests/gopts/banana", KEY_META, "opt/long", "longopt", KEY_END),
 			     keyNew ("spec:/tests/gopts/raspberry", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
 			     keyNew ("spec:/tests/gopts/carrot", KEY_META, "env", "ENV_VAR", KEY_END),

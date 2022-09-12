@@ -48,12 +48,12 @@ void elektraFstabFsName (char * fsname, struct mntent * fstabEntry, unsigned int
 	}
 }
 
-int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0;
-	Key * key;
-	Key * dir;
+	ElektraKey * key;
+	ElektraKey * dir;
 	FILE * fstab = 0;
 
 	ELEKTRA_LOG ("get fstab %s from %s\n", keyName (parentKey), keyString (parentKey));
@@ -61,7 +61,7 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/fstab"))
 	{
 		// clang-format off
-		KeySet *moduleConfig = ksNew (50,
+		ElektraKeyset *moduleConfig = ksNew (50,
 			keyNew ("system:/elektra/modules/fstab",
 				KEY_VALUE, "fstab plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/fstab/exports", KEY_END),
@@ -185,11 +185,11 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 }
 
 
-int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	FILE * fstab = 0;
-	Key * key = 0;
+	ElektraKey * key = 0;
 	const void * rootname = 0;
 	struct mntent fstabEntry;
 

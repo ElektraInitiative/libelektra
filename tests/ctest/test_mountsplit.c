@@ -13,9 +13,9 @@
 #include <tests_internal.h>
 
 #if 1 == 0
-KDB * kdb_new (void)
+ElektraKdb * kdb_new (void)
 {
-	KDB * kdb = elektraCalloc (sizeof (KDB));
+	ElektraKdb * kdb = elektraCalloc (sizeof (KDB));
 	kdb->split = splitNew ();
 	return kdb;
 }
@@ -77,12 +77,12 @@ static void test_mount (void)
 	//	kdb_del (kdb);
 }
 
-KeySet * modules_config (void)
+ElektraKeyset * modules_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/modules", KEY_END), KS_END);
 }
 
-KeySet * minimal_config (void)
+ElektraKeyset * minimal_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), KS_END);
 }
@@ -108,7 +108,7 @@ static void test_minimaltrie (void)
 	//	kdb_del (kdb);
 }
 
-KeySet * simple_config (void)
+ElektraKeyset * simple_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/simple", KEY_END), KS_END);
@@ -164,7 +164,7 @@ static void test_simple (void)
 	//	kdb_del (kdb);
 }
 
-KeySet * set_us (void)
+ElektraKeyset * set_us (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user:\\/", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/user:\\//mountpoint", KEY_VALUE, "user:/", KEY_END),
@@ -228,7 +228,7 @@ static void test_us (void)
 }
 
 
-KeySet * cascading_config (void)
+ElektraKeyset * cascading_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "/tests/simple", KEY_END), KS_END);
@@ -322,7 +322,7 @@ static void test_cascading (void)
 }
 
 
-KeySet * root_config (void)
+ElektraKeyset * root_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),

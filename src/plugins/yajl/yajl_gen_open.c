@@ -141,7 +141,7 @@ static void elektraGenOpenIterate (yajl_gen g, const char * pnext, int levels)
  * @param g generate array there
  * @param key the key to look at
  */
-static void elektraGenOpenLast (yajl_gen g, const Key * key)
+static void elektraGenOpenLast (yajl_gen g, const ElektraKey * key)
 {
 	keyNameReverseIterator last = elektraKeyNameGetReverseIterator (key);
 	elektraKeyNameReverseNext (&last);
@@ -176,7 +176,7 @@ static void elektraGenOpenLast (yajl_gen g, const Key * key)
  * @param parentKey
  * @param first
  */
-void elektraGenOpenInitial (yajl_gen g, Key * parentKey, const Key * first)
+void elektraGenOpenInitial (yajl_gen g, ElektraKey * parentKey, const ElektraKey * first)
 {
 	const char * pfirst = keyName (first);
 	size_t csize = 0;
@@ -434,7 +434,7 @@ static void elektraGenOpenFirst (yajl_gen g, const char * cur, const char * next
  * @param cur current key of iteration
  * @param next next key of iteration
  */
-void elektraGenOpen (yajl_gen g, const Key * cur, const Key * next)
+void elektraGenOpen (yajl_gen g, const ElektraKey * cur, const ElektraKey * next)
 {
 	const char * pcur = keyName (cur);
 	const char * pnext = keyName (next);

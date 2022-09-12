@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline KeySet * elektraLineContract (void)
+static inline ElektraKeyset * elektraLineContract (void)
 {
 	return ksNew (30, keyNew ("system:/elektra/modules/line", KEY_VALUE, "line plugin waits for your orders", KEY_END),
 		      keyNew ("system:/elektra/modules/line/exports", KEY_END),
@@ -33,12 +33,12 @@ static inline KeySet * elektraLineContract (void)
 		      keyNew ("system:/elektra/modules/line/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
-int elektraLineRead (FILE * fp, KeySet * returned)
+int elektraLineRead (FILE * fp, ElektraKeyset * returned)
 {
 	char * value = NULL;
 	size_t len = 0;
 	ssize_t n = 0;
-	Key * read = NULL;
+	ElektraKey * read = NULL;
 
 	// Read in each line
 	while ((n = getline (&value, &len, fp)) != -1)
@@ -65,13 +65,13 @@ int elektraLineRead (FILE * fp, KeySet * returned)
 }
 
 
-int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* get all keys */
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/line"))
 	{
-		KeySet * moduleConfig = elektraLineContract ();
+		ElektraKeyset * moduleConfig = elektraLineContract ();
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -87,7 +87,7 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return -1;
 	}
 
-	Key * b = keyNew (keyName (parentKey), KEY_END);
+	ElektraKey * b = keyNew (keyName (parentKey), KEY_END);
 	ksAppendKey (returned, keyDup (b, KEY_CP_ALL)); // start with parentKey
 	keyAddName (b, "#");				// start point for our array
 	ksAppendKey (returned, b);
@@ -113,7 +113,7 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return ret; /* success */
 }
 
-int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* set all keys */
 
@@ -127,7 +127,7 @@ int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return -1;
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	if (!ksLookup (returned, parentKey, 0))
 	{
 		// ignore parentKey if found

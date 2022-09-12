@@ -69,23 +69,23 @@ extern "C" {
 typedef int KDBStream;
 
 
-typedef int (*KSFromXMLfile) (KeySet * ks, const char * filename);
-typedef int (*KSFromXML) (KeySet * ks, int fd);
-typedef ssize_t (*output) (const KeySet * ks, FILE * stream, KDBStream options);
+typedef int (*KSFromXMLfile) (ElektraKeyset * ks, const char * filename);
+typedef int (*KSFromXML) (ElektraKeyset * ks, int fd);
+typedef ssize_t (*output) (const ElektraKeyset * ks, FILE * stream, KDBStream options);
 
 
-int ksFromXMLfile (KeySet * ks, const char * filename);
-int ksFromXML (KeySet * ks, int fd);
+int ksFromXMLfile (ElektraKeyset * ks, const char * filename);
+int ksFromXML (ElektraKeyset * ks, int fd);
 
-ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options);
-int ksOutput (const KeySet * ks, FILE * stream, KDBStream options);
-int ksGenerate (const KeySet * ks, FILE * stream, KDBStream options);
+ssize_t ksToStream (const ElektraKeyset * ks, FILE * stream, KDBStream options);
+int ksOutput (const ElektraKeyset * ks, FILE * stream, KDBStream options);
+int ksGenerate (const ElektraKeyset * ks, FILE * stream, KDBStream options);
 
-ssize_t keyToStream (const Key * key, FILE * stream, KDBStream options);
-ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, KDBStream options);
+ssize_t keyToStream (const ElektraKey * key, FILE * stream, KDBStream options);
+ssize_t keyToStreamBasename (const ElektraKey * key, FILE * stream, const char * parent, const size_t parentSize, KDBStream options);
 
-int keyOutput (const Key * key, FILE * stream, KDBStream options);
-int keyGenerate (const Key * key, FILE * stream, KDBStream options);
+int keyOutput (const ElektraKey * key, FILE * stream, KDBStream options);
+int keyGenerate (const ElektraKey * key, FILE * stream, KDBStream options);
 
 #ifdef __cplusplus
 }

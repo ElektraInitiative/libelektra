@@ -51,9 +51,9 @@ int elektraDbusRecvSetupReceive (Plugin * handle, DBusBusType type, DBusHandleMe
 int elektraDbusRecvTeardownReceive (Plugin * handle, DBusBusType type, DBusHandleMessageFunction filter_func);
 DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection, DBusMessage * message, void * data);
 
-int elektraDbusRecvOpen (Plugin * handle, Key * errorKey);
-int elektraDbusRecvClose (Plugin * handle, Key * errorKey);
-int elektraDbusRecvGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDbusRecvOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraDbusRecvClose (Plugin * handle, ElektraKey * errorKey);
+int elektraDbusRecvGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

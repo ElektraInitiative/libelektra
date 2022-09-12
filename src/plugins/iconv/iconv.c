@@ -11,7 +11,7 @@
 static inline const char * getFrom (Plugin * handle)
 {
 	const char * from;
-	Key * k;
+	ElektraKey * k;
 
 	k = ksLookupByName (elektraPluginGetConfig (handle), "/from", 0);
 	if (!k)
@@ -25,7 +25,7 @@ static inline const char * getFrom (Plugin * handle)
 static inline const char * getTo (Plugin * handle)
 {
 	const char * to;
-	Key * k;
+	ElektraKey * k;
 
 	k = ksLookupByName (elektraPluginGetConfig (handle), "/to", 0);
 	if (!k)
@@ -145,15 +145,15 @@ int kdbbUTF8Engine (Plugin * handle, int direction, char ** string, size_t * inp
 }
 
 
-int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraIconvGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	Key * cur;
+	ElektraKey * cur;
 
 	ksRewind (returned);
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/iconv"))
 	{
-		KeySet * pluginConfig =
+		ElektraKeyset * pluginConfig =
 			ksNew (30, keyNew ("system:/elektra/modules/iconv", KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/iconv/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/iconv/exports/get", KEY_FUNC, elektraIconvGet, KEY_END),
@@ -187,7 +187,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		const Key * meta = keyGetMeta (cur, "comment");
+		const ElektraKey * meta = keyGetMeta (cur, "comment");
 		if (meta)
 		{
 			/* String or similar type of value */
@@ -211,9 +211,9 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraIconvSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	Key * cur;
+	ElektraKey * cur;
 
 	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
@@ -240,7 +240,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		const Key * meta = keyGetMeta (cur, "comment");
+		const ElektraKey * meta = keyGetMeta (cur, "comment");
 		if (meta)
 		{
 			/* String or similar type of value */

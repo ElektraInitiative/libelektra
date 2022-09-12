@@ -10,31 +10,31 @@
 #include <stdlib.h>
 #include <string.h>
 
-Key * copy;
+ElektraKey * copy;
 
 // clang-format off
-void x (Key * orig)
+void x (ElektraKey * orig)
 {
 //! [Duplicate Key]
 copy = keyCopy (keyNew ("/", KEY_END), orig, KEY_CP_ALL);
 //! [Duplicate Key]
 }
 
-void y (Key * orig)
+void y (ElektraKey * orig)
 {
 //! [Dup Key]
 copy = keyDup (orig, KEY_CP_ALL);
 //! [Dup Key]
 }
 
-void h (Key * orig)
+void h (ElektraKey * orig)
 {
 //! [Basic Usage]
 keyCopy (copy, orig, KEY_CP_ALL);
 //! [Basic Usage]
 }
 
-void g (Key * k)
+void g (ElektraKey * k)
 {
 //! [Clear]
 keyCopy (k, NULL, KEY_CP_ALL);
@@ -47,7 +47,7 @@ keyCopy (k, NULL, KEY_CP_ALL);
 
 int main (void)
 {
-	Key * k = keyNew ("user:/hello", KEY_VALUE, "my content", KEY_END);
+	ElektraKey * k = keyNew ("user:/hello", KEY_VALUE, "my content", KEY_END);
 
 	copy = keyNew ("user:/copy", KEY_VALUE, "copies content", KEY_END);
 

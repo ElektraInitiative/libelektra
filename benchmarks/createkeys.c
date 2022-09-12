@@ -16,7 +16,7 @@ void benchmarkDel (void)
 int benchmarkIterate (void)
 {
 	ksRewind (large);
-	Key * cur;
+	ElektraKey * cur;
 	int c = 0;
 	while ((cur = ksNext (large)))
 	{

@@ -18,7 +18,7 @@
 #include <kdbmodule.h>
 
 
-int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
+int elektraModulesInit (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
 	ksAppendKey (modules, keyNew ("system:/elektra/modules", KEY_END));
 
@@ -62,11 +62,11 @@ static kdblib_symbol * elektraStaticSym (kdblib_symbol * handle, const char * sy
 	return NULL;
 }
 
-elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * error)
+elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * name, ElektraKey * error)
 {
-	Key * moduleKey = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (moduleKey, name);
-	Key * lookup = ksLookup (modules, moduleKey, 0);
+	ElektraKey * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
 		kdblib_symbol * module = (kdblib_symbol *) keyValue (lookup);
@@ -98,7 +98,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	return (elektraPluginFactory) module->function;
 }
 
-int elektraModulesClose (KeySet * modules, Key * error ELEKTRA_UNUSED)
+int elektraModulesClose (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
 	ksClear (modules);
 	return 0;

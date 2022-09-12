@@ -25,9 +25,9 @@
 
 static void test_helloWorld (void)
 {
-	Key * parentKey = keyNew ("user:/tests/jni", KEY_VALUE, "", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/jni", KEY_VALUE, "", KEY_END);
 
-	KeySet * conf;
+	ElektraKeyset * conf;
 	if (access (CLASSPATH, F_OK) == 0)
 	{
 		printf ("Using classpath '%s'.\n", CLASSPATH);
@@ -43,7 +43,7 @@ static void test_helloWorld (void)
 
 	PLUGIN_OPEN ("jni");
 
-	KeySet * ks = ksNew (20, KS_END);
+	ElektraKeyset * ks = ksNew (20, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 10, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 20, "call to kdbSet was not successful");
 	succeed_if (plugin->kdbError (plugin, ks, parentKey) == 30, "call to kdbError was not successful");

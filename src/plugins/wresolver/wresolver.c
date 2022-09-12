@@ -63,7 +63,7 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
-static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
+static resolverHandle * elektraGetResolverHandle (Plugin * handle, ElektraKey * parentKey)
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
 	switch (keyGetNamespace (parentKey))
@@ -117,7 +117,7 @@ static void escapePath (char * home)
 	}
 }
 
-static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
+static void elektraResolveSpec (resolverHandle * p, ElektraKey * errorKey)
 {
 	char * system = getenv ("ALLUSERSPROFILE");
 
@@ -151,7 +151,7 @@ static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
 	return;
 }
 
-static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
+static void elektraResolveDir (resolverHandle * p, ElektraKey * warningsKey)
 {
 	p->filename = elektraMalloc (KDB_MAX_PATH_LENGTH);
 
@@ -190,7 +190,7 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	return;
 }
 
-static void elektraResolveUser (resolverHandle * p, Key * warningsKey)
+static void elektraResolveUser (resolverHandle * p, ElektraKey * warningsKey)
 {
 	p->filename = elektraMalloc (KDB_MAX_PATH_LENGTH);
 
@@ -219,7 +219,7 @@ static void elektraResolveUser (resolverHandle * p, Key * warningsKey)
 	strncat (p->filename, p->path, KDB_MAX_PATH_LENGTH);
 }
 
-static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
+static void elektraResolveSystem (resolverHandle * p, ElektraKey * errorKey)
 {
 	char * system = getenv ("ALLUSERSPROFILE");
 
@@ -251,9 +251,9 @@ static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
 	return;
 }
 
-int elektraWresolverOpen (Plugin * handle, Key * errorKey)
+int elektraWresolverOpen (Plugin * handle, ElektraKey * errorKey)
 {
-	KeySet * resolverConfig = elektraPluginGetConfig (handle);
+	ElektraKeyset * resolverConfig = elektraPluginGetConfig (handle);
 	const char * path = keyString (ksLookupByName (resolverConfig, "/path", 0));
 
 	if (!path)
@@ -299,7 +299,7 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 	return 0; /* success */
 }
 
-int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraWresolverClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	resolverHandles * ps = elektraPluginGetData (handle);
 
@@ -330,11 +330,11 @@ int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 0; /* success */
 }
 
-int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraWresolverGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/wresolver"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/wresolver", KEY_VALUE, "wresolver plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/wresolver/exports", KEY_END),
 			keyNew ("system:/elektra/modules/wresolver/exports/open", KEY_FUNC, elektraWresolverOpen, KEY_END),
@@ -379,7 +379,7 @@ int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraWresolverSet (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
@@ -433,12 +433,12 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	return 1; /* success */
 }
 
-int elektraWresolverCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraWresolverCommit (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	return elektraWresolverSet (handle, returned, parentKey);
 }
 
-int elektraWresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraWresolverError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	pk->state = 1;

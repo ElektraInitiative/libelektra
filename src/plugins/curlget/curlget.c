@@ -85,7 +85,7 @@ typedef struct
 	SSHAuthType sshAuth;
 } Data;
 
-static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
+static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfile tmpFile)
 {
 	int rc = 0;
 	void * handle = elektraInvokeOpen ("resolver", 0, 0);
@@ -95,7 +95,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		goto RESOLVE_FAILED;
 	}
 	ElektraResolved * resolved = NULL;
-	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
+	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, ElektraKey *);
 	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
@@ -138,7 +138,7 @@ int elektraCurlgetCheckFile (const char * filename)
 	return 1;
 }
 
-int elektraCurlgetClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraCurlgetClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	Data * data = elektraPluginGetData (handle);
 	if (!data) return 0;
@@ -165,7 +165,7 @@ int elektraCurlgetClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	return 1;
 }
 
-int elektraCurlgetError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCurlgetError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	return 1;
 }
@@ -191,11 +191,11 @@ static ElektraCurlProtocol isValidURL (const char * str)
 	return PROTO_INVALID;
 }
 
-static unsigned short parseURLPath (Data * data, KeySet * config)
+static unsigned short parseURLPath (Data * data, ElektraKeyset * config)
 {
 	const char * path = keyString (ksLookupByName (config, "/path", 0));
 	ElektraCurlProtocol proto = isValidURL (path);
-	Key * key = NULL;
+	ElektraKey * key = NULL;
 	if (proto == PROTO_INVALID)
 	{
 		data->path = elektraStrDup (path);
@@ -284,9 +284,9 @@ static unsigned short parseURLPath (Data * data, KeySet * config)
 	return 1;
 }
 
-int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0)) return 0;
 	Data * data = elektraCalloc (sizeof (Data));
 	if (!parseURLPath (data, config))
@@ -295,7 +295,7 @@ int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data = NULL;
 		return 0;
 	}
-	Key * key = ksLookupByName (config, "/user", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (config, "/user", KDB_O_NONE);
 	if (key)
 	{
 		data->user = keyString (key);
@@ -578,11 +578,11 @@ static int moveFile (const char * source, const char * dest)
 	return 0;
 }
 
-int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/curlget"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/curlget", KEY_VALUE, "curlget plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/curlget/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/curlget/exports/get", KEY_FUNC, elektraCurlgetGet, KEY_END),
@@ -697,7 +697,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
-int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// get all keys
 	Data * data = elektraPluginGetData (handle);
@@ -1005,7 +1005,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return retval; // success
 }
 
-int elektraCurlgetCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCurlgetCommit (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	return elektraCurlgetSet (handle, returned, parentKey);
 }

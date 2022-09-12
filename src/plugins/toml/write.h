@@ -21,6 +21,6 @@
  * @retval 0 On success.
  * @retval Non-Zero On Error, Error information written to parent key.
  */
-int tomlWrite (KeySet * keys, Key * parent);
+int tomlWrite (ElektraKeyset * keys, ElektraKey * parent);
 
 #endif // ELEKTRA_PLUGIN_TOML_WRITE_H

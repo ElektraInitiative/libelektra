@@ -21,18 +21,18 @@ static void test_v1_oneValue (void)
 {
 	printf ("test v1 oneValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/one_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/one_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_oneValue ();
+		ElektraKeyset * expected = testdata_oneValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -44,9 +44,9 @@ static void test_v1_oneValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -68,18 +68,18 @@ static void test_v1_twoValue (void)
 {
 	printf ("test v1 twoValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/two_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/two_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_twoValue ();
+		ElektraKeyset * expected = testdata_twoValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -91,9 +91,9 @@ static void test_v1_twoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -115,18 +115,18 @@ static void test_v1_threeValue (void)
 {
 	printf ("test v1 threeValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/three_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/three_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_threeValue ();
+		ElektraKeyset * expected = testdata_threeValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -138,9 +138,9 @@ static void test_v1_threeValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -162,18 +162,18 @@ static void test_v1_againTwoValue (void)
 {
 	printf ("test v1 againTwoValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/again_two_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_againTwoValue ();
+		ElektraKeyset * expected = testdata_againTwoValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -185,9 +185,9 @@ static void test_v1_againTwoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -209,18 +209,18 @@ static void test_v1_metaData (void)
 {
 	printf ("test v1 metaData\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_metaData ();
+		ElektraKeyset * expected = testdata_metaData ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -232,9 +232,9 @@ static void test_v1_metaData (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -256,17 +256,17 @@ static void test_v2_oneValue (void)
 {
 	printf ("test v2 oneValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/one_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_oneValue ();
+		ElektraKeyset * expected = testdata_oneValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -278,9 +278,9 @@ static void test_v2_oneValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -301,17 +301,17 @@ static void test_v2_twoValue (void)
 {
 	printf ("test v2 twoValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/two_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_twoValue ();
+		ElektraKeyset * expected = testdata_twoValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -323,9 +323,9 @@ static void test_v2_twoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -346,17 +346,17 @@ static void test_v2_threeValue (void)
 {
 	printf ("test v2 threeValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/three_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_threeValue ();
+		ElektraKeyset * expected = testdata_threeValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -368,9 +368,9 @@ static void test_v2_threeValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -391,17 +391,17 @@ static void test_v2_againTwoValue (void)
 {
 	printf ("test v2 againTwoValue\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_againTwoValue ();
+		ElektraKeyset * expected = testdata_againTwoValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -413,9 +413,9 @@ static void test_v2_againTwoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -436,17 +436,17 @@ static void test_v2_metaData (void)
 {
 	printf ("test v2 metaData\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_metaData ();
+		ElektraKeyset * expected = testdata_metaData ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -458,9 +458,9 @@ static void test_v2_metaData (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -481,17 +481,17 @@ static void test_v2_fullnames (void)
 {
 	printf ("test v2 fullnames\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/fullnames.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (1, keyNew ("user:/fullname", KEY_END), KS_END);
+		ElektraKeyset * conf = ksNew (1, keyNew ("user:/fullname", KEY_END), KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_demo ();
+		ElektraKeyset * expected = testdata_demo ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -503,9 +503,9 @@ static void test_v2_fullnames (void)
 	}
 
 	{
-		Key * setKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (1, keyNew ("user:/fullname", KEY_END), KS_END);
+		ElektraKeyset * conf = ksNew (1, keyNew ("user:/fullname", KEY_END), KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -526,17 +526,17 @@ static void test_v2_demo (void)
 {
 	printf ("test v2 demo\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/demo.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_demo ();
+		ElektraKeyset * expected = testdata_demo ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -548,9 +548,9 @@ static void test_v2_demo (void)
 	}
 
 	{
-		Key * setKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -571,17 +571,17 @@ static void test_v2_demo_root (void)
 {
 	printf ("test v2 demo\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/demo.dump"));
 	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
-		Key * getKey = keyNew ("system:/", KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew ("system:/", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_demo_root ();
+		ElektraKeyset * expected = testdata_demo_root ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -593,9 +593,9 @@ static void test_v2_demo_root (void)
 	}
 
 	{
-		Key * setKey = keyNew ("system:/", KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew ("system:/", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");

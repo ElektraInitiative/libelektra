@@ -11,16 +11,16 @@
 
 int main (void)
 {
-	KeySet * myConfig = ksNew (0, KS_END);
+	ElektraKeyset * myConfig = ksNew (0, KS_END);
 
 	// for error handling see kdbget_error.c
 
 	// clang-format off
 //! [basic usage]
-Key * key = keyNew ("/sw/tests/myapp/#0/current/",  KEY_END);
-KDB * handle = kdbOpen (NULL, key);
+ElektraKey * key = keyNew ("/sw/tests/myapp/#0/current/",  KEY_END);
+ElektraKdb * handle = kdbOpen (NULL, key);
 kdbGet (handle, myConfig, key);
-Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
+ElektraKey * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
 //! [basic usage]
 	// clang-format on
 

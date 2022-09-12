@@ -28,15 +28,15 @@
 
 void test_latin1_to_utf8 (void)
 {
-	KeySet * latin1 = 0;
-	KeySet * utf8 = 0;
+	ElektraKeyset * latin1 = 0;
+	ElektraKeyset * utf8 = 0;
 
-	KeySet * conf =
+	ElektraKeyset * conf =
 		ksNew (2, keyNew ("user:/from", KEY_VALUE, "ISO8859-1", KEY_END), keyNew ("user:/to", KEY_VALUE, "UTF-8", KEY_END), KS_END);
 
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * parentKey = keyNew ("/", KEY_END);
+	ElektraKey * parentKey = keyNew ("/", KEY_END);
 
 	Plugin * plugin = elektraPluginOpen ("iconv", modules, conf, 0);
 
@@ -68,14 +68,14 @@ void test_latin1_to_utf8 (void)
 
 void test_utf8_to_latin1 (void)
 {
-	KeySet * latin1 = 0;
-	KeySet * utf8 = 0;
-	Key * parentKey = keyNew ("/", KEY_END);
+	ElektraKeyset * latin1 = 0;
+	ElektraKeyset * utf8 = 0;
+	ElektraKey * parentKey = keyNew ("/", KEY_END);
 
-	KeySet * conf =
+	ElektraKeyset * conf =
 		ksNew (2, keyNew ("user:/from", KEY_VALUE, "UTF-8", KEY_END), keyNew ("user:/to", KEY_VALUE, "ISO8859-1", KEY_END), KS_END);
 
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
 
@@ -110,10 +110,10 @@ void test_utf8_to_latin1 (void)
 void test_utf8_needed (void)
 {
 	printf ("Test if utf8 conversation is needed\n");
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf =
+	ElektraKeyset * conf =
 		ksNew (2, keyNew ("user:/from", KEY_VALUE, "UTF-8", KEY_END), keyNew ("user:/to", KEY_VALUE, "UTF-8", KEY_END), KS_END);
 
 
@@ -149,10 +149,10 @@ static void set_str (char ** str, size_t * len, char * newstr)
 
 void test_utf8_conversation (void)
 {
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	KeySet * conf =
+	ElektraKeyset * conf =
 		ksNew (2, keyNew ("user:/from", KEY_VALUE, "UTF-8", KEY_END), keyNew ("user:/to", KEY_VALUE, "UTF-8", KEY_END), KS_END);
 
 

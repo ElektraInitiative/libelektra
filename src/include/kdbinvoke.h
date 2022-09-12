@@ -19,32 +19,32 @@ typedef struct _ElektraDeferredCallList ElektraDeferredCallList;
  * @param  plugin     plugin handle
  * @param  parameters function parameters
  */
-typedef void (*ElektraDeferredCallable) (Plugin * plugin, KeySet * parameters);
-typedef void (*ElektraDeferredCall) (Plugin * plugin, const char * functionName, KeySet * parameters);
+typedef void (*ElektraDeferredCallable) (Plugin * plugin, ElektraKeyset * parameters);
+typedef void (*ElektraDeferredCall) (Plugin * plugin, const char * functionName, ElektraKeyset * parameters);
 
-ElektraInvokeHandle * elektraInvokeOpen (const char *, KeySet * config, Key * errorKey);
+ElektraInvokeHandle * elektraInvokeOpen (const char *, ElektraKeyset * config, ElektraKey * errorKey);
 ElektraInvokeHandle * elektraInvokeInitialize (const char *);
 
 const void * elektraInvokeGetFunction (ElektraInvokeHandle *, const char *);
-KeySet * elektraInvokeGetPluginConfig (ElektraInvokeHandle *);
+ElektraKeyset * elektraInvokeGetPluginConfig (ElektraInvokeHandle *);
 const char * elektraInvokeGetPluginName (ElektraInvokeHandle *);
 void * elektraInvokeGetPluginData (ElektraInvokeHandle *);
 
-KeySet * elektraInvokeGetModules (ElektraInvokeHandle *);
-KeySet * elektraInvokeGetExports (ElektraInvokeHandle *);
+ElektraKeyset * elektraInvokeGetModules (ElektraInvokeHandle *);
+ElektraKeyset * elektraInvokeGetExports (ElektraInvokeHandle *);
 
-int elektraInvoke2Args (ElektraInvokeHandle *, const char *, KeySet * ks, Key * k);
+int elektraInvoke2Args (ElektraInvokeHandle *, const char *, ElektraKeyset * ks, ElektraKey * k);
 
-void elektraInvokeClose (ElektraInvokeHandle *, Key * errorKey);
+void elektraInvokeClose (ElektraInvokeHandle *, ElektraKey * errorKey);
 
-int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * parameters);
+int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, ElektraKeyset * parameters);
 void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list);
 
-int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, KeySet * parameters);
+int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, ElektraKeyset * parameters);
 ElektraDeferredCallList * elektraDeferredCallCreateList (void);
 void elektraDeferredCallDeleteList (ElektraDeferredCallList * list);
 void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * list);
-int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName, KeySet * parameters);
+int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName, ElektraKeyset * parameters);
 
 #ifdef __cplusplus
 }

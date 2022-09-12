@@ -26,9 +26,9 @@
 #define AUGEAS_CONTENT_ROOT "/raw/content"
 #define AUGEAS_TREE_ROOT "/raw/tree"
 
-int elektraAugeasGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraAugeasSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraAugeasError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraAugeasGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraAugeasSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraAugeasError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

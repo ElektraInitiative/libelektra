@@ -24,7 +24,7 @@
  *
  * @return the size of the string as set (with including 0)
  */
-ssize_t keySetStringF (Key * key, const char * format, ...)
+ssize_t keySetStringF (ElektraKey * key, const char * format, ...)
 {
 	va_list arg_list;
 
@@ -51,14 +51,14 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 	return key->dataSize;
 }
 
-static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t spaces, const char * commentStart, const char * comment)
+static void elektraAddCommentInfo (ElektraKeyset * comments, ElektraKey * commentBase, size_t spaces, const char * commentStart, const char * comment)
 {
 	keySetString (commentBase, comment);
 
 	if (commentStart)
 	{
 		/* this comment contains actual comment data */
-		Key * commentStartKey = keyDup (commentBase, KEY_CP_ALL);
+		ElektraKey * commentStartKey = keyDup (commentBase, KEY_CP_ALL);
 		keyAddBaseName (commentStartKey, "start");
 		keySetString (commentStartKey, commentStart);
 		ksAppendKey (comments, commentStartKey);
@@ -71,7 +71,7 @@ static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t 
 	 */
 	if (commentStart || spaces > 0)
 	{
-		Key * commentSpaceKey = keyDup (commentBase, KEY_CP_ALL);
+		ElektraKey * commentSpaceKey = keyDup (commentBase, KEY_CP_ALL);
 		keyAddBaseName (commentSpaceKey, "space");
 		keySetStringF (commentSpaceKey, "%d", spaces);
 		ksAppendKey (comments, commentSpaceKey);
@@ -94,9 +94,9 @@ static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t 
  * @param commentStart the used comment start sequence
  * @param comment the comment data (i.e. the actual comment)
  */
-void elektraAddLineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment)
+void elektraAddLineComment (ElektraKeyset * comments, size_t spaces, const char * commentStart, const char * comment)
 {
-	Key * lineComment;
+	ElektraKey * lineComment;
 
 	/* initialize the comment key */
 	if (ksGetSize (comments) == 0)
@@ -110,8 +110,8 @@ void elektraAddLineComment (KeySet * comments, size_t spaces, const char * comme
 	{
 		// TODO: doing all this every time is very inefficient. Arrayhandling
 		// definitely needs to be improved
-		Key * arrayBase = keyNew ("meta:/comment", KEY_END);
-		KeySet * array = elektraArrayGet (arrayBase, comments);
+		ElektraKey * arrayBase = keyNew ("meta:/comment", KEY_END);
+		ElektraKeyset * array = elektraArrayGet (arrayBase, comments);
 		lineComment = elektraArrayGetNextKey (array);
 		keyDel (arrayBase);
 		ksDel (array);
@@ -131,9 +131,9 @@ void elektraAddLineComment (KeySet * comments, size_t spaces, const char * comme
  * @param commentStart the used comment start sequence
  * @param comment the comment data (i.e. the actual comment)
  */
-void elektraAddInlineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment)
+void elektraAddInlineComment (ElektraKeyset * comments, size_t spaces, const char * commentStart, const char * comment)
 {
-	Key * inlineComment = keyNew ("meta:/comment/#", KEY_END);
+	ElektraKey * inlineComment = keyNew ("meta:/comment/#", KEY_END);
 	elektraArrayIncName (inlineComment);
 
 	elektraAddCommentInfo (comments, inlineComment, spaces, commentStart, comment);

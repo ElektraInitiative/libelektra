@@ -43,17 +43,17 @@
 typedef struct ExampleUserData
 {
 	GMainLoop * loop;
-	KDB * kdb;
-	Key * parentKey;
-	KeySet * config;
+	ElektraKdb * kdb;
+	ElektraKey * parentKey;
+	ElektraKeyset * config;
 	ElektraIoInterface * binding;
-	Key * intKeyToWatch;
+	ElektraKey * intKeyToWatch;
 	int valueToPrint;
 	ElektraIoTimerOperation * timer;
 	ElektraIoTimerOperation * reload;
 } ExampleUserData;
 
-static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context);
+static void elektraChangedCallback (ElektraKey * changedKey ELEKTRA_UNUSED, void * context);
 
 /**
  * Initializes KDB on first call and performs cleanup before initialization on
@@ -78,7 +78,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		didReload = 1;
 	}
 
-	KeySet * contract = ksNew (0, KS_END);
+	ElektraKeyset * contract = ksNew (0, KS_END);
 	elektraIoContract (contract, data->binding);
 	elektraNotificationContract (contract);
 
@@ -96,7 +96,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		exit (1);
 	}
 
-	Key * elektraKey = keyNew ("/elektra", KEY_END);
+	ElektraKey * elektraKey = keyNew ("/elektra", KEY_END);
 	if (!elektraNotificationRegisterCallbackSameOrBelow (data->kdb, elektraKey, elektraChangedCallback, data))
 	{
 		printf ("could not register for changes to Elektra's configuration, aborting\n");
@@ -134,7 +134,7 @@ static gboolean onSIGNAL (gpointer user_data)
  * @param changedKey unused
  * @param context unused
  */
-static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context)
+static void elektraChangedCallback (ElektraKey * changedKey ELEKTRA_UNUSED, void * context)
 {
 	printf ("\nElektra's configuration has changed.\n");
 

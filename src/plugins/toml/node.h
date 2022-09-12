@@ -27,7 +27,7 @@ typedef enum
 
 typedef struct Node_
 {
-	Key * key;
+	ElektraKey * key;
 	NodeType type;
 	struct Node_ * parent;
 	char * relativeName;
@@ -49,7 +49,7 @@ typedef struct Node_
  * @retval Pointer The root of the created tree
  * @retval NULL On Error, the root key contains additional error information.
  * */
-Node * buildTree (Node * parent, Key * root, KeySet * keys);
+Node * buildTree (Node * parent, ElektraKey * root, ElektraKeyset * keys);
 
 /*
  * @brief Frees up any memory allocated within the tree and all it's children.

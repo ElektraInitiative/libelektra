@@ -36,10 +36,10 @@ static long convertUnsignedLong (const char * string, long defaultValue)
 	}
 }
 
-int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraZeroMqSendOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// read endpoint from configuration
-	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
+	ElektraKey * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
 	const char * endpoint = ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT;
 	if (endpointKey)
 	{
@@ -47,7 +47,7 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	}
 
 	// read timeout for connections from plugin configuration
-	Key * connectTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/connectTimeout", 0);
+	ElektraKey * connectTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/connectTimeout", 0);
 	long connectTimeout = ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT;
 	if (connectTimeoutKey)
 	{
@@ -55,7 +55,7 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	}
 
 	// read timeout for subscriptions from plugin configuration
-	Key * subscribeTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/subscribeTimeout", 0);
+	ElektraKey * subscribeTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/subscribeTimeout", 0);
 	long subscribeTimeout = ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT;
 	if (subscribeTimeoutKey)
 	{
@@ -78,11 +78,11 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/zeromqsend"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/zeromqsend", KEY_VALUE, "zeromqsend plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/zeromqsend/exports", KEY_END),
 			keyNew ("system:/elektra/modules/zeromqsend/exports/open", KEY_FUNC, elektraZeroMqSendOpen, KEY_END),
@@ -100,7 +100,7 @@ int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	return 1; /* success */
 }
 
-int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraZeroMqSendSet (Plugin * handle, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	ElektraZeroMqSendPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
@@ -126,7 +126,7 @@ int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key
 	return 1; /* success */
 }
 
-int elektraZeroMqSendClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraZeroMqSendClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	ElektraZeroMqSendPluginData * pluginData = elektraPluginGetData (handle);
 	if (pluginData == NULL)

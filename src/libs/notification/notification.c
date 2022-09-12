@@ -24,14 +24,14 @@
 /**
  * @see kdbnotificationinternal.h ::ElektraNotificationKdbUpdate
  */
-static void elektraNotificationKdbUpdate (KDB * kdb, Key * changedKey)
+static void elektraNotificationKdbUpdate (ElektraKdb * kdb, ElektraKey * changedKey)
 {
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, changedKey);
 	ksDel (ks);
 }
 
-int elektraNotificationContract (KeySet * contract)
+int elektraNotificationContract (ElektraKeyset * contract)
 {
 	if (contract == NULL) return -1;
 
@@ -52,7 +52,7 @@ int elektraNotificationContract (KeySet * contract)
  * @param  kdb KDB handle
  * @return     Notification plugin handle or NULL if not present
  */
-static Plugin * getNotificationPlugin (KDB * kdb)
+static Plugin * getNotificationPlugin (ElektraKdb * kdb)
 {
 	ELEKTRA_NOT_NULL (kdb);
 
@@ -93,7 +93,7 @@ ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_double_t, KdbDouble)
 ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_double_t, KdbLongDouble)
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context)
+int elektraNotificationRegisterCallback (ElektraKdb * kdb, ElektraKey * key, ElektraNotificationChangeCallback callback, void * context)
 {
 	if (!kdb || !key || !callback)
 	{
@@ -120,7 +120,7 @@ int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificati
 	return registerFunc (notificationPlugin, key, callback, context);
 }
 
-int elektraNotificationRegisterCallbackSameOrBelow (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context)
+int elektraNotificationRegisterCallbackSameOrBelow (ElektraKdb * kdb, ElektraKey * key, ElektraNotificationChangeCallback callback, void * context)
 {
 	if (!kdb || !key || !callback)
 	{
@@ -147,7 +147,7 @@ int elektraNotificationRegisterCallbackSameOrBelow (KDB * kdb, Key * key, Elektr
 	return registerFunc (notificationPlugin, key, callback, context);
 }
 
-int elektraNotificationSetConversionErrorCallback (KDB * kdb, ElektraNotificationConversionErrorCallback callback, void * context)
+int elektraNotificationSetConversionErrorCallback (ElektraKdb * kdb, ElektraNotificationConversionErrorCallback callback, void * context)
 {
 	if (!kdb || !callback)
 	{

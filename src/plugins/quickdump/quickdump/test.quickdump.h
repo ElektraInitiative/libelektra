@@ -7,12 +7,12 @@
  *
  */
 
-static KeySet * test_quickdump_expected (void)
+static ElektraKeyset * test_quickdump_expected (void)
 {
-	Key * k1 = keyNew ("dir:/tests/bench/__112", KEY_VALUE, "gQHLlzB36CqIFlf", KEY_META, "meta/_35", "O6xNya6srhNhMFC", KEY_META,
+	ElektraKey * k1 = keyNew ("dir:/tests/bench/__112", KEY_VALUE, "gQHLlzB36CqIFlf", KEY_META, "meta/_35", "O6xNya6srhNhMFC", KEY_META,
 			   "meta/_39", "ublVuvyh1DgfOKU", KEY_META, "meta/_58", "5Nyde2MHJODCBAT", KEY_META, "meta/_79", "ZK2xlaRMfobquxp",
 			   KEY_META, "meta/_90", "0kCcc1pK7hOgY3F", KEY_END);
-	Key * k8 = keyNew ("dir:/tests/bench/__911", KEY_VALUE, "PgNbwPxfeqD30pH", KEY_END);
+	ElektraKey * k8 = keyNew ("dir:/tests/bench/__911", KEY_VALUE, "PgNbwPxfeqD30pH", KEY_END);
 	keyCopyMeta (k8, k1, "meta/_35");
 	return ksNew (8, k1, keyNew ("dir:/tests/bench/__114", KEY_BINARY, KEY_META, "binary", "", KEY_END),
 		      keyNew ("dir:/tests/bench/__333", KEY_VALUE, "SxTUAjM6OIpUV6s", KEY_END),

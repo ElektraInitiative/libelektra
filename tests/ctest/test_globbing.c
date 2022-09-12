@@ -18,7 +18,7 @@
 
 static int check_key (const char * keyname, const char * pattern)
 {
-	Key * k = keyNew (keyname, KEY_END);
+	ElektraKey * k = keyNew (keyname, KEY_END);
 	int rc = elektraKeyGlob (k, pattern);
 	keyDel (k);
 	return rc;
@@ -134,19 +134,19 @@ static void test_keyset (void)
 {
 	printf ("keyset");
 
-	KeySet * test = ksNew (4, keyNew (BASE_KEY "/yes/a", KEY_END), keyNew (BASE_KEY "/yes/b", KEY_END),
+	ElektraKeyset * test = ksNew (4, keyNew (BASE_KEY "/yes/a", KEY_END), keyNew (BASE_KEY "/yes/b", KEY_END),
 			       keyNew (BASE_KEY "/no/a", KEY_END), keyNew (BASE_KEY "/no/b", KEY_END), KS_END);
 
-	KeySet * expected = ksNew (2, keyNew (BASE_KEY "/yes/a", KEY_END), keyNew (BASE_KEY "/yes/b", KEY_END), KS_END);
+	ElektraKeyset * expected = ksNew (2, keyNew (BASE_KEY "/yes/a", KEY_END), keyNew (BASE_KEY "/yes/b", KEY_END), KS_END);
 
-	KeySet * actual = ksNew (0, KS_END);
+	ElektraKeyset * actual = ksNew (0, KS_END);
 	succeed_if (elektraKsGlob (actual, test, BASE_KEY "/yes/*") == ksGetSize (expected), "wrong number of matching keys");
 
 	ksRewind (expected);
 	ksRewind (actual);
 
-	Key * curA = ksNext (actual);
-	Key * curE = ksNext (expected);
+	ElektraKey * curA = ksNext (actual);
+	ElektraKey * curE = ksNext (expected);
 	while (curA != NULL && curE != NULL)
 	{
 		succeed_if (keyCmp (curA, curE) == 0, keyName (curE));

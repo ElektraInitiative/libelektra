@@ -41,7 +41,7 @@
 #define TEST_CASE_UPDATE_SIGNATURE(TYPE_NAME) static void TEST_CASE_UPDATE_NAME (TYPE_NAME) (void)
 #define TEST_CASE_NO_UPDATE_SIGNATURE(TYPE_NAME) static void TEST_CASE_NO_UPDATE_NAME (TYPE_NAME) (void)
 
-static int REGISTER_FUNC_NAME (TYPE_NAME) (Plugin * plugin, Key * key, TYPE * variable)
+static int REGISTER_FUNC_NAME (TYPE_NAME) (Plugin * plugin, ElektraKey * key, TYPE * variable)
 {
 	size_t address = elektraPluginGetFunction (plugin, ELEKTRA_STRINGIFY (ELEKTRA_CONCAT (register, TYPE_NAME)));
 	if (!address) yield_error ("function not exported");
@@ -54,14 +54,14 @@ static int REGISTER_FUNC_NAME (TYPE_NAME) (Plugin * plugin, Key * key, TYPE * va
 TEST_CASE_UPDATE_SIGNATURE (TYPE_NAME)
 {
 	printf ("test update\n");
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
-	Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
+	ElektraKey * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
 	TYPE value = 0;
 	succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, registeredKey, &value) == 1, "registration was not successful");
 	char * valueStr = elektraFormat (FORMAT_STRING, TEST_VALUE);
-	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
+	ElektraKey * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);
+	ElektraKeyset * ks = ksNew (1, valueKey, KS_END);
 	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 	succeed_if (CHECK_VALUE, "registered value was not updated");
 	free (valueStr);
@@ -74,10 +74,10 @@ TEST_CASE_UPDATE_SIGNATURE (TYPE_NAME)
 TEST_CASE_NO_UPDATE_SIGNATURE (TYPE_NAME)
 {
 	printf ("test no update with invalid value\n");
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
-	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
+	ElektraKey * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
+	ElektraKeyset * ks = ksNew (1, valueKey, KS_END);
 	TYPE value = 0;
 	succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, valueKey, &value) == 1, "registration was not successful");
 	keySetString (valueKey, INVALID_VALUE);

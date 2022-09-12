@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 
-void printError (char * what, Key const * parentKey)
+void printError (char * what, ElektraKey const * parentKey)
 {
 	printf ("%s \"%s\" returned error: %s and reason %s\n", what, keyName (parentKey),
 		keyString (keyGetMeta (parentKey, "error/number")), keyString (keyGetMeta (parentKey, "error/reason")));
@@ -18,9 +18,9 @@ void printError (char * what, Key const * parentKey)
 
 int main (void)
 {
-	Key * parentKey = keyNew ("/", KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("/", KEY_END);
+	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
@@ -40,7 +40,7 @@ int main (void)
 	keyDel (parentKey);
 
 	ksRewind (ks);
-	Key * k;
+	ElektraKey * k;
 	while ((k = ksNext (ks)))
 	{
 		printf ("%s = %s\n", keyName (k), keyString (k));

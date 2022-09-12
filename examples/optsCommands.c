@@ -21,7 +21,7 @@ extern char ** environ;
 #define BASE_KEY "/sw/org/kdbdummy/#0/current"
 #define SPEC_BASE_KEY "spec" BASE_KEY
 
-static KeySet * createSpec (void)
+static ElektraKeyset * createSpec (void)
 {
 	return ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
 		      keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "description",
@@ -60,8 +60,8 @@ int main (int argc, const char ** argv)
 	 */
 
 
-	KeySet * ks = createSpec ();
-	Key * errorKey = keyNew (BASE_KEY, KEY_END);
+	ElektraKeyset * ks = createSpec ();
+	ElektraKey * errorKey = keyNew (BASE_KEY, KEY_END);
 
 	int result = elektraGetOpts (ks, argc, argv, (const char **) environ, errorKey);
 	if (result == -1)
@@ -86,7 +86,7 @@ int main (int argc, const char ** argv)
 
 	printf ("A real implementation would now\n");
 
-	Key * lookup = ksLookupByName (ks, BASE_KEY "/printversion", 0);
+	ElektraKey * lookup = ksLookupByName (ks, BASE_KEY "/printversion", 0);
 	if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
 	{
 		printf ("print version information\n");
@@ -149,15 +149,15 @@ int main (int argc, const char ** argv)
 	}
 	else
 	{
-		Key * arrayParent = ksLookupByName (ks, BASE_KEY "/dynamic", 0);
-		KeySet * dynamicCommand = elektraArrayGet (arrayParent, ks);
+		ElektraKey * arrayParent = ksLookupByName (ks, BASE_KEY "/dynamic", 0);
+		ElektraKeyset * dynamicCommand = elektraArrayGet (arrayParent, ks);
 
 		if (ksGetSize (dynamicCommand) > 0)
 		{
 			printf ("dynamically invoke the command '");
 			ksRewind (dynamicCommand);
 			printf ("%s' with arguments:", keyString (ksNext (dynamicCommand)));
-			Key * cur = NULL;
+			ElektraKey * cur = NULL;
 			while ((cur = ksNext (dynamicCommand)) != NULL)
 			{
 				printf (" %s", keyString (cur));

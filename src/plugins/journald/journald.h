@@ -12,9 +12,9 @@
 
 #include <kdbplugin.h>
 
-int elektraJournaldGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraJournaldSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraJournaldError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraJournaldGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraJournaldSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraJournaldError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

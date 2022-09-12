@@ -260,7 +260,7 @@ static void test_keySetNamespace (void)
 {
 	printf ("test keySetNamespace\n");
 
-	Key * k = keyNew ("/test/123", KEY_END);
+	ElektraKey * k = keyNew ("/test/123", KEY_END);
 	succeed_if (keySetNamespace (k, KEY_NS_CASCADING) == 10, "new size wrong");
 	succeed_if (keyGetNamespace (k) == KEY_NS_CASCADING, "new namespace wrong");
 	succeed_if_same_string (keyName (k), "/test/123");

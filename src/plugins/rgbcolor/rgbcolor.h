@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraRgbcolorGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraRgbcolorSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraRgbcolorGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraRgbcolorSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

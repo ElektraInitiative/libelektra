@@ -27,9 +27,9 @@ struct _TimeofdayInfo
 
 typedef struct _TimeofdayInfo TimeofdayInfo;
 
-int elektraTimeofdayOpen (Plugin * handle, Key *);
-int elektraTimeofdayClose (Plugin * handle, Key *);
-int elektraTimeofdayGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraTimeofdaySet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraTimeofdayError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraTimeofdayOpen (Plugin * handle, ElektraKey *);
+int elektraTimeofdayClose (Plugin * handle, ElektraKey *);
+int elektraTimeofdayGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraTimeofdaySet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraTimeofdayError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;

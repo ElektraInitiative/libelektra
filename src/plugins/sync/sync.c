@@ -24,11 +24,11 @@
 #define ERROR_SIZE 1024
 
 
-int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/sync"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/sync", KEY_VALUE, "sync plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/sync/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/sync/exports/get", KEY_FUNC, elektraSyncGet, KEY_END),
@@ -45,7 +45,7 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; /* success */
 }
 
-int elektraSyncCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraSyncCommit (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	/* set all keys */
 	const char * configFile = keyString (parentKey);

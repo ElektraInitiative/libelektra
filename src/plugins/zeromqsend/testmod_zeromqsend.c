@@ -184,11 +184,11 @@ static void test_commit (void)
 {
 	printf ("test commit notification\n");
 
-	Key * parentKey = keyNew ("system:/tests/foo", KEY_END);
-	Key * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/tests/foo", KEY_END);
+	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
+	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
 			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
 			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
@@ -224,11 +224,11 @@ static void test_timeoutConnect (void)
 {
 	printf ("test connect timeout\n");
 
-	Key * parentKey = keyNew ("system:/tests/foo", KEY_END);
-	Key * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/tests/foo", KEY_END);
+	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
+	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
 			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
 			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
@@ -255,11 +255,11 @@ static void test_timeoutSubscribe (void)
 {
 	printf ("test subscribe message timeout\n");
 
-	Key * parentKey = keyNew ("system:/tests/foo", KEY_END);
-	Key * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/tests/foo", KEY_END);
+	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
+	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
 			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
 			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");

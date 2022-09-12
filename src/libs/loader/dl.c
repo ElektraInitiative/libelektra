@@ -45,14 +45,14 @@ struct _Module
 	} symbol;
 };
 
-int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
+int elektraModulesInit (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
 	ksAppendKey (modules, keyNew ("system:/elektra/modules", KEY_END));
 
 	return 0;
 }
 
-elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * errorKey)
+elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * name, ElektraKey * errorKey)
 {
 #ifdef _WIN32
 	static const char elektraPluginPostfix[] = ".dll";
@@ -60,9 +60,9 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	static const char elektraPluginPostfix[] = ".so";
 #endif
 
-	Key * moduleKey = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (moduleKey, name);
-	Key * lookup = ksLookup (modules, moduleKey, 0);
+	ElektraKey * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
 		Module * module = (Module *) keyValue (lookup);
@@ -111,11 +111,11 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	return module.symbol.f;
 }
 
-int elektraModulesClose (KeySet * modules, Key * errorKey)
+int elektraModulesClose (ElektraKeyset * modules, ElektraKey * errorKey)
 {
-	Key * root = ksLookupByName (modules, "system:/elektra/modules", KDB_O_POP);
-	Key * cur;
-	KeySet * newModules = 0;
+	ElektraKey * root = ksLookupByName (modules, "system:/elektra/modules", KDB_O_POP);
+	ElektraKey * cur;
+	ElektraKeyset * newModules = 0;
 	int ret = 0;
 
 	if (!root)

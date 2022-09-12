@@ -12,9 +12,9 @@
 
 int main (void)
 {
-	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("system:/test/myapp", KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
+	ElektraKeyset * myConfig = ksNew (0, KS_END);
+	ElektraKey * key = keyNew ("system:/test/myapp", KEY_END);
+	ElektraKdb * handle = kdbOpen (NULL, key);
 
 	kdbGet (handle, myConfig, key);
 

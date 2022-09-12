@@ -20,7 +20,7 @@
 #include <kdb.h>
 #include "kdbplugin.h"
 
-static inline KeySet *elektraVersionKeySet (void)
+static inline ElektraKeyset *elektraVersionKeySet (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/version",
 			KEY_VALUE, "Below are version information of the Elektra Library you are currently using", KEY_END),

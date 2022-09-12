@@ -32,7 +32,7 @@ extern char ** environ;
  * DO NOT set/unset the specification inside of your application.
  */
 
-static KeySet * createSpec (void)
+static ElektraKeyset * createSpec (void)
 {
 	return ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
 		      keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "description",
@@ -59,12 +59,12 @@ static KeySet * createSpec (void)
 
 static int setupSpec (void)
 {
-	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 
-	KeySet * existing = ksCut (ks, parentKey);
+	ElektraKeyset * existing = ksCut (ks, parentKey);
 	if (ksGetSize (existing) > 0)
 	{
 		kdbClose (kdb, parentKey);
@@ -74,7 +74,7 @@ static int setupSpec (void)
 	}
 	ksDel (existing);
 
-	KeySet * spec = createSpec ();
+	ElektraKeyset * spec = createSpec ();
 	ksAppend (ks, spec);
 	ksDel (spec);
 	kdbSet (kdb, ks, parentKey);
@@ -87,11 +87,11 @@ static int setupSpec (void)
 
 static void removeSpec (void)
 {
-	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
-	KeySet * spec = ksCut (ks, parentKey);
+	ElektraKeyset * spec = ksCut (ks, parentKey);
 	ksDel (spec);
 	kdbSet (kdb, ks, parentKey);
 	kdbClose (kdb, parentKey);
@@ -113,15 +113,15 @@ int main (int argc, const char ** argv)
 		return EXIT_FAILURE;
 	}
 
-	Key * parentKey = keyNew (BASE_KEY, KEY_END);
-	KeySet * goptsConfig = ksNew (0, KS_END);
-	KeySet * contract = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (BASE_KEY, KEY_END);
+	ElektraKeyset * goptsConfig = ksNew (0, KS_END);
+	ElektraKeyset * contract = ksNew (0, KS_END);
 
 	elektraGOptsContract (contract, argc, argv, (const char * const *) environ, parentKey, goptsConfig);
 
-	KDB * kdb = kdbOpen (contract, parentKey);
+	ElektraKdb * kdb = kdbOpen (contract, parentKey);
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	int rc = kdbGet (kdb, ks, parentKey);
 
 	if (rc == -1)
@@ -134,7 +134,7 @@ int main (int argc, const char ** argv)
 		return EXIT_FAILURE;
 	}
 
-	Key * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
+	ElektraKey * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
 	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
 	{
 		const char * help = keyString (ksLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
@@ -148,7 +148,7 @@ int main (int argc, const char ** argv)
 
 	printf ("A real implementation would now\n");
 
-	Key * lookup = ksLookupByName (ks, BASE_KEY "/printversion", 0);
+	ElektraKey * lookup = ksLookupByName (ks, BASE_KEY "/printversion", 0);
 	if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
 	{
 		printf ("print version information\n");
@@ -215,15 +215,15 @@ int main (int argc, const char ** argv)
 	}
 	else
 	{
-		Key * arrayParent = ksLookupByName (ks, BASE_KEY "/dynamic", 0);
-		KeySet * dynamicCommand = elektraArrayGet (arrayParent, ks);
+		ElektraKey * arrayParent = ksLookupByName (ks, BASE_KEY "/dynamic", 0);
+		ElektraKeyset * dynamicCommand = elektraArrayGet (arrayParent, ks);
 
 		if (ksGetSize (dynamicCommand) > 0)
 		{
 			printf ("dynamically invoke the command '");
 			ksRewind (dynamicCommand);
 			printf ("%s' with arguments:", keyString (ksNext (dynamicCommand)));
-			Key * cur = NULL;
+			ElektraKey * cur = NULL;
 			while ((cur = ksNext (dynamicCommand)) != NULL)
 			{
 				printf (" %s", keyString (cur));

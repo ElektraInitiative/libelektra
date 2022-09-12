@@ -26,7 +26,7 @@ struct _GElektraKeySet
 	GObject parent_instance;
 
 	/* instance members */
-	KeySet * keyset;
+	ElektraKeyset * keyset;
 };
 
 struct _GElektraKeySetClass
@@ -48,7 +48,7 @@ GType gelektra_keyset_get_type (void);
 
 /* constructor */
 GElektraKeySet * gelektra_keyset_new (gsize alloc, ...);
-GElektraKeySet * gelektra_keyset_make (KeySet * ks);
+GElektraKeySet * gelektra_keyset_make (ElektraKeyset * ks);
 
 /* basic methods */
 GElektraKeySet * gelektra_keyset_dup (const GElektraKeySet * ks);

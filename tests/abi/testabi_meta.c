@@ -10,7 +10,7 @@
 
 static void test_basic (void)
 {
-	Key * key;
+	ElektraKey * key;
 	key = keyNew ("user:/key_with_meta", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyGetMeta (key, "hello") == 0, "hello was not set up to now");
@@ -61,7 +61,7 @@ static void test_basic (void)
 
 static void test_null_pointer (void)
 {
-	Key * key;
+	ElektraKey * key;
 
 	key = keyNew ("user:/test1", KEY_END);
 	exit_if_fail (key, "could not create new key");
@@ -89,7 +89,7 @@ static void test_null_pointer (void)
 
 static void test_iterate (void)
 {
-	Key * key;
+	ElektraKey * key;
 
 	key = keyNew ("user:/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
@@ -116,7 +116,7 @@ static void test_iterate (void)
 
 static void test_size (void)
 {
-	Key * key;
+	ElektraKey * key;
 	char * buffer;
 
 	key = keyNew ("user:/test", KEY_END);
@@ -201,8 +201,8 @@ static void test_size (void)
 
 static void test_dup (void)
 {
-	Key * key;
-	Key * dup;
+	ElektraKey * key;
+	ElektraKey * dup;
 
 	key = keyNew ("user:/orig", KEY_END);
 	succeed_if (keySetMeta (key, "test", "some_meta_test") == sizeof ("some_meta_test"), "could not set meta");
@@ -218,9 +218,9 @@ static void test_dup (void)
 	keyDel (key);
 }
 
-Key * g_c;
+ElektraKey * g_c;
 
-static void j (Key * k)
+static void j (ElektraKey * k)
 {
 	size_t size = keyGetValueSize (k);
 	char * value = elektraMalloc (size);
@@ -238,7 +238,7 @@ static void j (Key * k)
 	// with the metadata from g_c
 }
 
-static void l (Key * k)
+static void l (ElektraKey * k)
 {
 	// receive g_c
 	keyCopyMeta (k, g_c, "type");
@@ -248,7 +248,7 @@ static void l (Key * k)
 
 static void test_examples (void)
 {
-	Key * key;
+	ElektraKey * key;
 	key = keyNew ("/", KEY_END);
 	keySetMeta (key, "def", "abc");
 	keySetMeta (key, "nop", "cup");
@@ -290,8 +290,8 @@ static void test_copy (void)
 {
 	printf ("Test key meta copy\n");
 
-	Key * key1;
-	Key * key2;
+	ElektraKey * key1;
+	ElektraKey * key2;
 
 	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
 	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
@@ -344,8 +344,8 @@ static void test_copy (void)
 	keyDel (key1);
 	keyDel (key2);
 
-	Key * k;
-	Key * c;
+	ElektraKey * k;
+	ElektraKey * c;
 
 	// clang-format off
 	k=keyNew ("user:/metakey",
@@ -410,7 +410,7 @@ static void test_copy (void)
 
 static void test_new (void)
 {
-	Key * key;
+	ElektraKey * key;
 	// clang-format off
 	key = keyNew ("user:/test",
 		KEY_META, "hello", "hello_world",
@@ -465,8 +465,8 @@ static void test_copyall (void)
 {
 	printf ("Test key meta copy all\n");
 
-	Key * key1;
-	Key * key2;
+	ElektraKey * key1;
+	ElektraKey * key2;
 
 	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
 	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
@@ -519,8 +519,8 @@ static void test_copyall (void)
 	keyDel (key1);
 	keyDel (key2);
 
-	Key * k;
-	Key * c;
+	ElektraKey * k;
+	ElektraKey * c;
 
 	// clang-format off
 	k=keyNew ("user:/metakey",
@@ -560,7 +560,7 @@ static void test_copyall (void)
 
 static void test_type (void)
 {
-	Key * key;
+	ElektraKey * key;
 
 	succeed_if (key = keyNew ("/", KEY_END), "could not create a new key");
 	succeed_if (keyValue (keyGetMeta (key, "binary")) == 0, "wrong type after key creation");
@@ -574,9 +574,9 @@ static void test_type (void)
 
 static void test_keyMeta (void)
 {
-	Key * key = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", KEY_END);
 
-	KeySet * meta = keyMeta (key);
+	ElektraKeyset * meta = keyMeta (key);
 
 	succeed_if (meta, "meta keyset is null");
 	succeed_if (ksGetSize (meta) == 0, "meta keyset is not empty");

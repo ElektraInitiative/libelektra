@@ -16,13 +16,13 @@
 
 static int createModeBits (const char * modes);
 
-static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, Key * key);
+static int handleNoUserCase (ElektraKey * parentKey, const char * validPath, const char * modes, ElektraKey * key);
 
-static int switchUser (Key * key, Key * parentKey, const struct passwd * p);
+static int switchUser (ElektraKey * key, ElektraKey * parentKey, const struct passwd * p);
 
-static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr);
+static int switchGroup (ElektraKey * key, ElektraKey * parentKey, const char * name, const struct group * gr);
 
-static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups);
+static int getAllGroups (ElektraKey * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups);
 
 /**
  * This method tries to find a matching group from a group struct containing more than one group
@@ -41,7 +41,7 @@ static bool isUserInGroup (unsigned int val, gid_t * groups, unsigned int size)
 	return false;
 }
 
-static int validateKey (Key * key, Key * parentKey)
+static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 {
 	struct stat buf;
 	/* TODO: make exceptions configurable using path/allow */
@@ -64,7 +64,7 @@ static int validateKey (Key * key, Key * parentKey)
 		return 0;
 	}
 	int errnosave = errno;
-	const Key * meta = keyGetMeta (key, "check/path");
+	const ElektraKey * meta = keyGetMeta (key, "check/path");
 	if (stat (keyString (key), &buf) == -1)
 	{
 		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + keyGetNameSize (key) + keyGetValueSize (key) +
@@ -107,13 +107,13 @@ static int validateKey (Key * key, Key * parentKey)
  * @retval 1 if success
  * @retval -1 for failure
  */
-static int validatePermission (Key * key, Key * parentKey)
+static int validatePermission (ElektraKey * key, ElektraKey * parentKey)
 {
 
 	uid_t currentUID = geteuid ();
 
-	const Key * userMeta = keyGetMeta (key, "check/path/user");
-	const Key * userTypes = keyGetMeta (key, "check/path/mode");
+	const ElektraKey * userMeta = keyGetMeta (key, "check/path/user");
+	const ElektraKey * userTypes = keyGetMeta (key, "check/path/mode");
 
 	// ***** central variables *******
 	const char * validPath = keyString (key);
@@ -231,7 +231,7 @@ static int validatePermission (Key * key, Key * parentKey)
  * @param groups the actual groups which are returned
  * @retval 0 if success
  */
-static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups)
+static int getAllGroups (ElektraKey * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups)
 {
 	gid_t * tmpGroups = (gid_t *) elektraMalloc (0 * sizeof (gid_t));
 	getgrouplist (p->pw_name, (int) p->pw_gid, tmpGroups, &ngroups);
@@ -263,7 +263,7 @@ static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd 
  * @param gr The group to which it is switched
  * @retval 0 if success
  */
-static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr)
+static int switchGroup (ElektraKey * key, ElektraKey * parentKey, const char * name, const struct group * gr)
 {
 	int gidErr = setegid ((int) gr->gr_gid);
 	if (gidErr < 0)
@@ -285,7 +285,7 @@ static int switchGroup (Key * key, Key * parentKey, const char * name, const str
  * @retval 0 if success
  * @retval -1 if failure happens
  */
-static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
+static int switchUser (ElektraKey * key, ElektraKey * parentKey, const struct passwd * p)
 {
 	// Check if I can change the UID as root
 	int err = seteuid ((int) p->pw_uid);
@@ -308,7 +308,7 @@ static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
  * @retval 1 if success
  * @retval -1 if failure happens
  */
-static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, Key * key)
+static int handleNoUserCase (ElektraKey * parentKey, const char * validPath, const char * modes, ElektraKey * key)
 {
 	int modeMask = createModeBits (modes);
 	struct passwd * p = getpwuid (getuid ());
@@ -345,10 +345,10 @@ static int createModeBits (const char * modes)
 	return modeMask;
 }
 
-int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* contract only */
-	KeySet * n;
+	ElektraKeyset * n;
 	ksAppend (returned, n = ksNew (30, keyNew ("system:/elektra/modules/path", KEY_VALUE, "path plugin waits for your orders", KEY_END),
 				       keyNew ("system:/elektra/modules/path/exports", KEY_END),
 				       keyNew ("system:/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
@@ -363,20 +363,20 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return 1; /* success */
 }
 
-int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* set all keys */
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	int rc = 1;
 	while ((cur = ksNext (returned)) != 0)
 	{
-		const Key * pathMeta = keyGetMeta (cur, "check/path");
+		const ElektraKey * pathMeta = keyGetMeta (cur, "check/path");
 		if (!pathMeta) continue;
 		rc = validateKey (cur, parentKey);
 		if (rc <= 0) return -1;
 
-		const Key * accessMeta = keyGetMeta (cur, "check/path/mode");
+		const ElektraKey * accessMeta = keyGetMeta (cur, "check/path/mode");
 		if (!accessMeta) continue;
 		rc = validatePermission (cur, parentKey);
 		if (!rc) return -1;

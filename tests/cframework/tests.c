@@ -113,9 +113,9 @@ int init (int argc, char ** argv)
 /**Create a root key for a backend.
  *
  * @return an allocated root key */
-Key * create_root_key (const char * backendName)
+ElektraKey * create_root_key (const char * backendName)
 {
-	Key * root = keyNew ("user:/tests", KEY_END);
+	ElektraKey * root = keyNew ("user:/tests", KEY_END);
 	/*Make mountpoint beneath root, and do all tests here*/
 	keyAddBaseName (root, backendName);
 	keySetString (root, backendName);
@@ -126,7 +126,7 @@ Key * create_root_key (const char * backendName)
 /**Create a configuration keyset for a backend.
  *
  * @return an allocated configuration keyset for a backend*/
-KeySet * create_conf (const char * filename)
+ElektraKeyset * create_conf (const char * filename)
 {
 	return ksNew (2, keyNew ("system:/path", KEY_VALUE, filename, KEY_END), KS_END);
 }
@@ -309,17 +309,17 @@ void elektraUnlink (const char * filename)
 	unlink (filename);
 }
 
-void clear_sync (KeySet * ks)
+void clear_sync (ElektraKeyset * ks)
 {
-	Key * k;
+	ElektraKey * k;
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 		keyClearSync (k);
 }
 
-void output_meta (Key * k)
+void output_meta (ElektraKey * k)
 {
-	const Key * meta;
+	const ElektraKey * meta;
 
 	keyRewindMeta (k);
 	while ((meta = keyNextMeta (k)) != 0)
@@ -329,16 +329,16 @@ void output_meta (Key * k)
 	printf ("\n");
 }
 
-void output_key (Key * k)
+void output_key (ElektraKey * k)
 {
 	// output_meta will print endline
 	printf ("%p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
 	output_meta (k);
 }
 
-void output_keyset (KeySet * ks)
+void output_keyset (ElektraKeyset * ks)
 {
-	Key * k;
+	ElektraKey * k;
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
@@ -417,11 +417,11 @@ void generate_split (Split * split)
  *
  * @retval 1 if no warnings (can be used within succeed_if)
  */
-int output_warnings (Key * warningKey)
+int output_warnings (ElektraKey * warningKey)
 {
 	//! [warnings]
-	Key * cutpoint = keyNew ("meta:/warnings", KEY_END);
-	KeySet * warnings = ksCut (keyMeta (warningKey), cutpoint);
+	ElektraKey * cutpoint = keyNew ("meta:/warnings", KEY_END);
+	ElektraKeyset * warnings = ksCut (keyMeta (warningKey), cutpoint);
 
 	if (!warningKey || ksGetSize (warnings) == 0)
 	{
@@ -435,7 +435,7 @@ int output_warnings (Key * warningKey)
 	while (i < ksGetSize (warnings))
 	{
 		++i;
-		Key * cur = ksAtCursor (warnings, i);
+		ElektraKey * cur = ksAtCursor (warnings, i);
 		while (!keyIsDirectlyBelow (cutpoint, cur))
 		{
 			printf ("%s: %s\n", keyName (cur) + keyGetNameSize (cutpoint), keyString (cur));
@@ -461,10 +461,10 @@ int output_warnings (Key * warningKey)
  *
  * @retval 1 if no error (can be used within succeed_if)
  */
-int output_error (Key * errorKey)
+int output_error (ElektraKey * errorKey)
 {
 	//! [error]
-	const Key * metaError = keyGetMeta (errorKey, "error");
+	const ElektraKey * metaError = keyGetMeta (errorKey, "error");
 	if (!metaError) return 1; /* There is no current error */
 
 	printf ("number: %s\n", keyString (keyGetMeta (errorKey, "error/number")));

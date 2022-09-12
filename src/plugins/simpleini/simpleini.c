@@ -44,7 +44,7 @@ static struct lineFormat getFormat (Plugin * handle)
 {
 	struct lineFormat ret;
 	// char * format;
-	Key * key = ksLookupByName (elektraPluginGetConfig (handle), "/format", 0);
+	ElektraKey * key = ksLookupByName (elektraPluginGetConfig (handle), "/format", 0);
 	if (!key)
 	{
 		ret.format = elektraStrDup ("%s = %s\n");
@@ -208,13 +208,13 @@ static char * getWriteFormat (Plugin * handle)
 	return f.format;
 }
 
-int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* get all keys */
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/simpleini"))
 	{
-		KeySet * moduleConfig = ksNew (
+		ElektraKeyset * moduleConfig = ksNew (
 			30, keyNew ("system:/elektra/modules/simpleini", KEY_VALUE, "simpleini plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/simpleini/exports", KEY_END),
 			keyNew ("system:/elektra/modules/simpleini/exports/get", KEY_FUNC, elektraSimpleiniGet, KEY_END),
@@ -294,7 +294,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			continue;
 		}
 
-		Key * read = keyNew (keyName (parentKey), KEY_END);
+		ElektraKey * read = keyNew (keyName (parentKey), KEY_END);
 		strippedkey = elektraStrip (key);
 
 		if (keyAddName (read, strippedkey) == -1)
@@ -345,7 +345,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* set all keys */
 
@@ -360,7 +360,7 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	ELEKTRA_LOG ("Write to '%s' with format '%s'", keyString (parentKey), format);
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{

@@ -13,30 +13,30 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-Key * keyAppendIndex (size_t index, const Key * parent);
-void keyUpdateArrayMetakey (Key * key, size_t newIndex);
+ElektraKey * keyAppendIndex (size_t index, const ElektraKey * parent);
+void keyUpdateArrayMetakey (ElektraKey * key, size_t newIndex);
 char * indexToArrayString (size_t index);
 size_t arrayStringToIndex (const char * indexStr);
 bool isArrayIndex (const char * basename);
-void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value);
+void setPlainIntMeta (ElektraKey * key, const char * metaKeyName, size_t value);
 char * intToStr (size_t i);
-void setOrderForKey (Key * key, size_t order);
-bool isArrayElement (const Key * key);
-bool isEmptyArray (Key * key);
+void setOrderForKey (ElektraKey * key, size_t order);
+bool isArrayElement (const ElektraKey * key);
+bool isEmptyArray (ElektraKey * key);
 bool isBareString (const char * str);
-size_t getArrayMax (Key * key);
-bool isArray (Key * key);
-bool isSimpleTable (Key * key);
-bool isTableArray (Key * key);
-bool isInlineTable (Key * key);
-bool isTomlType (Key * key, const char * type);
-char * getRelativeName (Key * parent, Key * key);
-char * getDirectSubKeyName (const Key * parent, const Key * key);
-void keySetDiff (KeySet * whole, KeySet * part);
-KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *));
-KeySet * collectSubKeys (KeySet * ks, Key * parent);
-KeySet * extractSubKeys (KeySet * ks, Key * parent);
-bool isLeaf (Key * leafCandidate, KeySet * ks);
+size_t getArrayMax (ElektraKey * key);
+bool isArray (ElektraKey * key);
+bool isSimpleTable (ElektraKey * key);
+bool isTableArray (ElektraKey * key);
+bool isInlineTable (ElektraKey * key);
+bool isTomlType (ElektraKey * key, const char * type);
+char * getRelativeName (ElektraKey * parent, ElektraKey * key);
+char * getDirectSubKeyName (const ElektraKey * parent, const ElektraKey * key);
+void keySetDiff (ElektraKeyset * whole, ElektraKeyset * part);
+ElektraKeyset * keysByPredicate (ElektraKeyset * ks, bool (*pred) (ElektraKey *));
+ElektraKeyset * collectSubKeys (ElektraKeyset * ks, ElektraKey * parent);
+ElektraKeyset * extractSubKeys (ElektraKeyset * ks, ElektraKey * parent);
+bool isLeaf (ElektraKey * leafCandidate, ElektraKeyset * ks);
 bool isBase64String (const char * str);
 bool isNullString (const char * str);
 

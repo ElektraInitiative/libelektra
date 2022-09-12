@@ -17,7 +17,7 @@
 
 #include <kdbinternal.h>
 
-void clear_sync (KeySet * ks);
+void clear_sync (ElektraKeyset * ks);
 void output_plugin (Plugin * plugin);
 void output_backend (Plugin * backend);
 

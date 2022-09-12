@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraCsvstorageGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCsvstorageSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCsvstorageGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraCsvstorageSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

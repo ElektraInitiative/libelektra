@@ -12,8 +12,8 @@
 #include <kdbplugin.h>
 
 
-int elektraSyncGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraSyncCommit (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraSyncGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraSyncCommit (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -18,11 +18,11 @@
 #include <time.h>
 
 
-int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/file"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/file", KEY_VALUE, "file plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/file/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/file/exports/get", KEY_FUNC, elektraFileGet, KEY_END),
@@ -37,8 +37,8 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	short binary = 0;
 	short info = 0;
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * lookup = ksLookupByName (config, "/info", KDB_O_NONE);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * lookup = ksLookupByName (config, "/info", KDB_O_NONE);
 	if (lookup) info = 1;
 	lookup = ksLookupByName (config, "/binary", KDB_O_NONE);
 	if (lookup) binary = 1;
@@ -95,7 +95,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	}
 	fclose (fp);
 
-	Key * key = keyNew (keyName (parentKey), KEY_END);
+	ElektraKey * key = keyNew (keyName (parentKey), KEY_END);
 	if (binary)
 	{
 		keySetBinary (key, (const void *) buffer, (size_t) fileSize);
@@ -130,11 +130,11 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; // success
 }
 
-int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
-	const Key * key = ksLookup (returned, parentKey, KDB_O_NONE);
+	const ElektraKey * key = ksLookup (returned, parentKey, KDB_O_NONE);
 	if (!key) return 0;
 	const char * fileName = keyString (parentKey);
 

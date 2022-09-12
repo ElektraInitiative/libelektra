@@ -43,7 +43,7 @@ XRrYPw+gFVq5zeOAI4A=\n\
 
 static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0x03, 0x04 };
 
-static KeySet * newPluginConfiguration (void)
+static ElektraKeyset * newPluginConfiguration (void)
 {
 	// clang-format off
 	return ksNew (3,
@@ -55,7 +55,7 @@ static KeySet * newPluginConfiguration (void)
 	// clang-format on
 }
 
-static KeySet * newPluginConfigurationWithTextmodeEnabled (void)
+static ElektraKeyset * newPluginConfigurationWithTextmodeEnabled (void)
 {
 	// clang-format off
 	return ksNew (3,
@@ -119,9 +119,9 @@ static int isTestFileCorrect (const char * file)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * configKs = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (PLUGIN_NAME, modules, configKs, 0);
@@ -130,7 +130,7 @@ static void test_init (void)
 	{
 		succeed_if (!strcmp (plugin->name, PLUGIN_NAME), "got wrong name");
 
-		KeySet * config = elektraPluginGetConfig (plugin);
+		ElektraKeyset * config = elektraPluginGetConfig (plugin);
 		succeed_if (config != 0, "there should be a config");
 
 		succeed_if (plugin->kdbOpen != 0, "no open pointer");
@@ -149,13 +149,13 @@ static void test_init (void)
 static void test_gpg (void)
 {
 	// Plugin configuration
-	KeySet * conf = newPluginConfiguration ();
-	Key * errorKey = keyNew ("/", KEY_END);
+	ElektraKeyset * conf = newPluginConfiguration ();
+	ElektraKey * errorKey = keyNew ("/", KEY_END);
 
 	// install the gpg key
 	char * argv[] = { "", "-a", "--import", NULL };
 	const size_t argc = 4;
-	Key * msg = keyNew ("/", KEY_END);
+	ElektraKey * msg = keyNew ("/", KEY_END);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
 	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
@@ -168,16 +168,16 @@ static void test_gpg (void)
 static void test_file_crypto_operations (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
 	plugin = elektraPluginOpen (PLUGIN_NAME, modules, config, 0);
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		KeySet * data = ksNew (0, KS_END);
+		ElektraKeyset * data = ksNew (0, KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
@@ -212,16 +212,16 @@ static void test_file_crypto_operations (void)
 static void test_file_signature_operations (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
 	plugin = elektraPluginOpen (PLUGIN_NAME, modules, config, 0);
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		KeySet * data = ksNew (0, KS_END);
+		ElektraKeyset * data = ksNew (0, KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
@@ -251,16 +251,16 @@ static void test_file_signature_operations (void)
 static void test_file_faulty_signature (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = newPluginConfigurationWithTextmodeEnabled ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * config = newPluginConfigurationWithTextmodeEnabled ();
 
 	elektraModulesInit (modules, 0);
 	plugin = elektraPluginOpen (PLUGIN_NAME, modules, config, 0);
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		KeySet * data = ksNew (0, KS_END);
+		ElektraKeyset * data = ksNew (0, KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{

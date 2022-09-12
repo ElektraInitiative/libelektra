@@ -9,7 +9,7 @@
 
 // FIXME: TESTS
 
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	BackendHandle * handle = elektraCalloc (sizeof (BackendHandle));
 	elektraPluginSetData (plugin, handle);
@@ -24,7 +24,7 @@ enum PluginType
 	PLUGIN_TYPE_ERROR,
 };
 
-static bool loadPlugin (Plugin ** pluginPtr, Plugin * thisPlugin, Key * pluginRefKey, enum PluginType type, Key * parentKey)
+static bool loadPlugin (Plugin ** pluginPtr, Plugin * thisPlugin, ElektraKey * pluginRefKey, enum PluginType type, ElektraKey * parentKey)
 {
 	if (pluginRefKey == NULL)
 	{
@@ -83,17 +83,17 @@ static bool loadPlugin (Plugin ** pluginPtr, Plugin * thisPlugin, Key * pluginRe
 	return true;
 }
 
-static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, KeySet * definition, const char * pluginRefRootName,
-			    enum PluginType type, Key * parentKey)
+static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, ElektraKeyset * definition, const char * pluginRefRootName,
+			    enum PluginType type, ElektraKey * parentKey)
 {
-	Key * pluginRefRoot = keyNew (pluginRefRootName, KEY_END);
+	ElektraKey * pluginRefRoot = keyNew (pluginRefRootName, KEY_END);
 
 	*pluginListPtr = NULL;
 	PluginList * listEnd = NULL;
 
 	for (elektraCursor end, i = ksFindHierarchy (definition, pluginRefRoot, &end); i < end; i++)
 	{
-		Key * cur = ksAtCursor (definition, i);
+		ElektraKey * cur = ksAtCursor (definition, i);
 		if (keyIsDirectlyBelow (pluginRefRoot, cur) != 1)
 		{
 			continue;
@@ -125,7 +125,7 @@ static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, Ke
 	return true;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, ElektraKeyset * definition, ElektraKey * parentKey)
 {
 	if (keyGetNamespace (parentKey) == KEY_NS_PROC)
 	{
@@ -141,7 +141,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 
-	Key * pathKey = ksLookupByName (definition, "system:/path", 0);
+	ElektraKey * pathKey = ksLookupByName (definition, "system:/path", 0);
 	const char * path = keyString (pathKey);
 	if (pathKey == NULL || strlen (path) == 0)
 	{
@@ -376,7 +376,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 	return readOnly ? ELEKTRA_PLUGIN_STATUS_NO_UPDATE : ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-static inline void addGenericError (Key * key, const char * function, const char * plugin)
+static inline void addGenericError (ElektraKey * key, const char * function, const char * plugin)
 {
 	ELEKTRA_SET_INTERFACE_ERRORF (key,
 				      "The %s() function of the plugin '%s' returned ELEKTRA_PLUGIN_STATUS_ERROR, but did not actually set "
@@ -384,7 +384,7 @@ static inline void addGenericError (Key * key, const char * function, const char
 				      function, plugin);
 }
 
-static int runPluginGet (Plugin * plugin, KeySet * ks, Key * parentKey)
+static int runPluginGet (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// TODO: provide way to access kdbGet and name without kdbprivate.h
 	ksRewind (ks);
@@ -399,7 +399,7 @@ static int runPluginGet (Plugin * plugin, KeySet * ks, Key * parentKey)
 	return ret;
 }
 
-static int runPluginListGet (PluginList * plugins, KeySet * ks, Key * parentKey)
+static int runPluginListGet (PluginList * plugins, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
 	{
@@ -411,11 +411,11 @@ static int runPluginListGet (PluginList * plugins, KeySet * ks, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backend"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/backend", KEY_VALUE, "backend plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/backend/exports", KEY_END),
 			keyNew ("system:/elektra/modules/backend/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
@@ -483,7 +483,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-static int runPluginSet (Plugin * plugin, KeySet * ks, Key * parentKey)
+static int runPluginSet (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// TODO: provide way to access kdbSet and name without kdbprivate.h
 	ksRewind (ks);
@@ -498,7 +498,7 @@ static int runPluginSet (Plugin * plugin, KeySet * ks, Key * parentKey)
 	return ret;
 }
 
-static int runPluginListSet (PluginList * plugins, KeySet * ks, Key * parentKey)
+static int runPluginListSet (PluginList * plugins, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
 	{
@@ -510,7 +510,7 @@ static int runPluginListSet (PluginList * plugins, KeySet * ks, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	BackendHandle * handle = elektraPluginGetData (plugin);
 	if (handle == NULL)
@@ -559,7 +559,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-static int runPluginCommit (Plugin * plugin, KeySet * ks, Key * parentKey)
+static int runPluginCommit (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// TODO: provide way to access kdbCommit and name without kdbprivate.h
 	ksRewind (ks);
@@ -574,7 +574,7 @@ static int runPluginCommit (Plugin * plugin, KeySet * ks, Key * parentKey)
 	return ret;
 }
 
-static int runPluginListCommit (PluginList * plugins, KeySet * ks, Key * parentKey)
+static int runPluginListCommit (PluginList * plugins, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
 	{
@@ -586,7 +586,7 @@ static int runPluginListCommit (PluginList * plugins, KeySet * ks, Key * parentK
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	BackendHandle * handle = elektraPluginGetData (plugin);
 	if (handle == NULL)
@@ -619,7 +619,7 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks, Key * parent
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-static int runPluginError (Plugin * plugin, KeySet * ks, Key * parentKey)
+static int runPluginError (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// TODO: provide way to access kdbError and name without kdbprivate.h
 	ksRewind (ks);
@@ -634,7 +634,7 @@ static int runPluginError (Plugin * plugin, KeySet * ks, Key * parentKey)
 	return ret;
 }
 
-static int runPluginListError (PluginList * plugins, KeySet * ks, Key * parentKey)
+static int runPluginListError (PluginList * plugins, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
 	{
@@ -646,7 +646,7 @@ static int runPluginListError (PluginList * plugins, KeySet * ks, Key * parentKe
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	BackendHandle * handle = elektraPluginGetData (plugin);
 	if (handle == NULL)
@@ -691,7 +691,7 @@ static void freePluginList (PluginList ** pluginsPtr)
 	*pluginsPtr = NULL;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	BackendHandle * handle = elektraPluginGetData (plugin);
 	if (handle == NULL)

@@ -8,10 +8,10 @@
 
 #include <kdb.h>
 
-Key * copy;
+ElektraKey * copy;
 
 //! [Basic Copy All]
-void l (Key * k)
+void l (ElektraKey * k)
 {
 	// receive copy
 	keyCopyAllMeta (k, copy);
@@ -20,16 +20,16 @@ void l (Key * k)
 }
 //! [Basic Copy All]
 
-int needsSharedData (Key * k)
+int needsSharedData (ElektraKey * k)
 {
 	return k ? 1 : 0;
 }
 
 //! [Shared Meta All]
-void o (KeySet * ks)
+void o (ElektraKeyset * ks)
 {
-	Key * current;
-	Key * shared = keyNew ("/", KEY_END);
+	ElektraKey * current;
+	ElektraKey * shared = keyNew ("/", KEY_END);
 	keySetMeta (shared, "shared1", "this metadata should be shared among many keys");
 	keySetMeta (shared, "shared2", "this metadata should be shared among many keys also");
 	keySetMeta (shared, "shared3", "this metadata should be shared among many keys too");
@@ -46,13 +46,13 @@ void o (KeySet * ks)
 
 int main (void)
 {
-	Key * k = keyNew ("user:/key", KEY_END);
+	ElektraKey * k = keyNew ("user:/key", KEY_END);
 	copy = keyNew ("user:/copy", KEY_END);
 	l (k);
 	keyDel (k);
 	keyDel (copy);
 
-	KeySet * ks = ksNew (20, KS_END);
+	ElektraKeyset * ks = ksNew (20, KS_END);
 	o (ks);
 	ksDel (ks);
 }

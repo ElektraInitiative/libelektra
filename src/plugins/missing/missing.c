@@ -13,11 +13,11 @@
 #include <kdbplugin.h>
 
 
-int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/missing"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/missing", KEY_VALUE, "The missing plugin is waiting for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/missing/exports", KEY_END),
 			keyNew ("system:/elektra/modules/missing/exports/get", KEY_FUNC, elektraMissingGet, KEY_END),
@@ -34,7 +34,7 @@ int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return -1;
 }
 
-int elektraMissingSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraMissingSet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Tried to set a key from a missing backend: %s", keyName (parentKey));
 	return -1;

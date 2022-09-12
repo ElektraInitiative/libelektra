@@ -13,11 +13,11 @@
 #include <kdbplugin.h>
 
 
-int elektraProfileOpen (Plugin * handle, Key * errorKey);
-int elektraProfileClose (Plugin * handle, Key * errorKey);
-int elektraProfileGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraProfileSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraProfileError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraProfileOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraProfileClose (Plugin * handle, ElektraKey * errorKey);
+int elektraProfileGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraProfileSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraProfileError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraConditionalsGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraConditionalsSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraConditionalsGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraConditionalsSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

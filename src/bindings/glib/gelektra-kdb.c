@@ -3,7 +3,7 @@
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKdb, gelektra_kdb, G_TYPE_OBJECT)
-static KDB * gelektra_kdb_swap (GElektraKdb * kdb, KDB * newhandle);
+static ElektraKdb * gelektra_kdb_swap (GElektraKdb * kdb, ElektraKdb * newhandle);
 
 static void gelektra_kdb_init (GElektraKdb * self)
 {
@@ -54,7 +54,7 @@ GElektraKdb * gelektra_kdb_open (GElektraKeySet * contract, GElektraKey * error)
  *
  * Returns: (transfer full): A new #GElektraKdb holding the ownership of @handle
  */
-GElektraKdb * gelektra_kdb_make (KDB * handle)
+GElektraKdb * gelektra_kdb_make (ElektraKdb * handle)
 {
 	if (handle == NULL) return NULL;
 	GElektraKdb * ret = g_object_new (GELEKTRA_TYPE_KDB, NULL);
@@ -101,9 +101,9 @@ gint gelektra_kdb_set (GElektraKdb * kdb, GElektraKeySet * returned, GElektraKey
  *
  * Returns: The old underlying handle
  */
-static KDB * gelektra_kdb_swap (GElektraKdb * kdb, KDB * newhandle)
+static ElektraKdb * gelektra_kdb_swap (GElektraKdb * kdb, ElektraKdb * newhandle)
 {
-	KDB * oldhandle = kdb->handle;
+	ElektraKdb * oldhandle = kdb->handle;
 	kdb->handle = newhandle;
 	return oldhandle;
 }

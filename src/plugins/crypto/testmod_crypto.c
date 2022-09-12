@@ -24,9 +24,9 @@
 #define PLUGIN_NAME "crypto"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
-static KeySet * newPluginConfiguration (void);
+static ElektraKeyset * newPluginConfiguration (void);
 
-typedef int (*checkConfPtr) (Key *, KeySet *);
+typedef int (*checkConfPtr) (ElektraKey *, ElektraKeyset *);
 
 static const char strVal[] = "abcde";
 static const char strValLong[] = "Oh loooooooooooooooooooong Johnson";
@@ -39,9 +39,9 @@ static inline ssize_t MIN (ssize_t a, ssize_t b)
 	return (a < b) ? a : b;
 }
 
-static int isMarkedForEncryption (const Key * k)
+static int isMarkedForEncryption (const ElektraKey * k)
 {
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
+	const ElektraKey * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
 	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
 	{
 		return 1;
@@ -52,16 +52,16 @@ static int isMarkedForEncryption (const Key * k)
 /**
  * @brief create a new KeySet holding sample data for encryption and decryption.
  */
-static KeySet * newTestdataKeySet (void)
+static ElektraKeyset * newTestdataKeySet (void)
 {
-	Key * kUnchanged1 = keyNew ("user:/crypto/test/nochange", KEY_END);
-	Key * kUnchanged2 = keyNew ("user:/crypto/test/nochange2", KEY_END);
-	Key * kNull = keyNew ("user:/crypto/test/mynull", KEY_END);
-	Key * kString = keyNew ("user:/crypto/test/mystring", KEY_END);
-	Key * kStringLong = keyNew ("user:/crypto/test/myextralongstring", KEY_END);
-	Key * kStringFullBlockSingle = keyNew ("user:/crypto/test/myfullblocksingle", KEY_END);
-	Key * kStringFullBlockDouble = keyNew ("user:/crypto/test/myfullblockdouble", KEY_END);
-	Key * kBin = keyNew ("user:/crypto/test/mybin", KEY_END);
+	ElektraKey * kUnchanged1 = keyNew ("user:/crypto/test/nochange", KEY_END);
+	ElektraKey * kUnchanged2 = keyNew ("user:/crypto/test/nochange2", KEY_END);
+	ElektraKey * kNull = keyNew ("user:/crypto/test/mynull", KEY_END);
+	ElektraKey * kString = keyNew ("user:/crypto/test/mystring", KEY_END);
+	ElektraKey * kStringLong = keyNew ("user:/crypto/test/myextralongstring", KEY_END);
+	ElektraKey * kStringFullBlockSingle = keyNew ("user:/crypto/test/myfullblocksingle", KEY_END);
+	ElektraKey * kStringFullBlockDouble = keyNew ("user:/crypto/test/myfullblockdouble", KEY_END);
+	ElektraKey * kBin = keyNew ("user:/crypto/test/mybin", KEY_END);
 
 	keySetString (kUnchanged1, strVal);
 
@@ -90,12 +90,12 @@ static KeySet * newTestdataKeySet (void)
 		      KS_END);
 }
 
-static inline void setPluginShutdown (KeySet * config)
+static inline void setPluginShutdown (ElektraKeyset * config)
 {
 	ksAppendKey (config, keyNew (ELEKTRA_CRYPTO_PARAM_SHUTDOWN, KEY_VALUE, "1", KEY_END));
 }
 
-static KeySet * newPluginConfiguration (void)
+static ElektraKeyset * newPluginConfiguration (void)
 {
 	return ksNew (2, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
@@ -104,9 +104,9 @@ static KeySet * newPluginConfiguration (void)
 static void test_init (const char * pluginName)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * configKs = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (pluginName, modules, configKs, 0);
@@ -115,7 +115,7 @@ static void test_init (const char * pluginName)
 	{
 		succeed_if (!strcmp (plugin->name, pluginName), "got wrong name");
 
-		KeySet * config = elektraPluginGetConfig (plugin);
+		ElektraKeyset * config = elektraPluginGetConfig (plugin);
 		succeed_if (config != 0, "there should be a config");
 
 		succeed_if (plugin->kdbOpen != 0, "no open pointer");
@@ -139,16 +139,16 @@ static void test_init (const char * pluginName)
 static void test_incomplete_config (const char * pluginName)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * configKs = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * configKs = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (pluginName, modules, configKs, 0);
 	succeed_if (plugin != 0, "failed to open the plugin");
 	if (plugin)
 	{
-		KeySet * data = newTestdataKeySet ();
+		ElektraKeyset * data = newTestdataKeySet ();
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == -1, "kdb set succeeded with incomplete configuration");
 		ksDel (data);
 		elektraPluginClose (plugin, 0);
@@ -168,9 +168,9 @@ static void test_crypto_operations (const char * pluginName)
 	} conversation;
 
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * config = newPluginConfiguration ();
 
 	setPluginShutdown (config);
 
@@ -179,17 +179,17 @@ static void test_crypto_operations (const char * pluginName)
 	plugin = elektraPluginOpen (pluginName, modules, config, 0);
 	if (plugin)
 	{
-		Key * k;
-		KeySet * data = newTestdataKeySet ();
-		KeySet * original = ksDup (data);
+		ElektraKey * k;
+		ElektraKeyset * data = newTestdataKeySet ();
+		ElektraKeyset * original = ksDup (data);
 
 		// read and check the contract
-		KeySet * contract = ksNew (0, KS_END);
-		Key * contractParent = keyNew ("system:/elektra/modules/" PLUGIN_NAME, KEY_END);
+		ElektraKeyset * contract = ksNew (0, KS_END);
+		ElektraKey * contractParent = keyNew ("system:/elektra/modules/" PLUGIN_NAME, KEY_END);
 		succeed_if (plugin->kdbGet (plugin, contract, contractParent) == 1, "kdb get for contract failed");
 
 		// run checkconf to generate the master password
-		Key * function = ksLookupByName (contract, "system:/elektra/modules/" PLUGIN_NAME "/exports/checkconf", 0);
+		ElektraKey * function = ksLookupByName (contract, "system:/elektra/modules/" PLUGIN_NAME "/exports/checkconf", 0);
 		succeed_if (function, "no symbol exported for the checkconf function");
 		if (function)
 		{
@@ -199,7 +199,7 @@ static void test_crypto_operations (const char * pluginName)
 
 			if (conversation.f)
 			{
-				KeySet * pluginConfig = elektraPluginGetConfig (plugin);
+				ElektraKeyset * pluginConfig = elektraPluginGetConfig (plugin);
 				succeed_if (conversation.f (parentKey, pluginConfig) != -1, "checkconf call failed");
 			}
 		}
@@ -248,13 +248,13 @@ static void test_crypto_operations (const char * pluginName)
 static void test_gpg (void)
 {
 	// Plugin configuration
-	KeySet * conf = newPluginConfiguration ();
-	Key * errorKey = keyNew ("/", KEY_END);
+	ElektraKeyset * conf = newPluginConfiguration ();
+	ElektraKey * errorKey = keyNew ("/", KEY_END);
 
 	// install the gpg key
 	char * argv[] = { "", "-a", "--import", NULL };
 	const size_t argc = 4;
-	Key * msg = keyNew ("/", KEY_END);
+	ElektraKey * msg = keyNew ("/", KEY_END);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
 	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");

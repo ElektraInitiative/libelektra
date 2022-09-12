@@ -59,7 +59,7 @@ static char * keyNameGetOneLevel (const char * name, size_t * size)
  * @param g generate array there
  * @param key the key to look at
  */
-static void elektraGenCloseLast (yajl_gen g, const Key * key)
+static void elektraGenCloseLast (yajl_gen g, const ElektraKey * key)
 {
 	keyNameReverseIterator last = elektraKeyNameGetReverseIterator (key);
 	elektraKeyNameReverseNext (&last);
@@ -110,7 +110,7 @@ static void elektraGenCloseLast (yajl_gen g, const Key * key)
  * @param cur the key which name is used for closing
  * @param levels the number of levels to close
  */
-static void elektraGenCloseIterate (yajl_gen g, const Key * cur, int levels)
+static void elektraGenCloseIterate (yajl_gen g, const ElektraKey * cur, int levels)
 {
 	keyNameReverseIterator curIt = elektraKeyNameGetReverseIterator (cur);
 
@@ -291,7 +291,7 @@ static void elektraGenCloseFirst (yajl_gen g, const char * pcur, size_t csize, c
  * @param cur
  * @param next
  */
-void elektraGenClose (yajl_gen g, const Key * cur, const Key * next)
+void elektraGenClose (yajl_gen g, const ElektraKey * cur, const ElektraKey * next)
 {
 	int curLevels = elektraKeyCountLevel (cur);
 #ifdef HAVE_LOGGER
@@ -334,7 +334,7 @@ void elektraGenClose (yajl_gen g, const Key * cur, const Key * next)
  * @param cur current key
  * @param next the last key (the parentKey)
  */
-void elektraGenCloseFinally (yajl_gen g, const Key * cur, const Key * next)
+void elektraGenCloseFinally (yajl_gen g, const ElektraKey * cur, const ElektraKey * next)
 {
 	int curLevels = elektraKeyCountLevel (cur);
 #ifdef HAVE_LOGGER

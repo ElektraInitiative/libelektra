@@ -30,7 +30,7 @@
 DynArray * ELEKTRA_PLUGIN_FUNCTION (dynArrayNew) (void)
 {
 	DynArray * dynArray = elektraCalloc (sizeof (DynArray));
-	dynArray->keyArray = elektraCalloc (sizeof (Key *) * ELEKTRA_MMAP_DYNARRAY_MINSIZE);
+	dynArray->keyArray = elektraCalloc (sizeof (ElektraKey *) * ELEKTRA_MMAP_DYNARRAY_MINSIZE);
 	dynArray->mappedKeyArray = 0;
 	dynArray->size = 0;
 	dynArray->alloc = ELEKTRA_MMAP_DYNARRAY_MINSIZE;
@@ -69,7 +69,7 @@ void ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (DynArray * dynArray)
  * @retval 0 if the key was inserted
  * @retval 1 if the key was found
  */
-int ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (Key * key, DynArray * dynArray)
+int ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (ElektraKey * key, DynArray * dynArray)
 {
 	size_t l = 0;
 	size_t h = dynArray->size;
@@ -105,8 +105,8 @@ int ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (Key * key, DynArray * dynArr
 		{
 			return -1; // error
 		}
-		Key ** new = elektraCalloc ((2 * oldAllocSize) * sizeof (Key *));
-		memcpy (new, dynArray->keyArray, dynArray->size * sizeof (Key *));
+		ElektraKey ** new = elektraCalloc ((2 * oldAllocSize) * sizeof (ElektraKey *));
+		memcpy (new, dynArray->keyArray, dynArray->size * sizeof (ElektraKey *));
 		elektraFree (dynArray->keyArray);
 		dynArray->keyArray = new;
 		dynArray->alloc = 2 * oldAllocSize;
@@ -127,7 +127,7 @@ int ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (Key * key, DynArray * dynArr
  *
  * @return position of the Key pointer in the DynArray, or -1 if not found or size exceeded
  */
-ssize_t ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) (Key * key, DynArray * dynArray)
+ssize_t ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) (ElektraKey * key, DynArray * dynArray)
 {
 	size_t l = 0;
 	size_t h = dynArray->size;

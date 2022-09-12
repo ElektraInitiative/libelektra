@@ -15,13 +15,13 @@
 #include <kdberrors.h>
 #include <kdbplugin.h>
 
-int elektraValidationOpen (Plugin * handle, Key * errorKey);
-int elektraValidationClose (Plugin * handle, Key * errorKey);
-int elektraValidationGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraValidationSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraValidationError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraValidationOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraValidationClose (Plugin * handle, ElektraKey * errorKey);
+int elektraValidationGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraValidationSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraValidationError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
-Key * ksLookupRE (KeySet * ks, const regex_t * regexp);
+ElektraKey * ksLookupRE (ElektraKeyset * ks, const regex_t * regexp);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

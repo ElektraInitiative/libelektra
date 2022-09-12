@@ -30,7 +30,7 @@ static void deblank (char * input)
 	input[count] = '\0';
 }
 
-static kdb_unsigned_long_long_t isValidKey (Key * key)
+static kdb_unsigned_long_long_t isValidKey (ElektraKey * key)
 {
 
 	const char * value = keyString (key);
@@ -86,7 +86,7 @@ static kdb_unsigned_long_long_t isValidKey (Key * key)
 }
 
 // @param formatFactor unsigned long, used to determine the factor for normalizing to bytes
-static int elektraUnitConvertToByteString (Key * key, kdb_unsigned_long_long_t formatFactor)
+static int elektraUnitConvertToByteString (ElektraKey * key, kdb_unsigned_long_long_t formatFactor)
 {
 
 	const char * str = keyString (key);
@@ -118,9 +118,9 @@ static int elektraUnitConvertToByteString (Key * key, kdb_unsigned_long_long_t f
 	return 0;
 }
 
-static void elektraUnitRestore (Key * key)
+static void elektraUnitRestore (ElektraKey * key)
 {
-	const Key * oldval = keyGetMeta (key, "origvalue");
+	const ElektraKey * oldval = keyGetMeta (key, "origvalue");
 	if (oldval != NULL)
 	{
 		keySetString (key, keyString (oldval));
@@ -128,11 +128,11 @@ static void elektraUnitRestore (Key * key)
 }
 
 
-int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/unit"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/unit", KEY_VALUE, "unit plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/unit/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/unit/exports/get", KEY_FUNC, elektraUnitGet, KEY_END),
@@ -145,11 +145,11 @@ int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	int rc = 1;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/unit");
+		const ElektraKey * meta = keyGetMeta (cur, "check/unit");
 		if (meta)
 		{
 			kdb_unsigned_long_long_t format = isValidKey (cur);
@@ -169,14 +169,14 @@ int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return rc;
 }
 
-int elektraUnitSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraUnitSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/unit");
+		const ElektraKey * meta = keyGetMeta (cur, "check/unit");
 		if (!meta)
 		{
 			continue;

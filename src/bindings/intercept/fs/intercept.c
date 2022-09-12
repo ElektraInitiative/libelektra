@@ -113,12 +113,12 @@ void init (void)
 {
 	char cwd[PATH_MAX];
 	getcwd (cwd, PATH_MAX);
-	KeySet * tmpKS = ksNew (0, KS_END);
-	Key * parentKey = keyNew (PRELOAD_PATH, KEY_END);
-	Key * key;
-	KDB * handle = kdbOpen (NULL, parentKey);
+	ElektraKeyset * tmpKS = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (PRELOAD_PATH, KEY_END);
+	ElektraKey * key;
+	ElektraKdb * handle = kdbOpen (NULL, parentKey);
 	kdbGet (handle, tmpKS, parentKey);
-	KeySet * ks = ksCut (tmpKS, parentKey);
+	ElektraKeyset * ks = ksCut (tmpKS, parentKey);
 	ksRewind (ks);
 	ssize_t size = ksGetSize (ks);
 	if (size <= 1) goto CleanUp;
@@ -134,9 +134,9 @@ void init (void)
 		else
 			tmp->value = createAbsolutePath (keyString (key), cwd);
 		tmp->oflags = (unsigned short) -1;
-		Key * lookupKey = keyDup (key, KEY_CP_ALL);
+		ElektraKey * lookupKey = keyDup (key, KEY_CP_ALL);
 		keyAddBaseName (lookupKey, "readonly");
-		Key * found = ksLookup (ks, lookupKey, 0);
+		ElektraKey * found = ksLookup (ks, lookupKey, 0);
 		if (found)
 		{
 			if (!strcmp (keyString (found), "1"))
@@ -249,15 +249,15 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf);
 
 static void exportConfiguration (Node * node)
 {
-	Key * key = keyNew (node->exportKey, KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKey * key = keyNew (node->exportKey, KEY_END);
+	ElektraKdb * handle = kdbOpen (NULL, key);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 	kdbGet (handle, ks, key);
-	KeySet * exportKS;
+	ElektraKeyset * exportKS;
 	exportKS = ksCut (ks, key);
-	KeySet * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	Plugin * check = elektraPluginOpen (node->exportType, modules, conf, key);
 	keySetString (key, node->value);
 	ksRewind (exportKS);

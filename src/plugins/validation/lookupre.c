@@ -80,10 +80,10 @@ regfree(&regex);        // don't forget to free resources
 
  * @endcode
  */
-Key * ksLookupRE (KeySet * ks, const regex_t * regexp)
+ElektraKey * ksLookupRE (ElektraKeyset * ks, const regex_t * regexp)
 {
 	regmatch_t offsets;
-	Key *walker = 0, *end = 0;
+	ElektraKey *walker = 0, *end = 0;
 
 	while ((walker = ksNext (ks)) != end)
 	{

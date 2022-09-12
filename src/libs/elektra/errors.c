@@ -33,7 +33,7 @@ using namespace ckdb;
 #define ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC "C03200"
 #define ELEKTRA_ERROR_CODE_VALIDATION_SEMANTIC_NAME "Validation Semantic"
 
-static void addWarning (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
+static void addWarning (ElektraKey * key, const char * code, const char * name, const char * file, const char * line, const char * module,
 			const char * reasonFmt, va_list va)
 {
 	if (key == NULL)
@@ -42,7 +42,7 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 	}
 
 	char buffer[64] = "warnings/#0\0\0\0";
-	const Key * meta = keyGetMeta (key, "warnings");
+	const ElektraKey * meta = keyGetMeta (key, "warnings");
 	const char * old = meta == NULL ? NULL : keyString (meta);
 	char * end = &buffer[11];
 	if (old && strcmp (old, "#_99") < 0)
@@ -86,7 +86,7 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 	elektraFree (reason);
 }
 
-static void setError (Key * key, const char * code, const char * name, const char * file, const char * line, const char * module,
+static void setError (ElektraKey * key, const char * code, const char * name, const char * file, const char * line, const char * module,
 		      const char * reasonFmt, va_list va)
 {
 	if (key == NULL)
@@ -180,7 +180,7 @@ KeySet * elektraErrorSpecification (void)
 		      KS_END);
 }
 
-void elektraTriggerWarnings (const char * nr, Key * parentKey, const char * message)
+void elektraTriggerWarnings (const char * nr, ElektraKey * parentKey, const char * message)
 {
 	if (strcmp (nr, ELEKTRA_WARNING_RESOURCE) == 0)
 	{
@@ -230,7 +230,7 @@ void elektraTriggerWarnings (const char * nr, Key * parentKey, const char * mess
 	ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Unkown warning code %s", nr);
 }
 
-void elektraTriggerError (const char * nr, Key * parentKey, const char * message)
+void elektraTriggerError (const char * nr, ElektraKey * parentKey, const char * message)
 {
 	if (strcmp (nr, ELEKTRA_ERROR_RESOURCE) == 0)
 	{

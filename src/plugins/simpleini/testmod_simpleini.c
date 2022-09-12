@@ -25,8 +25,8 @@ static void test_readFormat (const char * format, const char * fileContent, int 
 		fclose (fh);
 	}
 
-	Key * parentKey = keyNew ("user:/tests/simpleini", KEY_VALUE, tmpFile, KEY_END);
-	KeySet * conf = 0;
+	ElektraKey * parentKey = keyNew ("user:/tests/simpleini", KEY_VALUE, tmpFile, KEY_END);
+	ElektraKeyset * conf = 0;
 	if (format)
 	{
 		conf = ksNew (1, keyNew ("system:/format", KEY_VALUE, format, KEY_END), KS_END);
@@ -38,12 +38,12 @@ static void test_readFormat (const char * format, const char * fileContent, int 
 
 	PLUGIN_OPEN ("simpleini");
 
-	KeySet * ks = ksNew (numKeys, KS_END);
-	Key * key = 0;
+	ElektraKeyset * ks = ksNew (numKeys, KS_END);
+	ElektraKey * key = 0;
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	Key * lookup = 0;
+	ElektraKey * lookup = 0;
 	for (int i = 0; i < numKeys; i++)
 	{
 		lookup = keyNew ("user:/tests/simpleini", KEY_END);
@@ -61,11 +61,11 @@ static void test_readFormat (const char * format, const char * fileContent, int 
 
 static void test_formatNotAccepted (const char * format)
 {
-	Key * parentKey = keyNew ("user:/tests/simpleini", KEY_VALUE, elektraFilename (), KEY_END);
-	KeySet * conf = ksNew (1, keyNew ("system:/format", KEY_VALUE, format, KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/simpleini", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKeyset * conf = ksNew (1, keyNew ("system:/format", KEY_VALUE, format, KEY_END), KS_END);
 	PLUGIN_OPEN ("simpleini");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != 1, "kdbGet was successful for an invalid format");
 

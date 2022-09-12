@@ -11,8 +11,8 @@
 
 int main (void)
 {
-	KeySet * ks = ksNew (0, KS_END);
-	Key * key = 0;
+	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * key = 0;
 
 	printf ("Generate some keys...");
 

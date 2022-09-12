@@ -21,7 +21,7 @@
 #include <tests_internal.h>
 
 // clang-format off
-KeySet *getEmptyKeys(void)
+ElektraKeyset *getEmptyKeys(void)
 {
 	return ksNew(1,
 			keyNew("user:/tests/yajl",
@@ -30,10 +30,10 @@ KeySet *getEmptyKeys(void)
 			);
 }
 
-KeySet *getNullKeys(void)
+ElektraKeyset *getNullKeys(void)
 {
-	Key *k1, *k2;
-	KeySet *ks = ksNew(10,
+	ElektraKey *k1, *k2;
+	ElektraKeyset *ks = ksNew(10,
 			k1 = keyNew("user:/tests/yajl/nullkey",
 			       KEY_VALUE, "will be removed",
 			       KEY_END),
@@ -49,9 +49,9 @@ KeySet *getNullKeys(void)
 	return ks;
 }
 
-KeySet *getBelowKeys(void)
+ElektraKeyset *getBelowKeys(void)
 {
-	KeySet *ks = ksNew(10,
+	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/fancy/path/below/x/y/z",
 			       KEY_VALUE, "val1",
 			       KEY_END),
@@ -93,9 +93,9 @@ KeySet *getBelowKeys(void)
 }
 */
 
-KeySet *getBooleanKeys(void)
+ElektraKeyset *getBooleanKeys(void)
 {
-	KeySet *ks = ksNew(10,
+	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/boolean_key",
 			       KEY_VALUE, "1",
 			       KEY_META, "type", "boolean",
@@ -111,9 +111,9 @@ KeySet *getBooleanKeys(void)
 	return ks;
 }
 
-KeySet *getNumberKeys(void)
+ElektraKeyset *getNumberKeys(void)
 {
-	KeySet *ks = ksNew(10,
+	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/number_key",
 			       KEY_VALUE, "25",
 			       KEY_META, "type", "double",
@@ -132,9 +132,9 @@ KeySet *getNumberKeys(void)
 	return ks;
 }
 
-KeySet *getStringKeys(void)
+ElektraKeyset *getStringKeys(void)
 {
-	KeySet *ks = ksNew(10,
+	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/string_key",
 			       KEY_VALUE, "25",
 			       KEY_END),
@@ -150,9 +150,9 @@ KeySet *getStringKeys(void)
 	return ks;
 }
 
-KeySet *getMapKeys (void)
+ElektraKeyset *getMapKeys (void)
 {
-	KeySet *ks = ksNew(10,
+	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/map/string_key",
 			       KEY_VALUE, "25",
 			       KEY_END),
@@ -183,9 +183,9 @@ KeySet *getMapKeys (void)
 	return ks;
 }
 
-KeySet *getArrayKeys(void)
+ElektraKeyset *getArrayKeys(void)
 {
-	KeySet *ks = ksNew(30,
+	ElektraKeyset *ks = ksNew(30,
 			keyNew("user:/tests/yajl/array",
 				KEY_META, "array", "#_12",
 				KEY_META, "binary", "",
@@ -255,9 +255,9 @@ KeySet *getArrayKeys(void)
 	return ks;
 }
 
-KeySet *getOpenICCKeys(void)
+ElektraKeyset *getOpenICCKeys(void)
 {
-	KeySet *ks = ksNew(60,
+	ElektraKeyset *ks = ksNew(60,
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera",
 	KEY_META, "array", "#1",
 	KEY_META, "binary", "",
@@ -391,7 +391,7 @@ keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_date",
 	return ks;
 }
 
-KeySet *getSomeBelowKeys(void)
+ElektraKeyset *getSomeBelowKeys(void)
 {
 	return ksNew(10,
 			keyNew("user:/some/path/below",
@@ -413,9 +413,9 @@ KeySet *getSomeBelowKeys(void)
 
 // clang-format on
 
-KeySet * modules;
+ElektraKeyset * modules;
 
-void test_json (const char * fileName, KeySet * compareKeySet, KeySet * conf)
+void test_json (const char * fileName, ElektraKeyset * compareKeySet, ElektraKeyset * conf)
 {
 	printf ("Test json with %s\n", srcdir_file (fileName));
 
@@ -423,8 +423,8 @@ void test_json (const char * fileName, KeySet * compareKeySet, KeySet * conf)
 	exit_if_fail (plugin != 0, "could not open plugin");
 	// printf ("Test with %s\n", srcdir_file(fileName));
 
-	Key * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	KeySet * keys = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKeyset * keys = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
@@ -459,7 +459,7 @@ void test_json (const char * fileName, KeySet * compareKeySet, KeySet * conf)
 	elektraPluginClose (plugin, 0);
 }
 
-void test_readWrite (const char * fileName, KeySet * conf)
+void test_readWrite (const char * fileName, ElektraKeyset * conf)
 {
 	printf ("Test read write with %s\n", srcdir_file (fileName));
 
@@ -467,8 +467,8 @@ void test_readWrite (const char * fileName, KeySet * conf)
 	exit_if_fail (plugin != 0, "could not open plugin");
 	// printf ("Test with %s\n", srcdir_file(fileName));
 
-	Key * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	KeySet * keys = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKeyset * keys = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
@@ -499,9 +499,9 @@ void test_nextNotBelow (void)
 {
 	printf ("Test next not below\n");
 
-	KeySet * ks = getNullKeys ();
+	ElektraKeyset * ks = getNullKeys ();
 	ksRewind (ks);
-	Key * k = elektraNextNotBelow (ks);
+	ElektraKey * k = elektraNextNotBelow (ks);
 	succeed_if_equal (keyName (k), "user:/tests/yajl/nullkey");
 	succeed_if_equal (keyName (ksCurrent (ks)), "user:/tests/yajl/nullkey");
 	k = elektraNextNotBelow (ks);
@@ -548,7 +548,7 @@ void test_nextNotBelow (void)
 
 void test_reverseLevel (void)
 {
-	Key * k = keyNew ("user:/abc/defghi/jkl", KEY_END);
+	ElektraKey * k = keyNew ("user:/abc/defghi/jkl", KEY_END);
 	int level = 0;
 	char buffer[20];
 
@@ -618,7 +618,7 @@ void test_reverseLevel (void)
 
 void test_countLevel (void)
 {
-	Key * k = keyNew ("user:///", KEY_END);
+	ElektraKey * k = keyNew ("user:///", KEY_END);
 	succeed_if (elektraKeyCountLevel (k) == 1, "count level wrong");
 	keySetName (k, "user:/x");
 	succeed_if (elektraKeyCountLevel (k) == 2, "count level wrong");
@@ -627,7 +627,7 @@ void test_countLevel (void)
 	keySetName (k, "user:/x/z\\/f");
 	succeed_if (elektraKeyCountLevel (k) == 3, "count level wrong");
 
-	Key * k2 = keyNew ("user:/x/z", KEY_END);
+	ElektraKey * k2 = keyNew ("user:/x/z", KEY_END);
 	succeed_if (elektraKeyCountEqualLevel (k, k2) == 2, "equal level wrong");
 
 	keySetName (k, "user:/x/z\\/f");
@@ -652,13 +652,13 @@ void test_countLevel (void)
 
 void test_writing (void)
 {
-	KeySet * conf = ksNew (0, KS_END);
-	Key * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, "/proc/self/fd/1", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, "/proc/self/fd/1", KEY_END);
 
 	Plugin * plugin = elektraPluginOpen ("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 
-	KeySet * ks = getNullKeys ();
+	ElektraKeyset * ks = getNullKeys ();
 	/*
 	output_keyset(ks);
 

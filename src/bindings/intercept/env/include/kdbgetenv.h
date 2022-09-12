@@ -25,19 +25,19 @@ extern "C" {
 /**
  * @brief The KDB repository to be used to fetch configuration
  */
-extern KDB * elektraRepo;
+extern ElektraKdb * elektraRepo;
 
 /**
  * @brief The config of the application. Contains whole /env configuration.
  */
-extern KeySet * elektraConfig;
+extern ElektraKeyset * elektraConfig;
 
 /**
  * @brief The parentKey used to access elektraRepo.
  *
  * Contains all warnings and errors that happened during repo access
  */
-extern Key * elektraParentKey;
+extern ElektraKey * elektraParentKey;
 
 /**
  * @brief Lock the internally used mutex to access elektraRepo, elektraConfig or elektraParentKey

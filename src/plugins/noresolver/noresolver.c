@@ -26,7 +26,7 @@ int elektraNoresolverCheckFile (const char * filename)
 	return 1;
 }
 
-static KeySet * elektraNoresolverModules (void)
+static ElektraKeyset * elektraNoresolverModules (void)
 {
 	return ksNew (
 		50,
@@ -43,22 +43,22 @@ static KeySet * elektraNoresolverModules (void)
 }
 
 // TODO: remove, handled by backend
-int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 
-	Key * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
-		KeySet * info = elektraNoresolverModules ();
+		ElektraKeyset * info = elektraNoresolverModules ();
 		ksAppend (returned, info);
 		ksDel (info);
 		return 1;
 	}
 	keyDel (root);
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * pathKey = ksLookupByName (config, "/path", KDB_O_NONE);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * pathKey = ksLookupByName (config, "/path", KDB_O_NONE);
 	if (pathKey) keySetString (parentKey, keyString (pathKey));
 
 	if (!strcmp (keyString (ksLookupByName (config, "/assume/unchanged", 0)), "1"))
@@ -77,23 +77,23 @@ int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	return 1; /* success */
 }
 
-int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * pathKey = ksLookupByName (config, "/path", KDB_O_NONE);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * pathKey = ksLookupByName (config, "/path", KDB_O_NONE);
 	if (pathKey) keySetString (parentKey, keyString (pathKey));
 
 	return 1; /* success */
 }
 
-int elektraNoresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraNoresolverError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 
 	return 1; /* success */
 }
 
-int elektraNoresolverCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraNoresolverCommit (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 

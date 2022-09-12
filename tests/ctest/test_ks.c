@@ -9,19 +9,19 @@
 #include <kdbease.h>
 #include <tests_internal.h>
 
-ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);
+ssize_t ksCopyInternal (ElektraKeyset * ks, size_t to, size_t from);
 
 static void test_ksRenameKeys (void)
 {
 	printf ("test rename keys\n");
-	KeySet * ks = ksNew (20, keyNew ("system:/some/common/prefix", KEY_END), keyNew ("system:/some/common/prefix/dir", KEY_END),
+	ElektraKeyset * ks = ksNew (20, keyNew ("system:/some/common/prefix", KEY_END), keyNew ("system:/some/common/prefix/dir", KEY_END),
 			     keyNew ("system:/some/common/prefix/dir/keya", KEY_END),
 			     keyNew ("system:/some/common/prefix/some", KEY_VALUE, "huhu", KEY_END),
 			     keyNew ("system:/some/common/prefix/other", KEY_END), KS_END);
-	KeySet * cmp = ksNew (20, keyNew ("user:/x/dir", KEY_END), keyNew ("user:/x/dir/keya", KEY_END),
+	ElektraKeyset * cmp = ksNew (20, keyNew ("user:/x/dir", KEY_END), keyNew ("user:/x/dir/keya", KEY_END),
 			      keyNew ("user:/x/some", KEY_VALUE, "huhu", KEY_END), keyNew ("user:/x/other", KEY_END), KS_END);
 
-	KeySet * result = ksRenameKeys (ks, "user:/x");
+	ElektraKeyset * result = ksRenameKeys (ks, "user:/x");
 	compare_keyset (result, cmp);
 	// output_keyset(result);
 	ksDel (cmp);
@@ -39,15 +39,15 @@ static void test_ksRenameKeys (void)
 static void test_cascadingLookup (void)
 {
 	printf ("test cascading lookup\n");
-	Key * k0;
-	Key * k1;
-	Key * k2;
-	Key * k3;
-	KeySet * ks =
+	ElektraKey * k0;
+	ElektraKey * k1;
+	ElektraKey * k2;
+	ElektraKey * k3;
+	ElektraKeyset * ks =
 		ksNew (10, k0 = keyNew ("system:/benchmark/override/#0", KEY_END), k1 = keyNew ("system:/benchmark/override/#1", KEY_END),
 		       k2 = keyNew ("user:/benchmark/override/#2", KEY_END), k3 = keyNew ("user:/benchmark/override/#3", KEY_END), KS_END);
-	Key * search = keyNew ("/benchmark/override/#0", KEY_END);
-	Key * found = ksLookup (ks, search, 0);
+	ElektraKey * search = keyNew ("/benchmark/override/#0", KEY_END);
+	ElektraKey * found = ksLookup (ks, search, 0);
 	succeed_if (found == k0, "found wrong key");
 
 	keySetName (search, "/benchmark/override/#1");
@@ -70,15 +70,15 @@ static void test_creatingLookup (void)
 {
 	printf ("Test creating lookup\n");
 
-	KeySet * ks = ksNew (10, KS_END);
+	ElektraKeyset * ks = ksNew (10, KS_END);
 
-	Key * searchKey = keyNew ("user:/something", KEY_VALUE, "a value", KEY_END);
-	Key * k0 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	ElektraKey * searchKey = keyNew ("user:/something", KEY_VALUE, "a value", KEY_END);
+	ElektraKey * k0 = ksLookup (ks, searchKey, KDB_O_CREATE);
 	exit_if_fail (k0, "no key was created");
 	succeed_if_same_string (keyName (k0), keyName (searchKey));
 	succeed_if_same_string (keyString (k0), keyString (searchKey));
 
-	Key * k1 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	ElektraKey * k1 = ksLookup (ks, searchKey, KDB_O_CREATE);
 	exit_if_fail (k1, "no key was returned");
 	succeed_if (k0 == k1, "not the same key");
 
@@ -107,7 +107,7 @@ static void test_creatingLookup (void)
 	searchKey = keyNew ("/something", KEY_VALUE, "a value", KEY_END);
 
 	// check if duplication works:
-	Key * dupKey = keyDup (searchKey, KEY_CP_ALL);
+	ElektraKey * dupKey = keyDup (searchKey, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dupKey), keyName (searchKey));
 	succeed_if_same_string (keyString (dupKey), keyString (searchKey));
 	ksAppendKey (ks, dupKey);
@@ -146,9 +146,9 @@ static void test_ksToArray (void)
 {
 	printf ("Test ksToArray\n");
 
-	KeySet * ks = ksNew (5, keyNew ("user:/test1", KEY_END), keyNew ("user:/test2", KEY_END), keyNew ("user:/test3", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/test1", KEY_END), keyNew ("user:/test2", KEY_END), keyNew ("user:/test3", KEY_END), KS_END);
 
-	Key ** keyArray = calloc (ksGetSize (ks), sizeof (Key *));
+	ElektraKey ** keyArray = calloc (ksGetSize (ks), sizeof (ElektraKey *));
 	elektraKsToMemArray (ks, keyArray);
 
 	succeed_if_same_string ("user:/test1", keyName (keyArray[0]));
@@ -164,7 +164,7 @@ static void test_ksToArray (void)
 
 	succeed_if (elektraKsToMemArray (0, keyArray) < 0, "wrong result on null pointer");
 	succeed_if (elektraKsToMemArray (ks, 0) < 0, "wrong result on null buffer");
-	KeySet * empty = ksNew (0, KS_END);
+	ElektraKeyset * empty = ksNew (0, KS_END);
 	succeed_if (elektraKsToMemArray (empty, keyArray) == 0, "wrong result on empty keyset");
 	ksDel (empty);
 
@@ -176,7 +176,7 @@ static void test_ksNoAlloc (void)
 {
 	printf ("Test no alloc\n");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (ks->alloc == 0, "alloc is not 0");
 	succeed_if (ks->size == 0, "size is not 0");
@@ -197,12 +197,12 @@ static void test_ksRename (void)
 {
 	printf ("Test ksRename\n");
 
-	Key * key1 = keyNew ("system:/baz", KEY_VALUE, "5", KEY_END);
-	Key * key2 = keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END);
-	Key * key3 = keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
-	Key * key4 = keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
+	ElektraKey * key1 = keyNew ("system:/baz", KEY_VALUE, "5", KEY_END);
+	ElektraKey * key2 = keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END);
+	ElektraKey * key3 = keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
+	ElektraKey * key4 = keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
 
-	KeySet * ks = ksNew (
+	ElektraKeyset * ks = ksNew (
 		24,
 		// clang-format off
 		keyNew ("system:/bar", KEY_VALUE, "1", KEY_END), 
@@ -220,12 +220,12 @@ static void test_ksRename (void)
 		// clang-format on
 		KS_END);
 
-	Key * keyRenamed1 = keyNew ("dir:/baz", KEY_VALUE, "5", KEY_END);
-	Key * keyRenamed2 = keyNew ("dir:/baz/bar", KEY_VALUE, "6", KEY_END);
-	Key * keyRenamed3 = keyNew ("dir:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
-	Key * keyRenamed4 = keyNew ("dir:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
+	ElektraKey * keyRenamed1 = keyNew ("dir:/baz", KEY_VALUE, "5", KEY_END);
+	ElektraKey * keyRenamed2 = keyNew ("dir:/baz/bar", KEY_VALUE, "6", KEY_END);
+	ElektraKey * keyRenamed3 = keyNew ("dir:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
+	ElektraKey * keyRenamed4 = keyNew ("dir:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
 
-	KeySet * renamed =
+	ElektraKeyset * renamed =
 		ksNew (24,
 		       // clang-format off
 		       keyRenamed1, 
@@ -243,15 +243,15 @@ static void test_ksRename (void)
 		       // clang-format on
 		       KS_END);
 
-	Key * orig1 = keyNew ("system:/baz", KEY_VALUE, "5", KEY_END);
-	Key * orig2 = keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END);
-	Key * orig3 = keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
-	Key * orig4 = keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
+	ElektraKey * orig1 = keyNew ("system:/baz", KEY_VALUE, "5", KEY_END);
+	ElektraKey * orig2 = keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END);
+	ElektraKey * orig3 = keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
+	ElektraKey * orig4 = keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
 
-	KeySet * orig = ksDeepDup (ks);
+	ElektraKeyset * orig = ksDeepDup (ks);
 
-	Key * root = keyNew ("user:/baz", KEY_END);
-	Key * newRoot = keyNew ("user:/baz", KEY_END);
+	ElektraKey * root = keyNew ("user:/baz", KEY_END);
+	ElektraKey * newRoot = keyNew ("user:/baz", KEY_END);
 
 	succeed_if (ksRename (NULL, root, newRoot) == -1, "shouldn't accept NULL pointers");
 	succeed_if (ksRename (ks, NULL, newRoot) == -1, "shouldn't accept NULL pointers");
@@ -394,7 +394,7 @@ void test_ksFindHierarchy (void)
 {
 	printf ("Test ksFindHierarchy\n");
 
-	KeySet * ks =
+	ElektraKeyset * ks =
 		ksNew (24,
 		       // clang-format off
 		       keyNew ("system:/bar", KEY_VALUE, "1", KEY_END), 
@@ -412,7 +412,7 @@ void test_ksFindHierarchy (void)
 		       // clang-format on
 		       KS_END);
 
-	Key * root = keyNew ("/", KEY_END);
+	ElektraKey * root = keyNew ("/", KEY_END);
 
 	elektraCursor end;
 
@@ -449,7 +449,7 @@ void test_ksFindHierarchy (void)
 	ksDel (ks);
 }
 
-static KeySet * set_a (void)
+static ElektraKeyset * set_a (void)
 {
 	return ksNew (16, keyNew ("user:/0", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/a", KEY_END),
 		      keyNew ("user:/a/a/a", KEY_END), keyNew ("user:/a/a/b", KEY_END), keyNew ("user:/a/b", KEY_END),
@@ -463,8 +463,8 @@ static void test_ksSearch (void)
 {
 	printf ("Testing ksSearch\n");
 
-	KeySet * a = set_a ();
-	Key * s = keyNew ("user:/a", KEY_END);
+	ElektraKeyset * a = set_a ();
+	ElektraKey * s = keyNew ("user:/a", KEY_END);
 	ssize_t result;
 
 	keySetName (s, "user:/0");

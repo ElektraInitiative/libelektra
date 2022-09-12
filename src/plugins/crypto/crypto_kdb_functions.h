@@ -13,11 +13,11 @@
 #include <kdbplugin.h>
 
 // kdb functions
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey);
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey);
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf);
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, ElektraKey * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (checkconf) (ElektraKey * errorKey, ElektraKeyset * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

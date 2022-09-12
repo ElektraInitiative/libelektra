@@ -83,7 +83,7 @@ int loadConfiguration (Elektra ** elektra,
 				 ElektraError ** error)
 {
 	
-	KeySet * defaults = ksNew (5,
+	ElektraKeyset * defaults = ksNew (5,
 	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
 	keyNew ("/myfloatarray/#", KEY_META, "default", "2.5", KEY_META, "type", "float", KEY_END),
 	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
@@ -93,14 +93,14 @@ int loadConfiguration (Elektra ** elektra,
 ;
 	
 
-	KeySet * contract = ksNew (4,
+	ElektraKeyset * contract = ksNew (4,
 	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "97af78f96fb881d4949f8df0f61d38751fbc7c350cb7f8cc01c81f14695b66c0", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
-	Key * parentKey = keyNew ("/tests/script/gen/highlevel/externalwithdefaults", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/externalwithdefaults", KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
@@ -169,7 +169,7 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 		return;
 	}
 
-	Key * helpKey = elektraHelpKey (elektra);
+	ElektraKey * helpKey = elektraHelpKey (elektra);
 	if (helpKey == NULL)
 	{
 		return;

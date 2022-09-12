@@ -65,7 +65,7 @@ static inline int elektraHexcodeConvFromHex (char c)
  * @param cur the key holding the value to decode
  * @param buf the buffer to write to
  */
-void elektraHexcodeDecode (Key * cur, CHexData * hd)
+void elektraHexcodeDecode (ElektraKey * cur, CHexData * hd)
 {
 	size_t valsize = keyGetValueSize (cur);
 	const char * val = keyValue (cur);
@@ -102,13 +102,13 @@ void elektraHexcodeDecode (Key * cur, CHexData * hd)
 }
 
 
-int elektraHexcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraHexcodeGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* get all keys */
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hexcode"))
 	{
-		KeySet * pluginConfig =
+		ElektraKeyset * pluginConfig =
 			ksNew (30, keyNew ("system:/elektra/modules/hexcode", KEY_VALUE, "hexcode plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/hexcode/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/hexcode/exports/get", KEY_FUNC, elektraHexcodeGet, KEY_END),
@@ -129,7 +129,7 @@ int elektraHexcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		hd->bufalloc = 1000;
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{
@@ -200,7 +200,7 @@ static inline char elektraHexcodeConvToHex (int c)
  * @param buf the buffer
  * @pre the buffer needs to have thrice as much space as the value's size
  */
-void elektraHexcodeEncode (Key * cur, CHexData * hd)
+void elektraHexcodeEncode (ElektraKey * cur, CHexData * hd)
 {
 	size_t valsize = keyGetValueSize (cur);
 	const char * val = keyValue (cur);
@@ -237,7 +237,7 @@ void elektraHexcodeEncode (Key * cur, CHexData * hd)
 }
 
 
-int elektraHexcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraHexcodeSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 	CHexData * hd = elektraPluginGetData (handle);
@@ -247,7 +247,7 @@ int elektraHexcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKT
 		hd->bufalloc = 1000;
 	}
 
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{
@@ -264,16 +264,16 @@ int elektraHexcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKT
 	return 1; /* success */
 }
 
-int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
+int elektraHexcodeOpen (Plugin * handle, ElektraKey * key ELEKTRA_UNUSED)
 {
 	CHexData * hd = calloc (1, sizeof (CHexData));
 
 	/* Store for later use...*/
 	elektraPluginSetData (handle, hd);
 
-	KeySet * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
 
-	Key * escape = ksLookupByName (config, "/escape", 0);
+	ElektraKey * escape = ksLookupByName (config, "/escape", 0);
 	hd->escape = '\\';
 	if (escape && keyGetBaseNameSize (escape) && keyGetValueSize (escape) == 3)
 	{
@@ -284,7 +284,7 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 		hd->escape = res & 255;
 	}
 
-	Key * root = ksLookupByName (config, "/chars", 0);
+	ElektraKey * root = ksLookupByName (config, "/chars", 0);
 	if (!root)
 	{
 		/* Some default config */
@@ -295,7 +295,7 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	}
 	else
 	{
-		Key * cur = 0;
+		ElektraKey * cur = 0;
 		while ((cur = ksNext (config)) != 0)
 		{
 			/* ignore all keys not direct below */
@@ -317,7 +317,7 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	return 0;
 }
 
-int elektraHexcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
+int elektraHexcodeClose (Plugin * handle, ElektraKey * key ELEKTRA_UNUSED)
 {
 	CHexData * hd = elektraPluginGetData (handle);
 

@@ -12,12 +12,12 @@
 #include <kdbplugin.h>
 
 
-int elektraProcessOpen (Plugin * handle, Key * errorKey);
-int elektraProcessClose (Plugin * handle, Key * errorKey);
-int elektraProcessGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraProcessSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraProcessError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraProcessCheckConf (Key * errorKey, KeySet * conf);
+int elektraProcessOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraProcessClose (Plugin * handle, ElektraKey * errorKey);
+int elektraProcessGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraProcessSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraProcessError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraProcessCheckConf (ElektraKey * errorKey, ElektraKeyset * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

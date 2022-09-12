@@ -32,7 +32,7 @@
  * @return the popped key
  * @retval 0 if ks is 0
  */
-Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos)
+ElektraKey * elektraKsPopAtCursor (ElektraKeyset * ks, elektraCursor pos)
 {
 	if (!ks) return 0;
 	if (pos < 0) return 0;
@@ -43,8 +43,8 @@ Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos)
 
 	if (c != ks->size - 1)
 	{
-		Key ** found = ks->array + c;
-		Key * k = *found;
+		ElektraKey ** found = ks->array + c;
+		ElektraKey * k = *found;
 		/* Move the array over the place where key was found
 		 *
 		 * e.g. c = 2
@@ -56,7 +56,7 @@ Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos)
 		 * |--|--|--|--|--|
 		 *
 		 * */
-		memmove (found, found + 1, (ks->size - c - 1) * sizeof (Key *));
+		memmove (found, found + 1, (ks->size - c - 1) * sizeof (ElektraKey *));
 		*(ks->array + ks->size - 1) = k; // prepare last element to pop
 	}
 	else

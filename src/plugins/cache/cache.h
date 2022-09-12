@@ -13,10 +13,10 @@
 #include <kdbplugin.h>
 
 
-int elektraCacheOpen (Plugin * handle, Key * errorKey);
-int elektraCacheClose (Plugin * handle, Key * errorKey);
-int elektraCacheGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCacheSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCacheOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraCacheClose (Plugin * handle, ElektraKey * errorKey);
+int elektraCacheGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraCacheSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

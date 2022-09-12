@@ -37,14 +37,14 @@ typedef struct
 	kdb_long_long_t booleanCount;
 } TypeData;
 
-int elektraTypeOpen (Plugin * handle, Key * errorKey);
-int elektraTypeGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraTypeSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraTypeClose (Plugin * handle, Key * errorKey);
-int elektraTypeCheckConf (Key * errorKey, KeySet * conf);
+int elektraTypeOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraTypeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraTypeSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraTypeClose (Plugin * handle, ElektraKey * errorKey);
+int elektraTypeCheckConf (ElektraKey * errorKey, ElektraKeyset * conf);
 
-bool elektraTypeCheckType (const Key * key);
-bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey);
+bool elektraTypeCheckType (const ElektraKey * key);
+bool elektraTypeValidateKey (Plugin * handle, ElektraKey * key, ElektraKey * errorKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

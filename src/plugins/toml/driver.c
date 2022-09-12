@@ -31,31 +31,31 @@ extern int yylineno;
 extern void initializeLexer (FILE * file);
 extern void clearLexer (void);
 
-static Driver * createDriver (Key * parent, KeySet * keys);
+static Driver * createDriver (ElektraKey * parent, ElektraKeyset * keys);
 static void destroyDriver (Driver * driver);
 static int driverParse (Driver * driver);
 static void driverNewCommentList (Driver * driver, const char * comment, const char * orig);
 static void driverClearCommentList (Driver * driver);
-static bool driverDrainCommentsToKey (Key * key, Driver * driver);
+static bool driverDrainCommentsToKey (ElektraKey * key, Driver * driver);
 static void firstCommentAsInlineToPrevKey (Driver * driver);
 static void driverCommitLastScalarToParentKey (Driver * driver);
 static void driverClearLastScalar (Driver * driver);
 
 static void pushCurrKey (Driver * driver);
-static void setCurrKey (Driver * driver, const Key * key);
-static void setPrevKey (Driver * driver, Key * key);
+static void setCurrKey (Driver * driver, const ElektraKey * key);
+static void setPrevKey (Driver * driver, ElektraKey * key);
 static void resetCurrKey (Driver * driver);
 static void extendCurrKey (Driver * driver, const char * name);
-static ParentList * pushParent (ParentList * top, Key * key);
+static ParentList * pushParent (ParentList * top, ElektraKey * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
-static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, Driver * driver);
-static bool handleSpecialStrings (const char * string, Key * key);
-static void assignStringTomlType (Key * key, ScalarType stringType);
-static void assignOrigValueIfDifferent (Key * key, const char * origValue);
+static void assignStringMetakeys (ElektraKey * key, const char * origStr, const char * translatedStr, Driver * driver);
+static bool handleSpecialStrings (const char * string, ElektraKey * key);
+static void assignStringTomlType (ElektraKey * key, ScalarType stringType);
+static void assignOrigValueIfDifferent (ElektraKey * key, const char * origValue);
 
-int tomlRead (KeySet * keys, Key * parent)
+int tomlRead (ElektraKeyset * keys, ElektraKey * parent)
 {
 	Driver * driver = createDriver (parent, keys);
 	int status = 0;
@@ -73,7 +73,7 @@ int tomlRead (KeySet * keys, Key * parent)
 	return status;
 }
 
-static Driver * createDriver (Key * parent, KeySet * keys)
+static Driver * createDriver (ElektraKey * parent, ElektraKeyset * keys)
 {
 	Driver * driver = (Driver *) elektraCalloc (sizeof (Driver));
 	if (driver == NULL)
@@ -144,7 +144,7 @@ void driverExitToml (Driver * driver)
 	}
 	if (driver->commentRoot != NULL)
 	{
-		Key * root = keyNew (keyName (driver->root), KEY_END);
+		ElektraKey * root = keyNew (keyName (driver->root), KEY_END);
 		ksAppendKey (driver->keys, root);
 		driverDrainCommentsToKey (root, driver);
 	}
@@ -165,7 +165,7 @@ void driverExitKey (Driver * driver)
 	{
 		return;
 	}
-	Key * existing = ksLookup (driver->keys, driver->currKey, 0);
+	ElektraKey * existing = ksLookup (driver->keys, driver->currKey, 0);
 	if (existing != NULL && !isTableArray (existing) && keyCmp (existing, driver->root) != 0)
 	{
 		// Only allow table array keys to be read multiple times
@@ -463,10 +463,10 @@ void driverExitTableArray (Driver * driver)
 	driver->parentStack = popParent (driver->parentStack); // pop key name without any indices (was pushed after exiting key)
 	driver->order--;				       // Undo order increment
 
-	Key * key = buildTableArrayKeyName (driver->tableArrayStack);
-	Key * rootNameKey = keyDup (key, KEY_CP_ALL);
+	ElektraKey * key = buildTableArrayKeyName (driver->tableArrayStack);
+	ElektraKey * rootNameKey = keyDup (key, KEY_CP_ALL);
 	keyAddName (rootNameKey, "..");
-	Key * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
+	ElektraKey * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
 
 	if (existingRoot == NULL)
 	{
@@ -498,12 +498,12 @@ void driverEnterArray (Driver * driver)
 		return;
 	}
 	driver->indexStack = pushIndex (driver->indexStack, 0);
-	const Key * meta = keyGetMeta (driver->parentStack->key, "array"); // check for nested arrays
+	const ElektraKey * meta = keyGetMeta (driver->parentStack->key, "array"); // check for nested arrays
 	if (meta != NULL)
 	{
 		ELEKTRA_ASSERT (elektraStrCmp (keyString (meta), "") != 0,
 				"Empty array index shouldn't be possible, we should've already called driverEnterArrayElement once");
-		Key * key = keyAppendIndex (0, driver->parentStack->key);
+		ElektraKey * key = keyAppendIndex (0, driver->parentStack->key);
 		setOrderForKey (key, driver->order++);
 		driver->parentStack = pushParent (driver->parentStack, key);
 	}
@@ -553,7 +553,7 @@ void driverEnterArrayElement (Driver * driver)
 		firstCommentAsInlineToPrevKey (driver);
 	}
 
-	Key * key = keyAppendIndex (driver->indexStack->value, driver->parentStack->key);
+	ElektraKey * key = keyAppendIndex (driver->indexStack->value, driver->parentStack->key);
 	// setOrderForKey (key, driver->order++); // TODO: no order for array elements
 
 	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
@@ -714,7 +714,7 @@ static void firstCommentAsInlineToPrevKey (Driver * driver)
 	}
 }
 
-static bool driverDrainCommentsToKey (Key * key, Driver * driver)
+static bool driverDrainCommentsToKey (ElektraKey * key, Driver * driver)
 {
 	if (driver->newlineCount > 0)
 	{
@@ -750,7 +750,7 @@ static void pushCurrKey (Driver * driver)
 	driver->parentStack = pushParent (driver->parentStack, driver->currKey);
 }
 
-static void setCurrKey (Driver * driver, const Key * key)
+static void setCurrKey (Driver * driver, const ElektraKey * key)
 {
 	if (driver->currKey != NULL)
 	{
@@ -768,7 +768,7 @@ static void setCurrKey (Driver * driver, const Key * key)
 	}
 }
 
-static void setPrevKey (Driver * driver, Key * key)
+static void setPrevKey (Driver * driver, ElektraKey * key)
 {
 	if (driver->prevKey != NULL)
 	{
@@ -798,7 +798,7 @@ static void extendCurrKey (Driver * driver, const char * name)
 	keyAddBaseName (driver->currKey, name);
 }
 
-static ParentList * pushParent (ParentList * top, Key * key)
+static ParentList * pushParent (ParentList * top, ElektraKey * key)
 {
 	ParentList * parent = elektraCalloc (sizeof (ParentList));
 	parent->key = key;
@@ -898,7 +898,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	driverClearLastScalar (driver);
 }
 
-static void assignOrigValueIfDifferent (Key * key, const char * origValue)
+static void assignOrigValueIfDifferent (ElektraKey * key, const char * origValue)
 {
 	if (elektraStrCmp (keyString (key), origValue) != 0)
 	{
@@ -908,7 +908,7 @@ static void assignOrigValueIfDifferent (Key * key, const char * origValue)
 
 
 // handles base64 encoded or null-indicator strings
-static bool handleSpecialStrings (const char * string, Key * key)
+static bool handleSpecialStrings (const char * string, ElektraKey * key)
 {
 	if (isNullString (string))
 	{
@@ -925,9 +925,9 @@ static bool handleSpecialStrings (const char * string, Key * key)
 	}
 }
 
-static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, Driver * driver)
+static void assignStringMetakeys (ElektraKey * key, const char * origStr, const char * translatedStr, Driver * driver)
 {
-	const Key * metaType = keyGetMeta (key, "type");
+	const ElektraKey * metaType = keyGetMeta (key, "type");
 	// Don't overwrite "binary" typed metakeys -> See base64 plugin meta mode
 	// Don't assign it empty strings, otherwise the type plugin complains
 	// TODO (kodebach): string length 0, once type allows zero length on type=string
@@ -948,7 +948,7 @@ static void assignStringMetakeys (Key * key, const char * origStr, const char * 
 	}
 }
 
-static void assignStringTomlType (Key * key, ScalarType stringType)
+static void assignStringTomlType (ElektraKey * key, ScalarType stringType)
 {
 	switch (stringType)
 	{

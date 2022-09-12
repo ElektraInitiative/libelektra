@@ -155,7 +155,7 @@ while ((meta = keyNextMeta (key))!=0)
  * @see keyNextMeta(), keyCurrentMeta() for iterating after rewinding
  * @see ksRewind() KeySet's equivalent function for rewinding
  **/
-int keyRewindMeta (Key * key)
+int keyRewindMeta (ElektraKey * key)
 {
 	if (!key) return -1;
 	if (!key->meta) return 0;
@@ -194,9 +194,9 @@ int keyRewindMeta (Key * key)
  * @see keyRewindMeta() for rewinding the internal iterator
  * @see keyCurrentMeta() for getting the current metadata Key
  **/
-const Key * keyNextMeta (Key * key)
+const ElektraKey * keyNextMeta (ElektraKey * key)
 {
-	Key * ret;
+	ElektraKey * ret;
 	if (!key) return 0;
 	if (!key->meta) return 0;
 
@@ -226,9 +226,9 @@ const Key * keyNextMeta (Key * key)
  * @see keyRewindMeta() for rewinding the internal iterator
  * @see ksCurrent() KeySets's equivalent function for getting the current Key
  **/
-const Key * keyCurrentMeta (const Key * key)
+const ElektraKey * keyCurrentMeta (const ElektraKey * key)
 {
-	Key * ret;
+	ElektraKey * ret;
 	if (!key) return 0;
 	if (!key->meta) return 0;
 
@@ -300,22 +300,22 @@ void o(KeySet *ks)
  *
  * @see keyCopyAllMeta() copies all metadata from @p dest to @p src
  */
-int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
+int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * metaName)
 {
-	Key * ret;
+	ElektraKey * ret;
 
 	if (!source) return -1;
 	if (!dest) return -1;
 	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
-	ret = (Key *) keyGetMeta (source, metaName);
+	ret = (ElektraKey *) keyGetMeta (source, metaName);
 
 	if (!ret)
 	{
 		/*Make sure that dest also does not have metaName*/
 		if (dest->meta)
 		{
-			Key * r;
+			ElektraKey * r;
 			r = ksLookup (dest->meta, ret, KDB_O_POP);
 			if (r)
 			{
@@ -329,7 +329,7 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 	/*Lets have a look if the key is already inserted.*/
 	if (dest->meta)
 	{
-		Key * r;
+		ElektraKey * r;
 		r = ksLookup (dest->meta, ret, KDB_O_POP);
 		if (r && r != ret)
 		{
@@ -395,7 +395,7 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
  * @ingroup keymeta
  * @see keyCopyMeta() for copying one metadata Key from @p dest to @p source
  */
-int keyCopyAllMeta (Key * dest, const Key * source)
+int keyCopyAllMeta (ElektraKey * dest, const ElektraKey * source)
 {
 	if (!source) return -1;
 	if (!dest) return -1;
@@ -450,10 +450,10 @@ char keyType[] = keyValue(metaData)
  * @see keySetMeta() for setting metadata
  * @see keyMeta() for getting the KeySet containing metadata
  **/
-const Key * keyGetMeta (const Key * key, const char * metaName)
+const ElektraKey * keyGetMeta (const ElektraKey * key, const char * metaName)
 {
-	Key * ret;
-	Key * search;
+	ElektraKey * ret;
+	ElektraKey * search;
 
 	if (!key) return 0;
 	if (!metaName) return 0;
@@ -513,9 +513,9 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * @see keyGetMeta() for getting the value of a metadata Key
  * @see keyMeta() for getting the KeySet containing metadata
  **/
-ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString)
+ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMetaString)
 {
-	Key * toSet;
+	ElektraKey * toSet;
 	char * metaStringDup;
 	ssize_t metaNameSize;
 	ssize_t metaStringSize = 0;
@@ -544,7 +544,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)
 	{
-		Key * ret;
+		ElektraKey * ret;
 		ret = ksLookup (key->meta, toSet, KDB_O_POP);
 		if (ret)
 		{
@@ -633,7 +633,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  * @see keySetMeta() for setting a metadata Key
  * @see keyGetMeta() for getting a metadata Key
  **/
-KeySet * keyMeta (Key * key)
+ElektraKeyset * keyMeta (ElektraKey * key)
 {
 	if (!key) return 0;
 	if (!key->meta) key->meta = ksNew (0, KS_END);

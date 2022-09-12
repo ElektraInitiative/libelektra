@@ -14,15 +14,15 @@
 #include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
 
-int elektraListOpen (Plugin * handle, Key * errorKey);
-int elektraListClose (Plugin * handle, Key * errorKey);
-int elektraListGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraListSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraListError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig);
-int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig);
-int elektraListMountPlugin (Plugin * handle, const char * pluginName, KeySet * pluginConfig, Key * errorKey);
-int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, Key * errorKey);
+int elektraListOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraListClose (Plugin * handle, ElektraKey * errorKey);
+int elektraListGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraListSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraListError (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraListAddPlugin (Plugin * handle, ElektraKeyset * pluginConfig);
+int elektraListEditPlugin (Plugin * handle, ElektraKeyset * pluginConfig);
+int elektraListMountPlugin (Plugin * handle, const char * pluginName, ElektraKeyset * pluginConfig, ElektraKey * errorKey);
+int elektraListUnmountPlugin (Plugin * handle, const char * pluginName, ElektraKey * errorKey);
 Plugin * elektraListFindPlugin (Plugin * handle, const char * pluginName);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

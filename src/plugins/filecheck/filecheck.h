@@ -56,10 +56,10 @@ typedef struct
 } checkStruct;
 
 
-int elektraFilecheckOpen (Plugin * handle, Key * errorKey);
-int elektraFilecheckClose (Plugin * handle, Key * errorKey);
-int elektraFilecheckGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraFilecheckSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraFilecheckOpen (Plugin * handle, ElektraKey * errorKey);
+int elektraFilecheckClose (Plugin * handle, ElektraKey * errorKey);
+int elektraFilecheckGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraFilecheckSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

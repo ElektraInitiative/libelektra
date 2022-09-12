@@ -58,9 +58,9 @@ static inline void dummy (struct __test * ks ELEKTRA_UNUSED, ...)
 {
 }
 
-static bool check_error0 (const Key * parentKey, const char * expectedError)
+static bool check_error0 (const ElektraKey * parentKey, const char * expectedError)
 {
-	const Key * errorKey = keyGetMeta (parentKey, "error/number");
+	const ElektraKey * errorKey = keyGetMeta (parentKey, "error/number");
 	const char * actualError = errorKey != NULL ? keyString (errorKey) : NULL;
 	return actualError != NULL && strcmp (actualError, expectedError) == 0;
 }

@@ -62,12 +62,12 @@ typedef struct _fcryptState fcryptState;
  * @param fd will hold the file descriptor to the temporary file in case of success
  * @returns an allocated string holding the name of the encrypted file. Must be freed by the caller.
  */
-static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
+static char * getTemporaryFileName (ElektraKeyset * conf, const char * file, int * fd)
 {
 	// read the temporary directory to use from the plugin configuration
 	// NOTE the string contained in tmpDir must not be modified!
 	const char * tmpDir = NULL;
-	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
+	ElektraKey * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
 	if (k)
 	{
 		tmpDir = keyString (k);
@@ -120,7 +120,7 @@ error:
  * @retval 1 on success
  * @retval -1 on failure. In this case errorKey holds an error description.
  */
-static int shredTemporaryFile (int fd, Key * errorKey)
+static int shredTemporaryFile (int fd, ElektraKey * errorKey)
 {
 	kdb_octet_t buffer[512] = { 0 };
 	struct stat tmpStat;
@@ -160,9 +160,9 @@ error:
  * @retval 0 test mode is not enabled
  * @retval 1 test mode is enabled
  */
-static int inTestMode (KeySet * conf)
+static int inTestMode (ElektraKeyset * conf)
 {
-	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
+	ElektraKey * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
 	if (k && !strcmp (keyString (k), "1"))
 	{
 		return 1;
@@ -177,9 +177,9 @@ static int inTestMode (KeySet * conf)
  * @retval 0 text mode is not enabled
  * @retval 1 text mode is enabled
  */
-static int inTextMode (KeySet * conf)
+static int inTextMode (ElektraKeyset * conf)
 {
-	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TEXTMODE, 0);
+	ElektraKey * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TEXTMODE, 0);
 	if (k && !strcmp (keyString (k), "0"))
 	{
 		return 0;
@@ -193,11 +193,11 @@ static int inTextMode (KeySet * conf)
  * @param keyName holds the name of the root key to look up
  * @returns the number of GPG recipient keys.
  */
-static size_t getRecipientCount (KeySet * config, const char * keyName)
+static size_t getRecipientCount (ElektraKeyset * config, const char * keyName)
 {
-	Key * k;
+	ElektraKey * k;
 	size_t recipientCount = 0;
-	Key * root = ksLookupByName (config, keyName, 0);
+	ElektraKey * root = ksLookupByName (config, keyName, 0);
 
 	if (!root) return 0;
 
@@ -218,7 +218,7 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 	return recipientCount;
 }
 
-static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
+static int fcryptGpgCallAndCleanup (ElektraKey * parentKey, ElektraKeyset * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
 {
 	ssize_t readCount;
 	ssize_t writeCount;
@@ -318,9 +318,9 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
+static int fcryptEncrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey)
 {
-	Key * k;
+	ElektraKey * k;
 	const size_t recipientCount = getRecipientCount (pluginConfig, ELEKTRA_RECIPIENT_KEY);
 	const size_t signatureCount = getRecipientCount (pluginConfig, ELEKTRA_SIGNATURE_KEY);
 
@@ -364,7 +364,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	argv[i++] = "--yes"; // overwrite files if they exist
 
 	// add recipients
-	Key * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_RECIPIENT_KEY, 0);
+	ElektraKey * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_RECIPIENT_KEY, 0);
 
 	// append root (gpg/key) as gpg recipient
 	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
@@ -392,7 +392,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 
 
 	// add signature keys
-	Key * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_SIGNATURE_KEY, 0);
+	ElektraKey * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_SIGNATURE_KEY, 0);
 
 	// append root signature key
 	if (gpgSignatureRoot && strlen (keyString (gpgSignatureRoot)) > 0)
@@ -470,7 +470,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * state)
+static int fcryptDecrypt (ElektraKeyset * pluginConfig, ElektraKey * parentKey, fcryptState * state)
 {
 	int tmpFileFd = -1;
 	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
@@ -550,7 +550,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, ElektraKeyset * ks ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	fcryptState * s = elektraMalloc (sizeof (fcryptState));
 	if (!s)
@@ -573,7 +573,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED,
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKeyset * ks ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (s)
@@ -601,12 +601,12 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		KeySet * moduleConfig = ksNew (30,
+		ElektraKeyset * moduleConfig = ksNew (30,
 #include "contract.h"
 					       KS_END);
 		ksAppend (ks, moduleConfig);
@@ -615,7 +615,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
 	}
 
 	// check plugin state
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	ElektraKeyset * pluginConfig = elektraPluginGetConfig (handle);
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (!s)
 	{
@@ -670,9 +670,9 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	ElektraKeyset * pluginConfig = elektraPluginGetConfig (handle);
 	int encryptionResult = fcryptEncrypt (pluginConfig, parentKey);
 	if (encryptionResult != 1) return encryptionResult;
 
@@ -708,7 +708,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
  * @retval 1 the master password has been appended to the configuration
  * @retval -1 an error occurred. Check errorKey
  */
-int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
+int ELEKTRA_PLUGIN_FUNCTION (checkconf) (ElektraKey * errorKey, ElektraKeyset * conf)
 {
 	const size_t recipientCount = getRecipientCount (conf, ELEKTRA_RECIPIENT_KEY);
 	const size_t signatureCount = getRecipientCount (conf, ELEKTRA_SIGNATURE_KEY);

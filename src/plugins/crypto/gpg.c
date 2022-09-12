@@ -80,7 +80,7 @@ static inline void closePipe (int * pipe)
  * @retval -1 if the file can not be found
  * @retval -2 if the file exsits but it can not be executed
  */
-static int isExecutable (const char * file, Key * errorKey)
+static int isExecutable (const char * file, ElektraKey * errorKey)
 {
 	if (access (file, F_OK))
 	{
@@ -110,7 +110,7 @@ static int isExecutable (const char * file, Key * errorKey)
  * @param file contains a file name
  * @returns an allocated string containing "dir:/file" which must be freed by the caller or NULL in case of error.
  */
-static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
+static char * genGpgCandidate (ElektraKey * errorKey, char * dir, const char * file)
 {
 	const size_t resultLen = strlen (dir) + strlen (file) + 2;
 	char * result = elektraMalloc (resultLen);
@@ -133,7 +133,7 @@ static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
  * @retval 0 if the binary could not be found within PATH.
  * @retval 1 if the binary was found and the full path was stored in result.
  */
-static int searchPathForBin (Key * errorKey, const char * bin, char ** result)
+static int searchPathForBin (ElektraKey * errorKey, const char * bin, char ** result)
 {
 	*result = NULL;
 
@@ -181,12 +181,12 @@ static int searchPathForBin (Key * errorKey, const char * bin, char ** result)
  * @retval 1 on success.
  * @retval -1 on error. In this case errorkey holds an error description.
  */
-int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, ElektraKeyset * conf, ElektraKey * errorKey)
 {
 	*gpgBin = NULL;
 
 	// plugin configuration has highest priority
-	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_BIN, 0);
+	ElektraKey * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_BIN, 0);
 	if (k)
 	{
 		const char * configPath = keyString (k);
@@ -305,7 +305,7 @@ static void freeKeyList (struct gpgKeyListElement * head)
  * +-------+-------------+------------+----------------------------+
  *
  */
-static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t * totalChars, size_t * keyCount)
+static struct gpgKeyListElement * parseGpgKeyIdFromOutput (ElektraKey * msgKey, size_t * totalChars, size_t * keyCount)
 {
 	// generate a list of secret key IDs
 	const char * input = (char *) keyValue (msgKey);
@@ -414,12 +414,12 @@ static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t 
  * @retval 1 if value is a valid GPG private key
  * @retval -1 otherwise
  */
-static int isValidGpgKey (KeySet * conf, const char * value)
+static int isValidGpgKey (ElektraKeyset * conf, const char * value)
 {
 	// NOTE it is save to discard the const modifier (although it is not pretty) - the value is not being modified
 	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *) value, NULL };
-	Key * errorKey = keyNew ("/", KEY_END);
-	Key * msgKey = keyNew ("/", KEY_END);
+	ElektraKey * errorKey = keyNew ("/", KEY_END);
+	ElektraKey * msgKey = keyNew ("/", KEY_END);
 
 	int status = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
 
@@ -437,7 +437,7 @@ static int isValidGpgKey (KeySet * conf, const char * value)
  * @retval 1 on success.
  * @retval -1 on error, check errorKey for further details.
  */
-static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
+static int verifyGpgKeysInConf (ElektraKey * root, ElektraKeyset * conf, ElektraKey * errorKey)
 {
 	if (!root) return 1; // success
 
@@ -453,7 +453,7 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
 	}
 
 	// verify child elements
-	Key * k;
+	ElektraKey * k;
 	ksRewind (conf);
 	while ((k = ksNext (conf)) != 0)
 	{
@@ -480,16 +480,16 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
  * @retval 1 on success
  * @retval -1 on error. check errorKey for further details.
  */
-int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (ElektraKeyset * conf, ElektraKey * errorKey)
 {
-	Key * rootEncrypting = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
+	ElektraKey * rootEncrypting = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
 	if (verifyGpgKeysInConf (rootEncrypting, conf, errorKey) != 1)
 	{
 		// errorKey has been set by verifyGpgKeysInConf
 		return -1; // failure
 	}
 
-	Key * rootSignature = ksLookupByName (conf, ELEKTRA_SIGNATURE_KEY, 0);
+	ElektraKey * rootSignature = ksLookupByName (conf, ELEKTRA_SIGNATURE_KEY, 0);
 	if (verifyGpgKeysInConf (rootSignature, conf, errorKey) != 1)
 	{
 		// errorKey has been set by verifyGpgKeysInConf
@@ -504,10 +504,10 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * err
  * @param conf holds the backend/plugin configuration
  * @returns the error text. This pointer must be freed by the caller!
  */
-char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
+char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (ElektraKeyset * conf)
 {
-	Key * msgKey = keyNew ("/", KEY_END);
-	Key * errorKey = keyNew ("/", KEY_END);
+	ElektraKey * msgKey = keyNew ("/", KEY_END);
+	ElektraKey * errorKey = keyNew ("/", KEY_END);
 
 	char * errorBuffer;
 	size_t errorBufferLen = 0;
@@ -582,7 +582,7 @@ char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKey, char * argv[], size_t argc)
+int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (ElektraKeyset * conf, ElektraKey * errorKey, ElektraKey * msgKey, char * argv[], size_t argc)
 {
 	pid_t pid;
 	int status;

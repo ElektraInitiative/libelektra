@@ -56,7 +56,7 @@ typedef struct
 } GitData;
 
 
-static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
+static int elektraResolveFilename (ElektraKey * parentKey, ElektraResolveTempfile tmpFile)
 {
 	int rc = 0;
 	ElektraInvokeHandle * handle = elektraInvokeOpen ("resolver", 0, 0);
@@ -66,7 +66,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		goto RESOLVE_FAILED;
 	}
 	ElektraResolved * resolved = NULL;
-	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
+	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, ElektraKey *);
 	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
@@ -134,14 +134,14 @@ static unsigned char * hashBuffer (const void * buffer, size_t size)
 	return out;
 }
 
-int elektraGitresolverOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraGitresolverOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 	// this function is optional
 	return 1; // success
 }
 
-int elektraGitresolverClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraGitresolverClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 	// this function is optional
@@ -162,16 +162,16 @@ int elektraGitresolverClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
 	elektraPluginSetData (handle, NULL);
 	return 1; // success
 }
-static int initData (Plugin * handle, Key * parentKey)
+static int initData (Plugin * handle, ElektraKey * parentKey)
 {
 
 	GitData * data = elektraPluginGetData (handle);
 	if (!data)
 	{
-		KeySet * config = elektraPluginGetConfig (handle);
+		ElektraKeyset * config = elektraPluginGetConfig (handle);
 		data = elektraCalloc (sizeof (GitData));
 
-		Key * key = ksLookupByName (config, "/path", KDB_O_NONE);
+		ElektraKey * key = ksLookupByName (config, "/path", KDB_O_NONE);
 		keySetString (parentKey, keyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
@@ -612,11 +612,11 @@ PULL_CLEANUP:
 	return rc;
 }
 
-int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gitresolver"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/gitresolver/exports", KEY_END),
 			keyNew ("system:/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
@@ -822,7 +822,7 @@ static int moveFile (const char * source, const char * dest)
 	return 0;
 }
 
-int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// get all keys
 	// this function is optional
@@ -957,7 +957,7 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	return 1; // success
 }
 
-int elektraGitresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraGitresolverError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	// this function is optional
@@ -965,7 +965,7 @@ int elektraGitresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	return 1; // success
 }
 
-int elektraGitresolverCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraGitresolverCommit (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	return elektraGitresolverSet (handle, returned, parentKey);
 }

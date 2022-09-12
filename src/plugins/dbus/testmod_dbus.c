@@ -177,17 +177,17 @@ static void test_keyAdded (void)
 	printf ("test adding keys\n");
 
 	// (namespace)/tests/foo
-	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	ElektraKey * parentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toAdd = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * toAdd = keyDup (parentKey, KEY_CP_ALL);
 	keyAddName (toAdd, "bar");
 	keySetString (toAdd, "test");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
@@ -222,17 +222,17 @@ static void test_keyChanged (void)
 	// This flag is only cleared after kdbSet or when keys come from a backend.
 
 	// (namespace)/tests/foo
-	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	ElektraKey * parentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toChange = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * toChange = keyDup (parentKey, KEY_CP_ALL);
 	keyAddName (toChange, "bar");
 	keySetString (toChange, "test");
 
-	KeySet * ks = ksNew (2, toChange, KS_END);
+	ElektraKeyset * ks = ksNew (2, toChange, KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
@@ -263,24 +263,24 @@ static void test_keyDeleted (void)
 	printf ("test deleting keys\n");
 
 	// (namespace)/tests/foo
-	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	ElektraKey * parentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toDelete = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * toDelete = keyDup (parentKey, KEY_CP_ALL);
 	keyAddName (toDelete, "bar");
 	keySetString (toDelete, "test");
 
-	KeySet * ks = ksNew (1, keyDup (toDelete, KEY_CP_ALL), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyDup (toDelete, KEY_CP_ALL), KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
 
 	// remove key from keyset
-	Key * deleted = ksLookup (ks, toDelete, KDB_O_POP);
+	ElektraKey * deleted = ksLookup (ks, toDelete, KDB_O_POP);
 	succeed_if (deleted != NULL, "key was not found");
 
 	DBusConnection * connection = getDbusConnection (testBusType);
@@ -306,26 +306,26 @@ static void test_announceOnce (void)
 	printf ("test announce once\n");
 
 	// (namespace)/tests/foo
-	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	ElektraKey * parentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar/#0
-	Key * toAdd1 = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * toAdd1 = keyDup (parentKey, KEY_CP_ALL);
 	keyAddName (toAdd1, "bar/#0");
 	keySetString (toAdd1, "test");
 
 	// (namespace)/tests/foo/bar/#1
-	Key * toAdd2 = keyDup (toAdd1, KEY_CP_ALL);
+	ElektraKey * toAdd2 = keyDup (toAdd1, KEY_CP_ALL);
 	keySetBaseName (toAdd2, "#1");
 
 	// (namespace)/tests/foo/bar
-	Key * toChange = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * toChange = keyDup (parentKey, KEY_CP_ALL);
 	keyAddName (toChange, "bar");
 	keySetString (toChange, "test");
 
-	KeySet * ks = ksNew (1, toChange, KS_END);
+	ElektraKeyset * ks = ksNew (1, toChange, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
+	ElektraKeyset * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
@@ -357,20 +357,20 @@ static void test_cascadedChangeNotification (void)
 {
 	printf ("test change notification with cascaded parent key\n");
 
-	Key * parentKey = keyNew ("/tests/foo", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/foo", KEY_END);
 
 	// (namespace)/tests/foo
-	Key * completeParentKey = keyNew (testKeyNamespace, KEY_END);
+	ElektraKey * completeParentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (completeParentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toAdd = keyDup (completeParentKey, KEY_CP_ALL);
+	ElektraKey * toAdd = keyDup (completeParentKey, KEY_CP_ALL);
 	keyAddName (toAdd, "bar");
 	keySetString (toAdd, "test");
 
-	KeySet * ks = ksNew (1, completeParentKey, KS_END);
+	ElektraKeyset * ks = ksNew (1, completeParentKey, KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state
@@ -400,20 +400,20 @@ static void test_cascadedAnnounceOnce (void)
 {
 	printf ("test announce once with cascaded parent key\n");
 
-	Key * parentKey = keyNew ("/tests/foo", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/foo", KEY_END);
 
 	// (namespace)/tests/foo
-	Key * completeParentKey = keyNew (testKeyNamespace, KEY_END);
+	ElektraKey * completeParentKey = keyNew (testKeyNamespace, KEY_END);
 	keyAddName (completeParentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toAdd = keyDup (completeParentKey, KEY_CP_ALL);
+	ElektraKey * toAdd = keyDup (completeParentKey, KEY_CP_ALL);
 	keyAddName (toAdd, "bar");
 	keySetString (toAdd, "test");
 
-	KeySet * ks = ksNew (1, completeParentKey, KS_END);
+	ElektraKeyset * ks = ksNew (1, completeParentKey, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
+	ElektraKeyset * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
 	PLUGIN_OPEN ("dbus");
 
 	// initial get to save current state

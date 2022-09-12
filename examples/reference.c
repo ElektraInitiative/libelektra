@@ -9,14 +9,14 @@
 #include <kdb.h>
 #include <stdio.h>
 
-void f (Key * k)
+void f (ElektraKey * k)
 {
 	printf ("\tf called with %s\n", keyName (k));
 	keySetName (k, "user:/delete");
 	keyDel (k);
 }
 
-void h (Key * k)
+void h (ElektraKey * k)
 {
 	printf ("\th called with %s\n", keyName (k));
 	keyIncRef (k);
@@ -28,7 +28,7 @@ void h (Key * k)
 
 int main (void)
 {
-	Key * k = keyNew ("user:/key1", KEY_END);
+	ElektraKey * k = keyNew ("user:/key1", KEY_END);
 	printf ("key has ref %hu\n", keyGetRef (k));
 
 	f (k);

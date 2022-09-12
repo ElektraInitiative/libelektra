@@ -16,7 +16,7 @@
 struct timeval start;
 int num_dir = NUM_DIR;
 int num_key = NUM_KEY;
-KeySet * large;
+ElektraKeyset * large;
 
 void timeInit (void)
 {
@@ -445,7 +445,7 @@ static KsTreeVertex * recGenerateKsTree (KsTreeVertex * parent, const size_t siz
  *
  * @retval KeySet * the resulting KeySet
  */
-static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
+static void recGenerateKeySet (ElektraKeyset * ks, ElektraKey * key, KsTreeVertex * vertex)
 {
 	// add name to key
 	if (keyAddBaseName (key, vertex->name) < 0)
@@ -455,7 +455,7 @@ static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
 	// add if Key
 	if (vertex->isKey)
 	{
-		Key * dupKey = keyDup (key, KEY_CP_ALL);
+		ElektraKey * dupKey = keyDup (key, KEY_CP_ALL);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");
@@ -473,7 +473,7 @@ static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
 	// go to children
 	for (size_t i = 0; i < vertex->numberofChildren; ++i)
 	{
-		Key * dupKey = keyDup (key, KEY_CP_ALL);
+		ElektraKey * dupKey = keyDup (key, KEY_CP_ALL);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");
@@ -517,7 +517,7 @@ static void recFreeKsTree (KsTreeVertex * vertex)
  *
  * @retval KeySet * the resulting KeySet
  */
-KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape)
+ElektraKeyset * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape)
 {
 	ELEKTRA_ASSERT (size > 4, "size < 5");
 	int32_t defaultSeed = 1;
@@ -591,14 +591,14 @@ KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape)
 		shape->shapeDel (data);
 	}
 	// generate KeySet out of KsTree
-	KeySet * ks = ksNew (size, KS_END);
+	ElektraKeyset * ks = ksNew (size, KS_END);
 	if (!ks)
 	{
 		printExit ("generateKeySet: Can not create KeySet");
 	}
 	for (size_t i = 0; i < root->numberofChildren; ++i)
 	{
-		Key * key = keyNew ("/", KEY_END);
+		ElektraKey * key = keyNew ("/", KEY_END);
 		if (!key)
 		{
 			printExit ("generateKeySet: Can not create Key");

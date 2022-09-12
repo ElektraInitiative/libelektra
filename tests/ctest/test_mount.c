@@ -15,14 +15,14 @@
 // FIXME: lots of commented out tests
 
 #if 1 == 0
-KDB * kdb_new (void)
+ElektraKdb * kdb_new (void)
 {
-	KDB * kdb = elektraCalloc (sizeof (KDB));
+	ElektraKdb * kdb = elektraCalloc (sizeof (KDB));
 	kdb->split = splitNew ();
 	return kdb;
 }
 
-static void kdb_del (KDB * kdb)
+static void kdb_del (ElektraKdb * kdb)
 {
 	elektraPluginClose (kdb->defaultBackend, 0);
 	if (kdb->initBackend)
@@ -35,12 +35,12 @@ static void kdb_del (KDB * kdb)
 	elektraFree (kdb);
 }
 
-KeySet * modules_config (void)
+ElektraKeyset * modules_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/modules", KEY_END), KS_END);
 }
 
-KeySet * set_simple (void)
+ElektraKeyset * set_simple (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 
@@ -79,7 +79,7 @@ static void test_mount (void)
 {
 	printf ("test mount backend\n");
 
-	KeySet * modules = modules_config ();
+	ElektraKeyset * modules = modules_config ();
 	Plugin * backend = elektraPluginOpen ("backend", modules, set_simple (), 0);
 
 	if (backend == NULL)
@@ -88,13 +88,13 @@ static void test_mount (void)
 		exit_if_fail (0, "couldn't open backend");
 	}
 
-	KDB * kdb = kdb_new ();
+	ElektraKdb * kdb = kdb_new ();
 
 	mountBackend (kdb, backend, 0);
 	succeed_if (kdb->trie, "there should be a trie");
 
-	Key * mp = keyNew ("system:/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END);
-	Key * sk = keyNew ("user", KEY_VALUE, "user", KEY_END);
+	ElektraKey * mp = keyNew ("system:/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END);
+	ElektraKey * sk = keyNew ("user", KEY_VALUE, "user", KEY_END);
 
 	Plugin * tempBackend = mountGetBackend (kdb, sk);
 	compare_key (backendGetMountpoint (tempBackend), mp);
@@ -120,7 +120,7 @@ static void test_mount (void)
 	kdb_del (kdb);
 }
 
-KeySet * minimal_config (void)
+ElektraKeyset * minimal_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), KS_END);
 }
@@ -130,9 +130,9 @@ static void test_minimaltrie (void)
 {
 	printf ("Test minimal mount\n");
 
-	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew ("/", KEY_END);
-	KeySet * modules = modules_config ();
+	ElektraKdb * kdb = kdb_new ();
+	ElektraKey * errorKey = keyNew ("/", KEY_END);
+	ElektraKeyset * modules = modules_config ();
 	succeed_if (mountOpen (kdb, minimal_config (), modules, errorKey) == 0, "could not open minimal config")
 
 		succeed_if (output_warnings (errorKey), "warnings found");
@@ -145,7 +145,7 @@ static void test_minimaltrie (void)
 	kdb_del (kdb);
 }
 
-KeySet * simple_config (void)
+ElektraKeyset * simple_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/simple/config/mountpoint", KEY_VALUE, "user:/tests/simple", KEY_END), KS_END);
@@ -155,9 +155,9 @@ static void test_simple (void)
 {
 	printf ("Test simple mount\n");
 
-	KDB * kdb = kdb_new ();
-	Key * errorKey = keyNew ("/", KEY_END);
-	KeySet * modules = modules_config ();
+	ElektraKdb * kdb = kdb_new ();
+	ElektraKey * errorKey = keyNew ("/", KEY_END);
+	ElektraKeyset * modules = modules_config ();
 	succeed_if (mountOpen (kdb, simple_config (), modules, errorKey) == 0, "could not open trie");
 
 	succeed_if (output_warnings (errorKey), "warnings found");
@@ -165,12 +165,12 @@ static void test_simple (void)
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
-	Key * searchKey = keyNew ("user", KEY_END);
+	ElektraKey * searchKey = keyNew ("user", KEY_END);
 	Plugin * backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
-	Key * mp = keyNew ("user:/tests/simple", KEY_VALUE, "simple", KEY_END);
+	ElektraKey * mp = keyNew ("user:/tests/simple", KEY_VALUE, "simple", KEY_END);
 	backend = trieLookup (kdb->trie, keyNew ("user:/tests/simple", KEY_END));
 	succeed_if (backend, "there should be a backend");
 	if (backend) compare_key (backendGetMountpoint (backend), mp);
@@ -194,7 +194,7 @@ static void test_simple (void)
 	kdb_del (kdb);
 }
 
-KeySet * set_pluginconf (void)
+ElektraKeyset * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system:/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system:/more", KEY_END),
 		      keyNew ("system:/more/config", KEY_END), keyNew ("system:/more/config/below", KEY_END),
@@ -258,7 +258,7 @@ static void test_simpletrie (void)
 }
 
 
-KeySet * set_two (void)
+ElektraKeyset * set_two (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 
@@ -371,7 +371,7 @@ static void test_two (void)
 }
 
 
-KeySet * set_us (void)
+ElektraKeyset * set_us (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user:\\/", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/user:\\//mountpoint", KEY_VALUE, "user:/", KEY_END),
@@ -430,7 +430,7 @@ static void test_us (void)
 	//	kdb_del (kdb);
 }
 
-KeySet * endings_config (void)
+ElektraKeyset * endings_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/slash", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/slash/mountpoint", KEY_VALUE, "user:/endings", KEY_END),
@@ -535,7 +535,7 @@ static void test_endings (void)
 	//	kdb_del (kdb);
 }
 
-KeySet * cascading_config (void)
+ElektraKeyset * cascading_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "/tests/simple", KEY_END), KS_END);
@@ -615,7 +615,7 @@ static void test_cascading (void)
 }
 
 
-KeySet * root_config (void)
+ElektraKeyset * root_config (void)
 {
 	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),

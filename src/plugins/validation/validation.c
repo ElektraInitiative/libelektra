@@ -17,11 +17,11 @@
 
 #include "validation.h"
 
-static int validateKey (Key *, Key *);
+static int validateKey (ElektraKey *, ElektraKey *);
 
-int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * n;
+	ElektraKeyset * n;
 	ksAppend (returned,
 		  n = ksNew (30,
 			     keyNew ("system:/elektra/modules/validation", KEY_VALUE, "validation plugin waits for your orders", KEY_END),
@@ -36,14 +36,14 @@ int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	return 1;
 }
 
-static int validateKey (Key * key, Key * parentKey)
+static int validateKey (ElektraKey * key, ElektraKey * parentKey)
 {
-	const Key * regexMeta = keyGetMeta (key, "check/validation");
+	const ElektraKey * regexMeta = keyGetMeta (key, "check/validation");
 
-	const Key * icaseMeta = keyGetMeta (key, "check/validation/ignorecase");
-	const Key * matchMeta = keyGetMeta (key, "check/validation/match");
-	const Key * invertMeta = keyGetMeta (key, "check/validation/invert");
-	const Key * typeMeta = keyGetMeta (key, "check/validation/type");
+	const ElektraKey * icaseMeta = keyGetMeta (key, "check/validation/ignorecase");
+	const ElektraKey * matchMeta = keyGetMeta (key, "check/validation/match");
+	const ElektraKey * invertMeta = keyGetMeta (key, "check/validation/invert");
+	const ElektraKey * typeMeta = keyGetMeta (key, "check/validation/type");
 
 	int lineValidation = 0;
 	int wordValidation = 0;
@@ -143,7 +143,7 @@ static int validateKey (Key * key, Key * parentKey)
 
 	if (!match)
 	{
-		const Key * msg = keyGetMeta (key, "check/validation/message");
+		const ElektraKey * msg = keyGetMeta (key, "check/validation/message");
 		if (msg)
 		{
 			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
@@ -171,13 +171,13 @@ static int validateKey (Key * key, Key * parentKey)
 	return 1;
 }
 
-int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	Key * cur = 0;
+	ElektraKey * cur = 0;
 
 	while ((cur = ksNext (returned)) != 0)
 	{
-		const Key * regexMeta = keyGetMeta (cur, "check/validation");
+		const ElektraKey * regexMeta = keyGetMeta (cur, "check/validation");
 
 		if (!regexMeta) continue;
 		int rc = validateKey (cur, parentKey);

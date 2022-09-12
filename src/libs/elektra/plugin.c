@@ -52,7 +52,7 @@
  *
  * @return a pointer to a new created plugin or 0 on error
  */
-Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config, Key * errorKey)
+Plugin * elektraPluginOpen (const char * name, ElektraKeyset * modules, ElektraKeyset * config, ElektraKey * errorKey)
 {
 	// TODO (kodebach) [Q]: take global KS as arg?
 	Plugin * handle = 0;
@@ -125,7 +125,7 @@ err_clup:
 	return 0;
 }
 
-int elektraPluginClose (Plugin * handle, Key * errorKey)
+int elektraPluginClose (Plugin * handle, ElektraKey * errorKey)
 {
 	int rc = 0;
 
@@ -161,14 +161,14 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	ELEKTRA_NOT_NULL (plugin);
 	ELEKTRA_NOT_NULL (name);
 
-	KeySet * exports = ksNew (0, KS_END);
-	Key * pk = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKeyset * exports = ksNew (0, KS_END);
+	ElektraKey * pk = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (pk, plugin->name);
 	plugin->kdbGet (plugin, exports, pk);
 	ksRewind (exports);
 	keyAddBaseName (pk, "exports");
 	keyAddBaseName (pk, name);
-	Key * keyFunction = ksLookup (exports, pk, 0);
+	ElektraKey * keyFunction = ksLookup (exports, pk, 0);
 	if (!keyFunction)
 	{
 		ELEKTRA_LOG_DEBUG ("function \"%s\" from plugin \"%s\" not found", name, plugin->name);
@@ -211,7 +211,7 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
  *
  * @return the plugin handle, if found or NULL otherwise
  */
-Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName)
+Plugin * elektraPluginFindGlobal (ElektraKdb * handle, const char * pluginName)
 {
 	Plugin * listPlugin = handle->globalPlugins[PREROLLBACK][MAXONCE]; // take any position
 	if (listPlugin != NULL && strcmp (listPlugin->name, "list") == 0)

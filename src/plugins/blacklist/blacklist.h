@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraBlacklistGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraBlacklistSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraBlacklistGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraBlacklistSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

@@ -36,17 +36,17 @@
 
 static void test_hostLensRead (char * fileName)
 {
-	Key * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN ("augeas");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/ipaddr", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/ipaddr", 0);
 	return_if_fail (key, "ip address of localhost not found");
 	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address of localhost not correct");
 
@@ -78,12 +78,12 @@ static void test_hostLensRead (char * fileName)
 
 static void test_hostLensWrite (char * fileName)
 {
-	Key * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, elektraFilename (), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN ("augeas");
 
 	// clang-format off
-	KeySet *ks = ksNew (30, keyNew ("user:/tests/augeas-hosts/1", KEY_END),
+	ElektraKeyset *ks = ksNew (30, keyNew ("user:/tests/augeas-hosts/1", KEY_END),
 			keyNew ("user:/tests/augeas-hosts/1/ipaddr", KEY_VALUE, "127.0.0.1",
 					KEY_META, "order", "10", KEY_END),
 			keyNew ("user:/tests/augeas-hosts/1/canonical", KEY_VALUE,
@@ -127,17 +127,17 @@ static void test_hostLensWrite (char * fileName)
 
 static void test_hostLensDelete (char * sourceFile, char * compFile)
 {
-	Key * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (sourceFile), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (sourceFile), KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN ("augeas");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user:/tests/augeas-hosts/1", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/augeas-hosts/1", 0);
 	return_if_fail (key, "localhost not found");
 	elektraKsPopAtCursor (ks, ksGetCursor (ks));
 	keyDel (key);
@@ -175,17 +175,17 @@ static void test_hostLensDelete (char * sourceFile, char * compFile)
 
 static void test_hostLensModify (char * sourceFile, char * compFile)
 {
-	Key * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (sourceFile), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (sourceFile), KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN ("augeas");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/ipaddr", 0);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/ipaddr", 0);
 	return_if_fail (key, "ip address of localhost not found");
 	keySetString (key, "127.0.0.2");
 
@@ -215,17 +215,17 @@ static void test_hostLensModify (char * sourceFile, char * compFile)
 
 static void test_order (char * fileName)
 {
-	Key * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN ("augeas");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
-	Key * key;
+	ElektraKey * key;
 	size_t currentIndex = 0;
 	size_t numKeys = ksGetSize (ks);
 	long * usedOrders = elektraMalloc (numKeys * sizeof (long));
@@ -244,7 +244,7 @@ static void test_order (char * fileName)
 		if (strcmp (keyName (key), keyName (parentKey)))
 		{
 			char errorMessage[150];
-			const Key * orderKey = keyGetMeta (key, "order");
+			const ElektraKey * orderKey = keyGetMeta (key, "order");
 
 			snprintf (errorMessage, 150, "key %s has no order", keyName (key));
 
@@ -283,11 +283,11 @@ static void test_order (char * fileName)
 
 static void test_hostLensFormatting (char * fileName)
 {
-	Key * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	KeySet * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/augeas-hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN ("augeas");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");

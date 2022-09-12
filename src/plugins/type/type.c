@@ -17,13 +17,13 @@
 struct _Type
 {
 	const char * name;
-	bool (*normalize) (Plugin * handle, Key * key);
-	bool (*check) (const Key * key);
-	bool (*restore) (Plugin * handle, Key * key);
-	void (*setError) (Plugin * handle, Key * errorKey, const Key * key);
+	bool (*normalize) (Plugin * handle, ElektraKey * key);
+	bool (*check) (const ElektraKey * key);
+	bool (*restore) (Plugin * handle, ElektraKey * key);
+	void (*setError) (Plugin * handle, ElektraKey * errorKey, const ElektraKey * key);
 };
 
-static void elektraTypeSetDefaultError (Plugin * handle, Key * errorKey, const Key * key);
+static void elektraTypeSetDefaultError (Plugin * handle, ElektraKey * errorKey, const ElektraKey * key);
 
 static const Type elektraTypesList[] = {
 	{ "any", NULL, &elektraTypeCheckAny, NULL, &elektraTypeSetDefaultError },
@@ -62,9 +62,9 @@ static const Type * findType (const char * name)
 	return NULL;
 }
 
-static const char * getTypeName (const Key * key)
+static const char * getTypeName (const ElektraKey * key)
 {
-	const Key * meta = keyGetMeta (key, "check/type");
+	const ElektraKey * meta = keyGetMeta (key, "check/type");
 	if (meta == NULL)
 	{
 		meta = keyGetMeta (key, "type");
@@ -79,7 +79,7 @@ static const char * getTypeName (const Key * key)
 	return strlen (type) == 0 ? NULL : type;
 }
 
-bool elektraTypeCheckType (const Key * key)
+bool elektraTypeCheckType (const ElektraKey * key)
 {
 	const char * typeName = getTypeName (key);
 	if (typeName == NULL)
@@ -91,13 +91,13 @@ bool elektraTypeCheckType (const Key * key)
 	return type != NULL && type->check (key);
 }
 
-static void elektraTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
+static void elektraTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey, const ElektraKey * key)
 {
 	ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The type '%s' failed to match for '%s' with string '%s'", getTypeName (key),
 						keyName (key), keyString (key));
 }
 
-bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
+bool elektraTypeValidateKey (Plugin * handle, ElektraKey * key, ElektraKey * errorKey)
 {
 	const char * typeName = getTypeName (key);
 	if (typeName == NULL)
@@ -136,9 +136,9 @@ bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey)
 	return true;
 }
 
-static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** result, Key * errorKey)
+static kdb_long_long_t readBooleans (ElektraKeyset * config, struct boolean_pair ** result, ElektraKey * errorKey)
 {
-	Key * parent = ksLookupByName (config, "/booleans", 0);
+	ElektraKey * parent = ksLookupByName (config, "/booleans", 0);
 	const char * max = keyString (parent);
 	if (parent == NULL || strlen (max) == 0)
 	{
@@ -164,9 +164,9 @@ static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** res
 	{
 		char * subPos = &buffer[strlen (buffer)];
 		strcpy (subPos, "/true");
-		Key * trueKey = ksLookupByName (config, buffer, 0);
+		ElektraKey * trueKey = ksLookupByName (config, buffer, 0);
 		strcpy (subPos, "/false");
-		Key * falseKey = ksLookupByName (config, buffer, 0);
+		ElektraKey * falseKey = ksLookupByName (config, buffer, 0);
 
 		*subPos = '\0';
 		if ((trueKey == NULL) != (falseKey == NULL))
@@ -202,9 +202,9 @@ static kdb_long_long_t readBooleans (KeySet * config, struct boolean_pair ** res
  * @retval -1 if /boolean/restoreas is unset
  * @retval >= 0 index of chosen boolean pair
  */
-static kdb_long_long_t readBooleanRestore (KeySet * config)
+static kdb_long_long_t readBooleanRestore (ElektraKeyset * config)
 {
-	Key * restore = ksLookupByName (config, "/boolean/restoreas", 0);
+	ElektraKey * restore = ksLookupByName (config, "/boolean/restoreas", 0);
 	if (restore == NULL)
 	{
 		return -1;
@@ -223,7 +223,7 @@ static kdb_long_long_t readBooleanRestore (KeySet * config)
 		return -3;
 	}
 
-	Key * restoreKey = keyNew ("/", KEY_VALUE, &restoreString[digitStart], KEY_END);
+	ElektraKey * restoreKey = keyNew ("/", KEY_VALUE, &restoreString[digitStart], KEY_END);
 
 	kdb_long_long_t size;
 	if (!elektraKeyToLongLong (restoreKey, &size))
@@ -237,9 +237,9 @@ static kdb_long_long_t readBooleanRestore (KeySet * config)
 	return size;
 }
 
-int elektraTypeOpen (Plugin * handle, Key * errorKey)
+int elektraTypeOpen (Plugin * handle, ElektraKey * errorKey)
 {
-	KeySet * conf = elektraPluginGetConfig (handle);
+	ElektraKeyset * conf = elektraPluginGetConfig (handle);
 	TypeData * data = elektraMalloc (sizeof (TypeData));
 
 	kdb_long_long_t result = readBooleans (conf, &data->booleans, errorKey);
@@ -277,11 +277,11 @@ int elektraTypeOpen (Plugin * handle, Key * errorKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/type"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/type", KEY_VALUE, "type plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/type/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/type/exports/open", KEY_FUNC, elektraTypeOpen, KEY_END),
@@ -302,7 +302,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	ksRewind (returned);
 
-	Key * cur = NULL;
+	ElektraKey * cur = NULL;
 	while ((cur = ksNext (returned)))
 	{
 		const char * typeName = getTypeName (cur);
@@ -321,7 +321,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 		if (type->normalize != NULL)
 		{
-			const Key * orig = keyGetMeta (cur, "origvalue");
+			const ElektraKey * orig = keyGetMeta (cur, "origvalue");
 			if (orig != NULL)
 			{
 				ELEKTRA_SET_INSTALLATION_ERRORF (
@@ -356,13 +356,13 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	elektraCursor cursor = ksGetCursor (returned);
 
 	ksRewind (returned);
 
-	Key * cur = NULL;
+	ElektraKey * cur = NULL;
 	while ((cur = ksNext (returned)))
 	{
 		const char * typeName = getTypeName (cur);
@@ -381,7 +381,7 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 		if (type->normalize != NULL)
 		{
-			const Key * orig = keyGetMeta (cur, "origvalue");
+			const ElektraKey * orig = keyGetMeta (cur, "origvalue");
 			// skip normalization origvalue already set
 			if (orig == NULL && !type->normalize (handle, cur))
 			{
@@ -416,7 +416,7 @@ int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 }
 
 
-int elektraTypeClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraTypeClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	TypeData * data = elektraPluginGetData (handle);
 	if (data != NULL)
@@ -431,7 +431,7 @@ int elektraTypeClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraTypeCheckConf (Key * errorKey, KeySet * conf)
+int elektraTypeCheckConf (ElektraKey * errorKey, ElektraKeyset * conf)
 {
 	struct boolean_pair * pairs;
 	if (readBooleans (conf, &pairs, errorKey) < -1)

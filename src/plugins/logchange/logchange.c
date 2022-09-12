@@ -17,21 +17,21 @@
 
 #include "logchange.h"
 
-static void logKeys (KeySet * ks, const char * message)
+static void logKeys (ElektraKeyset * ks, const char * message)
 {
 	ksRewind (ks);
-	Key * k = 0;
+	ElektraKey * k = 0;
 	while ((k = ksNext (ks)) != 0)
 	{
 		printf ("%s: %s\n", message, keyName (k));
 	}
 }
 
-int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraLogchangeGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/logchange"))
 	{
-		KeySet * contract = ksNew (
+		ElektraKeyset * contract = ksNew (
 			30, keyNew ("system:/elektra/modules/logchange", KEY_VALUE, "logchange plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports", KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
@@ -46,13 +46,13 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	}
 
 	// remember all keys
-	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
+	ElektraKeyset * ks = (ElektraKeyset *) elektraPluginGetData (handle);
 	if (ks) ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
 	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
 	{
-		KeySet * logset = ksNew (1, keyDup (parentKey, KEY_CP_ALL), KS_END);
+		ElektraKeyset * logset = ksNew (1, keyDup (parentKey, KEY_CP_ALL), KS_END);
 		logKeys (logset, "loading configuration");
 		ksDel (logset);
 	}
@@ -60,22 +60,22 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	return 1; /* success */
 }
 
-int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraLogchangeSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * oldKeys = (KeySet *) elektraPluginGetData (handle);
+	ElektraKeyset * oldKeys = (ElektraKeyset *) elektraPluginGetData (handle);
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
 	ksRewind (oldKeys);
 	ksRewind (returned);
 
-	KeySet * addedKeys = ksDup (returned);
-	KeySet * changedKeys = ksNew (0, KS_END);
-	KeySet * removedKeys = ksNew (0, KS_END);
+	ElektraKeyset * addedKeys = ksDup (returned);
+	ElektraKeyset * changedKeys = ksNew (0, KS_END);
+	ElektraKeyset * removedKeys = ksNew (0, KS_END);
 
-	Key * k = 0;
+	ElektraKey * k = 0;
 	while ((k = ksNext (oldKeys)) != 0)
 	{
-		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
+		ElektraKey * p = ksLookup (addedKeys, k, KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)
 		{
@@ -105,9 +105,9 @@ int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	return 1; /* success */
 }
 
-int elektraLogchangeClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraLogchangeClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
+	ElektraKeyset * ks = (ElektraKeyset *) elektraPluginGetData (handle);
 	if (ks) ksDel (ks);
 	return 1; /* success */
 }

@@ -10,7 +10,7 @@ enum
 };
 
 G_DEFINE_TYPE (GElektraKey, gelektra_key, G_TYPE_OBJECT)
-static Key * gelektra_key_swap (GElektraKey * key, Key * newkey);
+static ElektraKey * gelektra_key_swap (GElektraKey * key, ElektraKey * newkey);
 
 static void gelektra_key_init (GElektraKey * self)
 {
@@ -99,11 +99,11 @@ GElektraKey * gelektra_key_new (const gchar * name, ...)
 	if (name)
 	{
 		va_start (va, name);
-		Key * newkey = keyVNew (name, va);
+		ElektraKey * newkey = keyVNew (name, va);
 		va_end (va);
 		if (newkey == NULL) return NULL;
 
-		Key * old = gelektra_key_swap (key, newkey);
+		ElektraKey * old = gelektra_key_swap (key, newkey);
 		keyDel (old);
 	}
 	return key;
@@ -115,11 +115,11 @@ GElektraKey * gelektra_key_new (const gchar * name, ...)
  *
  * Returns: (transfer full): A new #GElektraKey holding the ownership of @key
  */
-GElektraKey * gelektra_key_make (Key * key)
+GElektraKey * gelektra_key_make (ElektraKey * key)
 {
 	if (key == NULL) return NULL;
 	GElektraKey * ret = gelektra_key_new (NULL);
-	Key * old = gelektra_key_swap (ret, key);
+	ElektraKey * old = gelektra_key_swap (ret, key);
 	keyDel (old);
 	return ret;
 }
@@ -144,11 +144,11 @@ static void gelektra_key_gi_init_va (GElektraKey * key, const gchar * name, ...)
 	if (!name) return;
 	va_list va;
 	va_start (va, name);
-	Key * newkey = keyVNew (name, va);
+	ElektraKey * newkey = keyVNew (name, va);
 	va_end (va);
 	if (newkey == NULL) return;
 
-	Key * old = gelektra_key_swap (key, newkey);
+	ElektraKey * old = gelektra_key_swap (key, newkey);
 	keyDel (old);
 }
 
@@ -204,7 +204,7 @@ GElektraKey * gelektra_key_dup (const GElektraKey * key, elektraCopyFlags flags)
  */
 GElektraKey * gelektra_key_copy (const GElektraKey * key, GElektraKey * dest, elektraCopyFlags flags)
 {
-	Key * ret = keyCopy (dest->key, key->key, flags);
+	ElektraKey * ret = keyCopy (dest->key, key->key, flags);
 	return ret == NULL ? NULL : dest;
 }
 
@@ -222,10 +222,10 @@ gint gelektra_key_clear (GElektraKey * key)
  *
  * \note #GElektraKey also swaps ownership of the underlying keys
  */
-static Key * gelektra_key_swap (GElektraKey * key, Key * newkey)
+static ElektraKey * gelektra_key_swap (GElektraKey * key, ElektraKey * newkey)
 {
 	keyDecRef (key->key);
-	Key * oldkey = key->key;
+	ElektraKey * oldkey = key->key;
 	key->key = newkey;
 	keyIncRef (key->key);
 	return oldkey;
@@ -417,7 +417,7 @@ gboolean gelektra_key_hasmeta (const GElektraKey * key, const gchar * name)
  */
 GElektraKey * gelektra_key_getmeta (const GElektraKey * key, const gchar * name)
 {
-	return gelektra_key_make ((Key *) keyGetMeta (key->key, name));
+	return gelektra_key_make ((ElektraKey *) keyGetMeta (key->key, name));
 }
 
 gint gelektra_key_copymeta (const GElektraKey * key, GElektraKey * dest, const gchar * name)
@@ -444,7 +444,7 @@ gint gelektra_key_rewindmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
 {
-	return gelektra_key_make ((Key *) keyNextMeta (key->key));
+	return gelektra_key_make ((ElektraKey *) keyNextMeta (key->key));
 }
 
 /**
@@ -456,7 +456,7 @@ GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_currentmeta (const GElektraKey * key)
 {
-	return gelektra_key_make ((Key *) keyCurrentMeta (key->key));
+	return gelektra_key_make ((ElektraKey *) keyCurrentMeta (key->key));
 }
 
 /* validating */

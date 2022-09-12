@@ -13,14 +13,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-void printError (Key * key);
-void printWarnings (Key * key);
+void printError (ElektraKey * key);
+void printWarnings (ElektraKey * key);
 
 int main (void)
 {
-	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("/sw/MyApp", KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
+	ElektraKeyset * myConfig = ksNew (0, KS_END);
+	ElektraKey * key = keyNew ("/sw/MyApp", KEY_END);
+	ElektraKdb * handle = kdbOpen (NULL, key);
 
 	if (!handle) printError (key);
 
@@ -35,7 +35,7 @@ int main (void)
 	keyDel (key);
 
 	// lookup
-	Key * result = ksLookupByName (myConfig, "/sw/MyApp/Tests/TestKey1", 0);
+	ElektraKey * result = ksLookupByName (myConfig, "/sw/MyApp/Tests/TestKey1", 0);
 	if (!result)
 		printf ("Key not found in KeySet\n");
 	else
@@ -62,12 +62,12 @@ int main (void)
  * the Key returned by keyGetMeta(key,"error").
  * Or print all MetaData, by using the loop from removeMetaData ().
  */
-void printError (Key * key)
+void printError (ElektraKey * key)
 {
 	printf ("Error occurred: %s\n", keyString (keyGetMeta (key, "error/description")));
 
 	/*remove error*/
-	Key * cutpoint = keyNew ("meta:/error", KEY_END);
+	ElektraKey * cutpoint = keyNew ("meta:/error", KEY_END);
 	ksDel (ksCut (keyMeta (key), cutpoint));
 	keyDel (cutpoint);
 }
@@ -80,17 +80,17 @@ void printError (Key * key)
  * is the Warning number, starting at 00.
  * Or print all MetaData, by using the loop from removeMetaData ().
  */
-void printWarnings (Key * key)
+void printWarnings (ElektraKey * key)
 {
-	Key * cutpoint = keyNew ("meta:/warnings", KEY_END);
-	KeySet * warnings = ksCut (keyMeta (key), cutpoint);
+	ElektraKey * cutpoint = keyNew ("meta:/warnings", KEY_END);
+	ElektraKeyset * warnings = ksCut (keyMeta (key), cutpoint);
 
 	for (elektraCursor i = 1; i < ksGetSize (warnings); ++i)
 	{
-		Key * cur = ksAtCursor (warnings, i);
+		ElektraKey * cur = ksAtCursor (warnings, i);
 		if (keyIsDirectlyBelow (cutpoint, cur))
 		{
-			Key * lookup = keyNew (keyName (cur), KEY_END);
+			ElektraKey * lookup = keyNew (keyName (cur), KEY_END);
 			keyAddBaseName (cur, "description");
 			printf ("Warning occurred: %s\n", keyString (ksLookup (warnings, lookup, KDB_O_DEL)));
 		}
@@ -105,9 +105,9 @@ void printWarnings (Key * key)
  * and removes all MetaKeys starting with
  * searchfor.
  */
-void removeMetaData (Key * key, const char * searchfor)
+void removeMetaData (ElektraKey * key, const char * searchfor)
 {
-	const Key * iter_key;
+	const ElektraKey * iter_key;
 	keyRewindMeta (key);
 	while ((iter_key = keyNextMeta (key)) != 0)
 	{

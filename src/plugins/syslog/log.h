@@ -11,11 +11,11 @@
 #include <kdbplugin.h>
 #include <syslog.h>
 
-int elektraSyslogOpen (Plugin * handle, Key * parentKey);
-int elektraSyslogClose (Plugin * handle, Key * parentKey);
-int elektraSyslogGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraSyslogSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraSyslogError (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraSyslogOpen (Plugin * handle, ElektraKey * parentKey);
+int elektraSyslogClose (Plugin * handle, ElektraKey * parentKey);
+int elektraSyslogGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraSyslogSet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey);
+int elektraSyslogError (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

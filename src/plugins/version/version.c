@@ -12,17 +12,17 @@
 #include <kdbprivate.h> // for keyReplacePrefix
 #include <kdbversion.h>
 
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle ELEKTRA_UNUSED, KeySet * definition ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * definition ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	// init as read-only
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/version"))
 	{
-		KeySet * contract =
+		ElektraKeyset * contract =
 			ksNew (30, keyNew ("system:/elektra/modules/version", KEY_VALUE, "version plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/version/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/version/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
@@ -42,10 +42,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	}
 	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
 	{
-		KeySet * info = elektraVersionKeySet ();
-		Key * versionRoot = keyNew ("system:/elektra/version", KEY_END);
+		ElektraKeyset * info = elektraVersionKeySet ();
+		ElektraKey * versionRoot = keyNew ("system:/elektra/version", KEY_END);
 
-		Key * first = keyDup (ksAtCursor (info, 0), KEY_CP_ALL);
+		ElektraKey * first = keyDup (ksAtCursor (info, 0), KEY_CP_ALL);
 		keyReplacePrefix (first, versionRoot, parentKey);
 		keySetMeta (first, "restrict/write", "1");
 		keySetMeta (first, "restrict/remove", "1");
@@ -53,7 +53,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 
 		for (elektraCursor i = 1; i < ksGetSize (info); i++)
 		{
-			Key * cur = keyDup (ksAtCursor (info, i), KEY_CP_ALL);
+			ElektraKey * cur = keyDup (ksAtCursor (info, i), KEY_CP_ALL);
 			keyReplacePrefix (cur, versionRoot, parentKey);
 			keyCopyAllMeta (cur, first);
 			ksAppendKey (returned, cur);

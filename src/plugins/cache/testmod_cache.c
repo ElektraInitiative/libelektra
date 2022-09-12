@@ -19,11 +19,11 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user:/tests/cache", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/cache", KEY_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("cache");
 
-	KeySet * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
 		    "call to kdbGet was successful, but file should not exist yet");
@@ -38,22 +38,22 @@ static void test_basics (void)
 
 static void test_cacheNonBackendKeys (void)
 {
-	KeySet * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, KS_END);
 
-	Key * key = keyNew ("user:/tests/cache", KEY_END);
-	KDB * handle = kdbOpen (NULL, key);
+	ElektraKey * key = keyNew ("user:/tests/cache", KEY_END);
+	ElektraKdb * handle = kdbOpen (NULL, key);
 
 	// the key should be in the keyset, but should not be cached
-	Key * doNotCache = keyNew ("user:/tests/cache/somekey", KEY_END);
+	ElektraKey * doNotCache = keyNew ("user:/tests/cache/somekey", KEY_END);
 	ksAppendKey (conf, doNotCache);
 	kdbGet (handle, conf, key);
-	Key * result = ksLookupByName (conf, "user:/tests/cache/somekey", 0);
+	ElektraKey * result = ksLookupByName (conf, "user:/tests/cache/somekey", 0);
 	succeed_if (result != 0, "key is missing from keyset");
 
 	// the cached key should not have been persisted, so it is not in the fresh keyset
-	KeySet * freshConf = ksNew (0, KS_END);
+	ElektraKeyset * freshConf = ksNew (0, KS_END);
 	kdbGet (handle, freshConf, key);
-	Key * freshResult = ksLookupByName (freshConf, "user:/tests/cache/somekey", 0);
+	ElektraKey * freshResult = ksLookupByName (freshConf, "user:/tests/cache/somekey", 0);
 	succeed_if (freshResult == 0, "key was persisted/cached, even though it was not committed");
 	ksDel (freshConf);
 

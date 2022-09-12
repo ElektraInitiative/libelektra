@@ -35,14 +35,14 @@
 
 #include <kdbinternal.h>
 
-Key * backendGetMountpoint (const Plugin * backend)
+ElektraKey * backendGetMountpoint (const Plugin * backend)
 {
 	if (backend == NULL)
 	{
 		return NULL;
 	}
 
-	Key * mp = ksLookupByName (backend->config, "system:/mountpoint", 0);
+	ElektraKey * mp = ksLookupByName (backend->config, "system:/mountpoint", 0);
 
 	return mp;
 }
@@ -54,9 +54,9 @@ Key * backendGetMountpoint (const Plugin * backend)
  * @param config the config for the backend
  * @param value the value of the key if needed, 0 otherwise
  */
-static void appendKeyToBackendKs (Key * mp, const char * nameEnding, KeySet * config, const char * value)
+static void appendKeyToBackendKs (ElektraKey * mp, const char * nameEnding, ElektraKeyset * config, const char * value)
 {
-	Key * key = keyDup (mp, KEY_CP_ALL);
+	ElektraKey * key = keyDup (mp, KEY_CP_ALL);
 	keyAddName (key, nameEnding);
 	keySetString (key, value);
 	ksAppendKey (config, key);
@@ -70,9 +70,9 @@ static void appendKeyToBackendKs (Key * mp, const char * nameEnding, KeySet * co
  *
  * @return the fresh allocated backend or 0 if no memory
  */
-static Plugin * backendOpenMissing (KeySet * global, KeySet * modules, Key * mp, Key * errorKey)
+static Plugin * backendOpenMissing (ElektraKeyset * global, ElektraKeyset * modules, ElektraKey * mp, ElektraKey * errorKey)
 {
-	KeySet * missingConfig = ksNew (12, KS_END);
+	ElektraKeyset * missingConfig = ksNew (12, KS_END);
 
 	appendKeyToBackendKs (mp, "", missingConfig, 0);
 	appendKeyToBackendKs (mp, "/config", missingConfig, 0);
@@ -133,14 +133,14 @@ system:/elektra/mountpoints/<name>
  * @retval 0 if out of memory
  * @ingroup backend
  */
-Plugin * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global, Key * errorKey)
+Plugin * backendOpen (ElektraKeyset * elektraConfig, ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey)
 {
 	Plugin * backend = elektraPluginOpen ("backend", modules, ksDup (elektraConfig), errorKey);
 	if (backend == NULL)
 	{
 		ksRewind (elektraConfig);
 
-		Key * mp = ksLookupByName (elektraConfig, "system:/mountpoint", 0);
+		ElektraKey * mp = ksLookupByName (elektraConfig, "system:/mountpoint", 0);
 
 		if (mp != NULL)
 		{
@@ -162,11 +162,11 @@ Plugin * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global,
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey)
+Plugin * backendOpenDefault (ElektraKeyset * modules, ElektraKeyset * global, const char * file, ElektraKey * errorKey)
 {
 	keySetName (errorKey, "/");
 
-	KeySet * config = ksNew (
+	ElektraKeyset * config = ksNew (
 		30, keyNew ("system:/elektra/mountpoints/default", KEY_END), keyNew ("system:/elektra/mountpoints/default/config", KEY_END),
 		keyNew ("system:/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "system:/elektra/mountpoints/default", KEY_END),
 		keyNew ("system:/elektra/mountpoints/default/config/path", KEY_VALUE, file, KEY_END),
@@ -195,7 +195,7 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
 		keyNew ("system:/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
 
 #ifdef ENABLE_TRACER
-	KeySet * tracerConfig =
+	ElektraKeyset * tracerConfig =
 		ksNew (10, keyNew ("/default/error/prerollback", KEY_END), keyNew ("/default/error/prerollback/#0", KEY_END),
 		       keyNew ("/default/error/prerollback/#0/label", KEY_VALUE, "tracer", KEY_END),
 		       keyNew ("/default/error/prerollback/#0/name", KEY_VALUE, "tracer", KEY_END),
@@ -223,16 +223,16 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
  * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
  */
-Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
+Plugin * backendOpenModules (ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey)
 {
-	Key * mp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
-	Key * cur = ksCurrent (modules);
+	ElektraKey * mp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
+	ElektraKey * cur = ksCurrent (modules);
 
 	keySetName (errorKey, keyName (cur));
 
 	keyAddBaseName (mp, keyBaseName (cur));
 
-	KeySet * moduleConfig = ksNew (12, KS_END);
+	ElektraKeyset * moduleConfig = ksNew (12, KS_END);
 
 	appendKeyToBackendKs (mp, "", moduleConfig, 0);
 	appendKeyToBackendKs (mp, "/config", moduleConfig, 0);
@@ -270,9 +270,9 @@ Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey)
+Plugin * backendOpenVersion (ElektraKeyset * global, ElektraKeyset * modules, ElektraKey * errorKey)
 {
-	KeySet * versionConfig =
+	ElektraKeyset * versionConfig =
 		ksNew (12, keyNew ("system:/elektra/version", KEY_END), keyNew ("system:/elektra/version/config", KEY_END),
 		       keyNew ("system:/elektra/version/config/mountpoint", KEY_VALUE, "system:/elektra/version", KEY_END),
 		       keyNew ("system:/elektra/version/get", KEY_END), keyNew ("system:/elektra/version/get/getstorage", KEY_END),
@@ -308,7 +308,7 @@ Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey)
  * @retval -1 if invalid parent (assert)
  * @retval 0 on success
  */
-int backendUpdateSize (Split * split, int index, Key * parent, int size)
+int backendUpdateSize (Split * split, int index, ElektraKey * parent, int size)
 {
 	elektraNamespace namespace = keyGetNamespace (parent);
 	switch (namespace)
