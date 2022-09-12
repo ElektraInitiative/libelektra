@@ -74,7 +74,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 	p->gid = 0;
 }
 
-static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
+static resolverHandle * elektraGetResolverHandle (Plugin * handle, ElektraKey * parentKey)
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for handle %p with parentKey %s", (void *) handle,
@@ -136,7 +136,7 @@ static void resolverClose (resolverHandles * p)
  * @retval -1 on failure
  * @ingroup backendhelper
  */
-static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+static int elektraLockFile (int fd ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_FILE
 	struct flock l;
@@ -176,7 +176,7 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
  * @retval -1 on failure
  * @ingroup backendhelper
  */
-static int elektraUnlockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+static int elektraUnlockFile (int fd ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_FILE
 	struct flock l;
@@ -203,7 +203,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNU
  * @retval 0 on success
  * @retval -1 on error
  */
-static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
+static int elektraLockMutex (ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
 	int ret = pthread_mutex_trylock (&elektraResolverMutex);
@@ -234,7 +234,7 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
  * @retval 0 on success
  * @retval -1 on error
  */
-static int elektraUnlockMutex (Key * parentKey ELEKTRA_UNUSED)
+static int elektraUnlockMutex (ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
 	int ret = pthread_mutex_unlock (&elektraResolverMutex);
@@ -256,7 +256,7 @@ static int elektraUnlockMutex (Key * parentKey ELEKTRA_UNUSED)
  * @param fd the filedescriptor to close
  * @param parentKey the key to write warnings to
  */
-static void elektraCloseFile (int fd, Key * parentKey)
+static void elektraCloseFile (int fd, ElektraKey * parentKey)
 {
 	if (close (fd) == -1)
 	{
@@ -292,7 +292,7 @@ static char * elektraAddErrnoText (void)
 #endif
 }
 
-static int needsMapping (Key * testKey, Key * errorKey)
+static int needsMapping (ElektraKey * testKey, ElektraKey * errorKey)
 {
 	// FIXME (kodebach): fix resolver
 	// we don't need to always init everything, but lazy init doesn't work right now
@@ -306,9 +306,9 @@ static int needsMapping (Key * testKey, Key * errorKey)
 	return ns == keyGetNamespace (testKey); // otherwise only init if same ns
 }
 
-static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
+static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 {
-	Key * testKey = keyNew ("/", KEY_END);
+	ElektraKey * testKey = keyNew ("/", KEY_END);
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:
@@ -433,7 +433,7 @@ static char * elektraCacheKeyName (char * filename)
 	return name;
 }
 
-static int initHandles (Plugin * handle, Key * parentKey)
+static int initHandles (Plugin * handle, ElektraKey * parentKey)
 {
 	const char * path = keyString (parentKey);
 
@@ -497,13 +497,13 @@ static int initHandles (Plugin * handle, Key * parentKey)
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	elektraPluginSetData (handle, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	resolverHandles * ps = elektraPluginGetData (handle);
 
@@ -517,14 +517,14 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNU
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	Key * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
-		KeySet * info =
+		ElektraKeyset * info =
 #include "contract.h"
 			ksAppend (returned, info);
 		ksDel (info);
@@ -577,7 +577,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	}
 
 	/* Check if cache update needed */
-	KeySet * global;
+	ElektraKeyset * global;
 	char * name = elektraCacheKeyName (pk->filename);
 
 
@@ -616,7 +616,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	if (global != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modification times");
-		Key * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
+		ElektraKey * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
 		ksAppendKey (global, time);
 	}
 
@@ -635,7 +635,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
  * @retval 0 on success (might be an error for creating a missing file)
  * @retval -1 on conflict
  */
-static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
+static int elektraOpenFile (resolverHandle * pk, ElektraKey * parentKey)
 {
 	int flags = 0;
 
@@ -709,7 +709,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
  * @retval 0 on success
  * @retval -1 on error
  */
-static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
+static int elektraCreateFile (resolverHandle * pk, ElektraKey * parentKey)
 {
 	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
 
@@ -734,7 +734,7 @@ static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
  * @retval 0 on success
  * @retval -1 on error + elektra error will be set
  */
-static int elektraMkdirParents (resolverHandle * pk, const char * pathname, Key * parentKey)
+static int elektraMkdirParents (resolverHandle * pk, const char * pathname, ElektraKey * parentKey)
 {
 	if (mkdir (pathname, pk->dirmode) == -1)
 	{
@@ -807,7 +807,7 @@ error : {
  * @retval 0 success
  * @retval -1 error
  */
-static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
+static int elektraCheckConflict (resolverHandle * pk, ElektraKey * parentKey)
 {
 	if (pk->isMissing)
 	{
@@ -855,7 +855,7 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
  * @retval 0 on success
  * @retval -1 on error
  */
-static int elektraSetPrepare (resolverHandle * pk, Key * parentKey)
+static int elektraSetPrepare (resolverHandle * pk, ElektraKey * parentKey)
 {
 	pk->removalNeeded = 0;
 
@@ -948,7 +948,7 @@ static void elektraModifyFileTime (resolverHandle * pk)
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
  * filedescriptor */
-static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
+static void elektraUpdateFileTime (resolverHandle * pk, int fd, ElektraKey * parentKey)
 {
 #ifdef HAVE_FUTIMENS
 	const struct timespec times[2] = { pk->mtime,	// atime
@@ -984,7 +984,7 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
  * @retval 0 on success
  * @retval -1 on error
  */
-static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
+static int elektraSetCommit (resolverHandle * pk, ElektraKey * parentKey)
 {
 	int ret = 0;
 
@@ -1081,7 +1081,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 {
 	// FIXME (kodebach): resolver creates tmp files but doesn't delete?
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
@@ -1156,7 +1156,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 	return ret;
 }
 
-static void elektraUnlinkFile (char * filename, Key * parentKey)
+static void elektraUnlinkFile (char * filename, ElektraKey * parentKey)
 {
 	int errnoSave = errno;
 	if (unlink (filename) == -1)
@@ -1166,7 +1166,7 @@ static void elektraUnlinkFile (char * filename, Key * parentKey)
 	}
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, ElektraKeyset * r ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
@@ -1196,7 +1196,7 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED,
 	return 0;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, KeySet * returned, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	return ELEKTRA_PLUGIN_FUNCTION (set) (handle, returned, parentKey);
 }

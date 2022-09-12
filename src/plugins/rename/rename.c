@@ -73,7 +73,7 @@ static void doConversion (char * newName, int levels, const int toCase)
 	free (returnName);
 }
 
-Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const char * cutPath, const char * replaceWith,
+ElektraKey * elektraKeyCreateNewName (const ElektraKey * key, const ElektraKey * parentKey, const char * cutPath, const char * replaceWith,
 			       const char * toUpperPath, const char * toLowerPath, const int initialConversion)
 {
 	size_t addToLen = 0;
@@ -146,7 +146,7 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	elektraFree (curKeyName);
 	if (replace)
 	{
-		Key * result = keyDup (key, KEY_CP_ALL);
+		ElektraKey * result = keyDup (key, KEY_CP_ALL);
 		keySetName (result, keyName (parentKey));
 		keyAddName (result, newName);
 		elektraFree (newName);
@@ -156,17 +156,17 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	return 0;
 }
 
-static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * replaceWithConfig, Key * toUpperConfig, Key * toLowerConfig,
-			Key * getCase)
+static ElektraKey * renameGet (ElektraKey * key, ElektraKey * parentKey, ElektraKey * cutConfig, ElektraKey * replaceWithConfig, ElektraKey * toUpperConfig, ElektraKey * toLowerConfig,
+			ElektraKey * getCase)
 {
 	char * cutPath = 0;
 	char * replaceWith = 0;
 	char * toUpperPath = 0;
 	char * toLowerPath = 0;
-	const Key * cutMeta = keyGetMeta (key, "rename/cut");
-	const Key * toMeta = keyGetMeta (key, "rename/to");
-	const Key * toUpperMeta = keyGetMeta (key, "rename/toupper");
-	const Key * toLowerMeta = keyGetMeta (key, "rename/tolower");
+	const ElektraKey * cutMeta = keyGetMeta (key, "rename/cut");
+	const ElektraKey * toMeta = keyGetMeta (key, "rename/to");
+	const ElektraKey * toUpperMeta = keyGetMeta (key, "rename/toupper");
+	const ElektraKey * toLowerMeta = keyGetMeta (key, "rename/tolower");
 
 	int initialConversion = 0;
 	if (getCase)
@@ -206,15 +206,15 @@ static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * repla
 	return elektraKeyCreateNewName (key, parentKey, cutPath, replaceWith, toUpperPath, toLowerPath, initialConversion);
 }
 
-static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * configKey)
+static ElektraKey * restoreKeyName (ElektraKey * key, const ElektraKey * parentKey, const ElektraKey * configKey)
 {
-	const Key * origNameKey = keyGetMeta (key, ELEKTRA_ORIGINAL_NAME_META);
+	const ElektraKey * origNameKey = keyGetMeta (key, ELEKTRA_ORIGINAL_NAME_META);
 	if (origNameKey)
 	{
 		if (strcmp (keyString (origNameKey), keyName (key)))
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			Key * result = keyDup (key, KEY_CP_ALL);
+			ElektraKey * result = keyDup (key, KEY_CP_ALL);
 			keySetName (result, keyString (origNameKey));
 			keySetMeta (result, ELEKTRA_ORIGINAL_NAME_META, 0);
 
@@ -230,7 +230,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 		if (configKey)
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			Key * result = keyDup (key, KEY_CP_ALL);
+			ElektraKey * result = keyDup (key, KEY_CP_ALL);
 			keySetName (result, keyName (parentKey));
 			keyAddName (result, keyString (configKey));
 
@@ -252,12 +252,12 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 	return 0;
 }
 
-int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraRenameGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	/* configuration only */
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/rename"))
 	{
-		KeySet * info =
+		ElektraKeyset * info =
 #include "contract.h"
 
 			ksAppend (returned, info);
@@ -266,23 +266,23 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 
-	KeySet * config = elektraPluginGetConfig (handle);
-	KeySet * iterateKs = ksDup (returned);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKeyset * iterateKs = ksDup (returned);
 
 	ksRewind (iterateKs);
 
-	Key * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
-	Key * toUpper = ksLookupByName (config, "/toupper", KDB_O_NONE);
-	Key * toLower = ksLookupByName (config, "/tolower", KDB_O_NONE);
-	Key * replaceWith = ksLookupByName (config, "/replacewith", KDB_O_NONE);
-	Key * getCase = ksLookupByName (config, "/get/case", KDB_O_NONE);
+	ElektraKey * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
+	ElektraKey * toUpper = ksLookupByName (config, "/toupper", KDB_O_NONE);
+	ElektraKey * toLower = ksLookupByName (config, "/tolower", KDB_O_NONE);
+	ElektraKey * replaceWith = ksLookupByName (config, "/replacewith", KDB_O_NONE);
+	ElektraKey * getCase = ksLookupByName (config, "/get/case", KDB_O_NONE);
 
 
-	Key * key;
+	ElektraKey * key;
 	while ((key = ksNext (iterateKs)) != 0)
 	{
 
-		Key * renamedKey = renameGet (key, parentKey, cutConfig, replaceWith, toUpper, toLower, getCase);
+		ElektraKey * renamedKey = renameGet (key, parentKey, cutConfig, replaceWith, toUpper, toLower, getCase);
 
 		if (renamedKey)
 		{
@@ -321,15 +321,15 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
-int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraRenameSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 
-	KeySet * iterateKs = ksDup (returned);
+	ElektraKeyset * iterateKs = ksDup (returned);
 
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
 
-	Key * setCase = ksLookupByName (config, "/set/case", KDB_O_NONE);
+	ElektraKey * setCase = ksLookupByName (config, "/set/case", KDB_O_NONE);
 
 	int writeConversion = 0;
 	if (setCase)
@@ -353,12 +353,12 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 	}
 	ksRewind (iterateKs);
-	Key * key;
+	ElektraKey * key;
 	char * parentKeyName = elektraMalloc (keyGetNameSize (parentKey));
 	keyGetName (parentKey, parentKeyName, keyGetNameSize (parentKey));
 	while ((key = ksNext (iterateKs)) != 0)
 	{
-		Key * renamedKey = NULL;
+		ElektraKey * renamedKey = NULL;
 		if (writeConversion != KEYNAME)
 		{
 			renamedKey = restoreKeyName (key, parentKey, cutConfig);

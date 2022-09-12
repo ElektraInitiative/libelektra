@@ -24,7 +24,7 @@ struct GlobFlagMap
 
 struct GlobFlagMap flagMaps[] = { { "noescape", FNM_NOESCAPE }, { "pathname", FNM_PATHNAME }, { "period", FNM_PERIOD } };
 
-int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
+int elektraGlobMatch (ElektraKey * key, const ElektraKey * match, const char * globFlags)
 {
 	char * tokenList = elektraStrDup (globFlags);
 	char delimiter[] = ",";
@@ -60,11 +60,11 @@ enum GlobDirection
 	SET,
 };
 
-static const char * getGlobFlags (KeySet * keys, Key * globKey)
+static const char * getGlobFlags (ElektraKeyset * keys, ElektraKey * globKey)
 {
-	Key * flagKey = keyDup (globKey, KEY_CP_ALL);
+	ElektraKey * flagKey = keyDup (globKey, KEY_CP_ALL);
 	keyAddBaseName (flagKey, "flags");
-	Key * flagResult = ksLookup (keys, flagKey, KDB_O_NONE);
+	ElektraKey * flagResult = ksLookup (keys, flagKey, KDB_O_NONE);
 	keyDel (flagKey);
 
 	if (flagResult)
@@ -75,16 +75,16 @@ static const char * getGlobFlags (KeySet * keys, Key * globKey)
 	return 0;
 }
 
-static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection direction)
+static ElektraKeyset * getGlobKeys (ElektraKey * parentKey, ElektraKeyset * keys, enum GlobDirection direction)
 {
-	KeySet * glob = ksNew (0, KS_END);
-	Key * k = 0;
+	ElektraKeyset * glob = ksNew (0, KS_END);
+	ElektraKey * k = 0;
 	size_t parentsize = keyGetNameSize (parentKey);
 
-	Key * userGlobConfig = 0;
-	Key * systemGlobConfig = 0;
-	Key * userDirGlobConfig = 0;
-	Key * systemDirGlobConfig = 0;
+	ElektraKey * userGlobConfig = 0;
+	ElektraKey * systemGlobConfig = 0;
+	ElektraKey * userDirGlobConfig = 0;
+	ElektraKey * systemDirGlobConfig = 0;
 
 	userGlobConfig = keyNew ("user:/glob", KEY_END);
 	systemGlobConfig = keyNew ("system:/glob", KEY_END);
@@ -114,7 +114,7 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 
 			/* We now know we want that key.
 			 Dup it to not change the configuration. */
-			Key * ins = keyDup (k, KEY_CP_ALL);
+			ElektraKey * ins = keyDup (k, KEY_CP_ALL);
 			/* Now look if we want cascading for the key */
 			if (keyString (k)[0] == '/')
 			{
@@ -136,17 +136,17 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 	return glob;
 }
 
-static void applyGlob (KeySet * returned, KeySet * glob)
+static void applyGlob (ElektraKeyset * returned, ElektraKeyset * glob)
 {
-	Key * cur;
+	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{
-		Key * match;
+		ElektraKey * match;
 		ksRewind (glob);
 		while ((match = ksNext (glob)) != 0)
 		{
-			const Key * flagKey = keyGetMeta (match, "glob/flags");
+			const ElektraKey * flagKey = keyGetMeta (match, "glob/flags");
 			int matchApplied;
 
 			if (flagKey)
@@ -164,7 +164,7 @@ static void applyGlob (KeySet * returned, KeySet * glob)
 	}
 }
 
-int elektraGlobOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraGlobOpen (Plugin * handle ELEKTRA_UNUSED, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic should be here */
 	/* TODO: name of parentKey is not set...*/
@@ -173,33 +173,33 @@ int elektraGlobOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNU
 	return 1; /* success */
 }
 
-int elektraGlobClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraGlobClose (Plugin * handle ELEKTRA_UNUSED, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	/* free all plugin resources and shut it down */
 
-	KeySet * keys = elektraPluginGetData (handle);
+	ElektraKeyset * keys = elektraPluginGetData (handle);
 	ksDel (keys);
 
 	return 1; /* success */
 }
 
 
-int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/glob"))
 	{
 		// TODO: improve plugin contract
-		KeySet * config =
+		ElektraKeyset * config =
 #include "contract.h"
 			ksAppend (returned, config);
 		ksDel (config);
 		return 1;
 	}
 
-	KeySet * keys = elektraPluginGetConfig (handle);
+	ElektraKeyset * keys = elektraPluginGetConfig (handle);
 	ksRewind (keys);
 
-	KeySet * glob = getGlobKeys (parentKey, keys, GET);
+	ElektraKeyset * glob = getGlobKeys (parentKey, keys, GET);
 	applyGlob (returned, glob);
 
 	ksDel (glob);
@@ -208,12 +208,12 @@ int elektraGlobGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 }
 
 
-int elektraGlobSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraGlobSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	KeySet * keys = elektraPluginGetConfig (handle);
+	ElektraKeyset * keys = elektraPluginGetConfig (handle);
 	ksRewind (keys);
 
-	KeySet * glob = getGlobKeys (parentKey, keys, SET);
+	ElektraKeyset * glob = getGlobKeys (parentKey, keys, SET);
 	applyGlob (returned, glob);
 
 	ksDel (glob);

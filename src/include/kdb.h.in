@@ -126,9 +126,9 @@ namespace ckdb {
 extern "C" {
 #endif
 
-typedef struct _KDB	KDB;
-typedef struct _Key	Key;
-typedef struct _KeySet	KeySet;
+typedef struct _KDB	ElektraKdb;
+typedef struct _Key	ElektraKey;
+typedef struct _KeySet	ElektraKeyset;
 
 
 /**************************************
@@ -137,14 +137,14 @@ typedef struct _KeySet	KeySet;
  *
  **************************************/
 
-KDB * kdbOpen (const KeySet * contract, Key *parentKey);
+ElektraKdb * kdbOpen (const ElektraKeyset * contract, ElektraKey *parentKey);
 
-int kdbClose (KDB *handle, Key *errorKey);
+int kdbClose (ElektraKdb *handle, ElektraKey *errorKey);
 
-int kdbGet (KDB *handle, KeySet *returned,
-	Key *parentKey);
-int kdbSet (KDB *handle, KeySet *returned,
-	Key *parentKey);
+int kdbGet (ElektraKdb *handle, ElektraKeyset *returned,
+	ElektraKey *parentKey);
+int kdbSet (ElektraKdb *handle, ElektraKeyset *returned,
+	ElektraKey *parentKey);
 
 /**************************************
  *
@@ -153,79 +153,79 @@ int kdbSet (KDB *handle, KeySet *returned,
  **************************************/
 
 /* Basic Methods */
-Key *keyNew (const char *keyname, ...) ELEKTRA_SENTINEL;
-Key *keyVNew (const char *keyname, va_list ap);
+ElektraKey *keyNew (const char *keyname, ...) ELEKTRA_SENTINEL;
+ElektraKey *keyVNew (const char *keyname, va_list ap);
 
-Key * keyCopy (Key *dest, const Key *source, elektraCopyFlags flags);
+ElektraKey * keyCopy (ElektraKey *dest, const ElektraKey *source, elektraCopyFlags flags);
 
-int keyClear (Key *key);
-int keyDel (Key *key);
+int keyClear (ElektraKey *key);
+int keyDel (ElektraKey *key);
 
-uint16_t keyIncRef (Key *key);
-uint16_t keyDecRef (Key *key);
-uint16_t keyGetRef (const Key *key);
+uint16_t keyIncRef (ElektraKey *key);
+uint16_t keyDecRef (ElektraKey *key);
+uint16_t keyGetRef (const ElektraKey *key);
 
 /* Meta Info */
-int keyRewindMeta (Key *key);
-const Key *keyNextMeta (Key *key);
-const Key *keyCurrentMeta (const Key *key);
+int keyRewindMeta (ElektraKey *key);
+const ElektraKey *keyNextMeta (ElektraKey *key);
+const ElektraKey *keyCurrentMeta (const ElektraKey *key);
 
-int keyCopyMeta (Key *dest, const Key *source, const char *metaName);
-int keyCopyAllMeta (Key *dest, const Key *source);
+int keyCopyMeta (ElektraKey *dest, const ElektraKey *source, const char *metaName);
+int keyCopyAllMeta (ElektraKey *dest, const ElektraKey *source);
 
-const Key *keyGetMeta (const Key *key, const char* metaName);
-ssize_t    keySetMeta (Key *key, const char* metaName,
+const ElektraKey *keyGetMeta (const ElektraKey *key, const char* metaName);
+ssize_t    keySetMeta (ElektraKey *key, const char* metaName,
 	const char *newMetaString);
-KeySet * keyMeta (Key * key);
+ElektraKeyset * keyMeta (ElektraKey * key);
 
 /* Methods for Making Tests */
-int keyCmp (const Key *k1, const Key *k2);
+int keyCmp (const ElektraKey *k1, const ElektraKey *k2);
 
-int keyNeedSync (const Key *key);
+int keyNeedSync (const ElektraKey *key);
 
-int keyIsBelow (const Key *key, const Key *check);
-int keyIsBelowOrSame (const Key *key, const Key *check);
-int keyIsDirectlyBelow (const Key *key, const Key *check);
+int keyIsBelow (const ElektraKey *key, const ElektraKey *check);
+int keyIsBelowOrSame (const ElektraKey *key, const ElektraKey *check);
+int keyIsDirectlyBelow (const ElektraKey *key, const ElektraKey *check);
 
-int keyIsBinary (const Key *key);
-int keyIsString (const Key *key);
+int keyIsBinary (const ElektraKey *key);
+int keyIsString (const ElektraKey *key);
 
 /* Name Manipulation Methods */
-const char *keyName (const Key *key);
-ssize_t keyGetNameSize (const Key *key);
-ssize_t keyGetName (const Key *key, char *returnedName, size_t maxSize);
+const char *keyName (const ElektraKey *key);
+ssize_t keyGetNameSize (const ElektraKey *key);
+ssize_t keyGetName (const ElektraKey *key, char *returnedName, size_t maxSize);
 
-ssize_t keySetName (Key *key, const char *newname);
-ssize_t keyAddName (Key *key, const char *addName);
+ssize_t keySetName (ElektraKey *key, const char *newname);
+ssize_t keyAddName (ElektraKey *key, const char *addName);
 
-const void *keyUnescapedName (const Key *key);
-ssize_t keyGetUnescapedNameSize (const Key *key);
+const void *keyUnescapedName (const ElektraKey *key);
+ssize_t keyGetUnescapedNameSize (const ElektraKey *key);
 
-const char *keyBaseName (const Key *key);
-ssize_t keyGetBaseNameSize (const Key *key);
-ssize_t keyGetBaseName (const Key *key, char *returned, size_t maxSize);
+const char *keyBaseName (const ElektraKey *key);
+ssize_t keyGetBaseNameSize (const ElektraKey *key);
+ssize_t keyGetBaseName (const ElektraKey *key, char *returned, size_t maxSize);
 
-ssize_t keySetBaseName (Key *key,const char *baseName);
-ssize_t keyAddBaseName (Key *key,const char *baseName);
+ssize_t keySetBaseName (ElektraKey *key,const char *baseName);
+ssize_t keyAddBaseName (ElektraKey *key,const char *baseName);
 
-elektraNamespace keyGetNamespace (Key const* key);
-ssize_t keySetNamespace (Key * key, elektraNamespace ns);
+elektraNamespace keyGetNamespace (ElektraKey const* key);
+ssize_t keySetNamespace (ElektraKey * key, elektraNamespace ns);
 
 /* Value Manipulation Methods */
-const void *keyValue (const Key *key);
-ssize_t keyGetValueSize (const Key *key);
+const void *keyValue (const ElektraKey *key);
+ssize_t keyGetValueSize (const ElektraKey *key);
 
-const char *keyString (const Key *key);
-ssize_t keyGetString (const Key *key, char *returnedString, size_t maxSize);
-ssize_t keySetString (Key *key, const char *newString);
+const char *keyString (const ElektraKey *key);
+ssize_t keyGetString (const ElektraKey *key, char *returnedString, size_t maxSize);
+ssize_t keySetString (ElektraKey *key, const char *newString);
 
-ssize_t keyGetBinary (const Key *key, void *returnedBinary, size_t maxSize);
-ssize_t keySetBinary (Key *key, const void *newBinary, size_t dataSize);
+ssize_t keyGetBinary (const ElektraKey *key, void *returnedBinary, size_t maxSize);
+ssize_t keySetBinary (ElektraKey *key, const void *newBinary, size_t dataSize);
 
-int keyLock (Key * key, elektraLockFlags what);
-int keyIsLocked (const Key * key, elektraLockFlags what);
+int keyLock (ElektraKey * key, elektraLockFlags what);
+int keyIsLocked (const ElektraKey * key, elektraLockFlags what);
 
-static inline Key *keyDup (const Key *source, elektraCopyFlags flags)
+static inline ElektraKey *keyDup (const ElektraKey *source, elektraCopyFlags flags)
 {
 	return keyCopy (keyNew ("/", KEY_END), source, flags);
 }
@@ -236,43 +236,43 @@ static inline Key *keyDup (const Key *source, elektraCopyFlags flags)
  *
  **************************************/
 
-KeySet *ksNew (size_t alloc, ...) ELEKTRA_SENTINEL;
-KeySet *ksVNew (size_t alloc, va_list ap);
+ElektraKeyset *ksNew (size_t alloc, ...) ELEKTRA_SENTINEL;
+ElektraKeyset *ksVNew (size_t alloc, va_list ap);
 
-KeySet *ksDup (const KeySet * source);
-int ksCopy (KeySet *dest, const KeySet *source);
+ElektraKeyset *ksDup (const ElektraKeyset * source);
+int ksCopy (ElektraKeyset *dest, const ElektraKeyset *source);
 
-uint16_t ksIncRef (KeySet * ks);
-uint16_t ksDecRef (KeySet * ks);
-uint16_t ksGetRef (const KeySet * ks);
+uint16_t ksIncRef (ElektraKeyset * ks);
+uint16_t ksDecRef (ElektraKeyset * ks);
+uint16_t ksGetRef (const ElektraKeyset * ks);
 
-int ksClear (KeySet *ks);
-int ksDel (KeySet *ks);
+int ksClear (ElektraKeyset *ks);
+int ksDel (ElektraKeyset *ks);
 
-ssize_t ksGetSize (const KeySet *ks);
+ssize_t ksGetSize (const ElektraKeyset *ks);
 
-ssize_t ksAppendKey (KeySet *ks, Key *toAppend);
+ssize_t ksAppendKey (ElektraKeyset *ks, ElektraKey *toAppend);
 
-ssize_t ksAppend (KeySet *ks, const KeySet *toAppend);
-KeySet *ksCut (KeySet *ks, const Key *cutpoint);
+ssize_t ksAppend (ElektraKeyset *ks, const ElektraKeyset *toAppend);
+ElektraKeyset *ksCut (ElektraKeyset *ks, const ElektraKey *cutpoint);
 
-Key *ksPop (KeySet *ks);
+ElektraKey *ksPop (ElektraKeyset *ks);
 
-int ksRewind (KeySet *ks);
-Key *ksNext (KeySet *ks);
-Key *ksCurrent (const KeySet *ks);
+int ksRewind (ElektraKeyset *ks);
+ElektraKey *ksNext (ElektraKeyset *ks);
+ElektraKey *ksCurrent (const ElektraKeyset *ks);
 
-Key *ksHead (const KeySet *ks);
-Key *ksTail (const KeySet *ks);
+ElektraKey *ksHead (const ElektraKeyset *ks);
+ElektraKey *ksTail (const ElektraKeyset *ks);
 
-elektraCursor ksGetCursor (const KeySet *ks);
-int ksSetCursor (KeySet *ks, elektraCursor cursor);
-Key *ksAtCursor (const KeySet *ks, elektraCursor cursor);
+elektraCursor ksGetCursor (const ElektraKeyset *ks);
+int ksSetCursor (ElektraKeyset *ks, elektraCursor cursor);
+ElektraKey *ksAtCursor (const ElektraKeyset *ks, elektraCursor cursor);
 
-Key *ksLookup (KeySet *ks, Key *k, elektraLookupFlags options);
-Key *ksLookupByName (KeySet *ks, const char *name, elektraLookupFlags options);
+ElektraKey *ksLookup (ElektraKeyset *ks, ElektraKey *k, elektraLookupFlags options);
+ElektraKey *ksLookupByName (ElektraKeyset *ks, const char *name, elektraLookupFlags options);
 
-ssize_t ksSearch (const KeySet * ks, const Key * toAppend);
+ssize_t ksSearch (const ElektraKeyset * ks, const ElektraKey * toAppend);
 
 #ifdef __cplusplus
 }

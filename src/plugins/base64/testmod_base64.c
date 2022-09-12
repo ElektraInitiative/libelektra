@@ -17,7 +17,7 @@ static const char * decoded[] = { "", "f", "fo", "foo", "foob", "fooba", "foobar
 static const char * encoded[] = { "", "Zg==", "Zm8=", "Zm9v", "Zm9vYg==", "Zm9vYmE=", "Zm9vYmFy" };
 static const size_t testcaseCounter = sizeof (decoded) / sizeof (const char *);
 
-static inline KeySet * newPluginConfiguration (void)
+static inline ElektraKeyset * newPluginConfiguration (void)
 {
 	return ksNew (0, KS_END);
 }
@@ -28,9 +28,9 @@ static void test_init (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * configKs = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (ELEKTRA_PLUGIN_NAME, modules, configKs, 0);
@@ -39,7 +39,7 @@ static void test_init (void)
 	{
 		succeed_if (strcmp (plugin->name, ELEKTRA_PLUGIN_NAME) == 0, "got wrong name");
 
-		KeySet * config = elektraPluginGetConfig (plugin);
+		ElektraKeyset * config = elektraPluginGetConfig (plugin);
 		succeed_if (config != 0, "there should be a config");
 
 		succeed_if (plugin->kdbGet != 0, "no get pointer");
@@ -131,19 +131,19 @@ static void test_base64_plugin_regular (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
 	plugin = elektraPluginOpen (ELEKTRA_PLUGIN_NAME, modules, config, 0);
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		Key * key;
+		ElektraKey * key;
 		const kdb_octet_t sampleValue[] = { 0x31, 0x32, 0x33 };
 
-		KeySet * data = ksNew (4, keyNew ("/t/k1", KEY_VALUE, "Hello World", KEY_END),
+		ElektraKeyset * data = ksNew (4, keyNew ("/t/k1", KEY_VALUE, "Hello World", KEY_END),
 				       keyNew ("/t/k2", KEY_BINARY, KEY_SIZE, sizeof (sampleValue), KEY_VALUE, sampleValue, KEY_END),
 				       keyNew ("/t/k3", KEY_BINARY, KEY_SIZE, 0, KEY_END),
 				       keyNew ("/t/k4", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX, KEY_END), KS_END);
@@ -234,17 +234,17 @@ static void test_base64_plugin_decoding_error (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = newPluginConfiguration ();
+	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
 	plugin = elektraPluginOpen (ELEKTRA_PLUGIN_NAME, modules, config, 0);
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		Key * key;
-		KeySet * data = ksNew (1, keyNew ("/t/k1", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX "_$..", KEY_END), KS_END);
+		ElektraKey * key;
+		ElektraKeyset * data = ksNew (1, keyNew ("/t/k1", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX "_$..", KEY_END), KS_END);
 
 		// test failing decoding
 		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");

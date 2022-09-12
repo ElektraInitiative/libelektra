@@ -20,7 +20,7 @@
 #endif
 
 
-typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);
+typedef void CommentConstructor (ElektraKeyset *, size_t, const char *, const char *);
 
 /*
  * Determines the address family of the supplied network address
@@ -50,7 +50,7 @@ static int getAddressFamily (const char * address)
 	return result;
 }
 
-static void addAddressHierarchy (Key * key, char * fieldbuffer)
+static void addAddressHierarchy (ElektraKey * key, char * fieldbuffer)
 {
 	/* determine whether this is an ipv4 or ipv6 entry */
 	int family = getAddressFamily (fieldbuffer);
@@ -91,14 +91,14 @@ size_t elektraParseToken (char ** token, const char * line)
 	return i;
 }
 
-static void setOrderMeta (Key * key, int order)
+static void setOrderMeta (ElektraKey * key, int order)
 {
 	char buffer[MAX_ORDER_SIZE];
 	snprintf (buffer, MAX_ORDER_SIZE, "%d", order);
 	keySetMeta (key, "order", buffer);
 }
 
-static int parseComment (KeySet * comments, char * line, const char * commentStart, CommentConstructor constructor)
+static int parseComment (ElektraKeyset * comments, char * line, const char * commentStart, CommentConstructor constructor)
 {
 	/* count the number of whitespace characters before the comment */
 	size_t spaces = elektraCountStartSpaces (line);
@@ -126,7 +126,7 @@ static int parseComment (KeySet * comments, char * line, const char * commentSta
 	return 0;
 }
 
-static char * parseCanonicalName (Key * result, char * line)
+static char * parseCanonicalName (ElektraKey * result, char * line)
 {
 	char * fieldBuffer;
 	char * tokenPointer = line;
@@ -158,14 +158,14 @@ static char * parseCanonicalName (Key * result, char * line)
 	return tokenPointer;
 }
 
-static char * parseAlias (KeySet * append, const Key * hostParent, char * tokenPointer)
+static char * parseAlias (ElektraKeyset * append, const ElektraKey * hostParent, char * tokenPointer)
 {
 	char * fieldBuffer;
 	int sret = 0;
 	sret = elektraParseToken (&fieldBuffer, tokenPointer);
 	if (sret == 0) return 0;
 
-	Key * alias = keyDup (hostParent, KEY_CP_ALL);
+	ElektraKey * alias = keyDup (hostParent, KEY_CP_ALL);
 	keyAddBaseName (alias, fieldBuffer);
 	elektraFree (fieldBuffer);
 
@@ -182,12 +182,12 @@ static char * parseAlias (KeySet * append, const Key * hostParent, char * tokenP
 	return tokenPointer + sret;
 }
 
-static int elektraKeySetMetaKeySet (Key * key, KeySet * metaKeySet)
+static int elektraKeySetMetaKeySet (ElektraKey * key, ElektraKeyset * metaKeySet)
 {
 	if (!key) return 0;
 	if (!metaKeySet) return 0;
 
-	Key * currentMeta;
+	ElektraKey * currentMeta;
 	elektraCursor initialCursor = ksGetCursor (metaKeySet);
 	ksRewind (metaKeySet);
 	while ((currentMeta = ksNext (metaKeySet)))
@@ -200,14 +200,14 @@ static int elektraKeySetMetaKeySet (Key * key, KeySet * metaKeySet)
 	return 1;
 }
 
-int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	char readBuffer[HOSTS_KDB_BUFFER_SIZE];
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hosts"))
 	{
-		KeySet * moduleConfig =
+		ElektraKeyset * moduleConfig =
 #include "contract.h"
 			ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
@@ -224,13 +224,13 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 
 	ksClear (returned);
-	KeySet * append = ksNew (ksGetSize (returned) * 2, KS_END);
+	ElektraKeyset * append = ksNew (ksGetSize (returned) * 2, KS_END);
 
-	Key * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (append, key);
 
-	Key * currentKey = 0;
-	KeySet * comments = ksNew (0, KS_END);
+	ElektraKey * currentKey = 0;
+	ElektraKeyset * comments = ksNew (0, KS_END);
 	size_t order = 1;
 	char * tokenPointer = 0;
 	while (1)

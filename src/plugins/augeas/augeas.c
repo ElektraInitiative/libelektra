@@ -22,20 +22,20 @@
 
 struct KeyConversion
 {
-	KeySet * ks;
-	Key * parentKey;
+	ElektraKeyset * ks;
+	ElektraKey * parentKey;
 	int currentOrder;
 };
 
 struct OrphanSearch
 {
-	KeySet * ks;
-	Key * parentKey;
+	ElektraKeyset * ks;
+	ElektraKey * parentKey;
 };
 
 typedef int (*ForeachAugNodeClb) (augeas *, const char *, void *);
 
-int keySetOrderMeta (Key * key, int order)
+int keySetOrderMeta (ElektraKey * key, int order)
 {
 	char * buffer;
 	int result;
@@ -50,17 +50,17 @@ int keySetOrderMeta (Key * key, int order)
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
-	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));
+	return elektraKeyCmpOrder (*((const ElektraKey **) a), *((const ElektraKey **) b));
 }
 
 static const char * getLensPath (Plugin * handle)
 {
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * lensPathKey = ksLookupByName (config, "/lens", 0);
+	ElektraKeyset * config = elektraPluginGetConfig (handle);
+	ElektraKey * lensPathKey = ksLookupByName (config, "/lens", 0);
 	return keyString (lensPathKey);
 }
 
-int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
+int elektraAugeasGenConf (ElektraKeyset * ks, ElektraKey * errorKey ELEKTRA_UNUSED)
 {
 	glob_t pglob;
 	int retval = 1;
@@ -163,9 +163,9 @@ static const char * getAugeasError (augeas * augeasHandle, const char * lensPath
 	return reason;
 }
 
-static Key * createKeyFromPath (Key * parentKey, const char * treePath)
+static ElektraKey * createKeyFromPath (ElektraKey * parentKey, const char * treePath)
 {
-	Key * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
 	char * baseName = elektraStrDup (treePath + strlen (AUGEAS_TREE_ROOT) + 1);
 	char * lastSlash = strrchr (baseName, '/');
 	const char * lastPart = lastSlash != NULL ? lastSlash + 1 : baseName;
@@ -218,7 +218,7 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	/* we were unable to retrieve the augeas value */
 	if (result < 0) return result;
 
-	Key * key = createKeyFromPath (conversionData->parentKey, treePath);
+	ElektraKey * key = createKeyFromPath (conversionData->parentKey, treePath);
 
 	if (key == NULL) return -1;
 
@@ -245,7 +245,7 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 	int result;
 	struct OrphanSearch * orphanData = (struct OrphanSearch *) data;
 
-	Key * key = createKeyFromPath (orphanData->parentKey, treePath);
+	ElektraKey * key = createKeyFromPath (orphanData->parentKey, treePath);
 
 	if (!ksLookup (orphanData->ks, key, KDB_O_NONE))
 	{
@@ -268,7 +268,7 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 			short pruneTree = 1;
 			for (int i = 0; i < numChildNodes; i++)
 			{
-				Key * childKey = createKeyFromPath (orphanData->parentKey, matches[i]);
+				ElektraKey * childKey = createKeyFromPath (orphanData->parentKey, matches[i]);
 				if (ksLookup (orphanData->ks, childKey, KDB_O_NONE))
 				{
 					pruneTree = 0;
@@ -387,23 +387,23 @@ static int saveFile (augeas * augeasHandle, FILE * fh)
 	return ret;
 }
 
-static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, Key * parentKey)
+static int saveTree (augeas * augeasHandle, ElektraKeyset * ks, const char * lensPath, ElektraKey * parentKey)
 {
 	int ret = 0;
 
 	size_t prefixSize = (size_t) (keyGetNameSize (parentKey) - 1);
 	size_t arraySize = (size_t) ksGetSize (ks);
-	Key ** keyArray = calloc ((size_t) ksGetSize (ks), sizeof (Key *));
+	ElektraKey ** keyArray = calloc ((size_t) ksGetSize (ks), sizeof (ElektraKey *));
 	ret = elektraKsToMemArray (ks, keyArray);
 
 	if (ret < 0) goto memoryerror;
 
-	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
+	qsort (keyArray, arraySize, sizeof (ElektraKey *), keyCmpOrderWrapper);
 
 	/* convert the Elektra KeySet to an Augeas tree */
 	for (size_t i = 0; i < arraySize; i++)
 	{
-		Key * key = keyArray[i];
+		ElektraKey * key = keyArray[i];
 		char * nodeName;
 		ret = asprintf (&nodeName, AUGEAS_TREE_ROOT "%s", (keyName (key) + prefixSize));
 
@@ -450,7 +450,7 @@ memoryerror:
 	return -1;
 }
 
-int elektraAugeasOpen (Plugin * handle, Key * parentKey)
+int elektraAugeasOpen (Plugin * handle, ElektraKey * parentKey)
 {
 	augeas * augeasHandle;
 	augeasHandle = aug_init (NULL, NULL, AUG_NO_MODL_AUTOLOAD | AUG_NO_ERR_CLOSE);
@@ -476,7 +476,7 @@ int elektraAugeasOpen (Plugin * handle, Key * parentKey)
 	return 0;
 }
 
-int elektraAugeasClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+int elektraAugeasClose (Plugin * handle, ElektraKey * parentKey ELEKTRA_UNUSED)
 {
 	augeas * augeasHandle = elektraPluginGetData (handle);
 
@@ -489,14 +489,14 @@ int elektraAugeasClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	int ret = 0;
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/augeas"))
 	{
-		KeySet * info =
+		ElektraKeyset * info =
 #include "contract.h"
 
 			ksAppend (returned, info);
@@ -547,9 +547,9 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	/* convert the augeas tree to an Elektra KeySet */
 	ksClear (returned);
-	KeySet * append = ksNew ((size_t) ksGetSize (returned) * 2, KS_END);
+	ElektraKeyset * append = ksNew ((size_t) ksGetSize (returned) * 2, KS_END);
 
-	Key * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (append, key);
 
 	struct KeyConversion * conversionData = elektraMalloc (sizeof (struct KeyConversion));
@@ -587,7 +587,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1;
 }
 
-int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraAugeasSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
 	int errnosave = errno;
 	augeas * augeasHandle = elektraPluginGetData (handle);
