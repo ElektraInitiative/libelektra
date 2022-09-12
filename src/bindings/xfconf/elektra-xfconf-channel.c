@@ -227,13 +227,14 @@ static GElektraKeySet * keySet_from_channel (const gchar * channel_name)
 	return channel_pair->keySet;
 }
 
-static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * property, GValue * g_value) {
+static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * property, GValue * g_value)
+{
 	trace ();
 	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
 	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
 	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
-	g_debug ("request key %s with type %s, on channel: %s which has %zd keys", property, G_VALUE_TYPE_NAME (g_value), channel->channel_name,
-		 gelektra_keyset_len (key_set));
+	g_debug ("request key %s with type %s, on channel: %s which has %zd keys", property, G_VALUE_TYPE_NAME (g_value),
+		 channel->channel_name, gelektra_keyset_len (key_set));
 	GElektraKey * key = gelektra_keyset_lookup_byname (key_set, property_name, GELEKTRA_KDB_O_NONE);
 	if (key == NULL)
 	{
@@ -242,23 +243,30 @@ static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gch
 	}
 	const gchar * key_value = gelektra_key_string (key);
 	g_debug ("Found value %s to key %s", key_value, property_name);
-	if (!G_IS_VALUE (g_value)) {
+	if (!G_IS_VALUE (g_value))
+	{
 		g_debug ("read gtype from key database");
 		GType g_type = G_TYPE_STRING;
-		if (gelektra_key_hasmeta (key, XFCONF_GTYPE_META_NAME)) {
+		if (gelektra_key_hasmeta (key, XFCONF_GTYPE_META_NAME))
+		{
 			GElektraKeySet * meta_set = gelektra_key_meta (key);
 			g_debug ("the meta key set has %ld keys", gelektra_keyset_len (meta_set));
-			GElektraKey * gtype_meta_key = gelektra_keyset_lookup_byname (meta_set, XFCONF_GTYPE_META_NAME, GELEKTRA_KDB_O_NONE); //todo: lookup returns no keys
-			if (gtype_meta_key) {
+			GElektraKey * gtype_meta_key = gelektra_keyset_lookup_byname (meta_set, XFCONF_GTYPE_META_NAME,
+										      GELEKTRA_KDB_O_NONE); // todo: lookup returns no keys
+			if (gtype_meta_key)
+			{
 				const gchar * g_type_name = gelektra_key_string (gtype_meta_key);
 				g_debug ("set gtype to %s", g_type_name);
 				g_type = g_type_from_name (g_type_name);
-			} else {
-				g_debug ("type meta key was null");
-
 			}
-		} else {
-			g_debug("key has no gtype meta - assuming string");
+			else
+			{
+				g_debug ("type meta key was null");
+			}
+		}
+		else
+		{
+			g_debug ("key has no gtype meta - assuming string");
 		}
 		g_value_init (g_value, g_type);
 	}
@@ -345,7 +353,9 @@ static const gchar * g_value_to_string (GValue * g_value)
 	return g_value_get_string (&str);
 }
 
-static GValue * g_value_from_string(const gchar * str) {}
+static GValue * g_value_from_string (const gchar * str)
+{
+}
 
 /* basic types */
 
@@ -434,7 +444,8 @@ gboolean xfconf_channel_set_double (XfconfChannel * channel, const gchar * prope
 gboolean xfconf_channel_get_bool (XfconfChannel * channel, const gchar * property, gboolean default_value)
 {
 	trace ();
-	if (!xfconf_channel_has_property (channel, property)) {
+	if (!xfconf_channel_has_property (channel, property))
+	{
 		return default_value;
 	}
 	GValue g_value = G_VALUE_INIT;
