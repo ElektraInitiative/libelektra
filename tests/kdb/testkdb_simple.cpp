@@ -69,7 +69,7 @@ TEST_F (Simple, TryChangeAfterSet)
 	KDB kdb;
 	KeySet ks;
 	std::string name = "system:" + testRoot + "try_change";
-	Key k (name, KEY_END);
+	Key k (name, ELEKTRA_KEY_END);
 	EXPECT_EQ (k.getName (), name);
 	ks.append (k);
 	EXPECT_THROW (k.setName ("user:/x"), kdb::KeyInvalidName);
@@ -90,11 +90,11 @@ TEST_F (Simple, DISABLED_MetaInSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.get (ks, parent);
 	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backend\n" << ks;
 
-	ks.append (Key ("meta:" + testRoot + "wrong_meta_key", KEY_END));
+	ks.append (Key ("meta:" + testRoot + "wrong_meta_key", ELEKTRA_KEY_END));
 
 	ASSERT_EQ (ks.size (), 1) << "key not inserted:\n" << ks;
 	kdb.set (ks, parent);
@@ -111,12 +111,12 @@ TEST_F (Simple, DISABLED_InvalidKeysInSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.get (ks, parent);
 	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backend" << ks;
 
-	ks.append (Key (testRoot + "wrong_cascading_key", KEY_END));
-	ks.append (Key ("meta:" + testRoot + "wrong_meta_key", KEY_END));
+	ks.append (Key (testRoot + "wrong_cascading_key", ELEKTRA_KEY_END));
+	ks.append (Key ("meta:" + testRoot + "wrong_meta_key", ELEKTRA_KEY_END));
 
 	ASSERT_EQ (ks.size (), 2) << "keys not inserted:\n" << ks;
 	kdb.set (ks, parent);
@@ -152,7 +152,7 @@ TEST_F (Simple, DISABLED_EverythingInGetSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks = getAll ();
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.get (ks, parent);
 	ASSERT_EQ (ks.size (), 816) << "did not keep" << ks;
 
@@ -174,7 +174,7 @@ TEST_F (Simple, DISABLED_EverythingInSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.get (ks, parent);
 	ASSERT_EQ (ks.size (), 0) << "got from freshly mounted" << ks;
 	ks.append (getAll ());
@@ -199,7 +199,7 @@ TEST_F (Simple, RemoveFile)
 	KDB kdb;
 	KeySet ks;
 	kdb.get (ks, testRoot);
-	ks.append (Key ("system:" + testRoot + "remove", KEY_END));
+	ks.append (Key ("system:" + testRoot + "remove", ELEKTRA_KEY_END));
 	ASSERT_EQ (ks.size (), 1) << "could not append key\n" << ks;
 	kdb.set (ks, testRoot);
 	ASSERT_EQ (ks.size (), 1) << "key gone after kdb.set?\n" << ks;
@@ -243,8 +243,8 @@ TEST_F (Simple, GetSystem)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey ("system:" + testRoot, KEY_END);
-	ks.append (Key (parentKey.getName () + "/key", KEY_END));
+	Key parentKey ("system:" + testRoot, ELEKTRA_KEY_END);
+	ks.append (Key (parentKey.getName () + "/key", ELEKTRA_KEY_END));
 	EXPECT_NE (kdb.get (ks, parentKey), -1);
 	ASSERT_EQ (ks.size (), 1) << "no key stayed" << ks;
 	ks.rewind ();
@@ -273,7 +273,7 @@ TEST_F (Simple, WrongStateSystem)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey ("system:" + testRoot, KEY_END);
+	Key parentKey ("system:" + testRoot, ELEKTRA_KEY_END);
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "kdb set without prior kdb get should have 107 Wrong State";
 	kdb.close (parentKey);
 	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backends" << ks;
@@ -285,7 +285,7 @@ TEST_F (Simple, WrongStateUser)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey ("user:" + testRoot, KEY_END);
+	Key parentKey ("user:" + testRoot, ELEKTRA_KEY_END);
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "kdb set without prior kdb get should have 107 Wrong State";
 	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backends" << ks;
 }
@@ -296,7 +296,7 @@ TEST_F (Simple, WrongStateCascading)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey (testRoot, KEY_END);
+	Key parentKey (testRoot, ELEKTRA_KEY_END);
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "kdb set without prior kdb get should have 107 Wrong State";
 	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backends" << ks;
 }
@@ -306,11 +306,11 @@ TEST_F (Simple, GetCascading)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey (testRoot, KEY_END);
+	Key parentKey (testRoot, ELEKTRA_KEY_END);
 	kdb.get (ks, parentKey);
 	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backends" << ks;
 
-	Key setParentKey ("system:" + testRoot, KEY_END);
+	Key setParentKey ("system:" + testRoot, ELEKTRA_KEY_END);
 	kdb.set (ks, setParentKey);
 	kdb.close (parentKey);
 }
@@ -322,8 +322,8 @@ TEST_F (Simple, DISABLED_GetAppendCascading)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	ks.append (Key (testRoot + "key", KEY_END));
-	Key parentKey (testRoot, KEY_END);
+	ks.append (Key (testRoot + "key", ELEKTRA_KEY_END));
+	Key parentKey (testRoot, ELEKTRA_KEY_END);
 	std::string myRoot = testRoot.substr (0, testRoot.length () - 1);
 	EXPECT_EQ (parentKey.getName (), myRoot);
 	EXPECT_EQ (parentKey.getString (), "");
@@ -366,8 +366,8 @@ TEST_F (Simple, DISABLED_GetAppendMeta)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	ks.append (Key ("meta:/meta/key", KEY_END));
-	Key parentKey (testRoot, KEY_END);
+	ks.append (Key ("meta:/meta/key", ELEKTRA_KEY_END));
+	Key parentKey (testRoot, ELEKTRA_KEY_END);
 	kdb.get (ks, parentKey);
 	ASSERT_EQ (ks.size (), 1) << "no key stayed";
 	ks.rewind ();
@@ -394,7 +394,7 @@ TEST_F (Simple, GetAppendNamespaces)
 	{
 		KDB kdb;
 		KeySet ks;
-		ks.append (Key (namespaces[i].name + ":" + testRoot + "key", KEY_END));
+		ks.append (Key (namespaces[i].name + ":" + testRoot + "key", ELEKTRA_KEY_END));
 		kdb.get (ks, testRoot);
 		ASSERT_EQ (ks.size (), 1) << "did not got key appended first with namespace " << namespaces[i].name;
 		ks.rewind ();
@@ -409,8 +409,8 @@ TEST_F (Simple, SetSystemKey)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey (testRoot, KEY_END);
-	ks.append (Key ("system:" + testRoot + "key", KEY_END));
+	Key parentKey (testRoot, ELEKTRA_KEY_END);
+	ks.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_END));
 	kdb.get (ks, parentKey);
 	ASSERT_EQ (ks.size (), 1) << "got keys from freshly mounted backends";
 	ks.rewind ();
@@ -435,8 +435,8 @@ TEST_F (Simple, SetSystemGetAppend)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey (testRoot, KEY_END);
-	ks.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value1", KEY_END));
+	Key parentKey (testRoot, ELEKTRA_KEY_END);
+	ks.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
 	ASSERT_NE (kdb.get (ks, parentKey), -1);
 	ASSERT_EQ (ks.size (), 1) << "got keys from freshly mounted backends";
 	ks.rewind ();
@@ -447,7 +447,7 @@ TEST_F (Simple, SetSystemGetAppend)
 	kdb.close (parentKey);
 
 	KeySet ks2;
-	ks2.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value2", KEY_END));
+	ks2.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
 	kdb.open (parentKey);
 	ASSERT_EQ (kdb.get (ks2, parentKey), 1);
 	ASSERT_EQ (ks2.size (), 1) << "wrong size";
@@ -462,8 +462,8 @@ TEST_F (Simple, SetSystemGetAppend2)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parentKey (testRoot, KEY_END);
-	ks.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value1", KEY_END));
+	Key parentKey (testRoot, ELEKTRA_KEY_END);
+	ks.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
 	kdb.get (ks, parentKey);
 	ASSERT_EQ (ks.size (), 1) << "got keys from freshly mounted backends";
 	ks.rewind ();
@@ -474,7 +474,7 @@ TEST_F (Simple, SetSystemGetAppend2)
 	kdb.close (parentKey);
 
 	KeySet ks2;
-	ks2.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+	ks2.append (Key ("system:" + testRoot + "key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
 	kdb.open (parentKey);
 	kdb.get (ks2, parentKey);
 	ks2.rewind ();
@@ -488,7 +488,7 @@ TEST_F (Simple, WrongParent)
 {
 	using namespace kdb;
 	KDB kdb;
-	Key parent ("meta:/meta", KEY_END);
+	Key parent ("meta:/meta", ELEKTRA_KEY_END);
 	KeySet ks;
 	EXPECT_THROW (kdb.set (ks, parent), kdb::KDBException);
 	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backends" << ks;
@@ -500,9 +500,9 @@ TEST_F (Simple, TriggerError)
 	KDB kdb;
 	KeySet ks;
 	EXPECT_EQ (kdb.get (ks, testRoot), 0) << "nothing to do in get";
-	ks.append (Key ("system:" + testRoot + "a", KEY_END));
-	ks.append (Key ("system:" + testRoot + "k", KEY_META, "trigger/error", "10", KEY_END));
-	ks.append (Key ("system:" + testRoot + "z", KEY_END));
+	ks.append (Key ("system:" + testRoot + "a", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "k", ELEKTRA_KEY_META, "trigger/error", "10", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "z", ELEKTRA_KEY_END));
 	struct stat buf;
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	EXPECT_THROW (kdb.set (ks, testRoot), kdb::KDBException) << "could not trigger error";

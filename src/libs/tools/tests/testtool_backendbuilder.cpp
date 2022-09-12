@@ -150,7 +150,7 @@ TEST (GTEST_DISABLE_ASAN (MountBackendBuilder), allSort)
 		b.addPlugin (PluginSpec ("augeas"));
 		// b.addPlugin (PluginSpec ("type"));
 		// b.addPlugin (PluginSpec ("validation"));
-		// b.addPlugin (PluginSpec ("struct", KeySet(5, *Key("user:/module", KEY_END), KS_END)));
+		// b.addPlugin (PluginSpec ("struct", KeySet(5, *Key("user:/module", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
 	}
 	catch (std::exception const & e)
 	{
@@ -264,13 +264,13 @@ TEST (BackendBuilder, doubleAddWithConf)
 	BackendBuilder bb (bbi);
 	bb.addPlugin (PluginSpec ("resolver"));
 	bb.addPlugin (PluginSpec ("a"));
-	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
-	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END)));
+	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
+	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user:/vef", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("resolver"));
 	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("a"));
-	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
-	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", "v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END))) << "remember it was virtual";
+	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", KeySet (2, *Key ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
+	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", "v", KeySet (2, *Key ("user:/vef", ELEKTRA_KEY_END), ELEKTRA_KS_END))) << "remember it was virtual";
 	bb.resolveNeeds ();
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 }
@@ -288,13 +288,13 @@ TEST (BackendBuilder, doubleAddWithConfVirtual)
 	BackendBuilder bb (bbi);
 	bb.addPlugin (PluginSpec ("resolver"));
 	bb.addPlugin (PluginSpec ("a"));
-	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END)));
-	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
+	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user:/vef", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
+	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
 	ASSERT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("noresolver", "resolver"));
 	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("a"));
-	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", "v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END)));
-	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
+	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", "v", KeySet (2, *Key ("user:/vef", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
+	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", KeySet (2, *Key ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
 	bb.resolveNeeds ();
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 }
@@ -316,7 +316,7 @@ TEST (BackendBuilder, directPluginLoading)
 	bb.resolveNeeds ();
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 3);
 	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("a"));
-	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("x", KeySet (2, *Key ("user:/a", KEY_VALUE, "b", KEY_END), KS_END)));
+	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("x", KeySet (2, *Key ("user:/a", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END), ELEKTRA_KS_END)));
 	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("noresolver", "resolver"));
 }
 
@@ -597,7 +597,7 @@ TEST (BackendBuilder, checkconfNotOKmissing)
 
 static int checkconfAppend (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
-	ckdb::ksAppendKey (config, ckdb::keyNew ("user:/b", KEY_VALUE, "test", KEY_END));
+	ckdb::ksAppendKey (config, ckdb::keyNew ("user:/b", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END));
 	return 1;
 }
 
@@ -673,7 +673,7 @@ TEST (BackendBuilder, checkconfOkRemovedBackendConfig)
 
 static int checkconfAppendBackendConf (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
-	ckdb::ksAppendKey (config, ckdb::keyNew ("system:/a", KEY_VALUE, "abc", KEY_END));
+	ckdb::ksAppendKey (config, ckdb::keyNew ("system:/a", ELEKTRA_KEY_VALUE, "abc", ELEKTRA_KEY_END));
 	return 1;
 }
 

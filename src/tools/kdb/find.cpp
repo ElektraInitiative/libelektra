@@ -24,7 +24,7 @@ FindCommand::FindCommand ()
 
 int FindCommand::execute (Cmdline const & cl)
 {
-	Key root ("/", KEY_END);
+	Key root ("/", ELEKTRA_KEY_END);
 	KDB kdb (root);
 	KeySet ks;
 

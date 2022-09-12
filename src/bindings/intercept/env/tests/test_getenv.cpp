@@ -19,7 +19,7 @@ TEST (GetEnv, ExistOverride)
 {
 	using namespace ckdb;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
 	elektraClose ();
@@ -29,7 +29,7 @@ TEST (GetEnv, ExistOverrideFallback)
 {
 	using namespace ckdb;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/env/override/does-exist-fb", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/env/override/does-exist-fb", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist-fb"), std::string ("hello"));
 	elektraClose ();
@@ -59,7 +59,7 @@ TEST (GetEnv, ExistFallback)
 {
 	using namespace ckdb;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/fallback/does-exist", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/fallback/does-exist", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
 	elektraClose ();
@@ -69,7 +69,7 @@ TEST (GetEnv, ExistFallbackFallback)
 {
 	using namespace ckdb;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/env/fallback/does-exist-fb", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/env/fallback/does-exist-fb", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist-fb"), std::string ("hello"));
 	elektraClose ();
@@ -82,7 +82,7 @@ TEST (GetEnv, OpenClose)
 	elektraOpen (nullptr, nullptr);
 	// EXPECT_NE(elektraConfig, oldElektraConfig); // even its a new object, it might point to same address
 	EXPECT_EQ (getenv ("du4Maiwi/does-not-exist"), static_cast<char *> (nullptr));
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
@@ -97,7 +97,7 @@ TEST (GetEnv, OpenCloseFallback)
 	elektraOpen (nullptr, nullptr);
 	// EXPECT_NE(elektraConfig, oldElektraConfig); // even its a new object, it might point to same address
 	EXPECT_EQ (getenv ("du4Maiwi/does-not-exist-fb"), static_cast<char *> (nullptr));
-	ksAppendKey (elektraConfig, keyNew ("user:/env/override/does-exist-fb", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/env/override/does-exist-fb", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 
 	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist-fb"), std::string ("hello"));

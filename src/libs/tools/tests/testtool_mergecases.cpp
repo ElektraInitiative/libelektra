@@ -55,10 +55,10 @@ TEST_F (ThreeWayMergeTest, EqualKeySetsWontCauseSync)
 
 TEST_F (ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)
 {
-	Key root ("/", KEY_END);
-	MergeResult result = merger.mergeKeySet (MergeTask (BaseMergeKeys (base, Key ("/parentb", KEY_END)),
-							    OurMergeKeys (ours, Key ("/parento", KEY_END)),
-							    TheirMergeKeys (theirs, Key ("/parentt", KEY_END)), root));
+	Key root ("/", ELEKTRA_KEY_END);
+	MergeResult result = merger.mergeKeySet (MergeTask (BaseMergeKeys (base, Key ("/parentb", ELEKTRA_KEY_END)),
+							    OurMergeKeys (ours, Key ("/parento", ELEKTRA_KEY_END)),
+							    TheirMergeKeys (theirs, Key ("/parentt", ELEKTRA_KEY_END)), root));
 	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 
 	Key current;
@@ -72,8 +72,8 @@ TEST_F (ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)
 
 TEST_F (ThreeWayMergeTest, SameDeletedKeyMerge)
 {
-	ours.lookup ("user:/parento/config/key1", KDB_O_POP);
-	theirs.lookup ("user:/parentt/config/key1", KDB_O_POP);
+	ours.lookup ("user:/parento/config/key1", ELEKTRA_KDB_O_POP);
+	theirs.lookup ("user:/parentt/config/key1", ELEKTRA_KDB_O_POP);
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 
@@ -85,7 +85,7 @@ TEST_F (ThreeWayMergeTest, SameDeletedKeyMerge)
 
 TEST_F (ThreeWayMergeTest, DeleteModifyConflict)
 {
-	ours.lookup ("user:/parento/config/key1", KDB_O_POP);
+	ours.lookup ("user:/parento/config/key1", ELEKTRA_KDB_O_POP);
 	theirs.lookup ("user:/parentt/config/key1").setString ("modifiedvalue");
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
@@ -102,7 +102,7 @@ TEST_F (ThreeWayMergeTest, DeleteModifyConflict)
 TEST_F (ThreeWayMergeTest, ModifyDeleteConflict)
 {
 	ours.lookup ("user:/parento/config/key1").setString ("modifiedvalue");
-	theirs.lookup ("user:/parentt/config/key1", KDB_O_POP);
+	theirs.lookup ("user:/parentt/config/key1", ELEKTRA_KDB_O_POP);
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 	ASSERT_TRUE (result.hasConflicts ()) << "No conflict detected although conflicts should exist";
@@ -136,8 +136,8 @@ TEST_F (ThreeWayMergeTest, SameModifyConflict)
 
 TEST_F (ThreeWayMergeTest, SameAddedEqualValueMerges)
 {
-	ours.append (Key ("user:/parento/config/key5", KEY_VALUE, "newvalue", KEY_END));
-	theirs.append (Key ("user:/parentt/config/key5", KEY_VALUE, "newvalue", KEY_END));
+	ours.append (Key ("user:/parento/config/key5", ELEKTRA_KEY_VALUE, "newvalue", ELEKTRA_KEY_END));
+	theirs.append (Key ("user:/parentt/config/key5", ELEKTRA_KEY_VALUE, "newvalue", ELEKTRA_KEY_END));
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
@@ -147,13 +147,13 @@ TEST_F (ThreeWayMergeTest, SameAddedEqualValueMerges)
 	EXPECT_EQ (6, merged.size ());
 	compareAllKeys (merged);
 
-	compareKeys (Key ("user:/parentm/config/key5", KEY_VALUE, "newvalue", KEY_END), merged.lookup (mk5));
+	compareKeys (Key ("user:/parentm/config/key5", ELEKTRA_KEY_VALUE, "newvalue", ELEKTRA_KEY_END), merged.lookup (mk5));
 }
 
 TEST_F (ThreeWayMergeTest, SameAddedDifferentValueConflict)
 {
-	ours.append (Key ("user:/parento/config/key5", KEY_VALUE, "newvalueours", KEY_END));
-	theirs.append (Key ("user:/parentt/config/key5", KEY_VALUE, "newvaluetheirs", KEY_END));
+	ours.append (Key ("user:/parento/config/key5", ELEKTRA_KEY_VALUE, "newvalueours", ELEKTRA_KEY_END));
+	theirs.append (Key ("user:/parentt/config/key5", ELEKTRA_KEY_VALUE, "newvaluetheirs", ELEKTRA_KEY_END));
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 

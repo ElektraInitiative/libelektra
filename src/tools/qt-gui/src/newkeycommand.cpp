@@ -27,7 +27,7 @@ NewKeyCommand::NewKeyCommand (TreeViewModel * model, int index, DataContainer * 
 			parentPath += "/";
 		}
 
-		parentKey = kdb::Key (parentPath, KEY_END);
+		parentKey = kdb::Key (parentPath, ELEKTRA_KEY_END);
 	}
 
 	QStringList parentNameSplit = parentModel->getSplittedKeyname (parentKey);

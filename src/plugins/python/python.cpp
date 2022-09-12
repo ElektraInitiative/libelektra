@@ -393,15 +393,15 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	{
 		KeySet * n;
 		ksAppend (returned,
-			  n = ksNew (30, keyNew (_MODULE_CONFIG_PATH, KEY_VALUE, "python interpreter waits for your orders", KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports", KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/get", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Get), KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/set", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Set), KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/error", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Error), KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/open", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Open), KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/close", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Close), KEY_END),
+			  n = ksNew (30, keyNew (_MODULE_CONFIG_PATH, ELEKTRA_KEY_VALUE, "python interpreter waits for your orders", ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports", ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/get", ELEKTRA_KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Get), ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/set", ELEKTRA_KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Set), ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/error", ELEKTRA_KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Error), ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/open", ELEKTRA_KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Open), ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/close", ELEKTRA_KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Close), ELEKTRA_KEY_END),
 #include ELEKTRA_README
-				     keyNew (_MODULE_CONFIG_PATH "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				     keyNew (_MODULE_CONFIG_PATH "/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 		ksDel (n);
 	}
 

@@ -41,7 +41,7 @@ kdb::KeySet CppTemplateDelegate::getConfig (Key const & parent)
 
 	for (auto configKey : configuration)
 	{
-		Key key{ parent.getName (), KEY_END };
+		Key key{ parent.getName (), ELEKTRA_KEY_END };
 		key.addBaseName (configKey.getBaseName ());
 		if (configKey.isString ()) key.setString (configKey.getString ());
 		keys.append (key);

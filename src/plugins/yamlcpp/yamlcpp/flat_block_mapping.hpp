@@ -2,9 +2,9 @@
 kdb::KeySet
 {
 	10, 
-	keyNew (PREFIX "longish key", KEY_VALUE, "10-9-8-7 everybody’s coming to burn this city", KEY_END),
-	keyNew (PREFIX "double quoted", KEY_VALUE, "single quoted", KEY_END),
-	keyNew (PREFIX "forward\\/slash", KEY_VALUE, "value containing spaces", KEY_END),
-	keyNew (PREFIX "hello", KEY_VALUE, "world", KEY_END), 
-	KS_END
+	keyNew (PREFIX "longish key", ELEKTRA_KEY_VALUE, "10-9-8-7 everybody’s coming to burn this city", ELEKTRA_KEY_END),
+	keyNew (PREFIX "double quoted", ELEKTRA_KEY_VALUE, "single quoted", ELEKTRA_KEY_END),
+	keyNew (PREFIX "forward\\/slash", ELEKTRA_KEY_VALUE, "value containing spaces", ELEKTRA_KEY_END),
+	keyNew (PREFIX "hello", ELEKTRA_KEY_VALUE, "world", ELEKTRA_KEY_END), 
+	ELEKTRA_KS_END
 }

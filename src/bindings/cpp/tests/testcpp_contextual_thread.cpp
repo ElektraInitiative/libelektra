@@ -16,7 +16,7 @@ using namespace kdb;
 
 void foo1 (Coordinator & gc, KeySet & ks)
 {
-	Key specKey ("/hello", KEY_END);
+	Key specKey ("/hello", ELEKTRA_KEY_END);
 
 	ThreadContext c1 (gc);
 	ThreadValue<int> v1 (ks, c1, specKey);
@@ -33,7 +33,7 @@ void foo1 (Coordinator & gc, KeySet & ks)
 
 void foo2 (Coordinator & gc, KeySet & ks)
 {
-	Key specKey ("/hello", KEY_END);
+	Key specKey ("/hello", ELEKTRA_KEY_END);
 
 	ThreadContext c2 (gc);
 	ThreadValue<int> v2 (ks, c2, specKey);
@@ -49,10 +49,10 @@ void foo2 (Coordinator & gc, KeySet & ks)
 
 TEST (test_contextual_thread, instanciation)
 {
-	Key specKey ("/hello", KEY_END);
+	Key specKey ("/hello", ELEKTRA_KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user:/hello", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/hello", ELEKTRA_KEY_VALUE, "22", ELEKTRA_KEY_END));
 
 	Coordinator gc;
 	ThreadContext c (gc);
@@ -127,7 +127,7 @@ void toggleOff ()
 
 void activate1 (Coordinator & gc, KeySet & ks)
 {
-	Key specKey ("/act/%activate%", KEY_END);
+	Key specKey ("/act/%activate%", ELEKTRA_KEY_END);
 
 	ThreadContext c1 (gc);
 	ThreadValue<int> v1 (ks, c1, specKey);
@@ -150,11 +150,11 @@ TEST (DISABLED_test_contextual_thread, activate)
 TEST (test_contextual_thread, activate)
 #endif
 {
-	Key specKey ("/act/%activate%", KEY_END);
+	Key specKey ("/act/%activate%", ELEKTRA_KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", ELEKTRA_KEY_VALUE, "22", ELEKTRA_KEY_END));
 
 	Coordinator gc;
 	ThreadContext c (gc);
@@ -190,7 +190,7 @@ TEST (test_contextual_thread, ThreadNoContext)
 	ThreadNoContext c;
 	const char * name = "/%language%/%country%/%dialect%/test";
 	ASSERT_TRUE (!ks.lookup (name));
-	Value<int, ContextPolicyIs<ThreadNoContext>> i (ks, c, Key (name, KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<ThreadNoContext>> i (ks, c, Key (name, ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	ASSERT_EQ (i, i_value);
 	ASSERT_TRUE (ks.lookup (name));
 	i = 5;
@@ -228,11 +228,11 @@ public:
 
 TEST (test_contextual_thread, activateNoDependency)
 {
-	Key specKey ("/act/%activate%", KEY_END);
+	Key specKey ("/act/%activate%", ELEKTRA_KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", ELEKTRA_KEY_VALUE, "22", ELEKTRA_KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -261,11 +261,11 @@ TEST (test_contextual_thread, activateNoDependency)
 
 TEST (test_contextual_thread, activateWithDependency)
 {
-	Key specKey ("/act/%activate%", KEY_END);
+	Key specKey ("/act/%activate%", ELEKTRA_KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", ELEKTRA_KEY_VALUE, "22", ELEKTRA_KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -317,11 +317,11 @@ public:
 
 TEST (test_contextual_thread, activateWithDirectDependency)
 {
-	Key specKey ("/act/%activate%", KEY_END);
+	Key specKey ("/act/%activate%", ELEKTRA_KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user:/act/%", KEY_VALUE, "inactive", KEY_END));
-	ks.append (Key ("user:/act/active", KEY_VALUE, "active", KEY_END));
+	ks.append (Key ("user:/act/%", ELEKTRA_KEY_VALUE, "inactive", ELEKTRA_KEY_END));
+	ks.append (Key ("user:/act/active", ELEKTRA_KEY_VALUE, "active", ELEKTRA_KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -347,11 +347,11 @@ TEST (test_contextual_thread, activateWithDirectDependency)
 
 TEST (test_contextual_thread, syncInWith)
 {
-	Key specKey ("/act/%activate%", KEY_END);
+	Key specKey ("/act/%activate%", ELEKTRA_KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", ELEKTRA_KEY_VALUE, "22", ELEKTRA_KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);
@@ -392,11 +392,11 @@ TEST (test_contextual_thread, syncInWith)
 
 TEST (test_contextual_thread, syncBeforeWith)
 {
-	Key specKey ("/act/%activate%", KEY_END);
+	Key specKey ("/act/%activate%", ELEKTRA_KEY_END);
 
 	KeySet ks;
-	ks.append (Key ("user:/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
-	ks.append (Key ("user:/act/active", KEY_VALUE, "22", KEY_END));
+	ks.append (Key ("user:/act/%", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END)); // not active layer
+	ks.append (Key ("user:/act/active", ELEKTRA_KEY_VALUE, "22", ELEKTRA_KEY_END));
 
 	Coordinator gc;
 	ThreadContext c1 (gc);

@@ -55,7 +55,7 @@ public:
 
 	void removeMergeKey (const Key & key)
 	{
-		mergedKeys.lookup (key, KDB_O_POP);
+		mergedKeys.lookup (key, ELEKTRA_KDB_O_POP);
 	}
 
 	KeySet getConflictSet ()

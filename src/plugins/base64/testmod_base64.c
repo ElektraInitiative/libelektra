@@ -19,7 +19,7 @@ static const size_t testcaseCounter = sizeof (decoded) / sizeof (const char *);
 
 static inline ElektraKeyset * newPluginConfiguration (void)
 {
-	return ksNew (0, KS_END);
+	return ksNew (0, ELEKTRA_KS_END);
 }
 
 static void test_init (void)
@@ -28,8 +28,8 @@ static void test_init (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
@@ -131,8 +131,8 @@ static void test_base64_plugin_regular (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
@@ -143,10 +143,10 @@ static void test_base64_plugin_regular (void)
 		ElektraKey * key;
 		const kdb_octet_t sampleValue[] = { 0x31, 0x32, 0x33 };
 
-		ElektraKeyset * data = ksNew (4, keyNew ("/t/k1", KEY_VALUE, "Hello World", KEY_END),
-				       keyNew ("/t/k2", KEY_BINARY, KEY_SIZE, sizeof (sampleValue), KEY_VALUE, sampleValue, KEY_END),
-				       keyNew ("/t/k3", KEY_BINARY, KEY_SIZE, 0, KEY_END),
-				       keyNew ("/t/k4", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX, KEY_END), KS_END);
+		ElektraKeyset * data = ksNew (4, keyNew ("/t/k1", ELEKTRA_KEY_VALUE, "Hello World", ELEKTRA_KEY_END),
+				       keyNew ("/t/k2", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (sampleValue), ELEKTRA_KEY_VALUE, sampleValue, ELEKTRA_KEY_END),
+				       keyNew ("/t/k3", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, 0, ELEKTRA_KEY_END),
+				       keyNew ("/t/k4", ELEKTRA_KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// test encoding
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
@@ -234,8 +234,8 @@ static void test_base64_plugin_decoding_error (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
@@ -244,7 +244,7 @@ static void test_base64_plugin_decoding_error (void)
 	if (plugin)
 	{
 		ElektraKey * key;
-		ElektraKeyset * data = ksNew (1, keyNew ("/t/k1", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX "_$..", KEY_END), KS_END);
+		ElektraKeyset * data = ksNew (1, keyNew ("/t/k1", ELEKTRA_KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX "_$..", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// test failing decoding
 		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");

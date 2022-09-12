@@ -31,7 +31,7 @@ void GUIBackend::createBackend (const QString & mountpoint)
 {
 	m_backend = QSharedPointer<MountBackendBuilder> (new MountBackendBuilder ());
 
-	Key parentKey (Backends::mountpointsPath, KEY_END);
+	Key parentKey (Backends::mountpointsPath, ELEKTRA_KEY_END);
 
 	try
 	{
@@ -44,7 +44,7 @@ void GUIBackend::createBackend (const QString & mountpoint)
 
 	try
 	{
-		m_backend->setMountpoint (Key (mountpoint.toStdString (), KEY_END), m_mountConf);
+		m_backend->setMountpoint (Key (mountpoint.toStdString (), ELEKTRA_KEY_END), m_mountConf);
 	}
 	catch (MountpointInvalidException const & ex)
 	{
@@ -124,7 +124,7 @@ void GUIBackend::serialise (TreeViewModel * model)
 
 	try
 	{
-		Key rootKey (Backends::mountpointsPath, KEY_END);
+		Key rootKey (Backends::mountpointsPath, ELEKTRA_KEY_END);
 		m_kdb.get (m_mountConf, rootKey);
 		m_kdb.set (m_mountConf, rootKey);
 	}
@@ -176,7 +176,7 @@ void GUIBackend::resetModel ()
 
 QString GUIBackend::mountPoints () const
 {
-	Key parentKey (Backends::mountpointsPath, KEY_END);
+	Key parentKey (Backends::mountpointsPath, ELEKTRA_KEY_END);
 	KeySet mountConf;
 	KDB kdb (parentKey);
 

@@ -567,7 +567,7 @@ static void test_keyAddName (void)
 #define TEST_ADD_NAME(base, toadd, result)                                                                                                 \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		k = keyNew (base, KEY_END);                                                                                                \
+		k = keyNew (base, ELEKTRA_KEY_END);                                                                                                \
 		succeed_if (keyAddName (k, toadd) == sizeof (result), "could not add name");                                               \
 		succeed_if_same_string (keyName (k), result);                                                                              \
 		keyDel (k);                                                                                                                \
@@ -576,7 +576,7 @@ static void test_keyAddName (void)
 #define TEST_ADD_NAME_ERROR(base, toadd)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		k = keyNew (base, KEY_END);                                                                                                \
+		k = keyNew (base, ELEKTRA_KEY_END);                                                                                                \
 		succeed_if (keyAddName (k, toadd) == -1, "shouldn't be able to add name");                                                 \
 		succeed_if_same_string (keyName (k), base);                                                                                \
 		keyDel (k);                                                                                                                \

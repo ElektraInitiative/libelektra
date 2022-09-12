@@ -195,15 +195,15 @@ int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * p
 	{
 		KeySet * n;
 		ksAppend (returned,
-			  n = ksNew (30, keyNew (_MODULE_CONFIG_PATH, KEY_VALUE, "lua interpreter waits for your orders", KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports", KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/get", KEY_FUNC, elektraLuaGet, KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/set", KEY_FUNC, elektraLuaSet, KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/error", KEY_FUNC, elektraLuaError, KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/open", KEY_FUNC, elektraLuaOpen, KEY_END),
-				     keyNew (_MODULE_CONFIG_PATH "/exports/close", KEY_FUNC, elektraLuaClose, KEY_END),
+			  n = ksNew (30, keyNew (_MODULE_CONFIG_PATH, ELEKTRA_KEY_VALUE, "lua interpreter waits for your orders", ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports", ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/get", ELEKTRA_KEY_FUNC, elektraLuaGet, ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/set", ELEKTRA_KEY_FUNC, elektraLuaSet, ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/error", ELEKTRA_KEY_FUNC, elektraLuaError, ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/open", ELEKTRA_KEY_FUNC, elektraLuaOpen, ELEKTRA_KEY_END),
+				     keyNew (_MODULE_CONFIG_PATH "/exports/close", ELEKTRA_KEY_FUNC, elektraLuaClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-				     keyNew (_MODULE_CONFIG_PATH "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				     keyNew (_MODULE_CONFIG_PATH "/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 		ksDel (n);
 	}
 

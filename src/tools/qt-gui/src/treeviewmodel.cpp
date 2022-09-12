@@ -33,12 +33,12 @@ using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 
-TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb ()
+TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", ELEKTRA_KEY_END), m_kdb ()
 {
 	Q_UNUSED (parentModel);
 }
 
-TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
+TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", ELEKTRA_KEY_END), m_kdb (kdb)
 {
 	Q_UNUSED (parentModel);
 	connectDBus ();
@@ -195,7 +195,7 @@ int TreeViewModel::getIndexByName (const QString & name) const
 
 void TreeViewModel::importConfiguration (const QString & name, const QString & format, QString & file, const QVariantList & mergeStrategies)
 {
-	Key root (name.toStdString (), KEY_END);
+	Key root (name.toStdString (), ELEKTRA_KEY_END);
 	KeySet originalKeys = collectCurrentKeySet ();
 	KeySet base = originalKeys.cut (root);
 	printWarnings (cerr, root, true, true);
@@ -289,7 +289,7 @@ void TreeViewModel::exportConfiguration (TreeViewModel * parentModel, int idx, Q
 	Key root = parentModel->model ().at (idx)->getKey ();
 
 	// Node is only a filler
-	if (!root) root = Key (parentModel->model ().at (idx)->getPath ().toStdString (), KEY_END);
+	if (!root) root = Key (parentModel->model ().at (idx)->getPath ().toStdString (), ELEKTRA_KEY_END);
 
 	KeySet part (ks.cut (root));
 

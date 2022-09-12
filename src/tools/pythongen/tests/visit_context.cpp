@@ -104,9 +104,9 @@ int main ()
 	KeySet ks;
 	Context c;
 	// some predefined values (for convenience):
-	ks.append (Key ("user:/visit/%/%/%/person/greeting", KEY_VALUE, "Tag", KEY_END));
-	ks.append (Key ("user:/visit/german/Austria/%/person/greeting", KEY_VALUE, "Servus", KEY_END));
-	ks.append (Key ("user:/visit/german/switzerland/%/person/greeting", KEY_VALUE, "Grüezi", KEY_END));
+	ks.append (Key ("user:/visit/%/%/%/person/greeting", ELEKTRA_KEY_VALUE, "Tag", ELEKTRA_KEY_END));
+	ks.append (Key ("user:/visit/german/Austria/%/person/greeting", ELEKTRA_KEY_VALUE, "Servus", ELEKTRA_KEY_END));
+	ks.append (Key ("user:/visit/german/switzerland/%/person/greeting", ELEKTRA_KEY_VALUE, "Grüezi", ELEKTRA_KEY_END));
 	KeySet ks2;
 	kdb.get (ks2, "/visit");
 	// overwrite them if something is available in config files:

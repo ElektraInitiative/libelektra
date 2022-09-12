@@ -36,16 +36,16 @@ namespace
 kdb::KeySet getContract ()
 {
 	return kdb::KeySet{ 30,
-			    keyNew ("system:/elektra/modules/directoryvalue", KEY_VALUE, "directoryvalue plugin waits for your orders",
-				    KEY_END),
-			    keyNew ("system:/elektra/modules/directoryvalue/exports", KEY_END),
-			    keyNew ("system:/elektra/modules/directoryvalue/exports/open", KEY_FUNC, elektraDirectoryValueOpen, KEY_END),
-			    keyNew ("system:/elektra/modules/directoryvalue/exports/close", KEY_FUNC, elektraDirectoryValueClose, KEY_END),
-			    keyNew ("system:/elektra/modules/directoryvalue/exports/get", KEY_FUNC, elektraDirectoryValueGet, KEY_END),
-			    keyNew ("system:/elektra/modules/directoryvalue/exports/set", KEY_FUNC, elektraDirectoryValueSet, KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue", ELEKTRA_KEY_VALUE, "directoryvalue plugin waits for your orders",
+				    ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports", ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/open", ELEKTRA_KEY_FUNC, elektraDirectoryValueOpen, ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/close", ELEKTRA_KEY_FUNC, elektraDirectoryValueClose, ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/get", ELEKTRA_KEY_FUNC, elektraDirectoryValueGet, ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/set", ELEKTRA_KEY_FUNC, elektraDirectoryValueSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			    keyNew ("system:/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			    KS_END };
+			    keyNew ("system:/elektra/modules/directoryvalue/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			    ELEKTRA_KS_END };
 }
 
 } // end namespace

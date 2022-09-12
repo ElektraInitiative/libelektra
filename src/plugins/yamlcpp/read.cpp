@@ -60,7 +60,7 @@ Key newKey (string const & name, Key const & parent)
 {
 	ELEKTRA_LOG_DEBUG ("Add new key with base name “%s”", name.c_str ());
 
-	Key key{ parent.getName (), KEY_BINARY, KEY_END };
+	Key key{ parent.getName (), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_END };
 	key.addBaseName (name);
 
 	return key;
@@ -78,7 +78,7 @@ Key newArrayKey (Key & arrayKey, uintmax_t const index)
 {
 	ELEKTRA_LOG_DEBUG ("Add new array element to array parent “%s”", arrayKey.getName ().c_str ());
 
-	Key newKey{ arrayKey.getName (), KEY_BINARY, KEY_END };
+	Key newKey{ arrayKey.getName (), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_END };
 	newKey.addBaseName (indexToArrayBaseName (index));
 	arrayKey.setMeta ("array", newKey.getBaseName ());
 
@@ -112,7 +112,7 @@ void addMetadata (Key & key, Node const & node)
  */
 Key createLeafKey (Node const & node, string const & name)
 {
-	Key key{ name, KEY_BINARY, KEY_END };
+	Key key{ name, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_END };
 
 	if (!node.IsNull ())
 	{
@@ -150,8 +150,8 @@ Key createLeafKey (Node const & node, string const & name)
  */
 Key convertMetaNodeToKey (Node const & node, Key & parent)
 {
-	auto key = node[0].IsNull () ? Key{ parent.getName (), KEY_BINARY, KEY_END } :
-					     Key{ parent.getName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
+	auto key = node[0].IsNull () ? Key{ parent.getName (), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_END } :
+					     Key{ parent.getName (), ELEKTRA_KEY_VALUE, node[0].as<string> ().c_str (), ELEKTRA_KEY_END };
 	ELEKTRA_LOG_DEBUG ("Add key “%s”: “%s”", key.getName ().c_str (),
 			   key.getBinarySize () == 0 ? "NULL" :
 			   key.isString ()	     ? key.getString ().c_str () :
@@ -237,7 +237,7 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
-	Key parentWithoutValue{ parent.getName (), KEY_BINARY, KEY_END }; // We do **not** want to save the filename inside the read key set
+	Key parentWithoutValue{ parent.getName (), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_END }; // We do **not** want to save the filename inside the read key set
 	convertNodeToKeySet (config, mappings, parentWithoutValue);
 
 #ifdef HAVE_LOGGER

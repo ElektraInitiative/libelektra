@@ -12,8 +12,8 @@
 
 TEST (ks, get)
 {
-	KeySet ks (5, *Key ("user:/map", KEY_END), *Key ("user:/map/a", KEY_END), *Key ("user:/map/b", KEY_END),
-		   *Key ("user:/map/c", KEY_VALUE, "value", KEY_END), KS_END);
+	KeySet ks (5, *Key ("user:/map", ELEKTRA_KEY_END), *Key ("user:/map/a", ELEKTRA_KEY_END), *Key ("user:/map/b", ELEKTRA_KEY_END),
+		   *Key ("user:/map/c", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	EXPECT_EQ (ks.get<std::string> ("user:/map/c"), "value");
 	EXPECT_THROW (ks.get<std::string> ("user:/map/x"), KeyNotFoundException);
 	typedef std::map<std::string, std::string> map;
@@ -78,9 +78,9 @@ struct KeySetTypeWrapper<Point>
 
 TEST (ks, getOwnType)
 {
-	KeySet ks (5, *Key ("user:/owntype", KEY_END), *Key ("user:/owntype/a", KEY_END), *Key ("user:/owntype/b", KEY_END),
-		   *Key ("user:/owntype/c", KEY_VALUE, "20", KEY_END), *Key ("user:/owntype/x", KEY_VALUE, "5", KEY_END),
-		   *Key ("user:/owntype/y", KEY_VALUE, "12", KEY_END), KS_END);
+	KeySet ks (5, *Key ("user:/owntype", ELEKTRA_KEY_END), *Key ("user:/owntype/a", ELEKTRA_KEY_END), *Key ("user:/owntype/b", ELEKTRA_KEY_END),
+		   *Key ("user:/owntype/c", ELEKTRA_KEY_VALUE, "20", ELEKTRA_KEY_END), *Key ("user:/owntype/x", ELEKTRA_KEY_VALUE, "5", ELEKTRA_KEY_END),
+		   *Key ("user:/owntype/y", ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	EXPECT_EQ (ks.get<int> ("user:/owntype/a"), -3);
 	EXPECT_EQ (ks.get<int> ("user:/owntype/c"), 25);
 	EXPECT_EQ (ks.get<int> ("user:/owntype/n"), -5);
@@ -89,10 +89,10 @@ TEST (ks, getOwnType)
 
 TEST (ks, getCascading)
 {
-	KeySet ks (5, *Key ("user:/map", KEY_END), *Key ("user:/map/a", KEY_END), *Key ("user:/map/b", KEY_END),
-		   *Key ("user:/map/c", KEY_VALUE, "winvalue", KEY_END), *Key ("user:/map/d", KEY_VALUE, "dvalue", KEY_END),
-		   *Key ("system:/map", KEY_END), *Key ("system:/map/a", KEY_END), *Key ("system:/map/b", KEY_END),
-		   *Key ("system:/map/c", KEY_VALUE, "value", KEY_END), *Key ("system:/map/e", KEY_VALUE, "evalue", KEY_END), KS_END);
+	KeySet ks (5, *Key ("user:/map", ELEKTRA_KEY_END), *Key ("user:/map/a", ELEKTRA_KEY_END), *Key ("user:/map/b", ELEKTRA_KEY_END),
+		   *Key ("user:/map/c", ELEKTRA_KEY_VALUE, "winvalue", ELEKTRA_KEY_END), *Key ("user:/map/d", ELEKTRA_KEY_VALUE, "dvalue", ELEKTRA_KEY_END),
+		   *Key ("system:/map", ELEKTRA_KEY_END), *Key ("system:/map/a", ELEKTRA_KEY_END), *Key ("system:/map/b", ELEKTRA_KEY_END),
+		   *Key ("system:/map/c", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), *Key ("system:/map/e", ELEKTRA_KEY_VALUE, "evalue", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	EXPECT_EQ (ks.get<std::string> ("/map/c"), "winvalue");
 	typedef std::map<std::string, std::string> map;
 	map m = ks.get<map> ("/map");

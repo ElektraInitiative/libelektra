@@ -25,10 +25,10 @@ using elektra::increaseArrayIndices;
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
-	kdb::KeySet modules{ 0, KS_END };                                                                                                  \
-	kdb::KeySet config{ 0, KS_END };                                                                                                   \
+	kdb::KeySet modules{ 0, ELEKTRA_KS_END };                                                                                                  \
+	kdb::KeySet config{ 0, ELEKTRA_KS_END };                                                                                                   \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	kdb::Key parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                       \
+	kdb::Key parent{ parentName, ELEKTRA_KEY_VALUE, filepath, ELEKTRA_KEY_END };                                                                       \
 	Plugin * plugin = elektraPluginOpen ("directoryvalue", modules.getKeySet (), config.getKeySet (), *parent);                        \
 	exit_if_fail (plugin != NULL, "Could not open directoryvalue plugin");
 
@@ -94,34 +94,34 @@ TEST (directoryvalue, increaseArrayIndices) //! OCLint (avoid private static mem
 __attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[too few branches in switch statement]]")))
 #endif
 {
-	kdb::KeySet arrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END), KS_END };
+	kdb::KeySet arrayParents{ 10, keyNew (PREFIX "key/array", ELEKTRA_KEY_END), keyNew (PREFIX "key/array/#2/nested", ELEKTRA_KEY_END), ELEKTRA_KS_END };
 
-	kdb::KeySet expectedArrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#3/nested", KEY_END),
-					  KS_END };
+	kdb::KeySet expectedArrayParents{ 10, keyNew (PREFIX "key/array", ELEKTRA_KEY_END), keyNew (PREFIX "key/array/#3/nested", ELEKTRA_KEY_END),
+					  ELEKTRA_KS_END };
 
 	kdb::KeySet arrays{ 10,
-			    keyNew (PREFIX "key/array", KEY_END),
-			    keyNew (PREFIX "key/array/#0", KEY_END),
-			    keyNew (PREFIX "key/array/#1", KEY_END),
-			    keyNew (PREFIX "key/array/#2/nested", KEY_END),
-			    keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
-			    keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
-			    keyNew (PREFIX "key/array", KEY_END),
-			    keyNew (PREFIX "key/array/#0", KEY_END),
-			    keyNew (PREFIX "key/array/#1", KEY_END),
-			    KS_END };
+			    keyNew (PREFIX "key/array", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array/#0", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array/#1", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array/#2/nested", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array/#2/nested/#0", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array/#2/nested/#1", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array/#0", ELEKTRA_KEY_END),
+			    keyNew (PREFIX "key/array/#1", ELEKTRA_KEY_END),
+			    ELEKTRA_KS_END };
 
 	kdb::KeySet expectedArrays{ 10,
-				    keyNew (PREFIX "key/array", KEY_END),
-				    keyNew (PREFIX "key/array/#1", KEY_END),
-				    keyNew (PREFIX "key/array/#2", KEY_END),
-				    keyNew (PREFIX "key/array/#3/nested", KEY_END),
-				    keyNew (PREFIX "key/array/#3/nested/#1", KEY_END),
-				    keyNew (PREFIX "key/array/#3/nested/#2", KEY_END),
-				    keyNew (PREFIX "key/array", KEY_END),
-				    keyNew (PREFIX "key/array/#1", KEY_END),
-				    keyNew (PREFIX "key/array/#2", KEY_END),
-				    KS_END };
+				    keyNew (PREFIX "key/array", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array/#1", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array/#2", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array/#3/nested", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array/#3/nested/#1", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array/#3/nested/#2", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array/#1", ELEKTRA_KEY_END),
+				    keyNew (PREFIX "key/array/#2", ELEKTRA_KEY_END),
+				    ELEKTRA_KS_END };
 
 	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
 	compare_keyset (expectedArrays, arrays);
@@ -135,7 +135,7 @@ __attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("ocl
 {
 	OPEN_PLUGIN ("system:/elektra/modules/directoryvalue", "")
 
-	kdb::KeySet keys{ 0, KS_END };
+	kdb::KeySet keys{ 0, ELEKTRA_KS_END };
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 "Unable to retrieve plugin contract");
 

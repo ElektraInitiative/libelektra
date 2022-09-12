@@ -181,7 +181,7 @@ protected:
 
 	static const inline kdb::Key makeKey (KDBType type, const char * name, const char * value)
 	{
-		return kdb::Key ("user:" + testRoot + name, KEY_VALUE, value, KEY_META, "type", type, KEY_END);
+		return kdb::Key ("user:" + testRoot + name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "type", type, ELEKTRA_KEY_END);
 	}
 
 	static const std::vector<kdb::Key> makeArray (KDBType type, const char * name, const std::vector<std::string> & values)
@@ -191,10 +191,10 @@ protected:
 		for (size_t i = 0; i < values.size (); ++i)
 		{
 			ckdb::elektraWriteArrayNumber (arrayNumber, i);
-			array[i + 1] = kdb::Key ("user:" + testRoot + name + "/" + arrayNumber, KEY_VALUE, values[i].c_str (), KEY_META,
-						 "type", type, KEY_END);
+			array[i + 1] = kdb::Key ("user:" + testRoot + name + "/" + arrayNumber, ELEKTRA_KEY_VALUE, values[i].c_str (), ELEKTRA_KEY_META,
+						 "type", type, ELEKTRA_KEY_END);
 		}
-		array[0] = kdb::Key ("user:" + testRoot + name, KEY_META, "array", arrayNumber, KEY_END);
+		array[0] = kdb::Key ("user:" + testRoot + name, ELEKTRA_KEY_META, "array", arrayNumber, ELEKTRA_KEY_END);
 		return array;
 	}
 };
@@ -873,7 +873,7 @@ TEST_F (Highlevel, ArraySetters)
 TEST_F (Highlevel, DefaultValues)
 {
 	ckdb::KeySet * defaults =
-		ksNew (5, ckdb::keyNew ("/stringkey", KEY_VALUE, "A string", KEY_META, "type", KDB_TYPE_STRING, KEY_END), KS_END);
+		ksNew (5, ckdb::keyNew ("/stringkey", ELEKTRA_KEY_VALUE, "A string", ELEKTRA_KEY_META, "type", KDB_TYPE_STRING, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	createElektra (defaults);
 

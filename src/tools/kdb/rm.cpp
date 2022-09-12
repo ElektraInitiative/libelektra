@@ -43,13 +43,13 @@ int RemoveCommand::execute (Cmdline const & cl)
 
 	if (cl.withoutElektra)
 	{
-		Key systemElektra ("system:/elektra", KEY_END);
+		Key systemElektra ("system:/elektra", ELEKTRA_KEY_END);
 		savedKeys = conf.cut (systemElektra);
 	}
 
 	if (!cl.recursive)
 	{
-		Key f = conf.lookup (x, KDB_O_POP);
+		Key f = conf.lookup (x, ELEKTRA_KDB_O_POP);
 
 		if (!f)
 		{

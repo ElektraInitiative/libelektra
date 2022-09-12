@@ -30,7 +30,7 @@ using namespace kdb::tools;
  */
 void MountBaseCommand::readMountConf (Cmdline const & cl)
 {
-	Key parentKey (mountpointsPath, KEY_END);
+	Key parentKey (mountpointsPath, ELEKTRA_KEY_END);
 
 	kdb.get (mountConf, parentKey);
 
@@ -127,7 +127,7 @@ void MountBaseCommand::askForConfirmation (Cmdline const & cl)
  */
 void MountBaseCommand::doIt ()
 {
-	Key parentKey (mountpointsPath, KEY_END);
+	Key parentKey (mountpointsPath, ELEKTRA_KEY_END);
 
 	try
 	{

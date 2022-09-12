@@ -59,7 +59,7 @@ TEST (Backend, backendName)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("user:/a", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("user:/a", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	EXPECT_EQ (b.getMountpoint (), "user:/a");
 }
 
@@ -68,7 +68,7 @@ TEST (Backend, SimpleBackend)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("/", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("/", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	EXPECT_EQ (b.getMountpoint (), "/");
 	b.addPlugin (PluginSpec ("resolver"));
 	b.addPlugin (PluginSpec ("dump"));
@@ -194,7 +194,7 @@ TEST (Backend, CrazyName)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("/crazy///.//name/../a..__.b/._.///._c__d", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("/crazy///.//name/../a..__.b/._.///._c__d", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	b.addPlugin (PluginSpec ("resolver"));
 	b.addPlugin (PluginSpec ("dump"));
 
@@ -336,16 +336,16 @@ TEST (Backend, SimpleBackendWithConf)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("user:/somewhere", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("user:/somewhere", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	EXPECT_EQ (b.getMountpoint (), "user:/somewhere");
-	KeySet backendConf (5, *Key ("system:/globalConf", KEY_VALUE, "for everywhere", KEY_END),
-			    *Key ("system:/other_global_conf", KEY_VALUE, "more", KEY_END), KS_END);
+	KeySet backendConf (5, *Key ("system:/globalConf", ELEKTRA_KEY_VALUE, "for everywhere", ELEKTRA_KEY_END),
+			    *Key ("system:/other_global_conf", ELEKTRA_KEY_VALUE, "more", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	b.setBackendConfig (backendConf);
-	KeySet resConf (5, *Key ("user:/res_conf", KEY_VALUE, "do resolving", KEY_END),
-			*Key ("user:/other_res_conf", KEY_VALUE, "do resolving too", KEY_END), KS_END);
+	KeySet resConf (5, *Key ("user:/res_conf", ELEKTRA_KEY_VALUE, "do resolving", ELEKTRA_KEY_END),
+			*Key ("user:/other_res_conf", ELEKTRA_KEY_VALUE, "do resolving too", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	b.addPlugin (PluginSpec ("resolver", resConf));
-	KeySet dumpConf (5, *Key ("user:/file_format", KEY_VALUE, "1", KEY_END),
-			 *Key ("user:/other_dump_conf", KEY_VALUE, "some dump config", KEY_END), KS_END);
+	KeySet dumpConf (5, *Key ("user:/file_format", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+			 *Key ("user:/other_dump_conf", ELEKTRA_KEY_VALUE, "some dump config", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	b.addPlugin (PluginSpec ("dump", dumpConf));
 	b.useConfigFile ("abc");
 	EXPECT_TRUE (b.validated ());
@@ -511,16 +511,16 @@ TEST (Backend, SimpleBackendWithNeededConf)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("user:/somewhere", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("user:/somewhere", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	EXPECT_EQ (b.getMountpoint (), "user:/somewhere");
-	KeySet backendConf (5, *Key ("system:/globalConf", KEY_VALUE, "for everywhere", KEY_END),
-			    *Key ("system:/struct/FStab/device", KEY_VALUE, "loses, not in key", KEY_END), KS_END);
+	KeySet backendConf (5, *Key ("system:/globalConf", ELEKTRA_KEY_VALUE, "for everywhere", ELEKTRA_KEY_END),
+			    *Key ("system:/struct/FStab/device", ELEKTRA_KEY_VALUE, "loses, not in key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	b.setBackendConfig (backendConf);
-	KeySet resConf (5, *Key ("user:/res_conf", KEY_VALUE, "do resolving", KEY_END),
-			*Key ("user:/other_res_conf", KEY_VALUE, "do resolving too", KEY_END), KS_END);
+	KeySet resConf (5, *Key ("user:/res_conf", ELEKTRA_KEY_VALUE, "do resolving", ELEKTRA_KEY_END),
+			*Key ("user:/other_res_conf", ELEKTRA_KEY_VALUE, "do resolving too", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	b.addPlugin (PluginSpec ("resolver", resConf));
-	KeySet dumpConf (5, *Key ("user:/file_format", KEY_VALUE, "1", KEY_END),
-			 *Key ("user:/other_dump_conf", KEY_VALUE, "some dump config", KEY_END), KS_END);
+	KeySet dumpConf (5, *Key ("user:/file_format", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+			 *Key ("user:/other_dump_conf", ELEKTRA_KEY_VALUE, "some dump config", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	try
 	{
 		b.addPlugin (PluginSpec ("fstab", dumpConf));
@@ -718,12 +718,12 @@ TEST (Backend, SimpleBackendWithUnderscore)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("user:/somewhere", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("user:/somewhere", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	EXPECT_EQ (b.getMountpoint (), "user:/somewhere");
-	KeySet backendConf (5, *Key ("system:/global/conf", KEY_VALUE, "for backend", KEY_END), KS_END);
+	KeySet backendConf (5, *Key ("system:/global/conf", ELEKTRA_KEY_VALUE, "for backend", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	b.setBackendConfig (backendConf);
-	KeySet resConf (5, *Key ("user:/res/conf", KEY_VALUE, "do it", KEY_END), KS_END);
-	KeySet dumpConf (5, *Key ("user:/something", KEY_VALUE, "a val", KEY_END), KS_END);
+	KeySet resConf (5, *Key ("user:/res/conf", ELEKTRA_KEY_VALUE, "do it", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	KeySet dumpConf (5, *Key ("user:/something", ELEKTRA_KEY_VALUE, "a val", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	try
 	{
 		b.addPlugin (PluginSpec ("dump", resConf));
@@ -883,7 +883,7 @@ TEST (Backend, BackendWithMultipleOccupiedSlots)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("user:/somewhere", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("user:/somewhere", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	EXPECT_EQ (b.getMountpoint (), "user:/somewhere");
 	b.addPlugin (PluginSpec ("resolver"));
 	b.addPlugin (PluginSpec ("glob"));

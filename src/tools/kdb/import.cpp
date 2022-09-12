@@ -78,7 +78,7 @@ int ImportCommand::execute (Cmdline const & cl)
 	if (cl.withoutElektra)
 	{
 		KeySet baseCopy = base.dup ();
-		Key systemElektra ("system:/elektra", KEY_END);
+		Key systemElektra ("system:/elektra", ELEKTRA_KEY_END);
 		KeySet systemKeySet = baseCopy.cut (systemElektra);
 		importedKeys.append (systemKeySet);
 	}

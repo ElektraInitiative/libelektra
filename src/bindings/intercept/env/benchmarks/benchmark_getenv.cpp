@@ -149,23 +149,23 @@ __attribute__ ((noinline)) void benchmark_bootstrap_getenv ()
 __attribute__ ((noinline)) void benchmark_kslookup ()
 {
 	static Timer t ("kslookup");
-	using namespace kdb; // needed for KS_END
+	using namespace kdb; // needed for ELEKTRA_KS_END
 	kdb::KeySet ks (100,
 			/*
-			 *kdb::Key("user:/env/override/some", KEY_END),
-			 *kdb::Key("user:/env/override/a/key", KEY_END),
-			 *kdb::Key("user:/env/override/b/key", KEY_END),
-			 *kdb::Key("user:/env/override/c/key", KEY_END),
-			 *kdb::Key("user:/env/override/d/key", KEY_END),
+			 *kdb::Key("user:/env/override/some", ELEKTRA_KEY_END),
+			 *kdb::Key("user:/env/override/a/key", ELEKTRA_KEY_END),
+			 *kdb::Key("user:/env/override/b/key", ELEKTRA_KEY_END),
+			 *kdb::Key("user:/env/override/c/key", ELEKTRA_KEY_END),
+			 *kdb::Key("user:/env/override/d/key", ELEKTRA_KEY_END),
 			 */
-			KS_END);
+			ELEKTRA_KS_END);
 	for (int i = 0; i < nr_keys; ++i)
 	{
 		char x[100];
 		sprintf (x, "user:/env/override/hello%d_%d", i, i);
-		ks.append (*kdb::Key (x, KEY_END));
+		ks.append (*kdb::Key (x, ELEKTRA_KEY_END));
 	}
-	Key lookupKey ("user:/env/override/HELLO", KEY_END);
+	Key lookupKey ("user:/env/override/HELLO", ELEKTRA_KEY_END);
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{

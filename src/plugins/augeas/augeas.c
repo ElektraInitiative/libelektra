@@ -75,13 +75,13 @@ int elektraAugeasGenConf (ElektraKeyset * ks, ElektraKey * errorKey ELEKTRA_UNUS
 			if (l > 4)
 			{
 				p[l - 4] = '\0';
-				ElektraKey * k = keyNew ("system:/", KEY_END);
+				ElektraKey * k = keyNew ("system:/", ELEKTRA_KEY_END);
 				keyAddBaseName (k, p);
-				ksAppendKey (ks, keyDup (k, KEY_CP_ALL));
+				ksAppendKey (ks, keyDup (k, ELEKTRA_KEY_CP_ALL));
 
-				ElektraKey * b = keyDup (k, KEY_CP_ALL);
+				ElektraKey * b = keyDup (k, ELEKTRA_KEY_CP_ALL);
 				keyAddBaseName (b, "infos");
-				ksAppendKey (ks, keyDup (b, KEY_CP_ALL));
+				ksAppendKey (ks, keyDup (b, ELEKTRA_KEY_CP_ALL));
 				keyAddBaseName (b, "provides");
 				char * s = elektraFormat ("storage/%s", p);
 				keySetString (b, s);
@@ -89,7 +89,7 @@ int elektraAugeasGenConf (ElektraKeyset * ks, ElektraKey * errorKey ELEKTRA_UNUS
 				ksAppendKey (ks, b);
 
 				keyAddBaseName (k, "config");
-				ksAppendKey (ks, keyDup (k, KEY_CP_ALL));
+				ksAppendKey (ks, keyDup (k, ELEKTRA_KEY_CP_ALL));
 				keyAddBaseName (k, "lens");
 				p[0] = (char) toupper (p[0]);
 				p[l - 1] = 's';

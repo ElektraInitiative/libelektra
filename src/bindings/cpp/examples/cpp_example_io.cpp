@@ -14,7 +14,7 @@
 
 int main ()
 {
-	kdb::Key k ("user:/sw/MyApp", KEY_END);
+	kdb::Key k ("user:/sw/MyApp", ELEKTRA_KEY_END);
 	std::cout << "created a key: " << k << std::endl;
 
 	kdb::KeySet ks;

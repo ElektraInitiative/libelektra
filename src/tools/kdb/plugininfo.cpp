@@ -39,7 +39,7 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 	std::string name = cl.arguments[0];
 
 	KeySet conf;
-	Key parentKey (std::string ("system:/elektra/modules/") + name, KEY_END);
+	Key parentKey (std::string ("system:/elektra/modules/") + name, ELEKTRA_KEY_END);
 
 	if (!cl.load)
 	{
@@ -76,7 +76,7 @@ int PluginInfoCommand::execute (Cmdline const & cl)
 		conf.append (plugin->getInfo ());
 	}
 
-	Key root (std::string ("system:/elektra/modules/") + name + "/exports", KEY_END);
+	Key root (std::string ("system:/elektra/modules/") + name + "/exports", ELEKTRA_KEY_END);
 
 	if (!subkey.empty ())
 	{

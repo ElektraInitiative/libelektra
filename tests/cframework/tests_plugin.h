@@ -12,9 +12,9 @@
 #include <tests_internal.h>
 
 #define PLUGIN_OPEN(NAME)                                                                                                                  \
-	ElektraKeyset * modules = ksNew (0, KS_END);                                                                                       \
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);                                                                                       \
 	elektraModulesInit (modules, 0);                                                                                                   \
-	ElektraKey * errorKey = keyNew ("/", KEY_END);                                                                                     \
+	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);                                                                                     \
 	Plugin * plugin = elektraPluginOpen (NAME, modules, conf, errorKey);                                                               \
 	succeed_if (output_warnings (errorKey), "warnings in kdbOpen for plugin " NAME);                                                   \
 	succeed_if (output_error (errorKey), "error in kdbOpen for plugin " NAME);                                                         \

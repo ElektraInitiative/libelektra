@@ -23,9 +23,9 @@ int main ()
 	ThreadContext tc (c);
 	KeySet ks;
 	// some predefined values (for convenience):
-	ks.append (Key ("user:/test/location", KEY_VALUE, "48N16O", KEY_END));
-	ks.append (Key ("user:/test/48N16O/country", KEY_VALUE, "austria", KEY_END));
-	ks.append (Key ("user:/test/person/austria/greeting", KEY_VALUE, "Griaz Enk!", KEY_END));
+	ks.append (Key ("user:/test/location", ELEKTRA_KEY_VALUE, "48N16O", ELEKTRA_KEY_END));
+	ks.append (Key ("user:/test/48N16O/country", ELEKTRA_KEY_VALUE, "austria", ELEKTRA_KEY_END));
+	ks.append (Key ("user:/test/person/austria/greeting", ELEKTRA_KEY_VALUE, "Griaz Enk!", ELEKTRA_KEY_END));
 	Environment<ContextPolicyIs<ThreadContext>> env (ks, tc);
 
 	greet (env.test.person, env.country, env.location);

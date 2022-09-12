@@ -66,7 +66,7 @@ void MergeResult::resolveConflict (Key & key)
 		}
 	}
 
-	conflictSet.lookup (key, KDB_O_POP);
+	conflictSet.lookup (key, ELEKTRA_KDB_O_POP);
 	resolvedKeys++;
 }
 } // namespace merging

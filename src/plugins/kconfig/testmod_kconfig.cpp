@@ -25,10 +25,10 @@ using CppKey = kdb::Key;
 
 // BEGIN: COPY UTIL FUNCTIONS FROM testmod_yamlcpp.cpp
 #define OPEN_KCONFIG_PLUGIN()                                                                                                              \
-	CppKeySet modules{ 0, KS_END };                                                                                                    \
-	CppKeySet config{ 0, KS_END };                                                                                                     \
+	CppKeySet modules{ 0, ELEKTRA_KS_END };                                                                                                    \
+	CppKeySet config{ 0, ELEKTRA_KS_END };                                                                                                     \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	CppKey parent{ "system:/elektra/modules/kconfig", KEY_END };                                                                       \
+	CppKey parent{ "system:/elektra/modules/kconfig", ELEKTRA_KEY_END };                                                                       \
 	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), *parent);                               \
 	exit_if_fail (plugin != NULL, "Could not open kconfig plugin")
 #define CLOSE_PLUGIN()                                                                                                                     \
@@ -165,7 +165,7 @@ TEST (kconfig, read_and_write_test)
 #include "kconfig/test_valid.h"
 		};
 
-		CppKey parent{ "/kconfig/prefix", KEY_END };
+		CppKey parent{ "/kconfig/prefix", ELEKTRA_KEY_END };
 		parent.setString ("kconfig/test_validrc");
 		test_read_and_write (parent, keys);
 	}

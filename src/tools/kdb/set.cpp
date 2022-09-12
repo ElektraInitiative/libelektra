@@ -55,7 +55,7 @@ int SetCommand::execute (Cmdline const & cl)
 	if (!key)
 	{
 		toprint << "Create a new key " << name;
-		key = Key (name, KEY_END);
+		key = Key (name, ELEKTRA_KEY_END);
 		toprint << " with string \"" << value << '"' << endl;
 		key.setString (value);
 

@@ -12,8 +12,8 @@ KConfigParser::KConfigParser (FileUtility & fileUtilityParam, CppKeySet & keySet
 
 void KConfigParser::parse (CppKey const & parent)
 {
-	CppKey current_group{ parent.getName (), KEY_END };
-	CppKey current_key{ parent.getName (), KEY_END };
+	CppKey current_group{ parent.getName (), ELEKTRA_KEY_END };
+	CppKey current_key{ parent.getName (), ELEKTRA_KEY_END };
 
 	while (true)
 	{
@@ -39,7 +39,7 @@ void KConfigParser::parse (CppKey const & parent)
 
 kdb::Key KConfigParser::loadGroupNameFromFile (CppKey const & parent)
 {
-	CppKey key{ parent.getName (), KEY_END };
+	CppKey key{ parent.getName (), ELEKTRA_KEY_END };
 
 	while (fileUtility.peekNextChar () == character_open_bracket)
 	{
@@ -110,7 +110,7 @@ CppKey KConfigParser::loadKeyFromFile (CppKey const & parent)
 	std::string keyName{ fileUtility.getUntilChar (character_equals_sign, character_open_bracket) };
 
 	// If the following line introduces problems, use `parent.dup();`
-	CppKey key{ parent.getName (), KEY_END };
+	CppKey key{ parent.getName (), ELEKTRA_KEY_END };
 
 	if (fileUtility.isNextCharNewlineOrEOF ())
 	{

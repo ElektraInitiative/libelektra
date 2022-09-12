@@ -133,7 +133,7 @@ Key commonKeyName (Key key1, Key key2)
 
 	auto ns = key1.getNamespace ();
 
-	Key ret ("/", KEY_END);
+	Key ret ("/", ELEKTRA_KEY_END);
 	ret.setNamespace (ns);
 	for (auto it1 = ++key1.begin (), it2 = ++key2.begin (); it1 != key1.end () && it2 != key2.end (); ++it1, ++it2)
 	{

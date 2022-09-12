@@ -28,14 +28,14 @@ typedef Delegator<Coder> coderDelegator;
  */
 inline KeySet * contract (void)
 {
-	return ksNew (30, keyNew ("system:/elektra/modules/ccode", KEY_VALUE, "ccode plugin waits for your orders", KEY_END),
-		      keyNew ("system:/elektra/modules/ccode/exports", KEY_END),
-		      keyNew ("system:/elektra/modules/ccode/exports/open", KEY_FUNC, elektraCcodeOpen, KEY_END),
-		      keyNew ("system:/elektra/modules/ccode/exports/close", KEY_FUNC, elektraCcodeClose, KEY_END),
-		      keyNew ("system:/elektra/modules/ccode/exports/get", KEY_FUNC, elektraCcodeGet, KEY_END),
-		      keyNew ("system:/elektra/modules/ccode/exports/set", KEY_FUNC, elektraCcodeSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/ccode", ELEKTRA_KEY_VALUE, "ccode plugin waits for your orders", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/open", ELEKTRA_KEY_FUNC, elektraCcodeOpen, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/close", ELEKTRA_KEY_FUNC, elektraCcodeClose, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/get", ELEKTRA_KEY_FUNC, elektraCcodeGet, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/ccode/exports/set", ELEKTRA_KEY_FUNC, elektraCcodeSet, ELEKTRA_KEY_END),
 #include "readme_ccode.c"
-		      keyNew ("system:/elektra/modules/ccode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		      keyNew ("system:/elektra/modules/ccode/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 } // end namespace

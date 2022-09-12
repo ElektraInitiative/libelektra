@@ -160,7 +160,7 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 	processKey (mp);
 	bb.nodes++; // count mp
 
-	ks.lookup (mp, KDB_O_POP);
+	ks.lookup (mp, ELEKTRA_KDB_O_POP);
 
 	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
 	for (Key k = ks.next (); k; k = ks.next ())

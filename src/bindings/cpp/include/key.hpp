@@ -30,15 +30,15 @@ class NameReverseIterator;
 
 enum class ElektraNamespace : std::uint8_t
 {
-	NONE = KEY_NS_NONE,
-	CASCADING = KEY_NS_CASCADING,
-	META = KEY_NS_META,
-	SPEC = KEY_NS_SPEC,
-	PROC = KEY_NS_PROC,
-	DIR = KEY_NS_DIR,
-	USER = KEY_NS_USER,
-	SYSTEM = KEY_NS_SYSTEM,
-	DEFAULT = KEY_NS_DEFAULT,
+	NONE = ELEKTRA_NS_NONE,
+	CASCADING = ELEKTRA_NS_CASCADING,
+	META = ELEKTRA_NS_META,
+	SPEC = ELEKTRA_NS_SPEC,
+	PROC = ELEKTRA_NS_PROC,
+	DIR = ELEKTRA_NS_DIR,
+	USER = ELEKTRA_NS_USER,
+	SYSTEM = ELEKTRA_NS_SYSTEM,
+	DEFAULT = ELEKTRA_NS_DEFAULT,
 };
 
 static const ElektraNamespace ELEKTRA_NAMESPACES[] = {
@@ -114,7 +114,7 @@ public:
 	inline Key & operator= (ckdb::Key * k);
 	inline Key & operator= (const Key & k);
 
-	inline void copy (const Key & other, elektraCopyFlags flags = KEY_CP_ALL);
+	inline void copy (const Key & other, elektraCopyFlags flags = ELEKTRA_KEY_CP_ALL);
 	inline void clear ();
 	inline ckdb::Key * operator-> () const;
 
@@ -124,7 +124,7 @@ public:
 	inline ckdb::Key * operator* () const;
 
 	inline ckdb::Key * release ();
-	inline ckdb::Key * dup (elektraCopyFlags flags = KEY_CP_ALL) const;
+	inline ckdb::Key * dup (elektraCopyFlags flags = ELEKTRA_KEY_CP_ALL) const;
 	inline ~Key ();
 
 
@@ -550,7 +550,7 @@ inline Key::const_reverse_iterator Key::crend () const noexcept
  *
  * @see isValid(), isNull()
  */
-inline Key::Key () : key (ckdb::keyNew ("/", KEY_END))
+inline Key::Key () : key (ckdb::keyNew ("/", ELEKTRA_KEY_END))
 {
 	operator++ ();
 }
@@ -1491,7 +1491,7 @@ inline ssize_t Key::setNamespace (ElektraNamespace ns) const
  */
 inline bool Key::isCascading () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_CASCADING;
+	return ckdb::keyGetNamespace (getKey ()) == ELEKTRA_NS_CASCADING;
 }
 
 /**
@@ -1502,7 +1502,7 @@ inline bool Key::isCascading () const
  */
 inline bool Key::isSpec () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SPEC;
+	return ckdb::keyGetNamespace (getKey ()) == ELEKTRA_NS_SPEC;
 }
 
 /**
@@ -1513,7 +1513,7 @@ inline bool Key::isSpec () const
  */
 inline bool Key::isProc () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_PROC;
+	return ckdb::keyGetNamespace (getKey ()) == ELEKTRA_NS_PROC;
 }
 
 /**
@@ -1524,7 +1524,7 @@ inline bool Key::isProc () const
  */
 inline bool Key::isDir () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_DIR;
+	return ckdb::keyGetNamespace (getKey ()) == ELEKTRA_NS_DIR;
 }
 
 /**
@@ -1535,7 +1535,7 @@ inline bool Key::isDir () const
  */
 inline bool Key::isUser () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_USER;
+	return ckdb::keyGetNamespace (getKey ()) == ELEKTRA_NS_USER;
 }
 
 /**
@@ -1546,7 +1546,7 @@ inline bool Key::isUser () const
  */
 inline bool Key::isSystem () const
 {
-	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SYSTEM;
+	return ckdb::keyGetNamespace (getKey ()) == ELEKTRA_NS_SYSTEM;
 }
 
 /**
@@ -1609,7 +1609,7 @@ inline bool Key::isDirectBelow (const Key & k) const
  */
 inline bool Key::isNameLocked () const
 {
-	return ckdb::keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME;
+	return ckdb::keyIsLocked (key, ELEKTRA_KEY_LOCK_NAME) == ELEKTRA_KEY_LOCK_NAME;
 }
 
 /**
@@ -1617,7 +1617,7 @@ inline bool Key::isNameLocked () const
  */
 inline bool Key::isValueLocked () const
 {
-	return ckdb::keyIsLocked (key, KEY_LOCK_VALUE) == KEY_LOCK_VALUE;
+	return ckdb::keyIsLocked (key, ELEKTRA_KEY_LOCK_VALUE) == ELEKTRA_KEY_LOCK_VALUE;
 }
 
 /**
@@ -1625,7 +1625,7 @@ inline bool Key::isValueLocked () const
  */
 inline bool Key::isMetaLocked () const
 {
-	return ckdb::keyIsLocked (key, KEY_LOCK_META) == KEY_LOCK_META;
+	return ckdb::keyIsLocked (key, ELEKTRA_KEY_LOCK_META) == ELEKTRA_KEY_LOCK_META;
 }
 
 /**

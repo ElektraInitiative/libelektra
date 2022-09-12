@@ -16,7 +16,7 @@ int main ()
 	using namespace kdb;
 	using namespace kdb::tools;
 	MountBackendBuilder b;
-	b.setMountpoint (Key ("/", KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("/", ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 	b.addPlugin (PluginSpec ("resolver"));
 	b.addPlugin (PluginSpec ("dump"));
 	b.useConfigFile ("file.ecf");

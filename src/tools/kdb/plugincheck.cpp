@@ -44,7 +44,7 @@ int doKDBcheck (bool force)
 		ret += printProblems (x, "opening", 0);
 
 		KeySet ks;
-		Key a ("/", KEY_END);
+		Key a ("/", ELEKTRA_KEY_END);
 		try
 		{
 			kdb.get (ks, a);
@@ -56,7 +56,7 @@ int doKDBcheck (bool force)
 
 		if (force)
 		{
-			Key b ("/", KEY_END);
+			Key b ("/", ELEKTRA_KEY_END);
 			try
 			{
 				kdb.set (ks, b);
@@ -95,7 +95,7 @@ int PluginCheckCommand::execute (Cmdline const & cl)
 	try
 	{
 		KeySet ks = cl.getPluginsConfig ();
-		ks.append (Key ("system:/module", KEY_END));
+		ks.append (Key ("system:/module", ELEKTRA_KEY_END));
 		PluginPtr plugin = modules.load (name, ks);
 		plugin->check (warnings);
 	}

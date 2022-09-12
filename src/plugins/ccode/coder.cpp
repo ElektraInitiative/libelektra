@@ -237,7 +237,7 @@ Coder::Coder (CppKeySet config)
 	}
 	ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", escapeCharacter);
 
-	CppKey const root = CppKey{ "/chars", KEY_END };
+	CppKey const root = CppKey{ "/chars", ELEKTRA_KEY_END };
 	CppKeySet mappingConfig{ config.cut (root) };
 
 #ifdef HAVE_LOGGER

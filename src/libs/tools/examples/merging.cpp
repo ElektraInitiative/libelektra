@@ -28,16 +28,16 @@ int main ()
 	KeySet base;
 
 	// the root of the subtree containing our keys (i.e. our side of the merge)
-	Key oursRoot ("user:/ours", KEY_END);
+	Key oursRoot ("user:/ours", ELEKTRA_KEY_END);
 
 	// the root of the subtree containing their keys (i.e. their side of the merge)
-	Key theirsRoot ("user:/theirs", KEY_END);
+	Key theirsRoot ("user:/theirs", ELEKTRA_KEY_END);
 
 	// the root of the subtree containing the base keys (i.e. the common ancestor of the merge)
-	Key baseRoot ("user:/base", KEY_END);
+	Key baseRoot ("user:/base", ELEKTRA_KEY_END);
 
 	// the root of the subtree that will contain the merge result
-	Key resultRoot ("user:/result", KEY_END);
+	Key resultRoot ("user:/result", ELEKTRA_KEY_END);
 
 	// Step 1: retrieve clean KeySets containing only those
 	// keys that should be merged. This is a bit trickier than
@@ -56,13 +56,13 @@ int main ()
 		KDB lkdb;
 		lkdb.get (ours, oursRoot);
 		ours = ours.cut (oursRoot);
-		ours.lookup (oursRoot, KDB_O_POP);
+		ours.lookup (oursRoot, ELEKTRA_KDB_O_POP);
 		lkdb.get (theirs, theirsRoot);
 		theirs = theirs.cut (theirsRoot);
-		theirs.lookup (theirsRoot, KDB_O_POP);
+		theirs.lookup (theirsRoot, ELEKTRA_KDB_O_POP);
 		lkdb.get (base, baseRoot);
 		base = base.cut (baseRoot);
-		base.lookup (baseRoot, KDB_O_POP);
+		base.lookup (baseRoot, ELEKTRA_KDB_O_POP);
 	}
 
 

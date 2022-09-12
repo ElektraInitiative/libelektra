@@ -26,7 +26,7 @@
 
 #define RUN_TEST(ks, args, envp)                                                                                                           \
 	{                                                                                                                                  \
-		ElektraKey * ek = keyNew (SPEC_BASE_KEY, KEY_END);                                                                                \
+		ElektraKey * ek = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);                                                                                \
 		if (elektraGetOpts (ks, args, envp, ek) != 0)                                                                              \
 		{                                                                                                                          \
 			yield_error ("error found");                                                                                       \
@@ -37,7 +37,7 @@
 
 #define RUN_TEST_ERROR(ks, errorKey, args, envp)                                                                                           \
 	{                                                                                                                                  \
-		errorKey = keyNew (SPEC_BASE_KEY, KEY_END);                                                                                \
+		errorKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);                                                                                \
 		if (elektraGetOpts (ks, args, envp, errorKey) >= 0)                                                                        \
 		{                                                                                                                          \
 			yield_error ("should have failed");                                                                                \

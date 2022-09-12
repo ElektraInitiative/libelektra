@@ -354,10 +354,10 @@ kdb::KeySet convertArrayParentsToLeaves (kdb::KeySet const & parents)
 
 	for (auto parent : parents)
 	{
-		kdb::Key directory{ parent.getName (), KEY_END };
+		kdb::Key directory{ parent.getName (), ELEKTRA_KEY_END };
 		// The plugin still stores the `array` metadata in the parent and not the first child. Otherwise storage plugins pick up
 		// the wrong key as parent.
-		kdb::Key lastElement{ parent.getName (), KEY_END };
+		kdb::Key lastElement{ parent.getName (), ELEKTRA_KEY_END };
 		auto secondToLastIndex = parent.getMeta<string> ("array");
 		if (secondToLastIndex.empty ()) secondToLastIndex += "#";
 		lastElement.addBaseName (secondToLastIndex);
@@ -392,7 +392,7 @@ kdb::KeySet convertDirectoriesToLeaves (kdb::KeySet const & directories)
 
 	for (auto directory : directories)
 	{
-		kdb::Key emptyDirectory{ directory.getName (), KEY_END };
+		kdb::Key emptyDirectory{ directory.getName (), ELEKTRA_KEY_END };
 		kdb::Key leaf = directory.dup ();
 		leaf.addBaseName (DIRECTORY_POSTFIX);
 		directoryLeaves.append (leaf);
@@ -435,7 +435,7 @@ KeySetPair increaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const 
 			{
 				kdb::Key updated;
 				tie (updated, ignore) = changeArrayIndexByOne (parent, key);
-				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
+				if (updatedParents.lookup (key, ELEKTRA_KDB_O_POP)) updatedParents.append (updated);
 				newArrays.append (updated);
 			}
 			else

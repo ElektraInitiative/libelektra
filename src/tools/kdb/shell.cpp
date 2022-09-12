@@ -50,14 +50,14 @@ int ShellCommand::execute (Cmdline const &)
 		{
 			string parent;
 			is >> parent;
-			Key parentKey (parent, KEY_END);
+			Key parentKey (parent, ELEKTRA_KEY_END);
 			cout << "return value: " << kdb.get (current, parentKey) << endl;
 		}
 		else if (command == "kdbSet")
 		{
 			string parent;
 			is >> parent;
-			Key parentKey (parent, KEY_END);
+			Key parentKey (parent, ELEKTRA_KEY_END);
 			cout << "return value: " << kdb.set (current, parentKey) << endl;
 		}
 		else if (command == "keyClear")
@@ -99,7 +99,7 @@ int ShellCommand::execute (Cmdline const &)
 		{
 			string parent;
 			is >> parent;
-			Key parentKey (parent, KEY_END);
+			Key parentKey (parent, ELEKTRA_KEY_END);
 
 			current.cut (parentKey);
 		}

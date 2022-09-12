@@ -2,11 +2,11 @@
 kdb::KeySet
 {
 	10,
-	keyNew (PREFIX "grandparent", KEY_VALUE, "Grandparent", KEY_END),
-	keyNew (PREFIX "grandparent/leaf", KEY_VALUE, "Leaf", KEY_END),
-	keyNew (PREFIX "grandparent/parent", KEY_VALUE, "Parent", KEY_END),
-	keyNew (PREFIX "grandparent/parent/child", KEY_VALUE, "Child", KEY_END),
-	keyNew (PREFIX "mother", KEY_VALUE, "Mother", KEY_END),
-	keyNew (PREFIX "mother/daughter", KEY_VALUE, "Daughter", KEY_END),
-	keyNew (PREFIX "mother/son", KEY_VALUE, "Son", KEY_END), KS_END
+	keyNew (PREFIX "grandparent", ELEKTRA_KEY_VALUE, "Grandparent", ELEKTRA_KEY_END),
+	keyNew (PREFIX "grandparent/leaf", ELEKTRA_KEY_VALUE, "Leaf", ELEKTRA_KEY_END),
+	keyNew (PREFIX "grandparent/parent", ELEKTRA_KEY_VALUE, "Parent", ELEKTRA_KEY_END),
+	keyNew (PREFIX "grandparent/parent/child", ELEKTRA_KEY_VALUE, "Child", ELEKTRA_KEY_END),
+	keyNew (PREFIX "mother", ELEKTRA_KEY_VALUE, "Mother", ELEKTRA_KEY_END),
+	keyNew (PREFIX "mother/daughter", ELEKTRA_KEY_VALUE, "Daughter", ELEKTRA_KEY_END),
+	keyNew (PREFIX "mother/son", ELEKTRA_KEY_VALUE, "Son", ELEKTRA_KEY_END), ELEKTRA_KS_END
 }

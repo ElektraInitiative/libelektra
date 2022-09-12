@@ -259,7 +259,7 @@ void addKeys (Node & data, KeySet const & mappings, Key const & parent)
 		}
 
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
-		Key converted{ parent.getName (), KEY_END };
+		Key converted{ parent.getName (), ELEKTRA_KEY_END };
 		addKey (data, keyIterator, key, converted, arrayParents.empty () ? nullptr : &arrayParents.top ());
 
 #ifdef HAVE_LOGGER

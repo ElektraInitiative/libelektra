@@ -41,14 +41,14 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/xerces"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/xerces", KEY_VALUE, "xerces plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/xerces/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/xerces/exports/open", KEY_FUNC, elektraXercesOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/xerces/exports/close", KEY_FUNC, elektraXercesClose, KEY_END),
-			       keyNew ("system:/elektra/modules/xerces/exports/get", KEY_FUNC, elektraXercesGet, KEY_END),
-			       keyNew ("system:/elektra/modules/xerces/exports/set", KEY_FUNC, elektraXercesSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/xerces", ELEKTRA_KEY_VALUE, "xerces plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xerces/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xerces/exports/open", ELEKTRA_KEY_FUNC, elektraXercesOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xerces/exports/close", ELEKTRA_KEY_FUNC, elektraXercesClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xerces/exports/get", ELEKTRA_KEY_FUNC, elektraXercesGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xerces/exports/set", ELEKTRA_KEY_FUNC, elektraXercesSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/xerces/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/xerces/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

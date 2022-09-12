@@ -53,8 +53,8 @@ int PluginListCommand::execute (Cmdline const & cl)
 			int s = db.calculateStatus (db.lookupInfo (
 				PluginSpec (plugin,
 					    KeySet (5,
-						    *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
-						    KS_END)),
+						    *Key ("system:/module", ELEKTRA_KEY_VALUE, "this plugin was loaded without a config", ELEKTRA_KEY_END),
+						    ELEKTRA_KS_END)),
 				"status"));
 			statusPlugins.insert (std::make_pair (s, plugin));
 		}

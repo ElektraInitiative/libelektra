@@ -28,7 +28,7 @@ void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet
 {
 	if (cl.force)
 	{
-		tmpConf.lookup (rk, KDB_O_POP);
+		tmpConf.lookup (rk, ELEKTRA_KDB_O_POP);
 	}
 	else
 	{

@@ -96,7 +96,7 @@ void BackendBuilder::sort ()
 	size_t i = 0;
 	for (auto const & ps : toAdd)
 	{
-		Key dep ("/" + ps.getName (), KEY_END);
+		Key dep ("/" + ps.getName (), ELEKTRA_KEY_END);
 		if (ps.getName () != ps.getRefName ())
 		{
 			dep.addBaseName (ps.getRefName ());
@@ -188,10 +188,10 @@ void BackendBuilder::needMetadata (std::string addMetadata)
 		}
 
 		std::string nd;
-		Key k (md.c_str (), KEY_END);
+		Key k (md.c_str (), ELEKTRA_KEY_END);
 		for (auto && elem : k)
 		{
-			if (elem[0] == KEY_NS_META)
+			if (elem[0] == ELEKTRA_NS_META)
 			{
 				continue;
 			}
@@ -449,7 +449,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	checkConfPtr checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
 	if (checkConfFunction)
 	{
-		ckdb::Key * errorKey = ckdb::keyNew ("/", KEY_END);
+		ckdb::Key * errorKey = ckdb::keyNew ("/", ELEKTRA_KEY_END);
 
 		// merge plugin config and backend config together
 		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
@@ -465,7 +465,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		else if (checkResult == 1)
 		{
 			// separate plugin config from the backend config
-			ckdb::Key * backendParent = ckdb::keyNew ("system:/", KEY_END);
+			ckdb::Key * backendParent = ckdb::keyNew ("system:/", ELEKTRA_KEY_END);
 			ckdb::KeySet * newBackendConfig = ckdb::ksCut (pluginConfig, backendParent);
 
 			// take over the new configuration

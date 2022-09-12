@@ -48,7 +48,7 @@ KeySet parsePluginArguments (std::string const & pluginArguments, std::string co
 		// in the config string, consider the value empty
 		if (!std::getline (sstream, value, ',')) value = "";
 
-		ks.append (Key (basepath + "/" + keyName, KEY_VALUE, value.c_str (), KEY_END));
+		ks.append (Key (basepath + "/" + keyName, ELEKTRA_KEY_VALUE, value.c_str (), ELEKTRA_KEY_END));
 	}
 	return ks;
 }

@@ -20,7 +20,7 @@ int main ()
 	KeySet ks;
 	Context c;
 	// some predefined values (for convenience):
-	ks.append (Key ("user:/kate/quit", KEY_VALUE, "Ctrl+k", KEY_END));
+	ks.append (Key ("user:/kate/quit", ELEKTRA_KEY_VALUE, "Ctrl+k", ELEKTRA_KEY_END));
 	KeySet ks2;
 	kdb.get (ks2, "/myapp");
 	// overwrite them if something is available in config files:

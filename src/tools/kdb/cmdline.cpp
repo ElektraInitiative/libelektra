@@ -514,7 +514,7 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 		throw invalid_argument ("<empty string> is not a valid keyname. Please enter a valid one.");
 	}
 
-	kdb::Key root (name, KEY_END);
+	kdb::Key root (name, ELEKTRA_KEY_END);
 
 	if (name[0] == '+')
 	{
@@ -598,7 +598,7 @@ kdb::Key Cmdline::resolveBookmark (std::string name) const
 			{
 				std::cout << "using bookmark " << bookmark << " which is: " << realKey << "-" << restKey << std::endl;
 			}
-			return kdb::Key (name, KEY_END);
+			return kdb::Key (name, ELEKTRA_KEY_END);
 		}
 	}
 	return kdb::Key ();

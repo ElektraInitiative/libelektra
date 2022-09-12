@@ -94,7 +94,7 @@ void ConfigNode::setName (const QString & name)
 	}
 
 	if (!m_key)
-		m_key = Key (m_path.toStdString (), KEY_END);
+		m_key = Key (m_path.toStdString (), ELEKTRA_KEY_END);
 	else
 		m_key = m_key.dup ();
 
@@ -114,7 +114,7 @@ void ConfigNode::setName (const QString & name)
 void ConfigNode::setValue (const QVariant & value)
 {
 	if (!m_key)
-		m_key = Key (m_path.toStdString (), KEY_END);
+		m_key = Key (m_path.toStdString (), ELEKTRA_KEY_END);
 	else
 		m_key = m_key.dup ();
 
@@ -137,7 +137,7 @@ void ConfigNode::setValue (const QVariant & value)
 void ConfigNode::setMeta (const QString & name, const QVariant & value)
 {
 	if (!m_key)
-		m_key = Key (m_path.toStdString (), KEY_END);
+		m_key = Key (m_path.toStdString (), ELEKTRA_KEY_END);
 	else
 		m_key = m_key.dup ();
 

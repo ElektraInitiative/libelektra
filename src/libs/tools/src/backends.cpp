@@ -28,7 +28,7 @@ namespace tools
 Backends::BackendInfoVector Backends::getBackendInfo (KeySet mountConf)
 {
 	std::vector<BackendInfo> ret;
-	Key rootKey (Backends::mountpointsPath, KEY_END);
+	Key rootKey (Backends::mountpointsPath, ELEKTRA_KEY_END);
 	Key cur;
 
 	mountConf.rewind ();
@@ -72,7 +72,7 @@ BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountCo
 
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
 
-	Key kmp (Backends::getBasePath (mountPath), KEY_END);
+	Key kmp (Backends::getBasePath (mountPath), ELEKTRA_KEY_END);
 
 	// search for proper mountname:
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
@@ -89,7 +89,7 @@ BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountCo
 	// it will never happen if something desired is present.
 	std::string soldMountpoint = mountPath;
 	std::replace (soldMountpoint.begin (), soldMountpoint.end (), '_', '/');
-	Key koldMountpoint ("user:/" + soldMountpoint, KEY_END);
+	Key koldMountpoint ("user:/" + soldMountpoint, ELEKTRA_KEY_END);
 	std::string omp = koldMountpoint.getName ();
 	std::string oldMountpoint (omp.begin () + 4, omp.end ());
 	if (soldMountpoint.at (0) != '/') oldMountpoint.erase (0, 1); // fix non-cascading
@@ -120,7 +120,7 @@ bool Backends::umount (std::string const & mountPath, KeySet & mountConf)
 	BackendInfo bi = Backends::findBackend (mountPath, mountConf);
 	if (!bi.mountpoint.empty ())
 	{
-		Key x (Backends::mountpointsPath, KEY_END);
+		Key x (Backends::mountpointsPath, ELEKTRA_KEY_END);
 		x.addBaseName (bi.mountpoint);
 		mountConf.cut (x);
 		return true;
@@ -139,8 +139,8 @@ bool Backends::umount (std::string const & mountPath, KeySet & mountConf)
  */
 std::string Backends::getBasePath (std::string mp)
 {
-	Key k (Backends::mountpointsPath, KEY_END);
-	Key kmp (mp, KEY_END);		// canonify name
+	Key k (Backends::mountpointsPath, ELEKTRA_KEY_END);
+	Key kmp (mp, ELEKTRA_KEY_END);		// canonify name
 	k.addBaseName (kmp.getName ()); // escape name
 	return k.getName ();
 }

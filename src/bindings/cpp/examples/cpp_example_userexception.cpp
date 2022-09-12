@@ -156,7 +156,7 @@ public:
 
 int main ()
 {
-	kdb::Key k ("abc", KEY_END);
+	kdb::Key k ("abc", ELEKTRA_KEY_END);
 	kdb::KDB kdb;
 	kdb::KeySet ks;
 	kdb.get (ks, k);

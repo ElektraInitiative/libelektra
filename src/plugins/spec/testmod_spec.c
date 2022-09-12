@@ -16,7 +16,7 @@
 	{                                                                                                                                  \
 		ElektraKeyset * conf = ksDup (_conf);                                                                                             \
 		PLUGIN_OPEN ("spec");                                                                                                      \
-		ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_END);                                                                            \
+		ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_END);                                                                            \
 		bool success = 1;
 
 #define TEST_END                                                                                                                           \

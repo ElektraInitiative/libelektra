@@ -34,35 +34,35 @@ protected:
 		using namespace kdb;
 
 		KeySet spec = KeySet (ckdb::ksNew (
-			10, ckdb::keyNew (specRoot.c_str (), KEY_META, "command", "", KEY_END),
-			ckdb::keyNew ((specRoot + "/printversion").c_str (), KEY_META, "description",
-				      "print version information and exit (ignoring all other options/commands/parameters)", KEY_META,
-				      "opt", "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "version", KEY_END),
-			ckdb::keyNew ((specRoot + "/getter").c_str (), KEY_META, "description", "get a key's value", KEY_META, "command",
-				      "get", KEY_END),
-			ckdb::keyNew ((specRoot + "/getter/verbose").c_str (), KEY_META, "description",
-				      "print additional information about where the value comes from", KEY_META, "opt", "v", KEY_META,
-				      "opt/long", "verbose", KEY_META, "opt/arg", "none", KEY_END),
-			ckdb::keyNew ((specRoot + "/getter/keyname").c_str (), KEY_META, "description", "name of the key to read", KEY_META,
-				      "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			ckdb::keyNew ((specRoot + "/setter").c_str (), KEY_META, "description", "set a key's value", KEY_META, "command",
-				      "set", KEY_END),
-			ckdb::keyNew ((specRoot + "/setter/verbose").c_str (), KEY_META, "description",
-				      "print additional information about where the value will be stored", KEY_META, "opt", "v", KEY_META,
-				      "opt/long", "verbose", KEY_META, "opt/arg", "none", KEY_END),
-			ckdb::keyNew ((specRoot + "/setter/keyname").c_str (), KEY_META, "description", "name of the key to write",
-				      KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			ckdb::keyNew ((specRoot + "/setter/value").c_str (), KEY_META, "description", "value to be written", KEY_META,
-				      "args", "indexed", KEY_META, "args/index", "1", KEY_END),
-			ckdb::keyNew ((specRoot + "/dynamic/#").c_str (), KEY_META, "description",
-				      "dynamically call a user-supplied command", KEY_META, "args", "remaining", KEY_END),
-			KS_END));
+			10, ckdb::keyNew (specRoot.c_str (), ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/printversion").c_str (), ELEKTRA_KEY_META, "description",
+				      "print version information and exit (ignoring all other options/commands/parameters)", ELEKTRA_KEY_META,
+				      "opt", "v", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/getter").c_str (), ELEKTRA_KEY_META, "description", "get a key's value", ELEKTRA_KEY_META, "command",
+				      "get", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/getter/verbose").c_str (), ELEKTRA_KEY_META, "description",
+				      "print additional information about where the value comes from", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META,
+				      "opt/long", "verbose", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/getter/keyname").c_str (), ELEKTRA_KEY_META, "description", "name of the key to read", ELEKTRA_KEY_META,
+				      "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/setter").c_str (), ELEKTRA_KEY_META, "description", "set a key's value", ELEKTRA_KEY_META, "command",
+				      "set", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/setter/verbose").c_str (), ELEKTRA_KEY_META, "description",
+				      "print additional information about where the value will be stored", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META,
+				      "opt/long", "verbose", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/setter/keyname").c_str (), ELEKTRA_KEY_META, "description", "name of the key to write",
+				      ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/setter/value").c_str (), ELEKTRA_KEY_META, "description", "value to be written", ELEKTRA_KEY_META,
+				      "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_END),
+			ckdb::keyNew ((specRoot + "/dynamic/#").c_str (), ELEKTRA_KEY_META, "description",
+				      "dynamically call a user-supplied command", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END),
+			ELEKTRA_KS_END));
 
 		KDB kdb;
 
 		KeySet ks;
 		kdb.get (ks, specRoot);
-		ASSERT_EQ (ks.cut (Key (specRoot, KEY_END)).size (), 0) << "Couldn't setup spec, keys exist!";
+		ASSERT_EQ (ks.cut (Key (specRoot, ELEKTRA_KEY_END)).size (), 0) << "Couldn't setup spec, keys exist!";
 
 		ks.append (spec);
 		kdb.set (ks, specRoot);
@@ -84,11 +84,11 @@ TEST_F (Contracts, GOpts)
 	using namespace kdb;
 
 	KeySet contract;
-	KeySet config = KeySet (ckdb::ksNew (1, ckdb::keyNew ("user:/offset", KEY_VALUE, "1", KEY_END), KS_END));
+	KeySet config = KeySet (ckdb::ksNew (1, ckdb::keyNew ("user:/offset", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END), ELEKTRA_KS_END));
 
 	std::vector<const char *> customArgv = { "dummy", "test", "get", "-v", "user:/", NULL };
 	std::vector<const char *> customEnvp = { NULL };
-	goptsContract (contract, customArgv.size (), customArgv.data (), customEnvp.data (), Key (testRoot, KEY_END), config);
+	goptsContract (contract, customArgv.size (), customArgv.data (), customEnvp.data (), Key (testRoot, ELEKTRA_KEY_END), config);
 
 	KDB kdb (contract);
 
@@ -112,11 +112,11 @@ TEST_F (Contracts, GOptsStringVector)
 	using namespace kdb;
 
 	KeySet contract;
-	KeySet config = KeySet (ckdb::ksNew (1, ckdb::keyNew ("user:/offset", KEY_VALUE, "1", KEY_END), KS_END));
+	KeySet config = KeySet (ckdb::ksNew (1, ckdb::keyNew ("user:/offset", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END), ELEKTRA_KS_END));
 
 	std::vector<std::string> customArgv = { "dummy", "test", "get", "-v", "user:/" };
 	std::vector<std::string> customEnvp = {};
-	goptsContract (contract, customArgv, customEnvp, Key (testRoot, KEY_END), config);
+	goptsContract (contract, customArgv, customEnvp, Key (testRoot, ELEKTRA_KEY_END), config);
 
 	KDB kdb (contract);
 

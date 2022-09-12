@@ -439,8 +439,8 @@ void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 {
 	if (!ks.size ()) return;
 
-	Key oldParent ("user:/", KEY_END);
-	Key newParent (name + "/config", KEY_END);
+	Key oldParent ("user:/", ELEKTRA_KEY_END);
+	Key newParent (name + "/config", ELEKTRA_KEY_END);
 
 	ret.append (newParent);
 
@@ -492,19 +492,19 @@ void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
 				std::string refName = current->value->refname ();
 				std::string pluginName = current->value->name ();
 
-				Key refKey (baseKey.getName () + "/plugins/" + refName, KEY_END);
+				Key refKey (baseKey.getName () + "/plugins/" + refName, ELEKTRA_KEY_END);
 
 				if (!ret.lookup (refKey.getName ()))
 				{
 					ret.append (refKey);
-					ret.append (Key (refKey.getName () + "/name", KEY_VALUE, pluginName.c_str (), KEY_END));
+					ret.append (Key (refKey.getName () + "/name", ELEKTRA_KEY_VALUE, pluginName.c_str (), ELEKTRA_KEY_END));
 					serializeConfig (baseKey.getName () + "/plugins/" + refName, current->value->getConfig (), ret);
 				}
 
 				if (listPosition)
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName + "/#0", KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName + "/#0", ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					while (ret.lookup (positionKey.getName ()))
 					{
 						ckdb::elektraArrayIncName (*positionKey);
@@ -514,8 +514,8 @@ void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
 				}
 				else
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName, KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName, ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					if (ret.lookup (positionKey.getName ()))
 					{
 						throw TooManyPlugins ("Position set/" + roleName + " can only contain a single plugin.");
@@ -568,19 +568,19 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 				std::string refName = current->value->refname ();
 				std::string pluginName = current->value->name ();
 
-				Key refKey (baseKey.getName () + "/plugins/" + refName, KEY_END);
+				Key refKey (baseKey.getName () + "/plugins/" + refName, ELEKTRA_KEY_END);
 
 				if (!ret.lookup (refKey.getName ()))
 				{
 					ret.append (refKey);
-					ret.append (Key (refKey.getName () + "/name", KEY_VALUE, pluginName.c_str (), KEY_END));
+					ret.append (Key (refKey.getName () + "/name", ELEKTRA_KEY_VALUE, pluginName.c_str (), ELEKTRA_KEY_END));
 					serializeConfig (baseKey.getName () + "/plugins/" + refName, current->value->getConfig (), ret);
 				}
 
 				if (listPosition)
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/get/" + roleName + "/#0", KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/get/" + roleName + "/#0", ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					while (ret.lookup (positionKey.getName ()))
 					{
 						ckdb::elektraArrayIncName (*positionKey);
@@ -590,8 +590,8 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 				}
 				else
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/get/" + roleName, KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/get/" + roleName, ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					if (ret.lookup (positionKey.getName ()))
 					{
 						throw TooManyPlugins ("Position get/" + roleName + " can only contain a single plugin.");
@@ -642,19 +642,19 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 				std::string refName = current->value->refname ();
 				std::string pluginName = current->value->name ();
 
-				Key refKey (baseKey.getName () + "/plugins/" + refName, KEY_END);
+				Key refKey (baseKey.getName () + "/plugins/" + refName, ELEKTRA_KEY_END);
 
 				if (!ret.lookup (refKey.getName ()))
 				{
 					ret.append (refKey);
-					ret.append (Key (refKey.getName () + "/name", KEY_VALUE, pluginName.c_str (), KEY_END));
+					ret.append (Key (refKey.getName () + "/name", ELEKTRA_KEY_VALUE, pluginName.c_str (), ELEKTRA_KEY_END));
 					serializeConfig (baseKey.getName () + "/plugins/" + refName, current->value->getConfig (), ret);
 				}
 
 				if (listPosition)
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName + "/#0", KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName + "/#0", ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					while (ret.lookup (positionKey.getName ()))
 					{
 						ckdb::elektraArrayIncName (*positionKey);
@@ -664,8 +664,8 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 				}
 				else
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName, KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName, ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					if (ret.lookup (positionKey.getName ()))
 					{
 						throw TooManyPlugins ("Position set/" + roleName + " can only contain a single plugin.");
@@ -714,19 +714,19 @@ void CommitPlugins::serialise (Key & baseKey, KeySet & ret)
 				std::string refName = current->value->refname ();
 				std::string pluginName = current->value->name ();
 
-				Key refKey (baseKey.getName () + "/plugins/" + refName, KEY_END);
+				Key refKey (baseKey.getName () + "/plugins/" + refName, ELEKTRA_KEY_END);
 
 				if (!ret.lookup (refKey.getName ()))
 				{
 					ret.append (refKey);
-					ret.append (Key (refKey.getName () + "/name", KEY_VALUE, pluginName.c_str (), KEY_END));
+					ret.append (Key (refKey.getName () + "/name", ELEKTRA_KEY_VALUE, pluginName.c_str (), ELEKTRA_KEY_END));
 					serializeConfig (baseKey.getName () + "/plugins/" + refName, current->value->getConfig (), ret);
 				}
 
 				if (listPosition)
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName + "/#0", KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName + "/#0", ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					while (ret.lookup (positionKey.getName ()))
 					{
 						ckdb::elektraArrayIncName (*positionKey);
@@ -736,8 +736,8 @@ void CommitPlugins::serialise (Key & baseKey, KeySet & ret)
 				}
 				else
 				{
-					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName, KEY_VALUE,
-							 refName.c_str (), KEY_END);
+					Key positionKey (baseKey.getName () + "/definition/positions/set/" + roleName, ELEKTRA_KEY_VALUE,
+							 refName.c_str (), ELEKTRA_KEY_END);
 					if (ret.lookup (positionKey.getName ()))
 					{
 						throw TooManyPlugins ("Position set/" + roleName + " can only contain a single plugin.");

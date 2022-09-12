@@ -218,7 +218,7 @@ inline void KDB::close (Key & errorKey) throw ()
  */
 inline int KDB::get (KeySet & returned, std::string const & keyname)
 {
-	Key parentKey (keyname.c_str (), KEY_END);
+	Key parentKey (keyname.c_str (), ELEKTRA_KEY_END);
 	return get (returned, parentKey);
 }
 
@@ -260,7 +260,7 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
  */
 inline int KDB::set (KeySet & returned, std::string const & keyname)
 {
-	Key parentKey (keyname.c_str (), KEY_END);
+	Key parentKey (keyname.c_str (), ELEKTRA_KEY_END);
 	return set (returned, parentKey);
 }
 

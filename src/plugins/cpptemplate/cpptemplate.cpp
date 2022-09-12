@@ -32,17 +32,17 @@ namespace
 CppKeySet getContract ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system:/elektra/modules/cpptemplate", KEY_VALUE, "cpptemplate plugin waits for your orders", KEY_END),
-			  keyNew ("system:/elektra/modules/cpptemplate/exports", KEY_END),
-			  keyNew ("system:/elektra/modules/cpptemplate/exports/open", KEY_FUNC, elektraCppTemplateOpen, KEY_END),
-			  keyNew ("system:/elektra/modules/cpptemplate/exports/close", KEY_FUNC, elektraCppTemplateClose, KEY_END),
-			  keyNew ("system:/elektra/modules/cpptemplate/exports/get", KEY_FUNC, elektraCppTemplateGet, KEY_END),
-			  keyNew ("system:/elektra/modules/cpptemplate/exports/set", KEY_FUNC, elektraCppTemplateSet, KEY_END),
-			  keyNew ("system:/elektra/modules/cpptemplate/exports/error", KEY_FUNC, elektraCppTemplateError, KEY_END),
-			  keyNew ("system:/elektra/modules/cpptemplate/exports/checkconf", KEY_FUNC, elektraCppTemplateCheckConf, KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate", ELEKTRA_KEY_VALUE, "cpptemplate plugin waits for your orders", ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate/exports", ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate/exports/open", ELEKTRA_KEY_FUNC, elektraCppTemplateOpen, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate/exports/close", ELEKTRA_KEY_FUNC, elektraCppTemplateClose, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate/exports/get", ELEKTRA_KEY_FUNC, elektraCppTemplateGet, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate/exports/set", ELEKTRA_KEY_FUNC, elektraCppTemplateSet, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate/exports/error", ELEKTRA_KEY_FUNC, elektraCppTemplateError, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/cpptemplate/exports/checkconf", ELEKTRA_KEY_FUNC, elektraCppTemplateCheckConf, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system:/elektra/modules/cpptemplate/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			  KS_END };
+			  keyNew ("system:/elektra/modules/cpptemplate/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			  ELEKTRA_KS_END };
 }
 
 } // end namespace

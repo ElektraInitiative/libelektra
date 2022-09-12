@@ -108,7 +108,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	ckdb::KeySet * c_ours = ours.getKeySet ();
 	ckdb::KeySet * c_theirs = theirs.getKeySet ();
 	ckdb::KeySet * c_base = base.getKeySet ();
-	ckdb::Key * informationKey = keyNew ("/", KEY_END);
+	ckdb::Key * informationKey = keyNew ("/", ELEKTRA_KEY_END);
 	ckdb::KeySet * c_merge_result = elektraMerge (c_ours, oursRoot.getKey (), c_theirs, theirsRoot.getKey (), c_base,
 						      baseRoot.getKey (), resultRoot.getKey (), strategy, informationKey);
 	int numberOfConflicts = getConflicts (informationKey);

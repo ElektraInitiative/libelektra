@@ -212,7 +212,7 @@ private:
 		{
 			for (auto & i : m_updates)
 			{
-				i.second.toUpdate.append (Key (c.newKey, KEY_END));
+				i.second.toUpdate.append (Key (c.newKey, ELEKTRA_KEY_END));
 			}
 		}
 	}

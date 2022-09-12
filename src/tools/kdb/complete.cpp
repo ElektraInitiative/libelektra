@@ -58,7 +58,7 @@ void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 
 	if (argument.empty ())
 	{ // No argument, show all completions by analyzing everything including namespaces, so adjust the offset for that
-		const Key root = Key ("/", KEY_END);
+		const Key root = Key ("/", ELEKTRA_KEY_END);
 		printResults (root, cl.minDepth, cl.maxDepth, cl, analyze (getKeys (root, false, cl), cl),
 			      bind (filterDepth, cl.minDepth, cl.maxDepth, _1), printResult);
 	}
@@ -73,7 +73,7 @@ void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 		else
 		{ // Bookmark not resolvable, so try a bookmark completion
 			// since for legacy reasons its probably /sw/kdb, we use /sw as a root
-			const Key root = Key ("/sw", KEY_END);
+			const Key root = Key ("/sw", ELEKTRA_KEY_END);
 			printResults (root, 0, cl.maxDepth, cl, analyze (getKeys (root, true, cl), cl),
 				      bind (filterBookmarks, argument, _1), printBookmarkResult);
 		}
@@ -84,7 +84,7 @@ void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 		bool valid;
 		try
 		{
-			parsedArgument = Key (argument, KEY_END);
+			parsedArgument = Key (argument, ELEKTRA_KEY_END);
 			valid = true;
 		}
 		catch (std::exception &)
@@ -94,7 +94,7 @@ void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 
 		if ((!valid || !shallShowNextLevel (argument)) && parsedArgument.getBaseName ().empty ())
 		{ // is it a namespace completion?
-			const Key root = Key ("/", KEY_END);
+			const Key root = Key ("/", ELEKTRA_KEY_END);
 			const auto filter = [&] (const pair<Key, pair<int, int>> & c) {
 				return filterDepth (cl.minDepth, cl.maxDepth, c) && filterName (argument, c);
 			};
@@ -286,7 +286,7 @@ bool CompleteCommand::shallShowNextLevel (string const & argument)
 void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline const & cl)
 {
 	KDB kdb;
-	Key mountpointPath ("system:/elektra/mountpoints", KEY_END);
+	Key mountpointPath ("system:/elektra/mountpoints", ELEKTRA_KEY_END);
 	KeySet mountpoints;
 
 	kdb.get (mountpoints, mountpointPath);
@@ -297,7 +297,7 @@ void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline con
 		if (mountpoint.isDirectBelow (mountpointPath))
 		{
 			const string actualName = mountpoints.lookup (mountpoint.getName () + "/mountpoint").getString ();
-			Key mountpointKey (actualName, KEY_END);
+			Key mountpointKey (actualName, ELEKTRA_KEY_END);
 			// If the mountpoint already has some contents, its expanded with a namespace, so leave it out then
 			if (mountpointKey.isBelow (root) && !KeySet (ks).cut (mountpointKey).size ())
 			{
@@ -324,13 +324,13 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 	// Check for new namespaces, issue a warning in case
 	if (cl.debug || cl.verbose)
 	{
-		for (elektraNamespace ens = KEY_NS_FIRST; ens <= KEY_NS_LAST; ++ens)
+		for (elektraNamespace ens = ELEKTRA_NS_FIRST; ens <= ELEKTRA_NS_LAST; ++ens)
 		{
 			// since ens are numbers, there is no way to get a string representation if not found in that case
 			bool found = false;
 			for (const string & ns : namespaces)
 			{
-				found = found || ckdb::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
+				found = found || ckdb::keyGetNamespace (Key (ns, ELEKTRA_KEY_END).getKey ()) == ens;
 			}
 			if (!found)
 			{
@@ -341,7 +341,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 
 	for (const string & ns : namespaces)
 	{
-		const Key nsKey (ns, KEY_END);
+		const Key nsKey (ns, ELEKTRA_KEY_END);
 		hierarchy[nsKey] = pair<int, int> (1, 0);
 	}
 }

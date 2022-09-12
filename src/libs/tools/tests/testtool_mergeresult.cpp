@@ -21,10 +21,10 @@ using namespace kdb::tools::merging;
 TEST (MergeResult, ResolveConflictDeletesConflictMeta)
 {
 	MergeResult result;
-	Key conflictKey = Key ("user:/test/config/key1", KEY_VALUE, "testvalue", KEY_META, "conflict/operation/our", "delete", KEY_META,
-			       "conflict/operation/their", "modify", KEY_META, "conflict/test", "testvalue", KEY_END);
+	Key conflictKey = Key ("user:/test/config/key1", ELEKTRA_KEY_VALUE, "testvalue", ELEKTRA_KEY_META, "conflict/operation/our", "delete", ELEKTRA_KEY_META,
+			       "conflict/operation/their", "modify", ELEKTRA_KEY_META, "conflict/test", "testvalue", ELEKTRA_KEY_END);
 
-	Key test = Key ("/", KEY_END);
+	Key test = Key ("/", ELEKTRA_KEY_END);
 
 	result.resolveConflict (conflictKey);
 
@@ -36,8 +36,8 @@ TEST (MergeResult, ResolveConflictDeletesConflictMeta)
 TEST (MergeResult, ResolveConflictIgnoresOtherMeta)
 {
 	MergeResult result;
-	Key conflictKey = Key ("user:/test/config/key1", KEY_VALUE, "testvalue", KEY_META, "order", "10", KEY_META, "noconflict/data",
-			       "testvalue", KEY_END);
+	Key conflictKey = Key ("user:/test/config/key1", ELEKTRA_KEY_VALUE, "testvalue", ELEKTRA_KEY_META, "order", "10", ELEKTRA_KEY_META, "noconflict/data",
+			       "testvalue", ELEKTRA_KEY_END);
 
 	result.resolveConflict (conflictKey);
 
@@ -47,7 +47,7 @@ TEST (MergeResult, ResolveConflictIgnoresOtherMeta)
 
 TEST (MergeResult, ResolveConflictRemovesKeyFromConflicts)
 {
-	Key conflictKey = Key ("user:/test/config/key1", KEY_VALUE, "testvalue", KEY_END);
+	Key conflictKey = Key ("user:/test/config/key1", ELEKTRA_KEY_VALUE, "testvalue", ELEKTRA_KEY_END);
 	KeySet conflicts;
 	conflicts.append (conflictKey);
 	KeySet merged;
@@ -60,7 +60,7 @@ TEST (MergeResult, ResolveConflictRemovesKeyFromConflicts)
 
 TEST (MergeResult, HasConflictsWorks)
 {
-	Key conflictKey = Key ("user:/test/config/key1", KEY_END);
+	Key conflictKey = Key ("user:/test/config/key1", ELEKTRA_KEY_END);
 	KeySet conflicts;
 	conflicts.append (conflictKey);
 	KeySet merged;
@@ -73,19 +73,19 @@ TEST (MergeResult, HasConflictsWorks)
 
 TEST (MergeResult, IsConflictWorks)
 {
-	Key conflictKey = Key ("user:/test/config/key1", KEY_END);
+	Key conflictKey = Key ("user:/test/config/key1", ELEKTRA_KEY_END);
 	KeySet conflicts;
 	conflicts.append (conflictKey);
 	KeySet merged;
 	MergeResult result (conflicts, merged);
 	EXPECT_TRUE (result.isConflict (conflictKey));
-	EXPECT_FALSE (result.isConflict (Key ("user:/test/config/key2", KEY_END)));
+	EXPECT_FALSE (result.isConflict (Key ("user:/test/config/key2", ELEKTRA_KEY_END)));
 }
 
 TEST (MergeResult, CountsResolvedKeysCorrectly)
 {
-	Key conflictKey1 = Key ("user:/test/config/key1", KEY_END);
-	Key conflictKey2 = Key ("user:/test/config/key2", KEY_END);
+	Key conflictKey1 = Key ("user:/test/config/key1", ELEKTRA_KEY_END);
+	Key conflictKey2 = Key ("user:/test/config/key2", ELEKTRA_KEY_END);
 	KeySet conflicts;
 	conflicts.append (conflictKey1);
 	conflicts.append (conflictKey2);
@@ -99,10 +99,10 @@ TEST (MergeResult, CountsResolvedKeysCorrectly)
 
 TEST (MergeResult, CountsEqualKeysCorrectly)
 {
-	Key mergedKey1 = Key ("user:/test/config/key1", KEY_END);
-	Key mergedKey2 = Key ("user:/test/config/key2", KEY_END);
-	Key mergedKey3 = Key ("user:/test/config/key3", KEY_END);
-	Key conflictKey1 = Key ("user:/test/config/key4", KEY_END);
+	Key mergedKey1 = Key ("user:/test/config/key1", ELEKTRA_KEY_END);
+	Key mergedKey2 = Key ("user:/test/config/key2", ELEKTRA_KEY_END);
+	Key mergedKey3 = Key ("user:/test/config/key3", ELEKTRA_KEY_END);
+	Key conflictKey1 = Key ("user:/test/config/key4", ELEKTRA_KEY_END);
 	KeySet conflicts;
 	conflicts.append (conflictKey1);
 	KeySet merged;

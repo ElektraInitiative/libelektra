@@ -173,7 +173,7 @@ $cpp_util.generateForwardDeclContext(support, child)
 @if len($support.override(info)) > 0
 // override
 	kdb::Key search ("${support.override(info)[0]}",
-		KEY_END);
+		ELEKTRA_KEY_END);
 	kdb::Key found = ks.lookup(search, 0);
 	if (found)
 	{
@@ -195,7 +195,7 @@ $cpp_util.generateForwardDeclContext(support, child)
 	found = ks.lookup(search, 0);
 @else
 kdb::Key search ("$key",
-		KEY_END);
+		ELEKTRA_KEY_END);
 	kdb::Key found = ks.lookup(search, 0);
 @end if
 	if (found)
@@ -231,26 +231,26 @@ kdb::Key search ("$key",
 				"/",
 @end if
 		@if $hierarchy.info.get('default') != None:
-				KEY_META, "default", $support.quote($hierarchy.info.get('default')),
+				ELEKTRA_KEY_META, "default", $support.quote($hierarchy.info.get('default')),
 @end if
 @if $hierarchy.info.get('unit'):
-				KEY_META, "unit", $support.quote($hierarchy.info.get('unit')),
+				ELEKTRA_KEY_META, "unit", $support.quote($hierarchy.info.get('unit')),
 @end if
 @if $hierarchy.info.get('explanation'):
-				KEY_META, "explanation", $support.quote($hierarchy.info.get('explanation')),
+				ELEKTRA_KEY_META, "explanation", $support.quote($hierarchy.info.get('explanation')),
 @end if
 @if $hierarchy.info.get('rationale'):
-				KEY_META, "rationale", $support.quote($hierarchy.info.get('rationale')),
+				ELEKTRA_KEY_META, "rationale", $support.quote($hierarchy.info.get('rationale')),
 @end if
 @set $fa = $support.fallback(hierarchy.info)
 @for $f in $fa
-				KEY_META, "fallback/#$fa.index($f)", "$f",
+				ELEKTRA_KEY_META, "fallback/#$fa.index($f)", "$f",
 @end for
 @set $ov = $support.override(hierarchy.info)
 @for $o in $ov
-				KEY_META, "override/#$ov.index($o)", "$o",
+				ELEKTRA_KEY_META, "override/#$ov.index($o)", "$o",
 @end for
-				KEY_END)
+				ELEKTRA_KEY_END)
 @end def
 
 

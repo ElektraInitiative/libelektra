@@ -47,7 +47,7 @@ TEST_F (OneSideStrategyTest, BaseWinsCorrectly)
 	cout << merged << endl;
 	EXPECT_EQ (4, merged.size ());
 
-	compareKeys (Key ("user:/parentm/config/key1", KEY_VALUE, "valueb", KEY_END), merged.lookup (mk1));
+	compareKeys (Key ("user:/parentm/config/key1", ELEKTRA_KEY_VALUE, "valueb", ELEKTRA_KEY_END), merged.lookup (mk1));
 }
 
 TEST_F (OneSideStrategyTest, BaseWinnerRespectsBinaryData)
@@ -82,7 +82,7 @@ TEST_F (OneSideStrategyTest, OursWinsCorrectly)
 	cout << merged << endl;
 	EXPECT_EQ (4, merged.size ());
 
-	compareKeys (Key ("user:/parentm/config/key1", KEY_VALUE, "valueo", KEY_END), merged.lookup (mk1));
+	compareKeys (Key ("user:/parentm/config/key1", ELEKTRA_KEY_VALUE, "valueo", ELEKTRA_KEY_END), merged.lookup (mk1));
 }
 
 TEST_F (OneSideStrategyTest, OursWinnerRespectsBinaryData)
@@ -117,7 +117,7 @@ TEST_F (OneSideStrategyTest, TheirsWinsCorrectly)
 	cout << merged << endl;
 	EXPECT_EQ (4, merged.size ());
 
-	compareKeys (Key ("user:/parentm/config/key1", KEY_VALUE, "valuet", KEY_END), merged.lookup (mk1));
+	compareKeys (Key ("user:/parentm/config/key1", ELEKTRA_KEY_VALUE, "valuet", ELEKTRA_KEY_END), merged.lookup (mk1));
 }
 
 TEST_F (OneSideStrategyTest, TheirsWinnerRespectsBinaryData)

@@ -262,7 +262,7 @@ class DefaultGetPolicy
 public:
 	static Key get (KeySet & ks, Key const & spec)
 	{
-		return ks.lookup (spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE);
+		return ks.lookup (spec, ckdb::ELEKTRA_KDB_O_SPEC | ckdb::ELEKTRA_KDB_O_CREATE);
 	}
 };
 
@@ -280,7 +280,7 @@ public:
 	static Key setWithNamespace (KeySet & ks, Key const & spec, std::string const & ns)
 	{
 		std::string const & name = spec.getName ();
-		kdb::Key k (ns + "/" + name.substr (name.find ('/')), KEY_END);
+		kdb::Key k (ns + "/" + name.substr (name.find ('/')), ELEKTRA_KEY_END);
 		ks.append (k);
 
 		return k;
@@ -746,7 +746,7 @@ private:
 
 	virtual kdb::Key getDepKey () const override
 	{
-		kdb::Key dep ("/" + layerId (), KEY_END);
+		kdb::Key dep ("/" + layerId (), ELEKTRA_KEY_END);
 		// rename to /layer/order
 		const Key meta = m_spec.getMeta<const Key> ("layer/order");
 		if (meta)

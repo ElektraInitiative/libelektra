@@ -67,14 +67,14 @@ TEST_F (MergingKDBTest, HandlesUnconflictingKeySets)
 	KDB first;
 	MergingKDB mergingKDB;
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	first.get (firstReturned, parent);
-	firstReturned.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END));
 	first.set (firstReturned, parent);
 
 	mergingKDB.get (secondReturned, parent);
-	secondReturned.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
 	mergingKDB.synchronize (secondReturned, parent, merger);
 }
 
@@ -82,16 +82,16 @@ TEST_F (MergingKDBTest, ThrowsIfNoConflictStrategyRegistered)
 {
 	KDB first;
 	MergingKDB mergingKDB;
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	first.get (firstReturned, parent);
 	mergingKDB.get (secondReturned, parent);
 	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
-	firstReturned.append (Key ("system:" + testRoot + "key", KEY_VALUE, "value", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END));
 	first.set (firstReturned, parent);
 
-	secondReturned.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
 	EXPECT_THROW (mergingKDB.synchronize (secondReturned, parent, merger), MergingKDBException);
 }
 
@@ -99,7 +99,7 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 {
 	KDB first;
 	MergingKDB mergingKDB;
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	AutoMergeConfiguration configuration;
 	configuration.configureMerger (merger);
@@ -108,11 +108,11 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 	mergingKDB.get (secondReturned, parent);
 	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
-	Key key1 ("system:" + testRoot + "key1", KEY_VALUE, "value", KEY_END);
+	Key key1 ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END);
 	firstReturned.append (key1);
 	first.set (firstReturned, parent);
 
-	Key key2 ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END);
+	Key key2 ("system:" + testRoot + "key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END);
 	secondReturned.append (key2);
 	mergingKDB.synchronize (secondReturned, parent, merger);
 
@@ -128,10 +128,10 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 
 TEST_F (MergingKDBTest, DISABLED_RemoveKey)
 {
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	{
-		KeySet ks (3, *Key ("system:" + testRoot + "key", KEY_VALUE, "value", KEY_END), KS_END);
+		KeySet ks (3, *Key ("system:" + testRoot + "key", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		EXPECT_EQ (1, ks.size ());
 		KDB keyAdder;
 		KeySet discard;
@@ -146,7 +146,7 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey)
 		KDB first;
 		first.get (firstReturned, parent);
 		EXPECT_EQ (1, firstReturned.size ());
-		firstReturned.lookup ("system:" + testRoot + "key", KDB_O_POP);
+		firstReturned.lookup ("system:" + testRoot + "key", ELEKTRA_KDB_O_POP);
 		EXPECT_EQ (0, firstReturned.size ());
 		EXPECT_EQ (1, first.set (firstReturned, parent));
 	}
@@ -157,11 +157,11 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey)
 
 TEST_F (MergingKDBTest, DISABLED_RemoveKey2)
 {
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	{
-		KeySet ks (3, *Key ("system:" + testRoot + "key1", KEY_VALUE, "value", KEY_END),
-			   *Key ("system:" + testRoot + "key2", KEY_VALUE, "value", KEY_END), KS_END);
+		KeySet ks (3, *Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+			   *Key ("system:" + testRoot + "key2", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		EXPECT_EQ (1, ks.size ());
 		KDB keyAdder;
 		KeySet discard;
@@ -176,7 +176,7 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey2)
 		KDB first;
 		first.get (firstReturned, parent);
 		EXPECT_EQ (2, firstReturned.size ());
-		firstReturned.lookup ("system:" + testRoot + "key2", KDB_O_POP);
+		firstReturned.lookup ("system:" + testRoot + "key2", ELEKTRA_KDB_O_POP);
 		EXPECT_EQ (1, firstReturned.size ());
 		EXPECT_EQ (1, first.set (firstReturned, parent));
 	}

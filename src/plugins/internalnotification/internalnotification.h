@@ -28,8 +28,8 @@ void elektraInternalnotificationDoUpdate (ElektraKey * changedKey, ElektraNotifi
 #define INTERNALNOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraInternalnotificationRegister##TYPE_NAME
 
 #define INTERNALNOTIFICATION_EXPORT_FUNCTION(TYPE_NAME)                                                                                    \
-	keyNew ("system:/elektra/modules/internalnotification/exports/register" #TYPE_NAME, KEY_FUNC,                                      \
-		INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME), KEY_END)
+	keyNew ("system:/elektra/modules/internalnotification/exports/register" #TYPE_NAME, ELEKTRA_KEY_FUNC,                              \
+		INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME), ELEKTRA_KEY_END)
 
 /**
  * Structure containing conversion context

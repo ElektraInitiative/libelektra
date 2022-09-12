@@ -42,7 +42,7 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool
 		}
 	}
 
-	ckdb::KeySet * metacopies = ksNew (0, KS_END);
+	ckdb::KeySet * metacopies = ksNew (0, ELEKTRA_KS_END);
 	for (elektraCursor cursor = 0; cursor < ksGetSize (ks); ++cursor)
 	{
 		ckdb::Key * cur = ksAtCursor (ks, cursor);
@@ -93,7 +93,7 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool
 			std::stringstream ss;
 			ss << "/" << meta; // use the address of pointer as name
 
-			ckdb::Key * search = keyNew (ss.str ().c_str (), KEY_END);
+			ckdb::Key * search = keyNew (ss.str ().c_str (), ELEKTRA_KEY_END);
 			ckdb::Key * ret = ksLookup (metacopies, search, 0);
 
 			if (!ret)
@@ -184,7 +184,7 @@ static int decodeLine (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * 
 			name = name.substr (0, slashIndex) + ":" + name.substr (slashIndex);
 		}
 
-		cur = ckdb::keyNew (name.c_str (), KEY_END);
+		cur = ckdb::keyNew (name.c_str (), ELEKTRA_KEY_END);
 
 		if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
 		is.read (&valuebuffer[0], valuesize);
@@ -337,7 +337,7 @@ int unserialiseVersion2 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet 
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				cur = keyNew ((rootName + name).c_str (), KEY_VALUE, value.c_str (), KEY_END);
+				cur = keyNew ((rootName + name).c_str (), ELEKTRA_KEY_VALUE, value.c_str (), ELEKTRA_KEY_END);
 			}
 			else if (type == "binary")
 			{
@@ -355,12 +355,12 @@ int unserialiseVersion2 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet 
 
 				if (valueSize > 0)
 				{
-					cur = keyNew ((rootName + name).c_str (), KEY_BINARY, KEY_SIZE, valueSize, KEY_VALUE, value.data (),
-						      KEY_END);
+					cur = keyNew ((rootName + name).c_str (), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, valueSize, ELEKTRA_KEY_VALUE, value.data (),
+						      ELEKTRA_KEY_END);
 				}
 				else
 				{
-					cur = keyNew ((rootName + name).c_str (), KEY_BINARY, KEY_SIZE, valueSize, KEY_END);
+					cur = keyNew ((rootName + name).c_str (), ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, valueSize, ELEKTRA_KEY_END);
 				}
 			}
 			else
@@ -508,19 +508,19 @@ extern "C" {
 
 int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
-	Key * root = ckdb::keyNew ("system:/elektra/modules/dump", KEY_END);
+	Key * root = ckdb::keyNew ("system:/elektra/modules/dump", ELEKTRA_KEY_END);
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
-		KeySet * n = ksNew (50, keyNew ("system:/elektra/modules/dump", KEY_VALUE, "dump plugin waits for your orders", KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports", KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/get", KEY_FUNC, elektraDumpGet, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/set", KEY_FUNC, elektraDumpSet, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/serialise", KEY_FUNC, dump::serialise, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/exports/unserialise", KEY_FUNC, dump::unserialise, KEY_END),
-				    keyNew ("system:/elektra/modules/dump/config/needs/fcrypt/textmode", KEY_VALUE, "0", KEY_END),
+		KeySet * n = ksNew (50, keyNew ("system:/elektra/modules/dump", ELEKTRA_KEY_VALUE, "dump plugin waits for your orders", ELEKTRA_KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports", ELEKTRA_KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/get", ELEKTRA_KEY_FUNC, elektraDumpGet, ELEKTRA_KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/set", ELEKTRA_KEY_FUNC, elektraDumpSet, ELEKTRA_KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/serialise", ELEKTRA_KEY_FUNC, dump::serialise, ELEKTRA_KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/unserialise", ELEKTRA_KEY_FUNC, dump::unserialise, ELEKTRA_KEY_END),
+				    keyNew ("system:/elektra/modules/dump/config/needs/fcrypt/textmode", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
 #include "readme_dump.c"
-				    keyNew ("system:/elektra/modules/dump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+				    keyNew ("system:/elektra/modules/dump/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, n);
 		ksDel (n);
 		return 1;

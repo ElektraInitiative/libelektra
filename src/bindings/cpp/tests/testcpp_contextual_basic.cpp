@@ -214,7 +214,7 @@ TYPED_TEST (test_contextual_basic, integer)
 	TypeParam c = this->context;
 	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (ks, c,
-						  Key ("/%language%/%country%/%dialect%/test", KEY_META, "default", s_value, KEY_END));
+						  Key ("/%language%/%country%/%dialect%/test", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
 	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
@@ -325,7 +325,7 @@ TYPED_TEST (test_contextual_basic, mixedWithActivate)
 	TypeParam c = this->context;
 	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (ks, c,
-						  Key ("/%language%/%country%/%dialect%/test", KEY_META, "default", s_value, KEY_END));
+						  Key ("/%language%/%country%/%dialect%/test", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
 	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
@@ -365,7 +365,7 @@ TYPED_TEST (test_contextual_basic, nestedWithActivate)
 	TypeParam c = this->context;
 	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (ks, c,
-						  Key ("/%language%/%country%/%dialect%/test", KEY_META, "default", s_value, KEY_END));
+						  Key ("/%language%/%country%/%dialect%/test", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
 	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
@@ -409,7 +409,7 @@ TYPED_TEST (test_contextual_basic, nestedWithActivateConflicting)
 	TypeParam c = this->context;
 	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (ks, c,
-						  Key ("/%language%/%country%/%dialect%/test", KEY_META, "default", s_value, KEY_END));
+						  Key ("/%language%/%country%/%dialect%/test", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
 	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
@@ -460,7 +460,7 @@ TYPED_TEST (test_contextual_basic, counting)
 	c.template with<CountingLayer> () ([&] { EXPECT_EQ (c["counting"], "0"); });
 	// is it a specification error to have counting
 	// two times?
-	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%counting%/%counting%", KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%counting%/%counting%", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 
 	EXPECT_EQ ((*l) (), "0");
 	EXPECT_EQ ((*l) (), "1");
@@ -494,11 +494,11 @@ TYPED_TEST (test_contextual_basic, groups)
 	TypeParam c = this->context;
 	Value<int, ContextPolicyIs<TypeParam>> i (
 		ks, c,
-		Key ("/%application%/%version profile thread module%/%manufacturer type family model%/serial_number", KEY_META, "default",
-		     s_value, KEY_END));
+		Key ("/%application%/%version profile thread module%/%manufacturer type family model%/serial_number", ELEKTRA_KEY_META, "default",
+		     s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i.getName (), "default:/%/%/%/serial_number");
 	c.template activate<MainApplicationLayer> ();
-	String s (ks, c, Key ("/%x%", KEY_META, "default", "anonymous", KEY_END));
+	String s (ks, c, Key ("/%x%", ELEKTRA_KEY_META, "default", "anonymous", ELEKTRA_KEY_END));
 	c.template activate<ProfileLayer> (s);
 	EXPECT_EQ (i.getName (), "default:/main/%/%/serial_number");
 	c.activate ("version", "1");
@@ -553,7 +553,7 @@ TYPED_TEST (test_contextual_basic, wrapped)
 
 	KeySet ks;
 	TypeParam c = this->context;
-	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%id%/key", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i.getName (), "default:/%/key");
 	c.activate (myId ());
 	EXPECT_EQ (i.getName (), "default:/my/key");
@@ -566,9 +566,9 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 
 	KeySet ks;
 	TypeParam c = this->context;
-	Value<std::string, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", KEY_META, "default", "my", KEY_END));
+	Value<std::string, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", ELEKTRA_KEY_META, "default", "my", ELEKTRA_KEY_END));
 
-	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 
 	EXPECT_EQ (x.getName (), "default:/%/key");
 	EXPECT_TRUE (ks.lookup ("/%/key"));
@@ -576,7 +576,7 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 	EXPECT_EQ (x.getName (), "default:/my/key");
 	EXPECT_TRUE (ks.lookup ("/my/key"));
 
-	ks.append (Key ("default:/other/key", KEY_VALUE, "88", KEY_END));
+	ks.append (Key ("default:/other/key", ELEKTRA_KEY_VALUE, "88", ELEKTRA_KEY_END));
 	i = "other";
 	c.activate (i);
 	EXPECT_EQ (x.getName (), "default:/other/key");
@@ -584,7 +584,7 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 	EXPECT_EQ (x, 88);
 	EXPECT_EQ (ks.lookup ("default:/other/key").getString (), "88");
 
-	ks.append (Key ("default:/other/key", KEY_VALUE, "100", KEY_END));
+	ks.append (Key ("default:/other/key", ELEKTRA_KEY_VALUE, "100", ELEKTRA_KEY_END));
 	EXPECT_EQ (ks.lookup ("default:/other/key").getString (), "100");
 	EXPECT_EQ (x, 88) << "updated from KeySet?";
 }
@@ -596,9 +596,9 @@ TYPED_TEST (test_contextual_basic, cvWrappedInt)
 
 	KeySet ks;
 	TypeParam c = this->context;
-	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", KEY_META, "default", "88", KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", ELEKTRA_KEY_META, "default", "88", ELEKTRA_KEY_END));
 
-	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 
 	EXPECT_EQ (x.getName (), "default:/%/key");
 	c.activate (i);
@@ -612,7 +612,7 @@ TEST (test_contextual_basic, integer_copy)
 	KeySet ks;
 	Context c;
 	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
-	Integer i (ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_META, "default", s_value, KEY_END));
+	Integer i (ks, c, Key ("/%language%/%country%/%dialect%/test", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i, i_value);
 	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
@@ -739,16 +739,16 @@ TEST (test_contextual_basic, evaluate)
 	KeySet ks;
 	Integer i (ks, c,
 		   Key ("/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
-			KEY_META, "default", s_value, KEY_END));
+			ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	Integer j (ks, c,
-		   Key ("/%application version profile thread module manufacturer type family model%/serial_number", KEY_META, "default",
-			s_value, KEY_END));
+		   Key ("/%application version profile thread module manufacturer type family model%/serial_number", ELEKTRA_KEY_META, "default",
+			s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (i.getName (), "default:/%/%/%/%/%/%/%/%/%/serial_number");
 	EXPECT_EQ (j.getName (), "default:/%/serial_number");
 	c.activate<MainApplicationLayer> ();
 	EXPECT_EQ (i.getName (), "default:/main/%/%/%/%/%/%/%/%/serial_number");
 	EXPECT_EQ (j.getName (), "default:/%main/serial_number");
-	String s (ks, c, Key ("/%x%", KEY_META, "default", "anonymous", KEY_END));
+	String s (ks, c, Key ("/%x%", ELEKTRA_KEY_META, "default", "anonymous", ELEKTRA_KEY_END));
 	c.activate<ProfileLayer> (s);
 	EXPECT_EQ (i.getName (), "default:/main/%/anonymous/%/%/%/%/%/%/serial_number");
 	EXPECT_EQ (j.getName (), "default:/%main/serial_number");
@@ -865,7 +865,7 @@ TEST (test_contextual_basic, threads)
 
 	KeySet ks;
 	Context c;
-	kdb::Integer n (ks, c, Key ("/%thread%/%printer%/test", KEY_META, "default", s_value, KEY_END));
+	kdb::Integer n (ks, c, Key ("/%thread%/%printer%/test", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 
 
 	n.context ().activate<MainApplicationLayer> ();
@@ -905,7 +905,7 @@ TEST (test_contextual_basic, nocontext)
 	using namespace kdb;
 	KeySet ks;
 	NoContext c;
-	kdb::Value<int> n (ks, c, Key ("/test", KEY_META, "default", s_value, KEY_END));
+	kdb::Value<int> n (ks, c, Key ("/test", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (n, i_value);
 
 	n = 18;
@@ -917,8 +917,8 @@ TEST (test_contextual_basic, operators)
 	using namespace kdb;
 	KeySet ks;
 	NoContext c;
-	kdb::Value<int> n (ks, c, Key ("/test/n", KEY_META, "default", s_value, KEY_END));
-	kdb::Value<int> m (ks, c, Key ("/test/m", KEY_META, "default", s_value, KEY_END));
+	kdb::Value<int> n (ks, c, Key ("/test/n", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
+	kdb::Value<int> m (ks, c, Key ("/test/m", ELEKTRA_KEY_META, "default", s_value, ELEKTRA_KEY_END));
 	EXPECT_EQ (n, i_value);
 	EXPECT_EQ (m, i_value);
 

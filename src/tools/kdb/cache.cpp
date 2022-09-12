@@ -28,14 +28,14 @@ int CacheCommand::execute (Cmdline const & cl)
 	if (cl.arguments.size () != 1) throw invalid_argument ("1 argument required");
 
 	KeySet conf;
-	Key parentKey ("system:/elektra/cache", KEY_END);
+	Key parentKey ("system:/elektra/cache", ELEKTRA_KEY_END);
 
 	KDB kdb;
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
 	string cmd = cl.arguments[0];
-	Key isEnabled ("system:/elektra/cache/enabled", KEY_END);
+	Key isEnabled ("system:/elektra/cache/enabled", ELEKTRA_KEY_END);
 	if (cmd == "enable")
 	{
 		// always use the cache
@@ -53,7 +53,7 @@ int CacheCommand::execute (Cmdline const & cl)
 	else if (cmd == "default")
 	{
 		// reset to default settings, use cache if available
-		conf.lookup (isEnabled, KDB_O_POP);
+		conf.lookup (isEnabled, ELEKTRA_KDB_O_POP);
 		kdb.set (conf, parentKey);
 	}
 	else if (cmd == "clear")

@@ -13,8 +13,8 @@ TEST (kdb, get_set)
 	// cout << "testing kdbSet() and kdbGet()" << endl;
 
 	{
-		KeySet ks_set (5, *Key ("user:/tests/key3", KEY_END), *Key ("user:/tests/key3/1", KEY_END),
-			       *Key ("user:/tests/key3/2", KEY_END), *Key ("user:/tests/key3/3", KEY_VALUE, "value", KEY_END), KS_END);
+		KeySet ks_set (5, *Key ("user:/tests/key3", ELEKTRA_KEY_END), *Key ("user:/tests/key3/1", ELEKTRA_KEY_END),
+			       *Key ("user:/tests/key3/2", ELEKTRA_KEY_END), *Key ("user:/tests/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		KeySet ks;
 		KDB kdb;
 		kdb.get (ks, "user:/tests/key3");
@@ -37,7 +37,7 @@ TEST (kdb, get_set)
 		KeySet ks;
 		KDB kdb;
 		kdb.get (ks, "user:/tests/key3");
-		ks.cut (Key ("user:/tests/key3", KEY_END));
+		ks.cut (Key ("user:/tests/key3", ELEKTRA_KEY_END));
 		kdb.set (ks, "user:/tests/key3");
 	}
 

@@ -25,10 +25,10 @@ using ckdb::keyNew;
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
-	kdb::KeySet modules{ 0, KS_END };                                                                                                  \
-	kdb::KeySet config{ 0, KS_END };                                                                                                   \
+	kdb::KeySet modules{ 0, ELEKTRA_KS_END };                                                                                                  \
+	kdb::KeySet config{ 0, ELEKTRA_KS_END };                                                                                                   \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	kdb::Key parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                       \
+	kdb::Key parent{ parentName, ELEKTRA_KEY_VALUE, filepath, ELEKTRA_KEY_END };                                                                       \
 	Plugin * plugin = elektraPluginOpen ("yamlcpp", modules.getKeySet (), config.getKeySet (), *parent);                               \
 	exit_if_fail (plugin != NULL, "Could not open yamlcpp plugin")
 

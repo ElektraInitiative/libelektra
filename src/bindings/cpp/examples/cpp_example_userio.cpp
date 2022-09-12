@@ -65,7 +65,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 	{
 		// TODO: use C++ binding version of keyMeta
 		kdb::KeySet meta (ckdb::ksDup (ckdb::keyMeta (error.getKey ())));
-		kdb::Key parent ("meta:/warnings", KEY_END);
+		kdb::Key parent ("meta:/warnings", ELEKTRA_KEY_END);
 		auto warnings = meta.cut (parent);
 
 		if (warnings.size () == 0)
@@ -120,7 +120,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 
 int main ()
 {
-	kdb::Key k ("user:/sw/MyApp", KEY_END);
+	kdb::Key k ("user:/sw/MyApp", ELEKTRA_KEY_END);
 	std::cout << k << std::endl;
 
 	kdb::KeySet ks;

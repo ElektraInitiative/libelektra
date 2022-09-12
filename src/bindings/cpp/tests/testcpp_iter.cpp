@@ -15,8 +15,8 @@
 
 TEST (test_iter, iterate)
 {
-	KeySet ks2 (5, *Key ("user:/key2/1", KEY_END), *Key ("user:/key2/2", KEY_END), *Key ("user:/key2/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks2 (5, *Key ("user:/key2/1", ELEKTRA_KEY_END), *Key ("user:/key2/2", ELEKTRA_KEY_END), *Key ("user:/key2/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	ASSERT_EQ ((*ks2.begin ()).getName (), "user:/key2/1") << "name wrong";
 	ASSERT_EQ (ks2.begin ()->getName (), "user:/key2/1") << "name wrong";
@@ -74,8 +74,8 @@ TEST (test_iter, iterate)
 TEST (test_iter, const_iterate)
 {
 	// std::cout << "testing const iterate" << std::endl;
-	const KeySet ks2 (5, *Key ("user:/key2/1", KEY_END), *Key ("user:/key2/2", KEY_END),
-			  *Key ("user:/key2/3", KEY_VALUE, "value", KEY_END), KS_END);
+	const KeySet ks2 (5, *Key ("user:/key2/1", ELEKTRA_KEY_END), *Key ("user:/key2/2", ELEKTRA_KEY_END),
+			  *Key ("user:/key2/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ASSERT_EQ ((*ks2.begin ()).getName (), "user:/key2/1") << "name wrong";
 	ASSERT_EQ (ks2.begin ()->getName (), "user:/key2/1") << "name wrong";
@@ -133,8 +133,8 @@ TEST (test_iter, const_iterate)
 TEST (test_iter, iterator)
 {
 	// std::cout << "test iterator" << std::endl;
-	KeySet ks4 (5, *Key ("user:/key4/1", KEY_END), *Key ("user:/key4/2", KEY_END), *Key ("user:/key4/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks4 (5, *Key ("user:/key4/1", ELEKTRA_KEY_END), *Key ("user:/key4/2", ELEKTRA_KEY_END), *Key ("user:/key4/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	KeySet::iterator it = ks4.begin ();
 	ASSERT_EQ (it->getName (), "user:/key4/1") << "name wrong";
@@ -181,8 +181,8 @@ TEST (test_iter, iterator)
 TEST (test_iter, const_iterator)
 {
 	// std::cout << "test const iterator" << std::endl;
-	const KeySet ks4 (5, *Key ("user:/key4/1", KEY_END), *Key ("user:/key4/2", KEY_END),
-			  *Key ("user:/key4/3", KEY_VALUE, "value", KEY_END), KS_END);
+	const KeySet ks4 (5, *Key ("user:/key4/1", ELEKTRA_KEY_END), *Key ("user:/key4/2", ELEKTRA_KEY_END),
+			  *Key ("user:/key4/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	KeySet::iterator it = ks4.begin ();
 	ASSERT_EQ (it->getName (), "user:/key4/1") << "name wrong";

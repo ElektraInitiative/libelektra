@@ -82,14 +82,14 @@ int GenCommand::execute (Cmdline const & cl)
 	 * For token calculation, only keys from the spec namespace are relevant.
 	 * Thus, the parentKeyForTokenCalculation must be in spec namespace.
 	 */
-	Key parentKeyForTokenCalculation (parentKeyName, KEY_END);
+	Key parentKeyForTokenCalculation (parentKeyName, ELEKTRA_KEY_END);
 
 	KeySet ks;
 
 	// When no inputFile was specified, load specification keys from the KDB.
 	if (cl.inputFile.empty ())
 	{
-		Key getKey (parentKeyName, KEY_END);
+		Key getKey (parentKeyName, ELEKTRA_KEY_END);
 
 		KDB kdb;
 		kdb.get (ks, getKey);
@@ -125,7 +125,7 @@ int GenCommand::execute (Cmdline const & cl)
 			throw invalid_argument ("plugin '" + pluginName + "' given to -F/--input-file could not be loaded");
 		}
 
-		Key getKey (parentKeyName, KEY_VALUE, file.c_str (), KEY_END);
+		Key getKey (parentKeyName, ELEKTRA_KEY_VALUE, file.c_str (), ELEKTRA_KEY_END);
 		if (plugin->get (ks, getKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			printWarnings (cerr, getKey, cl.verbose, cl.debug);
@@ -135,7 +135,7 @@ int GenCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	auto inputKs = ks.cut (Key (parentKeyForTokenCalculation.getName (), KEY_END));
+	auto inputKs = ks.cut (Key (parentKeyForTokenCalculation.getName (), ELEKTRA_KEY_END));
 
 	for (const auto & part : tmpl->getParts ())
 	{

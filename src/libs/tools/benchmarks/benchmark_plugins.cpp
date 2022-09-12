@@ -47,7 +47,7 @@ __attribute__ ((noinline)) void benchmark_backend ()
 	using namespace kdb::tools;
 	static Timer t (std::to_string (PLUGINS) + " mountpoint(s)");
 
-	Key mp ("system:/iterate/" + std::to_string (PLUGINS), KEY_END);
+	Key mp ("system:/iterate/" + std::to_string (PLUGINS), ELEKTRA_KEY_END);
 	std::string cf = "/tmp/file" + std::to_string (PLUGINS) + ".ecf";
 	unlink (cf.c_str ());
 
@@ -57,7 +57,7 @@ __attribute__ ((noinline)) void benchmark_backend ()
 		kdb.get (mountConfig, "system:/elektra/mountpoints");
 
 		Backend b;
-		b.setMountpoint (mp, KeySet (0, KS_END));
+		b.setMountpoint (mp, KeySet (0, ELEKTRA_KS_END));
 		b.addPlugin (PluginSpec ("resolver"));
 		b.addPlugin (PluginSpec ("dump"));
 		b.useConfigFile (cf);
@@ -76,19 +76,19 @@ __attribute__ ((noinline)) void benchmark_backend ()
 		{
 			// clang-format off
 			ks.append (Key ("system:/iterate/" + std::to_string (i%10) + "/" + std::to_string (i/10),
-					KEY_VALUE, "value",
-					KEY_META, "iterate", "value",
-					KEY_META, "iterate0", "value",
-					KEY_META, "iterate1", "value",
-					KEY_META, "iterate2", "value",
-					KEY_META, "iterate3", "value",
-					KEY_META, "iterate4", "value",
-					KEY_META, "iterate5", "value",
-					KEY_META, "iterate6", "value",
-					KEY_META, "iterate7", "value",
-					KEY_META, "iterate8", "value",
-					KEY_META, "iterate9", "value",
-					KEY_END));
+					ELEKTRA_KEY_VALUE, "value",
+					ELEKTRA_KEY_META, "iterate", "value",
+					ELEKTRA_KEY_META, "iterate0", "value",
+					ELEKTRA_KEY_META, "iterate1", "value",
+					ELEKTRA_KEY_META, "iterate2", "value",
+					ELEKTRA_KEY_META, "iterate3", "value",
+					ELEKTRA_KEY_META, "iterate4", "value",
+					ELEKTRA_KEY_META, "iterate5", "value",
+					ELEKTRA_KEY_META, "iterate6", "value",
+					ELEKTRA_KEY_META, "iterate7", "value",
+					ELEKTRA_KEY_META, "iterate8", "value",
+					ELEKTRA_KEY_META, "iterate9", "value",
+					ELEKTRA_KEY_END));
 			// clang-format on
 		}
 		kdb.set (ks, mp);

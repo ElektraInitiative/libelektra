@@ -27,39 +27,39 @@ TEST (ks, new)
 {
 	// would fail to compile with: error: call to ‘kdb::KeySet::KeySet’ declared with attribute error: wrong usage of API
 	//    or error: call to deleted constructor of 'kdb::KeySet'
-	// KeySet(Key("user:/", KEY_END), KS_END);
+	// KeySet(Key("user:/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	KeySet ks1;
 
-	KeySet ks2 (5, ckdb::keyNew ("user:/key2", KEY_END), KS_END);
+	KeySet ks2 (5, ckdb::keyNew ("user:/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 	// ks3.toStream(stdout, 0);
 
-	Key k1 ("user:/key4/1", KEY_END);
-	Key k2 ("user:/key4/2", KEY_END);
-	Key k3 ("user:/key4/3", KEY_VALUE, "value", KEY_END);
+	Key k1 ("user:/key4/1", ELEKTRA_KEY_END);
+	Key k2 ("user:/key4/2", ELEKTRA_KEY_END);
+	Key k3 ("user:/key4/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END);
 	KeySet ks4 (5,
 		    *k1, // k1 will lose its key and pass it to keyset
-		    *k2, *k3, KS_END);
+		    *k2, *k3, ELEKTRA_KS_END);
 	// ks4.toStream(stdout, 0);
 
-	Key k4 ("user:/key5/1", KEY_END);
-	Key k5 ("user:/key5/2", KEY_END);
-	Key k6 ("user:/key5/3", KEY_VALUE, "value", KEY_END);
-	KeySet ks5 (5, k4.dup (), k5.dup (), k6.dup (), KS_END);
+	Key k4 ("user:/key5/1", ELEKTRA_KEY_END);
+	Key k5 ("user:/key5/2", ELEKTRA_KEY_END);
+	Key k6 ("user:/key5/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END);
+	KeySet ks5 (5, k4.dup (), k5.dup (), k6.dup (), ELEKTRA_KS_END);
 	// ks5.toStream(stdout, 0);
 	// k4, k5, k6 can still be used
 
-	KeySet ks6 = fun (5, k4.dup (), k5.dup (), k6.dup (), KS_END);
+	KeySet ks6 = fun (5, k4.dup (), k5.dup (), k6.dup (), ELEKTRA_KS_END);
 }
 
 
 TEST (ks, dup)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 	succeed_if (ks3.lookup ("user:/key3/1"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/2"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3"), "could not find key");
@@ -79,8 +79,8 @@ TEST (ks, dup)
 
 TEST (ks, copy)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	KeySet ks4 (ks3);
 	succeed_if (ks3.size () == 3, "size not correct");
@@ -101,8 +101,8 @@ TEST (ks, copy)
 
 TEST (ks, iterate)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	ks3.rewind ();
 
@@ -181,8 +181,8 @@ TEST (ks, iterate)
 
 TEST (ks, cursor)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 	elektraCursor cursorTest = ks3.getCursor ();
 
 	ks3.rewind ();
@@ -200,8 +200,8 @@ TEST (ks, cursor)
 
 TEST (ks, pop)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	ks3.rewind ();
 
@@ -215,8 +215,8 @@ TEST (ks, pop)
 	Key k0 = ks3.pop ();
 	succeed_if (!k0, "Out of Range, no more key");
 
-	KeySet ks4 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks4 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	ks4.rewind ();
 	for (int i = ks4.size () - 1; i > 0; i--)
@@ -231,8 +231,8 @@ TEST (ks, pop)
 
 TEST (ks, lookup)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	Key k1 = ks3.lookup ("user:/key3/1");
 	succeed_if (k1, "did not find key");
@@ -255,18 +255,18 @@ TEST (ks, append)
 {
 	KeySet ks1;
 
-	KeySet ks2 (5, ckdb::keyNew ("user:/key2", KEY_END), KS_END);
+	KeySet ks2 (5, ckdb::keyNew ("user:/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ks1.append (ks2);
 
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 	ks2.append (ks3);
 	ks1.append (ks3);
 	ks3.append (ks2);
 
-	Key k1 ("user:/key4/1", KEY_END);
-	Key k2 ("user:/key4/2", KEY_END);
-	Key k3 ("user:/key4/3", KEY_VALUE, "value", KEY_END);
+	Key k1 ("user:/key4/1", ELEKTRA_KEY_END);
+	Key k2 ("user:/key4/2", ELEKTRA_KEY_END);
+	Key k3 ("user:/key4/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END);
 	ks1.append (k1);
 	ks1.append (k2);
 	ks1.append (k3);
@@ -277,14 +277,14 @@ TEST (ks, append)
 	ks3.append (k2);
 	ks3.append (k3);
 
-	KeySet ks4 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks4 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	KeySet ks5;
 	std::vector<Key> v (3);
-	ks5.append (v[1] = Key ("user:/s/2", KEY_END));
-	ks5.append (v[0] = Key ("user:/s/1", KEY_END));
-	ks5.append (v[2] = Key ("user:/s/3", KEY_END));
+	ks5.append (v[1] = Key ("user:/s/2", ELEKTRA_KEY_END));
+	ks5.append (v[0] = Key ("user:/s/1", ELEKTRA_KEY_END));
+	ks5.append (v[2] = Key ("user:/s/3", ELEKTRA_KEY_END));
 
 	ks5.rewind ();
 	for (ssize_t i = 0; i < ks5.size (); ++i)
@@ -300,11 +300,11 @@ TEST (ks, append)
 TEST (ks, permutations)
 {
 	vector<Key> solution;
-	solution.push_back (Key ("user:/s/1", KEY_END));
-	solution.push_back (Key ("user:/s/2", KEY_END));
-	solution.push_back (Key ("user:/s/3", KEY_END));
-	solution.push_back (Key ("user:/s/3/s", KEY_END));
-	solution.push_back (Key ("user:/s/3-3", KEY_END));
+	solution.push_back (Key ("user:/s/1", ELEKTRA_KEY_END));
+	solution.push_back (Key ("user:/s/2", ELEKTRA_KEY_END));
+	solution.push_back (Key ("user:/s/3", ELEKTRA_KEY_END));
+	solution.push_back (Key ("user:/s/3/s", ELEKTRA_KEY_END));
+	solution.push_back (Key ("user:/s/3-3", ELEKTRA_KEY_END));
 
 	vector<Key> permutation (solution);
 
@@ -323,7 +323,7 @@ TEST (ks, permutations)
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back (Key ("user:/s/x", KEY_END));
+	solution.push_back (Key ("user:/s/x", ELEKTRA_KEY_END));
 	permutation.push_back (solution[4]); // need a copy of same key, otherwise name is not the same string
 	sort (permutation.begin (), permutation.end ());
 
@@ -343,7 +343,7 @@ TEST (ks, permutations)
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back (Key ("user:/x/y", KEY_END));
+	solution.push_back (Key ("user:/x/y", ELEKTRA_KEY_END));
 	permutation.push_back (solution[5]);
 	sort (permutation.begin (), permutation.end ());
 
@@ -365,7 +365,7 @@ TEST (ks, permutations)
 		}
 	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back (Key ("user:/x/y/z", KEY_END));
+	solution.push_back (Key ("user:/x/y/z", ELEKTRA_KEY_END));
 	permutation.push_back (solution[5]);
 	sort (permutation.begin (), permutation.end ());
 
@@ -390,13 +390,13 @@ TEST (ks, permutations)
 
 TEST (ks, comparision)
 {
-	KeySet ks0 (5, KS_END);
-	KeySet ks00 (5, KS_END);
-	KeySet ks1 (5, *Key ("user:/a", KEY_END), *Key ("user:/b", KEY_END), KS_END);
-	KeySet ks11 (5, *Key ("user:/a", KEY_END), *Key ("user:/b", KEY_END), KS_END);
-	KeySet ks2 (5, *Key ("user:/a", KEY_END), *Key ("user:/bb", KEY_END), KS_END);
-	KeySet ks3 (5, *Key ("user:/aa", KEY_END), *Key ("user:/b", KEY_END), KS_END);
-	KeySet ks4 (5, *Key ("user:/aa", KEY_END), *Key ("user:/bb", KEY_END), KS_END);
+	KeySet ks0 (5, ELEKTRA_KS_END);
+	KeySet ks00 (5, ELEKTRA_KS_END);
+	KeySet ks1 (5, *Key ("user:/a", ELEKTRA_KEY_END), *Key ("user:/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	KeySet ks11 (5, *Key ("user:/a", ELEKTRA_KEY_END), *Key ("user:/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	KeySet ks2 (5, *Key ("user:/a", ELEKTRA_KEY_END), *Key ("user:/bb", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	KeySet ks3 (5, *Key ("user:/aa", ELEKTRA_KEY_END), *Key ("user:/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	KeySet ks4 (5, *Key ("user:/aa", ELEKTRA_KEY_END), *Key ("user:/bb", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	EXPECT_EQ (ks0, ks0);
 	EXPECT_EQ (ks0, ks00);
@@ -478,8 +478,8 @@ void refcall (KeySet & ks3)
 
 TEST (ks, call)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 	succeed_if (ks3.lookup ("user:/key3/1"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/2"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3"), "could not find key");
@@ -505,31 +505,31 @@ TEST (ks, call)
 void ccall (KeySet ks3)
 {
 	succeed_if (ks3.lookup ("user:/key3/1"), "could not find key");
-	succeed_if (ks3.lookup ("user:/key3/2", KDB_O_POP), "could not find key");
+	succeed_if (ks3.lookup ("user:/key3/2", ELEKTRA_KDB_O_POP), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3").getString () == "value", "value not correct");
 	succeed_if (ks3.size () == 2, "size not correct");
 
 	ks3.lookup ("user:/key3/1").setString ("will change");
-	ks3.append (Key ("user:/key3/ccall", KEY_END));
+	ks3.append (Key ("user:/key3/ccall", ELEKTRA_KEY_END));
 }
 
 void refccall (KeySet & ks3)
 {
 	succeed_if (ks3.lookup ("user:/key3/1"), "could not find key");
-	succeed_if (ks3.lookup ("user:/key3/2", KDB_O_POP), "could not find key");
+	succeed_if (ks3.lookup ("user:/key3/2", ELEKTRA_KDB_O_POP), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3").getString () == "value", "value not correct");
 	succeed_if (ks3.size () == 2, "size not correct");
 
-	ks3.append (Key ("user:/key3/refccall", KEY_END));
+	ks3.append (Key ("user:/key3/refccall", ELEKTRA_KEY_END));
 	ks3.lookup ("user:/key3/1").setString ("will change again");
 }
 
 TEST (ks, call2)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 	succeed_if (ks3.lookup ("user:/key3/1"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/2"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3"), "could not find key");
@@ -560,13 +560,13 @@ void rcopycall (KeySet ks)
 {
 	// do something with keyset
 	// (wont be one hierarchy higher)
-	ks.append (Key ("user:/yyy", KEY_END));
+	ks.append (Key ("user:/yyy", ELEKTRA_KEY_END));
 }
 
 void rrefcall (KeySet & ks)
 {
 	// do something with keyset
-	ks.append (Key ("user:/xxx", KEY_END));
+	ks.append (Key ("user:/xxx", ELEKTRA_KEY_END));
 }
 
 /*Calling conventions: user need to free the keyset */
@@ -593,18 +593,18 @@ TEST (ks, release)
 	ckdb::KeySet * ks = ks1.release ();
 	ckdb::ksDel (ks);
 
-	KeySet ks2 (5, ckdb::keyNew ("user:/key2", KEY_END), KS_END);
+	KeySet ks2 (5, ckdb::keyNew ("user:/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ks = ks2.release ();
 	ckdb::ksDel (ks);
 
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	ks = ks3.release ();
 	ckdb::ksDel (ks);
 
-	ks = ckdb::ksNew (5, ckdb::keyNew ("user:/abc", KEY_END), KS_END);
+	ks = ckdb::ksNew (5, ckdb::keyNew ("user:/abc", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	rcall (ks);
 	succeed_if (ckdb::ksLookupByName (ks, "user:/xxx", 0) != nullptr, "could not find key");
 	ckdb::ksDel (ks);
@@ -612,34 +612,34 @@ TEST (ks, release)
 
 TEST (ks, lookupPop)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	succeed_if (ks3.size () == 3, "size not correct");
 
-	Key k3 = ks3.lookup ("user:/key3/3", KDB_O_POP);
+	Key k3 = ks3.lookup ("user:/key3/3", ELEKTRA_KDB_O_POP);
 	succeed_if (k3.getName () == "user:/key3/3", "wrong keyname");
 	succeed_if (k3.getString () == "value", "wrong value");
 	succeed_if (ks3.size () == 2, "size not correct");
 
-	Key k1 = ks3.lookup ("user:/key3/1", KDB_O_POP);
+	Key k1 = ks3.lookup ("user:/key3/1", ELEKTRA_KDB_O_POP);
 	succeed_if (k1.getName () == "user:/key3/1", "wrong keyname");
 	succeed_if (ks3.size () == 1, "size not correct");
 
-	Key k2 = ks3.lookup ("user:/key3/2", KDB_O_POP);
+	Key k2 = ks3.lookup ("user:/key3/2", ELEKTRA_KDB_O_POP);
 	succeed_if (k2.getName () == "user:/key3/2", "wrong keyname");
 	succeed_if (ks3.size () == 0, "size not correct");
 
-	Key k0 = ks3.lookup ("user:/key3/2", KDB_O_POP);
+	Key k0 = ks3.lookup ("user:/key3/2", ELEKTRA_KDB_O_POP);
 	succeed_if (!k0, "Out of Range, no more key");
 	succeed_if (ks3.size () == 0, "size not correct");
 
-	Key kn = ks3.lookup ("user:/key3/n", KDB_O_POP);
+	Key kn = ks3.lookup ("user:/key3/n", ELEKTRA_KDB_O_POP);
 	succeed_if (!kn, "key was never in set");
 	succeed_if (ks3.size () == 0, "size not correct");
 
-	KeySet ks4 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks4 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	for (ssize_t i = ks4.size (); i > 0; i--)
 	{
@@ -647,25 +647,25 @@ TEST (ks, lookupPop)
 
 		str[11] = i + '0';
 		succeed_if (ks4.size () == i, "size not correct");
-		Key k = ks4.lookup (str, KDB_O_POP);
+		Key k = ks4.lookup (str, ELEKTRA_KDB_O_POP);
 		succeed_if (k, "there should be a key");
 
 		succeed_if (k.getName () == str, str);
 		succeed_if (ks4.size () == i - 1, "size not correct");
 	}
 
-	KeySet ks5 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks5 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	for (ssize_t i = ks5.size (); i > 0; i--)
 	{
 		char str[] = "user:/key3/X";
 
 		str[11] = i + '0';
-		Key searchKey (str, KEY_END);
+		Key searchKey (str, ELEKTRA_KEY_END);
 		succeed_if (ks5.size () == i, "size not correct");
 
-		Key k = ks5.lookup (searchKey, KDB_O_POP);
+		Key k = ks5.lookup (searchKey, ELEKTRA_KDB_O_POP);
 		succeed_if (k, "there should be a key");
 
 		succeed_if (k.getName () == str, str);
@@ -675,8 +675,8 @@ TEST (ks, lookupPop)
 
 TEST (ks, duplicate)
 {
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 	succeed_if (ks3.lookup ("user:/key3/1"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/2"), "could not find key");
 	succeed_if (ks3.lookup ("user:/key3/3"), "could not find key");
@@ -712,8 +712,8 @@ struct C
 TEST (ks, move)
 {
 
-	std::unique_ptr<KeySet> u1 (new KeySet (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END),
-						*Key ("user:/key3/3", KEY_VALUE, "value", KEY_END), KS_END));
+	std::unique_ptr<KeySet> u1 (new KeySet (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END),
+						*Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END), ELEKTRA_KS_END));
 	std::unique_ptr<KeySet> u2 (std::move (u1));
 	std::unique_ptr<KeySet> u3 = std::move (u1);
 
@@ -725,7 +725,7 @@ TEST (ks, move)
 
 TEST (ks, vaargs)
 {
-	KeySet ks = fill_vaargs (20, *Key ("user:/a", KEY_END), *Key ("user:/b", KEY_END), KS_END);
+	KeySet ks = fill_vaargs (20, *Key ("user:/a", ELEKTRA_KEY_END), *Key ("user:/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ks.lookup ("user:/a"), "could not find key");
 	succeed_if (ks.lookup ("user:/b"), "could not find key");
 }

@@ -48,7 +48,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 			return 2;
 		}
 
-		k = Key (keyname, KEY_END);
+		k = Key (keyname, ELEKTRA_KEY_END);
 		// k.setBinary(0, 0); // conceptually maybe better, but would have confusing "binary" metadata
 		conf.append (k);
 		if (cl.verbose) cout << "Creating key " << keyname << endl;

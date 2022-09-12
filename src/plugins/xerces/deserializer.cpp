@@ -76,7 +76,7 @@ string getElementText (DOMNode const * parent)
 
 Key newNodeKey (Key const & parent, DOMNode const * node)
 {
-	Key childKey (parent.getName (), KEY_END);
+	Key childKey (parent.getName (), ELEKTRA_KEY_END);
 	const string keyName = toStr (node->getNodeName ());
 	childKey.addBaseName (keyName);
 	return childKey;
@@ -150,7 +150,7 @@ Key newArrayKey (Key const & arrayKey, KeySet & ks)
 	{
 		Key arrayBaseKey = arrayKey.dup ();
 
-		Key parentArrayKey = Key (arrayKey.getName (), KEY_END);
+		Key parentArrayKey = Key (arrayKey.getName (), ELEKTRA_KEY_END);
 		parentArrayKey.setMeta ("array", "empty");
 		ks.append (parentArrayKey);
 
@@ -164,7 +164,7 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bo
 {
 	if (n)
 	{
-		Key current (parent.getName (), KEY_END);
+		Key current (parent.getName (), ELEKTRA_KEY_END);
 
 		if (n->getNodeType () == DOMNode::ELEMENT_NODE)
 		{

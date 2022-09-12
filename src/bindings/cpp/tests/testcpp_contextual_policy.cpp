@@ -16,7 +16,7 @@ class MyStaticGetPolicy
 public:
 	static kdb::Key get (ELEKTRA_UNUSED kdb::KeySet & ks, ELEKTRA_UNUSED kdb::Key const & spec)
 	{
-		return kdb::Key ("user:/something", KEY_VALUE, "23", KEY_END);
+		return kdb::Key ("user:/something", ELEKTRA_KEY_VALUE, "23", ELEKTRA_KEY_END);
 	}
 };
 
@@ -29,9 +29,9 @@ TEST (test_contextual_policy, staticGetPolicy)
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy>> cv
 		(ks, c, Key("/test",
-			KEY_VALUE, "/test",
-			KEY_META, "default", "88",
-			KEY_END));
+			ELEKTRA_KEY_VALUE, "/test",
+			ELEKTRA_KEY_META, "default", "88",
+			ELEKTRA_KEY_END));
 	// clang-format on
 	EXPECT_EQ (cv, 23);
 	EXPECT_EQ (cv, cv);
@@ -73,9 +73,9 @@ TEST (test_contextual_policy, ValueWrapper)
 	// clang-format off
 	ValueWrapper<int, WritePolicyIs<DefaultWritePolicy>> cv
 		(ks, c, Key("/test",
-			KEY_VALUE, "/test",
-			KEY_META, "default", "88",
-			KEY_END));
+			ELEKTRA_KEY_VALUE, "/test",
+			ELEKTRA_KEY_META, "default", "88",
+			ELEKTRA_KEY_END));
 	// clang-format on
 	EXPECT_EQ (cv.value, 23);
 	EXPECT_EQ (cv.value, cv.value);
@@ -107,9 +107,9 @@ TEST (test_contextual_policy, setPolicy)
 	// clang-format off
 	ContextualValue<int, SetPolicyIs<MySetPolicy<int>>> cv
 		(ks, c, Key("/test",
-			KEY_VALUE, "/test",
-			KEY_META, "default", "88",
-			KEY_END));
+			ELEKTRA_KEY_VALUE, "/test",
+			ELEKTRA_KEY_META, "default", "88",
+			ELEKTRA_KEY_END));
 	// clang-format on
 	EXPECT_EQ (cv, 88);
 	EXPECT_EQ (cv, 88);
@@ -129,7 +129,7 @@ TEST (test_contextual_policy, readonlyPolicy)
 	KeySet ks;
 	Context c;
 	ContextualValue<int, WritePolicyIs<ReadOnlyPolicy>> cv (ks, c,
-								Key ("/test", KEY_VALUE, "/test", KEY_META, "default", "88", KEY_END));
+								Key ("/test", ELEKTRA_KEY_VALUE, "/test", ELEKTRA_KEY_META, "default", "88", ELEKTRA_KEY_END));
 	EXPECT_EQ (cv, 88);
 	EXPECT_EQ (cv, 88);
 	// cv = 40; // read only, so this is a compile error
@@ -141,7 +141,7 @@ class MyDynamicGetPolicy
 public:
 	static kdb::Key get (ELEKTRA_UNUSED kdb::KeySet & ks, kdb::Key const & spec)
 	{
-		return ksLookup (ks.getKeySet (), *spec, ckdb::KDB_O_SPEC);
+		return ksLookup (ks.getKeySet (), *spec, ckdb::ELEKTRA_KDB_O_SPEC);
 	}
 };
 
@@ -149,14 +149,14 @@ TEST (test_contextual_policy, dynamicGetPolicy)
 {
 	using namespace kdb;
 	KeySet ks;
-	ks.append (Key ("user:/available", KEY_VALUE, "12", KEY_END));
+	ks.append (Key ("user:/available", ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END));
 	Context c;
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/test",
-			KEY_META, "default", "88",
-			KEY_META, "override/#0", "user:/available",
-			KEY_END));
+			ELEKTRA_KEY_META, "default", "88",
+			ELEKTRA_KEY_META, "override/#0", "user:/available",
+			ELEKTRA_KEY_END));
 	// clang-format on
 
 	EXPECT_EQ (cv, 12);
@@ -184,14 +184,14 @@ TEST (test_contextual_policy, root)
 {
 	using namespace kdb;
 	KeySet ks;
-	ks.append (Key ("user:/available", KEY_VALUE, "12", KEY_END));
+	ks.append (Key ("user:/available", ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END));
 	Context c;
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/",
-			KEY_META, "default", "88",
-			KEY_META, "override/#0", "user:/available",
-			KEY_END));
+			ELEKTRA_KEY_META, "default", "88",
+			ELEKTRA_KEY_META, "override/#0", "user:/available",
+			ELEKTRA_KEY_END));
 	// clang-format on
 
 	EXPECT_EQ (cv, 12);
@@ -210,7 +210,7 @@ template <typename T, typename P = kdb::GetPolicyIs<MyStaticGetPolicy>>
 class MyCV : public kdb::ContextualValue<T, P>
 {
 public:
-	MyCV<T, P> (kdb::KeySet & ks_, kdb::Context & context_) : kdb::ContextualValue<T, P> (ks_, context_, kdb::Key ("/", KEY_END))
+	MyCV<T, P> (kdb::KeySet & ks_, kdb::Context & context_) : kdb::ContextualValue<T, P> (ks_, context_, kdb::Key ("/", ELEKTRA_KEY_END))
 	{
 	}
 };
@@ -239,7 +239,7 @@ class MyCV2 : public kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGe
 {
 public:
 	MyCV2 (kdb::KeySet & ks_, kdb::Context & context_)
-	: kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGetPolicy>> (ks_, context_, kdb::Key ("/", KEY_END)), m_m (ks_, context_)
+	: kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGetPolicy>> (ks_, context_, kdb::Key ("/", ELEKTRA_KEY_END)), m_m (ks_, context_)
 	{
 	}
 

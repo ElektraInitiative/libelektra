@@ -27,7 +27,7 @@ int UmountCommand::execute (Cmdline const & cl)
 	if (cl.arguments.size () != 1) throw invalid_argument ("1 argument required");
 
 	KeySet conf;
-	Key parentKey (Backends::mountpointsPath, KEY_END);
+	Key parentKey (Backends::mountpointsPath, ELEKTRA_KEY_END);
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 

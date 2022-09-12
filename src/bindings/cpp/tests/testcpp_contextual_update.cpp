@@ -17,8 +17,8 @@ using namespace kdb;
 struct test_contextual_update : ::testing::Test
 {
 	test_contextual_update ()
-	: ks (), gc (), c (gc), i (ks, c, Key ("/ignore/id", KEY_META, "default", "my", KEY_END)),
-	  x (ks, c, Key ("/%id%/key", KEY_META, "default", "33", KEY_END)){};
+	: ks (), gc (), c (gc), i (ks, c, Key ("/ignore/id", ELEKTRA_KEY_META, "default", "my", ELEKTRA_KEY_END)),
+	  x (ks, c, Key ("/%id%/key", ELEKTRA_KEY_META, "default", "33", ELEKTRA_KEY_END)){};
 
 	KeySet ks;
 	Coordinator gc;
@@ -38,7 +38,7 @@ TEST_F (test_contextual_update, activate)
 
 TEST_F (test_contextual_update, changeKey)
 {
-	ks.append (Key ("default:/other/key", KEY_VALUE, "88", KEY_END));
+	ks.append (Key ("default:/other/key", ELEKTRA_KEY_VALUE, "88", ELEKTRA_KEY_END));
 	i = "other";
 	c.activate (i);
 	ASSERT_EQ (x.getName (), "default:/other/key");
@@ -61,7 +61,7 @@ TEST_F (test_contextual_update, changeKey)
 
 TEST_F (test_contextual_update, syncCache)
 {
-	ks.append (Key ("default:/%/key", KEY_VALUE, "111", KEY_END));
+	ks.append (Key ("default:/%/key", ELEKTRA_KEY_VALUE, "111", ELEKTRA_KEY_END));
 
 	x.syncCache ();
 	ASSERT_EQ (x.getName (), "default:/%/key");
@@ -71,7 +71,7 @@ TEST_F (test_contextual_update, syncCache)
 
 TEST_F (test_contextual_update, notifyAllEvents)
 {
-	ks.append (Key ("default:/%/key", KEY_VALUE, "133", KEY_END));
+	ks.append (Key ("default:/%/key", ELEKTRA_KEY_VALUE, "133", ELEKTRA_KEY_END));
 
 	c.notifyAllEvents ();
 	ASSERT_EQ (x.getName (), "default:/%/key");
@@ -82,7 +82,7 @@ TEST_F (test_contextual_update, notifyAllEvents)
 TEST_F (test_contextual_update, notifyAllEventsChange)
 {
 	ASSERT_EQ (ks.size (), 2);
-	ks.append (Key ("default:/other/key", KEY_VALUE, "133", KEY_END));
+	ks.append (Key ("default:/other/key", ELEKTRA_KEY_VALUE, "133", ELEKTRA_KEY_END));
 	ASSERT_EQ (ks.size (), 3);
 	EXPECT_EQ (ks.at (0).getName (), "default:/%/key") << "nothing done, so its not changed";
 	EXPECT_EQ (ks.at (1).getName (), "default:/ignore/id") << "nothing done, so its not changed";
@@ -104,7 +104,7 @@ TEST_F (test_contextual_update, notifyAllEventsChange)
 TEST_F (test_contextual_update, notifyKeySetUpdate)
 {
 	ASSERT_EQ (ks.size (), 2);
-	ks.append (Key ("default:/%/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("default:/%/key", ELEKTRA_KEY_VALUE, "144", ELEKTRA_KEY_END));
 	ASSERT_EQ (ks.size (), 2);
 	EXPECT_EQ (ks.at (0).getName (), "default:/%/key");
 	EXPECT_EQ (ks.at (1).getName (), "default:/ignore/id");
@@ -128,7 +128,7 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdate)
 	EXPECT_EQ (ks.at (1).getString (), "33");
 	EXPECT_EQ (ks.at (2).getName (), "default:/ignore/id");
 
-	ks.append (Key ("user:/%/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/%/key", ELEKTRA_KEY_VALUE, "144", ELEKTRA_KEY_END));
 
 	c.notifyKeySetUpdate ();
 	ASSERT_EQ (x.getName (), "user:/%/key");
@@ -167,7 +167,7 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayer)
 	EXPECT_EQ (ks.at (2).getString (), "33");
 	EXPECT_EQ (ks.at (3).getName (), "default:/ignore/id");
 
-	ks.append (Key ("user:/other/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/other/key", ELEKTRA_KEY_VALUE, "144", ELEKTRA_KEY_END));
 
 	const_cast<Key &> (i.getSpec ()).setMeta<std::string> ("order", "#0");
 	const_cast<Key &> (x.getSpec ()).setMeta<std::string> ("order", "#1");
@@ -209,7 +209,7 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivateOrder)
 	EXPECT_EQ (ks.at (4).getName (), "default:/my/key");
 	EXPECT_EQ (ks.at (4).getString (), "33");
 
-	ks.append (Key ("user:/other/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/other/key", ELEKTRA_KEY_VALUE, "144", ELEKTRA_KEY_END));
 
 	const_cast<Key &> (i.getSpec ()).setMeta<std::string> ("layer/order", "#0");
 	const_cast<Key &> (x.getSpec ()).setMeta<std::string> ("layer/order", "#1");
@@ -252,7 +252,7 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivate)
 	EXPECT_EQ (ks.at (4).getName (), "default:/my/key");
 	EXPECT_EQ (ks.at (4).getString (), "33");
 
-	ks.append (Key ("user:/other/key", KEY_VALUE, "144", KEY_END));
+	ks.append (Key ("user:/other/key", ELEKTRA_KEY_VALUE, "144", ELEKTRA_KEY_END));
 
 	c.notifyKeySetUpdate ();
 	EXPECT_EQ (x.getName (), "user:/other/key");
@@ -330,7 +330,7 @@ TEST_F (test_contextual_update, activateLayersByCV)
 	EXPECT_EQ (c["id"], "my");
 	EXPECT_EQ (c["key"], "5") << "not synced properly";
 
-	ks.append (Key ("user:/my/key", KEY_VALUE, "99", KEY_END));
+	ks.append (Key ("user:/my/key", ELEKTRA_KEY_VALUE, "99", ELEKTRA_KEY_END));
 
 	c.sync ();
 	ASSERT_EQ (x.getName (), "user:/my/key");
@@ -383,8 +383,8 @@ TEST_F (test_contextual_update, activateLayersByCV)
 TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 {
 	ThreadValue<std::string> j (
-		ks, c, Key ("/%country%/language/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
-	ThreadValue<int> y (ks, c, Key ("/%language%/%id%/key", KEY_META, "default", "55", KEY_END));
+		ks, c, Key ("/%country%/language/code", ELEKTRA_KEY_META, "layer/name", "language", ELEKTRA_KEY_META, "default", "my", ELEKTRA_KEY_END));
+	ThreadValue<int> y (ks, c, Key ("/%language%/%id%/key", ELEKTRA_KEY_META, "default", "55", ELEKTRA_KEY_END));
 	c.activate (j); // activate language layer "my"
 
 	ASSERT_GE (ks.size (), 5);
@@ -401,8 +401,8 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 	EXPECT_EQ (ks.at (4).getString (), "55");
 
 	// now in the database the language changes:
-	ks.append (Key ("user:/%/language/code", KEY_VALUE, "de", KEY_END));
-	ks.append (Key ("user:/de/%/key", KEY_VALUE, "155", KEY_END));
+	ks.append (Key ("user:/%/language/code", ELEKTRA_KEY_VALUE, "de", ELEKTRA_KEY_END));
+	ks.append (Key ("user:/de/%/key", ELEKTRA_KEY_VALUE, "155", ELEKTRA_KEY_END));
 
 	c.notifyKeySetUpdate ();
 	EXPECT_EQ (j.getName (), "user:/%/language/code");
@@ -431,8 +431,8 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 TEST_F (test_contextual_update, notifySyncAssign)
 {
 	ThreadValue<std::string> j (
-		ks, c, Key ("/%country%/language/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
-	ThreadValue<int> y (ks, c, Key ("/%language%/%id%/key", KEY_META, "default", "55", KEY_END));
+		ks, c, Key ("/%country%/language/code", ELEKTRA_KEY_META, "layer/name", "language", ELEKTRA_KEY_META, "default", "my", ELEKTRA_KEY_END));
+	ThreadValue<int> y (ks, c, Key ("/%language%/%id%/key", ELEKTRA_KEY_META, "default", "55", ELEKTRA_KEY_END));
 	c.activate (j); // activate language layer with "my"
 
 	ASSERT_GE (ks.size (), 5);
@@ -449,7 +449,7 @@ TEST_F (test_contextual_update, notifySyncAssign)
 	EXPECT_EQ (ks.at (4).getString (), "55");
 
 	j = "de";
-	ks.append (Key ("user:/de/%/key", KEY_VALUE, "155", KEY_END));
+	ks.append (Key ("user:/de/%/key", ELEKTRA_KEY_VALUE, "155", ELEKTRA_KEY_END));
 
 	c.sync ();
 	EXPECT_EQ (j.getName (), "user:/%/language/code");
@@ -478,8 +478,8 @@ TEST_F (test_contextual_update, notifySyncAssign)
 TEST_F (test_contextual_update, notifySyncCycle)
 {
 	ThreadValue<std::string> j (
-		ks, c, Key ("/%country%/%language%/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
-	ThreadValue<int> y (ks, c, Key ("/%language%/%country%/country", KEY_META, "default", "55", KEY_END));
+		ks, c, Key ("/%country%/%language%/code", ELEKTRA_KEY_META, "layer/name", "language", ELEKTRA_KEY_META, "default", "my", ELEKTRA_KEY_END));
+	ThreadValue<int> y (ks, c, Key ("/%language%/%country%/country", ELEKTRA_KEY_META, "default", "55", ELEKTRA_KEY_END));
 	EXPECT_NO_THROW (c.activate (j)) << "also works with cycle"; // activate language layer with "my"
 
 	ASSERT_GE (ks.size (), 6);
@@ -498,8 +498,8 @@ TEST_F (test_contextual_update, notifySyncCycle)
 	EXPECT_EQ (ks.at (5).getString (), "55");
 
 	// now in the database the language changes:
-	ks.append (Key ("user:/%/language/code", KEY_VALUE, "de", KEY_END));
-	ks.append (Key ("user:/de/%/key", KEY_VALUE, "155", KEY_END));
+	ks.append (Key ("user:/%/language/code", ELEKTRA_KEY_VALUE, "de", ELEKTRA_KEY_END));
+	ks.append (Key ("user:/de/%/key", ELEKTRA_KEY_VALUE, "155", ELEKTRA_KEY_END));
 
 	EXPECT_THROW (c.sync (), std::runtime_error);
 	EXPECT_EQ (std::string (j), "my");

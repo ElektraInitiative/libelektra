@@ -71,7 +71,7 @@ TEST_F (Nested, GetSetRoot)
 	KeySet ks;
 
 	std::string name = "system:" + testRoot + "key";
-	Key k (name, KEY_END);
+	Key k (name, ELEKTRA_KEY_END);
 	EXPECT_EQ (k.getName (), name);
 	ks.append (k);
 
@@ -85,7 +85,7 @@ TEST_F (Nested, GetSetRoot)
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), 0) << "root file not created";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.close (parent);
 	kdb.open (parent);
 	KeySet ks2;
@@ -108,7 +108,7 @@ TEST_F (Nested, GetSetBelow)
 	KeySet ks;
 
 	std::string name = "system:" + testRoot + "below/key";
-	Key k (name, KEY_END);
+	Key k (name, ELEKTRA_KEY_END);
 	EXPECT_EQ (k.getName (), name);
 	ks.append (k);
 	ks.append (getAll ());
@@ -123,7 +123,7 @@ TEST_F (Nested, GetSetBelow)
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), -1) << "root file created?";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), 0) << "below file not created";
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.close (parent);
 	kdb.open (parent);
 	KeySet ks2;
@@ -138,8 +138,8 @@ TEST_F (Nested, RemoveFiles)
 	KDB kdb;
 	KeySet ks;
 
-	ks.append (Key ("system:" + testRoot + "key", KEY_END));
-	ks.append (Key ("system:" + testRoot + "below/key", KEY_END));
+	ks.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "below/key", ELEKTRA_KEY_END));
 
 	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
 	ASSERT_EQ (ks.size (), 2) << "did not keep key at get" << ks;
@@ -149,7 +149,7 @@ TEST_F (Nested, RemoveFiles)
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), 0) << "root file not created";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), 0) << "below file not created";
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.close (parent);
 	kdb.open (parent);
 	KeySet ks2;
@@ -168,10 +168,10 @@ TEST_F (Nested, GetSetRemoveBoth)
 	KDB kdb;
 	KeySet ks;
 
-	ks.append (Key ("system:" + testRoot + "key", KEY_END));
-	ks.append (Key ("system:" + testRoot + "key/subkey", KEY_END));
-	ks.append (Key ("system:" + testRoot + "below/key", KEY_END));
-	ks.append (Key ("system:" + testRoot + "below/key/subkey", KEY_END));
+	ks.append (Key ("system:" + testRoot + "key", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "key/subkey", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "below/key", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "below/key/subkey", ELEKTRA_KEY_END));
 	ks.append (getAll ());
 
 	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
@@ -184,7 +184,7 @@ TEST_F (Nested, GetSetRemoveBoth)
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), 0) << "root file not created";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), 0) << "below file not created";
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 	kdb.close (parent);
 	kdb.open (parent);
 	KeySet ks2;
@@ -205,12 +205,12 @@ TEST_F (Nested, ErrorBelow)
 	KDB kdb;
 	KeySet ks;
 
-	ks.append (Key ("system:" + testRoot + "a", KEY_END));
-	ks.append (Key ("system:" + testRoot + "k", KEY_END));
-	ks.append (Key ("system:" + testRoot + "7", KEY_END));
-	ks.append (Key ("system:" + testBelow + "a", KEY_END));
-	ks.append (Key ("system:" + testBelow + "k", KEY_META, "trigger/error", "10", KEY_END));
-	ks.append (Key ("system:" + testBelow + "z", KEY_END));
+	ks.append (Key ("system:" + testRoot + "a", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "k", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testRoot + "7", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testBelow + "a", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testBelow + "k", ELEKTRA_KEY_META, "trigger/error", "10", ELEKTRA_KEY_END));
+	ks.append (Key ("system:" + testBelow + "z", ELEKTRA_KEY_END));
 
 	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
 	ASSERT_EQ (ks.size (), 6) << "did not keep key at get" << ks;

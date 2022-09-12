@@ -722,13 +722,21 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	string (REGEX REPLACE "\\\\" "\\\\\\\\" contents "${contents}")
 	string (REGEX REPLACE "\"" "\\\\\"" contents "${contents}")
 	string (REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
-	string (REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system:/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX
+	string (
+		REGEX
+		REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\""
+			"keyNew(\"system:/elektra/modules/${p}/infos\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
 		REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX REPLACE "\"- +infos/author *= *([^\\\\]*)\\\\n\""
-			      "keyNew(\"system:/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/licence\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
+		REPLACE "\"- +infos/author *= *([^\\\\]*)\\\\n\""
+			"keyNew(\"system:/elektra/modules/${p}/infos/author\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
 
 	string (REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
 	string (REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")
@@ -738,46 +746,64 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	string (
 		REGEX
 		REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END)," contents
-			"${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/provides\",\nELEKTRA_KEY_VALUE, \"${PROVIDES}\", ELEKTRA_KEY_END),"
+			contents "${contents}")
 
-	string (REGEX
+	string (
+		REGEX
 		REPLACE "\"- +infos/placements *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX
+			"keyNew(\"system:/elektra/modules/${p}/infos/placements\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
 		REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX
+			"keyNew(\"system:/elektra/modules/${p}/infos/recommends\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
 		REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX
+			"keyNew(\"system:/elektra/modules/${p}/infos/ordering\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
 		REPLACE "\"- +infos/stacking *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/stacking\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\""
-			      "keyNew(\"system:/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/stacking\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
+		REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\""
+			"keyNew(\"system:/elektra/modules/${p}/infos/needs\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
 	if (p STREQUAL ${KDB_DEFAULT_STORAGE} OR p STREQUAL KDB_DEFAULT_RESOLVER)
 		string (
 			REGEX
-			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
-				"keyNew(\"system:/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END)," contents
+			REPLACE
+				"\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
+				"keyNew(\"system:/elektra/modules/${p}/infos/status\",\nELEKTRA_KEY_VALUE, \"\\1 default\", ELEKTRA_KEY_END),"
+				contents
 				"${contents}")
 	else ()
 		string (
 			REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
-				"keyNew(\"system:/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1\", KEY_END)," contents
-				"${contents}")
+				"keyNew(\"system:/elektra/modules/${p}/infos/status\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END),"
+				contents "${contents}")
 	endif ()
-	string (REGEX
+	string (
+		REGEX
 		REPLACE "\"- +infos/metadata *= *([/#a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX
+			"keyNew(\"system:/elektra/modules/${p}/infos/metadata\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
 		REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	string (REGEX
+			"keyNew(\"system:/elektra/modules/${p}/infos/plugins\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END)," contents
+			"${contents}")
+	string (
+		REGEX
 		REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}"
-	)# allow macros:
+			"keyNew(\"system:/elektra/modules/${p}/infos/description\",\nELEKTRA_KEY_VALUE, \"\\1\", ELEKTRA_KEY_END),"
+			contents "${contents}") # allow macros:
 	string (REGEX REPLACE "\" *#ifdef ([^\\]*)\\\\n\"" "#ifdef \\1" contents "${contents}")
 	string (REGEX REPLACE "\" *#ifndef ([^\\]*)\\\\n\"" "#ifndef \\1" contents "${contents}")
 	string (REGEX REPLACE "\" *#else\\\\n\"" "#else" contents "${contents}")

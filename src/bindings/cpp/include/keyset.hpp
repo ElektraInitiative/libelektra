@@ -97,10 +97,10 @@ public:
 
 	KeySet cut (Key k);
 
-	Key lookup (const Key & k, const elektraLookupFlags options = KDB_O_NONE) const;
-	Key lookup (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
+	Key lookup (const Key & k, const elektraLookupFlags options = ELEKTRA_KDB_O_NONE) const;
+	Key lookup (std::string const & name, const elektraLookupFlags options = ELEKTRA_KDB_O_NONE) const;
 	template <typename T>
-	T get (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
+	T get (std::string const & name, const elektraLookupFlags options = ELEKTRA_KDB_O_NONE) const;
 
 	// operators
 	inline bool operator== (const KeySet & ks) const;
@@ -486,7 +486,7 @@ inline KeySet::const_reverse_iterator KeySet::crend () const noexcept
  *
  * @copydoc ksNew
  */
-inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
+inline KeySet::KeySet () : ks (ckdb::ksNew (0, ELEKTRA_KS_END))
 {
 }
 
@@ -575,7 +575,7 @@ inline KeySet::~KeySet ()
 inline ckdb::KeySet * KeySet::release ()
 {
 	ckdb::KeySet * ret = ks;
-	ks = ckdb::ksNew (0, KS_END);
+	ks = ckdb::ksNew (0, ELEKTRA_KS_END);
 	return ret;
 }
 

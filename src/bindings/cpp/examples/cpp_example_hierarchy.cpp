@@ -22,8 +22,8 @@ namespace kdb
  * @param k the key to search in
  * @param n the level
  *
- * nth_level_of_name(Key("user:/hello", KEY_END), 0) -> "user:"
- * nth_level_of_name(Key("user:/hello", KEY_END), 1) -> "hello"
+ * nth_level_of_name(Key("user:/hello", ELEKTRA_KEY_END), 0) -> "user:"
+ * nth_level_of_name(Key("user:/hello", ELEKTRA_KEY_END), 1) -> "hello"
  *
  * @return the searched string (without slashes)
  */
@@ -220,7 +220,7 @@ public:
 		}
 
 		// update keyset
-		m_keyset.lookup (k, KDB_O_POP);
+		m_keyset.lookup (k, ELEKTRA_KDB_O_POP);
 		m_keyset.append (k);
 	}
 
@@ -275,19 +275,19 @@ int main ()
 	using namespace kdb;
 	KeySet ks;
 	KeyHierarchy kh (ks);
-	kh.add (Key ("user:/hello", KEY_VALUE, "Hello world", KEY_END));
+	kh.add (Key ("user:/hello", ELEKTRA_KEY_VALUE, "Hello world", ELEKTRA_KEY_END));
 	PrintVisitor pv;
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system:/b/s/t", KEY_VALUE, "Below", KEY_END));
+	kh.add (Key ("system:/b/s/t", ELEKTRA_KEY_VALUE, "Below", ELEKTRA_KEY_END));
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system:/b/s/t", KEY_VALUE, "Updated", KEY_END));
+	kh.add (Key ("system:/b/s/t", ELEKTRA_KEY_VALUE, "Updated", ELEKTRA_KEY_END));
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system:/", KEY_VALUE, "root value", KEY_END));
+	kh.add (Key ("system:/", ELEKTRA_KEY_VALUE, "root value", ELEKTRA_KEY_END));
 	kh.accept (pv);
 }

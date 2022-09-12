@@ -31,7 +31,7 @@ protected:
 		KDB repo;
 		KeySet ks;
 		repo.get (ks, testRoot);
-		ks.append (Key ("system:" + testRoot, KEY_END));
+		ks.append (Key ("system:" + testRoot, ELEKTRA_KEY_END));
 		repo.set (ks, testRoot);
 	}
 
@@ -57,7 +57,7 @@ TEST_P (Conflict, ConflictWithFile)
 {
 	using namespace kdb;
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	KDB first;
 	KeySet firstReturned;
@@ -67,9 +67,9 @@ TEST_P (Conflict, ConflictWithFile)
 	KeySet secondReturned;
 	second.get (secondReturned, parent);
 
-	firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-	secondReturned.append (Key ("system:" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END));
 
 	second.set (secondReturned, parent);
 	EXPECT_THROW (first.set (firstReturned, parent), KDBException);
@@ -80,7 +80,7 @@ TEST_P (Conflict, DISABLED_ConflictWithFileLoop)
 {
 	using namespace kdb;
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	KDB first;
 	KeySet firstReturned;
@@ -94,9 +94,9 @@ TEST_P (Conflict, DISABLED_ConflictWithFileLoop)
 	{
 		second.get (secondReturned, parent);
 
-		firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-		secondReturned.append (Key ("system:" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-		secondReturned.append (Key ("system:" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
+		firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
+		secondReturned.append (Key ("system:" + testRoot + "key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
+		secondReturned.append (Key ("system:" + testRoot + "key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END));
 
 		for (int i = 0; i < retries; ++i)
 		{
@@ -111,7 +111,7 @@ TEST_P (Conflict, ConflictWithFileSameKey)
 {
 	using namespace kdb;
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	KDB first;
 	KeySet firstReturned;
@@ -121,8 +121,8 @@ TEST_P (Conflict, ConflictWithFileSameKey)
 	KeySet secondReturned;
 	second.get (secondReturned, parent);
 
-	firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value2", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
 
 	second.set (secondReturned, parent);
 	EXPECT_THROW (first.set (firstReturned, parent), KDBException);
@@ -133,7 +133,7 @@ TEST_P (Conflict, ConflictWithFileSameKeyValue)
 {
 	using namespace kdb;
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	KDB first;
 	KeySet firstReturned;
@@ -143,8 +143,8 @@ TEST_P (Conflict, ConflictWithFileSameKeyValue)
 	KeySet secondReturned;
 	second.get (secondReturned, parent);
 
-	firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
+	secondReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
 
 	second.set (secondReturned, parent);
 	EXPECT_THROW (first.set (firstReturned, parent), KDBException);
@@ -155,7 +155,7 @@ TEST_P (Conflict, ConflictWithRemoval)
 {
 	using namespace kdb;
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	KDB first;
 	KeySet firstReturned;
@@ -165,7 +165,7 @@ TEST_P (Conflict, ConflictWithRemoval)
 	KeySet secondReturned;
 	second.get (secondReturned, parent);
 
-	firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
 	secondReturned.clear (); // remove file
 
 	second.set (secondReturned, parent);
@@ -184,7 +184,7 @@ TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
 {
 	using namespace kdb;
 
-	Key parent (testRoot, KEY_END);
+	Key parent (testRoot, ELEKTRA_KEY_END);
 
 	KDB first;
 	KeySet firstReturned;
@@ -194,7 +194,7 @@ TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
 	KeySet secondReturned;
 	second.get (secondReturned, parent);
 
-	firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+	firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
 	secondReturned.clear (); // remove file
 
 	second.set (secondReturned, parent);
@@ -213,12 +213,12 @@ TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
 		second.get (secondReturned, parent);
 		second.set (secondReturned, parent);
 
-		firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+		firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
 		EXPECT_THROW (first.set (firstReturned, parent), KDBException) << "should be conflict with removed file";
 
 		// create file
 		first.get (firstReturned, parent);
-		firstReturned.append (Key ("system:" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+		firstReturned.append (Key ("system:" + testRoot + "key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
 		first.set (firstReturned, parent);
 
 		secondReturned.clear ();

@@ -14,8 +14,8 @@ int main ()
 {
 	using namespace kdb;
 
-	KeySet ks3 (5, *Key ("user:/key3/1", KEY_END), *Key ("user:/key3/2", KEY_END), *Key ("user:/key3/3", KEY_VALUE, "value", KEY_END),
-		    KS_END);
+	KeySet ks3 (5, *Key ("user:/key3/1", ELEKTRA_KEY_END), *Key ("user:/key3/2", ELEKTRA_KEY_END), *Key ("user:/key3/3", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	for (auto && elem : ks3)
 	{

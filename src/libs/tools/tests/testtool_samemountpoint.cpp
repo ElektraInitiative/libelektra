@@ -20,25 +20,25 @@ TEST (SameMountpoint, setMountpoints)
 	KeySet ks;
 
 	Backend b1;
-	b1.setMountpoint (Key ("user:/hello", KEY_END), ks);
+	b1.setMountpoint (Key ("user:/hello", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 
-	b1.setMountpoint (Key ("user://hello", KEY_END), ks);
+	b1.setMountpoint (Key ("user://hello", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 
-	b1.setMountpoint (Key ("user:////hello", KEY_END), ks);
+	b1.setMountpoint (Key ("user:////hello", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 
-	b1.setMountpoint (Key ("user:////hello//", KEY_END), ks);
+	b1.setMountpoint (Key ("user:////hello//", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 
-	b1.setMountpoint (Key ("user:////hello////.", KEY_END), ks);
+	b1.setMountpoint (Key ("user:////hello////.", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 
-	b1.setMountpoint (Key ("user:////hello////.//", KEY_END), ks);
+	b1.setMountpoint (Key ("user:////hello////.//", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 
-	b1.setMountpoint (Key ("user:////hello////.//x/..", KEY_END), ks);
+	b1.setMountpoint (Key ("user:////hello////.//x/..", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 }
 
@@ -50,16 +50,16 @@ TEST (SameMountpoint, setMountpointsNamespaces)
 
 	Backend b1;
 
-	b1.setMountpoint (Key ("dir:/", KEY_END), ks);
+	b1.setMountpoint (Key ("dir:/", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "dir:/");
 
-	b1.setMountpoint (Key ("system:/", KEY_END), ks);
+	b1.setMountpoint (Key ("system:/", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "system:/");
 
-	b1.setMountpoint (Key ("user:/", KEY_END), ks);
+	b1.setMountpoint (Key ("user:/", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/");
 
-	b1.setMountpoint (Key ("spec:/", KEY_END), ks);
+	b1.setMountpoint (Key ("spec:/", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "spec:/");
 }
 
@@ -70,16 +70,16 @@ TEST (SameMountpoint, strangeMountpoints)
 	KeySet ks;
 
 	Backend b1;
-	b1.setMountpoint (Key ("user:/elektras", KEY_END), ks);
+	b1.setMountpoint (Key ("user:/elektras", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/elektras");
 
-	b1.setMountpoint (Key ("user:/elektra/..", KEY_END), ks);
+	b1.setMountpoint (Key ("user:/elektra/..", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/");
 
-	b1.setMountpoint (Key ("user:/elektra\\/", KEY_END), ks);
+	b1.setMountpoint (Key ("user:/elektra\\/", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/elektra\\/");
 
-	b1.setMountpoint (Key ("/is//../a//../complex/..///.", KEY_END), ks);
+	b1.setMountpoint (Key ("/is//../a//../complex/..///.", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "/");
 }
 
@@ -92,9 +92,9 @@ TEST (SameMountpoint, wrongMountpoints)
 	Backend b1;
 	ASSERT_THROW (b1.setMountpoint (Key (static_cast<ckdb::Key *> (nullptr)), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("proc:/", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("proc:/", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("proc:/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("proc:/something", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
 }
 
@@ -105,45 +105,45 @@ TEST (SameMountpoint, wrongElektraMountpoints)
 	KeySet ks;
 
 	Backend b1;
-	ASSERT_THROW (b1.setMountpoint (Key ("proc:/", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("proc:/", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("proc:/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("proc:/elektra", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("spec:/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("spec:/elektra", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("dir:/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("dir:/elektra", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/mountpoints", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/mountpoints", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/globalplugins", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/globalplugins", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/something", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/something/deep/below", KEY_END), ks),
+	ASSERT_THROW (b1.setMountpoint (Key ("system:/elektra/something/deep/below", ELEKTRA_KEY_END), ks),
 		      kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/mountpoints", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/mountpoints", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/globalplugins", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/globalplugins", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/something", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/something/deep/below", KEY_END), ks),
+	ASSERT_THROW (b1.setMountpoint (Key ("user:/elektra/something/deep/below", ELEKTRA_KEY_END), ks),
 		      kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("/elektra", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/mountpoints", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/mountpoints", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/globalplugins", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/globalplugins", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/something", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
-	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/something/deep/below", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW (b1.setMountpoint (Key ("/elektra/something/deep/below", ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
 }
 
@@ -155,17 +155,17 @@ TEST (SameMountpoint, notSame)
 	KeySet ks;
 
 	Backend b1;
-	b1.setMountpoint (Key ("user:/hello", KEY_END), ks);
+	b1.setMountpoint (Key ("user:/hello", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b1.getMountpoint (), "user:/hello");
 	b1.serialize (ks);
 
 	Backend b2;
-	b2.setMountpoint (Key ("user:/else", KEY_END), ks);
+	b2.setMountpoint (Key ("user:/else", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b2.getMountpoint (), "user:/else");
 	b2.serialize (ks);
 
 	Backend b3;
-	b2.setMountpoint (Key ("/somewhere", KEY_END), ks);
+	b2.setMountpoint (Key ("/somewhere", ELEKTRA_KEY_END), ks);
 	EXPECT_EQ (b2.getMountpoint (), "/somewhere");
 	b2.serialize (ks);
 }
@@ -178,13 +178,13 @@ TEST (SameMountpoint, notSame)
                                                                                                                                            \
 		Backend b1;                                                                                                                \
 		EXPECT_EQ (b1.getMountpoint (), "");                                                                                       \
-		b1.setMountpoint (Key (name1, KEY_END), ks);                                                                               \
+		b1.setMountpoint (Key (name1, ELEKTRA_KEY_END), ks);                                                                               \
 		EXPECT_EQ (b1.getMountpoint (), name1);                                                                                    \
 		b1.serialize (ks);                                                                                                         \
                                                                                                                                            \
 		Backend b2;                                                                                                                \
 		EXPECT_EQ (b2.getMountpoint (), "");                                                                                       \
-		ASSERT_THROW (b2.setMountpoint (Key (name2, KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);                   \
+		ASSERT_THROW (b2.setMountpoint (Key (name2, ELEKTRA_KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);                   \
 		EXPECT_EQ (b2.getMountpoint (), "");                                                                                       \
 	}
 
@@ -196,13 +196,13 @@ TEST (SameMountpoint, notSame)
                                                                                                                                            \
 		Backend b1;                                                                                                                \
 		EXPECT_EQ (b1.getMountpoint (), "");                                                                                       \
-		b1.setMountpoint (Key (name1, KEY_END), ks);                                                                               \
+		b1.setMountpoint (Key (name1, ELEKTRA_KEY_END), ks);                                                                               \
 		EXPECT_EQ (b1.getMountpoint (), name1);                                                                                    \
 		b1.serialize (ks);                                                                                                         \
                                                                                                                                            \
 		Backend b2;                                                                                                                \
 		EXPECT_EQ (b2.getMountpoint (), "");                                                                                       \
-		ASSERT_NO_THROW (b2.setMountpoint (Key (name2, KEY_END), ks));                                                             \
+		ASSERT_NO_THROW (b2.setMountpoint (Key (name2, ELEKTRA_KEY_END), ks));                                                             \
 		EXPECT_EQ (b2.getMountpoint (), name2);                                                                                    \
 	}
 

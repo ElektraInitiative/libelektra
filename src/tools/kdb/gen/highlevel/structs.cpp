@@ -154,7 +154,7 @@ kainjow::mustache::object StructFieldsProcessor::processArrayStructRef (const kd
 	fields.emplace_back (kainjow::mustache::object{
 		{ "name", sizeName }, { "is_array_size?", true }, { "array_key", fieldKeyName }, { "native_type", "kdb_long_long_t" } });
 
-	return kainjow::mustache::object{ { "name", name },	     { "key_name", keyName },	{ "native_type", nativeType },
+	return kainjow::mustache::object{ { "name", name },	     { "ELEKTRA_KEY_name", keyName },	{ "native_type", nativeType },
 					  { "type_name", typeName }, { "alloc?", alloc },	{ "is_array?", true },
 					  { "is_struct?", true },    { "size_field", sizeName } };
 }
@@ -323,7 +323,7 @@ kainjow::mustache::object StructFieldsProcessor::processStructRefUnion (const kd
 	auto name = getName (genKey, fieldKeyName);
 
 	auto field = kainjow::mustache::object{ { "name", name },
-						{ "key_name", keyName },
+						{ "ELEKTRA_KEY_name", keyName },
 						{ "native_type", unionType },
 						{ "type_name", "Union" + unionType },
 						{ "is_array?", isArray },
@@ -379,7 +379,7 @@ kainjow::mustache::object StructFieldsProcessor::processStructRef (const kdb::Ke
 
 	auto name = getName (key, fieldKeyName);
 
-	return kainjow::mustache::object{ { "name", name },	     { "key_name", keyName }, { "native_type", nativeType },
+	return kainjow::mustache::object{ { "name", name },	     { "ELEKTRA_KEY_name", keyName }, { "native_type", nativeType },
 					  { "type_name", typeName }, { "alloc?", alloc },     { "is_array?", false },
 					  { "is_struct?", true } };
 }
@@ -496,7 +496,7 @@ void StructFieldsProcessor::processAll ()
 		else
 		{
 
-			auto field = object{ { "name", name },		{ "key_name", keyName }, { "native_type", nativeType },
+			auto field = object{ { "name", name },		{ "ELEKTRA_KEY_name", keyName }, { "native_type", nativeType },
 					     { "type_name", typeName }, { "alloc?", true },	 { "is_array?", isArray },
 					     { "is_struct?", false } };
 

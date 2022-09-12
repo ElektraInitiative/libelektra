@@ -58,7 +58,7 @@ void displayVersion ()
 {
 	kdb::KDB kdb;
 	kdb::KeySet versions;
-	kdb::Key k ("system:/elektra/version", KEY_END);
+	kdb::Key k ("system:/elektra/version", ELEKTRA_KEY_END);
 	kdb.get (versions, k);
 	kdb::Key kdb_version = versions.lookup ("system:/elektra/version/constants/KDB_VERSION");
 	if (!kdb_version)

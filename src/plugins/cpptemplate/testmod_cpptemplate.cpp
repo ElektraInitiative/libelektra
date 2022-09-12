@@ -23,12 +23,12 @@ __attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("ocl
 		annotate ("oclint:suppress[too few branches in switch statement]")))
 #endif
 {
-	CppKeySet modules{ 0, KS_END };
-	CppKeySet config{ 0, KS_END };
-	CppKeySet keys{ 0, KS_END };
+	CppKeySet modules{ 0, ELEKTRA_KS_END };
+	CppKeySet config{ 0, ELEKTRA_KS_END };
+	CppKeySet keys{ 0, ELEKTRA_KS_END };
 	elektraModulesInit (modules.getKeySet (), 0);
 
-	CppKey parent{ "system:/elektra/modules/cpptemplate", KEY_END };
+	CppKey parent{ "system:/elektra/modules/cpptemplate", ELEKTRA_KEY_END };
 	Plugin * plugin = elektraPluginOpen ("cpptemplate", modules.getKeySet (), config.getKeySet (), *parent);
 	exit_if_fail (plugin != NULL, "Could not open cpptemplate plugin"); //! OCLint (empty if, too few branches switch)
 

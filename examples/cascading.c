@@ -47,7 +47,7 @@ int main (void)
 	}
 
 	/*
-	k = keyNew("user:/test/shell/somewhere/key", KEY_VALUE, "value", KEY_END);
+	k = keyNew("user:/test/shell/somewhere/key", ELEKTRA_KEY_VALUE, "value", ELEKTRA_KEY_END);
 	ksAppendKey(ks, k);
 	keyDel(k);
 	*/

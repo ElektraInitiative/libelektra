@@ -113,8 +113,8 @@ bool hasProvides (PluginDatabase const & pd, std::string which)
 			std::istringstream ss (pd.lookupInfo (
 				PluginSpec (plugin,
 					    KeySet (5,
-						    *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
-						    KS_END)),
+						    *Key ("system:/module", ELEKTRA_KEY_VALUE, "this plugin was loaded without a config", ELEKTRA_KEY_END),
+						    ELEKTRA_KS_END)),
 				"provides"));
 			std::string provide;
 			while (ss >> provide)
@@ -212,7 +212,7 @@ PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) c
 	try
 	{
 		KeySet conf = spec.getConfig ();
-		conf.append (Key ("system:/module", KEY_VALUE, "this plugin was loaded for the status", KEY_END));
+		conf.append (Key ("system:/module", ELEKTRA_KEY_VALUE, "this plugin was loaded for the status", ELEKTRA_KEY_END));
 		plugin = impl->modules.load (spec.getName (), conf);
 		return real;
 	}
@@ -263,8 +263,8 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 			std::istringstream ss (lookupInfo (
 				PluginSpec (plugin,
 					    KeySet (5,
-						    *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
-						    KS_END)),
+						    *Key ("system:/module", ELEKTRA_KEY_VALUE, "this plugin was loaded without a config", ELEKTRA_KEY_END),
+						    ELEKTRA_KS_END)),
 				"metadata"));
 			std::string metadata;
 			while (ss >> metadata)
@@ -273,9 +273,9 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 				{
 					int s = calculateStatus (lookupInfo (
 						PluginSpec (plugin, KeySet (5,
-									    *Key ("system:/module", KEY_VALUE,
-										  "this plugin was loaded without a config", KEY_END),
-									    KS_END)),
+									    *Key ("system:/module", ELEKTRA_KEY_VALUE,
+										  "this plugin was loaded without a config", ELEKTRA_KEY_END),
+									    ELEKTRA_KS_END)),
 						"status"));
 					foundPlugins.insert (std::make_pair (s, PluginSpec (plugin)));
 					break;
@@ -335,7 +335,7 @@ std::map<int, PluginSpec> ModulesPluginDatabase::lookupAllProvidesWithStatus (st
 		{
 			PluginSpec spec = PluginSpec (
 				plugin,
-				KeySet (5, *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END));
+				KeySet (5, *Key ("system:/module", ELEKTRA_KEY_VALUE, "this plugin was loaded without a config", ELEKTRA_KEY_END), ELEKTRA_KS_END));
 
 			// lets see if there is a plugin named after the required provider
 			if (plugin == which)
@@ -422,7 +422,7 @@ std::vector<std::string> PluginVariantDatabase::listAllPlugins () const
 	std::vector<std::string> plugins (ModulesPluginDatabase::listAllPlugins ());
 	plugins.erase (std::remove_if (plugins.begin (), plugins.end (),
 				       [this] (const std::string & elem) {
-					       Key k ("system:/elektra/plugins", KEY_END);
+					       Key k ("system:/elektra/plugins", ELEKTRA_KEY_END);
 					       k.addBaseName (elem);
 					       k.addBaseName ("disable");
 					       Key res = this->variantImpl->pluginconf.lookup (k);
@@ -463,7 +463,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromSysconf (Plu
 	KeySet ksSysconf (sysconf);
 
 	// first find possible variants
-	Key kVariantBase ("system:/elektra/plugins", KEY_END);
+	Key kVariantBase ("system:/elektra/plugins", ELEKTRA_KEY_END);
 	kVariantBase.addBaseName (whichplugin.getName ());
 	kVariantBase.addBaseName ("variants");
 
@@ -479,7 +479,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromSysconf (Plu
 			KeySet ksVariantConfToAdd;
 
 			// new base for plugin conf
-			Key kVariantPluginConf ("system:/", KEY_END);
+			Key kVariantPluginConf ("system:/", ELEKTRA_KEY_END);
 
 			// add system conf for plugin variant
 			Key kVariantSysconf (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "config"));
@@ -522,7 +522,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 	KeySet ksToIterate (genconf);
 	for (auto kCurrent : ksToIterate)
 	{
-		Key kCurrentTest ("/", KEY_END);
+		Key kCurrentTest ("/", ELEKTRA_KEY_END);
 		kCurrentTest.setNamespace (kCurrent.getNamespace ());
 		kCurrentTest.addBaseName (kCurrent.getBaseName ()); // e.g. system:/space
 		if (kCurrentTest == kCurrent)
@@ -531,7 +531,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 			KeySet ksVariantConfToAdd;
 
 			// new base for plugin conf
-			Key kVariantPluginConf ("system:/", KEY_END);
+			Key kVariantPluginConf ("system:/", ELEKTRA_KEY_END);
 
 			// take variant config from genconf and transform it to proper plugin conf,
 			// e.g. system:/space/config/format -> system:/format
@@ -577,7 +577,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 Key PluginVariantDatabase::buildVariantSysconfKey (PluginSpec const & whichplugin, std::string const & variant,
 						   const std::string attr) const
 {
-	Key result ("system:/elektra/plugins", KEY_END);
+	Key result ("system:/elektra/plugins", ELEKTRA_KEY_END);
 	result.addBaseName (whichplugin.getName ());
 	result.addBaseName ("variants");
 	result.addBaseName (variant);

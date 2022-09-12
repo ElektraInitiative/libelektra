@@ -21,7 +21,7 @@ TEST (Context, Exist)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, k = keyNew ("user:/elektra/intercept/getenv/override/does-exist", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, k = keyNew ("user:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("user:/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -31,9 +31,9 @@ TEST (Context, ExistWithContext)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, k = keyNew ("user:/elektra/intercept/getenv/override/does-exist", KEY_VALUE, "hello", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "user:/elektra/intercept/getenv/override/does-exist", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, k = keyNew ("user:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "user:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -43,9 +43,9 @@ TEST (Context, ExistWithContextCascading)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, k = keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "hello", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, k = keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -59,15 +59,15 @@ TEST (Context, ExistWithContextOverrideCascading)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", KEY_VALUE, "layer", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", ELEKTRA_KEY_VALUE, "layer", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", KEY_META, "override/#0",
-					    "/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", ELEKTRA_KEY_META, "override/#0",
+					    "/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -76,16 +76,16 @@ TEST (Context, ExistWithContextOverrideCascadingSystem)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", KEY_VALUE, "layer", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("system:/elektra/intercept/getenv/layer/layer", KEY_VALUE, "systemlayer", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", ELEKTRA_KEY_VALUE, "layer", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("system:/elektra/intercept/getenv/layer/layer", ELEKTRA_KEY_VALUE, "systemlayer", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", KEY_META, "override/#0",
-					    "/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", ELEKTRA_KEY_META, "override/#0",
+					    "/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -95,16 +95,16 @@ TEST (Context, ExistWithContextOverrideCascadingDir)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("dir:/elektra/intercept/getenv/layer/layer", KEY_VALUE, "layer", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", KEY_VALUE, "userlayer", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("dir:/elektra/intercept/getenv/layer/layer", ELEKTRA_KEY_VALUE, "layer", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", ELEKTRA_KEY_VALUE, "userlayer", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", KEY_META, "override/#0",
-					    "/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", ELEKTRA_KEY_META, "override/#0",
+					    "/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -113,16 +113,16 @@ TEST (Context, ExistWithContextOverrideCascadingProc)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("proc:/elektra/intercept/getenv/layer/layer", KEY_VALUE, "layer", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", KEY_VALUE, "userlayer", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("proc:/elektra/intercept/getenv/layer/layer", ELEKTRA_KEY_VALUE, "layer", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/layer", ELEKTRA_KEY_VALUE, "userlayer", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", KEY_META, "override/#0",
-					    "/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%layer%/does-exist-too", ELEKTRA_KEY_META, "override/#0",
+					    "/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -131,15 +131,15 @@ TEST (Context, ExistWithContextOverrideCascadingWithSlash)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("proc:/elektra/intercept/getenv/layer/layer/name", KEY_VALUE, "layer/value", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("proc:/elektra/intercept/getenv/layer/layer/name", ELEKTRA_KEY_VALUE, "layer/value", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/value/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%layer/name%/does-exist-too", KEY_META, "override/#0",
-					    "/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/layer/value/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%layer/name%/does-exist-too", ELEKTRA_KEY_META, "override/#0",
+					    "/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -153,9 +153,9 @@ TEST (Context, NameExplicit)
 	char ** argv = const_cast<char **> (cargv);
 
 	elektraOpen (&argc, argv);
-	ksAppendKey (elektraConfig, keyNew ("system:/somewhere/other-name/layer/does-exist", KEY_VALUE, "hello", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("system:/elektra/intercept/getenv/override/akey", KEY_META, "context",
-					    "/somewhere/%name%/%layer%/does-exist", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("system:/somewhere/other-name/layer/does-exist", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("system:/elektra/intercept/getenv/override/akey", ELEKTRA_KEY_META, "context",
+					    "/somewhere/%name%/%layer%/does-exist", ELEKTRA_KEY_END));
 	elektraClose ();
 }
 
@@ -163,17 +163,17 @@ TEST (Context, ExistWithContextOverrideCascadingOverrideUser)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/hostname", KEY_VALUE, "wrongname", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/layer/hostname", KEY_META, "override/#0",
-					    "system:/syscall/uname/hostname", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("system:/syscall/uname/hostname", KEY_VALUE, "localhost", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/layer/hostname", ELEKTRA_KEY_VALUE, "wrongname", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/layer/hostname", ELEKTRA_KEY_META, "override/#0",
+					    "system:/syscall/uname/hostname", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("system:/syscall/uname/hostname", ELEKTRA_KEY_VALUE, "localhost", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/localhost/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%hostname%/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/localhost/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%hostname%/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -182,17 +182,17 @@ TEST (Context, ExistWithContextOverrideCascadingOverrideSystem)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("system:/elektra/intercept/getenv/layer/hostname", KEY_VALUE, "wrongname", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/layer/hostname", KEY_META, "override/#0",
-					    "system:/syscall/uname/hostname", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("system:/syscall/uname/hostname", KEY_VALUE, "localhost", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("system:/elektra/intercept/getenv/layer/hostname", ELEKTRA_KEY_VALUE, "wrongname", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/layer/hostname", ELEKTRA_KEY_META, "override/#0",
+					    "system:/syscall/uname/hostname", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("system:/syscall/uname/hostname", ELEKTRA_KEY_VALUE, "localhost", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/localhost/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%hostname%/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/localhost/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%hostname%/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }
@@ -201,16 +201,16 @@ TEST (Context, ExistWithContextOverrideCascadingOverride)
 {
 	Key * k;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/layer/hostname", KEY_META, "override/#0",
-					    "system:/syscall/uname/hostname", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("system:/syscall/uname/hostname", KEY_VALUE, "localhost", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/layer/hostname", ELEKTRA_KEY_META, "override/#0",
+					    "system:/syscall/uname/hostname", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("system:/syscall/uname/hostname", ELEKTRA_KEY_VALUE, "localhost", ELEKTRA_KEY_END));
 	addLayers ();
 
-	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user:/elektra/intercept/getenv/override/does-exist-too", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
 	ksAppendKey (elektraConfig,
-		     k = keyNew ("user:/elektra/intercept/getenv/override/localhost/does-exist-too", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", KEY_META, "context",
-					    "/elektra/intercept/getenv/override/%hostname%/does-exist-too", KEY_VALUE, "hello", KEY_END));
+		     k = keyNew ("user:/elektra/intercept/getenv/override/localhost/does-exist-too", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("spec:/elektra/intercept/getenv/override/does-exist", ELEKTRA_KEY_META, "context",
+					    "/elektra/intercept/getenv/override/%hostname%/does-exist-too", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END));
 	Key * f = elektraLookupWithContext ("/elektra/intercept/getenv/override/does-exist");
 	EXPECT_EQ (k, f);
 }

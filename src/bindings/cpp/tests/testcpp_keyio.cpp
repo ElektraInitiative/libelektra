@@ -17,7 +17,7 @@
 
 TEST (keyio, out)
 {
-	Key k ("user:/hello", KEY_META, "abc", "", KEY_META, "def", "", KEY_END);
+	Key k ("user:/hello", ELEKTRA_KEY_META, "abc", "", ELEKTRA_KEY_META, "def", "", ELEKTRA_KEY_END);
 	std::stringstream ss;
 	ss << k;
 	EXPECT_EQ (ss.str (), "user:/hello");
@@ -25,7 +25,7 @@ TEST (keyio, out)
 
 TEST (keyio, in)
 {
-	Key k ("user:/hello", KEY_META, "abc", "", KEY_META, "def", "", KEY_END);
+	Key k ("user:/hello", ELEKTRA_KEY_META, "abc", "", ELEKTRA_KEY_META, "def", "", ELEKTRA_KEY_END);
 	Key k2;
 	std::stringstream ss ("user:/hello");
 	ss >> k2;
@@ -35,7 +35,7 @@ TEST (keyio, in)
 
 TEST (keyio, outmeta)
 {
-	Key k ("user:/hello", KEY_META, "abc", "", KEY_META, "def", "", KEY_END);
+	Key k ("user:/hello", ELEKTRA_KEY_META, "abc", "", ELEKTRA_KEY_META, "def", "", ELEKTRA_KEY_END);
 	std::stringstream ss;
 	ss.setf (std::ios_base::showbase);
 	ss << k;
@@ -44,7 +44,7 @@ TEST (keyio, outmeta)
 
 TEST (keyio, inmeta)
 {
-	Key k ("user:/hello", KEY_META, "abc", "", KEY_META, "def", "", KEY_END);
+	Key k ("user:/hello", ELEKTRA_KEY_META, "abc", "", ELEKTRA_KEY_META, "def", "", ELEKTRA_KEY_END);
 	Key k2;
 	std::stringstream ss ("user:/hello meta:/abc meta:/def");
 	ss.setf (std::ios_base::showbase);

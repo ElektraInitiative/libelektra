@@ -31,18 +31,18 @@ namespace
 void printOptions (elektraLookupFlags options)
 {
 	// :'<,'>s/\(.*\)/^Iif(options \& \1) std::cout << "\1 ";
-	if (options & ckdb::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
-	if (options & ckdb::KDB_O_CREATE) std::cout << "KDB_O_CREATE ";
-	if (options & ckdb::KDB_O_NOCASCADING) std::cout << "KDB_O_NOCASCADING ";
-	if (options & ckdb::KDB_O_NOSPEC) std::cout << "KDB_O_NOSPEC ";
-	if (options & ckdb::KDB_O_NODEFAULT) std::cout << "KDB_O_NODEFAULT ";
-	if (options & ckdb::KDB_O_CALLBACK) std::cout << "KDB_O_CALLBACK";
+	if (options & ckdb::ELEKTRA_KDB_O_SPEC) std::cout << "ELEKTRA_KDB_O_SPEC ";
+	if (options & ckdb::ELEKTRA_KDB_O_CREATE) std::cout << "ELEKTRA_KDB_O_CREATE ";
+	if (options & ckdb::ELEKTRA_KDB_O_NOCASCADING) std::cout << "ELEKTRA_KDB_O_NOCASCADING ";
+	if (options & ckdb::ELEKTRA_KDB_O_NOSPEC) std::cout << "ELEKTRA_KDB_O_NOSPEC ";
+	if (options & ckdb::ELEKTRA_KDB_O_NODEFAULT) std::cout << "ELEKTRA_KDB_O_NODEFAULT ";
+	if (options & ckdb::ELEKTRA_KDB_O_CALLBACK) std::cout << "ELEKTRA_KDB_O_CALLBACK";
 }
 
 
 ckdb::Key * warnOnMeta (ELEKTRA_UNUSED ckdb::KeySet * ks, ELEKTRA_UNUSED ckdb::Key * key, ckdb::Key * found, elektraLookupFlags options)
 {
-	if (found && !strncmp (keyName (found), "spec:/", 5) && options == ckdb::KDB_O_CALLBACK)
+	if (found && !strncmp (keyName (found), "spec:/", 5) && options == ckdb::ELEKTRA_KDB_O_CALLBACK)
 	{
 		const ckdb::Key * meta = keyGetMeta (found, "context");
 		if (meta)
@@ -85,7 +85,7 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 	}
 	std::cout << std::endl;
 
-	if (k.getName ().substr (0, 6) == "spec:/" && (options & ckdb::KDB_O_CALLBACK))
+	if (k.getName ().substr (0, 6) == "spec:/" && (options & ckdb::ELEKTRA_KDB_O_CALLBACK))
 	{
 		depth += 4;
 		k.setMeta<int> ("callback/print_trace/depth", depth);

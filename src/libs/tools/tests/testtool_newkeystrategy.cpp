@@ -33,7 +33,7 @@ protected:
 
 TEST_F (NewKeyStrategyTest, AddEqualsKeyMerge)
 {
-	Key addedKey = Key ("user:/parento/config/key5", KEY_VALUE, "value5", KEY_END);
+	Key addedKey = Key ("user:/parento/config/key5", ELEKTRA_KEY_VALUE, "value5", ELEKTRA_KEY_END);
 	task.ours.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);
@@ -50,7 +50,7 @@ TEST_F (NewKeyStrategyTest, AddEqualsKeyMerge)
 
 TEST_F (NewKeyStrategyTest, AddEqualsRespectsBinaryData)
 {
-	Key addedKey = Key ("user:/parento/config/key5", KEY_BINARY, KEY_VALUE, "value5", KEY_END);
+	Key addedKey = Key ("user:/parento/config/key5", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_VALUE, "value5", ELEKTRA_KEY_END);
 	task.ours.append (addedKey);
 	Key conflictKey = mk5;
 	result.addConflict (conflictKey, CONFLICT_ADD, CONFLICT_SAME);
@@ -62,7 +62,7 @@ TEST_F (NewKeyStrategyTest, AddEqualsRespectsBinaryData)
 
 TEST_F (NewKeyStrategyTest, EqualsAddKeyMerge)
 {
-	Key addedKey = Key ("user:/parentt/config/key5", KEY_VALUE, "value5", KEY_END);
+	Key addedKey = Key ("user:/parentt/config/key5", ELEKTRA_KEY_VALUE, "value5", ELEKTRA_KEY_END);
 	task.theirs.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);
@@ -79,7 +79,7 @@ TEST_F (NewKeyStrategyTest, EqualsAddKeyMerge)
 
 TEST_F (NewKeyStrategyTest, EqualsAddRespectsBinaryData)
 {
-	Key addedKey = Key ("user:/parentt/config/key5", KEY_BINARY, KEY_VALUE, "value5", KEY_END);
+	Key addedKey = Key ("user:/parentt/config/key5", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_VALUE, "value5", ELEKTRA_KEY_END);
 	task.theirs.append (addedKey);
 	Key conflictKey = mk5;
 	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_ADD);

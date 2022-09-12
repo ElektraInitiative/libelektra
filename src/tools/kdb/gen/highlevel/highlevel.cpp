@@ -150,7 +150,7 @@ static std::string keySetToCCode (kdb::KeySet & set)
 	PluginPtr plugin = modules.load ("c", KeySet ());
 
 	auto file = "/tmp/elektra.highlevelgen." + std::to_string (std::time (nullptr));
-	Key errorKey ("/", KEY_VALUE, file.c_str (), KEY_END);
+	Key errorKey ("/", ELEKTRA_KEY_VALUE, file.c_str (), ELEKTRA_KEY_END);
 	if (plugin->set (set, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		throw CommandAbortException ("c (plugin) failed");
@@ -175,10 +175,10 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 
 	Modules modules;
 	KeySet config;
-	config.append (Key ("system:/noparent", KEY_END));
+	config.append (Key ("system:/noparent", ELEKTRA_KEY_END));
 	PluginPtr plugin = modules.load ("quickdump", config);
 
-	Key parentKey (parent.c_str (), KEY_VALUE, path.c_str (), KEY_END);
+	Key parentKey (parent.c_str (), ELEKTRA_KEY_VALUE, path.c_str (), ELEKTRA_KEY_END);
 	if (plugin->set (set, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		throw CommandAbortException ("quickdump failed");
@@ -187,7 +187,7 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 
 static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 {
-	auto result = kdb::KeySet (ks.size (), KS_END);
+	auto result = kdb::KeySet (ks.size (), ELEKTRA_KS_END);
 	for (auto it = ks.begin (); it != ks.end (); ++it)
 	{
 		if (it->isCascading ())
@@ -208,7 +208,7 @@ static std::string generateHelpMessage (const std::string & appName, const std::
 {
 	std::vector<const char *> argv = { appName.c_str (), "--help" };
 
-	kdb::Key parentKey (specParent.c_str (), KEY_END);
+	kdb::Key parentKey (specParent.c_str (), ELEKTRA_KEY_END);
 	int ret = ckdb::elektraGetOpts (spec.getKeySet (), argv.size (), argv.data (), NULL, parentKey.getKey ());
 
 	if (ret != 1)
@@ -300,7 +300,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	list unions;
 	list commands;
 
-	auto specParent = kdb::Key (specParentName, KEY_END);
+	auto specParent = kdb::Key (specParentName, ELEKTRA_KEY_END);
 
 	EnumProcessor enumProcessor (enumConversion);
 	StructProcessor structProcessor (specParent, ks);
@@ -440,7 +440,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 						     "' doesn't have a default value and is not marked with 'require'!");
 		}
 
-		kdb::Key defaultsKey (key.getName ().substr (parentLength), KEY_END);
+		kdb::Key defaultsKey (key.getName ().substr (parentLength), ELEKTRA_KEY_END);
 		defaultsKey.setMeta ("default", key.getMeta<std::string> ("default"));
 		defaultsKey.setMeta ("type", key.getMeta<std::string> ("type"));
 		defaults.append (defaultsKey);
@@ -618,17 +618,17 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	}
 
 	kdb::KeySet contract;
-	contract.append (kdb::Key ("system:/elektra/contract/mountglobal/gopts", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END));
 
 	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
-	contract.append (kdb::Key ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END));
 
 	// enable check for properly mounted specification
-	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END));
 
 	// calculate specification token
 	char token[65];
-	kdb::Key parentKeyMaybeWithErrors = kdb::Key (specParentName, KEY_END);
+	kdb::Key parentKeyMaybeWithErrors = kdb::Key (specParentName, ELEKTRA_KEY_END);
 	kdb_boolean_t success = ckdb::calculateSpecificationToken (token, ks.getKeySet (), parentKeyMaybeWithErrors.getKey ());
 	if (!success)
 	{
@@ -636,7 +636,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		kdb::printError (std::cerr, parentKeyMaybeWithErrors, false, false);
 		throw CommandAbortException ("Error during calculation of specification token.");
 	}
-	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, token, KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, token, ELEKTRA_KEY_END));
 
 
 	data["keys_count"] = std::to_string (keys.size ());

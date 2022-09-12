@@ -27,7 +27,7 @@ int GlobalUmountCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	// they are all mounted in that array
-	Key parentKey ("system:/elektra/globalplugins/postcommit/user/plugins/", KEY_END);
+	Key parentKey ("system:/elektra/globalplugins/postcommit/user/plugins/", ELEKTRA_KEY_END);
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 

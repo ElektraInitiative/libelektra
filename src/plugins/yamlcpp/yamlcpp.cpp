@@ -48,16 +48,16 @@ namespace
 kdb::KeySet contractYamlCpp (void)
 {
 	return kdb::KeySet{ 30,
-			    keyNew ("system:/elektra/modules/yamlcpp", KEY_VALUE, "yamlcpp plugin waits for your orders", KEY_END),
-			    keyNew ("system:/elektra/modules/yamlcpp/exports", KEY_END),
-			    keyNew ("system:/elektra/modules/yamlcpp/exports/get", KEY_FUNC, elektraYamlcppGet, KEY_END),
-			    keyNew ("system:/elektra/modules/yamlcpp/exports/set", KEY_FUNC, elektraYamlcppSet, KEY_END),
+			    keyNew ("system:/elektra/modules/yamlcpp", ELEKTRA_KEY_VALUE, "yamlcpp plugin waits for your orders", ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/yamlcpp/exports", ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/yamlcpp/exports/get", ELEKTRA_KEY_FUNC, elektraYamlcppGet, ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/yamlcpp/exports/set", ELEKTRA_KEY_FUNC, elektraYamlcppSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			    keyNew ("system:/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			    keyNew ("system:/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END),
-			    keyNew ("system:/elektra/modules/yamlcpp/config/needs/boolean/restore", KEY_VALUE, "#1", KEY_END),
-			    keyNew ("system:/elektra/modules/yamlcpp/config/needs/boolean/restoreas", KEY_VALUE, "none", KEY_END),
-			    KS_END };
+			    keyNew ("system:/elektra/modules/yamlcpp/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/yamlcpp/config/needs/binary/meta", ELEKTRA_KEY_VALUE, "true", ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/yamlcpp/config/needs/boolean/restore", ELEKTRA_KEY_VALUE, "#1", ELEKTRA_KEY_END),
+			    keyNew ("system:/elektra/modules/yamlcpp/config/needs/boolean/restoreas", ELEKTRA_KEY_VALUE, "none", ELEKTRA_KEY_END),
+			    ELEKTRA_KS_END };
 }
 }
 

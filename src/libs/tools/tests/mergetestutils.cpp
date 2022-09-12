@@ -30,35 +30,35 @@ protected:
 	Key mk1, mk2, mk3, mk4, mk5;
 
 	MergeTest ()
-	: baseParent (Key ("user:/parentb", KEY_END)), ourParent (Key ("user:/parento", KEY_END)),
-	  theirParent (Key ("user:/parentt", KEY_END)), mergeParent (Key ("user:/parentm", KEY_END))
+	: baseParent (Key ("user:/parentb", ELEKTRA_KEY_END)), ourParent (Key ("user:/parento", ELEKTRA_KEY_END)),
+	  theirParent (Key ("user:/parentt", ELEKTRA_KEY_END)), mergeParent (Key ("user:/parentm", ELEKTRA_KEY_END))
 	{
 		base.append (baseParent);
-		base.append (Key ("user:/parentb/config/key1", KEY_VALUE, "value1", KEY_END));
-		base.append (Key ("user:/parentb/config/key2", KEY_VALUE, "value2", KEY_END));
-		base.append (Key ("user:/parentb/config/key3", KEY_VALUE, "value3", KEY_END));
-		base.append (Key ("user:/parentb/config/key4", KEY_VALUE, "value4", KEY_END));
+		base.append (Key ("user:/parentb/config/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
+		base.append (Key ("user:/parentb/config/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
+		base.append (Key ("user:/parentb/config/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END));
+		base.append (Key ("user:/parentb/config/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END));
 
 		ours.append (ourParent);
-		ours.append (Key ("user:/parento/config/key1", KEY_VALUE, "value1", KEY_END));
-		ours.append (Key ("user:/parento/config/key2", KEY_VALUE, "value2", KEY_END));
-		ours.append (Key ("user:/parento/config/key3", KEY_VALUE, "value3", KEY_END));
-		ours.append (Key ("user:/parento/config/key4", KEY_VALUE, "value4", KEY_END));
+		ours.append (Key ("user:/parento/config/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
+		ours.append (Key ("user:/parento/config/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
+		ours.append (Key ("user:/parento/config/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END));
+		ours.append (Key ("user:/parento/config/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END));
 
 		theirs.append (theirParent);
-		theirs.append (Key ("user:/parentt/config/key1", KEY_VALUE, "value1", KEY_END));
-		theirs.append (Key ("user:/parentt/config/key2", KEY_VALUE, "value2", KEY_END));
-		theirs.append (Key ("user:/parentt/config/key3", KEY_VALUE, "value3", KEY_END));
-		theirs.append (Key ("user:/parentt/config/key4", KEY_VALUE, "value4", KEY_END));
+		theirs.append (Key ("user:/parentt/config/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END));
+		theirs.append (Key ("user:/parentt/config/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END));
+		theirs.append (Key ("user:/parentt/config/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END));
+		theirs.append (Key ("user:/parentt/config/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END));
 
 		// used as references for comparing
-		mk1 = Key ("user:/parentm/config/key1", KEY_VALUE, "value1", KEY_END);
-		mk2 = Key ("user:/parentm/config/key2", KEY_VALUE, "value2", KEY_END);
-		mk3 = Key ("user:/parentm/config/key3", KEY_VALUE, "value3", KEY_END);
-		mk4 = Key ("user:/parentm/config/key4", KEY_VALUE, "value4", KEY_END);
+		mk1 = Key ("user:/parentm/config/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END);
+		mk2 = Key ("user:/parentm/config/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END);
+		mk3 = Key ("user:/parentm/config/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END);
+		mk4 = Key ("user:/parentm/config/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END);
 
 		// used only by some tests
-		mk5 = Key ("user:/parentm/config/key5", KEY_VALUE, "value5", KEY_END);
+		mk5 = Key ("user:/parentm/config/key5", ELEKTRA_KEY_VALUE, "value5", ELEKTRA_KEY_END);
 
 		mergeKeys.append (mk1);
 		mergeKeys.append (mk2);
@@ -84,10 +84,10 @@ protected:
 		ks.rewind ();
 		while ((current = ks.next ()))
 		{
-			current.getKey ()->flags = static_cast<ckdb::keyflag_t> (current.getKey ()->flags & ~(ckdb::KEY_FLAG_SYNC));
+			current.getKey ()->flags = static_cast<ckdb::keyflag_t> (current.getKey ()->flags & ~(ckdb::ELEKTRA_KEY_FLAG_SYNC));
 
 			// This does not work because C++ complains about an invalid conversion from int to keyflags_t
-			// clear_bit(current.getKey()->flags, static_cast<int>(ckdb::KEY_FLAG_SYNC));
+			// clear_bit(current.getKey()->flags, static_cast<int>(ckdb::ELEKTRA_KEY_FLAG_SYNC));
 		}
 	}
 

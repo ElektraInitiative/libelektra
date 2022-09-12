@@ -34,7 +34,7 @@ TEST (key, null)
 
 TEST (key, typebool)
 {
-	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
+	Key k ("user:/key", ELEKTRA_KEY_VALUE, "testkey", ELEKTRA_KEY_END);
 	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
 	k.setString ("O");
 	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
@@ -73,7 +73,7 @@ TEST (key, keynew)
 	succeed_if (key0.getName () == "/", "key0 has wrong name");
 
 	// Key with name
-	Key key2 ("system:/sw/test", KEY_END);
+	Key key2 ("system:/sw/test", ELEKTRA_KEY_END);
 	succeed_if (key2.getBaseName () == "test", "wrong base name");
 	succeed_if (key2.getName () == "system:/sw/test", "key2 has wrong name");
 	// succeed_if (key2.getDirName() == "system:/sw", "wrong dir name");
@@ -84,7 +84,7 @@ TEST (key, keynew)
 
 
 	// Key with name
-	Key key3 ("system:/sw/test", KEY_END);
+	Key key3 ("system:/sw/test", ELEKTRA_KEY_END);
 	succeed_if (key3.getName () == "system:/sw/test", "key3 has wrong name");
 	succeed_if (key3.getBaseName () == "test", "wrong base name");
 	// succeed_if (key3.getDirName() == "system:/sw", "wrong dir name");
@@ -133,7 +133,7 @@ TEST (key, keynew)
 	// succeed_if (key3.getDirName() == "/name", "wrong dir name");
 
 	// Key with name + value
-	Key key4 ("system:/sw/test", KEY_VALUE, "test", KEY_END);
+	Key key4 ("system:/sw/test", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END);
 	succeed_if (key4.getName () == "system:/sw/test", "key4 has wrong name");
 	succeed_if (key4.getString () == "test", "key4 has wrong value");
 	succeed_if (key4.get<string> () == "test", "key4 has wrong value");
@@ -200,7 +200,7 @@ TEST (key, keynew)
 	succeed_if (key4.getBinary () == s, "key4 has wrong binary value");
 	succeed_if (key4.getBinarySize () == 3, "key4 has wrong value size");
 
-	Key key8 ("system:/valid/there", KEY_BINARY, KEY_SIZE, sizeof (array), KEY_VALUE, array, KEY_END);
+	Key key8 ("system:/valid/there", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (array), ELEKTRA_KEY_VALUE, array, ELEKTRA_KEY_END);
 	succeed_if (key8.getName () == "system:/valid/there", "key8 has wrong name");
 	succeed_if (key8.isBinary (), "Key should be binary");
 	succeed_if (!key8.isString (), "Key should be binary");
@@ -209,16 +209,16 @@ TEST (key, keynew)
 	succeed_if (memcmp (&getBack[0], array, sizeof (array)) == 0, "could not get correct value with keyGetBinary");
 	succeed_if (key8.getBaseName () == "there", "wrong base name");
 
-	Key key9 ("system:/valid/.inactive", KEY_COMMENT, "inactive key", KEY_END);
+	Key key9 ("system:/valid/.inactive", ELEKTRA_KEY_COMMENT, "inactive key", ELEKTRA_KEY_END);
 	succeed_if (key9.getMeta<std::string> ("comment") == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName () == ".inactive", "wrong base name");
 
 	std::string name = "system:/valid/name";
-	Key keyA (name, KEY_END);
+	Key keyA (name, ELEKTRA_KEY_END);
 	succeed_if (keyA.getName () == "system:/valid/name", "keyA has wrong name");
 	succeed_if (keyA.getBaseName () == "name", "keyA wrong base name");
 
-	Key keyB ("/", KEY_END);
+	Key keyB ("/", ELEKTRA_KEY_END);
 	keyB.setBinary (nullptr, 0);
 	succeed_if (keyB.isBinary (), "should be binary");
 	succeed_if (keyB.getBinary () == "", "Binary should be a nullpointer");
@@ -232,7 +232,7 @@ TEST (key, keynew)
 
 TEST (key, constructor)
 {
-	ckdb::Key * ck = ckdb::keyNew ("/", KEY_END);
+	ckdb::Key * ck = ckdb::keyNew ("/", ELEKTRA_KEY_END);
 	Key k = ck; // constructor with (ckdb::Key)
 
 	/*
@@ -250,7 +250,7 @@ TEST (key, set)
 	ckdb::Key * ck;
 	Key k;
 
-	ck = ckdb::keyNew ("/", KEY_END);
+	ck = ckdb::keyNew ("/", ELEKTRA_KEY_END);
 	k = ck; // operator= alias for setKey()
 
 	/*
@@ -268,7 +268,7 @@ TEST (key, cast)
 	ckdb::Key * ck;
 	Key * k;
 
-	ck = ckdb::keyNew ("/", KEY_END);
+	ck = ckdb::keyNew ("/", ELEKTRA_KEY_END);
 	k = reinterpret_cast<Key *> (&ck); // not copied on purpose
 
 	/*
@@ -433,51 +433,51 @@ TEST (key, name)
 	// so we finally got a name, lets test below
 	succeed_if (test.getName () == "user:/dir/mykey/onedeeper", "Basename did not work");
 
-	succeed_if (test.isBelow (Key ("user:/", KEY_END)), "key is below");
-	succeed_if (test.isBelow (Key ("user:/dir", KEY_END)), "key is below");
-	succeed_if (test.isBelow (Key ("user:/dir/mykey", KEY_END)), "key is below");
-	succeed_if (!test.isBelow (Key ("user:/dir/mykey/onedeeper", KEY_END)), "key is not below (but same)");
-	succeed_if (!test.isBelow (Key ("user:/otherdir", KEY_END)), "key is not below");
+	succeed_if (test.isBelow (Key ("user:/", ELEKTRA_KEY_END)), "key is below");
+	succeed_if (test.isBelow (Key ("user:/dir", ELEKTRA_KEY_END)), "key is below");
+	succeed_if (test.isBelow (Key ("user:/dir/mykey", ELEKTRA_KEY_END)), "key is below");
+	succeed_if (!test.isBelow (Key ("user:/dir/mykey/onedeeper", ELEKTRA_KEY_END)), "key is not below (but same)");
+	succeed_if (!test.isBelow (Key ("user:/otherdir", ELEKTRA_KEY_END)), "key is not below");
 
-	succeed_if (test.isBelowOrSame (Key ("user:/", KEY_END)), "key is below");
-	succeed_if (test.isBelowOrSame (Key ("user:/dir", KEY_END)), "key is below");
-	succeed_if (test.isBelowOrSame (Key ("user:/dir/mykey", KEY_END)), "key is below");
-	succeed_if (test.isBelowOrSame (Key ("user:/dir/mykey/onedeeper", KEY_END)), "key is same");
-	succeed_if (!test.isBelowOrSame (Key ("user:/otherdir", KEY_END)), "key is not below");
+	succeed_if (test.isBelowOrSame (Key ("user:/", ELEKTRA_KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key ("user:/dir", ELEKTRA_KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key ("user:/dir/mykey", ELEKTRA_KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key ("user:/dir/mykey/onedeeper", ELEKTRA_KEY_END)), "key is same");
+	succeed_if (!test.isBelowOrSame (Key ("user:/otherdir", ELEKTRA_KEY_END)), "key is not below");
 
-	succeed_if (test.isDirectBelow (Key ("user:/dir/mykey", KEY_END)), "key is direct below");
-	succeed_if (!test.isDirectBelow (Key ("user:/dir/test", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user:/dir", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user:/dir/otherdir", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user:/otherdir", KEY_END)), "key is not direct below");
-	succeed_if (!test.isDirectBelow (Key ("user:/", KEY_END)), "key is not direct below");
+	succeed_if (test.isDirectBelow (Key ("user:/dir/mykey", ELEKTRA_KEY_END)), "key is direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/dir/test", ELEKTRA_KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/dir", ELEKTRA_KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/dir/otherdir", ELEKTRA_KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/otherdir", ELEKTRA_KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key ("user:/", ELEKTRA_KEY_END)), "key is not direct below");
 
 	test.setName ("system:/elektra");
-	succeed_if (test.isBelow (Key ("system:/", KEY_END)), "system:/elektra is not below system");
+	succeed_if (test.isBelow (Key ("system:/", ELEKTRA_KEY_END)), "system:/elektra is not below system");
 	test.setName ("system:/");
-	succeed_if (!test.isBelow (Key ("system:/elektra", KEY_END)), "system is below system:/elektra");
+	succeed_if (!test.isBelow (Key ("system:/elektra", ELEKTRA_KEY_END)), "system is below system:/elektra");
 }
 
 void f (Key)
 {
-	Key h ("user:/infunction", KEY_END);
+	Key h ("user:/infunction", ELEKTRA_KEY_END);
 }
 
 TEST (key, ref)
 {
-	Key zgr1 ("user:/zgr1", KEY_END);
+	Key zgr1 ("user:/zgr1", ELEKTRA_KEY_END);
 	{
-		Key zgr2 ("user:/zgr2", KEY_END);
-		Key zgr3 ("user:/zgr3", KEY_END);
-		Key zgr4 ("user:/zgr4", KEY_END);
-		Key zgr5 ("user:/zgr5", KEY_END);
+		Key zgr2 ("user:/zgr2", ELEKTRA_KEY_END);
+		Key zgr3 ("user:/zgr3", ELEKTRA_KEY_END);
+		Key zgr4 ("user:/zgr4", ELEKTRA_KEY_END);
+		Key zgr5 ("user:/zgr5", ELEKTRA_KEY_END);
 		zgr2 = zgr1;
 		zgr3 = zgr1;
 		zgr4 = zgr1;
 	}
 
 	f (zgr1);
-	f (Key ("user:/passed", KEY_END));
+	f (Key ("user:/passed", ELEKTRA_KEY_END));
 
 	Key test;
 	test.setName ("user:/test");
@@ -495,7 +495,7 @@ TEST (key, ref)
 	succeed_if (test.getName () == "user:/test", "wrong name");
 	succeed_if (ref2.getName () == "user:/test", "ref key wrong name");
 
-	const Key consttest ("user:/test", KEY_END);
+	const Key consttest ("user:/test", ELEKTRA_KEY_END);
 	Key ref3 = consttest; // const copy constructor
 	succeed_if (*ref3 == *consttest, "should point to the same object");
 
@@ -526,7 +526,7 @@ TEST (key, valid)
 	succeed_if (i1.isValid (), "key should be valid");
 	succeed_if (i1, "even though it is invalid, it is still not a null key");
 
-	Key i2 ("/", KEY_END);
+	Key i2 ("/", ELEKTRA_KEY_END);
 	succeed_if (i2.isValid (), "key should be valid");
 	succeed_if (i2, "even though it is invalid, it is still not a null key");
 
@@ -545,14 +545,14 @@ TEST (key, valid)
 
 	for (auto & invalid_name : invalid_names)
 	{
-		EXPECT_THROW (Key (invalid_name, KEY_END), kdb::KeyInvalidName);
+		EXPECT_THROW (Key (invalid_name, ELEKTRA_KEY_END), kdb::KeyInvalidName);
 	}
 
-	Key v1 ("user:/", KEY_END);
+	Key v1 ("user:/", ELEKTRA_KEY_END);
 	succeed_if (v1.isValid (), "key should be valid");
 	succeed_if (v1, "should be non-null too");
 
-	Key v2 ("system:/", KEY_END);
+	Key v2 ("system:/", ELEKTRA_KEY_END);
 	succeed_if (v2.isValid (), "key should be valid");
 	succeed_if (v2, "should be non-null too");
 
@@ -568,7 +568,7 @@ TEST (key, valid)
 
 	for (auto & valid_name : valid_names)
 	{
-		Key v3 (valid_name, KEY_END);
+		Key v3 (valid_name, ELEKTRA_KEY_END);
 		succeed_if (v3.isValid (), "key should be valid");
 		succeed_if (v3, "should not be a null key");
 	}
@@ -576,7 +576,7 @@ TEST (key, valid)
 
 TEST (key, clear)
 {
-	Key k1 ("user:/", KEY_END);
+	Key k1 ("user:/", ELEKTRA_KEY_END);
 	Key k2 = k1;
 	Key k3 = k1;
 
@@ -613,7 +613,7 @@ TEST (key, clear)
 
 TEST (key, conversation)
 {
-	Key k1 ("user:/", KEY_END);
+	Key k1 ("user:/", ELEKTRA_KEY_END);
 	ckdb::Key * ck1 = k1.getKey ();
 	succeed_if (!strcmp (ckdb::keyName (ck1), "user:/"), "c key does not have correct name");
 	succeed_if (!strcmp (ckdb::keyName (*k1), "user:/"), "c key does not have correct name");
@@ -625,25 +625,25 @@ TEST (key, conversation)
 
 TEST (key, keynamespace)
 {
-	succeed_if (Key ("user:/", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
-	succeed_if (Key ("user:/a", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
-	// std::cout << Key ("user:/a", KEY_END).getNamespace () << std::endl;
-	succeed_if (Key ("user:/a/b/c", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
-	succeed_if (Key ("user:/a/..", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
-	succeed_if (Key ("user:/a/../x/f/v", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	succeed_if (Key ("user:/", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	succeed_if (Key ("user:/a", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	// std::cout << Key ("user:/a", ELEKTRA_KEY_END).getNamespace () << std::endl;
+	succeed_if (Key ("user:/a/b/c", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	succeed_if (Key ("user:/a/..", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	succeed_if (Key ("user:/a/../x/f/v", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
 
-	succeed_if (Key ("dir:/", KEY_END).getNamespace () == ElektraNamespace::DIR, "namespace wrong");
-	succeed_if (Key ("proc:/", KEY_END).getNamespace () == ElektraNamespace::PROC, "namespace wrong");
-	succeed_if (Key ("spec:/", KEY_END).getNamespace () == ElektraNamespace::SPEC, "namespace wrong");
-	succeed_if (Key ("system:/", KEY_END).getNamespace () == ElektraNamespace::SYSTEM, "namespace wrong");
+	succeed_if (Key ("dir:/", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::DIR, "namespace wrong");
+	succeed_if (Key ("proc:/", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::PROC, "namespace wrong");
+	succeed_if (Key ("spec:/", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::SPEC, "namespace wrong");
+	succeed_if (Key ("system:/", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::SYSTEM, "namespace wrong");
 
-	succeed_if (Key ("dir:/abc", KEY_END).getNamespace () == ElektraNamespace::DIR, "namespace wrong");
-	succeed_if (Key ("proc:/abc", KEY_END).getNamespace () == ElektraNamespace::PROC, "namespace wrong");
-	succeed_if (Key ("spec:/abc", KEY_END).getNamespace () == ElektraNamespace::SPEC, "namespace wrong");
-	succeed_if (Key ("system:/abc", KEY_END).getNamespace () == ElektraNamespace::SYSTEM, "namespace wrong");
+	succeed_if (Key ("dir:/abc", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::DIR, "namespace wrong");
+	succeed_if (Key ("proc:/abc", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::PROC, "namespace wrong");
+	succeed_if (Key ("spec:/abc", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::SPEC, "namespace wrong");
+	succeed_if (Key ("system:/abc", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::SYSTEM, "namespace wrong");
 
-	succeed_if (Key ("/", KEY_END).getNamespace () == ElektraNamespace::CASCADING, "namespace wrong");
-	succeed_if (Key ("/abc", KEY_END).getNamespace () == ElektraNamespace::CASCADING, "namespace wrong");
+	succeed_if (Key ("/", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::CASCADING, "namespace wrong");
+	succeed_if (Key ("/abc", ELEKTRA_KEY_END).getNamespace () == ElektraNamespace::CASCADING, "namespace wrong");
 }
 
 TEST (key, comparision)
@@ -653,7 +653,7 @@ TEST (key, comparision)
 	succeed_if (ke1 == ke2, "two empty keys are not the same?");
 	succeed_if (!(ke1 != ke2), "two empty keys are not the same?");
 
-	Key k1 ("user:/a", KEY_END), k2 ("user:/b", KEY_END);
+	Key k1 ("user:/a", ELEKTRA_KEY_END), k2 ("user:/b", ELEKTRA_KEY_END);
 
 	succeed_if (ke1 < k1, "compare empty key with user:/a");
 	succeed_if (ke1 <= k1, "compare empty key with user:/a");
@@ -682,7 +682,7 @@ struct C
 TEST (key, move)
 {
 
-	std::unique_ptr<Key> u1 (new Key ("user:/key3/1", KEY_END));
+	std::unique_ptr<Key> u1 (new Key ("user:/key3/1", ELEKTRA_KEY_END));
 	std::unique_ptr<Key> u2 (std::move (u1));
 	std::unique_ptr<Key> u3 = std::move (u1);
 

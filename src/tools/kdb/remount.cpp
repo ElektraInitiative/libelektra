@@ -39,12 +39,12 @@ void RemountCommand::getExistingMountpoint (Cmdline const & cl)
 
 void RemountCommand::cloneMountpoint (Cmdline const & cl)
 {
-	Key existingParent (Backends::getBasePath (existingMountpoint), KEY_END);
-	Key newParent (Backends::getBasePath (mp), KEY_END);
+	Key existingParent (Backends::getBasePath (existingMountpoint), ELEKTRA_KEY_END);
+	Key newParent (Backends::getBasePath (mp), ELEKTRA_KEY_END);
 
 	KeySet existingBackend = mountConf.cut (existingParent);
 	mountConf.append (existingBackend);
-	KeySet newBackend (existingBackend.size (), KS_END);
+	KeySet newBackend (existingBackend.size (), ELEKTRA_KS_END);
 	string configPath = newParent.getName () + "/config/path";
 	string mpPath = newParent.getName () + "/mountpoint";
 	existingBackend.rewind ();

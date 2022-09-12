@@ -30,35 +30,35 @@ using ckdb::Plugin;
 CppKeySet defaultConfig ()
 {
 	CppKeySet config{ 20,
-			  keyNew ("user:/chars", KEY_END),
-			  keyNew ("user:/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
-			  keyNew ("user:/chars/20", KEY_VALUE, "77", KEY_END), // space -> w
-			  keyNew ("user:/chars/23", KEY_VALUE, "72", KEY_END), // # -> r
-			  keyNew ("user:/chars/5C", KEY_VALUE, "62", KEY_END), // \\ (backslash) -> b
-			  keyNew ("user:/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
-			  keyNew ("user:/chars/3B", KEY_VALUE, "73", KEY_END), // ; -> s
-			  KS_END };
+			  keyNew ("user:/chars", ELEKTRA_KEY_END),
+			  keyNew ("user:/chars/0A", ELEKTRA_KEY_VALUE, "6E", ELEKTRA_KEY_END), // new line -> n
+			  keyNew ("user:/chars/20", ELEKTRA_KEY_VALUE, "77", ELEKTRA_KEY_END), // space -> w
+			  keyNew ("user:/chars/23", ELEKTRA_KEY_VALUE, "72", ELEKTRA_KEY_END), // # -> r
+			  keyNew ("user:/chars/5C", ELEKTRA_KEY_VALUE, "62", ELEKTRA_KEY_END), // \\ (backslash) -> b
+			  keyNew ("user:/chars/3D", ELEKTRA_KEY_VALUE, "65", ELEKTRA_KEY_END), // = -> e
+			  keyNew ("user:/chars/3B", ELEKTRA_KEY_VALUE, "73", ELEKTRA_KEY_END), // ; -> s
+			  ELEKTRA_KS_END };
 	return config;
 }
 
 CppKeySet percentConfig ()
 {
 	CppKeySet config{ 20,
-			  keyNew ("user:/chars", KEY_END),
-			  keyNew ("user:/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
-			  keyNew ("user:/chars/20", KEY_VALUE, "77", KEY_END), // space -> w
-			  keyNew ("user:/chars/23", KEY_VALUE, "72", KEY_END), // # -> r
-			  keyNew ("user:/chars/5C", KEY_VALUE, "62", KEY_END), // \\ (backslash) -> b
-			  keyNew ("user:/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
-			  keyNew ("user:/chars/3B", KEY_VALUE, "73", KEY_END), // ; -> s
-			  keyNew ("user:/escape", KEY_VALUE, "25", KEY_END),   // use % as escape character
-			  KS_END };
+			  keyNew ("user:/chars", ELEKTRA_KEY_END),
+			  keyNew ("user:/chars/0A", ELEKTRA_KEY_VALUE, "6E", ELEKTRA_KEY_END), // new line -> n
+			  keyNew ("user:/chars/20", ELEKTRA_KEY_VALUE, "77", ELEKTRA_KEY_END), // space -> w
+			  keyNew ("user:/chars/23", ELEKTRA_KEY_VALUE, "72", ELEKTRA_KEY_END), // # -> r
+			  keyNew ("user:/chars/5C", ELEKTRA_KEY_VALUE, "62", ELEKTRA_KEY_END), // \\ (backslash) -> b
+			  keyNew ("user:/chars/3D", ELEKTRA_KEY_VALUE, "65", ELEKTRA_KEY_END), // = -> e
+			  keyNew ("user:/chars/3B", ELEKTRA_KEY_VALUE, "73", ELEKTRA_KEY_END), // ; -> s
+			  keyNew ("user:/escape", ELEKTRA_KEY_VALUE, "25", ELEKTRA_KEY_END),   // use % as escape character
+			  ELEKTRA_KS_END };
 	return config;
 }
 
 void testEnocdingDecoding (Plugin * const plugin, CppKey const & parent, string const decodedString, string const encodedString = "")
 {
-	ckdb::KeySet * rawKeys = ksNew (20, keyNew ("user:/tests/ccode/key", KEY_VALUE, decodedString.c_str (), KEY_END), KS_END);
+	ckdb::KeySet * rawKeys = ksNew (20, keyNew ("user:/tests/ccode/key", ELEKTRA_KEY_VALUE, decodedString.c_str (), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if_same (plugin->kdbSet (plugin, rawKeys, *parent), //! OCLint (empty if, too few branches switch)
 			 ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbset` was not successful");
 
@@ -80,10 +80,10 @@ void testEnocdingDecoding (Plugin * const plugin, CppKey const & parent, string 
 
 void testRoundTrip (string const decodedString, string const encodedString = "", CppKeySet config = defaultConfig ())
 {
-	CppKeySet modules{ 0, KS_END };
+	CppKeySet modules{ 0, ELEKTRA_KS_END };
 	elektraModulesInit (modules.getKeySet (), NULL);
 
-	CppKey parent{ "system:/elektra/modules/type", KEY_END };
+	CppKey parent{ "system:/elektra/modules/type", ELEKTRA_KEY_END };
 	Plugin * plugin = elektraPluginOpen ("ccode", modules.getKeySet (), config.getKeySet (), *parent);
 	exit_if_fail (plugin != NULL, "Could not open ccode plugin"); //! OCLint (empty if, too few branches switch)
 

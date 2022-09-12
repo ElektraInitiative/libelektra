@@ -85,7 +85,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 {
 	MountBackendBuilder backend;
 
-	Key mpk (mp, KEY_END);
+	Key mpk (mp, ELEKTRA_KEY_END);
 
 	if (!mpk.isValid ())
 	{
@@ -96,7 +96,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 
 	if (cl.force || cl.strategy != "preserve")
 	{
-		Key cutKey (Backends::mountpointsPath, KEY_END);
+		Key cutKey (Backends::mountpointsPath, ELEKTRA_KEY_END);
 		cutKey.addBaseName (mpk.getName ());
 		mountConf.cut (cutKey);
 	}
@@ -205,7 +205,7 @@ void MountCommand::readPluginConfig (KeySet & pluginConfig)
 		cout << "Enter the Key value: ";
 		cin >> value;
 
-		pluginConfig.append (Key ("user:/" + keyName, KEY_VALUE, value.c_str (), KEY_END));
+		pluginConfig.append (Key ("user:/" + keyName, ELEKTRA_KEY_VALUE, value.c_str (), ELEKTRA_KEY_END));
 	}
 }
 

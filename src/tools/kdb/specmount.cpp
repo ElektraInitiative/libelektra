@@ -47,7 +47,7 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 
 	kdb::KeySet specToRead;
 	kdb.get (specToRead, "spec:" + mp);
-	specToRead = specToRead.cut (Key ("spec:" + mp, KEY_END));
+	specToRead = specToRead.cut (Key ("spec:" + mp, ELEKTRA_KEY_END));
 
 	sr.readSpecification (specToRead);
 

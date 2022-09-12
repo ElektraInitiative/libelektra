@@ -34,17 +34,17 @@ namespace
 CppKeySet getContract ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system:/elektra/modules/kconfig", KEY_VALUE, "kconfig plugin waits for your orders", KEY_END),
-			  keyNew ("system:/elektra/modules/kconfig/exports", KEY_END),
-			  keyNew ("system:/elektra/modules/kconfig/exports/open", KEY_FUNC, elektraKconfigOpen, KEY_END),
-			  keyNew ("system:/elektra/modules/kconfig/exports/close", KEY_FUNC, elektraKconfigClose, KEY_END),
-			  keyNew ("system:/elektra/modules/kconfig/exports/get", KEY_FUNC, elektraKconfigGet, KEY_END),
-			  keyNew ("system:/elektra/modules/kconfig/exports/set", KEY_FUNC, elektraKconfigSet, KEY_END),
-			  keyNew ("system:/elektra/modules/kconfig/exports/error", KEY_FUNC, elektraKconfigError, KEY_END),
-			  keyNew ("system:/elektra/modules/kconfig/exports/checkconf", KEY_FUNC, elektraKconfigCheckConf, KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig", ELEKTRA_KEY_VALUE, "kconfig plugin waits for your orders", ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports", ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/open", ELEKTRA_KEY_FUNC, elektraKconfigOpen, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/close", ELEKTRA_KEY_FUNC, elektraKconfigClose, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/get", ELEKTRA_KEY_FUNC, elektraKconfigGet, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/set", ELEKTRA_KEY_FUNC, elektraKconfigSet, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/error", ELEKTRA_KEY_FUNC, elektraKconfigError, ELEKTRA_KEY_END),
+			  keyNew ("system:/elektra/modules/kconfig/exports/checkconf", ELEKTRA_KEY_FUNC, elektraKconfigCheckConf, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system:/elektra/modules/kconfig/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			  KS_END };
+			  keyNew ("system:/elektra/modules/kconfig/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			  ELEKTRA_KS_END };
 }
 
 } // end namespace

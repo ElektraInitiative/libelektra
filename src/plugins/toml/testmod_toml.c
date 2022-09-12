@@ -22,8 +22,8 @@ static const char * prefix = NULL;
 #define TEST_WR_HEAD                                                                                                                       \
 	printf ("Start Test: %s\n", __func__);                                                                                             \
 	ElektraKey * lastKey = NULL;                                                                                                              \
-	ElektraKeyset * writeKs = ksNew (0, KS_END);                                                                                              \
-	ElektraKeyset * expectedKs = ksNew (0, KS_END)
+	ElektraKeyset * writeKs = ksNew (0, ELEKTRA_KS_END);                                                                                              \
+	ElektraKeyset * expectedKs = ksNew (0, ELEKTRA_KS_END)
 #define TEST_WR_FOOT                                                                                                                       \
 	testWriteReadCompare (writeKs, expectedKs);                                                                                        \
 	ksDel (expectedKs);                                                                                                                \
@@ -56,7 +56,7 @@ static const char * prefix = NULL;
 	{                                                                                                                                  \
 		if (lastKey != NULL)                                                                                                       \
 		{                                                                                                                          \
-			lastKey = keyDup (lastKey, KEY_CP_ALL);                                                                            \
+			lastKey = keyDup (lastKey, ELEKTRA_KEY_CP_ALL);                                                                            \
 			ksAppendKey (expectedKs, lastKey);                                                                                 \
 		}                                                                                                                          \
 	}

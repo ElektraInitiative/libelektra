@@ -21,7 +21,7 @@ void testUmount (std::string mp)
 	KeySet ks;
 
 	Backend b1;
-	b1.setMountpoint (Key (mp, KEY_END), ks);
+	b1.setMountpoint (Key (mp, ELEKTRA_KEY_END), ks);
 	b1.serialize (ks);
 
 	Backends::umount (mp, ks);

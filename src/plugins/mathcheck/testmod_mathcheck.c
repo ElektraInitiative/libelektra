@@ -17,8 +17,8 @@
 
 #define test(ks, retval)                                                                                                                   \
 	{                                                                                                                                  \
-		ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                \
-		ElektraKeyset * conf = ksNew (0, KS_END);                                                                                         \
+		ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);                                                \
+		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);                                                                                         \
 		PLUGIN_OPEN ("mathcheck");                                                                                                 \
 		ksRewind (ks);                                                                                                             \
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == retval, "error");                                                    \
@@ -28,8 +28,8 @@
 
 #define testSet(ks, value)                                                                                                                 \
 	{                                                                                                                                  \
-		ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                \
-		ElektraKeyset * conf = ksNew (0, KS_END);                                                                                         \
+		ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);                                                \
+		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);                                                                                         \
 		PLUGIN_OPEN ("mathcheck");                                                                                                 \
 		ksRewind (ks);                                                                                                             \
 		plugin->kdbSet (plugin, ks, parentKey);                                                                                    \

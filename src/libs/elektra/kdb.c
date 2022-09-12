@@ -48,8 +48,8 @@
 #include <kdbinternal.h>
 
 
-#define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
-#define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")
+#define ELEKTRA_KDB_GET_PHASE_POST_STORAGE_SPEC (ELEKTRA_KDB_GET_PHASE_POST_STORAGE "/spec")
+#define ELEKTRA_KDB_GET_PHASE_POST_STORAGE_NONSPEC (ELEKTRA_KDB_GET_PHASE_POST_STORAGE "/nonspec")
 
 /**
  * @defgroup kdb KDB
@@ -1508,7 +1508,7 @@ static bool runGetPhase (ElektraKeyset * backends, ElektraKey * parentKey, const
 	bool skipspec = false;
 	if (strncmp (phase, ELEKTRA_KDB_GET_PHASE_POST_STORAGE, sizeof (ELEKTRA_KDB_GET_PHASE_POST_STORAGE) - 1) == 0)
 	{
-		speconly = strcmp (phase, KDB_GET_PHASE_POST_STORAGE_SPEC);
+		speconly = strcmp (phase, ELEKTRA_KDB_GET_PHASE_POST_STORAGE_SPEC);
 		skipspec = !speconly;
 		phase = ELEKTRA_KDB_GET_PHASE_POST_STORAGE;
 	}
@@ -1829,7 +1829,7 @@ int kdbGet (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 
 	// Step 11: run poststorage phase for spec:/
 	ElektraKey * specRoot = keyNew ("spec:/", ELEKTRA_KEY_END);
-	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_SPEC))
+	if (!runGetPhase (backends, parentKey, ELEKTRA_KDB_GET_PHASE_POST_STORAGE_SPEC))
 	{
 		keyDel (specRoot);
 		goto error;
@@ -1886,7 +1886,7 @@ int kdbGet (ElektraKdb * handle, ElektraKeyset * ks, ElektraKey * parentKey)
 	}
 
 	// Step 16: run poststorage phase for non-spec:/
-	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_NONSPEC))
+	if (!runGetPhase (backends, parentKey, ELEKTRA_KDB_GET_PHASE_POST_STORAGE_NONSPEC))
 	{
 		goto error;
 	}
