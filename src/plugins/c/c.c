@@ -130,7 +130,7 @@ int keyGenerate (const ElektraKey * key, FILE * stream)
 	}
 
 	const ElektraKey * meta;
-	ElektraKey * dup = keyDup (key, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	keyRewindMeta (dup);
 	while ((meta = keyNextMeta (dup)))
 	{
@@ -181,13 +181,13 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTR
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/c"))
 	{
-		ElektraKeyset * contract = ksNew (30, keyNew ("system:/elektra/modules/c", KEY_VALUE, "c plugin waits for your orders", KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports", KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
-					   keyNew ("system:/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConf, KEY_END),
+		ElektraKeyset * contract = ksNew (30, keyNew ("system:/elektra/modules/c", ELEKTRA_KEY_VALUE, "c plugin waits for your orders", ELEKTRA_KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports", ELEKTRA_KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/get", ELEKTRA_KEY_FUNC, elektraCGet, ELEKTRA_KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/set", ELEKTRA_KEY_FUNC, elektraCSet, ELEKTRA_KEY_END),
+					   keyNew ("system:/elektra/modules/c/exports/checkconf", ELEKTRA_KEY_FUNC, elektraCCheckConf, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-					   keyNew ("system:/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+					   keyNew ("system:/elektra/modules/c/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

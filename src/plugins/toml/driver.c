@@ -82,7 +82,7 @@ static Driver * createDriver (ElektraKey * parent, ElektraKeyset * keys)
 	}
 	driver->root = parent;
 	driver->keys = keys;
-	driver->parentStack = pushParent (NULL, keyDup (parent, KEY_CP_ALL));
+	driver->parentStack = pushParent (NULL, keyDup (parent, ELEKTRA_KEY_CP_ALL));
 	driver->filename = elektraStrDup (keyString (parent));
 	driver->simpleTableActive = false;
 	driver->drainCommentsOnKeyExit = true;
@@ -144,7 +144,7 @@ void driverExitToml (Driver * driver)
 	}
 	if (driver->commentRoot != NULL)
 	{
-		ElektraKey * root = keyNew (keyName (driver->root), KEY_END);
+		ElektraKey * root = keyNew (keyName (driver->root), ELEKTRA_KEY_END);
 		ksAppendKey (driver->keys, root);
 		driverDrainCommentsToKey (root, driver);
 	}
@@ -464,7 +464,7 @@ void driverExitTableArray (Driver * driver)
 	driver->order--;				       // Undo order increment
 
 	ElektraKey * key = buildTableArrayKeyName (driver->tableArrayStack);
-	ElektraKey * rootNameKey = keyDup (key, KEY_CP_ALL);
+	ElektraKey * rootNameKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	keyAddName (rootNameKey, "..");
 	ElektraKey * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
 
@@ -759,7 +759,7 @@ static void setCurrKey (Driver * driver, const ElektraKey * key)
 	}
 	if (key != NULL)
 	{
-		driver->currKey = keyNew (keyName (key), KEY_END);
+		driver->currKey = keyNew (keyName (key), ELEKTRA_KEY_END);
 		keyIncRef (driver->currKey);
 	}
 	else

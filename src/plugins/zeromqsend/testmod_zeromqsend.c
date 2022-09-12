@@ -184,13 +184,13 @@ static void test_commit (void)
 {
 	printf ("test commit notification\n");
 
-	ElektraKey * parentKey = keyNew ("system:/tests/foo", KEY_END);
-	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
-			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
-			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
+	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
+			       keyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
+			       keyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
@@ -224,13 +224,13 @@ static void test_timeoutConnect (void)
 {
 	printf ("test connect timeout\n");
 
-	ElektraKey * parentKey = keyNew ("system:/tests/foo", KEY_END);
-	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
-			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
-			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
+	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
+			       keyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
+			       keyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
@@ -255,13 +255,13 @@ static void test_timeoutSubscribe (void)
 {
 	printf ("test subscribe message timeout\n");
 
-	ElektraKey * parentKey = keyNew ("system:/tests/foo", KEY_END);
-	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/tests/foo", ELEKTRA_KEY_END);
+	ElektraKey * toAdd = keyNew ("system:/tests/foo/bar", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
-			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
-			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
+	ElektraKeyset * conf = ksNew (3, keyNew ("/endpoint", ELEKTRA_KEY_VALUE, TEST_ENDPOINT, ELEKTRA_KEY_END),
+			       keyNew ("/connectTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, ELEKTRA_KEY_END),
+			       keyNew ("/subscribeTimeout", ELEKTRA_KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state

@@ -74,7 +74,7 @@ static char * getChildFraction (const ElektraKey * parent, const ElektraKey * ch
 	}
 	else
 	{
-		ElektraKey * childDup = keyDup (child, KEY_CP_ALL);
+		ElektraKey * childDup = keyDup (child, ELEKTRA_KEY_CP_ALL);
 		size_t fracSize = 256;
 		char * fraction = elektraCalloc (sizeof (char) * fracSize);
 		if (fraction == NULL)

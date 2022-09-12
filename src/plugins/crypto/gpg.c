@@ -418,8 +418,8 @@ static int isValidGpgKey (ElektraKeyset * conf, const char * value)
 {
 	// NOTE it is save to discard the const modifier (although it is not pretty) - the value is not being modified
 	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *) value, NULL };
-	ElektraKey * errorKey = keyNew ("/", KEY_END);
-	ElektraKey * msgKey = keyNew ("/", KEY_END);
+	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * msgKey = keyNew ("/", ELEKTRA_KEY_END);
 
 	int status = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
 
@@ -506,8 +506,8 @@ int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (ElektraKeyset * conf, El
  */
 char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (ElektraKeyset * conf)
 {
-	ElektraKey * msgKey = keyNew ("/", KEY_END);
-	ElektraKey * errorKey = keyNew ("/", KEY_END);
+	ElektraKey * msgKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
 
 	char * errorBuffer;
 	size_t errorBufferLen = 0;

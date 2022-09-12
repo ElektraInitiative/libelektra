@@ -146,17 +146,17 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 	/* configuration only */
 	ElektraKeyset * n;
 	ksAppend (returned,
-		  n = ksNew (30, keyNew ("system:/elektra/modules/network", KEY_VALUE, "network plugin waits for your orders", KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports", KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/get", KEY_FUNC, elektraNetworkGet, KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/set", KEY_FUNC, elektraNetworkSet, KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/elektraNetworkAddrInfo", KEY_FUNC, elektraNetworkAddrInfo,
-				     KEY_END),
-			     keyNew ("system:/elektra/modules/network/exports/elektraPortInfo", KEY_FUNC, elektraNetworkAddrInfo, KEY_END),
+		  n = ksNew (30, keyNew ("system:/elektra/modules/network", ELEKTRA_KEY_VALUE, "network plugin waits for your orders", ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/network/exports", ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/network/exports/get", ELEKTRA_KEY_FUNC, elektraNetworkGet, ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/network/exports/set", ELEKTRA_KEY_FUNC, elektraNetworkSet, ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/network/exports/elektraNetworkAddrInfo", ELEKTRA_KEY_FUNC, elektraNetworkAddrInfo,
+				     ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/network/exports/elektraPortInfo", ELEKTRA_KEY_FUNC, elektraNetworkAddrInfo, ELEKTRA_KEY_END),
 
 #include "readme_network.c"
 
-			     keyNew ("system:/elektra/modules/network/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+			     keyNew ("system:/elektra/modules/network/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 	ksDel (n);
 
 	return 1; /* success */

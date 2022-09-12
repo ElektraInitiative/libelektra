@@ -120,7 +120,7 @@ void removeKeyFromResult (ElektraKey * convertKey, ElektraKey * target, ElektraK
 	 * before removing it from the result
 	 */
 	keySetMeta (convertKey, CONVERT_TARGET, keyName (target));
-	keyDel (ksLookup (orig, convertKey, KDB_O_POP));
+	keyDel (ksLookup (orig, convertKey, ELEKTRA_KDB_O_POP));
 }
 
 static void flushConvertedKeys (ElektraKey * target, ElektraKeyset * converted, ElektraKeyset * orig)
@@ -135,8 +135,8 @@ static void flushConvertedKeys (ElektraKey * target, ElektraKeyset * converted, 
 		ElektraKey * appendTarget = target;
 		const char * metaName = keyString (keyGetMeta (current, CONVERT_METANAME));
 
-		ElektraKey * currentDup = keyDup (current, KEY_CP_ALL);
-		ElektraKey * targetDup = keyDup (appendTarget, KEY_CP_ALL);
+		ElektraKey * currentDup = keyDup (current, ELEKTRA_KEY_CP_ALL);
+		ElektraKey * targetDup = keyDup (appendTarget, ELEKTRA_KEY_CP_ALL);
 		keySetBaseName (currentDup, 0);
 		keySetBaseName (targetDup, 0);
 
@@ -170,9 +170,9 @@ static ElektraKeyset * convertKeys (ElektraKey ** keyArray, size_t numKeys, Elek
 {
 	ElektraKey * current = 0;
 	ElektraKey * prevAppendTarget = 0;
-	ElektraKeyset * prevConverted = ksNew (0, KS_END);
-	ElektraKeyset * nextConverted = ksNew (0, KS_END);
-	ElektraKeyset * result = ksNew (0, KS_END);
+	ElektraKeyset * prevConverted = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * nextConverted = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
 
 	for (size_t index = 0; index < numKeys; index++)
 	{
@@ -300,7 +300,7 @@ int elektraKeyToMetaSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 		/* they should always exist, just to be sure */
 		if (targetName && metaName)
 		{
-			ElektraKey * target = ksLookupByName (returned, keyString (targetName), KDB_O_NONE);
+			ElektraKey * target = ksLookupByName (returned, keyString (targetName), ELEKTRA_KDB_O_NONE);
 
 			/* this might be NULL as the key might have been deleted */
 			if (target)

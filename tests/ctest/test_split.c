@@ -14,32 +14,32 @@
 
 ElektraKeyset * modules_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/modules", KEY_END), KS_END);
+	return ksNew (5, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * simple_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/simple", KEY_END), KS_END);
+	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * set_us (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/user", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/user/mountpoint", ELEKTRA_KEY_VALUE, "user", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
 ElektraKeyset * root_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END), KS_END);
+	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/root", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/root/mountpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 #if 1 == 0
@@ -165,19 +165,19 @@ void addBackendForDivide (ElektraKeyset * backends, const char * mountpoint)
 {
 	BackendData data = {
 		.backend = NULL,
-		.keys = ksNew (0, KS_END),
+		.keys = ksNew (0, ELEKTRA_KS_END),
 		.definition = NULL,
 		.plugins = NULL,
 		.initialized = false,
 	};
-	ksAppendKey (backends, keyNew (mountpoint, KEY_BINARY, KEY_SIZE, sizeof (data), KEY_VALUE, &data, KEY_END));
+	ksAppendKey (backends, keyNew (mountpoint, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (data), ELEKTRA_KEY_VALUE, &data, ELEKTRA_KEY_END));
 }
 
 void test_backendsDivide (void)
 {
 	printf ("Test backendsDivide");
 
-	ElektraKeyset * backends = ksNew (0, KS_END);
+	ElektraKeyset * backends = ksNew (0, ELEKTRA_KS_END);
 
 	addBackendForDivide (backends, "dir:/");
 	addBackendForDivide (backends, "user:/");
@@ -192,38 +192,38 @@ void test_backendsDivide (void)
 
 	// clang-format off
 	ElektraKeyset * ks = ksNew (20,
-				keyNew ("spec:/xyz", KEY_END),
-				keyNew ("user:/abc", KEY_END),
-				keyNew ("user:/bak/abc", KEY_END),
-				keyNew ("user:/bar/abc", KEY_END),
-				keyNew ("user:/bar/bar/abc", KEY_END),
-				keyNew ("user:/bar/bar/def", KEY_END),
-				keyNew ("user:/bar/bar/xyz", KEY_END),
-				keyNew ("user:/bar/foo/abc", KEY_END),
-				keyNew ("user:/bar/foo/xyz", KEY_END),
-				keyNew ("user:/bar/xyz", KEY_END),
-				keyNew ("user:/foo/abc", KEY_END),
-				keyNew ("user:/foo/xyz", KEY_END),
-				keyNew ("user:/xyz", KEY_END),
-				keyNew ("default:/xyz", KEY_END),
-			     KS_END);
+				keyNew ("spec:/xyz", ELEKTRA_KEY_END),
+				keyNew ("user:/abc", ELEKTRA_KEY_END),
+				keyNew ("user:/bak/abc", ELEKTRA_KEY_END),
+				keyNew ("user:/bar/abc", ELEKTRA_KEY_END),
+				keyNew ("user:/bar/bar/abc", ELEKTRA_KEY_END),
+				keyNew ("user:/bar/bar/def", ELEKTRA_KEY_END),
+				keyNew ("user:/bar/bar/xyz", ELEKTRA_KEY_END),
+				keyNew ("user:/bar/foo/abc", ELEKTRA_KEY_END),
+				keyNew ("user:/bar/foo/xyz", ELEKTRA_KEY_END),
+				keyNew ("user:/bar/xyz", ELEKTRA_KEY_END),
+				keyNew ("user:/foo/abc", ELEKTRA_KEY_END),
+				keyNew ("user:/foo/xyz", ELEKTRA_KEY_END),
+				keyNew ("user:/xyz", ELEKTRA_KEY_END),
+				keyNew ("default:/xyz", ELEKTRA_KEY_END),
+			     ELEKTRA_KS_END);
 	// clang-format on
 
 	succeed_if (backendsDivide (backends, ks) == 1, "couldn't split ks");
 
 	// TODO: more thorough tests
 
-	ElektraKeyset * ks0 = ksNew (10, KS_END);
-	ElektraKeyset * ks1 = ksNew (10, keyNew ("user:/abc", KEY_END), keyNew ("user:/bak/abc", KEY_END), keyNew ("user:/xyz", KEY_END), KS_END);
-	ElektraKeyset * ks2 = ksNew (10, keyNew ("user:/bar/abc", KEY_END), keyNew ("user:/bar/xyz", KEY_END), KS_END);
-	ElektraKeyset * ks3 = ksNew (10, keyNew ("user:/bar/bar/abc", KEY_END), keyNew ("user:/bar/bar/def", KEY_END),
-			      keyNew ("user:/bar/bar/xyz", KEY_END), KS_END);
-	ElektraKeyset * ks4 = ksNew (10, KS_END);
-	ElektraKeyset * ks5 = ksNew (10, keyNew ("user:/bar/foo/abc", KEY_END), keyNew ("user:/bar/foo/xyz", KEY_END), KS_END);
-	ElektraKeyset * ks6 = ksNew (10, KS_END);
-	ElektraKeyset * ks7 = ksNew (10, keyNew ("user:/foo/abc", KEY_END), keyNew ("user:/foo/xyz", KEY_END), KS_END);
-	ElektraKeyset * ks8 = ksNew (10, KS_END);
-	ElektraKeyset * ks9 = ksNew (10, keyNew ("default:/xyz", KEY_END), keyNew ("spec:/xyz", KEY_END), KS_END);
+	ElektraKeyset * ks0 = ksNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks1 = ksNew (10, keyNew ("user:/abc", ELEKTRA_KEY_END), keyNew ("user:/bak/abc", ELEKTRA_KEY_END), keyNew ("user:/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks2 = ksNew (10, keyNew ("user:/bar/abc", ELEKTRA_KEY_END), keyNew ("user:/bar/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks3 = ksNew (10, keyNew ("user:/bar/bar/abc", ELEKTRA_KEY_END), keyNew ("user:/bar/bar/def", ELEKTRA_KEY_END),
+			      keyNew ("user:/bar/bar/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks4 = ksNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks5 = ksNew (10, keyNew ("user:/bar/foo/abc", ELEKTRA_KEY_END), keyNew ("user:/bar/foo/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks6 = ksNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks7 = ksNew (10, keyNew ("user:/foo/abc", ELEKTRA_KEY_END), keyNew ("user:/foo/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks8 = ksNew (10, ELEKTRA_KS_END);
+	ElektraKeyset * ks9 = ksNew (10, keyNew ("default:/xyz", ELEKTRA_KEY_END), keyNew ("spec:/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	compare_keyset (ks0, ((const BackendData *) keyValue (ksLookupByName (backends, "dir:/", 0)))->keys);
 	compare_keyset (ks1, ((const BackendData *) keyValue (ksLookupByName (backends, "user:/", 0)))->keys);

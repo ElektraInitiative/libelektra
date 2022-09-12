@@ -16,28 +16,28 @@ ElektraKey * copy;
 void x (ElektraKey * orig)
 {
 //! [Duplicate Key]
-copy = keyCopy (keyNew ("/", KEY_END), orig, KEY_CP_ALL);
+copy = keyCopy (keyNew ("/", ELEKTRA_KEY_END), orig, ELEKTRA_KEY_CP_ALL);
 //! [Duplicate Key]
 }
 
 void y (ElektraKey * orig)
 {
 //! [Dup Key]
-copy = keyDup (orig, KEY_CP_ALL);
+copy = keyDup (orig, ELEKTRA_KEY_CP_ALL);
 //! [Dup Key]
 }
 
 void h (ElektraKey * orig)
 {
 //! [Basic Usage]
-keyCopy (copy, orig, KEY_CP_ALL);
+keyCopy (copy, orig, ELEKTRA_KEY_CP_ALL);
 //! [Basic Usage]
 }
 
 void g (ElektraKey * k)
 {
 //! [Clear]
-keyCopy (k, NULL, KEY_CP_ALL);
+keyCopy (k, NULL, ELEKTRA_KEY_CP_ALL);
 // name, value and metadata of k have now been clear
 // lock flags, reference count, etc. remain unchanged
 //! [Clear]
@@ -47,9 +47,9 @@ keyCopy (k, NULL, KEY_CP_ALL);
 
 int main (void)
 {
-	ElektraKey * k = keyNew ("user:/hello", KEY_VALUE, "my content", KEY_END);
+	ElektraKey * k = keyNew ("user:/hello", ELEKTRA_KEY_VALUE, "my content", ELEKTRA_KEY_END);
 
-	copy = keyNew ("user:/copy", KEY_VALUE, "copies content", KEY_END);
+	copy = keyNew ("user:/copy", ELEKTRA_KEY_VALUE, "copies content", ELEKTRA_KEY_END);
 
 	x (k);
 	h (k);

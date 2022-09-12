@@ -24,12 +24,12 @@ void test_readline (void)
 {
 
 	char * filename = srcdir_file ("line/linetest");
-	ElektraKey * parentKey = keyNew ("user:/tests/line", KEY_VALUE, filename, KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/line", ELEKTRA_KEY_VALUE, filename, ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("line");
 	printf ("%s\n", filename);
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	ElektraKey * key = ksLookupByName (ks, "user:/tests/line/#0", 0);
 	exit_if_fail (key, "line1 key not found");

@@ -68,7 +68,7 @@ static inline const char * keyGetMetaString (const ElektraKey * key, const char 
  */
 static inline const char * keyGetMetaStringByKey (ElektraKey * key, ElektraKey * lookup)
 {
-	const ElektraKey * mk = ksLookup (keyMeta (key), lookup, KDB_O_DEL);
+	const ElektraKey * mk = ksLookup (keyMeta (key), lookup, ELEKTRA_KDB_O_DEL);
 	const char * value = mk == NULL ? NULL : keyString (mk);
 	return value != NULL && value[0] == '\0' ? NULL : value;
 }
@@ -147,9 +147,9 @@ int elektraGetOpts (ElektraKeyset * ks, int argc, const char ** argv, const char
 {
 	elektraCursor initial = ksGetCursor (ks);
 
-	ElektraKey * specParent = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * specParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	// Translate key to spec namespace
-	keySetNamespace (specParent, KEY_NS_SPEC);
+	keySetNamespace (specParent, ELEKTRA_NS_SPEC);
 
 	struct Specification spec;
 	if (!processSpec (&spec, ks, specParent, parentKey))
@@ -159,9 +159,9 @@ int elektraGetOpts (ElektraKeyset * ks, int argc, const char ** argv, const char
 		return -1;
 	}
 
-	ElektraKey * command = keyNew ("/", KEY_END);
-	ElektraKey * commandKey = keyNew (keyName (specParent), KEY_END);
-	ElektraKey * commandArgs = keyNew ("/", KEY_END);
+	ElektraKey * command = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * commandKey = keyNew (keyName (specParent), ELEKTRA_KEY_END);
+	ElektraKey * commandArgs = keyNew ("/", ELEKTRA_KEY_END);
 
 	keyDel (specParent);
 
@@ -193,9 +193,9 @@ int elektraGetOpts (ElektraKeyset * ks, int argc, const char ** argv, const char
 				endArg += lastEndArg;
 
 				ElektraKey * commandSpec = ksLookup (spec.keys, commandKey, 0);
-				ElektraKey * commandLookup = keyNew ("meta:/command", KEY_END);
+				ElektraKey * commandLookup = keyNew ("meta:/command", ELEKTRA_KEY_END);
 				keyAddBaseName (commandLookup, argv[endArg]);
-				subCommand = ksLookup (keyMeta (commandSpec), commandLookup, KDB_O_DEL);
+				subCommand = ksLookup (keyMeta (commandSpec), commandLookup, ELEKTRA_KDB_O_DEL);
 			}
 
 			bool argsWritten = false;
@@ -230,7 +230,7 @@ int elektraGetOpts (ElektraKeyset * ks, int argc, const char ** argv, const char
 				return -1;
 			}
 
-			ElektraKey * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
+			ElektraKey * procKey = keyNew ("proc:/", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
 			keyAddName (procKey, strchr (keyName (commandKey), '/'));
 			ksAppendKey (ks, procKey);
 
@@ -325,7 +325,7 @@ char * elektraGetOptsHelpMessage (ElektraKey * helpKey, const char * usage, cons
 	ElektraKey * lookup;
 	if (usage == NULL)
 	{
-		lookup = keyNew ("meta:/internal/libopts/help/usage", KEY_END);
+		lookup = keyNew ("meta:/internal/libopts/help/usage", ELEKTRA_KEY_END);
 		keyAddBaseName (lookup, command);
 		usage = keyGetMetaStringByKey (helpKey, lookup);
 	}
@@ -335,7 +335,7 @@ char * elektraGetOptsHelpMessage (ElektraKey * helpKey, const char * usage, cons
 		return NULL;
 	}
 
-	lookup = keyNew ("meta:/internal/libopts/help/options", KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/options", ELEKTRA_KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * options = keyGetMetaStringByKey (helpKey, lookup);
 	if (options == NULL)
@@ -343,7 +343,7 @@ char * elektraGetOptsHelpMessage (ElektraKey * helpKey, const char * usage, cons
 		options = "";
 	}
 
-	lookup = keyNew ("meta:/internal/libopts/help/commands", KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/commands", ELEKTRA_KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * commands = keyGetMetaStringByKey (helpKey, lookup);
 	if (commands == NULL)
@@ -351,7 +351,7 @@ char * elektraGetOptsHelpMessage (ElektraKey * helpKey, const char * usage, cons
 		commands = "";
 	}
 
-	lookup = keyNew ("meta:/internal/libopts/help/args", KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/args", ELEKTRA_KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * args = keyGetMetaStringByKey (helpKey, lookup);
 	if (args == NULL)
@@ -359,7 +359,7 @@ char * elektraGetOptsHelpMessage (ElektraKey * helpKey, const char * usage, cons
 		args = "";
 	}
 
-	lookup = keyNew ("meta:/internal/libopts/help/envs", KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/envs", ELEKTRA_KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * envs = keyGetMetaStringByKey (helpKey, lookup);
 	if (envs == NULL)
@@ -410,13 +410,13 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 		}
 	}
 
-	ElektraKeyset * usedEnvVars = ksNew (0, KS_END);
+	ElektraKeyset * usedEnvVars = ksNew (0, ELEKTRA_KS_END);
 	spec->options = ksNew (
-		1, keyNew ("/long/help", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END),
-		KS_END);
-	spec->keys = ksNew (0, KS_END);
-	spec->argIndices = ksNew (0, KS_END);
-	spec->commands = ksNew (0, KS_END);
+		1, keyNew ("/long/help", ELEKTRA_KEY_META, "hasarg", "none", ELEKTRA_KEY_META, "kind", "single", ELEKTRA_KEY_META, "flagvalue", "1", ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
+	spec->keys = ksNew (0, ELEKTRA_KS_END);
+	spec->argIndices = ksNew (0, ELEKTRA_KS_END);
+	spec->commands = ksNew (0, ELEKTRA_KS_END);
 
 	/**
 	 * 1. Process all keys in the @p ks and
@@ -430,7 +430,7 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 		ElektraKey * cur = ksAtCursor (ks, i);
 
 		// Keys that aren't in the spec namespace or below the parent key are ignored.
-		if (keyGetNamespace (cur) != KEY_NS_SPEC || !keyIsBelowOrSame (specParent, cur))
+		if (keyGetNamespace (cur) != ELEKTRA_NS_SPEC || !keyIsBelowOrSame (specParent, cur))
 		{
 			continue;
 		}
@@ -474,7 +474,7 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 
 			if (keyWithOpt == NULL)
 			{
-				keyWithOpt = keyNew (keyName (cur), KEY_META, "command", "1", KEY_END);
+				keyWithOpt = keyNew (keyName (cur), ELEKTRA_KEY_META, "command", "1", ELEKTRA_KEY_END);
 			}
 
 			// step 1b.)
@@ -489,18 +489,18 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 
 			if (!isParentKey)
 			{
-				ElektraKey * helpKey = keyNew (keyName (cur) + specParentLen, KEY_META, "hasarg", "none", KEY_META, "kind",
-							"single", KEY_META, "flagvalue", "1", KEY_END);
+				ElektraKey * helpKey = keyNew (keyName (cur) + specParentLen, ELEKTRA_KEY_META, "hasarg", "none", ELEKTRA_KEY_META, "kind",
+							"single", ELEKTRA_KEY_META, "flagvalue", "1", ELEKTRA_KEY_END);
 				keyAddName (helpKey, "/long/help");
 				ksAppendKey (spec->options, helpKey);
 			}
 		}
 
-		ElektraKey * command = keyNew ("/", KEY_VALUE, keyName (specParent), KEY_END);
+		ElektraKey * command = keyNew ("/", ELEKTRA_KEY_VALUE, keyName (specParent), ELEKTRA_KEY_END);
 		if (useSubcommands && !isParentKey)
 		{
 			// Determine name of the parent of cur
-			ElektraKey * curParent = keyNew (keyName (cur), KEY_END);
+			ElektraKey * curParent = keyNew (keyName (cur), ELEKTRA_KEY_END);
 			if (strcmp (keyBaseName (curParent), "#") == 0)
 			{
 				keySetBaseName (curParent, NULL); // remove #
@@ -508,7 +508,7 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 			keySetBaseName (curParent, NULL);
 
 			// Check if parent of current key exists in the KeySet
-			ElektraKey * maybeCommand = ksLookup (ks, curParent, KDB_O_DEL);
+			ElektraKey * maybeCommand = ksLookup (ks, curParent, ELEKTRA_KDB_O_DEL);
 			if (maybeCommand == NULL)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
@@ -546,7 +546,7 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 			{
 				// add sub-command to parent command
 				ElektraKey * parentCommand = ksLookup (spec->keys, maybeCommand, 0);
-				ElektraKey * subCommand = keyNew ("meta:/command", KEY_VALUE, keyBaseName (cur), KEY_END);
+				ElektraKey * subCommand = keyNew ("meta:/command", ELEKTRA_KEY_VALUE, keyBaseName (cur), ELEKTRA_KEY_END);
 				keyAddBaseName (subCommand, keyString (commandMeta));
 				if (ksLookup (keyMeta (parentCommand), subCommand, 0) != NULL)
 				{
@@ -575,7 +575,7 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 			}
 		}
 
-		keyCopyAllMeta (command, ksLookup (spec->commands, command, KDB_O_CREATE));
+		keyCopyAllMeta (command, ksLookup (spec->commands, command, ELEKTRA_KDB_O_CREATE));
 
 		// step 1c.)
 		if (!processOptions (spec, command, cur, &keyWithOpt, errorKey))
@@ -614,7 +614,7 @@ bool processSpec (struct Specification * spec, ElektraKeyset * ks, ElektraKey * 
 			return false;
 		}
 
-		keyCopyAllMeta (ksLookup (spec->commands, command, KDB_O_CREATE), command);
+		keyCopyAllMeta (ksLookup (spec->commands, command, ELEKTRA_KDB_O_CREATE), command);
 
 		keyDel (command);
 
@@ -683,8 +683,8 @@ bool processOptions (struct Specification * spec, ElektraKey * command, ElektraK
 		}
 
 		// no other way to create Key with name "opt"
-		ElektraKey * k = keyNew ("/", KEY_META, "opt", "", KEY_END);
-		opts = ksNew (2, keyNew ("meta:/#", KEY_END), keyGetMeta (k, "opt"), KS_END);
+		ElektraKey * k = keyNew ("/", ELEKTRA_KEY_META, "opt", "", ELEKTRA_KEY_END);
+		opts = ksNew (2, keyNew ("meta:/#", ELEKTRA_KEY_END), keyGetMeta (k, "opt"), ELEKTRA_KS_END);
 		keyDel (k);
 	}
 
@@ -874,8 +874,8 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	}
 
 	const char * commandName = command != NULL ? keyName (command) : "/";
-	ElektraKey * shortOptSpec = keyNew (commandName, KEY_META, "key", keyName (key), KEY_META, "hasarg", hasArg, KEY_META, "kind", kind,
-				     KEY_META, "flagvalue", flagValue, KEY_END);
+	ElektraKey * shortOptSpec = keyNew (commandName, ELEKTRA_KEY_META, "key", keyName (key), ELEKTRA_KEY_META, "hasarg", hasArg, ELEKTRA_KEY_META, "kind", kind,
+				     ELEKTRA_KEY_META, "flagvalue", flagValue, ELEKTRA_KEY_END);
 	keyAddBaseName (shortOptSpec, "short");
 	keyAddBaseName (shortOptSpec, (char[]){ shortOpt, '\0' });
 
@@ -894,7 +894,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	if (*keyWithOpt == NULL)
 	{
 		// Mark this option as belonging to command "command".
-		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
+		*keyWithOpt = keyNew (keyName (key), ELEKTRA_KEY_META, META_COMMAND_KEY, keyName (command), ELEKTRA_KEY_END);
 	}
 	elektraMetaArrayAdd (*keyWithOpt, "opt", keyName (shortOptSpec));
 
@@ -955,8 +955,8 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 	}
 
 	const char * commandName = command != NULL ? keyName (command) : "/";
-	ElektraKey * longOptSpec = keyNew (commandName, KEY_META, "key", keyName (key), KEY_META, "hasarg", hasArg, KEY_META, "kind", kind,
-				    KEY_META, "flagvalue", flagValue, KEY_END);
+	ElektraKey * longOptSpec = keyNew (commandName, ELEKTRA_KEY_META, "key", keyName (key), ELEKTRA_KEY_META, "hasarg", hasArg, ELEKTRA_KEY_META, "kind", kind,
+				    ELEKTRA_KEY_META, "flagvalue", flagValue, ELEKTRA_KEY_END);
 	keyAddBaseName (longOptSpec, "long");
 	keyAddBaseName (longOptSpec, longOpt);
 
@@ -975,7 +975,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 	if (*keyWithOpt == NULL)
 	{
 		// Mark this option as belonging to command "command".
-		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
+		*keyWithOpt = keyNew (keyName (key), ELEKTRA_KEY_META, META_COMMAND_KEY, keyName (command), ELEKTRA_KEY_END);
 	}
 	elektraMetaArrayAdd (*keyWithOpt, "opt", keyName (longOptSpec));
 
@@ -1035,7 +1035,7 @@ bool processEnvVars (ElektraKeyset * usedEnvVars, ElektraKey * specKey, ElektraK
 			continue;
 		}
 
-		ElektraKey * envVarKey = keyNew ("/", KEY_META, "key", keyName (specKey), KEY_END);
+		ElektraKey * envVarKey = keyNew ("/", ELEKTRA_KEY_META, "key", keyName (specKey), ELEKTRA_KEY_END);
 		keyAddBaseName (envVarKey, envVar);
 
 		ElektraKey * existing = ksLookup (usedEnvVars, envVarKey, 0);
@@ -1054,7 +1054,7 @@ bool processEnvVars (ElektraKeyset * usedEnvVars, ElektraKey * specKey, ElektraK
 
 		if (*keyWithOpt == NULL)
 		{
-			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
+			*keyWithOpt = keyNew (keyName (specKey), ELEKTRA_KEY_END);
 		}
 		elektraMetaArrayAdd (*keyWithOpt, "env", keyName (envVarKey));
 
@@ -1112,11 +1112,11 @@ bool processArgs (ElektraKey * command, ElektraKey * specKey, ElektraKeyset * ar
 		if (*keyWithOpt == NULL)
 		{
 			// Mark this arg as belonging to command "command".
-			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
+			*keyWithOpt = keyNew (keyName (specKey), ELEKTRA_KEY_META, META_COMMAND_KEY, keyName (command), ELEKTRA_KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "remaining");
 
-		ElektraKey * dup = keyDup (specKey, KEY_CP_ALL);
+		ElektraKey * dup = keyDup (specKey, ELEKTRA_KEY_CP_ALL);
 		keySetBaseName (dup, NULL); // remove #
 
 		const char * existing = keyGetMetaString (command, "remainingargskey");
@@ -1168,12 +1168,12 @@ bool processArgs (ElektraKey * command, ElektraKey * specKey, ElektraKeyset * ar
 		if (*keyWithOpt == NULL)
 		{
 			// Mark this arg as belonging to command "command".
-			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
+			*keyWithOpt = keyNew (keyName (specKey), ELEKTRA_KEY_META, META_COMMAND_KEY, keyName (command), ELEKTRA_KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "indexed");
 		keySetMeta (*keyWithOpt, "args/index", keyString (argsIndex));
 
-		ElektraKey * indexKey = ksLookup (argIndices, keyNew (keyName (command), KEY_END), KDB_O_DEL | KDB_O_CREATE);
+		ElektraKey * indexKey = ksLookup (argIndices, keyNew (keyName (command), ELEKTRA_KEY_END), ELEKTRA_KDB_O_DEL | ELEKTRA_KDB_O_CREATE);
 		keySetMeta (indexKey, "key", keyString (command));
 
 		char indexMetaName[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("index/")];
@@ -1236,8 +1236,8 @@ int writeOptionValues (ElektraKeyset * ks, ElektraKey * keyWithOpt, ElektraKeyse
 	bool shortFound = false;
 	while ((optMeta = ksNext (optMetas)) != NULL)
 	{
-		ElektraKey * optLookup = keyNew (keyString (optMeta), KEY_END);
-		ElektraKey * optKey = ksLookup (options, optLookup, KDB_O_DEL);
+		ElektraKey * optLookup = keyNew (keyString (optMeta), ELEKTRA_KEY_END);
+		ElektraKey * optKey = ksLookup (options, optLookup, ELEKTRA_KDB_O_DEL);
 		bool isShort = strncmp (keyString (optMeta), "/short", 6) == 0;
 		if (shortFound && !isShort)
 		{
@@ -1306,7 +1306,7 @@ int writeEnvVarValues (ElektraKeyset * ks, ElektraKey * keyWithOpt, ElektraKeyse
 		}
 		else
 		{
-			envValueKey = keyNew (keyName (envKey), KEY_VALUE, keyString (envKey), KEY_END);
+			envValueKey = keyNew (keyName (envKey), ELEKTRA_KEY_VALUE, keyString (envKey), ELEKTRA_KEY_END);
 		}
 
 		int res = addProcKey (ks, keyWithOpt, envValueKey);
@@ -1354,10 +1354,10 @@ int writeArgsValues (ElektraKeyset * ks, ElektraKey * keyWithOpt, ElektraKey * c
 		elektraCursor firstRemainingArg = argIndex == NULL ? 0 : ksGetSize (indices) - 1; // -1 because of parent
 		ksDel (indices);
 
-		ElektraKey * procKey = keyNew ("proc:/", KEY_END);
+		ElektraKey * procKey = keyNew ("proc:/", ELEKTRA_KEY_END);
 		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 
-		ElektraKey * insertKey = keyDup (procKey, KEY_CP_NAME);
+		ElektraKey * insertKey = keyDup (procKey, ELEKTRA_KEY_CP_NAME);
 
 		ksRewind (args);
 		for (elektraCursor i = firstRemainingArg; i < ksGetSize (args); ++i)
@@ -1365,7 +1365,7 @@ int writeArgsValues (ElektraKeyset * ks, ElektraKey * keyWithOpt, ElektraKey * c
 			ElektraKey * arg = ksAtCursor (args, i);
 			elektraArrayIncName (insertKey);
 
-			ElektraKey * k = keyDup (insertKey, KEY_CP_NAME);
+			ElektraKey * k = keyDup (insertKey, ELEKTRA_KEY_CP_NAME);
 			keySetString (k, keyString (arg));
 			ksAppendKey (ks, k);
 		}
@@ -1387,10 +1387,10 @@ int writeArgsValues (ElektraKeyset * ks, ElektraKey * keyWithOpt, ElektraKey * c
 		char arrayIndex[ELEKTRA_MAX_ARRAY_SIZE];
 		elektraWriteArrayNumber (arrayIndex, index);
 
-		ElektraKey * argKey = keyNew (keyName (command), KEY_END);
+		ElektraKey * argKey = keyNew (keyName (command), ELEKTRA_KEY_END);
 		keyAddBaseName (argKey, "args");
 		keyAddBaseName (argKey, arrayIndex);
-		ElektraKey * arg = ksLookup (args, argKey, KDB_O_DEL);
+		ElektraKey * arg = ksLookup (args, argKey, ELEKTRA_KDB_O_DEL);
 		if (arg == NULL)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
@@ -1399,7 +1399,7 @@ int writeArgsValues (ElektraKeyset * ks, ElektraKey * keyWithOpt, ElektraKey * c
 			return -1;
 		}
 
-		ElektraKey * procKey = keyNew ("proc:/", KEY_END);
+		ElektraKey * procKey = keyNew ("proc:/", ELEKTRA_KEY_END);
 		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 		keySetString (procKey, keyString (arg));
 		ksAppendKey (ks, procKey);
@@ -1418,7 +1418,7 @@ int writeArgsValues (ElektraKeyset * ks, ElektraKey * keyWithOpt, ElektraKey * c
  */
 ElektraKey * splitEnvValue (const ElektraKey * envKey)
 {
-	ElektraKey * valueKey = keyNew (keyName (envKey), KEY_END);
+	ElektraKey * valueKey = keyNew (keyName (envKey), ELEKTRA_KEY_END);
 
 	char * envValue = elektraStrDup (keyString (envKey));
 	char * curEnvValue = envValue;
@@ -1461,7 +1461,7 @@ int addProcKey (ElektraKeyset * ks, const ElektraKey * key, ElektraKey * valueKe
 		return 1;
 	}
 
-	ElektraKey * procKey = keyNew ("proc:/", KEY_END);
+	ElektraKey * procKey = keyNew ("proc:/", ELEKTRA_KEY_END);
 	keyAddName (procKey, strchr (keyName (key), '/'));
 
 	bool isArrayKey = elektraStrCmp (keyBaseName (procKey), "#") == 0;
@@ -1484,7 +1484,7 @@ int addProcKey (ElektraKeyset * ks, const ElektraKey * key, ElektraKey * valueKe
 
 	if (isArrayKey)
 	{
-		ElektraKey * insertKey = keyDup (procKey, KEY_CP_NAME);
+		ElektraKey * insertKey = keyDup (procKey, ELEKTRA_KEY_CP_NAME);
 		keyAddBaseName (insertKey, "#");
 		ElektraKeyset * values = elektraMetaArrayToKS (valueKey, "values");
 		if (values == NULL)
@@ -1501,7 +1501,7 @@ int addProcKey (ElektraKeyset * ks, const ElektraKey * key, ElektraKey * valueKe
 		{
 			elektraArrayIncName (insertKey);
 
-			ElektraKey * k = keyDup (insertKey, KEY_CP_NAME);
+			ElektraKey * k = keyDup (insertKey, ELEKTRA_KEY_CP_NAME);
 			keySetString (k, keyString (cur));
 			ksAppendKey (ks, k);
 		}
@@ -1523,13 +1523,13 @@ int addProcKey (ElektraKeyset * ks, const ElektraKey * key, ElektraKey * valueKe
  */
 ElektraKeyset * parseEnvp (const char ** envp)
 {
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	const char ** cur = envp;
 	while (*cur != NULL)
 	{
 		const char * eq = strchr (*cur, '=');
-		ElektraKey * key = keyNew ("/", KEY_VALUE, eq + 1, KEY_END);
+		ElektraKey * key = keyNew ("/", ELEKTRA_KEY_VALUE, eq + 1, ELEKTRA_KEY_END);
 		size_t len = eq - *cur;
 		char * name = elektraMemDup (*cur, len + 1);
 		name[len] = '\0';
@@ -1560,10 +1560,10 @@ ElektraKeyset * parseArgs (ElektraKey * command, ElektraKeyset * optionsSpec, bo
 		posixly = true;
 	}
 
-	ElektraKey * argKey = keyNew (keyName (command), KEY_END);
+	ElektraKey * argKey = keyNew (keyName (command), ELEKTRA_KEY_END);
 	keyAddName (argKey, "/args/#");
 
-	ElektraKeyset * options = ksNew (0, KS_END);
+	ElektraKeyset * options = ksNew (0, ELEKTRA_KS_END);
 	int i;
 	for (i = 1; i < argc; ++i)
 	{
@@ -1607,7 +1607,7 @@ ElektraKeyset * parseArgs (ElektraKey * command, ElektraKeyset * optionsSpec, bo
 			}
 
 			elektraArrayIncName (argKey);
-			ElektraKey * newArgKey = keyDup (argKey, KEY_CP_NAME);
+			ElektraKey * newArgKey = keyDup (argKey, ELEKTRA_KEY_CP_NAME);
 			keySetString (newArgKey, cur);
 			ksAppendKey (options, newArgKey);
 		}
@@ -1617,12 +1617,12 @@ ElektraKeyset * parseArgs (ElektraKey * command, ElektraKeyset * optionsSpec, bo
 	for (; i < argc; ++i)
 	{
 		elektraArrayIncName (argKey);
-		ElektraKey * newArgKey = keyDup (argKey, KEY_CP_NAME);
+		ElektraKey * newArgKey = keyDup (argKey, ELEKTRA_KEY_CP_NAME);
 		keySetString (newArgKey, argv[i]);
 		ksAppendKey (options, newArgKey);
 	}
 
-	ElektraKey * argsParent = keyNew (keyName (command), KEY_VALUE, keyBaseName (argKey), KEY_END);
+	ElektraKey * argsParent = keyNew (keyName (command), ELEKTRA_KEY_VALUE, keyBaseName (argKey), ELEKTRA_KEY_END);
 	keyAddBaseName (argsParent, "args");
 	ksAppendKey (options, argsParent);
 	keyDel (argKey);
@@ -1636,7 +1636,7 @@ bool parseShortOptions (ElektraKey * command, ElektraKeyset * optionsSpec, Elekt
 	for (const char * c = &argv[i][1]; *c != '\0'; ++c)
 	{
 
-		ElektraKey * shortOpt = keyNew (keyName (command), KEY_END);
+		ElektraKey * shortOpt = keyNew (keyName (command), ELEKTRA_KEY_END);
 		keyAddBaseName (shortOpt, "short");
 		keyAddBaseName (shortOpt, (char[]){ *c, '\0' });
 
@@ -1658,7 +1658,7 @@ bool parseShortOptions (ElektraKey * command, ElektraKeyset * optionsSpec, Elekt
 		ElektraKey * option = ksLookupByName (options, keyName (shortOpt), 0);
 		if (option == NULL)
 		{
-			option = keyNew (keyName (shortOpt), KEY_META, "key", keyGetMetaString (optSpec, "key"), KEY_END);
+			option = keyNew (keyName (shortOpt), ELEKTRA_KEY_META, "key", keyGetMetaString (optSpec, "key"), ELEKTRA_KEY_END);
 			ksAppendKey (options, option);
 		}
 		else if (!repeated)
@@ -1713,7 +1713,7 @@ bool parseShortOptions (ElektraKey * command, ElektraKeyset * optionsSpec, Elekt
 bool parseLongOption (ElektraKey * command, ElektraKeyset * optionsSpec, ElektraKeyset * options, int argc, const char ** argv, int * index, ElektraKey * errorKey)
 {
 	int i = *index;
-	ElektraKey * longOpt = keyNew (keyName (command), KEY_END);
+	ElektraKey * longOpt = keyNew (keyName (command), ELEKTRA_KEY_END);
 	keyAddBaseName (longOpt, "long");
 
 	char * opt = elektraStrDup (&argv[i][2]);
@@ -1748,7 +1748,7 @@ bool parseLongOption (ElektraKey * command, ElektraKeyset * optionsSpec, Elektra
 	ElektraKey * option = ksLookupByName (options, keyName (longOpt), 0);
 	if (option == NULL)
 	{
-		option = keyNew (keyName (longOpt), KEY_META, "key", keyGetMetaString (optSpec, "key"), KEY_END);
+		option = keyNew (keyName (longOpt), ELEKTRA_KEY_META, "key", keyGetMetaString (optSpec, "key"), ELEKTRA_KEY_END);
 		ksAppendKey (options, option);
 	}
 	else if (!repeated)
@@ -1836,11 +1836,11 @@ int writeOptions (ElektraKey * command, ElektraKey * commandKey, ElektraKey * co
 		  struct Specification * spec, ElektraKeyset * ks, const char * progname, const char ** envp, ElektraKey * parentKey)
 {
 	// Check if help message should be generated
-	ElektraKey * helpKey = keyNew (keyName (command), KEY_END);
+	ElektraKey * helpKey = keyNew (keyName (command), ELEKTRA_KEY_END);
 	keyAddName (helpKey, "/long/help");
 
 	// Generate help message
-	if (ksLookup (options, helpKey, KDB_O_DEL) != NULL)
+	if (ksLookup (options, helpKey, ELEKTRA_KDB_O_DEL) != NULL)
 	{
 		char * lastSlash = strrchr (progname, '/');
 		if (lastSlash != NULL)
@@ -1871,7 +1871,7 @@ int writeOptions (ElektraKey * command, ElektraKey * commandKey, ElektraKey * co
 	{
 		ElektraKeyset * envValues = parseEnvp (envp);
 
-		ElektraKey * argsParent = keyNew (keyName (command), KEY_END);
+		ElektraKey * argsParent = keyNew (keyName (command), ELEKTRA_KEY_END);
 		keyAddBaseName (argsParent, "args");
 		ElektraKeyset * args = elektraArrayGet (argsParent, options);
 		keyDel (argsParent);
@@ -1882,7 +1882,7 @@ int writeOptions (ElektraKey * command, ElektraKey * commandKey, ElektraKey * co
 		{
 			if (spec->useSubcommands)
 			{
-				ElektraKey * checkKey = keyDup (keyWithOpt, KEY_CP_ALL);
+				ElektraKey * checkKey = keyDup (keyWithOpt, ELEKTRA_KEY_CP_ALL);
 				if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
 				{
 					keySetBaseName (checkKey, NULL); // remove #
@@ -1899,7 +1899,7 @@ int writeOptions (ElektraKey * command, ElektraKey * commandKey, ElektraKey * co
 
 			if (keyGetMeta (keyWithOpt, "command") != NULL)
 			{
-				ElektraKey * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
+				ElektraKey * procKey = keyNew ("proc:/", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
 				keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 				ksAppendKey (ks, procKey);
 			}
@@ -1963,10 +1963,10 @@ ElektraKeyset * ksMetaGetSingleOrArray (ElektraKey * key, const char * metaName)
 	if (value[0] != '#')
 	{
 		// add dummy key to mimic elektraMetaArrayToKS
-		return ksNew (2, keyNew ("meta:/#", KEY_END), k, KS_END);
+		return ksNew (2, keyNew ("meta:/#", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 	}
 
-	ElektraKey * testKey = keyDup (k, KEY_CP_NAME);
+	ElektraKey * testKey = keyDup (k, ELEKTRA_KEY_CP_NAME);
 	keyAddBaseName (testKey, keyString (k));
 
 	const ElektraKey * test = keyGetMeta (key, keyName (testKey));
@@ -1975,7 +1975,7 @@ ElektraKeyset * ksMetaGetSingleOrArray (ElektraKey * key, const char * metaName)
 	if (test == NULL)
 	{
 		// add dummy key to mimic elektraMetaArrayToKS
-		return ksNew (2, keyNew ("meta:/#", KEY_END), k, KS_END);
+		return ksNew (2, keyNew ("meta:/#", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 	}
 
 	return elektraMetaArrayToKS (key, metaName);
@@ -2153,7 +2153,7 @@ char * generateCommandsList (ElektraKeyset * keysWithOpts, ElektraKey * commandK
 	ksRewind (keysWithOpts);
 	while ((cur = ksNext (keysWithOpts)) != NULL)
 	{
-		ElektraKey * checkKey = keyDup (cur, KEY_CP_NAME);
+		ElektraKey * checkKey = keyDup (cur, ELEKTRA_KEY_CP_NAME);
 		if (strcmp (keyBaseName (cur), "#") == 0)
 		{
 			keySetBaseName (checkKey, NULL); // remove #

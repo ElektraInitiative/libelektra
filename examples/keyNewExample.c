@@ -11,36 +11,36 @@
 
 int main (void)
 {
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	ElektraKey * key = 0;
 
 	printf ("Generate some keys...");
 
-	ksAppendKey (ks, keyNew ("user:/sw", KEY_END)); /* a simple key */
+	ksAppendKey (ks, keyNew ("user:/sw", ELEKTRA_KEY_END)); /* a simple key */
 
-	ksAppendKey (ks, keyNew ("/", KEY_END)); /* an empty key */
+	ksAppendKey (ks, keyNew ("/", ELEKTRA_KEY_END)); /* an empty key */
 
-	ksAppendKey (ks, keyNew ("system:/sw", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/sw", ELEKTRA_KEY_END));
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex1", KEY_VALUE, "some data", /* with a simple value */
-				 KEY_END));				  /* end of args */
+	ksAppendKey (ks, keyNew ("user:/tmp/ex1", ELEKTRA_KEY_VALUE, "some data", /* with a simple value */
+				 ELEKTRA_KEY_END));				  /* end of args */
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex4", KEY_BINARY, KEY_COMMENT, "value is truncated", KEY_SIZE, 7, KEY_VALUE,
+	ksAppendKey (ks, keyNew ("user:/tmp/ex4", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_COMMENT, "value is truncated", ELEKTRA_KEY_SIZE, 7, ELEKTRA_KEY_VALUE,
 				 "some data", /* value that will be truncated to 7 bytes */
-				 KEY_END));   /* end of args */
+				 ELEKTRA_KEY_END));   /* end of args */
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex5", KEY_VALUE, "some data", /* value  */
-				 KEY_COMMENT, "some comment",		  /* a comment */
-				 KEY_END));				  /* end of args */
+	ksAppendKey (ks, keyNew ("user:/tmp/ex5", ELEKTRA_KEY_VALUE, "some data", /* value  */
+				 ELEKTRA_KEY_COMMENT, "some comment",		  /* a comment */
+				 ELEKTRA_KEY_END));				  /* end of args */
 
 	ksAppendKey (ks, keyNew ("user:/env/alias/ls", /* a key we know we have */
-				 KEY_END));	       /* do nothing more */
+				 ELEKTRA_KEY_END));	       /* do nothing more */
 
 	ksAppendKey (ks, keyNew ("user:/env/alias/ls",	     /* same key, to compare in output */
-				 KEY_COMMENT, "new comment", /* set new comment */
-				 KEY_END));		     /* end of args */
+				 ELEKTRA_KEY_COMMENT, "new comment", /* set new comment */
+				 ELEKTRA_KEY_END));		     /* end of args */
 
-	key = keyNew ("user:/test//", KEY_END);
+	key = keyNew ("user:/test//", ELEKTRA_KEY_END);
 
 	/* we are providing a lot of '/' to see it being removed */
 	keySetName (key, "system:/");

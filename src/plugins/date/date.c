@@ -460,13 +460,13 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/date"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/date", KEY_VALUE, "date plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports/get", KEY_FUNC, elektraDateGet, KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports/set", KEY_FUNC, elektraDateSet, KEY_END),
-			       keyNew ("system:/elektra/modules/date/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/date", ELEKTRA_KEY_VALUE, "date plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/date/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/date/exports/get", ELEKTRA_KEY_FUNC, elektraDateGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/date/exports/set", ELEKTRA_KEY_FUNC, elektraDateSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/date/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/date/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/date/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

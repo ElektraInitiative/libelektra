@@ -81,7 +81,7 @@ int ksFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter) (Elek
 		else if (rc != 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
+			ksAppendKey (result, keyDup (current, ELEKTRA_KEY_CP_ALL));
 		}
 	}
 	ksSetCursor (input, cursor);
@@ -129,26 +129,26 @@ int find_80 (ElektraKey * check)
 int main (void)
 {
 	ElektraKeyset * out;
-	ElektraKeyset * ks = ksNew (64, keyNew ("user:/a/1", KEY_END), keyNew ("user:/a/2", KEY_END), keyNew ("user:/a/b/1", KEY_END),
-			     keyNew ("user:/a/b/2", KEY_END), keyNew ("user:/ab/2", KEY_END), keyNew ("user:/b/1", KEY_END),
-			     keyNew ("user:/b/2", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (64, keyNew ("user:/a/1", ELEKTRA_KEY_END), keyNew ("user:/a/2", ELEKTRA_KEY_END), keyNew ("user:/a/b/1", ELEKTRA_KEY_END),
+			     keyNew ("user:/a/b/2", ELEKTRA_KEY_END), keyNew ("user:/ab/2", ELEKTRA_KEY_END), keyNew ("user:/b/1", ELEKTRA_KEY_END),
+			     keyNew ("user:/b/2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKeyset * values = 0;
 	ElektraKeyset * values_below_30 = 0;
 
-	global_a = keyNew ("user:/a", KEY_END);
+	global_a = keyNew ("user:/a", ELEKTRA_KEY_END);
 
 	ksForEach (ks, add_string);
 	ksForEach (ks, add_comment);
 
-	out = ksNew (0, KS_END);
+	out = ksNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, has_a);
 	ksDel (out);
 
-	out = ksNew (0, KS_END);
+	out = ksNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, below_a);
 	ksDel (out);
 
-	out = ksNew (0, KS_END);
+	out = ksNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, direct_below_a);
 	ksDel (out);
 
@@ -156,15 +156,15 @@ int main (void)
 	keyDel (global_a);
 	global_a = 0;
 
-	values = ksNew (64, keyNew ("user:/a", KEY_VALUE, "40", KEY_END), keyNew ("user:/b", KEY_VALUE, "20", KEY_END),
-			keyNew ("user:/c", KEY_VALUE, "80", KEY_END), keyNew ("user:/d", KEY_VALUE, "24", KEY_END),
-			keyNew ("user:/e", KEY_VALUE, "32", KEY_END), keyNew ("user:/f", KEY_VALUE, "12", KEY_END),
-			keyNew ("user:/g", KEY_VALUE, "43", KEY_END), KS_END);
+	values = ksNew (64, keyNew ("user:/a", ELEKTRA_KEY_VALUE, "40", ELEKTRA_KEY_END), keyNew ("user:/b", ELEKTRA_KEY_VALUE, "20", ELEKTRA_KEY_END),
+			keyNew ("user:/c", ELEKTRA_KEY_VALUE, "80", ELEKTRA_KEY_END), keyNew ("user:/d", ELEKTRA_KEY_VALUE, "24", ELEKTRA_KEY_END),
+			keyNew ("user:/e", ELEKTRA_KEY_VALUE, "32", ELEKTRA_KEY_END), keyNew ("user:/f", ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END),
+			keyNew ("user:/g", ELEKTRA_KEY_VALUE, "43", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	/* add together */
 	ksForEach (values, sum_helper);
 
-	values_below_30 = ksNew (0, KS_END);
+	values_below_30 = ksNew (0, ELEKTRA_KS_END);
 	ksFilter (values_below_30, values, below_30);
 	ksForEach (values_below_30, sum_helper);
 

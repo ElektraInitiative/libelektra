@@ -18,8 +18,8 @@ void printWarnings (ElektraKey * key);
 
 int main (void)
 {
-	ElektraKeyset * myConfig = ksNew (0, KS_END);
-	ElektraKey * key = keyNew ("/sw/MyApp", KEY_END);
+	ElektraKeyset * myConfig = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * key = keyNew ("/sw/MyApp", ELEKTRA_KEY_END);
 	ElektraKdb * handle = kdbOpen (NULL, key);
 
 	if (!handle) printError (key);
@@ -67,7 +67,7 @@ void printError (ElektraKey * key)
 	printf ("Error occurred: %s\n", keyString (keyGetMeta (key, "error/description")));
 
 	/*remove error*/
-	ElektraKey * cutpoint = keyNew ("meta:/error", KEY_END);
+	ElektraKey * cutpoint = keyNew ("meta:/error", ELEKTRA_KEY_END);
 	ksDel (ksCut (keyMeta (key), cutpoint));
 	keyDel (cutpoint);
 }
@@ -82,7 +82,7 @@ void printError (ElektraKey * key)
  */
 void printWarnings (ElektraKey * key)
 {
-	ElektraKey * cutpoint = keyNew ("meta:/warnings", KEY_END);
+	ElektraKey * cutpoint = keyNew ("meta:/warnings", ELEKTRA_KEY_END);
 	ElektraKeyset * warnings = ksCut (keyMeta (key), cutpoint);
 
 	for (elektraCursor i = 1; i < ksGetSize (warnings); ++i)
@@ -90,9 +90,9 @@ void printWarnings (ElektraKey * key)
 		ElektraKey * cur = ksAtCursor (warnings, i);
 		if (keyIsDirectlyBelow (cutpoint, cur))
 		{
-			ElektraKey * lookup = keyNew (keyName (cur), KEY_END);
+			ElektraKey * lookup = keyNew (keyName (cur), ELEKTRA_KEY_END);
 			keyAddBaseName (cur, "description");
-			printf ("Warning occurred: %s\n", keyString (ksLookup (warnings, lookup, KDB_O_DEL)));
+			printf ("Warning occurred: %s\n", keyString (ksLookup (warnings, lookup, ELEKTRA_KDB_O_DEL)));
 		}
 	}
 

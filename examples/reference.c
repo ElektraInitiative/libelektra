@@ -28,13 +28,13 @@ void h (ElektraKey * k)
 
 int main (void)
 {
-	ElektraKey * k = keyNew ("user:/key1", KEY_END);
+	ElektraKey * k = keyNew ("user:/key1", ELEKTRA_KEY_END);
 	printf ("key has ref %hu\n", keyGetRef (k));
 
 	f (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew ("user:/key2", KEY_END);
+	k = keyNew ("user:/key2", ELEKTRA_KEY_END);
 	keyIncRef (k);
 	printf ("key has ref %hu\n", keyGetRef (k));
 
@@ -48,7 +48,7 @@ int main (void)
 	keyDel (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew ("user:/key3", KEY_END);
+	k = keyNew ("user:/key3", ELEKTRA_KEY_END);
 	printf ("key has ref %hu\n", keyGetRef (k));
 	h (k);
 	keyDel (k);

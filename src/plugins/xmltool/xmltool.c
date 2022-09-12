@@ -22,14 +22,14 @@ int elektraXmltoolGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/xmltool"))
 	{
 		ElektraKeyset * moduleConfig =
-			ksNew (30, keyNew ("system:/elektra/modules/xmltool", KEY_VALUE, "xmltool plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/get", KEY_FUNC, elektraXmltoolGet, KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/set", KEY_FUNC, elektraXmltoolSet, KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/ksFromXML", KEY_FUNC, ksFromXMLfile, KEY_END),
-			       keyNew ("system:/elektra/modules/xmltool/exports/ksToStream", KEY_FUNC, ksToStream, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/xmltool", ELEKTRA_KEY_VALUE, "xmltool plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xmltool/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xmltool/exports/get", ELEKTRA_KEY_FUNC, elektraXmltoolGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xmltool/exports/set", ELEKTRA_KEY_FUNC, elektraXmltoolSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xmltool/exports/ksFromXML", ELEKTRA_KEY_FUNC, ksFromXMLfile, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/xmltool/exports/ksToStream", ELEKTRA_KEY_FUNC, ksToStream, ELEKTRA_KEY_END),
 #include "readme_xmltool.c"
-			       keyNew ("system:/elektra/modules/xmltool/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/xmltool/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;

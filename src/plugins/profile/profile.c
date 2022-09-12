@@ -43,30 +43,30 @@ static ElektraKey * keyDupWithNS (const ElektraKey * origKey, elektraNamespace n
 	ElektraKey * newKey = NULL;
 	switch (ns)
 	{
-	case KEY_NS_SPEC:
-		newKey = keyNew ("spec:/", KEY_END);
+	case ELEKTRA_NS_SPEC:
+		newKey = keyNew ("spec:/", ELEKTRA_KEY_END);
 		break;
-	case KEY_NS_DIR:
-		newKey = keyNew ("dir:/", KEY_END);
+	case ELEKTRA_NS_DIR:
+		newKey = keyNew ("dir:/", ELEKTRA_KEY_END);
 		break;
-	case KEY_NS_USER:
-		newKey = keyNew ("user:/", KEY_END);
+	case ELEKTRA_NS_USER:
+		newKey = keyNew ("user:/", ELEKTRA_KEY_END);
 		break;
-	case KEY_NS_SYSTEM:
-		newKey = keyNew ("system:/", KEY_END);
+	case ELEKTRA_NS_SYSTEM:
+		newKey = keyNew ("system:/", ELEKTRA_KEY_END);
 		break;
-	case KEY_NS_PROC:
-		newKey = keyNew ("proc:/", KEY_END);
+	case ELEKTRA_NS_PROC:
+		newKey = keyNew ("proc:/", ELEKTRA_KEY_END);
 		break;
-	case KEY_NS_META:
-		newKey = keyNew ("meta:/", KEY_END);
+	case ELEKTRA_NS_META:
+		newKey = keyNew ("meta:/", ELEKTRA_KEY_END);
 		break;
-	case KEY_NS_DEFAULT:
-		newKey = keyNew ("default:/", KEY_END);
+	case ELEKTRA_NS_DEFAULT:
+		newKey = keyNew ("default:/", ELEKTRA_KEY_END);
 		break;
-	case KEY_NS_CASCADING:
+	case ELEKTRA_NS_CASCADING:
 	default:
-		newKey = keyNew ("/", KEY_END);
+		newKey = keyNew ("/", ELEKTRA_KEY_END);
 		break;
 	}
 	const char * relativeName = keyName (origKey);
@@ -90,9 +90,9 @@ static void linkProfileKeys (ElektraKeyset * swKS, ElektraKeyset * profileKeys, 
 		profileString = keyString (profileKey);
 		if (profileString)
 		{
-			profileCutKey = keyDup (profileKey, KEY_CP_ALL);
+			profileCutKey = keyDup (profileKey, ELEKTRA_KEY_CP_ALL);
 			keyAddName (profileCutKey, "..");
-			ElektraKey * currentProfileKey = keyDup (profileCutKey, KEY_CP_ALL);
+			ElektraKey * currentProfileKey = keyDup (profileCutKey, ELEKTRA_KEY_CP_ALL);
 			keyAddBaseName (currentProfileKey, "current");
 			keyAddBaseName (profileCutKey, profileString);
 			ElektraKeyset * profileKS = ksCut (swKS, profileCutKey);
@@ -101,11 +101,11 @@ static void linkProfileKeys (ElektraKeyset * swKS, ElektraKeyset * profileKeys, 
 			while ((cur = ksNext (profileKS)) != NULL)
 			{
 				if (!strcmp (keyName (cur), keyName (profileCutKey))) continue;
-				ElektraKey * overrideKey = keyDupWithNS (currentProfileKey, KEY_NS_SPEC);
+				ElektraKey * overrideKey = keyDupWithNS (currentProfileKey, ELEKTRA_NS_SPEC);
 				const char * relativeName = elektraKeyGetRelativeName (cur, profileCutKey);
 				keyAddName (overrideKey, relativeName);
 				ElektraKey * lookupKey = keyDupWithNS (overrideKey, keyGetNamespace (currentProfileKey));
-				if (ksLookup (swKS, lookupKey, KDB_O_NONE))
+				if (ksLookup (swKS, lookupKey, ELEKTRA_KDB_O_NONE))
 				{
 					keyDel (lookupKey);
 					keyDel (overrideKey);
@@ -113,8 +113,8 @@ static void linkProfileKeys (ElektraKeyset * swKS, ElektraKeyset * profileKeys, 
 				}
 				keyDel (lookupKey);
 				keySetMeta (overrideKey, "override/#0", keyName (cur));
-				ksAppendKey (swKS, keyDup (overrideKey, KEY_CP_ALL));
-				ksAppendKey (appendedKeys, keyDup (overrideKey, KEY_CP_ALL));
+				ksAppendKey (swKS, keyDup (overrideKey, ELEKTRA_KEY_CP_ALL));
+				ksAppendKey (appendedKeys, keyDup (overrideKey, ELEKTRA_KEY_CP_ALL));
 				keyDel (overrideKey);
 			}
 			keyDel (currentProfileKey);
@@ -131,21 +131,21 @@ static void linkDefaultKeys (ElektraKeyset * swKS, ElektraKeyset * profileParent
 	ElektraKey * profileParent = NULL;
 	while ((profileParent = ksNext (profileParents)) != NULL)
 	{
-		ElektraKey * defaultCutKey = keyDup (profileParent, KEY_CP_ALL);
+		ElektraKey * defaultCutKey = keyDup (profileParent, ELEKTRA_KEY_CP_ALL);
 		keyAddName (defaultCutKey, "%");
 		ElektraKeyset * defaultKS = ksCut (swKS, defaultCutKey);
 		ksRewind (defaultKS);
 		ElektraKey * cur;
-		ElektraKey * currentProfileKey = keyDup (profileParent, KEY_CP_ALL);
+		ElektraKey * currentProfileKey = keyDup (profileParent, ELEKTRA_KEY_CP_ALL);
 		keyAddName (currentProfileKey, "current");
 		while ((cur = ksNext (defaultKS)) != NULL)
 		{
 			if (!strcmp (keyName (cur), keyName (defaultCutKey))) continue;
 			const char * relativeName = elektraKeyGetRelativeName (cur, defaultCutKey);
-			ElektraKey * overrideKey = keyDupWithNS (currentProfileKey, KEY_NS_SPEC);
+			ElektraKey * overrideKey = keyDupWithNS (currentProfileKey, ELEKTRA_NS_SPEC);
 			keyAddName (overrideKey, relativeName);
 			ElektraKey * existingKey = keyDupWithNS (overrideKey, keyGetNamespace (profileParent));
-			if (ksLookup (swKS, overrideKey, KDB_O_NONE) || ksLookup (swKS, existingKey, KDB_O_NONE))
+			if (ksLookup (swKS, overrideKey, ELEKTRA_KDB_O_NONE) || ksLookup (swKS, existingKey, ELEKTRA_KDB_O_NONE))
 			{
 				keyDel (overrideKey);
 				keyDel (existingKey);
@@ -153,8 +153,8 @@ static void linkDefaultKeys (ElektraKeyset * swKS, ElektraKeyset * profileParent
 			}
 			keyDel (existingKey);
 			keySetMeta (overrideKey, "override/#0", keyName (cur));
-			ksAppendKey (swKS, keyDup (overrideKey, KEY_CP_ALL));
-			ksAppendKey (appendedKeys, keyDup (overrideKey, KEY_CP_ALL));
+			ksAppendKey (swKS, keyDup (overrideKey, ELEKTRA_KEY_CP_ALL));
+			ksAppendKey (appendedKeys, keyDup (overrideKey, ELEKTRA_KEY_CP_ALL));
 			keyDel (overrideKey);
 		}
 		keyDel (currentProfileKey);
@@ -169,30 +169,30 @@ int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/profile"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/profile", KEY_VALUE, "profile plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/profile/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/profile/exports/open", KEY_FUNC, elektraProfileOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/profile/exports/close", KEY_FUNC, elektraProfileClose, KEY_END),
-			       keyNew ("system:/elektra/modules/profile/exports/get", KEY_FUNC, elektraProfileGet, KEY_END),
-			       keyNew ("system:/elektra/modules/profile/exports/set", KEY_FUNC, elektraProfileSet, KEY_END),
-			       keyNew ("system:/elektra/modules/profile/exports/error", KEY_FUNC, elektraProfileError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/profile", ELEKTRA_KEY_VALUE, "profile plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/open", ELEKTRA_KEY_FUNC, elektraProfileOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/close", ELEKTRA_KEY_FUNC, elektraProfileClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/get", ELEKTRA_KEY_FUNC, elektraProfileGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/set", ELEKTRA_KEY_FUNC, elektraProfileSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/error", ELEKTRA_KEY_FUNC, elektraProfileError, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/profile/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/profile/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
 		return 1; // success
 	}
 	// get all keys
-	ElektraKey * swKey = keyNew ("/sw", KEY_END);
+	ElektraKey * swKey = keyNew ("/sw", ELEKTRA_KEY_END);
 	ElektraKeyset * swKS = ksCut (returned, swKey);
 	keyDel (swKey);
 	ksRewind (swKS);
 	ElektraKey * cur;
 
 	ElektraKeyset * appendedKeys = elektraPluginGetData (handle);
-	if (!appendedKeys) appendedKeys = ksNew (0, KS_END);
-	ElektraKeyset * profileKeys = ksNew (0, KS_END);
+	if (!appendedKeys) appendedKeys = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * profileKeys = ksNew (0, ELEKTRA_KS_END);
 	while ((cur = ksNext (swKS)) != NULL)
 	{
 		if (!fnmatch (PROFILEPATH, keyName (cur), FNM_PATHNAME))
@@ -204,14 +204,14 @@ int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	ksDel (profileKeys);
 	ksDel (appendedKeys);
 	ksRewind (swKS);
-	ElektraKeyset * profileParents = ksNew (0, KS_END);
+	ElektraKeyset * profileParents = ksNew (0, ELEKTRA_KS_END);
 	while ((cur = ksNext (swKS)) != NULL)
 	{
 		if (!fnmatch (CURRENTPATH, keyName (cur), FNM_PATHNAME))
 		{
-			ElektraKey * profileParent = keyDup (cur, KEY_CP_ALL);
+			ElektraKey * profileParent = keyDup (cur, ELEKTRA_KEY_CP_ALL);
 			keyAddName (profileParent, "..");
-			ksAppendKey (profileParents, keyDup (profileParent, KEY_CP_ALL));
+			ksAppendKey (profileParents, keyDup (profileParent, ELEKTRA_KEY_CP_ALL));
 			keyDel (profileParent);
 		}
 	}
@@ -232,7 +232,7 @@ int elektraProfileSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	ElektraKey * cur;
 	while ((cur = ksNext (appendedKeys)) != NULL)
 	{
-		keyDel (ksLookup (returned, cur, KDB_O_POP));
+		keyDel (ksLookup (returned, cur, ELEKTRA_KDB_O_POP));
 	}
 	ksDel (appendedKeys);
 	elektraPluginSetData (handle, NULL);

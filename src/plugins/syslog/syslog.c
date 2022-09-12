@@ -43,15 +43,15 @@ int elektraSyslogGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 		ElektraKeyset * n;
 		ksAppend (returned,
 			  n = ksNew (30,
-				     keyNew ("system:/elektra/modules/syslog", KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports", KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/open", KEY_FUNC, elektraSyslogOpen, KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/close", KEY_FUNC, elektraSyslogClose, KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/set", KEY_FUNC, elektraSyslogSet, KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog", ELEKTRA_KEY_VALUE, "syslog plugin waits for your orders", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/open", ELEKTRA_KEY_FUNC, elektraSyslogOpen, ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/close", ELEKTRA_KEY_FUNC, elektraSyslogClose, ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/get", ELEKTRA_KEY_FUNC, elektraSyslogGet, ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/set", ELEKTRA_KEY_FUNC, elektraSyslogSet, ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/error", ELEKTRA_KEY_FUNC, elektraSyslogError, ELEKTRA_KEY_END),
 #include "readme_syslog.c"
-				     keyNew ("system:/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				     keyNew ("system:/elektra/modules/syslog/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 		ksDel (n);
 
 		return 1;

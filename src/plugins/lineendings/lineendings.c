@@ -116,12 +116,12 @@ int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retur
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/lineendings"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/lineendings", KEY_VALUE, "lineendings plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/lineendings/exports", KEY_END),
-			keyNew ("system:/elektra/modules/lineendings/exports/get", KEY_FUNC, elektraLineendingsGet, KEY_END),
-			keyNew ("system:/elektra/modules/lineendings/exports/set", KEY_FUNC, elektraLineendingsSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/lineendings", ELEKTRA_KEY_VALUE, "lineendings plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/lineendings/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/lineendings/exports/get", ELEKTRA_KEY_FUNC, elektraLineendingsGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/lineendings/exports/set", ELEKTRA_KEY_FUNC, elektraLineendingsSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/lineendings/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/lineendings/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

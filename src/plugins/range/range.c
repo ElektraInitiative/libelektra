@@ -503,13 +503,13 @@ int elektraRangeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned EL
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/range"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/range", KEY_VALUE, "range plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports/get", KEY_FUNC, elektraRangeGet, KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports/set", KEY_FUNC, elektraRangeSet, KEY_END),
-			       keyNew ("system:/elektra/modules/range/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/range", ELEKTRA_KEY_VALUE, "range plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/range/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/range/exports/get", ELEKTRA_KEY_FUNC, elektraRangeGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/range/exports/set", ELEKTRA_KEY_FUNC, elektraRangeSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/range/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/range/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/range/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

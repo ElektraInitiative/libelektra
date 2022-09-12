@@ -18,12 +18,12 @@ int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned 
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/missing"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/missing", KEY_VALUE, "The missing plugin is waiting for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/missing/exports", KEY_END),
-			keyNew ("system:/elektra/modules/missing/exports/get", KEY_FUNC, elektraMissingGet, KEY_END),
-			keyNew ("system:/elektra/modules/missing/exports/set", KEY_FUNC, elektraMissingSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/missing", ELEKTRA_KEY_VALUE, "The missing plugin is waiting for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/missing/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/missing/exports/get", ELEKTRA_KEY_FUNC, elektraMissingGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/missing/exports/set", ELEKTRA_KEY_FUNC, elektraMissingSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/missing/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/missing/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

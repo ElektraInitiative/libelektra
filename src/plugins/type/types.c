@@ -272,7 +272,7 @@ static bool enumValidValues (const ElektraKey * key, ElektraKeyset * validValues
 		if (strlen (name) > 0)
 		{
 			kdb_unsigned_long_long_t val = index;
-			ElektraKey * k = keyNew ("user:/", KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t), KEY_VALUE, &val, KEY_END);
+			ElektraKey * k = keyNew ("user:/", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (kdb_unsigned_long_long_t), ELEKTRA_KEY_VALUE, &val, ELEKTRA_KEY_END);
 			keyAddName (k, name);
 			ksAppendKey (validValues, k);
 		}
@@ -342,7 +342,7 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 		return true;
 	}
 
-	ElektraKeyset * validValues = ksNew (0, KS_END);
+	ElektraKeyset * validValues = ksNew (0, ELEKTRA_KS_END);
 	char delim = 0;
 	if (!enumValidValues (key, validValues, &delim))
 	{
@@ -372,7 +372,7 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, ElektraKey * key)
 		return true;
 	}
 
-	ElektraKey * valueKey = keyNew ("user:/0", KEY_END);
+	ElektraKey * valueKey = keyNew ("user:/0", ELEKTRA_KEY_END);
 
 	kdb_unsigned_long_long_t normalized = 0;
 	if (delim != 0)
@@ -441,7 +441,7 @@ bool elektraTypeCheckEnum (const ElektraKey * key)
 		return false;
 	}
 
-	ElektraKeyset * validValues = ksNew (0, KS_END);
+	ElektraKeyset * validValues = ksNew (0, ELEKTRA_KS_END);
 	char delim = 0;
 	if (!enumValidValues (key, validValues, &delim))
 	{
@@ -452,7 +452,7 @@ bool elektraTypeCheckEnum (const ElektraKey * key)
 	char * value = values;
 	char * next;
 
-	ElektraKey * valueKey = keyNew ("user:/0", KEY_END);
+	ElektraKey * valueKey = keyNew ("user:/0", ELEKTRA_KEY_END);
 
 	if (delim != 0)
 	{

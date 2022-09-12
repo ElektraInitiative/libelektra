@@ -16,29 +16,29 @@
 
 static void doTest (void)
 {
-	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/list/to/be/cut/key1", KEY_END), keyNew ("user:/tests/list/to/be/cut/key2", KEY_END),
-			     keyNew ("user:/tests/list/to/be/cut/meta1", KEY_END),
-			     keyNew ("user:/tests/list/to/be/cut/meta2", KEY_VALUE, "meta?", KEY_META, "convert/metaname", "amimetanow?",
-				     KEY_META, "convert/append", "previous", KEY_END),
-			     KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/tests/list/to/be/cut/key1", ELEKTRA_KEY_END), keyNew ("user:/tests/list/to/be/cut/key2", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/list/to/be/cut/meta1", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/list/to/be/cut/meta2", ELEKTRA_KEY_VALUE, "meta?", ELEKTRA_KEY_META, "convert/metaname", "amimetanow?",
+				     ELEKTRA_KEY_META, "convert/append", "previous", ELEKTRA_KEY_END),
+			     ELEKTRA_KS_END);
 	ElektraKeyset * conf = ksNew (
-		20, keyNew ("user:/placements", KEY_END), keyNew ("user:/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
-		keyNew ("user:/placements/set", KEY_VALUE, "presetstorage", KEY_END), keyNew ("user:/plugins", KEY_END),
-		keyNew ("user:/plugins/#0", KEY_VALUE, "rename", KEY_END), keyNew ("user:/plugins/#0/config", KEY_END),
+		20, keyNew ("user:/placements", ELEKTRA_KEY_END), keyNew ("user:/placements/get", ELEKTRA_KEY_VALUE, "pregetstorage", ELEKTRA_KEY_END),
+		keyNew ("user:/placements/set", ELEKTRA_KEY_VALUE, "presetstorage", ELEKTRA_KEY_END), keyNew ("user:/plugins", ELEKTRA_KEY_END),
+		keyNew ("user:/plugins/#0", ELEKTRA_KEY_VALUE, "rename", ELEKTRA_KEY_END), keyNew ("user:/plugins/#0/config", ELEKTRA_KEY_END),
 		// Configure "rename" plugin directly to cut a part of the key name
-		keyNew ("user:/plugins/#0/config/cut", KEY_VALUE, "to/be/cut", KEY_END), keyNew ("user:/plugins/#0/placements", KEY_END),
-		keyNew ("user:/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
-		keyNew ("user:/plugins/#0/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
-		keyNew ("user:/plugins/#1", KEY_VALUE, "keytometa", KEY_END), keyNew ("user:/plugins/#1/placements", KEY_END),
-		keyNew ("user:/plugins/#1/placements/set", KEY_VALUE, "presetstorage", KEY_END),
-		keyNew ("user:/plugins/#1/placements/get", KEY_VALUE, "pregetstorage", KEY_END),
+		keyNew ("user:/plugins/#0/config/cut", ELEKTRA_KEY_VALUE, "to/be/cut", ELEKTRA_KEY_END), keyNew ("user:/plugins/#0/placements", ELEKTRA_KEY_END),
+		keyNew ("user:/plugins/#0/placements/set", ELEKTRA_KEY_VALUE, "presetstorage", ELEKTRA_KEY_END),
+		keyNew ("user:/plugins/#0/placements/get", ELEKTRA_KEY_VALUE, "pregetstorage", ELEKTRA_KEY_END),
+		keyNew ("user:/plugins/#1", ELEKTRA_KEY_VALUE, "keytometa", ELEKTRA_KEY_END), keyNew ("user:/plugins/#1/placements", ELEKTRA_KEY_END),
+		keyNew ("user:/plugins/#1/placements/set", ELEKTRA_KEY_VALUE, "presetstorage", ELEKTRA_KEY_END),
+		keyNew ("user:/plugins/#1/placements/get", ELEKTRA_KEY_VALUE, "pregetstorage", ELEKTRA_KEY_END),
 		// For all plugins, but only used by "rename" plugin
-		keyNew ("user:/config", KEY_END), keyNew ("user:/config/toupper", KEY_END), KS_END);
-	ElektraKey * parentKey = keyNew ("user:/tests/list", KEY_END);
+		keyNew ("user:/config", ELEKTRA_KEY_END), keyNew ("user:/config/toupper", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/list", ELEKTRA_KEY_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("list");
 
-	Plugin * check = elektraPluginOpen ("keytometa", modules, ksNew (5, KS_END), parentKey);
+	Plugin * check = elektraPluginOpen ("keytometa", modules, ksNew (5, ELEKTRA_KS_END), parentKey);
 	if (!check)
 	{
 		printf ("Abort test case, keytometa is missing");
@@ -46,7 +46,7 @@ static void doTest (void)
 	}
 	elektraPluginClose (check, 0);
 
-	check = elektraPluginOpen ("rename", modules, ksNew (5, KS_END), parentKey);
+	check = elektraPluginOpen ("rename", modules, ksNew (5, ELEKTRA_KS_END), parentKey);
 	if (!check)
 	{
 		printf ("Abort test case, rename is missing");

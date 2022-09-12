@@ -17,10 +17,10 @@
 
 static void test_normalize_color (const char * color, kdb_unsigned_long_t colorValue)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", KEY_VALUE, color, KEY_META, "check/rgbcolor", "any", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (20, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", ELEKTRA_KEY_VALUE, color, ELEKTRA_KEY_META, "check/rgbcolor", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
 	// KeySet * ksGet = ks;
 
 	ksAppendKey (ks, hexkey);
@@ -51,10 +51,10 @@ static void test_normalize_color (const char * color, kdb_unsigned_long_t colorV
 
 static void test_color (const char * color, const int expected_ret)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", KEY_VALUE, color, KEY_META, "check/rgbcolor", "any", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (20, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/rgbcolor", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = keyNew ("user:/test/rgbcolor/testcolor", ELEKTRA_KEY_VALUE, color, ELEKTRA_KEY_META, "check/rgbcolor", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
 
 	ksAppendKey (ks, hexkey);
 

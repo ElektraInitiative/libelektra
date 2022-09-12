@@ -7,7 +7,7 @@ static ElektraKeyset * gelektra_keyset_swap (GElektraKeySet * ks, ElektraKeyset 
 static void gelektra_keyset_init (GElektraKeySet * self)
 {
 	/* initialize the object */
-	self->keyset = ksNew (0, KS_END);
+	self->keyset = ksNew (0, ELEKTRA_KS_END);
 }
 
 static void gelektra_keyset_finalize (GObject * object)

@@ -83,7 +83,7 @@ static int inTestMode (ElektraKeyset * conf)
  */
 static inline int isSpecNamespace (const ElektraKey * k)
 {
-	return (keyGetNamespace (k) == KEY_NS_SPEC);
+	return (keyGetNamespace (k) == ELEKTRA_NS_SPEC);
 }
 
 /**
@@ -587,7 +587,7 @@ int elektraGpgmeGet (Plugin * handle, ElektraKeyset * ks, ElektraKey * parentKey
 	{
 		ElektraKeyset * moduleConfig = ksNew (30,
 #include "contract.h"
-					       KS_END);
+					       ELEKTRA_KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);
 		return 1; // success

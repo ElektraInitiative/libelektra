@@ -63,54 +63,54 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 		// clang-format off
 		ElektraKeyset *moduleConfig = ksNew (50,
 			keyNew ("system:/elektra/modules/fstab",
-				KEY_VALUE, "fstab plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/fstab/exports", KEY_END),
+				ELEKTRA_KEY_VALUE, "fstab plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/fstab/exports", ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/exports/get",
-				KEY_FUNC, elektraFstabGet,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraFstabGet,
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/exports/set",
-				KEY_FUNC, elektraFstabSet,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraFstabSet,
+				ELEKTRA_KEY_END),
 #include "readme_fstab.c"
 			keyNew ("system:/elektra/modules/fstab/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
+				ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs",
-				KEY_VALUE, "The configuration which is needed",
-				KEY_END),
+				ELEKTRA_KEY_VALUE, "The configuration which is needed",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct",
-				KEY_VALUE, "list FStab",
-				KEY_END),
+				ELEKTRA_KEY_VALUE, "list FStab",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct/FStab",
-				KEY_META, "check/type", "null empty",
-				KEY_END),
+				ELEKTRA_KEY_META, "check/type", "null empty",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct/FStab/device",
-				KEY_META, "check/type", "string",
-				KEY_META, "check/path", "device",
-				KEY_END),
+				ELEKTRA_KEY_META, "check/type", "string",
+				ELEKTRA_KEY_META, "check/path", "device",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct/FStab/mpoint",
-				KEY_META, "check/type", "string",
-				KEY_META, "check/path", "directory",
-				KEY_END),
+				ELEKTRA_KEY_META, "check/type", "string",
+				ELEKTRA_KEY_META, "check/path", "directory",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct/FStab/type",
-				KEY_META, "check/type", "FSType",
-				KEY_END),
+				ELEKTRA_KEY_META, "check/type", "FSType",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct/FStab/options",
-				KEY_META, "check/type", "string",
-				KEY_END),
+				ELEKTRA_KEY_META, "check/type", "string",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct/FStab/dumpfreq",
-				KEY_META, "check/type", "unsigned_short",
-				KEY_END),
+				ELEKTRA_KEY_META, "check/type", "unsigned_short",
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/fstab/config/needs/struct/FStab/passno",
-				KEY_META, "check/type", "unsigned_short",
-				KEY_END),
-			KS_END);
+				ELEKTRA_KEY_META, "check/type", "unsigned_short",
+				ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 		// clang-format on
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
 	}
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	ksAppendKey (returned, key);
 	nr_keys++;
 
@@ -132,45 +132,45 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 		elektraFstabFsName (fsname, fstabEntry, &swapIndex);
 
 		/* Include only the filesystem pseudo-names */
-		dir = keyDup (parentKey, KEY_CP_ALL);
+		dir = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (dir, fsname);
 		keySetString (dir, "");
 		keySetComment (dir, "");
 		keySetComment (dir, "Filesystem pseudo-name");
 		ksAppendKey (returned, dir);
 
-		key = keyDup (dir, KEY_CP_ALL);
+		key = keyDup (dir, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (key, "device");
 		keySetString (key, fstabEntry->mnt_fsname);
 		keySetComment (key, "Device or Label");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir, KEY_CP_ALL);
+		key = keyDup (dir, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (key, "mpoint");
 		keySetString (key, fstabEntry->mnt_dir);
 		keySetComment (key, "Mount point");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir, KEY_CP_ALL);
+		key = keyDup (dir, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (key, "type");
 		keySetString (key, fstabEntry->mnt_type);
 		keySetComment (key, "Filesystem type.");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir, KEY_CP_ALL);
+		key = keyDup (dir, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (key, "options");
 		keySetString (key, fstabEntry->mnt_opts);
 		keySetComment (key, "Filesystem specific options");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir, KEY_CP_ALL);
+		key = keyDup (dir, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (key, "dumpfreq");
 		snprintf (buffer, MAX_NUMBER_SIZE, "%d", fstabEntry->mnt_freq);
 		keySetString (key, buffer);
 		keySetComment (key, "Dump frequency in days");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir, KEY_CP_ALL);
+		key = keyDup (dir, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (key, "passno");
 		snprintf (buffer, MAX_NUMBER_SIZE, "%d", fstabEntry->mnt_passno);
 		keySetString (key, buffer);

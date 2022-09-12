@@ -191,8 +191,8 @@ int ksGetOpt(int argc, char **argv, ElektraKeyset *ks)
 				if (!found)
 				{
 					ksAppendKey(ks, keyNew("$support.userkey(key)",
-							KEY_VALUE, $optarg(info),
-							KEY_END));
+							ELEKTRA_KEY_VALUE, $optarg(info),
+							ELEKTRA_KEY_END));
 				}
 				else
 				{

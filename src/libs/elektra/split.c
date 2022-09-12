@@ -179,7 +179,7 @@ ssize_t splitAppend (Split * split, Plugin * backend, ElektraKey * parentKey, in
 	// index of the new element
 	const int n = split->size - 1;
 
-	split->keysets[n] = ksNew (0, KS_END);
+	split->keysets[n] = ksNew (0, ELEKTRA_KS_END);
 	split->handles[n] = backend;
 	split->parents[n] = parentKey;
 	split->syncbits[n] = syncbits;
@@ -216,27 +216,27 @@ static ssize_t splitSearchBackend (Split * split, Plugin * backend, ElektraKey *
 			{
 				switch (keyGetNamespace (parent))
 				{
-				case KEY_NS_SPEC:
+				case ELEKTRA_NS_SPEC:
 					if (keyIsSpec (split->parents[i])) return i;
 					break;
-				case KEY_NS_DIR:
+				case ELEKTRA_NS_DIR:
 					if (keyIsDir (split->parents[i])) return i;
 					break;
-				case KEY_NS_USER:
+				case ELEKTRA_NS_USER:
 					if (keyIsUser (split->parents[i])) return i;
 					break;
-				case KEY_NS_SYSTEM:
+				case ELEKTRA_NS_SYSTEM:
 					if (keyIsSystem (split->parents[i])) return i;
 					break;
-				case KEY_NS_PROC:
+				case ELEKTRA_NS_PROC:
 					return -1;
-				case KEY_NS_NONE:
+				case ELEKTRA_NS_NONE:
 					return -1;
-				case KEY_NS_META:
+				case ELEKTRA_NS_META:
 					return -1;
-				case KEY_NS_CASCADING:
+				case ELEKTRA_NS_CASCADING:
 					return -1;
-				case KEY_NS_DEFAULT:
+				case ELEKTRA_NS_DEFAULT:
 					return -1;
 				}
 				continue;
@@ -261,25 +261,25 @@ static int elektraKeySetNameByNamespace (ElektraKey * parentKey, elektraNamespac
 {
 	switch (ns)
 	{
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		keySetName (parentKey, "spec:/");
 		break;
-	case KEY_NS_PROC:
+	case ELEKTRA_NS_PROC:
 		/* only transient, should fail */
 		return 0;
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		keySetName (parentKey, "dir:/");
 		break;
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		keySetName (parentKey, "user:/");
 		break;
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		keySetName (parentKey, "system:/");
 		break;
-	case KEY_NS_NONE:
-	case KEY_NS_META:
-	case KEY_NS_CASCADING:
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_NONE:
+	case ELEKTRA_NS_META:
+	case ELEKTRA_NS_CASCADING:
+	case ELEKTRA_NS_DEFAULT:
 		return 0;
 	}
 	return 1;
@@ -320,8 +320,8 @@ int splitBuildup (Split * split, ElektraKdb * kdb, ElektraKey * parentKey)
 	}
 	else if (name[0] == '/')
 	{
-		ElektraKey * key = keyNew ("/", KEY_END);
-		for (elektraNamespace ins = KEY_NS_FIRST; ins <= KEY_NS_LAST; ++ins)
+		ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
+		for (elektraNamespace ins = ELEKTRA_NS_FIRST; ins <= ELEKTRA_NS_LAST; ++ins)
 		{
 			if (!elektraKeySetNameByNamespace (key, ins)) continue;
 			keyAddName (key, keyName (parentKey));
@@ -349,7 +349,7 @@ int splitBuildup (Split * split, ElektraKdb * kdb, ElektraKey * parentKey)
 			printf ("   def add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* Catch all: add all mountpoints */
-			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], ELEKTRA_KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 		else if (backend == kdb->split->handles[i] &&
 			 (keyCmp (kdb->split->parents[i], parentKey) == 0 || keyIsBelow (kdb->split->parents[i], parentKey) == 1))
@@ -358,7 +358,7 @@ int splitBuildup (Split * split, ElektraKdb * kdb, ElektraKey * parentKey)
 			printf ("   exa add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* parentKey is exactly in this backend, so add it! */
-			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], ELEKTRA_KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 		else if (keyCmp (parentKey, kdb->split->parents[i]) == 0 || keyIsBelow (parentKey, kdb->split->parents[i]) == 1)
 		{
@@ -366,7 +366,7 @@ int splitBuildup (Split * split, ElektraKdb * kdb, ElektraKey * parentKey)
 			printf ("   rel add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* this backend is completely below the parentKey, so lets add it. */
-			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], ELEKTRA_KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 	}
 
@@ -548,35 +548,35 @@ static int elektraSplitPostprocess (Split * split, int i, ElektraKey * warningKe
 		else
 			switch (keyGetNamespace (cur))
 			{
-			case KEY_NS_SPEC:
+			case ELEKTRA_NS_SPEC:
 				if (!keyIsSpec (split->parents[i]))
 					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not spec");
 				break;
-			case KEY_NS_DIR:
+			case ELEKTRA_NS_DIR:
 				if (!keyIsDir (split->parents[i]))
 					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not dir");
 				break;
-			case KEY_NS_USER:
+			case ELEKTRA_NS_USER:
 				if (!keyIsUser (split->parents[i]))
 					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not user");
 				break;
-			case KEY_NS_SYSTEM:
+			case ELEKTRA_NS_SYSTEM:
 				if (!keyIsSystem (split->parents[i]))
 					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not system");
 				break;
-			case KEY_NS_PROC:
+			case ELEKTRA_NS_PROC:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a proc key name");
 				break;
-			case KEY_NS_META:
+			case ELEKTRA_NS_META:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a metaname");
 				break;
-			case KEY_NS_CASCADING:
+			case ELEKTRA_NS_CASCADING:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a cascading name");
 				break;
-			case KEY_NS_DEFAULT:
+			case ELEKTRA_NS_DEFAULT:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a default name");
 				break;
-			case KEY_NS_NONE:
+			case ELEKTRA_NS_NONE:
 				ELEKTRA_ASSERT (0, "wrong key namespace `none'");
 				return -1;
 			}
@@ -648,23 +648,23 @@ int splitUpdateSize (Split * split)
 	{
 		switch (keyGetNamespace (split->parents[i]))
 		{
-		case KEY_NS_SPEC:
+		case ELEKTRA_NS_SPEC:
 			split->specsizes[i] = ksGetSize (split->keysets[i]);
 			break;
-		case KEY_NS_DIR:
+		case ELEKTRA_NS_DIR:
 			split->dirsizes[i] = ksGetSize (split->keysets[i]);
 			break;
-		case KEY_NS_USER:
+		case ELEKTRA_NS_USER:
 			split->usersizes[i] = ksGetSize (split->keysets[i]);
 			break;
-		case KEY_NS_SYSTEM:
+		case ELEKTRA_NS_SYSTEM:
 			split->systemsizes[i] = ksGetSize (split->keysets[i]);
 			break;
-		case KEY_NS_PROC:
-		case KEY_NS_NONE:
-		case KEY_NS_META:
-		case KEY_NS_CASCADING:
-		case KEY_NS_DEFAULT:
+		case ELEKTRA_NS_PROC:
+		case ELEKTRA_NS_NONE:
+		case ELEKTRA_NS_META:
+		case ELEKTRA_NS_CASCADING:
+		case ELEKTRA_NS_DEFAULT:
 			return -1;
 		}
 	}
@@ -743,7 +743,7 @@ int splitSync (Split * split)
 		// first check for wrong states etc.
 		switch (keyGetNamespace (split->parents[i]))
 		{
-		case KEY_NS_SPEC:
+		case ELEKTRA_NS_SPEC:
 			// Check if we are in correct state
 			if (split->specsizes[i] == -1)
 			{
@@ -756,7 +756,7 @@ int splitSync (Split * split)
 				needsSync = 1;
 			}
 			break;
-		case KEY_NS_DIR:
+		case ELEKTRA_NS_DIR:
 			// Check if we are in correct state
 			if (split->dirsizes[i] == -1)
 			{
@@ -769,7 +769,7 @@ int splitSync (Split * split)
 				needsSync = 1;
 			}
 			break;
-		case KEY_NS_USER:
+		case ELEKTRA_NS_USER:
 			// Check if we are in correct state
 			if (split->usersizes[i] == -1)
 			{
@@ -782,7 +782,7 @@ int splitSync (Split * split)
 				needsSync = 1;
 			}
 			break;
-		case KEY_NS_SYSTEM:
+		case ELEKTRA_NS_SYSTEM:
 			// Check if we are in correct state
 			if (split->systemsizes[i] == -1)
 			{
@@ -795,11 +795,11 @@ int splitSync (Split * split)
 				needsSync = 1;
 			}
 			break;
-		case KEY_NS_PROC:
-		case KEY_NS_META:
-		case KEY_NS_CASCADING:
-		case KEY_NS_NONE:
-		case KEY_NS_DEFAULT:
+		case ELEKTRA_NS_PROC:
+		case ELEKTRA_NS_META:
+		case ELEKTRA_NS_CASCADING:
+		case ELEKTRA_NS_NONE:
+		case ELEKTRA_NS_DEFAULT:
 			ELEKTRA_ASSERT (0, "Got keys in wrong namespace %d in split %zu", keyGetNamespace (split->parents[i]), i);
 			return -1;
 		}
@@ -851,11 +851,11 @@ void splitCacheStoreState (ElektraKdb * handle, Split * split, ElektraKeyset * g
 	ElektraKey * mountPoint = mountGetMountpoint (handle, parentKey);
 	const char * mountPointName = mountPoint == NULL ? "/" : keyName (mountPoint);
 	const char * mountPointValue = mountPoint == NULL ? "" : keyString (mountPoint);
-	ElektraKey * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, mountPointName, KEY_END);
-	ElektraKey * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, mountPointValue, KEY_END);
-	ElektraKey * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
+	ElektraKey * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", ELEKTRA_KEY_VALUE, mountPointName, ELEKTRA_KEY_END);
+	ElektraKey * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", ELEKTRA_KEY_VALUE, mountPointValue, ELEKTRA_KEY_END);
+	ElektraKey * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", ELEKTRA_KEY_VALUE, keyName (initialParent), ELEKTRA_KEY_END);
 	ElektraKey * lastSplitSize =
-		keyNew (KDB_CACHE_PREFIX "/lastSplitSize", KEY_BINARY, KEY_SIZE, sizeof (size_t), KEY_VALUE, &(split->size), KEY_END);
+		keyNew (KDB_CACHE_PREFIX "/lastSplitSize", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (size_t), ELEKTRA_KEY_VALUE, &(split->size), ELEKTRA_KEY_END);
 	ksAppendKey (global, lastParentName);
 	ksAppendKey (global, lastParentValue);
 	ksAppendKey (global, lastInitalParentName);
@@ -899,49 +899,49 @@ void splitCacheStoreState (ElektraKdb * handle, Split * split, ElektraKeyset * g
 		ELEKTRA_LOG_DEBUG (">>>> STORING split->handle[%ld] with name: %s :::: parentName: %s, parentValue: %s", i, name,
 				   keyName (split->parents[i]), keyString (split->parents[i]));
 
-		ElektraKey * key = keyNew (name, KEY_END);
+		ElektraKey * key = keyNew (name, ELEKTRA_KEY_END);
 		keyAddBaseName (key, "splitParentName");
 		keySetString (key, keyName (split->parents[i]));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 		keyAddBaseName (key, "splitParentValue");
 		keySetString (key, keyString (split->parents[i]));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 		keyAddBaseName (key, "specsize");
 		keySetBinary (key, &(split->specsizes[i]), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 		keyAddBaseName (key, "dirsize");
 		keySetBinary (key, &(split->dirsizes), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 		keyAddBaseName (key, "usersize");
 		keySetBinary (key, &(split->usersizes[i]), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 		keyAddBaseName (key, "systemsize");
 		keySetBinary (key, &(split->systemsizes[i]), sizeof (ssize_t));
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 		keyAddBaseName (key, "syncbits");
 		keySetBinary (key, &(split->syncbits[i]), sizeof (splitflag_t));
 		ksAppendKey (global, key);
@@ -958,7 +958,7 @@ int splitCacheCheckState (Split * split, ElektraKeyset * global)
 	ElektraKey * key = 0;
 	char * name = 0;
 
-	ElektraKey * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", KDB_O_NONE);
+	ElektraKey * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", ELEKTRA_KDB_O_NONE);
 	if (lastSplitSize && keyGetValueSize (lastSplitSize) == sizeof (size_t))
 	{
 		size_t lastSize = 0;
@@ -987,52 +987,52 @@ int splitCacheCheckState (Split * split, ElektraKeyset * global)
 		char * tmp = name;
 		name = elektraStrConcat (name, keyName (split->parents[i]));
 		elektraFree (tmp);
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 
 		keyAddBaseName (key, "splitParentName");
-		ElektraKey * found = ksLookup (global, key, KDB_O_NONE);
+		ElektraKey * found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && elektraStrCmp (keyString (found), keyName (split->parents[i])) == 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "splitParentValue");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && elektraStrCmp (keyString (found), keyString (split->parents[i])) == 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "specsize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->specsizes[i] > 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "dirsize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->dirsizes[i] > 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "usersize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->usersizes[i] > 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "systemsize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)) || (split->systemsizes[i] > 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "syncbits");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (splitflag_t)) || test_bit (split->syncbits[i], 0))
 		{
 			goto error;
@@ -1060,7 +1060,7 @@ int splitCacheLoadState (Split * split, ElektraKeyset * global)
 	ElektraKey * key = 0;
 	char * name = 0;
 
-	ElektraKey * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", KDB_O_NONE);
+	ElektraKey * lastSplitSize = ksLookupByName (global, KDB_CACHE_PREFIX "/lastSplitSize", ELEKTRA_KDB_O_NONE);
 	if (lastSplitSize && keyGetValueSize (lastSplitSize) == sizeof (size_t))
 	{
 		size_t lastSize = 0;
@@ -1089,24 +1089,24 @@ int splitCacheLoadState (Split * split, ElektraKeyset * global)
 		char * tmp = name;
 		name = elektraStrConcat (name, keyName (split->parents[i]));
 		elektraFree (tmp);
-		key = keyNew (name, KEY_END);
+		key = keyNew (name, ELEKTRA_KEY_END);
 
 		keyAddBaseName (key, "splitParentName");
-		ElektraKey * found = ksLookup (global, key, KDB_O_NONE);
+		ElektraKey * found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && elektraStrCmp (keyString (found), keyName (split->parents[i])) == 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "splitParentValue");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (!(found && elektraStrCmp (keyString (found), keyString (split->parents[i])) == 0))
 		{
 			goto error;
 		}
 
 		keySetBaseName (key, "specsize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
 			keyGetBinary (found, &(split->specsizes[i]), sizeof (ssize_t));
@@ -1117,7 +1117,7 @@ int splitCacheLoadState (Split * split, ElektraKeyset * global)
 		}
 
 		keySetBaseName (key, "dirsize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
 			keyGetBinary (found, &(split->dirsizes[i]), sizeof (ssize_t));
@@ -1128,7 +1128,7 @@ int splitCacheLoadState (Split * split, ElektraKeyset * global)
 		}
 
 		keySetBaseName (key, "usersize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
 			keyGetBinary (found, &(split->usersizes[i]), sizeof (ssize_t));
@@ -1139,7 +1139,7 @@ int splitCacheLoadState (Split * split, ElektraKeyset * global)
 		}
 
 		keySetBaseName (key, "systemsize");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
 			keyGetBinary (found, &(split->systemsizes[i]), sizeof (ssize_t));
@@ -1150,7 +1150,7 @@ int splitCacheLoadState (Split * split, ElektraKeyset * global)
 		}
 
 		keySetBaseName (key, "syncbits");
-		found = ksLookup (global, key, KDB_O_NONE);
+		found = ksLookup (global, key, ELEKTRA_KDB_O_NONE);
 		if (found && keyGetValueSize (found) == sizeof (splitflag_t))
 		{
 			keyGetBinary (found, &(split->syncbits[i]), sizeof (splitflag_t));
@@ -1185,7 +1185,7 @@ ElektraKey * backendsFindParent (ElektraKeyset * backends, const ElektraKey * ke
 	// The old trie solution would be O(k) where k is the length of the name of key
 	// The expectation is that k is bigger than m*log(n) in most cases
 
-	ElektraKey * lookup = keyDup (key, KEY_CP_NAME);
+	ElektraKey * lookup = keyDup (key, ELEKTRA_KEY_CP_NAME);
 	while (keyGetUnescapedNameSize (lookup) > 3)
 	{
 		ElektraKey * parent = ksLookup (backends, lookup, 0);
@@ -1205,29 +1205,29 @@ ElektraKey * backendsFindParent (ElektraKeyset * backends, const ElektraKey * ke
 ElektraKeyset * backendsForParentKey (ElektraKeyset * backends, ElektraKey * parentKey)
 {
 	ElektraKeyset * selected = ksBelow (backends, parentKey);
-	if (keyGetNamespace (parentKey) == KEY_NS_CASCADING)
+	if (keyGetNamespace (parentKey) == ELEKTRA_NS_CASCADING)
 	{
 		// FIXME (kodebach): properly handle cascading backends
-		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
+		for (elektraNamespace ns = ELEKTRA_NS_FIRST; ns <= ELEKTRA_NS_LAST; ++ns)
 		{
 			switch (ns)
 			{
-			case KEY_NS_PROC:
-			case KEY_NS_DIR:
-			case KEY_NS_USER:
-			case KEY_NS_SYSTEM:
-			case KEY_NS_SPEC:
-			case KEY_NS_DEFAULT:
+			case ELEKTRA_NS_PROC:
+			case ELEKTRA_NS_DIR:
+			case ELEKTRA_NS_USER:
+			case ELEKTRA_NS_SYSTEM:
+			case ELEKTRA_NS_SPEC:
+			case ELEKTRA_NS_DEFAULT:
 				keySetNamespace (parentKey, ns);
 				ksAppendKey (selected, backendsFindParent (backends, parentKey));
 				break;
-			case KEY_NS_META:
-			case KEY_NS_NONE:
-			case KEY_NS_CASCADING:
+			case ELEKTRA_NS_META:
+			case ELEKTRA_NS_NONE:
+			case ELEKTRA_NS_CASCADING:
 				break;
 			}
 		}
-		keySetNamespace (parentKey, KEY_NS_CASCADING);
+		keySetNamespace (parentKey, ELEKTRA_NS_CASCADING);
 	}
 	else
 	{
@@ -1257,7 +1257,7 @@ static elektraCursor backendsDivideInternal (ElektraKeyset * backends, elektraCu
 
 		if (keyIsBelowOrSame (defaultBackendKey, k) == 1)
 		{
-			ksAppendKey (defaultBackendData->keys, keyDup (k, KEY_CP_ALL));
+			ksAppendKey (defaultBackendData->keys, keyDup (k, ELEKTRA_KEY_CP_ALL));
 		}
 		// nextBackendKey == NULL happens during bootstrap
 		else if (nextBackendKey != NULL && keyCmp (k, nextBackendKey) >= 0)
@@ -1269,7 +1269,7 @@ static elektraCursor backendsDivideInternal (ElektraKeyset * backends, elektraCu
 		else if (*curBackend < 0 || keyIsBelowOrSame (backendKey, k) == 1)
 		{
 			backendData->keyNeedsSync = backendData->keyNeedsSync || keyNeedSync (k) == 1;
-			ksAppendKey (backendData->keys, keyDup (k, KEY_CP_ALL));
+			ksAppendKey (backendData->keys, keyDup (k, ELEKTRA_KEY_CP_ALL));
 		}
 		else
 		{
@@ -1304,7 +1304,7 @@ void backendsMerge (ElektraKeyset * backends, ElektraKeyset * ks)
 		const ElektraKey * backendKey = ksAtCursor (backends, i);
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
-		if (keyGetNamespace (backendKey) != KEY_NS_DEFAULT)
+		if (keyGetNamespace (backendKey) != ELEKTRA_NS_DEFAULT)
 		{
 			ssize_t size = ksGetSize (backendData->keys);
 			backendData->getSize = size;

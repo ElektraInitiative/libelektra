@@ -25,16 +25,16 @@ pthread_barrier_t * bar;
 
 void * writer (void * pV_data ELEKTRA_UNUSED)
 {
-	ElektraKey * parent = keyNew ("user:/test/race", KEY_END);
+	ElektraKey * parent = keyNew ("user:/test/race", ELEKTRA_KEY_END);
 	ElektraKdb * h = kdbOpen (NULL, parent);
 	char buffer[BUFFER_SIZE];
 	unsigned long tid = (unsigned long) pthread_self ();
 	int pid = getpid ();
 	snprintf (buffer, BUFFER_SIZE - 1, "user:/test/race/keys/%d/%lu", pid, tid);
-	ElektraKeyset * ks = ksNew (20, KS_END);
+	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
 
 	int retg = kdbGet (h, ks, parent);
-	ksAppendKey (ks, keyNew (buffer, KEY_VALUE, "a value", KEY_END));
+	ksAppendKey (ks, keyNew (buffer, ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_END));
 
 	pthread_barrier_wait (bar);
 	int rets = kdbSet (h, ks, parent);

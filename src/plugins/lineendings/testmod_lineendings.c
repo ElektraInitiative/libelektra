@@ -16,10 +16,10 @@
 
 void testvalid (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("lineendings");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbget failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbset failed");
 	ksDel (ks);
@@ -29,10 +29,10 @@ void testvalid (const char * file)
 
 void testinconsistent (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("lineendings");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == (-1), "should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "should have failed");
 	ksDel (ks);
@@ -42,10 +42,10 @@ void testinconsistent (const char * file)
 
 void testinvalid (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", KEY_VALUE, srcdir_file (file), KEY_END);
-	ElektraKeyset * conf = ksNew (20, keyNew ("system:/valid", KEY_VALUE, "CRLF", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/lineendings", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/valid", ELEKTRA_KEY_VALUE, "CRLF", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("lineendings");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbget failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "should have failed");
 	ksDel (ks);

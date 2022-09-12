@@ -68,19 +68,19 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, ElektraKey * 
 	resolverHandles * pks = elektraPluginGetData (handle);
 	switch (keyGetNamespace (parentKey))
 	{
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		return &pks->spec;
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		return &pks->dir;
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		return &pks->user;
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		return &pks->system;
-	case KEY_NS_PROC:
-	case KEY_NS_NONE:
-	case KEY_NS_META:
-	case KEY_NS_CASCADING:
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_PROC:
+	case ELEKTRA_NS_NONE:
+	case ELEKTRA_NS_META:
+	case ELEKTRA_NS_CASCADING:
+	case ELEKTRA_NS_DEFAULT:
 		break;
 	}
 	ELEKTRA_ASSERT (0, "namespace %d not valid for resolving", keyGetNamespace (parentKey));
@@ -268,29 +268,29 @@ int elektraWresolverOpen (Plugin * handle, ElektraKey * errorKey)
 	// a warning whenever a new namespace is present.
 	// (also used below in close)
 	// In fact its linear code executed:
-	switch (KEY_NS_SPEC)
+	switch (ELEKTRA_NS_SPEC)
 	{
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		resolverInit (&p->spec, path);
 		elektraResolveSpec (&p->spec, errorKey);
 	// FALLTHROUGH
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		resolverInit (&p->dir, path);
 		elektraResolveDir (&p->dir, errorKey);
 	// FALLTHROUGH
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		resolverInit (&p->user, path);
 		elektraResolveUser (&p->user, errorKey);
 	// FALLTHROUGH
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		resolverInit (&p->system, path);
 		elektraResolveSystem (&p->system, errorKey);
 	// FALLTHROUGH
-	case KEY_NS_PROC:
-	case KEY_NS_NONE:
-	case KEY_NS_META:
-	case KEY_NS_CASCADING:
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_PROC:
+	case ELEKTRA_NS_NONE:
+	case ELEKTRA_NS_META:
+	case ELEKTRA_NS_CASCADING:
+	case ELEKTRA_NS_DEFAULT:
 		break;
 	}
 
@@ -305,21 +305,21 @@ int elektraWresolverClose (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED
 
 	if (ps)
 	{
-		switch (KEY_NS_SPEC)
+		switch (ELEKTRA_NS_SPEC)
 		{
-		case KEY_NS_SPEC:
+		case ELEKTRA_NS_SPEC:
 			resolverClose (&ps->spec); // FALLTHROUGH
-		case KEY_NS_DIR:
+		case ELEKTRA_NS_DIR:
 			resolverClose (&ps->dir); // FALLTHROUGH
-		case KEY_NS_USER:
+		case ELEKTRA_NS_USER:
 			resolverClose (&ps->user); // FALLTHROUGH
-		case KEY_NS_SYSTEM:
+		case ELEKTRA_NS_SYSTEM:
 			resolverClose (&ps->system); // FALLTHROUGH
-		case KEY_NS_PROC:
-		case KEY_NS_NONE:
-		case KEY_NS_META:
-		case KEY_NS_CASCADING:
-		case KEY_NS_DEFAULT:
+		case ELEKTRA_NS_PROC:
+		case ELEKTRA_NS_NONE:
+		case ELEKTRA_NS_META:
+		case ELEKTRA_NS_CASCADING:
+		case ELEKTRA_NS_DEFAULT:
 			break;
 		}
 
@@ -335,17 +335,17 @@ int elektraWresolverGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/wresolver"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/wresolver", KEY_VALUE, "wresolver plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports", KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/open", KEY_FUNC, elektraWresolverOpen, KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/close", KEY_FUNC, elektraWresolverClose, KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/get", KEY_FUNC, elektraWresolverGet, KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/set", KEY_FUNC, elektraWresolverSet, KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/commit", KEY_FUNC, elektraWresolverCommit, KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/error", KEY_FUNC, elektraWresolverError, KEY_END),
-			keyNew ("system:/elektra/modules/wresolver/exports/checkfile", KEY_FUNC, elektraWresolverCheckFile, KEY_END),
+			30, keyNew ("system:/elektra/modules/wresolver", ELEKTRA_KEY_VALUE, "wresolver plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/open", ELEKTRA_KEY_FUNC, elektraWresolverOpen, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/close", ELEKTRA_KEY_FUNC, elektraWresolverClose, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/get", ELEKTRA_KEY_FUNC, elektraWresolverGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/set", ELEKTRA_KEY_FUNC, elektraWresolverSet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraWresolverCommit, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/error", ELEKTRA_KEY_FUNC, elektraWresolverError, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraWresolverCheckFile, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/wresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/wresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

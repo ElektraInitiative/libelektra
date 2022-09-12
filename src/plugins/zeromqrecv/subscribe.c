@@ -105,7 +105,7 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
 	ELEKTRA_LOG_DEBUG ("received key name %s", changedKeyName);
 
 	// notify about changes
-	ElektraKey * changedKey = keyNew (changedKeyName, KEY_END);
+	ElektraKey * changedKey = keyNew (changedKeyName, ELEKTRA_KEY_END);
 	data->notificationCallback (changedKey, data->notificationContext);
 
 	zmq_msg_close (&message);

@@ -28,8 +28,8 @@ int main (void)
 
 	fprintf (stdout, "%s;%s;%s\n", "plugin", "operation", "microseconds");
 	{
-		ElektraKeyset * returned = ksNew (0, KS_END);
-		ElektraKey * parentKey = keyNew ("user:/", KEY_END);
+		ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_END);
 
 		timeInit ();
 		ElektraKdb * handle = kdbOpen (NULL, parentKey);
@@ -49,11 +49,11 @@ int main (void)
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
 		timeInit ();
-		ElektraKey * parentKey = keyNew ("user:/benchmark", KEY_END);
+		ElektraKey * parentKey = keyNew ("user:/benchmark", ELEKTRA_KEY_END);
 		ElektraKdb * handle = kdbOpen (NULL, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbOpen", timeGetDiffMicroseconds ());
 
-		ElektraKeyset * returned = ksNew (0, KS_END);
+		ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
 		timeInit ();
 		kdbGet (handle, returned, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbGet", timeGetDiffMicroseconds ());

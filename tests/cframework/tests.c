@@ -115,7 +115,7 @@ int init (int argc, char ** argv)
  * @return an allocated root key */
 ElektraKey * create_root_key (const char * backendName)
 {
-	ElektraKey * root = keyNew ("user:/tests", KEY_END);
+	ElektraKey * root = keyNew ("user:/tests", ELEKTRA_KEY_END);
 	/*Make mountpoint beneath root, and do all tests here*/
 	keyAddBaseName (root, backendName);
 	keySetString (root, backendName);
@@ -128,7 +128,7 @@ ElektraKey * create_root_key (const char * backendName)
  * @return an allocated configuration keyset for a backend*/
 ElektraKeyset * create_conf (const char * filename)
 {
-	return ksNew (2, keyNew ("system:/path", KEY_VALUE, filename, KEY_END), KS_END);
+	return ksNew (2, keyNew ("system:/path", ELEKTRA_KEY_VALUE, filename, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
@@ -420,7 +420,7 @@ void generate_split (Split * split)
 int output_warnings (ElektraKey * warningKey)
 {
 	//! [warnings]
-	ElektraKey * cutpoint = keyNew ("meta:/warnings", KEY_END);
+	ElektraKey * cutpoint = keyNew ("meta:/warnings", ELEKTRA_KEY_END);
 	ElektraKeyset * warnings = ksCut (keyMeta (warningKey), cutpoint);
 
 	if (!warningKey || ksGetSize (warnings) == 0)

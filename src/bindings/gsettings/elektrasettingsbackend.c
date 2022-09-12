@@ -146,7 +146,7 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, gchar
 	if (gkey == NULL)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s %s.", "Key not found, creating new key:", keypathname, string_value);
-		gkey = gelektra_key_new (keypathname, KEY_VALUE, string_value, KEY_END);
+		gkey = gelektra_key_new (keypathname, ELEKTRA_KEY_VALUE, string_value, ELEKTRA_KEY_END);
 		g_free (keypathname);
 		if (gkey == NULL)
 		{
@@ -297,7 +297,7 @@ static gint elektra_settings_keyset_from_tree (gpointer key, gpointer value, gpo
 	if (gkey == NULL)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Key is new, need to create it");
-		gkey = gelektra_key_new (fullpathname, KEY_VALUE, string_value, KEY_END);
+		gkey = gelektra_key_new (fullpathname, ELEKTRA_KEY_VALUE, string_value, ELEKTRA_KEY_END);
 		if (gkey == NULL)
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Error douring key creation");
@@ -404,7 +404,7 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 	gchar * pathToWrite = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, name, NULL);
 
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks_user, pathToWrite, GELEKTRA_KDB_O_NONE);
-	if (gkey == NULL) gkey = gelektra_key_new (pathToWrite, KEY_VALUE, G_ELEKTRA_TEST_STRING, KEY_END);
+	if (gkey == NULL) gkey = gelektra_key_new (pathToWrite, ELEKTRA_KEY_VALUE, G_ELEKTRA_TEST_STRING, ELEKTRA_KEY_END);
 	g_free (pathToWrite);
 	if (gkey == NULL)
 	{
@@ -446,7 +446,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	}
 	else
 	{
-		GElektraKey * needle = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
+		GElektraKey * needle = gelektra_key_new (keypathname, ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
 		GElektraKey * cur;
 		gssize pos = 0;
 		while ((cur = gelektra_keyset_at (gks_paths, pos)) != NULL)
@@ -544,9 +544,9 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 
 	guint counter = 1;
 	gchar * pathToSubscribe = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, name, NULL);
-	gkey = gelektra_key_new (pathToSubscribe, KEY_BINARY, KEY_SIZE, sizeof (guint), // now the size is important
-				 KEY_VALUE, &counter,					// sets the binary value of the counter
-				 KEY_END);
+	gkey = gelektra_key_new (pathToSubscribe, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (guint), // now the size is important
+				 ELEKTRA_KEY_VALUE, &counter,					// sets the binary value of the counter
+				 ELEKTRA_KEY_END);
 	g_free (pathToSubscribe);
 
 	if (gelektra_keyset_append (ks, gkey) == -1)
@@ -608,8 +608,8 @@ static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Init new ElektraSettingsBackend");
 	esb->gkey_error = gelektra_key_new (0);
-	esb->gkey_user = gelektra_key_new (G_ELEKTRA_SETTINGS_USER G_ELEKTRA_SETTINGS_PATH, KEY_END);
-	esb->gkey_system = gelektra_key_new (G_ELEKTRA_SETTINGS_SYSTEM G_ELEKTRA_SETTINGS_PATH, KEY_END);
+	esb->gkey_user = gelektra_key_new (G_ELEKTRA_SETTINGS_USER G_ELEKTRA_SETTINGS_PATH, ELEKTRA_KEY_END);
+	esb->gkey_system = gelektra_key_new (G_ELEKTRA_SETTINGS_SYSTEM G_ELEKTRA_SETTINGS_PATH, ELEKTRA_KEY_END);
 	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey_error);
 	esb->gks_user = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->gks_system = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);

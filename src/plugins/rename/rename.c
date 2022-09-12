@@ -146,7 +146,7 @@ ElektraKey * elektraKeyCreateNewName (const ElektraKey * key, const ElektraKey *
 	elektraFree (curKeyName);
 	if (replace)
 	{
-		ElektraKey * result = keyDup (key, KEY_CP_ALL);
+		ElektraKey * result = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		keySetName (result, keyName (parentKey));
 		keyAddName (result, newName);
 		elektraFree (newName);
@@ -214,7 +214,7 @@ static ElektraKey * restoreKeyName (ElektraKey * key, const ElektraKey * parentK
 		if (strcmp (keyString (origNameKey), keyName (key)))
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			ElektraKey * result = keyDup (key, KEY_CP_ALL);
+			ElektraKey * result = keyDup (key, ELEKTRA_KEY_CP_ALL);
 			keySetName (result, keyString (origNameKey));
 			keySetMeta (result, ELEKTRA_ORIGINAL_NAME_META, 0);
 
@@ -230,7 +230,7 @@ static ElektraKey * restoreKeyName (ElektraKey * key, const ElektraKey * parentK
 		if (configKey)
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			ElektraKey * result = keyDup (key, KEY_CP_ALL);
+			ElektraKey * result = keyDup (key, ELEKTRA_KEY_CP_ALL);
 			keySetName (result, keyName (parentKey));
 			keyAddName (result, keyString (configKey));
 
@@ -271,11 +271,11 @@ int elektraRenameGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 
 	ksRewind (iterateKs);
 
-	ElektraKey * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
-	ElektraKey * toUpper = ksLookupByName (config, "/toupper", KDB_O_NONE);
-	ElektraKey * toLower = ksLookupByName (config, "/tolower", KDB_O_NONE);
-	ElektraKey * replaceWith = ksLookupByName (config, "/replacewith", KDB_O_NONE);
-	ElektraKey * getCase = ksLookupByName (config, "/get/case", KDB_O_NONE);
+	ElektraKey * cutConfig = ksLookupByName (config, "/cut", ELEKTRA_KDB_O_NONE);
+	ElektraKey * toUpper = ksLookupByName (config, "/toupper", ELEKTRA_KDB_O_NONE);
+	ElektraKey * toLower = ksLookupByName (config, "/tolower", ELEKTRA_KDB_O_NONE);
+	ElektraKey * replaceWith = ksLookupByName (config, "/replacewith", ELEKTRA_KDB_O_NONE);
+	ElektraKey * getCase = ksLookupByName (config, "/get/case", ELEKTRA_KDB_O_NONE);
 
 
 	ElektraKey * key;
@@ -287,7 +287,7 @@ int elektraRenameGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 		if (renamedKey)
 		{
 			keySetMeta (renamedKey, ELEKTRA_ORIGINAL_NAME_META, keyName (key));
-			ksLookup (returned, key, KDB_O_POP);
+			ksLookup (returned, key, ELEKTRA_KDB_O_POP);
 			keyDel (key);
 
 			/*
@@ -327,9 +327,9 @@ int elektraRenameSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	ElektraKeyset * iterateKs = ksDup (returned);
 
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
+	ElektraKey * cutConfig = ksLookupByName (config, "/cut", ELEKTRA_KDB_O_NONE);
 
-	ElektraKey * setCase = ksLookupByName (config, "/set/case", KDB_O_NONE);
+	ElektraKey * setCase = ksLookupByName (config, "/set/case", ELEKTRA_KDB_O_NONE);
 
 	int writeConversion = 0;
 	if (setCase)
@@ -363,7 +363,7 @@ int elektraRenameSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 		{
 			renamedKey = restoreKeyName (key, parentKey, cutConfig);
 
-			if (!renamedKey) renamedKey = keyDup (key, KEY_CP_ALL);
+			if (!renamedKey) renamedKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
 			if (writeConversion == TOUPPER || writeConversion == TOLOWER)
 			{
 				char * curKeyName = elektraMalloc (keyGetNameSize (renamedKey));
@@ -382,7 +382,7 @@ int elektraRenameSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 			 */
 			if (keyCmp (key, parentKey) != 0)
 			{
-				keyDel (ksLookup (returned, key, KDB_O_POP));
+				keyDel (ksLookup (returned, key, ELEKTRA_KDB_O_POP));
 			}
 			ksAppendKey (returned, renamedKey);
 		}
@@ -390,7 +390,7 @@ int elektraRenameSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 		{
 			if (keyCmp (key, parentKey) != 0)
 			{
-				keyDel (ksLookupByName (returned, keyString (keyGetMeta (key, ELEKTRA_ORIGINAL_NAME_META)), KDB_O_POP));
+				keyDel (ksLookupByName (returned, keyString (keyGetMeta (key, ELEKTRA_ORIGINAL_NAME_META)), ELEKTRA_KDB_O_POP));
 			}
 			ksAppendKey (returned, key);
 		}

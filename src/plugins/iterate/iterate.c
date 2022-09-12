@@ -47,15 +47,15 @@ int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/iterate"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/iterate", KEY_VALUE, "iterate plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/iterate/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/iterate/exports/open", KEY_FUNC, elektraIterateOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/iterate/exports/close", KEY_FUNC, elektraIterateClose, KEY_END),
-			       keyNew ("system:/elektra/modules/iterate/exports/get", KEY_FUNC, elektraIterateGet, KEY_END),
-			       keyNew ("system:/elektra/modules/iterate/exports/set", KEY_FUNC, elektraIterateSet, KEY_END),
-			       keyNew ("system:/elektra/modules/iterate/exports/error", KEY_FUNC, elektraIterateError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/iterate", ELEKTRA_KEY_VALUE, "iterate plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iterate/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iterate/exports/open", ELEKTRA_KEY_FUNC, elektraIterateOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iterate/exports/close", ELEKTRA_KEY_FUNC, elektraIterateClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iterate/exports/get", ELEKTRA_KEY_FUNC, elektraIterateGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iterate/exports/set", ELEKTRA_KEY_FUNC, elektraIterateSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iterate/exports/error", ELEKTRA_KEY_FUNC, elektraIterateError, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/iterate/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/iterate/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

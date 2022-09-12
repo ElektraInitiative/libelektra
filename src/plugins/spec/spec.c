@@ -85,7 +85,7 @@ static bool specMatches (ElektraKey * specKey, ElektraKey * otherKey)
 static bool specMatches (ElektraKey * specKey, ElektraKey * otherKey)
 {
 	// ignore namespaces for globbing
-	ElektraKey * globKey = keyNew (strchr (keyName (otherKey), '/'), KEY_END);
+	ElektraKey * globKey = keyNew (strchr (keyName (otherKey), '/'), ELEKTRA_KEY_END);
 	bool matches = elektraKeyGlob (globKey, strchr (keyName (specKey), '/')) == 0;
 	keyDel (globKey);
 	return matches;
@@ -346,11 +346,11 @@ static int handleErrors (ElektraKey * key, ElektraKey * parentKey, ElektraKeyset
 
 	parseLocalConfig (specKey, &localCh, isKdbGet);
 
-	ElektraKey * parentLookup = keyDup (key, KEY_CP_ALL);
+	ElektraKey * parentLookup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	keySetBaseName (parentLookup, NULL);
 
 	elektraCursor cursor = ksGetCursor (ks);
-	ElektraKey * parent = ksLookup (ks, parentLookup, KDB_O_NONE);
+	ElektraKey * parent = ksLookup (ks, parentLookup, ELEKTRA_KDB_O_NONE);
 	ksSetCursor (ks, cursor);
 
 	keyDel (parentLookup);
@@ -456,7 +456,7 @@ static bool validateArraySize (ElektraKey * arrayParent, ElektraKey * spec)
 
 static void validateEmptyArray (ElektraKeyset * ks, ElektraKey * arraySpecParent, ElektraKey * parentKey, OnConflict onConflict)
 {
-	ElektraKey * parentLookup = keyNew (strchr (keyName (arraySpecParent), '/'), KEY_END);
+	ElektraKey * parentLookup = keyNew (strchr (keyName (arraySpecParent), '/'), ELEKTRA_KEY_END);
 
 	// either existed already, or was added by processSpecKey because of KeySet order
 	ElektraKey * arrayParent = ksLookup (ks, parentLookup, 0);
@@ -469,7 +469,7 @@ static void validateEmptyArray (ElektraKeyset * ks, ElektraKey * arraySpecParent
 	bool immediate = arrayParent == NULL;
 	if (immediate)
 	{
-		arrayParent = keyNew (keyName (parentLookup), KEY_END);
+		arrayParent = keyNew (keyName (parentLookup), ELEKTRA_KEY_END);
 	}
 
 	// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
@@ -484,7 +484,7 @@ static void validateEmptyArray (ElektraKeyset * ks, ElektraKey * arraySpecParent
 	ksRewind (subKeys);
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == KEY_NS_SPEC)
+		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == ELEKTRA_NS_SPEC)
 		{
 			continue;
 		}
@@ -526,7 +526,7 @@ static void validateEmptyArray (ElektraKeyset * ks, ElektraKey * arraySpecParent
 
 static void validateArrayMembers (ElektraKeyset * ks, ElektraKey * arraySpec)
 {
-	ElektraKey * parentLookup = keyNew (strchr (keyName (arraySpec), '/'), KEY_END);
+	ElektraKey * parentLookup = keyNew (strchr (keyName (arraySpec), '/'), ELEKTRA_KEY_END);
 	keySetBaseName (parentLookup, NULL);
 
 	// either existed already, or was added by processSpecKey because of KeySet order
@@ -548,8 +548,8 @@ static void validateArrayMembers (ElektraKeyset * ks, ElektraKey * arraySpec)
 	ksRewind (subKeys);
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == KEY_NS_SPEC ||
-		    keyGetNamespace (cur) == KEY_NS_CASCADING)
+		if (keyIsBelow (parentLookup, cur) == 0 || keyGetNamespace (cur) == ELEKTRA_NS_SPEC ||
+		    keyGetNamespace (cur) == ELEKTRA_NS_CASCADING)
 		{
 			continue;
 		}
@@ -580,15 +580,15 @@ static ElektraKeyset * instantiateArraySpec (ElektraKeyset * ks, ElektraKey * ar
 
 	cur += strlen (cur) + 1; // skip "spec:"
 
-	ElektraKeyset * newKeys = ksNew (1, keyNew ("spec:/", KEY_END), KS_END);
-	ElektraKeyset * parents = ksNew (0, KS_END);
-	ElektraKey * specCur = keyNew ("spec:/", KEY_END);
+	ElektraKeyset * newKeys = ksNew (1, keyNew ("spec:/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * parents = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * specCur = keyNew ("spec:/", ELEKTRA_KEY_END);
 
 	while (cur < end)
 	{
 		size_t len = strlen (cur);
 
-		ElektraKeyset * curNew = ksNew (0, KS_END);
+		ElektraKeyset * curNew = ksNew (0, ELEKTRA_KS_END);
 		if (len == 1 && cur[0] == '#')
 		{
 
@@ -636,7 +636,7 @@ static ElektraKeyset * instantiateArraySpec (ElektraKeyset * ks, ElektraKey * ar
 
 				while (strcmp (elem, arraySize) <= 0)
 				{
-					ElektraKey * new = keyDup (k, KEY_CP_ALL);
+					ElektraKey * new = keyDup (k, ELEKTRA_KEY_CP_ALL);
 					keyAddBaseName (new, elem);
 					ksAppendKey (curNew, new);
 
@@ -644,7 +644,7 @@ static ElektraKeyset * instantiateArraySpec (ElektraKeyset * ks, ElektraKey * ar
 					elektraWriteArrayNumber (elem, i);
 				}
 
-				ElektraKey * parent = keyNew (keyName (k), KEY_END);
+				ElektraKey * parent = keyNew (keyName (k), ELEKTRA_KEY_END);
 				keyAddBaseName (parent, "#");
 				ksAppendKey (parents, parent);
 			}
@@ -655,7 +655,7 @@ static ElektraKeyset * instantiateArraySpec (ElektraKeyset * ks, ElektraKey * ar
 			ksRewind (newKeys);
 			while ((k = ksNext (newKeys)) != NULL)
 			{
-				ElektraKey * new = keyDup (k, KEY_CP_ALL);
+				ElektraKey * new = keyDup (k, ELEKTRA_KEY_CP_ALL);
 				keyAddBaseName (new, cur);
 				ksAppendKey (curNew, new);
 			}
@@ -728,7 +728,7 @@ static bool isWildcardSpec (const ElektraKey * key)
  */
 static void validateWildcardSubs (ElektraKeyset * ks, ElektraKey * key)
 {
-	ElektraKey * parent = keyDup (key, KEY_CP_ALL);
+	ElektraKey * parent = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	keySetBaseName (parent, NULL);
 
 	// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup
@@ -761,7 +761,7 @@ static void copyMeta (ElektraKey * dest, ElektraKey * src)
 {
 	ElektraKeyset * metaKS = ksDup (keyMeta (src));
 
-	ElektraKey * cutpoint = keyNew ("meta:/internal", KEY_END);
+	ElektraKey * cutpoint = keyNew ("meta:/internal", ELEKTRA_KEY_END);
 	ksDel (ksCut (metaKS, cutpoint)); // don't care for internal stuff
 
 	keySetName (cutpoint, "meta:/conflict");
@@ -872,14 +872,14 @@ static int processSpecKey (ElektraKey * specKey, ElektraKey * parentKey, Elektra
 		{
 			if (keyGetMeta (specKey, "assign/condition") != NULL)
 			{
-				ElektraKey * newKey = keyNew ("default:/", KEY_END);
+				ElektraKey * newKey = keyNew ("default:/", ELEKTRA_KEY_END);
 				keyAddName (newKey, strchr (keyName (specKey), '/'));
 				copyMeta (newKey, specKey);
 				ksAppendKey (ks, newKey);
 			}
 			else if (keyGetMeta (specKey, "default") != NULL)
 			{
-				ElektraKey * newKey = keyNew ("default:/", KEY_VALUE, keyString (keyGetMeta (specKey, "default")), KEY_END);
+				ElektraKey * newKey = keyNew ("default:/", ELEKTRA_KEY_VALUE, keyString (keyGetMeta (specKey, "default")), ELEKTRA_KEY_END);
 				keyAddName (newKey, strchr (keyName (specKey), '/'));
 				copyMeta (newKey, specKey);
 				ksAppendKey (ks, newKey);
@@ -888,7 +888,7 @@ static int processSpecKey (ElektraKey * specKey, ElektraKey * parentKey, Elektra
 
 		if (keyGetMeta (specKey, "array") != NULL)
 		{
-			ElektraKey * newKey = keyNew ("default:/", KEY_END);
+			ElektraKey * newKey = keyNew ("default:/", ELEKTRA_KEY_END);
 			keyAddName (newKey, strchr (keyName (specKey), '/'));
 			copyMeta (newKey, specKey);
 			if (!isKdbGet)
@@ -907,12 +907,12 @@ int elektraSpecGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/spec"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/spec/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
-			       keyNew ("system:/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/spec", ELEKTRA_KEY_VALUE, "spec plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/get", ELEKTRA_KEY_FUNC, elektraSpecGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/set", ELEKTRA_KEY_FUNC, elektraSpecSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/spec/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -926,13 +926,13 @@ int elektraSpecGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	parseConfig (config, &ch, CONFIG_BASE_NAME_GET);
 
 	// build spec
-	ElektraKeyset * specKS = ksNew (0, KS_END);
+	ElektraKeyset * specKS = ksNew (0, ELEKTRA_KS_END);
 
 	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_SPEC)
+		if (keyGetNamespace (cur) == ELEKTRA_NS_SPEC)
 		{
 			if (isArraySpec (cur))
 			{
@@ -952,7 +952,7 @@ int elektraSpecGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	}
 
 	// remove spec namespace from returned
-	ElektraKey * specParent = keyNew ("spec:/", KEY_END);
+	ElektraKey * specParent = keyNew ("spec:/", ELEKTRA_KEY_END);
 	ksDel (ksCut (returned, specParent));
 	keyDel (specParent);
 
@@ -997,13 +997,13 @@ int elektraSpecSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	parseConfig (config, &ch, CONFIG_BASE_NAME_SET);
 
 	// build spec
-	ElektraKeyset * specKS = ksNew (0, KS_END);
+	ElektraKeyset * specKS = ksNew (0, ELEKTRA_KS_END);
 
 	ElektraKey * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_SPEC)
+		if (keyGetNamespace (cur) == ELEKTRA_NS_SPEC)
 		{
 			if (isArraySpec (cur))
 			{
@@ -1023,7 +1023,7 @@ int elektraSpecSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	}
 
 	// remove spec namespace from returned
-	ElektraKey * specParent = keyNew ("spec:/", KEY_END);
+	ElektraKey * specParent = keyNew ("spec:/", ELEKTRA_KEY_END);
 	ksDel (ksCut (returned, specParent));
 	keyDel (specParent);
 
@@ -1057,7 +1057,7 @@ int elektraSpecSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != NULL)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_SPEC)
+		if (keyGetNamespace (cur) == ELEKTRA_NS_SPEC)
 		{
 			continue;
 		}

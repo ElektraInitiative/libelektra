@@ -76,15 +76,15 @@ int elektraTracerGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/tracer"))
 	{
 		ElektraKeyset * info =
-			ksNew (50, keyNew ("system:/elektra/modules/tracer", KEY_VALUE, "tracer plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/tracer/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/tracer/exports/open", KEY_FUNC, elektraTracerOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/tracer/exports/close", KEY_FUNC, elektraTracerClose, KEY_END),
-			       keyNew ("system:/elektra/modules/tracer/exports/get", KEY_FUNC, elektraTracerGet, KEY_END),
-			       keyNew ("system:/elektra/modules/tracer/exports/set", KEY_FUNC, elektraTracerSet, KEY_END),
-			       keyNew ("system:/elektra/modules/tracer/exports/error", KEY_FUNC, elektraTracerError, KEY_END),
+			ksNew (50, keyNew ("system:/elektra/modules/tracer", ELEKTRA_KEY_VALUE, "tracer plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/open", ELEKTRA_KEY_FUNC, elektraTracerOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/close", ELEKTRA_KEY_FUNC, elektraTracerClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/get", ELEKTRA_KEY_FUNC, elektraTracerGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/set", ELEKTRA_KEY_FUNC, elektraTracerSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/tracer/exports/error", ELEKTRA_KEY_FUNC, elektraTracerError, ELEKTRA_KEY_END),
 #include "readme_tracer.c"
-			       keyNew ("system:/elektra/modules/tracer/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/tracer/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, info);
 		ksDel (info);
 		return 1;

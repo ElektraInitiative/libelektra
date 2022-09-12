@@ -17,28 +17,28 @@ void printNamespace (ElektraKey const * k)
 //! [namespace]
 switch (keyGetNamespace (k))
 {
-case KEY_NS_SPEC:
+case ELEKTRA_NS_SPEC:
 	printf ("spec namespace\n");
 	break;
-case KEY_NS_PROC:
+case ELEKTRA_NS_PROC:
 	printf ("proc namespace\n");
 	break;
-case KEY_NS_DIR:
+case ELEKTRA_NS_DIR:
 	printf ("dir namespace\n");
 	break;
-case KEY_NS_USER:
+case ELEKTRA_NS_USER:
 	printf ("user namespace\n");
 	break;
-case KEY_NS_SYSTEM:
+case ELEKTRA_NS_SYSTEM:
 	printf ("system namespace\n");
 	break;
-case KEY_NS_NONE:
+case ELEKTRA_NS_NONE:
 	printf ("no key\n");
 	break;
-case KEY_NS_META:
+case ELEKTRA_NS_META:
 	printf ("metakey\n");
 	break;
-case KEY_NS_CASCADING:
+case ELEKTRA_NS_CASCADING:
 	printf ("cascading key\n");
 	break;
 }
@@ -48,7 +48,7 @@ case KEY_NS_CASCADING:
 void loop (void)
 {
 //! [loop]
-for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
+for (elektraNamespace ns = ELEKTRA_NS_FIRST; ns <= ELEKTRA_NS_LAST; ++ns)
 {
 	// work with namespace
 	printf ("%d\n", ns);
@@ -64,7 +64,7 @@ int main (void)
 		return EXIT_FAILURE;
 	}
 
-	ElektraKey * k = keyNew (s, KEY_END);
+	ElektraKey * k = keyNew (s, ELEKTRA_KEY_END);
 	printNamespace (k);
 	keyDel (k);
 }

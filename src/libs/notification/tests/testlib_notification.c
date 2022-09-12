@@ -20,8 +20,8 @@ static void test_registerInt (void)
 {
 	printf ("test elektraNotificationRegisterInt\n");
 
-	ElektraKey * key = keyNew ("system:/elektra/version/constants", KEY_END);
-	ElektraKey * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
+	ElektraKey * key = keyNew ("system:/elektra/version/constants", ELEKTRA_KEY_END);
+	ElektraKey * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", ELEKTRA_KEY_END);
 
 	int startValue = -1;
 	int value = startValue;
@@ -32,14 +32,14 @@ static void test_registerInt (void)
 
 	kdbClose (kdb, key);
 
-	ElektraKeyset * contract = ksNew (0, KS_END);
+	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
 	elektraNotificationContract (contract);
 	kdb = kdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value), "register failed");
 
 	// call kdbGet; value gets automatically updated
-	ElektraKeyset * config = ksNew (0, KS_END);
+	ElektraKeyset * config = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (kdbGet (kdb, config, key), "kdbGet failed");
 
 	succeed_if (value != startValue, "value was not changed");
@@ -61,8 +61,8 @@ static void test_registerCallback (void)
 {
 	printf ("test elektraNotificationRegisterCallback\n");
 
-	ElektraKey * key = keyNew ("system:/elektra/version/constants", KEY_END);
-	ElektraKey * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
+	ElektraKey * key = keyNew ("system:/elektra/version/constants", ELEKTRA_KEY_END);
+	ElektraKey * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", ELEKTRA_KEY_END);
 	callback_called = 0;
 
 	ElektraKdb * kdb = kdbOpen (NULL, key);
@@ -71,14 +71,14 @@ static void test_registerCallback (void)
 
 	kdbClose (kdb, key);
 
-	ElektraKeyset * contract = ksNew (0, KS_END);
+	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
 	elektraNotificationContract (contract);
 	kdb = kdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL), "register failed");
 
 	// call kdbGet; value gets automatically updated
-	ElektraKeyset * config = ksNew (0, KS_END);
+	ElektraKeyset * config = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (kdbGet (kdb, config, key), "kdbGet failed");
 
 	succeed_if (callback_called, "callback was not called");

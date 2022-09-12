@@ -171,7 +171,7 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 		ElektraKeyset * config = elektraPluginGetConfig (handle);
 		data = elektraCalloc (sizeof (GitData));
 
-		ElektraKey * key = ksLookupByName (config, "/path", KDB_O_NONE);
+		ElektraKey * key = ksLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
 		keySetString (parentKey, keyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
@@ -181,13 +181,13 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 
 		// default to master branch when no branchname is supplied
 		const char * defaultBranch = "master";
-		key = ksLookupByName (config, "/branch", KDB_O_NONE);
+		key = ksLookupByName (config, "/branch", ELEKTRA_KDB_O_NONE);
 		if (!key)
 			data->branch = (char *) defaultBranch;
 		else
 			data->branch = (char *) keyString (key);
 
-		key = ksLookupByName (config, "/tracking", KDB_O_NONE);
+		key = ksLookupByName (config, "/tracking", ELEKTRA_KDB_O_NONE);
 		if (!key)
 			data->tracking = HEAD;
 		else
@@ -197,7 +197,7 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 			else
 				data->tracking = HEAD;
 		}
-		key = ksLookupByName (config, "/pull", KDB_O_NONE);
+		key = ksLookupByName (config, "/pull", ELEKTRA_KDB_O_NONE);
 		if (!key)
 		{
 			data->pull = 0;
@@ -209,7 +209,7 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 		size_t refLen = strlen (REFSTRING) + strlen (data->branch) + 1;
 		data->refName = elektraCalloc (refLen);
 		snprintf (data->refName, refLen, "%s%s", REFSTRING, data->branch);
-		key = ksLookupByName (config, "/checkout", KDB_O_NONE);
+		key = ksLookupByName (config, "/checkout", ELEKTRA_KDB_O_NONE);
 		if (!key)
 		{
 			data->checkout = 0;
@@ -617,18 +617,18 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retur
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gitresolver"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports", KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/close", KEY_FUNC, elektraGitresolverClose, KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/get", KEY_FUNC, elektraGitresolverGet, KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/set", KEY_FUNC, elektraGitresolverSet, KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/commit", KEY_FUNC, elektraGitresolverCommit, KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
-			keyNew ("system:/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
+			30, keyNew ("system:/elektra/modules/gitresolver", ELEKTRA_KEY_VALUE, "gitresolver plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/open", ELEKTRA_KEY_FUNC, elektraGitresolverOpen, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/close", ELEKTRA_KEY_FUNC, elektraGitresolverClose, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/get", ELEKTRA_KEY_FUNC, elektraGitresolverGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/set", ELEKTRA_KEY_FUNC, elektraGitresolverSet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraGitresolverCommit, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/error", ELEKTRA_KEY_FUNC, elektraGitresolverError, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraGitresolverCheckFile, ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/gitresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

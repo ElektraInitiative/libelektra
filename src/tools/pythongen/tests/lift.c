@@ -49,9 +49,9 @@ void kdbGetByName (ElektraKdb * kdb, ElektraKeyset * conf, ElektraKey * parentKe
 
 int main (int argc, char ** argv)
 {
-	ElektraKey * parentKey = keyNew ("", KEY_END);
+	ElektraKey * parentKey = keyNew ("", ELEKTRA_KEY_END);
 	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 
 	// get all config files
 	kdbGetByName (kdb, conf, parentKey, "/test/lift");

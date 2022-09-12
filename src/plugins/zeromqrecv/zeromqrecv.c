@@ -74,13 +74,13 @@ int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * return
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/zeromqrecv"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/zeromqrecv", KEY_VALUE, "zeromqrecv plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/zeromqrecv/exports", KEY_END),
-			keyNew ("system:/elektra/modules/zeromqrecv/exports/open", KEY_FUNC, elektraZeroMqRecvOpen, KEY_END),
-			keyNew ("system:/elektra/modules/zeromqrecv/exports/get", KEY_FUNC, elektraZeroMqRecvGet, KEY_END),
-			keyNew ("system:/elektra/modules/zeromqrecv/exports/close", KEY_FUNC, elektraZeroMqRecvClose, KEY_END),
+			30, keyNew ("system:/elektra/modules/zeromqrecv", ELEKTRA_KEY_VALUE, "zeromqrecv plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/open", ELEKTRA_KEY_FUNC, elektraZeroMqRecvOpen, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/get", ELEKTRA_KEY_FUNC, elektraZeroMqRecvGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/close", ELEKTRA_KEY_FUNC, elektraZeroMqRecvClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/zeromqrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/zeromqrecv/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

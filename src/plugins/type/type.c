@@ -223,7 +223,7 @@ static kdb_long_long_t readBooleanRestore (ElektraKeyset * config)
 		return -3;
 	}
 
-	ElektraKey * restoreKey = keyNew ("/", KEY_VALUE, &restoreString[digitStart], KEY_END);
+	ElektraKey * restoreKey = keyNew ("/", ELEKTRA_KEY_VALUE, &restoreString[digitStart], ELEKTRA_KEY_END);
 
 	kdb_long_long_t size;
 	if (!elektraKeyToLongLong (restoreKey, &size))
@@ -282,16 +282,16 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/type"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/type", KEY_VALUE, "type plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/open", KEY_FUNC, elektraTypeOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/get", KEY_FUNC, elektraTypeGet, KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/set", KEY_FUNC, elektraTypeSet, KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/close", KEY_FUNC, elektraTypeClose, KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/checkconf", KEY_FUNC, elektraTypeCheckConf, KEY_END),
-			       keyNew ("system:/elektra/modules/type/exports/validateKey", KEY_FUNC, elektraTypeValidateKey, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/type", ELEKTRA_KEY_VALUE, "type plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/open", ELEKTRA_KEY_FUNC, elektraTypeOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/get", ELEKTRA_KEY_FUNC, elektraTypeGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/set", ELEKTRA_KEY_FUNC, elektraTypeSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/close", ELEKTRA_KEY_FUNC, elektraTypeClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/checkconf", ELEKTRA_KEY_FUNC, elektraTypeCheckConf, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/type/exports/validateKey", ELEKTRA_KEY_FUNC, elektraTypeValidateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/type/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/type/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

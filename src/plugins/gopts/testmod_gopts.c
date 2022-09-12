@@ -79,8 +79,8 @@ void test_global (void)
 {
 	printf ("test global\n");
 
-	ElektraKey * parentKey = keyNew ("/tests/gopts", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("/tests/gopts", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("gopts");
 
@@ -89,16 +89,16 @@ void test_global (void)
 	char ** envp = (char **) (char *[]){ "ENV_VAR=carrot", "OTHER_ENV_VAR=strawberry", NULL };
 
 	plugin->global =
-		ksNew (4, keyNew ("system:/elektra/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END),
-		       keyNew ("system:/elektra/gopts/argc", KEY_BINARY, KEY_SIZE, sizeof (int), KEY_VALUE, &argc, KEY_END),
-		       keyNew ("system:/elektra/gopts/argv", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &argv, KEY_END),
-		       keyNew ("system:/elektra/gopts/envp", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &envp, KEY_END), KS_END);
+		ksNew (4, keyNew ("system:/elektra/gopts/parent", ELEKTRA_KEY_VALUE, keyName (parentKey), ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/gopts/argc", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (int), ELEKTRA_KEY_VALUE, &argc, ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/gopts/argv", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (char **), ELEKTRA_KEY_VALUE, &argv, ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/gopts/envp", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (char **), ELEKTRA_KEY_VALUE, &envp, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * ks = ksNew (5, keyNew ("spec:/tests/gopts/apple", KEY_META, "opt", "c", KEY_END),
-			     keyNew ("spec:/tests/gopts/banana", KEY_META, "opt/long", "longopt", KEY_END),
-			     keyNew ("spec:/tests/gopts/raspberry", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			     keyNew ("spec:/tests/gopts/carrot", KEY_META, "env", "ENV_VAR", KEY_END),
-			     keyNew ("spec:/tests/gopts/strawberry", KEY_META, "env", "OTHER_ENV_VAR", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("spec:/tests/gopts/apple", ELEKTRA_KEY_META, "opt", "c", ELEKTRA_KEY_END),
+			     keyNew ("spec:/tests/gopts/banana", ELEKTRA_KEY_META, "opt/long", "longopt", ELEKTRA_KEY_END),
+			     keyNew ("spec:/tests/gopts/raspberry", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			     keyNew ("spec:/tests/gopts/carrot", ELEKTRA_KEY_META, "env", "ENV_VAR", ELEKTRA_KEY_END),
+			     keyNew ("spec:/tests/gopts/strawberry", ELEKTRA_KEY_META, "env", "OTHER_ENV_VAR", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	output_error (parentKey);
 

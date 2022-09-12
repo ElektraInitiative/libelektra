@@ -45,7 +45,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 	strcat (buffer, filename);
 
 	/* Because of the outbreak bugs these tests are not enough */
-	ElektraKey * check = keyNew (buffer, KEY_END);
+	ElektraKey * check = keyNew (buffer, ELEKTRA_KEY_END);
 	if (!check) goto error;
 	if (!strcmp (keyName (check), "system:/")) goto error;
 	keyDel (check);
@@ -113,7 +113,7 @@ static void elektraResolveFinishByFilename (ElektraResolved * handle, ElektraRes
 
 static void elektraResolveUsingHome (ElektraResolved * handle, const char * home, short addPostfix)
 {
-	ElektraKey * canonify = keyNew ("user:/", KEY_END);
+	ElektraKey * canonify = keyNew ("user:/", ELEKTRA_KEY_END);
 	keyAddName (canonify, home);
 
 	size_t dirnameSize = keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
@@ -228,7 +228,7 @@ static int elektraResolveEnvUser (ElektraResolved * handle)
 		return 0;
 	}
 
-	ElektraKey * canonify = keyNew ("user:/", KEY_END);
+	ElektraKey * canonify = keyNew ("user:/", ELEKTRA_KEY_END);
 	keyAddName (canonify, user);
 	size_t homeSize = sizeof (KDB_DB_HOME "/") + keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 
@@ -635,35 +635,35 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace
 
 	switch (namespace)
 	{
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		rc = elektraResolveSpec (handle, tmpDir, warningsKey);
 		break;
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		rc = elektraResolveDir (handle, tmpDir, warningsKey);
 		break;
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		rc = elektraResolveMapperUser (handle, tmpDir, warningsKey);
 		break;
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		rc = elektraResolveMapperSystem (handle, tmpDir, warningsKey);
 		break;
-	case KEY_NS_PROC:
+	case ELEKTRA_NS_PROC:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve proc");
 		rc = -1;
 		break;
-	case KEY_NS_NONE:
+	case ELEKTRA_NS_NONE:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve none");
 		rc = -1;
 		break;
-	case KEY_NS_META:
+	case ELEKTRA_NS_META:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve meta");
 		rc = -1;
 		break;
-	case KEY_NS_CASCADING:
+	case ELEKTRA_NS_CASCADING:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve cascading");
 		rc = -1;
 		break;
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_DEFAULT:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve default");
 		rc = -1;
 		break;

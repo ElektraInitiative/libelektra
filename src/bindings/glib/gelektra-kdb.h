@@ -22,9 +22,9 @@ typedef struct _GElektraKdb      GElektraKdb;
 typedef struct _GElektraKdbClass GElektraKdbClass;
 
 typedef enum {
-	GELEKTRA_KDB_O_NONE        = KDB_O_NONE,
-	GELEKTRA_KDB_O_DEL         = KDB_O_DEL,
-	GELEKTRA_KDB_O_POP         = KDB_O_POP
+	GELEKTRA_KDB_O_NONE        = ELEKTRA_KDB_O_NONE,
+	GELEKTRA_KDB_O_DEL         = ELEKTRA_KDB_O_DEL,
+	GELEKTRA_KDB_O_POP         = ELEKTRA_KDB_O_POP
 } GElektraKdbOptions;
 
 #ifndef G_ELEKTRA_CONSTANTS_H

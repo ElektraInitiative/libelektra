@@ -40,22 +40,22 @@
 
 static ElektraKeyset * create_ks (const char * res, const char * meta)
 {
-	return ksNew (5, keyNew ("user:/tests/mathcheck/sum", KEY_VALUE, res, KEY_META, "check/math", meta, KEY_END),
-		      keyNew ("user:/tests/mathcheck/bla/val1", KEY_VALUE, "100", KEY_END),
-		      keyNew ("user:/tests/mathcheck/bla/val2", KEY_VALUE, "50", KEY_END),
-		      keyNew ("user:/tests/mathcheck/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
+	return ksNew (5, keyNew ("user:/tests/mathcheck/sum", ELEKTRA_KEY_VALUE, res, ELEKTRA_KEY_META, "check/math", meta, ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/mathcheck/bla/val1", ELEKTRA_KEY_VALUE, "100", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/mathcheck/bla/val2", ELEKTRA_KEY_VALUE, "50", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/mathcheck/bla/val3", ELEKTRA_KEY_VALUE, "3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_multiUp (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/mathcheck", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * ks = ksNew (5,
-			     keyNew ("user:/tests/mathcheck/up/sum", KEY_VALUE, "0", KEY_META, "check/math",
-				     ":= + ../val1 + ../../val2 ../val3", KEY_END),
-			     keyNew ("user:/tests/mathcheck/up/val1", KEY_VALUE, "1", KEY_END),
-			     keyNew ("user:/tests/mathcheck/val2", KEY_VALUE, "2", KEY_END),
-			     keyNew ("user:/tests/mathcheck/up/val3", KEY_VALUE, "10", KEY_END), KS_END);
+			     keyNew ("user:/tests/mathcheck/up/sum", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_META, "check/math",
+				     ":= + ../val1 + ../../val2 ../val3", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/mathcheck/up/val1", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/mathcheck/val2", ELEKTRA_KEY_VALUE, "2", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/mathcheck/up/val3", ELEKTRA_KEY_VALUE, "10", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("mathcheck");
 	ksRewind (ks);

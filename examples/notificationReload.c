@@ -78,7 +78,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		didReload = 1;
 	}
 
-	ElektraKeyset * contract = ksNew (0, KS_END);
+	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
 	elektraIoContract (contract, data->binding);
 	elektraNotificationContract (contract);
 
@@ -96,7 +96,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		exit (1);
 	}
 
-	ElektraKey * elektraKey = keyNew ("/elektra", KEY_END);
+	ElektraKey * elektraKey = keyNew ("/elektra", ELEKTRA_KEY_END);
 	if (!elektraNotificationRegisterCallbackSameOrBelow (data->kdb, elektraKey, elektraChangedCallback, data))
 	{
 		printf ("could not register for changes to Elektra's configuration, aborting\n");
@@ -168,9 +168,9 @@ int main (void)
 	// Signal Handling
 	g_unix_signal_add (SIGINT, onSIGNAL, data);
 
-	data->config = ksNew (20, KS_END);
-	data->parentKey = keyNew ("/sw/example/notification/#0/current", KEY_END);
-	data->intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", KEY_END);
+	data->config = ksNew (20, ELEKTRA_KS_END);
+	data->parentKey = keyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
+	data->intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
 
 	// Setup timer that repeatedly prints the variable
 	data->timer = elektraIoNewTimerOperation (TWO_SECONDS, 1, printVariable, data);

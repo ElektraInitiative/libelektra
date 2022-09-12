@@ -13,51 +13,51 @@
 #if 1 == 0
 ElektraKeyset * set_simple (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
+	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/anything", ELEKTRA_KEY_VALUE, "backend", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/backend/simple", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/path", ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/error", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/error/prerollback", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/error/prerollback/#1", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/error/prerollback/#1/name", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/error", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/error/prerollback", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/error/prerollback/#1", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/error/prerollback/#1/name", ELEKTRA_KEY_VALUE, KDB_DEFAULT_STORAGE, ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/get", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/more", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/more/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/more/config/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/path", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/name", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/anything", ELEKTRA_KEY_VALUE, "plugin", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/more", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/more/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/more/config/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/config/path", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/get/pregetstorage/#0/name", ELEKTRA_KEY_VALUE, KDB_DEFAULT_STORAGE, ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/set", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/set/presetstorage", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/set/presetstorage/#0", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/set/presetstorage/#0/name", KDB_DEFAULT_STORAGE, KEY_END), KS_END);
+		      keyNew ("system:/elektra/mountpoints/simple/set", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/set/presetstorage", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/set/presetstorage/#0", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/set/presetstorage/#0/name", KDB_DEFAULT_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 ElektraKeyset * set_pluginconf (void)
 {
-	return ksNew (10, keyNew ("system:/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system:/more", KEY_END),
-		      keyNew ("system:/more/config", KEY_END), keyNew ("system:/more/config/below", KEY_END),
-		      keyNew ("system:/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END), keyNew ("system:/path", KEY_END),
-		      keyNew ("user:/anything", KEY_VALUE, "plugin", KEY_END), keyNew ("user:/more", KEY_END),
-		      keyNew ("user:/more/config", KEY_END), keyNew ("user:/more/config/below", KEY_END), keyNew ("user:/path", KEY_END),
-		      KS_END);
+	return ksNew (10, keyNew ("system:/anything", ELEKTRA_KEY_VALUE, "backend", ELEKTRA_KEY_END), keyNew ("system:/more", ELEKTRA_KEY_END),
+		      keyNew ("system:/more/config", ELEKTRA_KEY_END), keyNew ("system:/more/config/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/backend/simple", ELEKTRA_KEY_END), keyNew ("system:/path", ELEKTRA_KEY_END),
+		      keyNew ("user:/anything", ELEKTRA_KEY_VALUE, "plugin", ELEKTRA_KEY_END), keyNew ("user:/more", ELEKTRA_KEY_END),
+		      keyNew ("user:/more/config", ELEKTRA_KEY_END), keyNew ("user:/more/config/below", ELEKTRA_KEY_END), keyNew ("user:/path", ELEKTRA_KEY_END),
+		      ELEKTRA_KS_END);
 }
 
 Trie * test_insert (Trie * trie, char * name, char * value ELEKTRA_UNUSED)
 {
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * backend = elektraPluginOpen ("backend", modules, set_simple (), 0);
 	return trieInsert (trie, name, backend);
@@ -69,8 +69,8 @@ static void test_minimaltrie (void)
 	printf ("Test minimal trie\n");
 
 	Trie * trie = test_insert (0, "", "");
-	ElektraKey * s = keyNew ("/", KEY_END);
-	ElektraKey * mp = keyNew ("/", KEY_VALUE, "", KEY_END);
+	ElektraKey * s = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * mp = keyNew ("/", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
 
 	succeed_if (trieLookup (trie, s), "trie should not be null");
 	compare_key (backendGetMountpoint (trieLookup (trie, s)), mp);
@@ -92,8 +92,8 @@ static void test_minimaltrie (void)
 
 ElektraKeyset * simple_config (void)
 {
-	return ksNew (5, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/simple", KEY_END), KS_END);
+	return ksNew (5, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/simple", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_simple (void)
@@ -104,12 +104,12 @@ static void test_simple (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	ElektraKey * searchKey = keyNew ("user:/", KEY_END);
+	ElektraKey * searchKey = keyNew ("user:/", ELEKTRA_KEY_END);
 	Plugin * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
-	ElektraKey * mp = keyNew ("user:/tests/simple", KEY_VALUE, "simple", KEY_END);
+	ElektraKey * mp = keyNew ("user:/tests/simple", ELEKTRA_KEY_VALUE, "simple", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/tests/simple/below");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
@@ -154,12 +154,12 @@ static void test_iterate (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	ElektraKey * searchKey = keyNew ("user:/", KEY_END);
+	ElektraKey * searchKey = keyNew ("user:/", ELEKTRA_KEY_END);
 	Plugin * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
-	ElektraKey * mp = keyNew ("user:/tests/hosts", KEY_VALUE, "hosts", KEY_END);
+	ElektraKey * mp = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, "hosts", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/tests/hosts");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
@@ -181,7 +181,7 @@ static void test_iterate (void)
 	if (b2) compare_key (backendGetMountpoint (b2), mp);
 
 
-	ElektraKey * mp2 = keyNew ("user:/tests/hosts/below", KEY_VALUE, "below", KEY_END);
+	ElektraKey * mp2 = keyNew ("user:/tests/hosts/below", ELEKTRA_KEY_VALUE, "below", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/tests/hosts/below");
 	Plugin * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
@@ -197,7 +197,7 @@ static void test_iterate (void)
 	succeed_if (backend == b3, "should be same backend");
 	if (b3) compare_key (backendGetMountpoint (b3), mp2);
 
-	ElektraKeyset * mps = ksNew (0, KS_END);
+	ElektraKeyset * mps = ksNew (0, ELEKTRA_KS_END);
 	collect_mountpoints (trie, mps);
 	// output_keyset(mps);
 	// output_trie(trie);
@@ -221,12 +221,12 @@ static void test_reviterate (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	ElektraKey * searchKey = keyNew ("user:/", KEY_END);
+	ElektraKey * searchKey = keyNew ("user:/", ELEKTRA_KEY_END);
 	Plugin * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
-	ElektraKey * mp = keyNew ("user:/tests/hosts", KEY_VALUE, "hosts", KEY_END);
+	ElektraKey * mp = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, "hosts", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/tests/hosts");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
@@ -249,7 +249,7 @@ static void test_reviterate (void)
 	if (b2) compare_key (backendGetMountpoint (b2), mp);
 
 
-	ElektraKey * mp2 = keyNew ("user:/tests/hosts/below", KEY_VALUE, "below", KEY_END);
+	ElektraKey * mp2 = keyNew ("user:/tests/hosts/below", ELEKTRA_KEY_VALUE, "below", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/tests/hosts/below");
 	Plugin * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
@@ -265,7 +265,7 @@ static void test_reviterate (void)
 	succeed_if (backend == b2, "should be same backend");
 	if (b2) compare_key (backendGetMountpoint (b2), mp2);
 
-	ElektraKeyset * mps = ksNew (0, KS_END);
+	ElektraKeyset * mps = ksNew (0, ELEKTRA_KS_END);
 	collect_mountpoints (trie, mps);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
 	compare_key (ksHead (mps), mp);
@@ -280,32 +280,32 @@ static void test_reviterate (void)
 
 ElektraKeyset * moreiterate_config (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/tests", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/tests/mountpoint", KEY_VALUE, "user:/tests", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/hosts", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/hosts/mountpoint", KEY_VALUE, "user:/tests/hosts", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/below/mountpoint", KEY_VALUE, "user:/tests/hosts/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/systests", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/systests/mountpoint", KEY_VALUE, "system:/tests", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/syshosts", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/syshosts/mountpoint", KEY_VALUE, "system:/tests/hosts", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/sysbelow", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/sysbelow/mountpoint", KEY_VALUE, "system:/tests/hosts/below", KEY_END), KS_END);
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/user", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/user/mountpoint", ELEKTRA_KEY_VALUE, "user", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/tests", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/tests/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/hosts", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/hosts/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/hosts", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/below/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/hosts/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system/mountpoint", ELEKTRA_KEY_VALUE, "system", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/systests", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/systests/mountpoint", ELEKTRA_KEY_VALUE, "system:/tests", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/syshosts", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/syshosts/mountpoint", ELEKTRA_KEY_VALUE, "system:/tests/hosts", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/sysbelow", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/sysbelow/mountpoint", ELEKTRA_KEY_VALUE, "system:/tests/hosts/below", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 ElektraKeyset * set_mountpoints (void)
 {
-	return ksNew (10, keyNew ("user:/", KEY_VALUE, "user", KEY_END), keyNew ("user:/tests", KEY_VALUE, "tests", KEY_END),
-		      keyNew ("user:/tests/hosts", KEY_VALUE, "hosts", KEY_END),
-		      keyNew ("user:/tests/hosts/below", KEY_VALUE, "below", KEY_END), keyNew ("system:/", KEY_VALUE, "system", KEY_END),
-		      keyNew ("system:/tests", KEY_VALUE, "systests", KEY_END),
-		      keyNew ("system:/tests/hosts", KEY_VALUE, "syshosts", KEY_END),
-		      keyNew ("system:/tests/hosts/below", KEY_VALUE, "sysbelow", KEY_END), KS_END);
+	return ksNew (10, keyNew ("user:/", ELEKTRA_KEY_VALUE, "user", ELEKTRA_KEY_END), keyNew ("user:/tests", ELEKTRA_KEY_VALUE, "tests", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, "hosts", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/hosts/below", ELEKTRA_KEY_VALUE, "below", ELEKTRA_KEY_END), keyNew ("system:/", ELEKTRA_KEY_VALUE, "system", ELEKTRA_KEY_END),
+		      keyNew ("system:/tests", ELEKTRA_KEY_VALUE, "systests", ELEKTRA_KEY_END),
+		      keyNew ("system:/tests/hosts", ELEKTRA_KEY_VALUE, "syshosts", ELEKTRA_KEY_END),
+		      keyNew ("system:/tests/hosts/below", ELEKTRA_KEY_VALUE, "sysbelow", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_moreiterate (void)
@@ -325,7 +325,7 @@ static void test_moreiterate (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	ElektraKey * searchKey = keyNew ("/", KEY_END);
+	ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
 
 	keySetName (searchKey, "user:/");
 	Plugin * backend = trieLookup (trie, searchKey);
@@ -391,7 +391,7 @@ static void test_moreiterate (void)
 	succeed_if (b2, "there should be a backend");
 	if (b2) compare_key (backendGetMountpoint (b2), ksLookupByName (mps, "system:/tests/hosts/below", 0));
 
-	ElektraKeyset * mps_cmp = ksNew (0, KS_END);
+	ElektraKeyset * mps_cmp = ksNew (0, ELEKTRA_KS_END);
 	collect_mountpoints (trie, mps_cmp);
 	succeed_if (ksGetSize (mps_cmp) == 8, "size should be 8");
 	compare_keyset (mps, mps_cmp);
@@ -468,7 +468,7 @@ static void test_revmoreiterate (void)
 
 		exit_if_fail (trie, "trie was not build up successfully");
 
-		ElektraKey * searchKey = keyNew ("/", KEY_END);
+		ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
 
 		keySetName (searchKey, "user:/");
 		Plugin * backend = trieLookup (trie, searchKey);
@@ -539,7 +539,7 @@ static void test_revmoreiterate (void)
 		output_trie(trie);
 		*/
 
-		ElektraKeyset * mps_cmp = ksNew (0, KS_END);
+		ElektraKeyset * mps_cmp = ksNew (0, ELEKTRA_KS_END);
 		collect_mountpoints (trie, mps_cmp);
 		succeed_if (ksGetSize (mps_cmp) == 8, "size should be 8");
 		compare_keyset (mps, mps_cmp);
@@ -564,12 +564,12 @@ static void test_umlauts (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	ElektraKey * searchKey = keyNew ("user:/", KEY_END);
+	ElektraKey * searchKey = keyNew ("user:/", ELEKTRA_KEY_END);
 	Plugin * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
-	ElektraKey * mp = keyNew ("user:/umlauts/test", KEY_VALUE, "slash", KEY_END);
+	ElektraKey * mp = keyNew ("user:/umlauts/test", ELEKTRA_KEY_VALUE, "slash", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/umlauts/test");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
@@ -644,12 +644,12 @@ static void test_endings (void)
 
 		exit_if_fail (trie, "trie was not build up successfully");
 
-		ElektraKey * searchKey = keyNew ("user:/", KEY_END);
+		ElektraKey * searchKey = keyNew ("user:/", ELEKTRA_KEY_END);
 		Plugin * backend = trieLookup (trie, searchKey);
 		succeed_if (!backend, "there should be no backend");
 
 
-		ElektraKey * mp = keyNew ("user:/endings", KEY_VALUE, "slash", KEY_END);
+		ElektraKey * mp = keyNew ("user:/endings", ELEKTRA_KEY_VALUE, "slash", ELEKTRA_KEY_END);
 		keySetName (searchKey, "user:/endings");
 		backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
@@ -730,14 +730,14 @@ static void test_root (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	ElektraKey * searchKey = keyNew ("user:/", KEY_END);
-	ElektraKey * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
+	ElektraKey * searchKey = keyNew ("user:/", ELEKTRA_KEY_END);
+	ElektraKey * rmp = keyNew ("/", ELEKTRA_KEY_VALUE, "root", ELEKTRA_KEY_END);
 	Plugin * backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be the root backend");
 	if (backend) compare_key (backendGetMountpoint (backend), rmp);
 
 
-	ElektraKey * mp = keyNew ("user:/tests/simple", KEY_VALUE, "simple", KEY_END);
+	ElektraKey * mp = keyNew ("user:/tests/simple", ELEKTRA_KEY_VALUE, "simple", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/tests/simple");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
@@ -823,8 +823,8 @@ static void test_userroot (void)
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	ElektraKey * searchKey = keyNew ("/", KEY_END);
-	ElektraKey * mp = keyNew ("user:/", KEY_VALUE, "root", KEY_END);
+	ElektraKey * searchKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * mp = keyNew ("user:/", ELEKTRA_KEY_VALUE, "root", ELEKTRA_KEY_END);
 	keySetName (searchKey, "user:/");
 	Plugin * backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");

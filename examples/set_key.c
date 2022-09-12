@@ -30,15 +30,15 @@ void print_warnings (ElektraKey * err)
 /** After writing the key this function rereads the key and print it*/
 void check_key (void)
 {
-	ElektraKey * error_key = keyNew ("/", KEY_END);
+	ElektraKey * error_key = keyNew ("/", ELEKTRA_KEY_END);
 	ElektraKdb * kdb_handle = kdbOpen (NULL, error_key);
-	ElektraKey * top = keyNew ("/", KEY_END);
+	ElektraKey * top = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (top, "user:/sw/MyApp"); // == 14
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (kdb_handle, ks, top);
-	ElektraKey * key = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (key, "user:/sw/MyApp/Tests/TestKey1"); // == 14
-	ElektraKey * result = ksLookup (ks, key, KDB_O_NONE);
+	ElektraKey * result = ksLookup (ks, key, ELEKTRA_KDB_O_NONE);
 	const char * key_name = keyName (result);
 	const char * key_value = keyString (result);
 	const char * key_comment = keyString (keyGetMeta (result, "comment"));
@@ -53,15 +53,15 @@ void check_key (void)
 // typical usage of Elektra
 int main (void)
 {
-	ElektraKey * error_key = keyNew ("/", KEY_END);
+	ElektraKey * error_key = keyNew ("/", ELEKTRA_KEY_END);
 	ElektraKdb * kdb_handle = kdbOpen (NULL, error_key);
-	ElektraKey * top = keyNew ("/", KEY_END);
+	ElektraKey * top = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (top, "user:/sw/MyApp");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (kdb_handle, ks, top);
 
-	ElektraKey * key = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (key, "user:/sw/MyApp/Tests/TestKey1"); // == 31
 	keySetString (key, "NULLTestValue");		   // == 14
 	keySetMeta (key, "comment", "NULLTestComment");	   // == 16

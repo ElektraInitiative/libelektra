@@ -22,7 +22,7 @@ static void elektraYajlSetArrayLength (ElektraKeyset * ks, ElektraKey * current)
 {
 	// Update array length in array key
 	elektraCursor cursor = ksGetCursor (ks);
-	ElektraKey * arrayKey = keyNew (keyName (current), KEY_END);
+	ElektraKey * arrayKey = keyNew (keyName (current), ELEKTRA_KEY_END);
 	keySetBaseName (arrayKey, 0);
 	ElektraKey * foundKey = ksLookup (ks, arrayKey, 0);
 	keySetMeta (foundKey, "array", keyBaseName (current));
@@ -43,7 +43,7 @@ static int elektraYajlIncrementArrayEntry (ElektraKeyset * ks)
 	const char * meta = keyString (keyGetMeta (current, "array"));
 	if (!strcmp (meta, "empty"))
 	{
-		current = keyNew (keyName (current), KEY_END);
+		current = keyNew (keyName (current), ELEKTRA_KEY_END);
 		keyAddName (current, "#0");
 		ksAppendKey (ks, current);
 
@@ -54,7 +54,7 @@ static int elektraYajlIncrementArrayEntry (ElektraKeyset * ks)
 	else if (baseName && *baseName == '#')
 	{
 		// we are in an array
-		current = keyNew (keyName (current), KEY_END);
+		current = keyNew (keyName (current), ELEKTRA_KEY_END);
 		elektraArrayIncName (current);
 		ksAppendKey (ks, current);
 
@@ -152,7 +152,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 	ElektraKeyset * ks = (ElektraKeyset *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
-	ElektraKey * currentKey = keyNew (keyName (ksCurrent (ks)), KEY_END);
+	ElektraKey * currentKey = keyNew (keyName (ksCurrent (ks)), ELEKTRA_KEY_END);
 	keySetString (currentKey, 0);
 
 	unsigned char delim = stringVal[stringLen];
@@ -163,7 +163,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 	if (currentKey && !strcmp (keyBaseName (currentKey), "___empty_map"))
 	{
 		// remove old key
-		keyDel (ksLookup (ks, currentKey, KDB_O_POP));
+		keyDel (ksLookup (ks, currentKey, ELEKTRA_KDB_O_POP));
 		// now we know the name of the object
 		keySetBaseName (currentKey, stringValue);
 	}
@@ -187,7 +187,7 @@ static int elektraYajlParseStartMap (void * ctx)
 
 	ElektraKey * currentKey = ksCurrent (ks);
 
-	ElektraKey * newKey = keyNew (keyName (currentKey), KEY_END);
+	ElektraKey * newKey = keyNew (keyName (currentKey), ELEKTRA_KEY_END);
 	// add a pseudo element for empty map
 	keyAddBaseName (newKey, "___empty_map");
 	ksAppendKey (ks, newKey);
@@ -210,7 +210,7 @@ static int elektraYajlParseEnd (void * ctx)
 		return 1;
 	}
 
-	ElektraKey * lookupKey = keyNew (keyName (currentKey), KEY_END);
+	ElektraKey * lookupKey = keyNew (keyName (currentKey), ELEKTRA_KEY_END);
 	keySetBaseName (lookupKey, 0); // remove current baseName
 
 	// lets point current to the correct place
@@ -241,7 +241,7 @@ static int elektraYajlParseStartArray (void * ctx)
 
 	ElektraKey * currentKey = ksCurrent (ks);
 
-	ElektraKey * newKey = keyNew (keyName (currentKey), KEY_END);
+	ElektraKey * newKey = keyNew (keyName (currentKey), ELEKTRA_KEY_END);
 	keySetMeta (newKey, "array", "empty");
 	ksAppendKey (ks, newKey);
 
@@ -265,7 +265,7 @@ static void elektraYajlParseSuppressNonLeafKeys (ElektraKeyset * returned)
 
 		if (ksNext (returned) == NULL) break;
 
-		ElektraKey * peekDup = keyDup (ksCurrent (returned), KEY_CP_ALL);
+		ElektraKey * peekDup = keyDup (ksCurrent (returned), ELEKTRA_KEY_CP_ALL);
 		keySetBaseName (peekDup, 0);
 
 		if (!strcmp (keyName (peekDup), keyName (cur)))
@@ -275,7 +275,7 @@ static void elektraYajlParseSuppressNonLeafKeys (ElektraKeyset * returned)
 			if (strcmp (baseName, "#0"))
 			{
 				ELEKTRA_LOG_DEBUG ("Removing non-leaf key %s", keyName (cur));
-				keyDel (ksLookup (returned, cur, KDB_O_POP));
+				keyDel (ksLookup (returned, cur, ELEKTRA_KDB_O_POP));
 				ksSetCursor (returned, cursor);
 			}
 			else
@@ -301,9 +301,9 @@ static void elektraYajlParseSuppressEmptyMap (ElektraKeyset * returned, ElektraK
 
 	if (ksGetSize (returned) == 2)
 	{
-		ElektraKey * lookupKey = keyDup (parentKey, KEY_CP_ALL);
+		ElektraKey * lookupKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (lookupKey, "___empty_map");
-		ElektraKey * toRemove = ksLookup (returned, lookupKey, KDB_O_POP);
+		ElektraKey * toRemove = ksLookup (returned, lookupKey, ELEKTRA_KDB_O_POP);
 
 #ifdef HAVE_LOGGER
 		if (toRemove)
@@ -333,16 +333,16 @@ static void elektraYajlParseSuppressEmptyMap (ElektraKeyset * returned, ElektraK
 
 static inline ElektraKeyset * elektraGetModuleConfig (void)
 {
-	return ksNew (30, keyNew ("system:/elektra/modules/yajl", KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
-		      keyNew ("system:/elektra/modules/yajl/exports", KEY_END),
-		      keyNew ("system:/elektra/modules/yajl/exports/get", KEY_FUNC, elektraYajlGet, KEY_END),
-		      keyNew ("system:/elektra/modules/yajl/exports/set", KEY_FUNC, elektraYajlSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/yajl", ELEKTRA_KEY_VALUE, "yajl plugin waits for your orders", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/exports", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/exports/get", ELEKTRA_KEY_FUNC, elektraYajlGet, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/exports/set", ELEKTRA_KEY_FUNC, elektraYajlSet, ELEKTRA_KEY_END),
 #include "readme_yajl.c"
-		      keyNew ("system:/elektra/modules/yajl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		      keyNew ("system:/elektra/modules/yajl/config", KEY_END),
-		      keyNew ("system:/elektra/modules/yajl/config/", KEY_VALUE, "system", KEY_END),
-		      keyNew ("system:/elektra/modules/yajl/config/below", KEY_VALUE, "user", KEY_END),
-		      keyNew ("system:/elektra/modules/yajl/config/needs/boolean/restoreas", KEY_VALUE, "none", KEY_END), KS_END);
+		      keyNew ("system:/elektra/modules/yajl/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config/", ELEKTRA_KEY_VALUE, "system", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config/below", ELEKTRA_KEY_VALUE, "user", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/yajl/config/needs/boolean/restoreas", ELEKTRA_KEY_VALUE, "none", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
@@ -367,7 +367,7 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 				     elektraYajlParseStartArray,
 				     elektraYajlParseEnd };
 
-	ksAppendKey (returned, keyNew (keyName ((parentKey)), KEY_END));
+	ksAppendKey (returned, keyNew (keyName ((parentKey)), ELEKTRA_KEY_END));
 
 #if YAJL_MAJOR == 1
 	yajl_parser_config cfg = { 1, 1 };

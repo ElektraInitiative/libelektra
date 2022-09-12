@@ -57,17 +57,17 @@ static void init_gpgme (void)
 
 static ElektraKeyset * newPluginConfiguration (void)
 {
-	return ksNew (3, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
-		      keyNew (ELEKTRA_GPGME_CONFIG_TEXTMODE, KEY_VALUE, "0", KEY_END),
-		      keyNew (ELEKTRA_GPGME_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
+	return ksNew (3, keyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		      keyNew (ELEKTRA_GPGME_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+		      keyNew (ELEKTRA_GPGME_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static ElektraKeyset * newTestdataKeySet (void)
 {
-	ElektraKey * kUnchanged = keyNew (KEYNAME_UNCHANGED, KEY_END);
-	ElektraKey * kNull = keyNew (KEYNAME_NULL, KEY_END);
-	ElektraKey * kString = keyNew (KEYNAME_STRING, KEY_END);
-	ElektraKey * kBin = keyNew (KEYNAME_BIN, KEY_END);
+	ElektraKey * kUnchanged = keyNew (KEYNAME_UNCHANGED, ELEKTRA_KEY_END);
+	ElektraKey * kNull = keyNew (KEYNAME_NULL, ELEKTRA_KEY_END);
+	ElektraKey * kString = keyNew (KEYNAME_STRING, ELEKTRA_KEY_END);
+	ElektraKey * kBin = keyNew (KEYNAME_BIN, ELEKTRA_KEY_END);
 
 	keySetString (kUnchanged, strVal);
 
@@ -80,7 +80,7 @@ static ElektraKeyset * newTestdataKeySet (void)
 	keySetBinary (kBin, binVal, sizeof (binVal));
 	keySetMeta (kBin, ELEKTRA_GPGME_META_ENCRYPT, "1");
 
-	return ksNew (4, kUnchanged, kNull, kString, kBin, KS_END);
+	return ksNew (4, kUnchanged, kNull, kString, kBin, ELEKTRA_KS_END);
 }
 
 static void test_import_key (void)
@@ -112,8 +112,8 @@ static void test_import_key (void)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
@@ -147,9 +147,9 @@ static void test_init (void)
 static void test_incomplete_config (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
-	ElektraKeyset * configKs = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * configKs = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (GPGME_PLUGIN_NAME, modules, configKs, 0);
@@ -170,8 +170,8 @@ static void test_incomplete_config (void)
 static void test_encryption_decryption (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);

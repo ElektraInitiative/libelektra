@@ -17,11 +17,11 @@
 
 static void testread (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
-	ElektraKeyset * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
-			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END),
+			       keyNew ("system:/header", ELEKTRA_KEY_VALUE, "colname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	ElektraKey * key;
 	key = ksLookupByName (ks, "user:/tests/csvstorage/#1/col1", 0);
@@ -38,12 +38,12 @@ static void testread (const char * file)
 }
 static void testreadfixcolcount (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
 	ElektraKeyset * conf =
-		ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END), keyNew ("system:/header", KEY_VALUE, "colname", KEY_END),
-		       keyNew ("system:/columns", KEY_VALUE, "4", KEY_END), KS_END);
+		ksNew (20, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END), keyNew ("system:/header", ELEKTRA_KEY_VALUE, "colname", ELEKTRA_KEY_END),
+		       keyNew ("system:/columns", ELEKTRA_KEY_VALUE, "4", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (ret == (-1), "call to kdbGet was successful but shouldn't have been");
 	ksDel (ks);
@@ -53,9 +53,9 @@ static void testreadfixcolcount (const char * file)
 }
 static void testreadwriteinvalid (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END), KS_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
 	succeed_if (!output_warnings (parentKey), "no warnings in kdbGet");
@@ -70,11 +70,11 @@ static void testreadwriteinvalid (const char * file)
 static void testwriteinvalidheader (const char * file)
 {
 
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
-	ElektraKeyset * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
-			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END),
+			       keyNew ("system:/header", ELEKTRA_KEY_VALUE, "colname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
 	succeed_if (!output_warnings (parentKey), "no warnings in kdbGet");
@@ -88,11 +88,11 @@ static void testwriteinvalidheader (const char * file)
 static void testwritevalidemptycol (const char * file)
 {
 
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
-	ElektraKeyset * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
-			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END),
+			       keyNew ("system:/header", ELEKTRA_KEY_VALUE, "colname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
 	keySetString (parentKey, elektraFilename ());
@@ -103,14 +103,14 @@ static void testwritevalidemptycol (const char * file)
 }
 static void testSetColnames (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
 	ElektraKeyset * conf =
-		ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END), keyNew ("system:/header", KEY_VALUE, "colname", KEY_END),
-		       keyNew ("system:/columns", KEY_VALUE, "2", KEY_END), keyNew ("system:/columns/names", KEY_VALUE, "", KEY_END),
-		       keyNew ("system:/columns/names/#0", KEY_VALUE, "col0Name", KEY_END),
-		       keyNew ("system:/columns/names/#1", KEY_VALUE, "col1Name", KEY_END), KS_END);
+		ksNew (20, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END), keyNew ("system:/header", ELEKTRA_KEY_VALUE, "colname", ELEKTRA_KEY_END),
+		       keyNew ("system:/columns", ELEKTRA_KEY_VALUE, "2", ELEKTRA_KEY_END), keyNew ("system:/columns/names", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+		       keyNew ("system:/columns/names/#0", ELEKTRA_KEY_VALUE, "col0Name", ELEKTRA_KEY_END),
+		       keyNew ("system:/columns/names/#1", ELEKTRA_KEY_VALUE, "col1Name", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	ElektraKey * key;
 	key = ksLookupByName (ks, "user:/tests/csvstorage/#1/col0Name", 0);
@@ -128,21 +128,21 @@ static void testSetColnames (const char * file)
 
 static void testreadwritecomplicated (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
-			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END),
+			       keyNew ("system:/header", ELEKTRA_KEY_VALUE, "colname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#1/col3", KDB_O_NONE)), "l1;c3"),
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#1/col3", ELEKTRA_KDB_O_NONE)), "l1;c3"),
 		    "key value doesn't match expected value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#1/col4", KDB_O_NONE)), "l1\"\"c4"),
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#1/col4", ELEKTRA_KDB_O_NONE)), "l1\"\"c4"),
 		    "key value doesn't match expected value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#2/col3", KDB_O_NONE)), "l2\nc3"),
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#2/col3", ELEKTRA_KDB_O_NONE)), "l2\nc3"),
 		    "key value doesn't match expected value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#4/col4", KDB_O_NONE)), "l4\"\"c4"),
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#4/col4", ELEKTRA_KDB_O_NONE)), "l4\"\"c4"),
 		    "key value doesn't match expected value");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#5/col3", KDB_O_NONE)), "l5\"\"\nc3"),
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#5/col3", ELEKTRA_KDB_O_NONE)), "l5\"\"\nc3"),
 		    "key value doesn't match expected value");
 
 	keySetString (parentKey, elektraFilename ());
@@ -156,14 +156,14 @@ static void testreadwritecomplicated (const char * file)
 
 static void testreadunescapedDQuote (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
-			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END),
+			       keyNew ("system:/header", ELEKTRA_KEY_VALUE, "colname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
 	succeed_if (!output_warnings (parentKey), "no warnings in kdbGet");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#3/col3", KDB_O_NONE)), "l3\"c3"),
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/csvstorage/#3/col3", ELEKTRA_KDB_O_NONE)), "l3\"c3"),
 		    "key value doesn't match expected value");
 
 	ksDel (ks);
@@ -173,14 +173,14 @@ static void testreadunescapedDQuote (const char * file)
 
 static void testexportmissing (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, elektraFilename (), KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END), keyNew ("system:/export", KEY_VALUE, "", KEY_END),
-			       keyNew ("system:/export/a", KEY_VALUE, "", KEY_END), KS_END);
-	ElektraKeyset * ks = ksNew (10, keyNew ("user:/tests/csvstorage/#0", KEY_VALUE, "", KEY_END),
-			     keyNew ("user:/tests/csvstorage/#0/a", KEY_VALUE, "a1", KEY_END),
-			     keyNew ("user:/tests/csvstorage/#0/b", KEY_VALUE, "b", KEY_END),
-			     keyNew ("user:/tests/csvstorage/#1", KEY_VALUE, "", KEY_END),
-			     keyNew ("user:/tests/csvstorage/#1/a", KEY_VALUE, "a2", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/csvstorage", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/delimiter", ELEKTRA_KEY_VALUE, ";", ELEKTRA_KEY_END), keyNew ("system:/export", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+			       keyNew ("system:/export/a", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (10, keyNew ("user:/tests/csvstorage/#0", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/csvstorage/#0/a", ELEKTRA_KEY_VALUE, "a1", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/csvstorage/#0/b", ELEKTRA_KEY_VALUE, "b", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/csvstorage/#1", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/csvstorage/#1/a", ELEKTRA_KEY_VALUE, "a2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "call to kdbSet was not successful");
 	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");

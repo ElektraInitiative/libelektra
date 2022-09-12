@@ -23,12 +23,12 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/version"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/version", KEY_VALUE, "version plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/version/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/version/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
-			       keyNew ("system:/elektra/modules/version/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/version", ELEKTRA_KEY_VALUE, "version plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/version/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/version/exports/init", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/version/exports/get", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/version/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/version/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -36,16 +36,16 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	}
 
 	const char * phase = elektraPluginGetPhase (handle);
-	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
+	if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_RESOLVER) == 0)
 	{
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_STORAGE) == 0)
 	{
 		ElektraKeyset * info = elektraVersionKeySet ();
-		ElektraKey * versionRoot = keyNew ("system:/elektra/version", KEY_END);
+		ElektraKey * versionRoot = keyNew ("system:/elektra/version", ELEKTRA_KEY_END);
 
-		ElektraKey * first = keyDup (ksAtCursor (info, 0), KEY_CP_ALL);
+		ElektraKey * first = keyDup (ksAtCursor (info, 0), ELEKTRA_KEY_CP_ALL);
 		keyReplacePrefix (first, versionRoot, parentKey);
 		keySetMeta (first, "restrict/write", "1");
 		keySetMeta (first, "restrict/remove", "1");
@@ -53,7 +53,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 
 		for (elektraCursor i = 1; i < ksGetSize (info); i++)
 		{
-			ElektraKey * cur = keyDup (ksAtCursor (info, i), KEY_CP_ALL);
+			ElektraKey * cur = keyDup (ksAtCursor (info, i), ELEKTRA_KEY_CP_ALL);
 			keyReplacePrefix (cur, versionRoot, parentKey);
 			keyCopyAllMeta (cur, first);
 			ksAppendKey (returned, cur);

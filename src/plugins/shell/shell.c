@@ -48,21 +48,21 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/shell"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/shell", KEY_VALUE, "shell plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/shell/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/shell/exports/get", KEY_FUNC, elektraShellGet, KEY_END),
-			       keyNew ("system:/elektra/modules/shell/exports/set", KEY_FUNC, elektraShellSet, KEY_END),
-			       keyNew ("system:/elektra/modules/shell/exports/error", KEY_FUNC, elektraShellError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/shell", ELEKTRA_KEY_VALUE, "shell plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports/get", ELEKTRA_KEY_FUNC, elektraShellGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports/set", ELEKTRA_KEY_FUNC, elektraShellSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports/error", ELEKTRA_KEY_FUNC, elektraShellError, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/shell/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/shell/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
 		return 1; // success
 	}
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * cmdKey = ksLookupByName (config, "/execute/get", KDB_O_NONE);
-	ElektraKey * expectedReturnKey = ksLookupByName (config, "/execute/get/return", KDB_O_NONE);
+	ElektraKey * cmdKey = ksLookupByName (config, "/execute/get", ELEKTRA_KDB_O_NONE);
+	ElektraKey * expectedReturnKey = ksLookupByName (config, "/execute/get/return", ELEKTRA_KDB_O_NONE);
 	if (cmdKey == NULL)
 		return 1;
 	else
@@ -90,8 +90,8 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * cmdKey = ksLookupByName (config, "/execute/set", KDB_O_NONE);
-	ElektraKey * expectedReturnKey = ksLookupByName (config, "/execute/set/return", KDB_O_NONE);
+	ElektraKey * cmdKey = ksLookupByName (config, "/execute/set", ELEKTRA_KDB_O_NONE);
+	ElektraKey * expectedReturnKey = ksLookupByName (config, "/execute/set/return", ELEKTRA_KDB_O_NONE);
 	if (cmdKey == NULL)
 		return 1;
 	else
@@ -119,8 +119,8 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned EL
 int elektraShellError (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELEKTRA_UNUSED, ElektraKey * parentKey)
 {
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * cmdKey = ksLookupByName (config, "/execute/error", KDB_O_NONE);
-	ElektraKey * expectedReturnKey = ksLookupByName (config, "/execute/error/return", KDB_O_NONE);
+	ElektraKey * cmdKey = ksLookupByName (config, "/execute/error", ELEKTRA_KDB_O_NONE);
+	ElektraKey * expectedReturnKey = ksLookupByName (config, "/execute/error/return", ELEKTRA_KDB_O_NONE);
 	if (cmdKey == NULL)
 		return 1;
 	else

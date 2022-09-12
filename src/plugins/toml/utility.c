@@ -18,7 +18,7 @@
 ElektraKey * keyAppendIndex (size_t index, const ElektraKey * parent)
 {
 	// Key * indexKey = keyDup (parent);
-	ElektraKey * indexKey = keyNew (keyName (parent), KEY_END);
+	ElektraKey * indexKey = keyNew (keyName (parent), ELEKTRA_KEY_END);
 
 	char * indexStr = indexToArrayString (index);
 	keyAddBaseName (indexKey, indexStr);
@@ -280,13 +280,13 @@ void keySetDiff (ElektraKeyset * whole, ElektraKeyset * part)
 	ElektraKey * key;
 	while ((key = ksNext (part)) != NULL)
 	{
-		ksLookup (whole, key, KDB_O_POP);
+		ksLookup (whole, key, ELEKTRA_KDB_O_POP);
 	}
 }
 
 ElektraKeyset * keysByPredicate (ElektraKeyset * ks, bool (*pred) (ElektraKey *))
 {
-	ElektraKeyset * predicateKeys = ksNew (0, KS_END);
+	ElektraKeyset * predicateKeys = ksNew (0, ELEKTRA_KS_END);
 	if (predicateKeys == NULL)
 	{
 		return NULL;
@@ -305,7 +305,7 @@ ElektraKeyset * keysByPredicate (ElektraKeyset * ks, bool (*pred) (ElektraKey *)
 
 ElektraKeyset * collectSubKeys (ElektraKeyset * ks, ElektraKey * parent)
 {
-	ElektraKeyset * subKeys = ksNew (0, KS_END);
+	ElektraKeyset * subKeys = ksNew (0, ELEKTRA_KS_END);
 	ksRewind (ks);
 	ElektraKey * key;
 	while ((key = ksNext (ks)) != NULL)

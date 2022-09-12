@@ -1404,10 +1404,10 @@ static void testRoundtrip (const char * filePath)
 static ElektraKeyset * readFile (const char * filename)
 {
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
@@ -1427,9 +1427,9 @@ static bool writeFile (const char * filename, ElektraKeyset * ksWrite)
 {
 	bool success = true;
 	ELEKTRA_LOG_DEBUG ("Writing '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
+	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
 
 	int setStatus = plugin->kdbSet (plugin, ksWrite, parentKey);
@@ -1477,10 +1477,10 @@ static bool roundtripFile (const char * filenameIn, const char * filenameOut)
 static void testReadCompare (const char * filename, ElektraKeyset * expected)
 {
 	printf ("Reading '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
 	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
@@ -1507,10 +1507,10 @@ static void testReadCompare (const char * filename, ElektraKeyset * expected)
 static void testReadMustError (const char * filename)
 {
 	printf ("Reading '%s'\n", filename);
-	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (filename), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("toml");
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "Expected kdbGet to fail, but got success.");
 
 	ksDel (ks);
@@ -1521,7 +1521,7 @@ static void testReadMustError (const char * filename)
 static ElektraKey * addKey (ElektraKeyset * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order)
 {
-	ElektraKey * key = keyNew (prefix, KEY_END);
+	ElektraKey * key = keyNew (prefix, ELEKTRA_KEY_END);
 	if (name != NULL)
 	{
 		keyAddName (key, name);

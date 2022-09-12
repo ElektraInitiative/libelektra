@@ -53,17 +53,17 @@ void testKeys (ElektraKeyset * ks)
 
 ElektraKeyset * createKeys (void)
 {
-	ElektraKeyset * ks = ksNew (30, keyNew ("user:/tests/glob/test1", KEY_END), keyNew ("user:/tests/glob/test2/subtest1", KEY_END),
-			     keyNew ("user:/tests/glob/test3", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (30, keyNew ("user:/tests/glob/test1", ELEKTRA_KEY_END), keyNew ("user:/tests/glob/test2/subtest1", ELEKTRA_KEY_END),
+			     keyNew ("user:/tests/glob/test3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	return ks;
 }
 
 void test_zeroMatchFlags (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", KEY_END);
-	ElektraKeyset * conf = ksNew (20, keyNew ("user:/glob/#1", KEY_VALUE, "*test1", KEY_META, "testmetakey1", "testvalue1", KEY_END),
+	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (20, keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "*test1", ELEKTRA_KEY_META, "testmetakey1", "testvalue1", ELEKTRA_KEY_END),
 			       /* disable default pathname globbing behaviour */
-			       keyNew ("user:/glob/#1/flags", KEY_VALUE, "", KEY_END), KS_END);
+			       keyNew ("user:/glob/#1/flags", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("glob");
 
 	ElektraKeyset * ks = createKeys ();
@@ -96,14 +96,14 @@ void test_zeroMatchFlags (void)
 
 void test_setGlobalMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
 	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/#1", KEY_VALUE, "/*",
-					KEY_META, "testmetakey1", "testvalue1",
-					KEY_META, "testmetakey2", "testvalue2",
-					KEY_END),
-			KS_END);
+			keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "/*",
+					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
+					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 	// clang-format on
 	PLUGIN_OPEN ("glob");
 
@@ -122,14 +122,14 @@ void test_setGlobalMatch (void)
 
 void test_getGlobalMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
 	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/#1", KEY_VALUE, "/*",
-					KEY_META, "testmetakey1", "testvalue1",
-					KEY_META, "testmetakey2", "testvalue2",
-					KEY_END),
-			KS_END);
+			keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "/*",
+					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
+					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 	// clang-format on
 	PLUGIN_OPEN ("glob");
 
@@ -148,18 +148,18 @@ void test_getGlobalMatch (void)
 
 void test_getDirectionMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
 	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/get/#1", KEY_VALUE, "/*",
-					KEY_META, "testmetakey1", "testvalue1",
-					KEY_META, "testmetakey2", "testvalue2",
-					KEY_END),
-			keyNew ("user:/glob/set/#1", KEY_VALUE, "/*/*",
-					KEY_META, "testmetakey1", "testvalue1",
-					KEY_META, "testmetakey2", "testvalue2",
-					KEY_END),
-			KS_END);
+			keyNew ("user:/glob/get/#1", ELEKTRA_KEY_VALUE, "/*",
+					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
+					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
+					ELEKTRA_KEY_END),
+			keyNew ("user:/glob/set/#1", ELEKTRA_KEY_VALUE, "/*/*",
+					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
+					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 	// clang-format on
 	PLUGIN_OPEN ("glob");
 
@@ -178,18 +178,18 @@ void test_getDirectionMatch (void)
 
 void test_setDirectionMatch (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
 	ElektraKeyset *conf = ksNew (20,
-			keyNew ("user:/glob/set/#1", KEY_VALUE, "/*",
-					KEY_META, "testmetakey1", "testvalue1",
-					KEY_META, "testmetakey2", "testvalue2",
-					KEY_END),
-			keyNew ("user:/glob/get/#1", KEY_VALUE, "/*/*",
-					KEY_META, "testmetakey1", "testvalue1",
-					KEY_META, "testmetakey2", "testvalue2",
-					KEY_END),
-			KS_END);
+			keyNew ("user:/glob/set/#1", ELEKTRA_KEY_VALUE, "/*",
+					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
+					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
+					ELEKTRA_KEY_END),
+			keyNew ("user:/glob/get/#1", ELEKTRA_KEY_VALUE, "/*/*",
+					ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
+					ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 	// clang-format on
 	PLUGIN_OPEN ("glob");
 
@@ -208,11 +208,11 @@ void test_setDirectionMatch (void)
 
 void test_namedMatchFlags (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	ElektraKeyset * conf =
-		ksNew (20, keyNew ("user:/glob/#1", KEY_VALUE, "user:/tests/glob/*", KEY_META, "testmetakey1", "testvalue1", KEY_END),
+		ksNew (20, keyNew ("user:/glob/#1", ELEKTRA_KEY_VALUE, "user:/tests/glob/*", ELEKTRA_KEY_META, "testmetakey1", "testvalue1", ELEKTRA_KEY_END),
 		       /* explicitly request pathname matching */
-		       keyNew ("user:/glob/#1/flags", KEY_VALUE, "pathname", KEY_END), KS_END);
+		       keyNew ("user:/glob/#1/flags", ELEKTRA_KEY_VALUE, "pathname", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("glob");
 
 	ElektraKeyset * ks = createKeys ();
@@ -243,25 +243,25 @@ void test_namedMatchFlags (void)
 
 void test_onlyFirstMatchIsApplied (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/glob", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/glob", ELEKTRA_KEY_END);
 	// clang-format off
 	ElektraKeyset * conf = ksNew (20,
 				keyNew ("user:/glob/#1",
-						KEY_VALUE, "user:/tests/glob/test1*",
-						KEY_META, "testmetakey1", "testvalue1",
-						KEY_END),
+						ELEKTRA_KEY_VALUE, "user:/tests/glob/test1*",
+						ELEKTRA_KEY_META, "testmetakey1", "testvalue1",
+						ELEKTRA_KEY_END),
 				keyNew ("user:/glob/#2",
-						KEY_VALUE, "user:/tests/glob/*",
-						KEY_META, "testmetakey2", "testvalue2",
-						KEY_END),
+						ELEKTRA_KEY_VALUE, "user:/tests/glob/*",
+						ELEKTRA_KEY_META, "testmetakey2", "testvalue2",
+						ELEKTRA_KEY_END),
 			       /* disable all flags */
 			    keyNew ("user:/glob/#1/flags",
-			    		KEY_VALUE, "",
-						KEY_END),
+			    		ELEKTRA_KEY_VALUE, "",
+						ELEKTRA_KEY_END),
 				keyNew ("user:/glob/#2/flags",
-				   		KEY_VALUE, "",
-						KEY_END),
-				KS_END);
+				   		ELEKTRA_KEY_VALUE, "",
+						ELEKTRA_KEY_END),
+				ELEKTRA_KS_END);
 	// clang-format on
 	PLUGIN_OPEN ("glob");
 

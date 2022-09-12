@@ -41,17 +41,17 @@ static const char * pluginNames[NUM_PLUGINS_SUGGESTED];
 
 static ElektraKeyset * simpleTestKeySet (void)
 {
-	return ksNew (10, keyNew ("user:/tests/storage/simpleKey", KEY_VALUE, "root key", KEY_END),
-		      keyNew ("user:/tests/storage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
-		      keyNew ("user:/tests/storage/simpleKey/b", KEY_VALUE, "b value", KEY_END), KS_END);
+	return ksNew (10, keyNew ("user:/tests/storage/simpleKey", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/storage/simpleKey/a", ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/storage/simpleKey/b", ELEKTRA_KEY_VALUE, "b value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static ElektraKeyset * metaTestKeySet (void)
 {
-	return ksNew (10, keyNew ("user:/tests/storage", KEY_VALUE, "root key", KEY_META, "a", "some metadata for root key", KEY_END),
-		      keyNew ("user:/tests/storage/a", KEY_VALUE, "a value", KEY_META, "ab", "other metadata for a key", KEY_END),
-		      keyNew ("user:/tests/storage/b", KEY_VALUE, "b value", KEY_META, "longer val", "metadata for key b", KEY_END),
-		      KS_END);
+	return ksNew (10, keyNew ("user:/tests/storage", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_META, "a", "some metadata for root key", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/storage/a", ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_META, "ab", "other metadata for a key", ELEKTRA_KEY_END),
+		      keyNew ("user:/tests/storage/b", ELEKTRA_KEY_VALUE, "b value", ELEKTRA_KEY_META, "longer val", "metadata for key b", ELEKTRA_KEY_END),
+		      ELEKTRA_KS_END);
 }
 
 /* -- Test helpers ---------------------------------------------------------------------------------------------------------------------- */
@@ -75,10 +75,10 @@ static void initPlugins (void)
 
 static int openStoragePlugin (const size_t storagePlugin)
 {
-	modules[storagePlugin] = ksNew (0, KS_END);
+	modules[storagePlugin] = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules[storagePlugin], 0);
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKey * errorKey = keyNew ("/", KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
 	Plugin * plugin = elektraPluginOpen (pluginNames[storagePlugin], modules[storagePlugin], conf, errorKey);
 
 	const ElektraKey * metaWarnings = keyGetMeta (errorKey, "warnings");
@@ -111,7 +111,7 @@ static int closeStoragePlugin (const size_t storagePlugin)
 
 static void test_ksDupFun (const size_t storagePlugin, const char * tmpFile, ElektraKeyset * copyFunction (const ElektraKeyset * source))
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -131,7 +131,7 @@ static void test_ksDupFun (const size_t storagePlugin, const char * tmpFile, Ele
 
 static void test_ksCopy (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -139,7 +139,7 @@ static void test_ksCopy (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	ElektraKeyset * copyKs = ksNew (0, KS_END);
+	ElektraKeyset * copyKs = ksNew (0, ELEKTRA_KS_END);
 	if (ksCopy (copyKs, ks) == 1)
 	{
 		compare_keyset (copyKs, ks);
@@ -158,7 +158,7 @@ static void test_ksCopy (const size_t storagePlugin, const char * tmpFile)
 
 static void test_ksGetSize (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -168,7 +168,7 @@ static void test_ksGetSize (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
 	ksDel (ks);
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 	ssize_t returnedSize = ksGetSize (ks);
 	succeed_if (origSize == returnedSize, "ksGetSize before and after kdbSet, kdbGet differ");
@@ -180,16 +180,16 @@ static void test_ksGetSize (const size_t storagePlugin, const char * tmpFile)
 
 static void test_double_get (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
 	ElektraKeyset * ks = simpleTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	ElektraKeyset * first = ksNew (0, KS_END);
+	ElektraKeyset * first = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, first, parentKey) == 1, "kdbGet was not successful");
-	ElektraKeyset * second = ksNew (0, KS_END);
+	ElektraKeyset * second = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, second, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (first->array != second->array, "ks->array points to same thing");
 
@@ -215,7 +215,7 @@ static void test_double_get (const size_t storagePlugin, const char * tmpFile)
 
 static void test_ksAppendKey (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -225,7 +225,7 @@ static void test_ksAppendKey (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ssize_t appendSize = 0;
-	ElektraKey * toAppend = keyNew (TEST_ROOT_KEY "/my/new/key", KEY_END);
+	ElektraKey * toAppend = keyNew (TEST_ROOT_KEY "/my/new/key", ELEKTRA_KEY_END);
 
 	if ((appendSize = ksAppendKey (ks, toAppend)) == -1)
 	{
@@ -235,7 +235,7 @@ static void test_ksAppendKey (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (appendSize == (origSize + 1), "ksAppendKey after append should be incremented");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	ksDel (ks);
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 	ssize_t returnedSize = ksGetSize (ks);
 
@@ -248,7 +248,7 @@ static void test_ksAppendKey (const size_t storagePlugin, const char * tmpFile)
 
 static void test_ksAppend (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -256,9 +256,9 @@ static void test_ksAppend (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	ElektraKeyset * toAppend = ksNew (10, keyNew ("user:/tests/storage/zzzz", KEY_VALUE, "root key", KEY_END),
-				   keyNew ("user:/tests/storage/simpleKey/c", KEY_VALUE, "c value", KEY_END),
-				   keyNew ("user:/tests/storage/simpleKey/d", KEY_VALUE, "d value", KEY_END), KS_END);
+	ElektraKeyset * toAppend = ksNew (10, keyNew ("user:/tests/storage/zzzz", ELEKTRA_KEY_VALUE, "root key", ELEKTRA_KEY_END),
+				   keyNew ("user:/tests/storage/simpleKey/c", ELEKTRA_KEY_VALUE, "c value", ELEKTRA_KEY_END),
+				   keyNew ("user:/tests/storage/simpleKey/d", ELEKTRA_KEY_VALUE, "d value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	if (ksAppend (ks, toAppend) == -1)
 	{
 		yield_error ("ksAppend failed");
@@ -266,7 +266,7 @@ static void test_ksAppend (const size_t storagePlugin, const char * tmpFile)
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	ksDel (ks);
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ksDel (toAppend);
@@ -277,15 +277,15 @@ static void test_ksAppend (const size_t storagePlugin, const char * tmpFile)
 
 static void test_ksCut (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
 	// create keyset with some folder 'other' that we will then cut
 	ElektraKeyset * ks = simpleTestKeySet ();
-	ElektraKeyset * other = ksNew (10, keyNew ("user:/tests/storage/other", KEY_VALUE, "other key", KEY_END),
-				keyNew ("user:/tests/storage/other/a", KEY_VALUE, "other a value", KEY_END),
-				keyNew ("user:/tests/storage/other/b", KEY_VALUE, "other b value", KEY_END), KS_END);
+	ElektraKeyset * other = ksNew (10, keyNew ("user:/tests/storage/other", ELEKTRA_KEY_VALUE, "other key", ELEKTRA_KEY_END),
+				keyNew ("user:/tests/storage/other/a", ELEKTRA_KEY_VALUE, "other a value", ELEKTRA_KEY_END),
+				keyNew ("user:/tests/storage/other/b", ELEKTRA_KEY_VALUE, "other b value", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	if (ksAppend (ks, other) == -1)
 	{
 		yield_error ("ksAppend failed");
@@ -295,7 +295,7 @@ static void test_ksCut (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	// now cut the 'other' folder
-	ElektraKey * cutKey = keyNew ("user:/tests/storage/other", KEY_END);
+	ElektraKey * cutKey = keyNew ("user:/tests/storage/other", ELEKTRA_KEY_END);
 	ElektraKeyset * returned = ksCut (ks, cutKey);
 	succeed_if (returned, "keyset is empty (does not contain the cut keyset)");
 
@@ -314,7 +314,7 @@ static void test_ksCut (const size_t storagePlugin, const char * tmpFile)
 
 static void test_ksPop (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -322,7 +322,7 @@ static void test_ksPop (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	ElektraKeyset * poppedKeys = ksNew (0, KS_END);
+	ElektraKeyset * poppedKeys = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (ksAppendKey (poppedKeys, ksPop (ks)) != -1, "ksAppendKey failed");
 	succeed_if (ksAppendKey (poppedKeys, ksPop (ks)) != -1, "ksAppendKey failed");
 	succeed_if (ksGetSize (ks) == 1, "ksGetSize after ksPop should be decremented");
@@ -343,7 +343,7 @@ static void test_ksPop (const size_t storagePlugin, const char * tmpFile)
 
 static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, elektraLookupFlags options)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -351,10 +351,10 @@ static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, ele
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	ElektraKey * lookup = keyNew ("user:/tests/storage/simpleKey/a", KEY_END);
+	ElektraKey * lookup = keyNew ("user:/tests/storage/simpleKey/a", ELEKTRA_KEY_END);
 	ElektraKey * found = ksLookup (ks, lookup, options);
 	succeed_if (found, "did not find key");
-	if (options == KDB_O_POP)
+	if (options == ELEKTRA_KDB_O_POP)
 	{
 		// make sure key is really popped
 		keyDel (found);
@@ -363,7 +363,7 @@ static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, ele
 	}
 	keyDel (lookup);
 
-	lookup = keyNew ("user:/tests/storage/simpleKey/foo", KEY_END);
+	lookup = keyNew ("user:/tests/storage/simpleKey/foo", ELEKTRA_KEY_END);
 	found = ksLookup (ks, lookup, options);
 	succeed_if (!found, "found key that should not exist");
 	keyDel (lookup);
@@ -375,7 +375,7 @@ static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, ele
 
 static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFile, elektraLookupFlags options)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -386,7 +386,7 @@ static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFil
 	const char * name = "user:/tests/storage/simpleKey/a";
 	ElektraKey * found = ksLookupByName (ks, name, options);
 	succeed_if (found, "did not find key");
-	if (options == KDB_O_POP)
+	if (options == ELEKTRA_KDB_O_POP)
 	{
 		// make sure key is really popped
 		keyDel (found);
@@ -407,11 +407,11 @@ static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFil
 
 static void test_keyFlags (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
-	ElektraKeyset * ks = ksNew (10, keyNew ("user:/tests/storage/testKey", KEY_FLAGS, KEY_BINARY, KEY_VALUE, "test key", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (10, keyNew ("user:/tests/storage/testKey", ELEKTRA_KEY_FLAGS, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_VALUE, "test key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
@@ -426,7 +426,7 @@ static void test_keyFlags (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyDup (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -437,7 +437,7 @@ static void test_keyDup (const size_t storagePlugin, const char * tmpFile)
 	ElektraKey * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	ElektraKey * duplicate = keyDup (found, KEY_CP_ALL);
+	ElektraKey * duplicate = keyDup (found, ELEKTRA_KEY_CP_ALL);
 
 	// check that keyDup has not changed KeySet
 	ElektraKeyset * expected = metaTestKeySet ();
@@ -455,7 +455,7 @@ static void test_keyDup (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyCopy_newKey (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -466,8 +466,8 @@ static void test_keyCopy_newKey (const size_t storagePlugin, const char * tmpFil
 	ElektraKey * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	ElektraKey * copy = keyNew ("/", KEY_END);
-	succeed_if (keyCopy (copy, found, KEY_CP_ALL) != NULL, "keyCopy failed");
+	ElektraKey * copy = keyNew ("/", ELEKTRA_KEY_END);
+	succeed_if (keyCopy (copy, found, ELEKTRA_KEY_CP_ALL) != NULL, "keyCopy failed");
 
 	compare_key (found, copy);
 
@@ -487,7 +487,7 @@ static void test_keyCopy_newKey (const size_t storagePlugin, const char * tmpFil
 
 static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -495,20 +495,20 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	ElektraKey * toCopy = keyNew ("user:/tests/storage/newnewkey", KEY_VALUE, "new key", KEY_END);
+	ElektraKey * toCopy = keyNew ("user:/tests/storage/newnewkey", ELEKTRA_KEY_VALUE, "new key", ELEKTRA_KEY_END);
 
-	ElektraKey * found = ksLookupByName (ks, "user:/tests/storage/b", KDB_O_POP);
+	ElektraKey * found = ksLookupByName (ks, "user:/tests/storage/b", ELEKTRA_KDB_O_POP);
 	succeed_if (found, "did not find key");
 
 	// currently, KDB_O_POP doest not clear the readonly name flag
-	if (test_bit (found->flags, KEY_FLAG_RO_NAME))
+	if (test_bit (found->flags, ELEKTRA_KEY_FLAG_RO_NAME))
 	{
-		clear_bit (found->flags, KEY_FLAG_RO_NAME);
+		clear_bit (found->flags, ELEKTRA_KEY_FLAG_RO_NAME);
 	}
 
 	// overwrite Key
-	succeed_if (keyCopy (found, 0, KEY_CP_ALL) != NULL, "keyCopy: clear destination failed");
-	succeed_if (keyCopy (found, toCopy, KEY_CP_ALL) != NULL, "keyCopy failed");
+	succeed_if (keyCopy (found, 0, ELEKTRA_KEY_CP_ALL) != NULL, "keyCopy: clear destination failed");
+	succeed_if (keyCopy (found, toCopy, ELEKTRA_KEY_CP_ALL) != NULL, "keyCopy failed");
 	compare_key (found, toCopy);
 	keyDel (toCopy);
 
@@ -529,7 +529,7 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 
 static void test_keyDel (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -554,7 +554,7 @@ static void test_keyDel (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyClear (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -582,7 +582,7 @@ static void test_keyClear (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyName (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -604,7 +604,7 @@ static void test_keyName (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -615,7 +615,7 @@ static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 	ElektraKey * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	ElektraKey * duplicate = keyDup (found, KEY_CP_ALL);
+	ElektraKey * duplicate = keyDup (found, ELEKTRA_KEY_CP_ALL);
 	keySetName (duplicate, "user:/tests/storage/z");
 	keySetString (duplicate, "zzz");
 
@@ -631,7 +631,7 @@ static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyGetBaseName (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -669,7 +669,7 @@ static void test_keyGetBaseName (const size_t storagePlugin, const char * tmpFil
 
 static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -679,9 +679,9 @@ static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 	void * value = elektraMalloc (valueSize);
 	memset (value, 42, valueSize);
 
-	ElektraKey * key = keyNew (name, KEY_END);
+	ElektraKey * key = keyNew (name, ELEKTRA_KEY_END);
 	keySetBinary (key, value, valueSize);
-	ksAppendKey (ks, keyDup (key, KEY_CP_ALL));
+	ksAppendKey (ks, keyDup (key, ELEKTRA_KEY_CP_ALL));
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
@@ -698,7 +698,7 @@ static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyString (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -706,7 +706,7 @@ static void test_keyString (const size_t storagePlugin, const char * tmpFile)
 	const char * name = "user:/tests/storage/specialkey";
 	const char * value = "special value";
 	size_t valueSize = elektraStrLen (value);
-	ElektraKey * key = keyNew (name, KEY_VALUE, value, KEY_END);
+	ElektraKey * key = keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END);
 	ksAppendKey (ks, key);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
@@ -723,7 +723,7 @@ static void test_keyString (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyGetBinary (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -733,7 +733,7 @@ static void test_keyGetBinary (const size_t storagePlugin, const char * tmpFile)
 	void * value = elektraMalloc (realValueSize);
 	memset (value, 42, realValueSize);
 
-	ElektraKey * key = keyNew (name, KEY_END);
+	ElektraKey * key = keyNew (name, ELEKTRA_KEY_END);
 	keySetBinary (key, value, realValueSize);
 	ksAppendKey (ks, key);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
@@ -757,7 +757,7 @@ static void test_keyGetBinary (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keyGetString (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -765,7 +765,7 @@ static void test_keyGetString (const size_t storagePlugin, const char * tmpFile)
 	const char * name = "user:/tests/storage/specialkey";
 	const char * value = "special value";
 	size_t realValueSize = elektraStrLen (value);
-	ElektraKey * key = keyNew (name, KEY_VALUE, value, KEY_END);
+	ElektraKey * key = keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END);
 	ksAppendKey (ks, key);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
@@ -787,7 +787,7 @@ static void test_keyGetString (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keySetBinary (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -797,13 +797,13 @@ static void test_keySetBinary (const size_t storagePlugin, const char * tmpFile)
 	void * value = elektraMalloc (realValueSize);
 	memset (value, 42, realValueSize);
 
-	ElektraKey * key = keyNew (name, KEY_END);
+	ElektraKey * key = keyNew (name, ELEKTRA_KEY_END);
 	keySetBinary (key, value, realValueSize);
 	ksAppendKey (ks, key);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	ElektraKey * found = ksLookupByName (ks, name, KDB_O_POP);
+	ElektraKey * found = ksLookupByName (ks, name, ELEKTRA_KDB_O_POP);
 	succeed_if (found, "did not find key");
 
 	// now set a new key value to the Key _after_ kdbGet
@@ -837,7 +837,7 @@ static void test_keySetBinary (const size_t storagePlugin, const char * tmpFile)
 
 static void test_keySetString (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
@@ -845,12 +845,12 @@ static void test_keySetString (const size_t storagePlugin, const char * tmpFile)
 	const char * name = "user:/tests/storage/specialkey";
 	const char * value = "special value";
 	size_t realValueSize = elektraStrLen (value);
-	ElektraKey * key = keyNew (name, KEY_VALUE, value, KEY_END);
+	ElektraKey * key = keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END);
 	ksAppendKey (ks, key);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	ElektraKey * found = ksLookupByName (ks, name, KDB_O_POP);
+	ElektraKey * found = ksLookupByName (ks, name, ELEKTRA_KDB_O_POP);
 	succeed_if (found, "did not find key");
 
 	// now set a new key string to the Key _after_ kdbGet
@@ -881,11 +881,11 @@ static void test_keySetString (const size_t storagePlugin, const char * tmpFile)
 
 static void clearStorage (const size_t storagePlugin, const char * tmpFile)
 {
-	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew (TEST_ROOT_KEY, ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	open_storage_plugin (storagePlugin);
 	Plugin * plugin = plugins[storagePlugin];
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
@@ -945,13 +945,13 @@ int main (int argc, char ** argv)
 		test_ksLookup (plugin, tmpFile, 0);
 
 		clearStorage (plugin, tmpFile);
-		test_ksLookup (plugin, tmpFile, KDB_O_POP);
+		test_ksLookup (plugin, tmpFile, ELEKTRA_KDB_O_POP);
 
 		clearStorage (plugin, tmpFile);
 		test_ksLookupByName (plugin, tmpFile, 0);
 
 		clearStorage (plugin, tmpFile);
-		test_ksLookupByName (plugin, tmpFile, KDB_O_POP);
+		test_ksLookupByName (plugin, tmpFile, ELEKTRA_KDB_O_POP);
 
 		// Key API tests
 		clearStorage (plugin, tmpFile);

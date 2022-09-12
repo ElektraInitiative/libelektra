@@ -102,12 +102,12 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/quickdump"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/quickdump", KEY_VALUE, "quickdump plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/quickdump/exports", KEY_END),
-			keyNew ("system:/elektra/modules/quickdump/exports/get", KEY_FUNC, elektraQuickdumpGet, KEY_END),
-			keyNew ("system:/elektra/modules/quickdump/exports/set", KEY_FUNC, elektraQuickdumpSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/quickdump", ELEKTRA_KEY_VALUE, "quickdump plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/quickdump/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/quickdump/exports/get", ELEKTRA_KEY_FUNC, elektraQuickdumpGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/quickdump/exports/set", ELEKTRA_KEY_FUNC, elektraQuickdumpSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/quickdump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/quickdump/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -218,7 +218,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 			if (valueSize == 0)
 			{
-				k = keyNew (nameBuffer.string, KEY_BINARY, KEY_SIZE, valueSize, KEY_END);
+				k = keyNew (nameBuffer.string, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, valueSize, ELEKTRA_KEY_END);
 			}
 			else
 			{
@@ -231,7 +231,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Error while reading file");
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
-				k = keyNew (nameBuffer.string, KEY_BINARY, KEY_SIZE, (size_t) valueSize, KEY_VALUE, value, KEY_END);
+				k = keyNew (nameBuffer.string, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, (size_t) valueSize, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END);
 				elektraFree (value);
 			}
 			break;
@@ -246,7 +246,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 				fclose (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
-			k = keyNew (nameBuffer.string, KEY_VALUE, valueBuffer.string, KEY_END);
+			k = keyNew (nameBuffer.string, ELEKTRA_KEY_VALUE, valueBuffer.string, ELEKTRA_KEY_END);
 			break;
 		}
 		default:

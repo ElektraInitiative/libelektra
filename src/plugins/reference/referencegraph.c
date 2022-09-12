@@ -13,8 +13,8 @@ struct _RefGraph
 RefGraph * rgNew (void)
 {
 	RefGraph * graph = elektraCalloc (sizeof (struct _RefGraph));
-	graph->inner = ksNew (0, KS_END);
-	graph->leaves = ksNew (0, KS_END);
+	graph->inner = ksNew (0, ELEKTRA_KS_END);
+	graph->leaves = ksNew (0, ELEKTRA_KS_END);
 	return graph;
 }
 
@@ -43,7 +43,7 @@ bool rgEmpty (const RefGraph * graph)
 
 bool rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode)
 {
-	ElektraKey * node = ksLookupByName (graph->leaves, fromNode, KDB_O_POP);
+	ElektraKey * node = ksLookupByName (graph->leaves, fromNode, ELEKTRA_KDB_O_POP);
 	if (node != NULL)
 	{
 		keySetMeta (node, "last", "#0");
@@ -59,7 +59,7 @@ bool rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode)
 		return false;
 	}
 
-	ElektraKey * lastKey = keyDup (keyGetMeta (node, "last"), KEY_CP_ALL);
+	ElektraKey * lastKey = keyDup (keyGetMeta (node, "last"), ELEKTRA_KEY_CP_ALL);
 	if (elektraArrayIncName (lastKey) < 0)
 	{
 		keyDel (lastKey);
@@ -75,7 +75,7 @@ bool rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode)
 
 void rgAddNode (RefGraph * graph, const char * nodeName)
 {
-	ElektraKey * node = keyNew (nodeName, KEY_END);
+	ElektraKey * node = keyNew (nodeName, ELEKTRA_KEY_END);
 	ksAppendKey (graph->leaves, node);
 }
 
@@ -96,8 +96,8 @@ const char * rgGetEdge (RefGraph * graph, const char * fromNode, int index)
 
 void rgRemoveLeaves (RefGraph * graph)
 {
-	ElektraKeyset * newLeaves = ksNew (0, KS_END);
-	ElektraKeyset * newInner = ksNew (0, KS_END);
+	ElektraKeyset * newLeaves = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * newInner = ksNew (0, ELEKTRA_KS_END);
 
 	ElektraKey * cur;
 	while ((cur = ksPop (graph->inner)) != NULL)

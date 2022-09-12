@@ -20,7 +20,7 @@
 
 int elektraModulesInit (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
-	ksAppendKey (modules, keyNew ("system:/elektra/modules", KEY_END));
+	ksAppendKey (modules, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END));
 
 	return 0;
 }
@@ -64,7 +64,7 @@ static kdblib_symbol * elektraStaticSym (kdblib_symbol * handle, const char * sy
 
 elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * name, ElektraKey * error)
 {
-	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
 	keyAddBaseName (moduleKey, name);
 	ElektraKey * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)

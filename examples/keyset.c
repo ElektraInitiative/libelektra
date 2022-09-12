@@ -12,7 +12,7 @@
 
 void f (const ElektraKey * source)
 {
-	ElektraKey * dup = keyDup (source, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (source, ELEKTRA_KEY_CP_ALL);
 	printf ("\tin f\n");
 
 	keyDel (dup);
@@ -20,7 +20,7 @@ void f (const ElektraKey * source)
 
 void g (const ElektraKey * source, ElektraKeyset * ks)
 {
-	ElektraKey * dup = keyDup (source, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (source, ELEKTRA_KEY_CP_ALL);
 	printf ("\tin g\n");
 
 	ksAppendKey (ks, dup);
@@ -28,10 +28,10 @@ void g (const ElektraKey * source, ElektraKeyset * ks)
 
 void h (ElektraKey * k)
 {
-	ElektraKey * c = keyNew ("user:/from/h", KEY_END);
+	ElektraKey * c = keyNew ("user:/from/h", ELEKTRA_KEY_END);
 	printf ("\tin h\n");
 
-	keyCopy (k, c, KEY_CP_ALL);
+	keyCopy (k, c, ELEKTRA_KEY_CP_ALL);
 	keyDel (c);
 	/* the caller will see the changed key k */
 }
@@ -41,8 +41,8 @@ void h (ElektraKey * k)
 void simpleAppend (void)
 {
 //! [simple append]
-ElektraKeyset * ks = ksNew (1, KS_END);
-ksAppendKey (ks, keyNew ("user:/my/new/key", KEY_END));
+ElektraKeyset * ks = ksNew (1, ELEKTRA_KS_END);
+ksAppendKey (ks, keyNew ("user:/my/new/key", ELEKTRA_KEY_END));
 ksDel (ks);
 // key deleted, too!
 //! [simple append]
@@ -52,8 +52,8 @@ ksDel (ks);
 void refAppend (void)
 {
 //! [ref append]
-ElektraKeyset * ks = ksNew (1, KS_END);
-ElektraKey * k = keyNew ("user:/ref/key", KEY_END);
+ElektraKeyset * ks = ksNew (1, ELEKTRA_KS_END);
+ElektraKey * k = keyNew ("user:/ref/key", ELEKTRA_KEY_END);
 keyIncRef (k);
 ksAppendKey (ks, k);
 ksDel (ks);
@@ -66,9 +66,9 @@ keyDel (k);
 void dupAppend (void)
 {
 //! [dup append]
-ElektraKeyset * ks = ksNew (1, KS_END);
-ElektraKey * k = keyNew ("user:/ref/key", KEY_END);
-ksAppendKey (ks, keyDup (k, KEY_CP_ALL));
+ElektraKeyset * ks = ksNew (1, ELEKTRA_KS_END);
+ElektraKey * k = keyNew ("user:/ref/key", ELEKTRA_KEY_END);
+ksAppendKey (ks, keyDup (k, ELEKTRA_KEY_CP_ALL));
 ksDel (ks);
 // now we still can work with the key k!
 keyDel (k);
@@ -78,9 +78,9 @@ keyDel (k);
 int main (void)
 {
 	ElektraKey * origKey;
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	ElektraKey * key = keyNew ("user:/test/name", KEY_VALUE, "myvalue", KEY_END);
+	ElektraKey * key = keyNew ("user:/test/name", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END);
 	printf ("Created key %s with value %s\n", keyName (key), keyString (key));
 
 	f (key);
@@ -101,7 +101,7 @@ int main (void)
 
 	ksRewind (ks);
 	origKey = ksNext (ks);
-	key = keyDup (origKey, KEY_CP_ALL);
+	key = keyDup (origKey, ELEKTRA_KEY_CP_ALL);
 	printf ("A duplication of the key %s with value %s\n", keyName (key), keyString (key));
 
 	keyDel (key);

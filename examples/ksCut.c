@@ -23,9 +23,9 @@ int main (void)
 {
 	// clang-format off
 	//! [cut]
-	ElektraKey * parentKey = keyNew ("system:/mountpoint/interest", KEY_END);
+	ElektraKey * parentKey = keyNew ("system:/mountpoint/interest", ELEKTRA_KEY_END);
 	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (kdb, ks, parentKey);
 	ElektraKeyset * returned = ksCut (ks, parentKey);
 	kdbSet (kdb, ks, parentKey); // all keys below cutpoint are now removed

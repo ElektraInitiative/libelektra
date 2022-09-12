@@ -25,12 +25,12 @@
 
 static inline ElektraKeyset * elektraLineContract (void)
 {
-	return ksNew (30, keyNew ("system:/elektra/modules/line", KEY_VALUE, "line plugin waits for your orders", KEY_END),
-		      keyNew ("system:/elektra/modules/line/exports", KEY_END),
-		      keyNew ("system:/elektra/modules/line/exports/get", KEY_FUNC, elektraLineGet, KEY_END),
-		      keyNew ("system:/elektra/modules/line/exports/set", KEY_FUNC, elektraLineSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/line", ELEKTRA_KEY_VALUE, "line plugin waits for your orders", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/line/exports", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/line/exports/get", ELEKTRA_KEY_FUNC, elektraLineGet, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/line/exports/set", ELEKTRA_KEY_FUNC, elektraLineSet, ELEKTRA_KEY_END),
 #include "readme_line.c"
-		      keyNew ("system:/elektra/modules/line/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		      keyNew ("system:/elektra/modules/line/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 int elektraLineRead (FILE * fp, ElektraKeyset * returned)
@@ -48,7 +48,7 @@ int elektraLineRead (FILE * fp, ElektraKeyset * returned)
 		{
 			value[n - 1] = '\0';
 		}
-		read = keyDup (ksTail (returned), KEY_CP_ALL);
+		read = keyDup (ksTail (returned), ELEKTRA_KEY_CP_ALL);
 		if (elektraArrayIncName (read) == -1)
 		{
 			elektraFree (value);
@@ -87,15 +87,15 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 		return -1;
 	}
 
-	ElektraKey * b = keyNew (keyName (parentKey), KEY_END);
-	ksAppendKey (returned, keyDup (b, KEY_CP_ALL)); // start with parentKey
+	ElektraKey * b = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
+	ksAppendKey (returned, keyDup (b, ELEKTRA_KEY_CP_ALL)); // start with parentKey
 	keyAddName (b, "#");				// start point for our array
 	ksAppendKey (returned, b);
 
 	int ret = elektraLineRead (fp, returned);
 
 	// get rid of startpoint, if it was an empty file
-	keyDel (ksLookup (returned, b, KDB_O_POP));
+	keyDel (ksLookup (returned, b, ELEKTRA_KDB_O_POP));
 
 	if (ret == -1)
 	{

@@ -404,7 +404,7 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.alloc = 0;
 	magicKeySet.cursor = (ElektraKey *) ~magicNumber;
 	magicKeySet.current = SIZE_MAX / 2;
-	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
+	magicKeySet.flags = ELEKTRA_KS_FLAG_MMAP_ARRAY | ELEKTRA_KS_FLAG_SYNC;
 	magicKeySet.refs = UINT16_MAX;
 	magicKeySet.reserved = 0;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
@@ -427,7 +427,7 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.ukey = 0;
 	magicKey.keyUSize = 0;
 	magicKey.meta = (ElektraKeyset *) ELEKTRA_MMAP_MAGIC_BOM;
-	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
+	magicKey.flags = ELEKTRA_KEY_FLAG_MMAP_STRUCT | ELEKTRA_KEY_FLAG_MMAP_DATA | ELEKTRA_KEY_FLAG_MMAP_KEY | ELEKTRA_KEY_FLAG_SYNC;
 	magicKey.refs = UINT16_MAX / 2;
 	magicKey.reserved = UINT16_MAX;
 }
@@ -754,7 +754,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 			memcpy (mmapAddr->dataPtr, curMeta->key, curMeta->keySize);
 			mmapMetaKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += curMeta->keySize;
-			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
+			mmapMetaKey->flags |= ELEKTRA_KEY_FLAG_MMAP_KEY;
 		}
 
 		// move Key unescaped name
@@ -763,7 +763,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 			memcpy (mmapAddr->dataPtr, curMeta->ukey, curMeta->keyUSize);
 			mmapMetaKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += curMeta->keyUSize;
-			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
+			mmapMetaKey->flags |= ELEKTRA_KEY_FLAG_MMAP_KEY;
 		}
 
 		// move Key value
@@ -772,11 +772,11 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 			memcpy (mmapAddr->dataPtr, curMeta->data.v, curMeta->dataSize);
 			mmapMetaKey->data.v = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += curMeta->dataSize;
-			mmapMetaKey->flags |= KEY_FLAG_MMAP_DATA;
+			mmapMetaKey->flags |= ELEKTRA_KEY_FLAG_MMAP_DATA;
 		}
 
 		// move Key itself
-		mmapMetaKey->flags |= KEY_FLAG_MMAP_STRUCT;
+		mmapMetaKey->flags |= ELEKTRA_KEY_FLAG_MMAP_STRUCT;
 		mmapMetaKey->meta = 0;
 		mmapMetaKey->refs = 0;
 
@@ -801,7 +801,7 @@ static ElektraKeyset * writeMetaKeySet (ElektraKey * key, MmapAddr * mmapAddr, D
 	ElektraKeyset * newMeta = (ElektraKeyset *) mmapAddr->metaKsPtr;
 	mmapAddr->metaKsPtr += SIZEOF_KEYSET;
 
-	newMeta->flags = key->meta->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
+	newMeta->flags = key->meta->flags | ELEKTRA_KS_FLAG_MMAP_STRUCT | ELEKTRA_KS_FLAG_MMAP_ARRAY;
 	newMeta->array = (ElektraKey **) mmapAddr->metaKsArrayPtr;
 	mmapAddr->metaKsArrayPtr += SIZEOF_KEY_PTR * key->meta->alloc;
 
@@ -866,7 +866,7 @@ static void writeKeys (ElektraKeyset * keySet, MmapAddr * mmapAddr, DynArray * d
 			memcpy (mmapAddr->dataPtr, cur->key, cur->keySize);
 			mmapKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += cur->keySize;
-			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
+			mmapKey->flags |= ELEKTRA_KEY_FLAG_MMAP_KEY;
 		}
 
 		// move Key unescaped name
@@ -875,7 +875,7 @@ static void writeKeys (ElektraKeyset * keySet, MmapAddr * mmapAddr, DynArray * d
 			memcpy (mmapAddr->dataPtr, cur->ukey, cur->keyUSize);
 			mmapKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += cur->keyUSize;
-			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
+			mmapKey->flags |= ELEKTRA_KEY_FLAG_MMAP_KEY;
 		}
 
 		// move Key value
@@ -884,7 +884,7 @@ static void writeKeys (ElektraKeyset * keySet, MmapAddr * mmapAddr, DynArray * d
 			memcpy (mmapAddr->dataPtr, cur->data.v, cur->dataSize);
 			mmapKey->data.v = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += cur->dataSize;
-			mmapKey->flags |= KEY_FLAG_MMAP_DATA;
+			mmapKey->flags |= ELEKTRA_KEY_FLAG_MMAP_DATA;
 		}
 		else
 		{
@@ -896,7 +896,7 @@ static void writeKeys (ElektraKeyset * keySet, MmapAddr * mmapAddr, DynArray * d
 		mmapKey->meta = writeMetaKeySet (cur, mmapAddr, dynArray);
 
 		// move Key itself
-		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT;
+		mmapKey->flags |= ELEKTRA_KEY_FLAG_MMAP_STRUCT;
 		mmapKey->refs = 1;
 
 		// write the relative Key pointer into the KeySet array
@@ -1021,7 +1021,7 @@ static int copyKeySetToMmap (char * const dest, ElektraKeyset * keySet, ElektraK
 		if (global->size != 0) writeKeys (global, &mmapAddr, dynArray, MODE_GLOBALCACHE);
 
 		set_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS);
-		mmapAddr.globalKsPtr->flags = global->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
+		mmapAddr.globalKsPtr->flags = global->flags | ELEKTRA_KS_FLAG_MMAP_STRUCT | ELEKTRA_KS_FLAG_MMAP_ARRAY;
 		mmapAddr.globalKsPtr->array = (ElektraKey **) mmapAddr.globalKsArrayPtr;
 		mmapAddr.globalKsPtr->array[global->size] = 0;
 		mmapAddr.globalKsPtr->array = (ElektraKey **) (mmapAddr.globalKsArrayPtr - mmapAddr.mmapAddrInt);
@@ -1035,7 +1035,7 @@ static int copyKeySetToMmap (char * const dest, ElektraKeyset * keySet, ElektraK
 		writeKeys (keySet, &mmapAddr, dynArray, MODE_STORAGE);
 	}
 
-	mmapAddr.ksPtr->flags = keySet->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
+	mmapAddr.ksPtr->flags = keySet->flags | ELEKTRA_KS_FLAG_MMAP_STRUCT | ELEKTRA_KS_FLAG_MMAP_ARRAY;
 	mmapAddr.ksPtr->array = (ElektraKey **) mmapAddr.ksArrayPtr;
 	mmapAddr.ksPtr->array[keySet->size] = 0;
 	mmapAddr.ksPtr->array = (ElektraKey **) (mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);
@@ -1114,7 +1114,7 @@ static void mmapFastReplace (ElektraKeyset * dest, ElektraKeyset * src)
 	dest->size = src->size;
 	dest->alloc = src->alloc;
 	// to be able to free() the returned KeySet, just set the array flag here
-	dest->flags = KS_FLAG_MMAP_ARRAY;
+	dest->flags = ELEKTRA_KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
 	// also do not change the reference counter on purpose,
 	// we only want to change the contents
@@ -1334,7 +1334,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 		mode = MODE_GLOBALCACHE;
 	}
 
-	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
@@ -1348,7 +1348,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
-	ElektraKey * initialParent = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 
 	if (elektraStrCmp (keyString (parentKey), STDIN_FILENAME) == 0)
 	{
@@ -1525,7 +1525,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
-	ElektraKey * initialParent = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * initialParent = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 
 	if (elektraStrCmp (keyString (parentKey), STDOUT_FILENAME) == 0)
 	{

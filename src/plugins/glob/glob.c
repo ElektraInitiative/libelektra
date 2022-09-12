@@ -62,9 +62,9 @@ enum GlobDirection
 
 static const char * getGlobFlags (ElektraKeyset * keys, ElektraKey * globKey)
 {
-	ElektraKey * flagKey = keyDup (globKey, KEY_CP_ALL);
+	ElektraKey * flagKey = keyDup (globKey, ELEKTRA_KEY_CP_ALL);
 	keyAddBaseName (flagKey, "flags");
-	ElektraKey * flagResult = ksLookup (keys, flagKey, KDB_O_NONE);
+	ElektraKey * flagResult = ksLookup (keys, flagKey, ELEKTRA_KDB_O_NONE);
 	keyDel (flagKey);
 
 	if (flagResult)
@@ -77,7 +77,7 @@ static const char * getGlobFlags (ElektraKeyset * keys, ElektraKey * globKey)
 
 static ElektraKeyset * getGlobKeys (ElektraKey * parentKey, ElektraKeyset * keys, enum GlobDirection direction)
 {
-	ElektraKeyset * glob = ksNew (0, KS_END);
+	ElektraKeyset * glob = ksNew (0, ELEKTRA_KS_END);
 	ElektraKey * k = 0;
 	size_t parentsize = keyGetNameSize (parentKey);
 
@@ -86,17 +86,17 @@ static ElektraKeyset * getGlobKeys (ElektraKey * parentKey, ElektraKeyset * keys
 	ElektraKey * userDirGlobConfig = 0;
 	ElektraKey * systemDirGlobConfig = 0;
 
-	userGlobConfig = keyNew ("user:/glob", KEY_END);
-	systemGlobConfig = keyNew ("system:/glob", KEY_END);
+	userGlobConfig = keyNew ("user:/glob", ELEKTRA_KEY_END);
+	systemGlobConfig = keyNew ("system:/glob", ELEKTRA_KEY_END);
 	switch (direction)
 	{
 	case GET:
-		userDirGlobConfig = keyNew ("user:/glob/get", KEY_END);
-		systemDirGlobConfig = keyNew ("system:/glob/get", KEY_END);
+		userDirGlobConfig = keyNew ("user:/glob/get", ELEKTRA_KEY_END);
+		systemDirGlobConfig = keyNew ("system:/glob/get", ELEKTRA_KEY_END);
 		break;
 	case SET:
-		userDirGlobConfig = keyNew ("user:/glob/set", KEY_END);
-		systemDirGlobConfig = keyNew ("system:/glob/set", KEY_END);
+		userDirGlobConfig = keyNew ("user:/glob/set", ELEKTRA_KEY_END);
+		systemDirGlobConfig = keyNew ("system:/glob/set", ELEKTRA_KEY_END);
 		break;
 	}
 
@@ -114,7 +114,7 @@ static ElektraKeyset * getGlobKeys (ElektraKey * parentKey, ElektraKeyset * keys
 
 			/* We now know we want that key.
 			 Dup it to not change the configuration. */
-			ElektraKey * ins = keyDup (k, KEY_CP_ALL);
+			ElektraKey * ins = keyDup (k, ELEKTRA_KEY_CP_ALL);
 			/* Now look if we want cascading for the key */
 			if (keyString (k)[0] == '/')
 			{

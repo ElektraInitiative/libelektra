@@ -113,8 +113,8 @@ void init (void)
 {
 	char cwd[PATH_MAX];
 	getcwd (cwd, PATH_MAX);
-	ElektraKeyset * tmpKS = ksNew (0, KS_END);
-	ElektraKey * parentKey = keyNew (PRELOAD_PATH, KEY_END);
+	ElektraKeyset * tmpKS = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = keyNew (PRELOAD_PATH, ELEKTRA_KEY_END);
 	ElektraKey * key;
 	ElektraKdb * handle = kdbOpen (NULL, parentKey);
 	kdbGet (handle, tmpKS, parentKey);
@@ -134,7 +134,7 @@ void init (void)
 		else
 			tmp->value = createAbsolutePath (keyString (key), cwd);
 		tmp->oflags = (unsigned short) -1;
-		ElektraKey * lookupKey = keyDup (key, KEY_CP_ALL);
+		ElektraKey * lookupKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (lookupKey, "readonly");
 		ElektraKey * found = ksLookup (ks, lookupKey, 0);
 		if (found)
@@ -249,15 +249,15 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf);
 
 static void exportConfiguration (Node * node)
 {
-	ElektraKey * key = keyNew (node->exportKey, KEY_END);
+	ElektraKey * key = keyNew (node->exportKey, ELEKTRA_KEY_END);
 	ElektraKdb * handle = kdbOpen (NULL, key);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (handle, ks, key);
 	ElektraKeyset * exportKS;
 	exportKS = ksCut (ks, key);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	Plugin * check = elektraPluginOpen (node->exportType, modules, conf, key);
 	keySetString (key, node->value);
 	ksRewind (exportKS);

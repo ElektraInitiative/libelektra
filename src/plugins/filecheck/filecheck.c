@@ -309,14 +309,14 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/filecheck"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/filecheck", KEY_VALUE, "filecheck plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports", KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/open", KEY_FUNC, elektraFilecheckOpen, KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/close", KEY_FUNC, elektraFilecheckClose, KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/get", KEY_FUNC, elektraFilecheckGet, KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/set", KEY_FUNC, elektraFilecheckSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/filecheck", ELEKTRA_KEY_VALUE, "filecheck plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/filecheck/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/filecheck/exports/open", ELEKTRA_KEY_FUNC, elektraFilecheckOpen, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/filecheck/exports/close", ELEKTRA_KEY_FUNC, elektraFilecheckClose, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/filecheck/exports/get", ELEKTRA_KEY_FUNC, elektraFilecheckGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/filecheck/exports/set", ELEKTRA_KEY_FUNC, elektraFilecheckSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/filecheck/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/filecheck/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

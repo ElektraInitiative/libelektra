@@ -37,9 +37,9 @@
 #endif
 
 #ifdef __cplusplus
-#define KS_END (static_cast<ckdb::Key *> (0))
+#define ELEKTRA_KS_END (static_cast<ckdb::Key *> (0))
 #else
-#define KS_END ((ElektraKey *) 0)
+#define ELEKTRA_KS_END ((ElektraKey *) 0)
 #endif
 
 

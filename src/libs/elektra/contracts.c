@@ -43,16 +43,16 @@ int elektraGOptsContract (ElektraKeyset * contract, int argc, const char * const
 {
 	if (contract == NULL || (argc == 0) != (argv == NULL) || parentKey == NULL) return -1;
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END));
 	if (goptsConfig != NULL)
 	{
-		ElektraKey * configRoot = keyNew ("user:/", KEY_END);
-		ElektraKey * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
+		ElektraKey * configRoot = keyNew ("user:/", ELEKTRA_KEY_END);
+		ElektraKey * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END);
 
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)
 		{
-			ElektraKey * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
+			ElektraKey * renamed = keyDup (ksAtCursor (goptsConfig, it), ELEKTRA_KEY_CP_ALL);
 			keyReplacePrefix (renamed, configRoot, contractRoot);
 			ksAppendKey (contract, renamed);
 		}
@@ -61,19 +61,19 @@ int elektraGOptsContract (ElektraKeyset * contract, int argc, const char * const
 		keyDel (contractRoot);
 	}
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/parent", ELEKTRA_KEY_VALUE, keyName (parentKey), ELEKTRA_KEY_END));
 	if (argc != 0)
 	{
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/argc", KEY_BINARY, KEY_SIZE, sizeof (int),
-					       KEY_VALUE, &argc, KEY_END));
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/argv", KEY_BINARY, KEY_SIZE,
-					       sizeof (const char * const *), KEY_VALUE, &argv, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/argc", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (int),
+					       ELEKTRA_KEY_VALUE, &argc, ELEKTRA_KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/argv", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE,
+					       sizeof (const char * const *), ELEKTRA_KEY_VALUE, &argv, ELEKTRA_KEY_END));
 	}
 
 	if (envp != NULL)
 	{
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/envp", KEY_BINARY, KEY_SIZE,
-					       sizeof (const char * const *), KEY_VALUE, &envp, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/envp", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE,
+					       sizeof (const char * const *), ELEKTRA_KEY_VALUE, &envp, ELEKTRA_KEY_END));
 	}
 	return 0;
 }
@@ -115,16 +115,16 @@ int elektraGOptsContractFromStrings (ElektraKeyset * contract, size_t argsSize, 
 {
 	if (contract == NULL || parentKey == NULL) return -1;
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END));
 	if (goptsConfig != NULL)
 	{
-		ElektraKey * configRoot = keyNew ("user:/", KEY_END);
-		ElektraKey * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
+		ElektraKey * configRoot = keyNew ("user:/", ELEKTRA_KEY_END);
+		ElektraKey * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END);
 
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)
 		{
-			ElektraKey * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
+			ElektraKey * renamed = keyDup (ksAtCursor (goptsConfig, it), ELEKTRA_KEY_CP_ALL);
 			keyReplacePrefix (renamed, configRoot, contractRoot);
 			ksAppendKey (contract, renamed);
 		}
@@ -133,17 +133,17 @@ int elektraGOptsContractFromStrings (ElektraKeyset * contract, size_t argsSize, 
 		keyDel (contractRoot);
 	}
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/parent", ELEKTRA_KEY_VALUE, keyName (parentKey), ELEKTRA_KEY_END));
 	if (args != NULL)
 	{
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/args", KEY_BINARY, KEY_SIZE, argsSize,
-					       KEY_VALUE, args, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/args", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, argsSize,
+					       ELEKTRA_KEY_VALUE, args, ELEKTRA_KEY_END));
 	}
 
 	if (env != NULL)
 	{
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/env", KEY_BINARY, KEY_SIZE, envSize, KEY_VALUE,
-					       env, KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/env", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, envSize, ELEKTRA_KEY_VALUE,
+					       env, ELEKTRA_KEY_END));
 	}
 	return 0;
 }

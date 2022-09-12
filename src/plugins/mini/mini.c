@@ -33,17 +33,17 @@
  */
 static inline ElektraKeyset * elektraMiniContract (void)
 {
-	return ksNew (30, keyNew ("system:/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
-		      keyNew ("system:/elektra/modules/mini/exports", KEY_END),
-		      keyNew ("system:/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
-		      keyNew ("system:/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/mini", ELEKTRA_KEY_VALUE, "mini plugin waits for your orders", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/mini/exports", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/mini/exports/get", ELEKTRA_KEY_FUNC, elektraMiniGet, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/mini/exports/set", ELEKTRA_KEY_FUNC, elektraMiniSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-		      keyNew ("system:/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/23", KEY_VALUE, "23", KEY_END), // 23 ↔︎ `#`
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3B", KEY_VALUE, "3B", KEY_END), // 3B ↔︎ `;`
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3D", KEY_VALUE, "3D", KEY_END), // 3D ↔︎ `=`
-		      keyNew ("system:/elektra/modules/mini/config/needs/chars/5C", KEY_VALUE, "5C", KEY_END), // 5C ↔︎ `\`
-		      KS_END);
+		      keyNew ("system:/elektra/modules/mini/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/23", ELEKTRA_KEY_VALUE, "23", ELEKTRA_KEY_END), // 23 ↔︎ `#`
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3B", ELEKTRA_KEY_VALUE, "3B", ELEKTRA_KEY_END), // 3B ↔︎ `;`
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/3D", ELEKTRA_KEY_VALUE, "3D", ELEKTRA_KEY_END), // 3D ↔︎ `=`
+		      keyNew ("system:/elektra/modules/mini/config/needs/chars/5C", ELEKTRA_KEY_VALUE, "5C", ELEKTRA_KEY_END), // 5C ↔︎ `\`
+		      ELEKTRA_KS_END);
 }
 
 /**
@@ -147,7 +147,7 @@ static inline void parseLine (char * line, size_t lineNumber, ElektraKeyset * ke
 	char * name = elektraRstrip (pair, NULL);
 	char * value = elektraLskip (equals + 1);
 
-	ElektraKey * key = keyNew (keyName (parentKey), KEY_END);
+	ElektraKey * key = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 	keyAddName (key, name);
 	keySetString (key, value);
 	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));

@@ -100,17 +100,17 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, Ele
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/doc"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/doc", KEY_VALUE, "doc plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/open", KEY_FUNC, elektraDocOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/close", KEY_FUNC, elektraDocClose, KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/get", KEY_FUNC, elektraDocGet, KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/set", KEY_FUNC, elektraDocSet, KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/commit", KEY_FUNC, elektraDocCommit, KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/error", KEY_FUNC, elektraDocError, KEY_END),
-			       keyNew ("system:/elektra/modules/doc/exports/checkconf", KEY_FUNC, elektraDocCheckConf, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/doc", ELEKTRA_KEY_VALUE, "doc plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports/open", ELEKTRA_KEY_FUNC, elektraDocOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports/close", ELEKTRA_KEY_FUNC, elektraDocClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports/get", ELEKTRA_KEY_FUNC, elektraDocGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports/set", ELEKTRA_KEY_FUNC, elektraDocSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports/commit", ELEKTRA_KEY_FUNC, elektraDocCommit, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports/error", ELEKTRA_KEY_FUNC, elektraDocError, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/doc/exports/checkconf", ELEKTRA_KEY_FUNC, elektraDocCheckConf, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/doc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/doc/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -125,7 +125,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, Ele
 
 	while (parseKey (fp, &key, &value) >= 1)
 	{
-		ElektraKey * read = keyNew (keyName (parentKey), KEY_END);
+		ElektraKey * read = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 		if (keyAddName (read, key) == -1)
 		{
 			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (parentKey, "Key name %s is not valid, discarding key", key);
@@ -151,13 +151,13 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, ElektraKeyset * returned, Ele
 	ElektraKeyset * globalKS = elektraPluginGetGlobalKeySet (plugin);
 	// now we can read something from the global keyset
 	// or add something for us or others to read
-	ElektraKey * important = keyNew ("user:/global/myDocKey", KEY_VALUE, "global plugins can see me", KEY_END);
+	ElektraKey * important = keyNew ("user:/global/myDocKey", ELEKTRA_KEY_VALUE, "global plugins can see me", ELEKTRA_KEY_END);
 	ksAppendKey (globalKS, important);
 	//![get global keyset]
 
 	//![get global keyset cleanup]
 	// clean up parts of the global keyset which we do not need
-	ElektraKey * cutKey = keyNew ("user:/global/myDocKey", KEY_END);
+	ElektraKey * cutKey = keyNew ("user:/global/myDocKey", ELEKTRA_KEY_END);
 	ElektraKeyset * notNeeded = ksCut (globalKS, cutKey);
 	ksDel (notNeeded);
 	//![get global keyset cleanup]

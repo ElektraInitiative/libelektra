@@ -19,13 +19,13 @@ int main (void)
 	ElektraKdb * handles[NUM_RUNS];
 	ElektraKeyset * keysets[NUM_RUNS];
 
-	ElektraKey * parentKey = keyNew ("user:/", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/", ELEKTRA_KEY_END);
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
 		ElektraKdb * handle = kdbOpen (NULL, parentKey);
 
-		ElektraKeyset * ks = ksNew (0, KS_END);
+		ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 		kdbGet (handle, ks, parentKey);
 

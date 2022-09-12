@@ -24,11 +24,11 @@
 
 static void test_basics (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("hexnumber");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
 
@@ -42,12 +42,12 @@ static void test_basics (void)
 
 static void test_default (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	ElektraKeyset * ks = ksNew (30, CREATE_TEST_KEY (0xF), CREATE_TEST_KEY (0xf), CREATE_TEST_KEY (0x14), CREATE_TEST_KEY (0xFFFFFFFFFFFFFFFF),
 			     CREATE_TEST_KEY (0x0), CREATE_TEST_KEY (0x2), CREATE_TEST_KEY (-0x2), CREATE_TEST_KEY (-0x1),
-			     CREATE_TEST_KEY (test), KS_END);
+			     CREATE_TEST_KEY (test), ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	CHECK_TEST_KEY (0xF, 15);
 	CHECK_TEST_KEY (0xf, 15);
@@ -67,12 +67,12 @@ static void test_default (void)
 
 static void test_customint (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/accept/type/#0", KEY_VALUE, "customint", KEY_END),
-			       keyNew ("system:/accept/type/#1", KEY_VALUE, "othercustomint", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/accept/type/#0", ELEKTRA_KEY_VALUE, "customint", ELEKTRA_KEY_END),
+			       keyNew ("system:/accept/type/#1", ELEKTRA_KEY_VALUE, "othercustomint", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	ElektraKeyset * ks = ksNew (30, CREATE_TEST_KEY_CUSTOM (0x1F, "customint"), CREATE_TEST_KEY_CUSTOM (0xFF, "othercustomint"),
-			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), CREATE_TEST_KEY_CUSTOM (0x11, "long"), KS_END);
+			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), CREATE_TEST_KEY_CUSTOM (0x11, "long"), ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	CHECK_TEST_KEY (0x1F, 31);
 	CHECK_TEST_KEY (0xFF, 255);
@@ -87,10 +87,10 @@ static void test_customint (void)
 
 static void test_unitbase (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("hexnumber");
-	ElektraKeyset * ks = ksNew (30, CREATE_TEST_KEY_UNITBASE (0x1F), CREATE_TEST_KEY_UNITBASE (0xFF), KS_END);
+	ElektraKeyset * ks = ksNew (30, CREATE_TEST_KEY_UNITBASE (0x1F), CREATE_TEST_KEY_UNITBASE (0xFF), ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	CHECK_TEST_KEY (0x1F, 31);
 	CHECK_TEST_KEY (0xFF, 255);
@@ -103,12 +103,12 @@ static void test_unitbase (void)
 
 static void test_force (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/integertypes", KEY_VALUE, "customint;othercustomint", KEY_END),
-			       keyNew ("system:/force", KEY_VALUE, "1", KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hexnumber", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/integertypes", ELEKTRA_KEY_VALUE, "customint;othercustomint", ELEKTRA_KEY_END),
+			       keyNew ("system:/force", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	ElektraKeyset * ks = ksNew (30, CREATE_TEST_KEY_CUSTOM (0x1F, "customint"), CREATE_TEST_KEY_CUSTOM (0xFF, "othercustomint"),
-			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), KS_END);
+			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	CHECK_TEST_KEY (0x1F, 31);
 	CHECK_TEST_KEY (0xFF, 255);

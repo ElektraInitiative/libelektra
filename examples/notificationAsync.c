@@ -93,16 +93,16 @@ int main (void)
 	// Cleanup on SIGINT
 	signal (SIGINT, onSIGNAL);
 
-	ElektraKeyset * config = ksNew (20, KS_END);
+	ElektraKeyset * config = ksNew (20, ELEKTRA_KS_END);
 
 	uv_loop_t * loop = uv_default_loop ();
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-	ElektraKeyset * contract = ksNew (0, KS_END);
+	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
 	elektraIoContract (contract, binding);
 	elektraNotificationContract (contract);
 
-	ElektraKey * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
+	ElektraKey * key = keyNew ("/sw/example/notification/#0/current", ELEKTRA_KEY_END);
 	ElektraKdb * kdb = kdbOpen (contract, key);
 	if (kdb == NULL)
 	{
@@ -111,7 +111,7 @@ int main (void)
 	}
 
 	int value = 0;
-	ElektraKey * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", KEY_END);
+	ElektraKey * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", ELEKTRA_KEY_END);
 	int result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
@@ -119,7 +119,7 @@ int main (void)
 		return -1;
 	}
 
-	ElektraKey * callbackKeyToWatch = keyNew ("/sw/example/notification/#0/current/color", KEY_END);
+	ElektraKey * callbackKeyToWatch = keyNew ("/sw/example/notification/#0/current/color", ELEKTRA_KEY_END);
 	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor, NULL);
 	if (!result)
 	{

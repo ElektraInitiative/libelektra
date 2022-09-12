@@ -33,10 +33,10 @@
 
 void test_lookupre (void)
 {
-	ElektraKeyset * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/a", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_COMMENT, "does not match", ELEKTRA_KEY_END),
+			     keyNew ("user:/b", ELEKTRA_KEY_VALUE, "  a  ", ELEKTRA_KEY_COMMENT, "does not match", ELEKTRA_KEY_END),
+			     keyNew ("user:/c", ELEKTRA_KEY_VALUE, "\t\t", ELEKTRA_KEY_COMMENT, "match", ELEKTRA_KEY_END),
+			     keyNew ("user:/d", ELEKTRA_KEY_VALUE, " \t \t ", ELEKTRA_KEY_COMMENT, "match", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ElektraKey * match = 0;
 	regex_t regex;
@@ -59,10 +59,10 @@ void test_lookupre (void)
 
 void test_extended (void)
 {
-	ElektraKeyset * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "la", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/b", KEY_VALUE, "lalala", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/c", KEY_VALUE, "jump", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/d", KEY_VALUE, "lalalala", KEY_COMMENT, "match", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/a", ELEKTRA_KEY_VALUE, "la", ELEKTRA_KEY_COMMENT, "match", ELEKTRA_KEY_END),
+			     keyNew ("user:/b", ELEKTRA_KEY_VALUE, "lalala", ELEKTRA_KEY_COMMENT, "match", ELEKTRA_KEY_END),
+			     keyNew ("user:/c", ELEKTRA_KEY_VALUE, "jump", ELEKTRA_KEY_COMMENT, "does not match", ELEKTRA_KEY_END),
+			     keyNew ("user:/d", ELEKTRA_KEY_VALUE, "lalalala", ELEKTRA_KEY_COMMENT, "match", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ElektraKey * match = 0;
 	regex_t regex;
@@ -88,39 +88,39 @@ void test_extended (void)
 
 void word_test (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
-	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/match", "word", KEY_END);
-	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
-			   "check/validation/match", "word", KEY_END);
-	ElektraKey * k3 = keyNew ("user:/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/match", "word", KEY_END);
-	ElektraKey * k4 = keyNew ("user:/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word",
-			   KEY_META, "check/validation/match", "word", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/validation", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", ELEKTRA_KEY_VALUE, "word", ELEKTRA_KEY_META, "check/validation", "word", ELEKTRA_KEY_META,
+			   "check/validation/match", "word", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", ELEKTRA_KEY_VALUE, "word1 word2 word3", ELEKTRA_KEY_META, "check/validation", "word2", ELEKTRA_KEY_META,
+			   "check/validation/match", "word", ELEKTRA_KEY_END);
+	ElektraKey * k3 = keyNew ("user:/tests/validation/invalid1", ELEKTRA_KEY_VALUE, "aworda", ELEKTRA_KEY_META, "check/validation", "word", ELEKTRA_KEY_META,
+			   "check/validation/match", "word", ELEKTRA_KEY_END);
+	ElektraKey * k4 = keyNew ("user:/tests/validation/invalid2", ELEKTRA_KEY_VALUE, "word1 word2 word3", ELEKTRA_KEY_META, "check/validation", "word",
+			   ELEKTRA_KEY_META, "check/validation/match", "word", ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * ks;
 	PLUGIN_OPEN ("validation");
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k1);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k2);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k3);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k4);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
@@ -132,39 +132,39 @@ void word_test (void)
 
 void line_test (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
-	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "line", KEY_META, "check/validation", "line", KEY_META,
-			   "check/validation/match", "line", KEY_END);
-	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line2",
-			   KEY_META, "check/validation/match", "line", KEY_END);
-	ElektraKey * k3 = keyNew ("user:/tests/validation/invalid1", KEY_VALUE, "alinea", KEY_META, "check/validation", "line", KEY_META,
-			   "check/validation/match", "line", KEY_END);
-	ElektraKey * k4 = keyNew ("user:/tests/validation/invalid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line",
-			   KEY_META, "check/validation/match", "line", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/validation", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", ELEKTRA_KEY_VALUE, "line", ELEKTRA_KEY_META, "check/validation", "line", ELEKTRA_KEY_META,
+			   "check/validation/match", "line", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", ELEKTRA_KEY_VALUE, "line1\nline2\nline3", ELEKTRA_KEY_META, "check/validation", "line2",
+			   ELEKTRA_KEY_META, "check/validation/match", "line", ELEKTRA_KEY_END);
+	ElektraKey * k3 = keyNew ("user:/tests/validation/invalid1", ELEKTRA_KEY_VALUE, "alinea", ELEKTRA_KEY_META, "check/validation", "line", ELEKTRA_KEY_META,
+			   "check/validation/match", "line", ELEKTRA_KEY_END);
+	ElektraKey * k4 = keyNew ("user:/tests/validation/invalid2", ELEKTRA_KEY_VALUE, "line1\nline2\nline3", ELEKTRA_KEY_META, "check/validation", "line",
+			   ELEKTRA_KEY_META, "check/validation/match", "line", ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * ks;
 	PLUGIN_OPEN ("validation");
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k1);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k2);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k3);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k4);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
@@ -176,39 +176,39 @@ void line_test (void)
 
 void invert_test (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
-	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
-	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
-			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
-	ElektraKey * k3 = keyNew ("user:/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
-	ElektraKey * k4 = keyNew ("user:/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word",
-			   KEY_META, "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/validation", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", ELEKTRA_KEY_VALUE, "word", ELEKTRA_KEY_META, "check/validation", "word", ELEKTRA_KEY_META,
+			   "check/validation/match", "word", ELEKTRA_KEY_META, "check/validation/invert", "", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", ELEKTRA_KEY_VALUE, "word1 word2 word3", ELEKTRA_KEY_META, "check/validation", "word2", ELEKTRA_KEY_META,
+			   "check/validation/match", "word", ELEKTRA_KEY_META, "check/validation/invert", "", ELEKTRA_KEY_END);
+	ElektraKey * k3 = keyNew ("user:/tests/validation/invalid1", ELEKTRA_KEY_VALUE, "aworda", ELEKTRA_KEY_META, "check/validation", "word", ELEKTRA_KEY_META,
+			   "check/validation/match", "word", ELEKTRA_KEY_META, "check/validation/invert", "", ELEKTRA_KEY_END);
+	ElektraKey * k4 = keyNew ("user:/tests/validation/invalid2", ELEKTRA_KEY_VALUE, "word1 word2 word3", ELEKTRA_KEY_META, "check/validation", "word",
+			   ELEKTRA_KEY_META, "check/validation/match", "word", ELEKTRA_KEY_META, "check/validation/invert", "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * ks;
 	PLUGIN_OPEN ("validation");
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k1);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k2);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k3);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k4);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
@@ -220,23 +220,23 @@ void invert_test (void)
 
 void icase_test (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/validation", KEY_VALUE, "", KEY_END);
-	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", KEY_VALUE, "WORD", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/word", "", KEY_META, "check/validation/ignorecase", "", KEY_END);
-	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "wORd2", KEY_META,
-			   "check/validation/word", "", KEY_META, "check/validation/ignorecase", "", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/validation", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKey * k1 = keyNew ("user:/tests/validation/valid1", ELEKTRA_KEY_VALUE, "WORD", ELEKTRA_KEY_META, "check/validation", "word", ELEKTRA_KEY_META,
+			   "check/validation/word", "", ELEKTRA_KEY_META, "check/validation/ignorecase", "", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("user:/tests/validation/valid2", ELEKTRA_KEY_VALUE, "word1 word2 word3", ELEKTRA_KEY_META, "check/validation", "wORd2", ELEKTRA_KEY_META,
+			   "check/validation/word", "", ELEKTRA_KEY_META, "check/validation/ignorecase", "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * ks;
 	PLUGIN_OPEN ("validation");
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k1);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
-	ks = ksNew (2, KS_END);
+	ks = ksNew (2, ELEKTRA_KS_END);
 	ksAppendKey (ks, k2);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");

@@ -95,7 +95,7 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 		}
 		else
 		{
-			ElektraKey * changed = keyNew (keyName, KEY_END);
+			ElektraKey * changed = keyNew (keyName, ELEKTRA_KEY_END);
 			pluginData->notificationCallback (changed, pluginData->notificationContext);
 		}
 
@@ -162,13 +162,13 @@ int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbusrecv"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/dbusrecv", KEY_VALUE, "dbusrecv plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/dbusrecv/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/dbusrecv/exports/open", KEY_FUNC, elektraDbusRecvOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/dbusrecv/exports/get", KEY_FUNC, elektraDbusRecvGet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbusrecv/exports/close", KEY_FUNC, elektraDbusRecvClose, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/dbusrecv", ELEKTRA_KEY_VALUE, "dbusrecv plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports/open", ELEKTRA_KEY_FUNC, elektraDbusRecvOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports/get", ELEKTRA_KEY_FUNC, elektraDbusRecvGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports/close", ELEKTRA_KEY_FUNC, elektraDbusRecvClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/dbusrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/dbusrecv/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

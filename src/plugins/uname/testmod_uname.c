@@ -24,8 +24,8 @@ void test_structure (void)
 {
 	printf ("Test structure of keys returned from uname plugin");
 
-	ElektraKey * parentKey = keyNew ("user:/test/key", KEY_END);
-	ElektraKeyset * keys = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/test/key", ELEKTRA_KEY_END);
+	ElektraKeyset * keys = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * conf = 0;
 
 	PLUGIN_OPEN ("uname");

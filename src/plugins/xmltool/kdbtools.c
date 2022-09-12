@@ -41,7 +41,7 @@ static int consumeKeyNode (ElektraKeyset * ks, const char * context, xmlTextRead
 		int isbin = 0;
 		int end = 0;
 
-		ElektraKey * newKey = keyNew ("/", KEY_END);
+		ElektraKey * newKey = keyNew ("/", ELEKTRA_KEY_END);
 
 		/* a <key> must have one of the following:
 		   - a "name" attribute, used as an absolute name overriding the context

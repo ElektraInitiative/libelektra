@@ -13,39 +13,39 @@
 
 ksNew (30,
 		keyNew ("system:/elektra/modules/augeas",
-				KEY_VALUE, "Augeas plugin waits for your orders", KEY_END),
-		keyNew ("system:/elektra/modules/augeas/exports", KEY_END),
+				ELEKTRA_KEY_VALUE, "Augeas plugin waits for your orders", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/augeas/exports", ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/augeas/exports/get",
-				KEY_FUNC, elektraAugeasGet,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraAugeasGet,
+				ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/augeas/exports/set",
-				KEY_FUNC, elektraAugeasSet,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraAugeasSet,
+				ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/augeas/exports/open",
-				KEY_FUNC, elektraAugeasOpen,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraAugeasOpen,
+				ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/augeas/exports/genconf",
-				KEY_FUNC, elektraAugeasGenConf,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraAugeasGenConf,
+				ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/augeas/exports/close",
-				KEY_FUNC, elektraAugeasClose,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraAugeasClose,
+				ELEKTRA_KEY_END),
 #include "readme_augeas.c"
 		keyNew ("system:/elektra/modules/augeas/infos/version",
-				KEY_VALUE, PLUGINVERSION,
-				KEY_END),
-		keyNew ("system:/elektra/modules/augeas/config", KEY_END),
-		keyNew ("system:/elektra/modules/augeas/config/needs", KEY_END),
+				ELEKTRA_KEY_VALUE, PLUGINVERSION,
+				ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/augeas/config", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/augeas/config/needs", ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/augeas/config/needs/glob/get/#1",
-			KEY_VALUE, "*#comment*",
-			KEY_META, "convert/metaname", "comment", /* comment keys are converted to comments */
-			KEY_META, "convert/append", "next", /* usually comments belong to the following key */
-			KEY_META, "convert/append/samelevel", "1", /* if the configuration has nested structures, comments should stay in the same hierarchy */
-			KEY_END),
+			ELEKTRA_KEY_VALUE, "*#comment*",
+			ELEKTRA_KEY_META, "convert/metaname", "comment", /* comment keys are converted to comments */
+			ELEKTRA_KEY_META, "convert/append", "next", /* usually comments belong to the following key */
+			ELEKTRA_KEY_META, "convert/append/samelevel", "1", /* if the configuration has nested structures, comments should stay in the same hierarchy */
+			ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/augeas/config/needs/glob/get/#1/flags",
-			KEY_VALUE, "", /* disable the path matching mode */
-			KEY_END),
-		KS_END);
+			ELEKTRA_KEY_VALUE, "", /* disable the path matching mode */
+			ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 
 // clang-format on
 

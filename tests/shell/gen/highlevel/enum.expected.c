@@ -42,13 +42,13 @@
 static ElektraKeyset * embeddedSpec (void)
 {
 	return ksNew (6,
-	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", KEY_END),
-	keyNew ("/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default", "blue", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/gentype2", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#3", "blue", KEY_META, "default", "red", KEY_META, "gen/enum/#0/value", "NO_VALUE", KEY_META, "gen/enum/#1/value", "1", KEY_META, "gen/enum/#2/value", "1 << 1", KEY_META, "gen/enum/#3/value", "1 << 2", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
-	keyNew ("/myenum", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red", KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META, "check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum", KEY_END),
-	KS_END);
+	keyNew ("/", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_enum.ini", ELEKTRA_KEY_END),
+	keyNew ("/disjointed", ELEKTRA_KEY_META, "check/enum", "#__255", ELEKTRA_KEY_META, "check/enum/#0", "black", ELEKTRA_KEY_META, "check/enum/#__255", "white", ELEKTRA_KEY_META, "default", "black", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	keyNew ("/existinggentype", ELEKTRA_KEY_META, "check/enum", "#2", ELEKTRA_KEY_META, "check/enum/#0", "cyan", ELEKTRA_KEY_META, "check/enum/#1", "magenta", ELEKTRA_KEY_META, "check/enum/#2", "yellow", ELEKTRA_KEY_META, "default", "cyan", ELEKTRA_KEY_META, "gen/enum/create", "0", ELEKTRA_KEY_META, "gen/enum/type", "ExistingColors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	keyNew ("/gentype", ELEKTRA_KEY_META, "check/enum", "#3", ELEKTRA_KEY_META, "check/enum/#0", "none", ELEKTRA_KEY_META, "check/enum/#1", "red", ELEKTRA_KEY_META, "check/enum/#2", "green", ELEKTRA_KEY_META, "check/enum/#3", "blue", ELEKTRA_KEY_META, "default", "blue", ELEKTRA_KEY_META, "gen/enum/#0/value", "NO_VALUE", ELEKTRA_KEY_META, "gen/enum/#1/value", "1", ELEKTRA_KEY_META, "gen/enum/#2/value", "1 << 1", ELEKTRA_KEY_META, "gen/enum/#3/value", "1 << 2", ELEKTRA_KEY_META, "gen/enum/type", "Colors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	keyNew ("/gentype2", ELEKTRA_KEY_META, "check/enum", "#3", ELEKTRA_KEY_META, "check/enum/#0", "none", ELEKTRA_KEY_META, "check/enum/#1", "red", ELEKTRA_KEY_META, "check/enum/#2", "green", ELEKTRA_KEY_META, "check/enum/#3", "blue", ELEKTRA_KEY_META, "default", "red", ELEKTRA_KEY_META, "gen/enum/#0/value", "NO_VALUE", ELEKTRA_KEY_META, "gen/enum/#1/value", "1", ELEKTRA_KEY_META, "gen/enum/#2/value", "1 << 1", ELEKTRA_KEY_META, "gen/enum/#3/value", "1 << 2", ELEKTRA_KEY_META, "gen/enum/type", "Colors", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	keyNew ("/myenum", ELEKTRA_KEY_META, "check/enum", "#5", ELEKTRA_KEY_META, "check/enum/#0", "red", ELEKTRA_KEY_META, "check/enum/#1", "green", ELEKTRA_KEY_META, "check/enum/#2", "blue", ELEKTRA_KEY_META, "check/enum/#3", "blueish", ELEKTRA_KEY_META, "check/enum/#4", "brown", ELEKTRA_KEY_META, "check/enum/#5", "gray", ELEKTRA_KEY_META, "default", "blue", ELEKTRA_KEY_META, "type", "enum", ELEKTRA_KEY_END),
+	ELEKTRA_KS_END);
 ;
 }
 
@@ -97,13 +97,13 @@ int loadConfiguration (Elektra ** elektra,
 	
 
 	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "fbb054456ff70fde7e4f184ec86eb130a99b4b3712d0c9d496e78bd262fb8c8d", KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
-	KS_END);
+	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "fbb054456ff70fde7e4f184ec86eb130a99b4b3712d0c9d496e78bd262fb8c8d", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/enum", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/enum", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
@@ -160,9 +160,9 @@ void exitForSpecload (int argc, const char * const * argv)
 
 	ElektraKeyset * spec = embeddedSpec ();
 
-	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/enum", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
+	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/enum", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
+	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);

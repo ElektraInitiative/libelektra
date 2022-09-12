@@ -40,11 +40,11 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gopts"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/gopts", KEY_VALUE, "gopts plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/gopts/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/gopts/exports/get", KEY_FUNC, elektraGOptsGet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/gopts", ELEKTRA_KEY_VALUE, "gopts plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/gopts/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/gopts/exports/get", ELEKTRA_KEY_FUNC, elektraGOptsGet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/gopts/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/gopts/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -65,7 +65,7 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 
 	if (globalParent != NULL)
 	{
-		optsParent = keyNew (keyString (globalParent), KEY_END);
+		optsParent = keyNew (keyString (globalParent), ELEKTRA_KEY_END);
 
 		ElektraKey * kArgc = ksLookupByName (global, "system:/elektra/gopts/argc", 0);
 		ElektraKey * kArgv = ksLookupByName (global, "system:/elektra/gopts/argv", 0);
@@ -163,7 +163,7 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 	}
 	else
 	{
-		optsParent = keyNew (keyName (parentKey), KEY_END);
+		optsParent = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 		argv = NULL;
 		argc = loadArgs (&argv);
 		envp = loadEnvp ();
@@ -214,7 +214,7 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	ElektraKey * helpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
+	ElektraKey * helpKey = keyNew ("proc:/elektra/gopts/help", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END);
 	keyCopyAllMeta (helpKey, optsParent);
 	ksAppendKey (returned, helpKey);
 	keyDel (optsParent);
@@ -227,7 +227,7 @@ int elektraGOptsGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 		const char * prefix = prefixKey == NULL ? NULL : keyString (prefixKey);
 
 		char * message = elektraGetOptsHelpMessage (helpKey, usage, prefix);
-		ElektraKey * messageKey = keyNew ("proc:/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
+		ElektraKey * messageKey = keyNew ("proc:/elektra/gopts/help/message", ELEKTRA_KEY_VALUE, message, ELEKTRA_KEY_END);
 		elektraFree (message);
 		ksAppendKey (returned, messageKey);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

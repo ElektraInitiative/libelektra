@@ -21,11 +21,11 @@ static void test_basics (void)
 {
 	printf ("• Test basic functionality of plugin\n");
 
-	ElektraKey * parentKey = keyNew ("system:/elektra/modules/mini", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/elektra/modules/mini", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mini");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
 
 	keyDel (parentKey);
@@ -39,11 +39,11 @@ static void test_get (void)
 	printf ("• Parse file “%s”\n", fileName);
 
 	char const * const prefix = "user:/mini/tests/read";
-	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (fileName), KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mini");
 
-	ElektraKeyset * keySet = ksNew (0, KS_END);
+	ElektraKeyset * keySet = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open or parse file");
 	succeed_if (output_error (parentKey), "Received unexpected error while reading the configuration");
 
@@ -60,9 +60,9 @@ static void test_get (void)
 	char text[MAX_LENGTH_TEXT];
 	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
 	{
-		ElektraKey * reference = keyNew (prefix, KEY_VALUE, keyValues[pair][1], KEY_END);
+		ElektraKey * reference = keyNew (prefix, ELEKTRA_KEY_VALUE, keyValues[pair][1], ELEKTRA_KEY_END);
 		keyAddName (reference, keyValues[pair][0]);
-		key = ksLookupByName (keySet, keyName (reference), KDB_O_NONE);
+		key = ksLookupByName (keySet, keyName (reference), ELEKTRA_KDB_O_NONE);
 
 		snprintf (text, MAX_LENGTH_TEXT, "key “%.100s” not found", keyName (reference));
 		exit_if_fail (key, text);
@@ -83,21 +83,21 @@ static void test_set (void)
 	char const * const fileName = "mini/write.ini";
 	char const * const prefix = "user:/mini/tests/write";
 
-	ElektraKey * parentKey = keyNew (prefix, KEY_VALUE, elektraFilename (), KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (prefix, ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("mini");
 
 	char keyValues[][2][50] = {
 		{ "key", "value" }, { "space", "wide open	 spaces" }, { "empty", "" }, { "esc\\/aped/level1/", "🐌" }
 	};
 	char text[MAX_LENGTH_TEXT];
-	ElektraKeyset * keySet = ksNew (0, KS_END);
+	ElektraKeyset * keySet = ksNew (0, ELEKTRA_KS_END);
 	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
 	{
 		char * name = keyValues[pair][0];
 		char * value = keyValues[pair][1];
 		snprintf (text, MAX_LENGTH_TEXT, "%s/%s", prefix, name);
-		ksAppendKey (keySet, keyNew (text, KEY_VALUE, value, KEY_END));
+		ksAppendKey (keySet, keyNew (text, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END));
 	}
 
 	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write to file");

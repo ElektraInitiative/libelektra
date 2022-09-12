@@ -154,12 +154,12 @@ int elektraIconvGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * par
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/iconv"))
 	{
 		ElektraKeyset * pluginConfig =
-			ksNew (30, keyNew ("system:/elektra/modules/iconv", KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/iconv/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/iconv/exports/get", KEY_FUNC, elektraIconvGet, KEY_END),
-			       keyNew ("system:/elektra/modules/iconv/exports/set", KEY_FUNC, elektraIconvSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/iconv", ELEKTRA_KEY_VALUE, "iconv plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iconv/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iconv/exports/get", ELEKTRA_KEY_FUNC, elektraIconvGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/iconv/exports/set", ELEKTRA_KEY_FUNC, elektraIconvSet, ELEKTRA_KEY_END),
 #include "readme_iconv.c"
-			       keyNew ("system:/elektra/modules/iconv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/iconv/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return 1;

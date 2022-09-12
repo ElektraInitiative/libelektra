@@ -15,8 +15,8 @@ int main (void)
 	ElektraKey * k;
 	ElektraKey * c;
 	const ElektraKey * meta;
-	k = keyNew ("user:/metakey", KEY_END);
-	c = keyNew ("user:/metacopy", KEY_END);
+	k = keyNew ("user:/metakey", ELEKTRA_KEY_END);
+	c = keyNew ("user:/metacopy", ELEKTRA_KEY_END);
 
 	keySetMeta (k, "hello", "hello_world");
 

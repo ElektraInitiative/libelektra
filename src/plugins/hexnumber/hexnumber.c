@@ -29,18 +29,18 @@ static ElektraKeyset * elektraContract (void)
 {
 	return ksNew (
 		30,
-		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME, KEY_VALUE, "hexnumber plugin waits for your orders",
-			KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports", KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraHexnumberGet, KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraHexnumberSet, KEY_END),
-		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/close", KEY_FUNC, elektraHexnumberClose,
-			KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME, ELEKTRA_KEY_VALUE, "hexnumber plugin waits for your orders",
+			ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/get", ELEKTRA_KEY_FUNC, elektraHexnumberGet, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/set", ELEKTRA_KEY_FUNC, elektraHexnumberSet, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/close", ELEKTRA_KEY_FUNC, elektraHexnumberClose,
+			ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
 
-		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END);
+		keyNew ("system:/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 }
 
 /**
@@ -237,7 +237,7 @@ static bool hasType (const ElektraKey * key, ElektraKeyset * types)
 	}
 
 	const char * type = keyString (typeMeta);
-	ElektraKeyset * res = ksNew ((size_t) ksGetSize (types), KS_END);
+	ElektraKeyset * res = ksNew ((size_t) ksGetSize (types), ELEKTRA_KS_END);
 	elektraKsFilter (res, types, &__hasTypeFilter, (void *) type);
 
 	const ssize_t size = ksGetSize (res);
@@ -274,7 +274,7 @@ int parseConfig (ElektraKeyset * config, HexnumberData * data, ElektraKey * erro
 		data->forceConversion = true;
 	}
 
-	ElektraKey * typesKey = keyNew ("/accept/type", KEY_END);
+	ElektraKey * typesKey = keyNew ("/accept/type", ELEKTRA_KEY_END);
 	ElektraKeyset * types = elektraArrayGet (typesKey, config);
 	keyDel (typesKey);
 
@@ -327,13 +327,13 @@ int elektraHexnumberGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	ElektraKey * cur;
 	ksRewind (returned);
 
-	ElektraKeyset * defaultIntegerTypes = ksNew (7, keyNew ("system:/accept/type/#0", KEY_VALUE, "byte", KEY_END),
-					      keyNew ("system:/accept/type/#1", KEY_VALUE, "short", KEY_END),
-					      keyNew ("system:/accept/type/#2", KEY_VALUE, "long", KEY_END),
-					      keyNew ("system:/accept/type/#3", KEY_VALUE, "long_long", KEY_END),
-					      keyNew ("system:/accept/type/#4", KEY_VALUE, "unsigned_short", KEY_END),
-					      keyNew ("system:/accept/type/#5", KEY_VALUE, "unsigned_long", KEY_END),
-					      keyNew ("system:/accept/type/#6", KEY_VALUE, "unsigned_long_long", KEY_END), KS_END);
+	ElektraKeyset * defaultIntegerTypes = ksNew (7, keyNew ("system:/accept/type/#0", ELEKTRA_KEY_VALUE, "byte", ELEKTRA_KEY_END),
+					      keyNew ("system:/accept/type/#1", ELEKTRA_KEY_VALUE, "short", ELEKTRA_KEY_END),
+					      keyNew ("system:/accept/type/#2", ELEKTRA_KEY_VALUE, "long", ELEKTRA_KEY_END),
+					      keyNew ("system:/accept/type/#3", ELEKTRA_KEY_VALUE, "long_long", ELEKTRA_KEY_END),
+					      keyNew ("system:/accept/type/#4", ELEKTRA_KEY_VALUE, "unsigned_short", ELEKTRA_KEY_END),
+					      keyNew ("system:/accept/type/#5", ELEKTRA_KEY_VALUE, "unsigned_long", ELEKTRA_KEY_END),
+					      keyNew ("system:/accept/type/#6", ELEKTRA_KEY_VALUE, "unsigned_long_long", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	while ((cur = ksNext (returned)) != NULL)

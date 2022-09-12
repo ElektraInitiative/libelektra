@@ -21,12 +21,12 @@ int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/reference"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/reference", KEY_VALUE, "reference plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/reference/exports", KEY_END),
-			keyNew ("system:/elektra/modules/reference/exports/get", KEY_FUNC, elektraReferenceGet, KEY_END),
-			keyNew ("system:/elektra/modules/reference/exports/set", KEY_FUNC, elektraReferenceSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/reference", ELEKTRA_KEY_VALUE, "reference plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/reference/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/reference/exports/get", ELEKTRA_KEY_FUNC, elektraReferenceGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/reference/exports/set", ELEKTRA_KEY_FUNC, elektraReferenceSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/reference/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/reference/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -101,12 +101,12 @@ static int checkSingleReference (const ElektraKey * key, ElektraKeyset * allKeys
 		}
 		else
 		{
-			restrictions = ksNew (1, keyNew ("/#0", KEY_VALUE, restrictValue, KEY_END), KS_END);
+			restrictions = ksNew (1, keyNew ("/#0", ELEKTRA_KEY_VALUE, restrictValue, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		}
 	}
 	else
 	{
-		restrictions = ksNew (0, KS_END);
+		restrictions = ksNew (0, ELEKTRA_KS_END);
 	}
 
 	ElektraKeyset * refArray;
@@ -116,7 +116,7 @@ static int checkSingleReference (const ElektraKey * key, ElektraKeyset * allKeys
 	}
 	else
 	{
-		refArray = ksNew (1, keyDup (key, KEY_CP_ALL), KS_END);
+		refArray = ksNew (1, keyDup (key, ELEKTRA_KEY_CP_ALL), ELEKTRA_KS_END);
 	}
 
 	ksRewind (refArray);
@@ -203,11 +203,11 @@ static bool checkReferenceGraphAcyclic (const RefGraph * referenceGraph, const c
 		}
 	}
 
-	ElektraKeyset * nodes = ksNew (0, KS_END);
+	ElektraKeyset * nodes = ksNew (0, ELEKTRA_KS_END);
 	ELEKTRA_LOG_NOTICE ("start of path with cycle: %s", root);
 
 	const char * node = root;
-	while (ksGetSize (nodes) != ksAppendKey (nodes, keyNew (node, KEY_END)))
+	while (ksGetSize (nodes) != ksAppendKey (nodes, keyNew (node, ELEKTRA_KEY_END)))
 	{
 		ELEKTRA_LOG_NOTICE ("refers to: %s", node);
 		node = rgGetEdge (curGraph, root, 0);
@@ -236,18 +236,18 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 	}
 
 	RefGraph * referenceGraph = rgNew ();
-	ElektraKeyset * allRefnames = ksNew (0, KS_END);
-	ElektraKeyset * refnameRoots = ksNew (0, KS_END);
+	ElektraKeyset * allRefnames = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * refnameRoots = ksNew (0, ELEKTRA_KS_END);
 
-	ksAppendKey (refnameRoots, keyNew (keyName (rootKey), KEY_END));
+	ksAppendKey (refnameRoots, keyNew (keyName (rootKey), ELEKTRA_KEY_END));
 
 	ElektraKey * curRoot;
 	while ((curRoot = ksPop (refnameRoots)) != NULL)
 	{
-		ElektraKeyset * keysToCheck = ksNew (0, KS_END);
+		ElektraKeyset * keysToCheck = ksNew (0, ELEKTRA_KS_END);
 		const char * refname = keyBaseName (curRoot);
 
-		ElektraKey * rootParent = keyDup (curRoot, KEY_CP_ALL);
+		ElektraKey * rootParent = keyDup (curRoot, ELEKTRA_KEY_CP_ALL);
 		keySetBaseName (rootParent, NULL);
 		ksAppendKey (keysToCheck, rootParent);
 
@@ -255,7 +255,7 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 		while ((cur = ksPop (keysToCheck)) != NULL)
 		{
 			const char * curName = keyName (cur);
-			ElektraKeyset * alternatives = ksNew (0, KS_END);
+			ElektraKeyset * alternatives = ksNew (0, ELEKTRA_KS_END);
 			elektraKsFilter (alternatives, allKeys, filterAlternatives, cur);
 
 			ElektraKey * curAlternative;
@@ -263,14 +263,14 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 			{
 				if (ksLookup (allRefnames, curAlternative, 0) == NULL)
 				{
-					ksAppendKey (refnameRoots, keyNew (keyName (curAlternative), KEY_END));
-					ksAppendKey (allRefnames, keyNew (keyName (curAlternative), KEY_END));
+					ksAppendKey (refnameRoots, keyNew (keyName (curAlternative), ELEKTRA_KEY_END));
+					ksAppendKey (allRefnames, keyNew (keyName (curAlternative), ELEKTRA_KEY_END));
 				}
 				keyDel (curAlternative);
 			}
 			ksDel (alternatives);
 
-			ElektraKey * tmp = keyNew (curName, KEY_END);
+			ElektraKey * tmp = keyNew (curName, ELEKTRA_KEY_END);
 			keyAddBaseName (tmp, refname);
 			ElektraKey * baseKey = ksLookup (allKeys, tmp, 0);
 			keyDel (tmp);
@@ -293,12 +293,12 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 				}
 				else
 				{
-					restrictions = ksNew (1, keyNew ("/#0", KEY_VALUE, restrictValue, KEY_END), KS_END);
+					restrictions = ksNew (1, keyNew ("/#0", ELEKTRA_KEY_VALUE, restrictValue, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 				}
 			}
 			else
 			{
-				restrictions = ksNew (0, KS_END);
+				restrictions = ksNew (0, ELEKTRA_KS_END);
 			}
 
 			ElektraKeyset * refArray;
@@ -308,9 +308,9 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 			}
 			else
 			{
-				ElektraKey * element = keyDup (baseKey, KEY_CP_ALL);
+				ElektraKey * element = keyDup (baseKey, ELEKTRA_KEY_CP_ALL);
 				keyAddBaseName (element, "#0");
-				refArray = ksNew (1, element, KS_END);
+				refArray = ksNew (1, element, ELEKTRA_KS_END);
 			}
 
 			if (!rgContains (referenceGraph, curName))
@@ -382,7 +382,7 @@ static int checkRecursiveReference (const ElektraKey * rootKey, ElektraKeyset * 
 
 				if (!rgContains (referenceGraph, refKeyName))
 				{
-					ksAppendKey (keysToCheck, keyDup (refKey, KEY_CP_ALL));
+					ksAppendKey (keysToCheck, keyDup (refKey, ELEKTRA_KEY_CP_ALL));
 					rgAddNode (referenceGraph, refKeyName);
 				}
 				rgAddEdge (referenceGraph, curName, refKeyName);

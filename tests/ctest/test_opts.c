@@ -59,8 +59,8 @@
 
 static inline ElektraKey * keyWithOpt (const char * name, const char shortOpt, const char * longOpt, const char * envVar)
 {
-	return keyNew (name, KEY_META, "opt", (const char[]){ shortOpt, '\0' }, KEY_META, "opt/long", longOpt, KEY_META, "env", envVar,
-		       KEY_END);
+	return keyNew (name, ELEKTRA_KEY_META, "opt", (const char[]){ shortOpt, '\0' }, ELEKTRA_KEY_META, "opt/long", longOpt, ELEKTRA_KEY_META, "env", envVar,
+		       ELEKTRA_KEY_END);
 }
 
 static bool checkValue (ElektraKeyset * ks, const char * name, const char * expected)
@@ -128,7 +128,7 @@ static void clearValues (ElektraKeyset * ks)
 
 static void test_simple (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -159,7 +159,7 @@ static void test_simple (void)
 
 static void test_short_only (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -178,7 +178,7 @@ static void test_short_only (void)
 
 static void test_long_only (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, "apple", NULL), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, "apple", NULL), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -197,7 +197,7 @@ static void test_long_only (void)
 
 static void test_env_only (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, NO_ARGS, NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
@@ -214,7 +214,7 @@ static void test_flag (void)
 {
 	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "none");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag failed");
@@ -251,7 +251,7 @@ static void test_flag_value (void)
 	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "none");
 	keySetMeta (k, "opt/flagvalue", "set");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value failed");
@@ -287,7 +287,7 @@ static void test_optional (void)
 {
 	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "optional");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag failed");
@@ -323,7 +323,7 @@ static void test_optional_value (void)
 	ElektraKey * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "optional");
 	keySetMeta (k, "opt/flagvalue", "set");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value failed");
@@ -356,7 +356,7 @@ static void test_optional_value (void)
 
 static void test_precedence (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("--apple=long", "-ashort"), ENVP ("APPLE=env"));
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option didn't take precedence");
@@ -371,7 +371,7 @@ static void test_precedence (void)
 
 static void test_repeated (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short0", "-ashort1", "-a", "short2"), NO_ENVP);
 	succeed_if (checkMeta (ks, PROC_BASE_KEY "/apple", "array", "#2"), "short repeated failed (wrong count)");
@@ -399,7 +399,7 @@ static void test_repeated (void)
 
 static void test_multiple (void)
 {
-	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "#1");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
@@ -408,7 +408,7 @@ static void test_multiple (void)
 	keySetMeta (k, "env", "#1");
 	keySetMeta (k, "env/#0", "APPLE");
 	keySetMeta (k, "env/#1", "BANANA");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option failed");
@@ -455,7 +455,7 @@ static void test_multiple (void)
 
 static void test_precedence_repeated (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("--apple=long1", "-a", "short0", "-a", "short1", "--apple", "long0", "--apple", "long2", "-ashort2"),
 		  ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
@@ -481,10 +481,10 @@ static void test_illegal_spec (void)
 	// illegal flagvalue
 	// ---
 
-	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "a");
 	keySetMeta (k, "opt/flagvalue", "set");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
@@ -499,7 +499,7 @@ static void test_illegal_spec (void)
 	// duplicate option (short)
 	// ---
 
-	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), keyWithOpt (SPEC_BASE_KEY "/banana", 'a', NULL, NULL), KS_END);
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), keyWithOpt (SPEC_BASE_KEY "/banana", 'a', NULL, NULL), ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -514,7 +514,7 @@ static void test_illegal_spec (void)
 	// ---
 
 	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, "apple", NULL), keyWithOpt (SPEC_BASE_KEY "/banana", 0, "apple", NULL),
-		    KS_END);
+		    ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -529,7 +529,7 @@ static void test_illegal_spec (void)
 	//
 
 	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), keyWithOpt (SPEC_BASE_KEY "/banana", 0, NULL, "APPLE"),
-		    KS_END);
+		    ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -543,9 +543,9 @@ static void test_illegal_spec (void)
 	// args remaining not array
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "remaining");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -558,9 +558,9 @@ static void test_illegal_spec (void)
 	// '-' option
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "-");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -574,9 +574,9 @@ static void test_illegal_spec (void)
 	// 'help' option
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt/long", "help");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -590,9 +590,9 @@ static void test_illegal_spec (void)
 	// args indexed without index
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "indexed");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -605,10 +605,10 @@ static void test_illegal_spec (void)
 	// args indexed array
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple/#", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "indexed");
 	keySetMeta (k, "args/index", "0");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -622,10 +622,10 @@ static void test_illegal_spec (void)
 	// args indexed missing index
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "indexed");
 	keySetMeta (k, "args/index", "3");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -639,9 +639,9 @@ static void test_illegal_spec (void)
 	// args duplicate remaining
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple/#", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "remaining");
-	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -655,10 +655,10 @@ static void test_illegal_spec (void)
 	// args duplicate index
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "indexed");
 	keySetMeta (k, "args/index", "0");
-	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END), KS_END);
+	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -671,9 +671,9 @@ static void test_illegal_spec (void)
 	// command non-empty root meta
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY, KEY_END);
+	k = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 	keySetMeta (k, "command", "abc");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -686,9 +686,9 @@ static void test_illegal_spec (void)
 	// command sub without root
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd", ELEKTRA_KEY_END);
 	keySetMeta (k, "command", "sub");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -701,9 +701,9 @@ static void test_illegal_spec (void)
 	// command sub without parent
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd/sub", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd/sub", ELEKTRA_KEY_END);
 	keySetMeta (k, "command", "sub");
-	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -717,9 +717,9 @@ static void test_illegal_spec (void)
 	// command sub parent without command
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd/sub", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd/sub", ELEKTRA_KEY_END);
 	keySetMeta (k, "command", "sub");
-	ks = ksNew (3, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), keyNew (SPEC_BASE_KEY "/cmd", KEY_END), k, KS_END);
+	ks = ksNew (3, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END), keyNew (SPEC_BASE_KEY "/cmd", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -733,9 +733,9 @@ static void test_illegal_spec (void)
 	// command short option without parent
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd/opt", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd/opt", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "a");
-	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -749,9 +749,9 @@ static void test_illegal_spec (void)
 	// command long option without parent
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd/opt", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd/opt", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt/long", "apple");
-	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -765,9 +765,9 @@ static void test_illegal_spec (void)
 	// command args remaining without parent
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd/arg/#", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd/arg/#", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "remaining");
-	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -781,10 +781,10 @@ static void test_illegal_spec (void)
 	// command args indexed without parent
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd/arg", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd/arg", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "indexed");
 	keySetMeta (k, "args/index", "0");
-	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -798,9 +798,9 @@ static void test_illegal_spec (void)
 	// command sub empty
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd", ELEKTRA_KEY_END);
 	keySetMeta (k, "command", "");
-	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -814,10 +814,10 @@ static void test_illegal_spec (void)
 	// command duplicate sub
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/cmd2", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/cmd2", ELEKTRA_KEY_END);
 	keySetMeta (k, "command", "sub");
-	ks = ksNew (3, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/cmd", KEY_META, "command", "sub", KEY_END), k, KS_END);
+	ks = ksNew (3, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/cmd", ELEKTRA_KEY_META, "command", "sub", ELEKTRA_KEY_END), k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -833,7 +833,7 @@ static void test_illegal_use (void)
 	// illegal repeat
 	// ---
 
-	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), ELEKTRA_KS_END);
 
 	ElektraKey * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort0", "-ashort1"), NO_ENVP);
@@ -852,7 +852,7 @@ static void test_illegal_use (void)
 	// missing argument
 	// ---
 
-	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), KS_END);
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Missing argument for short option: -a"),
@@ -870,11 +870,11 @@ static void test_illegal_use (void)
 	// argument not allowed
 	// ---
 
-	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "a");
 	keySetMeta (k, "opt/long", "apple");
 	keySetMeta (k, "opt/arg", "none");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple=short"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "This option cannot have an argument: --apple"),
@@ -887,7 +887,7 @@ static void test_illegal_use (void)
 	// multiple repeated
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple/#", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "#1");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
@@ -896,7 +896,7 @@ static void test_illegal_use (void)
 	keySetMeta (k, "env", "#1");
 	keySetMeta (k, "env/#0", "APPLE");
 	keySetMeta (k, "env/#1", "BANANA");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a", "short0", "-ashort1", "-a", "short2", "-b", "short3", "-bshort4"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
@@ -927,10 +927,10 @@ static void test_illegal_use (void)
 	// missing indexed arg
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "args", "indexed");
 	keySetMeta (k, "args/index", "0");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Expected at least 1 non-option arguments, but only got 0"),
@@ -943,9 +943,9 @@ static void test_illegal_use (void)
 	// unknown sub-command
 	// ---
 
-	k = keyNew (SPEC_BASE_KEY, KEY_END);
+	k = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 	keySetMeta (k, "command", "");
-	ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("sub"), NO_ENVP);
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown sub-command: sub"),
@@ -961,9 +961,9 @@ static void test_help (void)
 	// no options
 	// ---
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	ElektraKey * errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	ElektraKey * errorKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 
 	const char * expectedHelpBase =
 		"Usage: prog [OPTION...]\n"
@@ -1006,7 +1006,7 @@ static void test_help (void)
 		"ENVIRONMENT VARIABLES\n"
 		"  APPLE, BANANA, CHERRY       Apple/Banana/Cherry description\n";
 
-	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "#3");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
@@ -1025,15 +1025,15 @@ static void test_help (void)
 	keySetMeta (k, "env/#2", "CHERRY");
 	keySetMeta (k, "description", "Apple/Banana/Cherry description");
 	ks = ksNew (4, k,
-		    keyNew (SPEC_BASE_KEY "/pear", KEY_META, "opt", "p", KEY_META, "description",
-			    "A pear is not an apple, nor a banana, nor a cherry.", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/param1", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "description",
-			    "First parameter", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/param2", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_META, "description",
-			    "Second parameter", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/other/#", KEY_META, "args", "remaining", KEY_META, "description", "Other parameters", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/none", KEY_META, "opt", "n", KEY_META, "opt/hidden", "1", KEY_END), KS_END);
-	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+		    keyNew (SPEC_BASE_KEY "/pear", ELEKTRA_KEY_META, "opt", "p", ELEKTRA_KEY_META, "description",
+			    "A pear is not an apple, nor a banana, nor a cherry.", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/param1", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_META, "description",
+			    "First parameter", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/param2", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_META, "description",
+			    "Second parameter", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/other/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_META, "description", "Other parameters", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/none", ELEKTRA_KEY_META, "opt", "n", ELEKTRA_KEY_META, "opt/hidden", "1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
 	checkHelpMessage (errorKey, expectedHelpOpts);
@@ -1060,16 +1060,16 @@ static void test_help (void)
 		"PARAMETERS\n"
 		"  dynamic...                  \n";
 
-	ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_END),
-		    keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META, "opt/arg",
-			    "none", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/oneleveldown/", KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
+	ks = ksNew (10, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/printversion", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_META, "opt/arg",
+			    "none", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/", ELEKTRA_KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
 		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown",
-			    KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
-		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown/notdirectlybelow", KEY_META, "opt", "x", KEY_META, "opt/long",
-			    "notdirectlybelow", KEY_META, "opt/arg", "none", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
-	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+			    ELEKTRA_KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown/notdirectlybelow", ELEKTRA_KEY_META, "opt", "x", ELEKTRA_KEY_META, "opt/long",
+			    "notdirectlybelow", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/dynamic/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
 	checkHelpMessage (errorKey, expectedHelpMainDeep);
@@ -1117,20 +1117,20 @@ static void test_help (void)
 		"  keyname                     \n"
 		"  value                       \n";
 
-	ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META, "opt/arg",
-			    "none", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/get", KEY_META, "command", "get", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/get/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META, "opt/arg",
-			    "none", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/set1", KEY_META, "command", "set", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/set1/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META, "opt/arg",
-			    "none", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/set1/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/set1/value", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
-	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	ks = ksNew (10, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/printversion", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_META, "opt/arg",
+			    "none", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get", ELEKTRA_KEY_META, "command", "get", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get/verbose", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META, "opt/arg",
+			    "none", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1", ELEKTRA_KEY_META, "command", "set", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/verbose", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META, "opt/arg",
+			    "none", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/value", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_END),
+		    keyNew (SPEC_BASE_KEY "/dynamic/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
 	checkHelpMessage (errorKey, expectedHelpMain);
@@ -1146,7 +1146,7 @@ static void test_help (void)
 static void test_stop (void)
 {
 	ElektraKeyset * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"),
-			     keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+			     keyNew (SPEC_BASE_KEY "/rest/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("--", "-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "should have stopped");
@@ -1175,7 +1175,7 @@ static void test_stop (void)
 	clearValues (ks);
 
 
-	ElektraKey * errorKey = keyNew ("spec:/tests/opts", KEY_META, "posixly", "1", KEY_END);
+	ElektraKey * errorKey = keyNew ("spec:/tests/opts", ELEKTRA_KEY_META, "posixly", "1", ELEKTRA_KEY_END);
 	if (elektraGetOpts (ks, ARGS ("-ashort", "other", "-a", "short2"), NO_ENVP, errorKey) != 0)
 	{
 		yield_error ("error found");
@@ -1194,14 +1194,14 @@ static void test_stop (void)
 
 static void test_mixed_config (void)
 {
-	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	ElektraKey * k = keyNew (SPEC_BASE_KEY "/apple", ELEKTRA_KEY_END);
 	keySetMeta (k, "opt", "#1");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
 	keySetMeta (k, "opt/#0/arg", "none");
 	keySetMeta (k, "opt/#1", "b");
 	keySetMeta (k, "opt/#1/long", "banana");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "mixed config failed");
@@ -1232,7 +1232,7 @@ static void test_mixed_config (void)
 
 static void test_args_remaining (void)
 {
-	ElektraKeyset * ks = ksNew (1, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (1, keyNew (SPEC_BASE_KEY "/rest/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
 	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#4"), "args remaining (wrong count)");
@@ -1252,11 +1252,11 @@ static void test_args_remaining (void)
 
 static void test_args_indexed (void)
 {
-	ElektraKeyset * ks = ksNew (5, keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/rest3", KEY_META, "args", "indexed", KEY_META, "args/index", "3", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/rest4", KEY_META, "args", "indexed", KEY_META, "args/index", "4", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew (SPEC_BASE_KEY "/rest0", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest1", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest2", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "2", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest3", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "3", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest4", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "4", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest0", "short0"), "args indexed (0)");
@@ -1271,10 +1271,10 @@ static void test_args_indexed (void)
 
 static void test_args_indexed_and_remaining (void)
 {
-	ElektraKeyset * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest0", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest1", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest2", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest0", "short0"), "args indexed and remaining (index 0)");
@@ -1289,19 +1289,19 @@ static void test_args_indexed_and_remaining (void)
 
 static void test_commands (void)
 {
-	ElektraKeyset * ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META,
-				     "opt/arg", "none", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/get", KEY_META, "command", "get", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/get/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META,
-				     "opt/arg", "none", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/set1", KEY_META, "command", "set", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/set1/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META,
-				     "opt/arg", "none", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/set1/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/set1/value", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
-			     keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (10, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/printversion", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_META,
+				     "opt/arg", "none", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get", ELEKTRA_KEY_META, "command", "get", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get/verbose", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META,
+				     "opt/arg", "none", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1", ELEKTRA_KEY_META, "command", "set", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/verbose", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META,
+				     "opt/arg", "none", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/keyname", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/value", ELEKTRA_KEY_META, "args", "indexed", ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_END),
+			     keyNew (SPEC_BASE_KEY "/dynamic/#", ELEKTRA_KEY_META, "args", "remaining", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	RUN_TEST (ks, ARGS ("-v"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY, ""), "command failed: {kdb} -v");

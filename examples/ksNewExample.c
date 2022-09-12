@@ -15,9 +15,9 @@ int main (void)
 //! [Full Example]
 // create a new keyset with 3 keys
 // with a hint that about 20 keys will be inside
-ElektraKeyset * myConfig = ksNew (20, keyNew ("user:/name1", KEY_END), keyNew ("user:/name2", KEY_END), keyNew ("user:/name3", KEY_END), KS_END);
+ElektraKeyset * myConfig = ksNew (20, keyNew ("user:/name1", ELEKTRA_KEY_END), keyNew ("user:/name2", ELEKTRA_KEY_END), keyNew ("user:/name3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 // append a key in the keyset
-ksAppendKey (myConfig, keyNew ("user:/name4", KEY_END));
+ksAppendKey (myConfig, keyNew ("user:/name4", ELEKTRA_KEY_END));
 
 ElektraKey * current;
 ksRewind (myConfig);

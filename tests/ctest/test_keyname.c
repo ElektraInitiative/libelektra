@@ -746,129 +746,129 @@ static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_
 
 static void test_unescape (void)
 {
-	TEST_UNESCAPE_OK ("/", KEY_NS_CASCADING, "\0");
-	TEST_UNESCAPE_OK ("proc:/", KEY_NS_PROC, "\0");
-	TEST_UNESCAPE_OK ("dir:/", KEY_NS_DIR, "\0");
-	TEST_UNESCAPE_OK ("user:/", KEY_NS_USER, "\0");
-	TEST_UNESCAPE_OK ("system:/", KEY_NS_SYSTEM, "\0");
-	TEST_UNESCAPE_OK ("spec:/", KEY_NS_SPEC, "\0");
-	TEST_UNESCAPE_OK ("meta:/", KEY_NS_META, "\0");
-	TEST_UNESCAPE_OK ("default:/", KEY_NS_DEFAULT, "\0");
+	TEST_UNESCAPE_OK ("/", ELEKTRA_NS_CASCADING, "\0");
+	TEST_UNESCAPE_OK ("proc:/", ELEKTRA_NS_PROC, "\0");
+	TEST_UNESCAPE_OK ("dir:/", ELEKTRA_NS_DIR, "\0");
+	TEST_UNESCAPE_OK ("user:/", ELEKTRA_NS_USER, "\0");
+	TEST_UNESCAPE_OK ("system:/", ELEKTRA_NS_SYSTEM, "\0");
+	TEST_UNESCAPE_OK ("spec:/", ELEKTRA_NS_SPEC, "\0");
+	TEST_UNESCAPE_OK ("meta:/", ELEKTRA_NS_META, "\0");
+	TEST_UNESCAPE_OK ("default:/", ELEKTRA_NS_DEFAULT, "\0");
 
-	TEST_UNESCAPE_OK ("/abc/def/ghi", KEY_NS_CASCADING, "\0abc\0def\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/def/ghi", KEY_NS_USER, "\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/def/ghi", ELEKTRA_NS_CASCADING, "\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/def/ghi", ELEKTRA_NS_USER, "\0abc\0def\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/def/ghi/", KEY_NS_CASCADING, "\0abc\0def\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/def/ghi/", KEY_NS_USER, "\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/def/ghi/", ELEKTRA_NS_CASCADING, "\0abc\0def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/def/ghi/", ELEKTRA_NS_USER, "\0abc\0def\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/%/def", KEY_NS_CASCADING, "\0abc\0\0def");
-	TEST_UNESCAPE_OK ("user:/abc/%/def", KEY_NS_USER, "\0abc\0\0def");
+	TEST_UNESCAPE_OK ("/abc/%/def", ELEKTRA_NS_CASCADING, "\0abc\0\0def");
+	TEST_UNESCAPE_OK ("user:/abc/%/def", ELEKTRA_NS_USER, "\0abc\0\0def");
 
-	TEST_UNESCAPE_OK ("/abc/d@ef/ghi", KEY_NS_CASCADING, "\0abc\0d@ef\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/d@ef/ghi", KEY_NS_USER, "\0abc\0d@ef\0ghi");
+	TEST_UNESCAPE_OK ("/abc/d@ef/ghi", ELEKTRA_NS_CASCADING, "\0abc\0d@ef\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/d@ef/ghi", ELEKTRA_NS_USER, "\0abc\0d@ef\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/.def/ghi", KEY_NS_CASCADING, "\0abc\0.def\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/.def/ghi", KEY_NS_USER, "\0abc\0.def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/.def/ghi", ELEKTRA_NS_CASCADING, "\0abc\0.def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/.def/ghi", ELEKTRA_NS_USER, "\0abc\0.def\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/.../ghi", KEY_NS_CASCADING, "\0abc\0...\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/.../ghi", KEY_NS_USER, "\0abc\0...\0ghi");
+	TEST_UNESCAPE_OK ("/abc/.../ghi", ELEKTRA_NS_CASCADING, "\0abc\0...\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/.../ghi", ELEKTRA_NS_USER, "\0abc\0...\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/..../ghi", KEY_NS_CASCADING, "\0abc\0....\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/..../ghi", KEY_NS_USER, "\0abc\0....\0ghi");
+	TEST_UNESCAPE_OK ("/abc/..../ghi", ELEKTRA_NS_CASCADING, "\0abc\0....\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/..../ghi", ELEKTRA_NS_USER, "\0abc\0....\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/#0/ghi", KEY_NS_CASCADING, "\0abc\0#0\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/#0/ghi", KEY_NS_USER, "\0abc\0#0\0ghi");
+	TEST_UNESCAPE_OK ("/abc/#0/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#0\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#0/ghi", ELEKTRA_NS_USER, "\0abc\0#0\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/#1/ghi", KEY_NS_CASCADING, "\0abc\0#1\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/#1/ghi", KEY_NS_USER, "\0abc\0#1\0ghi");
+	TEST_UNESCAPE_OK ("/abc/#1/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#1\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#1/ghi", ELEKTRA_NS_USER, "\0abc\0#1\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/#5/ghi", KEY_NS_CASCADING, "\0abc\0#5\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/#5/ghi", KEY_NS_USER, "\0abc\0#5\0ghi");
+	TEST_UNESCAPE_OK ("/abc/#5/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#5\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#5/ghi", ELEKTRA_NS_USER, "\0abc\0#5\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/#_10/ghi", KEY_NS_CASCADING, "\0abc\0#_10\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/#_10/ghi", KEY_NS_USER, "\0abc\0#_10\0ghi");
+	TEST_UNESCAPE_OK ("/abc/#_10/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#_10\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#_10/ghi", ELEKTRA_NS_USER, "\0abc\0#_10\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/#____10000/ghi", KEY_NS_CASCADING, "\0abc\0#____10000\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/#____10000/ghi", KEY_NS_USER, "\0abc\0#____10000\0ghi");
+	TEST_UNESCAPE_OK ("/abc/#____10000/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#____10000\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/#____10000/ghi", ELEKTRA_NS_USER, "\0abc\0#____10000\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/#__________________9223372036854775807/ghi", KEY_NS_CASCADING,
+	TEST_UNESCAPE_OK ("/abc/#__________________9223372036854775807/ghi", ELEKTRA_NS_CASCADING,
 			  "\0abc\0#__________________9223372036854775807\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/#__________________9223372036854775807/ghi", KEY_NS_USER,
+	TEST_UNESCAPE_OK ("user:/abc/#__________________9223372036854775807/ghi", ELEKTRA_NS_USER,
 			  "\0abc\0#__________________9223372036854775807\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/\\%/def", KEY_NS_CASCADING, "\0abc\0%\0def");
-	TEST_UNESCAPE_OK ("user:/abc/\\%/def", KEY_NS_USER, "\0abc\0%\0def");
+	TEST_UNESCAPE_OK ("/abc/\\%/def", ELEKTRA_NS_CASCADING, "\0abc\0%\0def");
+	TEST_UNESCAPE_OK ("user:/abc/\\%/def", ELEKTRA_NS_USER, "\0abc\0%\0def");
 
-	TEST_UNESCAPE_OK ("/abc/\\./ghi", KEY_NS_CASCADING, "\0abc\0.\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/\\./ghi", KEY_NS_USER, "\0abc\0.\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\./ghi", ELEKTRA_NS_CASCADING, "\0abc\0.\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\./ghi", ELEKTRA_NS_USER, "\0abc\0.\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/\\../ghi", KEY_NS_CASCADING, "\0abc\0..\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/\\../ghi", KEY_NS_USER, "\0abc\0..\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\../ghi", ELEKTRA_NS_CASCADING, "\0abc\0..\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\../ghi", ELEKTRA_NS_USER, "\0abc\0..\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/\\.def/ghi", KEY_NS_CASCADING, "\0abc\0.def\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/\\.def/ghi", KEY_NS_USER, "\0abc\0.def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\.def/ghi", ELEKTRA_NS_CASCADING, "\0abc\0.def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\.def/ghi", ELEKTRA_NS_USER, "\0abc\0.def\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc\\/def/ghi", KEY_NS_CASCADING, "\0abc/def\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc\\/def/ghi", KEY_NS_USER, "\0abc/def\0ghi");
+	TEST_UNESCAPE_OK ("/abc\\/def/ghi", ELEKTRA_NS_CASCADING, "\0abc/def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc\\/def/ghi", ELEKTRA_NS_USER, "\0abc/def\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/de\\\\f/ghi", KEY_NS_CASCADING, "\0abc\0de\\f\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/de\\\\f/ghi", KEY_NS_USER, "\0abc\0de\\f\0ghi");
+	TEST_UNESCAPE_OK ("/abc/de\\\\f/ghi", ELEKTRA_NS_CASCADING, "\0abc\0de\\f\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/de\\\\f/ghi", ELEKTRA_NS_USER, "\0abc\0de\\f\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/def/ghi\\/", KEY_NS_CASCADING, "\0abc\0def\0ghi/");
-	TEST_UNESCAPE_OK ("user:/abc/def/ghi\\/", KEY_NS_USER, "\0abc\0def\0ghi/");
+	TEST_UNESCAPE_OK ("/abc/def/ghi\\/", ELEKTRA_NS_CASCADING, "\0abc\0def\0ghi/");
+	TEST_UNESCAPE_OK ("user:/abc/def/ghi\\/", ELEKTRA_NS_USER, "\0abc\0def\0ghi/");
 
-	TEST_UNESCAPE_OK ("/abc/\\@/def", KEY_NS_CASCADING, "\0abc\0@\0def");
-	TEST_UNESCAPE_OK ("user:/abc/\\@/def", KEY_NS_USER, "\0abc\0@\0def");
+	TEST_UNESCAPE_OK ("/abc/\\@/def", ELEKTRA_NS_CASCADING, "\0abc\0@\0def");
+	TEST_UNESCAPE_OK ("user:/abc/\\@/def", ELEKTRA_NS_USER, "\0abc\0@\0def");
 
-	TEST_UNESCAPE_OK ("/abc/#/def", KEY_NS_CASCADING, "\0abc\0#\0def");
-	TEST_UNESCAPE_OK ("user:/abc/#/def", KEY_NS_USER, "\0abc\0#\0def");
+	TEST_UNESCAPE_OK ("/abc/#/def", ELEKTRA_NS_CASCADING, "\0abc\0#\0def");
+	TEST_UNESCAPE_OK ("user:/abc/#/def", ELEKTRA_NS_USER, "\0abc\0#\0def");
 
-	TEST_UNESCAPE_OK ("/abc/\\#def/ghi", KEY_NS_CASCADING, "\0abc\0#def\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/\\#def/ghi", KEY_NS_USER, "\0abc\0#def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\#def/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\#def/ghi", ELEKTRA_NS_USER, "\0abc\0#def\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/\\#123/ghi", KEY_NS_CASCADING, "\0abc\0#123\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/\\#123/ghi", KEY_NS_USER, "\0abc\0#123\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\#123/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#123\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\#123/ghi", ELEKTRA_NS_USER, "\0abc\0#123\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/\\#123/ghi", KEY_NS_CASCADING, "\0abc\0#123\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/\\#123/ghi", KEY_NS_USER, "\0abc\0#123\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\#123/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#123\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\#123/ghi", ELEKTRA_NS_USER, "\0abc\0#123\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/\\#__10/ghi", KEY_NS_CASCADING, "\0abc\0#__10\0ghi");
-	TEST_UNESCAPE_OK ("user:/abc/\\#_100/ghi", KEY_NS_USER, "\0abc\0#_100\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\#__10/ghi", ELEKTRA_NS_CASCADING, "\0abc\0#__10\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\#_100/ghi", ELEKTRA_NS_USER, "\0abc\0#_100\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/#1/#_10", KEY_NS_CASCADING, "\0abc\0#1\0#_10");
-	TEST_UNESCAPE_OK ("user:/abc/#1/#_10", KEY_NS_USER, "\0abc\0#1\0#_10");
+	TEST_UNESCAPE_OK ("/abc/#1/#_10", ELEKTRA_NS_CASCADING, "\0abc\0#1\0#_10");
+	TEST_UNESCAPE_OK ("user:/abc/#1/#_10", ELEKTRA_NS_USER, "\0abc\0#1\0#_10");
 
-	TEST_UNESCAPE_OK ("/%", KEY_NS_CASCADING, "\0");
-	TEST_UNESCAPE_OK ("/\\%", KEY_NS_CASCADING, "\0%");
-	TEST_UNESCAPE_OK ("/\\\\%", KEY_NS_CASCADING, "\0\\%");
-	TEST_UNESCAPE_OK ("/\\\\\\\\%", KEY_NS_CASCADING, "\0\\\\%");
+	TEST_UNESCAPE_OK ("/%", ELEKTRA_NS_CASCADING, "\0");
+	TEST_UNESCAPE_OK ("/\\%", ELEKTRA_NS_CASCADING, "\0%");
+	TEST_UNESCAPE_OK ("/\\\\%", ELEKTRA_NS_CASCADING, "\0\\%");
+	TEST_UNESCAPE_OK ("/\\\\\\\\%", ELEKTRA_NS_CASCADING, "\0\\\\%");
 
-	TEST_UNESCAPE_OK ("/\\/", KEY_NS_CASCADING, "\0/");
-	TEST_UNESCAPE_OK ("/\\\\", KEY_NS_CASCADING, "\0\\");
-	TEST_UNESCAPE_OK ("/\\\\\\/", KEY_NS_CASCADING, "\0\\/");
-	TEST_UNESCAPE_OK ("/\\\\\\\\", KEY_NS_CASCADING, "\0\\\\");
-	TEST_UNESCAPE_OK ("/\\\\\\\\\\/", KEY_NS_CASCADING, "\0\\\\/");
+	TEST_UNESCAPE_OK ("/\\/", ELEKTRA_NS_CASCADING, "\0/");
+	TEST_UNESCAPE_OK ("/\\\\", ELEKTRA_NS_CASCADING, "\0\\");
+	TEST_UNESCAPE_OK ("/\\\\\\/", ELEKTRA_NS_CASCADING, "\0\\/");
+	TEST_UNESCAPE_OK ("/\\\\\\\\", ELEKTRA_NS_CASCADING, "\0\\\\");
+	TEST_UNESCAPE_OK ("/\\\\\\\\\\/", ELEKTRA_NS_CASCADING, "\0\\\\/");
 
-	TEST_UNESCAPE_OK ("user:/\\/", KEY_NS_USER, "\0/");
-	TEST_UNESCAPE_OK ("user:/\\\\", KEY_NS_USER, "\0\\");
-	TEST_UNESCAPE_OK ("user:/\\\\\\/", KEY_NS_USER, "\0\\/");
-	TEST_UNESCAPE_OK ("user:/\\\\\\\\", KEY_NS_USER, "\0\\\\");
-	TEST_UNESCAPE_OK ("user:/\\\\\\\\\\/", KEY_NS_USER, "\0\\\\/");
+	TEST_UNESCAPE_OK ("user:/\\/", ELEKTRA_NS_USER, "\0/");
+	TEST_UNESCAPE_OK ("user:/\\\\", ELEKTRA_NS_USER, "\0\\");
+	TEST_UNESCAPE_OK ("user:/\\\\\\/", ELEKTRA_NS_USER, "\0\\/");
+	TEST_UNESCAPE_OK ("user:/\\\\\\\\", ELEKTRA_NS_USER, "\0\\\\");
+	TEST_UNESCAPE_OK ("user:/\\\\\\\\\\/", ELEKTRA_NS_USER, "\0\\\\/");
 
-	TEST_UNESCAPE_OK ("user:/tests/plugin/\\/", KEY_NS_USER, "\0tests\0plugin\0/");
-	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\", KEY_NS_USER, "\0tests\0plugin\0\\");
-	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\/", KEY_NS_USER, "\0tests\0plugin\0\\/");
-	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\\\", KEY_NS_USER, "\0tests\0plugin\0\\\\");
-	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\\\\\/", KEY_NS_USER, "\0tests\0plugin\0\\\\/");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\/", ELEKTRA_NS_USER, "\0tests\0plugin\0/");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\", ELEKTRA_NS_USER, "\0tests\0plugin\0\\");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\/", ELEKTRA_NS_USER, "\0tests\0plugin\0\\/");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\\\", ELEKTRA_NS_USER, "\0tests\0plugin\0\\\\");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\\\\\/", ELEKTRA_NS_USER, "\0tests\0plugin\0\\\\/");
 
-	TEST_UNESCAPE_OK ("/abc/%def/ghi", KEY_NS_CASCADING, "\0abc\0%def\0ghi");
-	TEST_UNESCAPE_OK ("/abc/%d%ef%/ghi", KEY_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
-	TEST_UNESCAPE_OK ("/abc/%def%/ghi", KEY_NS_CASCADING, "\0abc\0%def%\0ghi");
-	TEST_UNESCAPE_OK ("/abc/d%ef/ghi", KEY_NS_CASCADING, "\0abc\0d%ef\0ghi");
+	TEST_UNESCAPE_OK ("/abc/%def/ghi", ELEKTRA_NS_CASCADING, "\0abc\0%def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/%d%ef%/ghi", ELEKTRA_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
+	TEST_UNESCAPE_OK ("/abc/%def%/ghi", ELEKTRA_NS_CASCADING, "\0abc\0%def%\0ghi");
+	TEST_UNESCAPE_OK ("/abc/d%ef/ghi", ELEKTRA_NS_CASCADING, "\0abc\0d%ef\0ghi");
 
-	TEST_UNESCAPE_OK ("/abc/\\%def/ghi", KEY_NS_CASCADING, "\0abc\0%def\0ghi");
-	TEST_UNESCAPE_OK ("/abc/\\%d%ef%/ghi", KEY_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
-	TEST_UNESCAPE_OK ("/abc/\\%def%/ghi", KEY_NS_CASCADING, "\0abc\0%def%\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\%def/ghi", ELEKTRA_NS_CASCADING, "\0abc\0%def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\%d%ef%/ghi", ELEKTRA_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\%def%/ghi", ELEKTRA_NS_CASCADING, "\0abc\0%def%\0ghi");
 }
 
 #undef TEST_UNESCAPE_OK

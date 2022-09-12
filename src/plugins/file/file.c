@@ -23,12 +23,12 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/file"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/file", KEY_VALUE, "file plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/file/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/file/exports/get", KEY_FUNC, elektraFileGet, KEY_END),
-			       keyNew ("system:/elektra/modules/file/exports/set", KEY_FUNC, elektraFileSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/file", ELEKTRA_KEY_VALUE, "file plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/file/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/file/exports/get", ELEKTRA_KEY_FUNC, elektraFileGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/file/exports/set", ELEKTRA_KEY_FUNC, elektraFileSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/file/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/file/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -38,9 +38,9 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	short binary = 0;
 	short info = 0;
 	ElektraKeyset * config = elektraPluginGetConfig (handle);
-	ElektraKey * lookup = ksLookupByName (config, "/info", KDB_O_NONE);
+	ElektraKey * lookup = ksLookupByName (config, "/info", ELEKTRA_KDB_O_NONE);
 	if (lookup) info = 1;
-	lookup = ksLookupByName (config, "/binary", KDB_O_NONE);
+	lookup = ksLookupByName (config, "/binary", ELEKTRA_KDB_O_NONE);
 	if (lookup) binary = 1;
 
 	const char * fileName = keyString (parentKey);
@@ -95,7 +95,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	}
 	fclose (fp);
 
-	ElektraKey * key = keyNew (keyName (parentKey), KEY_END);
+	ElektraKey * key = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 	if (binary)
 	{
 		keySetBinary (key, (const void *) buffer, (size_t) fileSize);
@@ -134,7 +134,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 {
 	// set all keys
 	// this function is optional
-	const ElektraKey * key = ksLookup (returned, parentKey, KDB_O_NONE);
+	const ElektraKey * key = ksLookup (returned, parentKey, ELEKTRA_KDB_O_NONE);
 	if (!key) return 0;
 	const char * fileName = keyString (parentKey);
 

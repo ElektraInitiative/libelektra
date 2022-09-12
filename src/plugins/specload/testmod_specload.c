@@ -56,22 +56,22 @@ static void test_basics (bool directFile)
 {
 	printf ("test basics %s\n", directFile ? "directFile" : "");
 
-	ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/basics.quickdump"), KEY_END);
+	ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_VALUE, srcdir_file ("specload/basics.quickdump"), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (directFile)
 	{
-		conf = ksNew (2, keyNew ("/file", KEY_VALUE, srcdir_file ("specload/spec.quickdump"), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/file", ELEKTRA_KEY_VALUE, srcdir_file ("specload/spec.quickdump"), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", ELEKTRA_KEY_VALUE, bindir_file (TESTAPP_NAME), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
 
 	PLUGIN_OPEN ("specload");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * defaultSpec = DEFAULT_SPEC;
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
@@ -93,22 +93,22 @@ static void test_newfile (bool directFile)
 
 	exit_if_fail (access (srcdir_file ("specload/new.quickdump"), F_OK) == -1, "srcdir_file specload/new.quickdump shouldn't exist");
 
-	ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/new.quickdump"), KEY_END);
+	ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_VALUE, srcdir_file ("specload/new.quickdump"), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (directFile)
 	{
-		conf = ksNew (2, keyNew ("/file", KEY_VALUE, srcdir_file ("specload/spec.quickdump"), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/file", ELEKTRA_KEY_VALUE, srcdir_file ("specload/spec.quickdump"), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", ELEKTRA_KEY_VALUE, bindir_file (TESTAPP_NAME), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
 
 	PLUGIN_OPEN ("specload");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * defaultSpec = DEFAULT_SPEC;
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
@@ -130,15 +130,15 @@ static void test_add (bool directFile)
 {
 	printf ("test add %s\n", directFile ? "directFile" : "");
 
-	ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/add.quickdump"), KEY_END);
+	ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_VALUE, srcdir_file ("specload/add.quickdump"), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (directFile)
 	{
-		conf = ksNew (2, keyNew ("/file", KEY_VALUE, srcdir_file ("specload/spec.quickdump"), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/file", ELEKTRA_KEY_VALUE, srcdir_file ("specload/spec.quickdump"), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", ELEKTRA_KEY_VALUE, bindir_file (TESTAPP_NAME), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
@@ -147,8 +147,8 @@ static void test_add (bool directFile)
 	PLUGIN_OPEN ("specload");
 
 	FILE * backup = backupFile (srcdir_file ("specload/add.quickdump"));
-	ElektraKeyset * ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_VALUE, "0", KEY_END));
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END));
 	ElektraKeyset * orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "adding values should fail");
 	compare_keyset (orig, ks);
@@ -157,8 +157,8 @@ static void test_add (bool directFile)
 	restoreBackup (backup, srcdir_file ("specload/add.quickdump"));
 
 	backup = backupFile (srcdir_file ("specload/add.quickdump"));
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_META, "description", "Lorem ipsum", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", ELEKTRA_KEY_META, "description", "Lorem ipsum", ELEKTRA_KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding description should work");
 	compare_keyset (orig, ks);
@@ -167,8 +167,8 @@ static void test_add (bool directFile)
 	restoreBackup (backup, srcdir_file ("specload/add.quickdump"));
 
 	backup = backupFile (srcdir_file ("specload/add.quickdump"));
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/newkey", ELEKTRA_KEY_META, "opt/help", "Lorem ipsum opt", ELEKTRA_KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding opt/help should work");
 	compare_keyset (orig, ks);
@@ -184,15 +184,15 @@ static void test_edit (bool directFile)
 {
 	printf ("test edit %s\n", directFile ? "directFile" : "");
 
-	ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/edit.quickdump"), KEY_END);
+	ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_VALUE, srcdir_file ("specload/edit.quickdump"), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (directFile)
 	{
-		conf = ksNew (2, keyNew ("/file", KEY_VALUE, srcdir_file ("specload/spec.quickdump"), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/file", ELEKTRA_KEY_VALUE, srcdir_file ("specload/spec.quickdump"), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", ELEKTRA_KEY_VALUE, bindir_file (TESTAPP_NAME), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
@@ -201,9 +201,9 @@ static void test_edit (bool directFile)
 	PLUGIN_OPEN ("specload");
 
 	FILE * backup = backupFile (srcdir_file ("specload/edit.quickdump"));
-	ElektraKeyset * ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "1", KEY_META, "description", "Lorem ipsum", KEY_META, "opt/help",
-				 "Lorem ipsum opt", KEY_END));
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_META, "description", "Lorem ipsum", ELEKTRA_KEY_META, "opt/help",
+				 "Lorem ipsum opt", ELEKTRA_KEY_END));
 	ElektraKeyset * orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "changing values should fail");
 	compare_keyset (orig, ks);
@@ -212,9 +212,9 @@ static void test_edit (bool directFile)
 	restoreBackup (backup, srcdir_file ("specload/edit.quickdump"));
 
 	backup = backupFile (srcdir_file ("specload/edit.quickdump"));
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "description", "Lorem ipsum edit", KEY_META, "opt/help",
-				 "Lorem ipsum opt", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_META, "description", "Lorem ipsum edit", ELEKTRA_KEY_META, "opt/help",
+				 "Lorem ipsum opt", ELEKTRA_KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing description should work");
 	compare_keyset (orig, ks);
@@ -223,9 +223,9 @@ static void test_edit (bool directFile)
 	restoreBackup (backup, srcdir_file ("specload/edit.quickdump"));
 
 	backup = backupFile (srcdir_file ("specload/edit.quickdump"));
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "description", "Lorem ipsum", KEY_META, "opt/help",
-				 "Lorem ipsum opt edit", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_META, "description", "Lorem ipsum", ELEKTRA_KEY_META, "opt/help",
+				 "Lorem ipsum opt edit", ELEKTRA_KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing opt/help should work");
 	compare_keyset (orig, ks);
@@ -241,15 +241,15 @@ static void test_remove (bool directFile)
 {
 	printf ("test remove %s\n", directFile ? "directFile" : "");
 
-	ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_VALUE, srcdir_file ("specload/remove.quickdump"), KEY_END);
+	ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_VALUE, srcdir_file ("specload/remove.quickdump"), ELEKTRA_KEY_END);
 	ElektraKeyset * conf;
 	if (directFile)
 	{
-		conf = ksNew (2, keyNew ("/file", KEY_VALUE, srcdir_file ("specload/spec.quickdump"), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/file", ELEKTRA_KEY_VALUE, srcdir_file ("specload/spec.quickdump"), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", ELEKTRA_KEY_VALUE, bindir_file (TESTAPP_NAME), ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
@@ -258,9 +258,9 @@ static void test_remove (bool directFile)
 	PLUGIN_OPEN ("specload");
 
 	FILE * backup = backupFile (srcdir_file ("specload/remove.quickdump"));
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	ksAppendKey (ks,
-		     keyNew (PARENT_KEY "/key", KEY_META, "description", "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+		     keyNew (PARENT_KEY "/key", ELEKTRA_KEY_META, "description", "Lorem ipsum", ELEKTRA_KEY_META, "opt/help", "Lorem ipsum opt", ELEKTRA_KEY_END));
 	ElektraKeyset * orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "removing values should fail");
 	compare_keyset (orig, ks);
@@ -269,8 +269,8 @@ static void test_remove (bool directFile)
 	restoreBackup (backup, srcdir_file ("specload/remove.quickdump"));
 
 	backup = backupFile (srcdir_file ("specload/remove.quickdump"));
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_META, "opt/help", "Lorem ipsum opt", ELEKTRA_KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "removing description should work");
 	compare_keyset (orig, ks);
@@ -279,8 +279,8 @@ static void test_remove (bool directFile)
 	restoreBackup (backup, srcdir_file ("specload/remove.quickdump"));
 
 	backup = backupFile (srcdir_file ("specload/remove.quickdump"));
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_VALUE, "0", KEY_META, "description", "Lorem ipsum", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_META, "description", "Lorem ipsum", ELEKTRA_KEY_END));
 	orig = ksDup (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "removing opt/help should work");
 	compare_keyset (orig, ks);

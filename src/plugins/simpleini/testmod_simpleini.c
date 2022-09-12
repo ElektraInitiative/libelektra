@@ -25,20 +25,20 @@ static void test_readFormat (const char * format, const char * fileContent, int 
 		fclose (fh);
 	}
 
-	ElektraKey * parentKey = keyNew ("user:/tests/simpleini", KEY_VALUE, tmpFile, KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/simpleini", ELEKTRA_KEY_VALUE, tmpFile, ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	if (format)
 	{
-		conf = ksNew (1, keyNew ("system:/format", KEY_VALUE, format, KEY_END), KS_END);
+		conf = ksNew (1, keyNew ("system:/format", ELEKTRA_KEY_VALUE, format, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	}
 	else
 	{
-		conf = ksNew (0, KS_END);
+		conf = ksNew (0, ELEKTRA_KS_END);
 	}
 
 	PLUGIN_OPEN ("simpleini");
 
-	ElektraKeyset * ks = ksNew (numKeys, KS_END);
+	ElektraKeyset * ks = ksNew (numKeys, ELEKTRA_KS_END);
 	ElektraKey * key = 0;
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
@@ -46,7 +46,7 @@ static void test_readFormat (const char * format, const char * fileContent, int 
 	ElektraKey * lookup = 0;
 	for (int i = 0; i < numKeys; i++)
 	{
-		lookup = keyNew ("user:/tests/simpleini", KEY_END);
+		lookup = keyNew ("user:/tests/simpleini", ELEKTRA_KEY_END);
 		keyAddBaseName (lookup, keys[i]);
 		printf ("testing key '%s'\n", keyBaseName (lookup));
 		succeed_if ((key = ksLookup (ks, lookup, 0)) != NULL, "key not found");
@@ -61,11 +61,11 @@ static void test_readFormat (const char * format, const char * fileContent, int 
 
 static void test_formatNotAccepted (const char * format)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/simpleini", KEY_VALUE, elektraFilename (), KEY_END);
-	ElektraKeyset * conf = ksNew (1, keyNew ("system:/format", KEY_VALUE, format, KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/simpleini", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (1, keyNew ("system:/format", ELEKTRA_KEY_VALUE, format, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN ("simpleini");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != 1, "kdbGet was successful for an invalid format");
 

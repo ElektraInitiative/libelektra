@@ -27,7 +27,7 @@ static void test_ctor (void)
 	key = gelektra_key_new ("wrongname", GELEKTRA_KEY_END);
 	succeed_if (key == NULL, "created invalid key");
 
-	ElektraKey * ckey = keyNew ("/", KEY_END);
+	ElektraKey * ckey = keyNew ("/", ELEKTRA_KEY_END);
 	key = gelektra_key_make (ckey);
 	succeed_if (key->key == ckey, "new key not wrapped");
 	g_object_unref (key);
@@ -114,7 +114,7 @@ static void test_basic (void)
 {
 	GElektraKey * key;
 
-	key = gelektra_key_dup (g_key, KEY_CP_ALL);
+	key = gelektra_key_dup (g_key, ELEKTRA_KEY_CP_ALL);
 	gelektra_key_incref (key);
 	succeed_if (gelektra_key_getref (key) == 2, "refcount should be 2");
 	succeed_if (gelektra_key_getref (g_key) == 1, "refcount should be still 1");
@@ -124,7 +124,7 @@ static void test_basic (void)
 
 	gchar * name;
 	key = gelektra_key_new ("user:/bar", GELEKTRA_KEY_END);
-	gelektra_key_copy (g_key, key, KEY_CP_ALL);
+	gelektra_key_copy (g_key, key, ELEKTRA_KEY_CP_ALL);
 	g_object_get (key, "name", &name, NULL);
 	succeed_if (!strcmp (name, "user:/key"), "wrong value");
 	g_free (name);
@@ -142,7 +142,7 @@ static void test_operators (void)
 	succeed_if (!gelektra_key_equal (g_key, g_bkey), "keys shouldn't be equal");
 	succeed_if (gelektra_key_cmp (g_key, g_bkey) != 0, "keys shouldn't be equal");
 
-	GElektraKey * key = gelektra_key_dup (g_key, KEY_CP_ALL);
+	GElektraKey * key = gelektra_key_dup (g_key, ELEKTRA_KEY_CP_ALL);
 	succeed_if (gelektra_key_equal (g_key, key), "keys should be equal");
 	succeed_if (gelektra_key_cmp (g_key, key) == 0, "keys should be equal");
 	g_object_unref (key);

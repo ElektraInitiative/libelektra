@@ -51,14 +51,14 @@ int elektraLengthGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned E
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/length"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/length", KEY_VALUE, "length plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/length/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/length/exports/get", KEY_FUNC, elektraLengthGet, KEY_END),
-			       keyNew ("system:/elektra/modules/length/exports/set", KEY_FUNC, elektraLengthSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/length", ELEKTRA_KEY_VALUE, "length plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/length/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/length/exports/get", ELEKTRA_KEY_FUNC, elektraLengthGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/length/exports/set", ELEKTRA_KEY_FUNC, elektraLengthSet, ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
 
-			       keyNew ("system:/elektra/modules/length/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/length/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

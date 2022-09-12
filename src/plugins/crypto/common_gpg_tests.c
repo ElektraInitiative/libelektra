@@ -11,7 +11,7 @@ static int gpg_available (ElektraKeyset * conf)
 {
 	int available = 0;
 	char * gpgPath = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
 
 	int gpg_search_result = ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (&gpgPath, conf, parentKey);
 	if (gpg_search_result == 1)

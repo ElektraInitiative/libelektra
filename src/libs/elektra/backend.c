@@ -56,7 +56,7 @@ ElektraKey * backendGetMountpoint (const Plugin * backend)
  */
 static void appendKeyToBackendKs (ElektraKey * mp, const char * nameEnding, ElektraKeyset * config, const char * value)
 {
-	ElektraKey * key = keyDup (mp, KEY_CP_ALL);
+	ElektraKey * key = keyDup (mp, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, nameEnding);
 	keySetString (key, value);
 	ksAppendKey (config, key);
@@ -72,7 +72,7 @@ static void appendKeyToBackendKs (ElektraKey * mp, const char * nameEnding, Elek
  */
 static Plugin * backendOpenMissing (ElektraKeyset * global, ElektraKeyset * modules, ElektraKey * mp, ElektraKey * errorKey)
 {
-	ElektraKeyset * missingConfig = ksNew (12, KS_END);
+	ElektraKeyset * missingConfig = ksNew (12, ELEKTRA_KS_END);
 
 	appendKeyToBackendKs (mp, "", missingConfig, 0);
 	appendKeyToBackendKs (mp, "/config", missingConfig, 0);
@@ -167,42 +167,42 @@ Plugin * backendOpenDefault (ElektraKeyset * modules, ElektraKeyset * global, co
 	keySetName (errorKey, "/");
 
 	ElektraKeyset * config = ksNew (
-		30, keyNew ("system:/elektra/mountpoints/default", KEY_END), keyNew ("system:/elektra/mountpoints/default/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "system:/elektra/mountpoints/default", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/config/path", KEY_VALUE, file, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/error", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/error/rollback", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/error/rollback/#0", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get/getresolver", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get/getresolver/#0", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get/getstorage", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get/getstorage/#0", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/commit", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/commit/#0", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/setresolver", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/setresolver/#0", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/setstorage", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/setstorage/#0", KEY_END),
-		keyNew ("system:/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
+		30, keyNew ("system:/elektra/mountpoints/default", ELEKTRA_KEY_END), keyNew ("system:/elektra/mountpoints/default/config", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/config/mountpoint", ELEKTRA_KEY_VALUE, "system:/elektra/mountpoints/default", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/config/path", ELEKTRA_KEY_VALUE, file, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/error", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/error/rollback", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/error/rollback/#0", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/error/rollback/#0/label", ELEKTRA_KEY_VALUE, KDB_RESOLVER, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/error/rollback/#0/name", ELEKTRA_KEY_VALUE, KDB_RESOLVER, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get/getresolver", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get/getresolver/#0", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get/getresolver/#0/reference", ELEKTRA_KEY_VALUE, KDB_RESOLVER, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get/getstorage", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get/getstorage/#0", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get/getstorage/#0/label", ELEKTRA_KEY_VALUE, KDB_STORAGE, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/get/getstorage/#0/name", ELEKTRA_KEY_VALUE, KDB_STORAGE, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/commit", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/commit/#0", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/commit/#0/reference", ELEKTRA_KEY_VALUE, KDB_RESOLVER, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/setresolver", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/setresolver/#0", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/setresolver/#0/reference", ELEKTRA_KEY_VALUE, KDB_RESOLVER, ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/setstorage", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/setstorage/#0", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/mountpoints/default/set/setstorage/#0/reference", ELEKTRA_KEY_VALUE, KDB_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 #ifdef ENABLE_TRACER
 	ElektraKeyset * tracerConfig =
-		ksNew (10, keyNew ("/default/error/prerollback", KEY_END), keyNew ("/default/error/prerollback/#0", KEY_END),
-		       keyNew ("/default/error/prerollback/#0/label", KEY_VALUE, "tracer", KEY_END),
-		       keyNew ("/default/error/prerollback/#0/name", KEY_VALUE, "tracer", KEY_END),
-		       keyNew ("/default/get/pregetstorage", KEY_END), keyNew ("/default/get/pregetstorage/#0", KEY_END),
-		       keyNew ("/default/get/pregetstorage/#0/reference", KEY_VALUE, "tracer", KEY_END),
-		       keyNew ("/default/set/presetstorage", KEY_END), keyNew ("/default/set/presetstorage/#0", KEY_END),
-		       keyNew ("/default/set/presetstorage/#0/reference", KEY_VALUE, "tracer"));
+		ksNew (10, keyNew ("/default/error/prerollback", ELEKTRA_KEY_END), keyNew ("/default/error/prerollback/#0", ELEKTRA_KEY_END),
+		       keyNew ("/default/error/prerollback/#0/label", ELEKTRA_KEY_VALUE, "tracer", ELEKTRA_KEY_END),
+		       keyNew ("/default/error/prerollback/#0/name", ELEKTRA_KEY_VALUE, "tracer", ELEKTRA_KEY_END),
+		       keyNew ("/default/get/pregetstorage", ELEKTRA_KEY_END), keyNew ("/default/get/pregetstorage/#0", ELEKTRA_KEY_END),
+		       keyNew ("/default/get/pregetstorage/#0/reference", ELEKTRA_KEY_VALUE, "tracer", ELEKTRA_KEY_END),
+		       keyNew ("/default/set/presetstorage", ELEKTRA_KEY_END), keyNew ("/default/set/presetstorage/#0", ELEKTRA_KEY_END),
+		       keyNew ("/default/set/presetstorage/#0/reference", ELEKTRA_KEY_VALUE, "tracer"));
 	ksAppend (config, tracerConfig);
 #endif
 
@@ -225,14 +225,14 @@ Plugin * backendOpenDefault (ElektraKeyset * modules, ElektraKeyset * global, co
  */
 Plugin * backendOpenModules (ElektraKeyset * modules, ElektraKeyset * global, ElektraKey * errorKey)
 {
-	ElektraKey * mp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
+	ElektraKey * mp = keyNew ("system:/elektra/modules", ELEKTRA_KEY_VALUE, "modules", ELEKTRA_KEY_END);
 	ElektraKey * cur = ksCurrent (modules);
 
 	keySetName (errorKey, keyName (cur));
 
 	keyAddBaseName (mp, keyBaseName (cur));
 
-	ElektraKeyset * moduleConfig = ksNew (12, KS_END);
+	ElektraKeyset * moduleConfig = ksNew (12, ELEKTRA_KS_END);
 
 	appendKeyToBackendKs (mp, "", moduleConfig, 0);
 	appendKeyToBackendKs (mp, "/config", moduleConfig, 0);
@@ -273,15 +273,15 @@ Plugin * backendOpenModules (ElektraKeyset * modules, ElektraKeyset * global, El
 Plugin * backendOpenVersion (ElektraKeyset * global, ElektraKeyset * modules, ElektraKey * errorKey)
 {
 	ElektraKeyset * versionConfig =
-		ksNew (12, keyNew ("system:/elektra/version", KEY_END), keyNew ("system:/elektra/version/config", KEY_END),
-		       keyNew ("system:/elektra/version/config/mountpoint", KEY_VALUE, "system:/elektra/version", KEY_END),
-		       keyNew ("system:/elektra/version/get", KEY_END), keyNew ("system:/elektra/version/get/getstorage", KEY_END),
-		       keyNew ("system:/elektra/version/get/getstorage/#0", KEY_END),
-		       keyNew ("system:/elektra/version/get/getstorage/#0/label", KEY_VALUE, "version", KEY_END),
-		       keyNew ("system:/elektra/version/get/getstorage/#0/name", KEY_VALUE, "version", KEY_END),
-		       keyNew ("system:/elektra/version/set", KEY_END), keyNew ("system:/elektra/version/set/setstorage", KEY_END),
-		       keyNew ("system:/elektra/version/set/setstorage/#0", KEY_END),
-		       keyNew ("system:/elektra/version/set/setstorage/#0/reference", KEY_VALUE, "version", KEY_END), KS_END);
+		ksNew (12, keyNew ("system:/elektra/version", ELEKTRA_KEY_END), keyNew ("system:/elektra/version/config", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/config/mountpoint", ELEKTRA_KEY_VALUE, "system:/elektra/version", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/get", ELEKTRA_KEY_END), keyNew ("system:/elektra/version/get/getstorage", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/get/getstorage/#0", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/get/getstorage/#0/label", ELEKTRA_KEY_VALUE, "version", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/get/getstorage/#0/name", ELEKTRA_KEY_VALUE, "version", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/set", ELEKTRA_KEY_END), keyNew ("system:/elektra/version/set/setstorage", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/set/setstorage/#0", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/version/set/setstorage/#0/reference", ELEKTRA_KEY_VALUE, "version", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	Plugin * backend = elektraPluginOpen ("backend", modules, versionConfig, errorKey);
 	if (backend == NULL)
@@ -313,23 +313,23 @@ int backendUpdateSize (Split * split, int index, ElektraKey * parent, int size)
 	elektraNamespace namespace = keyGetNamespace (parent);
 	switch (namespace)
 	{
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		split->specsizes[index] = size;
 		break;
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		split->dirsizes[index] = size;
 		break;
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		split->usersizes[index] = size;
 		break;
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		split->systemsizes[index] = size;
 		break;
-	case KEY_NS_PROC:
-	case KEY_NS_META:
-	case KEY_NS_CASCADING:
-	case KEY_NS_NONE:
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_PROC:
+	case ELEKTRA_NS_META:
+	case ELEKTRA_NS_CASCADING:
+	case ELEKTRA_NS_NONE:
+	case ELEKTRA_NS_DEFAULT:
 		ELEKTRA_ASSERT (0, "invalid namespace %d", namespace);
 		return -1;
 	}

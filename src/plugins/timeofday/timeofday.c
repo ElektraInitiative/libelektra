@@ -122,15 +122,15 @@ int elektraTimeofdayGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/timeofday"))
 	{
 		ElektraKeyset * pluginConfig = ksNew (
-			30, keyNew ("system:/elektra/modules/timeofday", KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports", KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/open", KEY_FUNC, elektraTimeofdayOpen, KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/close", KEY_FUNC, elektraTimeofdayClose, KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/get", KEY_FUNC, elektraTimeofdayGet, KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/set", KEY_FUNC, elektraTimeofdaySet, KEY_END),
-			keyNew ("system:/elektra/modules/timeofday/exports/error", KEY_FUNC, elektraTimeofdayError, KEY_END),
+			30, keyNew ("system:/elektra/modules/timeofday", ELEKTRA_KEY_VALUE, "timeofday plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/open", ELEKTRA_KEY_FUNC, elektraTimeofdayOpen, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/close", ELEKTRA_KEY_FUNC, elektraTimeofdayClose, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/get", ELEKTRA_KEY_FUNC, elektraTimeofdayGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/set", ELEKTRA_KEY_FUNC, elektraTimeofdaySet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/error", ELEKTRA_KEY_FUNC, elektraTimeofdayError, ELEKTRA_KEY_END),
 #include "readme_timeofday.c"
-			keyNew ("system:/elektra/modules/timeofday/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/timeofday/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 

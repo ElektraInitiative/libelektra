@@ -24,11 +24,11 @@
 
 void test_readHostsSimple (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
@@ -61,14 +61,14 @@ void test_readHostsSimple (char * fileName)
 
 void test_readInvalidIpAddress (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
 	succeed_if (strcmp ("noipaddress", keyValue (key)) == 0, "address not correct");
 
@@ -80,30 +80,30 @@ void test_readInvalidIpAddress (char * fileName)
 
 void test_mixedAddresses (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv4host not found");
 	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias1", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias1", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv4alias1 not found");
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias2", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/ipv4host/ipv4alias2", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv4alias2 not found");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv6host not found");
 	succeed_if (strcmp ("::1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias1", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias1", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv6alias1 not found");
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias2", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv6/ipv6host/ipv6alias2", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "ipv6alias2 not found");
 
 	ksDel (ks);
@@ -114,25 +114,25 @@ void test_mixedAddresses (char * fileName)
 
 void test_duplicateEntries (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/hosts/ipv4/localhost", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
 	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "hostname host not found");
 	succeed_if (strcmp ("192.168.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias1", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias1", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "alias1 not found");
-	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias2", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/hosts/ipv4/host/alias2", ELEKTRA_KDB_O_NONE);
 	succeed_if (key, "alias2 not found");
 
 	ksDel (ks);
@@ -143,25 +143,25 @@ void test_duplicateEntries (char * fileName)
 
 void test_duplicateOrder (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
 	ElektraKeyset *ks = ksNew (20,
 			keyNew ("user:/tests/hosts/ipv4/host1",
-					KEY_VALUE, "192.168.0.1",
-					KEY_META, "order", "10",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "192.168.0.1",
+					ELEKTRA_KEY_META, "order", "10",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv4/host2",
-					KEY_VALUE, "192.168.0.2",
-					KEY_META, "order", "20",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "192.168.0.2",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv4/host3",
-					KEY_VALUE, "192.168.0.3",
-					KEY_META, "order", "20",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_VALUE, "192.168.0.3",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 	// clang-format on
 
 	ksAppendKey (ks, parentKey);
@@ -180,41 +180,41 @@ void test_duplicateOrder (char * fileName)
 
 void test_writeHostsSimple (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
 	ElektraKeyset *ks = ksNew (20,
 			keyNew ("user:/tests/hosts/ipv4/localhost",
-					KEY_VALUE, "127.0.0.1",
-					KEY_META, "order", "10",
-					KEY_META, "comment/#0", "",
-					KEY_META, "comment/#1", " these are for ipv4",
-					KEY_META, "comment/#1/start", "#",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "127.0.0.1",
+					ELEKTRA_KEY_META, "order", "10",
+					ELEKTRA_KEY_META, "comment/#0", "",
+					ELEKTRA_KEY_META, "comment/#1", " these are for ipv4",
+					ELEKTRA_KEY_META, "comment/#1/start", "#",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv4/testhost",
-					KEY_VALUE, "127.0.1.1",
-					KEY_META, "order", "20",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "127.0.1.1",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv4/testhost/testhostalias",
-					KEY_END),
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv6/localhost",
-					KEY_VALUE, "::1",
-					KEY_META, "order", "30",
-					KEY_META, "comment/#0", "",
-					KEY_META, "comment/#1", " The following lines are desirable for IPv6 capable hosts",
-					KEY_META, "comment/#1/start", "#",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "::1",
+					ELEKTRA_KEY_META, "order", "30",
+					ELEKTRA_KEY_META, "comment/#0", "",
+					ELEKTRA_KEY_META, "comment/#1", " The following lines are desirable for IPv6 capable hosts",
+					ELEKTRA_KEY_META, "comment/#1/start", "#",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv6/localhost/ip6-localhost",
-					KEY_END),
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv6/localhost/ip6-loopback",
-					KEY_END),
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv6/ip6-allnodes",
-					KEY_VALUE, "ff02::1",
-					KEY_META, "order", "40",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_VALUE, "ff02::1",
+					ELEKTRA_KEY_META, "order", "40",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 	// clang-format on
 
 	ksAppendKey (ks, parentKey);
@@ -233,11 +233,11 @@ void test_writeHostsSimple (char * fileName)
 
 void test_readHostsComments (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
@@ -357,41 +357,41 @@ void test_readHostsComments (char * fileName)
 
 void test_writeHostsComments (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/hosts", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("hosts");
 
 	// clang-format off
 	ElektraKeyset *ks = ksNew (20,
 			keyNew ("user:/tests/hosts/ipv4/localhost",
-					KEY_VALUE, "127.0.0.1",
-					KEY_META, "order", "10",
-					KEY_META, "comment/#0", "inline comment0",
-					KEY_META, "comment/#0/space", "3",
-					KEY_META, "comment/#0/start", "#",
-					KEY_META, "comment/#1", "",
-					KEY_META, "comment/#2", "",
-					KEY_META, "comment/#3", " comment for localhost",
-					KEY_META, "comment/#3/start", "#",
-					KEY_META, "comment/#4", "",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "127.0.0.1",
+					ELEKTRA_KEY_META, "order", "10",
+					ELEKTRA_KEY_META, "comment/#0", "inline comment0",
+					ELEKTRA_KEY_META, "comment/#0/space", "3",
+					ELEKTRA_KEY_META, "comment/#0/start", "#",
+					ELEKTRA_KEY_META, "comment/#1", "",
+					ELEKTRA_KEY_META, "comment/#2", "",
+					ELEKTRA_KEY_META, "comment/#3", " comment for localhost",
+					ELEKTRA_KEY_META, "comment/#3/start", "#",
+					ELEKTRA_KEY_META, "comment/#4", "",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv4/testentry",
-					KEY_VALUE, "192.168.0.1",
-					KEY_META, "order", "20",
-					KEY_META, "comment/#0", " inline comment1",
-					KEY_META, "comment/#0/space", "1",
-					KEY_META, "comment/#0/start", "#",
-					KEY_META, "comment/#1", "",
-					KEY_META, "comment/#1/space", "2",
-					KEY_META, "comment/#2", " comment for testentry",
-					KEY_META, "comment/#2/space", "2",
-					KEY_META, "comment/#2/start", "#",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "192.168.0.1",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_META, "comment/#0", " inline comment1",
+					ELEKTRA_KEY_META, "comment/#0/space", "1",
+					ELEKTRA_KEY_META, "comment/#0/start", "#",
+					ELEKTRA_KEY_META, "comment/#1", "",
+					ELEKTRA_KEY_META, "comment/#1/space", "2",
+					ELEKTRA_KEY_META, "comment/#2", " comment for testentry",
+					ELEKTRA_KEY_META, "comment/#2/space", "2",
+					ELEKTRA_KEY_META, "comment/#2/start", "#",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv4/testentry/alias1",
-					KEY_END),
+					ELEKTRA_KEY_END),
 			keyNew ("user:/tests/hosts/ipv4/testentry/alias2",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 	// clang-format on
 
 	keySetMeta (parentKey, "comment/#1", "");
@@ -416,7 +416,7 @@ static void test_format (void)
 {
 	printf ("Test key format\n");
 
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 	keySetString (k, "huhu");
 	succeed_if_same_string (keyString (k), "huhu");
 

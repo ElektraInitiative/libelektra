@@ -60,7 +60,7 @@ char * elektraResolveReference (const char * reference, const ElektraKey * baseK
 		return NULL;
 	}
 
-	ElektraKey * fullReference = keyNew ("/", KEY_END);
+	ElektraKey * fullReference = keyNew ("/", ELEKTRA_KEY_END);
 
 	if (elektraStrNCmp (reference, "@/", 2) == 0)
 	{

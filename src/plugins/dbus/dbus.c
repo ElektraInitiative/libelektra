@@ -36,14 +36,14 @@ int elektraDbusGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbus"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/dbus", KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/open", KEY_FUNC, elektraDbusOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/get", KEY_FUNC, elektraDbusGet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/set", KEY_FUNC, elektraDbusSet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/close", KEY_FUNC, elektraDbusClose, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/dbus", ELEKTRA_KEY_VALUE, "dbus plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbus/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbus/exports/open", ELEKTRA_KEY_FUNC, elektraDbusOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbus/exports/get", ELEKTRA_KEY_FUNC, elektraDbusGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbus/exports/set", ELEKTRA_KEY_FUNC, elektraDbusSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dbus/exports/close", ELEKTRA_KEY_FUNC, elektraDbusClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/dbus/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/dbus/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -96,13 +96,13 @@ int elektraDbusSet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pare
 	ksRewind (returned);
 
 	ElektraKeyset * addedKeys = ksDup (returned);
-	ElektraKeyset * changedKeys = ksNew (0, KS_END);
-	ElektraKeyset * removedKeys = ksNew (0, KS_END);
+	ElektraKeyset * changedKeys = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * removedKeys = ksNew (0, ELEKTRA_KS_END);
 
 	ElektraKey * k = 0;
 	while ((k = ksNext (oldKeys)) != 0)
 	{
-		ElektraKey * p = ksLookup (addedKeys, k, KDB_O_POP);
+		ElektraKey * p = ksLookup (addedKeys, k, ELEKTRA_KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)
 		{

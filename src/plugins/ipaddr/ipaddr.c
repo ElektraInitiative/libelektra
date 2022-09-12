@@ -119,12 +119,12 @@ int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned E
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/ipaddr"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/ipaddr", KEY_VALUE, "ipaddr plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/ipaddr/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/ipaddr/exports/get", KEY_FUNC, elektraIpaddrGet, KEY_END),
-			       keyNew ("system:/elektra/modules/ipaddr/exports/set", KEY_FUNC, elektraIpaddrSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/ipaddr", ELEKTRA_KEY_VALUE, "ipaddr plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/ipaddr/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/ipaddr/exports/get", ELEKTRA_KEY_FUNC, elektraIpaddrGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/ipaddr/exports/set", ELEKTRA_KEY_FUNC, elektraIpaddrSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/ipaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/ipaddr/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

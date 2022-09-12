@@ -506,20 +506,20 @@ static const char * isAssign (ElektraKey * key, char * expr, ElektraKey * parent
 		ElektraKey * lookupKey;
 		if (*firstPtr == '@')
 		{
-			lookupKey = keyDup (parentKey, KEY_CP_ALL);
+			lookupKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 			++firstPtr;
 			keyAddName (lookupKey, firstPtr);
 		}
 		else if (!strncmp (firstPtr, "..", 2) || !strncmp (firstPtr, ".", 1))
 		{
-			lookupKey = keyDup (key, KEY_CP_ALL);
+			lookupKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
 			keyAddName (lookupKey, firstPtr);
 		}
 		else
 		{
-			lookupKey = keyNew (firstPtr, KEY_END);
+			lookupKey = keyNew (firstPtr, ELEKTRA_KEY_END);
 		}
-		ElektraKey * assign = ksLookup (ks, lookupKey, KDB_O_NONE);
+		ElektraKey * assign = ksLookup (ks, lookupKey, ELEKTRA_KDB_O_NONE);
 		if (!assign)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Key %s not found", keyName (lookupKey));
@@ -891,12 +891,12 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * retu
 	{
 		ElektraKeyset * contract = ksNew (
 			30,
-			keyNew ("system:/elektra/modules/conditionals", KEY_VALUE, "conditionals plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/conditionals/exports", KEY_END),
-			keyNew ("system:/elektra/modules/conditionals/exports/get", KEY_FUNC, elektraConditionalsGet, KEY_END),
-			keyNew ("system:/elektra/modules/conditionals/exports/set", KEY_FUNC, elektraConditionalsSet, KEY_END),
+			keyNew ("system:/elektra/modules/conditionals", ELEKTRA_KEY_VALUE, "conditionals plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/conditionals/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/conditionals/exports/get", ELEKTRA_KEY_FUNC, elektraConditionalsGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/conditionals/exports/set", ELEKTRA_KEY_FUNC, elektraConditionalsSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/conditionals/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/conditionals/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

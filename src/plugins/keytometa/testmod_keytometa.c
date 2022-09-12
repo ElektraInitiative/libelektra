@@ -37,7 +37,7 @@ static ElektraKey * createMergingKey (int i)
 		fprintf (stderr, "Unable to create key attributes");
 		exit (EXIT_FAILURE);
 	}
-	ElektraKey * key = keyNew (name, KEY_VALUE, value, KEY_META, "order", order, KEY_END);
+	ElektraKey * key = keyNew (name, ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_META, "order", order, ELEKTRA_KEY_END);
 	elektraFree (name);
 	elektraFree (value);
 	elektraFree (order);
@@ -52,32 +52,32 @@ static ElektraKeyset* createSimpleTestKeys(void)
 	 */
 	return ksNew (20,
 			keyNew ("user:/normalkey1",
-					KEY_META, "order", "10", KEY_END),
+					ELEKTRA_KEY_META, "order", "10", ELEKTRA_KEY_END),
 			keyNew ("user:/convertkey1",
-					KEY_VALUE, "testvalue1",
-					KEY_META, "order", "20",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "next",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "testvalue1",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/normalkey2",
-					KEY_META, "order", "30",
-					KEY_END),
+					ELEKTRA_KEY_META, "order", "30",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/normalkey3",
-					KEY_META, "order", "40",
-					KEY_END),
+					ELEKTRA_KEY_META, "order", "40",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/convertkey2",
-					KEY_VALUE, "testvalue2",
-					KEY_META, "order", "50",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "previous",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "testvalue2",
+					ELEKTRA_KEY_META, "order", "50",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "previous",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/normalkey1/subkey",
-					KEY_VALUE, "testvalue3",
-					KEY_META, "order", "60",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "parent",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_VALUE, "testvalue3",
+					ELEKTRA_KEY_META, "order", "60",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "parent",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 }
 
 static ElektraKeyset* createMergeTestkeys(void)
@@ -85,7 +85,7 @@ static ElektraKeyset* createMergeTestkeys(void)
 	/* the keys to be converted are merged together
 	 * into a single metadata
 	 */
-	ElektraKeyset* ks = ksNew(0, KS_END);
+	ElektraKeyset* ks = ksNew(0, ELEKTRA_KS_END);
 	for (int i = 1; i <= 3; i++)
 	{
 		ElektraKey* key = createMergingKey (i);
@@ -94,9 +94,9 @@ static ElektraKeyset* createMergeTestkeys(void)
 		ksAppendKey (ks, key);
 	}
 	ksAppendKey (ks,
-			keyNew ("user:/normalkey1", KEY_META, "order", "10", KEY_END));
+			keyNew ("user:/normalkey1", ELEKTRA_KEY_META, "order", "10", ELEKTRA_KEY_END));
 	ksAppendKey (ks,
-			keyNew ("user:/normalkey2", KEY_META, "order", "20", KEY_END));
+			keyNew ("user:/normalkey2", ELEKTRA_KEY_META, "order", "20", ELEKTRA_KEY_END));
 	for (int i = 30; i <= 32; i++)
 	{
 		ElektraKey* key = createMergingKey (i);
@@ -114,35 +114,35 @@ static ElektraKeyset* createSkipMergeTestKeys(void)
 	 */
 	return ksNew (20,
 			keyNew ("user:/normalkey1",
-					KEY_META, "order", "10", KEY_END),
+					ELEKTRA_KEY_META, "order", "10", ELEKTRA_KEY_END),
 			keyNew ("user:/convertkey1",
-					KEY_VALUE, "meta line1",
-					KEY_META, "order", "20",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "previous",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "meta line1",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "previous",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/convertkey2",
-					KEY_VALUE, "meta line2",
-					KEY_META, "order", "30",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "next",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "meta line2",
+					ELEKTRA_KEY_META, "order", "30",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/convertkey3",
-					KEY_VALUE, "meta line3",
-					KEY_META, "order", "40",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "previous",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "meta line3",
+					ELEKTRA_KEY_META, "order", "40",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "previous",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/convertkey4",
-					KEY_VALUE, "meta line4",
-					KEY_META, "order", "50",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "next",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "meta line4",
+					ELEKTRA_KEY_META, "order", "50",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/normalkey2",
-					KEY_META, "order", "60",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_META, "order", "60",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 }
 
 static ElektraKeyset *createParentTestKeys(void)
@@ -153,105 +153,105 @@ static ElektraKeyset *createParentTestKeys(void)
 	 */
 	return ksNew (20,
 			keyNew ("user:/parentkey1",
-					KEY_META, "order", "10", KEY_END),
+					ELEKTRA_KEY_META, "order", "10", ELEKTRA_KEY_END),
 			keyNew ("user:/parentkey1/convertkeydirect",
-					KEY_VALUE, "testvalue1",
-					KEY_META, "order", "20",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "parent",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "testvalue1",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "parent",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/parentkey2",
-					KEY_META, "order", "30", KEY_END),
+					ELEKTRA_KEY_META, "order", "30", ELEKTRA_KEY_END),
 			keyNew ("user:/parentkey2/subparent/convertkeyhole",
-					KEY_VALUE, "testvalue2",
-					KEY_META, "order", "40",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "parent",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "testvalue2",
+					ELEKTRA_KEY_META, "order", "40",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "parent",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/parentkey3",
-					KEY_META, "order", "50",
-					KEY_END),
+					ELEKTRA_KEY_META, "order", "50",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/normalkey1",
-					KEY_META, "order", "60",
-					KEY_END),
+					ELEKTRA_KEY_META, "order", "60",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/parentkey3/convertkeyprev",
-					KEY_VALUE, "testvalue3",
-					KEY_META, "order", "70",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "previous",
-					KEY_META, "convert/append/samelevel", "",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "testvalue3",
+					ELEKTRA_KEY_META, "order", "70",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "previous",
+					ELEKTRA_KEY_META, "convert/append/samelevel", "",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/parentkey4",
-					KEY_META, "order", "80",
-					KEY_END),
+					ELEKTRA_KEY_META, "order", "80",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/parentkey4/convertkeynext",
-					KEY_VALUE, "testvalue4",
-					KEY_META, "order", "90",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "next",
-					KEY_META, "convert/append/samelevel", "",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "testvalue4",
+					ELEKTRA_KEY_META, "order", "90",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_META, "convert/append/samelevel", "",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/normalkey2",
-					KEY_META, "order", "100",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_META, "order", "100",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 }
 
 static ElektraKeyset* createDifferentMetaNameTestKeys(void)
 {
 	return ksNew (20,
 			keyNew ("user:/convertkey1",
-					KEY_VALUE, "meta line1",
-					KEY_META, "order", "10",
-					KEY_META, "convert/metaname", "testmeta1",
-					KEY_META, "convert/append", "next",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "meta line1",
+					ELEKTRA_KEY_META, "order", "10",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta1",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/convertkey2",
-					KEY_VALUE, "meta line2",
-					KEY_META, "order", "20",
-					KEY_META, "convert/metaname", "testmeta2",
-					KEY_META, "convert/append", "next",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "meta line2",
+					ELEKTRA_KEY_META, "order", "20",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta2",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/normalkey1",
-					KEY_META, "order", "30",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_META, "order", "30",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 }
 
 static ElektraKeyset* createSameLevelTestKeys(void)
 {
 	return ksNew (20,
 			keyNew ("user:/levelkey1",
-					KEY_META, "order", "10",
-					KEY_END),
+					ELEKTRA_KEY_META, "order", "10",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/levelkey1/convertkey1",
-					KEY_VALUE, "convertkey1value",
-					KEY_META, "order","20",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "next",
-					KEY_META, "convert/append/samelevel", "",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "convertkey1value",
+					ELEKTRA_KEY_META, "order","20",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_META, "convert/append/samelevel", "",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/levelkey1/childkey1",
-					KEY_META, "order", "30",
-					KEY_END),
+					ELEKTRA_KEY_META, "order", "30",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/levelkey1/convertkey2",
-					KEY_VALUE, "convertkey2value",
-					KEY_META, "order", "40",
-					KEY_META, "convert/metaname", "testmeta",
-					KEY_META, "convert/append", "next",
-					KEY_META, "convert/append/samelevel", "",
-					KEY_END),
+					ELEKTRA_KEY_VALUE, "convertkey2value",
+					ELEKTRA_KEY_META, "order", "40",
+					ELEKTRA_KEY_META, "convert/metaname", "testmeta",
+					ELEKTRA_KEY_META, "convert/append", "next",
+					ELEKTRA_KEY_META, "convert/append/samelevel", "",
+					ELEKTRA_KEY_END),
 			keyNew ("user:/levelkey2",
-					KEY_META, "order", "50",
-					KEY_END),
-			KS_END);
+					ELEKTRA_KEY_META, "order", "50",
+					ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 }
 // clang-format on
 
 void test_parentAppendMode (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	ElektraKeyset * ks = createParentTestKeys ();
@@ -313,8 +313,8 @@ void test_parentAppendMode (void)
 
 void test_simpleAppendModes (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 
@@ -361,8 +361,8 @@ void test_simpleAppendModes (void)
 
 void test_metaMerging (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	ElektraKeyset * ks = createMergeTestkeys ();
@@ -412,8 +412,8 @@ void test_metaMerging (void)
 
 void test_metaSkipMerge (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	ElektraKeyset * ks = createSkipMergeTestKeys ();
@@ -444,8 +444,8 @@ void test_metaSkipMerge (void)
 
 void test_differentMetaNames (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	ElektraKeyset * ks = createDifferentMetaNameTestKeys ();
@@ -473,8 +473,8 @@ void test_differentMetaNames (void)
 
 void test_appendSameLevel (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	ElektraKeyset * ks = createSameLevelTestKeys ();
@@ -507,8 +507,8 @@ void test_appendSameLevel (void)
 
 void test_restoreOnSet (void)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/keytometa", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	ElektraKeyset * ks = createSimpleTestKeys ();

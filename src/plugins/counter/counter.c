@@ -65,15 +65,15 @@ int elektraCounterGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/counter"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/counter", KEY_VALUE, "counter plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/open", KEY_FUNC, elektraCounterOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/close", KEY_FUNC, elektraCounterClose, KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/get", KEY_FUNC, elektraCounterGet, KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/set", KEY_FUNC, elektraCounterSet, KEY_END),
-			       keyNew ("system:/elektra/modules/counter/exports/error", KEY_FUNC, elektraCounterError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/counter", ELEKTRA_KEY_VALUE, "counter plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/open", ELEKTRA_KEY_FUNC, elektraCounterOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/close", ELEKTRA_KEY_FUNC, elektraCounterClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/get", ELEKTRA_KEY_FUNC, elektraCounterGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/set", ELEKTRA_KEY_FUNC, elektraCounterSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/counter/exports/error", ELEKTRA_KEY_FUNC, elektraCounterError, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/counter/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/counter/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

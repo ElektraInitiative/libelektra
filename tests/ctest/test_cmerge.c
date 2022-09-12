@@ -44,25 +44,25 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 {
 	printf ("Executing %s with our=%s their=%s base=%s, strategy=%d, expected_result=%s\n", __func__, our_value, their_value,
 		base_value, strategy, expected_result);
-	ElektraKey * our_root = keyNew ("user:/our", KEY_END);
-	ElektraKey * their_root = keyNew ("user:/their", KEY_END);
-	ElektraKey * base_root = keyNew ("user:/base", KEY_END);
-	ElektraKey * result_root = keyNew ("user:/result", KEY_END);
-	ElektraKey * informationKey = keyNew ("/", KEY_END);
-	ElektraKeyset * our = ksNew (0, KS_END);
-	ElektraKeyset * their = ksNew (0, KS_END);
-	ElektraKeyset * base = ksNew (0, KS_END);
+	ElektraKey * our_root = keyNew ("user:/our", ELEKTRA_KEY_END);
+	ElektraKey * their_root = keyNew ("user:/their", ELEKTRA_KEY_END);
+	ElektraKey * base_root = keyNew ("user:/base", ELEKTRA_KEY_END);
+	ElektraKey * result_root = keyNew ("user:/result", ELEKTRA_KEY_END);
+	ElektraKey * informationKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKeyset * our = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * their = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * base = ksNew (0, ELEKTRA_KS_END);
 	if (strcmp (our_value, "EMPTY") != 0)
 	{
-		ksAppendKey (our, keyNew ("user:/our/key", KEY_VALUE, our_value, KEY_END));
+		ksAppendKey (our, keyNew ("user:/our/key", ELEKTRA_KEY_VALUE, our_value, ELEKTRA_KEY_END));
 	}
 	if (strcmp (their_value, "EMPTY") != 0)
 	{
-		ksAppendKey (their, keyNew ("user:/their/key", KEY_VALUE, their_value, KEY_END));
+		ksAppendKey (their, keyNew ("user:/their/key", ELEKTRA_KEY_VALUE, their_value, ELEKTRA_KEY_END));
 	}
 	if (strcmp (base_value, "EMPTY") != 0)
 	{
-		ksAppendKey (base, keyNew ("user:/base/key", KEY_VALUE, base_value, KEY_END));
+		ksAppendKey (base, keyNew ("user:/base/key", ELEKTRA_KEY_VALUE, base_value, ELEKTRA_KEY_END));
 	}
 	ElektraKeyset * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy, informationKey);
 
@@ -139,14 +139,14 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 {
 	printf ("Executing %s with our=%s their=%s base=%s, strategy=%d, expected_result=%s\n", __func__, our_order, their_order,
 		base_order, strategy, expected_result);
-	ElektraKey * our_root = keyNew ("user:/our", KEY_END);
-	ElektraKey * their_root = keyNew ("user:/their", KEY_END);
-	ElektraKey * base_root = keyNew ("user:/base", KEY_END);
-	ElektraKey * result_root = keyNew ("user:/result", KEY_END);
-	ElektraKey * informationKey = keyNew ("/", KEY_END);
-	ElektraKeyset * our = ksNew (1, keyNew ("user:/our/key", KEY_VALUE, "1", KEY_META, "order", our_order, KEY_END), KS_END);
-	ElektraKeyset * their = ksNew (1, keyNew ("user:/their/key", KEY_VALUE, "1", KEY_META, "order", their_order, KEY_END), KS_END);
-	ElektraKeyset * base = ksNew (1, keyNew ("user:/base/key", KEY_VALUE, "1", KEY_META, "order", base_order, KEY_END), KS_END);
+	ElektraKey * our_root = keyNew ("user:/our", ELEKTRA_KEY_END);
+	ElektraKey * their_root = keyNew ("user:/their", ELEKTRA_KEY_END);
+	ElektraKey * base_root = keyNew ("user:/base", ELEKTRA_KEY_END);
+	ElektraKey * result_root = keyNew ("user:/result", ELEKTRA_KEY_END);
+	ElektraKey * informationKey = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKeyset * our = ksNew (1, keyNew ("user:/our/key", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_META, "order", our_order, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * their = ksNew (1, keyNew ("user:/their/key", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_META, "order", their_order, ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * base = ksNew (1, keyNew ("user:/base/key", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_META, "order", base_order, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ElektraKeyset * result = elektraMerge (our, our_root, their, their_root, base, base_root, result_root, strategy, informationKey);
 
@@ -213,20 +213,20 @@ static void test_order (char * our_order, char * their_order, char * base_order,
 static void array_conflict_number_test (void)
 {
 	printf ("Executing %s\n", __func__);
-	ElektraKey * our_root = keyNew ("user:/our", KEY_END);
-	ElektraKey * their_root = keyNew ("user:/their", KEY_END);
-	ElektraKey * base_root = keyNew ("user:/base", KEY_END);
-	ElektraKey * result_root = keyNew ("user:/result", KEY_END);
-	ElektraKey * informationKey = keyNew (0, KEY_END);
-	ElektraKeyset * our = ksNew (5, keyNew ("user:/our/#0", KEY_VALUE, "a", KEY_END), keyNew ("user:/our/#1", KEY_VALUE, "0", KEY_END),
-			      keyNew ("user:/our/#2", KEY_VALUE, "1", KEY_END), keyNew ("user:/our/#3", KEY_VALUE, "2", KEY_END),
-			      keyNew ("user:/our/#4", KEY_VALUE, "3", KEY_END), KS_END);
+	ElektraKey * our_root = keyNew ("user:/our", ELEKTRA_KEY_END);
+	ElektraKey * their_root = keyNew ("user:/their", ELEKTRA_KEY_END);
+	ElektraKey * base_root = keyNew ("user:/base", ELEKTRA_KEY_END);
+	ElektraKey * result_root = keyNew ("user:/result", ELEKTRA_KEY_END);
+	ElektraKey * informationKey = keyNew (0, ELEKTRA_KEY_END);
+	ElektraKeyset * our = ksNew (5, keyNew ("user:/our/#0", ELEKTRA_KEY_VALUE, "a", ELEKTRA_KEY_END), keyNew ("user:/our/#1", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+			      keyNew ("user:/our/#2", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END), keyNew ("user:/our/#3", ELEKTRA_KEY_VALUE, "2", ELEKTRA_KEY_END),
+			      keyNew ("user:/our/#4", ELEKTRA_KEY_VALUE, "3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKeyset * their =
-		ksNew (4, keyNew ("user:/their/#0", KEY_VALUE, "0", KEY_END), keyNew ("user:/their/#1", KEY_VALUE, "1", KEY_END),
-		       keyNew ("user:/their/#2", KEY_VALUE, "2", KEY_END), keyNew ("user:/their/#3", KEY_VALUE, "3", KEY_END), KS_END);
+		ksNew (4, keyNew ("user:/their/#0", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END), keyNew ("user:/their/#1", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		       keyNew ("user:/their/#2", ELEKTRA_KEY_VALUE, "2", ELEKTRA_KEY_END), keyNew ("user:/their/#3", ELEKTRA_KEY_VALUE, "3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKeyset * base =
-		ksNew (4, keyNew ("user:/base/#0", KEY_VALUE, "0", KEY_END), keyNew ("user:/base/#1", KEY_VALUE, "1", KEY_END),
-		       keyNew ("user:/base/#2", KEY_VALUE, "2", KEY_END), keyNew ("user:/base/#3", KEY_VALUE, "3", KEY_END), KS_END);
+		ksNew (4, keyNew ("user:/base/#0", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END), keyNew ("user:/base/#1", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		       keyNew ("user:/base/#2", ELEKTRA_KEY_VALUE, "2", ELEKTRA_KEY_END), keyNew ("user:/base/#3", ELEKTRA_KEY_VALUE, "3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKeyset * result =
 		elektraMerge (our, our_root, their, their_root, base, base_root, result_root, MERGE_STRATEGY_ABORT, informationKey);
 
@@ -244,29 +244,29 @@ static void array_conflict_number_test (void)
 static void testValuesWithGivenLength (int size)
 {
 	printf ("Executing %s with size %d\n", __func__, size);
-	ElektraKey * our_root = keyNew ("user:/tests/our", KEY_END);
-	ElektraKey * their_root = keyNew ("user:/tests/their", KEY_END);
-	ElektraKey * base_root = keyNew ("user:/tests/base", KEY_END);
-	ElektraKey * result_root = keyNew ("user:/tests/result", KEY_END);
-	ElektraKey * informationKey = keyNew (0, KEY_END);
+	ElektraKey * our_root = keyNew ("user:/tests/our", ELEKTRA_KEY_END);
+	ElektraKey * their_root = keyNew ("user:/tests/their", ELEKTRA_KEY_END);
+	ElektraKey * base_root = keyNew ("user:/tests/base", ELEKTRA_KEY_END);
+	ElektraKey * result_root = keyNew ("user:/tests/result", ELEKTRA_KEY_END);
+	ElektraKey * informationKey = keyNew (0, ELEKTRA_KEY_END);
 	char * value = elektraCalloc (size);
 	memset (value, 'a', size - 1); // leave the last element \0
 	// clang-format off
 	ElektraKeyset * our = ksNew (3,
-		keyNew ("user:/tests/our/#0", KEY_VALUE, value, KEY_END),
-		keyNew ("user:/tests/our/#1", KEY_VALUE, value, KEY_END),
-		keyNew ("user:/tests/our/#2", KEY_VALUE, value, KEY_END),
-		KS_END);
+		keyNew ("user:/tests/our/#0", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		keyNew ("user:/tests/our/#1", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		keyNew ("user:/tests/our/#2", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 	ElektraKeyset * their = ksNew (3,
-		keyNew ("user:/tests/their/#0", KEY_VALUE, value, KEY_END),
-		keyNew ("user:/tests/their/#1", KEY_VALUE, value, KEY_END),
-		keyNew ("user:/tests/their/#2", KEY_VALUE, value, KEY_END),
-		KS_END);
+		keyNew ("user:/tests/their/#0", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		keyNew ("user:/tests/their/#1", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		keyNew ("user:/tests/their/#2", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 	ElektraKeyset * base = ksNew (3,
-		keyNew ("user:/tests/base/#0", KEY_VALUE, value, KEY_END),
-		keyNew ("user:/tests/base/#1", KEY_VALUE, value, KEY_END),
-		keyNew ("user:/tests/base/#2", KEY_VALUE, value, KEY_END),
-		KS_END);
+		keyNew ("user:/tests/base/#0", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		keyNew ("user:/tests/base/#1", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		keyNew ("user:/tests/base/#2", ELEKTRA_KEY_VALUE, value, ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 	// clang-format on
 	elektraFree (value);
 	ElektraKeyset * result =

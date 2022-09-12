@@ -34,9 +34,9 @@
 
 static void testIP (char const * const ip, const int ret, char const * const version)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/ipaddr", KEY_VALUE, "", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (10, keyNew ("user:/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/ipaddr", ELEKTRA_KEY_VALUE, "", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (10, keyNew ("user:/test/ipaddr/totest", ELEKTRA_KEY_VALUE, ip, ELEKTRA_KEY_META, "check/ipaddr", version, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];

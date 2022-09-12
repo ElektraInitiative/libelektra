@@ -19,12 +19,12 @@
 
 ElektraKeyset * getContract (void)
 {
-	return ksNew (30, keyNew ("system:/elektra/modules/toml", KEY_VALUE, "toml plugin waits for your orders", KEY_END),
-		      keyNew ("system:/elektra/modules/toml/exports", KEY_END),
-		      keyNew ("system:/elektra/modules/toml/exports/get", KEY_FUNC, elektraTomlGet, KEY_END),
-		      keyNew ("system:/elektra/modules/toml/exports/set", KEY_FUNC, elektraTomlSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/toml", ELEKTRA_KEY_VALUE, "toml plugin waits for your orders", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/toml/exports", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/toml/exports/get", ELEKTRA_KEY_FUNC, elektraTomlGet, ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/modules/toml/exports/set", ELEKTRA_KEY_FUNC, elektraTomlSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-		      keyNew ("system:/elektra/modules/toml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		      keyNew ("system:/elektra/modules/toml/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 

@@ -102,13 +102,13 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, Elektra
 	{
 		return NULL;
 	}
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	handle->modules = modules;
 	elektraModulesInit (modules, NULL);
 
 	if (!config)
 	{
-		config = ksNew (0, KS_END);
+		config = ksNew (0, ELEKTRA_KS_END);
 	}
 	else
 	{
@@ -118,7 +118,7 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, Elektra
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew ("/", KEY_END);
+		errorKey = keyNew ("/", ELEKTRA_KEY_END);
 	}
 
 	Plugin * plugin = elektraPluginOpen (elektraPluginName, modules, config, errorKey);
@@ -167,7 +167,7 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 	Plugin * plugin = handle->plugin;
 	ElektraKeyset * exports = NULL;
 
-	ElektraKey * exportParent = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * exportParent = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
 	keyAddBaseName (exportParent, plugin->name);
 
 	if (handle->exports)
@@ -176,7 +176,7 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * handle, const char 
 	}
 	else
 	{
-		exports = ksNew (0, KS_END);
+		exports = ksNew (0, ELEKTRA_KS_END);
 		handle->exports = exports;
 		plugin->kdbGet (plugin, exports, exportParent);
 	}
@@ -324,7 +324,7 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, ElektraKey * errorKey)
 	int errorKeyMissing = !errorKey;
 	if (errorKeyMissing)
 	{
-		errorKey = keyNew ("/", KEY_END);
+		errorKey = keyNew ("/", ELEKTRA_KEY_END);
 	}
 	elektraPluginClose (handle->plugin, errorKey);
 	if (errorKeyMissing)

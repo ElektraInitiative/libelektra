@@ -13,23 +13,23 @@
 
 ksNew (30,
 			keyNew ("system:/elektra/modules/keytometa",
-				KEY_VALUE, "keytometa plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/keytometa/exports", KEY_END),
+				ELEKTRA_KEY_VALUE, "keytometa plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/keytometa/exports", ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/keytometa/exports/get",
-				KEY_FUNC, elektraKeyToMetaGet,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraKeyToMetaGet,
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/keytometa/exports/set",
-				KEY_FUNC, elektraKeyToMetaSet,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraKeyToMetaSet,
+				ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/keytometa/exports/close",
-				KEY_FUNC, elektraKeyToMetaClose,
-				KEY_END),
+				ELEKTRA_KEY_FUNC, elektraKeyToMetaClose,
+				ELEKTRA_KEY_END),
 #include "readme_keytometa.c"
 			keyNew ("system:/elektra/modules/keytometa/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
+				ELEKTRA_KEY_VALUE, "All information you want to know", ELEKTRA_KEY_END),
 			keyNew ("system:/elektra/modules/keytometa/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END);
+				ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 
 // clang-format on
 

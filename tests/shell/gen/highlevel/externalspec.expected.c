@@ -87,13 +87,13 @@ int loadConfiguration (Elektra ** elektra,
 	ElektraKeyset * defaults = NULL;
 
 	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "28025ee44839c1274cfbdffc51b42e8b37b485e149168de78f52c2081fc1c1fa", KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
-	KS_END);
+	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "28025ee44839c1274cfbdffc51b42e8b37b485e149168de78f52c2081fc1c1fa", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/externalspec", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/externalspec", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	

@@ -109,14 +109,14 @@ int elektraHexcodeGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * p
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hexcode"))
 	{
 		ElektraKeyset * pluginConfig =
-			ksNew (30, keyNew ("system:/elektra/modules/hexcode", KEY_VALUE, "hexcode plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/get", KEY_FUNC, elektraHexcodeGet, KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/set", KEY_FUNC, elektraHexcodeSet, KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/open", KEY_FUNC, elektraHexcodeOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/hexcode/exports/close", KEY_FUNC, elektraHexcodeClose, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/hexcode", ELEKTRA_KEY_VALUE, "hexcode plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/hexcode/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/hexcode/exports/get", ELEKTRA_KEY_FUNC, elektraHexcodeGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/hexcode/exports/set", ELEKTRA_KEY_FUNC, elektraHexcodeSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/hexcode/exports/open", ELEKTRA_KEY_FUNC, elektraHexcodeOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/hexcode/exports/close", ELEKTRA_KEY_FUNC, elektraHexcodeClose, ELEKTRA_KEY_END),
 #include "readme_hexcode.c"
-			       keyNew ("system:/elektra/modules/hexcode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/hexcode/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return 1;

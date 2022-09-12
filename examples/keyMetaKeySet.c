@@ -14,7 +14,7 @@ int main (void)
 {
 
 	//! [Basic keyMeta]
-	ElektraKey * key = keyNew ("user:/test/key", KEY_END);
+	ElektraKey * key = keyNew ("user:/test/key", ELEKTRA_KEY_END);
 
 	keySetMeta (key, "meta1", "value1");
 	keySetMeta (key, "meta2", "value2");

@@ -23,11 +23,11 @@
 
 void test_readfstab (const char * file)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/fstab", KEY_VALUE, srcdir_file (file), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/fstab", ELEKTRA_KEY_VALUE, srcdir_file (file), ELEKTRA_KEY_END);
 	ElektraKeyset * conf = 0;
 	PLUGIN_OPEN ("fstab");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	printf ("Reading fstab using file: %s\n", file);
 
@@ -60,26 +60,26 @@ void test_writefstab (const char * file)
 	printf ("Writing fstab using file: %s\n", file);
 
 	ElektraKeyset * ks = ksNew (
-		22, keyNew ("user:/tests/filesystems", KEY_VALUE, "filesystems", KEY_COMMENT, "", KEY_END),
-		keyNew ("user:/tests/filesystems/\\/", KEY_VALUE, "the root fs", KEY_COMMENT, "pseudo name", KEY_END),
-		keyNew ("user:/tests/filesystems/\\//device", KEY_VALUE, "/dev/sda6", KEY_COMMENT, "Device or Label", KEY_END),
-		keyNew ("user:/tests/filesystems/\\//dumpfreq", KEY_VALUE, "0", KEY_COMMENT, "Dump frequency in days", KEY_END),
-		keyNew ("user:/tests/filesystems/\\//mpoint", KEY_VALUE, "/", KEY_COMMENT, "Moint point", KEY_END),
-		keyNew ("user:/tests/filesystems/\\//options", KEY_VALUE, "defaults,errors=remount-ro", KEY_COMMENT,
-			"Fileuser/tests specific options. See mount(8)", KEY_END),
-		keyNew ("user:/tests/filesystems/\\//passno", KEY_VALUE, "1", KEY_COMMENT, "Pass number on parallel fsck", KEY_END),
-		keyNew ("user:/tests/filesystems/\\//type", KEY_VALUE, "jfs", KEY_COMMENT, "Fileuser/tests type. See fs(5)", KEY_END),
-		keyNew ("user:/tests/filesystems/swap00", KEY_VALUE, "non-swapfs", KEY_COMMENT, "pseudo name", KEY_END),
-		keyNew ("user:/tests/filesystems/swap00/device", KEY_VALUE, "/dev/sda10", KEY_COMMENT, "Device or Label", KEY_END),
-		keyNew ("user:/tests/filesystems/swap00/dumpfreq", KEY_VALUE, "0", KEY_COMMENT, "Dump frequency in days", KEY_END),
-		keyNew ("user:/tests/filesystems/swap00/mpoint", KEY_VALUE, "none", KEY_COMMENT, "Moint point", KEY_END),
-		keyNew ("user:/tests/filesystems/swap00/options", KEY_VALUE, "sw", KEY_COMMENT,
-			"Fileuser/tests specific options. See mount(8)", KEY_END),
-		keyNew ("user:/tests/filesystems/swap00/passno", KEY_VALUE, "0", KEY_COMMENT, "Pass number on parallel fsck", KEY_END),
-		keyNew ("user:/tests/filesystems/swap00/type", KEY_VALUE, "swap", KEY_COMMENT, "Fileuser/tests type. See fs(5)", KEY_END),
-		KS_END);
+		22, keyNew ("user:/tests/filesystems", ELEKTRA_KEY_VALUE, "filesystems", ELEKTRA_KEY_COMMENT, "", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/\\/", ELEKTRA_KEY_VALUE, "the root fs", ELEKTRA_KEY_COMMENT, "pseudo name", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/\\//device", ELEKTRA_KEY_VALUE, "/dev/sda6", ELEKTRA_KEY_COMMENT, "Device or Label", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/\\//dumpfreq", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_COMMENT, "Dump frequency in days", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/\\//mpoint", ELEKTRA_KEY_VALUE, "/", ELEKTRA_KEY_COMMENT, "Moint point", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/\\//options", ELEKTRA_KEY_VALUE, "defaults,errors=remount-ro", ELEKTRA_KEY_COMMENT,
+			"Fileuser/tests specific options. See mount(8)", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/\\//passno", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_COMMENT, "Pass number on parallel fsck", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/\\//type", ELEKTRA_KEY_VALUE, "jfs", ELEKTRA_KEY_COMMENT, "Fileuser/tests type. See fs(5)", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/swap00", ELEKTRA_KEY_VALUE, "non-swapfs", ELEKTRA_KEY_COMMENT, "pseudo name", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/swap00/device", ELEKTRA_KEY_VALUE, "/dev/sda10", ELEKTRA_KEY_COMMENT, "Device or Label", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/swap00/dumpfreq", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_COMMENT, "Dump frequency in days", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/swap00/mpoint", ELEKTRA_KEY_VALUE, "none", ELEKTRA_KEY_COMMENT, "Moint point", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/swap00/options", ELEKTRA_KEY_VALUE, "sw", ELEKTRA_KEY_COMMENT,
+			"Fileuser/tests specific options. See mount(8)", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/swap00/passno", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_COMMENT, "Pass number on parallel fsck", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/filesystems/swap00/type", ELEKTRA_KEY_VALUE, "swap", ELEKTRA_KEY_COMMENT, "Fileuser/tests type. See fs(5)", ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 
-	ElektraKey * parentKey = keyNew ("user:/tests/filesystems", KEY_VALUE, elektraFilename (), KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/filesystems", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");

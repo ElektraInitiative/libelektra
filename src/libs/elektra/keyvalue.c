@@ -524,7 +524,7 @@ ssize_t keySetBinary (ElektraKey * key, const void * newBinary, size_t dataSize)
 
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (key->flags & ELEKTRA_KEY_FLAG_RO_VALUE) return -1;
 
 	keySetMeta (key, "binary", "");
 
@@ -554,18 +554,18 @@ ssize_t keySetBinary (ElektraKey * key, const void * newBinary, size_t dataSize)
 ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize)
 {
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (key->flags & ELEKTRA_KEY_FLAG_RO_VALUE) return -1;
 
 	if (!dataSize || !newBinary)
 	{
 		if (key->data.v)
 		{
-			if (!test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
+			if (!test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 			key->data.v = NULL;
-			clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
+			clear_bit (key->flags, (keyflag_t) ELEKTRA_KEY_FLAG_MMAP_DATA);
 		}
 		key->dataSize = 0;
-		set_bit (key->flags, KEY_FLAG_SYNC);
+		set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
 		if (keyIsBinary (key)) return 0;
 		return 1;
 	}
@@ -575,9 +575,9 @@ ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize)
 	{
 		char * previous = key->data.v;
 
-		if (test_bit (key->flags, KEY_FLAG_MMAP_DATA))
+		if (test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_DATA))
 		{
-			clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
+			clear_bit (key->flags, (keyflag_t) ELEKTRA_KEY_FLAG_MMAP_DATA);
 			key->data.v = elektraMalloc (key->dataSize);
 			if (key->data.v == NULL) return -1;
 		}
@@ -605,6 +605,6 @@ ssize_t keySetRaw (ElektraKey * key, const void * newBinary, size_t dataSize)
 		memcpy (key->data.v, newBinary, key->dataSize);
 	}
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
 	return keyGetValueSize (key);
 }

@@ -45,21 +45,21 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/modules"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/modules", KEY_VALUE, "modules plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
-			       keyNew ("system:/elektra/modules/modules/exports/close", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/modules", ELEKTRA_KEY_VALUE, "modules plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/modules/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/modules/exports/open", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/modules/exports/init", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/modules/exports/get", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/modules/exports/close", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/modules/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/modules/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	ElektraKey * modulesRoot = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * modulesRoot = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
 	if (keyCmp (modulesRoot, parentKey) == 0)
 	{
 		keyDel (modulesRoot);
@@ -74,12 +74,12 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	}
 
 	const char * phase = elektraPluginGetPhase (handle);
-	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
+	if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_RESOLVER) == 0)
 	{
 		keyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_STORAGE) == 0)
 	{
 		Plugin * plugin = elektraPluginGetData (handle);
 

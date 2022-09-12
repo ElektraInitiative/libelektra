@@ -35,17 +35,17 @@ int main (int argc, char ** argv)
 	const char * parent = argv[2];
 	const char * pluginname = argv[3];
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	char * infile = elektraFormat ("%s/test.%s.in", path, pluginname);
 	char * outfile = elektraFormat ("%s/test.%s.out", path, pluginname);
 
 	{
-		ElektraKey * getKey = keyNew (parent, KEY_VALUE, infile, KEY_END);
+		ElektraKey * getKey = keyNew (parent, ELEKTRA_KEY_VALUE, infile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, KS_END);
-		ElektraKeyset * modules = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 		elektraModulesInit (modules, 0);
-		ElektraKey * errorKey = keyNew ("/", KEY_END);
+		ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginname, modules, conf, errorKey);
 		keyDel (errorKey);
 
@@ -64,12 +64,12 @@ int main (int argc, char ** argv)
 
 	if (direction == BOTH)
 	{
-		ElektraKey * setKey = keyNew (parent, KEY_VALUE, outfile, KEY_END);
+		ElektraKey * setKey = keyNew (parent, ELEKTRA_KEY_VALUE, outfile, ELEKTRA_KEY_END);
 
-		ElektraKeyset * conf = ksNew (0, KS_END);
-		ElektraKeyset * modules = ksNew (0, KS_END);
+		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 		elektraModulesInit (modules, 0);
-		ElektraKey * errorKey = keyNew ("/", KEY_END);
+		ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginname, modules, conf, errorKey);
 		keyDel (errorKey);
 		plugin->kdbSet (plugin, ks, setKey);

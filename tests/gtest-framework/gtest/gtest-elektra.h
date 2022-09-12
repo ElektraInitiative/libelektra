@@ -107,7 +107,7 @@ public:
 		using namespace kdb::tools;
 
 		KDB kdb;
-		Key parent (ns + ":/" + mp, KEY_END);
+		Key parent (ns + ":/" + mp, ELEKTRA_KEY_END);
 		KeySet ks;
 		kdb.get (ks, parent);
 		return parent.getString ();
@@ -119,14 +119,14 @@ public:
 		using namespace kdb::tools;
 
 		Backend b;
-		b.setMountpoint (Key (mountpoint_, KEY_END), KeySet (0, KS_END));
+		b.setMountpoint (Key (mountpoint_, ELEKTRA_KEY_END), KeySet (0, ELEKTRA_KS_END));
 		b.addPlugin (PluginSpec (KDB_RESOLVER));
 		b.useConfigFile (configFile);
 		b.addPlugin (PluginSpec ("dump"));
 		b.addPlugin (PluginSpec ("error"));
 		KeySet ks;
 		KDB kdb;
-		Key parentKey ("system:/elektra/mountpoints", KEY_END);
+		Key parentKey ("system:/elektra/mountpoints", ELEKTRA_KEY_END);
 		kdb.get (ks, parentKey);
 		b.serialize (ks);
 		kdb.set (ks, parentKey);
@@ -138,7 +138,7 @@ public:
 		using namespace kdb::tools;
 		KeySet ks;
 		KDB kdb;
-		Key parentKey ("system:/elektra/mountpoints", KEY_END);
+		Key parentKey ("system:/elektra/mountpoints", ELEKTRA_KEY_END);
 		kdb.get (ks, parentKey);
 		Backends::umount (mountpoint_, ks);
 		kdb.set (ks, parentKey);

@@ -13,20 +13,20 @@
 
 ksNew (30,
 	keyNew ("system:/elektra/modules/rename",
-		KEY_VALUE, "rename plugin waits for your orders", KEY_END),
-	keyNew ("system:/elektra/modules/rename/exports", KEY_END),
+		ELEKTRA_KEY_VALUE, "rename plugin waits for your orders", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/modules/rename/exports", ELEKTRA_KEY_END),
 	keyNew ("system:/elektra/modules/rename/exports/get",
-		KEY_FUNC, elektraRenameGet,
-		KEY_END),
+		ELEKTRA_KEY_FUNC, elektraRenameGet,
+		ELEKTRA_KEY_END),
 	keyNew ("system:/elektra/modules/rename/exports/set",
-		KEY_FUNC, elektraRenameSet,
-		KEY_END),
+		ELEKTRA_KEY_FUNC, elektraRenameSet,
+		ELEKTRA_KEY_END),
 #include "readme_rename.c"
 	keyNew ("system:/elektra/modules/rename/infos",
-		KEY_VALUE, "All information you want to know", KEY_END),
+		ELEKTRA_KEY_VALUE, "All information you want to know", ELEKTRA_KEY_END),
 	keyNew ("system:/elektra/modules/rename/infos/version",
-		KEY_VALUE, PLUGINVERSION, KEY_END),
-	KS_END);
+		ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+	ELEKTRA_KS_END);
 
 // clang-format on
 

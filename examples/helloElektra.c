@@ -12,8 +12,8 @@
 
 int main (void)
 {
-	ElektraKeyset * config = ksNew (0, KS_END);
-	ElektraKey * root = keyNew ("user:/test", KEY_END);
+	ElektraKeyset * config = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * root = keyNew ("user:/test", ELEKTRA_KEY_END);
 
 	printf ("Open key database\n");
 	ElektraKdb * handle = kdbOpen (NULL, root);
@@ -23,7 +23,7 @@ int main (void)
 
 	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));
 
-	ElektraKey * key = keyNew ("user:/test/hello", KEY_VALUE, "elektra", KEY_END);
+	ElektraKey * key = keyNew ("user:/test/hello", ELEKTRA_KEY_VALUE, "elektra", ELEKTRA_KEY_END);
 	printf ("Add key %s\n", keyName (key));
 	ksAppendKey (config, key);
 	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));

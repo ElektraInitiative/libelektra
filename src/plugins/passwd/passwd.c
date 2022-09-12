@@ -120,15 +120,15 @@ struct passwd *fgetpwent_l(FILE *f)
 
 static ElektraKeyset * pwentToKS (struct passwd * pwd, ElektraKey * parentKey, SortBy index)
 {
-	ElektraKeyset * ks = ksNew (0, KS_END);
-	ElektraKey * append = keyNew (keyName (parentKey), KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * append = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 	char id[ID_MAX_CHARACTERS];
 	if (index == UID)
 	{
 		snprintf (id, sizeof (id), "%u", pwd->pw_uid);
 		keyAddBaseName (append, id);
 		keySetBinary (append, 0, 0);
-		ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+		ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 		keyAddBaseName (append, "name");
 		keySetString (append, pwd->pw_name);
 	}
@@ -136,33 +136,33 @@ static ElektraKeyset * pwentToKS (struct passwd * pwd, ElektraKey * parentKey, S
 	{
 		keyAddBaseName (append, pwd->pw_name);
 		keySetBinary (append, 0, 0);
-		ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+		ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 		snprintf (id, sizeof (id), "%u", pwd->pw_uid);
 		keyAddBaseName (append, "uid");
 		keySetString (append, id);
 	}
-	ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 	keySetString (append, 0);
 	keySetBaseName (append, "shell");
 	keySetString (append, pwd->pw_shell);
-	ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 	keySetString (append, 0);
 	keySetBaseName (append, "home");
 	keySetString (append, pwd->pw_dir);
-	ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 	keySetString (append, 0);
 	keySetBaseName (append, "gid");
 	snprintf (id, sizeof (id), "%u", pwd->pw_gid);
 	keySetString (append, id);
-	ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 	keySetString (append, 0);
 	keySetBaseName (append, "passwd");
 	keySetString (append, pwd->pw_passwd);
-	ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 	keySetString (append, 0);
 	keySetBaseName (append, "gecos");
 	keySetString (append, pwd->pw_gecos);
-	ksAppendKey (ks, keyDup (append, KEY_CP_ALL));
+	ksAppendKey (ks, keyDup (append, ELEKTRA_KEY_CP_ALL));
 	keyDel (append);
 	return ks;
 }
@@ -172,12 +172,12 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned E
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/passwd"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/passwd", KEY_VALUE, "passwd plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/passwd/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/passwd/exports/get", KEY_FUNC, elektraPasswdGet, KEY_END),
-			       keyNew ("system:/elektra/modules/passwd/exports/set", KEY_FUNC, elektraPasswdSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/passwd", ELEKTRA_KEY_VALUE, "passwd plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/passwd/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/passwd/exports/get", ELEKTRA_KEY_FUNC, elektraPasswdGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/passwd/exports/set", ELEKTRA_KEY_FUNC, elektraPasswdSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/passwd/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/passwd/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -227,7 +227,7 @@ static struct passwd * KStoPasswd (ElektraKeyset * ks, SortBy index)
 	struct passwd * pwd = elektraMalloc (sizeof (struct passwd));
 	ksRewind (ks);
 	ElektraKey * parent = ksNext (ks);
-	ElektraKey * lookup = keyDup (parent, KEY_CP_ALL);
+	ElektraKey * lookup = keyDup (parent, ELEKTRA_KEY_CP_ALL);
 	ElektraKey * found = NULL;
 	if (index == UID)
 	{

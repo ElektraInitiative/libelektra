@@ -215,15 +215,15 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/simpleini"))
 	{
 		ElektraKeyset * moduleConfig = ksNew (
-			30, keyNew ("system:/elektra/modules/simpleini", KEY_VALUE, "simpleini plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/exports", KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/exports/get", KEY_FUNC, elektraSimpleiniGet, KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/exports/set", KEY_FUNC, elektraSimpleiniSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/simpleini", ELEKTRA_KEY_VALUE, "simpleini plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/simpleini/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/simpleini/exports/get", ELEKTRA_KEY_FUNC, elektraSimpleiniGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/simpleini/exports/set", ELEKTRA_KEY_FUNC, elektraSimpleiniSet, ELEKTRA_KEY_END),
 #include "readme_simpleini.c"
-			keyNew ("system:/elektra/modules/simpleini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/config/needs", KEY_VALUE,
-				"the needed configuration to work in a backend", KEY_END),
-			keyNew ("system:/elektra/modules/simpleini/config/needs/chars", KEY_VALUE, "Characters needed", KEY_END),
+			keyNew ("system:/elektra/modules/simpleini/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/simpleini/config/needs", ELEKTRA_KEY_VALUE,
+				"the needed configuration to work in a backend", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/simpleini/config/needs/chars", ELEKTRA_KEY_VALUE, "Characters needed", ELEKTRA_KEY_END),
 			// space in value now works:
 			// TODO: characters present in format should be escaped
 			/*
@@ -235,9 +235,9 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
 			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/5C", KEY_VALUE, "66", KEY_END), // \\ -> f
 			*/
-			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/0A", KEY_VALUE, "67", KEY_END), // enter (NL) -> g
-			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/0D", KEY_VALUE, "68", KEY_END), // CR -> h
-			keyNew ("system:/elektra/modules/simpleini/config/needs/escape", KEY_VALUE, "25", KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/0A", ELEKTRA_KEY_VALUE, "67", ELEKTRA_KEY_END), // enter (NL) -> g
+			keyNew ("system:/elektra/modules/simpleini/config/needs/chars/0D", ELEKTRA_KEY_VALUE, "68", ELEKTRA_KEY_END), // CR -> h
+			keyNew ("system:/elektra/modules/simpleini/config/needs/escape", ELEKTRA_KEY_VALUE, "25", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -294,7 +294,7 @@ int elektraSimpleiniGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 			continue;
 		}
 
-		ElektraKey * read = keyNew (keyName (parentKey), KEY_END);
+		ElektraKey * read = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 		strippedkey = elektraStrip (key);
 
 		if (keyAddName (read, strippedkey) == -1)

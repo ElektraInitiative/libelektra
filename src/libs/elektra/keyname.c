@@ -495,7 +495,7 @@ ssize_t keyGetUnescapedName (const ElektraKey * key, char * returnedName, size_t
 ssize_t keySetName (ElektraKey * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
 
 	if (!elektraKeyNameValidate (newName, true))
@@ -506,14 +506,14 @@ ssize_t keySetName (ElektraKey * key, const char * newName)
 
 	// from now on this function CANNOT fail -> we may modify the key
 
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_KEY))
 	{
 		// key was in mmap region, clear flag and set NULL to allow realloc
 		key->key = NULL;
 		key->keySize = 0;
 		key->ukey = NULL;
 		key->keyUSize = 0;
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+		clear_bit (key->flags, (keyflag_t) ELEKTRA_KEY_FLAG_MMAP_KEY);
 	}
 
 	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, 0, &key->keyUSize);
@@ -522,7 +522,7 @@ ssize_t keySetName (ElektraKey * key, const char * newName)
 
 	elektraKeyNameUnescape (key->key, key->ukey);
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
 
 	return key->keySize;
 }
@@ -566,7 +566,7 @@ ssize_t keySetName (ElektraKey * key, const char * newName)
 ssize_t keyAddName (ElektraKey * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
 	if (!newName) return -1;
 
 	while (*newName == '/')
@@ -590,7 +590,7 @@ ssize_t keyAddName (ElektraKey * key, const char * newName)
 
 	// from now on this function CANNOT fail -> we may modify the key
 
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_KEY))
 	{
 		// key was in mmap region, clear flag and copy to malloced buffer
 		char * tmp = elektraMalloc (key->keySize);
@@ -601,7 +601,7 @@ ssize_t keyAddName (ElektraKey * key, const char * newName)
 		memcpy (tmp, key->ukey, key->keyUSize);
 		key->ukey = tmp;
 
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+		clear_bit (key->flags, (keyflag_t) ELEKTRA_KEY_FLAG_MMAP_KEY);
 	}
 
 	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, key->keySize, &key->keyUSize);
@@ -610,7 +610,7 @@ ssize_t keyAddName (ElektraKey * key, const char * newName)
 
 	elektraKeyNameUnescape (key->key, key->ukey);
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
 	return key->keySize;
 }
 
@@ -677,7 +677,7 @@ static size_t replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, 
 int keyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const ElektraKey * newPrefix)
 {
 	if (key == NULL || oldPrefix == NULL || newPrefix == NULL) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
 
 	// check namespace manually, because keyIsBelowOrSame has special handling for cascading keys
 	if (keyGetNamespace (key) != keyGetNamespace (oldPrefix)) return 0;
@@ -689,11 +689,11 @@ int keyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const Elek
 	if (key->keyUSize == oldPrefix->keyUSize)
 	{
 		// key is same as oldPrefix -> just copy name
-		keyCopy (key, newPrefix, KEY_CP_NAME);
+		keyCopy (key, newPrefix, ELEKTRA_KEY_CP_NAME);
 		return 1;
 	}
 
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_KEY))
 	{
 		// key was in mmap region, clear flag and copy to malloced buffer
 		char * tmp = elektraMalloc (key->keySize);
@@ -704,7 +704,7 @@ int keyReplacePrefix (ElektraKey * key, const ElektraKey * oldPrefix, const Elek
 		memcpy (tmp, key->ukey, key->keyUSize);
 		key->ukey = tmp;
 
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+		clear_bit (key->flags, (keyflag_t) ELEKTRA_KEY_FLAG_MMAP_KEY);
 	}
 
 	size_t oldSize, oldUSize;
@@ -760,7 +760,7 @@ bool elektraKeyNameValidate (const char * name, bool isComplete)
 		const char * colon = strchr (name, ':');
 		if (colon != NULL)
 		{
-			if (elektraReadNamespace (name, colon - name - 1) == KEY_NS_NONE)
+			if (elektraReadNamespace (name, colon - name - 1) == ELEKTRA_NS_NONE)
 			{
 				ELEKTRA_LOG_DEBUG ("Illegal namespace '%.*s': %s", (int) (colon - name - 1), name, name);
 				return 0;
@@ -1165,7 +1165,7 @@ void elektraKeyNameUnescape (const char * canonicalName, char * unescapedName)
 	else
 	{
 		// set cascading namespace
-		*outPtr++ = KEY_NS_CASCADING;
+		*outPtr++ = ELEKTRA_NS_CASCADING;
 	}
 
 	while (*canonicalName != '\0')
@@ -1479,7 +1479,7 @@ static size_t keyAddBaseNameInternal (ElektraKey * key, const char * baseName)
 
 	size_t newKeySize = key->keySize + escapedSize;
 	size_t newKeyUSize = key->keyUSize + unescapedSize;
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_KEY))
 	{
 		// key was in mmap region, clear flag and copy to malloced buffer
 		char * tmp = elektraMalloc (newKeySize);
@@ -1490,7 +1490,7 @@ static size_t keyAddBaseNameInternal (ElektraKey * key, const char * baseName)
 		memcpy (tmp, key->ukey, key->keyUSize);
 		key->ukey = tmp;
 
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+		clear_bit (key->flags, (keyflag_t) ELEKTRA_KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
@@ -1540,7 +1540,7 @@ static size_t keyAddBaseNameInternal (ElektraKey * key, const char * baseName)
 	key->keyUSize += unescapedSize;
 	key->ukey[key->keyUSize - 1] = '\0';
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
 	return key->keySize;
 }
 
@@ -1587,7 +1587,7 @@ ssize_t keyAddBaseName (ElektraKey * key, const char * baseName)
 {
 	if (!key) return -1;
 	if (!baseName) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
 	return keyAddBaseNameInternal (key, baseName);
@@ -1644,7 +1644,7 @@ ssize_t keyAddBaseName (ElektraKey * key, const char * baseName)
 ssize_t keySetBaseName (ElektraKey * key, const char * baseName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
 	// adjust sizes to exclude base name
@@ -1699,7 +1699,7 @@ ssize_t keySetBaseName (ElektraKey * key, const char * baseName)
  */
 elektraNamespace keyGetNamespace (const ElektraKey * key)
 {
-	if (!key) return KEY_NS_NONE;
+	if (!key) return ELEKTRA_NS_NONE;
 	return (elektraNamespace) key->ukey[0];
 }
 
@@ -1724,35 +1724,35 @@ elektraNamespace keyGetNamespace (const ElektraKey * key)
 ssize_t keySetNamespace (ElektraKey * key, elektraNamespace ns)
 {
 	if (!key) return -1;
-	if (ns == KEY_NS_NONE) return -1;
+	if (ns == ELEKTRA_NS_NONE) return -1;
 
 	if (ns == key->ukey[0]) return key->keySize;
 
 	size_t oldNamespaceLen;
 	switch (key->ukey[0])
 	{
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		oldNamespaceLen = sizeof ("user:") - 1;
 		break;
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		oldNamespaceLen = sizeof ("system:") - 1;
 		break;
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		oldNamespaceLen = sizeof ("dir:") - 1;
 		break;
-	case KEY_NS_META:
+	case ELEKTRA_NS_META:
 		oldNamespaceLen = sizeof ("meta:") - 1;
 		break;
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		oldNamespaceLen = sizeof ("spec:") - 1;
 		break;
-	case KEY_NS_PROC:
+	case ELEKTRA_NS_PROC:
 		oldNamespaceLen = sizeof ("proc:") - 1;
 		break;
-	case KEY_NS_CASCADING:
+	case ELEKTRA_NS_CASCADING:
 		oldNamespaceLen = 0;
 		break;
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_DEFAULT:
 		oldNamespaceLen = sizeof ("default:") - 1;
 		break;
 	default:
@@ -1762,28 +1762,28 @@ ssize_t keySetNamespace (ElektraKey * key, elektraNamespace ns)
 	const char * newNamespace;
 	switch (ns)
 	{
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		newNamespace = "user:";
 		break;
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		newNamespace = "system:";
 		break;
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		newNamespace = "dir:";
 		break;
-	case KEY_NS_META:
+	case ELEKTRA_NS_META:
 		newNamespace = "meta:";
 		break;
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		newNamespace = "spec:";
 		break;
-	case KEY_NS_PROC:
+	case ELEKTRA_NS_PROC:
 		newNamespace = "proc:";
 		break;
-	case KEY_NS_CASCADING:
+	case ELEKTRA_NS_CASCADING:
 		newNamespace = "";
 		break;
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_DEFAULT:
 		newNamespace = "default:";
 		break;
 	default:

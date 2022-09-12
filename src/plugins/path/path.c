@@ -349,15 +349,15 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 {
 	/* contract only */
 	ElektraKeyset * n;
-	ksAppend (returned, n = ksNew (30, keyNew ("system:/elektra/modules/path", KEY_VALUE, "path plugin waits for your orders", KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports", KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
-				       keyNew ("system:/elektra/modules/path/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
+	ksAppend (returned, n = ksNew (30, keyNew ("system:/elektra/modules/path", ELEKTRA_KEY_VALUE, "path plugin waits for your orders", ELEKTRA_KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports", ELEKTRA_KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports/get", ELEKTRA_KEY_FUNC, elektraPathGet, ELEKTRA_KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports/set", ELEKTRA_KEY_FUNC, elektraPathSet, ELEKTRA_KEY_END),
+				       keyNew ("system:/elektra/modules/path/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
 
 #include "readme_path.c"
 
-				       keyNew ("system:/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				       keyNew ("system:/elektra/modules/path/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 	ksDel (n);
 
 	return 1; /* success */

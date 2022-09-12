@@ -109,10 +109,10 @@ static int initData (Plugin * handle, ElektraKey * parentKey)
 		elektraPluginSetData (handle, data);
 		ElektraKeyset * config = elektraPluginGetConfig (handle);
 		ksRewind (config);
-		ElektraKey * key = ksLookupByName (config, "/identifier", KDB_O_NONE);
+		ElektraKey * key = ksLookupByName (config, "/identifier", ELEKTRA_KDB_O_NONE);
 		if (!key) return -1;
 		data->identifier = (char *) keyString (key);
-		key = ksLookupByName (config, "/path", KDB_O_NONE);
+		key = ksLookupByName (config, "/path", ELEKTRA_KDB_O_NONE);
 		if (!key) return -1;
 		keySetString (parentKey, keyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
@@ -225,17 +225,17 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * ret
 	{
 		ElektraKeyset * contract = ksNew (
 			30,
-			keyNew ("system:/elektra/modules/blockresolver", KEY_VALUE, "blockresolver plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports", KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/close", KEY_FUNC, elektraBlockresolverClose, KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
-			keyNew ("system:/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile,
-				KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver", ELEKTRA_KEY_VALUE, "blockresolver plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/close", ELEKTRA_KEY_FUNC, elektraBlockresolverClose, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/error", ELEKTRA_KEY_FUNC, elektraBlockresolverError, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/get", ELEKTRA_KEY_FUNC, elektraBlockresolverGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/set", ELEKTRA_KEY_FUNC, elektraBlockresolverSet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/commit", ELEKTRA_KEY_FUNC, elektraBlockresolverCommit, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/checkfile", ELEKTRA_KEY_FUNC, elektraBlockresolverCheckFile,
+				ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/blockresolver/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

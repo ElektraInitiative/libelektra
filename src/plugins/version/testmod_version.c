@@ -20,13 +20,13 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	ElektraKey * parentKey = keyNew ("system:/elektra/version", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/elektra/version", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("version");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
+	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", ELEKTRA_KEY_VALUE, ELEKTRA_KDB_GET_PHASE_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
@@ -56,14 +56,14 @@ static void test_rename (void)
 {
 	printf ("test rename\n");
 
-	ElektraKey * parentKey = keyNew ("user:/somewhere/else", KEY_END);
+	ElektraKey * parentKey = keyNew ("user:/somewhere/else", ELEKTRA_KEY_END);
 	size_t parentSize = keyGetNameSize (parentKey) - 1;
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 	PLUGIN_OPEN ("version");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
+	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", ELEKTRA_KEY_VALUE, ELEKTRA_KDB_GET_PHASE_STORAGE, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 

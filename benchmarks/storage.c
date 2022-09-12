@@ -30,10 +30,10 @@ static int benchmarkOpenPlugins (void)
 {
 	for (size_t i = 0; i < NUM_PLUGINS; ++i)
 	{
-		modules[i] = ksNew (0, KS_END);
+		modules[i] = ksNew (0, ELEKTRA_KS_END);
 		elektraModulesInit (modules[i], 0);
-		ElektraKeyset * conf = ksNew (0, KS_END);
-		ElektraKey * errorKey = keyNew ("/", KEY_END);
+		ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+		ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginNames[i], modules[i], conf, errorKey);
 
 		const ElektraKey * metaWarnings = keyGetMeta (errorKey, "warnings");
@@ -102,7 +102,7 @@ int main (int argc, char ** argv)
 		init (argc, argv);
 
 		Plugin * plugin = plugins[i];
-		ElektraKey * parentKey = keyNew ("user:/benchmarks/storage", KEY_VALUE, tmpfilename, KEY_END);
+		ElektraKey * parentKey = keyNew ("user:/benchmarks/storage", ELEKTRA_KEY_VALUE, tmpfilename, ELEKTRA_KEY_END);
 
 		for (size_t run = 0; run < NUM_RUNS; ++run)
 		{
@@ -114,7 +114,7 @@ int main (int argc, char ** argv)
 			}
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "write keyset", timeGetDiffMicroseconds ());
 
-			ElektraKeyset * returned = ksNew (0, KS_END);
+			ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
@@ -126,7 +126,7 @@ int main (int argc, char ** argv)
 			ksDel (returned);
 			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "delete keyset", timeGetDiffMicroseconds ());
 
-			ElektraKeyset * returned2 = ksNew (0, KS_END);
+			ElektraKeyset * returned2 = ksNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned2, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
@@ -136,7 +136,7 @@ int main (int argc, char ** argv)
 			ksDel (returned2);
 			timeInit ();
 
-			ElektraKeyset * returned3 = ksNew (0, KS_END);
+			ElektraKeyset * returned3 = ksNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned3, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
@@ -148,7 +148,7 @@ int main (int argc, char ** argv)
 			ksDel (returned3);
 			timeInit ();
 
-			ElektraKeyset * returned4 = ksNew (0, KS_END);
+			ElektraKeyset * returned4 = ksNew (0, ELEKTRA_KS_END);
 			if (plugin->kdbGet (plugin, returned4, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);

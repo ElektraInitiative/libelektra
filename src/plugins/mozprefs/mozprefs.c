@@ -32,7 +32,7 @@ const char * prefix[] = { "pref", "user", "lock", "sticky" };
 
 static ElektraKey * prefToKey (ElektraKey * parentKey, PrefType type, const char * pref)
 {
-	ElektraKey * key = keyNew (keyName (parentKey), KEY_END);
+	ElektraKey * key = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 	keyAddBaseName (key, prefix[type]);
 	char * localString = elektraStrDup (pref);
 	char * cPtr = strstr (localString, ",");
@@ -89,12 +89,12 @@ int elektraMozprefsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/mozprefs"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/mozprefs", KEY_VALUE, "mozprefs plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/mozprefs/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/mozprefs/exports/get", KEY_FUNC, elektraMozprefsGet, KEY_END),
-			       keyNew ("system:/elektra/modules/mozprefs/exports/set", KEY_FUNC, elektraMozprefsSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/mozprefs", ELEKTRA_KEY_VALUE, "mozprefs plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/mozprefs/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/mozprefs/exports/get", ELEKTRA_KEY_FUNC, elektraMozprefsGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/mozprefs/exports/set", ELEKTRA_KEY_FUNC, elektraMozprefsSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/mozprefs/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/mozprefs/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

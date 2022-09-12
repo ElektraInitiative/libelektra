@@ -36,7 +36,7 @@ ElektraKeyset * doElektraMerge (ElektraKeyset * ours, ElektraKeyset * theirs, El
 	printf ("see libelektra-tools for merging"
 		" sizes are: %d %d %d\n",
 		(int) ksGetSize (ours), (int) ksGetSize (theirs), (int) ksGetSize (base));
-	return ksNew (0, KS_END);
+	return ksNew (0, ELEKTRA_KS_END);
 }
 
 
@@ -44,15 +44,15 @@ int main (void)
 {
 	// clang-format off
 //! [set]
-ElektraKeyset * myConfig = ksNew (0, KS_END);
-ElektraKey * parentKey = keyNew ("system:/sw/MyApp", KEY_END);
+ElektraKeyset * myConfig = ksNew (0, ELEKTRA_KS_END);
+ElektraKey * parentKey = keyNew ("system:/sw/MyApp", ELEKTRA_KEY_END);
 ElektraKdb * handle = kdbOpen (NULL, parentKey);
 
 kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
 ElektraKeyset * base = ksDup (myConfig);     // save a copy of original keyset
 
 // change the keys within myConfig
-ksAppendKey (myConfig, keyNew ("system:/sw/MyApp/Test", KEY_VALUE, "5", KEY_END));
+ksAppendKey (myConfig, keyNew ("system:/sw/MyApp/Test", ELEKTRA_KEY_VALUE, "5", ELEKTRA_KEY_END));
 
 ElektraKeyset * ours = ksDup (myConfig); // save a copy of our keyset
 ElektraKeyset * theirs;		  // needed for 3-way merging

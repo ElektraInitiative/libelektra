@@ -35,42 +35,42 @@ static ElektraKeyset * createSpec (void)
 {
 	return ksNew (
 		10,
-		keyNew (SPEC_BASE_KEY "/emptydirs", KEY_META, "description", "remove empty directories", KEY_META, "opt", "d", KEY_META,
-			"opt/arg", "none", KEY_META, "opt/long", "dir", KEY_END),
-		keyNew (SPEC_BASE_KEY "/force", KEY_META, "description", "ignore nonexistent files and arguments, never prompt", KEY_META,
-			"opt", "f", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "force", KEY_END),
-		keyNew (SPEC_BASE_KEY "/interactive", KEY_META, "description",
-			"prompt according to WHEN: never, once (-I), or always (-i), without WHEN, prompt always", KEY_META, "opt", "#1",
-			KEY_META, "opt/#0", "i", KEY_META, "opt/#0/arg", "optional", KEY_META, "opt/#0/flagvalue", "always", KEY_META,
-			"opt/#0/long", "interactive", KEY_META, "opt/#1", "I", KEY_META, "opt/#1/arg", "none", KEY_META, "opt/#1/flagvalue",
-			"once", KEY_META, "opt/arg/name", "WHEN", KEY_END),
-		keyNew (SPEC_BASE_KEY "/nopreserve", KEY_META, "description", "do not treat '/' specially", KEY_META, "opt/arg", "none",
-			KEY_META, "opt/long", "no-preserve-root", KEY_END),
-		keyNew (SPEC_BASE_KEY "/preserve", KEY_META, "description",
+		keyNew (SPEC_BASE_KEY "/emptydirs", ELEKTRA_KEY_META, "description", "remove empty directories", ELEKTRA_KEY_META, "opt", "d", ELEKTRA_KEY_META,
+			"opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "dir", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/force", ELEKTRA_KEY_META, "description", "ignore nonexistent files and arguments, never prompt", ELEKTRA_KEY_META,
+			"opt", "f", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "force", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/interactive", ELEKTRA_KEY_META, "description",
+			"prompt according to WHEN: never, once (-I), or always (-i), without WHEN, prompt always", ELEKTRA_KEY_META, "opt", "#1",
+			ELEKTRA_KEY_META, "opt/#0", "i", ELEKTRA_KEY_META, "opt/#0/arg", "optional", ELEKTRA_KEY_META, "opt/#0/flagvalue", "always", ELEKTRA_KEY_META,
+			"opt/#0/long", "interactive", ELEKTRA_KEY_META, "opt/#1", "I", ELEKTRA_KEY_META, "opt/#1/arg", "none", ELEKTRA_KEY_META, "opt/#1/flagvalue",
+			"once", ELEKTRA_KEY_META, "opt/arg/name", "WHEN", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/nopreserve", ELEKTRA_KEY_META, "description", "do not treat '/' specially", ELEKTRA_KEY_META, "opt/arg", "none",
+			ELEKTRA_KEY_META, "opt/long", "no-preserve-root", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/preserve", ELEKTRA_KEY_META, "description",
 			"do not remove '/' (default), with 'all', reject any command line argument on a separate device from its parent",
-			KEY_META, "opt/arg", "optional", KEY_META, "opt/arg/name", "all", KEY_META, "opt/flagvalue", "root", KEY_META,
-			"opt/long", "preserve-root", KEY_END),
-		keyNew (SPEC_BASE_KEY "/recursive", KEY_META, "description", "remove directories and their contents recursively", KEY_META,
-			"opt", "#1", KEY_META, "opt/#0", "r", KEY_META, "opt/#0/arg", "none", KEY_META, "opt/#0/long", "recursive",
-			KEY_META, "opt/#1", "R", KEY_META, "opt/#1/arg", "none", KEY_END),
-		keyNew (SPEC_BASE_KEY "/showversion", KEY_META, "description", "output version information and exit", KEY_META, "opt/arg",
-			"none", KEY_META, "opt/long", "version", KEY_END),
-		keyNew (SPEC_BASE_KEY "/singlefs", KEY_META, "description",
+			ELEKTRA_KEY_META, "opt/arg", "optional", ELEKTRA_KEY_META, "opt/arg/name", "all", ELEKTRA_KEY_META, "opt/flagvalue", "root", ELEKTRA_KEY_META,
+			"opt/long", "preserve-root", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/recursive", ELEKTRA_KEY_META, "description", "remove directories and their contents recursively", ELEKTRA_KEY_META,
+			"opt", "#1", ELEKTRA_KEY_META, "opt/#0", "r", ELEKTRA_KEY_META, "opt/#0/arg", "none", ELEKTRA_KEY_META, "opt/#0/long", "recursive",
+			ELEKTRA_KEY_META, "opt/#1", "R", ELEKTRA_KEY_META, "opt/#1/arg", "none", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/showversion", ELEKTRA_KEY_META, "description", "output version information and exit", ELEKTRA_KEY_META, "opt/arg",
+			"none", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/singlefs", ELEKTRA_KEY_META, "description",
 			"when removing a hierarchy recursively, skip any directory that is on a file system different from that of the "
 			"corresponding line argument",
-			KEY_META, "opt/arg", "none", KEY_META, "opt/long", "one-file-system", KEY_END),
-		keyNew (SPEC_BASE_KEY "/verbose", KEY_META, "description", "explain what is being done", KEY_META, "opt", "v", KEY_META,
-			"opt/arg", "none", KEY_META, "opt/long", "verbose", KEY_META, "env", "VERBOSE", KEY_END),
-		keyNew (SPEC_BASE_KEY "/files/#", KEY_META, "description", "the files that shall be deleted", KEY_META, "args", "remaining",
-			KEY_META, "env", "FILES", KEY_END),
-		KS_END);
+			ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "one-file-system", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/verbose", ELEKTRA_KEY_META, "description", "explain what is being done", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META,
+			"opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "verbose", ELEKTRA_KEY_META, "env", "VERBOSE", ELEKTRA_KEY_END),
+		keyNew (SPEC_BASE_KEY "/files/#", ELEKTRA_KEY_META, "description", "the files that shall be deleted", ELEKTRA_KEY_META, "args", "remaining",
+			ELEKTRA_KEY_META, "env", "FILES", ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 }
 
 static int setupSpec (void)
 {
-	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (kdb, ks, parentKey);
 
 	ElektraKeyset * existing = ksCut (ks, parentKey);
@@ -96,9 +96,9 @@ static int setupSpec (void)
 
 static void removeSpec (void)
 {
-	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	ElektraKey * parentKey = keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_END);
 	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (kdb, ks, parentKey);
 	ElektraKeyset * spec = ksCut (ks, parentKey);
 	ksDel (spec);
@@ -122,15 +122,15 @@ int main (int argc, const char * const * argv)
 		return EXIT_FAILURE;
 	}
 
-	ElektraKey * parentKey = keyNew (BASE_KEY, KEY_END);
-	ElektraKeyset * goptsConfig = ksNew (0, KS_END);
-	ElektraKeyset * contract = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew (BASE_KEY, ELEKTRA_KEY_END);
+	ElektraKeyset * goptsConfig = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * contract = ksNew (0, ELEKTRA_KS_END);
 
 	elektraGOptsContract (contract, argc, argv, (const char * const *) environ, parentKey, goptsConfig);
 
 	ElektraKdb * kdb = kdbOpen (contract, parentKey);
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	int rc = kdbGet (kdb, ks, parentKey);
 
 	if (rc == -1)

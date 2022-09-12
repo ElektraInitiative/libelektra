@@ -21,8 +21,8 @@ int elektraIoContract (ElektraKeyset * contract, ElektraIoInterface * ioBinding)
 {
 	if (contract == NULL || ioBinding == NULL) return -1;
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/io/binding", KEY_BINARY, KEY_SIZE, sizeof (ioBinding),
-				       KEY_VALUE, &ioBinding, KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/io/binding", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (ioBinding),
+				       ELEKTRA_KEY_VALUE, &ioBinding, ELEKTRA_KEY_END));
 
 	return 0;
 }

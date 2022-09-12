@@ -260,21 +260,21 @@ static void test_keySetNamespace (void)
 {
 	printf ("test keySetNamespace\n");
 
-	ElektraKey * k = keyNew ("/test/123", KEY_END);
-	succeed_if (keySetNamespace (k, KEY_NS_CASCADING) == 10, "new size wrong");
-	succeed_if (keyGetNamespace (k) == KEY_NS_CASCADING, "new namespace wrong");
+	ElektraKey * k = keyNew ("/test/123", ELEKTRA_KEY_END);
+	succeed_if (keySetNamespace (k, ELEKTRA_NS_CASCADING) == 10, "new size wrong");
+	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_CASCADING, "new namespace wrong");
 	succeed_if_same_string (keyName (k), "/test/123");
 
-	succeed_if (keySetNamespace (k, KEY_NS_USER) == 15, "new size wrong");
-	succeed_if (keyGetNamespace (k) == KEY_NS_USER, "new namespace wrong");
+	succeed_if (keySetNamespace (k, ELEKTRA_NS_USER) == 15, "new size wrong");
+	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_USER, "new namespace wrong");
 	succeed_if_same_string (keyName (k), "user:/test/123");
 
-	succeed_if (keySetNamespace (k, KEY_NS_SPEC) == 15, "new size wrong");
-	succeed_if (keyGetNamespace (k) == KEY_NS_SPEC, "new namespace wrong");
+	succeed_if (keySetNamespace (k, ELEKTRA_NS_SPEC) == 15, "new size wrong");
+	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_SPEC, "new namespace wrong");
 	succeed_if_same_string (keyName (k), "spec:/test/123");
 
-	succeed_if (keySetNamespace (k, KEY_NS_SYSTEM) == 17, "new size wrong");
-	succeed_if (keyGetNamespace (k) == KEY_NS_SYSTEM, "new namespace wrong");
+	succeed_if (keySetNamespace (k, ELEKTRA_NS_SYSTEM) == 17, "new size wrong");
+	succeed_if (keyGetNamespace (k) == ELEKTRA_NS_SYSTEM, "new namespace wrong");
 	succeed_if_same_string (keyName (k), "system:/test/123");
 
 	keyDel (k);

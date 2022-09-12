@@ -473,13 +473,13 @@ char * elektraVFormat (const char * format, va_list arg_list)
 
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len)
 {
-	if (len == 0) return KEY_NS_NONE;
-	if (strncmp (namespaceStr, "system", len) == 0) return KEY_NS_SYSTEM;
-	if (strncmp (namespaceStr, "user", len) == 0) return KEY_NS_USER;
-	if (strncmp (namespaceStr, "dir", len) == 0) return KEY_NS_DIR;
-	if (strncmp (namespaceStr, "proc", len) == 0) return KEY_NS_PROC;
-	if (strncmp (namespaceStr, "spec", len) == 0) return KEY_NS_SPEC;
-	if (strncmp (namespaceStr, "meta", len) == 0) return KEY_NS_META;
-	if (strncmp (namespaceStr, "default", len) == 0) return KEY_NS_DEFAULT;
-	return KEY_NS_NONE;
+	if (len == 0) return ELEKTRA_NS_NONE;
+	if (strncmp (namespaceStr, "system", len) == 0) return ELEKTRA_NS_SYSTEM;
+	if (strncmp (namespaceStr, "user", len) == 0) return ELEKTRA_NS_USER;
+	if (strncmp (namespaceStr, "dir", len) == 0) return ELEKTRA_NS_DIR;
+	if (strncmp (namespaceStr, "proc", len) == 0) return ELEKTRA_NS_PROC;
+	if (strncmp (namespaceStr, "spec", len) == 0) return ELEKTRA_NS_SPEC;
+	if (strncmp (namespaceStr, "meta", len) == 0) return ELEKTRA_NS_META;
+	if (strncmp (namespaceStr, "default", len) == 0) return ELEKTRA_NS_DEFAULT;
+	return ELEKTRA_NS_NONE;
 }

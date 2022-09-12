@@ -18,17 +18,17 @@
 
 static void test_BlockresolverRead (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("system:/test/blockresolver-read", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/path", KEY_VALUE, srcdir_file (fileName), KEY_END),
-			       keyNew ("system:/identifier", KEY_VALUE, "### block config", KEY_END), KS_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/test/blockresolver-read", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/path", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END),
+			       keyNew ("system:/identifier", ELEKTRA_KEY_VALUE, "### block config", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * resolver = elektraPluginOpen ("blockresolver", modules, ksDup (conf), 0);
 	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed");
 	output_warnings (parentKey);
 	output_error (parentKey);
-	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
+	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, ELEKTRA_KS_END), 0);
 	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "system:/test/blockresolver-read/key", 0)), "inside block"),
 		    "blockresolver failed to resolve requested block");
@@ -54,15 +54,15 @@ static void test_BlockresolverWrite (char * fileName, char * compareName)
 	fclose (fin);
 	fclose (fout);
 
-	ElektraKey * parentKey = keyNew ("system:/test/blockresolver-write", KEY_VALUE, foutname, KEY_END);
-	ElektraKeyset * conf = ksNew (10, keyNew ("system:/path", KEY_VALUE, foutname, KEY_END),
-			       keyNew ("system:/identifier", KEY_VALUE, "### block config", KEY_END), KS_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/test/blockresolver-write", ELEKTRA_KEY_VALUE, foutname, ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (10, keyNew ("system:/path", ELEKTRA_KEY_VALUE, foutname, ELEKTRA_KEY_END),
+			       keyNew ("system:/identifier", ELEKTRA_KEY_VALUE, "### block config", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * resolver = elektraPluginOpen ("blockresolver", modules, ksDup (conf), 0);
 	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed");
-	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
+	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, ELEKTRA_KS_END), 0);
 	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed");
 	keySetString (ksLookupByName (ks, "system:/test/blockresolver-write/key", 0), "only the inside has changed");
 	succeed_if (storage->kdbSet (storage, ks, parentKey) >= 0, "storage->kdbSet failed");

@@ -13,8 +13,8 @@ static void test_keyCmp (void)
 {
 	printf ("check keyCmp\n");
 
-	ElektraKey * k1 = keyNew ("user:/valid", KEY_END);
-	ElektraKey * k2 = keyNew ("user:/valid", KEY_END);
+	ElektraKey * k1 = keyNew ("user:/valid", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("user:/valid", ELEKTRA_KEY_END);
 
 	succeed_if (keyCmp (0, 0) == 0, "all null pointers are same");
 
@@ -102,8 +102,8 @@ static void test_keyCmp (void)
 static void test_directbelow (void)
 {
 	printf ("check if direct below\n");
-	ElektraKey * k1 = keyNew ("/", KEY_END);
-	ElektraKey * k2 = keyNew ("/", KEY_END);
+	ElektraKey * k1 = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("/", ELEKTRA_KEY_END);
 
 	succeed_if (keySetName (k1, "user:/") == 7, "should be a valid name");
 	succeed_if (keySetName (k2, "user:/a") == 8, "should be a valid name");
@@ -149,8 +149,8 @@ static void test_directbelow (void)
 static void test_below (void)
 {
 	printf ("check if below\n");
-	ElektraKey * k1 = keyNew ("/", KEY_END);
-	ElektraKey * k2 = keyNew ("/", KEY_END);
+	ElektraKey * k1 = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("/", ELEKTRA_KEY_END);
 
 	succeed_if (keySetName (k1, "user:/tests/simple") == 19, "should be a valid name");
 	succeed_if (keySetName (k2, "user:/tests/simple/below") == 25, "should be a valid name");
@@ -192,8 +192,8 @@ static void test_below (void)
 static void test_examples (void)
 {
 	printf ("check examples\n");
-	ElektraKey * key = keyNew ("/", KEY_END);
-	ElektraKey * check = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * check = keyNew ("/", ELEKTRA_KEY_END);
 
 	succeed_if (keySetName (key, "user:/key/folder") == 17, "should be a valid name");
 	succeed_if (keySetName (check, "user:/key/folder") == 17, "should be a valid name");
@@ -225,8 +225,8 @@ static void test_examples (void)
 static void test_hierarchy (void)
 {
 	printf ("check hierarchy\n");
-	ElektraKey * key = keyNew ("/", KEY_END);
-	ElektraKey * check = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * check = keyNew ("/", ELEKTRA_KEY_END);
 
 	succeed_if (keySetName (key, "user:/key/folder/key") == 21, "should be a valid name");
 	succeed_if (keySetName (check, "user:/other/folder/key") == 23, "should be a valid name");
@@ -253,14 +253,14 @@ static void test_hierarchy (void)
 
 void test_keyCmpNsOrder (void)
 {
-	ElektraKey * cascadingKey = keyNew ("/key", KEY_END);
-	ElektraKey * metaKey = keyNew ("meta:/key", KEY_END);
-	ElektraKey * specKey = keyNew ("spec:/key", KEY_END);
-	ElektraKey * procKey = keyNew ("proc:/key", KEY_END);
-	ElektraKey * dirKey = keyNew ("dir:/key", KEY_END);
-	ElektraKey * userKey = keyNew ("user:/key", KEY_END);
-	ElektraKey * systemKey = keyNew ("system:/key", KEY_END);
-	ElektraKey * defaultKey = keyNew ("default:/key", KEY_END);
+	ElektraKey * cascadingKey = keyNew ("/key", ELEKTRA_KEY_END);
+	ElektraKey * metaKey = keyNew ("meta:/key", ELEKTRA_KEY_END);
+	ElektraKey * specKey = keyNew ("spec:/key", ELEKTRA_KEY_END);
+	ElektraKey * procKey = keyNew ("proc:/key", ELEKTRA_KEY_END);
+	ElektraKey * dirKey = keyNew ("dir:/key", ELEKTRA_KEY_END);
+	ElektraKey * userKey = keyNew ("user:/key", ELEKTRA_KEY_END);
+	ElektraKey * systemKey = keyNew ("system:/key", ELEKTRA_KEY_END);
+	ElektraKey * defaultKey = keyNew ("default:/key", ELEKTRA_KEY_END);
 
 	succeed_if (keyCmp (cascadingKey, cascadingKey) == 0, "cascading not equal to cascading");
 	succeed_if (keyCmp (cascadingKey, metaKey) < 0, "cascading not smaller than meta");

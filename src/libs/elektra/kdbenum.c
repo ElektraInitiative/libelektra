@@ -85,16 +85,16 @@
  */
 enum elektraKeyFlags
 {
-	KEY_NAME = 1,	      /*!< Flag for the key name */
-	KEY_VALUE = 1 << 1,   /*!< Flag for the key data */
-	KEY_FLAGS = 3,	      /*!< Allows to define multiple flags at once. */
-	KEY_COMMENT = 1 << 3, /*!< Flag for the key comment */
-	KEY_BINARY = 1 << 4,  /*!< Flag if the key is binary */
-	KEY_SIZE = 1 << 11,   /*!< Flag for maximum size to limit value */
-	KEY_META = 1 << 15,   /*!< Flag for metadata */
-	KEY_NULL = 1 << 16,   /*!< Is *not* a flag, only as return value @deprecated do not use */
+	ELEKTRA_KEY_NAME = 1,	      /*!< Flag for the key name */
+	ELEKTRA_KEY_VALUE = 1 << 1,   /*!< Flag for the key data */
+	ELEKTRA_KEY_FLAGS = 3,	      /*!< Allows to define multiple flags at once. */
+	ELEKTRA_KEY_COMMENT = 1 << 3, /*!< Flag for the key comment */
+	ELEKTRA_KEY_BINARY = 1 << 4,  /*!< Flag if the key is binary */
+	ELEKTRA_KEY_SIZE = 1 << 11,   /*!< Flag for maximum size to limit value */
+	ELEKTRA_KEY_META = 1 << 15,   /*!< Flag for metadata */
+	ELEKTRA_KEY_NULL = 1 << 16,   /*!< Is *not* a flag, only as return value @deprecated do not use */
 	// hole for elektraLockFlags
-	KEY_END = 0 /*!< Used as a parameter terminator to keyNew() */
+	ELEKTRA_KEY_END = 0 /*!< Used as a parameter terminator to keyNew() */
 };
 
 /**
@@ -105,11 +105,11 @@ enum elektraKeyFlags
  */
 enum elektraCopyFlags
 {
-	KEY_CP_NAME = 1 << 0,				       /*!< Flag for copying the key name */
-	KEY_CP_STRING = 1 << 1,				       /*!< Flag for copying the key value, if it is a string */
-	KEY_CP_VALUE = 1 << 2,				       /*!< Flag for copying the key value */
-	KEY_CP_META = 1 << 3,				       /*!< Flag for copying the key metadata */
-	KEY_CP_ALL = KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META, /*!< Shorthand for copying name, value and metadata */
+	ELEKTRA_KEY_CP_NAME = 1 << 0,				       /*!< Flag for copying the key name */
+	ELEKTRA_KEY_CP_STRING = 1 << 1,				       /*!< Flag for copying the key value, if it is a string */
+	ELEKTRA_KEY_CP_VALUE = 1 << 2,				       /*!< Flag for copying the key value */
+	ELEKTRA_KEY_CP_META = 1 << 3,				       /*!< Flag for copying the key metadata */
+	ELEKTRA_KEY_CP_ALL = ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE | ELEKTRA_KEY_CP_META, /*!< Shorthand for copying name, value and metadata */
 };
 
 /**
@@ -120,9 +120,9 @@ enum elektraCopyFlags
  */
 enum elektraLockFlags
 {
-	KEY_LOCK_NAME = 1 << 17,  /*!< lock the name of a key */
-	KEY_LOCK_VALUE = 1 << 18, /*!< lock the value of a key */
-	KEY_LOCK_META = 1 << 19,  /*!< lock the meta data of a key */
+	ELEKTRA_KEY_LOCK_NAME = 1 << 17,  /*!< lock the name of a key */
+	ELEKTRA_KEY_LOCK_VALUE = 1 << 18, /*!< lock the value of a key */
+	ELEKTRA_KEY_LOCK_META = 1 << 19,  /*!< lock the meta data of a key */
 };
 
 
@@ -134,15 +134,15 @@ enum elektraLockFlags
  */
 enum elektraNamespace
 {
-	KEY_NS_NONE = 0,      ///< no key given as parameter to keyGetNamespace()
-	KEY_NS_CASCADING = 1, ///< cascading key, starts with /, abstract name for any of the namespaces below
-	KEY_NS_META = 2,      ///< metakey, i.e. any key name not under other categories
-	KEY_NS_SPEC = 3,      ///< spec contains the specification of the other namespaces
-	KEY_NS_PROC = 4,      ///< proc contains process-specific configuration
-	KEY_NS_DIR = 5,	      ///< dir contains configuration from a specific directory
-	KEY_NS_USER = 6,      ///< user key in the home directory of the current user
-	KEY_NS_SYSTEM = 7,    ///< system key is shared for a computer system
-	KEY_NS_DEFAULT = 8,   ///< default key used as a fallback if no other key is found
+	ELEKTRA_NS_NONE = 0,      ///< no key given as parameter to keyGetNamespace()
+	ELEKTRA_NS_CASCADING = 1, ///< cascading key, starts with /, abstract name for any of the namespaces below
+	ELEKTRA_NS_META = 2,      ///< metakey, i.e. any key name not under other categories
+	ELEKTRA_NS_SPEC = 3,      ///< spec contains the specification of the other namespaces
+	ELEKTRA_NS_PROC = 4,      ///< proc contains process-specific configuration
+	ELEKTRA_NS_DIR = 5,	      ///< dir contains configuration from a specific directory
+	ELEKTRA_NS_USER = 6,      ///< user key in the home directory of the current user
+	ELEKTRA_NS_SYSTEM = 7,    ///< system key is shared for a computer system
+	ELEKTRA_NS_DEFAULT = 8,   ///< default key used as a fallback if no other key is found
 };
 
 /**
@@ -155,7 +155,7 @@ enum elektraNamespace
  * @see ksNew() and ksVNew()
  * @ingroup keyset
  */
-#define KS_END ((Key *) 0)
+#define ELEKTRA_KS_END ((Key *) 0)
 
 /**
  * Options to change the default behavior of
@@ -174,16 +174,16 @@ enum elektraLookupFlags
 	 *
 	 * @see ksLookup()
 	 */
-	KDB_O_NONE = 0,
+	ELEKTRA_KDB_O_NONE = 0,
 	/**
 	 * Delete parentKey key in ksLookup().
 	 *
 	 * @see ksLookup()
 	 */
-	KDB_O_DEL = 1,
+	ELEKTRA_KDB_O_DEL = 1,
 	/** Pop Parent out of keyset key in ksLookup().
 	 *
 	 * @see ksPop().
 	 */
-	KDB_O_POP = 1 << 1
+	ELEKTRA_KDB_O_POP = 1 << 1
 };

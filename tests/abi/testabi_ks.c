@@ -15,24 +15,24 @@ char * namespaces[] = { "spec:/", "proc:/", "dir:/", "user:/", "system:/", 0 };
 static void test_ksNew (void)
 {
 	ElektraKeyset * ks = 0;
-	ElektraKeyset * keys = ksNew (15, KS_END);
+	ElektraKeyset * keys = ksNew (15, ELEKTRA_KS_END);
 	ElektraKeyset * config;
 
 	printf ("Test ks creation\n");
-	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
+	exit_if_fail ((ks = ksNew (0, ELEKTRA_KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, keyNew ("user:/a", KEY_END)) == 1, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/b", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/c", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a", ELEKTRA_KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/b", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/c", ELEKTRA_KEY_END)) == 3, "could not append a key");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after 3 keys");
 
-	ElektraKeyset * ks2 = ksNew (0, KS_END);
+	ElektraKeyset * ks2 = ksNew (0, ELEKTRA_KS_END);
 	ksCopy (ks2, ks);
 	compare_keyset (ks, ks2);
 
-	succeed_if (ksAppendKey (ks, keyNew ("user:/d", KEY_END)) == 4, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/e", KEY_END)) == 5, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/f", KEY_END)) == 6, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/d", ELEKTRA_KEY_END)) == 4, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/e", ELEKTRA_KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/f", ELEKTRA_KEY_END)) == 6, "could not append a key");
 	succeed_if (ksGetSize (ks) == 6, "could not append 3 more keys");
 
 	ksCopy (ks2, ks);
@@ -49,9 +49,9 @@ static void test_ksNew (void)
 	// succeed_if(ksGetAlloc(keys) == 15, "allocation size wrong");
 	succeed_if (ksDel (keys) == 0, "could not delete keyset");
 
-	config = ksNew (100, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", KEY_END),
-			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", KEY_END),
-			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", KEY_END), KS_END);
+	config = ksNew (100, keyNew ("user:/sw/app/fixedConfiguration/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetSize (config) == 3, "could not append 3 keys in keyNew");
 	// this behaviour might change, do not build on it,
 	// and there is no compatible way to get the alloc info
@@ -64,14 +64,14 @@ static void test_ksNew (void)
 	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	succeed_if (ksDel (config) == 0, "could not delete keyset");
 
-	config = ksNew (10, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", KEY_END),
-			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", KEY_END),
-			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", KEY_END),
-			keyNew ("user:/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", KEY_END), KS_END);
+	config = ksNew (10, keyNew ("user:/sw/app/fixedConfiguration/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key4", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (ksGetSize (config) == 4, "could not append 5 keys in keyNew");
 	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
-	ksAppendKey (config, keyNew ("user:/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", KEY_END));
+	ksAppendKey (config, keyNew ("user:/sw/app/fixedConfiguration/key6", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END));
 
 	ksClear (ks2);
 	ksCopy (ks2, config);
@@ -80,8 +80,8 @@ static void test_ksNew (void)
 	succeed_if (ksDel (config) == 0, "could not delete keyset");
 	succeed_if (ksDel (ks2) == 0, "could not delete keyset");
 
-	ElektraKeyset * ks_c = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
-			       keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
+	ElektraKeyset * ks_c = ksNew (5, keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END),
+			       keyNew ("system:/valid/key1", ELEKTRA_KEY_END), keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (ksCurrent (ks_c) == 0, "should be rewinded");
 	ksDel (ks_c);
@@ -96,13 +96,13 @@ static void test_ksEmpty (void)
 	ElektraKeyset * ks2;
 	ElektraKey * current;
 
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
 	succeed_if (ksPop (ks) == 0, "pop empty keyset");
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
 	ksDel (ks);
 
-	ks = ksNew (1, current = keyNew ("user:/test", KEY_END), KS_END);
+	ks = ksNew (1, current = keyNew ("user:/test", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
 	succeed_if (ksPop (ks) == current, "pop empty keyset");
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
@@ -111,8 +111,8 @@ static void test_ksEmpty (void)
 	keyDel (current);
 	ksDel (ks);
 
-	ks = ksNew (0, KS_END);
-	ks2 = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ks2 = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (ksAppend (ks, ks2) == 0, "could not append empty keyset");
 	succeed_if (ksGetSize (ks) == 0, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 0, "empty keyset does not have correct size");
@@ -121,8 +121,8 @@ static void test_ksEmpty (void)
 	ksDel (ks);
 	ksDel (ks2);
 
-	ks = ksNew (1, current = keyNew ("user:/test", KEY_END), KS_END);
-	ks2 = ksNew (0, KS_END);
+	ks = ksNew (1, current = keyNew ("user:/test", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ks2 = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (ksGetSize (ks) == 1, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 0, "empty keyset does not have correct size");
 	succeed_if (ksAppend (ks, ks2) == 1, "could not append empty keyset");
@@ -140,8 +140,8 @@ static void test_ksEmpty (void)
 	ksDel (ks2);
 
 
-	ks = ksNew (0, KS_END);
-	ks2 = ksNew (1, current = keyNew ("user:/test", KEY_END), KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ks2 = ksNew (1, current = keyNew ("user:/test", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetSize (ks) == 0, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 1, "empty keyset does not have correct size");
 	succeed_if (ksAppend (ks, ks2) == 1, "could not append empty keyset");
@@ -171,8 +171,8 @@ static void test_ksReference (void)
 
 	printf ("Test reference of key\n");
 
-	ks = ksNew (0, KS_END);
-	k1 = keyNew ("user:/aname", KEY_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
+	k1 = keyNew ("user:/aname", ELEKTRA_KEY_END);
 
 	succeed_if (ksHead (0) == 0, "Not NULL on NULL KeySet");
 	succeed_if (ksTail (0) == 0, "Not NULL on NULL KeySet");
@@ -187,7 +187,7 @@ static void test_ksReference (void)
 	succeed_if (ksHead (ks) == k1, "head wrong");
 	succeed_if (ksTail (ks) == k1, "tail wrong");
 
-	k2 = keyDup (k1, KEY_CP_ALL);
+	k2 = keyDup (k1, ELEKTRA_KEY_CP_ALL);
 	keySetString (k2, "newvalue");
 
 	succeed_if (keyGetRef (k2) == 0, "reference counter not resetted");
@@ -201,7 +201,7 @@ static void test_ksReference (void)
 
 	ksDel (ks);
 
-	ks = ksNew (5, keyNew ("user:/key", KEY_END), keyNew ("system:/key", KEY_END), KS_END);
+	ks = ksNew (5, keyNew ("user:/key", ELEKTRA_KEY_END), keyNew ("system:/key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	k1 = ksLookupByName (ks, "system:/key", 0);
 	k2 = ksLookupByName (ks, "user:/key", 0);
@@ -212,7 +212,7 @@ static void test_ksReference (void)
 
 	ksDel (ks);
 
-	ks = ksNew (5, keyNew ("user:/key", KEY_END), keyNew ("system:/key", KEY_END), KS_END);
+	ks = ksNew (5, keyNew ("user:/key", ELEKTRA_KEY_END), keyNew ("system:/key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	k1 = ksLookupByName (ks, "system:/key", 0);
 	k2 = ksLookupByName (ks, "user:/key", 0);
@@ -235,8 +235,8 @@ static void test_ksReference (void)
 	succeed_if (keyGetRef (k2) == 1, "reference counter, delete from first keyset");
 	ksDel (ks1); // k1 and k2 deleted
 
-	ks1 = ksNew (0, KS_END);
-	k1 = keyNew ("user:/k1", KEY_END);
+	ks1 = ksNew (0, ELEKTRA_KS_END);
+	k1 = keyNew ("user:/k1", ELEKTRA_KEY_END);
 	succeed_if (keyGetRef (k1) == 0, "reference counter of new inserted key");
 	succeed_if (ksAppendKey (ks1, k1) == 1, "appending did not work");
 	succeed_if (ksGetSize (ks1) == 1, "size did not match");
@@ -252,7 +252,7 @@ static void test_ksReference (void)
 	succeed_if (ksDel (ks1) == 0, "could not delete key");
 
 
-	kss[0] = ksNew (5, k1 = keyNew ("user:/key", KEY_END), k2 = keyNew ("system:/key", KEY_END), KS_END);
+	kss[0] = ksNew (5, k1 = keyNew ("user:/key", ELEKTRA_KEY_END), k2 = keyNew ("system:/key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	for (i = 1; i < NR_KEYSETS; i++)
 	{
 		succeed_if (keyGetRef (k1) == i, "reference counter");
@@ -283,7 +283,7 @@ static void test_ksDup (void)
 
 	succeed_if (ksDup (0) == 0, "No error on NULL pointer");
 
-	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
+	exit_if_fail ((ks = ksNew (0, ELEKTRA_KS_END)) != 0, "could not create new keyset");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 0, "ks has keys");
@@ -291,7 +291,7 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("user:/anything", KEY_END), KS_END)) != 0, "could not create new keyset");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/anything", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 1, "ks has no keys");
@@ -299,10 +299,10 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("system:/some", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("system:/some", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 4, "ks has no keys");
@@ -310,10 +310,10 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("user:/any123", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/any123", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
@@ -322,14 +322,14 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("system:/test", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("system:/test", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test4", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test4", ELEKTRA_KEY_END)) == 5, "could not append a key");
 	succeed_if (ksGetSize (ks) == 5, "ks has no keys");
 	succeed_if (ksGetSize (other) == 3, "other has no keys");
 	ksDel (other);
@@ -343,17 +343,17 @@ static void test_ksCopy (void)
 
 	printf ("Test ks copy\n");
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("user:/testro", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/testro", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (0, ks) == -1, "No error on NULL pointer");
 	succeed_if (ksCopy (ks, 0) == 0, "Could not delete ks with ksCopy");
 	succeed_if (ksGetSize (ks) == 0, "ks has keys after deleting with ksCopy");
 	ksDel (ks);
 
-	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
+	other = ksNew (0, ELEKTRA_KS_END);
+	exit_if_fail ((ks = ksNew (0, ELEKTRA_KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 0, "ks has keys");
@@ -361,8 +361,8 @@ static void test_ksCopy (void)
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user:/test3", KEY_END), KS_END)) != 0, "could not create new keyset");
+	other = ksNew (0, ELEKTRA_KS_END);
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/test3", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 1, "ks has no keys");
@@ -370,11 +370,11 @@ static void test_ksCopy (void)
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user:/testro", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	other = ksNew (0, ELEKTRA_KS_END);
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/testro", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 4, "ks has no keys");
@@ -382,11 +382,11 @@ static void test_ksCopy (void)
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("system:/test", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	other = ksNew (0, ELEKTRA_KS_END);
+	exit_if_fail ((ks = ksNew (1, keyNew ("system:/test", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
@@ -395,29 +395,29 @@ static void test_ksCopy (void)
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user:/mykeys", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	other = ksNew (0, ELEKTRA_KS_END);
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/mykeys", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test", ELEKTRA_KEY_END)) == 5, "could not append a key");
 	succeed_if (ksGetSize (ks) == 5, "ks has no keys");
 	succeed_if (ksGetSize (other) == 3, "other has no keys");
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user:/a/b/c", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/a/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/a/b/test", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user:/a/b/ctest", KEY_END)) == 4, "could not append a key");
+	other = ksNew (0, ELEKTRA_KS_END);
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/a/b/c", ELEKTRA_KEY_END), ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a/test", ELEKTRA_KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a/b/test", ELEKTRA_KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a/b/ctest", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
-	succeed_if (ksAppendKey (ks, keyNew ("user:/test", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test", ELEKTRA_KEY_END)) == 5, "could not append a key");
 	succeed_if (ksGetSize (ks) == 5, "ks has no keys");
 	succeed_if (ksGetSize (other) == 3, "other has no keys");
 
@@ -430,10 +430,10 @@ static void test_ksCopy (void)
 	ksDel (ks);
 
 
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user:/abc", KEY_META, "def", "egh", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("user:/abc", ELEKTRA_KEY_META, "def", "egh", ELEKTRA_KEY_END));
 
-	other = ksNew (0, KS_END);
+	other = ksNew (0, ELEKTRA_KS_END);
 	ksCopy (other, ks);
 	compare_keyset (ks, other);
 
@@ -443,8 +443,8 @@ static void test_ksCopy (void)
 
 static void test_ksIterate (void)
 {
-	ElektraKeyset * ks = ksNew (0, KS_END);
-	ElektraKeyset * other = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * other = ksNew (0, ELEKTRA_KS_END);
 	ElektraKey * key;
 	int i;
 	char name[] = "user:/n";
@@ -458,11 +458,11 @@ static void test_ksIterate (void)
 	succeed_if (ksNext (ks) == 0, "No NULL pointer on empty keyset");
 	succeed_if (ksRewind (ks) == 0, "Cannot rewind empty keyset");
 
-	ksAppendKey (ks, keyNew ("user:/1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/2", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/3", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/4", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/5", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/3", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/4", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/5", ELEKTRA_KEY_END));
 	succeed_if (ksGetSize (ks) == 5, "could not append 5 keys");
 
 	succeed_if (ksRewind (ks) == 0, "Could not rewind keyset");
@@ -506,7 +506,7 @@ static void test_ksIterate (void)
 		keyDel (key);
 	}
 
-	succeed_if (ksAppendKey (other, keyNew ("user:/3", KEY_END)) == 1, "could not append one key");
+	succeed_if (ksAppendKey (other, keyNew ("user:/3", ELEKTRA_KEY_END)) == 1, "could not append one key");
 	key = ksPop (other);
 	succeed_if (key != 0, "got null pointer key");
 	succeed_if_same_string (keyName (key), "user:/3");
@@ -514,11 +514,11 @@ static void test_ksIterate (void)
 	ksDel (other);
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user:/0", KEY_END), keyNew ("user:/1", KEY_END), keyNew ("user:/2", KEY_END), keyNew ("user:/3", KEY_END),
-		    KS_END);
+	ks = ksNew (10, keyNew ("user:/0", ELEKTRA_KEY_END), keyNew ("user:/1", ELEKTRA_KEY_END), keyNew ("user:/2", ELEKTRA_KEY_END), keyNew ("user:/3", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
-	other = ksNew (10, keyNew ("user:/4", KEY_END), keyNew ("user:/5", KEY_END), keyNew ("user:/6", KEY_END),
-		       keyNew ("user:/7", KEY_END), KS_END);
+	other = ksNew (10, keyNew ("user:/4", ELEKTRA_KEY_END), keyNew ("user:/5", ELEKTRA_KEY_END), keyNew ("user:/6", ELEKTRA_KEY_END),
+		       keyNew ("user:/7", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (ksAppend (ks, other) == 8, "could not append keys");
 
@@ -536,7 +536,7 @@ static void test_ksIterate (void)
 
 static void test_ksCursor (void)
 {
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	ElektraKey * key;
 	elektraCursor cursor;
 	ElektraKey * cur;
@@ -545,17 +545,17 @@ static void test_ksCursor (void)
 
 	printf ("Test keyset cursor\n");
 
-	ksAppendKey (ks, cur = keyNew ("user:/1", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/1", ELEKTRA_KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
-	ksAppendKey (ks, cur = keyNew ("user:/2", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/2", ELEKTRA_KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
-	ksAppendKey (ks, cur = keyNew ("user:/3", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/3", ELEKTRA_KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
 	cursor = ksGetCursor (ks);
 	succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), "user:/3");
-	ksAppendKey (ks, cur = keyNew ("user:/4", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/4", ELEKTRA_KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
-	ksAppendKey (ks, cur = keyNew ("user:/5", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/5", ELEKTRA_KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
 	succeed_if (ksGetSize (ks) == 5, "could not append 5 keys");
 
@@ -587,8 +587,8 @@ static void test_ksCursor (void)
 
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user:/0", KEY_END), keyNew ("user:/1", KEY_END), keyNew ("user:/2", KEY_END), keyNew ("user:/3", KEY_END),
-		    KS_END);
+	ks = ksNew (10, keyNew ("user:/0", ELEKTRA_KEY_END), keyNew ("user:/1", ELEKTRA_KEY_END), keyNew ("user:/2", ELEKTRA_KEY_END), keyNew ("user:/3", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	ksRewind (ks);
 	for (i = 0; i < 4; i++)
@@ -607,8 +607,8 @@ static void test_ksCursor (void)
 
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user:/0", KEY_END), keyNew ("user:/1", KEY_END), keyNew ("user:/2", KEY_END), keyNew ("user:/3", KEY_END),
-		    KS_END);
+	ks = ksNew (10, keyNew ("user:/0", ELEKTRA_KEY_END), keyNew ("user:/1", ELEKTRA_KEY_END), keyNew ("user:/2", ELEKTRA_KEY_END), keyNew ("user:/3", ELEKTRA_KEY_END),
+		    ELEKTRA_KS_END);
 
 	ksRewind (ks);
 	for (i = 0; i < 4; i++)
@@ -634,13 +634,13 @@ static void test_ksAtCursor (void)
 	ElektraKeyset * ks;
 	ElektraKey * current;
 	ElektraKey * testKeys[5];
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 
-	testKeys[0] = keyNew ("user:/test1", KEY_END);
-	testKeys[1] = keyNew ("user:/test2", KEY_END);
-	testKeys[2] = keyNew ("user:/test3", KEY_END);
-	testKeys[3] = keyNew ("user:/test4", KEY_END);
-	testKeys[4] = keyNew ("user:/test5", KEY_END);
+	testKeys[0] = keyNew ("user:/test1", ELEKTRA_KEY_END);
+	testKeys[1] = keyNew ("user:/test2", ELEKTRA_KEY_END);
+	testKeys[2] = keyNew ("user:/test3", ELEKTRA_KEY_END);
+	testKeys[3] = keyNew ("user:/test4", ELEKTRA_KEY_END);
+	testKeys[4] = keyNew ("user:/test5", ELEKTRA_KEY_END);
 
 	for (size_t index = 0; index < 5; index++)
 	{
@@ -699,10 +699,10 @@ static void test_ksSort (void)
 
 	printf ("Test ks sort\n");
 
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user:/bname", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/aname", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/cname", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("user:/bname", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/aname", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/cname", ELEKTRA_KEY_END));
 
 	ksRewind (ks);
 	key = ksNext (ks);
@@ -715,21 +715,21 @@ static void test_ksSort (void)
 	succeed_if_same_string (keyName (key), "user:/cname");
 	ksDel (ks);
 
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/b1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/h2", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/b2", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/c2", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/c1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/h1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/f", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("user:/a", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/e", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/d", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/a", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/f", ELEKTRA_KEY_END));
 
 	ksRewind (ks);
 	for (i = 0; (key = ksNext (ks)) != 0; i++)
@@ -776,11 +776,11 @@ static void test_ksSort (void)
 	}
 	ksDel (ks);
 
-	ks = ksNew (0, KS_END);
-	k1 = keyNew ("user:/xname", KEY_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
+	k1 = keyNew ("user:/xname", ELEKTRA_KEY_END);
 	ksAppendKey (ks, k1);
 
-	k2 = keyDup (k1, KEY_CP_ALL);
+	k2 = keyDup (k1, ELEKTRA_KEY_CP_ALL);
 
 	succeed_if (keyGetRef (k2) == 0, "reference counter not resetted");
 	ksAppendKey (ks, k2);
@@ -790,9 +790,9 @@ static void test_ksSort (void)
 	ksNext (ks);
 	ksDel (ks);
 
-	ks = ksNew (0, KS_END);
-	k1 = keyNew ("user:/yname", KEY_END);
-	k2 = keyDup (k1, KEY_CP_ALL);
+	ks = ksNew (0, ELEKTRA_KS_END);
+	k1 = keyNew ("user:/yname", ELEKTRA_KEY_END);
+	k2 = keyDup (k1, ELEKTRA_KEY_CP_ALL);
 	ksAppendKey (ks, k2);
 	ksAppendKey (ks, k1);
 
@@ -800,18 +800,18 @@ static void test_ksSort (void)
 	ksNext (ks);
 	ksDel (ks);
 
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/h", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/h", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/f", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("user:/a", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/e", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/d", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/f", ELEKTRA_KEY_END));
 
 	ksRewind (ks);
 	for (i = 0; (key = ksNext (ks)) != 0; i++)
@@ -850,18 +850,18 @@ static void test_ksSort (void)
 	ksDel (ks);
 
 
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/b/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/c/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/h/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/h", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/f", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("user:/a", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/e", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b/a", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/d", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c/a", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h/a", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/f", ELEKTRA_KEY_END));
 
 	ksRewind (ks);
 	// output_keyset(ks,0);
@@ -909,18 +909,18 @@ static void test_ksSort (void)
 	}
 	ksDel (ks);
 
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user:/dir1/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir1/key2", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir1/key3", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir2", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir2/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir3/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir3", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir3/key2", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir4", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir5/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/dir6/key1", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("user:/dir1/key1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir1/key2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir1/key3", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir2/key1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir3/key1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir3", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir3/key2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir4", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir5/key1", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir6/key1", ELEKTRA_KEY_END));
 
 	ksRewind (ks);
 	// output_keyset(ks,0);
@@ -971,8 +971,8 @@ static void test_ksSort (void)
 
 static void ksUnsort (ElektraKeyset * ks)
 {
-	ElektraKeyset * randks = ksNew (0, KS_END); /*This is the final randomized keyset*/
-	ElektraKeyset * tempks = ksNew (0, KS_END); /*Temporary storage for keys not chosen to be inserted*/
+	ElektraKeyset * randks = ksNew (0, ELEKTRA_KS_END); /*This is the final randomized keyset*/
+	ElektraKeyset * tempks = ksNew (0, ELEKTRA_KS_END); /*Temporary storage for keys not chosen to be inserted*/
 
 	while (ksGetSize (ks) > 0)
 	{
@@ -1002,13 +1002,13 @@ static void test_ksLookup (void)
 {
 	printf ("Test lookup\n");
 
-	ElektraKey * simpleKey = keyNew ("user:/find_me", KEY_END);
-	ElektraKeyset * simple = ksNew (5, simpleKey, KS_END);
+	ElektraKey * simpleKey = keyNew ("user:/find_me", ELEKTRA_KEY_END);
+	ElektraKeyset * simple = ksNew (5, simpleKey, ELEKTRA_KS_END);
 
 	ElektraKey * foundKey = ksLookup (simple, simpleKey, 0);
 	succeed_if (foundKey == simpleKey, "could not find key in keyset");
 
-	ElektraKey * simpleKey2 = keyNew ("user:/find_me/a", KEY_END);
+	ElektraKey * simpleKey2 = keyNew ("user:/find_me/a", ELEKTRA_KEY_END);
 	ksAppendKey (simple, simpleKey2);
 
 	foundKey = ksLookup (simple, simpleKey, 0);
@@ -1025,48 +1025,48 @@ static void test_ksLookup (void)
 	ElektraKeyset * ks = ksNew (30,
 			     // clang-format off
 		       /* keys that are searched */
-		       k[0] = keyNew ("user:/rem3", KEY_END),
-		       k[1] = keyNew ("user:/rem2", KEY_END),
-		       k[2] = keyNew ("user:/rem1/key2", KEY_END),
-		       k[3] = keyNew ("user:/rem1/key1", KEY_END),
-		       k[4] = keyNew ("user:/rem1", KEY_END),
-		       k[5] = keyNew ("user:/dir1", KEY_END),
-		       k[6] = keyNew ("user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
-		       k[7] = keyNew ("user:/dir1/key2", KEY_VALUE, "value2", KEY_END),
-		       k[8] = keyNew ("user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
-		       k[9] = keyNew ("user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
-		       k[10] = keyNew ("user:/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[11] = keyNew ("user:/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
-		       k[12] = keyNew ("user:/dir2", KEY_END),
-		       k[13] = keyNew ("user:/dir2/key1", KEY_VALUE, "value1", KEY_END),
-		       k[14] = keyNew ("user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
-		       k[15] = keyNew ("user:/dir2/key3", KEY_VALUE, "value3", KEY_END),
-		       k[16] = keyNew ("user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
-		       k[17] = keyNew ("user:/dir3", KEY_END),
-		       k[18] = keyNew ("user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
-		       k[19] = keyNew ("user:/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[20] = keyNew ("user:/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
-		       k[21] = keyNew ("user:/dir4", KEY_END),
-		       k[22] = keyNew ("user:/dir5", KEY_END),
+		       k[0] = keyNew ("user:/rem3", ELEKTRA_KEY_END),
+		       k[1] = keyNew ("user:/rem2", ELEKTRA_KEY_END),
+		       k[2] = keyNew ("user:/rem1/key2", ELEKTRA_KEY_END),
+		       k[3] = keyNew ("user:/rem1/key1", ELEKTRA_KEY_END),
+		       k[4] = keyNew ("user:/rem1", ELEKTRA_KEY_END),
+		       k[5] = keyNew ("user:/dir1", ELEKTRA_KEY_END),
+		       k[6] = keyNew ("user:/dir1/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+		       k[7] = keyNew ("user:/dir1/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END),
+		       k[8] = keyNew ("user:/dir1/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END),
+		       k[9] = keyNew ("user:/dir1/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END),
+		       k[10] = keyNew ("user:/dir1/.inactive1", ELEKTRA_KEY_COMMENT, "key is inactive", ELEKTRA_KEY_END),
+		       k[11] = keyNew ("user:/dir1/.inactive2", ELEKTRA_KEY_COMMENT, "additional information", ELEKTRA_KEY_END),
+		       k[12] = keyNew ("user:/dir2", ELEKTRA_KEY_END),
+		       k[13] = keyNew ("user:/dir2/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+		       k[14] = keyNew ("user:/dir2/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END),
+		       k[15] = keyNew ("user:/dir2/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END),
+		       k[16] = keyNew ("user:/dir2/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END),
+		       k[17] = keyNew ("user:/dir3", ELEKTRA_KEY_END),
+		       k[18] = keyNew ("user:/dir3/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+		       k[19] = keyNew ("user:/dir3/.inactive1", ELEKTRA_KEY_COMMENT, "key is inactive", ELEKTRA_KEY_END),
+		       k[20] = keyNew ("user:/dir3/.inactive2", ELEKTRA_KEY_COMMENT, "a users comment", ELEKTRA_KEY_END),
+		       k[21] = keyNew ("user:/dir4", ELEKTRA_KEY_END),
+		       k[22] = keyNew ("user:/dir5", ELEKTRA_KEY_END),
 			     // clang-format on
-			     KS_END);
+			     ELEKTRA_KS_END);
 
 	ElektraKeyset * lookupKeys = ksNew (30,
 				     /* lookup keys, keyset only for ksDel */
 				     // clang-format off
-				     k[23] = keyNew ("user:/DiR1", KEY_END),
-				     k[24] = keyNew ("user:/DiR1/KEY1", KEY_END),
-				     k[25] = keyNew ("user:/DiR1/KEY1", KEY_END),
-				     k[26] = keyNew ("user:/DiR1/KEY1", KEY_END),
-				     k[27] = keyNew ("user:/dir1/key1", KEY_END),
-				     k[28] = keyNew ("user:/dir1/key1", KEY_END),
-				     k[29] = keyNew ("user:/dir2/key1", KEY_END),
-				     k[30] = keyNew ("user:/dir2/key1", KEY_END),
-				     k[31] = keyNew ("user:/dir2/key1", KEY_END),
-				     k[32] = keyNew ("/dir1/key1", KEY_END),
-				     k[33] = keyNew ("/dirX/keyY", KEY_END),
+				     k[23] = keyNew ("user:/DiR1", ELEKTRA_KEY_END),
+				     k[24] = keyNew ("user:/DiR1/KEY1", ELEKTRA_KEY_END),
+				     k[25] = keyNew ("user:/DiR1/KEY1", ELEKTRA_KEY_END),
+				     k[26] = keyNew ("user:/DiR1/KEY1", ELEKTRA_KEY_END),
+				     k[27] = keyNew ("user:/dir1/key1", ELEKTRA_KEY_END),
+				     k[28] = keyNew ("user:/dir1/key1", ELEKTRA_KEY_END),
+				     k[29] = keyNew ("user:/dir2/key1", ELEKTRA_KEY_END),
+				     k[30] = keyNew ("user:/dir2/key1", ELEKTRA_KEY_END),
+				     k[31] = keyNew ("user:/dir2/key1", ELEKTRA_KEY_END),
+				     k[32] = keyNew ("/dir1/key1", ELEKTRA_KEY_END),
+				     k[33] = keyNew ("/dirX/keyY", ELEKTRA_KEY_END),
 				     // clang-format on
-				     KS_END);
+				     ELEKTRA_KS_END);
 	succeed_if (keyGetNameSize (k[32]) == 11, "initial size of name wrong");
 	succeed_if (keyGetNameSize (k[33]) == 11, "initial size of name wrong");
 
@@ -1107,25 +1107,25 @@ static void test_ksLookupByName (void)
 	int i, j;
 	char * name[1000];
 	ElektraKey * k[1000];
-	ElektraKeyset * ks = ksNew (30, k[0] = keyNew (name[0] = "user:/rem3", KEY_END), k[1] = keyNew (name[1] = "user:/rem2", KEY_END),
-			     k[2] = keyNew (name[2] = "user:/rem1/key2", KEY_END), k[3] = keyNew (name[3] = "user:/rem1/key1", KEY_END),
-			     k[4] = keyNew (name[4] = "user:/rem1", KEY_END), k[5] = keyNew (name[5] = "user:/dir1", KEY_END),
-			     k[6] = keyNew (name[6] = "user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
-			     k[7] = keyNew (name[7] = "user:/dir1/key2", KEY_VALUE, "value2", KEY_END),
-			     k[8] = keyNew (name[8] = "user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
-			     k[9] = keyNew (name[9] = "user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
-			     k[10] = keyNew (name[10] = "user:/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-			     k[11] = keyNew (name[11] = "user:/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
-			     k[12] = keyNew (name[12] = "user:/dir2", KEY_END),
-			     k[13] = keyNew (name[13] = "user:/dir2/key1", KEY_VALUE, "value1", KEY_END),
-			     k[14] = keyNew (name[14] = "user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
-			     k[15] = keyNew (name[15] = "user:/dir2/key3", KEY_VALUE, "value3", KEY_END),
-			     k[16] = keyNew (name[16] = "user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
-			     k[17] = keyNew (name[17] = "user:/dir3", KEY_END),
-			     k[18] = keyNew (name[18] = "user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
-			     k[19] = keyNew (name[19] = "user:/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-			     k[20] = keyNew (name[20] = "user:/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
-			     k[21] = keyNew (name[21] = "user:/dir4", KEY_END), k[22] = keyNew (name[22] = "user:/dir5", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (30, k[0] = keyNew (name[0] = "user:/rem3", ELEKTRA_KEY_END), k[1] = keyNew (name[1] = "user:/rem2", ELEKTRA_KEY_END),
+			     k[2] = keyNew (name[2] = "user:/rem1/key2", ELEKTRA_KEY_END), k[3] = keyNew (name[3] = "user:/rem1/key1", ELEKTRA_KEY_END),
+			     k[4] = keyNew (name[4] = "user:/rem1", ELEKTRA_KEY_END), k[5] = keyNew (name[5] = "user:/dir1", ELEKTRA_KEY_END),
+			     k[6] = keyNew (name[6] = "user:/dir1/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+			     k[7] = keyNew (name[7] = "user:/dir1/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END),
+			     k[8] = keyNew (name[8] = "user:/dir1/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END),
+			     k[9] = keyNew (name[9] = "user:/dir1/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END),
+			     k[10] = keyNew (name[10] = "user:/dir1/.inactive1", ELEKTRA_KEY_COMMENT, "key is inactive", ELEKTRA_KEY_END),
+			     k[11] = keyNew (name[11] = "user:/dir1/.inactive2", ELEKTRA_KEY_COMMENT, "additional information", ELEKTRA_KEY_END),
+			     k[12] = keyNew (name[12] = "user:/dir2", ELEKTRA_KEY_END),
+			     k[13] = keyNew (name[13] = "user:/dir2/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+			     k[14] = keyNew (name[14] = "user:/dir2/key2", ELEKTRA_KEY_VALUE, "value2", ELEKTRA_KEY_END),
+			     k[15] = keyNew (name[15] = "user:/dir2/key3", ELEKTRA_KEY_VALUE, "value3", ELEKTRA_KEY_END),
+			     k[16] = keyNew (name[16] = "user:/dir2/key4", ELEKTRA_KEY_VALUE, "value4", ELEKTRA_KEY_END),
+			     k[17] = keyNew (name[17] = "user:/dir3", ELEKTRA_KEY_END),
+			     k[18] = keyNew (name[18] = "user:/dir3/key1", ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_END),
+			     k[19] = keyNew (name[19] = "user:/dir3/.inactive1", ELEKTRA_KEY_COMMENT, "key is inactive", ELEKTRA_KEY_END),
+			     k[20] = keyNew (name[20] = "user:/dir3/.inactive2", ELEKTRA_KEY_COMMENT, "a users comment", ELEKTRA_KEY_END),
+			     k[21] = keyNew (name[21] = "user:/dir4", ELEKTRA_KEY_END), k[22] = keyNew (name[22] = "user:/dir5", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	name[23] = "user:/DiR1";
 	name[24] = "user:/DiR1/KEY1";
@@ -1174,18 +1174,18 @@ ELEKTRA_UNUSED
 static void test_ksLookupName (void)
 {
 	ElektraKey * found;
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	printf ("Test lookup functions\n");
 
-	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/named/syskey", KEY_VALUE, "syskey", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/domain/key", ELEKTRA_KEY_VALUE, "domainvalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/single/key", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/syskey", ELEKTRA_KEY_VALUE, "syskey", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/sysonly/key", ELEKTRA_KEY_VALUE, "sysonlykey", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/bin", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, strlen ("binary\1\2data"), ELEKTRA_KEY_VALUE, "binary\1\2data", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/bin", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, strlen ("sys\1bin\2"), ELEKTRA_KEY_VALUE, "sys\1bin\2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/key", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, strlen ("syskey"), ELEKTRA_KEY_VALUE, "syskey", ELEKTRA_KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive test case
@@ -1197,7 +1197,7 @@ static void test_ksLookupName (void)
 	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 
-	ksAppendKey (ks, found = keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, found = keyNew ("user:/single/key", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END));
 	succeed_if (ksCurrent (ks) == found, "current update after append");
 	succeed_if_same_string (keyName (found), "user:/single/key");
 	succeed_if_same_string (keyValue (found), "singlevalue");
@@ -1269,7 +1269,7 @@ static void test_ksLookupName (void)
 static void test_ksLookupNameCascading (void)
 {
 	ElektraKey * found;
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	printf ("Test cascading lookup functions\n");
 
@@ -1278,11 +1278,11 @@ static void test_ksLookupNameCascading (void)
 	succeed_if (ksLookupByName (ks, "////named/", 0) == 0, "found in empty keyset");
 	succeed_if (ksLookupByName (ks, "//Person/Visits", 0) == 0, "found in empty keyset");
 
-	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/named/key", KEY_VALUE, "wrong value", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/named/otherkey", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/key", ELEKTRA_KEY_VALUE, "wrong value", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/single/key", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/sysonly/key", ELEKTRA_KEY_VALUE, "sysonlykey", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/otherkey", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END));
 
 	found = ksLookupByName (ks, "/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
@@ -1318,8 +1318,8 @@ static void test_ksLookupNameCascading (void)
 	succeed_if (ksLookupByName (ks, "////named/", 0) == 0, "found part of key with cascading");
 	succeed_if (ksLookupByName (ks, "/////named/keyd", 0) == 0, "found part of key with cascading, bad postfix");
 
-	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
-	found = ksLookupByName (ks, "//named/key", KDB_O_POP);
+	ksAppendKey (ks, keyNew ("user:/named/key", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END));
+	found = ksLookupByName (ks, "//named/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "cascading search failed");
@@ -1330,25 +1330,25 @@ static void test_ksLookupNameCascading (void)
 	ksDel (ks);
 
 
-	ks = ksNew (10, KS_END);
-	ksAppendKey (ks, keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
+	ks = ksNew (10, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("system:/test/myapp/key", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/test/myapp/key", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
 
 	succeed_if_same_string (keyString (ksLookupByName (ks, "/test/myapp/key", 0)), "correct");
 	ElektraKey * s = 0;
-	succeed_if_same_string (keyString (s = ksLookupByName (ks, "/test/myapp/key", KDB_O_POP)), "correct");
+	succeed_if_same_string (keyString (s = ksLookupByName (ks, "/test/myapp/key", ELEKTRA_KDB_O_POP)), "correct");
 	keyDel (s);
-	succeed_if_same_string (keyString (s = ksLookupByName (ks, "/test/myapp/key", KDB_O_POP)), "wrong");
+	succeed_if_same_string (keyString (s = ksLookupByName (ks, "/test/myapp/key", ELEKTRA_KDB_O_POP)), "wrong");
 	keyDel (s);
 	ksDel (ks);
 
 
-	ks = ksNew (10, KS_END);
+	ks = ksNew (10, ELEKTRA_KS_END);
 	ElektraKey * k1;
 	ElektraKey * k2;
-	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (ks, keyDup ((s = keyNew ("/test/myapp/key", KEY_END)), KEY_CP_ALL));
+	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
+	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyDup ((s = keyNew ("/test/myapp/key", ELEKTRA_KEY_END)), ELEKTRA_KEY_CP_ALL));
 	succeed_if (ksGetSize (ks) == 3, "initial size of keyset");
 	succeed_if (keyGetNameSize (s) == 16, "initial name size");
 
@@ -1359,14 +1359,14 @@ static void test_ksLookupNameCascading (void)
 	succeed_if (ksGetSize (ks) == 3, "lookup without pop changed size");
 	succeed_if (keyGetNameSize (s) == 16, "size changed after lookup");
 
-	succeed_if_same_string (keyString (ksLookup (ks, s, KDB_O_POP)), "correct");
+	succeed_if_same_string (keyString (ksLookup (ks, s, ELEKTRA_KDB_O_POP)), "correct");
 	succeed_if (ksGetSize (ks) == 2, "lookup with pop did not change size");
 	succeed_if (keyGetNameSize (s) == 16, "size changed after lookup");
 
 	succeed_if (ksLookup (ks, s, 0) == k1, "got wrong key (not system)");
 	succeed_if (ksLookup (ks, s, 0) != k2, "got user key again");
 	succeed_if (ksLookup (ks, s, 0) != s, "got cascading key");
-	succeed_if_same_string (keyString (ksLookup (ks, s, KDB_O_POP)), "wrong");
+	succeed_if_same_string (keyString (ksLookup (ks, s, ELEKTRA_KDB_O_POP)), "wrong");
 	succeed_if (ksGetSize (ks) == 1, "lookup with pop did not change size");
 	succeed_if (keyGetNameSize (s) == 16, "size changed after lookup");
 	ksDel (ks);
@@ -1375,24 +1375,24 @@ static void test_ksLookupNameCascading (void)
 	keyDel (k2);
 
 
-	ks = ksNew (10, KS_END);
-	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
+	ks = ksNew (10, ELEKTRA_KS_END);
+	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
+	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
 
-	succeed_if_same_string (keyString (ksLookup (ks, k2, KDB_O_POP)), "correct");
-	succeed_if_same_string (keyString (ksLookup (ks, k1, KDB_O_POP)), "wrong");
+	succeed_if_same_string (keyString (ksLookup (ks, k2, ELEKTRA_KDB_O_POP)), "correct");
+	succeed_if_same_string (keyString (ksLookup (ks, k1, ELEKTRA_KDB_O_POP)), "wrong");
 
 	keyDel (k1);
 	keyDel (k2);
 	ksDel (ks);
 
 
-	ks = ksNew (10, KS_END);
-	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
+	ks = ksNew (10, ELEKTRA_KS_END);
+	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", ELEKTRA_KEY_VALUE, "wrong", ELEKTRA_KEY_END));
+	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", ELEKTRA_KEY_VALUE, "correct", ELEKTRA_KEY_END));
 
-	succeed_if_same_string (keyString (ksLookup (ks, k1, KDB_O_POP)), "wrong");
-	succeed_if_same_string (keyString (ksLookup (ks, k2, KDB_O_POP)), "correct");
+	succeed_if_same_string (keyString (ksLookup (ks, k1, ELEKTRA_KDB_O_POP)), "wrong");
+	succeed_if_same_string (keyString (ksLookup (ks, k2, ELEKTRA_KDB_O_POP)), "correct");
 
 	keyDel (k1);
 	keyDel (k2);
@@ -1401,29 +1401,29 @@ static void test_ksLookupNameCascading (void)
 
 static void test_ksExample (void)
 {
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	ElektraKey * key;
 
-	ksAppendKey (ks, keyNew ("user:/test", KEY_END)); // an empty key
+	ksAppendKey (ks, keyNew ("user:/test", ELEKTRA_KEY_END)); // an empty key
 
 	ksAppendKey (ks, keyNew ("user:/sw", // the name of the key
-				 KEY_END));  // no more args
+				 ELEKTRA_KEY_END));  // no more args
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex1", KEY_VALUE, "some data", // set a string value
-				 KEY_END));				  // end of args
+	ksAppendKey (ks, keyNew ("user:/tmp/ex1", ELEKTRA_KEY_VALUE, "some data", // set a string value
+				 ELEKTRA_KEY_END));				  // end of args
 
 	ksAppendKey (ks, keyNew ("user:/tmp/ex4",
-				 KEY_BINARY,		 // key type
-				 KEY_SIZE, 7,		 // assume binary length 7
-				 KEY_VALUE, "some data", // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated",
-				 KEY_END)); // end of args
+				 ELEKTRA_KEY_BINARY,		 // key type
+				 ELEKTRA_KEY_SIZE, 7,		 // assume binary length 7
+				 ELEKTRA_KEY_VALUE, "some data", // value that will be truncated in 7 bytes
+				 ELEKTRA_KEY_COMMENT, "value is truncated",
+				 ELEKTRA_KEY_END)); // end of args
 
 	ksAppendKey (ks, keyNew ("user:/tmp/ex5",
-				 KEY_BINARY,			      // binary value
-				 KEY_SIZE, 7, KEY_VALUE, "some data", // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated",
-				 KEY_END)); // end of args
+				 ELEKTRA_KEY_BINARY,			      // binary value
+				 ELEKTRA_KEY_SIZE, 7, ELEKTRA_KEY_VALUE, "some data", // value that will be truncated in 7 bytes
+				 ELEKTRA_KEY_COMMENT, "value is truncated",
+				 ELEKTRA_KEY_END)); // end of args
 
 	ksRewind (ks);
 
@@ -1456,8 +1456,8 @@ static void test_ksAppend (void)
 
 	printf ("Test appending keys\n");
 
-	ElektraKey * key = keyNew ("user:/test", KEY_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * key = keyNew ("user:/test", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (ksAppendKey (0, key) == -1, "No error on NULL pointer");
 	succeed_if (ksAppendKey (ks, 0) == -1, "No error on NULL pointer");
 	ksDel (ks);
@@ -1470,14 +1470,14 @@ static void test_ksAppend (void)
 			ElektraKeyset * testReturned =
 #include "data_others.c"
 				ElektraKey * parentKey[2];
-	parentKey[0] = keyNew ("user:/test/keyset", KEY_END);
-	parentKey[1] = keyNew ("user:/test/keyset/dir1", KEY_END);
+	parentKey[0] = keyNew ("user:/test/keyset", ELEKTRA_KEY_END);
+	parentKey[1] = keyNew ("user:/test/keyset/dir1", ELEKTRA_KEY_END);
 
 	/* A real world example out in kdb.c */
 	for (i = 0; i < 2; i++)
 	{
-		ElektraKeyset * tmp = ksNew (ksGetSize (returned), KS_END);
-		ElektraKeyset * keys = ksNew (0, KS_END);
+		ElektraKeyset * tmp = ksNew (ksGetSize (returned), ELEKTRA_KS_END);
+		ElektraKeyset * keys = ksNew (0, ELEKTRA_KS_END);
 
 		/* add all keys direct below parentKey */
 		ksRewind (returned);
@@ -1529,10 +1529,10 @@ static void test_ksAppend (void)
 	ksDel (testDirectBelow);
 	ksDel (returned);
 
-	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user:/abc", KEY_META, "xyz", "egh", KEY_END));
+	ks = ksNew (0, ELEKTRA_KS_END);
+	ksAppendKey (ks, keyNew ("user:/abc", ELEKTRA_KEY_META, "xyz", "egh", ELEKTRA_KEY_END));
 
-	ElektraKeyset * other = ksNew (0, KS_END);
+	ElektraKeyset * other = ksNew (0, ELEKTRA_KS_END);
 	ksAppend (other, ks);
 	compare_keyset (ks, other);
 	compare_keyset (ks, ks);
@@ -1613,7 +1613,7 @@ int ksFilter (ElektraKeyset * result, ElektraKeyset * input, int (*filter) (Elek
 		else if (rc != 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
+			ksAppendKey (result, keyDup (current, ELEKTRA_KEY_CP_ALL));
 		}
 	}
 	ksSetCursor (input, cursor);
@@ -1660,10 +1660,10 @@ static void test_ksFunctional (void)
 	ElektraKey * found;
 	ElektraKey * current;
 	ElektraKeyset * out;
-	ElektraKeyset * ks = ksNew (64, keyNew ("user:/a/1", KEY_END), keyNew ("user:/a/2", KEY_END), keyNew ("user:/a/b/1", KEY_END),
-			     keyNew ("user:/a/b/2", KEY_END), keyNew ("user:/ab/2", KEY_END), keyNew ("user:/b/1", KEY_END),
-			     keyNew ("user:/b/2", KEY_END), KS_END);
-	global_a = keyNew ("user:/a", KEY_END);
+	ElektraKeyset * ks = ksNew (64, keyNew ("user:/a/1", ELEKTRA_KEY_END), keyNew ("user:/a/2", ELEKTRA_KEY_END), keyNew ("user:/a/b/1", ELEKTRA_KEY_END),
+			     keyNew ("user:/a/b/2", ELEKTRA_KEY_END), keyNew ("user:/ab/2", ELEKTRA_KEY_END), keyNew ("user:/b/1", ELEKTRA_KEY_END),
+			     keyNew ("user:/b/2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	global_a = keyNew ("user:/a", ELEKTRA_KEY_END);
 
 	printf ("Test functional style\n");
 
@@ -1677,19 +1677,19 @@ static void test_ksFunctional (void)
 		// succeed_if_same_string (keyComment (current), "comment");
 	}
 
-	out = ksNew (0, KS_END);
+	out = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (ksGetSize (ks) == 7, "initial size wrong");
 	succeed_if (ksGetSize (out) == 0, "initial size wrong");
 	ksFilter (out, ks, has_a);
 	succeed_if (ksGetSize (out) == 5, "has_a cut more than the user:/b");
 	ksDel (out);
 
-	out = ksNew (0, KS_END);
+	out = ksNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, below_a);
 	succeed_if (ksGetSize (out) == 4, "below_a cut more than the user:/ab/2");
 	ksDel (out);
 
-	out = ksNew (0, KS_END);
+	out = ksNew (0, ELEKTRA_KS_END);
 	ksFilter (out, ks, direct_below_a);
 	succeed_if (ksGetSize (out) == 2, "direct_below_a cut more than the user:/a/b/*");
 	ksDel (out);
@@ -1698,14 +1698,14 @@ static void test_ksFunctional (void)
 	keyDel (global_a);
 	global_a = 0;
 
-	ElektraKeyset * values = ksNew (64, keyNew ("user:/a", KEY_VALUE, "40", KEY_END), keyNew ("user:/b", KEY_VALUE, "20", KEY_END),
-				 keyNew ("user:/c", KEY_VALUE, "80", KEY_END), keyNew ("user:/d", KEY_VALUE, "24", KEY_END),
-				 keyNew ("user:/e", KEY_VALUE, "32", KEY_END), keyNew ("user:/f", KEY_VALUE, "12", KEY_END),
-				 keyNew ("user:/g", KEY_VALUE, "43", KEY_END), KS_END);
+	ElektraKeyset * values = ksNew (64, keyNew ("user:/a", ELEKTRA_KEY_VALUE, "40", ELEKTRA_KEY_END), keyNew ("user:/b", ELEKTRA_KEY_VALUE, "20", ELEKTRA_KEY_END),
+				 keyNew ("user:/c", ELEKTRA_KEY_VALUE, "80", ELEKTRA_KEY_END), keyNew ("user:/d", ELEKTRA_KEY_VALUE, "24", ELEKTRA_KEY_END),
+				 keyNew ("user:/e", ELEKTRA_KEY_VALUE, "32", ELEKTRA_KEY_END), keyNew ("user:/f", ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END),
+				 keyNew ("user:/g", ELEKTRA_KEY_VALUE, "43", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (ksForEach (values, sum_helper) == 251, "could not sum up");
 
-	ElektraKeyset * values_below_30 = ksNew (0, KS_END);
+	ElektraKeyset * values_below_30 = ksNew (0, ELEKTRA_KS_END);
 	ksFilter (values_below_30, values, below_30);
 	succeed_if (ksGetSize (values_below_30) == 3, "could not filter out everything above 30");
 	succeed_if (ksForEach (values_below_30, sum_helper) == 56, "could not sum up");
@@ -1728,14 +1728,14 @@ static void test_ksLookupPop (void)
 	ElektraKey * found;
 	ElektraKey *a, *b, *c;
 	ElektraKeyset * small =
-		ksNew (5, a = keyNew ("user:/a", KEY_END), b = keyNew ("user:/b", KEY_END), c = keyNew ("user:/c", KEY_END), KS_END);
+		ksNew (5, a = keyNew ("user:/a", ELEKTRA_KEY_END), b = keyNew ("user:/b", ELEKTRA_KEY_END), c = keyNew ("user:/c", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ksRewind (small);
 	ksNext (small);
 	succeed_if (ksCurrent (small) == a, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 3, "could not append all keys");
-	found = ksLookupByName (small, "user:/a", KDB_O_POP);
+	found = ksLookupByName (small, "user:/a", ELEKTRA_KDB_O_POP);
 	succeed_if (found == a, "not correct key");
 	succeed_if_same_string (keyName (found), "user:/a");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
@@ -1746,45 +1746,45 @@ static void test_ksLookupPop (void)
 	succeed_if (ksCurrent (small) == c, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 2, "could not append all keys");
-	found = ksLookupByName (small, "user:/b", KDB_O_POP);
+	found = ksLookupByName (small, "user:/b", ELEKTRA_KDB_O_POP);
 	succeed_if (found == b, "not correct key");
 	succeed_if_same_string (keyName (found), "user:/b");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
-	found = ksLookupByName (small, "user:/b", KDB_O_POP);
+	found = ksLookupByName (small, "user:/b", ELEKTRA_KDB_O_POP);
 	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
-	found = ksLookupByName (small, "user:/c", KDB_O_POP);
+	found = ksLookupByName (small, "user:/c", ELEKTRA_KDB_O_POP);
 	succeed_if (found == c, "not correct key");
 	succeed_if_same_string (keyName (found), "user:/c");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	succeed_if (ksGetSize (small) == 0, "could not append all keys");
-	found = ksLookupByName (small, "user:/d", KDB_O_POP);
+	found = ksLookupByName (small, "user:/d", ELEKTRA_KDB_O_POP);
 	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
 	ksDel (small);
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
-	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/named/skey", KEY_VALUE, "syskey", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system:/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/domain/key", ELEKTRA_KEY_VALUE, "domainvalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/single/key", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/skey", ELEKTRA_KEY_VALUE, "syskey", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/sysonly/key", ELEKTRA_KEY_VALUE, "sysonlykey", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/bin", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, strlen ("binary\1\2data"), ELEKTRA_KEY_VALUE, "binary\1\2data", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/bin", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, strlen ("sys\1bin\2"), ELEKTRA_KEY_VALUE, "sys\1bin\2", ELEKTRA_KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/key", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, strlen ("syskey"), ELEKTRA_KEY_VALUE, "syskey", ELEKTRA_KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive test case
-	found = ksLookupByName (ks, "user:/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
@@ -1793,29 +1793,29 @@ static void test_ksLookupPop (void)
 	succeed_if_same_string (keyValue (found), "myvalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "did not append key");
 
 	// here you can't find the keys
-	succeed_if (ksLookupByName (ks, "named/key", KDB_O_POP) == 0, "not valid keyname");
-	succeed_if (ksLookupByName (ks, "u/named/key", KDB_O_POP) == 0, "not valid keyname");
-	succeed_if (ksLookupByName (ks, "usea/named/key", KDB_O_POP) == 0, "not valid keyname");
-	succeed_if (ksLookupByName (ks, " user:/named/key", KDB_O_POP) == 0, "found key with bad prefix");
+	succeed_if (ksLookupByName (ks, "named/key", ELEKTRA_KDB_O_POP) == 0, "not valid keyname");
+	succeed_if (ksLookupByName (ks, "u/named/key", ELEKTRA_KDB_O_POP) == 0, "not valid keyname");
+	succeed_if (ksLookupByName (ks, "usea/named/key", ELEKTRA_KDB_O_POP) == 0, "not valid keyname");
+	succeed_if (ksLookupByName (ks, " user:/named/key", ELEKTRA_KDB_O_POP) == 0, "found key with bad prefix");
 
-	succeed_if (ksLookupByName (ks, "user:/named/Key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "User:/Named/key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "User:/named/key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "user:/NAMED/key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "USER:/NAMED/KEY", KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "user:/named/Key", ELEKTRA_KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "User:/Named/key", ELEKTRA_KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "User:/named/key", ELEKTRA_KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "user:/NAMED/key", ELEKTRA_KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "USER:/NAMED/KEY", ELEKTRA_KDB_O_POP) == 0, "found wrong case key");
 
-	succeed_if (ksLookupByName (ks, "user:/named/keys", KDB_O_POP) == 0, "wrong postfix");
-	succeed_if (ksLookupByName (ks, "user:/named/key_", KDB_O_POP) == 0, "wrong postfix");
+	succeed_if (ksLookupByName (ks, "user:/named/keys", ELEKTRA_KDB_O_POP) == 0, "wrong postfix");
+	succeed_if (ksLookupByName (ks, "user:/named/key_", ELEKTRA_KDB_O_POP) == 0, "wrong postfix");
 
-	succeed_if (ksLookupByName (ks, "user:/named/k/ey", KDB_O_POP) == 0, "seperation that should be");
-	succeed_if (ksLookupByName (ks, "user:/na/med/key", KDB_O_POP) == 0, "seperation that should be");
+	succeed_if (ksLookupByName (ks, "user:/named/k/ey", ELEKTRA_KDB_O_POP) == 0, "seperation that should be");
+	succeed_if (ksLookupByName (ks, "user:/na/med/key", ELEKTRA_KDB_O_POP) == 0, "seperation that should be");
 
 	// a positive test case
-	found = ksLookupByName (ks, "user:/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
@@ -1824,13 +1824,13 @@ static void test_ksLookupPop (void)
 	succeed_if_same_string (keyValue (found), "singlevalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	ksAppendKey (ks, keyNew ("user:/named/otherkey", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/otherkey", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "did not append key");
 
-	succeed_if (ksLookupByName (ks, "system:/domain/key", KDB_O_POP) == 0, "found key in wrong domain");
+	succeed_if (ksLookupByName (ks, "system:/domain/key", ELEKTRA_KDB_O_POP) == 0, "found key in wrong domain");
 
 	// now try to find them, and compare value
-	found = ksLookupByName (ks, "user:/domain/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/domain/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
@@ -1838,7 +1838,7 @@ static void test_ksLookupPop (void)
 	succeed_if_same_string (keyValue (found), "domainvalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "user:/single/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/single/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 6, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
@@ -1846,7 +1846,7 @@ static void test_ksLookupPop (void)
 	succeed_if_same_string (keyValue (found), "singlevalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "system:/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "system:/named/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 5, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
@@ -1854,7 +1854,7 @@ static void test_ksLookupPop (void)
 	succeed_if (strncmp (keyValue (found), "syskey", strlen ("syskey")) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "user:/named/bin", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/bin", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
@@ -1862,16 +1862,16 @@ static void test_ksLookupPop (void)
 	succeed_if (strncmp (keyValue (found), "binary\1\2data", strlen ("binary\1\2data")) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "user:/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found == 0, "could find same key again");
 
 	// cascading
 
-	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END));
 	printf ("Test cascading lookup functions\n");
-	found = ksLookupByName (ks, "/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "/named/key", ELEKTRA_KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "cascading search failed");
@@ -1885,11 +1885,11 @@ static void test_ksLookupPop (void)
 static void test_ksDoubleFree (void)
 {
 	/* Valgrind only test */
-	ElektraKeyset * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
-			      keyNew ("user:/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
+	ElektraKeyset * ks1 = ksNew (5, keyNew ("user:/abc1", ELEKTRA_KEY_VALUE, "abc1", ELEKTRA_KEY_END), keyNew ("user:/abc2", ELEKTRA_KEY_VALUE, "abc1", ELEKTRA_KEY_END),
+			      keyNew ("user:/abc3", ELEKTRA_KEY_VALUE, "abc1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
-			      keyNew ("user:/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
+	ElektraKeyset * ks2 = ksNew (5, keyNew ("user:/abc1", ELEKTRA_KEY_VALUE, "abc2", ELEKTRA_KEY_END), keyNew ("user:/abc2", ELEKTRA_KEY_VALUE, "abc2", ELEKTRA_KEY_END),
+			      keyNew ("user:/abc3", ELEKTRA_KEY_VALUE, "abc2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ElektraKey * cur;
 	ksRewind (ks1);
@@ -1906,11 +1906,11 @@ static void test_ksDoubleAppend (void)
 {
 	printf ("Test double appending\n");
 
-	ElektraKeyset * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
-			      keyNew ("user:/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
+	ElektraKeyset * ks1 = ksNew (5, keyNew ("user:/abc1", ELEKTRA_KEY_VALUE, "abc1", ELEKTRA_KEY_END), keyNew ("user:/abc2", ELEKTRA_KEY_VALUE, "abc1", ELEKTRA_KEY_END),
+			      keyNew ("user:/abc3", ELEKTRA_KEY_VALUE, "abc1", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
-			      keyNew ("user:/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
+	ElektraKeyset * ks2 = ksNew (5, keyNew ("user:/abc1", ELEKTRA_KEY_VALUE, "abc2", ELEKTRA_KEY_END), keyNew ("user:/abc2", ELEKTRA_KEY_VALUE, "abc2", ELEKTRA_KEY_END),
+			      keyNew ("user:/abc3", ELEKTRA_KEY_VALUE, "abc2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ksAppend (ks1, ks2);
 	succeed_if (ksGetSize (ks1) == 3, "size not correct");
@@ -1924,8 +1924,8 @@ static void test_ksDoubleAppendKey (void)
 {
 	printf ("Test double appending of key\n");
 
-	ElektraKey * k = keyNew ("user:/my_double_key", KEY_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * k = keyNew ("user:/my_double_key", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
@@ -1936,7 +1936,7 @@ static void test_ksDoubleAppendKey (void)
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
 
-	ElektraKey * k2 = keyNew ("user:/other", KEY_END);
+	ElektraKey * k2 = keyNew ("user:/other", ELEKTRA_KEY_END);
 
 	ksAppendKey (ks, k2);
 	succeed_if (ksGetSize (ks) == 2, "size not correct");
@@ -1953,48 +1953,48 @@ static void test_ksAppendKey (void)
 	ElektraKeyset * ks = 0;
 	ElektraKey * cur;
 
-	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
+	exit_if_fail ((ks = ksNew (0, ELEKTRA_KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/a", ELEKTRA_KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/b", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/b", ELEKTRA_KEY_END)) == 2, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/x", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/x", ELEKTRA_KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after 3 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/b", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/b", ELEKTRA_KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position (same key)");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after double append");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/0", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/0", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position (front key)");
 	succeed_if (ksGetSize (ks) == 4, "size not correct after 4 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/c", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/c", ELEKTRA_KEY_END)) == 5, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position (key in between)");
 	succeed_if (ksGetSize (ks) == 5, "size not correct after 5 keys");
 
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/", KEY_END)) == 1, "could not append a key");
+	exit_if_fail ((ks = ksNew (0, ELEKTRA_KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/", ELEKTRA_KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 1, "size not correct after 1 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests", ELEKTRA_KEY_END)) == 2, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 2, "size not correct after 2 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests/folder", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests/folder", ELEKTRA_KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after 3 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests/folder/bool_key", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests/folder/bool_key", ELEKTRA_KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 4, "size not correct after 4 keys");
 
-	ElektraKey * newKey = keyDup (cur, KEY_CP_ALL);
+	ElektraKey * newKey = keyDup (cur, ELEKTRA_KEY_CP_ALL);
 	keySetBaseName (newKey, "second_bool_key");
 
 	succeed_if (ksAppendKey (ks, newKey) == 5, "could not append a key");
@@ -2010,9 +2010,9 @@ static void test_ksModifyKey (void)
 	ElektraKeyset * ks = 0;
 	ElektraKey * cur;
 
-	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
+	exit_if_fail ((ks = ksNew (0, ELEKTRA_KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/a", ELEKTRA_KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (keySetName (cur, "user:/b") == -1, "set name with appended key should be disallowed");
 	succeed_if (keySetString (cur, "x") > 0, "changing value is ok");
@@ -2024,8 +2024,8 @@ static void test_ksModifyKey (void)
 
 static void test_ksOrder (void)
 {
-	ElektraKeyset * ks = ksNew (20, keyNew ("user:/test/test", KEY_END), keyNew ("user:/test/test/bar", KEY_END),
-			     keyNew ("user:/test/test/foo", KEY_END), keyNew ("user:/test/test-foo", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (20, keyNew ("user:/test/test", ELEKTRA_KEY_END), keyNew ("user:/test/test/bar", ELEKTRA_KEY_END),
+			     keyNew ("user:/test/test/foo", ELEKTRA_KEY_END), keyNew ("user:/test/test-foo", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ksNext (ks);
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/test/test");
@@ -2038,14 +2038,14 @@ static void test_ksOrder (void)
 
 	ksDel (ks);
 
-	ks = ksNew (20, keyNew ("user:/x", KEY_END), keyNew ("user:/x/%", KEY_END), keyNew ("user:/x/%/a", KEY_END),
-		    keyNew ("user:/x/%/b", KEY_END), keyNew ("user:/x/\\%", KEY_END), keyNew ("user:/x/\\%/a", KEY_END),
-		    keyNew ("user:/x/\\%/b", KEY_END), keyNew ("user:/x/A", KEY_END), keyNew ("user:/x/A/a", KEY_END),
-		    keyNew ("user:/x/A/b", KEY_END), keyNew ("user:/x/%a", KEY_END), keyNew ("user:/x/%b", KEY_END),
-		    keyNew ("user:/x/a\\/", KEY_END), keyNew ("user:/x/a\\/b", KEY_END), keyNew ("user:/x/a\\/b/a", KEY_END),
-		    keyNew ("user:/x/a\\/b/b", KEY_END), keyNew ("user:/x/aA", KEY_END), keyNew ("user:/x/aA/a", KEY_END),
-		    keyNew ("user:/x/aA/b", KEY_END), keyNew ("user:/x/aa", KEY_END), keyNew ("user:/x/aa/a", KEY_END),
-		    keyNew ("user:/x/aa/b", KEY_END), KS_END);
+	ks = ksNew (20, keyNew ("user:/x", ELEKTRA_KEY_END), keyNew ("user:/x/%", ELEKTRA_KEY_END), keyNew ("user:/x/%/a", ELEKTRA_KEY_END),
+		    keyNew ("user:/x/%/b", ELEKTRA_KEY_END), keyNew ("user:/x/\\%", ELEKTRA_KEY_END), keyNew ("user:/x/\\%/a", ELEKTRA_KEY_END),
+		    keyNew ("user:/x/\\%/b", ELEKTRA_KEY_END), keyNew ("user:/x/A", ELEKTRA_KEY_END), keyNew ("user:/x/A/a", ELEKTRA_KEY_END),
+		    keyNew ("user:/x/A/b", ELEKTRA_KEY_END), keyNew ("user:/x/%a", ELEKTRA_KEY_END), keyNew ("user:/x/%b", ELEKTRA_KEY_END),
+		    keyNew ("user:/x/a\\/", ELEKTRA_KEY_END), keyNew ("user:/x/a\\/b", ELEKTRA_KEY_END), keyNew ("user:/x/a\\/b/a", ELEKTRA_KEY_END),
+		    keyNew ("user:/x/a\\/b/b", ELEKTRA_KEY_END), keyNew ("user:/x/aA", ELEKTRA_KEY_END), keyNew ("user:/x/aA/a", ELEKTRA_KEY_END),
+		    keyNew ("user:/x/aA/b", ELEKTRA_KEY_END), keyNew ("user:/x/aa", ELEKTRA_KEY_END), keyNew ("user:/x/aa/a", ELEKTRA_KEY_END),
+		    keyNew ("user:/x/aa/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (ksCurrent (ks) == 0, "not rewinded");
 	ksNext (ks);
@@ -2097,16 +2097,16 @@ static void test_ksOrder (void)
 
 static void test_ksOrderNs (void)
 {
-	ElektraKey * cascadingKey = keyNew ("/key", KEY_END);
-	ElektraKey * metaKey = keyNew ("meta:/key", KEY_END);
-	ElektraKey * specKey = keyNew ("spec:/key", KEY_END);
-	ElektraKey * procKey = keyNew ("proc:/key", KEY_END);
-	ElektraKey * dirKey = keyNew ("dir:/key", KEY_END);
-	ElektraKey * userKey = keyNew ("user:/key", KEY_END);
-	ElektraKey * systemKey = keyNew ("system:/key", KEY_END);
-	ElektraKey * defaultKey = keyNew ("default:/key", KEY_END);
+	ElektraKey * cascadingKey = keyNew ("/key", ELEKTRA_KEY_END);
+	ElektraKey * metaKey = keyNew ("meta:/key", ELEKTRA_KEY_END);
+	ElektraKey * specKey = keyNew ("spec:/key", ELEKTRA_KEY_END);
+	ElektraKey * procKey = keyNew ("proc:/key", ELEKTRA_KEY_END);
+	ElektraKey * dirKey = keyNew ("dir:/key", ELEKTRA_KEY_END);
+	ElektraKey * userKey = keyNew ("user:/key", ELEKTRA_KEY_END);
+	ElektraKey * systemKey = keyNew ("system:/key", ELEKTRA_KEY_END);
+	ElektraKey * defaultKey = keyNew ("default:/key", ELEKTRA_KEY_END);
 
-	ElektraKeyset * ks = ksNew (8, systemKey, userKey, metaKey, defaultKey, cascadingKey, specKey, procKey, dirKey, KS_END);
+	ElektraKeyset * ks = ksNew (8, systemKey, userKey, metaKey, defaultKey, cascadingKey, specKey, procKey, dirKey, ELEKTRA_KS_END);
 
 	succeed_if (ksAtCursor (ks, 0) == cascadingKey, "cascading not first");
 	succeed_if (ksAtCursor (ks, 1) == metaKey, "meta not second");
@@ -2147,7 +2147,7 @@ static void test_keyVNew (void)
 		ksDel(ks);
 	*/
 
-	ks = fill_vaargs (20, keyNew ("user:/a", KEY_END), KS_END);
+	ks = fill_vaargs (20, keyNew ("user:/a", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ks != 0, "did not create KeySet");
 	succeed_if (ksGetSize (ks) == 1, "KeySet wrong size");
 	succeed_if (ksLookupByName (ks, "user:/a", 0) != 0, "could not lookup key");
@@ -2157,21 +2157,21 @@ static void test_keyVNew (void)
 
 static ElektraKeyset * set_a (void)
 {
-	return ksNew (16, keyNew ("user:/0", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/a", KEY_END),
-		      keyNew ("user:/a/a/a", KEY_END), keyNew ("user:/a/a/b", KEY_END), keyNew ("user:/a/b", KEY_END),
-		      keyNew ("user:/a/b/a", KEY_END), keyNew ("user:/a/b/b", KEY_END), keyNew ("user:/a/c", KEY_END),
-		      keyNew ("user:/a/d", KEY_END), keyNew ("user:/a/x/a", KEY_END), keyNew ("user:/a/x/b", KEY_END),
-		      keyNew ("user:/a/x/c", KEY_END), keyNew ("user:/a/x/c/a", KEY_END), keyNew ("user:/a/x/c/b", KEY_END),
-		      keyNew ("user:/x", KEY_END), KS_END);
+	return ksNew (16, keyNew ("user:/0", ELEKTRA_KEY_END), keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/a", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/a/a", ELEKTRA_KEY_END), keyNew ("user:/a/a/b", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/b/a", ELEKTRA_KEY_END), keyNew ("user:/a/b/b", ELEKTRA_KEY_END), keyNew ("user:/a/c", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/d", ELEKTRA_KEY_END), keyNew ("user:/a/x/a", ELEKTRA_KEY_END), keyNew ("user:/a/x/b", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/x/c", ELEKTRA_KEY_END), keyNew ("user:/a/x/c/a", ELEKTRA_KEY_END), keyNew ("user:/a/x/c/b", ELEKTRA_KEY_END),
+		      keyNew ("user:/x", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static ElektraKeyset * set_oa (void)
 {
-	return ksNew (14, keyNew ("user:/a", KEY_END), keyNew ("user:/a/a", KEY_END), keyNew ("user:/a/a/a", KEY_END),
-		      keyNew ("user:/a/a/b", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/a", KEY_END),
-		      keyNew ("user:/a/b/b", KEY_END), keyNew ("user:/a/c", KEY_END), keyNew ("user:/a/d", KEY_END),
-		      keyNew ("user:/a/x/a", KEY_END), keyNew ("user:/a/x/b", KEY_END), keyNew ("user:/a/x/c", KEY_END),
-		      keyNew ("user:/a/x/c/a", KEY_END), keyNew ("user:/a/x/c/b", KEY_END), KS_END);
+	return ksNew (14, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/a", ELEKTRA_KEY_END), keyNew ("user:/a/a/a", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/a/b", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), keyNew ("user:/a/b/a", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/b/b", ELEKTRA_KEY_END), keyNew ("user:/a/c", ELEKTRA_KEY_END), keyNew ("user:/a/d", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/x/a", ELEKTRA_KEY_END), keyNew ("user:/a/x/b", ELEKTRA_KEY_END), keyNew ("user:/a/x/c", ELEKTRA_KEY_END),
+		      keyNew ("user:/a/x/c/a", ELEKTRA_KEY_END), keyNew ("user:/a/x/c/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 
@@ -2184,8 +2184,8 @@ static void test_cut (void)
 	ElektraKeyset * result;
 	ElektraKeyset * real_orig;
 
-	orig = ksNew (0, KS_END);
-	cutpoint = keyNew ("user:/b", KEY_END);
+	orig = ksNew (0, ELEKTRA_KS_END);
+	cutpoint = keyNew ("user:/b", ELEKTRA_KEY_END);
 
 	succeed_if (ksCut (0, cutpoint) == 0, "No Error on NULL pointer");
 	succeed_if (ksCut (orig, 0) == 0, "No Error on NULL pointer");
@@ -2198,7 +2198,7 @@ static void test_cut (void)
 	keyDel (cutpoint);
 
 	orig = set_oa ();
-	cutpoint = keyNew ("user:/a", KEY_END);
+	cutpoint = keyNew ("user:/a", ELEKTRA_KEY_END);
 	result = ksCut (orig, cutpoint);
 	succeed_if (ksGetSize (orig) == 0, "orig not empty");
 	real_orig = set_oa ();
@@ -2216,7 +2216,7 @@ static void test_cut (void)
 	for (int i = 0; i < 16; ++i)
 	{
 		orig = set_a ();
-		cutpoint = keyDup (ksAtCursor (orig, i), KEY_CP_ALL);
+		cutpoint = keyDup (ksAtCursor (orig, i), ELEKTRA_KEY_CP_ALL);
 		result = ksCut (orig, cutpoint);
 
 		compare_keyset (result, cmp_result[i]);
@@ -2245,10 +2245,10 @@ static void test_cutpoint (void)
 {
 	printf ("Testing operation cut point\n");
 
-	ElektraKey * cutpoint = keyNew ("user:/a/b/c", KEY_END);
+	ElektraKey * cutpoint = keyNew ("user:/a/b/c", ELEKTRA_KEY_END);
 	ElektraKeyset * orig =
-		ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), cutpoint, keyNew ("user:/a/b/c/d", KEY_END),
-		       keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+		ksNew (30, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), cutpoint, keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END),
+		       keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ksRewind (orig);
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a");
@@ -2259,13 +2259,13 @@ static void test_cutpoint (void)
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
-	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	ElektraKeyset * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
-				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+	ElektraKeyset * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END),
+				   keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2275,7 +2275,7 @@ static void test_cascadingCutpoint (void)
 {
 	printf ("Testing operation cascading cut point\n");
 
-	ElektraKey * cutpoint = keyNew ("/a/b/c", KEY_END);
+	ElektraKey * cutpoint = keyNew ("/a/b/c", ELEKTRA_KEY_END);
 	ElektraKeyset * orig =
 #include <data_nscut.c>
 		ksRewind (orig);
@@ -2288,35 +2288,35 @@ static void test_cascadingCutpoint (void)
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a/b");
 
-	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("spec:/a", KEY_END), keyNew ("spec:/a/b", KEY_END),
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("spec:/a", ELEKTRA_KEY_END), keyNew ("spec:/a/b", ELEKTRA_KEY_END),
 
-				   keyNew ("proc:/a", KEY_END), keyNew ("proc:/a/b", KEY_END),
+				   keyNew ("proc:/a", ELEKTRA_KEY_END), keyNew ("proc:/a/b", ELEKTRA_KEY_END),
 
-				   keyNew ("dir:/a", KEY_END), keyNew ("dir:/a/b", KEY_END),
+				   keyNew ("dir:/a", ELEKTRA_KEY_END), keyNew ("dir:/a/b", ELEKTRA_KEY_END),
 
-				   keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END),
+				   keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END),
 
-				   keyNew ("system:/a", KEY_END), keyNew ("system:/a/b", KEY_END), KS_END);
+				   keyNew ("system:/a", ELEKTRA_KEY_END), keyNew ("system:/a/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (orig, cmp_orig);
 	// output_keyset(orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
 	ElektraKeyset * cmp_part =
-		ksNew (25, keyNew ("spec:/a/b/c", KEY_END), keyNew ("spec:/a/b/c/d", KEY_END), keyNew ("spec:/a/b/c/d/e", KEY_END),
-		       keyNew ("spec:/a/b/c/e", KEY_END), keyNew ("spec:/a/b/c/e/d", KEY_END),
+		ksNew (25, keyNew ("spec:/a/b/c", ELEKTRA_KEY_END), keyNew ("spec:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("spec:/a/b/c/d/e", ELEKTRA_KEY_END),
+		       keyNew ("spec:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("spec:/a/b/c/e/d", ELEKTRA_KEY_END),
 
-		       keyNew ("proc:/a/b/c", KEY_END), keyNew ("proc:/a/b/c/d", KEY_END), keyNew ("proc:/a/b/c/d/e", KEY_END),
-		       keyNew ("proc:/a/b/c/e", KEY_END), keyNew ("proc:/a/b/c/e/d", KEY_END),
+		       keyNew ("proc:/a/b/c", ELEKTRA_KEY_END), keyNew ("proc:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("proc:/a/b/c/d/e", ELEKTRA_KEY_END),
+		       keyNew ("proc:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("proc:/a/b/c/e/d", ELEKTRA_KEY_END),
 
-		       keyNew ("dir:/a/b/c", KEY_END), keyNew ("dir:/a/b/c/d", KEY_END), keyNew ("dir:/a/b/c/d/e", KEY_END),
-		       keyNew ("dir:/a/b/c/e", KEY_END), keyNew ("dir:/a/b/c/e/d", KEY_END),
+		       keyNew ("dir:/a/b/c", ELEKTRA_KEY_END), keyNew ("dir:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("dir:/a/b/c/d/e", ELEKTRA_KEY_END),
+		       keyNew ("dir:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("dir:/a/b/c/e/d", ELEKTRA_KEY_END),
 
-		       keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
-		       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END),
+		       keyNew ("user:/a/b/c", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END),
+		       keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END),
 
-		       keyNew ("system:/a/b/c", KEY_END), keyNew ("system:/a/b/c/d", KEY_END), keyNew ("system:/a/b/c/d/e", KEY_END),
-		       keyNew ("system:/a/b/c/e", KEY_END), keyNew ("system:/a/b/c/e/d", KEY_END), KS_END);
+		       keyNew ("system:/a/b/c", ELEKTRA_KEY_END), keyNew ("system:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("system:/a/b/c/d/e", ELEKTRA_KEY_END),
+		       keyNew ("system:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("system:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (part, cmp_part);
 	// output_keyset(part);
 	ksDel (part);
@@ -2328,7 +2328,7 @@ static void test_cascadingRootCutpoint (void)
 {
 	printf ("Testing operation cascading root cut point\n");
 
-	ElektraKey * cutpoint = keyNew ("/", KEY_END);
+	ElektraKey * cutpoint = keyNew ("/", ELEKTRA_KEY_END);
 	ElektraKeyset * orig =
 #include <data_nscut.c>
 		ksRewind (orig);
@@ -2356,10 +2356,10 @@ static void test_cutpointRoot (void)
 {
 	printf ("Testing operation cut root point\n");
 
-	ElektraKey * cutpoint = keyNew ("user:/", KEY_END);
-	ElektraKeyset * orig = ksNew (30, keyNew ("dir:/a", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END),
-			       keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
-			       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+	ElektraKey * cutpoint = keyNew ("user:/", ELEKTRA_KEY_END);
+	ElektraKeyset * orig = ksNew (30, keyNew ("dir:/a", ELEKTRA_KEY_END), keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END),
+			       keyNew ("user:/a/b/c", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END),
+			       keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ksRewind (orig);
 	ksNext (orig);
 	ksNext (orig);
@@ -2369,14 +2369,14 @@ static void test_cutpointRoot (void)
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "dir:/a");
 
-	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("dir:/a", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("dir:/a", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	ElektraKeyset * cmp_part = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
-				   keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
-				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+	ElektraKeyset * cmp_part = ksNew (15, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), keyNew ("user:/a/b/c", ELEKTRA_KEY_END),
+				   keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END),
+				   keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2388,10 +2388,10 @@ static void test_cutpoint_1 (void)
 {
 	printf ("Testing operation cut point 1\n");
 
-	ElektraKey * cutpoint = keyNew ("user:/a/b/c", KEY_END);
+	ElektraKey * cutpoint = keyNew ("user:/a/b/c", ELEKTRA_KEY_END);
 	ElektraKeyset * orig =
-		ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), cutpoint, keyNew ("user:/a/b/c/d", KEY_END),
-		       keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+		ksNew (30, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), cutpoint, keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END),
+		       keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ksRewind (orig);
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a");
@@ -2404,13 +2404,13 @@ static void test_cutpoint_1 (void)
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
-	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	ElektraKeyset * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
-				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+	ElektraKeyset * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END),
+				   keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2420,21 +2420,21 @@ static void test_unique_cutpoint (void)
 {
 	printf ("Testing operation cut with unique cutpoint\n");
 
-	ElektraKey * cutpoint = keyNew ("user:/a/b/c", KEY_END);
-	ElektraKeyset * orig = ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
-			       keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END),
-			       keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+	ElektraKey * cutpoint = keyNew ("user:/a/b/c", ELEKTRA_KEY_END);
+	ElektraKeyset * orig = ksNew (30, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), keyNew ("user:/a/b/c", ELEKTRA_KEY_END),
+			       keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END),
+			       keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	ElektraKeyset * part = ksCut (orig, cutpoint);
 
-	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/a", ELEKTRA_KEY_END), keyNew ("user:/a/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
 	ElektraKeyset * cmp_part =
-		ksNew (15, keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
-		       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
+		ksNew (15, keyNew ("user:/a/b/c", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/d/e", ELEKTRA_KEY_END),
+		       keyNew ("user:/a/b/c/e", ELEKTRA_KEY_END), keyNew ("user:/a/b/c/e/d", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2445,11 +2445,11 @@ static void test_cutbelow (void)
 {
 	printf ("Testing cutting below some keys\n");
 
-	ElektraKey * cutpoint = keyNew ("user:/export", KEY_END);
+	ElektraKey * cutpoint = keyNew ("user:/export", ELEKTRA_KEY_END);
 	ElektraKeyset * orig =
-		ksNew (30, keyNew ("user:/export/a", KEY_END), keyNew ("user:/export/c", KEY_END), keyNew ("user:/export/c/x", KEY_END),
-		       keyNew ("user:/export/c/x/b/blah", KEY_END), keyNew ("user:/export/xyz", KEY_END),
-		       keyNew ("user:/export-backup/b", KEY_END), keyNew ("user:/export-backup-2/x", KEY_END), KS_END);
+		ksNew (30, keyNew ("user:/export/a", ELEKTRA_KEY_END), keyNew ("user:/export/c", ELEKTRA_KEY_END), keyNew ("user:/export/c/x", ELEKTRA_KEY_END),
+		       keyNew ("user:/export/c/x/b/blah", ELEKTRA_KEY_END), keyNew ("user:/export/xyz", ELEKTRA_KEY_END),
+		       keyNew ("user:/export-backup/b", ELEKTRA_KEY_END), keyNew ("user:/export-backup-2/x", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ksRewind (orig);
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/export/a");
@@ -2460,14 +2460,14 @@ static void test_cutbelow (void)
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/export-backup/b");
 
-	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/export-backup-2/x", KEY_END), keyNew ("user:/export-backup/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("user:/export-backup-2/x", ELEKTRA_KEY_END), keyNew ("user:/export-backup/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
 	ElektraKeyset * cmp_part =
-		ksNew (15, keyNew ("user:/export/a", KEY_END), keyNew ("user:/export/c", KEY_END), keyNew ("user:/export/c/x", KEY_END),
-		       keyNew ("user:/export/c/x/b/blah", KEY_END), keyNew ("user:/export/xyz", KEY_END), KS_END);
+		ksNew (15, keyNew ("user:/export/a", ELEKTRA_KEY_END), keyNew ("user:/export/c", ELEKTRA_KEY_END), keyNew ("user:/export/c/x", ELEKTRA_KEY_END),
+		       keyNew ("user:/export/c/x/b/blah", ELEKTRA_KEY_END), keyNew ("user:/export/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2478,10 +2478,10 @@ static void test_cascading_cutbelow (void)
 {
 	printf ("Testing cutting below some keys (cascading)\n");
 
-	ElektraKey * cutpoint = keyNew ("/export", KEY_END);
-	ElektraKeyset * orig = ksNew (30, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
-			       keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END),
-			       keyNew ("/export-backup/b", KEY_END), keyNew ("/export-backup-2/x", KEY_END), KS_END);
+	ElektraKey * cutpoint = keyNew ("/export", ELEKTRA_KEY_END);
+	ElektraKeyset * orig = ksNew (30, keyNew ("/export/a", ELEKTRA_KEY_END), keyNew ("/export/c", ELEKTRA_KEY_END), keyNew ("/export/c/x", ELEKTRA_KEY_END),
+			       keyNew ("/export/c/x/b/blah", ELEKTRA_KEY_END), keyNew ("/export/xyz", ELEKTRA_KEY_END),
+			       keyNew ("/export-backup/b", ELEKTRA_KEY_END), keyNew ("/export-backup-2/x", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ksRewind (orig);
 	ksNext (orig);
 	succeed_if_same_string (keyName (ksCurrent (orig)), "/export/a");
@@ -2492,13 +2492,13 @@ static void test_cascading_cutbelow (void)
 
 	succeed_if_same_string (keyName (ksCurrent (orig)), "/export-backup/b");
 
-	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("/export-backup-2/x", KEY_END), keyNew ("/export-backup/b", KEY_END), KS_END);
+	ElektraKeyset * cmp_orig = ksNew (15, keyNew ("/export-backup-2/x", ELEKTRA_KEY_END), keyNew ("/export-backup/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	ElektraKeyset * cmp_part = ksNew (15, keyNew ("/export/a", KEY_END), keyNew ("/export/c", KEY_END), keyNew ("/export/c/x", KEY_END),
-				   keyNew ("/export/c/x/b/blah", KEY_END), keyNew ("/export/xyz", KEY_END), KS_END);
+	ElektraKeyset * cmp_part = ksNew (15, keyNew ("/export/a", ELEKTRA_KEY_END), keyNew ("/export/c", ELEKTRA_KEY_END), keyNew ("/export/c/x", ELEKTRA_KEY_END),
+				   keyNew ("/export/c/x/b/blah", ELEKTRA_KEY_END), keyNew ("/export/xyz", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2507,53 +2507,53 @@ static void test_cascading_cutbelow (void)
 
 ElektraKeyset * set_simple (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
+	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/anything", ELEKTRA_KEY_VALUE, "backend", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/path", ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", ELEKTRA_KEY_VALUE, "tracer", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", ELEKTRA_KEY_VALUE, "plugin", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/backend/simple", ELEKTRA_KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins", ELEKTRA_KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", ELEKTRA_KEY_VALUE, "tracer", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_simple (void)
 {
 	ElektraKeyset * config = set_simple ();
-	ElektraKeyset * result_res = ksNew (16, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
-				     keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
-				     keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
-				     keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
-				     keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
-				     keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END), KS_END);
+	ElektraKeyset * result_res = ksNew (16, keyNew ("system:/elektra/mountpoints/simple/config", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/anything", ELEKTRA_KEY_VALUE, "backend", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/more", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/more/config", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/path", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKeyset * result_config =
-		ksNew (22, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
-	ElektraKey * key = ksLookup (config, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
+		ksNew (22, keyNew ("system:/elektra/mountpoints/simple", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", ELEKTRA_KEY_VALUE, "tracer", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", ELEKTRA_KEY_VALUE, "plugin", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/mountpoint", ELEKTRA_KEY_VALUE, "user:/tests/backend/simple", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/setplugins", ELEKTRA_KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", ELEKTRA_KEY_VALUE, "tracer", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKey * key = ksLookup (config, keyNew ("system:/elektra/mountpoints/simple/config", ELEKTRA_KEY_END), ELEKTRA_KDB_O_DEL);
 	succeed_if (ksGetCursor (config) == 1, "cursor not set correctly");
 	ElektraKeyset * res = ksCut (config, key);
 	succeed_if (ksGetCursor (config) == 0, "cursor should stay as is");
@@ -2638,8 +2638,8 @@ static void test_morecut (void)
 {
 	printf ("More cut test cases\n");
 
-	ElektraKeyset * ks = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
-			     keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END),
+			     keyNew ("system:/valid/key1", ELEKTRA_KEY_END), keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksCurrent (ks) == 0, "should be rewinded");
 	ksNext (ks);
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/valid/key1");
@@ -2650,10 +2650,10 @@ static void test_morecut (void)
 	ksNext (ks);
 	succeed_if_same_string (keyName (ksCurrent (ks)), "system:/valid/key2");
 
-	ElektraKeyset * split1 = ksNew (3, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
-	ElektraKeyset * split2 = ksNew (3, keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
+	ElektraKeyset * split1 = ksNew (3, keyNew ("user:/valid/key1", ELEKTRA_KEY_END), keyNew ("user:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split2 = ksNew (3, keyNew ("system:/valid/key1", ELEKTRA_KEY_END), keyNew ("system:/valid/key2", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKey * userKey = keyNew ("user:/", KEY_END);
+	ElektraKey * userKey = keyNew ("user:/", ELEKTRA_KEY_END);
 
 	ElektraKeyset * cut = ksCut (ks, userKey);
 
@@ -2672,9 +2672,9 @@ static void test_cutafter (void)
 {
 	printf ("More cut after\n");
 
-	ElektraKeyset * ks = ksNew (5, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
-			     keyNew ("user:/b/valid/key", KEY_END), keyNew ("user:/b/x/valid/key", KEY_END),
-			     keyNew ("user:/c/valid/key", KEY_END), keyNew ("user:/c/x/valid/key", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (5, keyNew ("user:/a/valid/key", ELEKTRA_KEY_END), keyNew ("user:/a/x/valid/key", ELEKTRA_KEY_END),
+			     keyNew ("user:/b/valid/key", ELEKTRA_KEY_END), keyNew ("user:/b/x/valid/key", ELEKTRA_KEY_END),
+			     keyNew ("user:/c/valid/key", ELEKTRA_KEY_END), keyNew ("user:/c/x/valid/key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ksRewind (ks);
 	ksNext (ks);
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/a/valid/key");
@@ -2688,11 +2688,11 @@ static void test_cutafter (void)
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/c/valid/key");
 	// printf ("%s\n", keyName(ksCurrent(ks)));
 
-	ElektraKeyset * split1 = ksNew (8, keyNew ("user:/b/valid/key", KEY_END), keyNew ("user:/b/x/valid/key", KEY_END), KS_END);
-	ElektraKeyset * split2 = ksNew (8, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
-				 keyNew ("user:/c/valid/key", KEY_END), keyNew ("user:/c/x/valid/key", KEY_END), KS_END);
+	ElektraKeyset * split1 = ksNew (8, keyNew ("user:/b/valid/key", ELEKTRA_KEY_END), keyNew ("user:/b/x/valid/key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKeyset * split2 = ksNew (8, keyNew ("user:/a/valid/key", ELEKTRA_KEY_END), keyNew ("user:/a/x/valid/key", ELEKTRA_KEY_END),
+				 keyNew ("user:/c/valid/key", ELEKTRA_KEY_END), keyNew ("user:/c/x/valid/key", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKey * userKey = keyNew ("user:/b", KEY_END);
+	ElektraKey * userKey = keyNew ("user:/b", ELEKTRA_KEY_END);
 
 	ElektraKeyset * cut = ksCut (ks, userKey);
 	// printf ("%s\n", keyName(ksCurrent(ks)));
@@ -2713,13 +2713,13 @@ static void test_simpleLookup (void)
 {
 	printf ("Test simple lookup\n");
 
-	ElektraKeyset * ks = ksNew (10, KS_END);
+	ElektraKeyset * ks = ksNew (10, ELEKTRA_KS_END);
 
-	ElektraKey * searchKey = keyNew ("user:/something", KEY_VALUE, "a value", KEY_END);
+	ElektraKey * searchKey = keyNew ("user:/something", ELEKTRA_KEY_VALUE, "a value", ELEKTRA_KEY_END);
 	ElektraKey * k0 = ksLookup (ks, searchKey, 0);
 	succeed_if (!k0, "we have a problem: found not inserted key");
 
-	ElektraKey * dup = keyDup (searchKey, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (searchKey, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "user:/something");
 	succeed_if_same_string (keyString (dup), "a value");
 	ksAppendKey (ks, dup);
@@ -2732,7 +2732,7 @@ static void test_simpleLookup (void)
 	succeed_if_same_string (keyString (k1), "a value");
 
 	ElektraKey * returnedKey;
-	returnedKey = ksLookup (ks, searchKey, KDB_O_DEL);
+	returnedKey = ksLookup (ks, searchKey, ELEKTRA_KDB_O_DEL);
 	succeed_if_same_string (keyName (returnedKey), keyName (dup));
 	succeed_if_same_string (keyString (returnedKey), keyString (dup));
 	succeed_if (ksGetSize (ks) == 1, "key deleted from keyset");
@@ -2749,10 +2749,10 @@ static void test_nsLookup (void)
 
 		for (int i = 0; i < NUMBER_OF_NAMESPACES; ++i)
 	{
-		ElektraKey * searchKey = keyNew (namespaces[i], KEY_VALUE, "value1", KEY_COMMENT, "comment1", KEY_END);
+		ElektraKey * searchKey = keyNew (namespaces[i], ELEKTRA_KEY_VALUE, "value1", ELEKTRA_KEY_COMMENT, "comment1", ELEKTRA_KEY_END);
 		keyAddName (searchKey, "test/keyset/dir7/key1");
 
-		ElektraKey * lookupKey = keyNew (namespaces[i], KEY_END);
+		ElektraKey * lookupKey = keyNew (namespaces[i], ELEKTRA_KEY_END);
 		keyAddName (lookupKey, "something/not/found");
 		ElektraKey * k0 = ksLookup (ks, lookupKey, 0);
 		succeed_if (!k0, "we have a problem: found not inserted key");
@@ -2794,8 +2794,8 @@ static void test_ksAppend2 (void)
 {
 	printf ("Test more involved appending\n");
 
-	ElektraKey * inks = keyNew ("user:/key_with_meta_data", KEY_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * inks = keyNew ("user:/key_with_meta_data", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 	ksAppendKey (ks, inks);
 
 	succeed_if (keyGetMeta (inks, "hello") == 0, "hello was not set up to now");
@@ -2811,7 +2811,7 @@ static void test_ksAppend2 (void)
 	succeed_if_same_string (keyValue (keyGetMeta (ksCurrent (ks2), "hello")), "hello_world");
 	succeed_if (keyGetMeta (ksCurrent (ks2), "error") == 0, "hello was not set up to now");
 
-	ElektraKey * dup = keyDup (inks, KEY_CP_ALL);
+	ElektraKey * dup = keyDup (inks, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyValue (keyGetMeta (inks, "hello")), "hello_world");
 	succeed_if (keyGetMeta (inks, "error") == 0, "hello was not set up to now");
 
@@ -2829,9 +2829,9 @@ static void test_ksAppend2 (void)
 	keyDel (dup);
 	ksDel (ks2);
 
-	ElektraKey * parent = keyNew ("user:/test/rename", KEY_END);
+	ElektraKey * parent = keyNew ("user:/test/rename", ELEKTRA_KEY_END);
 	succeed_if (keyGetRef (parent) == 0, "ref wrong");
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	ksAppendKey (ks, parent);
 	succeed_if (keyGetRef (parent) == 1, "ref wrong");
 	ElektraKeyset * iter = ksDup (ks);
@@ -2839,12 +2839,12 @@ static void test_ksAppend2 (void)
 	ksRewind (iter);
 	ElektraKey * key = ksNext (iter);
 	succeed_if (keyGetMeta (key, "name") == 0, "no such meta exists");
-	ElektraKey * result = keyDup (key, KEY_CP_ALL);
+	ElektraKey * result = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if (keyGetRef (parent) == 2, "ref wrong");
 	succeed_if (keyGetRef (result) == 0, "ref wrong");
 	keySetName (result, keyName (parent));
 	keyAddBaseName (result, "cut");
-	ElektraKey * lok = ksLookup (ks, key, KDB_O_POP);
+	ElektraKey * lok = ksLookup (ks, key, ELEKTRA_KDB_O_POP);
 	keyDel (lok);
 	succeed_if (keyGetRef (parent) == 1, "ref wrong");
 	succeed_if (keyGetRef (key) == 1, "ref wrong");
@@ -2860,10 +2860,10 @@ static void test_ksAppend2 (void)
 	succeed_if (ksLookupByName (ks, "user:/test/rename/cut", 0) != 0, "did not find key");
 	succeed_if (ksGetSize (ks) == 1, "only result in it") ksDel (ks);
 
-	parent = keyNew ("user:/test/rename", KEY_END);
-	ks = ksNew (0, KS_END);
+	parent = keyNew ("user:/test/rename", ELEKTRA_KEY_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	ksAppendKey (ks, parent);
-	ElektraKey * lk = ksLookup (ks, parent, KDB_O_POP);
+	ElektraKey * lk = ksLookup (ks, parent, ELEKTRA_KDB_O_POP);
 	keyDel (lk);
 	ksDel (ks);
 }
@@ -2872,8 +2872,8 @@ static void test_ksAppend3 (void)
 {
 	printf ("Test appending same key\n");
 
-	ElektraKey * key = keyNew ("user:/key", KEY_END);
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKey * key = keyNew ("user:/key", ELEKTRA_KEY_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
 	succeed_if (ksLookupByName (ks, "user:/key", 0) == key, "did not find key");

@@ -28,7 +28,7 @@ static void appendToKey (ElektraKey * key, const char * line)
 static ElektraKeyset * nextPackage (FILE * fp, ElektraKey * parentKey)
 {
 	char * line = elektraMalloc (DPKG_LINE_MAX);
-	ElektraKeyset * package = ksNew (500, KS_END);
+	ElektraKeyset * package = ksNew (500, ELEKTRA_KS_END);
 	ElektraKey * lastKey = NULL;
 	ElektraKey * baseKey = NULL;
 	int notDone = 0;
@@ -59,14 +59,14 @@ static ElektraKeyset * nextPackage (FILE * fp, ElektraKey * parentKey)
 			strtok (data, "\n"); // remove newline
 			if (!strcmp (section, "Package"))
 			{
-				baseKey = keyDup (parentKey, KEY_CP_ALL);
+				baseKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 				keyAddBaseName (baseKey, data);
 				lastKey = baseKey;
 				ksAppendKey (package, baseKey);
 			}
 			else
 			{
-				ElektraKey * key = keyDup (baseKey, KEY_CP_ALL);
+				ElektraKey * key = keyDup (baseKey, ELEKTRA_KEY_CP_ALL);
 				keyAddBaseName (key, section);
 				keySetString (key, data);
 				lastKey = key;
@@ -81,7 +81,7 @@ static ElektraKeyset * nextPackage (FILE * fp, ElektraKey * parentKey)
 static ElektraKeyset * readFile (ElektraKey * parentKey)
 {
 	FILE * fp = fopen (keyString (parentKey), "r");
-	ElektraKeyset * result = ksNew (0, KS_END);
+	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
 	if (!fp) return result;
 	while (!feof (fp))
 	{
@@ -97,12 +97,12 @@ int elektraDpkgGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/dpkg"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/dpkg", KEY_VALUE, "dpkg plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/dpkg/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/dpkg/exports/get", KEY_FUNC, elektraDpkgGet, KEY_END),
-			       keyNew ("system:/elektra/modules/dpkg/exports/set", KEY_FUNC, elektraDpkgSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/dpkg", ELEKTRA_KEY_VALUE, "dpkg plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dpkg/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dpkg/exports/get", ELEKTRA_KEY_FUNC, elektraDpkgGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/dpkg/exports/set", ELEKTRA_KEY_FUNC, elektraDpkgSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/dpkg/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/dpkg/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

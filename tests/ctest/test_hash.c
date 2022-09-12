@@ -18,8 +18,8 @@
 static void test_keySet (void)
 {
 	char hash_string[65];
-	ElektraKeyset * ks = ksNew (3, keyNew ("/sw/application/myapp/#0/current", KEY_END), KS_END);
-	ElektraKey * parentKey = keyNew ("/sw/application/myapp/#0/current", KEY_END);
+	ElektraKeyset * ks = ksNew (3, keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END), ELEKTRA_KS_END);
+	ElektraKey * parentKey = keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END);
 
 	calculateSpecificationToken (hash_string, ks, parentKey);
 
@@ -40,16 +40,16 @@ static void test_keySet (void)
 static void test_onlyKeysBelowParentKey (void)
 {
 	ElektraKeyset * ksOnlyWithKeysFromMyApp =
-		ksNew (3, keyNew ("/sw/application/myapp/#0/current", KEY_META, "mountpoint", "test.ecf", KEY_END),
-		       keyNew ("/sw/application/myapp/#0/current/mykey", KEY_META, "default", "1", KEY_END),
-		       keyNew ("/sw/application/myapp/#0/current/myotherkey", KEY_META, "opt/arg", "required", KEY_END), KS_END);
+		ksNew (3, keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_META, "mountpoint", "test.ecf", ELEKTRA_KEY_END),
+		       keyNew ("/sw/application/myapp/#0/current/mykey", ELEKTRA_KEY_META, "default", "1", ELEKTRA_KEY_END),
+		       keyNew ("/sw/application/myapp/#0/current/myotherkey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraKeyset * ksWithKeysFromTwoApps = ksDup (ksOnlyWithKeysFromMyApp);
 	ksAppendKey (ksWithKeysFromTwoApps,
-		     keyNew ("/sw/application/myotherapp/#0/current/somekey", KEY_META, "opt/arg", "required", KEY_END));
+		     keyNew ("/sw/application/myotherapp/#0/current/somekey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END));
 	ksAppendKey (ksOnlyWithKeysFromMyApp,
-		     keyNew ("/sw/application/myotherapp/#0/current/someotherkey", KEY_META, "opt/arg", "required", KEY_END));
+		     keyNew ("/sw/application/myotherapp/#0/current/someotherkey", ELEKTRA_KEY_META, "opt/arg", "required", ELEKTRA_KEY_END));
 
-	ElektraKey * parentKeyForMyApp = keyNew ("/sw/application/myapp/#0/current", KEY_END);
+	ElektraKey * parentKeyForMyApp = keyNew ("/sw/application/myapp/#0/current", ELEKTRA_KEY_END);
 
 	char hash_ksWithKeysFroMyApp[65];
 	char hash_ksWithKeysFromTwoApps[65];

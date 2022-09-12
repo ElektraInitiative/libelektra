@@ -165,7 +165,7 @@ static const char * getAugeasError (augeas * augeasHandle, const char * lensPath
 
 static ElektraKey * createKeyFromPath (ElektraKey * parentKey, const char * treePath)
 {
-	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	char * baseName = elektraStrDup (treePath + strlen (AUGEAS_TREE_ROOT) + 1);
 	char * lastSlash = strrchr (baseName, '/');
 	const char * lastPart = lastSlash != NULL ? lastSlash + 1 : baseName;
@@ -247,7 +247,7 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 
 	ElektraKey * key = createKeyFromPath (orphanData->parentKey, treePath);
 
-	if (!ksLookup (orphanData->ks, key, KDB_O_NONE))
+	if (!ksLookup (orphanData->ks, key, ELEKTRA_KDB_O_NONE))
 	{
 		char * nodeMatch;
 		char ** matches;
@@ -269,7 +269,7 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 			for (int i = 0; i < numChildNodes; i++)
 			{
 				ElektraKey * childKey = createKeyFromPath (orphanData->parentKey, matches[i]);
-				if (ksLookup (orphanData->ks, childKey, KDB_O_NONE))
+				if (ksLookup (orphanData->ks, childKey, ELEKTRA_KDB_O_NONE))
 				{
 					pruneTree = 0;
 				}
@@ -547,9 +547,9 @@ int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 
 	/* convert the augeas tree to an Elektra KeySet */
 	ksClear (returned);
-	ElektraKeyset * append = ksNew ((size_t) ksGetSize (returned) * 2, KS_END);
+	ElektraKeyset * append = ksNew ((size_t) ksGetSize (returned) * 2, ELEKTRA_KS_END);
 
-	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	ksAppendKey (append, key);
 
 	struct KeyConversion * conversionData = elektraMalloc (sizeof (struct KeyConversion));
@@ -562,7 +562,7 @@ int elektraAugeasGet (Plugin * handle, ElektraKeyset * returned, ElektraKey * pa
 	}
 
 	conversionData->currentOrder = 0;
-	conversionData->parentKey = keyDup (key, KEY_CP_ALL);
+	conversionData->parentKey = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	conversionData->ks = append;
 
 	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &convertToKey, conversionData);

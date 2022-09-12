@@ -200,7 +200,7 @@ static unsigned short parseURLPath (Data * data, ElektraKeyset * config)
 	{
 		data->path = elektraStrDup (path);
 		data->useLocalCopy = 1;
-		key = ksLookupByName (config, "/url", KDB_O_NONE);
+		key = ksLookupByName (config, "/url", ELEKTRA_KDB_O_NONE);
 		if (key)
 		{
 			proto = isValidURL (keyString (key));
@@ -213,7 +213,7 @@ static unsigned short parseURLPath (Data * data, ElektraKeyset * config)
 			}
 			else
 			{
-				key = ksLookupByName (config, "/url/get", KDB_O_NONE);
+				key = ksLookupByName (config, "/url/get", ELEKTRA_KDB_O_NONE);
 				if (!key)
 				{
 					return 0;
@@ -231,7 +231,7 @@ static unsigned short parseURLPath (Data * data, ElektraKeyset * config)
 						data->getUrl = keyString (key);
 					}
 				}
-				key = ksLookupByName (config, "/url/put", KDB_O_NONE);
+				key = ksLookupByName (config, "/url/put", ELEKTRA_KDB_O_NONE);
 				if (key)
 				{
 					proto = isValidURL (keyString (key));
@@ -261,7 +261,7 @@ static unsigned short parseURLPath (Data * data, ElektraKeyset * config)
 		data->path = NULL;
 		data->getUrl = path;
 		data->getProto = proto;
-		key = ksLookupByName (config, "/url/put", KDB_O_NONE);
+		key = ksLookupByName (config, "/url/put", ELEKTRA_KDB_O_NONE);
 		if (!key)
 		{
 			data->uploadUrl = data->getUrl;
@@ -295,25 +295,25 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 		data = NULL;
 		return 0;
 	}
-	ElektraKey * key = ksLookupByName (config, "/user", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (config, "/user", ELEKTRA_KDB_O_NONE);
 	if (key)
 	{
 		data->user = keyString (key);
 	}
-	key = ksLookupByName (config, "/password", KDB_O_NONE);
+	key = ksLookupByName (config, "/password", ELEKTRA_KDB_O_NONE);
 	if (key)
 	{
 		data->password = keyString (key);
 	}
 	if (data->putProto == PROTO_HTTP || data->putProto == PROTO_HTTPS)
 	{
-		key = ksLookupByName (config, "/upload/method", KDB_O_NONE);
+		key = ksLookupByName (config, "/upload/method", ELEKTRA_KDB_O_NONE);
 		if (key)
 		{
 			if (!(strcasecmp (keyString (key), "POST")))
 			{
 				data->uploadMethod = POST;
-				key = ksLookupByName (config, "/upload/postfield", KDB_O_NONE);
+				key = ksLookupByName (config, "/upload/postfield", ELEKTRA_KDB_O_NONE);
 				if (key)
 				{
 					data->postFieldName = keyString (key);
@@ -333,7 +333,7 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 			}
 		}
 	}
-	key = ksLookupByName (config, "upload/filename", KDB_O_NONE);
+	key = ksLookupByName (config, "upload/filename", ELEKTRA_KDB_O_NONE);
 	if (key)
 	{
 		data->__uploadFileName = elektraStrDup (keyString (key));
@@ -356,7 +356,7 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 		}
 	}
 
-	key = ksLookupByName (config, "/ssl/verify", KDB_O_NONE);
+	key = ksLookupByName (config, "/ssl/verify", ELEKTRA_KDB_O_NONE);
 	if (key)
 	{
 		if (!strcmp (keyString (key), "1"))
@@ -365,7 +365,7 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 			data->sslVerifyHost = 1;
 			data->useSSL = 1;
 		}
-		key = ksLookupByName (config, "/ssl/verify/peer", KDB_O_NONE);
+		key = ksLookupByName (config, "/ssl/verify/peer", ELEKTRA_KDB_O_NONE);
 		if (key)
 		{
 			data->useSSL = 1;
@@ -374,7 +374,7 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 			else if (!strcmp (keyString (key), "0"))
 				data->sslVerifyPeer = 0;
 		}
-		key = ksLookupByName (config, "/ssl/verify/host", KDB_O_NONE);
+		key = ksLookupByName (config, "/ssl/verify/host", ELEKTRA_KDB_O_NONE);
 		if (key)
 		{
 			data->useSSL = 1;
@@ -384,13 +384,13 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 				data->sslVerifyHost = 0;
 		}
 	}
-	key = ksLookupByName (config, "/prefer", KDB_O_NONE);
+	key = ksLookupByName (config, "/prefer", ELEKTRA_KDB_O_NONE);
 	data->preferRemote = 1;
 	if (key && !strcasecmp (keyString (key), "local"))
 	{
 		data->preferRemote = 0;
 	}
-	key = ksLookupByName (config, "/ssh/auth", KDB_O_NONE);
+	key = ksLookupByName (config, "/ssh/auth", ELEKTRA_KDB_O_NONE);
 	if (key)
 	{
 		if (!strcasecmp (keyString (key), "password"))
@@ -404,7 +404,7 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 		else if (!strcasecmp (keyString (key), "pubkeypw"))
 			data->sshAuth = SSH_PUBKEYPW;
 	}
-	key = ksLookupByName (config, "/ssh/key", KDB_O_NONE);
+	key = ksLookupByName (config, "/ssh/key", ELEKTRA_KDB_O_NONE);
 	if (!key)
 	{
 		data->keyFile = NULL;
@@ -413,7 +413,7 @@ int elektraCurlgetOpen (Plugin * handle, ElektraKey * errorKey ELEKTRA_UNUSED)
 	{
 		data->keyFile = keyString (key);
 	}
-	key = ksLookupByName (config, "/ssh/key/passwd", KDB_O_NONE);
+	key = ksLookupByName (config, "/ssh/key/passwd", ELEKTRA_KDB_O_NONE);
 	if (key)
 	{
 		data->keyFilePasswd = keyString (key);
@@ -583,17 +583,17 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/curlget"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/curlget", KEY_VALUE, "curlget plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports/get", KEY_FUNC, elektraCurlgetGet, KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports/set", KEY_FUNC, elektraCurlgetSet, KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports/commit", KEY_FUNC, elektraCurlgetCommit, KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports/open", KEY_FUNC, elektraCurlgetOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports/close", KEY_FUNC, elektraCurlgetClose, KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports/error", KEY_FUNC, elektraCurlgetError, KEY_END),
-			       keyNew ("system:/elektra/modules/curlget/exports/checkfile", KEY_FUNC, elektraCurlgetCheckFile, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/curlget", ELEKTRA_KEY_VALUE, "curlget plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/get", ELEKTRA_KEY_FUNC, elektraCurlgetGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/set", ELEKTRA_KEY_FUNC, elektraCurlgetSet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/commit", ELEKTRA_KEY_FUNC, elektraCurlgetCommit, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/open", ELEKTRA_KEY_FUNC, elektraCurlgetOpen, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/close", ELEKTRA_KEY_FUNC, elektraCurlgetClose, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/error", ELEKTRA_KEY_FUNC, elektraCurlgetError, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/curlget/exports/checkfile", ELEKTRA_KEY_FUNC, elektraCurlgetCheckFile, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/curlget/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/curlget/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

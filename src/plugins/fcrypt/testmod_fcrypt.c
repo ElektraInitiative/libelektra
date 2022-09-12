@@ -47,11 +47,11 @@ static ElektraKeyset * newPluginConfiguration (void)
 {
 	// clang-format off
 	return ksNew (3,
-		keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
-		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END),
-		keyNew (ELEKTRA_SIGNATURE_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
-		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, KEY_VALUE, "0", KEY_END),
-		KS_END);
+		keyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		keyNew (ELEKTRA_SIGNATURE_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 	// clang-format on
 }
 
@@ -59,11 +59,11 @@ static ElektraKeyset * newPluginConfigurationWithTextmodeEnabled (void)
 {
 	// clang-format off
 	return ksNew (3,
-		keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
-		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END),
-		keyNew (ELEKTRA_SIGNATURE_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
-		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, KEY_VALUE, "1", KEY_END),
-		KS_END);
+		keyNew (ELEKTRA_RECIPIENT_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		keyNew (ELEKTRA_SIGNATURE_KEY, ELEKTRA_KEY_VALUE, TEST_KEY_ID, ELEKTRA_KEY_END),
+		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 	// clang-format on
 }
 
@@ -119,8 +119,8 @@ static int isTestFileCorrect (const char * file)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
@@ -150,12 +150,12 @@ static void test_gpg (void)
 {
 	// Plugin configuration
 	ElektraKeyset * conf = newPluginConfiguration ();
-	ElektraKey * errorKey = keyNew ("/", KEY_END);
+	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
 
 	// install the gpg key
 	char * argv[] = { "", "-a", "--import", NULL };
 	const size_t argc = 4;
-	ElektraKey * msg = keyNew ("/", KEY_END);
+	ElektraKey * msg = keyNew ("/", ELEKTRA_KEY_END);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
 	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
@@ -168,8 +168,8 @@ static void test_gpg (void)
 static void test_file_crypto_operations (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
@@ -177,7 +177,7 @@ static void test_file_crypto_operations (void)
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		ElektraKeyset * data = ksNew (0, KS_END);
+		ElektraKeyset * data = ksNew (0, ELEKTRA_KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
@@ -212,8 +212,8 @@ static void test_file_crypto_operations (void)
 static void test_file_signature_operations (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfiguration ();
 
 	elektraModulesInit (modules, 0);
@@ -221,7 +221,7 @@ static void test_file_signature_operations (void)
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		ElektraKeyset * data = ksNew (0, KS_END);
+		ElektraKeyset * data = ksNew (0, ELEKTRA_KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
@@ -251,8 +251,8 @@ static void test_file_signature_operations (void)
 static void test_file_faulty_signature (void)
 {
 	Plugin * plugin = NULL;
-	ElektraKey * parentKey = keyNew ("system:/", KEY_END);
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	ElektraKeyset * config = newPluginConfigurationWithTextmodeEnabled ();
 
 	elektraModulesInit (modules, 0);
@@ -260,7 +260,7 @@ static void test_file_faulty_signature (void)
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		ElektraKeyset * data = ksNew (0, KS_END);
+		ElektraKeyset * data = ksNew (0, ELEKTRA_KS_END);
 		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{

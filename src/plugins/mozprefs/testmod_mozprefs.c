@@ -17,24 +17,24 @@
 
 static void test_readPref (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/pref-read", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/pref-read", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("mozprefs");
 
-	ElektraKeyset * ks = ksNew (0, KS_END);
+	ElektraKeyset * ks = ksNew (0, ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	ElektraKey * key = ksLookupByName (ks, "user:/tests/pref-read/user/a/user/key", KDB_O_NONE);
+	ElektraKey * key = ksLookupByName (ks, "user:/tests/pref-read/user/a/user/key", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "Key a.user.key not found");
 	succeed_if (!strcmp (keyString (key), "usertest"), "Key a.user.key contains invalid data");
-	key = ksLookupByName (ks, "user:/tests/pref-read/lock/a/lock/key", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/pref-read/lock/a/lock/key", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "Key a.lock.key not found");
 	succeed_if (!strcmp (keyString (key), "true"), "Key a.lock.key contains invalid data");
-	key = ksLookupByName (ks, "user:/tests/pref-read/pref/a/default/key", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/pref-read/pref/a/default/key", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "Key a.default.key not found");
 	succeed_if (!strcmp (keyString (key), "1"), "Key a.default.key contains invalid data");
-	key = ksLookupByName (ks, "user:/tests/pref-read/sticky/a/sticky/key", KDB_O_NONE);
+	key = ksLookupByName (ks, "user:/tests/pref-read/sticky/a/sticky/key", ELEKTRA_KDB_O_NONE);
 	exit_if_fail (key, "Key a.sticky.key not found");
 	succeed_if (!strcmp (keyString (key), "false"), "Key a.sticky.key contains invalid data");
 	ksDel (ks);
@@ -44,16 +44,16 @@ static void test_readPref (char * fileName)
 
 static void test_writePref (char * fileName)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/pref-write", KEY_VALUE, elektraFilename (), KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/pref-write", ELEKTRA_KEY_VALUE, elektraFilename (), ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("mozprefs");
 
 	ElektraKeyset * ks = ksNew (
-		30, keyNew ("user:/tests/pref-write/user/a/user/key", KEY_VALUE, "usertest", KEY_META, "type", "string", KEY_END),
-		keyNew ("user:/tests/pref-write/lock/a/lock/key", KEY_VALUE, "true", KEY_META, "type", "boolean", KEY_END),
-		keyNew ("user:/tests/pref-write/pref/a/default/key", KEY_VALUE, "1", KEY_META, "type", "integer", KEY_END),
-		keyNew ("user:/tests/pref-write/sticky/a/sticky/key", KEY_VALUE, "false", KEY_META, "type", "boolean", KEY_END), KS_END);
+		30, keyNew ("user:/tests/pref-write/user/a/user/key", ELEKTRA_KEY_VALUE, "usertest", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/pref-write/lock/a/lock/key", ELEKTRA_KEY_VALUE, "true", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/pref-write/pref/a/default/key", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_META, "type", "integer", ELEKTRA_KEY_END),
+		keyNew ("user:/tests/pref-write/sticky/a/sticky/key", ELEKTRA_KEY_VALUE, "false", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 

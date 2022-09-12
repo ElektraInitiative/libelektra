@@ -133,12 +133,12 @@ int elektraUnitGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, El
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/unit"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/unit", KEY_VALUE, "unit plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/unit/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/unit/exports/get", KEY_FUNC, elektraUnitGet, KEY_END),
-			       keyNew ("system:/elektra/modules/unit/exports/set", KEY_FUNC, elektraUnitSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/unit", ELEKTRA_KEY_VALUE, "unit plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/unit/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/unit/exports/get", ELEKTRA_KEY_FUNC, elektraUnitGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/unit/exports/set", ELEKTRA_KEY_FUNC, elektraUnitSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/unit/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/unit/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

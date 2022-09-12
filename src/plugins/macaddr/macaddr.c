@@ -131,14 +131,14 @@ int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned,
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/macaddr"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/macaddr", KEY_VALUE, "macaddr plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/macaddr/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/macaddr/exports/get", KEY_FUNC, elektraMacaddrGet, KEY_END),
-			       keyNew ("system:/elektra/modules/macaddr/exports/set", KEY_FUNC, elektraMacaddrSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/macaddr", ELEKTRA_KEY_VALUE, "macaddr plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/macaddr/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/macaddr/exports/get", ELEKTRA_KEY_FUNC, elektraMacaddrGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/macaddr/exports/set", ELEKTRA_KEY_FUNC, elektraMacaddrSet, ELEKTRA_KEY_END),
 
 #include ELEKTRA_README
 
-			       keyNew ("system:/elektra/modules/macaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/macaddr/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

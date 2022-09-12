@@ -32,13 +32,13 @@ int elektraLogchangeGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/logchange"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/logchange", KEY_VALUE, "logchange plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/logchange/exports", KEY_END),
-			keyNew ("system:/elektra/modules/logchange/exports/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
-			keyNew ("system:/elektra/modules/logchange/exports/set", KEY_FUNC, elektraLogchangeSet, KEY_END),
-			keyNew ("system:/elektra/modules/logchange/exports/close", KEY_FUNC, elektraLogchangeClose, KEY_END),
+			30, keyNew ("system:/elektra/modules/logchange", ELEKTRA_KEY_VALUE, "logchange plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/get", ELEKTRA_KEY_FUNC, elektraLogchangeGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/set", ELEKTRA_KEY_FUNC, elektraLogchangeSet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/close", ELEKTRA_KEY_FUNC, elektraLogchangeClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/logchange/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/logchange/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -52,7 +52,7 @@ int elektraLogchangeGet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 
 	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
 	{
-		ElektraKeyset * logset = ksNew (1, keyDup (parentKey, KEY_CP_ALL), KS_END);
+		ElektraKeyset * logset = ksNew (1, keyDup (parentKey, ELEKTRA_KEY_CP_ALL), ELEKTRA_KS_END);
 		logKeys (logset, "loading configuration");
 		ksDel (logset);
 	}
@@ -69,13 +69,13 @@ int elektraLogchangeSet (Plugin * handle, ElektraKeyset * returned, ElektraKey *
 	ksRewind (returned);
 
 	ElektraKeyset * addedKeys = ksDup (returned);
-	ElektraKeyset * changedKeys = ksNew (0, KS_END);
-	ElektraKeyset * removedKeys = ksNew (0, KS_END);
+	ElektraKeyset * changedKeys = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * removedKeys = ksNew (0, ELEKTRA_KS_END);
 
 	ElektraKey * k = 0;
 	while ((k = ksNext (oldKeys)) != 0)
 	{
-		ElektraKey * p = ksLookup (addedKeys, k, KDB_O_POP);
+		ElektraKey * p = ksLookup (addedKeys, k, ELEKTRA_KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)
 		{

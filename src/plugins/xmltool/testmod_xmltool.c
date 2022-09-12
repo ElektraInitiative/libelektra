@@ -21,7 +21,7 @@ void test_readwrite (void)
 	printf ("Testing Read and write xml\n");
 
 	fout = fopen (srcdir_file ("xmltool/key-gen.xml"), "w");
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	exit_if_fail (ksFromXMLfile (ks, srcdir_file ("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	ksToStream (ks, fout, KDB_O_HEADER);
 	fclose (fout);
@@ -40,7 +40,7 @@ void test_readwrite_hier (void)
 	printf ("Testing Read and write xml\n");
 
 	fout = fopen (srcdir_file ("xmltool/key-gen.xml"), "w");
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	exit_if_fail (ksFromXMLfile (ks, srcdir_file ("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	ksToStream (ks, fout, KDB_O_HIER | KDB_O_HEADER);
 	fclose (fout);
@@ -60,7 +60,7 @@ void test_key (void)
 
 	printf ("Testing Key from xml\n");
 
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	exit_if_fail (ksFromXMLfile (ks, srcdir_file ("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
 	ksRewind (ks);
@@ -147,7 +147,7 @@ void test_keyset (void)
 
 	printf ("Testing KeySet from xml\n");
 
-	ks = ksNew (0, KS_END);
+	ks = ksNew (0, ELEKTRA_KS_END);
 	exit_if_fail (ksFromXMLfile (ks, srcdir_file ("xmltool/keyset.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
 	ksRewind (ks);
@@ -209,12 +209,12 @@ void test_keyset (void)
 static void test_ksCommonParentName (void)
 {
 	char ret[MAX_SIZE + 1];
-	ElektraKeyset * ks = ksNew (10, keyNew ("system:/sw/xorg/Monitors/Monitor1/vrefresh", KEY_END),
-			     keyNew ("system:/sw/xorg/Monitors/Monitor1/hrefresh", KEY_END),
-			     keyNew ("system:/sw/xorg/Monitors/Monitor2/vrefresh", KEY_END),
-			     keyNew ("system:/sw/xorg/Monitors/Monitor2/hrefresh", KEY_END),
-			     keyNew ("system:/sw/xorg/Devices/Device1/driver", KEY_END),
-			     keyNew ("system:/sw/xorg/Devices/Device1/mode", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (10, keyNew ("system:/sw/xorg/Monitors/Monitor1/vrefresh", ELEKTRA_KEY_END),
+			     keyNew ("system:/sw/xorg/Monitors/Monitor1/hrefresh", ELEKTRA_KEY_END),
+			     keyNew ("system:/sw/xorg/Monitors/Monitor2/vrefresh", ELEKTRA_KEY_END),
+			     keyNew ("system:/sw/xorg/Monitors/Monitor2/hrefresh", ELEKTRA_KEY_END),
+			     keyNew ("system:/sw/xorg/Devices/Device1/driver", ELEKTRA_KEY_END),
+			     keyNew ("system:/sw/xorg/Devices/Device1/mode", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 	printf ("Test common parentname\n");
 
@@ -222,34 +222,34 @@ static void test_ksCommonParentName (void)
 	succeed_if_same_string (ret, "system:/sw/xorg");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/", KEY_END), keyNew ("user:/", KEY_END), KS_END);
+	ks = ksNew (10, keyNew ("system:/", ELEKTRA_KEY_END), keyNew ("user:/", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 0, "could find correct parentname");
 	succeed_if_same_string (ret, "");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/some/thing", KEY_END), keyNew ("system:/other/thing", KEY_END), KS_END);
+	ks = ksNew (10, keyNew ("system:/some/thing", ELEKTRA_KEY_END), keyNew ("system:/other/thing", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 9, "could find correct parentname");
 	succeed_if_same_string (ret, "system:/");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/some/thing", KEY_END), keyNew ("system:/something", KEY_END), KS_END);
+	ks = ksNew (10, keyNew ("system:/some/thing", ELEKTRA_KEY_END), keyNew ("system:/something", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 9, "could find correct parentname");
 	succeed_if_same_string (ret, "system:/");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", KEY_END),
-		    keyNew ("system:/here/in/deep/goes/ok/other/thing", KEY_END), KS_END);
+	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", ELEKTRA_KEY_END),
+		    keyNew ("system:/here/in/deep/goes/ok/other/thing", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) > 0, "could find correct parentname");
 	succeed_if_same_string (ret, "system:/here/in/deep/goes/ok");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", KEY_END),
-		    keyNew ("system:/here/in/deep/goes/ok/other/thing", KEY_END), keyNew ("user:/unique/thing", KEY_END), KS_END);
+	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", ELEKTRA_KEY_END),
+		    keyNew ("system:/here/in/deep/goes/ok/other/thing", ELEKTRA_KEY_END), keyNew ("user:/unique/thing", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 0, "could find correct parentname");
 	succeed_if_same_string (ret, "");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user:/unique/thing", KEY_END), KS_END);
+	ks = ksNew (10, keyNew ("user:/unique/thing", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) > 0, "could find correct parentname");
 	succeed_if_same_string (ret, "user:/unique/thing");
 	ksDel (ks);

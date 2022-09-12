@@ -86,7 +86,7 @@ static bool loadPlugin (Plugin ** pluginPtr, Plugin * thisPlugin, ElektraKey * p
 static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, ElektraKeyset * definition, const char * pluginRefRootName,
 			    enum PluginType type, ElektraKey * parentKey)
 {
-	ElektraKey * pluginRefRoot = keyNew (pluginRefRootName, KEY_END);
+	ElektraKey * pluginRefRoot = keyNew (pluginRefRootName, ELEKTRA_KEY_END);
 
 	*pluginListPtr = NULL;
 	PluginList * listEnd = NULL;
@@ -127,7 +127,7 @@ static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, El
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, ElektraKeyset * definition, ElektraKey * parentKey)
 {
-	if (keyGetNamespace (parentKey) == KEY_NS_PROC)
+	if (keyGetNamespace (parentKey) == ELEKTRA_NS_PROC)
 	{
 		BackendHandle * handle = elektraPluginGetData (plugin);
 		handle->path = elektraStrDup ("");
@@ -416,17 +416,17 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, ElektraKeyset * ks, ElektraK
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backend"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/backend", KEY_VALUE, "backend plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports", KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports/set", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (set), KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports/commit", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (commit), KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports/error", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (error), KEY_END),
-			keyNew ("system:/elektra/modules/backend/exports/close", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), KEY_END),
+			30, keyNew ("system:/elektra/modules/backend", ELEKTRA_KEY_VALUE, "backend plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/open", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/init", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/get", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/set", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (set), ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/commit", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (commit), ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/error", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (error), ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/close", ELEKTRA_KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/backend/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/backend/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (ks, contract);
 		ksDel (contract);
 
@@ -443,7 +443,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, ElektraKeyset * ks, ElektraK
 	}
 
 	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
+	if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_RESOLVER) == 0)
 	{
 		keySetString (parentKey, handle->path);
 
@@ -456,20 +456,20 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, ElektraKeyset * ks, ElektraK
 
 		return runPluginGet (handle->getPositions.resolver, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_GET_PHASE_CACHECHECK) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_CACHECHECK) == 0)
 	{
 		// FIXME (kodebach): implement cache
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
-	else if (strcmp (phase, KDB_GET_PHASE_PRE_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_PRE_STORAGE) == 0)
 	{
 		return runPluginListGet (handle->getPositions.prestorage, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_STORAGE) == 0)
 	{
 		return runPluginGet (handle->getPositions.storage, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_GET_PHASE_POST_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_GET_PHASE_POST_STORAGE) == 0)
 	{
 		return runPluginListGet (handle->getPositions.poststorage, ks, parentKey);
 	}
@@ -521,7 +521,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, ElektraKeyset * ks, ElektraK
 	}
 
 	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_SET_PHASE_RESOLVER) == 0)
+	if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_RESOLVER) == 0)
 	{
 		keySetString (parentKey, handle->path);
 
@@ -537,15 +537,15 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, ElektraKeyset * ks, ElektraK
 
 		return runPluginSet (handle->setPositions.resolver, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_SET_PHASE_PRE_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_PRE_STORAGE) == 0)
 	{
 		return runPluginListSet (handle->setPositions.prestorage, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_SET_PHASE_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_STORAGE) == 0)
 	{
 		return runPluginSet (handle->setPositions.storage, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_SET_PHASE_POST_STORAGE) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_POST_STORAGE) == 0)
 	{
 		return runPluginListSet (handle->setPositions.poststorage, ks, parentKey);
 	}
@@ -597,15 +597,15 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, ElektraKeyset * ks, Elekt
 	}
 
 	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_PRE_COMMIT) == 0)
 	{
 		return runPluginListCommit (handle->setPositions.precommit, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_SET_PHASE_COMMIT) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_COMMIT) == 0)
 	{
 		return runPluginCommit (handle->setPositions.commit, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_SET_PHASE_POST_COMMIT) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_POST_COMMIT) == 0)
 	{
 		return runPluginListCommit (handle->setPositions.postcommit, ks, parentKey);
 	}
@@ -657,15 +657,15 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, ElektraKeyset * ks, Elektr
 	}
 
 	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_SET_PHASE_PRE_ROLLBACK) == 0)
+	if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK) == 0)
 	{
 		return runPluginListError (handle->setPositions.prerollback, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_SET_PHASE_ROLLBACK) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_ROLLBACK) == 0)
 	{
 		return runPluginError (handle->setPositions.rollback, ks, parentKey);
 	}
-	else if (strcmp (phase, KDB_SET_PHASE_POST_ROLLBACK) == 0)
+	else if (strcmp (phase, ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK) == 0)
 	{
 		return runPluginListError (handle->setPositions.postrollback, ks, parentKey);
 	}

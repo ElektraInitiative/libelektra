@@ -217,7 +217,7 @@ ElektraKeyset * elektraArrayGet (const ElektraKey * arrayParent, ElektraKeyset *
 
 	if (!keys) return 0;
 
-	ElektraKeyset * arrayKeys = ksNew (ksGetSize (keys), KS_END);
+	ElektraKeyset * arrayKeys = ksNew (ksGetSize (keys), ELEKTRA_KS_END);
 	elektraKsFilter (arrayKeys, keys, &arrayFilter, (void *) arrayParent);
 	return arrayKeys;
 }
@@ -247,7 +247,7 @@ ElektraKey * elektraArrayGetNextKey (ElektraKeyset * arrayKeys)
 	if (!last) return 0;
 
 	ksAppendKey (arrayKeys, last);
-	ElektraKey * newKey = keyDup (last, KEY_CP_NAME);
+	ElektraKey * newKey = keyDup (last, ELEKTRA_KEY_CP_NAME);
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)

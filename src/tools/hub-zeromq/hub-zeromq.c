@@ -40,12 +40,12 @@ int main (void)
 	// exit on SIGINT
 	signal (SIGINT, onSignal);
 
-	ElektraKeyset * config = ksNew (2, KS_END);
+	ElektraKeyset * config = ksNew (2, ELEKTRA_KS_END);
 
-	ElektraKey * parentKey = keyNew ("/sw/elektra/hub-zeromq/#0/current", KEY_END);
-	ElektraKey * configXSubEndpoint = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * parentKey = keyNew ("/sw/elektra/hub-zeromq/#0/current", ELEKTRA_KEY_END);
+	ElektraKey * configXSubEndpoint = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddBaseName (configXSubEndpoint, "bind_xsub");
-	ElektraKey * configXPubEndpoint = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * configXPubEndpoint = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddBaseName (configXPubEndpoint, "bind_xpub");
 	ElektraKdb * kdb = kdbOpen (NULL, parentKey);
 	if (kdb == NULL)

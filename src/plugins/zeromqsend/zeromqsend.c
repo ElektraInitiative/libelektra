@@ -83,14 +83,14 @@ int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * return
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/zeromqsend"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/zeromqsend", KEY_VALUE, "zeromqsend plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports", KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/open", KEY_FUNC, elektraZeroMqSendOpen, KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/get", KEY_FUNC, elektraZeroMqSendGet, KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/set", KEY_FUNC, elektraZeroMqSendSet, KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/close", KEY_FUNC, elektraZeroMqSendClose, KEY_END),
+			30, keyNew ("system:/elektra/modules/zeromqsend", ELEKTRA_KEY_VALUE, "zeromqsend plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqsend/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqsend/exports/open", ELEKTRA_KEY_FUNC, elektraZeroMqSendOpen, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqsend/exports/get", ELEKTRA_KEY_FUNC, elektraZeroMqSendGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqsend/exports/set", ELEKTRA_KEY_FUNC, elektraZeroMqSendSet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/zeromqsend/exports/close", ELEKTRA_KEY_FUNC, elektraZeroMqSendClose, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/zeromqsend/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/zeromqsend/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

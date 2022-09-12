@@ -66,7 +66,7 @@ kdb_boolean_t checkSpec (ElektraKey * const parentKey, ElektraKeyset * contract,
  */
 Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, ElektraKeyset * contract, ElektraError ** error)
 {
-	ElektraKey * const parentKey = keyNew (application, KEY_END);
+	ElektraKey * const parentKey = keyNew (application, ELEKTRA_KEY_END);
 
 	// Before anything else: Verify that the specification is okay.
 	if (!checkSpec (parentKey, contract, error))
@@ -89,14 +89,14 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 	if (contract != NULL)
 	{
 		// TODO: set default spec config to use ERROR
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec", KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec", ELEKTRA_KEY_END));
 		ksAppendKey (contract,
-			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
+			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/get", ELEKTRA_KEY_VALUE, "ERROR", ELEKTRA_KEY_END));
 		ksAppendKey (contract,
-			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
-		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
+			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/set", ELEKTRA_KEY_VALUE, "ERROR", ELEKTRA_KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/missing/log", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END));
 
-		ElektraKey * contractCut = keyNew ("system:/elektra/contract/highlevel", KEY_END);
+		ElektraKey * contractCut = keyNew ("system:/elektra/contract/highlevel", ELEKTRA_KEY_END);
 		ElektraKeyset * highlevelContract = ksCut (contract, contractCut);
 
 		if (ksGetSize (highlevelContract) > 0)
@@ -112,7 +112,7 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 		ksDel (highlevelContract);
 	}
 
-	ElektraKeyset * const config = ksNew (0, KS_END);
+	ElektraKeyset * const config = ksNew (0, ELEKTRA_KS_END);
 	if (defaults != NULL)
 	{
 		insertDefaults (config, parentKey, defaults);
@@ -160,7 +160,7 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 			// BUT: anything other than helpKey may be incorrect
 			// and only helpKey should be used anyway
 			// so create a new config KeySet
-			ElektraKey * helpKeyDup = keyDup (helpKey, KEY_CP_ALL);
+			ElektraKey * helpKeyDup = keyDup (helpKey, ELEKTRA_KEY_CP_ALL);
 			ksClear (config);
 			ksAppendKey (config, helpKeyDup);
 		}
@@ -181,7 +181,7 @@ Elektra * elektraOpen (const char * application, ElektraKeyset * defaults, Elekt
 	elektra->parentKey = parentKey;
 	elektra->parentKeyLength = keyGetNameSize (parentKey) - 1;
 	elektra->config = config;
-	elektra->lookupKey = keyNew ("/", KEY_END);
+	elektra->lookupKey = keyNew ("/", ELEKTRA_KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
 	elektra->defaults = ksDup (defaults);
 
@@ -264,11 +264,11 @@ kdb_boolean_t checkSpec (ElektraKey * const parentKey, ElektraKeyset * contract,
  */
 kdb_boolean_t checkSpecToken (ElektraKdb * const kdb, ElektraKey * parentKey, const char * tokenFromContract, ElektraError ** error)
 {
-	ElektraKeyset * const specificationKs = ksNew (0, KS_END);
+	ElektraKeyset * const specificationKs = ksNew (0, ELEKTRA_KS_END);
 
-	ElektraKey * parentKeySpecNamespace = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * parentKeySpecNamespace = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	// For token calculation of an application using the HL API, only keys within the spec namespace are relevant.
-	keySetNamespace (parentKeySpecNamespace, KEY_NS_SPEC);
+	keySetNamespace (parentKeySpecNamespace, ELEKTRA_NS_SPEC);
 
 	const int kdbGetResult = kdbGet (kdb, specificationKs, parentKeySpecNamespace);
 	if (kdbGetResult == -1)
@@ -372,8 +372,8 @@ static char * generateSpecProblemErrorMessage (const char * application)
  */
 static kdb_boolean_t checkSpecProperlyMounted (ElektraKdb * const kdb, const char * application, ElektraError ** error)
 {
-	ElektraKeyset * const mountPoints = ksNew (0, KS_END);
-	ElektraKey * const parentKey = keyNew ("system:/elektra/mountpoints", KEY_END);
+	ElektraKeyset * const mountPoints = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * const parentKey = keyNew ("system:/elektra/mountpoints", ELEKTRA_KEY_END);
 	const int kdbGetResult = kdbGet (kdb, mountPoints, parentKey);
 
 	if (kdbGetResult == -1)
@@ -420,7 +420,7 @@ static kdb_boolean_t checkSpecificationMountPoint (ElektraKeyset * const mountPo
 {
 	// TODO (kodebach): update check
 	// Construct the lookup key
-	ElektraKey * mountPointLookupKey = keyNew ("system:/elektra/mountpoints/", KEY_END);
+	ElektraKey * mountPointLookupKey = keyNew ("system:/elektra/mountpoints/", ELEKTRA_KEY_END);
 	keyAddBaseName (mountPointLookupKey, mountPoint);
 	keyAddBaseName (mountPointLookupKey, "mountpoint");
 
@@ -591,7 +591,7 @@ void elektraSaveKey (Elektra * elektra, ElektraKey * key, ElektraError ** error)
 				ELEKTRA_LOG_DEBUG ("problemKey: %s\n", keyName (problemKey));
 			}
 
-			key = keyDup (key, KEY_CP_ALL);
+			key = keyDup (key, ELEKTRA_KEY_CP_ALL);
 			kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
 		}
 	} while (ret == -1);
@@ -602,7 +602,7 @@ void insertDefaults (ElektraKeyset * config, const ElektraKey * parentKey, Elekt
 	ksRewind (defaults);
 	for (ElektraKey * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
 	{
-		ElektraKey * const dup = keyDup (key, KEY_CP_ALL);
+		ElektraKey * const dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		const char * name = keyName (key);
 		keySetName (dup, keyName (parentKey));
 		keyAddName (dup, name);

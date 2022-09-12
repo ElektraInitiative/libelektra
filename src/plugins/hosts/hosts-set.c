@@ -59,7 +59,7 @@ static const char * getMetaValue (ElektraKey * key, const char * metaName)
 static void writeLineComments (ElektraKey * key, FILE * fp)
 {
 	ElektraKeyset * metaKeys = keyMeta (key);
-	ElektraKey * commentParent = keyNew ("meta:/comment", KEY_END);
+	ElektraKey * commentParent = keyNew ("meta:/comment", ELEKTRA_KEY_END);
 	ElektraKeyset * comments = elektraArrayGet (commentParent, metaKeys);
 	keyDel (commentParent);
 
@@ -69,9 +69,9 @@ static void writeLineComments (ElektraKey * key, FILE * fp)
 	{
 		if (strcmp (keyName (current), "meta:/comment/#0") != 0)
 		{
-			ElektraKey * spaceKey = keyDup (current, KEY_CP_ALL);
+			ElektraKey * spaceKey = keyDup (current, ELEKTRA_KEY_CP_ALL);
 			keyAddBaseName (spaceKey, "space");
-			ElektraKey * startKey = keyDup (current, KEY_CP_ALL);
+			ElektraKey * startKey = keyDup (current, ELEKTRA_KEY_CP_ALL);
 			keyAddBaseName (startKey, "start");
 			const char * spaces = getMetaValue (key, keyName (spaceKey));
 			const char * start = getMetaValue (key, keyName (startKey));
@@ -102,7 +102,7 @@ static void writeHostsEntry (ElektraKey * key, ElektraKeyset * returned, FILE * 
 	/* position the cursor at the current key and
 	 * iterate over its subkeys
 	 */
-	ksLookup (returned, key, KDB_O_NONE);
+	ksLookup (returned, key, ELEKTRA_KDB_O_NONE);
 	ElektraKey * alias;
 	while ((alias = ksNext (returned)) != 0)
 	{
@@ -143,9 +143,9 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 
 	qsort (keyArray, arraySize, sizeof (ElektraKey *), keyCmpOrderWrapper);
 
-	ElektraKey * ipv4Base = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * ipv4Base = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddBaseName (ipv4Base, "ipv4");
-	ElektraKey * ipv6Base = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * ipv6Base = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddBaseName (ipv6Base, "ipv6");
 
 	/* now write the hosts file */

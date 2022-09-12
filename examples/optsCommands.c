@@ -23,27 +23,27 @@ extern char ** environ;
 
 static ElektraKeyset * createSpec (void)
 {
-	return ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "description",
-			      "print version information and exit (ignoring all other options/commands/parameters)", KEY_META, "opt", "v",
-			      KEY_META, "opt/arg", "none", KEY_META, "opt/long", "version", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/getter", KEY_META, "description", "get a key's value", KEY_META, "command", "get", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/getter/verbose", KEY_META, "description",
-			      "print additional information about where the value comes from", KEY_META, "opt", "v", KEY_META, "opt/long",
-			      "verbose", KEY_META, "opt/arg", "none", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/getter/keyname", KEY_META, "description", "name of the key to read", KEY_META, "args",
-			      "indexed", KEY_META, "args/index", "0", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter", KEY_META, "description", "set a key's value", KEY_META, "command", "set", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter/verbose", KEY_META, "description",
-			      "print additional information about where the value will be stored", KEY_META, "opt", "v", KEY_META,
-			      "opt/long", "verbose", KEY_META, "opt/arg", "none", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter/keyname", KEY_META, "description", "name of the key to write", KEY_META, "args",
-			      "indexed", KEY_META, "args/index", "0", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/setter/value", KEY_META, "description", "value to be written", KEY_META, "args", "indexed",
-			      KEY_META, "args/index", "1", KEY_END),
-		      keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "description", "dynamically call a user-supplied command", KEY_META,
-			      "args", "remaining", KEY_END),
-		      KS_END);
+	return ksNew (10, keyNew (SPEC_BASE_KEY, ELEKTRA_KEY_META, "command", "", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/printversion", ELEKTRA_KEY_META, "description",
+			      "print version information and exit (ignoring all other options/commands/parameters)", ELEKTRA_KEY_META, "opt", "v",
+			      ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_META, "opt/long", "version", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/getter", ELEKTRA_KEY_META, "description", "get a key's value", ELEKTRA_KEY_META, "command", "get", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/getter/verbose", ELEKTRA_KEY_META, "description",
+			      "print additional information about where the value comes from", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META, "opt/long",
+			      "verbose", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/getter/keyname", ELEKTRA_KEY_META, "description", "name of the key to read", ELEKTRA_KEY_META, "args",
+			      "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/setter", ELEKTRA_KEY_META, "description", "set a key's value", ELEKTRA_KEY_META, "command", "set", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/setter/verbose", ELEKTRA_KEY_META, "description",
+			      "print additional information about where the value will be stored", ELEKTRA_KEY_META, "opt", "v", ELEKTRA_KEY_META,
+			      "opt/long", "verbose", ELEKTRA_KEY_META, "opt/arg", "none", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/setter/keyname", ELEKTRA_KEY_META, "description", "name of the key to write", ELEKTRA_KEY_META, "args",
+			      "indexed", ELEKTRA_KEY_META, "args/index", "0", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/setter/value", ELEKTRA_KEY_META, "description", "value to be written", ELEKTRA_KEY_META, "args", "indexed",
+			      ELEKTRA_KEY_META, "args/index", "1", ELEKTRA_KEY_END),
+		      keyNew (SPEC_BASE_KEY "/dynamic/#", ELEKTRA_KEY_META, "description", "dynamically call a user-supplied command", ELEKTRA_KEY_META,
+			      "args", "remaining", ELEKTRA_KEY_END),
+		      ELEKTRA_KS_END);
 }
 
 int main (int argc, const char ** argv)
@@ -61,7 +61,7 @@ int main (int argc, const char ** argv)
 
 
 	ElektraKeyset * ks = createSpec ();
-	ElektraKey * errorKey = keyNew (BASE_KEY, KEY_END);
+	ElektraKey * errorKey = keyNew (BASE_KEY, ELEKTRA_KEY_END);
 
 	int result = elektraGetOpts (ks, argc, argv, (const char **) environ, errorKey);
 	if (result == -1)

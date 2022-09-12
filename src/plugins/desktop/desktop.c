@@ -26,12 +26,12 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/desktop"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/desktop", KEY_VALUE, "desktop plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/desktop/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/desktop/exports/get", KEY_FUNC, elektraDesktopGet, KEY_END),
-			       keyNew ("system:/elektra/modules/desktop/exports/set", KEY_FUNC, elektraDesktopSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/desktop", ELEKTRA_KEY_VALUE, "desktop plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/desktop/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/desktop/exports/get", ELEKTRA_KEY_FUNC, elektraDesktopGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/desktop/exports/set", ELEKTRA_KEY_FUNC, elektraDesktopSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/desktop/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/desktop/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -42,19 +42,19 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 	// get key
 	if (getenv ("GNOME_DESKTOP_SESSION_ID"))
 	{
-		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "gnome", KEY_END));
+		ksAppendKey (returned, keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, "gnome", ELEKTRA_KEY_END));
 	}
 	else if (getenv ("KDE_FULL_SESSION"))
 	{
-		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "kde", KEY_END));
+		ksAppendKey (returned, keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, "kde", ELEKTRA_KEY_END));
 	}
 	else if (getenv ("TDE_FULL_SESSION"))
 	{
-		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "tde", KEY_END));
+		ksAppendKey (returned, keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, "tde", ELEKTRA_KEY_END));
 	}
 	else if ((desktop = getenv ("DESKTOP_SESSION")) && !strcasecmp (desktop, "unity"))
 	{
-		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "unity", KEY_END));
+		ksAppendKey (returned, keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, "unity", ELEKTRA_KEY_END));
 	}
 	else if ((desktop = getenv ("XDG_CURRENT_DESKTOP")))
 	{
@@ -63,7 +63,7 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 		{
 			str[i] = tolower (str[i]);
 		}
-		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, str, KEY_END));
+		ksAppendKey (returned, keyNew (keyName (parentKey), ELEKTRA_KEY_VALUE, str, ELEKTRA_KEY_END));
 		elektraFree (str);
 	}
 
@@ -74,7 +74,7 @@ int elektraDesktopSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned 
 {
 	ELEKTRA_LOG ("set desktop %s from %s\n", keyName (parentKey), keyString (parentKey));
 
-	ElektraKeyset * info = ksNew (0, KS_END);
+	ElektraKeyset * info = ksNew (0, ELEKTRA_KS_END);
 	elektraDesktopGet (handle, info, parentKey);
 	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;

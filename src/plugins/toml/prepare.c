@@ -124,7 +124,7 @@ static void addMissingArrayKeys (ElektraKeyset * keys, ElektraKey * parent)
 		{
 			arrays = updateArrayInfo (arrays, key, 0);
 		}
-		ElektraKey * name = keyNew (keyName (key), KEY_END);
+		ElektraKey * name = keyNew (keyName (key), ELEKTRA_KEY_END);
 		if (name == NULL)
 		{
 			return;
@@ -166,7 +166,7 @@ static void addMissingArrayKeys (ElektraKeyset * keys, ElektraKey * parent)
 static void pruneInvalidArrayKeys (ElektraKeyset * keys)
 {
 	ksRewind (keys);
-	ElektraKeyset * pruneSet = ksNew (8, KS_END);
+	ElektraKeyset * pruneSet = ksNew (8, ELEKTRA_KS_END);
 	ElektraKey * key = ksNext (keys);
 	while (key != NULL)
 	{
@@ -194,7 +194,7 @@ static void pruneInvalidArrayKeys (ElektraKeyset * keys)
 	ksRewind (pruneSet);
 	while ((key = ksNext (pruneSet)) != NULL)
 	{
-		ElektraKey * prune = ksLookup (keys, key, KDB_O_POP);
+		ElektraKey * prune = ksLookup (keys, key, ELEKTRA_KDB_O_POP);
 		ELEKTRA_ASSERT (prune != NULL, "Key must exist in keyset");
 		keyDel (prune);
 	}
@@ -221,7 +221,7 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, ElektraKey * name, size_t 
 	{
 		return NULL;
 	}
-	element->name = keyDup (name, KEY_CP_ALL);
+	element->name = keyDup (name, ELEKTRA_KEY_CP_ALL);
 	element->maxIndex = index;
 	element->next = root;
 	return element;

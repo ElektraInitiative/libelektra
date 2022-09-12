@@ -25,8 +25,8 @@ ElektraKeyset *getEmptyKeys(void)
 {
 	return ksNew(1,
 			keyNew("user:/tests/yajl",
-			       KEY_END),
-			KS_END
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END
 			);
 }
 
@@ -35,12 +35,12 @@ ElektraKeyset *getNullKeys(void)
 	ElektraKey *k1, *k2;
 	ElektraKeyset *ks = ksNew(10,
 			k1 = keyNew("user:/tests/yajl/nullkey",
-			       KEY_VALUE, "will be removed",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "will be removed",
+			       ELEKTRA_KEY_END),
 			k2 = keyNew("user:/tests/yajl/second_nullkey",
-			       KEY_VALUE, "will be removed too",
-			       KEY_END),
-			KS_END
+			       ELEKTRA_KEY_VALUE, "will be removed too",
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END
 		);
 	keySetBinary(k1, NULL, 0);
 	keySetBinary(k2, NULL, 0);
@@ -53,12 +53,12 @@ ElektraKeyset *getBelowKeys(void)
 {
 	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/fancy/path/below/x/y/z",
-			       KEY_VALUE, "val1",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "val1",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/fancy/path/below/v/y/z",
-			       KEY_VALUE, "val2",
-			       KEY_END),
-			KS_END
+			       ELEKTRA_KEY_VALUE, "val2",
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END
 		);
 
 	ksRewind(ks); // shouldn't that be default?
@@ -97,14 +97,14 @@ ElektraKeyset *getBooleanKeys(void)
 {
 	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/boolean_key",
-			       KEY_VALUE, "1",
-			       KEY_META, "type", "boolean",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "1",
+			       ELEKTRA_KEY_META, "type", "boolean",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/second_boolean_key",
-			       KEY_VALUE, "0",
-			       KEY_META, "type", "boolean",
-			       KEY_END),
-			KS_END
+			       ELEKTRA_KEY_VALUE, "0",
+			       ELEKTRA_KEY_META, "type", "boolean",
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END
 		);
 
 	ksRewind(ks);
@@ -115,18 +115,18 @@ ElektraKeyset *getNumberKeys(void)
 {
 	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/number_key",
-			       KEY_VALUE, "25",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "25",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/second_number_key",
-			       KEY_VALUE, "23002390202",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "23002390202",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/third_number_key",
-			       KEY_VALUE, "230020202.233",
-			       KEY_META, "type", "double",
-			       KEY_END),
-			KS_END
+			       ELEKTRA_KEY_VALUE, "230020202.233",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END
 		);
 
 	return ks;
@@ -136,15 +136,15 @@ ElektraKeyset *getStringKeys(void)
 {
 	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/string_key",
-			       KEY_VALUE, "25",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "25",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/second_string_key",
-			       KEY_VALUE, "some string",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "some string",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/third_string_key",
-			       KEY_VALUE, "escape {}; \" \\ problem",
-			       KEY_END),
-			KS_END
+			       ELEKTRA_KEY_VALUE, "escape {}; \" \\ problem",
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END
 		);
 
 	return ks;
@@ -154,30 +154,30 @@ ElektraKeyset *getMapKeys (void)
 {
 	ElektraKeyset *ks = ksNew(10,
 			keyNew("user:/tests/yajl/map/string_key",
-			       KEY_VALUE, "25",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "25",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/map/second_string_key",
-			       KEY_VALUE, "some string",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "some string",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/map/nested_map/string_key",
-			       KEY_VALUE, "25",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "25",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/map/nested_map/second_string_key",
-			       KEY_VALUE, "some string",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "some string",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/second_map/string_key",
-			       KEY_VALUE, "25",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "25",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/second_map/second_string_key",
-			       KEY_VALUE, "some string",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "some string",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/string_key",
-			       KEY_VALUE, "25",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "25",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/second_string_key",
-			       KEY_VALUE, "some string",
-			       KEY_END),
-			KS_END
+			       ELEKTRA_KEY_VALUE, "some string",
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END
 		);
 
 	return ks;
@@ -187,56 +187,56 @@ ElektraKeyset *getArrayKeys(void)
 {
 	ElektraKeyset *ks = ksNew(30,
 			keyNew("user:/tests/yajl/array",
-				KEY_META, "array", "#_12",
-				KEY_META, "binary", "",
-			       KEY_END),
+				ELEKTRA_KEY_META, "array", "#_12",
+				ELEKTRA_KEY_META, "binary", "",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#0",
-			       KEY_VALUE, "1",
-			       KEY_META, "type", "boolean",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "1",
+			       ELEKTRA_KEY_META, "type", "boolean",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#1",
-			       KEY_VALUE, "25",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "25",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#2",
-			       KEY_VALUE, "some string",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "some string",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#3",
-			       KEY_VALUE, "0",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "0",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#4",
-			       KEY_VALUE, "1",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "1",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#5",
-			       KEY_VALUE, "2",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "2",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#6",
-			       KEY_VALUE, "3",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "3",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#7",
-			       KEY_VALUE, "more \\ a",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "more \\ a",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#8",
-			       KEY_VALUE, "string \"",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "string \"",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#9",
-			       KEY_VALUE, "string abc",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "string abc",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#_10", // hack for keeping sort order
-			       KEY_VALUE, "def abc",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "def abc",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#_11",
-			       KEY_VALUE, "0",
-			       KEY_META, "type", "boolean",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "0",
+			       ELEKTRA_KEY_META, "type", "boolean",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/tests/yajl/array/#_12",
-			       KEY_VALUE, "42",
-			       KEY_META, "type", "double",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "42",
+			       ELEKTRA_KEY_META, "type", "double",
+			       ELEKTRA_KEY_END),
 			/*
 			keyNew("user:/tests/yajl/array/#___333",
 			       KEY_END),
@@ -249,7 +249,7 @@ ElektraKeyset *getArrayKeys(void)
 			keyNew("user:/tests/yajl/array/#_#__#___#4444", // gets quite long... (but works!)
 			       KEY_END),
 			*/
-			KS_END
+			ELEKTRA_KS_END
 		);
 
 	return ks;
@@ -259,133 +259,133 @@ ElektraKeyset *getOpenICCKeys(void)
 {
 	ElektraKeyset *ks = ksNew(60,
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera",
-	KEY_META, "array", "#1",
-	KEY_META, "binary", "",
-	KEY_END),
+	ELEKTRA_KEY_META, "array", "#1",
+	ELEKTRA_KEY_META, "binary", "",
+	ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/prefix",
-		KEY_VALUE, "EXIF_",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "EXIF_",
+		ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/EXIF_model",
-		KEY_VALUE, "ShinyGlass", KEY_END),
+		ELEKTRA_KEY_VALUE, "ShinyGlass", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/EXIF_serial",
-		KEY_VALUE, "1200000", KEY_END),
+		ELEKTRA_KEY_VALUE, "1200000", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/EXIF_mnft",
-		KEY_VALUE, "GLAS", KEY_END),
+		ELEKTRA_KEY_VALUE, "GLAS", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/EXIF_manufacturer",
-		KEY_VALUE, "Glasshuette", KEY_END),
+		ELEKTRA_KEY_VALUE, "Glasshuette", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/icc_profile",
-		KEY_VALUE, "profile_name.icc",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "profile_name.icc",
+		ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/creation_date",
-		KEY_VALUE, "05/08/11 11:59:50",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "05/08/11 11:59:50",
+		ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/expire_date",
-		KEY_VALUE, "08/08/11 11:59:50",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "08/08/11 11:59:50",
+		ELEKTRA_KEY_END),
 //Typo in example:
 //keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/automatic_assignment",
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/automatic_assigment",
-		KEY_VALUE, "1", KEY_END),
+		ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#0/comment",
-		KEY_VALUE, "nonsense example", KEY_END),
+		ELEKTRA_KEY_VALUE, "nonsense example", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/prefix",
-		KEY_VALUE, "EXIF_", KEY_END),
+		ELEKTRA_KEY_VALUE, "EXIF_", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/EXIF_model",
-		KEY_VALUE, "Knips", KEY_END),
+		ELEKTRA_KEY_VALUE, "Knips", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/EXIF_serial",
-		KEY_VALUE, "3400000", KEY_END),
+		ELEKTRA_KEY_VALUE, "3400000", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/EXIF_mnft",
-		KEY_VALUE, "CON", KEY_END),
+		ELEKTRA_KEY_VALUE, "CON", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/EXIF_manufacturer",
-		KEY_VALUE, "ConquerLight",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "ConquerLight",
+		ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/icc_profile",
-		KEY_VALUE, "profile_name2.icc",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "profile_name2.icc",
+		ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/creation_date",
-		KEY_VALUE, "05/08/11 11:59:50",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "05/08/11 11:59:50",
+		ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/expire_date",
-		KEY_VALUE, "08/08/11 11:59:50",
-		KEY_END),
+		ELEKTRA_KEY_VALUE, "08/08/11 11:59:50",
+		ELEKTRA_KEY_END),
 // keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/automatic_assignment",
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/camera/#1/automatic_assigment",
-		KEY_VALUE, "1", KEY_END),
+		ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor",
-	KEY_META, "array", "#1",
-	KEY_META, "binary", "",
-	KEY_END),
+	ELEKTRA_KEY_META, "array", "#1",
+	ELEKTRA_KEY_META, "binary", "",
+	ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/prefix",
-		KEY_VALUE, "EDID_", KEY_END),
+		ELEKTRA_KEY_VALUE, "EDID_", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_mnft_id",
-		KEY_VALUE, "12", KEY_END),
+		ELEKTRA_KEY_VALUE, "12", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_model_id",
-		KEY_VALUE, "123", KEY_END),
+		ELEKTRA_KEY_VALUE, "123", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_model",
-		KEY_VALUE, "LCD1", KEY_END),
+		ELEKTRA_KEY_VALUE, "LCD1", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_serial",
-		KEY_VALUE, "ABCD", KEY_END),
+		ELEKTRA_KEY_VALUE, "ABCD", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_red_x",
-		KEY_VALUE, "0.599609", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.599609", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_red_y",
-		KEY_VALUE, "0.34375", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.34375", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_green_x",
-		KEY_VALUE, "0.320312", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.320312", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_green_y",
-		KEY_VALUE, "0.554688", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.554688", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_blue_x",
-		KEY_VALUE, "0.150391", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.150391", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_blue_y",
-		KEY_VALUE, "0.120117", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.120117", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_white_x",
-		KEY_VALUE, "0.313477", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.313477", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_white_y",
-		KEY_VALUE, "0.329102", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.329102", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_gamma",
-		KEY_VALUE, "2.2", KEY_END),
+		ELEKTRA_KEY_VALUE, "2.2", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_mnft",
-		KEY_VALUE, "VEN", KEY_END),
+		ELEKTRA_KEY_VALUE, "VEN", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_manufacturer",
-		KEY_VALUE, "Vendor1", KEY_END),
+		ELEKTRA_KEY_VALUE, "Vendor1", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#0/EDID_date",
-		KEY_VALUE, "2007-T16", KEY_END),
+		ELEKTRA_KEY_VALUE, "2007-T16", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/prefix",
-		KEY_VALUE, "EDID_", KEY_END),
+		ELEKTRA_KEY_VALUE, "EDID_", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_mnft_id",
-		KEY_VALUE, "34", KEY_END),
+		ELEKTRA_KEY_VALUE, "34", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_model_id",
-		KEY_VALUE, "456", KEY_END),
+		ELEKTRA_KEY_VALUE, "456", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_model",
-		KEY_VALUE, "other monitor", KEY_END),
+		ELEKTRA_KEY_VALUE, "other monitor", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_serial",
-		KEY_VALUE, "other serial", KEY_END),
+		ELEKTRA_KEY_VALUE, "other serial", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_red_x",
-		KEY_VALUE, "0.599609", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.599609", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_red_y",
-		KEY_VALUE, "0.34375", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.34375", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_green_x",
-		KEY_VALUE, "0.320312", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.320312", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_green_y",
-		KEY_VALUE, "0.554688", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.554688", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_blue_x",
-		KEY_VALUE, "0.150391", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.150391", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_blue_y",
-		KEY_VALUE, "0.120117", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.120117", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_white_x",
-		KEY_VALUE, "0.313477", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.313477", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_white_y",
-		KEY_VALUE, "0.329102", KEY_END),
+		ELEKTRA_KEY_VALUE, "0.329102", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_gamma",
-		KEY_VALUE, "2.2", KEY_END),
+		ELEKTRA_KEY_VALUE, "2.2", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_mnft",
-		KEY_VALUE, "NEC", KEY_END),
+		ELEKTRA_KEY_VALUE, "NEC", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_manufacturer",
-		KEY_VALUE, "NEC", KEY_END),
+		ELEKTRA_KEY_VALUE, "NEC", ELEKTRA_KEY_END),
 keyNew("user:/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_date",
-		KEY_VALUE, "2001-T12", KEY_END),
+		ELEKTRA_KEY_VALUE, "2001-T12", ELEKTRA_KEY_END),
 
 
-			KS_END
+			ELEKTRA_KS_END
 		);
 
 	return ks;
@@ -395,20 +395,20 @@ ElektraKeyset *getSomeBelowKeys(void)
 {
 	return ksNew(10,
 			keyNew("user:/some/path/below",
-			       KEY_END),
+			       ELEKTRA_KEY_END),
 			keyNew("user:/some/path/below/tests",
-			       KEY_END),
+			       ELEKTRA_KEY_END),
 			keyNew("user:/some/path/below/tests/yajl",
-			       KEY_END),
+			       ELEKTRA_KEY_END),
 			keyNew("user:/some/path/below/tests/yajl/boolean_key",
-			       KEY_VALUE, "true",
-			       KEY_META, "type", "boolean",
-			       KEY_END),
+			       ELEKTRA_KEY_VALUE, "true",
+			       ELEKTRA_KEY_META, "type", "boolean",
+			       ELEKTRA_KEY_END),
 			keyNew("user:/some/path/below/tests/yajl/second_boolean_key",
-			       KEY_VALUE, "false",
-			       KEY_META, "type", "boolean",
-			       KEY_END),
-			KS_END);
+			       ELEKTRA_KEY_VALUE, "false",
+			       ELEKTRA_KEY_META, "type", "boolean",
+			       ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 }
 
 // clang-format on
@@ -423,8 +423,8 @@ void test_json (const char * fileName, ElektraKeyset * compareKeySet, ElektraKey
 	exit_if_fail (plugin != 0, "could not open plugin");
 	// printf ("Test with %s\n", srcdir_file(fileName));
 
-	ElektraKey * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	ElektraKeyset * keys = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/yajl", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKeyset * keys = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
@@ -467,8 +467,8 @@ void test_readWrite (const char * fileName, ElektraKeyset * conf)
 	exit_if_fail (plugin != 0, "could not open plugin");
 	// printf ("Test with %s\n", srcdir_file(fileName));
 
-	ElektraKey * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	ElektraKeyset * keys = ksNew (0, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/yajl", ELEKTRA_KEY_VALUE, srcdir_file (fileName), ELEKTRA_KEY_END);
+	ElektraKeyset * keys = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
@@ -548,7 +548,7 @@ void test_nextNotBelow (void)
 
 void test_reverseLevel (void)
 {
-	ElektraKey * k = keyNew ("user:/abc/defghi/jkl", KEY_END);
+	ElektraKey * k = keyNew ("user:/abc/defghi/jkl", ELEKTRA_KEY_END);
 	int level = 0;
 	char buffer[20];
 
@@ -618,7 +618,7 @@ void test_reverseLevel (void)
 
 void test_countLevel (void)
 {
-	ElektraKey * k = keyNew ("user:///", KEY_END);
+	ElektraKey * k = keyNew ("user:///", ELEKTRA_KEY_END);
 	succeed_if (elektraKeyCountLevel (k) == 1, "count level wrong");
 	keySetName (k, "user:/x");
 	succeed_if (elektraKeyCountLevel (k) == 2, "count level wrong");
@@ -627,7 +627,7 @@ void test_countLevel (void)
 	keySetName (k, "user:/x/z\\/f");
 	succeed_if (elektraKeyCountLevel (k) == 3, "count level wrong");
 
-	ElektraKey * k2 = keyNew ("user:/x/z", KEY_END);
+	ElektraKey * k2 = keyNew ("user:/x/z", ELEKTRA_KEY_END);
 	succeed_if (elektraKeyCountEqualLevel (k, k2) == 2, "equal level wrong");
 
 	keySetName (k, "user:/x/z\\/f");
@@ -652,8 +652,8 @@ void test_countLevel (void)
 
 void test_writing (void)
 {
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKey * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, "/proc/self/fd/1", KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/yajl", ELEKTRA_KEY_VALUE, "/proc/self/fd/1", ELEKTRA_KEY_END);
 
 	Plugin * plugin = elektraPluginOpen ("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
@@ -683,7 +683,7 @@ int main (int argc, char ** argv)
 	printf ("YAJL       TESTS\n");
 	printf ("==================\n\n");
 
-	modules = ksNew (0, KS_END);
+	modules = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	init (argc, argv);
@@ -693,39 +693,39 @@ int main (int argc, char ** argv)
 	test_countLevel ();
 	test_writing ();
 
-	test_json ("yajl/testdata_null.json", getNullKeys (), ksNew (0, KS_END));
-	test_json ("yajl/testdata_boolean.json", getBooleanKeys (), ksNew (0, KS_END));
-	test_json ("yajl/testdata_number.json", getNumberKeys (), ksNew (0, KS_END));
-	test_json ("yajl/testdata_string.json", getStringKeys (), ksNew (0, KS_END));
-	test_json ("yajl/testdata_maps.json", getMapKeys (), ksNew (0, KS_END));
-	test_json ("yajl/testdata_array.json", getArrayKeys (), ksNew (0, KS_END));
-	test_json ("yajl/testdata_below.json", getBelowKeys (), ksNew (0, KS_END));
-	test_json ("yajl/OpenICC_device_config_DB.json", getOpenICCKeys (), ksNew (0, KS_END));
+	test_json ("yajl/testdata_null.json", getNullKeys (), ksNew (0, ELEKTRA_KS_END));
+	test_json ("yajl/testdata_boolean.json", getBooleanKeys (), ksNew (0, ELEKTRA_KS_END));
+	test_json ("yajl/testdata_number.json", getNumberKeys (), ksNew (0, ELEKTRA_KS_END));
+	test_json ("yajl/testdata_string.json", getStringKeys (), ksNew (0, ELEKTRA_KS_END));
+	test_json ("yajl/testdata_maps.json", getMapKeys (), ksNew (0, ELEKTRA_KS_END));
+	test_json ("yajl/testdata_array.json", getArrayKeys (), ksNew (0, ELEKTRA_KS_END));
+	test_json ("yajl/testdata_below.json", getBelowKeys (), ksNew (0, ELEKTRA_KS_END));
+	test_json ("yajl/OpenICC_device_config_DB.json", getOpenICCKeys (), ksNew (0, ELEKTRA_KS_END));
 
 	// TODO currently do not have a KeySet, wait for C-plugin to make
 	// it easy to generate it..
-	test_readWrite ("yajl/empty_object.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/empty_array.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/top_level_string.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/top_level_integer.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/rfc_object.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/rfc_array.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_mixed.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_in_array.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_in_array_anon_map.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_nested.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_broken.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_special_ending.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_outside.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/keyframes_complex.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_mixed2.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_special_start.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_array_mixed3.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_empty_in_array.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_empty_in_map.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_empty_in_array1.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_empty_in_map2.json", ksNew (0, KS_END));
-	test_readWrite ("yajl/testdata_empty_in_map1.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/empty_object.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/empty_array.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/top_level_string.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/top_level_integer.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/rfc_object.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/rfc_array.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_mixed.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_in_array.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_in_array_anon_map.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_nested.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_broken.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_special_ending.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_outside.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/keyframes_complex.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_mixed2.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_special_start.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_array_mixed3.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_empty_in_array.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_empty_in_map.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_empty_in_array1.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_empty_in_map2.json", ksNew (0, ELEKTRA_KS_END));
+	test_readWrite ("yajl/testdata_empty_in_map1.json", ksNew (0, ELEKTRA_KS_END));
 
 	elektraModulesClose (modules, 0);
 	ksDel (modules);

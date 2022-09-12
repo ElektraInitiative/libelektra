@@ -13,11 +13,11 @@ ssize_t ksCopyInternal (ElektraKeyset * ks, size_t to, size_t from);
 
 void test_keyNotFound (void)
 {
-	ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-			     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-			     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+			     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+			     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKey * found = ksLookupByName (ks, "/nothere", KDB_O_OPMPHM);
+	ElektraKey * found = ksLookupByName (ks, "/nothere", ELEKTRA_KDB_O_OPMPHM);
 	succeed_if (!found, "key found");
 
 	exit_if_fail (ks->opmphm, "build opmphm");
@@ -30,12 +30,12 @@ void test_Copy (void)
 {
 	// ksDup
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -53,7 +53,7 @@ void test_Copy (void)
 		ksRewind (copy);
 		while ((iter = ksNext (copy)))
 		{
-			ElektraKey * f = ksLookup (copy, iter, KDB_O_OPMPHM);
+			ElektraKey * f = ksLookup (copy, iter, ELEKTRA_KDB_O_OPMPHM);
 			succeed_if (f, "key found");
 		}
 
@@ -63,12 +63,12 @@ void test_Copy (void)
 	}
 	// ksDeepDup
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -86,7 +86,7 @@ void test_Copy (void)
 		ksRewind (copy);
 		while ((iter = ksNext (copy)))
 		{
-			ElektraKey * f = ksLookup (copy, iter, KDB_O_OPMPHM);
+			ElektraKey * f = ksLookup (copy, iter, ELEKTRA_KDB_O_OPMPHM);
 			succeed_if (f, "key found");
 		}
 
@@ -96,18 +96,18 @@ void test_Copy (void)
 	}
 	// ksCopy
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
 		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
 
-		ElektraKeyset * copy = ksNew (0, KS_END);
+		ElektraKeyset * copy = ksNew (0, ELEKTRA_KS_END);
 		succeed_if (ksCopy (copy, ks) == 1, "copy");
 
 		// opmphm should be build
@@ -119,7 +119,7 @@ void test_Copy (void)
 		ksRewind (copy);
 		while ((iter = ksNext (copy)))
 		{
-			ElektraKey * f = ksLookup (copy, iter, KDB_O_OPMPHM);
+			ElektraKey * f = ksLookup (copy, iter, ELEKTRA_KDB_O_OPMPHM);
 			succeed_if (f, "key found");
 		}
 
@@ -129,9 +129,9 @@ void test_Copy (void)
 	}
 	// test not build copy
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		ElektraKeyset * copy = ksDup (ks);
 		succeed_if (copy, "copy");
@@ -149,12 +149,12 @@ void test_Invalidate (void)
 {
 	// ksClose
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -170,12 +170,12 @@ void test_Invalidate (void)
 	}
 	// ksClear
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -191,25 +191,25 @@ void test_Invalidate (void)
 	}
 	// ksAppendKey
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
 		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
 
 		// insert existing one
-		succeed_if (ksAppendKey (ks, keyNew ("/a", KEY_END)) > 0, "not invalidate");
+		succeed_if (ksAppendKey (ks, keyNew ("/a", ELEKTRA_KEY_END)) > 0, "not invalidate");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
 		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
 
 		// insert new one
-		succeed_if (ksAppendKey (ks, keyNew ("/k", KEY_END)) > 0, "invalidate");
+		succeed_if (ksAppendKey (ks, keyNew ("/k", ELEKTRA_KEY_END)) > 0, "invalidate");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
 		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
@@ -219,21 +219,21 @@ void test_Invalidate (void)
 	}
 	// ksAppend
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// subset of ks
-		ElektraKeyset * appendSub = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END),
-					    keyNew ("/d", KEY_END), keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), KS_END);
+		ElektraKeyset * appendSub = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END),
+					    keyNew ("/d", ELEKTRA_KEY_END), keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// super set of ks
 		ElektraKeyset * appendSuper =
-			ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-			       keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/k", KEY_END), KS_END);
+			ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+			       keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/k", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -256,12 +256,12 @@ void test_Invalidate (void)
 	}
 	// ksCopyInternal
 	{
-		ElektraKeyset * ks = ksNew (20, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (20, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -277,18 +277,18 @@ void test_Invalidate (void)
 	}
 	// ksCut
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
 		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
 
-		ElektraKey * cutPoint = keyNew ("/b", KEY_END);
+		ElektraKey * cutPoint = keyNew ("/b", ELEKTRA_KEY_END);
 		ElektraKeyset * cut = ksCut (ks, cutPoint);
 		succeed_if (cut, "invalidate");
 
@@ -302,12 +302,12 @@ void test_Invalidate (void)
 	}
 	// ksPop
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -325,12 +325,12 @@ void test_Invalidate (void)
 	}
 	// elektraKsPopAtCursor
 	{
-		ElektraKeyset * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+		ElektraKeyset * ks = ksNew (10, keyNew ("/a", ELEKTRA_KEY_END), keyNew ("/b", ELEKTRA_KEY_END), keyNew ("/c", ELEKTRA_KEY_END), keyNew ("/d", ELEKTRA_KEY_END),
+				     keyNew ("/e", ELEKTRA_KEY_END), keyNew ("/f", ELEKTRA_KEY_END), keyNew ("/g", ELEKTRA_KEY_END), keyNew ("/h", ELEKTRA_KEY_END),
+				     keyNew ("/i", ELEKTRA_KEY_END), keyNew ("/j", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
 		// trigger build
-		ElektraKey * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		ElektraKey * found = ksLookupByName (ks, "/a", ELEKTRA_KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");

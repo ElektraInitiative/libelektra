@@ -61,7 +61,7 @@ int keyClearSync (ElektraKey * key)
 {
 	if (!key) return -1;
 
-	key->flags &= ~KEY_FLAG_SYNC;
+	key->flags &= ~ELEKTRA_KEY_FLAG_SYNC;
 	return key->flags;
 }
 
@@ -100,24 +100,24 @@ int keyNeedSync (const ElektraKey * key)
 {
 	if (!key) return -1;
 
-	return (key->flags & KEY_FLAG_SYNC) == KEY_FLAG_SYNC;
+	return (key->flags & ELEKTRA_KEY_FLAG_SYNC) == ELEKTRA_KEY_FLAG_SYNC;
 }
 
 
 int keyIsSpec (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == KEY_NS_SPEC;
+	return keyGetNamespace (key) == ELEKTRA_NS_SPEC;
 }
 
 int keyIsProc (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == KEY_NS_PROC;
+	return keyGetNamespace (key) == ELEKTRA_NS_PROC;
 }
 
 
 int keyIsDir (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == KEY_NS_DIR;
+	return keyGetNamespace (key) == ELEKTRA_NS_DIR;
 }
 
 
@@ -134,7 +134,7 @@ int keyIsDir (const ElektraKey * key)
  */
 int keyIsSystem (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == KEY_NS_SYSTEM;
+	return keyGetNamespace (key) == ELEKTRA_NS_SYSTEM;
 }
 
 
@@ -151,7 +151,7 @@ int keyIsSystem (const ElektraKey * key)
  */
 int keyIsUser (const ElektraKey * key)
 {
-	return keyGetNamespace (key) == KEY_NS_USER;
+	return keyGetNamespace (key) == ELEKTRA_NS_USER;
 }
 
 /**
@@ -205,8 +205,8 @@ int keyIsBelow (const ElektraKey * key, const ElektraKey * check)
 	// same key, only if namespace and size are equal
 	// size alone could be equal with cascading keys
 	return keyIsBelowOrSame (key, check) && keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check) &&
-	       (keyGetNamespace (key) == keyGetNamespace (check) || keyGetNamespace (check) == KEY_NS_CASCADING ||
-		keyGetNamespace (key) == KEY_NS_CASCADING);
+	       (keyGetNamespace (key) == keyGetNamespace (check) || keyGetNamespace (check) == ELEKTRA_NS_CASCADING ||
+		keyGetNamespace (key) == ELEKTRA_NS_CASCADING);
 }
 
 
@@ -229,8 +229,8 @@ int keyIsBelowOrSame (const ElektraKey * key, const ElektraKey * check)
 	size_t sizeAbove = keyGetUnescapedNameSize (key);
 	size_t sizeBelow = keyGetUnescapedNameSize (check);
 
-	if ((sizeAbove == 3 && above[0] == KEY_NS_CASCADING && sizeBelow == 3 && below[0] != KEY_NS_CASCADING) ||
-	    (sizeBelow == 3 && below[0] == KEY_NS_CASCADING && sizeAbove == 3 && above[0] != KEY_NS_CASCADING))
+	if ((sizeAbove == 3 && above[0] == ELEKTRA_NS_CASCADING && sizeBelow == 3 && below[0] != ELEKTRA_NS_CASCADING) ||
+	    (sizeBelow == 3 && below[0] == ELEKTRA_NS_CASCADING && sizeAbove == 3 && above[0] != ELEKTRA_NS_CASCADING))
 	{
 		// cascading root compared to other root
 		return 0;
@@ -249,8 +249,8 @@ int keyIsBelowOrSame (const ElektraKey * key, const ElektraKey * check)
 		sizeBelow -= 1;
 	}
 
-	if ((above[0] != KEY_NS_CASCADING && below[0] == KEY_NS_CASCADING) ||
-	    (below[0] != KEY_NS_CASCADING && above[0] == KEY_NS_CASCADING))
+	if ((above[0] != ELEKTRA_NS_CASCADING && below[0] == ELEKTRA_NS_CASCADING) ||
+	    (below[0] != ELEKTRA_NS_CASCADING && above[0] == ELEKTRA_NS_CASCADING))
 	{
 		// cascading, ignore namespaces
 		++above;
@@ -327,8 +327,8 @@ int keyIsDirectlyBelow (const ElektraKey * key, const ElektraKey * check)
 		sizeBelow -= 1;
 	}
 
-	if ((above[0] != KEY_NS_CASCADING && below[0] == KEY_NS_CASCADING) ||
-	    (below[0] != KEY_NS_CASCADING && above[0] == KEY_NS_CASCADING))
+	if ((above[0] != ELEKTRA_NS_CASCADING && below[0] == ELEKTRA_NS_CASCADING) ||
+	    (below[0] != ELEKTRA_NS_CASCADING && above[0] == ELEKTRA_NS_CASCADING))
 	{
 		// cascading, ignore namespaces
 		++above;
@@ -470,7 +470,7 @@ keyDel(base);
 elektraKeyFlags keyCompare (const ElektraKey * key1, const ElektraKey * key2)
 {
 	if (!key1 && !key2) return 0;
-	if (!key1 || !key2) return KEY_NULL;
+	if (!key1 || !key2) return ELEKTRA_KEY_NULL;
 
 	elektraKeyFlags ret = 0;
 	ssize_t nsize1 = keyGetNameSize (key1);
@@ -485,24 +485,24 @@ elektraKeyFlags keyCompare (const ElektraKey * key1, const ElektraKey * key2)
 	ssize_t size2 = keyGetValueSize (key2);
 
 	// TODO: might be (binary) by chance
-	if (strcmp (keyString (comment1), keyString (comment2))) ret |= KEY_COMMENT;
+	if (strcmp (keyString (comment1), keyString (comment2))) ret |= ELEKTRA_KEY_COMMENT;
 
-	if (keyCompareMeta (key1, key2)) ret |= KEY_META;
+	if (keyCompareMeta (key1, key2)) ret |= ELEKTRA_KEY_META;
 
 	if (nsize1 != nsize2)
-		ret |= KEY_NAME;
+		ret |= ELEKTRA_KEY_NAME;
 	else if (!name1 || !name2)
-		ret |= KEY_NAME;
+		ret |= ELEKTRA_KEY_NAME;
 	else if (strcmp (name1, name2))
-		ret |= KEY_NAME;
+		ret |= ELEKTRA_KEY_NAME;
 
 
 	if (size1 != size2)
-		ret |= KEY_VALUE;
+		ret |= ELEKTRA_KEY_VALUE;
 	else if (!value1 || !value2)
-		ret |= KEY_VALUE;
+		ret |= ELEKTRA_KEY_VALUE;
 	else if (memcmp (value1, value2, size1))
-		ret |= KEY_VALUE;
+		ret |= ELEKTRA_KEY_VALUE;
 
 	// TODO: rewind metadata to previous position
 	return ret;
@@ -528,11 +528,11 @@ int keyCompareMeta (const ElektraKey * k1, const ElektraKey * k2)
 		const ElektraKey * meta2 = keyNextMeta (key2);
 		if (!meta2)
 		{
-			return KEY_META;
+			return ELEKTRA_KEY_META;
 		}
 
-		if (strcmp (keyName (meta1), keyName (meta2))) return KEY_META;
-		if (strcmp (keyString (meta1), keyString (meta2))) return KEY_META;
+		if (strcmp (keyName (meta1), keyName (meta2))) return ELEKTRA_KEY_META;
+		if (strcmp (keyString (meta1), keyString (meta2))) return ELEKTRA_KEY_META;
 	}
 
 	// TODO: rewind metadata to previous position

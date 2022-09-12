@@ -15,7 +15,7 @@ int main (void)
 	// clang-format off
 {
 //! [set base basic]
-ElektraKey * k = keyNew ("user:/my/long/name", KEY_END);
+ElektraKey * k = keyNew ("user:/my/long/name", ELEKTRA_KEY_END);
 keySetBaseName (k, "myname");
 printf ("%s\n", keyName (k)); // will print user:/my/long/myname
 keyDel (k);
@@ -23,7 +23,7 @@ keyDel (k);
 }
 {
 //! [add base basic]
-ElektraKey * k = keyNew ("user:/my/long", KEY_END);
+ElektraKey * k = keyNew ("user:/my/long", ELEKTRA_KEY_END);
 keyAddBaseName (k, "myname");
 printf ("%s\n", keyName (k)); // will print user:/my/long/myname
 keyDel (k);
@@ -31,7 +31,7 @@ keyDel (k);
 }
 {
 //! [add base escaped]
-ElektraKey * k = keyNew ("user:/my/long", KEY_END);
+ElektraKey * k = keyNew ("user:/my/long", ELEKTRA_KEY_END);
 keyAddBaseName (k, "myname");
 printf ("%s\n", keyName (k)); // will print user:/my/long/myname
 keyDel (k);

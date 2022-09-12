@@ -12,8 +12,8 @@
 
 int main (void)
 {
-	ElektraKeyset * myConfig = ksNew (0, KS_END);
-	ElektraKey * key = keyNew ("system:/test/myapp", KEY_END);
+	ElektraKeyset * myConfig = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * key = keyNew ("system:/test/myapp", ELEKTRA_KEY_END);
 	ElektraKdb * handle = kdbOpen (NULL, key);
 
 	kdbGet (handle, myConfig, key);

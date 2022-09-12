@@ -13,12 +13,12 @@
 #define BASE_KEY "user:/tests/globbing"
 
 #define should_match(k, p) succeed_if (check_key (k, p) == 0, p " does not match " k)
-#define should_not_match(KEY_NAME, PATTERN)                                                                                                \
+#define should_not_match(ELEKTRA_KEY_NAME, PATTERN)                                                                                                \
 	succeed_if (check_key (KEY_NAME, PATTERN) == ELEKTRA_GLOB_NOMATCH, PATTERN " should not match " KEY_NAME)
 
 static int check_key (const char * keyname, const char * pattern)
 {
-	ElektraKey * k = keyNew (keyname, KEY_END);
+	ElektraKey * k = keyNew (keyname, ELEKTRA_KEY_END);
 	int rc = elektraKeyGlob (k, pattern);
 	keyDel (k);
 	return rc;
@@ -134,12 +134,12 @@ static void test_keyset (void)
 {
 	printf ("keyset");
 
-	ElektraKeyset * test = ksNew (4, keyNew (BASE_KEY "/yes/a", KEY_END), keyNew (BASE_KEY "/yes/b", KEY_END),
-			       keyNew (BASE_KEY "/no/a", KEY_END), keyNew (BASE_KEY "/no/b", KEY_END), KS_END);
+	ElektraKeyset * test = ksNew (4, keyNew (BASE_KEY "/yes/a", ELEKTRA_KEY_END), keyNew (BASE_KEY "/yes/b", ELEKTRA_KEY_END),
+			       keyNew (BASE_KEY "/no/a", ELEKTRA_KEY_END), keyNew (BASE_KEY "/no/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * expected = ksNew (2, keyNew (BASE_KEY "/yes/a", KEY_END), keyNew (BASE_KEY "/yes/b", KEY_END), KS_END);
+	ElektraKeyset * expected = ksNew (2, keyNew (BASE_KEY "/yes/a", ELEKTRA_KEY_END), keyNew (BASE_KEY "/yes/b", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 
-	ElektraKeyset * actual = ksNew (0, KS_END);
+	ElektraKeyset * actual = ksNew (0, ELEKTRA_KS_END);
 	succeed_if (elektraKsGlob (actual, test, BASE_KEY "/yes/*") == ksGetSize (expected), "wrong number of matching keys");
 
 	ksRewind (expected);

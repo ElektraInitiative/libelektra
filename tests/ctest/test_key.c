@@ -15,7 +15,7 @@
 
 static void test_keyRefcounter (void)
 {
-	ElektraKey * key = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
 	key->refs = 5;
 	succeed_if (key->refs == 5, "wrong ref");
 	succeed_if (keyGetRef (key) == 5, "wrong ref");
@@ -35,7 +35,7 @@ static void test_keyHelpers (void)
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
 
-	k1 = keyNew ("user:/dir1/dir2", KEY_END);
+	k1 = keyNew ("user:/dir1/dir2", ELEKTRA_KEY_END);
 	succeed_if (keyAddBaseName (k1, 0) == -1, "Could add null basename");
 	succeed_if_same_string (keyName (k1), "user:/dir1/dir2");
 	succeed_if (keyAddBaseName (k1, "") == 18, "Could not add nothing to basename");
@@ -52,7 +52,7 @@ static void test_keyHelpers (void)
 	keyDel (k1);
 
 	{
-		k2 = keyNew ("user:/dir1/dir2", KEY_END);
+		k2 = keyNew ("user:/dir1/dir2", ELEKTRA_KEY_END);
 		char c[] = "user:/dir1/dir2/mykey\\/mykey\\/a";
 		succeed_if (keyAddBaseName (k2, "mykey/mykey/a") == sizeof (c), "Could not add basename");
 		succeed_if_same_string (keyName (k2), c);
@@ -61,7 +61,7 @@ static void test_keyHelpers (void)
 	}
 
 	{
-		k2 = keyNew ("user:/dir1/dir2", KEY_END);
+		k2 = keyNew ("user:/dir1/dir2", ELEKTRA_KEY_END);
 		char c[] = "user:/dir1/dir2/mykey\\/\\/\\/\\/a";
 		succeed_if (keyAddBaseName (k2, "mykey////a") == sizeof (c), "Could not add basename");
 		succeed_if_same_string (keyName (k2), c);
@@ -70,7 +70,7 @@ static void test_keyHelpers (void)
 	}
 
 	{
-		k2 = keyNew ("user:/dir1/dir2", KEY_END);
+		k2 = keyNew ("user:/dir1/dir2", ELEKTRA_KEY_END);
 		char c[] = "user:/dir1/dir2/mykey\\/\\/\\/\\/";
 		succeed_if (keyAddBaseName (k2, "mykey////") == sizeof (c), "Could not add basename");
 		succeed_if_same_string (keyName (k2), c);
@@ -78,13 +78,13 @@ static void test_keyHelpers (void)
 		keyDel (k2);
 	}
 
-	k2 = keyNew ("/", KEY_END);
+	k2 = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyAddBaseName (k2, "user") == 6, "Could not add basename on /");
 	succeed_if_same_string (keyName (k2), "/user");
 	succeed_if (keyGetNameSize (k2) == 6, "Name size not correct");
 	keyDel (k2);
 
-	k2 = keyNew ("user:/dir1/dir2/mykey/mykey/a", KEY_END);
+	k2 = keyNew ("user:/dir1/dir2/mykey/mykey/a", ELEKTRA_KEY_END);
 	succeed_if (keySetBaseName (k2, "mykey") == 34, "Could not add basename");
 	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/mykey");
 	succeed_if (keyGetNameSize (k2) == 34, "Name size not correct");
@@ -98,20 +98,20 @@ static void test_keyHelpers (void)
 	succeed_if_same_string (keyName (k2), "user:/dir1/dir2/mykey/mykey/change");
 	keyDel (k2);
 
-	k2 = keyNew ("user:/dir1/a", KEY_END);
+	k2 = keyNew ("user:/dir1/a", ELEKTRA_KEY_END);
 	succeed_if (keySetBaseName (k2, 0) == 11, "Could not add basename");
 	succeed_if_same_string (keyName (k2), "user:/dir1");
 	succeed_if (keyGetNameSize (k2) == 11, "Name size not correct");
 	keyDel (k2);
 
-	k2 = keyNew ("user:/dir1/a", KEY_END);
+	k2 = keyNew ("user:/dir1/a", ELEKTRA_KEY_END);
 	succeed_if (keySetBaseName (k2, "some/more") == sizeof ("user:/dir1/some\\/more"), "Could not add basename");
 	succeed_if_same_string (keyName (k2), "user:/dir1/some\\/more");
 	succeed_if (keyGetNameSize (k2) == sizeof ("user:/dir1/some\\/more"), "Name size not correct");
 	keyDel (k2);
 
 	{
-		k2 = keyNew ("user:/dir1/a", KEY_END);
+		k2 = keyNew ("user:/dir1/a", ELEKTRA_KEY_END);
 		char c[] = "user:/dir1/some\\/\\/\\/\\/more";
 		succeed_if (keySetBaseName (k2, "some////more") == sizeof (c), "Could not add basename");
 		succeed_if_same_string (keyName (k2), c);
@@ -120,7 +120,7 @@ static void test_keyHelpers (void)
 	}
 
 	{
-		k2 = keyNew ("user:/dir1/a", KEY_END);
+		k2 = keyNew ("user:/dir1/a", ELEKTRA_KEY_END);
 		char c[] = "user:/dir1/\\/\\/\\/\\/more";
 		succeed_if (keySetBaseName (k2, "////more") == sizeof (c), "Could not add basename");
 		succeed_if_same_string (keyName (k2), c);
@@ -128,13 +128,13 @@ static void test_keyHelpers (void)
 		keyDel (k2);
 	}
 
-	k2 = keyNew ("user:/", KEY_END);
+	k2 = keyNew ("user:/", ELEKTRA_KEY_END);
 	succeed_if (keySetBaseName (k2, "user") == -1, "Could add basename, but there is none");
 	succeed_if_same_string (keyName (k2), "user:/");
 	succeed_if (keyGetNameSize (k2) == 7, "Name size not correct");
 	keyDel (k2);
 
-	k2 = keyNew ("system:/", KEY_END);
+	k2 = keyNew ("system:/", ELEKTRA_KEY_END);
 	succeed_if (keySetBaseName (k2, "system") == -1, "Could add basename, but there is none");
 	succeed_if_same_string (keyName (k2), "system:/");
 	succeed_if (keyGetNameSize (k2) == 9, "Name size not correct");
@@ -145,7 +145,7 @@ static void test_keyPlugin (void)
 {
 	Plugin * plug = (Plugin *) 1222243;
 
-	ElektraKey * k = keyNew ("system:/name", KEY_BINARY, KEY_SIZE, sizeof (plug), KEY_VALUE, &plug, KEY_END);
+	ElektraKey * k = keyNew ("system:/name", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (plug), ELEKTRA_KEY_VALUE, &plug, ELEKTRA_KEY_END);
 	Plugin * xlug = *(Plugin **) keyValue (k);
 
 	succeed_if (xlug == plug, "should point to the same");
@@ -164,7 +164,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "/\\\\a";
 		char s[] = "\0\0\\a";
-		s[0] = KEY_NS_CASCADING;
+		s[0] = ELEKTRA_NS_CASCADING;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -172,7 +172,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "/a\\/test";
 		char s[] = "\0\0a/test";
-		s[0] = KEY_NS_CASCADING;
+		s[0] = ELEKTRA_NS_CASCADING;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -180,7 +180,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "/a\\\\\\/test";
 		char s[] = "\0\0a\\/test";
-		s[0] = KEY_NS_CASCADING;
+		s[0] = ELEKTRA_NS_CASCADING;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -188,7 +188,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "/a\\\\\\\\\\/test";
 		char s[] = "\0\0a\\\\/test";
-		s[0] = KEY_NS_CASCADING;
+		s[0] = ELEKTRA_NS_CASCADING;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -198,7 +198,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "user:/a/test";
 		char s[] = "\0\0a\0test";
-		s[0] = KEY_NS_USER;
+		s[0] = ELEKTRA_NS_USER;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -206,7 +206,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "user:/a\\/test";
 		char s[] = "\0\0a/test";
-		s[0] = KEY_NS_USER;
+		s[0] = ELEKTRA_NS_USER;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -214,7 +214,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "user:/a\\\\/test";
 		char s[] = "\0\0a\\\0test";
-		s[0] = KEY_NS_USER;
+		s[0] = ELEKTRA_NS_USER;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -222,7 +222,7 @@ static void test_keyNameUnescape (void)
 	{
 		char a[] = "user:/\\\\/test";
 		char s[] = "\0\0\\\0test";
-		s[0] = KEY_NS_USER;
+		s[0] = ELEKTRA_NS_USER;
 		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
@@ -231,24 +231,24 @@ static void test_keyNameUnescape (void)
 static void test_keyCompare (void)
 {
 	printf ("test keyCompare\n");
-	ElektraKey * key1 = keyNew ("/", KEY_END);
-	ElektraKey * key2 = keyNew ("/", KEY_END);
+	ElektraKey * key1 = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * key2 = keyNew ("/", ELEKTRA_KEY_END);
 
 	succeed_if (keyCompare (key1, key2) == 0, "the keys don't differ of course");
 
 	keySetName (key1, "user:/myname");
 	succeed_if_same_string (keyName (key1), "user:/myname");
-	succeed_if (keyCompare (key1, key2) == KEY_NAME, "the keys should differ in name");
+	succeed_if (keyCompare (key1, key2) == ELEKTRA_KEY_NAME, "the keys should differ in name");
 	keySetName (key2, "user:/myname");
 	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in name");
 
 	keySetString (key1, "myvalue");
-	succeed_if (keyCompare (key1, key2) == KEY_VALUE, "the keys should differ in value");
+	succeed_if (keyCompare (key1, key2) == ELEKTRA_KEY_VALUE, "the keys should differ in value");
 	keySetString (key2, "myvalue");
 	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in value");
 
 	keySetComment (key1, "mycomment");
-	succeed_if (keyCompare (key1, key2) == (KEY_COMMENT | KEY_META), "the keys should differ in comment");
+	succeed_if (keyCompare (key1, key2) == (ELEKTRA_KEY_COMMENT | ELEKTRA_KEY_META), "the keys should differ in comment");
 	keySetComment (key2, "mycomment");
 	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in comment");
 
@@ -262,7 +262,7 @@ static void test_keyNewExtensions (void)
 
 	ElektraKey * key;
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyIsUser (key) == 0, "empty user key");
 	succeed_if (keyIsSystem (key) == 0, "empty user key?");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
@@ -277,7 +277,7 @@ static void test_keyComment (void)
 
 	printf ("Test comment of key\n");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if (keyGetCommentSize (key) == 1, "empty comment size");
 	succeed_if (keySetComment (key, "perfectcomment") == 15, "could not set comment");
 	succeed_if (keyGetCommentSize (key) == 15, "comment size not correct");
@@ -292,7 +292,7 @@ static void test_keyComment (void)
 	succeed_if_same_string (ret, "nearperfectcomment");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if_same_string (keyComment (key), "");
 	succeed_if (keyGetCommentSize (key) == 1, "Empty comment size problem");
 	succeed_if (keySetComment (key, "") == 1, "could not set comment");
@@ -303,7 +303,7 @@ static void test_keyComment (void)
 	succeed_if (ret[0] == 0, "keyGetComment did not return empty comment");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	for (i = 1; i < 256; i++)
 	{
 		ret[0] = i;
@@ -322,7 +322,7 @@ static void test_keyComment (void)
 	succeed_if (keyGetCommentSize (0) == -1, "null pointer");
 	succeed_if (keySetComment (0, "") == -1, "null pointer");
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyGetCommentSize (key) == 1, "empty comment size");
 
 	keySetComment (key, testComment);
@@ -365,18 +365,18 @@ static void test_keySetName (void)
 {
 	printf ("test keySetName\n");
 
-	ElektraKey * key = keyNew ("/", KEY_END);
+	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_END);
 	ElektraKey * dup = 0;
 
 	succeed_if (keySetName (key, "/") != -1, "could not set cascading name");
 	succeed_if_same_string (keyName (key), "/");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/");
 	keyDel (dup);
 
 	keySetName (key, "/c");
 	succeed_if_same_string (keyName (key), "/c");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/c");
 	keyDel (dup);
 
@@ -384,43 +384,43 @@ static void test_keySetName (void)
 	succeed_if_same_string (keyName (key), "/");
 	keySetName (key, "/cascading");
 	succeed_if_same_string (keyName (key), "/cascading");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
 	keySetName (key, "/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "/cascading/s/deep/below");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/cascading/s/deep/below");
 	keyDel (dup);
 
 	keySetName (key, "user:/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "user:/cascading/s/deep/below");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "user:/cascading/s/deep/below");
 	keyDel (dup);
 
 	keySetName (key, "system:/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "system:/cascading/s/deep/below");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "system:/cascading/s/deep/below");
 	keyDel (dup);
 
 	keySetName (key, "meta:/order");
 	succeed_if_same_string (keyName (key), "meta:/order");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/order");
 	keyDel (dup);
 
 	keySetName (key, "meta:/check/type");
 	succeed_if_same_string (keyName (key), "meta:/check/type");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/check/type");
 	keyDel (dup);
 
 	keySetName (key, "meta:/a");
 	succeed_if_same_string (keyName (key), "meta:/a");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/a");
 	keyDel (dup);
 
@@ -432,21 +432,21 @@ static void test_keySetName (void)
 
 	keySetName (key, "/cascading");
 	succeed_if_same_string (keyName (key), "/cascading");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
 	keySetName (key, "meta:/");
 	succeed_if_same_string (keyName (key), "meta:/");
 	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/");
 	keyDel (dup);
 
 	keySetName (key, "meta:/other");
 	succeed_if_same_string (keyName (key), "meta:/other");
 	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key, KEY_CP_ALL);
+	dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/other");
 	keyDel (dup);
 
@@ -454,31 +454,31 @@ static void test_keySetName (void)
 	{
 		keySetName (key, "spec:/test");
 		succeed_if_same_string (keyName (key), "spec:/test");
-		dup = keyDup (key, KEY_CP_ALL);
+		dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "spec:/test");
 		keyDel (dup);
 
 		keySetName (key, "proc:/test");
 		succeed_if_same_string (keyName (key), "proc:/test");
-		dup = keyDup (key, KEY_CP_ALL);
+		dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "proc:/test");
 		keyDel (dup);
 
 		keySetName (key, "dir:/test");
 		succeed_if_same_string (keyName (key), "dir:/test");
-		dup = keyDup (key, KEY_CP_ALL);
+		dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "dir:/test");
 		keyDel (dup);
 
 		keySetName (key, "user:/test");
 		succeed_if_same_string (keyName (key), "user:/test");
-		dup = keyDup (key, KEY_CP_ALL);
+		dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "user:/test");
 		keyDel (dup);
 
 		keySetName (key, "system:/test");
 		succeed_if_same_string (keyName (key), "system:/test");
-		dup = keyDup (key, KEY_CP_ALL);
+		dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "system:/test");
 		keyDel (dup);
 	}
@@ -490,38 +490,38 @@ static void test_keyLock (void)
 {
 	printf ("Test locking\n");
 
-	succeed_if (keyLock (0, KEY_LOCK_NAME) == -1, "no error on locking NULL key");
-	succeed_if (keyLock (0, KEY_LOCK_VALUE) == -1, "no error on locking NULL key");
-	succeed_if (keyLock (0, KEY_LOCK_META) == -1, "no error on locking NULL key");
+	succeed_if (keyLock (0, ELEKTRA_KEY_LOCK_NAME) == -1, "no error on locking NULL key");
+	succeed_if (keyLock (0, ELEKTRA_KEY_LOCK_VALUE) == -1, "no error on locking NULL key");
+	succeed_if (keyLock (0, ELEKTRA_KEY_LOCK_META) == -1, "no error on locking NULL key");
 
-	succeed_if (keyIsLocked (0, KEY_LOCK_NAME) == -1, "no error on NULL Key");
-	succeed_if (keyIsLocked (0, KEY_LOCK_VALUE) == -1, "no error on NULL Key");
-	succeed_if (keyIsLocked (0, KEY_LOCK_META) == -1, "no error on NULL Key");
+	succeed_if (keyIsLocked (0, ELEKTRA_KEY_LOCK_NAME) == -1, "no error on NULL Key");
+	succeed_if (keyIsLocked (0, ELEKTRA_KEY_LOCK_VALUE) == -1, "no error on NULL Key");
+	succeed_if (keyIsLocked (0, ELEKTRA_KEY_LOCK_META) == -1, "no error on NULL Key");
 
-	ElektraKey * key = keyNew ("/", KEY_LOCK_NAME, KEY_END);
-	ElektraKey * key2 = keyNew ("/", KEY_LOCK_NAME, KEY_END);
+	ElektraKey * key = keyNew ("/", ELEKTRA_KEY_LOCK_NAME, ELEKTRA_KEY_END);
+	ElektraKey * key2 = keyNew ("/", ELEKTRA_KEY_LOCK_NAME, ELEKTRA_KEY_END);
 
 	succeed_if (keySetName (key, "user:/") == -1, "read only name, not allowed to set");
 
 	keyDel (key);
-	key = keyNew ("/", KEY_LOCK_VALUE, KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_LOCK_VALUE, ELEKTRA_KEY_END);
 
 	succeed_if (keySetString (key, "a") == -1, "read only string, not allowed to set");
 	succeed_if (keySetBinary (key, "a", 2) == -1, "read only string, not allowed to set");
 
 	keyDel (key);
-	key = keyNew ("/", KEY_LOCK_META, KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_LOCK_META, ELEKTRA_KEY_END);
 
 	succeed_if (keySetMeta (key, "meta", "value") == -1, "read only meta, not allowed to set");
 	succeed_if (keyCopyMeta (key, key2, "meta") == -1, "read only meta, not allowed to set");
 	succeed_if (keyCopyAllMeta (key, key2) == -1, "read only meta, not allowed to set");
 
 	keyDel (key);
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 
-	succeed_if (keyIsLocked (key, KEY_LOCK_NAME) == 0, "can lock name");
-	keyLock (key, KEY_LOCK_NAME);
-	succeed_if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME, "name is locked");
+	succeed_if (keyIsLocked (key, ELEKTRA_KEY_LOCK_NAME) == 0, "can lock name");
+	keyLock (key, ELEKTRA_KEY_LOCK_NAME);
+	succeed_if (keyIsLocked (key, ELEKTRA_KEY_LOCK_NAME) == ELEKTRA_KEY_LOCK_NAME, "name is locked");
 
 	succeed_if (keySetName (key, "user:/") == -1, "read only name, not allowed to set");
 	succeed_if (keyAddName (key, "a") == -1, "read only name, not allowed to set");
@@ -529,21 +529,21 @@ static void test_keyLock (void)
 	succeed_if (keyAddBaseName (key, "a") == -1, "read only name, not allowed to set");
 
 	keyDel (key);
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 
-	succeed_if (keyIsLocked (key, KEY_LOCK_VALUE | KEY_LOCK_META) == 0, "can lock name");
-	keyLock (key, KEY_LOCK_VALUE);
-	succeed_if (keyIsLocked (key, KEY_LOCK_VALUE | KEY_LOCK_META) == KEY_LOCK_VALUE, "value is locked");
+	succeed_if (keyIsLocked (key, ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META) == 0, "can lock name");
+	keyLock (key, ELEKTRA_KEY_LOCK_VALUE);
+	succeed_if (keyIsLocked (key, ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META) == ELEKTRA_KEY_LOCK_VALUE, "value is locked");
 
 	succeed_if (keySetString (key, "a") == -1, "read only string, not allowed to set");
 	succeed_if (keySetBinary (key, "a", 2) == -1, "read only string, not allowed to set");
 
 	keyDel (key);
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 
-	succeed_if (keyIsLocked (key, KEY_LOCK_META) == 0, "can lock meta");
-	keyLock (key, KEY_LOCK_META);
-	succeed_if (keyIsLocked (key, KEY_LOCK_META) == KEY_LOCK_META, "meta is locked");
+	succeed_if (keyIsLocked (key, ELEKTRA_KEY_LOCK_META) == 0, "can lock meta");
+	keyLock (key, ELEKTRA_KEY_LOCK_META);
+	succeed_if (keyIsLocked (key, ELEKTRA_KEY_LOCK_META) == ELEKTRA_KEY_LOCK_META, "meta is locked");
 
 	succeed_if (keySetMeta (key, "meta", "value") == -1, "read only meta, not allowed to set");
 	succeed_if (keyCopyMeta (key, key2, "meta") == -1, "read only meta, not allowed to set");
@@ -556,7 +556,7 @@ static void test_keyLock (void)
 
 static void test_keyAddName (void)
 {
-	ElektraKey * k = keyNew ("user:/", KEY_END);
+	ElektraKey * k = keyNew ("user:/", ELEKTRA_KEY_END);
 	keyAddName (k, "something");
 	succeed_if_same_string (keyName (k), "user:/something");
 
@@ -640,47 +640,47 @@ static void test_keyAddName (void)
 	TEST_ADD_NAME ("///./", "///.", "/");
 	TEST_ADD_NAME ("///./", "///./", "/");
 
-	k = keyNew ("system:/elektra/mountpoints/_t_error/config", KEY_END);
+	k = keyNew ("system:/elektra/mountpoints/_t_error/config", ELEKTRA_KEY_END);
 	keyAddName (k, "on_open/error");
 	succeed_if_same_string (keyName (k), "system:/elektra/mountpoints/_t_error/config/on_open/error");
 	keyDel (k);
 
-	k = keyNew ("user:/", KEY_END);
+	k = keyNew ("user:/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "bar\\/foo_bar\\/") == sizeof ("user:/bar\\/foo_bar\\/"), "could not add name");
 	succeed_if_same_string (keyName (k), "user:/bar\\/foo_bar\\/");
 	keyDel (k);
 
-	k = keyNew ("user:/", KEY_END);
+	k = keyNew ("user:/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\/") == sizeof ("user:/ba\\\\/foo_bar\\/"), "could not add name");
 	succeed_if_same_string (keyName (k), "user:/ba\\\\/foo_bar\\/");
 	keyDel (k);
 
-	k = keyNew ("user:/", KEY_END);
+	k = keyNew ("user:/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("user:/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "user:/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("system:/", KEY_END);
+	k = keyNew ("system:/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("system:/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "system:/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("meta:/", KEY_END);
+	k = keyNew ("meta:/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("meta:/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "meta:/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("/", KEY_END);
+	k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("/", KEY_END);
+	k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "ba\\\\/foo_bar\\//%") == sizeof ("/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "/ba\\\\/foo_bar\\//%");
 	keyDel (k);
 
-	k = keyNew ("/", KEY_END);
+	k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (k, "/\\\\/foo_bar\\//%") == sizeof ("/\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string (keyName (k), "/\\\\/foo_bar\\//%");
 	keyDel (k);
@@ -692,39 +692,39 @@ static void test_keyNeedSync (void)
 
 	succeed_if (keyNeedSync (0) == -1, "No error on NULL Key");
 
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyNeedSync (k), "fresh key should need sync");
 
-	set_bit (k->flags, KEY_FLAG_SYNC);
+	set_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	succeed_if (keyNeedSync (k), "sync bit was set");
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	succeed_if (!keyNeedSync (k), "sync bit was cleared");
 
 	keySetName (k, "/");
 	succeed_if (keyNeedSync (k), "nothing done, but synced (impl-dep, could be optimized)");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	keySetName (k, "user:/abc");
 	succeed_if (keyNeedSync (k), "new name, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	keySetString (k, "a str");
 	succeed_if (keyNeedSync (k), "new string, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	keySetBinary (k, "a str", 4);
 	succeed_if (keyNeedSync (k), "new binary, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	keySetMeta (k, "metakey", "metaval");
 	succeed_if (keyNeedSync (k), "new meta, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
-	ElektraKey * d = keyDup (k, KEY_CP_ALL);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
+	ElektraKey * d = keyDup (k, ELEKTRA_KEY_CP_ALL);
 	succeed_if (keyNeedSync (d), "dup key, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
-	clear_bit (d->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
+	clear_bit (d->flags, ELEKTRA_KEY_FLAG_SYNC);
 	succeed_if (keyCopy (d, k, 0) != NULL, "copy not successful");
 	succeed_if (keyNeedSync (d), "copy key, should definitely need sync");
 	succeed_if (!keyNeedSync (k), "sources sync flag should not be affected");
@@ -737,7 +737,7 @@ static void test_keyNeedSync (void)
 
 
 	keySetName (k, "");
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 
 	succeed_if (keySetBaseName (k, "") != -1, "could not set base name");
 	succeed_if (keyNeedSync (k), "name set, sync should be there");
@@ -745,15 +745,15 @@ static void test_keyNeedSync (void)
 	keySetName (k, "user:/abc");
 	succeed_if (keyNeedSync (k), "name set, sync should be there");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	succeed_if (keySetBaseName (k, "xynz") != -1, "could not set base name");
 	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	succeed_if (keyAddBaseName (k, "foo") != -1, "could not add base name");
 	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	clear_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC);
 	succeed_if (keyAddName (k, "bar") != -1, "could not add name");
 	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
 
@@ -763,61 +763,61 @@ static void test_keyNeedSync (void)
 static void test_keyCopy (void)
 {
 	printf ("test copy key\n");
-	ElektraKey * k = keyNew ("/", KEY_END);
-	ElektraKey * c = keyNew ("user:/name", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * c = keyNew ("user:/name", ELEKTRA_KEY_END);
 
-	succeed_if (keyCopy (c, k, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if (keyCopy (c, k, ELEKTRA_KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyName (c), "/");
 
 	succeed_if (keySetName (k, "/abc") != -1, "could not set cascading name");
-	succeed_if (keyCopy (c, k, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if (keyCopy (c, k, ELEKTRA_KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/abc");
 	succeed_if_same_string (keyName (c), "/abc");
 
 	succeed_if (keySetName (c, "spec:/test") != -1, "could not set name");
-	succeed_if (keyCopy (k, c, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if (keyCopy (k, c, ELEKTRA_KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "spec:/test");
 	succeed_if_same_string (keyName (c), "spec:/test");
 
 	succeed_if (keySetName (c, "proc:/test") != -1, "could not set name");
-	succeed_if (keyCopy (k, c, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if (keyCopy (k, c, ELEKTRA_KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "proc:/test");
 	succeed_if_same_string (keyName (c), "proc:/test");
 
-	succeed_if (keyCopy (k, c, KEY_CP_VALUE | KEY_CP_STRING) == NULL, "could copy despite of illegal flags");
+	succeed_if (keyCopy (k, c, ELEKTRA_KEY_CP_VALUE | ELEKTRA_KEY_CP_STRING) == NULL, "could copy despite of illegal flags");
 
 	keyDel (k);
 	keyDel (c);
 
-	ElektraKey * keyLock = keyNew ("user:/foo", KEY_FLAGS, KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META, KEY_END);
-	ElektraKey * keyNorm = keyNew ("user:/test", KEY_END);
+	ElektraKey * keyLock = keyNew ("user:/foo", ELEKTRA_KEY_FLAGS, ELEKTRA_KEY_LOCK_NAME | ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META, ELEKTRA_KEY_END);
+	ElektraKey * keyNorm = keyNew ("user:/test", ELEKTRA_KEY_END);
 
-	succeed_if (keyCopy (keyNorm, keyLock, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if (keyCopy (keyNorm, keyLock, ELEKTRA_KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (keyNorm), "user:/foo");
 	succeed_if_same_string (keyName (keyLock), "user:/foo");
 
 	succeed_if (keySetName (keyNorm, "user:/test") != -1, "could not set name");
-	succeed_if (keyCopy (keyLock, keyNorm, KEY_CP_NAME) == NULL, "could copy locked key");
+	succeed_if (keyCopy (keyLock, keyNorm, ELEKTRA_KEY_CP_NAME) == NULL, "could copy locked key");
 	succeed_if_same_string (keyName (keyNorm), "user:/test");
 	succeed_if_same_string (keyName (keyLock), "user:/foo");
 
-	succeed_if (keyCopy (NULL, keyNorm, KEY_CP_NAME) == NULL, "could copy to NULL");
-	succeed_if (keyCopy (NULL, keyLock, KEY_CP_NAME) == NULL, "could copy to NULL");
+	succeed_if (keyCopy (NULL, keyNorm, ELEKTRA_KEY_CP_NAME) == NULL, "could copy to NULL");
+	succeed_if (keyCopy (NULL, keyLock, ELEKTRA_KEY_CP_NAME) == NULL, "could copy to NULL");
 	succeed_if_same_string (keyName (keyNorm), "user:/test");
 	succeed_if_same_string (keyName (keyLock), "user:/foo");
 
-	ElektraKey * keyBin = keyNew ("user:/binary/foo", KEY_FLAGS, KEY_BINARY, KEY_END);
+	ElektraKey * keyBin = keyNew ("user:/binary/foo", ELEKTRA_KEY_FLAGS, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_END);
 	succeed_if (keyIsBinary (keyBin), "error creating binary key");
 
 	keySetString (keyNorm, "This is a string");
 	succeed_if_same_string (keyString (keyNorm), "This is a string");
 
-	succeed_if (keyCopy (keyNorm, keyBin, KEY_CP_STRING) == NULL, "could copy string to binary key");
+	succeed_if (keyCopy (keyNorm, keyBin, ELEKTRA_KEY_CP_STRING) == NULL, "could copy string to binary key");
 	succeed_if_same_string (keyName (keyNorm), "user:/test");
 	succeed_if_same_string (keyString (keyNorm), "This is a string");
 	succeed_if_same_string (keyName (keyBin), "user:/binary/foo");
-	succeed_if (keyCopy (keyNorm, keyBin, KEY_CP_NAME) != NULL, "could not copy name to binary key");
+	succeed_if (keyCopy (keyNorm, keyBin, ELEKTRA_KEY_CP_NAME) != NULL, "could not copy name to binary key");
 	succeed_if_same_string (keyName (keyNorm), "user:/binary/foo");
 	succeed_if_same_string (keyName (keyBin), "user:/binary/foo");
 
@@ -825,20 +825,20 @@ static void test_keyCopy (void)
 	keyDel (keyLock);
 	keyDel (keyBin);
 
-	ElektraKey * keyValSource = keyNew ("user:/hello", KEY_VALUE, "hello", KEY_END);
-	ElektraKey * keyValDest = keyNew ("user:/hi", KEY_END);
-	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
+	ElektraKey * keyValSource = keyNew ("user:/hello", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END);
+	ElektraKey * keyValDest = keyNew ("user:/hi", ELEKTRA_KEY_END);
+	keyValDest = keyCopy (keyValDest, keyValSource, ELEKTRA_KEY_CP_ALL);
 	compare_key (keyValDest, keyValSource);
 
 	keySetString (keyValSource, "This string has special chars \n \\ \t \a");
 	keySetName (keyValDest, "user:/hi");
-	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
+	keyValDest = keyCopy (keyValDest, keyValSource, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyString (keyValDest), keyString (keyValSource));
 	compare_key (keyValDest, keyValSource);
 
 	keySetString (keyValSource, "This string has special \0 here");
 	keySetName (keyValDest, "user:/hi");
-	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
+	keyValDest = keyCopy (keyValDest, keyValSource, ELEKTRA_KEY_CP_ALL);
 	succeed_if_same_string (keyString (keyValDest), keyString (keyValSource));
 	compare_key (keyValDest, keyValSource);
 
@@ -849,20 +849,20 @@ static void test_keyCopy (void)
 static void test_keyFixedNew (void)
 {
 	printf ("test fixed new\n");
-	ElektraKey * k1 = keyNew ("/", KEY_END);
-	ElektraKey * k2 = keyNew ("/", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	ElektraKey * k1 = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("/", ELEKTRA_KEY_SIZE, 0, ELEKTRA_KEY_VALUE, 0, ELEKTRA_KEY_END);
 	compare_key (k1, k2);
 	keyDel (k1);
 	keyDel (k2);
 
-	k1 = keyNew ("user:/hello", KEY_END);
-	k2 = keyNew ("user:/hello", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	k1 = keyNew ("user:/hello", ELEKTRA_KEY_END);
+	k2 = keyNew ("user:/hello", ELEKTRA_KEY_SIZE, 0, ELEKTRA_KEY_VALUE, 0, ELEKTRA_KEY_END);
 	compare_key (k1, k2);
 	keyDel (k1);
 	keyDel (k2);
 
-	k1 = keyNew ("user:/hello", KEY_VALUE, "hello", KEY_END);
-	k2 = keyNew ("user:/hello", KEY_SIZE, 6, KEY_VALUE, "hello", KEY_END);
+	k1 = keyNew ("user:/hello", ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END);
+	k2 = keyNew ("user:/hello", ELEKTRA_KEY_SIZE, 6, ELEKTRA_KEY_VALUE, "hello", ELEKTRA_KEY_END);
 	compare_key (k1, k2);
 	keyDel (k1);
 	keyDel (k2);
@@ -872,7 +872,7 @@ static void test_keyFlags (void)
 {
 	printf ("Test KEY_FLAGS\n");
 
-	ElektraKey * key = keyNew ("user:/foo", KEY_FLAGS, KEY_BINARY | KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META, KEY_END);
+	ElektraKey * key = keyNew ("user:/foo", ELEKTRA_KEY_FLAGS, ELEKTRA_KEY_BINARY | ELEKTRA_KEY_LOCK_NAME | ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META, ELEKTRA_KEY_END);
 	ElektraKey * key2 = NULL;
 
 	succeed_if (keyIsBinary (key), "Could not set type to binary");
@@ -896,7 +896,7 @@ static void test_warnings (void)
 {
 	printf ("Test ADD_WARNING\n");
 
-	ElektraKey * key = keyNew ("user:/bar", KEY_VALUE, "config", KEY_END);
+	ElektraKey * key = keyNew ("user:/bar", ELEKTRA_KEY_VALUE, "config", ELEKTRA_KEY_END);
 	for (int i = 0; i < 200; i++)
 	{
 #define WITH_LINENO(code)                                                                                                                  \
@@ -911,7 +911,7 @@ static void test_warnings (void)
 		printf ("  -- warning %d -> %s\n", i, index);
 		succeed_if_same_string (keyString (keyGetMeta (key, "meta:/warnings")), index);
 
-		ElektraKey * k = keyNew ("meta:/warnings", KEY_END);
+		ElektraKey * k = keyNew ("meta:/warnings", ELEKTRA_KEY_END);
 		keyAddBaseName (k, index);
 
 		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))),
@@ -951,17 +951,17 @@ static void test_keyReplacePrefix (void)
 {
 	printf ("Test keyReplacePrefix\n");
 
-	ElektraKey * key = keyNew ("user:/", KEY_END);
-	ElektraKey * oldPrefix = keyNew ("user:/", KEY_END);
-	ElektraKey * newPrefix = keyNew ("user:/", KEY_END);
+	ElektraKey * key = keyNew ("user:/", ELEKTRA_KEY_END);
+	ElektraKey * oldPrefix = keyNew ("user:/", ELEKTRA_KEY_END);
+	ElektraKey * newPrefix = keyNew ("user:/", ELEKTRA_KEY_END);
 
 	succeed_if (keyReplacePrefix (NULL, oldPrefix, newPrefix) == -1, "should not accept NULL argument");
 	succeed_if (keyReplacePrefix (key, NULL, newPrefix) == -1, "should not accept NULL argument");
 	succeed_if (keyReplacePrefix (key, oldPrefix, NULL) == -1, "should not accept NULL argument");
 
-	set_bit (key->flags, KEY_FLAG_RO_NAME);
+	set_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME);
 	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == -1, "should not accept read-only key");
-	clear_bit (key->flags, KEY_FLAG_RO_NAME);
+	clear_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME);
 
 	keySetName (oldPrefix, "user:/foo");
 	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 0, "shouldn't touch keys not below oldPrefix");
@@ -974,9 +974,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
 	succeed_if_same_string (keyName (newPrefix), "user:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_USER, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_USER, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_USER, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_USER, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0", 2) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");
@@ -992,9 +992,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "user:/bar");
 	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
 	succeed_if_same_string (keyName (newPrefix), "user:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_USER, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_USER, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_USER, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_USER, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0bar", 5) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");
@@ -1010,9 +1010,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "system:/foo/bar");
 	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
 	succeed_if_same_string (keyName (newPrefix), "user:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_SYSTEM, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_USER, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_SYSTEM, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_USER, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0foo\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");
@@ -1028,9 +1028,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "/foo/bar");
 	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
 	succeed_if_same_string (keyName (newPrefix), "user:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_CASCADING, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_USER, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_CASCADING, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_USER, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0foo\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");
@@ -1047,9 +1047,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "system:/foo/bar");
 	succeed_if_same_string (keyName (oldPrefix), "/foo");
 	succeed_if_same_string (keyName (newPrefix), "user:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_SYSTEM, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_CASCADING, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_SYSTEM, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_CASCADING, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0foo\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");
@@ -1067,9 +1067,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "system:/baz/bar");
 	succeed_if_same_string (keyName (oldPrefix), "system:/foo");
 	succeed_if_same_string (keyName (newPrefix), "system:/baz");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_SYSTEM, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_SYSTEM, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_SYSTEM, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_SYSTEM, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_SYSTEM, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_SYSTEM, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0baz\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0baz", 5) == 0, "newPrefix has wrong unescaped name");
@@ -1087,9 +1087,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "user:/baz/bar");
 	succeed_if_same_string (keyName (oldPrefix), "system:/foo");
 	succeed_if_same_string (keyName (newPrefix), "user:/baz");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_USER, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_SYSTEM, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_USER, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_SYSTEM, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0baz\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0baz", 5) == 0, "newPrefix has wrong unescaped name");
@@ -1107,9 +1107,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "system:/baz");
 	succeed_if_same_string (keyName (oldPrefix), "system:/foo/bar");
 	succeed_if_same_string (keyName (newPrefix), "system:/baz");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_SYSTEM, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_SYSTEM, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_SYSTEM, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_SYSTEM, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_SYSTEM, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_SYSTEM, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0baz", 5) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo\0bar", 9) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0baz", 5) == 0, "newPrefix has wrong unescaped name");
@@ -1127,9 +1127,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "user:/baz/foo/bar");
 	succeed_if_same_string (keyName (oldPrefix), "system:/");
 	succeed_if_same_string (keyName (newPrefix), "user:/baz");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_USER, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_SYSTEM, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_USER, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_SYSTEM, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0baz\0foo\0bar", 13) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0", 2) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0baz", 5) == 0, "newPrefix has wrong unescaped name");
@@ -1147,9 +1147,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "user:/foo/bar");
 	succeed_if_same_string (keyName (oldPrefix), "system:/");
 	succeed_if_same_string (keyName (newPrefix), "user:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_USER, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_SYSTEM, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_USER, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_SYSTEM, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0foo\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0", 2) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");
@@ -1167,9 +1167,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if_same_string (keyName (oldPrefix), "system:/");
 	succeed_if_same_string (keyName (newPrefix), "user:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_USER, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_SYSTEM, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_USER, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_USER, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_SYSTEM, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_USER, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0", 2) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0", 2) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");
@@ -1187,9 +1187,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "/baz/bar");
 	succeed_if_same_string (keyName (oldPrefix), "/foo");
 	succeed_if_same_string (keyName (newPrefix), "/baz");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_CASCADING, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_CASCADING, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_CASCADING, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_CASCADING, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_CASCADING, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_CASCADING, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0baz\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0foo", 5) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0baz", 5) == 0, "newPrefix has wrong unescaped name");
@@ -1207,9 +1207,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "system:/baz/foo/bar");
 	succeed_if_same_string (keyName (oldPrefix), "/");
 	succeed_if_same_string (keyName (newPrefix), "system:/baz");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_SYSTEM, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_CASCADING, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_SYSTEM, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_SYSTEM, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_CASCADING, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_SYSTEM, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0baz\0foo\0bar", 13) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0", 2) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0baz", 5) == 0, "newPrefix has wrong unescaped name");
@@ -1227,9 +1227,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if_same_string (keyName (key), "system:/foo/bar");
 	succeed_if_same_string (keyName (oldPrefix), "/");
 	succeed_if_same_string (keyName (newPrefix), "system:/");
-	succeed_if (*(char *) keyUnescapedName (key) == KEY_NS_SYSTEM, "key has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (oldPrefix) == KEY_NS_CASCADING, "oldPrefix has wrong namespace");
-	succeed_if (*(char *) keyUnescapedName (newPrefix) == KEY_NS_SYSTEM, "newPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (key) == ELEKTRA_NS_SYSTEM, "key has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (oldPrefix) == ELEKTRA_NS_CASCADING, "oldPrefix has wrong namespace");
+	succeed_if (*(char *) keyUnescapedName (newPrefix) == ELEKTRA_NS_SYSTEM, "newPrefix has wrong namespace");
 	succeed_if (memcmp ((char *) keyUnescapedName (key) + 1, "\0foo\0bar", 9) == 0, "key has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (oldPrefix) + 1, "\0", 2) == 0, "oldPrefix has wrong unescaped name");
 	succeed_if (memcmp ((char *) keyUnescapedName (newPrefix) + 1, "\0", 2) == 0, "newPrefix has wrong unescaped name");

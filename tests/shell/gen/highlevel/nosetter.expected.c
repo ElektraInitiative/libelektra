@@ -42,13 +42,13 @@
 static ElektraKeyset * embeddedSpec (void)
 {
 	return ksNew (6,
-	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
-	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("/myfloatarray/#", KEY_META, "default", "2.5", KEY_META, "type", "float", KEY_END),
-	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
-	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
-	KS_END);
+	keyNew ("/", ELEKTRA_KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", ELEKTRA_KEY_END),
+	keyNew ("/mydouble", ELEKTRA_KEY_META, "default", "0.0", ELEKTRA_KEY_META, "type", "double", ELEKTRA_KEY_END),
+	keyNew ("/myfloatarray/#", ELEKTRA_KEY_META, "default", "2.5", ELEKTRA_KEY_META, "type", "float", ELEKTRA_KEY_END),
+	keyNew ("/myint", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "type", "long", ELEKTRA_KEY_END),
+	keyNew ("/mystring", ELEKTRA_KEY_META, "default", "", ELEKTRA_KEY_META, "type", "string", ELEKTRA_KEY_END),
+	keyNew ("/print", ELEKTRA_KEY_META, "default", "0", ELEKTRA_KEY_META, "type", "boolean", ELEKTRA_KEY_END),
+	ELEKTRA_KS_END);
 ;
 }
 
@@ -97,13 +97,13 @@ int loadConfiguration (Elektra ** elektra,
 	
 
 	ElektraKeyset * contract = ksNew (4,
-	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "a5986b1414d7bd81cf112c89ddebb4545be9c4fc331aaf7a1b49da5ddd1332ce", KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
-	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
-	KS_END);
+	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/check/spec/token", ELEKTRA_KEY_VALUE, "a5986b1414d7bd81cf112c89ddebb4545be9c4fc331aaf7a1b49da5ddd1332ce", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", ELEKTRA_KEY_VALUE, "1", ELEKTRA_KEY_END),
+	keyNew ("system:/elektra/contract/mountglobal/gopts", ELEKTRA_KEY_END),
+	ELEKTRA_KS_END);
 ;
-	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/nosetter", KEY_END);
+	ElektraKey * parentKey = keyNew ("/tests/script/gen/highlevel/nosetter", ELEKTRA_KEY_END);
 
 	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
 	
@@ -160,9 +160,9 @@ void exitForSpecload (int argc, const char * const * argv)
 
 	ElektraKeyset * spec = embeddedSpec ();
 
-	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/nosetter", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
+	ElektraKey * parentKey = keyNew ("spec:/tests/script/gen/highlevel/nosetter", ELEKTRA_KEY_META, "system:/elektra/quickdump/noparent", "", ELEKTRA_KEY_END);
 
-	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
+	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);

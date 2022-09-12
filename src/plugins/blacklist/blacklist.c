@@ -28,7 +28,7 @@ static void blacklistValidValues (const ElektraKey * key, ElektraKeyset * validV
 	{
 		const ElektraKey * blacklistKey = keyGetMeta (key, elem);
 		const char * name = keyString (blacklistKey);
-		ElektraKey * k = keyNew ("user:/0", KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t), KEY_END);
+		ElektraKey * k = keyNew ("user:/0", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (kdb_unsigned_long_long_t), ELEKTRA_KEY_END);
 		keySetBaseName (k, name);
 		ksAppendKey (validValues, k);
 		++index;
@@ -39,14 +39,14 @@ static void blacklistValidValues (const ElektraKey * key, ElektraKeyset * validV
 static bool elektraCheckBlacklist (const ElektraKey * key)
 {
 
-	ElektraKeyset * validValues = ksNew (0, KS_END);
+	ElektraKeyset * validValues = ksNew (0, ELEKTRA_KS_END);
 
 	blacklistValidValues (key, validValues);
 
 	char * values = elektraStrDup (keyString (key));
 	char * value = values;
 
-	ElektraKey * valueKey = keyNew ("user:/0", KEY_END);
+	ElektraKey * valueKey = keyNew ("user:/0", ELEKTRA_KEY_END);
 
 	keySetBaseName (valueKey, value);
 	if (ksLookup (validValues, valueKey, 0) != NULL)
@@ -112,13 +112,13 @@ int elektraBlacklistGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/blacklist"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/blacklist", KEY_VALUE, "blacklist plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports", KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports/get", KEY_FUNC, elektraBlacklistGet, KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports/set", KEY_FUNC, elektraBlacklistSet, KEY_END),
-			keyNew ("system:/elektra/modules/blacklist/exports/validateKey", KEY_FUNC, elektraBlacklistValidateKey, KEY_END),
+			30, keyNew ("system:/elektra/modules/blacklist", ELEKTRA_KEY_VALUE, "blacklist plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports/get", ELEKTRA_KEY_FUNC, elektraBlacklistGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports/set", ELEKTRA_KEY_FUNC, elektraBlacklistSet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports/validateKey", ELEKTRA_KEY_FUNC, elektraBlacklistValidateKey, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/blacklist/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/blacklist/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

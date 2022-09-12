@@ -58,13 +58,13 @@ int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 	{
 		ElektraKeyset * n;
 		ksAppend (returned,
-			  n = ksNew (30, keyNew ("system:/elektra/modules/error", KEY_VALUE, "error plugin waits for your orders", KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports", KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports/open", KEY_FUNC, elektraErrorOpen, KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports/get", KEY_FUNC, elektraErrorGet, KEY_END),
-				     keyNew ("system:/elektra/modules/error/exports/set", KEY_FUNC, elektraErrorSet, KEY_END),
+			  n = ksNew (30, keyNew ("system:/elektra/modules/error", ELEKTRA_KEY_VALUE, "error plugin waits for your orders", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/error/exports", ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/error/exports/open", ELEKTRA_KEY_FUNC, elektraErrorOpen, ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/error/exports/get", ELEKTRA_KEY_FUNC, elektraErrorGet, ELEKTRA_KEY_END),
+				     keyNew ("system:/elektra/modules/error/exports/set", ELEKTRA_KEY_FUNC, elektraErrorSet, ELEKTRA_KEY_END),
 #include "readme_error.c"
-				     keyNew ("system:/elektra/modules/error/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				     keyNew ("system:/elektra/modules/error/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 		ksDel (n);
 
 		ksAppend (returned, n = elektraErrorSpecification ());

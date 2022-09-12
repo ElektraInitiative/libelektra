@@ -29,12 +29,12 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned ELE
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/sync"))
 	{
 		ElektraKeyset * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/sync", KEY_VALUE, "sync plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/sync/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/sync/exports/get", KEY_FUNC, elektraSyncGet, KEY_END),
-			       keyNew ("system:/elektra/modules/sync/exports/commit", KEY_FUNC, elektraSyncCommit, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/sync", ELEKTRA_KEY_VALUE, "sync plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/sync/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/sync/exports/get", ELEKTRA_KEY_FUNC, elektraSyncGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/sync/exports/commit", ELEKTRA_KEY_FUNC, elektraSyncCommit, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/sync/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/sync/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

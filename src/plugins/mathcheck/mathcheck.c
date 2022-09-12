@@ -57,16 +57,16 @@ int elektraMathcheckGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/mathcheck"))
 	{
 		ElektraKeyset * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/mathcheck", KEY_VALUE, "mathcheck plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/exports", KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/exports/get", KEY_FUNC, elektraMathcheckGet, KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/exports/set", KEY_FUNC, elektraMathcheckSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/mathcheck", ELEKTRA_KEY_VALUE, "mathcheck plugin waits for your orders", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/mathcheck/exports", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/mathcheck/exports/get", ELEKTRA_KEY_FUNC, elektraMathcheckGet, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/mathcheck/exports/set", ELEKTRA_KEY_FUNC, elektraMathcheckSet, ELEKTRA_KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/mathcheck/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/export/constants", KEY_END),
-			keyNew ("system:/elektra/modules/mathcheck/export/constants/EPSILON", KEY_VALUE, ELEKTRA_STRINGIFY (EPSILON),
-				KEY_END),
-			KS_END);
+			keyNew ("system:/elektra/modules/mathcheck/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/mathcheck/export/constants", ELEKTRA_KEY_END),
+			keyNew ("system:/elektra/modules/mathcheck/export/constants/EPSILON", ELEKTRA_KEY_VALUE, ELEKTRA_STRINGIFY (EPSILON),
+				ELEKTRA_KEY_END),
+			ELEKTRA_KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

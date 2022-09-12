@@ -25,12 +25,12 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, Elek
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/ni"))
 	{
 		ElektraKeyset * moduleConfig =
-			ksNew (30, keyNew ("system:/elektra/modules/ni", KEY_VALUE, "ni plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/ni/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/ni/exports/get", KEY_FUNC, elektraNiGet, KEY_END),
-			       keyNew ("system:/elektra/modules/ni/exports/set", KEY_FUNC, elektraNiSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/ni", ELEKTRA_KEY_VALUE, "ni plugin waits for your orders", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/ni/exports", ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/ni/exports/get", ELEKTRA_KEY_FUNC, elektraNiGet, ELEKTRA_KEY_END),
+			       keyNew ("system:/elektra/modules/ni/exports/set", ELEKTRA_KEY_FUNC, elektraNiSet, ELEKTRA_KEY_END),
 #include "readme_ni.c"
-			       keyNew ("system:/elektra/modules/ni/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/ni/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -50,7 +50,7 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, Elek
 	elektraNi_node current = NULL;
 	while ((current = elektraNi_GetNextChild (root, current)) != NULL)
 	{
-		ElektraKey * k = keyNew (keyName (parentKey), KEY_END);
+		ElektraKey * k = keyNew (keyName (parentKey), ELEKTRA_KEY_END);
 		keyAddName (k, elektraNi_GetName (current, NULL));
 		keySetString (k, elektraNi_GetValue (current, NULL));
 		elektraNi_node mcur = NULL;

@@ -22,7 +22,7 @@ extern char ** environ;
 
 static ElektraKeyset * getSpec (const char * name, ElektraKey ** parentKey)
 {
-	*parentKey = keyNew ("spec:/tests/gopts", KEY_END);
+	*parentKey = keyNew ("spec:/tests/gopts", ELEKTRA_KEY_END);
 
 	if (strcmp (name, TEST_EMPTY) == 0)
 	{
@@ -69,11 +69,11 @@ int main (int argc, const char ** argv)
 	ElektraKeyset * ks = getSpec (specname, &parentKey);
 
 	bool libFailed = elektraGetOpts (ks, argc - 1, &argv[1], (const char **) environ, parentKey) != 0;
-	ElektraKey * libHelpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
+	ElektraKey * libHelpKey = keyNew ("proc:/elektra/gopts/help", ELEKTRA_KEY_VALUE, "0", ELEKTRA_KEY_END);
 	keyCopyAllMeta (libHelpKey, parentKey);
 	ksAppendKey (ks, libHelpKey);
 
-	ElektraKeyset * conf = ksNew (0, KS_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("gopts");
 

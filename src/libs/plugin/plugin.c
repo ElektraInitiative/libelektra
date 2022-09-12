@@ -183,7 +183,7 @@ Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 	// TODO (kodebach): docs, precond checks
 	ElektraKeyset * plugins = *(ElektraKeyset **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
 
-	ElektraKey * lookupHelper = keyNew ("system:/", KEY_END);
+	ElektraKey * lookupHelper = keyNew ("system:/", ELEKTRA_KEY_END);
 	keyAddBaseName (lookupHelper, ref);
 
 	ElektraKey * pluginKey = ksLookup (plugins, lookupHelper, 0);

@@ -126,7 +126,7 @@ ElektraError * elektraErrorFromKey (ElektraKey * key)
 
 	// Code for extracting warnings was adapted from src/tools/kdb/coloredkdbio.h:printWarnings()
 	ElektraKeyset * metaKeys = keyMeta (key);
-	ElektraKey * warningsParent = keyNew ("meta:/warnings", KEY_END);
+	ElektraKey * warningsParent = keyNew ("meta:/warnings", ELEKTRA_KEY_END);
 	ElektraKeyset * warningKeys = ksCut (metaKeys, warningsParent);
 	if (ksGetSize (warningKeys) > 0)
 	{

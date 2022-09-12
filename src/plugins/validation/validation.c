@@ -24,14 +24,14 @@ int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * return
 	ElektraKeyset * n;
 	ksAppend (returned,
 		  n = ksNew (30,
-			     keyNew ("system:/elektra/modules/validation", KEY_VALUE, "validation plugin waits for your orders", KEY_END),
-			     keyNew ("system:/elektra/modules/validation/exports", KEY_END),
-			     keyNew ("system:/elektra/modules/validation/exports/get", KEY_FUNC, elektraValidationGet, KEY_END),
-			     keyNew ("system:/elektra/modules/validation/exports/set", KEY_FUNC, elektraValidationSet, KEY_END),
-			     keyNew ("system:/elektra/modules/validation/exports/ksLookupRE", KEY_FUNC, ksLookupRE, KEY_END),
-			     keyNew ("system:/elektra/modules/validation/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
+			     keyNew ("system:/elektra/modules/validation", ELEKTRA_KEY_VALUE, "validation plugin waits for your orders", ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/validation/exports", ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/validation/exports/get", ELEKTRA_KEY_FUNC, elektraValidationGet, ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/validation/exports/set", ELEKTRA_KEY_FUNC, elektraValidationSet, ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/validation/exports/ksLookupRE", ELEKTRA_KEY_FUNC, ksLookupRE, ELEKTRA_KEY_END),
+			     keyNew ("system:/elektra/modules/validation/exports/validateKey", ELEKTRA_KEY_FUNC, validateKey, ELEKTRA_KEY_END),
 #include "readme_validation.c"
-			     keyNew ("system:/elektra/modules/validation/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+			     keyNew ("system:/elektra/modules/validation/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 	ksDel (n);
 	return 1;
 }

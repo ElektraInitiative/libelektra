@@ -52,7 +52,7 @@ static int isMarkedForEncryption (const ElektraKey * k)
  */
 static inline int isSpecNamespace (const ElektraKey * k)
 {
-	return (keyGetNamespace (k) == KEY_NS_SPEC);
+	return (keyGetNamespace (k) == ELEKTRA_NS_SPEC);
 }
 
 /**
@@ -372,7 +372,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * ks, ElektraK
 	{
 		ElektraKeyset * moduleConfig = ksNew (30,
 #include "contract.h"
-					       KS_END);
+					       ELEKTRA_KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -422,7 +422,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (ElektraKey * errorKey, ElektraKeyset * 
 	if (k)
 	{
 		// call gpg module to verify that we own the required key
-		ElektraKey * msg = keyDup (k, KEY_CP_ALL);
+		ElektraKey * msg = keyDup (k, ELEKTRA_KEY_CP_ALL);
 		if (ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (conf, errorKey, msg) != 1)
 		{
 			keyDel (msg);
@@ -442,7 +442,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (ElektraKey * errorKey, ElektraKeyset * 
 		}
 
 		// store password in configuration
-		k = keyNew ("user:/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, KEY_END);
+		k = keyNew ("user:/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, ELEKTRA_KEY_END);
 		keySetString (k, r);
 		elektraFree (r);
 		if (ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (conf, errorKey, k) != 1)

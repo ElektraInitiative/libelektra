@@ -9,48 +9,48 @@
 // clang-format off
 
 ksNew( 28 ,
-	keyNew ("user:/test/keyset/dir1", KEY_END),
-	keyNew ("user:/test/keyset/dir2", KEY_END),
-	keyNew ("user:/test/keyset/dir3", KEY_END),
-	keyNew ("user:/test/keyset/dir4", KEY_END),
-	keyNew ("user:/test/keyset/dir5", KEY_END),
-	keyNew ("user:/test/keyset/dir6", KEY_END),
-	keyNew ("user:/test/keyset/dir7", KEY_END),
-	keyNew ("user:/test/keyset/dir8", KEY_END),
-	keyNew ("user:/test/keyset/dir9", KEY_END),
+	keyNew ("user:/test/keyset/dir1", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir2", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir3", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir4", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir5", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir6", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir7", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir8", ELEKTRA_KEY_END),
+	keyNew ("user:/test/keyset/dir9", ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key1"
-		, KEY_VALUE, "value1"
-		, KEY_COMMENT, "comment1"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value1"
+		, ELEKTRA_KEY_COMMENT, "comment1"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key2"
-		, KEY_VALUE, "value2"
-		, KEY_COMMENT, "comment2"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value2"
+		, ELEKTRA_KEY_COMMENT, "comment2"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key3"
-		, KEY_VALUE, "value3"
-		, KEY_COMMENT, "comment3"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value3"
+		, ELEKTRA_KEY_COMMENT, "comment3"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key4"
-		, KEY_VALUE, "value4"
-		, KEY_COMMENT, "comment4"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value4"
+		, ELEKTRA_KEY_COMMENT, "comment4"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key5"
-		, KEY_VALUE, "value5"
-		, KEY_COMMENT, "comment5"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value5"
+		, ELEKTRA_KEY_COMMENT, "comment5"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key6"
-		, KEY_VALUE, "value6"
-		, KEY_COMMENT, "comment6"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value6"
+		, ELEKTRA_KEY_COMMENT, "comment6"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key7"
-		, KEY_VALUE, "value7"
-		, KEY_COMMENT, "comment7"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value7"
+		, ELEKTRA_KEY_COMMENT, "comment7"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key8"
-		, KEY_VALUE, "value8"
-		, KEY_COMMENT, "comment8"
-	, KEY_END),
+		, ELEKTRA_KEY_VALUE, "value8"
+		, ELEKTRA_KEY_COMMENT, "comment8"
+	, ELEKTRA_KEY_END),
 	keyNew ("user:/test/keyset/key9"
-		, KEY_VALUE, "value9"
-		, KEY_COMMENT, "comment9"
-	, KEY_END),KS_END);
+		, ELEKTRA_KEY_VALUE, "value9"
+		, ELEKTRA_KEY_COMMENT, "comment9"
+	, ELEKTRA_KEY_END),ELEKTRA_KS_END);

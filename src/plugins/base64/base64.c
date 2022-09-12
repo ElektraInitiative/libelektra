@@ -239,7 +239,7 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * keySet, ElektraKey *
 	{
 		ElektraKeyset * moduleConfig = ksNew (30,
 #include "contract.h"
-					       KS_END);
+					       ELEKTRA_KS_END);
 		ksAppend (keySet, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;

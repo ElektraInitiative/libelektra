@@ -24,14 +24,14 @@
 
 static int outputKeySet (ElektraKeyset * ks, int noparent)
 {
-	ElektraKey * parentKey = keyNew (PARENT_KEY, KEY_END);
+	ElektraKey * parentKey = keyNew (PARENT_KEY, ELEKTRA_KEY_END);
 
 	if (noparent)
 	{
 		keySetMeta (parentKey, "system:/elektra/quickdump/noparent", "");
 	}
 
-	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
+	ElektraKeyset * specloadConf = ksNew (1, keyNew ("system:/sendspec", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", ks, parentKey);

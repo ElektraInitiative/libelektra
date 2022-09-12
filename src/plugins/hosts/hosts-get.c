@@ -165,12 +165,12 @@ static char * parseAlias (ElektraKeyset * append, const ElektraKey * hostParent,
 	sret = elektraParseToken (&fieldBuffer, tokenPointer);
 	if (sret == 0) return 0;
 
-	ElektraKey * alias = keyDup (hostParent, KEY_CP_ALL);
+	ElektraKey * alias = keyDup (hostParent, ELEKTRA_KEY_CP_ALL);
 	keyAddBaseName (alias, fieldBuffer);
 	elektraFree (fieldBuffer);
 
 	/* only add the alias if it does not exist already */
-	if (ksLookup (append, alias, KDB_O_NONE))
+	if (ksLookup (append, alias, ELEKTRA_KDB_O_NONE))
 	{
 		keyDel (alias);
 	}
@@ -224,13 +224,13 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 	}
 
 	ksClear (returned);
-	ElektraKeyset * append = ksNew (ksGetSize (returned) * 2, KS_END);
+	ElektraKeyset * append = ksNew (ksGetSize (returned) * 2, ELEKTRA_KS_END);
 
-	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	ksAppendKey (append, key);
 
 	ElektraKey * currentKey = 0;
-	ElektraKeyset * comments = ksNew (0, KS_END);
+	ElektraKeyset * comments = ksNew (0, ELEKTRA_KS_END);
 	size_t order = 1;
 	char * tokenPointer = 0;
 	while (1)
@@ -241,7 +241,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 
 		if (!currentKey)
 		{
-			currentKey = keyDup (parentKey, KEY_CP_ALL);
+			currentKey = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 		}
 
 		if (parseComment (comments, readBuffer, "#", &elektraAddLineComment)) continue;
@@ -253,7 +253,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, E
 		 * duplicates, we honor only the first entry. This mirrors the
 		 * behaviour of most name resolution implementations
 		 */
-		if (ksLookup (append, currentKey, KDB_O_NONE))
+		if (ksLookup (append, currentKey, ELEKTRA_KDB_O_NONE))
 		{
 			keyDel (currentKey);
 			currentKey = 0;

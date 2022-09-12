@@ -15,7 +15,7 @@ static ElektraKey * gelektra_key_swap (GElektraKey * key, ElektraKey * newkey);
 static void gelektra_key_init (GElektraKey * self)
 {
 	/* initialize the object */
-	self->key = keyNew ("/", KEY_END);
+	self->key = keyNew ("/", ELEKTRA_KEY_END);
 	keyIncRef (self->key);
 }
 
@@ -165,8 +165,8 @@ static void gelektra_key_gi_init_va (GElektraKey * key, const gchar * name, ...)
  */
 void gelektra_key_gi_init (GElektraKey * key, const gchar * name, int flags, const gchar * value, const void * data, gsize data_size)
 {
-	gelektra_key_gi_init_va (key, name, KEY_FLAGS, flags, KEY_SIZE, (flags & KEY_BINARY) ? data_size : 0, KEY_VALUE,
-				 (flags & KEY_BINARY) ? data : value, KEY_END);
+	gelektra_key_gi_init_va (key, name, ELEKTRA_KEY_FLAGS, flags, ELEKTRA_KEY_SIZE, (flags & ELEKTRA_KEY_BINARY) ? data_size : 0, ELEKTRA_KEY_VALUE,
+				 (flags & ELEKTRA_KEY_BINARY) ? data : value, ELEKTRA_KEY_END);
 }
 
 /* reference handling */

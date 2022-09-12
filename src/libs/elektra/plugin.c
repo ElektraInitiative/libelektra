@@ -161,8 +161,8 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	ELEKTRA_NOT_NULL (plugin);
 	ELEKTRA_NOT_NULL (name);
 
-	ElektraKeyset * exports = ksNew (0, KS_END);
-	ElektraKey * pk = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKeyset * exports = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * pk = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
 	keyAddBaseName (pk, plugin->name);
 	plugin->kdbGet (plugin, exports, pk);
 	ksRewind (exports);

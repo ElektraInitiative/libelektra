@@ -1,7 +1,7 @@
 // clang-format off
 ksNew (16,
 	keyNew (PREFIX "/basic_escapes",
-		KEY_VALUE,
+		ELEKTRA_KEY_VALUE,
 			"backspace\b\n"
 			"tab\t\n"
 			"linefeed\n\n"
@@ -9,7 +9,7 @@ ksNew (16,
 			"carriage return\r\n"
 			"quote\"\n"
 			"backslash\\\n",
-		KEY_META, "origvalue",
+		ELEKTRA_KEY_META, "origvalue",
 			"\n"
 			"backspace\\b\n"
 		       	"tab\\t\n"
@@ -18,12 +18,12 @@ ksNew (16,
 		      	"carriage return\\r\n"
 		      	"quote\\\"\n"
 		      	"backslash\\\\\n",
-		KEY_META, "tomltype", "string_ml_basic",
-		KEY_META, "type", "string",
-		KEY_META, "order", "0",
-	KEY_END),
+		ELEKTRA_KEY_META, "tomltype", "string_ml_basic",
+		ELEKTRA_KEY_META, "type", "string",
+		ELEKTRA_KEY_META, "order", "0",
+	ELEKTRA_KEY_END),
 	keyNew (PREFIX "/unicode_escape",
-		KEY_VALUE,
+		ELEKTRA_KEY_VALUE,
 			"0030: 0\n"
 			"00C0: \xC3\x80\n"
 			"0270: \xC9\xB0\n"
@@ -41,7 +41,7 @@ ksNew (16,
 			"15A4A: \xF0\x95\xA9\x8A\n"
 			"1da8b: \xF0\x9D\xAA\x8B\n"
 			"1fffd: \xF0\x9F\xBF\xBD\n",
-		KEY_META, "origvalue",
+		ELEKTRA_KEY_META, "origvalue",
 			"\n"
 			"0030: \\u0030\n"
 			"00C0: \\u00C0\n"
@@ -60,9 +60,9 @@ ksNew (16,
 			"15A4A: \\U00015A4A\n"
 			"1da8b: \\U0001da8b\n"
 			"1fffd: \\U0001fffd\n",
-		KEY_META, "tomltype", "string_ml_basic",
-		KEY_META, "type", "string",
-		KEY_META, "order", "1",
-	KEY_END),
+		ELEKTRA_KEY_META, "tomltype", "string_ml_basic",
+		ELEKTRA_KEY_META, "type", "string",
+		ELEKTRA_KEY_META, "order", "1",
+	ELEKTRA_KEY_END),
 
-KS_END)
+ELEKTRA_KS_END)

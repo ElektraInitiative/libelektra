@@ -261,7 +261,7 @@ static int prependStringToAllKeyNames (ElektraKeyset * result, ElektraKeyset * i
 		{
 			strcat (newName, keyName (key));
 		}
-		ElektraKey * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
+		ElektraKey * duplicateKey = keyDup (key, ELEKTRA_KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
 		int status = keySetName (duplicateKey, newName);
 		elektraFree (newName);
 		if (status < 0)
@@ -290,7 +290,7 @@ static int prependStringToAllKeyNames (ElektraKeyset * result, ElektraKeyset * i
 static ElektraKeyset * removeRoot (ElektraKeyset * original, ElektraKey * root, ElektraKey * informationKey)
 {
 	ksRewind (original);
-	ElektraKeyset * result = ksNew (0, KS_END);
+	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
 	const char * rootKeyNameString = keyName (root);
 	ElektraKey * currentKey;
 	while ((currentKey = ksNext (original)) != NULL)
@@ -305,7 +305,7 @@ static ElektraKeyset * removeRoot (ElektraKeyset * original, ElektraKey * root, 
 		};
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			ElektraKey * duplicateKey = keyDup (currentKey, KEY_CP_ALL);
+			ElektraKey * duplicateKey = keyDup (currentKey, ELEKTRA_KEY_CP_ALL);
 			int retVal;
 			if (keyIsBelow (root, currentKey))
 			{
@@ -687,7 +687,7 @@ static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStar
 	 *  The elektraArrayIncName would then change the name of the real key.
 	 *  We don't want that as we only increase the name to loop over all keys.
 	 */
-	ElektraKey * iterator = keyDup (arrayStart, KEY_CP_NAME);
+	ElektraKey * iterator = keyDup (arrayStart, ELEKTRA_KEY_CP_NAME);
 	if (iterator == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not duplicate key to iterate.");
@@ -696,7 +696,7 @@ static char * getValuesAsArray (ElektraKeyset * ks, const ElektraKey * arrayStar
 	}
 	ElektraKey * lookup;
 	int counter = 0;
-	while ((lookup = ksLookup (ks, iterator, KDB_O_POP)) != 0)
+	while ((lookup = ksLookup (ks, iterator, ELEKTRA_KDB_O_POP)) != 0)
 	{
 		counter++;
 		int tmpSize = keyGetValueSize (lookup);
@@ -774,13 +774,13 @@ static ElektraKeyset * ksFromArray (const char * array, int length, ElektraKey *
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter must not be null.");
 		return NULL;
 	}
-	ElektraKeyset * result = ksNew (0, KS_END);
+	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
 	if (result == NULL)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (informationKey);
 		return NULL;
 	}
-	ElektraKey * iterator = keyNew ("/#0", KEY_END);
+	ElektraKey * iterator = keyNew ("/#0", ELEKTRA_KEY_END);
 	if (iterator == NULL)
 	{
 		ksDel (result);
@@ -793,7 +793,7 @@ static ElektraKeyset * ksFromArray (const char * array, int length, ElektraKey *
 	char * token = strtok_r (buffer, "\n", &saveptr);
 	do
 	{
-		ksAppendKey (result, keyNew (keyName (iterator), KEY_VALUE, token, KEY_END));
+		ksAppendKey (result, keyNew (keyName (iterator), ELEKTRA_KEY_VALUE, token, ELEKTRA_KEY_END));
 		if (elektraArrayIncName (iterator) < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Increasing array key failed.");
@@ -977,7 +977,7 @@ ElektraKeyset * elektraMerge (ElektraKeyset * our, ElektraKey * ourRoot, Elektra
 		ksDel (theirCropped);
 		return NULL;
 	}
-	ElektraKeyset * result = ksNew (0, KS_END);
+	ElektraKeyset * result = ksNew (0, ELEKTRA_KS_END);
 	ksRewind (ourCropped);
 	ksRewind (theirCropped);
 	ksRewind (baseCropped);
@@ -1030,7 +1030,7 @@ ElektraKeyset * elektraMerge (ElektraKeyset * our, ElektraKey * ourRoot, Elektra
 		}
 	}
 
-	ElektraKeyset * resultWithRoot = ksNew (0, KS_END);
+	ElektraKeyset * resultWithRoot = ksNew (0, ELEKTRA_KS_END);
 	prependStringToAllKeyNames (resultWithRoot, result, keyName (resultRoot), informationKey);
 	ksDel (result);
 	return resultWithRoot;

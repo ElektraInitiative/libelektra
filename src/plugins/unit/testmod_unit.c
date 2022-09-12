@@ -13,10 +13,10 @@
 
 static void test_unit_normalization (const char * unitstring, const char * unitexpected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/unit", KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/unit/unittestval", KEY_VALUE, unitstring, KEY_META, "check/unit", "any", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (20, hexkey, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/unit", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = keyNew ("user:/test/unit/unittestval", ELEKTRA_KEY_VALUE, unitstring, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (20, hexkey, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("unit");
 
@@ -39,10 +39,10 @@ static void test_unit_normalization (const char * unitstring, const char * unite
 
 static void test_unit_normalization_error_expected (const char * unitstring, const char * unitexpected)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/unit", KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/unit/unittestval", KEY_VALUE, unitstring, KEY_META, "check/unit", "any", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (20, hexkey, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/unit", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = keyNew ("user:/test/unit/unittestval", ELEKTRA_KEY_VALUE, unitstring, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (20, hexkey, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("unit");
 	printf ("Testing usage of false value %s\n", unitstring);
@@ -63,10 +63,10 @@ static void test_unit_normalization_error_expected (const char * unitstring, con
 
 static void test_unit_validation (const char * unit, const short e_ret)
 {
-	ElektraKey * parentKey = keyNew ("user:/tests/unit", KEY_END);
-	ElektraKey * hexkey = keyNew ("user:/test/unit/testvalue", KEY_VALUE, unit, KEY_META, "check/unit", "any", KEY_END);
-	ElektraKeyset * conf = ksNew (0, KS_END);
-	ElektraKeyset * ks = ksNew (20, hexkey, KS_END);
+	ElektraKey * parentKey = keyNew ("user:/tests/unit", ELEKTRA_KEY_END);
+	ElektraKey * hexkey = keyNew ("user:/test/unit/testvalue", ELEKTRA_KEY_VALUE, unit, ELEKTRA_KEY_META, "check/unit", "any", ELEKTRA_KEY_END);
+	ElektraKeyset * conf = ksNew (0, ELEKTRA_KS_END);
+	ElektraKeyset * ks = ksNew (20, hexkey, ELEKTRA_KS_END);
 
 	PLUGIN_OPEN ("unit");
 

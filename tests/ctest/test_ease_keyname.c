@@ -37,15 +37,15 @@ static void test_relative_root (void)
 {
 	printf ("Get relative name of key with backend mounted at `/`\n");
 
-	ElektraKey * parent = keyNew ("/", KEY_END);
-	ElektraKey * child = keyNew ("spec:/ni/test", KEY_END);
+	ElektraKey * parent = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * child = keyNew ("spec:/ni/test", ELEKTRA_KEY_END);
 
 	test_relative ("spec:/ni/test", child, parent);
 	keyDel (child);
-	child = keyNew ("system:/💩🦄/Fjørt", KEY_END);
+	child = keyNew ("system:/💩🦄/Fjørt", ELEKTRA_KEY_END);
 	test_relative ("system:/💩🦄/Fjørt", child, parent);
 	keyDel (child);
-	child = keyNew ("user:/\\/dot", KEY_END);
+	child = keyNew ("user:/\\/dot", ELEKTRA_KEY_END);
 	test_relative ("user:/\\/dot", child, parent);
 	keyDel (child);
 	keyDel (parent);
@@ -55,20 +55,20 @@ static void test_relative_cascading (void)
 {
 	printf ("Get relative name of key with cascading mountpoint\n");
 
-	ElektraKey * parent = keyNew ("/cascading", KEY_END);
-	ElektraKey * child = keyNew ("/cascading/k", KEY_END);
+	ElektraKey * parent = keyNew ("/cascading", ELEKTRA_KEY_END);
+	ElektraKey * child = keyNew ("/cascading/k", ELEKTRA_KEY_END);
 
 	test_relative ("k", child, parent);
 	keyDel (child);
-	child = keyNew ("system:/cascading/deep/deeper/deepest", KEY_END);
+	child = keyNew ("system:/cascading/deep/deeper/deepest", ELEKTRA_KEY_END);
 	test_relative ("deep/deeper/deepest", child, parent);
 	keyDel (parent);
 	keyDel (child);
-	parent = keyNew ("/cascading\\/mountpoint/", KEY_END);
-	child = keyNew ("user:/cascading\\/mountpoint/\\/dot", KEY_END);
+	parent = keyNew ("/cascading\\/mountpoint/", ELEKTRA_KEY_END);
+	child = keyNew ("user:/cascading\\/mountpoint/\\/dot", ELEKTRA_KEY_END);
 	test_relative ("\\/dot", child, parent);
 	keyDel (child);
-	child = keyNew ("user:/second_level/cascading\\/mountpoint/\\/dot", KEY_END);
+	child = keyNew ("user:/second_level/cascading\\/mountpoint/\\/dot", ELEKTRA_KEY_END);
 	test_relative ("\\/dot", child, parent);
 	keyDel (child);
 	keyDel (parent);
@@ -78,21 +78,21 @@ static void test_relative_generic (void)
 {
 	printf ("Get relative name of key with generic mountpoint\n");
 
-	ElektraKey * parent = keyNew ("system:/", KEY_END);
-	ElektraKey * child = keyNew ("system:/key//", KEY_END);
+	ElektraKey * parent = keyNew ("system:/", ELEKTRA_KEY_END);
+	ElektraKey * child = keyNew ("system:/key//", ELEKTRA_KEY_END);
 
 	test_relative ("key", child, parent);
 	keyDel (child);
-	child = keyNew ("system:/Käfer/K", KEY_END);
+	child = keyNew ("system:/Käfer/K", ELEKTRA_KEY_END);
 	test_relative ("Käfer/K", child, parent);
 	keyDel (child);
 	keyDel (parent);
-	parent = keyNew ("user:/", KEY_END);
-	child = keyNew ("user:/K", KEY_END);
+	parent = keyNew ("user:/", ELEKTRA_KEY_END);
+	child = keyNew ("user:/K", ELEKTRA_KEY_END);
 	test_relative ("K", child, parent);
 	test_relative ("user:/", parent, child);
 	keyDel (child);
-	child = keyNew ("user:/KK\\/Kitchens/What/Were/You/Thinking?", KEY_END);
+	child = keyNew ("user:/KK\\/Kitchens/What/Were/You/Thinking?", ELEKTRA_KEY_END);
 	test_relative ("KK\\/Kitchens/What/Were/You/Thinking?", child, parent);
 	keyDel (child);
 	keyDel (parent);
@@ -102,18 +102,18 @@ static void test_relative_equal (void)
 {
 	printf ("Get relative name of key which is the same as the parent key\n");
 
-	ElektraKey * parent = keyNew ("system:/parentChild", KEY_END);
-	ElektraKey * child = keyNew ("system:/parentChild", KEY_END);
+	ElektraKey * parent = keyNew ("system:/parentChild", ELEKTRA_KEY_END);
+	ElektraKey * child = keyNew ("system:/parentChild", ELEKTRA_KEY_END);
 	test_relative ("", child, parent);
 
 	keyDel (parent);
-	parent = keyNew ("/parentChild", KEY_END);
+	parent = keyNew ("/parentChild", ELEKTRA_KEY_END);
 	test_relative ("", child, parent);
 
 	keyDel (child);
 	keyDel (parent);
-	child = keyNew ("system:/parentChild/#", KEY_END);
-	parent = keyNew ("system:/parentChild/#", KEY_END);
+	child = keyNew ("system:/parentChild/#", ELEKTRA_KEY_END);
+	parent = keyNew ("system:/parentChild/#", ELEKTRA_KEY_END);
 	test_relative ("", child, parent);
 
 	keyDel (child);

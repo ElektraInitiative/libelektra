@@ -39,14 +39,14 @@ ssize_t keySetStringF (ElektraKey * key, const char * format, ...)
 		return -1;
 	}
 
-	if (key->data.c && !test_bit (key->flags, KEY_FLAG_MMAP_DATA))
+	if (key->data.c && !test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_DATA))
 	{
 		elektraFree (key->data.c);
 	}
 
 	key->data.c = p;
 	key->dataSize = elektraStrLen (key->data.c);
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	set_bit (key->flags, ELEKTRA_KEY_FLAG_SYNC);
 
 	return key->dataSize;
 }
@@ -58,7 +58,7 @@ static void elektraAddCommentInfo (ElektraKeyset * comments, ElektraKey * commen
 	if (commentStart)
 	{
 		/* this comment contains actual comment data */
-		ElektraKey * commentStartKey = keyDup (commentBase, KEY_CP_ALL);
+		ElektraKey * commentStartKey = keyDup (commentBase, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (commentStartKey, "start");
 		keySetString (commentStartKey, commentStart);
 		ksAppendKey (comments, commentStartKey);
@@ -71,7 +71,7 @@ static void elektraAddCommentInfo (ElektraKeyset * comments, ElektraKey * commen
 	 */
 	if (commentStart || spaces > 0)
 	{
-		ElektraKey * commentSpaceKey = keyDup (commentBase, KEY_CP_ALL);
+		ElektraKey * commentSpaceKey = keyDup (commentBase, ELEKTRA_KEY_CP_ALL);
 		keyAddBaseName (commentSpaceKey, "space");
 		keySetStringF (commentSpaceKey, "%d", spaces);
 		ksAppendKey (comments, commentSpaceKey);
@@ -101,7 +101,7 @@ void elektraAddLineComment (ElektraKeyset * comments, size_t spaces, const char 
 	/* initialize the comment key */
 	if (ksGetSize (comments) == 0)
 	{
-		lineComment = keyNew ("meta:/comment/#", KEY_END);
+		lineComment = keyNew ("meta:/comment/#", ELEKTRA_KEY_END);
 		elektraArrayIncName (lineComment);
 		ksAppendKey (comments, lineComment);
 		lineComment = elektraArrayGetNextKey (comments);
@@ -110,7 +110,7 @@ void elektraAddLineComment (ElektraKeyset * comments, size_t spaces, const char 
 	{
 		// TODO: doing all this every time is very inefficient. Arrayhandling
 		// definitely needs to be improved
-		ElektraKey * arrayBase = keyNew ("meta:/comment", KEY_END);
+		ElektraKey * arrayBase = keyNew ("meta:/comment", ELEKTRA_KEY_END);
 		ElektraKeyset * array = elektraArrayGet (arrayBase, comments);
 		lineComment = elektraArrayGetNextKey (array);
 		keyDel (arrayBase);
@@ -133,7 +133,7 @@ void elektraAddLineComment (ElektraKeyset * comments, size_t spaces, const char 
  */
 void elektraAddInlineComment (ElektraKeyset * comments, size_t spaces, const char * commentStart, const char * comment)
 {
-	ElektraKey * inlineComment = keyNew ("meta:/comment/#", KEY_END);
+	ElektraKey * inlineComment = keyNew ("meta:/comment/#", ELEKTRA_KEY_END);
 	elektraArrayIncName (inlineComment);
 
 	elektraAddCommentInfo (comments, inlineComment, spaces, commentStart, comment);

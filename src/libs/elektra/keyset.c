@@ -52,7 +52,7 @@
 static void elektraOpmphmInvalidate (ElektraKeyset * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	set_bit (ks->flags, KS_FLAG_NAME_CHANGE);
+	set_bit (ks->flags, ELEKTRA_KS_FLAG_NAME_CHANGE);
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
@@ -319,7 +319,7 @@ ElektraKeyset * ksDup (const ElektraKeyset * source)
 		size = KEYSET_SIZE;
 	}
 
-	ElektraKeyset * keyset = ksNew (size, KS_END);
+	ElektraKeyset * keyset = ksNew (size, ELEKTRA_KS_END);
 	ksAppend (keyset, source);
 	elektraOpmphmCopy (keyset, source);
 	return keyset;
@@ -350,12 +350,12 @@ ElektraKeyset * ksDeepDup (const ElektraKeyset * source)
 	size_t i = 0;
 	ElektraKeyset * keyset = 0;
 
-	keyset = ksNew (source->alloc, KS_END);
+	keyset = ksNew (source->alloc, ELEKTRA_KS_END);
 	for (i = 0; i < s; ++i)
 	{
 		ElektraKey * k = source->array[i];
-		ElektraKey * d = keyDup (k, KEY_CP_ALL);
-		if (!test_bit (k->flags, KEY_FLAG_SYNC))
+		ElektraKey * d = keyDup (k, ELEKTRA_KEY_CP_ALL);
+		if (!test_bit (k->flags, ELEKTRA_KEY_FLAG_SYNC))
 		{
 			keyClearSync (d);
 		}
@@ -478,7 +478,7 @@ int ksDel (ElektraKeyset * ks)
 
 #endif
 
-	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
+	if (!test_bit (ks->flags, ELEKTRA_KS_FLAG_MMAP_STRUCT))
 	{
 		elektraFree (ks);
 	}
@@ -916,7 +916,7 @@ ssize_t ksAppendKey (ElektraKeyset * ks, ElektraKey * toAppend)
 		return -1;
 	}
 
-	keyLock (toAppend, KEY_LOCK_NAME);
+	keyLock (toAppend, ELEKTRA_KEY_LOCK_NAME);
 
 	result = ksSearchInternal (ks, toAppend);
 
@@ -1053,19 +1053,19 @@ static size_t ksRenameInternal (ElektraKeyset * ks, size_t start, size_t end, co
 		if (ks->array[it]->refs == 1)
 		{
 			// only referenced in this KeySet -> just override read-only flag
-			clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+			clear_bit (ks->array[it]->flags, ELEKTRA_KEY_FLAG_RO_NAME);
 		}
 		else
 		{
 			// key has other references -> dup in-place so we can safely rename it
-			ElektraKey * dup = keyDup (ks->array[it], KEY_CP_ALL);
+			ElektraKey * dup = keyDup (ks->array[it], ELEKTRA_KEY_CP_ALL);
 			keyDecRef (ks->array[it]);
 			dup->refs = 1;
 			ks->array[it] = dup;
 		}
 		keyReplacePrefix (ks->array[it], root, newRoot);
 		// lock key with new name
-		set_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+		set_bit (ks->array[it]->flags, ELEKTRA_KEY_FLAG_RO_NAME);
 	}
 	return end - start;
 }
@@ -1115,7 +1115,7 @@ static size_t ksRenameInternal (ElektraKeyset * ks, size_t start, size_t end, co
 ssize_t ksRename (ElektraKeyset * ks, const ElektraKey * root, const ElektraKey * newRoot)
 {
 	if (ks == NULL || root == NULL || newRoot == NULL) return -1;
-	if (keyGetNamespace (root) == KEY_NS_CASCADING || keyGetNamespace (newRoot) == KEY_NS_CASCADING) return -1;
+	if (keyGetNamespace (root) == ELEKTRA_NS_CASCADING || keyGetNamespace (newRoot) == ELEKTRA_NS_CASCADING) return -1;
 
 	// search the root
 	elektraCursor end;
@@ -1278,21 +1278,21 @@ elektraCursor ksFindHierarchy (const ElektraKeyset * ks, const ElektraKey * root
 ElektraKeyset * ksBelow (const ElektraKeyset * ks, const ElektraKey * root)
 {
 	// FIXME (kodebach): tests
-	if (keyGetNamespace (root) == KEY_NS_CASCADING)
+	if (keyGetNamespace (root) == ELEKTRA_NS_CASCADING)
 	{
-		ElektraKeyset * returned = ksNew (0, KS_END);
+		ElektraKeyset * returned = ksNew (0, ELEKTRA_KS_END);
 		// HACK: ksBelow does not use escaped name (key->key), so we don't need to change it
-		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
+		for (elektraNamespace ns = ELEKTRA_NS_FIRST; ns <= ELEKTRA_NS_LAST; ++ns)
 		{
 			switch (ns)
 			{
-			case KEY_NS_PROC:
-			case KEY_NS_DIR:
-			case KEY_NS_USER:
-			case KEY_NS_SYSTEM:
-			case KEY_NS_SPEC:
-			case KEY_NS_META:
-			case KEY_NS_DEFAULT: {
+			case ELEKTRA_NS_PROC:
+			case ELEKTRA_NS_DIR:
+			case ELEKTRA_NS_USER:
+			case ELEKTRA_NS_SYSTEM:
+			case ELEKTRA_NS_SPEC:
+			case ELEKTRA_NS_META:
+			case ELEKTRA_NS_DEFAULT: {
 				((ElektraKey *) root)->ukey[0] = ns;
 
 				ElektraKeyset * n = ksBelow (ks, root);
@@ -1300,19 +1300,19 @@ ElektraKeyset * ksBelow (const ElektraKeyset * ks, const ElektraKey * root)
 				ksDel (n);
 				break;
 			}
-			case KEY_NS_NONE:
-			case KEY_NS_CASCADING:
+			case ELEKTRA_NS_NONE:
+			case ELEKTRA_NS_CASCADING:
 				break;
 			}
 		}
-		((ElektraKey *) root)->ukey[0] = KEY_NS_CASCADING;
+		((ElektraKey *) root)->ukey[0] = ELEKTRA_NS_CASCADING;
 		return returned;
 	}
 
 	elektraCursor end;
 	elektraCursor start = ksFindHierarchy (ks, root, &end);
 
-	ElektraKeyset * returned = ksNew (end - start, KS_END);
+	ElektraKeyset * returned = ksNew (end - start, ELEKTRA_KS_END);
 	elektraMemcpy (returned->array, ks->array + start, end - start);
 	returned->size = end - start;
 	if (returned->size > 0)
@@ -1464,7 +1464,7 @@ ElektraKeyset * ksCut (ElektraKeyset * ks, const ElektraKey * cutpoint)
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 
-	if (!ks->array) return ksNew (0, KS_END);
+	if (!ks->array) return ksNew (0, ELEKTRA_KS_END);
 
 	char * name = cutpoint->key;
 	if (!name) return 0;
@@ -1472,27 +1472,27 @@ ElektraKeyset * ksCut (ElektraKeyset * ks, const ElektraKey * cutpoint)
 
 	elektraOpmphmInvalidate (ks);
 
-	if (cutpoint->ukey[0] == KEY_NS_CASCADING)
+	if (cutpoint->ukey[0] == ELEKTRA_NS_CASCADING)
 	{
-		ret = ksNew (0, KS_END);
+		ret = ksNew (0, ELEKTRA_KS_END);
 
 		// HACK: ksCut does not use escaped name (key->key), so we don't need to change it
-		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
+		for (elektraNamespace ns = ELEKTRA_NS_FIRST; ns <= ELEKTRA_NS_LAST; ++ns)
 		{
 			int validNS = 1;
 			switch (ns)
 			{
-			case KEY_NS_SPEC:
-			case KEY_NS_PROC:
-			case KEY_NS_DIR:
-			case KEY_NS_USER:
-			case KEY_NS_SYSTEM:
-			case KEY_NS_META:
+			case ELEKTRA_NS_SPEC:
+			case ELEKTRA_NS_PROC:
+			case ELEKTRA_NS_DIR:
+			case ELEKTRA_NS_USER:
+			case ELEKTRA_NS_SYSTEM:
+			case ELEKTRA_NS_META:
 				((ElektraKey *) cutpoint)->ukey[0] = ns;
 				break;
-			case KEY_NS_NONE:
-			case KEY_NS_CASCADING:
-			case KEY_NS_DEFAULT:
+			case ELEKTRA_NS_NONE:
+			case ELEKTRA_NS_CASCADING:
+			case ELEKTRA_NS_DEFAULT:
 				validNS = 0;
 			}
 			if (validNS)
@@ -1504,18 +1504,18 @@ ElektraKeyset * ksCut (ElektraKeyset * ks, const ElektraKey * cutpoint)
 		}
 
 		// restore old cascading name
-		((ElektraKey *) cutpoint)->ukey[0] = KEY_NS_CASCADING;
+		((ElektraKey *) cutpoint)->ukey[0] = ELEKTRA_NS_CASCADING;
 
 		// now look for cascading keys
 		// TODO: cascading keys shouldn't be allowed in KeySet anymore
 	}
 
 	set_cursor = elektraKsFindCutpoint (ks, cutpoint, &it, &found);
-	if (set_cursor < 0) return ret ? ret : ksNew (0, KS_END);
+	if (set_cursor < 0) return ret ? ret : ksNew (0, ELEKTRA_KS_END);
 
 	newsize = it - found;
 
-	returned = ksNew (newsize, KS_END);
+	returned = ksNew (newsize, ELEKTRA_KS_END);
 	elektraMemcpy (returned->array, ks->array + found, newsize);
 	returned->size = newsize;
 	if (returned->size > 0) returned->array[returned->size] = 0;
@@ -1580,7 +1580,7 @@ ElektraKey * ksPop (ElektraKeyset * ks)
 
 	if (!ks) return 0;
 
-	ks->flags |= KS_FLAG_SYNC;
+	ks->flags |= ELEKTRA_KS_FLAG_SYNC;
 
 	if (ks->size == 0) return 0;
 
@@ -2017,13 +2017,13 @@ static ElektraKey * elektraLookupBySpecLinks (ElektraKeyset * ks, ElektraKey * s
 		// optimization: lazy instanziation of k
 		if (!k)
 		{
-			k = keyNew (keyString (m), KEY_END);
+			k = keyNew (keyString (m), ELEKTRA_KEY_END);
 			keySetBinary (k, keyValue (specKey), keyGetValueSize (specKey));
 			elektraCopyCallbackMeta (k, specKey);
 		}
 		else
 			keySetName (k, keyString (m));
-		ret = ksLookup (ks, k, KDB_O_NODEFAULT);
+		ret = ksLookup (ks, k, ELEKTRA_KDB_O_NODEFAULT);
 		if (ret) break;
 		++i;
 	} while (m);
@@ -2048,17 +2048,17 @@ static ElektraKey * elektraLookupBySpecDefault (ElektraKeyset * ks, ElektraKey *
 	ElektraKey * ret = 0;
 	const ElektraKey * m = 0;
 
-	keySetNamespace (specKey, KEY_NS_DEFAULT);
+	keySetNamespace (specKey, ELEKTRA_NS_DEFAULT);
 	ret = ksLookup (ks, specKey, 0);
 
 	if (ret) return ret; // return previous added default key
 
 	m = keyGetMeta (specKey, "default");
 	if (!m) return ret;
-	ret = keyNew (keyName (specKey), KEY_VALUE, keyString (m), KEY_END);
+	ret = keyNew (keyName (specKey), ELEKTRA_KEY_VALUE, keyString (m), ELEKTRA_KEY_END);
 	ksAppendKey (ks, ret);
 
-	keySetNamespace (specKey, KEY_NS_CASCADING);
+	keySetNamespace (specKey, ELEKTRA_NS_CASCADING);
 
 	return ret;
 }
@@ -2085,13 +2085,13 @@ static ElektraKey * elektraLookupBySpecNamespaces (ElektraKeyset * ks, ElektraKe
 	m = keyGetMeta (specKey, buffer);
 	// no namespaces specified, so do a default cascading lookup
 	// (obviously w/o spec)
-	if (!m) return elektraLookupByCascading (ks, specKey, KDB_O_NOSPEC | KDB_O_NODEFAULT);
+	if (!m) return elektraLookupByCascading (ks, specKey, ELEKTRA_KDB_O_NOSPEC | ELEKTRA_KDB_O_NODEFAULT);
 
 	do
 	{
 		// lookup with given namespace
 		elektraNamespace ns = elektraReadNamespace (keyString (m), keyGetValueSize (m) - 1);
-		if (ns == KEY_NS_NONE) break;
+		if (ns == ELEKTRA_NS_NONE) break;
 		keySetNamespace (specKey, ns);
 		ret = ksLookup (ks, specKey, 0);
 		if (ret) break;
@@ -2102,7 +2102,7 @@ static ElektraKey * elektraLookupBySpecNamespaces (ElektraKeyset * ks, ElektraKe
 	} while (m);
 
 	// restore old cascading name
-	keySetNamespace (specKey, KEY_NS_CASCADING);
+	keySetNamespace (specKey, ELEKTRA_NS_CASCADING);
 	return ret;
 }
 
@@ -2116,7 +2116,7 @@ static ElektraKey * elektraLookupBySpec (ElektraKeyset * ks, ElektraKey * specKe
 	ElektraKey * ret = 0;
 	elektraNamespace oldNS = keyGetNamespace (specKey);
 	// strip away beginning of specKey
-	keySetNamespace (specKey, KEY_NS_CASCADING);
+	keySetNamespace (specKey, ELEKTRA_NS_CASCADING);
 
 	// lookup by override
 	char buffer[ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE] = "override/";
@@ -2133,7 +2133,7 @@ static ElektraKey * elektraLookupBySpec (ElektraKeyset * ks, ElektraKey * specKe
 	ret = elektraLookupBySpecLinks (ks, specKey, buffer);
 	if (ret) goto finished;
 
-	if (!(options & KDB_O_NODEFAULT))
+	if (!(options & ELEKTRA_KDB_O_NODEFAULT))
 	{
 		ret = elektraLookupBySpecDefault (ks, specKey);
 	}
@@ -2154,10 +2154,10 @@ static ElektraKey * elektraLookupByCascading (ElektraKeyset * ks, ElektraKey * k
 	ElektraKey * found = 0;
 	ElektraKey * specKey = 0;
 
-	if (!(options & KDB_O_NOSPEC))
+	if (!(options & ELEKTRA_KDB_O_NOSPEC))
 	{
-		keySetNamespace (key, KEY_NS_SPEC);
-		specKey = ksLookup (ks, key, (options & ~KDB_O_DEL) | KDB_O_CALLBACK);
+		keySetNamespace (key, ELEKTRA_NS_SPEC);
+		specKey = ksLookup (ks, key, (options & ~ELEKTRA_KDB_O_DEL) | ELEKTRA_KDB_O_CALLBACK);
 	}
 
 	if (specKey)
@@ -2171,7 +2171,7 @@ static ElektraKey * elektraLookupByCascading (ElektraKeyset * ks, ElektraKey * k
 		}
 
 		// we found a spec key, so we know what to do
-		specKey = keyDup (specKey, KEY_CP_ALL);
+		specKey = keyDup (specKey, ELEKTRA_KEY_CP_ALL);
 		keySetBinary (specKey, keyValue (key), keyGetValueSize (key));
 		elektraCopyCallbackMeta (specKey, key);
 		found = elektraLookupBySpec (ks, specKey, options);
@@ -2181,40 +2181,40 @@ static ElektraKey * elektraLookupByCascading (ElektraKeyset * ks, ElektraKey * k
 	}
 
 	// default cascading:
-	keySetNamespace (key, KEY_NS_PROC);
-	found = ksLookup (ks, key, options & ~KDB_O_DEL);
+	keySetNamespace (key, ELEKTRA_NS_PROC);
+	found = ksLookup (ks, key, options & ~ELEKTRA_KDB_O_DEL);
 
 	if (!found)
 	{
-		keySetNamespace (key, KEY_NS_DIR);
-		found = ksLookup (ks, key, options & ~KDB_O_DEL);
+		keySetNamespace (key, ELEKTRA_NS_DIR);
+		found = ksLookup (ks, key, options & ~ELEKTRA_KDB_O_DEL);
 	}
 
 	if (!found)
 	{
-		keySetNamespace (key, KEY_NS_USER);
-		found = ksLookup (ks, key, options & ~KDB_O_DEL);
+		keySetNamespace (key, ELEKTRA_NS_USER);
+		found = ksLookup (ks, key, options & ~ELEKTRA_KDB_O_DEL);
 	}
 
 	if (!found)
 	{
-		keySetNamespace (key, KEY_NS_SYSTEM);
-		found = ksLookup (ks, key, options & ~KDB_O_DEL);
+		keySetNamespace (key, ELEKTRA_NS_SYSTEM);
+		found = ksLookup (ks, key, options & ~ELEKTRA_KDB_O_DEL);
 	}
 
 	if (!found)
 	{
-		keySetNamespace (key, KEY_NS_DEFAULT);
-		found = ksLookup (ks, key, options & ~KDB_O_DEL);
+		keySetNamespace (key, ELEKTRA_NS_DEFAULT);
+		found = ksLookup (ks, key, options & ~ELEKTRA_KDB_O_DEL);
 	}
 
 	// restore old cascading name
-	keySetNamespace (key, KEY_NS_CASCADING);
+	keySetNamespace (key, ELEKTRA_NS_CASCADING);
 
-	if (!found && !(options & KDB_O_NODEFAULT))
+	if (!found && !(options & ELEKTRA_KDB_O_NODEFAULT))
 	{
 		// search / key itself
-		found = ksLookup (ks, key, (options & ~KDB_O_DEL) | KDB_O_NOCASCADING);
+		found = ksLookup (ks, key, (options & ~ELEKTRA_KDB_O_DEL) | ELEKTRA_KDB_O_NOCASCADING);
 	}
 
 	return found;
@@ -2232,7 +2232,7 @@ static ElektraKey * elektraLookupBinarySearch (ElektraKeyset * ks, ElektraKey co
 	if (found)
 	{
 		cursor = found - ks->array;
-		if (options & KDB_O_POP)
+		if (options & ELEKTRA_KDB_O_POP)
 		{
 			return elektraKsPopAtCursor (ks, cursor);
 		}
@@ -2364,7 +2364,7 @@ static ElektraKey * elektraLookupOpmphmSearch (ElektraKeyset * ks, ElektraKey co
 	if (!strcmp (keyName (found), keyName (key)))
 	{
 		cursor = index;
-		if (options & KDB_O_POP)
+		if (options & ELEKTRA_KDB_O_POP)
 		{
 			return elektraKsPopAtCursor (ks, cursor);
 		}
@@ -2408,52 +2408,52 @@ static ElektraKey * elektraLookupSearch (ElektraKeyset * ks, ElektraKey * key, e
 	}
 
 	// predictor
-	if (!test_bit (options, (KDB_O_BINSEARCH | KDB_O_OPMPHM)))
+	if (!test_bit (options, (ELEKTRA_KDB_O_BINSEARCH | ELEKTRA_KDB_O_OPMPHM)))
 	{
 		// predictor not overruled
 		if (ks->opmphmPredictor)
 		{
-			if (test_bit (ks->flags, KS_FLAG_NAME_CHANGE))
+			if (test_bit (ks->flags, ELEKTRA_KS_FLAG_NAME_CHANGE))
 			{
 				// KeySet changed ask predictor
 				if (opmphmPredictor (ks->opmphmPredictor, ks->size))
 				{
-					set_bit (options, KDB_O_OPMPHM);
+					set_bit (options, ELEKTRA_KDB_O_OPMPHM);
 				}
 				else
 				{
-					set_bit (options, KDB_O_BINSEARCH);
+					set_bit (options, ELEKTRA_KDB_O_BINSEARCH);
 				}
 				// resolve flag
-				clear_bit (ks->flags, (keyflag_t) KS_FLAG_NAME_CHANGE);
+				clear_bit (ks->flags, (keyflag_t) ELEKTRA_KS_FLAG_NAME_CHANGE);
 			}
 			else
 			{
 				if (opmphmIsBuild (ks->opmphm))
 				{
 					opmphmPredictorIncCountOpmphm (ks->opmphmPredictor);
-					set_bit (options, KDB_O_OPMPHM);
+					set_bit (options, ELEKTRA_KDB_O_OPMPHM);
 				}
 				else if (opmphmPredictorIncCountBinarySearch (ks->opmphmPredictor, ks->size))
 				{
 					// endless binary search protection
-					set_bit (options, KDB_O_OPMPHM);
+					set_bit (options, ELEKTRA_KDB_O_OPMPHM);
 				}
 				else
 				{
-					set_bit (options, KDB_O_BINSEARCH);
+					set_bit (options, ELEKTRA_KDB_O_BINSEARCH);
 				}
 			}
 		}
 		else
 		{
 			// when predictor is not here use binary search as backup
-			set_bit (options, KDB_O_BINSEARCH);
+			set_bit (options, ELEKTRA_KDB_O_BINSEARCH);
 		}
 	}
 
 	// the actual lookup
-	if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_OPMPHM)
+	if ((options & (ELEKTRA_KDB_O_BINSEARCH | ELEKTRA_KDB_O_OPMPHM)) == ELEKTRA_KDB_O_OPMPHM)
 	{
 		if (opmphmIsBuild (ks->opmphm) || !elektraLookupBuildOpmphm (ks))
 		{
@@ -2465,7 +2465,7 @@ static ElektraKey * elektraLookupSearch (ElektraKeyset * ks, ElektraKey * key, e
 			found = elektraLookupBinarySearch (ks, key, options);
 		}
 	}
-	else if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_BINSEARCH)
+	else if ((options & (ELEKTRA_KDB_O_BINSEARCH | ELEKTRA_KDB_O_OPMPHM)) == ELEKTRA_KDB_O_BINSEARCH)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
@@ -2483,7 +2483,7 @@ static ElektraKey * elektraLookupSearch (ElektraKeyset * ks, ElektraKey * key, e
 	}
 
 	// remove flags to not interfere with callback
-	clear_bit (options, (KDB_O_OPMPHM | KDB_O_BINSEARCH));
+	clear_bit (options, (ELEKTRA_KDB_O_OPMPHM | ELEKTRA_KDB_O_BINSEARCH));
 #else
 	found = elektraLookupBinarySearch (ks, key, options);
 #endif
@@ -2505,7 +2505,7 @@ static ElektraKey * elektraLookupSearch (ElektraKeyset * ks, ElektraKey * key, e
 
 static ElektraKey * elektraLookupCreateKey (ElektraKeyset * ks, ElektraKey * key, ELEKTRA_UNUSED elektraLookupFlags options)
 {
-	ElektraKey * ret = keyDup (key, KEY_CP_ALL);
+	ElektraKey * ret = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	ksAppendKey (ks, ret);
 	return ret;
 }
@@ -2612,25 +2612,25 @@ ElektraKey * ksLookup (ElektraKeyset * ks, ElektraKey * key, elektraLookupFlags 
 	if (!name) return 0;
 
 	ElektraKey * ret = 0;
-	const int mask = ~KDB_O_DEL & ~KDB_O_CREATE;
+	const int mask = ~ELEKTRA_KDB_O_DEL & ~ELEKTRA_KDB_O_CREATE;
 
-	if (options & KDB_O_SPEC)
+	if (options & ELEKTRA_KDB_O_SPEC)
 	{
 		ElektraKey * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, KEY_CP_NAME);
+		if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, ELEKTRA_KEY_CP_NAME);
 		ret = elektraLookupBySpec (ks, lookupKey, options & mask);
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
+		if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME))
 		{
 			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);
 		}
 	}
-	else if (!(options & KDB_O_NOCASCADING) && strcmp (name, "") && name[0] == '/')
+	else if (!(options & ELEKTRA_KDB_O_NOCASCADING) && strcmp (name, "") && name[0] == '/')
 	{
 		ElektraKey * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, KEY_CP_NAME);
+		if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, ELEKTRA_KEY_CP_NAME);
 		ret = elektraLookupByCascading (ks, lookupKey, options & mask);
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
+		if (test_bit (key->flags, ELEKTRA_KEY_FLAG_RO_NAME))
 		{
 			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);
@@ -2641,9 +2641,9 @@ ElektraKey * ksLookup (ElektraKeyset * ks, ElektraKey * key, elektraLookupFlags 
 		ret = elektraLookupSearch (ks, key, options & mask);
 	}
 
-	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey (ks, key, options & mask);
+	if (!ret && options & ELEKTRA_KDB_O_CREATE) ret = elektraLookupCreateKey (ks, key, options & mask);
 
-	if (options & KDB_O_DEL) keyDel (key);
+	if (options & ELEKTRA_KDB_O_DEL) keyDel (key);
 
 	return ret;
 }
@@ -2738,7 +2738,7 @@ int ksResize (ElektraKeyset * ks, size_t alloc)
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
-		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
+		clear_bit (ks->flags, (keyflag_t) ELEKTRA_KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			return -1;
@@ -2746,7 +2746,7 @@ int ksResize (ElektraKeyset * ks, size_t alloc)
 	}
 	ks->alloc = alloc;
 
-	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	if (test_bit (ks->flags, ELEKTRA_KS_FLAG_MMAP_ARRAY))
 	{
 		// need to move the ks->array out of mmap
 		ElektraKey ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
@@ -2756,7 +2756,7 @@ int ksResize (ElektraKeyset * ks, size_t alloc)
 		}
 		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
 		ks->array = new;
-		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
+		clear_bit (ks->flags, (keyflag_t) ELEKTRA_KS_FLAG_MMAP_ARRAY);
 	}
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
@@ -2850,11 +2850,11 @@ int ksClose (ElektraKeyset * ks)
 			keyDel (ks->array[i]);
 		}
 	}
-	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	if (ks->array && !test_bit (ks->flags, ELEKTRA_KS_FLAG_MMAP_ARRAY))
 	{
 		elektraFree (ks->array);
 	}
-	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
+	clear_bit (ks->flags, (keyflag_t) ELEKTRA_KS_FLAG_MMAP_ARRAY);
 
 	ks->array = NULL;
 	ks->alloc = 0;

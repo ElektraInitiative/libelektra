@@ -171,17 +171,17 @@ ElektraKey * keyVNew (const char * name, va_list va)
 	int flags = 0;
 
 	// flags that can be set via KEY_FLAGS
-	int allFlags = KEY_BINARY | KEY_LOCK_META | KEY_LOCK_NAME | KEY_LOCK_VALUE;
+	int allFlags = ELEKTRA_KEY_BINARY | ELEKTRA_KEY_LOCK_META | ELEKTRA_KEY_LOCK_NAME | ELEKTRA_KEY_LOCK_VALUE;
 
 	while ((action = va_arg (va, elektraKeyFlags)))
 	{
 		switch (action)
 		{
 		/* flags with an argument */
-		case KEY_SIZE:
+		case ELEKTRA_KEY_SIZE:
 			value_size = va_arg (va, size_t);
 			break;
-		case KEY_VALUE:
+		case ELEKTRA_KEY_VALUE:
 			value = va_arg (va, void *);
 			if (value_size && keyIsBinary (key))
 				keySetBinary (key, value, value_size);
@@ -190,34 +190,34 @@ ElektraKey * keyVNew (const char * name, va_list va)
 			else
 				keySetString (key, value);
 			break;
-		case KEY_FUNC:
+		case ELEKTRA_KEY_FUNC:
 			func = va_arg (va, void (*) (void));
 			keySetBinary (key, &func, sizeof (func));
 			break;
-		case KEY_META:
+		case ELEKTRA_KEY_META:
 			value = va_arg (va, char *);
 			/* First parameter is name */
 			keySetMeta (key, value, va_arg (va, char *));
 			break;
 
 		/* flags without an argument */
-		case KEY_FLAGS:
+		case ELEKTRA_KEY_FLAGS:
 			flags |= (va_arg (va, int) & allFlags);
-			if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
+			if (test_bit (flags, ELEKTRA_KEY_BINARY)) keySetMeta (key, "binary", "");
 			break;
-		case KEY_BINARY:
+		case ELEKTRA_KEY_BINARY:
 			keySetMeta (key, "binary", ""); // FALLTHROUGH
-		case KEY_LOCK_NAME:
-		case KEY_LOCK_VALUE:
-		case KEY_LOCK_META:
+		case ELEKTRA_KEY_LOCK_NAME:
+		case ELEKTRA_KEY_LOCK_VALUE:
+		case ELEKTRA_KEY_LOCK_META:
 			flags |= action;
 			break;
 
 		/* deprecated flags */
-		case KEY_NAME:
+		case ELEKTRA_KEY_NAME:
 			name = va_arg (va, char *);
 			break;
-		case KEY_COMMENT:
+		case ELEKTRA_KEY_COMMENT:
 			keySetMeta (key, "comment", va_arg (va, char *));
 			break;
 
@@ -328,30 +328,30 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 {
 	if (dest == NULL) return NULL;
 
-	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) && test_bit (flags, KEY_CP_NAME)) return NULL;
-	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_CP_VALUE)) return NULL;
-	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_CP_META)) return NULL;
+	if (test_bit (dest->flags, ELEKTRA_KEY_FLAG_RO_NAME) && test_bit (flags, ELEKTRA_KEY_CP_NAME)) return NULL;
+	if (test_bit (dest->flags, ELEKTRA_KEY_FLAG_RO_VALUE) && test_bit (flags, ELEKTRA_KEY_CP_VALUE)) return NULL;
+	if (test_bit (dest->flags, ELEKTRA_KEY_FLAG_RO_META) && test_bit (flags, ELEKTRA_KEY_CP_META)) return NULL;
 
-	if (test_bit (flags, KEY_CP_STRING) && test_bit (flags, KEY_CP_VALUE)) return NULL;
+	if (test_bit (flags, ELEKTRA_KEY_CP_STRING) && test_bit (flags, ELEKTRA_KEY_CP_VALUE)) return NULL;
 
 	if (source == NULL)
 	{
-		if (test_bit (flags, KEY_CP_NAME))
+		if (test_bit (flags, ELEKTRA_KEY_CP_NAME))
 		{
 			keySetName (dest, "/");
 		}
-		if (test_bit (flags, KEY_CP_VALUE))
+		if (test_bit (flags, ELEKTRA_KEY_CP_VALUE))
 		{
 			keySetRaw (dest, NULL, 0);
 		}
-		if (test_bit (flags, KEY_CP_META))
+		if (test_bit (flags, ELEKTRA_KEY_CP_META))
 		{
 			ksClear (dest->meta);
 		}
 		return dest;
 	}
 
-	if (test_bit (flags, KEY_CP_STRING) && keyIsBinary (source)) return NULL;
+	if (test_bit (flags, ELEKTRA_KEY_CP_STRING) && keyIsBinary (source)) return NULL;
 
 	if (source == dest) return dest;
 
@@ -359,7 +359,7 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 	ElektraKey orig = *dest;
 
 	// duplicate dynamic properties
-	if (test_bit (flags, KEY_CP_NAME))
+	if (test_bit (flags, ELEKTRA_KEY_CP_NAME))
 	{
 		if (source->key != NULL)
 		{
@@ -378,15 +378,15 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 			dest->keySize = 2;
 
 			dest->ukey = elektraMalloc (3);
-			dest->ukey[0] = KEY_NS_CASCADING;
+			dest->ukey[0] = ELEKTRA_NS_CASCADING;
 			dest->ukey[1] = '\0';
 			dest->ukey[2] = '\0';
 			dest->keyUSize = 3;
 		}
-		clear_bit (dest->flags, KEY_FLAG_MMAP_KEY);
+		clear_bit (dest->flags, ELEKTRA_KEY_FLAG_MMAP_KEY);
 	}
 
-	if (test_bit (flags, KEY_CP_STRING))
+	if (test_bit (flags, ELEKTRA_KEY_CP_STRING))
 	{
 		if (source->data.v != NULL)
 		{
@@ -394,7 +394,7 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 
-			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
+			if (!test_bit (flags, ELEKTRA_KEY_CP_META) && keyIsBinary (source))
 			{
 				keySetMeta (dest, "binary", "");
 			}
@@ -404,10 +404,10 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 			dest->data.v = NULL;
 			dest->dataSize = 0;
 		}
-		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
+		clear_bit (dest->flags, ELEKTRA_KEY_FLAG_MMAP_DATA);
 	}
 
-	if (test_bit (flags, KEY_CP_VALUE))
+	if (test_bit (flags, ELEKTRA_KEY_CP_VALUE))
 	{
 		if (source->data.v != NULL)
 		{
@@ -415,7 +415,7 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 
-			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
+			if (!test_bit (flags, ELEKTRA_KEY_CP_META) && keyIsBinary (source))
 			{
 				keySetMeta (dest, "binary", "");
 			}
@@ -425,10 +425,10 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 			dest->data.v = NULL;
 			dest->dataSize = 0;
 		}
-		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
+		clear_bit (dest->flags, ELEKTRA_KEY_FLAG_MMAP_DATA);
 	}
 
-	if (test_bit (flags, KEY_CP_META))
+	if (test_bit (flags, ELEKTRA_KEY_CP_META))
 	{
 		if (source->meta != NULL)
 		{
@@ -442,13 +442,13 @@ ElektraKey * keyCopy (ElektraKey * dest, const ElektraKey * source, elektraCopyF
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
-	set_bit (dest->flags, KEY_FLAG_SYNC);
+	set_bit (dest->flags, ELEKTRA_KEY_FLAG_SYNC);
 
 	// free old resources of destination
-	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
-	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
-	if (test_bit (flags, KEY_CP_VALUE) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
-	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
+	if (test_bit (flags, ELEKTRA_KEY_CP_NAME) && !test_bit (orig.flags, ELEKTRA_KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
+	if (test_bit (flags, ELEKTRA_KEY_CP_NAME) && !test_bit (orig.flags, ELEKTRA_KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
+	if (test_bit (flags, ELEKTRA_KEY_CP_VALUE) && !test_bit (orig.flags, ELEKTRA_KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
+	if (test_bit (flags, ELEKTRA_KEY_CP_META)) ksDel (orig.meta);
 
 	return dest;
 
@@ -463,9 +463,9 @@ memerror:
 
 static void keyClearNameValue (ElektraKey * key)
 {
-	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
-	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
-	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
+	if (key->key && !test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	if (key->ukey && !test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
+	if (key->data.v && !test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 }
 
 
@@ -505,7 +505,7 @@ int keyDel (ElektraKey * key)
 		return key->refs;
 	}
 
-	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+	int keyInMmap = test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_STRUCT);
 
 	keyClearNameValue (key);
 
@@ -563,14 +563,14 @@ int keyClear (ElektraKey * key)
 
 	ref = key->refs;
 
-	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+	int keyStructInMmap = test_bit (key->flags, ELEKTRA_KEY_FLAG_MMAP_STRUCT);
 
 	keyClearNameValue (key);
 
 	ksDel (key->meta);
 
 	keyInit (key);
-	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
+	if (keyStructInMmap) key->flags |= ELEKTRA_KEY_FLAG_MMAP_STRUCT;
 
 	keySetName (key, "/");
 
@@ -730,7 +730,7 @@ uint16_t keyGetRef (const ElektraKey * key)
 int keyLock (ElektraKey * key, elektraLockFlags what)
 {
 	if (!key) return -1;
-	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
+	what &= (ELEKTRA_KEY_LOCK_NAME | ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META);
 	what >>= 16; // to KEY_FLAG_RO_xyz
 	int ret = test_bit (~key->flags, what);
 	set_bit (key->flags, what);
@@ -754,7 +754,7 @@ int keyLock (ElektraKey * key, elektraLockFlags what)
 int keyIsLocked (const ElektraKey * key, elektraLockFlags what)
 {
 	if (!key) return -1;
-	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
+	what &= (ELEKTRA_KEY_LOCK_NAME | ELEKTRA_KEY_LOCK_VALUE | ELEKTRA_KEY_LOCK_META);
 	what >>= 16; // to KEY_FLAG_RO_xyz
 	return (test_bit (key->flags, what) << 16);
 }

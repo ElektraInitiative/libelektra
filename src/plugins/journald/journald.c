@@ -25,13 +25,13 @@ int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned
 		ksAppend (
 			returned,
 			n = ksNew (30,
-				   keyNew ("system:/elektra/modules/journald", KEY_VALUE, "journald plugin waits for your orders", KEY_END),
-				   keyNew ("system:/elektra/modules/journald/exports", KEY_END),
-				   keyNew ("system:/elektra/modules/journald/exports/get", KEY_FUNC, elektraJournaldGet, KEY_END),
-				   keyNew ("system:/elektra/modules/journald/exports/set", KEY_FUNC, elektraJournaldSet, KEY_END),
-				   keyNew ("system:/elektra/modules/journald/exports/error", KEY_FUNC, elektraJournaldError, KEY_END),
+				   keyNew ("system:/elektra/modules/journald", ELEKTRA_KEY_VALUE, "journald plugin waits for your orders", ELEKTRA_KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports", ELEKTRA_KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports/get", ELEKTRA_KEY_FUNC, elektraJournaldGet, ELEKTRA_KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports/set", ELEKTRA_KEY_FUNC, elektraJournaldSet, ELEKTRA_KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports/error", ELEKTRA_KEY_FUNC, elektraJournaldError, ELEKTRA_KEY_END),
 #include "readme_journald.c"
-				   keyNew ("system:/elektra/modules/journald/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				   keyNew ("system:/elektra/modules/journald/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END));
 		ksDel (n);
 		return 1;
 	}

@@ -38,7 +38,7 @@ void iterate_while (ElektraKeyset * ks)
 
 int main (void)
 {
-	ElektraKeyset * ks = ksNew (20, keyNew ("user:/name1", KEY_END), keyNew ("user:/name2", KEY_END), keyNew ("user:/name3", KEY_END), KS_END);
+	ElektraKeyset * ks = ksNew (20, keyNew ("user:/name1", ELEKTRA_KEY_END), keyNew ("user:/name2", ELEKTRA_KEY_END), keyNew ("user:/name3", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 	iterate_while (ks);
 	iterate_for (ks);
 }

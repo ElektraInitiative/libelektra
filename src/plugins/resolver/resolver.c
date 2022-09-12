@@ -82,19 +82,19 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, ElektraKey * 
 
 	switch (keyGetNamespace (parentKey))
 	{
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		return &pks->spec;
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		return &pks->dir;
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		return &pks->user;
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		return &pks->system;
-	case KEY_NS_PROC:
-	case KEY_NS_NONE:
-	case KEY_NS_META:
-	case KEY_NS_CASCADING:
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_PROC:
+	case ELEKTRA_NS_NONE:
+	case ELEKTRA_NS_META:
+	case ELEKTRA_NS_CASCADING:
+	case ELEKTRA_NS_DEFAULT:
 		return 0;
 	}
 
@@ -300,26 +300,26 @@ static int needsMapping (ElektraKey * testKey, ElektraKey * errorKey)
 
 	elektraNamespace ns = keyGetNamespace (errorKey);
 
-	if (ns == KEY_NS_NONE) return 1;      // for unit tests
-	if (ns == KEY_NS_CASCADING) return 1; // init all namespaces for cascading
+	if (ns == ELEKTRA_NS_NONE) return 1;      // for unit tests
+	if (ns == ELEKTRA_NS_CASCADING) return 1; // init all namespaces for cascading
 
 	return ns == keyGetNamespace (testKey); // otherwise only init if same ns
 }
 
 static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 {
-	ElektraKey * testKey = keyNew ("/", KEY_END);
+	ElektraKey * testKey = keyNew ("/", ELEKTRA_KEY_END);
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:
 	ElektraResolved * resolved = NULL;
-	switch (KEY_NS_SPEC)
+	switch (ELEKTRA_NS_SPEC)
 	{
-	case KEY_NS_SPEC:
+	case ELEKTRA_NS_SPEC:
 		keySetName (testKey, "spec:/");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SPEC, (p->spec).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_SPEC, (p->spec).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
 									    errorKey)) == NULL)
 			{
 				resolverClose (p);
@@ -337,11 +337,11 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 		}
 		// FALLTHROUGH
 
-	case KEY_NS_DIR:
+	case ELEKTRA_NS_DIR:
 		keySetName (testKey, "dir:/");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_DIR, (p->dir).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_DIR, (p->dir).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
 									    errorKey)) == NULL)
 			{
 				resolverClose (p);
@@ -358,11 +358,11 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 			}
 		}
 	// FALLTHROUGH
-	case KEY_NS_USER:
+	case ELEKTRA_NS_USER:
 		keySetName (testKey, "user:/");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_USER, (p->user).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_USER, (p->user).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
 									    errorKey)) == NULL)
 			{
 				resolverClose (p);
@@ -380,11 +380,11 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 			}
 		}
 	// FALLTHROUGH
-	case KEY_NS_SYSTEM:
+	case ELEKTRA_NS_SYSTEM:
 		keySetName (testKey, "system:/");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SYSTEM, (p->system).path,
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (ELEKTRA_NS_SYSTEM, (p->system).path,
 									    ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
 			{
 				resolverClose (p);
@@ -402,11 +402,11 @@ static int mapFilesForNamespaces (resolverHandles * p, ElektraKey * errorKey)
 			}
 		}
 	// FALLTHROUGH
-	case KEY_NS_PROC:
-	case KEY_NS_NONE:
-	case KEY_NS_META:
-	case KEY_NS_CASCADING:
-	case KEY_NS_DEFAULT:
+	case ELEKTRA_NS_PROC:
+	case ELEKTRA_NS_NONE:
+	case ELEKTRA_NS_META:
+	case ELEKTRA_NS_CASCADING:
+	case ELEKTRA_NS_DEFAULT:
 		break;
 	}
 	keyDel (testKey);
@@ -519,7 +519,7 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, ElektraKey * errorKey ELEK
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	ElektraKey * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, ELEKTRA_KEY_END);
 
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
@@ -616,7 +616,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, ElektraKeyset * returned, El
 	if (global != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modification times");
-		ElektraKey * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
+		ElektraKey * time = keyNew (name, ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (struct timespec), ELEKTRA_KEY_VALUE, &(pk->mtime), ELEKTRA_KEY_END);
 		ksAppendKey (global, time);
 	}
 

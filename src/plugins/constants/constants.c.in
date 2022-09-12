@@ -20,7 +20,7 @@ int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returne
 
 static void elektraAddKeyValue (ElektraKeyset * ks, ElektraKey * parentKey, const char * key, const char * value)
 {
-	ElektraKey * k = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * k = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (k, key);
 	keySetString (k, value);
 	ksAppendKey (ks, k);
@@ -28,33 +28,33 @@ static void elektraAddKeyValue (ElektraKeyset * ks, ElektraKey * parentKey, cons
 
 static void elektraAddConstants (ElektraKeyset * ks, ElektraKey * parentKey)
 {
-	ElektraKey * key = keyDup (parentKey, KEY_CP_ALL);
+	ElektraKey * key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	ksAppendKey (ks, key);
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "version");
 	keySetString (key, "Duplicate of version info also found below system:/elektra/version");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (key, KEY_CP_ALL);
+	key = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "version/KDB_VERSION");
 	keySetString (key, "@KDB_VERSION@");
 	ksAppendKey (ks, key);
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "version/KDB_VERSION_MAJOR");
 	keySetString (key, "@KDB_VERSION_MAJOR@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "version/KDB_VERSION_MINOR");
 	keySetString (key, "@KDB_VERSION_MINOR@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "version/KDB_VERSION_PATCH");
 	keySetString (key, "@KDB_VERSION_PATCH@");
 	ksAppendKey (ks, key);
@@ -65,31 +65,31 @@ static void elektraAddConstants (ElektraKeyset * ks, ElektraKey * parentKey)
 	elektraAddKeyValue (ks, parentKey, "version/SO_VERSION_GETENV", "@SO_VERSION_GETENV@");
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake");
 	keySetString (key, "All cmake variables as defined in the file cmake/ElektraCache.cmake");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/PLUGINS");
 	keySetString (key, "@ADDED_PLUGINS@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TOOLS");
 	keySetString (key, "@TOOLS@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/KDB_DB_SYSTEM");
 	keySetString (key, "@KDB_DB_SYSTEM@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/KDB_DB_HOME");
 	keySetString (key, "@KDB_DB_HOME@");
 	ksAppendKey (ks, key);
@@ -101,55 +101,55 @@ static void elektraAddConstants (ElektraKeyset * ks, ElektraKey * parentKey)
 	elektraAddKeyValue (ks, parentKey, "cmake/KDB_DEFAULT_RESOLVER", "@KDB_DEFAULT_RESOLVER@");
 	elektraAddKeyValue (ks, parentKey, "cmake/KDB_DEFAULT_STORAGE", "@KDB_DEFAULT_STORAGE@");
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/KDB_DB_USER");
 	keySetString (key, "@KDB_DB_USER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/GTEST_ROOT");
 	keySetString (key, "@GTEST_ROOT@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/BUILD_SHARED");
 	keySetString (key, "@BUILD_SHARED@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/BUILD_FULL");
 	keySetString (key, "@BUILD_FULL@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/BUILD_STATIC");
 	keySetString (key, "@BUILD_STATIC@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/BINDINGS");
 	keySetString (key, "@ADDED_BINDINGS@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_INCLUDE_FOLDER");
 	keySetString (key, "@TARGET_INCLUDE_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_CMAKE_FOLDER");
 	keySetString (key, "@TARGET_CMAKE_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_PLUGIN_FOLDER");
 	keySetString (key, "@TARGET_PLUGIN_FOLDER@");
 	ksAppendKey (ks, key);
@@ -162,7 +162,7 @@ static void elektraAddConstants (ElektraKeyset * ks, ElektraKey * parentKey)
 	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_DATA_FOLDER", BUILTIN_DATA_FOLDER);
 	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_EXEC_FOLDER", BUILTIN_EXEC_FOLDER);
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_PKGCONFIG_FOLDER");
 	keySetString (key, "@TARGET_PKGCONFIG_FOLDER@");
 	ksAppendKey (ks, key);
@@ -172,168 +172,168 @@ static void elektraAddConstants (ElektraKeyset * ks, ElektraKey * parentKey)
 	elektraAddKeyValue (ks, parentKey, "cmake/TARGET_DOCUMENTATION_MAN_FOLDER", "@TARGET_DOCUMENTATION_MAN_FOLDER@");
 	elektraAddKeyValue (ks, parentKey, "cmake/TARGET_DOCUMENTATION_LATEX_FOLDER", "@TARGET_DOCUMENTATION_LATEX_FOLDER@");
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_TOOL_EXEC_FOLDER");
 	keySetString (key, "@TARGET_TOOL_EXEC_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_TOOL_DATA_FOLDER");
 	keySetString (key, "@TARGET_TOOL_DATA_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_TEST_DATA_FOLDER");
 	keySetString (key, "@TARGET_TEST_DATA_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/TARGET_TEMPLATE_FOLDER");
 	keySetString (key, "@TARGET_TEMPLATE_FOLDER@");
 	ksAppendKey (ks, key);
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/LIB_SUFFIX");
 	keySetString (key, "@LIB_SUFFIX@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "cmake/CMAKE_INSTALL_PREFIX");
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "compiler");
 	keySetString (key, "Flags defined for compilers as defined in ElektraCompiling.cmake");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "compiler/c_flags");
 	keySetString (key, "@C_FLAGS_ESCAPED@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "compiler/id");
 	keySetString (key, "@CMAKE_CXX_COMPILER_ID@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "compiler/coverage");
 	keySetString (key, "@ENABLE_COVERAGE@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "compiler/cxx_flags");
 	keySetString (key, "@CXX_FLAGS_ESCAPED@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "compiler/pic_flags");
 	keySetString (key, "@CMAKE_PIC_FLAGS@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "compiler/static_flags");
 	keySetString (key, "@CMAKE_STATIC_FLAGS@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "macros");
 	keySetString (key, "Define the macros from kdbos.h and kdbconfig.h");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "macros/KDB_MAX_PATH_LENGTH");
 	keySetString (key, ELEKTRA_STRINGIFY (KDB_MAX_PATH_LENGTH));
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "macros/KDB_FILE_MODE");
 	keySetString (key, ELEKTRA_STRINGIFY (KDB_FILE_MODE));
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "macros/KDB_DIR_MODE");
 	keySetString (key, ELEKTRA_STRINGIFY (KDB_DIR_MODE));
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "macros/KDB_PATH_SEPARATOR");
 	keySetString (key, ELEKTRA_STRINGIFY (KDB_PATH_SEPARATOR));
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "macros/KDB_PATH_ESCAPE");
 	keySetString (key, ELEKTRA_STRINGIFY (KDB_PATH_ESCAPE));
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package");
 	keySetString (key, "Infos about the package as it is installed");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/prefix");
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/libdir");
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/includedir");
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/plugindir");
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/@TARGET_PLUGIN_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/tool_execdir");
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/templatedir");
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/libs");
 	keySetString (key, "-L@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@ -lelektra");
 	ksAppendKey (ks, key);
 
 
-	key = keyDup (parentKey, KEY_CP_ALL);
+	key = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 	keyAddName (key, "package/cflags");
 	keySetString (key, "-I@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@");
 	ksAppendKey (ks, key);
@@ -345,14 +345,14 @@ int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * ks, Ele
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/constants"))
 	{
 		ksAppendKey (ks,
-			     keyNew ("system:/elektra/modules/constants", KEY_VALUE, "constants plugin waits for your orders", KEY_END));
-		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports", KEY_END));
-		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/get", KEY_FUNC, elektraConstantsGet, KEY_END));
-		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/set", KEY_FUNC, elektraConstantsSet, KEY_END));
+			     keyNew ("system:/elektra/modules/constants", ELEKTRA_KEY_VALUE, "constants plugin waits for your orders", ELEKTRA_KEY_END));
+		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports", ELEKTRA_KEY_END));
+		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/get", ELEKTRA_KEY_FUNC, elektraConstantsGet, ELEKTRA_KEY_END));
+		ksAppendKey (ks, keyNew ("system:/elektra/modules/constants/exports/set", ELEKTRA_KEY_FUNC, elektraConstantsSet, ELEKTRA_KEY_END));
 		ElektraKeyset * contract =
 			ksNew (30,
 #include "readme_constants.c"
-			       keyNew ("system:/elektra/modules/constants/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/constants/infos/version", ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END), ELEKTRA_KS_END);
 		ksAppend (ks, contract);
 		ksDel (contract);
 		return 1;
@@ -365,7 +365,7 @@ int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * ks, Ele
 
 int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, ElektraKeyset * returned, ElektraKey * parentKey)
 {
-	ElektraKeyset * info = ksNew (0, KS_END);
+	ElektraKeyset * info = ksNew (0, ELEKTRA_KS_END);
 	elektraAddConstants (info, parentKey);
 	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;

@@ -29,7 +29,7 @@ int needsSharedData (ElektraKey * k)
 void o (ElektraKeyset * ks)
 {
 	ElektraKey * current;
-	ElektraKey * shared = keyNew ("/", KEY_END);
+	ElektraKey * shared = keyNew ("/", ELEKTRA_KEY_END);
 	keySetMeta (shared, "shared1", "this metadata should be shared among many keys");
 	keySetMeta (shared, "shared2", "this metadata should be shared among many keys also");
 	keySetMeta (shared, "shared3", "this metadata should be shared among many keys too");
@@ -46,13 +46,13 @@ void o (ElektraKeyset * ks)
 
 int main (void)
 {
-	ElektraKey * k = keyNew ("user:/key", KEY_END);
-	copy = keyNew ("user:/copy", KEY_END);
+	ElektraKey * k = keyNew ("user:/key", ELEKTRA_KEY_END);
+	copy = keyNew ("user:/copy", ELEKTRA_KEY_END);
 	l (k);
 	keyDel (k);
 	keyDel (copy);
 
-	ElektraKeyset * ks = ksNew (20, KS_END);
+	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
 	o (ks);
 	ksDel (ks);
 }

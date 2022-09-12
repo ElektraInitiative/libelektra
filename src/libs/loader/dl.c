@@ -47,7 +47,7 @@ struct _Module
 
 int elektraModulesInit (ElektraKeyset * modules, ElektraKey * error ELEKTRA_UNUSED)
 {
-	ksAppendKey (modules, keyNew ("system:/elektra/modules", KEY_END));
+	ksAppendKey (modules, keyNew ("system:/elektra/modules", ELEKTRA_KEY_END));
 
 	return 0;
 }
@@ -60,7 +60,7 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 	static const char elektraPluginPostfix[] = ".so";
 #endif
 
-	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", KEY_END);
+	ElektraKey * moduleKey = keyNew ("system:/elektra/modules", ELEKTRA_KEY_END);
 	keyAddBaseName (moduleKey, name);
 	ElektraKey * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
@@ -113,7 +113,7 @@ elektraPluginFactory elektraModulesLoad (ElektraKeyset * modules, const char * n
 
 int elektraModulesClose (ElektraKeyset * modules, ElektraKey * errorKey)
 {
-	ElektraKey * root = ksLookupByName (modules, "system:/elektra/modules", KDB_O_POP);
+	ElektraKey * root = ksLookupByName (modules, "system:/elektra/modules", ELEKTRA_KDB_O_POP);
 	ElektraKey * cur;
 	ElektraKeyset * newModules = 0;
 	int ret = 0;
@@ -132,7 +132,7 @@ int elektraModulesClose (ElektraKeyset * modules, ElektraKey * errorKey)
 			if (ret != -1)
 			{
 				/* First failure, start saving handles where close did not work */
-				newModules = ksNew (0, KS_END);
+				newModules = ksNew (0, ELEKTRA_KS_END);
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;

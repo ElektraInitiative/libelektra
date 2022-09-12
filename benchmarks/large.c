@@ -18,14 +18,14 @@ void benchmarkOpen (void)
 
 void benchmarkInread (void)
 {
-	ElektraKeyset * n = ksNew (0, KS_END);
+	ElektraKeyset * n = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (kdb, n, key);
 	ksDel (n);
 }
 
 void benchmarkReadin (void)
 {
-	ElektraKeyset * n = ksNew (0, KS_END);
+	ElektraKeyset * n = ksNew (0, ELEKTRA_KS_END);
 	kdbGet (kdb, n, key);
 	ksDel (n);
 }
@@ -75,7 +75,7 @@ void benchmarkClose (void)
 
 int main (void)
 {
-	key = keyNew (KEY_ROOT, KEY_END);
+	key = keyNew (KEY_ROOT, ELEKTRA_KEY_END);
 
 	timeInit ();
 	benchmarkCreate ();

@@ -13,27 +13,27 @@
 
 ksNew (30,
 		keyNew ("system:/elektra/modules/glob",
-			KEY_VALUE, "glob plugin waits for your orders", KEY_END),
-		keyNew ("system:/elektra/modules/glob/exports", KEY_END),
+			ELEKTRA_KEY_VALUE, "glob plugin waits for your orders", ELEKTRA_KEY_END),
+		keyNew ("system:/elektra/modules/glob/exports", ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/glob/exports/open",
-			KEY_FUNC, elektraGlobOpen,
-			KEY_END),
+			ELEKTRA_KEY_FUNC, elektraGlobOpen,
+			ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/glob/exports/close",
-			KEY_FUNC, elektraGlobClose,
-			KEY_END),
+			ELEKTRA_KEY_FUNC, elektraGlobClose,
+			ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/glob/exports/get",
-			KEY_FUNC, elektraGlobGet,
-			KEY_END),
+			ELEKTRA_KEY_FUNC, elektraGlobGet,
+			ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/glob/exports/set",
-			KEY_FUNC, elektraGlobSet,
-			KEY_END),
+			ELEKTRA_KEY_FUNC, elektraGlobSet,
+			ELEKTRA_KEY_END),
 		keyNew ("system:/elektra/modules/glob/exports/elektraGlobMatch",
-			KEY_FUNC, elektraGlobMatch,
-			KEY_END),
+			ELEKTRA_KEY_FUNC, elektraGlobMatch,
+			ELEKTRA_KEY_END),
 #include "readme_glob.c"
 		keyNew ("system:/elektra/modules/glob/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END);
+			ELEKTRA_KEY_VALUE, PLUGINVERSION, ELEKTRA_KEY_END),
+		ELEKTRA_KS_END);
 
 // clang-format on
 

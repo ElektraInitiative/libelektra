@@ -306,7 +306,7 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO_META) return -1;
+	if (dest->flags & ELEKTRA_KEY_FLAG_RO_META) return -1;
 
 	ret = (ElektraKey *) keyGetMeta (source, metaName);
 
@@ -316,7 +316,7 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 		if (dest->meta)
 		{
 			ElektraKey * r;
-			r = ksLookup (dest->meta, ret, KDB_O_POP);
+			r = ksLookup (dest->meta, ret, ELEKTRA_KDB_O_POP);
 			if (r)
 			{
 				/*It was already there, so lets drop that one*/
@@ -330,7 +330,7 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 	if (dest->meta)
 	{
 		ElektraKey * r;
-		r = ksLookup (dest->meta, ret, KDB_O_POP);
+		r = ksLookup (dest->meta, ret, ELEKTRA_KDB_O_POP);
 		if (r && r != ret)
 		{
 			/*It was already there, so lets drop that one*/
@@ -340,7 +340,7 @@ int keyCopyMeta (ElektraKey * dest, const ElektraKey * source, const char * meta
 	else
 	{
 		/*Create a new place for meta information.*/
-		dest->meta = ksNew (0, KS_END);
+		dest->meta = ksNew (0, ELEKTRA_KS_END);
 		if (!dest->meta)
 		{
 			return -1;
@@ -399,7 +399,7 @@ int keyCopyAllMeta (ElektraKey * dest, const ElektraKey * source)
 {
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO_META) return -1;
+	if (dest->flags & ELEKTRA_KEY_FLAG_RO_META) return -1;
 
 	if (ksGetSize (source->meta) > 0)
 	{
@@ -461,11 +461,11 @@ const ElektraKey * keyGetMeta (const ElektraKey * key, const char * metaName)
 
 	if (strncmp (metaName, "meta:/", sizeof ("meta:/") - 1) == 0)
 	{
-		search = keyNew (metaName, KEY_END);
+		search = keyNew (metaName, ELEKTRA_KEY_END);
 	}
 	else
 	{
-		search = keyNew ("meta:/", KEY_END);
+		search = keyNew ("meta:/", ELEKTRA_KEY_END);
 		keyAddName (search, metaName);
 	}
 
@@ -521,7 +521,7 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 	ssize_t metaStringSize = 0;
 
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO_META) return -1;
+	if (key->flags & ELEKTRA_KEY_FLAG_RO_META) return -1;
 	if (!metaName) return -1;
 	metaNameSize = elektraStrLen (metaName);
 	if (metaNameSize == -1) return -1;
@@ -532,11 +532,11 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 
 	if (strncmp (metaName, "meta:/", sizeof ("meta:/") - 1) == 0)
 	{
-		toSet = keyNew (metaName, KEY_END);
+		toSet = keyNew (metaName, ELEKTRA_KEY_END);
 	}
 	else
 	{
-		toSet = keyNew ("meta:/", KEY_END);
+		toSet = keyNew ("meta:/", ELEKTRA_KEY_END);
 		keyAddName (toSet, metaName);
 	}
 	if (!toSet) return -1;
@@ -545,12 +545,12 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 	if (key->meta)
 	{
 		ElektraKey * ret;
-		ret = ksLookup (key->meta, toSet, KDB_O_POP);
+		ret = ksLookup (key->meta, toSet, ELEKTRA_KDB_O_POP);
 		if (ret)
 		{
 			/*It was already there, so lets drop that one*/
 			keyDel (ret);
-			key->flags |= KEY_FLAG_SYNC;
+			key->flags |= ELEKTRA_KEY_FLAG_SYNC;
 		}
 	}
 
@@ -566,8 +566,8 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 			return -1;
 		}
 
-		if (toSet->data.v && !test_bit (toSet->flags, KEY_FLAG_MMAP_DATA)) elektraFree (toSet->data.v);
-		clear_bit (toSet->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
+		if (toSet->data.v && !test_bit (toSet->flags, ELEKTRA_KEY_FLAG_MMAP_DATA)) elektraFree (toSet->data.v);
+		clear_bit (toSet->flags, (keyflag_t) ELEKTRA_KEY_FLAG_MMAP_DATA);
 		toSet->data.c = metaStringDup;
 		toSet->dataSize = metaStringSize;
 	}
@@ -582,7 +582,7 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 	if (!key->meta)
 	{
 		/*Create a new place for meta information.*/
-		key->meta = ksNew (0, KS_END);
+		key->meta = ksNew (0, ELEKTRA_KS_END);
 		if (!key->meta)
 		{
 			keyDel (toSet);
@@ -590,12 +590,12 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 		}
 	}
 
-	set_bit (toSet->flags, KEY_FLAG_RO_NAME);
-	set_bit (toSet->flags, KEY_FLAG_RO_VALUE);
-	set_bit (toSet->flags, KEY_FLAG_RO_META);
+	set_bit (toSet->flags, ELEKTRA_KEY_FLAG_RO_NAME);
+	set_bit (toSet->flags, ELEKTRA_KEY_FLAG_RO_VALUE);
+	set_bit (toSet->flags, ELEKTRA_KEY_FLAG_RO_META);
 
 	ksAppendKey (key->meta, toSet);
-	key->flags |= KEY_FLAG_SYNC;
+	key->flags |= ELEKTRA_KEY_FLAG_SYNC;
 	return metaStringSize;
 }
 
@@ -636,7 +636,7 @@ ssize_t keySetMeta (ElektraKey * key, const char * metaName, const char * newMet
 ElektraKeyset * keyMeta (ElektraKey * key)
 {
 	if (!key) return 0;
-	if (!key->meta) key->meta = ksNew (0, KS_END);
+	if (!key->meta) key->meta = ksNew (0, ELEKTRA_KS_END);
 
 	return key->meta;
 }

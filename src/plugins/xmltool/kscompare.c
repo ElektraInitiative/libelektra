@@ -46,7 +46,7 @@ static ElektraKey * commonParent (ElektraKey * firstKey, ElektraKey * secondKey,
 	char * commonPrefix = strndup (firstName, commonLength);
 
 	// ... and adjust it to a common parent.
-	ElektraKey * common = keyNew (commonPrefix, KEY_END);
+	ElektraKey * common = keyNew (commonPrefix, ELEKTRA_KEY_END);
 	if (commonPrefix[commonLength - 1] != '/')
 	{
 		keySetBaseName (common, NULL);

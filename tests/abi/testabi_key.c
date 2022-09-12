@@ -68,31 +68,31 @@ static void test_keyNewSpecial (void)
 {
 	printf ("Test special key creation\n");
 
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (k), "/");
 	keyDel (k);
 
-	k = keyNew (0, KEY_END);
+	k = keyNew (0, ELEKTRA_KEY_END);
 	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
-	k = keyNew ("", KEY_END);
+	k = keyNew ("", ELEKTRA_KEY_END);
 	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
-	k = keyNew ("invalid", KEY_END);
+	k = keyNew ("invalid", ELEKTRA_KEY_END);
 	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
-	k = keyNew ("other invalid", KEY_END);
+	k = keyNew ("other invalid", ELEKTRA_KEY_END);
 	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
-	k = keyNew ("system spaces", KEY_END);
+	k = keyNew ("system spaces", ELEKTRA_KEY_END);
 	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
 
-	k = keyNew ("system:/bin", KEY_BINARY, KEY_VALUE, "a 2d\0b", KEY_END);
+	k = keyNew ("system:/bin", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_VALUE, "a 2d\0b", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyValue (k), "a 2d");
 	succeed_if (keyGetValueSize (k) == sizeof ("a 2d"), "no KEY_SIZE given, so bin is truncated");
 	succeed_if (keyIsBinary (k), "not a binary key");
@@ -111,30 +111,30 @@ static void test_keyNewSystem (void)
 	printf ("Test system key creation\n");
 
 	// Empty key
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a new empty key");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete empty key");
 
 	// Key with name
-	key = keyNew ("system:/sw/test", KEY_END);
+	key = keyNew ("system:/sw/test", ELEKTRA_KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name");
 	succeed_if_same_string (keyName (key), "system:/sw/test");
-	keyCopy (key, 0, KEY_CP_NAME);
+	keyCopy (key, 0, ELEKTRA_KEY_CP_NAME);
 	succeed_if_same_string (keyName (key), "/");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name");
 
 	// Key with name
-	key = keyNew ("system:/sw/test", KEY_END);
+	key = keyNew ("system:/sw/test", ELEKTRA_KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name");
 	succeed_if_same_string (keyName (key), "system:/sw/test");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name");
 
 	// Key with name + value
-	key = keyNew ("system:/sw/test", KEY_VALUE, "test", KEY_END);
+	key = keyNew ("system:/sw/test", ELEKTRA_KEY_VALUE, "test", ELEKTRA_KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if_same_string (keyValue (key), "test");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + value");
-	key = keyNew ("system:/valid/there", KEY_BINARY, KEY_SIZE, sizeof (array), KEY_VALUE, array, KEY_END);
+	key = keyNew ("system:/valid/there", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (array), ELEKTRA_KEY_VALUE, array, ELEKTRA_KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if (keyIsBinary (key), "Could not set type to binary");
 	succeed_if (keyGetValueSize (key) == sizeof (array), "Value size not correct");
@@ -145,16 +145,16 @@ static void test_keyNewSystem (void)
 	elektraFree (getBack);
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + owner");
 
-	key = keyNew ("system:/", KEY_END);
+	key = keyNew ("system:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "system:/");
 	succeed_if (keyGetNameSize (key) == 9, "empty name size");
 	succeed_if (keyValue (keyGetMeta (key, "owner")) == 0, "owner not null");
 	keyDel (key);
 
 	// testing multiple values at once
-	k1 = keyNew ("system:/1", KEY_VALUE, "singlevalue", KEY_END);
-	k2 = keyNew ("system:/2", KEY_VALUE, "myvalue", KEY_END);
-	k3 = keyNew ("system:/3", KEY_VALUE, "syskey", KEY_END);
+	k1 = keyNew ("system:/1", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END);
+	k2 = keyNew ("system:/2", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END);
+	k3 = keyNew ("system:/3", ELEKTRA_KEY_VALUE, "syskey", ELEKTRA_KEY_END);
 	succeed_if (k1 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if (keyIsString (k1), "keyNew: Default key value isn't set to string");
 	succeed_if_same_string (keyValue (k1), "singlevalue");
@@ -180,9 +180,9 @@ static void test_keyNewUser (void)
 
 	printf ("Test user key creation\n");
 	// testing multiple values at once
-	k1 = keyNew ("user:/1", KEY_VALUE, "singlevalue", KEY_END);
-	k2 = keyNew ("user:/2", KEY_VALUE, "myvalue", KEY_END);
-	k3 = keyNew ("user:/3", KEY_VALUE, "syskey", KEY_END);
+	k1 = keyNew ("user:/1", ELEKTRA_KEY_VALUE, "singlevalue", ELEKTRA_KEY_END);
+	k2 = keyNew ("user:/2", ELEKTRA_KEY_VALUE, "myvalue", ELEKTRA_KEY_END);
+	k3 = keyNew ("user:/3", ELEKTRA_KEY_VALUE, "syskey", ELEKTRA_KEY_END);
 	succeed_if (k1 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if (keyIsString (k1), "keyNew: Default key value isn't set to string");
 	succeed_if_same_string (keyValue (k1), "singlevalue");
@@ -199,7 +199,7 @@ static void test_keyNewUser (void)
 	succeed_if (keyDel (k2) == 0, "keyDel: Unable to delete key with name + value");
 	succeed_if (keyDel (k3) == 0, "keyDel: Unable to delete key with name + value");
 
-	k1 = keyNew ("invalid", KEY_END);
+	k1 = keyNew ("invalid", ELEKTRA_KEY_END);
 	succeed_if (k1 == 0, "should not construct key on invalid names");
 }
 
@@ -207,8 +207,8 @@ static void test_keyReference (void)
 {
 	printf ("Test key reference\n");
 
-	ElektraKey * key = keyNew ("user:/key", KEY_END);
-	ElektraKey * c = keyNew ("user:/c", KEY_END);
+	ElektraKey * key = keyNew ("user:/key", ELEKTRA_KEY_END);
+	ElektraKey * c = keyNew ("user:/c", ELEKTRA_KEY_END);
 	ElektraKey * d;
 	ElektraKeyset *ks1, *ks2;
 
@@ -227,26 +227,26 @@ static void test_keyReference (void)
 	succeed_if (keyIncRef (key) == 4, "keyIncRef return value");
 	succeed_if (keyGetRef (key) == 4, "After keyIncRef key reference");
 
-	d = keyDup (key, KEY_CP_ALL);
+	d = keyDup (key, ELEKTRA_KEY_CP_ALL);
 	succeed_if (keyGetRef (d) == 0, "After keyDup key reference");
 	succeed_if (keyIncRef (d) == 1, "keyIncRef return value");
 	succeed_if (keyGetRef (key) == 4, "Reference should not change");
 	succeed_if (keyDecRef (d) == 0, "decrement key");
 	succeed_if (keyDel (d) == 0, "last keyDel d, key exist");
 
-	keyCopy (c, key, KEY_CP_ALL);
+	keyCopy (c, key, ELEKTRA_KEY_CP_ALL);
 	succeed_if (keyGetRef (c) == 0, "After keyCopy key reference");
 	succeed_if (keyIncRef (c) == 1, "keyIncRef return value");
 	succeed_if (keyGetRef (key) == 4, "Reference should not change");
 
-	keyCopy (c, key, KEY_CP_ALL);
+	keyCopy (c, key, ELEKTRA_KEY_CP_ALL);
 	succeed_if (keyGetRef (c) == 1, "After keyCopy key reference");
 	succeed_if (keyDecRef (c) == 0, "keyDecRef return value");
 	succeed_if (keyGetRef (key) == 4, "Reference should not change");
 
 	succeed_if (keyIncRef (c) == 1, "keyIncRef return value");
 	succeed_if (keyIncRef (c) == 2, "keyIncRef return value");
-	keyCopy (c, key, KEY_CP_ALL);
+	keyCopy (c, key, ELEKTRA_KEY_CP_ALL);
 	succeed_if (keyGetRef (c) == 2, "After keyCopy key reference");
 	succeed_if (keyDecRef (c) == 1, "keyDecRef return value");
 	succeed_if (keyDecRef (c) == 0, "keyDecRef return value");
@@ -266,7 +266,7 @@ static void test_keyReference (void)
 	succeed_if (keyDel (key) == 0, "last keyDel key, key exist");
 
 	/* From examples in ksNew () */
-	key = keyNew ("/", KEY_END); // ref counter 0
+	key = keyNew ("/", ELEKTRA_KEY_END); // ref counter 0
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	keyIncRef (key); // ref counter of key 1
 	succeed_if (keyGetRef (key) == 1, "reference counter");
@@ -276,9 +276,9 @@ static void test_keyReference (void)
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	keyDel (key); // key is now deleted
 
-	ks1 = ksNew (0, KS_END);
-	ks2 = ksNew (0, KS_END);
-	key = keyNew ("user:/key", KEY_END); // ref counter 0
+	ks1 = ksNew (0, ELEKTRA_KS_END);
+	ks2 = ksNew (0, ELEKTRA_KS_END);
+	key = keyNew ("user:/key", ELEKTRA_KEY_END); // ref counter 0
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	ksAppendKey (ks1, key); // ref counter of key 1
 	succeed_if (keyGetRef (key) == 1, "reference counter");
@@ -288,7 +288,7 @@ static void test_keyReference (void)
 	succeed_if (keyGetRef (key) == 1, "reference counter");
 	ksDel (ks2); // key is now deleted
 
-	key = keyNew ("/", KEY_END); // ref counter 0
+	key = keyNew ("/", ELEKTRA_KEY_END); // ref counter 0
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	keyIncRef (key); // ref counter of key 1
 	succeed_if (keyGetRef (key) == 1, "reference counter");
@@ -306,15 +306,15 @@ static void test_keyReference (void)
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	keyDel (key); // key is now deleted
 
-	ElektraKey * k = keyNew ("system:/proper_name", KEY_END); // ref counter = 0
+	ElektraKey * k = keyNew ("system:/proper_name", ELEKTRA_KEY_END); // ref counter = 0
 	succeed_if (keyGetRef (k) == 0, "ref should be zero");
-	ElektraKeyset * ks = ksNew (1, k, KS_END);
+	ElektraKeyset * ks = ksNew (1, k, ELEKTRA_KS_END);
 	succeed_if (keyGetRef (k) == 1, "ref should be one");
 	succeed_if (keyDel (k) == 1, "key will not be deleted, because its in the keyset");
 	succeed_if (keyGetRef (k) == 1, "ref should be one");
 	succeed_if (ksDel (ks) == 0, "could not del"); // now the key will be deleted
 
-	key = keyNew ("/", KEY_END); // ref counter 0
+	key = keyNew ("/", ELEKTRA_KEY_END); // ref counter 0
 	while (keyGetRef (key) < UINT16_MAX - 1)
 		keyIncRef (key);
 	succeed_if (keyGetRef (key) == UINT16_MAX - 1, "reference counter");
@@ -342,7 +342,7 @@ static void test_keyName (void)
 
 	printf ("Test Key Name\n");
 
-	key = keyNew (testName, KEY_END);
+	key = keyNew (testName, ELEKTRA_KEY_END);
 	succeed_if (keyGetName (0, ret, 100) == -1, "null pointer");
 	succeed_if (keyGetName (key, 0, 100) == -1, "string null pointer");
 	succeed_if (keyGetName (key, ret, 0) == -1, "length checking");
@@ -364,7 +364,7 @@ static void test_keyName (void)
 
 	printf ("Test Key Base Name\n");
 
-	key = keyNew (testName, KEY_END);
+	key = keyNew (testName, ELEKTRA_KEY_END);
 
 	succeed_if (keyGetBaseName (0, ret, 100) == -1, "null pointer");
 	succeed_if (keyGetBaseName (key, 0, 100) == -1, "string null pointer");
@@ -388,7 +388,7 @@ static void test_keyName (void)
 
 	succeed_if (keyBaseName (0) == 0, "null pointer");
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyBaseName (key), "");
 	succeed_if (keyGetBaseName (key, ret, 1000) == 1, "get empty name");
 	succeed_if_same_string (ret, "");
@@ -397,7 +397,7 @@ static void test_keyName (void)
 
 	succeed_if (keySetName (0, ret) == -1, "Null pointer");
 
-	key = keyNew ("user:/", KEY_END);
+	key = keyNew ("user:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -407,7 +407,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("user:/", KEY_END);
+	key = keyNew ("user:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -417,7 +417,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("user://", KEY_END);
+	key = keyNew ("user://", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -427,7 +427,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("system:/", KEY_END);
+	key = keyNew ("system:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "system:/");
 	succeed_if (keyGetNameSize (key) == 9, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -437,7 +437,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("system:/", KEY_END);
+	key = keyNew ("system:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "system:/");
 	succeed_if (keyGetNameSize (key) == 9, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -447,7 +447,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("dir:/", KEY_END);
+	key = keyNew ("dir:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "dir:/");
 	succeed_if (keyGetNameSize (key) == 6, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -457,7 +457,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("dir:/", KEY_END);
+	key = keyNew ("dir:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "dir:/");
 	succeed_if (keyGetNameSize (key) == 6, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -467,7 +467,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("proc:/", KEY_END);
+	key = keyNew ("proc:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "proc:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -477,7 +477,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("proc:/", KEY_END);
+	key = keyNew ("proc:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "proc:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -487,7 +487,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("spec:/", KEY_END);
+	key = keyNew ("spec:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "spec:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -497,7 +497,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("spec:/", KEY_END);
+	key = keyNew ("spec:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "spec:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -507,7 +507,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("meta:/", KEY_END);
+	key = keyNew ("meta:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "meta:/");
 	succeed_if (keyGetNameSize (key) == 7, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -517,7 +517,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("default:/", KEY_END);
+	key = keyNew ("default:/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "default:/");
 	succeed_if (keyGetNameSize (key) == 10, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -527,7 +527,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "/");
 	succeed_if (keyGetNameSize (key) == 2, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -537,7 +537,7 @@ static void test_keyName (void)
 	succeed_if_same_string (ret, "");
 	keyDel (key);
 
-	key = keyNew ("//", KEY_END);
+	key = keyNew ("//", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (key), "/");
 	succeed_if (keyGetNameSize (key) == 2, "name length checking");
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
@@ -558,14 +558,14 @@ static void test_keyNameSlashes (void)
 	int i;
 
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyGetNameSize (key) == 2, "empty name size");
 	keyDel (key);
 
-	key = keyNew ("", KEY_END);
+	key = keyNew ("", ELEKTRA_KEY_END);
 	succeed_if (key == 0, "key should be null!");
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (key, "user:/");
 	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 7, "empty name size");
@@ -575,7 +575,7 @@ static void test_keyNameSlashes (void)
 	succeed_if (keyGetNameSize (key) == 9, "empty name size");
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (key, "system:/");
 	succeed_if_same_string (keyName (key), "system:/");
 	succeed_if (keyGetNameSize (key) == 9, "empty name size");
@@ -585,19 +585,19 @@ static void test_keyNameSlashes (void)
 	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keySetName (key, "user:/") == 7, "setting user:/ generates error");
 	succeed_if_same_string (keyName (key), "user:/");
 	succeed_if (keyGetNameSize (key) == 7, "empty name size");
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keySetName (key, "no") == -1, "no error code setting invalid name");
 	succeed_if_same_string (keyName (key), "/");
 	succeed_if (keyGetNameSize (key) == 2, "empty name size");
 	keyDel (key);
 
-	key = keyNew ("user:/noname", KEY_END);
+	key = keyNew ("user:/noname", ELEKTRA_KEY_END);
 	succeed_if (keyGetNameSize (key) == 13, "size not correct after keyNew");
 	getBack = elektraMalloc (13);
 	succeed_if (keyGetName (key, getBack, 13), "could not get name");
@@ -619,7 +619,7 @@ static void test_keyNameSlashes (void)
 	elektraFree (getBack);
 	keyDel (key);
 
-	key = keyNew ("user:/noname", KEY_END);
+	key = keyNew ("user:/noname", ELEKTRA_KEY_END);
 
 	keySetName (key, "user://hidden");
 	succeed_if_same_string (keyName (key), "user:/hidden");
@@ -710,19 +710,19 @@ static void test_keyNameSlashes (void)
 
 	printf ("Test failure key creation\n");
 
-	key = keyNew ("invalid", KEY_END);
+	key = keyNew ("invalid", ELEKTRA_KEY_END);
 	succeed_if (key == 0, "should be null");
 	succeed_if (keyDel (key) == -1, "keyDel: should fail");
 
-	key = keyNew ("nonhere/valid/there", KEY_END);
+	key = keyNew ("nonhere/valid/there", ELEKTRA_KEY_END);
 	succeed_if (key == 0, "should be null");
 	succeed_if (keyDel (key) == -1, "keyDel: should fail");
 
-	key = keyNew ("nonhere:y/valid/there", KEY_END);
+	key = keyNew ("nonhere:y/valid/there", ELEKTRA_KEY_END);
 	succeed_if (key == 0, "should be null");
 	succeed_if (keyDel (key) == -1, "keyDel: should fail");
 
-	key = keyNew ("user:/validname", KEY_END);
+	key = keyNew ("user:/validname", ELEKTRA_KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name");
 	succeed_if_same_string (keyName (key), "user:/validname");
 
@@ -743,17 +743,17 @@ static void test_keyNameSlashes (void)
 
 	printf ("Test key's name manipulation\n");
 
-	ElektraKey * copy = keyNew ("/", KEY_END);
+	ElektraKey * copy = keyNew ("/", ELEKTRA_KEY_END);
 
 	for (i = 0; tstKeyName[i].testName != NULL; i++)
 	{
-		key = keyNew (tstKeyName[i].keyName, KEY_END);
+		key = keyNew (tstKeyName[i].keyName, ELEKTRA_KEY_END);
 
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
-		keyCopy (copy, key, KEY_CP_ALL);
+		keyCopy (copy, key, ELEKTRA_KEY_CP_ALL);
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
 
-		ElektraKey * dup = keyDup (key, KEY_CP_ALL);
+		ElektraKey * dup = keyDup (key, ELEKTRA_KEY_CP_ALL);
 		succeed_if (keyGetRef (dup) == 0, "reference of dup not correct");
 
 		compare_key (copy, key);
@@ -810,7 +810,7 @@ static void test_keyValue (void)
 
 	printf ("Test value of keys\n");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if (keyGetValueSize (key) == 1, "empty value size");
 	succeed_if (keySetString (key, "perfectvalue") == 13, "could not set string");
 	succeed_if (keyGetValueSize (key) == 13, "value size not correct");
@@ -824,7 +824,7 @@ static void test_keyValue (void)
 	succeed_if_same_string (ret, "nearperfectvalue");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if_same_string (keyValue (key), "");
 	succeed_if (keyGetValueSize (key) == 1, "Empty value size problem");
 	succeed_if (keySetString (key, "") == 1, "could not set empty string");
@@ -835,13 +835,13 @@ static void test_keyValue (void)
 	succeed_if (ret[0] == 0, "keyGetValue did not return empty value");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if (keySetString (key, "a long long string") == 19, "could not set string");
 	succeed_if (keyGetString (key, ret, 6) == -1, "string not truncated");
 	succeed_if (keyGetBinary (key, ret, 999) == -1, "binary not mismatch");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if (keySetBinary (key, "a", 1) == 1, "could not set binary");
 	succeed_if (keyIsString (key) == 0, "is not a string");
 	succeed_if (keyIsBinary (key) == 1, "is not a string");
@@ -851,21 +851,21 @@ static void test_keyValue (void)
 	succeed_if (keySetString (key, 0) == 1, "wrong error code for SetString");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if (keySetBinary (key, NULL, 0) == 0, "could not set null binary");
 	succeed_if (keyIsString (key) == 0, "is not a string");
 	succeed_if (keyIsBinary (key) == 1, "is not a string");
 	succeed_if (keyGetValueSize (key) == 0, "Empty value size problem");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if (keySetString (key, "") == 1, "could not set empty string");
 	succeed_if (keyIsString (key) == 1, "is not a string");
 	succeed_if (keyIsBinary (key) == 0, "is a binary");
 	succeed_if (keyGetValueSize (key) == 1, "Empty value size problem");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	succeed_if (keySetBinary (key, "a long long binary", 19) == 19, "could not set string");
 	succeed_if (keyIsString (key) == 0, "is not a string");
 	succeed_if (keyIsBinary (key) == 1, "is not a string");
@@ -875,7 +875,7 @@ static void test_keyValue (void)
 	succeed_if (keyGetString (key, ret, 999) == -1, "string not mismatch");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	for (i = 1; i < 255; i++)
 	{
 		ret[0] = i;
@@ -888,7 +888,7 @@ static void test_keyValue (void)
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 
-	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
+	succeed_if (key = keyNew ("/", ELEKTRA_KEY_END), "could not create new key");
 	for (i = 0; i < 255; i++)
 	{
 		ret[0] = i;
@@ -910,7 +910,7 @@ static void test_keyValue (void)
 	succeed_if (keySetString (0, "") == -1, "null pointer");
 	succeed_if_same_string (keyString (0), "(null)");
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyGetValueSize (key) == 1, "empty value size");
 	succeed_if_same_string (keyString (key), "");
 
@@ -957,7 +957,7 @@ static void test_keyValue (void)
 	succeed_if (keyGetValueSize (0) == -1, "null pointer");
 	succeed_if (keySetBinary (0, "", 1) == -1, "null pointer");
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keySetBinary (key, "", 0) == -1, "null size");
 	succeed_if (keySetBinary (key, "b", 0) == -1, "null size");
 	succeed_if (keySetBinary (key, "", SIZE_MAX) == -1, "max size");
@@ -1018,7 +1018,7 @@ static void test_keyBinary (void)
 
 	succeed_if (keyIsBinary (0) == -1, "no error on checking NULL Key");
 
-	key = keyNew ("user:/binary", KEY_BINARY, KEY_END);
+	key = keyNew ("user:/binary", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_END);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
 	succeed_if (keyIsString (key) == 0, "should not be string");
@@ -1028,7 +1028,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew ("user:/binary", KEY_BINARY, KEY_SIZE, sizeof (binaryData), KEY_VALUE, binaryData, KEY_END);
+	key = keyNew ("user:/binary", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (binaryData), ELEKTRA_KEY_VALUE, binaryData, ELEKTRA_KEY_END);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
 	succeed_if (keyIsString (key) == 0, "should not be string");
@@ -1041,7 +1041,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetBinary (key, binaryData, sizeof (binaryData));
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1055,7 +1055,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetBinary (key, 0, 0);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1067,7 +1067,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetBinary (key, 0, 1);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1079,7 +1079,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetBinary (key, "", 1);
 	succeed_if (keySetBinary (key, 0, SIZE_MAX) == -1, "should do nothing and fail");
 	succeed_if (keySetBinary (key, 0, SSIZE_MAX) == 0, "should free data");
@@ -1093,7 +1093,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	keySetBinary (key, "", 1);
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
@@ -1107,7 +1107,7 @@ static void test_keyBinary (void)
 
 	keyDel (key);
 
-	key = keyNew ("/", KEY_END);
+	key = keyNew ("/", ELEKTRA_KEY_END);
 	i = 23;
 	keySetBinary (key, (void *) &i, sizeof (i));
 
@@ -1128,8 +1128,8 @@ static void test_keyBinary (void)
 
 static void test_keyBelow (void)
 {
-	ElektraKey * key1 = keyNew ("/", KEY_END);
-	ElektraKey * key2 = keyNew ("/", KEY_END);
+	ElektraKey * key1 = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * key2 = keyNew ("/", ELEKTRA_KEY_END);
 
 	printf ("Test of relative positions of keys\n");
 
@@ -1403,11 +1403,11 @@ static void test_keyDup (void)
 	printf ("Test key duplication\n");
 
 	// Create test key
-	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
+	orig = keyNew ("user:/foo/bar", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, 6, ELEKTRA_KEY_VALUE, "foobar", ELEKTRA_KEY_COMMENT, "mycomment", ELEKTRA_KEY_END);
 
 
 	// Dup the key
-	succeed_if ((copy = keyDup (orig, KEY_CP_ALL)) != 0, "keyDup failed");
+	succeed_if ((copy = keyDup (orig, ELEKTRA_KEY_CP_ALL)) != 0, "keyDup failed");
 	compare_key (orig, copy);
 	keyDel (orig); // everything independent from original!
 
@@ -1418,7 +1418,7 @@ static void test_keyDup (void)
 
 	// Dup the key again
 	ElektraKey * ccopy;
-	succeed_if ((ccopy = keyDup (copy, KEY_CP_ALL)) != 0, "keyDup failed");
+	succeed_if ((ccopy = keyDup (copy, ELEKTRA_KEY_CP_ALL)) != 0, "keyDup failed");
 	compare_key (copy, ccopy);
 	keyDel (copy); // everything independent from original!
 
@@ -1428,10 +1428,10 @@ static void test_keyDup (void)
 
 	keyDel (ccopy);
 
-	orig = keyNew ("/", KEY_END);
+	orig = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (orig, "invalid");
 
-	succeed_if ((copy = keyDup (orig, KEY_CP_ALL)) != 0, "keyDup failed");
+	succeed_if ((copy = keyDup (orig, ELEKTRA_KEY_CP_ALL)) != 0, "keyDup failed");
 	succeed_if_same_string (keyName (orig), "/");
 	succeed_if_same_string (keyName (copy), "/");
 	succeed_if (keyGetNameSize (orig) == 2, "orig name size");
@@ -1451,17 +1451,17 @@ static void test_keyCopy (void)
 	printf ("Test key copy\n");
 
 	// Create test key
-	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
+	orig = keyNew ("user:/foo/bar", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, 6, ELEKTRA_KEY_VALUE, "foobar", ELEKTRA_KEY_COMMENT, "mycomment", ELEKTRA_KEY_END);
 
 
 	// Copy the key
-	copy = keyNew ("/", KEY_END);
-	succeed_if (keyCopy (copy, orig, KEY_CP_ALL) == copy, "keyCopy failed");
+	copy = keyNew ("/", ELEKTRA_KEY_END);
+	succeed_if (keyCopy (copy, orig, ELEKTRA_KEY_CP_ALL) == copy, "keyCopy failed");
 	succeed_if (keyGetRef (orig) == 0, "orig ref counter should be 0");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
 	compare_key (orig, copy);
 
-	succeed_if (keyCopy (copy, orig, KEY_CP_ALL) == copy, "keyCopy failed");
+	succeed_if (keyCopy (copy, orig, ELEKTRA_KEY_CP_ALL) == copy, "keyCopy failed");
 	succeed_if (keyGetRef (orig) == 0, "orig ref counter should be 0");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
 	compare_key (orig, copy);
@@ -1471,21 +1471,21 @@ static void test_keyCopy (void)
 	succeed_if_same_string (keyName (copy), "user:/foo/bar");
 	succeed_if (strncmp (keyValue (copy), "foobar", 6) == 0, "keyCopy: key value copy error");
 
-	orig = keyNew ("/", KEY_END);
-	succeed_if (keyCopy (copy, orig, KEY_CP_ALL) == copy, "make a key copy of an unmodified key");
+	orig = keyNew ("/", ELEKTRA_KEY_END);
+	succeed_if (keyCopy (copy, orig, ELEKTRA_KEY_CP_ALL) == copy, "make a key copy of an unmodified key");
 	compare_key (orig, copy);
 
-	succeed_if (keyCopy (copy, 0, KEY_CP_ALL) == copy, "make the key copy fresh");
+	succeed_if (keyCopy (copy, 0, ELEKTRA_KEY_CP_ALL) == copy, "make the key copy fresh");
 	compare_key (orig, copy);
 	keyDel (orig);
 
 	keyDel (copy);
 
-	orig = keyNew ("/", KEY_END);
+	orig = keyNew ("/", ELEKTRA_KEY_END);
 	keySetName (orig, "invalid");
 
-	copy = keyNew ("/", KEY_END);
-	succeed_if (keyCopy (copy, orig, KEY_CP_ALL) == copy, "keyCopy failed");
+	copy = keyNew ("/", ELEKTRA_KEY_END);
+	succeed_if (keyCopy (copy, orig, ELEKTRA_KEY_CP_ALL) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "/");
 	succeed_if_same_string (keyName (copy), "/");
 	succeed_if (keyGetNameSize (orig) == 2, "orig name size");
@@ -1498,15 +1498,15 @@ static void test_keyCopy (void)
 
 
 	// check KEY_CP_NAME
-	orig = keyNew ("user:/orig", KEY_END);
+	orig = keyNew ("user:/orig", ELEKTRA_KEY_END);
 	keySetString (orig, "orig");
 	keySetMeta (orig, "orig", "orig");
 
-	copy = keyNew ("user:/copy", KEY_END);
+	copy = keyNew ("user:/copy", ELEKTRA_KEY_END);
 	keySetString (copy, "copy");
 	keySetMeta (copy, "copy", "copy");
 
-	succeed_if (keyCopy (copy, orig, KEY_CP_NAME) == copy, "keyCopy failed");
+	succeed_if (keyCopy (copy, orig, ELEKTRA_KEY_CP_NAME) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "user:/orig");
 	succeed_if_same_string (keyName (copy), "user:/orig");
 	keyGetString (orig, origBuffer, sizeof (origBuffer));
@@ -1522,15 +1522,15 @@ static void test_keyCopy (void)
 	keyDel (copy);
 
 	// check KEY_CP_VALUE
-	orig = keyNew ("user:/orig", KEY_END);
+	orig = keyNew ("user:/orig", ELEKTRA_KEY_END);
 	keySetString (orig, "orig");
 	keySetMeta (orig, "orig", "orig");
 
-	copy = keyNew ("user:/copy", KEY_END);
+	copy = keyNew ("user:/copy", ELEKTRA_KEY_END);
 	keySetString (copy, "copy");
 	keySetMeta (copy, "copy", "copy");
 
-	succeed_if (keyCopy (copy, orig, KEY_CP_VALUE) == copy, "keyCopy failed");
+	succeed_if (keyCopy (copy, orig, ELEKTRA_KEY_CP_VALUE) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "user:/orig");
 	succeed_if_same_string (keyName (copy), "user:/copy");
 	keyGetString (orig, origBuffer, sizeof (origBuffer));
@@ -1546,15 +1546,15 @@ static void test_keyCopy (void)
 	keyDel (copy);
 
 	// check KEY_CP_META
-	orig = keyNew ("user:/orig", KEY_END);
+	orig = keyNew ("user:/orig", ELEKTRA_KEY_END);
 	keySetString (orig, "orig");
 	keySetMeta (orig, "orig", "orig");
 
-	copy = keyNew ("user:/copy", KEY_END);
+	copy = keyNew ("user:/copy", ELEKTRA_KEY_END);
 	keySetString (copy, "copy");
 	keySetMeta (copy, "copy", "copy");
 
-	succeed_if (keyCopy (copy, orig, KEY_CP_META) == copy, "keyCopy failed");
+	succeed_if (keyCopy (copy, orig, ELEKTRA_KEY_CP_META) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "user:/orig");
 	succeed_if_same_string (keyName (copy), "user:/copy");
 	keyGetString (orig, origBuffer, sizeof (origBuffer));
@@ -1570,15 +1570,15 @@ static void test_keyCopy (void)
 	keyDel (copy);
 
 
-	orig = keyNew ("user:/orig", KEY_END);
+	orig = keyNew ("user:/orig", ELEKTRA_KEY_END);
 	succeed_if (keyNeedSync (orig), "fresh key does not need sync?");
-	ElektraKeyset * ks = ksNew (20, KS_END);
+	ElektraKeyset * ks = ksNew (20, ELEKTRA_KS_END);
 	ksAppendKey (ks, orig);
-	copy = keyNew ("user:/othername", KEY_END);
+	copy = keyNew ("user:/othername", ELEKTRA_KEY_END);
 	succeed_if (keyNeedSync (copy), "fresh key does not need sync?");
 	succeed_if (keyGetRef (orig) == 1, "orig ref counter should be 1");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
-	succeed_if (keyCopy (orig, copy, KEY_CP_ALL) == NULL, "copy should not be allowed when key is already referred to");
+	succeed_if (keyCopy (orig, copy, ELEKTRA_KEY_CP_ALL) == NULL, "copy should not be allowed when key is already referred to");
 	succeed_if (keyNeedSync (orig), "copied key does not need sync?");
 	succeed_if (keyNeedSync (copy), "copied key does not need sync?");
 
@@ -1609,7 +1609,7 @@ static void test_binary (void)
 	int i = 20;
 	int * p = &i;
 
-	k = keyNew ("/", KEY_END);
+	k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keySetBinary (k, &p, sizeof (p)) == sizeof (p), "could not set binary");
 
 	int * q;
@@ -1628,7 +1628,7 @@ static void test_binary (void)
 		void * v;
 	} conversation;
 
-	k = keyNew ("/", KEY_END);
+	k = keyNew ("/", ELEKTRA_KEY_END);
 	conversation.f = fun;
 	succeed_if (keySetBinary (k, &conversation.v, sizeof (conversation)) == sizeof (conversation), "could not set binary");
 
@@ -1643,7 +1643,7 @@ static void test_binary (void)
 
 
 	conversation.f = fun;
-	k = keyNew ("system:/symbols/fun", KEY_BINARY, KEY_SIZE, sizeof (conversation), KEY_VALUE, &conversation.v, KEY_END);
+	k = keyNew ("system:/symbols/fun", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (conversation), ELEKTRA_KEY_VALUE, &conversation.v, ELEKTRA_KEY_END);
 
 	conversation.v = 0;
 	conversation.f = 0;
@@ -1656,7 +1656,7 @@ static void test_binary (void)
 
 	fun_t tmp = fun;
 
-	k = keyNew ("system:/symbol/fun", KEY_BINARY, KEY_SIZE, sizeof (fun_t), KEY_VALUE, &tmp, KEY_END);
+	k = keyNew ("system:/symbol/fun", ELEKTRA_KEY_BINARY, ELEKTRA_KEY_SIZE, sizeof (fun_t), ELEKTRA_KEY_VALUE, &tmp, ELEKTRA_KEY_END);
 
 	fun_t myfun = 0;
 	succeed_if (keyGetBinary (k, &myfun, sizeof (fun_t)) == sizeof (fun_t), "could not get binary");
@@ -1666,7 +1666,7 @@ static void test_binary (void)
 	keyDel (k);
 
 
-	k = keyNew ("system:/symbol/cool", KEY_FUNC, fun, KEY_END);
+	k = keyNew ("system:/symbol/cool", ELEKTRA_KEY_FUNC, fun, ELEKTRA_KEY_END);
 
 	succeed_if (keyGetBinary (k, &myfun, sizeof (fun_t)) == sizeof (fun_t), "could not get binary");
 
@@ -1675,7 +1675,7 @@ static void test_binary (void)
 	keyDel (k);
 
 	char data[10];
-	k = keyNew ("system:/empty_binary", KEY_END);
+	k = keyNew ("system:/empty_binary", ELEKTRA_KEY_END);
 	succeed_if (keySetBinary (k, 0, 0) == 0, "could not set binary will null pointer");
 	succeed_if (keyIsBinary (k), "key is not binary");
 	succeed_if (keyGetBinary (k, data, 1) == 0, "could not get empty binary");
@@ -1701,8 +1701,8 @@ static void test_binary (void)
 
 static void test_keyBelowOrSame (void)
 {
-	ElektraKey * key1 = keyNew ("/", KEY_END);
-	ElektraKey * key2 = keyNew ("/", KEY_END);
+	ElektraKey * key1 = keyNew ("/", ELEKTRA_KEY_END);
+	ElektraKey * key2 = keyNew ("/", ELEKTRA_KEY_END);
 
 	printf ("Test of keyBelowOrSame\n");
 
@@ -1787,7 +1787,7 @@ static void test_keyBelowOrSame (void)
 static void test_keyNameSpecial (void)
 {
 	printf ("Test special keynames\n");
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (k), "/");
 
 	succeed_if (keySetName (k, "system:/"), "could not set key name with system");
@@ -1880,7 +1880,7 @@ static void test_keyNameSpecial (void)
 
 
 	printf ("Test invalid names\n");
-	k = keyNew ("/", KEY_END);
+	k = keyNew ("/", ELEKTRA_KEY_END);
 
 	succeed_if (keySetName (k, 0) == -1, "no error code setting invalid name");
 	succeed_if_same_string (keyName (k), "/");
@@ -1899,7 +1899,7 @@ static void test_keyClear (void)
 {
 	printf ("Test clear of key\n");
 
-	ElektraKey * k1 = keyNew ("system:/abc", KEY_END);
+	ElektraKey * k1 = keyNew ("system:/abc", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (k1), "system:/abc");
 
 	succeed_if (keyGetRef (k1) == 0, "New key reference");
@@ -1963,7 +1963,7 @@ static void test_keyClear (void)
 static void test_keyBaseName (void)
 {
 	printf ("Test basename\n");
-	ElektraKey * k = keyNew ("user:///foo\\///bar\\/foo_bar\\/", KEY_END);
+	ElektraKey * k = keyNew ("user:///foo\\///bar\\/foo_bar\\/", ELEKTRA_KEY_END);
 	succeed_if_same_string (keyName (k), "user:/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string (keyBaseName (k), "bar/foo_bar/");
 	succeed_if (keyGetBaseNameSize (k) == 13, "wrong base name size");
@@ -2056,7 +2056,7 @@ static void test_keySetBaseName (void)
 {
 	printf ("Test set basename\n");
 
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 
 	succeed_if (keySetBaseName (0, "abc") == -1, "NULL key");
 	succeed_if_same_string (keyName (k), "/");
@@ -2290,7 +2290,7 @@ static void test_keyAddBaseName (void)
 {
 	printf ("Test add basename\n");
 
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 
 	//![base0 empty]
 	keySetName (k, "");
@@ -2366,8 +2366,8 @@ static void test_keyDirectBelow (void)
 {
 	printf ("Test direct below check\n");
 
-	ElektraKey * k1 = keyNew ("/dir", KEY_END);
-	ElektraKey * k2 = keyNew ("/dir/directbelow", KEY_END);
+	ElektraKey * k1 = keyNew ("/dir", ELEKTRA_KEY_END);
+	ElektraKey * k2 = keyNew ("/dir/directbelow", ELEKTRA_KEY_END);
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "not direct below");
 
 	keySetName (k1, "user:/dir");
@@ -2414,7 +2414,7 @@ static void test_keyEscape (void)
 {
 	printf ("test escape in basename\n");
 
-	ElektraKey * k = keyNew ("/valid", KEY_END);
+	ElektraKey * k = keyNew ("/valid", ELEKTRA_KEY_END);
 	char buffer[500];
 
 #define TEST_ESCAPE_PART(A, S)                                                                                                             \
@@ -2505,7 +2505,7 @@ static void test_keyAdd (void)
 {
 	printf ("test keyAdd\n");
 
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyAddName (0, "valid") == -1, "cannot add to null name");
 
 	keySetName (k, "/");
@@ -2554,7 +2554,7 @@ void test_keyCascading (void)
 {
 	printf ("test cascading\n");
 
-	ElektraKey * k = keyNew ("/", KEY_END);
+	ElektraKey * k = keyNew ("/", ELEKTRA_KEY_END);
 	succeed_if (keyGetNameSize (k) == 2, "size not correct");
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyBaseName (k), "");

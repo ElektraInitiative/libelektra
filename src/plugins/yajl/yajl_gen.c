@@ -197,7 +197,7 @@ int elektraGenEmpty (yajl_gen g, ElektraKeyset * returned, ElektraKey * parentKe
 	}
 	else if (ksGetSize (returned) == 2) // maybe just parent+specialkey
 	{
-		ElektraKey * toCheck = keyDup (parentKey, KEY_CP_ALL);
+		ElektraKey * toCheck = keyDup (parentKey, ELEKTRA_KEY_CP_ALL);
 
 		keyAddBaseName (toCheck, "###empty_array");
 		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
@@ -259,7 +259,7 @@ static void elektraCheckForEmptyArray (ElektraKeyset * ks)
 		{
 			elektraCursor cursor = ksGetCursor (ks);
 
-			ElektraKey * k = keyNew (keyName (curr), KEY_END);
+			ElektraKey * k = keyNew (keyName (curr), ELEKTRA_KEY_END);
 			keyAddBaseName (k, "###empty_array");
 
 			ELEKTRA_LOG_DEBUG ("Add empty array: %s", keyName (k));

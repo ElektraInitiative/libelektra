@@ -117,18 +117,18 @@ static void test_process (void)
 
 ElektraKeyset * set_pluginconf (void)
 {
-	return ksNew (10, keyNew ("system:/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system:/more", KEY_END),
-		      keyNew ("system:/more/config", KEY_END), keyNew ("system:/more/config/below", KEY_END),
-		      keyNew ("system:/path", KEY_END), keyNew ("user:/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("user:/more", KEY_END), keyNew ("user:/more/config", KEY_END), keyNew ("user:/more/config/below", KEY_END),
-		      keyNew ("user:/path", KEY_END), KS_END);
+	return ksNew (10, keyNew ("system:/anything", ELEKTRA_KEY_VALUE, "backend", ELEKTRA_KEY_END), keyNew ("system:/more", ELEKTRA_KEY_END),
+		      keyNew ("system:/more/config", ELEKTRA_KEY_END), keyNew ("system:/more/config/below", ELEKTRA_KEY_END),
+		      keyNew ("system:/path", ELEKTRA_KEY_END), keyNew ("user:/anything", ELEKTRA_KEY_VALUE, "plugin", ELEKTRA_KEY_END),
+		      keyNew ("user:/more", ELEKTRA_KEY_END), keyNew ("user:/more/config", ELEKTRA_KEY_END), keyNew ("user:/more/config/below", ELEKTRA_KEY_END),
+		      keyNew ("user:/path", ELEKTRA_KEY_END), ELEKTRA_KS_END);
 }
 
 static void test_simple (void)
 {
 	printf ("Test plugin\n");
 
-	ElektraKeyset * modules = ksNew (0, KS_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin * plugin = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, set_pluginconf (), 0);
@@ -151,8 +151,8 @@ static void test_simple (void)
 static void test_name (void)
 {
 	printf ("Test name\n");
-	ElektraKeyset * modules = ksNew (0, KS_END);
-	ElektraKey * errorKey = keyNew ("/", KEY_END);
+	ElektraKeyset * modules = ksNew (0, ELEKTRA_KS_END);
+	ElektraKey * errorKey = keyNew ("/", ELEKTRA_KEY_END);
 	;
 
 	succeed_if (elektraPluginOpen (0, modules, set_pluginconf (), errorKey) == 0, "should fail with no name");
