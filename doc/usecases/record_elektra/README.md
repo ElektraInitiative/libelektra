@@ -2,7 +2,7 @@
 
 The contained use cases are both from a developer side and user side.
 
-The main use case is describe [here](UC_overall.md).
+The main use case is [interactive configuration](UC_interactive_configuration.md).
 
 ## Developer-oriented Use Cases
 - [Allow plugins to be notified when data changes](UC_change_notifications.md)
