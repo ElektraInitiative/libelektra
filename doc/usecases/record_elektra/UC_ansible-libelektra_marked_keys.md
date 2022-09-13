@@ -5,7 +5,7 @@
 - **Title:** Fail application of ansible-libelektra if certain keys differ in value
 - **Scope:** ansible-libelektra
 - **Level:** User goal
-- **Actors:** User (usually sysadmin)
+- **Actors:** System administrator
 - **Brief:** We should be able to mark certain keys in the tasks for a specific value. If the keys do have a different value on the target machine, ansible-libelektra should fail.
 
 ## Scenarios
