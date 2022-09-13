@@ -14,6 +14,6 @@
 - **Main success scenario:** User deploys configuration via Ansible.
 - **Alternative scenario:** -
 - **Error scenario:** -
-- **Postcondition:** Session recording is enabled
+- **Postcondition:** All locally changed keys get tracked.
 - **Non-functional Constraints:** -
 
