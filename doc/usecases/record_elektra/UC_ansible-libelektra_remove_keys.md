@@ -1,11 +1,11 @@
-# Use Case: Possibility to delete keys in ansible-libelektra
+# Use Case: Remove keys in ansible-libelektra
 
 ## Summary
 
-- **Title:** Possibility to delete keys in ansible-libelektra
+- **Title:** Remove keys in ansible-libelektra
 - **Scope:** ansible-libelektra
 - **Level:** User Goal
-- **Actors:** User (usually sysadmint)
+- **Actors:** User (usually sysadmin)
 - **Brief:** It should be possible to remove keys from the KDB using ansible-libelektra
 
 ## Scenarios
@@ -16,3 +16,4 @@
 - **Error scenario:** -
 - **Postcondition:** The specified key does not exist on the target machine
 - **Non-functional Constraints:** -
+
