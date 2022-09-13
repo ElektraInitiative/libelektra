@@ -10,7 +10,7 @@
 
 ## Scenarios
 
-- **Precondition:** The users marks a certain key in the task
+- **Precondition:** The user marks a certain key in the task
 - **Main success scenario:** The key on the target machine has a different value or is not present -> fail the execution
 - **Alternative scenario:** The key on the target machine has the same value -> continue the execution
 - **Error scenario:** -
