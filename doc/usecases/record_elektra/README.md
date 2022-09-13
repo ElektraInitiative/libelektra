@@ -2,6 +2,8 @@
 
 The contained use cases are both from a developer side and user side.
 
+The main use case is describe [here](UC_overall.md).
+
 ## Developer-oriented Use Cases
 - [Allow plugins to be notified when data changes](UC_change_notifications.md)
 - [Provide an API to know which keys caused a conflict on merge](UC_cmerge_conflict_keys.md)
