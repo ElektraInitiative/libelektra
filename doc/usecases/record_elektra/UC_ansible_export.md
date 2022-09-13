@@ -10,7 +10,7 @@
 
 ## Scenarios
 
-- **Precondition:** Some kind of configuration has to exist
+- **Precondition:** -
   
 - **Main success scenario:** 
   - User specifies which configuration to include in playbook
