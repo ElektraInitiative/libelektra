@@ -16,8 +16,7 @@
   
 - **Main success scenario:**
   - User makes a change to the key database, e.g. add key, delete key, modify key, modify meta
-  - It is recorded that the changes occured
-  - The original values to those changes are also recorded
+  - The old & new values for every chagned key and metakey are recorded.
   
 - **Alternative scenario:** -
 - **Error scenario:** We log that the changes could not be recorded.
