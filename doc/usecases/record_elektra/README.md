@@ -17,6 +17,6 @@ The main use case is [interactive configuration](UC_interactive_configuration.md
 - Concerning ansible-libelektra:
   - [Allow for keys to be deleted using ansible-libelektra](UC_ansible-libelektra_remove_keys.md)
   - [Allow specifying how conflicts are to be handled in ansible-libelektra](UC_ansible-libelektra_merge_strategies.md)
-  - [Fail application of ansible-libelektra if certain keys differ in value](UC_ansible-libelektra_marked_keys.md)
+  - [Assert certain values for keys for the execution to continue](UC_ansible-libelektra_assert_keys.md)
   - [Start session recording after Ansible run](UC_ansible-libelektra_start_recording.md)
   
