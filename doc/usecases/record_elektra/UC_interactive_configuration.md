@@ -4,7 +4,7 @@
 
 - **Title:** Interactively creating system config
 - **Scope:** Configuration
-- **Level:** User Goal
+- **Level:** Summary
 - **Actors:** System administrator
 - **Brief:** In order to interactively create a workable system configuration, sometimes multiple iterations are required. 
 It should be possible to modify the configuration on a single host, and then apply the changes onto all other hosts.

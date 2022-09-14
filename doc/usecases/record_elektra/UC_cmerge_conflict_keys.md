@@ -4,7 +4,7 @@
 
 - **Title:** Get information which keys are conflicting in 3-way-merge
 - **Scope:** Library/Development
-- **Level:** Developer goal
+- **Level:** Subfunction
 - **Actors:** Developers
 - **Brief:** It should be possible to get information about which keys are causing conflicts in a 3-way-merge.
 
