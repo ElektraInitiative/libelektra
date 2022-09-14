@@ -10,14 +10,12 @@
 
 ## Scenarios
 
-- **Precondition:** 
+- **Precondition:**
   - Recording is enabled
   - An active recording session exists
-  
 - **Main success scenario:**
   - User makes a change to the key database, e.g. add key, delete key, modify key, modify meta
   - The old & new values for every chagned key and metakey are recorded.
-  
 - **Alternative scenario:** -
 - **Error scenario:** We log that the changes could not be recorded.
 

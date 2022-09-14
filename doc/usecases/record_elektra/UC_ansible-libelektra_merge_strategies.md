@@ -16,4 +16,3 @@
 - **Error scenario:** If there are still conflicts that could not be resolved, the offending keys should be reported.
 - **Postcondition:** -
 - **Non-functional Constraints:** -
-

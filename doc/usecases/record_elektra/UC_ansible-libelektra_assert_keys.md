@@ -7,8 +7,8 @@
 - **Level:** User goal
 - **Actors:** System administrator
 - **Brief:** There should be a functionality in ansible-libelektra to assert certain keys have certain values.
-For example, some app B requires that a certain app A is already set up and running before configuring can be done.
-It may also be used to check that a certain plugin (e.g. `check`) is correctly installed within Elektra.
+  For example, some app B requires that a certain app A is already set up and running before configuring can be done.
+  It may also be used to check that a certain plugin (e.g. `check`) is correctly installed within Elektra.
 
 ## Scenarios
 

@@ -6,14 +6,14 @@
 - **Scope:** Configuration
 - **Level:** Summary
 - **Actors:** System administrator
-- **Brief:** In order to interactively create a workable system configuration, sometimes multiple iterations are required. 
-It should be possible to modify the configuration on a single host, and then apply the changes onto all other hosts.
-To integrate seamlessly into an Ansible workflow, it should also be possible to merge the changes into the original playbook.
+- **Brief:** In order to interactively create a workable system configuration, sometimes multiple iterations are required.
+  It should be possible to modify the configuration on a single host, and then apply the changes onto all other hosts.
+  To integrate seamlessly into an Ansible workflow, it should also be possible to merge the changes into the original playbook.
 
 ## Scenarios
 
 - **Precondition:** -
-- **Main success scenario:** 
+- **Main success scenario:**
   - User connects to the host and changes settings in Elektra
   - User exports a playbook that contains either
     - only the changed keys
@@ -22,4 +22,3 @@ To integrate seamlessly into an Ansible workflow, it should also be possible to 
 - **Error scenario:** -
 - **Postcondition:** A working playbook is exported
 - **Non-functional Constraints:** -
-
