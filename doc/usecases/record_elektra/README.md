@@ -12,7 +12,6 @@ The main use case is [interactive configuration](UC_interactive_configuration.md
 - Concerning libelektra:
   - [Allow the recording of changes in the KDB](UC_record_changes.md)
   - [Export certain keys as Ansible playbook](UC_ansible_export.md)
-  - [Allow for specification of how keys should be mapped to Ansible tasks](UC_ansible_specification.md) - this feature is pretty much optional
   
 - Concerning ansible-libelektra:
   - [Allow for keys to be deleted using ansible-libelektra](UC_ansible-libelektra_remove_keys.md)
