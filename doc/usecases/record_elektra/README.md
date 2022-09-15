@@ -14,6 +14,7 @@ The main use case is [interactive configuration](UC_interactive_configuration.md
   - [Allow specifying how conflicts are to be handled in ansible-libelektra](UC_ansible-libelektra_merge_strategies.md)
   - [Assert certain values for keys for the execution to continue](UC_ansible-libelektra_assert_keys.md)
   - [Start session recording after Ansible run](UC_ansible-libelektra_start_recording.md)
+  - [Allow different configurations for different hosts](UC_different_hosts.md)
 
 ## Developer-oriented Use Cases
 
