@@ -17,7 +17,7 @@
   - User makes a change to the key database, e.g. add key, delete key, modify key, modify meta
   - The old & new values for every changed key and metakey are recorded.
 - **Alternative scenario:** -
-- **Error scenario:** We log that the changes could not be recorded.
+- **Error scenario:** The `kdb` command will print an error message that the changes could not be recorded.
 
 - **Postcondition:** All changed keys and their original values are recorded.
 
