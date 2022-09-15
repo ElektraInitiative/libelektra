@@ -11,7 +11,7 @@
 ## Scenarios
 
 - **Precondition:** -
-- **Main success scenario:** User deploys configuration via Ansible.
+- **Main success scenario:** User deploys configuration via Ansible
 - **Alternative scenario:** -
 - **Error scenario:** -
 - **Postcondition:** All locally changed keys get tracked.
