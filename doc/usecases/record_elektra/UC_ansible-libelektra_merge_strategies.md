@@ -17,7 +17,7 @@
 
 - **Precondition:** -
 - **Main success scenario:** If the user has specified a strategy, this strategy is applied on merge conflicts.
-- **Alternative scenario:** If no strategy is specified OURS is used.
+- **Alternative scenario:** If no strategy is specified ABORT is used.
 - **Error scenario:** If there are still conflicts that could not be resolved, the offending keys should be reported.
 - **Postcondition:** -
 - **Non-functional Constraints:** -
