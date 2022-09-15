@@ -13,11 +13,9 @@
 - **Precondition:**
   - Something in the KDB changed
   - A plugin listening to such a hook is enabled
-- **Main success scenario:**
-  - After a change in the KDB the plugin(s) listening on the hooks are notified
-  - The plugins receive both the old and new state of the keys
+- **Main success scenario:** After a change in the KDB the plugin(s) listening on the hooks are notified
 - **Alternative scenario:** -
 - **Error scenario:** -
 - **Postcondition:** -
 - **Non-functional Constraints:**
-  - Determining which plugin(s) listen on this hook should not noticably slow down Elektra.
+  - Determining which plugin(s) listen on this hook should not noticably slow down Elektra
