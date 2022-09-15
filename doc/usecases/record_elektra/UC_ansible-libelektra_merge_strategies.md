@@ -6,12 +6,11 @@
 - **Scope:** ansible-libelektra
 - **Level:** User goal
 - **Actors:** User (usually sysadmin)
-- **Brief:** It should be possible to specify the merge strategy used for conflicts. The merging should be performed by ansible-libelektra. 
+- **Brief:** It should be possible to specify the merge strategy used for conflicts. The merging should be performed by ansible-libelektra.
   The following strategies should be implemented:
-    - OURS: use the new values
-    - THEIRS: keep the old values
-    - ABORT: on conflict don't merge and report an error
-  
+  - OURS: use the new values
+  - THEIRS: keep the old values
+  - ABORT: on conflict don't merge and report an error
 
 ## Scenarios
 
