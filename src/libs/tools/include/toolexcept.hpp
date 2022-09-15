@@ -339,8 +339,7 @@ struct MissingSymbol : public PluginCheckException
 {
 	std::string msg;
 	// TODO: this is currently still required by some SWIG bindings. Ideally the bindings would be updated, but this is a quick fix.
-	explicit MissingSymbol (std::string symbol)
-	: msg ("The necessary symbol \"" + symbol + "\" is missing in <unknown> plugin!")
+	explicit MissingSymbol (std::string symbol) : msg ("The necessary symbol \"" + symbol + "\" is missing in <unknown> plugin!")
 	{
 	}
 	explicit MissingSymbol (std::string symbol, std::string plugin)
