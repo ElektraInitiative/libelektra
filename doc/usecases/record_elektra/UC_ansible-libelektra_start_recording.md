@@ -6,7 +6,7 @@
 - **Scope:** Recording
 - **Level:** User Goal
 - **Actors:** User (usually sysadmin)
-- **Brief:** After a new elektra configuration has been rolled out via Ansible, automatically enable session recording
+- **Brief:** After a new elektra configuration has been rolled out via Ansible, automatically enable or reset session recording for the appropriate namespaces
 
 ## Scenarios
 
