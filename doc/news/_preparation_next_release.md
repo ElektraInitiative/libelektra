@@ -158,10 +158,24 @@ _(Michael Tucek)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
 - Improve wording and formatting of DESIGN.md _(@lawli3t)_
 - Correct various typing-, spelling- and grammar-errors in the .md-files in the directory doc and its subdirectories. _(Florian Lindner @flo91)_
-- <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
-- <<TODO>>
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
+
+### New Backend
+
+- Improve [description of plugin framework](doc/dev/plugins-framework.md).
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Tests
 

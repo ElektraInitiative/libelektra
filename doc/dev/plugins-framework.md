@@ -1,8 +1,22 @@
 # Plugins Framework
 
-TODO: rewrite intro
+<!-- TODO: integrate and remove doc/dev/plugins-framework_old.md -->
+
+The key database of Elektra basically passes a `KeySet` from plugin to plugin.
+Plugins can be chained or nested.
+The library `libelektra-kdb` only interacts with one special type of plugin called a _backend plugin_, usually with other plugins nested below.
+All other plugins must be called by these backend plugins.
+Backend plugins then usually implement some kind of plugin chaining.
 
 ## Contract
+
+In theory a plugin could do pretty much anything.
+In practice, however, plugins must meet certain expectations, described by the plugin's contract.
+
+Every plugin should provide a full contract to give information how it
+will work with other plugins. Most parts of the contract are obligatory.
+Plugins cannot be loaded without this information. For example, plugins
+must provide the clause `infos/version`.
 
 <!-- TODO: explain contract in general:
 	- explain open, init, get, set, commit, error, close operation basics
@@ -32,18 +46,14 @@ TODO: rewrite intro
 
 <!-- TODO: explain open, init, set, commit, error, close in detail -->
 
-## Types of Plugins
+## Plugin providers
 
-In theory a plugin could do pretty much anything.
-However, `libelektra-kdb` only interacts with one special type of plugin called a _backend plugin_.
-All other plugins must be called by these backend plugins.
-
-In addition to backend plugins there a few other common types of plugins that will be explained below.
+Next to the backend plugins, already introduced before, there a few other common types of plugins that will be explained below.
 
 ### Backend Plugins
 
-Backend plugins are a very special type of plugin.
-Compared to other plugins they have a much more strict contract for what they may and may not do in certain situations.
+Backend plugins are a special type of plugin.
+Compared to other plugins they have a more strict contract for what they may and may not do in certain situations.
 This is because they are the only plugins that are invoked by `libelektra-kdb`.
 Other plugins are normally called by a backend plugin, although any plugin may call another.
 
