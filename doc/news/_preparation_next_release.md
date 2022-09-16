@@ -335,6 +335,8 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - Bump Alpine Linux to 3.16.0. _(Mihael Pranjić @mpranj)_
 - The Docker image for building the documentation is now [based on Debian Bullseye](../../scripts/docker/debian/bullseye/doc.Dockerfile). _(Maximilian Irlinger @atmaxinger)_
+- Add Fedora 36 images. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -345,6 +347,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Jenkins
 
 - We no longer build and test on Ubuntu Xenial and Debian Stretch due to outdated CMake versions _(Maximilian Irlinger @atmaxinger)_
+- Add Fedora 36 builds, remove Fedora 34 builds. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -354,6 +357,7 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Cirrus
 
 - Update FreeBSD images to 13.1 and 12.3 and update packages before builds. _(Mihael Pranjić @mpranj)_
+- Bump Fedora builds to Fedora 36. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

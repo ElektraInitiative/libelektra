@@ -1,3 +1,8 @@
+## Ignored compiler errors
+
+### GCC
+- Ignoring some "maybe-uninitialized" upstream errors from libstdc++ 12.x.x in commit bd1543a1b98fb988f01bedcc266b35b5c4d6240f
+
 ## disabled tests
 
 src/plugins/lua/CMakeLists.txt  for APPLE
