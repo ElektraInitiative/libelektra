@@ -71,11 +71,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - fail if either the spec or parentKey parameter of elektraSpecloadSendSpec is NULL _(@hannes99)_
 
-### <<Plugin>>
+### quickdump
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- elektraQuickdumpSet: don't fclose if stdout _(@hannes99)_
 
 ### <<Plugin>>
 
