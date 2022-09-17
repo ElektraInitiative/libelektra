@@ -292,6 +292,32 @@ static void test_remove (bool directFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_sendspec (void)
+{
+	printf ("test sendspec\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	ksAppendKey (ks, keyNew (PARENT_KEY "/key", KEY_META, "description", "abc", KEY_META, "opt/help", "def", KEY_END));
+	KeySet * conf = ksNew (2, keyNew ("/file", KEY_VALUE, srcdir_file ("specload/spec.quickdump"), KEY_END), KS_END);
+	Key * parentKey = keyNew (PARENT_KEY, KEY_END);
+
+	PLUGIN_OPEN ("specload");
+
+	// TODO: if elektraSpecloadSendSpec should not fail as expected stdout will be closed with the current quickdump implementation
+
+	int tmp = elektraSpecloadSendSpec (plugin, NULL, parentKey);
+	succeed_if (tmp == ELEKTRA_PLUGIN_STATUS_ERROR, "sendspec should return an error if spec is NULL");
+
+	tmp = elektraSpecloadSendSpec (plugin, ks, NULL);
+	succeed_if (tmp == ELEKTRA_PLUGIN_STATUS_ERROR, "sendspec should return an error if parentKey is NULL");
+
+	tmp = elektraSpecloadSendSpec (plugin, NULL, NULL);
+	succeed_if (tmp == ELEKTRA_PLUGIN_STATUS_ERROR, "sendspec should return an error if spec and parentKey are NULL");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 
 int main (int argc, char ** argv)
 {
@@ -314,6 +340,8 @@ int main (int argc, char ** argv)
 
 	test_newfile (true);
 	test_newfile (false);
+
+	test_sendspec ();
 
 	print_result ("testmod_specload");
 
