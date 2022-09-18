@@ -580,7 +580,7 @@ int mountVersion (KDB * kdb, Key * errorKey);
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
 int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend);
 int initHooks (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
-void freeHooks(KDB * kdb, Key * errorKey);
+void freeHooks (KDB * kdb, Key * errorKey);
 
 const Key * mountGetMountpoint (KDB * handle, Key * where);
 Plugin * mountGetBackend (KDB * handle, Key * key);

@@ -1008,7 +1008,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// TOOD (atmaxinger): improve
-	if(initHooks (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
+	if (initHooks (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting hooks failed. Please see warning of concrete plugin");
 		ksDel (elektraKs);
@@ -1129,7 +1129,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 		}
 	}
 
-	if(handle->hooks)
+	if (handle->hooks)
 	{
 		freeHooks (handle, errorKey);
 	}
@@ -1899,7 +1899,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}*/
 
-	if(goptsActive && !handle->hooks->gopts->kdbHookGoptsGet (handle->hooks->gopts->plugin, dataKs, parentKey))
+	if (goptsActive && !handle->hooks->gopts->kdbHookGoptsGet (handle->hooks->gopts->plugin, dataKs, parentKey))
 	{
 		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 		goto error;

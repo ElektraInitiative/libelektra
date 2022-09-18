@@ -1,48 +1,48 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include <kdbinternal.h>
 
-void freeHooks(KDB * kdb, Key * errorKey)
+void freeHooks (KDB * kdb, Key * errorKey)
 {
-	if(kdb->hooks == NULL)
+	if (kdb->hooks == NULL)
 	{
 		return;
 	}
 
-	if(kdb->hooks->gopts != NULL)
+	if (kdb->hooks->gopts != NULL)
 	{
 		elektraPluginClose (kdb->hooks->gopts->plugin, errorKey);
-		free(kdb->hooks->gopts);
+		free (kdb->hooks->gopts);
 		kdb->hooks->gopts = NULL;
 	}
 
-	free(kdb->hooks);
+	free (kdb->hooks);
 	kdb->hooks = NULL;
 }
 
 static struct _HookPluginGopts * initHooksGopts (Plugin * plugin)
 {
-	if(!plugin)
+	if (!plugin)
 	{
 		return NULL;
 	}
 
-	struct _HookPluginGopts * hook = elektraCalloc (sizeof(struct _HookPluginGopts));
+	struct _HookPluginGopts * hook = elektraCalloc (sizeof (struct _HookPluginGopts));
 	hook->plugin = plugin;
 
-	hook->kdbHookGoptsGet = (kdbHookGoptsGetPtr) elektraPluginGetFunction(plugin, "hooks/gopts/get");
+	hook->kdbHookGoptsGet = (kdbHookGoptsGetPtr) elektraPluginGetFunction (plugin, "hooks/gopts/get");
 	return hook;
 }
 
-static Plugin * loadPlugin(const char * pluginName, KeySet * config, KeySet * modules, Key * errorKey)
+static Plugin * loadPlugin (const char * pluginName, KeySet * config, KeySet * modules, Key * errorKey)
 {
-	Key* openKey = keyDup (errorKey, KEY_CP_ALL);
+	Key * openKey = keyDup (errorKey, KEY_CP_ALL);
 
 	Plugin * plugin = elektraPluginOpen (pluginName, modules, config, openKey);
 
@@ -57,7 +57,7 @@ static Plugin * loadPlugin(const char * pluginName, KeySet * config, KeySet * mo
 	return plugin;
 }
 
-static bool isGoptsEnabledByContract(KDB * kdb)
+static bool isGoptsEnabledByContract (KDB * kdb)
 {
 	bool goptsEnabled = false;
 
@@ -69,7 +69,7 @@ static bool isGoptsEnabledByContract(KDB * kdb)
 	goptsEnabled = ksGetSize (cut) > 0;
 
 	keyDel (cutPoint);
-	ksDel(ksTemp);
+	ksDel (ksTemp);
 	ksDel (cut);
 
 	return goptsEnabled;
@@ -80,12 +80,12 @@ int initHooks (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 	freeHooks (kdb, errorKey);
 	kdb->hooks = elektraCalloc (sizeof (Hooks));
 
-	if(isGoptsEnabledByContract (kdb))
+	if (isGoptsEnabledByContract (kdb))
 	{
 		kdb->hooks->gopts = initHooksGopts (loadPlugin ("gopts", config, modules, errorKey));
 		kdb->hooks->goptsEnabled = kdb->hooks->gopts != NULL;
 
-		if(kdb->hooks->gopts == NULL)
+		if (kdb->hooks->gopts == NULL)
 		{
 			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Hook for 'gopts' enabled but no plugin found");
 		}
@@ -93,4 +93,3 @@ int initHooks (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 
 	return 0;
 }
-
