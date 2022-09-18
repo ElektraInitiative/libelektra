@@ -1,6 +1,6 @@
 # Hooks
 
-Hooks are central points in the KDB lifecycle, where specialized plugins are called. 
+Hooks are central points in the KDB lifecycle, where specialized plugins are called.
 Hooks are the new mechanism that will replace the old global plugins, [as specified in this decision](../decisions/global_plugins.md).
 
 ## Selecting which Plugin will be used for a specific hook
@@ -21,4 +21,3 @@ Other hooks might require multiple exported functions.
 1. Hooks are initilized within `kdbOpen` after the contract has been processed. This includes loading the plugins.
 2. The appropriate hooks are called within each `kdbGet` and `kdbSet` call.
 3. Hooks are deinitialized within `kdbClose`. This includes unloading the plugins.
-
