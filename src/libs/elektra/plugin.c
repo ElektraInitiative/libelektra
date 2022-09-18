@@ -167,7 +167,7 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	plugin->kdbGet (plugin, exports, pk);
 	ksRewind (exports);
 	keyAddBaseName (pk, "exports");
-	keyAddBaseName (pk, name);
+	keyAddName (pk, name); // we may not want to escape for hooks exports
 	Key * keyFunction = ksLookup (exports, pk, 0);
 	if (!keyFunction)
 	{
