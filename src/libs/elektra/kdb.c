@@ -1000,11 +1000,26 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// TODO (atmaxinger): improve
+	bool existingError = keyGetMeta (errorKey, "error") != NULL;
+
+	if (!existingError)
+	{
+		// set a dummy value to block errors
+		// any errors that occur will be converted into warnings
+		keySetMeta (errorKey, "error", "blocked");
+	}
+
 	if (initHooks (handle, handle->modules, contract, errorKey) == -1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Initializing hooks failed. Please see warning of concrete plugin");
 		ksDel (elektraKs);
 		goto error;
+	}
+
+	if (!existingError)
+	{
+		// remove dummy error again
+		keySetMeta (errorKey, "error", NULL);
 	}
 
 	// Step 5: process contract
