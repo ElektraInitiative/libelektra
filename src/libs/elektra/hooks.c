@@ -29,11 +29,11 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin)
 	return 0;
 }
 
-static Plugin * loadPlugin (const char * pluginName, KeySet * config, KeySet * modules, Key * errorKey)
+static Plugin * loadPlugin (const char * pluginName,KeySet * modules, Key * errorKey)
 {
 	Key * openKey = keyDup (errorKey, KEY_CP_ALL);
 
-	Plugin * plugin = elektraPluginOpen (pluginName, modules, config, openKey);
+	Plugin * plugin = elektraPluginOpen (pluginName, modules, ksNew (0, KS_END), openKey);
 
 	if (!plugin)
 	{
@@ -55,11 +55,11 @@ static bool isGoptsEnabledByContract (const KeySet * contract)
 	return isEnabled;
 }
 
-int initHooks (KDB * kdb, KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
+int initHooks (KDB * kdb, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
 	freeHooks (kdb, errorKey);
 
-	if (isGoptsEnabledByContract (contract) && !initHooksGopts (kdb, loadPlugin ("gopts", config, modules, errorKey)))
+	if (isGoptsEnabledByContract (contract) && !initHooksGopts (kdb, loadPlugin ("gopts", modules, errorKey)))
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Hook for 'gopts' enabled but no plugin found");
 	}

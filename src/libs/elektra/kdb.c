@@ -1000,7 +1000,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// TODO (atmaxinger): improve
-	if (initHooks (handle, ksDup (elektraKs), handle->modules, contract, errorKey) == -1)
+	if (initHooks (handle, handle->modules, contract, errorKey) == -1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting hooks failed. Please see warning of concrete plugin");
 		ksDel (elektraKs);
