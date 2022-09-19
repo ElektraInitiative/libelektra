@@ -2,7 +2,7 @@
 
 Hooks are central points in the KDB lifecycle, where specialized plugins are called.
 
-## Selecting which Plugin will be used for a specific hook
+## Selecting which Plugin will be Used for a Specific Hook
 
 Currently, the names of the plugins are hard-coded.
 This decision was made, because these plugins are meant to fulfil very specific purposes.
