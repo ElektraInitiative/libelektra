@@ -16,7 +16,7 @@ These exports are of the form `system:/elektra/modules/<plugin name>/exports/hoo
 
 For example, the `gopts` hook only requires the `get` function. A plugin that wants to act as a `gopts` hook therefore has to export `system:/elektra/modules/<plugin name>/exports/hooks/gopts/get`.
 
-Other hooks might require multiple exported functions.
+Other hooks (e.g. `spec`) might require multiple exported functions.
 
 ## Lifecycle
 
