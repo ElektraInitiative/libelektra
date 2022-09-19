@@ -37,7 +37,7 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 	kdb->hooks.gopts.plugin = plugin;
 
-	if ((kdb->hooks.gopts.kdbHookGoptsGet = (kdbHookGoptsGetPtr) getFunction (plugin, "hooks/gopts/get", errorKey)) == NULL)
+	if ((kdb->hooks.gopts.kdbHookGoptsGet = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
 	{
 		return -1;
 	}
