@@ -45,7 +45,7 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 	return 0;
 }
 
-static KeySet * getPluginConfigFromContract(const char * pluginName, const KeySet * contract)
+static KeySet * getPluginConfigFromContract (const char * pluginName, const KeySet * contract)
 {
 	KeySet * tmpContract = ksDup (contract);
 	KeySet * config = ksNew (0, KS_END);
@@ -59,7 +59,7 @@ static KeySet * getPluginConfigFromContract(const char * pluginName, const KeySe
 		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
 		{
 			const char * pluginNameOfConfig = keyBaseName (cur);
-			if(strcmp (pluginName, pluginNameOfConfig) != 0)
+			if (strcmp (pluginName, pluginNameOfConfig) != 0)
 			{
 				break;
 			}
@@ -92,7 +92,7 @@ static Plugin * loadPlugin (const char * pluginName, KeySet * global, KeySet * m
 {
 	Key * openKey = keyDup (errorKey, KEY_CP_ALL);
 
-	KeySet * config = getPluginConfigFromContract(pluginName, contract);
+	KeySet * config = getPluginConfigFromContract (pluginName, contract);
 
 	Plugin * plugin = elektraPluginOpen (pluginName, modules, config, openKey);
 
@@ -122,7 +122,8 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 {
 	freeHooks (kdb, errorKey);
 
-	if (isGoptsEnabledByContract (contract) && initHooksGopts (kdb, loadPlugin ("gopts", kdb->global, modules, contract, errorKey), errorKey) != 0)
+	if (isGoptsEnabledByContract (contract) &&
+	    initHooksGopts (kdb, loadPlugin ("gopts", kdb->global, modules, contract, errorKey), errorKey) != 0)
 	{
 		goto error;
 	}
