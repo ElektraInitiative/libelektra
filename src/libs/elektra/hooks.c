@@ -29,7 +29,7 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin)
 	return 0;
 }
 
-static Plugin * loadPlugin (const char * pluginName,KeySet * modules, Key * errorKey)
+static Plugin * loadPlugin (const char * pluginName, KeySet * modules, Key * errorKey)
 {
 	Key * openKey = keyDup (errorKey, KEY_CP_ALL);
 
