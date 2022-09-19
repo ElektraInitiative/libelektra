@@ -1,7 +1,6 @@
 # Hooks
 
 Hooks are central points in the KDB lifecycle, where specialized plugins are called.
-Hooks are the new mechanism that will replace the old global plugins, [as specified in this decision](../decisions/global_plugins.md).
 
 ## Selecting which Plugin will be used for a specific hook
 
