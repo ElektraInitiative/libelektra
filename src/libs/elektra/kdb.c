@@ -1009,7 +1009,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		keySetMeta (errorKey, "error", "blocked");
 	}
 
-	if (initHooks (handle, handle->modules, contract, errorKey) == -1)
+	if (initHooks (handle, elektraKs, handle->modules, contract, errorKey) == -1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Initializing hooks failed. Please see warning of concrete plugin");
 		ksDel (elektraKs);

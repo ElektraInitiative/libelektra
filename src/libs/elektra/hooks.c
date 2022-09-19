@@ -71,7 +71,7 @@ static bool isGoptsEnabledByContract (const KeySet * contract)
 	return isEnabled;
 }
 
-int initHooks (KDB * kdb, KeySet * modules, const KeySet * contract, Key * errorKey)
+int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
 	freeHooks (kdb, errorKey);
 
