@@ -18,7 +18,7 @@ void freeHooks (KDB * kdb, Key * errorKey)
 
 static size_t getFunction(Plugin * plugin, const char * functionName, Key * errorKey)
 {
-	size_t result = elektraPluginGetFunction (plugin, "hooks/gopts/get");
+	size_t result = elektraPluginGetFunction (plugin, functionName);
 
 	if(result == 0)
 	{

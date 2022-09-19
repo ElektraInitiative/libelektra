@@ -153,7 +153,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
  * Retrieves a function exported by a plugin.
  *
  * @param  plugin Plugin handle
- * @param  name   Function name
+ * @param  name   Function name. Must be a valid key name suffix. May not contain the sequence '..'
  * @return        Pointer to function. NULL if function not found or not enough memory available
  */
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
@@ -161,13 +161,21 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	ELEKTRA_NOT_NULL (plugin);
 	ELEKTRA_NOT_NULL (name);
 
+	if (strstr(name, "..") != NULL)
+	{
+		// The sequence ".." is contained in the key.
+		// For security and stability purposes we do not allow that.
+		return 0;
+	}
+
 	KeySet * exports = ksNew (0, KS_END);
 	Key * pk = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (pk, plugin->name);
 	plugin->kdbGet (plugin, exports, pk);
 	ksRewind (exports);
 	keyAddBaseName (pk, "exports");
-	keyAddName (pk, name); // we may not want to escape for hooks exports
+	keyAddName (pk, name);
+
 	Key * keyFunction = ksLookup (exports, pk, 0);
 	if (!keyFunction)
 	{
