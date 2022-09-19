@@ -6,6 +6,8 @@ Hooks are the new mechanism that will replace the old global plugins, [as specif
 ## Selecting which Plugin will be used for a specific hook
 
 Currently, the names of the plugins are hard-coded.
+This decision was made, because these plugins are meant to fulfil very specific purposes.
+A symlink replacing the shared library file of the plugin could be used to change the implementation.
 
 ## Interface of the hooks
 
