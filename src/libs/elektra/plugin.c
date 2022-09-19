@@ -163,7 +163,7 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 
 	if (strstr (name, "..") != NULL)
 	{
-		// The sequence ".." is contained in the key.
+		// The sequence ".." is contained in the name.
 		// For security and stability purposes we do not allow that.
 		return 0;
 	}
