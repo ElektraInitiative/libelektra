@@ -46,29 +46,20 @@ static Plugin * loadPlugin (const char * pluginName, KeySet * config, KeySet * m
 	return plugin;
 }
 
-static bool isGoptsEnabledByContract (KDB * kdb)
+static bool isGoptsEnabledByContract (const KeySet * contract)
 {
-	bool goptsEnabled = false;
+	KeySet * dupContract = ksDup (contract); // We need to duplicate because contract is const, and ksLookupByName doesn't take const
+	bool isEnabled = ksLookupByName (dupContract, "system:/elektra/contract/mountglobal/gopts", 0) != NULL;
+	ksDel (dupContract);
 
-	KeySet * ksTemp = ksDup (kdb->global);
-	Key * cutPoint = keyNew ("system:/elektra/gopts", KEY_END);
-
-	KeySet * cut = ksCut (ksTemp, cutPoint);
-
-	goptsEnabled = ksGetSize (cut) > 0;
-
-	keyDel (cutPoint);
-	ksDel (ksTemp);
-	ksDel (cut);
-
-	return goptsEnabled;
+	return isEnabled;
 }
 
-int initHooks (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
+int initHooks (KDB * kdb, KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
 	freeHooks (kdb, errorKey);
 
-	if (isGoptsEnabledByContract (kdb) && !initHooksGopts (kdb, loadPlugin ("gopts", config, modules, errorKey)))
+	if (isGoptsEnabledByContract (contract) && !initHooksGopts (kdb, loadPlugin ("gopts", config, modules, errorKey)))
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Hook for 'gopts' enabled but no plugin found");
 	}

@@ -999,17 +999,17 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
-	// Step 5: process contract
-	if (contract != NULL && !ensureContract (handle, contract, errorKey))
+	// TODO (atmaxinger): improve
+	if (initHooks (handle, ksDup (elektraKs), handle->modules, contract, errorKey) == -1)
 	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting hooks failed. Please see warning of concrete plugin");
 		ksDel (elektraKs);
 		goto error;
 	}
 
-	// TOOD (atmaxinger): improve
-	if (initHooks (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
+	// Step 5: process contract
+	if (contract != NULL && !ensureContract (handle, contract, errorKey))
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting hooks failed. Please see warning of concrete plugin");
 		ksDel (elektraKs);
 		goto error;
 	}
