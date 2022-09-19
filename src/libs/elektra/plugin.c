@@ -161,7 +161,7 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	ELEKTRA_NOT_NULL (plugin);
 	ELEKTRA_NOT_NULL (name);
 
-	if (strstr(name, "..") != NULL)
+	if (strstr (name, "..") != NULL)
 	{
 		// The sequence ".." is contained in the key.
 		// For security and stability purposes we do not allow that.
