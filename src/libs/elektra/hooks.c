@@ -16,7 +16,19 @@ void freeHooks (KDB * kdb, Key * errorKey)
 	}
 }
 
-static int initHooksGopts (KDB * kdb, Plugin * plugin)
+static size_t getFunction(Plugin * plugin, const char * functionName, Key * errorKey)
+{
+	size_t result = elektraPluginGetFunction (plugin, "hooks/gopts/get");
+
+	if(result == 0)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Plugin '%s' does not implement function '%s'", plugin->name, functionName);
+	}
+
+	return result;
+}
+
+static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 {
 	if (!plugin)
 	{
@@ -24,7 +36,11 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin)
 	}
 
 	kdb->hooks.gopts.plugin = plugin;
-	kdb->hooks.gopts.kdbHookGoptsGet = (kdbHookGoptsGetPtr) elektraPluginGetFunction (plugin, "hooks/gopts/get");
+
+	if((kdb->hooks.gopts.kdbHookGoptsGet = (kdbHookGoptsGetPtr) getFunction (plugin, "hooks/gopts/get", errorKey)) == NULL)
+	{
+		return -1;
+	}
 
 	return 0;
 }
@@ -59,10 +75,14 @@ int initHooks (KDB * kdb, KeySet * modules, const KeySet * contract, Key * error
 {
 	freeHooks (kdb, errorKey);
 
-	if (isGoptsEnabledByContract (contract) && !initHooksGopts (kdb, loadPlugin ("gopts", modules, errorKey)))
+	if (isGoptsEnabledByContract (contract) && initHooksGopts (kdb, loadPlugin ("gopts", modules, errorKey), errorKey) != 0)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Hook for 'gopts' enabled but no plugin found");
+		goto error;
 	}
 
 	return 0;
+
+error:
+	freeHooks (kdb, errorKey);
+	return -1;
 }
