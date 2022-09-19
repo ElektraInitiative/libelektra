@@ -1891,6 +1891,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// Step 13: run gopts (if enabled)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME);
+	keySetNamespace (parentKey, KEY_NS_CASCADING);
 	/*keySetNamespace (cascadingParent, KEY_NS_CASCADING);
 	set_bit (parentKey, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 	if (goptsActive && !goptsGet (dataKs, cascadingParent))
