@@ -10,34 +10,23 @@
 
 void freeHooks (KDB * kdb, Key * errorKey)
 {
-	if (kdb->hooks == NULL)
+	if (kdb->hooks.gopts.plugin != NULL)
 	{
-		return;
+		elektraPluginClose (kdb->hooks.gopts.plugin, errorKey);
 	}
-
-	if (kdb->hooks->gopts != NULL)
-	{
-		elektraPluginClose (kdb->hooks->gopts->plugin, errorKey);
-		free (kdb->hooks->gopts);
-		kdb->hooks->gopts = NULL;
-	}
-
-	free (kdb->hooks);
-	kdb->hooks = NULL;
 }
 
-static struct _HookPluginGopts * initHooksGopts (Plugin * plugin)
+static int initHooksGopts (KDB * kdb, Plugin * plugin)
 {
 	if (!plugin)
 	{
-		return NULL;
+		return -1;
 	}
 
-	struct _HookPluginGopts * hook = elektraCalloc (sizeof (struct _HookPluginGopts));
-	hook->plugin = plugin;
+	kdb->hooks.gopts.plugin = plugin;
+	kdb->hooks.gopts.kdbHookGoptsGet = (kdbHookGoptsGetPtr) elektraPluginGetFunction (plugin, "hooks/gopts/get");
 
-	hook->kdbHookGoptsGet = (kdbHookGoptsGetPtr) elektraPluginGetFunction (plugin, "hooks/gopts/get");
-	return hook;
+	return 0;
 }
 
 static Plugin * loadPlugin (const char * pluginName, KeySet * config, KeySet * modules, Key * errorKey)
@@ -78,17 +67,10 @@ static bool isGoptsEnabledByContract (KDB * kdb)
 int initHooks (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 {
 	freeHooks (kdb, errorKey);
-	kdb->hooks = elektraCalloc (sizeof (Hooks));
 
-	if (isGoptsEnabledByContract (kdb))
+	if (isGoptsEnabledByContract (kdb) && !initHooksGopts (kdb, loadPlugin ("gopts", config, modules, errorKey)))
 	{
-		kdb->hooks->gopts = initHooksGopts (loadPlugin ("gopts", config, modules, errorKey));
-		kdb->hooks->goptsEnabled = kdb->hooks->gopts != NULL;
-
-		if (kdb->hooks->gopts == NULL)
-		{
-			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Hook for 'gopts' enabled but no plugin found");
-		}
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Hook for 'gopts' enabled but no plugin found");
 	}
 
 	return 0;

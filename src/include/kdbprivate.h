@@ -365,8 +365,16 @@ struct _KDB
 			up their parts of the global keyset, which they do not need any more.*/
 
 	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
-	Hooks * hooks;
 	KeySet * backends;
+
+	struct
+	{
+		struct
+		{
+			struct _Plugin* plugin;
+			kdbHookGoptsGetPtr kdbHookGoptsGet;
+		} gopts;
+	} hooks;
 };
 
 /**
@@ -412,18 +420,6 @@ struct _Plugin
 			up their parts of the global keyset, which they do not need any more.*/
 
 	KeySet * modules; /*!< A list of all currently loaded modules.*/
-};
-
-struct _HookPluginGopts
-{
-	struct _Plugin* plugin;
-	kdbHookGoptsGetPtr kdbHookGoptsGet;
-};
-
-struct _Hooks
-{
-	struct _HookPluginGopts* gopts;
-	bool goptsEnabled;
 };
 
 // FIXME (kodebach): document
