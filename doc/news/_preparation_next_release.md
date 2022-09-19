@@ -67,11 +67,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### specload
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- fail if either the spec or parentKey parameter of elektraSpecloadSendSpec is NULL _(@hannes99)_
 
 ### <<Plugin>>
 
