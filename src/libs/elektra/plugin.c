@@ -165,6 +165,7 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	{
 		// The sequence ".." is contained in the name.
 		// For security and stability purposes we do not allow that.
+		ELEKTRA_LOG_WARNING ("Can't get function '%s' from plugin because '..' is not allowed in function name", name);
 		return 0;
 	}
 
