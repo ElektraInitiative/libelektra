@@ -1,7 +1,8 @@
-# Global Plugins
+# Hooks in KDB
 
 ## Problem
 
+In the current global plugins implementation:
 - Notification does not happen once after final commit, but for every
   plugin
 - Problems in spec plugin
@@ -11,21 +12,23 @@ We need to clean up and simplify the placement.
 
 ## Constraints
 
-- Plugin interface should be the same. Many plugins, e.g. dbus, should work
+- Plugin interface should be the same. Many plugins, where appropriate, e.g. dbus, should work
   as global plugins w/o any change in code (i.e. only changes
   in contract)
+
 - Global plugins might depend on specific applications or specific
   mount points (it should be possible to enforce global plugins for specific
   applications).
 
 ## Assumptions
 
-- Elektra is useful with following types of global plugins:
+- Elektra is useful with following types of plugins:
   - mmap
   - spec
   - gopts
   - receiving of notifications (internalnotification)
   - sending of notifications (dbus, ...)
+  - recording of changes
 - There are not too many types of global plugins, not more than 10
 
 ## Considered Alternatives
@@ -44,6 +47,8 @@ These hooks are not shared, so no `list` plugin is needed.
 
 Installed plugins will be used.
 
+In the beginning, we'll hardcode the names of the plugins. For changing those plugins symlinks will have to be used.
+
 ## Rationale
 
 - allows adding more types of plugins later, also post-1.0
@@ -57,6 +62,7 @@ Installed plugins will be used.
 - remove `list` plugin
 - remove plugins that stop working or disallow global positioning for them
 - call `spec` as needed several times
+- remove current global plugins mechanism
 
 ## Related Decisions
 

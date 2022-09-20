@@ -46,7 +46,7 @@ section here.
 
 ## In Progress
 
-- [Global Plugins](global_plugins.md) (@mpranj)
+- [Hooks](hooks.md) (@atmaxinger)
 - [Ensure](ensure.md) (@kodebach)
 - [Capabilities](capabilities.md) (@markus2330)
 - [Error Semantics](error_semantics.md) (API)
