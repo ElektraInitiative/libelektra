@@ -8,6 +8,12 @@
 
 #include <kdbinternal.h>
 
+/**
+ * Uninitializes and frees all hooks in the passed KDB handle.
+ *
+ * @param kdb the KDB handle where the hooks should be freed
+ * @param errorKey the key which holds errors and warnings which were issued
+ */
 void freeHooks (KDB * kdb, Key * errorKey)
 {
 	if (kdb->hooks.gopts.plugin != NULL)
@@ -59,6 +65,11 @@ static KeySet * getPluginConfigFromContract (const char * pluginName, const KeyS
 		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
 		{
 			const char * pluginNameOfConfig = keyBaseName (cur);
+
+			// only handle config for the specified plugin
+			// we might be able to replace this check by modifying the key mountContractRoot,
+			// but I just copied this function from the previous global plugins implementation
+			// and it works for now.
 			if (strcmp (pluginName, pluginNameOfConfig) != 0)
 			{
 				break;
@@ -118,6 +129,18 @@ static bool isGoptsEnabledByContract (const KeySet * contract)
 	return isEnabled;
 }
 
+/**
+ * Initializes the hooks stored in the passed KDB handle.
+ * If the handle already contains initialized hooks, they will be reinitialized, including unloading and loading of their plugins.
+ * Parameters @p config and @p contract will be used to determine which hooks to populate.
+ *
+ * @param kdb the KDB instance where the hooks should be initialized
+ * @param config KeySet containing the current config in @p system:/elektra namespace
+ * @param modules the current list of loaded modules
+ * @param contract the contract passed to @p kdbOpen
+ * @param errorKey the key which holds errors and warnings which were issued
+ * @return 0 on success, -1 on failure
+ */
 int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
 	freeHooks (kdb, errorKey);
