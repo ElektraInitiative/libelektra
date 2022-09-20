@@ -151,6 +151,15 @@ static bool isGoptsEnabledByContract (const KeySet * contract)
  */
 int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
+	bool existingError = ksLookupByName (keyMeta (errorKey), "meta:/error", 0) != NULL;
+
+	if (!existingError)
+	{
+		// set a dummy value to block errors
+		// any errors that occur will be converted into warnings
+		keySetMeta (errorKey, "meta:/error", "blocked");
+	}
+
 	freeHooks (kdb, errorKey);
 
 	if (isGoptsEnabledByContract (contract) &&
@@ -159,9 +168,22 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 		goto error;
 	}
 
+	if (!existingError)
+	{
+		// remove dummy error again
+		keySetMeta (errorKey, "meta:/error", NULL);
+	}
+
 	return 0;
 
 error:
 	freeHooks (kdb, errorKey);
+
+	if (!existingError)
+	{
+		// remove dummy error again
+		keySetMeta (errorKey, "meta:/error", NULL);
+	}
+
 	return -1;
 }
