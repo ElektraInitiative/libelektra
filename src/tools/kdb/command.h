@@ -9,11 +9,11 @@
 #ifndef ELEKTRA_KDB_COMMAND_H
 #define ELEKTRA_KDB_COMMAND_H
 
-#include <colors.h>
-
 #include <kdb.h>
+#include <colors.h>
 #include <stdbool.h>
 #include <unistd.h>
+
 
 #define CLI_BASE_KEY "/sw/elektra/kdb/#0/current"
 
@@ -109,6 +109,7 @@
 		}                                                                                                                          \
 		sleep (1);                                                                                                                 \
 	}
+
 
 // only print if we are at least as 'verbose' as minLogLevel
 #define CLI_PRINT(minLogLevel, fmt, ...) cliPrint (fmtBuffer, logLevel, minLogLevel, fmt, __VA_ARGS__)

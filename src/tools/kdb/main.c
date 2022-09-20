@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+
 #include <basename.h>
 #include <cmerge.h>
 #include <dirname.h>
