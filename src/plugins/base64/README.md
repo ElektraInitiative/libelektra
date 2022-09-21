@@ -123,7 +123,7 @@ kdb meta-set user:/tests/base64/encoded type binary
 
 # Receive key data (the `\x0` at the end marks the end of the string)
 kdb get user:/tests/base64/encoded
-#> \x76\x61\x6c\x75\x65\x0
+#> \x76\x61\x6c\x75\x65\x00
 
 # Undo modifications
 kdb rm -r user:/tests/base64
