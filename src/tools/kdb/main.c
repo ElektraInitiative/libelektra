@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <get.h>
+
 #include <command.h>
 #include <kdb.h>
 #include <kdbgopts.h>
@@ -19,7 +21,7 @@
 extern char ** environ;
 
 command subcommands[] = {
-	{NULL, NULL, NULL},
+	{ "get", addGetSpec, execGet },
 };
 
 void printWarnings (Key * errorKey)
