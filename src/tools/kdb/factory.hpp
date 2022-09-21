@@ -35,7 +35,8 @@
 #include <file.hpp>
 #include <find.hpp>
 #include <gen.hpp>
-#include <get.hpp>
+#include <globalmount.hpp>
+#include <globalumount.hpp>
 #include <import.hpp>
 #include <listcommands.hpp>
 #include <ls.hpp>
@@ -88,7 +89,6 @@ public:
 	Factory () : m_factory ()
 	{
 		// TODO: to add a new command, 2.) add a line here  -> and you are done
-		m_factory.insert (std::make_pair ("get", std::make_shared<Cnstancer<GetCommand>> ()));
 		m_factory.insert (std::make_pair ("set", std::make_shared<Cnstancer<SetCommand>> ()));
 		m_factory.insert (std::make_pair ("rm", std::make_shared<Cnstancer<RemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("ls", std::make_shared<Cnstancer<LsCommand>> ()));
