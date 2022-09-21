@@ -3,6 +3,7 @@
 ## Problem
 
 In the current global plugins implementation:
+
 - Notification does not happen once after final commit, but for every
   plugin
 - Problems in spec plugin
