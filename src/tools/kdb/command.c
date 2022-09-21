@@ -62,6 +62,11 @@ Key * expandKeyName (const char * name, bool * resolved)
 Key * getKeyFromOptions (const char * rawName, Key * errorKey, bool verbose)
 {
 	bool resolved = false;
+	if (!elektraKeyNameValidate (rawName, true) && rawName[0] != '+')
+	{
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "'%s' is not valid key name.", rawName);
+		return NULL;
+	}
 	Key * result = expandKeyName (rawName, &resolved);
 	if (result == NULL)
 	{

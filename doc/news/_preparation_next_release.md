@@ -130,7 +130,8 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### ansible
 
-- Add `ansible` plugin for exporting keysets as [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra) playbooks. _(Maximilian Irlinger @atmaxinger)_
+- Add `ansible` plugin for exporting keysets as [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra) playbooks. _(
+  Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -249,6 +250,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - The `dup` method of `Key` now returns a wrapped object _(Maximilian Irlinger @atmaxinger)_
 - Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger @atmaxinger)_
 - Include the header `cstdint` in `key.hpp`. It is needed for an enum of type `std::uint8_t` _(Florian Lindner @flo91)_
+- Add overloads for `Key::isBelow`, `Key::isBelowOrSame` and `Key::isDirectBelow` that accept a string as the key name _(Maximilian Irlinger
+  @atmaxinger)_
 
 ### <<Binding>>
 
@@ -291,9 +294,15 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
+### KDB
 
-- <<TODO>>
+- add basic C framework, helper functions and new `get` implementation _(@hannes99)_
+  - Logging levels and error/warning outputs are now handled by the new CLI framework, and not by commands individually.
+  - Using `opts` for command spec allows automatic generation of help messages and handles all the parsing.
+  - The `--help` flag will now show a description of how to use the command, instead of opening the man page.
+  - Not providing the correct options or arguments the commands expect will now result in a short error message describing what is wrong,
+    this is generated my `opts`.
+  - `--profile` is not yet supported in the new `C` version (#4965), other that everything that worked in `C++` still works
 - <<TODO>>
 - <<TODO>>
 
@@ -445,7 +454,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Add macro `succeed_if_keyset_contains_key_with_string` to assert that a certain key with a certain value must exist. _(Maximilian Irlinger @atmaxinger)_
+- Add macro `succeed_if_keyset_contains_key_with_string` to assert that a certain key with a certain value must exist. _(Maximilian Irlinger
+  @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -557,7 +567,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Website
 
-The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
+The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we
+changed:
 
 - <<TODO>>
 - <<TODO>>
@@ -617,7 +628,8 @@ Already built API documentation can be found
 
 Subscribe to the [RSS feed](https://www.libelektra.org/news/feed.rss) to always get the release notifications.
 
-If you also want to participate, or for any questions and comments, please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
+If you also want to participate, or for any questions and comments, please contact us via our issue
+tracker [on GitHub](http://issues.libelektra.org).
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/<<VERSION>>-release)
 
