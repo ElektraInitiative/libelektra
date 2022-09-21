@@ -10,6 +10,7 @@
 #define ELEKTRA_KDB_COMMAND_H
 
 #include <kdb.h>
+#include <stdbool.h>
 
 #define CLI_BASE_KEY "/sw/elektra/kdb/#0/current"
 
@@ -63,6 +64,28 @@
 		sleep (1);                                                                                                                 \
 	}
 
+/**
+ * Expands a keyname if it contains a bookmark. If @name does not contain a bookmark ref a copy of @name is returned.
+ *
+ * @param name the keyname that might contain a bookmark, and where the expanded name should be saved
+ * @param ks keyset that contains information about the bookmarks
+ * @param resolved will be set to true iff a bookmark was resolved successfully
+ *
+ * @return NULL if the bookmark could not be resolved, NULL was passed as @ks or @name
+ * @return string of the full key otherwise, has to be freed after usage
+ */
+const char * expandKeyName (KeySet * ks, const char * name, bool * resolved);
+
+/**
+ * Get a key name string from options and resolve bookmarks if present.
+ *
+ * @param options key set used to resolve bookmarks
+ * @param rawName the keyname as it was entered by the user, may contain a bookmark
+ * @param errorKey where errors should be written to, in case of: 1. can't resolve bookmark, 2. not a valid key name
+ * @param verbose print more info
+ * @return a pointer to the key name with the resolved bookmark(if present), has to freed
+ */
+const char * getKeyNameFromOptions (KeySet * options, const char * rawName, Key * errorKey, bool verbose);
 
 typedef struct command
 {
