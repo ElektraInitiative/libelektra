@@ -71,6 +71,7 @@ const char * getKeyNameFromOptions (KeySet * options, const char * rawName, Key 
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "'%s' is not valid key name.", result);
 		return NULL;
 	}
+
 	keyDel (key);
 	return result;
 }
