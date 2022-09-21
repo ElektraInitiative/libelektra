@@ -434,7 +434,7 @@ The website is generated from the repository, so all information about plugins, 
 
 We are currently working on following topics:
 
-- <<TODO>>
+- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
