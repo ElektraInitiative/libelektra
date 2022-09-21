@@ -296,7 +296,12 @@ void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline con
 	{
 		if (mountpoint.isDirectBelow (mountpointPath))
 		{
-			const string actualName = mountpoints.lookup (mountpoint.getName () + "/mountpoint").getString ();
+			Key const k = mountpoints.lookup (mountpoint.getName () + "/mountpoint");
+			if (!k)
+			{
+				continue;
+			}
+			const string actualName = k.getString ();
 			Key mountpointKey (actualName, KEY_END);
 			// If the mountpoint already has some contents, its expanded with a namespace, so leave it out then
 			if (mountpointKey.isBelow (root) && !KeySet (ks).cut (mountpointKey).size ())

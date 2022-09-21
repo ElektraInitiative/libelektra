@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-GET" "1" "August 2021" ""
+.TH "KDB\-GET" "1" "September 2022" ""
 .SH "NAME"
 \fBkdb\-get\fR \- Get the value of a key stored in the key database
 .SH "SYNOPSIS"
@@ -78,9 +78,9 @@ kdb get \-n /tests/get/examples/kdb\-get/key
 kdb get \-v /tests/get/examples/kdb\-get/key
 #> got 3 keys
 #> searching spec:/tests/get/examples/kdb\-get/key, found: <nothing>, options: KDB_O_CALLBACK
-#>     searching proc:/tests/get/examples/kdb\-get/key, found: <nothing>
-#>     searching dir:/tests/get/examples/kdb\-get/key, found: <nothing>
-#>     searching user:/tests/get/examples/kdb\-get/key, found: user:/tests/get/examples/kdb\-get/key
+#>     searching proc:/tests/get/examples/kdb\-get/key, found: <nothing>, options: KDB_O_CALLBACK
+#>     searching dir:/tests/get/examples/kdb\-get/key, found: <nothing>, options: KDB_O_CALLBACK
+#>     searching user:/tests/get/examples/kdb\-get/key, found: user:/tests/get/examples/kdb\-get/key, options: KDB_O_CALLBACK
 #> The resulting keyname is user:/tests/get/examples/kdb\-get/key
 #> The resulting value size is 6
 #> myKey
