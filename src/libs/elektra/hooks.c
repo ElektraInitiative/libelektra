@@ -54,7 +54,8 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 /**
  * Extracts the config for a single plugin from the contract
  *
- * The config must be below system:/elektra/contract/mountglobal/<pluginName> and will be moved to below user:/
+ * The config must be below system:/elektra/contract/mountglobal/<pluginName> and will be moved to below user:/.
+ * It also must contain the key system:/elektra/contract/mountglobal/<pluginName>.
  *
  * @param pluginName The name of the plugin for which the config will be extracted
  * @param contract The contract from which the config is extracted
