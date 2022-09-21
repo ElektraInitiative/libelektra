@@ -12,7 +12,7 @@
 
 - **Precondition:** -
 - **Main success scenario:** If there is a conflict, the developer should be able to call an API that returns reasonable information wich keys are causing a conflict.
-- **Alternative scenario:** If no conflict occured, the API should indicate so.
+- **Alternative scenario:** If no conflict occurred, the API should indicate so.
 - **Error scenario:** -
 - **Postcondition:** -
 - **Non-functional Constraints:**
