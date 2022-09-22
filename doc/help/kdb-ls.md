@@ -59,18 +59,18 @@ kdb ls /tests/examples/kdb-ls
 
 # list the next level of keys below /tests/examples/kdb-ls
 # note that if the search key ends with a /, it lists the next level
-kdb ls /tests/examples/kdb-ls/ --max-depth=1
+kdb ls --max-depth=1 /tests/examples/kdb-ls/
 #> user:/tests/examples/kdb-ls/test
 #> user:/tests/examples/kdb-ls/tost
 
 # list the current level of keys below /tests/examples/kdb-ls
 # note the difference to the previous example
-kdb ls /tests/examples/kdb-ls --max-depth=1
+kdb ls --max-depth=1 /tests/examples/kdb-ls
 # this yields no output as /tests/examples/kdb-ls is not a key
 
 # list all keys below /tests/examples/kdb-ls with are minimum 1 level (inclusive) away from that key
 # and maximum 2 levels away (exclusive)
-kdb ls /tests/examples/kdb-ls --min-depth=1 --max-depth=2
+kdb ls --min-depth=1 --max-depth=2 /tests/examples/kdb-ls
 #> user:/tests/examples/kdb-ls/test
 #> user:/tests/examples/kdb-ls/tost
 
@@ -81,7 +81,7 @@ kdb ls /tests/examples/kdb-ls/test
 #> user:/tests/examples/kdb-ls/test/foo/bar
 
 # list all keys under /tests/examples/kdb-ls in verbose mode
-kdb ls /tests/examples/kdb-ls/ -v
+kdb ls -v /tests/examples/kdb-ls/
 #> size of all keys in mount point: 5
 #> size of requested keys: 5
 #> user:/tests/examples/kdb-ls/test

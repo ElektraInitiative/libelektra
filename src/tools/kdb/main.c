@@ -7,6 +7,7 @@
  */
 
 #include <get.h>
+#include <ls.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -23,6 +24,7 @@ extern char ** environ;
 
 command subcommands[] = {
 	{ "get", addGetSpec, execGet },
+	{ "ls", addLsSpec, execLs },
 };
 
 void printError (Key * errorKey)
