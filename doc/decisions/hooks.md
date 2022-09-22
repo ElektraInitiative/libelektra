@@ -2,7 +2,12 @@
 
 ## Problem
 
-In the current global plugins implementation:
+Some components of `kdbGet`/`kdbSet` should be optional.
+We use the plugin system for that.
+However, some of these cases cannot be tied to a mountpoint.
+This was the idea of global plugins, but that idea proved problematic.
+
+In the old global plugins implementation:
 
 - Notification does not happen once after final commit, but for every
   plugin
