@@ -13,7 +13,7 @@ A symlink replacing the shared library file of the plugin could be used to chang
 If a plugin should be able to act upon a hook, it must export all the functions that the hook requires.
 These exports are of the form `system:/elektra/modules/<plugin name>/exports/hook/<hook name>/<hook function>`.
 
-For example, the `gopts` hook only requires the `get` function. A plugin that wants to act as a `gopts` hook therefore has to export `system:/elektra/modules/<plugin name>/exports/hook/gopts/get`.
+For example, the `gopts` hook only requires the `get` function. A plugin that wants to act upon the `gopts` hook therefore has to export `system:/elektra/modules/<plugin name>/exports/hook/gopts/get`.
 
 Other hooks (e.g. `spec`) require multiple exported functions.
 
