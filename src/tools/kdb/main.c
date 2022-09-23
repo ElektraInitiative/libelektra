@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <basename.h>
 #include <get.h>
 #include <ls.h>
 
@@ -22,6 +23,7 @@
 extern char ** environ;
 
 command subcommands[] = {
+	{ "basename", addBasenameSpec, execBasename },
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
 };
