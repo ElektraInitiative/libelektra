@@ -46,7 +46,6 @@
 #include <metaset.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
-#include <namespace.hpp>
 #include <plugincheck.hpp>
 #include <plugininfo.hpp>
 #include <pluginlist.hpp>
@@ -119,7 +118,6 @@ public:
 		m_factory.insert (std::make_pair ("smount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
 		m_factory.insert (std::make_pair ("list-commands", std::make_shared<Cnstancer<ListCommandsCommand>> ()));
 		m_factory.insert (std::make_pair ("gen", std::make_shared<Cnstancer<GenCommand>> ()));
-		m_factory.insert (std::make_pair ("namespace", std::make_shared<Cnstancer<NamespaceCommand>> ()));
 		m_factory.insert (std::make_pair ("dirname", std::make_shared<Cnstancer<DirnameCommand>> ()));
 		m_factory.insert (std::make_pair ("validate", std::make_shared<Cnstancer<ValidateCommand>> ()));
 	}
