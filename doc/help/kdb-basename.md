@@ -16,8 +16,10 @@ This command will return the following values as an exit status:
 
 - 0:
   No errors.
-- 7:
-  invalid key name passed, see [kdb(1)](kdb.md) for a list of return codes used by kdb.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md)
+- 11:
+  invalid key name passed
 
 ## OPTIONS
 

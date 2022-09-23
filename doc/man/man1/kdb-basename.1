@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-BASENAME" "1" "September 2021" ""
+.TH "KDB\-BASENAME" "1" "May 2023" ""
 .SH "NAME"
 \fBkdb\-basename\fR \- Get the basename of a key name
 .SH "SYNOPSIS"
@@ -15,8 +15,11 @@ This command will return the following values as an exit status:
 0
 No errors\.
 .TP
-7
-invalid key name passed, see kdb(1) \fIkdb\.md\fR for a list of return codes used by kdb\.
+1\-10
+standard exit codes, see kdb(1) \fIkdb\.md\fR
+.TP
+11
+invalid key name passed
 .SH "OPTIONS"
 .TP
 \fB\-n\fR, \fB\-\-no\-newline\fR

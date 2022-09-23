@@ -23,7 +23,6 @@
 #include <external.hpp>
 
 // TODO: to add a new command, 1.) include your header here
-#include <basename.hpp>
 #include <cache.hpp>
 #include <cmerge.hpp>
 #include <complete.hpp>
@@ -118,7 +117,6 @@ public:
 		m_factory.insert (std::make_pair ("list-commands", std::make_shared<Cnstancer<ListCommandsCommand>> ()));
 		m_factory.insert (std::make_pair ("gen", std::make_shared<Cnstancer<GenCommand>> ()));
 		m_factory.insert (std::make_pair ("namespace", std::make_shared<Cnstancer<NamespaceCommand>> ()));
-		m_factory.insert (std::make_pair ("basename", std::make_shared<Cnstancer<BasenameCommand>> ()));
 		m_factory.insert (std::make_pair ("dirname", std::make_shared<Cnstancer<DirnameCommand>> ()));
 		m_factory.insert (std::make_pair ("validate", std::make_shared<Cnstancer<ValidateCommand>> ()));
 	}
