@@ -9,6 +9,7 @@
 #include <basename.h>
 #include <get.h>
 #include <ls.h>
+#include <namespace.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -26,6 +27,7 @@ command subcommands[] = {
 	{ "basename", addBasenameSpec, execBasename },
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
+	{ "namespace", addNamespaceSpec, execNamespace },
 };
 
 void printWarnings (Key * errorKey)
