@@ -99,6 +99,8 @@ typedef int (*kdbSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbErrorPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbCommitPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
+typedef int (*kdbHookGoptsGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
 
@@ -319,6 +321,7 @@ struct _KeySet
 #endif
 };
 
+typedef struct _Hooks Hooks;
 
 /**
  * The access point to the key database.
@@ -362,8 +365,16 @@ struct _KDB
 			up their parts of the global keyset, which they do not need any more.*/
 
 	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
-
 	KeySet * backends;
+
+	struct
+	{
+		struct
+		{
+			struct _Plugin* plugin;
+			kdbHookGoptsGetPtr kdbHookGoptsGet;
+		} gopts;
+	} hooks;
 };
 
 /**
@@ -564,6 +575,8 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey);
 int mountVersion (KDB * kdb, Key * errorKey);
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
 int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend);
+int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey);
+void freeHooks (KDB * kdb, Key * errorKey);
 
 const Key * mountGetMountpoint (KDB * handle, Key * where);
 Plugin * mountGetBackend (KDB * handle, Key * key);

@@ -63,6 +63,7 @@ if (BUILD_SHARED)
 		backend.c
 		kdb.c
 		mount.c
+		hooks.c
 		split.c
 		trie.c
 		plugin.c

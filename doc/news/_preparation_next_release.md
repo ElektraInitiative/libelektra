@@ -164,7 +164,7 @@ _(Michael Tucek)_
 ### New Backend
 
 - Improve [description of plugin framework](doc/dev/plugins-framework.md).
-- <<TODO>>
+- Implement [hooks](doc/decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

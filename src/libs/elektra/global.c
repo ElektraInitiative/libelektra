@@ -20,7 +20,7 @@ int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, 
 	Plugin * plugin;
 	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		ret = plugin->kdbGet (plugin, ks, parentKey);
+		// ret = plugin->kdbGet (plugin, ks, parentKey);
 	}
 	return ret;
 }
@@ -31,7 +31,7 @@ int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, 
 	Plugin * plugin;
 	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		ret = plugin->kdbSet (plugin, ks, parentKey);
+		// ret = plugin->kdbSet (plugin, ks, parentKey);
 	}
 	return ret;
 }
@@ -42,7 +42,7 @@ int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position
 	Plugin * plugin;
 	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		ret = plugin->kdbError (plugin, ks, parentKey);
+		// ret = plugin->kdbError (plugin, ks, parentKey);
 	}
 	return ret;
 }

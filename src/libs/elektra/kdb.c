@@ -999,6 +999,15 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
+	// TODO (atmaxinger): improve
+	// TODO: combine with ensureContract below
+	if (initHooks (handle, elektraKs, handle->modules, contract, errorKey) == -1)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Initializing hooks failed. Please see warning of concrete plugin");
+		ksDel (elektraKs);
+		goto error;
+	}
+
 	// Step 5: process contract
 	if (contract != NULL && !ensureContract (handle, contract, errorKey))
 	{
@@ -1119,6 +1128,8 @@ int kdbClose (KDB * handle, Key * errorKey)
 			elektraPluginClose (handle->globalPlugins[i][j], errorKey);
 		}
 	}
+
+	freeHooks (handle, errorKey);
 
 	if (handle->modules)
 	{
@@ -1736,7 +1747,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 #endif
 	// Step 1: find backends for parentKey
 	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
-	bool goptsActive = handle->globalPlugins[PROCGETSTORAGE][MAXONCE] != NULL;
+
+	bool goptsActive = handle->hooks.gopts.plugin != NULL;
 	if (goptsActive)
 	{
 		// HACK: for gopts; generates keys outside backend
@@ -1854,17 +1866,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	/* TODO (kodebach): implement actual steps with new global plugins
-		// Step 13: run gopts (if enabled)
-		keyCopy (parentKey, initialParent, KEY_CP_NAME);
-		keySetNamespace (cascadingParent, KEY_NS_CASCADING);
-		set_bit (parentKey, KEY_LOCK_NAME | KEY_LOCK_VALUE);
-		bool goptsEnabled = false;
-		if (goptsEnabled && !goptsGet (dataKs, cascadingParent))
-		{
-			clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
-			goto error;
-		}
-
 		// Step 14: run spec plugin
 		if (!specGet (dataKs, cascadingParent))
 		{
@@ -1873,6 +1874,18 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 	*/
+
+	// Step 13: run gopts (if enabled)
+	keyCopy (parentKey, initialParent, KEY_CP_NAME);
+	keySetNamespace (parentKey, KEY_NS_CASCADING);
+
+	if (goptsActive && !handle->hooks.gopts.kdbHookGoptsGet (handle->hooks.gopts.plugin, dataKs, parentKey))
+	{
+		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
+		goto error;
+	}
+
+	keySetNamespace (parentKey, keyGetNamespace (initialParent));
 
 	// Step 15: split dataKs for poststorage phase
 	// FIXME (kodebach): handle proc:/ keys
