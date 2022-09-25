@@ -28,7 +28,6 @@
 #include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
-#include <dirname.hpp>
 #include <editor.hpp>
 #include <export.hpp>
 #include <file.hpp>
@@ -115,7 +114,6 @@ public:
 		m_factory.insert (std::make_pair ("spec-mount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
 		m_factory.insert (std::make_pair ("list-commands", std::make_shared<Cnstancer<ListCommandsCommand>> ()));
 		m_factory.insert (std::make_pair ("gen", std::make_shared<Cnstancer<GenCommand>> ()));
-		m_factory.insert (std::make_pair ("dirname", std::make_shared<Cnstancer<DirnameCommand>> ()));
 		m_factory.insert (std::make_pair ("validate", std::make_shared<Cnstancer<ValidateCommand>> ()));
 	}
 
