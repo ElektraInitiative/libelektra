@@ -5,7 +5,7 @@
 There exists a _backend contract_ between `libelektra-kdb` and any plugin acting as a backend plugin.
 This contract sets, the order of the phases described above and defines the interaction between a backend plugin and `libelektra-kdb`.
 
-TODO: update get diagram; add cachecheck phase
+<!-- FIXME: update diagrams
 
 ![Sequence of phases in `get` operation](kdbGet.svg)
 
@@ -14,9 +14,10 @@ TODO: update get diagram; add cachecheck phase
 The diagrams above show the possible sequences of phases during a `get` and a `set` operation.
 For each of the phases of a `get` operation `libelektra-kdb` calls the backend plugin's `elektra<Plugin>Get` function once.
 Similarly, for the phases of a `set` operation `elektra<Plugin>Set` is called.
+-->
 
-The current phase is communicated to the backend plugin via the global keyset.
-The value of the key `system:/elektra/kdb/backend/phase` is always set to the current phase.
+The current phase is communicated to the backend plugin (and any other plugin) via the global keyset.
+The current phase can be retrieved via the `elektraPluginGetPhase` function.
 
 ### Operation `get`
 
@@ -32,8 +33,8 @@ During the `init` phase the backend plugin is called with:
 - A keyset `definition` containing the mountpoint definition.
   To make things easier for the plugin, keys in `definition` are translated into cascading keys relative to `parentKey`.
   For example, if the key `system:/elektra/mountpoints/system:\/hosts/path` is set in the KDB, then `definition` will contain a key `/path`.
-
-TODO: how does the backend plugin get access to the other plugins? Maybe, just add a plugins/# array into `ks` containing keys with `Plugin *` values?
+- Additionally, the plugins for the current mountpoint are opened by `libelektra-kdb` and provided to the backend plugin via the global keyset.
+  They can be accessed via the `elektraPluginFromMountpoint` function.
 
 The backend plugin then:
 
@@ -49,7 +50,7 @@ This phase exists purely for the backend plugin to initialize and configure itse
 
 > **Note**: This phase is only executed _once per instance of `KDB`_.
 > Only the first `kdbGet()` call will result in `libelektra-kdb` executing this phase, all future calls to `kdbGet()` (and `kdbSet()`) start with the `resolver` phase.
-> The backend plugin must store the information contained in the mountpoint definition internally to accommodate this.
+> The backend plugin must store the necessary information contained in the mountpoint definition internally to accommodate this.
 
 #### Resolver Phase
 
@@ -81,8 +82,7 @@ During the `cachecheck` phase the backend plugin is called with:
 
 - The exact `parentKey` that was returned by the `resolver` phase of this `get` operation.
   The key name and value of this key are read-only.
-  Additionally, the metakey `internal/kdb/cachetime` is set to a value indicating the update time of the cache entry.
-  TODO: exact format of `internal/kdb/cachetime` TBD
+  Additionally, the metakey `internal/kdb/cachehandle` is set to a value indicating the cache handle (usually modification time) of the cache entry.
 - An empty keyset `ks`.
 
 The backend plugin then:
@@ -130,7 +130,7 @@ It is where validation, generation of implicit values and similar tasks happen.
 
 Finally, `libelektra-kdb` merges the keyset returned by the `poststorage` phase with the ones returned by other backend plugins for different mountpoints and then returns it to the user.
 
-TODO: Are modifications to `parentKey` visible to the user?
+<!-- TODO: Should modifications to `parentKey` (beyond errors/warnings) be visible to the user? -->
 
 ### Operation `set`
 
@@ -237,7 +237,7 @@ This makes the `postcommit` phase mostly useful for logging.
 
 Finally, `libelektra-kdb` merges the keyset returned by the `postcommit` phase (which is still the same one that was returned by the `prestorage` phase) with the ones returned by other backend plugins for different mountpoints and then returns it to the user.
 
-TODO: Are modifications to `parentKey` visible to the user?
+<!-- TODO: Should modifications to `parentKey` (beyond errors/warnings) be visible to the user? -->
 
 #### Rollback Phases (`set` only)
 
@@ -268,4 +268,4 @@ In the `rollback` phase the backend plugin:
 
 Finally, `libelektra-kdb` will restore `ks` to the state in which the user provided it and return.
 
-TODO: Are modifications to `parentKey` visible to the user?
+<!-- TODO: Should modifications to `parentKey` (beyond errors/warnings) be visible to the user? -->
