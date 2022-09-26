@@ -1,37 +1,16 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "ELEKTRA\-MERGE\-STRATEGIES" "7" "November 2021" ""
+.TH "ELEKTRA\-MERGE\-STRATEGIES" "7" "May 2023" ""
 .SH "NAME"
 \fBelektra\-merge\-strategies\fR \- how to merge key sets
 .P
-In elektra\-tools a three\-way merging was implemented\. It can also use be used for two\-way merging, e\.g\. for importing\.
-.P
-Note: For a two\-way merge, the \fBours\fR version of the keys is used in place of \fBbase\fR
-.SH "3\-WAY"
-.TP
-\fBbase\fR
-The \fBbase\fR KeySet is the original version of the KeySet\.
-.TP
-\fBours\fR
-The \fBours\fR KeySet represents the user's current version of the KeySet\. This KeySet differs from \fBbase\fR for every key you changed\.
-.TP
-\fBtheirs\fR
-The \fBtheirs\fR KeySet usually represents the default version of a KeySet (usually the package maintainer's version)\. This KeySet differs from \fBbase\fR for every key someone has changed\.
-.P
-The three\-way merge works by comparing the \fBours\fR KeySet and the \fBtheirs\fR KeySet to the \fBbase\fR KeySet\. By looking for differences in these KeySets, a new KeySet called \fBresult\fR is created that represents a merge of these KeySets\.
-.SH "STRATEGIES"
-Currently the following strategies exist:
+Elektra's merge library offers different strategies to resolve conflicts in merges without user interaction\. Consequently, Elektra's tools all have access to the following merge strategies:
 .IP "\(bu" 4
-preserve: Automerge only those keys where just one side deviates from base (default)\.
+\fBabort\fR: the merge will abort if any conflict happens and merge the 3 key sets together otherwise\.
 .IP "\(bu" 4
-ours: Whenever a conflict exists, use our version\.
+\fBour\fR: This option forces conflicting keys to be auto\-resolved cleanly by favoring \fBour\fR\. Changes from the other key sets that do not conflict with the \fBour\fR version are reflected in the merge result\. This works like the recursive merge strategy with the \fBours\fR option of git\.
 .IP "\(bu" 4
-theirs: Whenever a conflict exists, use their version\.
-.IP "\(bu" 4
-cut: Removes existing keys below the resultpath and replaces them with the merged keyset\.
-.IP "\(bu" 4
-unchanged: (EXPERIMENTAL, only for kdb\-mount) Do not fail if the operation does not change anything\.
-.IP "\(bu" 4
-import: (DEPRECATED, avoid using it) Preserves existing keys in the resultpath if they do not exist in the merged keyset\. If the key does exist in the merged keyset, it will be overwritten\.
+\fBtheir\fR: This is the opposite of \fBour\fR\. The merge will use the \fBtheir\fR version when a conflict happens\.
 .IP "" 0
-
+.P
+If no strategy is specified, the merge will default to the abort strategy\.

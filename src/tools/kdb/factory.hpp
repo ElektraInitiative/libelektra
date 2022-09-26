@@ -24,7 +24,6 @@
 
 // TODO: to add a new command, 1.) include your header here
 #include <cache.hpp>
-#include <cmerge.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
@@ -36,7 +35,6 @@
 #include <import.hpp>
 #include <listcommands.hpp>
 #include <memory>
-#include <merge.hpp>
 #include <metaget.hpp>
 #include <metals.hpp>
 #include <metaremove.hpp>
@@ -107,8 +105,6 @@ public:
 		m_factory.insert (std::make_pair ("umount", std::make_shared<Cnstancer<UmountCommand>> ()));
 		m_factory.insert (std::make_pair ("file", std::make_shared<Cnstancer<FileCommand>> ()));
 		m_factory.insert (std::make_pair ("sget", std::make_shared<Cnstancer<ShellGetCommand>> ()));
-		m_factory.insert (std::make_pair ("merge", std::make_shared<Cnstancer<MergeCommand>> ()));
-		m_factory.insert (std::make_pair ("cmerge", std::make_shared<Cnstancer<CMergeCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-list", std::make_shared<Cnstancer<PluginListCommand>> ()));
 		m_factory.insert (std::make_pair ("editor", std::make_shared<Cnstancer<EditorCommand>> ()));
 		m_factory.insert (std::make_pair ("spec-mount", std::make_shared<Cnstancer<SpecMountCommand>> ()));

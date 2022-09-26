@@ -25,7 +25,7 @@ mounts \fB<config file>\fR into \fB<elektra path>\fR as our version\. This versi
 .IP "" 0
 
 .IP "2." 4
-You have already used the script for a previous version of the file\. In this case \fB<elektra path>\fR already contains data the script performs a three\-way merge (using \fBkdb cmerge\fR) between the file at \fB<config file>\fR (their), the \fB<elektra path>\fR (our) and the preserved key set (base) from step 1 in scenario 1\.
+You have already used the script for a previous version of the file\. In this case \fB<elektra path>\fR already contains data the script performs a three\-way merge (using \fBkdb merge\fR) between the file at \fB<config file>\fR (their), the \fB<elektra path>\fR (our) and the preserved key set (base) from step 1 in scenario 1\.
 .IP "" 0
 .SH "EXAMPLES"
 To install the config file at \fB~/\.config/installing\.ini\fR we can use the following command

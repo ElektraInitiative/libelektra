@@ -1,283 +1,225 @@
-# How-To: kdb merge
+# How-To: Merging
 
 ## Introduction
 
-The kdb tool allows users to access and perform functions on the Elektra Key Database from the command line. We added
+Elektra takes the semantic aspects of configuration files into account when merging them into one result file.
+Those configuration files are represented as key sets in Elektra. Key sets are collections of name-value pairs.
+
+The `kdb` tool allows users to access and perform functions on the Elektra key database from the command line. We added
 a new command to this very useful tool, the `merge` command. This command allows a user to perform a three-way merge
-of KeySets from the `kdb` tool.
+of key sets from the `kdb` tool.
 
-The command to use this tool is:
+The syntax to use this tool is:
 
-```sh
-kdb merge [options] ourpath theirpath basepath resultpath
-# RET: 7
-```
+`kdb merge [OPTIONS] our their base result`
 
-The standard naming scheme for a three-way merge consists of `ours`, `theirs`, and `base`:
+`our`, `their` and `base` represent the three keys that are used in
+a three-way merge. As in the `diff3` tool, required are
+the three files MYFILE (our), OLDFILE (base) and YOURFILE (their)
+The result off the three-way merge
+will be stored in `result`.
 
-- `ours` refers to the local copy of a file
-- `theirs` refers to a remote copy
-- `base` refers to their common ancestor.
+## Simple example
 
-This works very similarly for KeySets, especially ones that consist of mounted configuration files.
-
-For mounted configuration files:
-
-- `ours` should be the user's copy
-- `theirs` would be the maintainers copy,
-- `base` would be the previous version of the maintainer's copy.
-
-If the user is just trying to accomplish a three-way merge using any two arbitrary keysets that share a base,
-it doesn't matter which ones are defined as `ours` or `theirs` as long as they use the correct base KeySet.
-In `kdb merge`, `ourpath`, `theirpath`, and `basepath` work just like `ours`, `theirs`, and `base` except each one represents the
-root of a KeySet. The argument `resultpath` is pretty self-explanatory, it is just where you want the result of the merge to be saved under.
-It's worth noting, `resultpath` should be empty before attempting a merge, otherwise there can be unintended consequences.
-
-## Options
-
-As for the options, there are two basic options:
-
-- `-i`, `--interactive`: which attempts the merge in an interactive way
-- `-f`, `--force`: which overwrites any Keys in `resultpath`
-
-### Strategies
-
-Additionally, there is an option to specify a merge strategy, which is very important.
-
-The option for strategy is:
-
-- `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
-
-The current list of strategies are:
-
-- `preserve`: the merge will fail if a conflict is detected
-- `ours`: the merge will use our version during a conflict
-- `theirs`: the merge will use their version during a conflict
-- `cut`: Removes existing keys below the resultpath and replaces them with the merged keyset.
-- `import`: (DEPRECATED, avoid using it!)
-  Preserves existing keys in the resultpath if they do not exist in the merged keyset.
-  If the key does exist in the merged keyset, it will be overwritten.
-
-If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision.
-If any of the other strategies are specified, when a conflict is detected, merge will use the Key specified by the
-strategy (`ours`, `theirs`, `cut` or `import`) for the resulting Key.
-
-## Basic Example
-
-Basic Usage:
+The easiest case is if all three versions contain equal data.
 
 ```sh
-kdb merge system:/hosts/ours system:/hosts/theirs system:/hosts/base system:/hosts/result
+kdb set user:/tests/base a
+#> Create a new key user:/tests/base with string "a"
+kdb set user:/tests/their a
+#> Create a new key user:/tests/their with string "a"
+kdb set user:/tests/our a
+#> Create a new key user:/tests/our with string "a"
+kdb merge user:/tests/our user:/tests/their user:/tests/base user:/tests/result
+kdb get user:/tests/result
+#> a
 ```
 
-## Examples Using Strategies
-
-Here are examples of the same KeySets being merged using different strategies.
-The KeySets are mounted using a property format, the left side of '=' is the name of
-the Key, the right side is its string value.
-
-We start with the base KeySet, `system:/base`:
-
-```ini
-key1=1
-key2=2
-key3=3
-key4=4
-key5=5
-```
-
-Here is our KeySet, `system:/ours`:
-
-```ini
-key1=apple
-key2=2
-key3=3
-key5=fish
-```
-
-Here is their KeySet, `system:/theirs`:
-
-```ini
-key1=1
-key2=pie
-key4=banana
-key5=5
-```
-
-To add the keys to the key database, execute the following commands:
+We change the key for another example.
 
 ```sh
-kdb set user:/tests/base/key1 1
-#> Create a new key user:/tests/base/key1 with string "1"
-
-kdb set user:/tests/base/key2 2
-#> Create a new key user:/tests/base/key2 with string "2"
-
-kdb set user:/tests/base/key3 3
-#> Create a new key user:/tests/base/key3 with string "3"
-
-kdb set user:/tests/base/key4 4
-#> Create a new key user:/tests/base/key4 with string "4"
-
-kdb set user:/tests/base/key5 5
-#> Create a new key user:/tests/base/key5 with string "5"
-
-
-kdb set user:/tests/ours/key1 apple
-#> Create a new key user:/tests/ours/key1 with string "apple"
-
-kdb set user:/tests/ours/key2 2
-#> Create a new key user:/tests/ours/key2 with string "2"
-
-kdb set user:/tests/ours/key3 3
-#> Create a new key user:/tests/ours/key3 with string "3"
-
-kdb set user:/tests/ours/key5 fish
-#> Create a new key user:/tests/ours/key5 with string "fish"
-
-
-kdb set user:/tests/theirs/key1 1
-#> Create a new key user:/tests/theirs/key1 with string "1"
-
-kdb set user:/tests/theirs/key2 pie
-#> Create a new key user:/tests/theirs/key2 with string "pie"
-
-kdb set user:/tests/theirs/key4 banana
-#> Create a new key user:/tests/theirs/key4 with string "banana"
-
-kdb set user:/tests/theirs/key5 5
-#> Create a new key user:/tests/theirs/key5 with string "5"
+kdb set user:/tests/our b
+#> Set string to "b"
 ```
 
-Now we will examine the result KeySet with the different strategies.
-
-### Preserve
+Using a `result` path that is not empty gives an error.
+The option `-f` can be used to override. **Attention!** This deletes existing keys below `result`.
 
 ```sh
-kdb merge -s preserve user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
-# RET: 11
-# STDERR: 1 conflicts were detected that could not be resolved automatically:⏎user:/tests/result/key4⏎ours: CONFLICT_DELETE, theirs: CONFLICT_MODIFY⏎⏎Merge unsuccessful.
+kdb merge user:/tests/our user:/tests/their user:/tests/base user:/tests/result
+# RET: 3
+# There are keys in the result path. Use -f to override them.
+kdb merge -f user:/tests/our user:/tests/their user:/tests/base user:/tests/result
+kdb get user:/tests/result
+#> b
 ```
 
-The merge will fail because of a conflict for `key4` since `key4` was deleted in our KeySet and
-edited in their KeySet. Since we used preserve, the merge fails and the result KeySet is not saved.
-
-### Ours
+We can use the same key multiple times in a single call to merge.
 
 ```sh
-kdb merge -s ours user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
+kdb set user:/tests/same a
+#> Create a new key user:/tests/same with string "a"
+kdb merge -f user:/tests/same user:/tests/same user:/tests/same user:/tests/result
+kdb get user:/tests/result
+#> a
 ```
 
-The result KeySet, `user:/tests/result` will be:
+### hosts
+
+As a real-world example, we import three different (see the comment) versions of a hosts file.
+
+```
+echo "127.0.0.1       localhost
+127.0.1.1       computer
+
+# BASE The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters" | kdb import user:/tests/hosts/base hosts
+
+echo "127.0.0.1       localhost
+127.0.1.1       computer
+
+# OUR The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters" | kdb import user:/tests/hosts/our hosts
+
+echo "127.0.0.1       localhost
+127.0.1.1       computer
+
+# THEIR The following lines are desirable for IPv6 capable hosts
+::2     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters" | kdb import user:/tests/hosts/their hosts
+
+kdb merge user:/tests/hosts/our user:/tests/hosts/their user:/tests/hosts/base user:/tests/hosts/result
+```
+
+The merge notices that only one of the three versions of the key `ip6-localhost` has changed.
+Assuming that this was an update it puts the new value in the result.
+
+```
+kdb get user:/tests/hosts/result/ipv6/ip6-localhost
+#> ::2
+```
+
+## Metadata
+
+Metadata gets merged as well.
+We do not follow a complicated approach for this topic.
+When a key-value pair is chosen from the three versions to be present in the result it takes all its metadata with it.
+
+In case that the values of some keys are equal, the `our` version wins and consequently the metadata of the `our` version is used. The reason for this is that users might have used the metadata for personal comments.
+
+To demonstrate this, we continue the hosts example:
+
+<!--- Some ini tests fail with multiline metadata => no sh => no Markdown shell
+recorder tests -->
+
+```
+kdb meta get user:/tests/hosts/result/ipv6/ip6-localhost comment/#2
+#>  THEIR The following lines are desirable for IPv6 capable hosts
+```
+
+We set up some keys:
 
 ```sh
-kdb ls user:/tests/result
-#> user:/tests/result/key1
-#> user:/tests/result/key2
-#> user:/tests/result/key5
+kdb set user:/tests/meta/base equal
+#> Create a new key user:/tests/meta/base with string "equal"
+kdb meta set user:/tests/meta/base comment/#0 "This is the original inline comment"
+kdb meta set user:/tests/meta/base comment/#1 "This is the first line of the original comment above the key"
+kdb meta set user:/tests/meta/base comment/#2 "This is the second line of the original comment above the key"
+
+kdb set user:/tests/meta/their equal
+#> Create a new key user:/tests/meta/their with string "equal"
+kdb meta set user:/tests/meta/their comment/#0 "This is their inline comment"
+kdb meta set user:/tests/meta/their comment/#1 "This is the first line of their comment above the key"
+kdb meta set user:/tests/meta/their comment/#2 "This is the second line of their comment above the key"
+
+kdb set user:/tests/meta/our equal
+#> Create a new key user:/tests/meta/our with string "equal"
+kdb meta set user:/tests/meta/our comment/#0 "This is your custom inline comment"
+kdb meta set user:/tests/meta/our comment/#1 "This is the first line of your custom comment above the key"
+kdb meta set user:/tests/meta/our comment/#2 "This is the second line of your custom comment above the key"
+
+kdb merge user:/tests/meta/our user:/tests/meta/their user:/tests/meta/base user:/tests/meta/metaFromOur
 ```
 
-The values of the keys are:
+Now we can check if the metadata has been merged as expected.
+
+<!--- Some ini tests fail with multiline metadata => no sh => no Markdown shell
+recorder tests -->
+
+```
+kdb meta get user:/tests/meta/metaFromOur comment/#0
+#> This is your custom inline comment
+kdb meta get user:/tests/meta/metaFromOur comment/#1
+#> This is the first line of your custom comment above the key
+kdb meta get user:/tests/meta/metaFromOur comment/#2
+#> This is the second line of your custom comment above the key
+```
+
+If a key is part of the result because its value has changed then the result will also contain the metadata of that key.
 
 ```sh
-kdb get user:/tests/result/key1
-#> apple
+kdb set user:/tests/meta/their different
+#> Set string to "different"
 
-kdb get user:/tests/result/key2
-#> pie
-
-kdb get user:/tests/result/key5
-#> fish
+kdb merge user:/tests/meta/our user:/tests/meta/their user:/tests/meta/base user:/tests/meta/metaFromChanged
 ```
 
-The conflict of `key4` (it was deleted in `ours` but changed in `theirs`) is solved by using our copy, thus deleting the key.
+We can test again if the result meets our expectations.
 
-Now we delete the result keys and try the next merging strategy.
+<!--- Some ini tests fail with multiline metadata => no sh => no Markdown shell
+recorder tests -->
+
+```
+kdb meta get user:/tests/meta/metaFromChanged comment/#2
+#> This is the second line of their comment above the key
+```
+
+## Arrays
+
+merge uses LibGit2 to handle arrays in an efficient manner.
 
 ```sh
-kdb rm user:/tests/result/key1
-kdb rm user:/tests/result/key2
-kdb rm user:/tests/result/key5
+echo "one\
+two\
+three\
+four\
+five" | kdb import user:/tests/arrays/original line
+
+echo "previous\
+one\
+two\
+three\
+four\
+five" | kdb import user:/tests/arrays/changed line
+
+kdb merge -f user:/tests/arrays/changed user:/tests/arrays/original user:/tests/arrays/original user:/tests/arrays/result
+
+kdb get user:/tests/arrays/result/#0
+#> previous
+
+kdb rm -r user:/tests
 ```
 
-### Theirs
+## Scripts
 
-```sh
-kdb merge -s theirs user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
-```
+There are two tools of which merge is the central tool:
 
-The result KeySet, `user:/tests/result` will be:
+1. [`kdb install-config-file`](/doc/help/kdb-install-config-file.md) installs or merges configuration files from the file system into
+   Elektra. There is [a tutorial](/doc/tutorials/install-config-files.md) for this tool, too.
+2. [`kdb merge-config-files`](/doc/help/kdb-merge-config-files) performs a three-way merge on three files using Elektra
 
-```sh
-kdb ls user:/tests/result
-#> user:/tests/result/key1
-#> user:/tests/result/key2
-#> user:/tests/result/key4
-#> user:/tests/result/key5
-```
+## Calling the API
 
-The values of the keys are:
-
-```sh
-kdb get user:/tests/result/key1
-#> apple
-
-kdb get user:/tests/result/key2
-#> pie
-
-kdb get user:/tests/result/key4
-#> banana
-
-kdb get user:/tests/result/key5
-#> fish
-```
-
-Here, the conflict of `key4` is solved by using their copy, thus `key4=banana`.
-
-We delete the result keys again and finally try the `cut` merging strategy.
-
-```sh
-kdb rm user:/tests/result/key1
-kdb rm user:/tests/result/key2
-kdb rm user:/tests/result/key4
-kdb rm user:/tests/result/key5
-```
-
-### Cut
-
-```sh
-kdb merge -s cut user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
-```
-
-The result KeySet, `user:/tests/result` will be:
-
-```sh
-kdb ls user:/tests/result
-#> user:/tests/result/key1
-#> user:/tests/result/key2
-#> user:/tests/result/key4
-#> user:/tests/result/key5
-```
-
-The values of the keys are:
-
-```sh
-kdb get user:/tests/result/key1
-#> 1
-
-kdb get user:/tests/result/key2
-#> pie
-
-kdb get user:/tests/result/key4
-#> banana
-
-kdb get user:/tests/result/key5
-#> 5
-```
-
-Here the state of theirs is simply copied to the `resultpath`.
-
-## SEE ALSO
-
-- [kdb-merge(1)](../help/kdb-merge.md)
-- [elektra-merge-strategy(7)](../help/elektra-merge-strategy.md)
+All the tools that use the merge library rely on the same API.
+An exemplary call to this API can be found in the [examples folder](/examples/kdbset.c).

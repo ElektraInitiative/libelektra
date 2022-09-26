@@ -3,17 +3,18 @@
 .TH "KDB\-MERGE" "1" "April 2023" ""
 .SH "NAME"
 \fBkdb\-merge\fR \- Three\-way merge of KeySets
+.SH "NAME"
+kdb\-merge \- Join three key sets together
 .SH "SYNOPSIS"
-\fBkdb merge [options] ourpath theirpath basepath resultpath\fR
-.br
+\fBkdb merge [OPTIONS] our their base result\fR
 .TP
 ourpath
-Path to the keyset to serve as \fBours\fR
+Path to the keyset to serve as \fBour\fR
 .br
 
 .TP
 theirpath
-path to the keyset to serve as \fBtheirs\fR
+path to the keyset to serve as \fBtheir\fR
 .br
 
 .TP
@@ -27,91 +28,87 @@ path without keys where the merged keyset will be saved
 .br
 
 .SH "DESCRIPTION"
-Does a three\-way merge between keysets\.
+\fBkdb merge\fR can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set\. This lets you merge the sets of changes represented by the two newer key sets\. This is called a three\-way merge between key sets\.
 .br
 On success the resulting keyset will be saved to mergepath\.
 .br
 On unresolved conflicts nothing will be changed\.
 .br
-.SH "THREE\-WAY MERGE"
-The \fBkdb merge\fR command uses a three\-way merge by default\.
-.br
-A three\-way merge is when three versions of a file (or in this case, KeySet) are compared in order to automatically merge the changes made to the KeySet over time\.
-.br
-These three versions of the KeySet are:
-.br
-.TP
-\fBbase\fR
-The \fBbase\fR KeySet is the original version of the KeySet\.
-.br
-
-.TP
-\fBours\fR
-The \fBours\fR KeySet represents the user's current version of the KeySet\.
-.br
-This KeySet differs from \fBbase\fR for every key you changed\.
-.br
-
-.TP
-\fBtheirs\fR
-The \fBtheirs\fR KeySet usually represents the default version of a KeySet (usually the package maintainer's version)\.
-.br
-This KeySet differs from \fBbase\fR for every key someone has changed\.
-.br
-
-.P
-The three\-way merge works by comparing the \fBours\fR KeySet and the \fBtheirs\fR KeySet to the \fBbase\fR KeySet\. By looking for differences in these KeySets, a new KeySet called \fBresult\fR is created that represents a merge of these KeySets\.
-.br
-.SH "CONFLICTS"
-Conflicts occur when a Key has a different value in all three KeySets\.
-.br
-Conflicts in a merge can be resolved using a \fIstrategy\fR with the \fB\-s\fR option\. To interactively resolve conflicts, use the \fB\-i\fR option\.
 .SH "OPTIONS"
+The options of \fBkdb merge\fR are:
 .IP "\(bu" 4
-\fB\-H\fR, \fB\-\-help\fR: Show the man page\.
+\fB\-f\fR, \fB\-\-force\fR: overwrite existing keys in \fBresult\fR
 .IP "\(bu" 4
-\fB\-V\fR, \fB\-\-version\fR: Print version info\.
-.IP "\(bu" 4
-\fB\-p\fR, \fB\-\-profile <profile>\fR: Use a different kdb profile\.
-.IP "\(bu" 4
-\fB\-C\fR, \fB\-\-color <when>\fR: Print never/auto(default)/always colored output\.
-.IP "\(bu" 4
-\fB\-f\fR, \fB\-\-force\fR: Will remove existing keys from \fBresultpath\fR instead of failing\.
-.IP "\(bu" 4
-\fB\-s\fR, \fB\-\-strategy <name>\fR: Specify which strategy should be used to resolve conflicts\.
-.IP "\(bu" 4
-\fB\-v\fR, \fB\-\-verbose\fR: Explain what is happening\. Prints additional information in case of errors/warnings\.
-.IP "\(bu" 4
-\fB\-d\fR, \fB\-\-debug\fR: Give debug information\. Prints additional debug information in case of errors/warnings\.
-.IP "\(bu" 4
-\fB\-i\fR, \fB\-\-interactive\fR Interactively resolve the conflicts\.
+\fB\-v\fR, \fB\-\-verbose\fR: give additional information
 .IP "" 0
+.P
+Strategies offer fine grained control over conflict handling\. The option is:
+.IP "\(bu" 4
+\fB\-s <name>\fR, \fB\-\-strategy <name>\fR: which is used to specify a strategy to use in case of a conflict
+.IP "" 0
+.P
+Strategies have their own man page \fI/doc/help/elektra\-merge\-strategy\.md\fR which can be accessed with \fBman elektra\-merge\-strategies\fR\.
 .SH "RETURN VALUE"
 .TP
 0
 Successful\.
 .TP
 11
-A conflict occurred during the merge\.
+An error happened\.
+.TP
+12
+A merge conflict occurred and merge strategy abort was set\.
+.P
+The result of the merge is stored in \fBresult\fR\.
+.SH "THREE\-WAY MERGE"
+You can think of the three\-way merge as subtracting base from their and adding the result to our, or as merging into our the changes that would turn base into their\. Thus, it behaves exactly as the GNU diff3 tool\. These three versions of the KeySet are:
+.br
+.TP
+\fBbase\fR
+The \fBbase\fR KeySet is the original version of the key set\.
+.br
+
+.TP
+\fBour\fR
+The \fBour\fR KeySet represents the user's current version of the KeySet\.
+.br
+This KeySet differs from \fBbase\fR for every key you changed\.
+.br
+
+.TP
+\fBtheir\fR
+The \fBtheir\fR KeySet usually represents the default version of a KeySet (usually the package maintainer's version)\.
+.br
+This KeySet differs from \fBbase\fR for every key someone has changed\.
+.br
+
+.P
+The three\-way merge works by comparing the \fBour\fR KeySet and the \fBtheir\fR KeySet to the \fBbase\fR KeySet\. By looking for differences in these KeySets, a new KeySet called \fBresult\fR is created that represents a merge of these KeySets\.
+.br
+.SH "CONFLICTS"
+Conflicts occur when a key has a different value in all three key sets or when only base differs\. When all three values for a key differ, we call this an overlap\. Different merge strategies \fIelektra\-merge\-strategy\.md\fR exist to resolve those conflicts\.
+.br
 .SH "EXAMPLES"
 To complete a simple merge of three KeySets:
 .br
-\fBkdb merge user:/ours user:/theirs user:/base user:/result\fR
-.br
-.P
-To complete a merge whilst using the \fBours\fR version of the KeySet to resolve conflicts:
-.br
-\fBkdb merge \-s ours user:/ours user:/theirs user:/base user:/result\fR
-.br
-.P
-To complete a three\-way merge and overwrite all current keys in the \fBresultpath\fR:
-.br
-\fBkdb merge \-s cut user:/ours user:/theirs user:/base user:/result\fR
-.br
-.SH "SEE ALSO"
-.IP "\(bu" 4
-elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR
-.IP "\(bu" 4
-elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
+.IP "" 4
+.nf
+kdb set user:/base "A"
+#> Create a new key user:/base with string "A"
+kdb set user:/their "A"
+#> Create a new key user:/their with string "A"
+kdb set user:/our "B"
+#> Create a new key user:/our with string "B"
+kdb merge user:/our user:/their user:/base user:/result
+kdb get user:/result
+#>B
+
+```<br>
+
+## SEE ALSO
+
+\- [elektra\-merge\-strategy(7)](elektra\-merge\-strategy\.md)
+\- [elektra\-key\-names(7)](elektra\-key\-names\.md) for an explanation of key names\.
+.fi
 .IP "" 0
 

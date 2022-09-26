@@ -93,9 +93,7 @@ The **spec** namespace is used to store metadata about keys and therefore Elektr
 
 ## Write Operations and the cascading Namespace
 
-If a value is to be written to a cascading key, i.e., a key starting with '/', only cascading keys that resolve to an existing key will be used.
-
-For example,
+When performing writing operations, a namespace always has to be specified.
 
 ```sh
 kdb set /tests/tutorial/cascading/#0/current/cascading_write_test value

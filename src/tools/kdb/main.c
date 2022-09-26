@@ -10,6 +10,7 @@
 #include <dirname.h>
 #include <get.h>
 #include <ls.h>
+#include <merge.h>
 #include <namespace.h>
 
 #include <command.h>
@@ -27,6 +28,7 @@ extern char ** environ;
 
 command subcommands[] = {
 	{ "basename", addBasenameSpec, execBasename },
+	{ "merge", addMergeSpec, execMerge },
 	{ "dirname", addDirnameSpec, execDirname },
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
