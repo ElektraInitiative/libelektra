@@ -47,13 +47,39 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
+- Prepare for new-backend merge
+- Olimex
 - <<HIGHLIGHT>>
 
-### <<HIGHLIGHT>>
+### Prepare for new-backend merge
 
-### <<HIGHLIGHT>>
+In a separated branch we rewrote the whole backend system.
+With this new backend system, backends are now also plugins,
+allowing backends also to be non-file-based, e.g., using databases.
+The main purpose of this release is to give a last stable release
+before master gets disrupted with a huge change set.
+The next release is not to be expected in this year.
+
+### Olimex
+
+Elektra is used for [doc/WHO](server, desktop and embedded).
+With this release, we again strengthen our embedded mainstay.
+We developed a major application running on Olimex boards,
+heavily relying on Elektra and [https://github.com/ElektraInitiative/ansible-libelektra](ansible-libelektra).
+
+This application allows:
+
+ - [X] opening (garage) doors
+ - [X] switching on entry lights
+ - [X] ringing doorbells
+ - [X] detection of fire alerts
+
+To give a smooth experience, with the support of Olimex,
+developing Ansible scripts to customize the Olimex base
+images for changing the language, time zone, static network
+configuration etc.
+
+Olimex likes this idea and will send us an A20 board.
 
 ### <<HIGHLIGHT>>
 
