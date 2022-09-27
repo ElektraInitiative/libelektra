@@ -20,15 +20,15 @@ void freeHooks (KDB * kdb, Key * errorKey)
 	{
 		elektraPluginClose (kdb->hooks.gopts.plugin, errorKey);
 		kdb->hooks.gopts.plugin = NULL;
-		kdb->hooks.gopts.kdbHookGoptsGet = NULL;
+		kdb->hooks.gopts.get = NULL;
 	}
 
 	if (kdb->hooks.spec.plugin != NULL)
 	{
 		elektraPluginClose (kdb->hooks.spec.plugin, errorKey);
 		kdb->hooks.spec.plugin = NULL;
-		kdb->hooks.spec.kdbHookSpecCopy = NULL;
-		kdb->hooks.spec.kdbHookSpecRemove = NULL;
+		kdb->hooks.spec.copy = NULL;
+		kdb->hooks.spec.remove = NULL;
 	}
 }
 
@@ -53,7 +53,7 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 	kdb->hooks.gopts.plugin = plugin;
 
-	if ((kdb->hooks.gopts.kdbHookGoptsGet = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
+	if ((kdb->hooks.gopts.get = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
 	{
 		return -1;
 	}
@@ -70,10 +70,10 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 	kdb->hooks.spec.plugin = plugin;
 
-	kdb->hooks.spec.kdbHookSpecCopy = (kdbHookSpecCopyPtr) getFunction (plugin, "hook/spec/copy", errorKey);
-	kdb->hooks.spec.kdbHookSpecRemove = (kdbHookSpecRemovePtr) getFunction (plugin, "hook/spec/remove", errorKey);
+	kdb->hooks.spec.copy = (kdbHookSpecCopyPtr) getFunction (plugin, "hook/spec/copy", errorKey);
+	kdb->hooks.spec.remove = (kdbHookSpecRemovePtr) getFunction (plugin, "hook/spec/remove", errorKey);
 
-	if(kdb->hooks.spec.kdbHookSpecCopy == NULL || kdb->hooks.spec.kdbHookSpecRemove == NULL)
+	if(kdb->hooks.spec.copy == NULL || kdb->hooks.spec.remove == NULL)
 	{
 		return -1;
 	}

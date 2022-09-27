@@ -373,14 +373,14 @@ struct _KDB
 		struct
 		{
 			struct _Plugin * plugin;
-			kdbHookGoptsGetPtr kdbHookGoptsGet;
+			kdbHookGoptsGetPtr get;
 		} gopts;
 
 		struct
 		{
 			struct _Plugin * plugin;
-			kdbHookSpecCopyPtr kdbHookSpecCopy;
-			kdbHookSpecRemovePtr kdbHookSpecRemove;
+			kdbHookSpecCopyPtr copy;
+			kdbHookSpecRemovePtr remove;
 		} spec;
 	} hooks;
 };

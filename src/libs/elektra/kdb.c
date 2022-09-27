@@ -1869,7 +1869,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME);
 	keySetNamespace (parentKey, KEY_NS_CASCADING);
 
-	if (goptsActive && !handle->hooks.gopts.kdbHookGoptsGet (handle->hooks.gopts.plugin, dataKs, parentKey))
+	if (goptsActive && !handle->hooks.gopts.get (handle->hooks.gopts.plugin, dataKs, parentKey))
 	{
 		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 		goto error;
@@ -1878,7 +1878,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keySetNamespace (parentKey, keyGetNamespace (initialParent));
 
 	// Step 14: run spec plugin
-	if(handle->hooks.spec.plugin && handle->hooks.spec.kdbHookSpecCopy(handle->hooks.spec.plugin, dataKs, parentKey, true) == -1)
+	if(handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, dataKs, parentKey, true) == -1)
 	{
 		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 		goto error;
@@ -2327,7 +2327,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	if(handle->hooks.spec.plugin && handle->hooks.spec.kdbHookSpecCopy(handle->hooks.spec.plugin, ks, parentKey, false) == -1)
+	if(handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, ks, parentKey, false) == -1)
 	{
 		goto error;
 	}
@@ -2424,7 +2424,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	backendsMerge (backends, setKs);
 
 	// Step 9: run the spec plugin to remove copied metadata
-	if(handle->hooks.spec.plugin && handle->hooks.spec.kdbHookSpecRemove(handle->hooks.spec.plugin, setKs, parentKey) == -1)
+	if(handle->hooks.spec.plugin && handle->hooks.spec.remove (handle->hooks.spec.plugin, setKs, parentKey) == -1)
 	{
 		goto rollback;
 	}
