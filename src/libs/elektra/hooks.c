@@ -73,7 +73,7 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 	kdb->hooks.spec.copy = (kdbHookSpecCopyPtr) getFunction (plugin, "hook/spec/copy", errorKey);
 	kdb->hooks.spec.remove = (kdbHookSpecRemovePtr) getFunction (plugin, "hook/spec/remove", errorKey);
 
-	if(kdb->hooks.spec.copy == NULL || kdb->hooks.spec.remove == NULL)
+	if (kdb->hooks.spec.copy == NULL || kdb->hooks.spec.remove == NULL)
 	{
 		return -1;
 	}
@@ -168,7 +168,7 @@ static bool isGoptsEnabledByContract (const KeySet * contract)
 	return isEnabled;
 }
 
-static bool isSpecEnabledByConfig(const KeySet * config)
+static bool isSpecEnabledByConfig (const KeySet * config)
 {
 	// TODO: check for system:/elektra/hook/spec/enabled or system:/elektra/hook/spec/disabled or something else ... TBD
 	//       See this discussion: https://github.com/ElektraInitiative/libelektra/pull/4471#discussion_r974129215
@@ -206,7 +206,7 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 		goto error;
 	}
 
-	if(isSpecEnabledByConfig (config) &&
+	if (isSpecEnabledByConfig (config) &&
 	    initHooksSpec (kdb, loadPlugin ("spec", kdb->global, modules, contract, errorKey), errorKey) != 0)
 	{
 		goto error;
