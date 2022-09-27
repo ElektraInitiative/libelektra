@@ -224,7 +224,7 @@ you up-to-date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Apply fix spelling to more files. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
