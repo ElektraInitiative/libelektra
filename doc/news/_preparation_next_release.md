@@ -59,6 +59,11 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### spec
+
+- Partial rewrite for spec hook _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+
 ### <<Plugin3>>
 
 - <<TODO>>

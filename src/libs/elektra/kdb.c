@@ -1865,16 +1865,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	/* TODO (kodebach): implement actual steps with new global plugins
-		// Step 14: run spec plugin
-		if (!specGet (dataKs, cascadingParent))
-		{
-			clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
-			goto error;
-		}
-		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
-	*/
-
 	// Step 13: run gopts (if enabled)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME);
 	keySetNamespace (parentKey, KEY_NS_CASCADING);
@@ -1886,6 +1876,18 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	keySetNamespace (parentKey, keyGetNamespace (initialParent));
+
+	// Step 14: run spec plugin
+	if(handle->hooks.spec.plugin && handle->hooks.spec.kdbHookSpecCopy(handle->hooks.spec.plugin, dataKs, parentKey, true) == -1)
+	{
+		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
+		goto error;
+	}
+	clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
+
+	// TODO (atmaxinger): should we have a default:/ backend?
+	Key * defaultCutpoint = keyNew ("default:/", KEY_END);
+	KeySet * defaults = ksCut (dataKs, defaultCutpoint);
 
 	// Step 15: split dataKs for poststorage phase
 	// FIXME (kodebach): handle proc:/ keys
@@ -1916,6 +1918,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// Step 18: merge data into ks and return
 	backendsMerge (backends, ks);
+
+	// TODO (atmaxinger): should we have a default:/ backend?
+	ksAppend (ks, defaults);
+	ksDel (defaults);
+	keyDel(defaultCutpoint);
 
 	// Step 19: update cache
 	// FIXME (kodebach): implement cache
@@ -2320,6 +2327,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	if(handle->hooks.spec.plugin && handle->hooks.spec.kdbHookSpecCopy(handle->hooks.spec.plugin, ks, parentKey, false) == -1)
+	{
+		goto error;
+	}
+
 	// TODO (kodebach) [opt]: merge steps 4-6
 	// By merging steps 4-6, we MAY be able to avoid copying keys from unchanged and read-only backends.
 
@@ -2406,6 +2418,23 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	   bug at https://issues.libelektra.org."); goto rollback;
 		}
 	*/
+
+	// Step 8: merge data from all backends (for spec removal)
+	ksClear (setKs);
+	backendsMerge (backends, setKs);
+
+	// Step 9: run the spec plugin to remove copied metadata
+	if(handle->hooks.spec.plugin && handle->hooks.spec.kdbHookSpecRemove(handle->hooks.spec.plugin, setKs, parentKey) == -1)
+	{
+		goto rollback;
+	}
+
+	// Step 10: split setKs for remaining phases
+	if (!backendsDivide (backends, setKs))
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints after spec removal. Please report this bug at https://issues.libelektra.org.");
+		goto rollback;
+	}
 
 	// Step 11a: run storage phase
 	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_STORAGE, false, KDB_SET_FN_SET))
