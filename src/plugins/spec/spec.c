@@ -984,23 +984,43 @@ int elektraSpecCopy (Plugin * handle, KeySet * returned, Key * parentKey, bool i
 
 int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Key * cur;
-	KeySet * ks = returned;
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
+	Key * specName = keyNew ("spec:/", KEY_END);
+
+	for (elektraCursor i = 0; i < ksGetSize (returned); i++)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_SPEC)
+		Key * cur = ksAtCursor (returned, i);
+
+		if(keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			continue;
 		}
 
-		keySetMeta (cur, "internal/spec/array/validated", NULL);
+		// Find out if there is a spec:/ key for the current key
+		keySetName (specName, "spec:/");
+		keyAddName (specName, strchr (keyName (cur), '/'));
+		Key * specKey = ksLookup(returned, specName, KDB_O_NONE);
 
-		if (keyGetMeta (cur, "internal/spec/array") == NULL && keyGetMeta (cur, "internal/spec/remove") == NULL)
+		if(specKey != NULL)
 		{
-			ksAppendKey (returned, cur);
+			// Found a spec:/ key!
+			// Now remove all meta from the current key that is also contained in the spec:/ key
+
+			KeySet * specMeta = keyMeta (specKey);
+			KeySet * meta = keyMeta (cur);
+
+			for (elektraCursor j = 0; j < ksGetSize (specMeta); j++)
+			{
+				Key * m = ksAtCursor (specMeta, j);
+				if (ksLookup (meta, m, 0) == m)
+				{
+					keySetMeta (cur, keyName (m), NULL);
+				}
+			}
 		}
+
 	}
+
+	keyDel (specName);
 
 	keySetMeta (parentKey, "internal/spec/error", NULL);
 

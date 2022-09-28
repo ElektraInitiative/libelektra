@@ -591,24 +591,37 @@ static void test_remove_meta (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/a", KEY_END), KS_END);
+		KeySet * ks = ksNew (10,
+				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_META, "othermeta2", "", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/a", KEY_END),
+				     keyNew ("spec:/" PARENT_KEY "/b", KEY_META, "abcmeta", "", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/b", KEY_END), KS_END);
 
 		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, true) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		Key * lookupA = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		Key * lookupB = ksLookupByName (ks, PARENT_KEY "/b", 0);
 
-		succeed_if (lookup != NULL, ".../a not found");
-		succeed_if (keyGetMeta (lookup, "othermeta") != NULL, "metadata missing");
+		succeed_if (lookupA != NULL, ".../a not found");
+		succeed_if (keyGetMeta (lookupA, "othermeta") != NULL, "othermeta missing");
+		succeed_if (keyGetMeta (lookupA, "othermeta2") != NULL, "othermeta2 missing");
+
+		succeed_if (lookupB != NULL, ".../b not found");
+		succeed_if (keyGetMeta (lookupB, "abcmeta") != NULL, "abcmeta missing");
 
 		TEST_CHECK (elektraSpecRemove (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/remove failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		lookupA = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		lookupB = ksLookupByName (ks, PARENT_KEY "/b", 0);
 
-		succeed_if (lookup != NULL, ".../a not found");
-		succeed_if (keyGetMeta (lookup, "othermeta") == NULL, "metadata not removed");
+		succeed_if (lookupA != NULL, ".../a not found");
+		succeed_if (keyGetMeta (lookupA, "othermeta") == NULL, "othermeta not removed");
+		succeed_if (keyGetMeta (lookupA, "othermeta2") == NULL, "othermeta2 not removed");
+
+		succeed_if (lookupB != NULL, ".../b not found");
+		succeed_if (keyGetMeta (lookupB, "abcmeta") == NULL, "abcmeta not removed");
 
 		ksDel (ks);
 	}
