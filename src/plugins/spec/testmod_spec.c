@@ -591,8 +591,7 @@ static void test_remove_meta (void)
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10,
-				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_META, "othermeta2", "", KEY_END),
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_META, "othermeta2", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/b", KEY_META, "abcmeta", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/b", KEY_META, "shouldbethere", "hello", KEY_END), KS_END);

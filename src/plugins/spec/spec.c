@@ -990,7 +990,7 @@ int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * 
 	{
 		Key * cur = ksAtCursor (returned, i);
 
-		if(keyGetNamespace (cur) == KEY_NS_SPEC)
+		if (keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			continue;
 		}
@@ -998,9 +998,9 @@ int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * 
 		// Find out if there is a spec:/ key for the current key
 		keySetName (specName, "spec:/");
 		keyAddName (specName, strchr (keyName (cur), '/'));
-		Key * specKey = ksLookup(returned, specName, KDB_O_NONE);
+		Key * specKey = ksLookup (returned, specName, KDB_O_NONE);
 
-		if(specKey != NULL)
+		if (specKey != NULL)
 		{
 			// Found a spec:/ key!
 			// Now remove all meta from the current key that is also contained in the spec:/ key
@@ -1017,7 +1017,6 @@ int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * 
 				}
 			}
 		}
-
 	}
 
 	keyDel (specName);
