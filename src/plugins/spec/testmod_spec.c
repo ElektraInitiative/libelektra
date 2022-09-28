@@ -595,7 +595,7 @@ static void test_remove_meta (void)
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_META, "othermeta2", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/b", KEY_META, "abcmeta", "", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/b", KEY_END), KS_END);
+				     keyNew ("user:/" PARENT_KEY "/b", KEY_META, "shouldbethere", "hello", KEY_END), KS_END);
 
 		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, true) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
@@ -609,6 +609,7 @@ static void test_remove_meta (void)
 
 		succeed_if (lookupB != NULL, ".../b not found");
 		succeed_if (keyGetMeta (lookupB, "abcmeta") != NULL, "abcmeta missing");
+		succeed_if (keyGetMeta (lookupB, "shouldbethere") != NULL, "shouldbethere missing");
 
 		TEST_CHECK (elektraSpecRemove (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/remove failed");
 		TEST_ON_FAIL (output_error (parentKey));
@@ -622,6 +623,7 @@ static void test_remove_meta (void)
 
 		succeed_if (lookupB != NULL, ".../b not found");
 		succeed_if (keyGetMeta (lookupB, "abcmeta") == NULL, "abcmeta not removed");
+		succeed_if (keyGetMeta (lookupB, "shouldbethere") != NULL, "shouldbethere should not be removed");
 
 		ksDel (ks);
 	}
