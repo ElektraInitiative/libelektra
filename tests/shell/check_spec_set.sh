@@ -1,20 +1,20 @@
 @INCLUDE_COMMON@
 
 echo
-echo ELEKTRA SPEC TESTS
+echo ELEKTRA SPEC SET TESTS
 echo
 
 check_version
 
 set -x
 
-echo "Test specification get"
+echo "Test type specification working"
 
-ROOT_FILE=spec_tests.ecf
-ROOT_MOUNTPOINT=/test/script/spec
+ROOT_FILE=spec_tests_set.ecf
+ROOT_MOUNTPOINT=/test/script/specSet
 
-if is_plugin_available dump && is_plugin_available list && is_plugin_available sync; then
-	"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT dump 1> /dev/null
+if is_plugin_available dump && is_plugin_available list && is_plugin_available sync && is_plugin_available type; then
+	"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT dump type 1> /dev/null
 	succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
 
 	SYSTEM_FILE="$("$KDB" file -n system:$ROOT_MOUNTPOINT)"
@@ -39,11 +39,12 @@ if is_plugin_available dump && is_plugin_available list && is_plugin_available s
 	[ $? != 0 ]
 	succeed_if "getting cascading should fail if nothing is there"
 
-	"$KDB" meta-set spec:$ROOT_MOUNTPOINT/first default 20
+	"$KDB" meta-set spec:$ROOT_MOUNTPOINT/first type unsigned_short
 	succeed_if "could not set meta"
 
-	[ "x$("$KDB" get $ROOT_MOUNTPOINT/first)" = "x20" ]
-	succeed_if "could not get default value"
+	"$KDB" set system:$ROOT_MOUNTPOINT/first abcd
+	[ $? != 0 ]
+	succeed_if "should complain that value is not a number"
 
 	"$KDB" umount $ROOT_MOUNTPOINT
 	succeed_if "could not unmount previously mounted mountpoint"
@@ -55,6 +56,4 @@ if is_plugin_available dump && is_plugin_available list && is_plugin_available s
 	rm -f "$SPEC_FILE"
 fi
 
-echo "Test mounting plugin stack"
-
-end_script spec tests
+end_script spec set tests
