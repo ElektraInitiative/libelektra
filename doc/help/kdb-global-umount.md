@@ -32,7 +32,7 @@ sudo kdb global-mount
 sudo kdb global-umount tracer
 
 sudo kdb global-mount
-#> 
+#>
 
 
 if [ -f "globalplugins.rm" ]; then rm "$(kdb file system:/elektra/globalplugins)" "globalplugins.rm"; else mv "globalplugins.bak" "$(kdb file system:/elektra/globalplugins)"; fi
