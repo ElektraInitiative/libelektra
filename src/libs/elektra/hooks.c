@@ -171,7 +171,7 @@ static bool isGoptsEnabledByContract (const KeySet * contract)
 static bool isSpecEnabledByConfig (const KeySet * config)
 {
 	// TODO: check for system:/elektra/hook/spec/enabled or system:/elektra/hook/spec/disabled or something else ... TBD
-	//       See this discussion: https://github.com/ElektraInitiative/libelektra/pull/4471#discussion_r974129215
+	//       See this discussion: https://github.com/ElektraInitiative/libelektra/issues/4499
 	return true;
 }
 
