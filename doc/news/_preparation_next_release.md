@@ -69,10 +69,10 @@ heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraIn
 
 This application allows:
 
- - [X] opening (garage) doors
- - [X] switching on entry lights
- - [X] ringing doorbells
- - [X] detection of fire alerts
+- [x] opening (garage) doors
+- [x] switching on entry lights
+- [x] ringing doorbells
+- [x] detection of fire alerts
 
 To give a smooth experience, with the support of Olimex,
 developing Ansible scripts to customize the Olimex base
