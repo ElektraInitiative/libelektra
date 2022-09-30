@@ -64,3 +64,12 @@ Nevertheless, there are a few must-haves:
 - A README.md must be available for every module.
 - A man page (help/kdb-) must be available for every command (including external commands).
 
+## Templates
+
+In general we use [arc42.org](https://arc42.org/) but we use specialized templates for different modules:
+
+- [plugins](/src/plugins/template/README.md).
+- [libs](/src/libs/template/README.md).
+- [bindings](/src/bindings/template/README.md).
+- [tools](/src/tools/template/README.md).
+- [decisions](doc/decisions/template.md)
