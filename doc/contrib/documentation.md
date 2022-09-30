@@ -5,7 +5,8 @@ This document takes preference to the actual situation, so if you see documentat
 not according to this document, please [create an issue](https://issue.libelektra.org)
 or directly fix it with your next PR.
 
-> Note: It is always allowed to improve the documentation, in every PR, even if it is unrelated.
+> Note: It is always allowed to improve the documentation, in every PR, even if
+> the documentation fix is completely unrelated.
 
 ## Target Groups
 
@@ -18,10 +19,16 @@ We write documentation for three groups:
 - Contributor
   Is a person who does changes within Elektra's repository.
 
+There are 3 separate folders for these 3 groups:
+
+- [for users](/doc/help)
+- [for developers](/doc/dev)
+- [for contributors](/doc/contrib)
+
 > Takeaway:
 > Every document must have a clear target group (user, developer or contributor).
-> Sometimes it is clear from the directory, e.g. [doc/help](/doc/help) is for users,
-> sometimes it must be explicitly stated, e.g. tutorials.
+> Sometimes it is clear from the directory sometimes it must be explicitly stated,
+> e.g. tutorials.
 
 ## Orientation
 
@@ -59,10 +66,12 @@ Elektra's documentation must fulfill:
 
 In general the documentation does not need to be complete.
 In particular, we do not want repetition of implementation details as documentation.
+[Prefer to write self-documenting code](/doc/CODING.md).
 Nevertheless, there are a few must-haves:
 
 - A README.md must be available for every module.
 - A man page (help/kdb-) must be available for every command (including external commands).
+- A tutorial must be present for every important concept.
 
 ## Templates
 
@@ -72,4 +81,4 @@ In general we use [arc42.org](https://arc42.org/) but we use specialized templat
 - [libs](/src/libs/template/README.md).
 - [bindings](/src/bindings/template/README.md).
 - [tools](/src/tools/template/README.md).
-- [decisions](doc/decisions/template.md)
+- [decisions](/doc/decisions/template.md)

@@ -62,7 +62,7 @@ The next release is not to be expected in this year.
 
 ### Olimex
 
-Elektra is used for [server, desktop and embedded](doc/WHO.md).
+Elektra is used for [server, desktop and embedded](/doc/WHO.md).
 With this release, we again strengthen our embedded mainstay.
 We developed a major application running on Olimex boards,
 heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra).
