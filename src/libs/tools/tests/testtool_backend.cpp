@@ -117,19 +117,19 @@ TEST (Backend, SimpleBackend)
 	EXPECT_EQ (mountConfig.current ().getName (),
 		   "system:/elektra/mountpoints/\\//error/rollback/#0") // fails ('/definition/positions/set/resolver' instead of
 									// '/error/rollback/#0')
-									<< "name of element in keyset wrong";
+		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong"; // fails ('resolver' instead of '')
 	mountConfig.next ();
 	EXPECT_EQ (mountConfig.current ().getName (),
 		   "system:/elektra/mountpoints/\\//error/rollback/#0/label") // fails ('/definition/positions/set/rollback' instead of
 									      // '/error/rollback/#0/label')
-									      << "name of element in keyset wrong";
+		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "resolver") << "string of element in keyset wrong";
 	mountConfig.next ();
 	EXPECT_EQ (mountConfig.current ().getName (),
 		   "system:/elektra/mountpoints/\\//error/rollback/#0/name") // fails ('/definition/positions/set/storage' instead of
 									     // '/error/rollback/#0/name')
-									     << "name of element in keyset wrong";
+		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), KDB_DEFAULT_RESOLVER)
 		<< "string of element in keyset wrong"; // fails ('dump' instead of 'resolver_fm_hpu_b')
 	mountConfig.next ();
@@ -150,7 +150,7 @@ TEST (Backend, SimpleBackend)
 	EXPECT_EQ (mountConfig.current ().getName (),
 		   "system:/elektra/mountpoints/\\//get/getresolver/#0/reference") // fails ('/plugins/dump/name' instead of
 										   // '/get/getresolver/#0/reference')
-										   << "name of element in keyset wrong";
+		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "resolver")
 		<< "string of element in keyset wrong"; // fails ('dump' instead of 'resolver')
 	mountConfig.next ();
