@@ -81,6 +81,16 @@ The rules for including headers are:
   #include "./subdir/header.h"
   ```
   It should not be necessary, to include a private non-installed header from another directory.
+  This ensures that libraries only use their own private APIs.
+  Going up one (or more) directories, but staying in the same library would be okay, but is considered an indication of bad code structure.
+  A library can always be restructured to avoid needing a `#include "../`.
+- Internal non-installed headers (i.e., a file that is not installed, but contains APIs exposed to other libraries within Elektra) can be included with
+  ```c
+  #include <internal/somelib.h>
+  // or
+  #include <internal/somelib/header.h>
+  ```
+  Since these internal headers are not installed, they must only be included from other headers that are not installed or from code files.
 - Installed headers are included with their full path as if they are installed already:
   ```c
   #include <elektra/somelib.h>
@@ -94,8 +104,10 @@ The rules for including headers are:
   // etc.
   ```
 
-We will set up the `build/include` directory to mirror the installed layout of header files.
-This makes the `#include <>`s work correctly, without having to add any extra include paths except `build/include`.
+Only `build/include`, which is a copy of `src/include` after CMake processing, is added to the include path.
+The entire `build/include/elektra` directory is installed as-is, with the exact same directory structure and without any further processing.
+
+This is enough for `#include <>`s to work.
 
 We will also enforce that the path in a `#include ""` always starts with a `./` and does not contain any `/../`.
 To do this, we will use a simple `grep` based script that runs as a test case and as an early part of the CI (like e.g., the formatting check).
@@ -107,13 +119,14 @@ Tests can include anything from anywhere within the code base to allow testing p
 
 The decision highlights the difference between installed and non-installed headers.
 The main driving factor for using `""` at all was that including a non-installed private header with `<>` would be unexpected, since non-installed headers shouldn't be in the (standard) include-path.
+This distinction also makes it easier to ensure that non-installed headers are not accidentally included in installed ones.
 
 See also considered alternatives.
 
 ## Implications
 
-- All installed headers must be put into `build/include`.
-- Non-installed headers meanwhile must be kept next to the `.c` files that use them (e.g. `src/libs/mylib`).
+- All installed headers (and only those) must be put into `src/include/elektra`.
+- There must not be any `#include <internal/...>`s anywhere within `src/include/elektra`.
 
 ## Related Decisions
 

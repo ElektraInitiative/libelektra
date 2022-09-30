@@ -65,35 +65,35 @@ A monolithic library `foo` may have these headers (covering categories 3 & 4 fro
 - `src/include/elektra/foo.h`:
   Contains the full public API of `libelektra-foo`.
   Will be installed as `<include-root>/elektra/foo.h`.
-- `src/include/elektra/foo/internal.h`:
-  Contains the internal (i.e., non-stable) API of `libelektra-foo`.
-  Will be installed as `<include-root>/elektra/foo/internal.h`.
+- `src/include/internal/foo.h`:
+  Contains the internal API of `libelektra-foo`.
+  Will not be installed.
 
 A modularized library `foo` may have these headers (covering categories 3 & 4 from above):
 
-- `src/include/elektra/foo/public.h`:
+- `src/include/elektra/foo.h`:
   Declares the public API of `libelektra-foo`, by including `#include <elektra/foo/*.h>`.
   Will be installed as `<include-root>/elektra/foo/public.h`.
 
-  Such a header may only include `#include <elektra/foo/*.h>` lines.
+  Such a header may only contain `#include <elektra/foo/*.h>` lines.
 
 - `src/include/elektra/foo/*.h`:
   Additional public API header of `libelektra-foo`.
   Will be installed as `<include-root>/elektra/foo/*.h`.
 
-  All of these installed headers `installed.h` must be included from `src/lib/foo/public.h` via a line `#include <elektra/foo/installed.h>`.
+  All of these installed headers `installed.h` must be included from `src/include/elektra/foo.h` via a line `#include <elektra/foo/installed.h>`.
 
-- `src/include/elektra/foo/internal.h`:
-  Declares the internal (i.e., non-stable) API of `libelektra-foo`, by including `#include <elektra/foo/*.h>`.
-  Will be installed as `<include-root>/elektra/internal/foo.h`.
+- `src/include/internal/foo.h`:
+  Declares the internal API of `libelektra-foo`, by including `#include <internal/foo/*.h>`.
+  Will not be installed.
 
-  Such a header may only include `#include <elektra/foo/*.h>` lines.
+  Such a header may only contain `#include <internal/foo/*.h>` lines.
 
-- `src/include/elektra/foo/internal/*.h`:
-  Additional header of `libelektra-foo`.
-  Will be installed as `<include-root>/elektra/foo/internal/*.h`.
+- `src/include/internal/foo/*.h`:
+  Additional internal header of `libelektra-foo`.
+  Will not be installed.
 
-  All of these installed headers `installed.h` must be included from `src/lib/foo/internal.h` via a line `#include <elektra/foo/internal/installed.h>`.
+  All of these installed headers `installed.h` must be included from `src/include/internal/foo.h` via a line `#include <internal/foo/installed.h>`.
 
 Additionally, all libraries may also have private headers:
 
@@ -111,7 +111,7 @@ Their headers are never installed and can be named any way the developer wants.
 For category 2 from above (private but needs to be tested), one of the following should be done:
 
 1. Declare functions as `static` in a `.c` file and `#include ""` this file from the test.
-2. Add a private non-installed header (e.g. `src/lib/foo/testapi.h`) that declares the API that needs testing, `#include ""` that and compile the test sources together with the `.o` files from the library (static linking).
+2. Add a private non-installed header (e.g., `src/lib/foo/testapi.h`) that declares the API that needs testing, `#include ""` that and compile the test sources together with the `.o` files from the library (static linking).
 
 If a symbol is needed in only one file and for tests, option 1 should be preferred.
 For symbols that are used in multiple files, a header needs to exist anyway.
@@ -122,14 +122,21 @@ This way we don't pollute our `symbols.map` files and keep the number of exporte
 
 - This structure makes the `#include`s simple and works nicely with our directory structure.
 - Having a uniform naming convention simplifies things, both for developers writing Elektra and those using Elektra.
-- Requiring libraries must either be fully modularized (main headers are only `#includes`) or completely monolithic, avoids the situation where a library has some parts in `public.h` and other parts in extra headers.
-  This is bad, because it encourages users to simply include `public.h`, which defeats the point of modularized headers.
+- Requiring libraries must either be fully modularized (main headers are only `#includes`) or completely monolithic, avoids the situation where a library has some parts in `foo.h` and other parts in extra headers.
+  This is bad, because it encourages users to simply include `foo.h`, which defeats the point of modularized headers.
 
 ## Implications
 
-- The location of a header file within the source tree determines what API it contains (public, internal, or private).
+- The location of a header file within the source tree determines what API it contains:
+  - Public: Will be installed, must be stable, can be used anywhere
+  - Internal: Will not be installed, doesn't have to be stable, can be used anywhere, but public headers
+  - Private: Will not be installed, doesn't have to be stable, can only be used in the same library
 - Some libraries are currently neither fully modularized nor fully monolithic.
   The headers for these libraries must be restructured.
+- There is no room for experimental APIs, i.e., headers that should be installed, but are not (yet) stable.
+  Currently, we don't plan to have any such APIs in the 1.0 release.
+  The plan is that anything that is not internal/private in 1.0 is stable.
+  If the need arises to introduce experimental APIs, a new decision must be reached about this.
 
 ## Related Decisions
 
