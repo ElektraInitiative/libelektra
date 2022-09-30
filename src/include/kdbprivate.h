@@ -101,6 +101,9 @@ typedef int (*kdbCommitPtr) (Plugin * handle, KeySet * returned, Key * parentKey
 
 typedef int (*kdbHookGoptsGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
+typedef int (*kdbHookSpecCopyPtr) (Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet);
+typedef int (*kdbHookSpecRemovePtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
 
@@ -321,8 +324,6 @@ struct _KeySet
 #endif
 };
 
-typedef struct _Hooks Hooks;
-
 /**
  * The access point to the key database.
  *
@@ -371,9 +372,16 @@ struct _KDB
 	{
 		struct
 		{
-			struct _Plugin* plugin;
-			kdbHookGoptsGetPtr kdbHookGoptsGet;
+			struct _Plugin * plugin;
+			kdbHookGoptsGetPtr get;
 		} gopts;
+
+		struct
+		{
+			struct _Plugin * plugin;
+			kdbHookSpecCopyPtr copy;
+			kdbHookSpecRemovePtr remove;
+		} spec;
 	} hooks;
 };
 

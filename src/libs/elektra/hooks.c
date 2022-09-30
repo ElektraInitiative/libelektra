@@ -19,6 +19,16 @@ void freeHooks (KDB * kdb, Key * errorKey)
 	if (kdb->hooks.gopts.plugin != NULL)
 	{
 		elektraPluginClose (kdb->hooks.gopts.plugin, errorKey);
+		kdb->hooks.gopts.plugin = NULL;
+		kdb->hooks.gopts.get = NULL;
+	}
+
+	if (kdb->hooks.spec.plugin != NULL)
+	{
+		elektraPluginClose (kdb->hooks.spec.plugin, errorKey);
+		kdb->hooks.spec.plugin = NULL;
+		kdb->hooks.spec.copy = NULL;
+		kdb->hooks.spec.remove = NULL;
 	}
 }
 
@@ -43,7 +53,27 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 	kdb->hooks.gopts.plugin = plugin;
 
-	if ((kdb->hooks.gopts.kdbHookGoptsGet = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
+	if ((kdb->hooks.gopts.get = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
+	{
+		return -1;
+	}
+
+	return 0;
+}
+
+static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
+{
+	if (!plugin)
+	{
+		return -1;
+	}
+
+	kdb->hooks.spec.plugin = plugin;
+
+	kdb->hooks.spec.copy = (kdbHookSpecCopyPtr) getFunction (plugin, "hook/spec/copy", errorKey);
+	kdb->hooks.spec.remove = (kdbHookSpecRemovePtr) getFunction (plugin, "hook/spec/remove", errorKey);
+
+	if (kdb->hooks.spec.copy == NULL || kdb->hooks.spec.remove == NULL)
 	{
 		return -1;
 	}
@@ -138,6 +168,13 @@ static bool isGoptsEnabledByContract (const KeySet * contract)
 	return isEnabled;
 }
 
+static bool isSpecEnabledByConfig (const KeySet * config)
+{
+	// TODO: check for system:/elektra/hook/spec/enabled or system:/elektra/hook/spec/disabled or something else ... TBD
+	//       See this discussion: https://github.com/ElektraInitiative/libelektra/issues/4499
+	return true;
+}
+
 /**
  * Initializes the hooks stored in the passed KDB handle.
  * If the handle already contains initialized hooks, they will be reinitialized, including unloading and loading of their plugins.
@@ -165,6 +202,12 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 
 	if (isGoptsEnabledByContract (contract) &&
 	    initHooksGopts (kdb, loadPlugin ("gopts", kdb->global, modules, contract, errorKey), errorKey) != 0)
+	{
+		goto error;
+	}
+
+	if (isSpecEnabledByConfig (config) &&
+	    initHooksSpec (kdb, loadPlugin ("spec", kdb->global, modules, contract, errorKey), errorKey) != 0)
 	{
 		goto error;
 	}

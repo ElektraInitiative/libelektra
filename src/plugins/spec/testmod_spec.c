@@ -38,17 +38,18 @@
 		}                                                                                                                          \
 	} while (0)
 
-static void test_default (void)
+static void test_hook_copy_default (bool isKdbGet)
 {
-	printf ("test default\n");
+	printf ("test %s, isKdbGet=%d\n", __func__, isKdbGet);
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
+
 	TEST_BEGIN
 	{
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
 				     KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
@@ -66,7 +67,7 @@ static void test_default (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_VALUE, "19", KEY_META, "default", "19", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should fail");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR, "hook spec/copy should fail");
 
 		ksDel (ks);
 	}
@@ -74,9 +75,9 @@ static void test_default (void)
 	ksDel (_conf);
 }
 
-static void test_assign_condition (void)
+static void test_hook_copy_assign_condition (void)
 {
-	printf ("test assign/condition\n");
+	printf ("test %s\n", __func__);
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
@@ -86,7 +87,7 @@ static void test_assign_condition (void)
 			10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "assign/condition", "17", KEY_META, "othermeta", "", KEY_END),
 			KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, true) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
@@ -102,9 +103,10 @@ static void test_assign_condition (void)
 	ksDel (_conf);
 }
 
-static void test_wildcard (void)
+static void test_hook_copy_wildcard (void)
 {
-	printf ("test wildcard (_)\n");
+	printf ("test %s (_)\n", __func__);
+	bool isKdbGet = true;
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
@@ -113,7 +115,7 @@ static void test_wildcard (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/_", KEY_META, "default", "17", KEY_META, "othermeta", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a/x", 0);
@@ -132,7 +134,7 @@ static void test_wildcard (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/_", KEY_META, "require/count", "2", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x", KEY_END), keyNew ("user:/" PARENT_KEY "/a/y", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		ksDel (ks);
@@ -142,9 +144,10 @@ static void test_wildcard (void)
 	ksDel (_conf);
 }
 
-static void test_require (void)
+static void test_hook_copy_require (void)
 {
-	printf ("test require\n");
+	printf ("test %s\n", __func__);
+	bool isKdbGet = true;
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
@@ -152,7 +155,8 @@ static void test_require (void)
 	{
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -163,7 +167,7 @@ static void test_require (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		ksDel (ks);
@@ -172,9 +176,10 @@ static void test_require (void)
 	ksDel (_conf);
 }
 
-static void test_logMissing (void)
+static void test_hook_copy_logMissing (void)
 {
-	printf ("test logMissing\n");
+	printf ("test %s\n", __func__);
+	bool isKdbGet = true;
 
 	KeySet * _conf = ksNew (2, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END),
 				keyNew ("user:/missing/log", KEY_VALUE, "1", KEY_END), KS_END);
@@ -183,7 +188,8 @@ static void test_logMissing (void)
 	{
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		succeed_if (keyGetMeta (parentKey, "logs/spec/missing") != NULL, "missing key should have been logged");
 		succeed_if_same_string (keyString (keyGetMeta (parentKey, "logs/spec/missing")), "#0");
@@ -200,7 +206,7 @@ static void test_logMissing (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "require", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		succeed_if (keyGetMeta (parentKey, "logs/spec/missing") == NULL, "missing key should not have been logged");
@@ -211,9 +217,10 @@ static void test_logMissing (void)
 	ksDel (_conf);
 }
 
-static void test_array (void)
+static void test_hook_copy_array (void)
 {
-	printf ("test array\n");
+	printf ("test %s\n", __func__);
+	bool isKdbGet = true;
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
@@ -222,7 +229,7 @@ static void test_array (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "7", KEY_META, "type", "long", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#5", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
@@ -276,7 +283,7 @@ static void test_array (void)
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
@@ -312,7 +319,7 @@ static void test_array (void)
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
@@ -349,7 +356,7 @@ static void test_array (void)
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
@@ -386,7 +393,8 @@ static void test_array (void)
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -399,7 +407,8 @@ static void test_array (void)
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#2", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/c", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -407,9 +416,10 @@ static void test_array (void)
 	ksDel (_conf);
 }
 
-static void test_require_array (void)
+static void test_hook_copy_require_array (void)
 {
-	printf ("test require array\n");
+	printf ("test %s\n", __func__);
+	bool isKdbGet = true;
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
@@ -419,7 +429,8 @@ static void test_require_array (void)
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#0", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -432,7 +443,7 @@ static void test_require_array (void)
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/#0", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		ksDel (ks);
@@ -446,7 +457,8 @@ static void test_require_array (void)
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "array", "#1", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/#0", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -454,9 +466,10 @@ static void test_require_array (void)
 	ksDel (_conf);
 }
 
-static void test_array_member (void)
+static void test_hook_copy_array_member (void)
 {
 	printf ("test array member\n");
+	bool isKdbGet = true;
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
@@ -465,7 +478,7 @@ static void test_array_member (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a/#0/b", 0);
@@ -482,7 +495,8 @@ static void test_array_member (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -494,7 +508,8 @@ static void test_array_member (void)
 				     keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#", KEY_META, "default", "x", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -505,7 +520,7 @@ static void test_array_member (void)
 		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a/#/b", KEY_META, "default", "x", KEY_END),
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b/c", KEY_META, "default", "y", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		ksDel (ks);
@@ -520,7 +535,7 @@ static void test_array_member (void)
 				     keyNew ("user:/" PARENT_KEY "/a", KEY_META, "array", "#0", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/c", KEY_VALUE, "z", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
 		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a/#0/b", 0);
@@ -543,7 +558,8 @@ static void test_array_member (void)
 				     keyNew ("spec:/" PARENT_KEY "/a/#/b/c", KEY_META, "default", "y", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x/b/c", KEY_VALUE, "z", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -558,7 +574,8 @@ static void test_array_member (void)
 				     keyNew ("user:/" PARENT_KEY "/a/#0/b/c", KEY_VALUE, "z", KEY_END),
 				     keyNew ("user:/" PARENT_KEY "/a/x/b/c", KEY_VALUE, "z", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet shouldn't succeed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, isKdbGet) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "hook spec/copy shouldn't succeed");
 
 		ksDel (ks);
 	}
@@ -566,40 +583,53 @@ static void test_array_member (void)
 	ksDel (_conf);
 }
 
-/* TODO: find way to remove metadata safely after other plugins ran
 static void test_remove_meta (void)
 {
-	printf ("test remove meta\n");
+	printf ("test %s\n", __func__);
 
 	KeySet * _conf = ksNew (1, keyNew ("user:/conflict/get", KEY_VALUE, "ERROR", KEY_END), KS_END);
 
 	TEST_BEGIN
 	{
-		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_END),
-				     keyNew ("user:/" PARENT_KEY "/a", KEY_END), KS_END);
+		KeySet * ks = ksNew (10, keyNew ("spec:/" PARENT_KEY "/a", KEY_META, "othermeta", "", KEY_META, "othermeta2", "", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/a", KEY_END),
+				     keyNew ("spec:/" PARENT_KEY "/b", KEY_META, "abcmeta", "", KEY_END),
+				     keyNew ("user:/" PARENT_KEY "/b", KEY_META, "shouldbethere", "hello", KEY_END), KS_END);
 
-		TEST_CHECK (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
+		TEST_CHECK (elektraSpecCopy (plugin, ks, parentKey, true) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/copy failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		Key * lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		Key * lookupA = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		Key * lookupB = ksLookupByName (ks, PARENT_KEY "/b", 0);
 
-		succeed_if (lookup != NULL, ".../a not found");
-		succeed_if (keyGetMeta (lookup, "othermeta") != NULL, "metadata missing");
+		succeed_if (lookupA != NULL, ".../a not found");
+		succeed_if (keyGetMeta (lookupA, "othermeta") != NULL, "othermeta missing");
+		succeed_if (keyGetMeta (lookupA, "othermeta2") != NULL, "othermeta2 missing");
 
-		TEST_CHECK (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
+		succeed_if (lookupB != NULL, ".../b not found");
+		succeed_if (keyGetMeta (lookupB, "abcmeta") != NULL, "abcmeta missing");
+		succeed_if (keyGetMeta (lookupB, "shouldbethere") != NULL, "shouldbethere missing");
+
+		TEST_CHECK (elektraSpecRemove (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "hook spec/remove failed");
 		TEST_ON_FAIL (output_error (parentKey));
 
-		lookup = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		lookupA = ksLookupByName (ks, PARENT_KEY "/a", 0);
+		lookupB = ksLookupByName (ks, PARENT_KEY "/b", 0);
 
-		succeed_if (lookup != NULL, ".../a not found");
-		succeed_if (keyGetMeta (lookup, "othermeta") == NULL, "metadata not removed");
+		succeed_if (lookupA != NULL, ".../a not found");
+		succeed_if (keyGetMeta (lookupA, "othermeta") == NULL, "othermeta not removed");
+		succeed_if (keyGetMeta (lookupA, "othermeta2") == NULL, "othermeta2 not removed");
+
+		succeed_if (lookupB != NULL, ".../b not found");
+		succeed_if (keyGetMeta (lookupB, "abcmeta") == NULL, "abcmeta not removed");
+		succeed_if (keyGetMeta (lookupB, "shouldbethere") != NULL, "shouldbethere should not be removed");
 
 		ksDel (ks);
 	}
 	TEST_END
 	ksDel (_conf);
 }
-*/
+
 
 int main (int argc, char ** argv)
 {
@@ -608,15 +638,16 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_default ();
-	test_assign_condition ();
-	test_wildcard ();
-	test_require ();
-	test_logMissing ();
-	test_array ();
-	test_require_array ();
-	test_array_member ();
-	// test_remove_meta ();
+	test_hook_copy_default (true);
+	// test_hook_copy_default(false);
+	test_hook_copy_assign_condition ();
+	test_hook_copy_wildcard ();
+	test_hook_copy_require ();
+	test_hook_copy_logMissing ();
+	test_hook_copy_array ();
+	test_hook_copy_require_array ();
+	test_hook_copy_array_member ();
+	test_remove_meta ();
 
 	print_result ("testmod_spec");
 

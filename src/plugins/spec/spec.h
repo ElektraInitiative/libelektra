@@ -11,10 +11,11 @@
 #define ELEKTRA_PLUGIN_SPEC_H
 
 #include <kdbplugin.h>
-
+#include <kdbtypes.h> /* for bool */
 
 int elektraSpecGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraSpecSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraSpecCopy (Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet);
+int elektraSpecRemove (Plugin * handle, KeySet * returned, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

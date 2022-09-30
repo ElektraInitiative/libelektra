@@ -27,18 +27,13 @@ if [ -f "$(kdb file system:/elektra/globalplugins)" ]; then mv "$(kdb file syste
 sudo kdb global-mount tracer
 
 sudo kdb global-mount
-# STDOUT-REGEX: .*spec⏎tracer.*
+# STDOUT-REGEX: .*tracer.*
 
 sudo kdb global-umount tracer
 
-# spec is always mounted by default
-sudo kdb global-mount
-#> spec
-
-sudo kdb global-umount spec
-
 sudo kdb global-mount
 #>
+
 
 if [ -f "globalplugins.rm" ]; then rm "$(kdb file system:/elektra/globalplugins)" "globalplugins.rm"; else mv "globalplugins.bak" "$(kdb file system:/elektra/globalplugins)"; fi
 ```

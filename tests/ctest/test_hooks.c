@@ -156,7 +156,10 @@ static void test_initHooks_shouldInitAllHooksWithoutFailure (void)
 	succeed_if (result == 0, "result should be 0");
 	succeed_if (ksGetSize (meta) == 0, "error key should not have meta data");
 	succeed_if (kdb->hooks.gopts.plugin != NULL, "gopts plugin should be loaded");
-	succeed_if (kdb->hooks.gopts.kdbHookGoptsGet != NULL, "gopts.kdbHookGoptsGet should be found");
+	succeed_if (kdb->hooks.gopts.get != NULL, "gopts.get should be found");
+	succeed_if (kdb->hooks.spec.plugin != NULL, "spec plugin should be loaded");
+	succeed_if (kdb->hooks.spec.copy != NULL, "spec.copy should be found");
+	succeed_if (kdb->hooks.spec.remove != NULL, "spec.remove should be found");
 
 	ksDel (config);
 	ksDel (modules);

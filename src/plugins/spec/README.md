@@ -3,7 +3,6 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = check apply
-- infos/placements = postgetstorage presetstorage
 - infos/status = recommended productive nodep configurable global unfinished
 - infos/description = allows to give specifications for keys
 
