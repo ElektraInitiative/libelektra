@@ -1,9 +1,11 @@
 # Algorithm
 
-You might want to read
-[about architecture](architecture.md)
-and
-[data structures](data-structures.md) first.
+You might want to read [about architecture](architecture.md) and [data structures](data-structures.md) first.
+
+## Outdated
+
+> **Warning** Many of the things described below (especially about `KDB` and the `kdb*` functions) are outdated.
+> See [`kdb-operations.md`](kdb-operations.md) and [`kdb-contracts.md`](kdb-contracts.md) for more up-to-date information.
 
 ## Introduction
 

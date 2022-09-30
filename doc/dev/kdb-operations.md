@@ -1,4 +1,4 @@
-# Proposal: KDB Operations
+# KDB Operations
 
 There are four main _operations_ in `libelektra-kdb`: `open`, `get`, `set` and `close`.
 For each of these there is a `kdb*` function the user calls to trigger the operation and plugins export a function for each of the operations they support (at least `get`).

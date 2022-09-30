@@ -1,4 +1,4 @@
-# Proposal: Backend Plugins
+# Backend Plugins
 
 ## Backend Contract
 

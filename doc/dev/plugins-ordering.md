@@ -1,5 +1,12 @@
 # Plugins Ordering
 
+## Outdated
+
+> **Warning** Many of the things described below are outdated.
+> Parts of this document are still valid for the `backend` plugin.
+
+## Introduction
+
 You should first read [elektra-plugins](/src/plugins/) to get
 an idea about plugins.
 
