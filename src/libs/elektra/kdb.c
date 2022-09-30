@@ -1865,6 +1865,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	struct _SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
+	while(sendNotificationHook != NULL)
+	{
+		sendNotificationHook->get (sendNotificationHook->plugin, dataKs, parentKey);
+		sendNotificationHook = sendNotificationHook->next;
+	}
+
 	// Step 13: run gopts (if enabled)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME);
 	keySetNamespace (parentKey, KEY_NS_CASCADING);
@@ -2464,6 +2471,16 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// Step 12c: run postcommit phase
 	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_COMMIT, true, KDB_SET_FN_COMMIT);
+
+
+
+	struct _SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
+	while(sendNotificationHook != NULL)
+	{
+		// TODO (atmaxinger): Is setKs really the correct KeySet?
+		sendNotificationHook->set (sendNotificationHook->plugin, setKs, parentKey);
+		sendNotificationHook = sendNotificationHook->next;
+	}
 
 	// TODO (kodebach): name not needed, once lock is in place
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);

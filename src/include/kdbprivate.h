@@ -104,6 +104,9 @@ typedef int (*kdbHookGoptsGetPtr) (Plugin * handle, KeySet * returned, Key * par
 typedef int (*kdbHookSpecCopyPtr) (Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet);
 typedef int (*kdbHookSpecRemovePtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
+typedef int (*kdbHookSendNotificationGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
 
@@ -324,6 +327,15 @@ struct _KeySet
 #endif
 };
 
+struct _SendNotificationHook
+{
+	struct _Plugin * plugin;
+	struct _SendNotificationHook * next;
+
+	kdbHookSendNotificationGetPtr get;
+	kdbHookSendNotificationGetPtr set;
+};
+
 /**
  * The access point to the key database.
  *
@@ -382,6 +394,8 @@ struct _KDB
 			kdbHookSpecCopyPtr copy;
 			kdbHookSpecRemovePtr remove;
 		} spec;
+
+		struct _SendNotificationHook * sendNotification;
 	} hooks;
 };
 

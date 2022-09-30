@@ -527,6 +527,10 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 				KEY_END),
 			keyNew ("system:/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
+			keyNew ("system:/elektra/modules/internalnotification/exports/hook/notification/send/get", KEY_FUNC, elektraInternalnotificationGet,
+				KEY_END),
+			keyNew ("system:/elektra/modules/internalnotification/exports/hook/notification/send/set", KEY_FUNC, elektraInternalnotificationSet,
+				KEY_END),
 
 			// Export register* functions
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (Int), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedInt),

@@ -8,6 +8,8 @@
 
 #include <kdbinternal.h>
 
+static Plugin * loadPlugin (const char * pluginName, KeySet * global, KeySet * modules, const KeySet * contract, Key * errorKey);
+
 /**
  * Uninitializes and frees all hooks in the passed KDB handle.
  *
@@ -29,6 +31,24 @@ void freeHooks (KDB * kdb, Key * errorKey)
 		kdb->hooks.spec.plugin = NULL;
 		kdb->hooks.spec.copy = NULL;
 		kdb->hooks.spec.remove = NULL;
+	}
+
+	if (kdb->hooks.sendNotification != NULL)
+	{
+		struct _SendNotificationHook * hook = kdb->hooks.sendNotification;
+		while (hook != NULL)
+		{
+			elektraPluginClose (hook->plugin, errorKey);
+			hook->plugin = NULL;
+			hook->get = NULL;
+			hook->set = NULL;
+
+			struct _SendNotificationHook * old = hook;
+			hook = hook->next;
+			elektraFree (old);
+		}
+
+		kdb->hooks.sendNotification = NULL;
 	}
 }
 
@@ -77,6 +97,64 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 	{
 		return -1;
 	}
+
+	return 0;
+}
+
+static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
+{
+	struct _SendNotificationHook * lastHook = kdb->hooks.sendNotification = NULL;
+
+	Key * pluginsKey = keyNew ("system:/elektra/hook/notification/send/plugins", KEY_END);
+	KeySet * configuredPlugins = elektraArrayGet (pluginsKey, config);
+
+	if (ksGetSize (configuredPlugins) == 0)
+	{
+		return 0;
+	}
+
+	ksRewind (configuredPlugins);
+
+	Key * cur;
+	while ((cur = ksNext(configuredPlugins)) != NULL)
+	{
+		const char * pluginName = keyString (cur);
+		Plugin * plugin = loadPlugin (pluginName, kdb->global, modules, contract, errorKey);
+
+		if (!plugin)
+		{
+			continue;
+		}
+
+		kdbHookSendNotificationGetPtr getPtr = (kdbHookSendNotificationGetPtr) getFunction (plugin, "hook/notification/send/get", errorKey);
+		kdbHookSendNotificationSetPtr setPtr = (kdbHookSendNotificationSetPtr) getFunction (plugin, "hook/notification/send/set", errorKey);
+
+		if (!getPtr || !setPtr)
+		{
+			elektraPluginClose (plugin, errorKey);
+			continue;
+		}
+
+		struct _SendNotificationHook * hook = elektraMalloc (sizeof(struct _SendNotificationHook));
+		hook->next = NULL;
+		hook->plugin = plugin;
+		hook->get = getPtr;
+		hook->set = setPtr;
+
+		if (lastHook == NULL)
+		{
+			kdb->hooks.sendNotification = hook;
+			lastHook = hook;
+		}
+		else
+		{
+			lastHook->next = hook;
+			lastHook = hook;
+		}
+	}
+
+	ksDel (configuredPlugins);
+	keyDel (pluginsKey);
 
 	return 0;
 }
@@ -208,6 +286,11 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 
 	if (isSpecEnabledByConfig (config) &&
 	    initHooksSpec (kdb, loadPlugin ("spec", kdb->global, modules, contract, errorKey), errorKey) != 0)
+	{
+		goto error;
+	}
+
+	if(initHooksSendNotifications(kdb, config, modules, contract, errorKey))
 	{
 		goto error;
 	}
