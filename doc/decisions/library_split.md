@@ -1,3 +1,51 @@
+# Library Split
+
+## Problem
+
+Only `libelektra-core` is supposed to access private data, but this contradicts the goal to keep the library minimal.
+`kdbprivate.h` was too generic, it contained many other parts next to the struct definitions of Key/KeySet.
+
+## Constraints
+
+- The [C99 standard, section 5.2.4.1](http://www.open-std.org/jtc1/sc22/wg14/) gives following limit:
+  4095 external identifiers in one translation unit
+- Some parts of Elektra, like `mmapstorage` need access to private data structure.
+- Elektra does not support several different struct definitions of Key/KeySet.
+  Alternative implementations that want to coexist (e.g. `mmapstorage` should still work)
+  must use the same struct definitions of Key/KeySet.
+
+## Assumptions
+
+## Considered Alternatives
+
+- keep current situation
+
+## Decision
+
+Also allow `libelektra-extra` (and maybe others) to access private Key/KeySet.
+Put struct definitions of Key/KeySet in a separate header file, which gets included by parts that need it.
+
+All currently planned libraries and their respective API prefixes are listed in the [Notes](#notes) below.
+
+## Rationale
+
+- allows various users (plugins, applications) to link to (more or less) exactly what they need
+- allows symbol versioning on different levels (for different evolving libraries)
+- allows alternative implementation of parts of Elektra, e.g. a libcore written in Rust
+- facilitates code reuse between plugins
+
+## Implications
+
+- we need to clearly communicate which plugins must be exactly in the version of the `libelektra-core`
+- all libraries will share a versioning scheme and are only supported if used in the same version
+
+## Related Decisions
+
+- [Lowlevel library](lowlevel_library.md)
+- [Extra library](extra_library.md)
+
+## Notes
+
 - `libelektra-core`:
   The core minimal API of Elektra.
   Defines what `ElektraKey` and `ElektraKeyset` are, and contains the minimal API for manipulating them.
@@ -71,27 +119,21 @@
   **Names:** `elektra<TYPE>ToString` and `elektraKeyTo<TYPE>`
   (Note: extracted from `libelektra-ease`)
 
+- `libelektra-extra`:
+  Contains extra APIs for `ElektraKey` and `ElektraKeyset` beyond the minimal API of `libelektra-core`.
+  These APIs are things that could be considered part of the "classes" for `ElektraKey` and `ElektraKeyset`, but which we do not consider minimal.
+  The APIs should not specifically target C (see `libelektra-lowlevel-c` for that) and should be usable via bindings (if appropriate for the other language).
+
+  **Prefix:** `elektraExtra*`
+  (Note: includes `elektraExtraKeysetCut`, etc.; may also include stuff from old `libelektra-ease` or `libelektra-meta`)
+
 - `libelektra-ease`:
   A collection of various other APIs that help when interacting with `ElektraKey` and `ElektraKeyset`.
-  Contains APIs that are not specific enough to justify a separate library and not minimal enough for `libelektra-core`, but can be implemented on top of the public API.
-  The APIs should not specifically target C and should be usable via bindings (if appropriate for the other language).
+  These APIs go beyond what could be considered part of the "classes" for `ElektraKey` and `ElektraKeyset` (e.g., SHA256 hashes).
+  The APIs should not specifically target C (see `libelektra-lowlevel-c` for that) and should be usable via bindings (if appropriate for the other language).
 
-  **Prefix:** `elektraE*` (`E` instead of `Ease` to keep names shorter and more readable)
+  **Prefix:** `elektraEase*`
   (Note: rest of old `libelektra-ease`, merged with `libelektra-meta`; cleanup needed)
-
-- `libelektra-operations`:
-  Like `libelektra-ease`, this library contains various additional `ElektraKey` and `ElektraKeyset` APIs beyond the minimal API.
-  However, these APIs may need access to private APIs of `libelektra-core` to be implemented (efficiently).
-  The APIs should not specifically target C and should be usable via bindings (if appropriate for the other language).
-  All APIs must abstract over unstable details of private APIs and provide a stable API, or **very clearly** state the stability restrictions.
-
-  Importantly, the distinction between `libelektra-ease` and `libelektra-operations` **is not** whether access to private APIs is needed.
-  `libelektra-operations` is intended for use by most applications, plugins, tools, etc. while `libelektra-ease` should be used less often and serves more niche use cases.
-  For example: `elektraKeysetCut`/`elektraKeysetFindHierarchy` from `libelektra-operations` can be useful in many plugins and applications.
-  `elektraKeysetSortTopological` from `libelektra-ease` on the other hand serves a very niche use case.
-
-  **Prefix:** `elektraX*` (`X` for extension)
-  (Note: includes `elektraXKeysetCut`, etc.; may also include stuff from old `libelektra-ease` or `libelektra-meta`)
 
 - `libelektra-utility`:
   Standalone helper functions that don't depend on `libelektra-core`
@@ -100,6 +142,6 @@
 
 - `libelektra-base`:
   Internal static library, linked into `libelektra-core` (not exported) and `libelektra-utility` (partially re-exported).
-  Contains helper functions for e.g. memory allocations, string formatting, etc.
+  Contains helper functions for e.g., memory allocations, string formatting, etc.
 
   **Prefix:** `elektra*` (for internal), `elektraUtil*` (for exported)

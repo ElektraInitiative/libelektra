@@ -51,6 +51,7 @@ Before you write your first decision, read [Decision Process](decision_process.m
 - [`keyIsBelow`](key_below.md)
 - [Private API](private_api.md)
 - [Library Directory Structure](library_directory_structure.md)
+- [Library Split](library_split.md)
 
 ## In Progress
 
