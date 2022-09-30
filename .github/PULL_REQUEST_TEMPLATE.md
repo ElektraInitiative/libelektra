@@ -38,7 +38,7 @@ need to be checked.
 - [ ] I added unit tests for my code
 - [ ] I fully described what my PR does in the documentation
       (not in the PR description)
-- [ ] I fixed all affected documentation
+- [ ] I fixed all affected documentation (see [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md))
 - [ ] I added code comments, logging, and assertions as appropriate (see [Coding Guidelines](https://master.libelektra.org/doc/CODING.md))
 - [ ] I updated all meta data (e.g. README.md of plugins and [METADATA.ini](https://master.libelektra.org/doc/METADATA.ini))
 - [ ] I mentioned [every code](/.reuse/dep5) not directly written by me in [reuse syntax](https://reuse.software/)
