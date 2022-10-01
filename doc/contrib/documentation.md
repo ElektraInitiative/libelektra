@@ -1,12 +1,12 @@
 # Documentation
 
 This document gives guidelines for contributors concerning Elektra's documentation.
-This document takes preference to the actual situation, so if you see documentation
-not according to this document, please [create an issue](https://issue.libelektra.org)
-or directly fix it with your next PR.
+This document takes preference to the actual situation.
+If you see documentation not according to this document, please [create an issue](https://issues.libelektra.org).
+Alternatively, you can directly fix it with your next PR.
 
-> Note: It is always allowed to improve the documentation, in every PR, even if
-> the documentation fix is completely unrelated.
+> Note: It is always allowed to improve the documentation, in every PR, even if the documentation fix is completely unrelated.
+> Preferably are several PRs, though.
 
 ## Target Groups
 
@@ -27,26 +27,24 @@ There are 3 separate folders for these 3 groups:
 
 > Takeaway:
 > Every document must have a clear target group (user, developer or contributor).
-> Sometimes it is clear from the directory sometimes it must be explicitly stated,
-> e.g. tutorials.
+> Sometimes it is clear from the directory sometimes it must be explicitly stated, e.g. tutorials.
 
 ## Orientation
 
 Each documentation should clearly be oriented to one of these 3 directions:
 
 1. learning-oriented: first introduction is done via tutorials, it teaches the basics.
-2. information-oriented: the README.md and API docs together are the references: they cover everything that someone needs to know about a [module](/doc/help/elektra-glossary.md).
-3. understanding-oriented: the [doc/decisions](/doc/decisions) explain the "Why?" something is done as it is done (Rationale).
+2. information-oriented: the README.md and API docs together are the references:
+   they cover everything that someone needs to know about a [module](/doc/help/elektra-glossary.md).
+3. understanding-oriented: the [doc/decisions](/doc/decisions) explain the "Why?":
+   something is done as it is done (Rationale).
 
 In literature there is also goal-oriented but we prefer learning-oriented approaches.
 E.g. of course you might have the goal to write a new plugin.
 But why not also learn about plugins while creating a new plugin?
 
 > Takeaway:
-> Don't try to combine different orientations in one document,
-> instead split your documentation up in e.g. a README.md (information),
-> tutorial (learning),
-> decisions (understanding).
+> Don't try to combine different orientations in one document, instead split your documentation up in e.g. a README.md (information), tutorial (learning), decisions (understanding).
 
 ## Criteria
 
@@ -57,10 +55,12 @@ Elektra's documentation must fulfill:
   All explanation must be within the repo, e.g., in case the external information goes away.
 - It is consistent in its [terminology](/doc/help/elektra-glossary.md).
 - Spelling is American English with [spellings as defined here](/scripts/sed).
+- Sentences are short and written in one line.
+  I.e. lines usually end with `.`, `:` or `;`.
+  Avoid line breaks in the middle of the sentence.
+- Use enumerations or itemizations to keep a clear structure in the text.
 
-> Note:
-> Please extend [terminology](/doc/help/elektra-glossary.md) and
-> [spellings](/scripts/sed) as needed.
+> Note: Please extend [terminology](/doc/help/elektra-glossary.md) and [spellings](/scripts/sed) as needed.
 
 ## Completeness
 
