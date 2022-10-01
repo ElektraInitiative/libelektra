@@ -44,7 +44,7 @@ But why not also learn about plugins while creating a new plugin?
 
 > Takeaway:
 > Don't try to combine different orientations in one document,
-> instead spit your documentation up in e.g. a README.md (information),
+> instead split your documentation up in e.g. a README.md (information),
 > tutorial (learning),
 > decisions (understanding).
 
