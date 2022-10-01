@@ -18,7 +18,7 @@ What is its responsibility?
 
 ## Classes
 
-Explain which classes the library contains.
+Explain which [classes](/doc/help/elektra-glossary.md) the library contains.
 The method names are `elektraClass*`.
 Add a link to the API docu.
 
