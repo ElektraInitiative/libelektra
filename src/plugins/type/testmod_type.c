@@ -213,13 +213,11 @@ void test_wchar (void)
 		max = 0xFFFF;
 	}
 
-	size_t c = 0;
 	for (size_t i = 1; i < max; ++i)
 	{
 		size_t ret = wcstombs (s, (wchar_t[]){ (wchar_t) i, 0 }, 3 * MB_CUR_MAX);
 		if (ret > 0)
 		{
-			c++;
 			keySetString (k, s);
 			nbTest++;
 			if (!checkType (k))
