@@ -34,11 +34,13 @@ There are 3 separate folders for these 3 groups:
 
 Each documentation should clearly be oriented to one of these 3 directions:
 
-1. learning-oriented: first introduction is done via tutorials, it teaches the basics.
-2. information-oriented: the README.md and API docs together are the references:
-   they cover everything that someone needs to know about a [module](/doc/help/elektra-glossary.md).
-3. understanding-oriented: the [doc/decisions](/doc/decisions) explain the "Why?":
-   something is done as it is done (Rationale).
+1. learning-oriented:
+   First introduction is done via tutorials, it teaches the basics.
+2. information-oriented:
+   The README.md and API docs together are the references:
+   They cover everything that someone needs to know about a [module](/doc/help/elektra-glossary.md).
+3. understanding-oriented:
+   The [doc/decisions](/doc/decisions) explain the "Why?" something is done as it is done, i.e., the rationale.
 
 In literature there is also goal-oriented but we prefer learning-oriented approaches.
 E.g. of course you might have the goal to write a new plugin.
@@ -53,13 +55,19 @@ Elektra's documentation must fulfill:
 
 - It is self-contained.
   It is not enough to link to some paper and an external page to explain, e.g., decisions.
-  All explanation must be within the repo, e.g., in case the external information goes away.
+  All explanation must be within the repository, e.g., in case the external information goes away.
+  This doesn't apply if the authoritative standard lives outside of Elektra.
+  Then you would write, e.g., "toml implements [this standard](https://toml.io/en/v1.0.0), with following extensions:".
 - It is consistent in its [terminology](/doc/help/elektra-glossary.md).
 - Spelling is American English with [spellings as defined here](/scripts/sed).
 - Sentences are short and written in one line.
   I.e. lines usually end with `.`, `:` or `;`.
   Avoid line breaks in the middle of the sentence.
 - Use enumerations or itemizations to keep a clear structure in the text.
+- We use standard Markdown where possible, with only a few extensions:
+  - styled fenced blocks
+  - `- [ ]` option lists
+  - `- <word>:<line break>` description lists
 
 > Note:
 > Please extend [terminology](/doc/help/elektra-glossary.md) and [spellings](/scripts/sed) as needed.
