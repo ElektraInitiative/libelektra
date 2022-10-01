@@ -54,6 +54,11 @@
 - **Module**:
   The parts Elektra is composed of, i.e. either lib, plugin, backend, tool.
 
+- **Class**:
+  A group of functions that logically belong together, working on the same type of objects.
+  A library may implement several classes.
+  E.g., `KDB`, `Key` and `KeySet` are the most important classes.
+
 ## Technical Concepts
 
 - [Backends](elektra-backends.md):
