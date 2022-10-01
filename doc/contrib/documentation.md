@@ -53,26 +53,33 @@ But why not also learn about plugins while creating a new plugin?
 
 Elektra's documentation must fulfill:
 
+- Always write what **is** not what you would like to have.
+  Explanations must always refer to the current situation (as changed with your PR).
 - It is self-contained.
   It is not enough to link to some paper and an external page as explanation.
   All explanation must be within the repository, e.g., in case the external information goes away.
   This doesn't apply if the authoritative standard lives outside of Elektra.
   Then you would write, e.g., "The toml plugin implements [this standard](https://toml.io/en/v1.0.0), with following extensions:".
   The extensions, however, again must be fully listed within our repository.
-- Always write what **is** not what you would like to have.
-  Explanations must always refer to the current situation (as changed with your PR).
-- It is consistent with our [terminology](/doc/help/elektra-glossary.md).
-- Spelling is American English with [spellings as defined here](/scripts/sed).
+- We use standard Markdown where possible, with only a few extensions:
+  - styled fenced blocks
+  - `- [ ]` option lists
+  - `- <word>:<line break>` description lists
+
+> Takeaway:
+> Include full API and Markdown documentation of the current situation directly in your PRs.
+
+## Style
+
 - Sentences are short and written in one line.
   I.e. lines usually end with `.`, `:` or `;`.
   Avoid line breaks in the middle of the sentence.
 - Use active and strong verbs early in your sentences.
   "We" refers to the community around the Elektra Initiative.
-- Use enumerations or itemizations to keep a clear structure in the text.
-- We use standard Markdown where possible, with only a few extensions:
-  - styled fenced blocks
-  - `- [ ]` option lists
-  - `- <word>:<line break>` description lists
+- Use headings and lists to keep a clear structure in the text.
+- Use examples and images to emphasize important points, don't overuse emphasis in text (bold, etc.).
+- Spelling is American English with [spellings as defined here](/scripts/sed).
+- It is consistent with our [terminology](/doc/help/elektra-glossary.md).
 
 > Note:
 > Please extend [terminology](/doc/help/elektra-glossary.md) and [spellings](/scripts/sed) as needed.
