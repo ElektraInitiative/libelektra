@@ -17,7 +17,7 @@ We write documentation for three groups:
   Is a person who uses Elektra, e.g. an application using Elektra or one of Elektra's tools like `kdb`.
 - Developer:
   Is a person who uses some library of Elektra within an application, tool or plugin.
-- Contributor
+- Contributor:
   Is a person who does changes within Elektra's repository.
 
 There are 3 separate folders for these 3 groups:
@@ -35,7 +35,7 @@ There are 3 separate folders for these 3 groups:
 Each documentation should clearly be oriented to one of these 3 directions:
 
 1. learning-oriented:
-   First introduction is done via tutorials, it teaches the basics.
+   First introduction is done via tutorials, they teach the fundamentals.
 2. information-oriented:
    The README.md and API docs together are the references:
    They cover everything that someone needs to know about a [module](/doc/help/elektra-glossary.md).
