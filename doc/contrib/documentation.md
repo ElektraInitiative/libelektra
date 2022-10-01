@@ -5,7 +5,8 @@ This document takes preference to the actual situation.
 If you see documentation not according to this document, please [create an issue](https://issues.libelektra.org).
 Alternatively, you can directly fix it with your next PR.
 
-> Note: It is always allowed to improve the documentation, in every PR, even if the documentation fix is completely unrelated.
+> Note:
+> It is always allowed to improve the documentation, in every PR, even if the documentation fix is completely unrelated.
 > Preferably are several PRs, though.
 
 ## Target Groups
@@ -60,7 +61,8 @@ Elektra's documentation must fulfill:
   Avoid line breaks in the middle of the sentence.
 - Use enumerations or itemizations to keep a clear structure in the text.
 
-> Note: Please extend [terminology](/doc/help/elektra-glossary.md) and [spellings](/scripts/sed) as needed.
+> Note:
+> Please extend [terminology](/doc/help/elektra-glossary.md) and [spellings](/scripts/sed) as needed.
 
 ## Completeness
 
