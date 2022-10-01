@@ -54,15 +54,20 @@ But why not also learn about plugins while creating a new plugin?
 Elektra's documentation must fulfill:
 
 - It is self-contained.
-  It is not enough to link to some paper and an external page to explain, e.g., decisions.
+  It is not enough to link to some paper and an external page as explanation.
   All explanation must be within the repository, e.g., in case the external information goes away.
   This doesn't apply if the authoritative standard lives outside of Elektra.
-  Then you would write, e.g., "toml implements [this standard](https://toml.io/en/v1.0.0), with following extensions:".
-- It is consistent in its [terminology](/doc/help/elektra-glossary.md).
+  Then you would write, e.g., "The toml plugin implements [this standard](https://toml.io/en/v1.0.0), with following extensions:".
+  The extensions, however, again must be fully listed within our repository.
+- Always write what **is** not what you would like to have.
+  Explanations must always refer to the current situation (as changed with your PR).
+- It is consistent with our [terminology](/doc/help/elektra-glossary.md).
 - Spelling is American English with [spellings as defined here](/scripts/sed).
 - Sentences are short and written in one line.
   I.e. lines usually end with `.`, `:` or `;`.
   Avoid line breaks in the middle of the sentence.
+- Use active and strong verbs early in your sentences.
+  "We" refers to the community around the Elektra Initiative.
 - Use enumerations or itemizations to keep a clear structure in the text.
 - We use standard Markdown where possible, with only a few extensions:
   - styled fenced blocks
