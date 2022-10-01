@@ -65,6 +65,7 @@ Elektra's documentation must fulfill:
   - styled fenced blocks
   - `- [ ]` option lists
   - `- <word>:<line break>` description lists
+- The documentation should be as near the code as possible.
 
 > Takeaway:
 > Include full API and Markdown documentation of the current situation directly in your PRs.
