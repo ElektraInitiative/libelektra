@@ -13,7 +13,7 @@ Alternatively, you can directly fix it with your next PR.
 We write documentation for three groups:
 
 - User:
-  Is a person who uses some tool of Elektra, e.g. `kdb`, Qt-Gui or Web-UI.
+  Is a person who uses Elektra, e.g. an application using Elektra or one of Elektra's tools like `kdb`.
 - Developer:
   Is a person who uses some library of Elektra within an application, tool or plugin.
 - Contributor
