@@ -14,11 +14,9 @@ For example, Max would write:
 - Added a new [doc plugin](/src/plugins/doc) _(Max)_
 ```
 
-Pick a random line to write your changes to minimize
-the chances of conflicts in this file.
+Pick a random line to write your changes to minimize the chances of conflicts in this file.
 
-For non-trivial changes, you can choose to be
-part of the highlighted changes.
+For non-trivial changes, you can choose to be part of the highlighted changes.
 Please write a highlight section in this case.
 
 After the horizontal line the release notes for the next version starts.
@@ -31,8 +29,7 @@ We are proud to release Elektra 0.9.<<VERSION>>.
 
 ## What is Elektra?
 
-Elektra serves as a universal and secure framework to access
-configuration settings in a global, hierarchical key database.
+Elektra serves as a universal and secure framework to access configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release).
@@ -49,23 +46,24 @@ docker run -it elektra/elektra
 
 - Prepare for new-backend merge
 - Olimex
-- <<HIGHLIGHT>>
+- Improving Elektra in FLOSS course
 
 ### Prepare for new-backend merge
 
 In a separated branch we rewrote the whole backend system.
-With this new backend system, backends are now also plugins,
-allowing backends also to be non-file-based, e.g., using databases.
-The main purpose of this release is to give a last stable release
-before master gets disrupted with a huge change set.
+With this new backend system, backends are now also plugins, allowing backends also to be non-file-based, e.g., using databases.
+The main purpose of this release is to give a last stable release before master gets disrupted with a huge change set.
 The next release is not to be expected in this year.
+
+A huge thanks to _(Klemens Böswirth @kodebach)_, _(Maximilian Irlinger @atmaxinger)_ for the many changes in the branch.
+Thanks to _(Richard Stöckl @Eiskasten)_ for testing.
 
 ### Olimex
 
 Elektra is used for [server, desktop and embedded](/doc/WHO.md).
 With this release, we again strengthen our embedded mainstay.
-We developed a major application running on Olimex boards, called [opensesame](https://opensesame.libelektra.org)
-heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra).
+We developed a major application running on Olimex boards, called [opensesame](https://opensesame.libelektra.org).
+It is heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra).
 
 In the initial release [opensesame](https://opensesame.libelektra.org) already allows:
 
@@ -75,12 +73,17 @@ In the initial release [opensesame](https://opensesame.libelektra.org) already a
 - [x] detection of fire
 - [x] report events to Nextcloud chats (English and German)
 
-To give a smooth experience when running such an application
-we develop Ansible scripts to customize the Olimex base images
-for changing the language, time zone, static network configuration
-etc.
+To give a smooth experience when running such an application we develop Ansible scripts to customize the Olimex base images.
+They allow changing the language, time zone, static network configuration etc.
 
 Olimex likes this idea and will send us an A20 board.
+A big thanks to Olimex.
+
+### Improving Elektra in FLOSS course
+
+Also in the [upcoming term](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194114&semester=2022W) Elektra will be object of study how FLOSS initiatives work.
+Students will make improvements in Elektra as part of their homework, teamwork and, if chosen, also for their project.
+Alternatively, they can also improve other other FLOSS initiatives.
 
 ## Plugins
 
@@ -89,86 +92,20 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### csvstorage
 
 - Remove superfluous if-conditions that lead to a build error on Debian Unstable _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### specload
 
 - fail if either the spec or parentKey parameter of elektraSpecloadSendSpec is NULL _(@hannes99)_
 
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
-### Maintenance
-
 - fix unused-but-set-variable warnings. _(Markus Raab)_
 
-### Compatibility
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Core
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
+### opts
 
 - opts: fix possible 'free(): invalid pointer' error and add test for it _(@hannes99)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -178,174 +115,28 @@ you up-to-date with the multi-language support provided by Elektra.
 ### Python
 
 - add merging based on elektraMerge _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Rust
 
-- start again to publish on crates.io _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Tools
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Scripts
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- start again to publish on crates.io, used by opensesame _(Markus Raab)_
 
 ## Documentation
 
 - Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
 - Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Apply fix spelling to more files. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- More decisions _(@kodebach)_
 
 ### Tutorials
 
 - opts: use arg/help instead of arg/name _(@hannes99)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Man Pages
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Update [FAQ](/doc/help/elektra-faq.md). _(Markus Raab)_
 
 ## Tests
 
 - Use GoogleTest framework v1.12.1. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Shell Recorder
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C++
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Packaging
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
@@ -353,22 +144,12 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - Fix build with newer libgit2 versions _(Fabian Vogt)_
 - We now require at least CMake `3.12` (released in July 2018). _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
 - Bump Alpine Linux to 3.16.0. _(Mihael Pranjić @mpranj)_
 - The Docker image for building the documentation is now [based on Debian Bullseye](../../scripts/docker/debian/bullseye/doc.Dockerfile). _(Maximilian Irlinger @atmaxinger)_
 - Add Fedora 36 images. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
@@ -376,50 +157,30 @@ you up-to-date with the multi-language support provided by Elektra.
 
 - We no longer build and test on Ubuntu Xenial and Debian Stretch due to outdated CMake versions _(Maximilian Irlinger @atmaxinger)_
 - Add Fedora 36 builds, remove Fedora 34 builds. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Cirrus
 
 - Update FreeBSD images to 13.1 and 12.3 and update packages before builds. _(Mihael Pranjić @mpranj)_
 - Bump Fedora builds to Fedora 36. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### GitHub Actions
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about
-plugins, bindings and tools are always up-to-date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+plugins, bindings and tools are always up-to-date.
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- 1.0 API _(Klemens Böswirth @kodebach)_ and _(Stefan Hanreich)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
+- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
+- Mounting SQL databases _(Florian Lindner @flo91)_
+- Recording Configuration _(Maximilian Irlinger)_
+- Ansible-Elektra _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Improve Java Development Experience _(Michael Tucek)_
+- Rewriting tools in C _(@hannes99)_
 
 ## Statistics
 
