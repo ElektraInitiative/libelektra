@@ -64,24 +64,23 @@ The next release is not to be expected in this year.
 
 Elektra is used for [server, desktop and embedded](/doc/WHO.md).
 With this release, we again strengthen our embedded mainstay.
-We developed a major application running on Olimex boards,
+We developed a major application running on Olimex boards, called [opensesame](https://opensesame.libelektra.org)
 heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra).
 
-This application allows:
+In the initial release [opensesame](https://opensesame.libelektra.org) already allows:
 
 - [x] opening (garage) doors
 - [x] switching on entry lights
 - [x] ringing doorbells
-- [x] detection of fire alerts
+- [x] detection of fire
+- [x] report events to Nextcloud chats (English and German)
 
-To give a smooth experience, with the support of Olimex,
-developing Ansible scripts to customize the Olimex base
-images for changing the language, time zone, static network
-configuration etc.
+To give a smooth experience when running such an application
+we develop Ansible scripts to customize the Olimex base images
+for changing the language, time zone, static network configuration
+etc.
 
 Olimex likes this idea and will send us an A20 board.
-
-### <<HIGHLIGHT>>
 
 ## Plugins
 
