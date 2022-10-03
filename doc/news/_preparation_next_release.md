@@ -125,6 +125,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
+### Maintenance
+
+- fix unused-but-set-variable warnings. _(Markus Raab)_
+
 ### Compatibility
 
 - <<TODO>>
@@ -240,6 +244,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Documentation
 
+- Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
