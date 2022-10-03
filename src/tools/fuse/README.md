@@ -1,4 +1,4 @@
-- infos = Mount the KDB as a FUSE-filesystem
+- infos =
 - infos/author = Alexander Firbas <alexanderfirbas@gmail.com>
 - infos/licence = BSD
 - infos/provides =

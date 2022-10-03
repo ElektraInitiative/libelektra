@@ -252,6 +252,13 @@
                         }
                     },
                     {
+                        "name": "Documentation",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/contrib/documentation.md"
+                        }
+                    },
+                    {
                         "name": "Design",
                         "type": "staticfile",
                         "options": {

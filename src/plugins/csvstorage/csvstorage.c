@@ -363,7 +363,6 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	unsigned long lineCounter = 0;
 
 	// TODO: refactoring needed here
-	int nr_keys = 1;
 	KeySet * header;
 	Key * key;
 	if (useHeader == 1)
@@ -417,7 +416,6 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 			fclose (fp);
 			return -1;
 		}
-		++nr_keys;
 		unsigned long offset = 0;
 		char * col;
 		colCounter = 0;
@@ -443,7 +441,6 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 			keySetString (key, col);
 			ksAppendKey (tmpKs, key);
 			lastIndex = (char *) keyBaseName (cur);
-			++nr_keys;
 			++colCounter;
 		}
 		if (colAsParent)

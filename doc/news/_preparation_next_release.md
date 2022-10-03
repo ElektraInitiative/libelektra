@@ -47,15 +47,40 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
+- Prepare for new-backend merge
+- Olimex
 - <<HIGHLIGHT>>
 
-### <<HIGHLIGHT>>
+### Prepare for new-backend merge
 
-### <<HIGHLIGHT>>
+In a separated branch we rewrote the whole backend system.
+With this new backend system, backends are now also plugins,
+allowing backends also to be non-file-based, e.g., using databases.
+The main purpose of this release is to give a last stable release
+before master gets disrupted with a huge change set.
+The next release is not to be expected in this year.
 
-### <<HIGHLIGHT>>
+### Olimex
+
+Elektra is used for [server, desktop and embedded](/doc/WHO.md).
+With this release, we again strengthen our embedded mainstay.
+We developed a major application running on Olimex boards, called [opensesame](https://opensesame.libelektra.org)
+heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra).
+
+In the initial release [opensesame](https://opensesame.libelektra.org) already allows:
+
+- [x] opening (garage) doors
+- [x] switching on entry lights
+- [x] ringing doorbells
+- [x] detection of fire
+- [x] report events to Nextcloud chats (English and German)
+
+To give a smooth experience when running such an application
+we develop Ansible scripts to customize the Olimex base images
+for changing the language, time zone, static network configuration
+etc.
+
+Olimex likes this idea and will send us an A20 board.
 
 ## Plugins
 
@@ -98,6 +123,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
+
+### Maintenance
+
+- fix unused-but-set-variable warnings. _(Markus Raab)_
 
 ### Compatibility
 
@@ -214,6 +243,7 @@ you up-to-date with the multi-language support provided by Elektra.
 
 ## Documentation
 
+- Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_

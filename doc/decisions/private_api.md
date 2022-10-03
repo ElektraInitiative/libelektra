@@ -10,7 +10,7 @@ All other headers are anybody's guess.
 
 ## Constraints
 
-- The [C99 standard, section 5.2.4.1](http://www.open-std.org/jtc1/sc22/wg14/) gives following limit:
+- The [C99 standard, section 5.2.4.1](https://www.open-std.org/jtc1/sc22/wg14/) gives following limit:
   4095 external identifiers in one translation unit
 
 ## Assumptions

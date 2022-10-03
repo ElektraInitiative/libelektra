@@ -84,7 +84,6 @@ static void getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, kainj
 
 	std::stringstream fmt;
 
-	size_t pos = 1;
 	size_t names = 1;
 	size_t indices = 1;
 	for (const auto & part : parts)
@@ -99,7 +98,6 @@ static void getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, kainj
 					   { "description", getArgDescription (key, names, "_") } };
 			args.push_back (arg);
 			fmt << "%s/";
-			++pos;
 			++names;
 		}
 		else if (part == "#")
@@ -117,7 +115,6 @@ static void getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, kainj
 					   { "description", getArgDescription (key, indices, "#") } };
 			args.push_back (arg);
 			fmt << "%*.*s%lld/";
-			pos += 4;
 			++indices;
 		}
 		else

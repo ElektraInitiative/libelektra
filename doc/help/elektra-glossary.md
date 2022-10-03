@@ -1,7 +1,5 @@
 # elektra-glossary(7) -- glossary of Elektra
 
-## Introduction
-
 - **Configuration settings**:
   customize applications towards the users'
   needs. It fulfills following properties:
@@ -52,6 +50,14 @@
   is a special argument passed on the command-line. **Short options**
   are single characters prefixed with '-'; **Long options** are
   arbitrarily long and start with '--'.
+
+- **Module**:
+  The parts Elektra is composed of, i.e. either lib, plugin, backend, tool.
+
+- **Class**:
+  A group of functions that logically belong together, working on the same type of objects.
+  A library may implement several classes.
+  E.g., `KDB`, `Key` and `KeySet` are the most important classes.
 
 ## Technical Concepts
 

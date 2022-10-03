@@ -17,27 +17,14 @@ actually **ADT** (abstract data types).
 The API is designed so that different implementations of the
 data structures can be used internally.
 
-A **hash** data structure
-presents a good candidate as alternative data structure, especially for
-the metadata interface.
-It is believed to be much faster on
-lookup, but considerably slower on sorted enumeration.
+A sorted **array** provides very fast iteration O(1) and has nearly no size-overhead.
 
-An **AVL tree** also serves as a competitor.
-AVL trees are expected to be
-faster for inserting keys at any place, but may be slower for appending
-because of the needed reorganizations.
-Their disadvantage is that they need to allocate
-a large number of small pieces of memory.
-Further investigations, namely implementation and benchmarks,
-are required to decide.
+A **hash map** data structure
+presents the best candidate for lookups O(1).
 
-A **trie** could also be used for lookup of key names.
-It performs well for lookup, but needs more memory allocations.
-
-Currently the `KeySet` is implemented as a sorted array.
-It is fast on appending and iterating, and has nearly no size-overhead.
-To improve the lookup-time, an additional **hash** will be used.
+`KeySet` combines the best of both worlds:
+`KeySet` is implemented as a sorted array and uses
+an order-preserving minimal perfect hash map (OPMPHM) for lookups.
 
 ### ABI compatibility
 
