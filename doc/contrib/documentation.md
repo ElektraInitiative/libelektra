@@ -95,6 +95,36 @@ Nevertheless, there are a few must-haves:
 - A README.md must be available for every module.
 - A man page (help/kdb-) must be available for every command (including external commands).
 - A tutorial must be present for every important concept.
+- Every documentation page must be listed in the [Website's structure](/src/tools/website/resources/structure.json.in).
+- Everything copied must be properly licensed in [reuse](/.reuse/dep5).
+
+## Links
+
+Generously use links but be very careful to create a red line through the documentation:
+
+- Clearly separate between prerequisites and further readings.
+- Prerequisites:
+  Concepts people need to know before reading the documentation must be linked in the beginning.
+- When adding links, check if users cannot easily get lost in circles.
+- To link to Elektra's files use internal links.
+  Use absolute or relative links as appropriate.
+  E.g. for files within the same folder use relative links.
+- For release notes use only external links to:
+  - [www.libelektra.org](https://www.libelektra.org) whenever possible, e.g. to tutorials, plugins, etc.
+  - [master.libelektra.org](https://master.libelektra.org) to link to source files
+- For external links use https links, if available.
+- Only use `*.libelektra.org/*` links, avoid `github.com/ElektraInitiative/*` links.
+  Create an issue if redirects are missing.
+  Rationale:
+  Then we can more easily move to other git hosting platforms.
+  Redirects created for this purpose:
+  - [issues.libelektra.org](https://issues.libelektra.org) for the issue tracker
+  - [pulls.libelektra.org](https://pulls.libelektra.org) for pull requests
+  - [git.libelektra.org](https://git.libelektra.org) as main page to the source repository
+
+> Takeaway:
+> Links are very helpful to readers.
+> Make sure they follow a red line.
 
 ## Templates
 
