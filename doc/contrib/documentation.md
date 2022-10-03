@@ -100,7 +100,7 @@ Nevertheless, there are a few must-haves:
 
 ## Links
 
-Generously use links but be very careful to create a red line through the documentation:
+Generously use links but be very careful to create a coherent documentation:
 
 - Clearly separate between prerequisites and further readings.
 - Prerequisites:
