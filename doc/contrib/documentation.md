@@ -100,7 +100,7 @@ Nevertheless, there are a few must-haves:
 
 ## Links
 
-Generously use links but be very careful to create a coherent documentation:
+Generously use links but be very careful to create a coherent documentation (German: "roter Faden"):
 
 - Clearly separate between prerequisites and further readings.
 - Prerequisites:
@@ -124,7 +124,7 @@ Generously use links but be very careful to create a coherent documentation:
 
 > Takeaway:
 > Links are very helpful to readers.
-> Make sure they follow a red line.
+> Make sure documentation can be read one after the other with these links (German: "roter Faden").
 
 ## Templates
 
