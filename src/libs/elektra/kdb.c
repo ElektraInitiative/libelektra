@@ -2478,6 +2478,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	while(sendNotificationHook != NULL)
 	{
 		// TODO (atmaxinger): Is setKs really the correct KeySet?
+		// Unfortunately setKs removes the SYNC flag, so plugins can not reliably detect changed keys ...
 		sendNotificationHook->set (sendNotificationHook->plugin, setKs, parentKey);
 		sendNotificationHook = sendNotificationHook->next;
 	}
