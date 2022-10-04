@@ -115,6 +115,10 @@ stage('Test packages') {
   parallel generateInstalledPackagesTestStages()
 }
 
+maybeStage('Build ABI images', params.abi_test) {
+  parallel generateAbiImages()
+}
+
 maybeStage('ABI tests', params.abi_test) {
   parallel generateAbiTestStages()
 }
@@ -460,16 +464,6 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   // build website
   tasks << buildWebsite('debian-buster')
 
-  // build abi images
-  tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.fedora_36_abi,
-    'fedora-36'
-  )
-  tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.bullseye_abi,
-    'debian-bullseye'
-  )
-
   return tasks
 }
 
@@ -505,6 +499,20 @@ def generateInstalledPackagesTestStages() {
   tasks << testInstalledPackage(
     'opensuse-15-3-installed',
     DOCKER_IMAGES.opensuse_15_3_installed
+  )
+
+  return tasks
+}
+
+def generateAbiImages() {
+  // build abi images
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_36_abi,
+    'fedora-36'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bullseye_abi,
+    'debian-bullseye'
   )
 
   return tasks
