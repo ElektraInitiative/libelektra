@@ -1,29 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please always update this file within **every PR**:
-
-1. write what changed
-2. use links pointing to your change
-3. add your name at the end of the line **Syntax:** _(your name)_
-
-For example, Max would write:
-
-```
-- Added a new [doc plugin](/src/plugins/doc) _(Max)_
-```
-
-Pick a random line to write your changes to minimize the chances of conflicts in this file.
-
-For non-trivial changes, you can choose to be part of the highlighted changes.
-Please write a highlight section in this case.
-
-After the horizontal line the release notes for the next version starts.
-
----
-
-<<`scripts/generate-news-entry`>>
+- guid: e064a23b-b5d6-4bd9-bfd9-7466fab67892
+- author: Mihael Pranjić
+- pubDate: Tue, 04 Oct 2022 12:35:30 +0200
+- shortDesc: New Backend System, Opensesame Application, FLOSS Course
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -188,7 +168,7 @@ We are currently working on following topics:
 
 ## Statistics
 
-We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+We closed [17 issues](https://github.com/ElektraInitiative/libelektra/milestone/32?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
