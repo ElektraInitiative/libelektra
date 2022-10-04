@@ -318,10 +318,10 @@ def dockerInit() {
     /* Build Elektra's documentation with this image.
      * Also contains latex for pdf creation.
      */
-    DOCKER_IMAGES.sid_doc = dockerUtils.createDockerImageDesc(
-      'debian-sid-doc', dockerUtils.&idTesting,
-      './scripts/docker/debian/sid',
-      './scripts/docker/debian/sid/doc.Dockerfile'
+    DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
+      'debian-bullseye-doc', dockerUtils.&idTesting,
+      './scripts/docker/debian/bullseye',
+      './scripts/docker/debian/bullseye/doc.Dockerfile'
     )
 
     /*
@@ -623,9 +623,9 @@ def generatePublishStages() {
 
   tasks << buildDoc()
 
-  // publish source package built in debian-buster stage
+  // publish source package built in debian-bullseye stage
   if (params.publish_source_package) {
-    tasks << publishSource('debian-buster')
+    tasks << publishSource('debian-bullseye')
   }
 
   tasks << buildAndPublishMaven()
@@ -682,8 +682,8 @@ def generateFinalPublishStages() {
   def tasks = [:]
 
   // publish main repo which got modified during the
-  // debian-buster release stage
-  tasks << publishMainRepo('debian-buster')
+  // debian-bullseye release stage
+  tasks << publishMainRepo('debian-bullseye')
   // publish website
   tasks << release.deployWebsite(DOCKER_IMAGES.website)
 
@@ -998,7 +998,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid_doc) {
+      withDockerEnv(DOCKER_IMAGES.bullseye_doc) {
         configureGitUser()
 
         dir('build') {
