@@ -27,7 +27,7 @@ RUN rm -rf ${ELEKTRA_ROOT}/elektra-tests* ${ELEKTRA_ROOT}/elektra-dbg*
 
 RUN yum localinstall -y ${ELEKTRA_ROOT}/*
 
-RUN wget https://rpms.libelektra.org/fedora-35/libelektra.repo -O libelektra.repo \
+RUN wget https://rpms.libelektra.org/fedora-36/libelektra.repo -O libelektra.repo \
     && mv libelektra.repo /etc/yum.repos.d/ \
     && yum update -y
 
