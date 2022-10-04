@@ -34,7 +34,7 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release).
 
-You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
+You can try out the latest Elektra release using our Docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
 This is the quickest way to get started with Elektra without compiling and other obstacles, simply run:
 
 ```sh
@@ -44,11 +44,11 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- Prepare for new-backend merge
+- Preparing new-backend merge
 - Olimex
 - Improving Elektra in FLOSS course
 
-### Prepare for new-backend merge
+### Preparing new-backend merge
 
 In a separated branch we rewrote the whole backend system.
 With this new backend system, backends are now also plugins, allowing backends also to be non-file-based, e.g., using databases.
@@ -61,33 +61,36 @@ Thanks to _(Richard Stöckl @Eiskasten)_ for testing.
 ### Olimex
 
 Elektra is used for [server, desktop and embedded](/doc/WHO.md).
-With this release, we again strengthen our embedded mainstay.
-We developed a major application running on Olimex boards, called [opensesame](https://opensesame.libelektra.org).
+With this release, we strengthen our embedded mainstay, specifically in [open source hardware OSHW](https://freedomdefined.org/OSHW).
+We developed a major application running on OSHW [Olimex](https://www.olimex.com/Products/OLinuXino/open-source-hardware) boards.
+The application is called [opensesame](https://opensesame.libelektra.org).
 It is heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra).
 
 In the initial release [opensesame](https://opensesame.libelektra.org) already allows:
 
-- [x] opening (garage) doors
+- [x] opening (garage) doors via a novel PIN entry method: you can press and release buttons in any sequence
 - [x] switching on entry lights
 - [x] ringing doorbells
 - [x] detection of fire
 - [x] report events to Nextcloud chats (English and German)
 
-To give a smooth experience when running such an application we develop Ansible scripts to customize the Olimex base images.
-They allow changing the language, time zone, static network configuration etc.
+To give a smoother experience when running such an application we will develop Ansible scripts to customize the Olimex base images.
+They will allow changing the language, time zone, static network configuration etc.
 
 Olimex likes this idea and will send us an A20 board.
-A big thanks to Olimex.
+A big thanks to [Olimex](https://www.olimex.com).
 
 ### Improving Elektra in FLOSS course
 
 Also in the [upcoming term](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194114&semester=2022W) Elektra will be object of study how FLOSS initiatives work.
 Students will make improvements in Elektra as part of their homework, teamwork and, if chosen, also for their project.
-Alternatively, they can also improve other other FLOSS initiatives.
+Alternatively, they can also improve other self-chosen FLOSS initiatives.
 
 ## Plugins
 
-The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following text list news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
+
+- fix unused-but-set-variable warnings. _(Markus Raab)_
 
 ### csvstorage
 
@@ -109,8 +112,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ## Bindings
 
-Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
-you up-to-date with the multi-language support provided by Elektra.
+Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
+This section keeps you up-to-date with the multi-language support provided by Elektra.
 
 ### Python
 
@@ -178,6 +181,7 @@ We are currently working on following topics:
 - Mounting SQL databases _(Florian Lindner @flo91)_
 - Recording Configuration _(Maximilian Irlinger)_
 - Ansible-Elektra _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Configure Olimex Base Images _(Maximilian Irlinger)_
 - Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
 - Improve Java Development Experience _(Michael Tucek)_
 - Rewriting tools in C _(@hannes99)_
@@ -200,30 +204,29 @@ Contact us via our [issue tracker](https://issues.libelektra.org).
 
 ## Get the Release!
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
+You can download the release from
+
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz) or from
+- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
 
 <<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
 
 The release tarball is also available signed using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
+
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
+- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
 
 The following GPG Key was used to sign this release: 12CC44541E1B8AD9B66AFAD55262E7353324914A
 
-Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/)
-or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
+Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/) or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
 
 ## Stay tuned!
 
-Subscribe to the
-[RSS feed](https://www.libelektra.org/news/feed.rss)
-to always get the release notifications.
+Subscribe to the [RSS feed](https://www.libelektra.org/news/feed.rss) to always get the release notifications.
 
-If you also want to participate, or for any questions and comments
-please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
+If you also want to participate, or for any questions and comments please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
