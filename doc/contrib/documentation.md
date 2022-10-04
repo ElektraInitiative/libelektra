@@ -130,7 +130,6 @@ Generously use links but be very careful to create a coherent documentation (Ger
 
 In general we use [arc42.org](https://arc42.org/) but we use specialized templates for different modules:
 
-
 - [plugins](/src/plugins/template/README.md)
 - [libs](/src/libs/template/README.md)
 - [bindings](/src/bindings/template/README.md)
