@@ -152,7 +152,7 @@ def initVariables() {
     } else {
       script {
         PREVIOUS_RELEASE_VERSION = sh(
-          script: "git tag -l '[0-9].[0-9].[0-9]' | tail -n1",
+          script: "git tag -l '[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1",
           returnStdout: true
         ).trim()
       }
@@ -813,9 +813,8 @@ def buildRelease(stageName, image, packageRevision='1',
               if (params.populate_release_notes) {
                 sh "scripts/release/populate-release-notes.sh ${RELEASE_VERSION} ../${RELEASE_VERSION}/"
                 sh "git add doc/news"
-                sh "git commit -m 'release: add hashsums and statistics to release notes'"
                 sh "git add scripts/docker/alpine"
-                sh "git commit -m 'docker: update alpine release image'"
+                sh "git commit -m 'release: add hashsums and statistics to release notes, update alpine release image'"
               }
               if (bundleRepo) {
                 sh 'git bundle create libelektra.bundle --all'
