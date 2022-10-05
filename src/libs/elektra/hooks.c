@@ -113,11 +113,9 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 		return 0;
 	}
 
-	ksRewind (configuredPlugins);
-
-	Key * cur;
-	while ((cur = ksNext(configuredPlugins)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (configuredPlugins); ++it)
 	{
+		Key * cur = ksAtCursor (configuredPlugins, it);
 		const char * pluginName = keyString (cur);
 		Plugin * plugin = loadPlugin (pluginName, kdb->global, modules, contract, errorKey);
 
