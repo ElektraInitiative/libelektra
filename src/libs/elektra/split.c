@@ -1255,9 +1255,22 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		Key * k = ksAtCursor (ks, cur);
 		Key * nextBackendKey = *curBackend >= ksGetSize (backends) - 1 ? defaultBackendKey : ksAtCursor (backends, *curBackend + 1);
 
+		bool originalKeyNeedsSync = keyNeedSync(k) == 1;
+
 		if (keyIsBelowOrSame (defaultBackendKey, k) == 1)
 		{
-			ksAppendKey (defaultBackendData->keys, keyDup (k, KEY_CP_ALL));
+			Key * newKey = keyDup (k, KEY_CP_ALL);
+
+			if (originalKeyNeedsSync)
+			{
+				set_bit (newKey->flags, KEY_FLAG_SYNC);
+			}
+			else
+			{
+				clear_bit (newKey->flags, KEY_FLAG_SYNC);
+			}
+
+			ksAppendKey (defaultBackendData->keys, newKey);
 		}
 		// nextBackendKey == NULL happens during bootstrap
 		else if (nextBackendKey != NULL && keyCmp (k, nextBackendKey) >= 0)
@@ -1268,8 +1281,20 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		}
 		else if (*curBackend < 0 || keyIsBelowOrSame (backendKey, k) == 1)
 		{
-			backendData->keyNeedsSync = backendData->keyNeedsSync || keyNeedSync (k) == 1;
-			ksAppendKey (backendData->keys, keyDup (k, KEY_CP_ALL));
+			backendData->keyNeedsSync = backendData->keyNeedsSync || originalKeyNeedsSync;
+
+			Key * newKey = keyDup (k, KEY_CP_ALL);
+
+			if (originalKeyNeedsSync)
+			{
+				set_bit (newKey->flags, KEY_FLAG_SYNC);
+			}
+			else
+			{
+				clear_bit (newKey->flags, KEY_FLAG_SYNC);
+			}
+
+			ksAppendKey (backendData->keys, newKey);
 		}
 		else
 		{
