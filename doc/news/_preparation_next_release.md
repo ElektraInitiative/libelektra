@@ -66,7 +66,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### dbus
 
-- Adapted plugin contract for send notifications hook _(Maximilian Irlinger @atmaxinger)_ 
+- Adapted plugin contract for send notifications hook _(Maximilian Irlinger @atmaxinger)_
 
 ### zeromqsend
 
