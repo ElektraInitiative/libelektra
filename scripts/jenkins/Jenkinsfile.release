@@ -462,7 +462,7 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   )
 
   // build website
-  tasks << buildWebsite('debian-buster')
+  tasks << buildWebsite('debian-bullseye')
 
   return tasks
 }
