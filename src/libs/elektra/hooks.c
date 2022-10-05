@@ -106,16 +106,20 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 	SendNotificationHook * lastHook = kdb->hooks.sendNotification = NULL;
 
 	Key * pluginsKey = keyNew ("system:/elektra/hook/notification/send/plugins", KEY_END);
-	KeySet * configuredPlugins = elektraArrayGet (pluginsKey, config);
 
-	if (ksGetSize (configuredPlugins) == 0)
+	// Iterate through the config and find all direct children below system:/elektra/hook/notification/send/plugins
+	// This is defined as an array, so the elements should be like
+	//   - system:/elektra/hook/notification/send/plugins/#0
+	//   - system:/elektra/hook/notification/send/plugins/#1
+	// We actually don't check for the # to be present, so it will currently work on all keys directly below.
+	for (elektraCursor end, it = ksFindHierarchy (config, pluginsKey, &end); it < end; it++)
 	{
-		return 0;
-	}
+		Key * cur = ksAtCursor (config, it);
+		if (keyIsDirectlyBelow (pluginsKey, cur) == 0)
+		{
+			continue;
+		}
 
-	for (elektraCursor it = 0; it < ksGetSize (configuredPlugins); ++it)
-	{
-		Key * cur = ksAtCursor (configuredPlugins, it);
 		const char * pluginName = keyString (cur);
 		Plugin * plugin = loadPlugin (pluginName, kdb->global, modules, contract, errorKey);
 
@@ -152,7 +156,6 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 		}
 	}
 
-	ksDel (configuredPlugins);
 	keyDel (pluginsKey);
 
 	return 0;

@@ -84,7 +84,7 @@ if (BUILD_SHARED)
 
 	add_library (elektra-kdb SHARED ${KDB_FILES})
 	add_dependencies (elektra-kdb generate_version_script)
-	target_link_libraries (elektra-kdb elektra-core elektra-ease)
+	target_link_libraries (elektra-kdb elektra-core)
 
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
 
