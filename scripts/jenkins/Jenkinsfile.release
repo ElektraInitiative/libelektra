@@ -374,14 +374,14 @@ def generateReleaseStages() {
   tasks << buildRelease(
     'debian-buster',
     DOCKER_IMAGES.buster,
-    params.debian_revision,
-    true // bundle repository
+    params.debian_revision
   )
 
   tasks << buildRelease(
     'debian-bullseye',
     DOCKER_IMAGES.bullseye,
-    params.debian_revision
+    params.debian_revision,
+    true // bundle repository
   )
 
   tasks << buildRelease(
