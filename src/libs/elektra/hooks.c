@@ -125,7 +125,8 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 
 		if (!plugin)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s not found, referenced by key %s", pluginName, keyName (cur));
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s not found, referenced by key %s",
+							   pluginName, keyName (cur));
 			continue;
 		}
 
@@ -136,8 +137,10 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 
 		if (getPtr == NULL && setPtr == NULL)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s exports neither 'hook/notification/send/get' nor 'hook/notification/send/set'",
-							   pluginName);
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				errorKey,
+				"SendNotification plugin %s exports neither 'hook/notification/send/get' nor 'hook/notification/send/set'",
+				pluginName);
 			continue;
 		}
 
