@@ -121,6 +121,7 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 
 		if (!plugin)
 		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s not found", pluginName);
 			continue;
 		}
 
