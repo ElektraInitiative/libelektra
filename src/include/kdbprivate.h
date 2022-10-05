@@ -327,14 +327,14 @@ struct _KeySet
 #endif
 };
 
-struct _SendNotificationHook
+typedef struct _SendNotificationHook
 {
 	struct _Plugin * plugin;
 	struct _SendNotificationHook * next;
 
 	kdbHookSendNotificationGetPtr get;
 	kdbHookSendNotificationGetPtr set;
-};
+} SendNotificationHook;
 
 /**
  * The access point to the key database.
