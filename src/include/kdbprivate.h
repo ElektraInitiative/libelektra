@@ -332,7 +332,14 @@ typedef struct _SendNotificationHook
 	struct _Plugin * plugin;
 	struct _SendNotificationHook * next;
 
+	/**
+	 * Optional, may be NULL
+	 */
 	kdbHookSendNotificationGetPtr get;
+
+	/**
+	 * Optional, may be NULL
+	 */
 	kdbHookSendNotificationGetPtr set;
 } SendNotificationHook;
 

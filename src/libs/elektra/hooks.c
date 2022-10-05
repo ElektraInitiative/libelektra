@@ -128,9 +128,9 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 		kdbHookSendNotificationGetPtr getPtr = (kdbHookSendNotificationGetPtr) getFunction (plugin, "hook/notification/send/get", errorKey);
 		kdbHookSendNotificationSetPtr setPtr = (kdbHookSendNotificationSetPtr) getFunction (plugin, "hook/notification/send/set", errorKey);
 
-		if (!getPtr || !setPtr)
+		if (getPtr == NULL && setPtr == NULL)
 		{
-			elektraPluginClose (plugin, errorKey);
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s does neither expose set nor get function", pluginName);
 			continue;
 		}
 

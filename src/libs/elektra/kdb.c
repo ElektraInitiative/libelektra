@@ -1868,7 +1868,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while(sendNotificationHook != NULL)
 	{
-		sendNotificationHook->get (sendNotificationHook->plugin, dataKs, parentKey);
+		if(sendNotificationHook->get != NULL)
+		{
+			sendNotificationHook->get (sendNotificationHook->plugin, dataKs, parentKey);
+		}
+
 		sendNotificationHook = sendNotificationHook->next;
 	}
 
@@ -2477,9 +2481,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while(sendNotificationHook != NULL)
 	{
-		// TODO (atmaxinger): Is setKs really the correct KeySet?
-		// Unfortunately setKs removes the SYNC flag, so plugins can not reliably detect changed keys ...
-		sendNotificationHook->set (sendNotificationHook->plugin, setKs, parentKey);
+		if (sendNotificationHook->set != NULL)
+		{
+			// TODO (atmaxinger): Is setKs really the correct KeySet?
+			// Unfortunately setKs removes the SYNC flag, so plugins can not reliably detect changed keys ...
+			sendNotificationHook->set (sendNotificationHook->plugin, setKs, parentKey);
+		}
+
 		sendNotificationHook = sendNotificationHook->next;
 	}
 
