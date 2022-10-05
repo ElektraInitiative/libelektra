@@ -425,7 +425,7 @@ The website is generated from the repository, so all information about plugins, 
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Update npm packages. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
