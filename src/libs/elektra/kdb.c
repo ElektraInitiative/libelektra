@@ -1866,9 +1866,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
-	while(sendNotificationHook != NULL)
+	while (sendNotificationHook != NULL)
 	{
-		if(sendNotificationHook->get != NULL)
+		if (sendNotificationHook->get != NULL)
 		{
 			sendNotificationHook->get (sendNotificationHook->plugin, dataKs, parentKey);
 		}
@@ -2477,9 +2477,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_COMMIT, true, KDB_SET_FN_COMMIT);
 
 
-
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
-	while(sendNotificationHook != NULL)
+	while (sendNotificationHook != NULL)
 	{
 		if (sendNotificationHook->set != NULL)
 		{

@@ -168,7 +168,7 @@ static void test_initHooks_shouldInitAllHooksWithoutFailure (void)
 	elektraFree (kdb);
 }
 
-static void test_initHooksSendNotifications(void)
+static void test_initHooksSendNotifications (void)
 {
 	printf ("Executing %s\n", __func__);
 
@@ -178,11 +178,9 @@ static void test_initHooksSendNotifications(void)
 
 	KeySet * contract = ksNew (0, KS_END);
 	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = ksNew (16,
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "dbus", KEY_END),
+	KeySet * config = ksNew (16, keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "dbus", KEY_END),
 				 keyNew ("system:/elektra/hook/notification/send/plugins/#1", KEY_VALUE, "internalnotification", KEY_END),
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#2", KEY_VALUE, "record", KEY_END),
-				 KS_END);
+				 keyNew ("system:/elektra/hook/notification/send/plugins/#2", KEY_VALUE, "record", KEY_END), KS_END);
 
 
 	// Act

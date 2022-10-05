@@ -129,16 +129,19 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 			continue;
 		}
 
-		kdbHookSendNotificationGetPtr getPtr = (kdbHookSendNotificationGetPtr) getFunction (plugin, "hook/notification/send/get", errorKey);
-		kdbHookSendNotificationSetPtr setPtr = (kdbHookSendNotificationSetPtr) getFunction (plugin, "hook/notification/send/set", errorKey);
+		kdbHookSendNotificationGetPtr getPtr =
+			(kdbHookSendNotificationGetPtr) getFunction (plugin, "hook/notification/send/get", errorKey);
+		kdbHookSendNotificationSetPtr setPtr =
+			(kdbHookSendNotificationSetPtr) getFunction (plugin, "hook/notification/send/set", errorKey);
 
 		if (getPtr == NULL && setPtr == NULL)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s does neither expose set nor get function", pluginName);
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s does neither expose set nor get function",
+							   pluginName);
 			continue;
 		}
 
-		SendNotificationHook * hook = elektraMalloc (sizeof(SendNotificationHook));
+		SendNotificationHook * hook = elektraMalloc (sizeof (SendNotificationHook));
 		hook->next = NULL;
 		hook->plugin = plugin;
 		hook->get = getPtr;
@@ -292,7 +295,7 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 		goto error;
 	}
 
-	if(initHooksSendNotifications(kdb, config, modules, contract, errorKey))
+	if (initHooksSendNotifications (kdb, config, modules, contract, errorKey))
 	{
 		goto error;
 	}

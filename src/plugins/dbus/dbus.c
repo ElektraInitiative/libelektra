@@ -35,17 +35,17 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbus"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/dbus", KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/open", KEY_FUNC, elektraDbusOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/get", KEY_FUNC, elektraDbusGet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/set", KEY_FUNC, elektraDbusSet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/hook/notification/send/get", KEY_FUNC, elektraDbusGet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/hook/notification/send/set", KEY_FUNC, elektraDbusSet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/close", KEY_FUNC, elektraDbusClose, KEY_END),
+		KeySet * contract = ksNew (
+			30, keyNew ("system:/elektra/modules/dbus", KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports", KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/open", KEY_FUNC, elektraDbusOpen, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/get", KEY_FUNC, elektraDbusGet, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/set", KEY_FUNC, elektraDbusSet, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/hook/notification/send/get", KEY_FUNC, elektraDbusGet, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/hook/notification/send/set", KEY_FUNC, elektraDbusSet, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/close", KEY_FUNC, elektraDbusClose, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/dbus/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/dbus/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
