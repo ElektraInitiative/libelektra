@@ -442,7 +442,6 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- We no longer build and test on Ubuntu Xenial and Debian Stretch due to outdated CMake versions _(Maximilian Irlinger @atmaxinger)_
 - Add Ubuntu Jammy Jellyfish builds and drop Bionic builds. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
