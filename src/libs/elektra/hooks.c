@@ -136,7 +136,7 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 
 		if (getPtr == NULL && setPtr == NULL)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s does neither expose set nor get function",
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s exports neither 'hook/notification/send/get' nor 'hook/notification/send/set'",
 							   pluginName);
 			continue;
 		}
