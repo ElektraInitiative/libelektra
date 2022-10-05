@@ -64,6 +64,18 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - Partial rewrite for spec hook _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
+### dbus
+
+- Adapted plugin contract for send notifications hook _(Maximilian Irlinger @atmaxinger)_ 
+
+### zeromqsend
+
+- Adapted plugin contract for send notifications hook _(Maximilian Irlinger @atmaxinger)_
+
+### internalnotification
+
+- Adapted plugin contract for send notifications hook _(Maximilian Irlinger @atmaxinger)_
+
 ### <<Plugin3>>
 
 - <<TODO>>
