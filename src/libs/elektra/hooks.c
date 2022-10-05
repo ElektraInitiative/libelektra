@@ -103,7 +103,7 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
-	SendNotificationHook * lastHook = kdb->hooks.sendNotification = NULL;
+	SendNotificationHook * lastHook = kdb->hooks.sendNotification;
 
 	Key * pluginsKey = keyNew ("system:/elektra/hook/notification/send/plugins", KEY_END);
 
