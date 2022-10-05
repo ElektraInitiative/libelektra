@@ -1255,7 +1255,7 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		Key * k = ksAtCursor (ks, cur);
 		Key * nextBackendKey = *curBackend >= ksGetSize (backends) - 1 ? defaultBackendKey : ksAtCursor (backends, *curBackend + 1);
 
-		bool originalKeyNeedsSync = keyNeedSync(k) == 1;
+		bool originalKeyNeedsSync = keyNeedSync (k) == 1;
 
 		if (keyIsBelowOrSame (defaultBackendKey, k) == 1)
 		{

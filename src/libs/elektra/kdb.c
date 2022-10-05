@@ -55,7 +55,7 @@
  * removes the SYNC flag on all keys of the provided KeySet
  * @param ks the KeySet
  */
-static void clearAllSync (KeySet *ks)
+static void clearAllSync (KeySet * ks)
 {
 	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
@@ -2525,7 +2525,7 @@ error:
 	// TODO (kodebach): name not needed, once lock is in place
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
-	ksDel(setKs);
+	ksDel (setKs);
 	errno = errnosave;
 
 	return -1;
