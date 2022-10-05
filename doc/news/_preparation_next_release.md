@@ -1,9 +1,29 @@
 # 0.9.<<VERSION>> Release
 
-- guid: 1390D163-9CEC-493D-839D-3930B9FFB6C4
-- author: Mihael Pranjić
-- pubDate: Wed, 05 Oct 2022 08:14:35 +0200
-- shortDesc: New Backend System, Opensesame Application, FLOSS Course
+This release did not happen yet.
+
+Please always update this file within **every PR**:
+
+1. write what changed
+2. use links pointing to your change (See [Documentation Guidelines](/doc/contrib/documentation.md))
+3. add your name at the end of the line **Syntax:** _(your name)_
+
+For example, Max would write:
+
+```
+- Added a new [doc plugin](https://www.libelektra.org/plugins/doc) _(Max)_
+```
+
+Pick a random line to write your changes to minimize the chances of conflicts in this file.
+
+For non-trivial changes, you can choose to be part of the highlighted changes.
+Please write a highlight section in this case.
+
+After the horizontal line the release notes for the next version starts.
+
+---
+
+<<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -14,7 +34,7 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release).
 
-You can try out the latest Elektra release using our Docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
+You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
 This is the quickest way to get started with Elektra without compiling and other obstacles, simply run:
 
 ```sh
@@ -24,151 +44,403 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- Preparing new-backend merge
-- Olimex
-- Improving Elektra in FLOSS course
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
 
-### Preparing new-backend merge
+### <<HIGHLIGHT>>
 
-In a separated branch we rewrote the whole backend system.
-With this new backend system, backends are now also plugins, allowing backends also to be non-file-based, e.g., using databases.
-The main purpose of this release is to give a last stable release before master gets disrupted with a huge change set.
-The next release is not to be expected in this year.
+### <<HIGHLIGHT>>
 
-A huge thanks to _(Klemens Böswirth @kodebach)_, _(Maximilian Irlinger @atmaxinger)_ for the many changes in the branch.
-Thanks to _(Richard Stöckl @Eiskasten)_ for testing.
-
-### Olimex
-
-Elektra is used for [server, desktop and embedded](/doc/WHO.md).
-With this release, we strengthen our embedded mainstay, specifically in [open source hardware OSHW](https://freedomdefined.org/OSHW).
-We developed a major application running on OSHW [Olimex](https://www.olimex.com/Products/OLinuXino/open-source-hardware) boards.
-The application is called [opensesame](https://opensesame.libelektra.org).
-It is heavily relying on Elektra and [ansible-libelektra](https://github.com/ElektraInitiative/ansible-libelektra).
-
-In the initial release [opensesame](https://opensesame.libelektra.org) already allows:
-
-- [x] opening (garage) doors via a novel PIN entry method: you can press and release buttons in any sequence
-- [x] switching on entry lights
-- [x] ringing doorbells
-- [x] detection of fire
-- [x] report events to Nextcloud chats (English and German)
-
-To give a smoother experience when running such an application we will develop Ansible scripts to customize the Olimex base images.
-They will allow changing the language, time zone, static network configuration etc.
-
-Olimex likes this idea and will send us an A20 board.
-A big thanks to [Olimex](https://www.olimex.com).
-
-### Improving Elektra in FLOSS course
-
-Also in the [upcoming term](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194114&semester=2022W) Elektra will be object of study how FLOSS initiatives work.
-Students will make improvements in Elektra as part of their homework, teamwork and, if chosen, also for their project.
-Alternatively, they can also improve other self-chosen FLOSS initiatives.
+### <<HIGHLIGHT>>
 
 ## Plugins
 
-The following text list news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-- fix unused-but-set-variable warnings. _(Markus Raab)_
+### <<Plugin>>
 
-### csvstorage
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-- Remove superfluous if-conditions that lead to a build error on Debian Unstable _(Maximilian Irlinger @atmaxinger)_
+### <<Plugin>>
 
-### specload
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-- fail if either the spec or parentKey parameter of elektraSpecloadSendSpec is NULL _(@hannes99)_
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
-- fix unused-but-set-variable warnings. _(Markus Raab)_
+### Compatibility
 
-### opts
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-- opts: fix possible 'free(): invalid pointer' error and add test for it _(@hannes99)_
+### Core
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Bindings
 
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
 This section keeps you up-to-date with the multi-language support provided by Elektra.
 
-### Python
+### <<Binding>>
 
-- add merging based on elektraMerge _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### Rust
+### <<Binding>>
 
-- start again to publish on crates.io, used by opensesame _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Tools
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Scripts
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Documentation
 
-- Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
-- Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
-- Apply fix spelling to more files. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Tutorials
 
-- opts: use arg/help instead of arg/name _(@hannes99)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Man Pages
 
-- Update [FAQ](/doc/help/elektra-faq.md). _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Tests
 
-- Use GoogleTest framework v1.12.1. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Shell Recorder
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C++
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Packaging
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- Fix build with newer libgit2 versions _(Fabian Vogt)_
-- We now require at least CMake `3.12` (released in July 2018). _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Docker
 
-- Bump Alpine Linux to 3.16.0. _(Mihael Pranjić @mpranj)_
-- The Docker image for building the documentation is now [based on Debian Bullseye](../../scripts/docker/debian/bullseye/doc.Dockerfile). _(Maximilian Irlinger @atmaxinger)_
-- Add Fedora 36 images. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Infrastructure
 
 ### Jenkins
 
-- We no longer build and test on Ubuntu Xenial and Debian Stretch due to outdated CMake versions _(Maximilian Irlinger @atmaxinger)_
-- Add Fedora 36 builds, remove Fedora 34 builds. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Cirrus
 
-- Update FreeBSD images to 13.1 and 12.3 and update packages before builds. _(Mihael Pranjić @mpranj)_
-- Bump Fedora builds to Fedora 36. _(Mihael Pranjić @mpranj)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### GitHub Actions
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Website
 
-The website is generated from the repository, so all information about
-plugins, bindings and tools are always up-to-date.
+The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- 1.0 API _(Klemens Böswirth @kodebach)_ and _(Stefan Hanreich)_
-- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
-- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
-- Mounting SQL databases _(Florian Lindner @flo91)_
-- Recording Configuration _(Maximilian Irlinger)_
-- Ansible-Elektra _(Lukas Hartl)_ and _(Maximilian Irlinger)_
-- Configure Olimex Base Images _(Maximilian Irlinger)_
-- Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
-- Improve Java Development Experience _(Michael Tucek)_
-- Rewriting tools in C _(@hannes99)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Statistics
 
-We closed [17 issues](https://github.com/ElektraInitiative/libelektra/milestone/32?closed=1) for this release.
+We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
@@ -186,7 +458,7 @@ Contact us via our [issue tracker](https://issues.libelektra.org).
 
 You can download the release from
 
-- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz) or from
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz) or
 - [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
@@ -195,18 +467,21 @@ The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/release
 
 The release tarball is also available signed using GnuPG from
 
-- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or
 - [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
 
 The following GPG Key was used to sign this release: 12CC44541E1B8AD9B66AFAD55262E7353324914A
 
-Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/) or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
+Already built API-Docu can be found
+
+- [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/) or
+- [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
 
 ## Stay tuned!
 
 Subscribe to the [RSS feed](https://www.libelektra.org/news/feed.rss) to always get the release notifications.
 
-If you also want to participate, or for any questions and comments please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
+If you also want to participate, or for any questions and comments, please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
