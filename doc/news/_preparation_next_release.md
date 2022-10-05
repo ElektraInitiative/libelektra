@@ -1,8 +1,8 @@
 # 0.9.<<VERSION>> Release
 
-- guid: e064a23b-b5d6-4bd9-bfd9-7466fab67892
+- guid: 1390D163-9CEC-493D-839D-3930B9FFB6C4
 - author: Mihael Pranjić
-- pubDate: Tue, 04 Oct 2022 12:35:30 +0200
+- pubDate: Wed, 05 Oct 2022 08:14:35 +0200
 - shortDesc: New Backend System, Opensesame Application, FLOSS Course
 
 We are proud to release Elektra 0.9.<<VERSION>>.
