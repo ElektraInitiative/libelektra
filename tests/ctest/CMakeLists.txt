@@ -13,7 +13,6 @@ target_link_elektra (test_array elektra-ease)
 target_link_elektra (test_conversion elektra-ease)
 target_link_elektra (test_keyname elektra-ease)
 
-target_link_elektra (test_mount elektra-plugin)
 target_link_elektra (test_plugin elektra-plugin)
 target_link_elektra (test_mountsplit elektra-plugin)
 target_link_elektra (test_split elektra-plugin)
