@@ -1308,10 +1308,6 @@ void backendsMerge (KeySet * backends, KeySet * ks)
 		{
 			ssize_t size = ksGetSize (backendData->keys);
 			backendData->getSize = size;
-			for (elektraCursor j = 0; j < size; j++)
-			{
-				keyClearSync (ksAtCursor (backendData->keys, j));
-			}
 			ksAppend (ks, backendData->keys);
 		}
 	}
