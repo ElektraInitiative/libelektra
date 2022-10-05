@@ -1865,7 +1865,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	struct _SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
+	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while(sendNotificationHook != NULL)
 	{
 		sendNotificationHook->get (sendNotificationHook->plugin, dataKs, parentKey);
@@ -2474,7 +2474,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 
 
-	struct _SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
+	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while(sendNotificationHook != NULL)
 	{
 		// TODO (atmaxinger): Is setKs really the correct KeySet?

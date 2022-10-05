@@ -35,7 +35,7 @@ void freeHooks (KDB * kdb, Key * errorKey)
 
 	if (kdb->hooks.sendNotification != NULL)
 	{
-		struct _SendNotificationHook * hook = kdb->hooks.sendNotification;
+		SendNotificationHook * hook = kdb->hooks.sendNotification;
 		while (hook != NULL)
 		{
 			elektraPluginClose (hook->plugin, errorKey);
@@ -43,7 +43,7 @@ void freeHooks (KDB * kdb, Key * errorKey)
 			hook->get = NULL;
 			hook->set = NULL;
 
-			struct _SendNotificationHook * old = hook;
+			SendNotificationHook * old = hook;
 			hook = hook->next;
 			elektraFree (old);
 		}
@@ -103,7 +103,7 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
-	struct _SendNotificationHook * lastHook = kdb->hooks.sendNotification = NULL;
+	SendNotificationHook * lastHook = kdb->hooks.sendNotification = NULL;
 
 	Key * pluginsKey = keyNew ("system:/elektra/hook/notification/send/plugins", KEY_END);
 	KeySet * configuredPlugins = elektraArrayGet (pluginsKey, config);
@@ -135,7 +135,7 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 			continue;
 		}
 
-		struct _SendNotificationHook * hook = elektraMalloc (sizeof(struct _SendNotificationHook));
+		SendNotificationHook * hook = elektraMalloc (sizeof(SendNotificationHook));
 		hook->next = NULL;
 		hook->plugin = plugin;
 		hook->get = getPtr;
