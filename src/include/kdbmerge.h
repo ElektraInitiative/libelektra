@@ -10,6 +10,7 @@
 #define KDBMERGE_H_
 
 #include "kdb.h"
+#include "kdbtypes.h"
 
 #ifdef __cplusplus
 namespace ckdb
@@ -28,6 +29,9 @@ enum
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultKey,
 		       int strategy, Key * informationKey);
 int elektraMergeGetConflicts (Key * informationKey);
+
+KeySet * elektraMergeGetConflictingKeys (Key * informationKey, Key * root);
+bool elektraMergeIsKeyConflicting (Key * informationKey, Key * root, Key * key);
 
 #ifdef __cplusplus
 }

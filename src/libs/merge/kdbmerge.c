@@ -1,4 +1,3 @@
-
 #include "kdbmerge.h"
 #include "kdb.h"
 #include "kdbassert.h"
@@ -17,6 +16,15 @@
 
 #define INT_BUF_SIZE 11 // Avoid math.h. int has at most 10 digits, +1 for \0
 
+const char * META_ELEKTRA_MERGE_CONFLICT = "meta:/elektra/merge/conflict";
+const char * META_ELEKTRA_MERGE_ROOT_OUR = "meta:/elektra/merge/root/our";
+const char * META_ELEKTRA_MERGE_ROOT_THEIR = "meta:/elektra/merge/root/their";
+const char * META_ELEKTRA_MERGE_ROOT_BASE = "meta:/elektra/merge/root/base";
+const char * META_ELEKTRA_MERGE_ROOT_RESULT = "meta:/elektra/merge/root/result";
+
+static Key * prependStringToKeyName (Key * key, const char * string, Key * informationKey);
+static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * informationKey);
+
 /**
  * @brief Get a statistical value from an information key
  * @param informationKey contains the statistics in its meta information
@@ -24,7 +32,7 @@
  * @retval the statistical value
  * @retval -1 on error
  */
-static int getStatisticalValue (Key * informationKey, char * metaName)
+static int getStatisticalValue (Key * informationKey, const char * metaName)
 {
 	const Key * metaKey = keyGetMeta (informationKey, metaName);
 	if (metaKey == NULL)
@@ -52,7 +60,7 @@ static int getStatisticalValue (Key * informationKey, char * metaName)
  *
  * This enforces that a number is set.
  */
-static int setStatisticalValue (Key * informationKey, char * metaName, int value)
+static int setStatisticalValue (Key * informationKey, const char * metaName, int value)
 {
 	char stringy[INT_BUF_SIZE];
 	int printsize = snprintf (stringy, INT_BUF_SIZE, "%d", value);
@@ -89,7 +97,7 @@ static int setStatisticalValue (Key * informationKey, char * metaName, int value
  * @param metaName which statistic to increase
  * @retval new value
  */
-static int increaseStatisticalValue (Key * informationKey, char * metaName)
+static int increaseStatisticalValue (Key * informationKey, const char * metaName)
 {
 	int value = getStatisticalValue (informationKey, metaName);
 	value++;
@@ -181,6 +189,147 @@ static int getTotalNonOverlaps (Key * informationKey)
 	       getNonOverlapOnlyBaseConflicts (informationKey);
 }
 
+static void addConflictingKeys (Key * informationKey, KeySet * conflictingKeys, const char * metaName)
+{
+	increaseStatisticalValue (informationKey, metaName);
+
+	KeySet * meta = keyMeta (informationKey);
+
+	Key * conflictsRoot = keyNew (META_ELEKTRA_MERGE_CONFLICT, KEY_END);
+	for (elektraCursor end, it = ksFindHierarchy (meta, conflictsRoot, &end); it < end; ++it)
+	{
+		Key * metaKey = ksAtCursor(meta, it);
+
+		if(!keyIsDirectlyBelow (conflictsRoot, metaKey))
+		{
+			continue;
+		}
+
+		// remove from conflicting keys
+		ksLookupByName(conflictingKeys, keyString (metaKey), KDB_O_POP);
+	}
+
+	for (elektraCursor it = 0; it < ksGetSize (conflictingKeys); it++)
+	{
+		Key * conflictingKey = ksAtCursor (conflictingKeys, it);
+		Key * key = keyNew (META_ELEKTRA_MERGE_CONFLICT, KEY_VALUE, keyName (conflictingKey), KEY_END);
+		keyAddBaseName (key, keyName (conflictingKey));
+		ksAppendKey (meta, key);
+	}
+
+	ksDel (conflictingKeys);
+	keyDel (conflictsRoot);
+}
+
+static bool isSpecifiedRootPartOfMerge(Key * informationKey, const char * root)
+{
+	KeySet * meta = keyMeta (informationKey);
+	Key * tmp;
+
+	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_OUR, 0)) != NULL)
+	{
+		if(strcmp (root, keyString (tmp)) == 0)
+		{
+			return true;
+		}
+	}
+
+	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_THEIR, 0)) != NULL)
+	{
+		if(strcmp (root, keyString (tmp)) == 0)
+		{
+			return true;
+		}
+	}
+
+	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_BASE, 0)) != NULL)
+	{
+		if(strcmp (root, keyString (tmp)) == 0)
+		{
+			return true;
+		}
+	}
+
+	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_RESULT, 0)) != NULL)
+	{
+		if(strcmp (root, keyString (tmp)) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Check whether the given key was part of a conflict.
+ * NOTE: Even if the conflict was resolved via the provided conflict strategy, the key will still be marked as being part of a conflict.
+ *
+ * @param informationKey The information key of the merge session
+ * @param root The root key (either for base, theirs, ours or result) that was used in the merge session
+ * @param key That key that should be checked. Must be located under the specified root key
+ * @return true if the key was part of a conflict, false if the key was not part of a conflict or the given root was not part of the merge
+ */
+bool elektraMergeIsKeyConflicting (Key * informationKey, Key * root, Key * key)
+{
+	if (!isSpecifiedRootPartOfMerge(informationKey, keyName (root)))
+	{
+		return false;
+	}
+
+	KeySet * meta = keyMeta (informationKey);
+	Key * keyWithoutRoot = removeRootFromKey (key, root, informationKey);
+
+	Key * conflictsRoot = keyNew (META_ELEKTRA_MERGE_CONFLICT, KEY_END);
+	keyAddBaseName (conflictsRoot, keyName (keyWithoutRoot));
+
+	bool isConflicting = ksLookup (meta, conflictsRoot, 0) != NULL;
+
+	keyDel (conflictsRoot);
+	keyDel (keyWithoutRoot);
+
+	return isConflicting;
+}
+
+/**
+ * Returns a keyset with all conflicting keys under the specified root
+ * @param informationKey The information key of the merge session
+ * @param root The root key (either for base, theirs, ours or result) that was used in the merge session
+ * @return KeySet containing all keys that are part of a merge conflict.
+ *         Will be empty im the specified root key was not part of the merge session.
+ */
+KeySet * elektraMergeGetConflictingKeys (Key * informationKey, Key * root)
+{
+	KeySet * conflictingKeys = ksNew (0, KS_END);
+	const char * rootKeyName = keyName (root);
+
+	if (!isSpecifiedRootPartOfMerge(informationKey, rootKeyName))
+	{
+		return conflictingKeys;
+	}
+
+	KeySet * meta = keyMeta (informationKey);
+	Key * conflictsRoot = keyNew (META_ELEKTRA_MERGE_CONFLICT, KEY_END);
+	for (elektraCursor end, it = ksFindHierarchy (meta, conflictsRoot, &end); it < end; ++it)
+	{
+		Key * metaKey = ksAtCursor(meta, it);
+
+		if(!keyIsDirectlyBelow (conflictsRoot, metaKey))
+		{
+			continue;
+		}
+
+		Key * tmp = keyNew (keyString(metaKey), KEY_END);
+
+		ksAppendKey (conflictingKeys, prependStringToKeyName (tmp, rootKeyName, informationKey));
+
+		keyDel (tmp);
+	}
+
+	keyDel (conflictsRoot);
+
+	return conflictingKeys;
+}
 
 int ELEKTRA_SYMVER (getConflicts, v1) (Key * informationKey)
 {
@@ -220,6 +369,35 @@ static char * strremove (char * string, const char * sub)
 	return string;
 }
 
+static Key * prependStringToKeyName (Key * key, const char * string, Key * informationKey)
+{
+	bool isRoot = strcmp (keyName (key), "/root") == 0;
+	size_t size = strlen (string);
+	if (isRoot)
+	{
+		size += 1;
+	}
+	else
+	{
+		size += keyGetNameSize (key);
+	}
+	char * newName = elektraMalloc (size);
+	strcpy (newName, string);
+	if (!isRoot)
+	{
+		strcat (newName, keyName (key));
+	}
+	Key * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
+	ssize_t status = keySetName (duplicateKey, newName);
+	elektraFree (newName);
+	if (status < 0)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set key name.");
+	}
+
+	return duplicateKey;
+}
+
 /**
  *  @brief This is the counterpart to the removeRoot function
  *
@@ -252,37 +430,49 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 
 	for (elektraCursor it = 0; it < ksGetSize (input); ++it)
 	{
-		const Key * key = ksAtCursor (input, it);
-		bool isRoot = strcmp (keyName (key), "/root") == 0;
-		size_t size = strlen (string);
-		if (isRoot)
-		{
-			size += 1;
-		}
-		else
-		{
-			size += keyGetNameSize (key);
-		}
-		char * newName = elektraMalloc (size);
-		strcpy (newName, string);
-		if (!isRoot)
-		{
-			strcat (newName, keyName (key));
-		}
-		Key * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
-		int status = keySetName (duplicateKey, newName);
-		elektraFree (newName);
-		if (status < 0)
-		{
-			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not set key name.");
-		}
-		status = ksAppendKey (result, duplicateKey);
+		Key * key = ksAtCursor (input, it);
+		Key * duplicateKey = prependStringToKeyName (key, string, informationKey);
+		ssize_t status = ksAppendKey (result, duplicateKey);
 		if (status < 0)
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not append key.");
 		}
 	}
 	return 0;
+}
+
+static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * informationKey)
+{
+	char * currentKeyNameString = elektraMalloc (keyGetNameSize (currentKey));
+	if (keyGetName (currentKey, currentKeyNameString, keyGetNameSize (currentKey)) < 0)
+	{
+		ELEKTRA_ASSERT (false, "ERROR: This should not happen");
+		elektraFree (currentKeyNameString);
+		return NULL;
+	}
+
+	Key * duplicateKey = keyDup (currentKey, KEY_CP_ALL);
+	ssize_t retVal;
+	if (keyIsBelow (root, currentKey))
+	{
+		currentKeyNameString = strremove (currentKeyNameString, keyName (root));
+		retVal = keySetName (duplicateKey, currentKeyNameString);
+	}
+	else
+	{
+		// If the root itself is in the keyset then create a special name for it as it would be empty otherwise
+		retVal = keySetName (duplicateKey, "/root");
+	}
+	if (retVal < 0)
+	{
+		elektraFree (currentKeyNameString);
+		keyDel (duplicateKey);
+		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
+		return NULL;
+	}
+
+	elektraFree (currentKeyNameString);
+	return duplicateKey;
 }
 
 /**
@@ -298,47 +488,25 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 {
 	KeySet * result = ksNew (0, KS_END);
-	const char * rootKeyNameString = keyName (root);
 
 	for (elektraCursor it = 0; it < ksGetSize (original); ++it)
 	{
 		const Key * currentKey = ksAtCursor (original, it);
-		char * currentKeyNameString = elektraMalloc (keyGetNameSize (currentKey));
-		if (keyGetName (currentKey, currentKeyNameString, keyGetNameSize (currentKey)) < 0)
-		{
-			ELEKTRA_ASSERT (false, "ERROR: This should not happen");
-			elektraFree (currentKeyNameString);
-			ksDel (result);
-			return NULL;
-		};
+
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * duplicateKey = keyDup (currentKey, KEY_CP_ALL);
-			int retVal;
-			if (keyIsBelow (root, currentKey))
+			Key * duplicateKey = removeRootFromKey(currentKey, root, informationKey);
+			if(duplicateKey == NULL)
 			{
-				currentKeyNameString = strremove (currentKeyNameString, rootKeyNameString);
-				retVal = keySetName (duplicateKey, currentKeyNameString);
-			}
-			else
-			{
-				// If the root itself is in the keyset then create a special name for it as it would be empty otherwise
-				retVal = keySetName (duplicateKey, "/root");
-			}
-			if (retVal < 0)
-			{
-				elektraFree (currentKeyNameString);
 				ksDel (result);
 				keyDel (duplicateKey);
-				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Setting new key name was not possible.");
 				return NULL;
 			}
+
 			ksAppendKey (result, duplicateKey);
-			elektraFree (currentKeyNameString);
 		}
 		else
 		{
-			elektraFree (currentKeyNameString);
 			ksDel (result);
 			ELEKTRA_SET_INTERNAL_ERROR (
 				informationKey,
@@ -401,13 +569,13 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
 	}
 	if (thisConflict)
 	{
-		increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
+		addConflictingKeys (informationKey, ksNew(3, checkedKey, keyInFirst, keyInSecond, KS_END), "nonOverlapBaseEmptyCounter");
 	}
 	if (!keysAreEqual (checkedKey, existingKey))
 	{
 		// overlap  with single empty
 		// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
-		increaseStatisticalValue (informationKey, "overlap1empty");
+		addConflictingKeys (informationKey, ksNew(3, checkedKey, existingKey, KS_END), "overlap1empty");
 		if (checkedIsDominant)
 		{
 			if (ksAppendKey (result, checkedKey) < 0)
@@ -432,7 +600,7 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
 		{
 			// base is empty and other and their have the same (non-empty) value
 			// this is a conflict
-			increaseStatisticalValue (informationKey, "nonOverlapBaseEmptyCounter");
+			addConflictingKeys (informationKey, ksNew(3, checkedKey, keyInFirst, keyInSecond, KS_END), "nonOverlapBaseEmptyCounter");
 			if (checkedIsDominant)
 			{
 				if (ksAppendKey (result, checkedKey) < 0)
@@ -477,7 +645,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 			/** This is a non-overlap conflict
 			 *  Base is currently checked and has value A, their and our have a different value B
 			 */
-			increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
+			addConflictingKeys (informationKey, ksNew (3, checkedKey, keyInFirst, keyInSecond, KS_END), "nonOverlapAllExistCounter");
 			if (checkedIsDominant)
 			{
 				// If base is also dominant then append it's key
@@ -506,7 +674,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 				 *  Base is currently secondCompare and has value A, their and our have a different
 				 *  value B
 				 */
-				increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
+				addConflictingKeys (informationKey, ksNew (2, checkedKey, keyInFirst, KS_END), "nonOverlapAllExistCounter");
 				if (checkedIsDominant)
 				{
 					// If base is also dominant then append it's key
@@ -537,7 +705,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 				 *  Base is currently firstCompare and has value A, their and our have a different
 				 *  value B
 				 */
-				increaseStatisticalValue (informationKey, "nonOverlapAllExistCounter");
+				addConflictingKeys (informationKey, ksNew (2, checkedKey, keyInSecond, KS_END), "nonOverlapAllExistCounter");
 				if (checkedIsDominant)
 				{
 					// If base is also dominant then append it's key
@@ -587,7 +755,7 @@ static int allExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond
 			 * checkSingleSet. However, only one of those three times is required. Thus use a getter function
 			 * that calculates a third.
 			 */
-			increaseStatisticalValue (informationKey, "overlap3different");
+			addConflictingKeys (informationKey, ksNew (3, checkedKey, keyInFirst, keyInSecond, KS_END), "overlap3different");
 			if (checkedIsDominant)
 			{
 				if (ksAppendKey (result, checkedKey) < 0)
@@ -642,7 +810,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 				 *
 				 * Here keys from base could be appended. But doing so is not useful.
 				 */
-				increaseStatisticalValue (informationKey, "nonOverlapOnlyBaseCounter");
+				addConflictingKeys (informationKey, ksNew (1, checkedKey, KS_END), "nonOverlapOnlyBaseCounter");
 			}
 			else
 			{
@@ -988,6 +1156,13 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		ksDel (theirCropped);
 		return NULL;
 	}
+
+	KeySet * informationMeta = keyMeta (informationKey);
+	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_OUR, KEY_VALUE, keyName (ourRoot), KEY_END));
+	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_THEIR, KEY_VALUE, keyName (theirRoot), KEY_END));
+	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_BASE, KEY_VALUE, keyName (baseRoot), KEY_END));
+	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_RESULT, KEY_VALUE, keyName (resultRoot), KEY_END));
+
 	KeySet * result = ksNew (0, KS_END);
 	bool ourDominant = false;
 	bool theirDominant = false;

@@ -7,5 +7,7 @@ libelektra_0.8 {
 libelektra_0.9 {
         # kdbmerge.h
 	elektraMergeGetConflicts;
+	elektraMergeIsKeyConflicting;
+	elektraMergeGetConflictingKeys;
 };
 
