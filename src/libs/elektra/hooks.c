@@ -145,12 +145,6 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 		}
 
 		SendNotificationHook * hook = elektraMalloc (sizeof (SendNotificationHook));
-		if (hook == NULL)
-		{
-			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not allocate memory for SendNotificationHook");
-			elektraPluginClose (plugin, errorKey);
-			return -1;
-		}
 
 		hook->next = NULL;
 		hook->plugin = plugin;
