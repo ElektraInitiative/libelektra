@@ -178,9 +178,7 @@ static void test_initHooksSendNotifications_unknownPlugin_shouldReportWarning (v
 
 	KeySet * contract = ksNew (0, KS_END);
 	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = ksNew (1,
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "unknown123", KEY_END),
-				 KS_END);
+	KeySet * config = ksNew (1, keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "unknown123", KEY_END), KS_END);
 
 	// Act
 	int result = initHooksSendNotifications (kdb, config, modules, contract, errorKey);
@@ -198,7 +196,8 @@ static void test_initHooksSendNotifications_unknownPlugin_shouldReportWarning (v
 	// warning0 contains warning from plugin loader -- message may be platform specific, so don't check that here
 
 	succeed_if (strstr (keyString (warning1), "unknown123") != NULL, "warning should contain the name of the plugin")
-	succeed_if (strstr (keyString (warning1), "system:/elektra/hook/notification/send/plugins/#0") != NULL, "warning should contain the configuration path of the plugin");
+		succeed_if (strstr (keyString (warning1), "system:/elektra/hook/notification/send/plugins/#0") != NULL,
+			    "warning should contain the configuration path of the plugin");
 
 	ksDel (config);
 	keyDel (errorKey);
@@ -215,16 +214,15 @@ static void test_initHooksSendNotifications_existingPlugin (void)
 
 	KeySet * contract = ksNew (0, KS_END);
 	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = ksNew (1,
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END),
-				 KS_END);
+	KeySet * config =
+		ksNew (1, keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END), KS_END);
 
 	// Act
 	int result = initHooksSendNotifications (kdb, config, modules, contract, errorKey);
 
 	// Assert
 	succeed_if (result == 0, "result should be 0");
-	succeed_if (ksGetSize(keyMeta (errorKey)) == 0, "should not have any warnings");
+	succeed_if (ksGetSize (keyMeta (errorKey)) == 0, "should not have any warnings");
 	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
@@ -246,21 +244,21 @@ static void test_initHooksSendNotifications_multipleExistingPlugins (void)
 
 	KeySet * contract = ksNew (0, KS_END);
 	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = ksNew (1,
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END),
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#1", KEY_VALUE, "dbus", KEY_END),
-				 KS_END);
+	KeySet * config =
+		ksNew (1, keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END),
+		       keyNew ("system:/elektra/hook/notification/send/plugins/#1", KEY_VALUE, "dbus", KEY_END), KS_END);
 
 	// Act
 	int result = initHooksSendNotifications (kdb, config, modules, contract, errorKey);
 
 	// Assert
 	succeed_if (result == 0, "result should be 0");
-	succeed_if (ksGetSize(keyMeta (errorKey)) == 0, "should not have any warnings");
+	succeed_if (ksGetSize (keyMeta (errorKey)) == 0, "should not have any warnings");
 
 	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
 	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
-	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0, "first plugin must be internalnotification");
+	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0,
+		    "first plugin must be internalnotification");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
 
@@ -287,22 +285,22 @@ static void test_initHooksSendNotifications_multipleExistingPluginsAndOneUnknown
 
 	KeySet * contract = ksNew (0, KS_END);
 	KeySet * modules = ksNew (0, KS_END);
-	KeySet * config = ksNew (1,
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END),
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#1", KEY_VALUE, "unknown123", KEY_END),
-				 keyNew ("system:/elektra/hook/notification/send/plugins/#2", KEY_VALUE, "dbus", KEY_END),
-				 KS_END);
+	KeySet * config =
+		ksNew (1, keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END),
+		       keyNew ("system:/elektra/hook/notification/send/plugins/#1", KEY_VALUE, "unknown123", KEY_END),
+		       keyNew ("system:/elektra/hook/notification/send/plugins/#2", KEY_VALUE, "dbus", KEY_END), KS_END);
 
 	// Act
 	int result = initHooksSendNotifications (kdb, config, modules, contract, errorKey);
 
 	// Assert
 	succeed_if (result == 0, "result should be 0");
-	succeed_if (ksGetSize(keyMeta (errorKey)) != 0, "should have some warnings");
+	succeed_if (ksGetSize (keyMeta (errorKey)) != 0, "should have some warnings");
 
 	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
 	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
-	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0, "first plugin must be internalnotification");
+	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0,
+		    "first plugin must be internalnotification");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
 
@@ -333,9 +331,9 @@ int main (int argc, char ** argv)
 	test_isGoptsEnabledByContract (false);
 	test_initHooks_shouldInitAllHooksWithoutFailure ();
 	test_initHooksSendNotifications_unknownPlugin_shouldReportWarning ();
-	test_initHooksSendNotifications_existingPlugin();
-	test_initHooksSendNotifications_multipleExistingPlugins();
-	test_initHooksSendNotifications_multipleExistingPluginsAndOneUnknownPlugin();
+	test_initHooksSendNotifications_existingPlugin ();
+	test_initHooksSendNotifications_multipleExistingPlugins ();
+	test_initHooksSendNotifications_multipleExistingPluginsAndOneUnknownPlugin ();
 
 	printf ("\ntest_hooks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
