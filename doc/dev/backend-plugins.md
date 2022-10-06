@@ -5,19 +5,87 @@
 There exists a _backend contract_ between `libelektra-kdb` and any plugin acting as a backend plugin.
 This contract sets, the order of the phases described above and defines the interaction between a backend plugin and `libelektra-kdb`.
 
-<!-- FIXME: update diagrams
+```mermaid
+sequenceDiagram
+    actor user
+    participant kdb as libelektra-kdb
+    participant backend as backend
+    participant other as other-backend
+    participant storage
+    participant validation
+    participant sa as storage-unit-a (e.g. file)
+    participant sb as storage-unit-b (e.g. database)
 
-![Sequence of phases in `get` operation](kdbGet.svg)
+    user->>+kdb: kdbGet
+    kdb->>backend: init
+    kdb->>other: init
+    kdb->>+backend: resolver
+    backend->>-kdb: "storage-unit-a", update needed
+    kdb->>+other: resolver
+    other->>-kdb: "storage-unit-b", no update needed
+    kdb->>backend: prestorage
+    kdb->>+backend: storage
+    backend->>+storage: &nbsp;
+    storage->>+sa: &nbsp;
+    sa-->>-storage: &nbsp;
+    storage-->>-backend: &nbsp;
+    backend-->>-kdb: &nbsp;
+    kdb->>+backend: poststorage
+    backend->>+validation: &nbsp;
+    validation-->>-backend: &nbsp;
+    backend-->>-kdb: &nbsp;
+    kdb->>kdb: merge backends
+    kdb-->>-user: &nbsp;
+```
 
-![Sequence of phases in `set` operation](kdbSet.svg)
+```mermaid
+sequenceDiagram
+    actor user
+    participant kdb as libelektra-kdb
+    participant backend as backend
+    participant other as other-backend
+    participant storage
+    participant validation
+    participant sa as storage-unit-a (e.g. file)
 
-The diagrams above show the possible sequences of phases during a `get` and a `set` operation.
+    user->>+kdb: kdbSet
+    kdb->>kdb: check backends initialized
+    kdb->>+backend: resolver
+    backend-->>-kdb: "storage-unit-a"
+    critical try to store
+      kdb->>+backend: prestorage
+      backend->>+validation: &nbsp;
+      validation-->>-backend: &nbsp;
+      backend-->>-kdb: &nbsp;
+      kdb->>+backend: storage
+      backend->>+storage: &nbsp;
+      storage->>+sa: write to temp
+      sa-->>-storage: &nbsp;
+      storage-->>-backend: &nbsp;
+      backend-->>-kdb: &nbsp;
+      kdb->>backend: poststorage
+      kdb->>backend: precommit
+      backend->>sa: make changes permanent
+      kdb->>+backend: commit
+      backend-->-kdb: &nbsp;
+      kdb->>backend: postcommit
+    option on failure
+      kdb->>backend: prerollback
+      kdb->>+backend: rollback
+      backend->>sa: revert changes
+      backend-->>-kdb: &nbsp;
+      kdb->>backend: postrollback
+    end
+    kdb-->>-user: &nbsp;
+```
+
+The diagrams above show possible sequences of phases during a `get` and a `set` operation.
 For each of the phases of a `get` operation `libelektra-kdb` calls the backend plugin's `elektra<Plugin>Get` function once.
 Similarly, for the phases of a `set` operation `elektra<Plugin>Set` is called.
--->
+The backend plugin can also (optionally) delegate to other plugins.
 
 The current phase is communicated to the backend plugin (and any other plugin) via the global keyset.
-The current phase can be retrieved via the `elektraPluginGetPhase` function.
+It can be retrieved via the `elektraPluginGetPhase` function.
 
 ### `parentKey`
 
