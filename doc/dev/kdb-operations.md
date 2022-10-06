@@ -3,7 +3,12 @@
 There are four main _operations_ in `libelektra-kdb`: `open`, `get`, `set` and `close`.
 For each of these there is a `kdb*` function the user calls to trigger the operation and plugins export a function for each of the operations they support (at least `get`).
 
-<!-- TODO: should commit and error really be separate? With the new elektraPluginGetPhase they could just be part of set... -->
+<!-- TODO [new_backend]: Decide whether the extra commit/error functions make sense.
+      Possible options are:
+      1. keep the separate functions
+      2. merge them into set, and let backend plugins dispatch based on elektraPluginGetPhase
+      3. in addition to merging into set, add an extra `ElektraGetPhase phase`/`ElektraSetPhase phase` argument to get/set so it is clear that the phase must be taken into account
+ -->
 
 Additionally, plugins may implement `commit` and `error`.
 These are part of the `set` operation and there is no corresponding `kdbCommit` or `kdbError` function available in `libelektra-kdb`.
@@ -61,8 +66,10 @@ The purpose of the `get` operation is to read data stored in backends into a `KD
 Properties of `kdbGet()`:
 
 - After calling `kdbGet (kdb, ks, parentKey)`, the KeySet `ks` will contain _all keys_ (including their values) that are stored in _any backend_ with a mountpoint that is _below `parentKey`_.
-- After calling `kdbGet (kdb, ks, parentKey)`, below `parentKey` the KeySet `ks` will _only_ contain keys that are stored in a backend.
-  <!-- TODO: what about default:/ keys? Should they be kept to allow runtime defaults? -->
+- After calling `kdbGet (kdb, ks, parentKey)`, below `parentKey` the KeySet `ks` will _mostly_ contain keys that are stored in a backend.
+  The exception here are `proc:/` and `spec:/` keys.
+  For other namespaces, all keys below `parentKey` will be removed from `ks`.
+  For `proc:/` and `spec:/` only keys that overlap with a backend that was loaded will be removed from `ks`.
 - The KeySet `ks` _may_ contain other keys not below `parentKey`.
   These keys fall into one of three categories:
   1. Keys that are not below `parentKey`, but are stored in a backend that contains other keys which are below `parentKey`.
@@ -133,9 +140,8 @@ The purpose of the `set` operation is to write data from a `KDB` instance into b
 
 Properties of `kdbSet()`:
 
-<!-- TODO: what about spec/copy? Should that really not be reflected? With the steps below the changes would show up... -->
-
-- When calling `kdbSet (kdb, ks, parentKey)` the contents (key names, values and metadata) of `ks` _will not be modified_.
+- When calling `kdbSet (kdb, ks, parentKey)` the contents (key names, values and metadata) of `ks` will _mostly_ not be modified.
+  The only modifications that are made to `ks` are those that originate from the `spec/copy` hook.
 - _All keys_ in `ks` that are below `parentKey` will be persisted in the KDB, when a `kdbSet (kdb, ks, parentKey)` call returns successfully.
   Additionally, any key in `ks` that shares a backend with another key which is below `parentKey` will also be persisted.
 - Calling `kdbSet` may result in an error, if `kdbGet` wasn't called on this `KDB` instance with the same `parentKey` at least once.
@@ -154,7 +160,6 @@ The flow of this operation is:
    Issue a warning, if a change was detected (via `KEY_FLAG_SYNC`) in a read-only backend.
    > **Note**: Steps 4-6 might be combined into a single procedure that deep-copies only keys from changed backends into separate KeySets per backend
 7. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to e).
-<!-- TODO: instead of this merge, spec/remove, split sequence, maybe we could add a metaspec:/ namespace and simply remove all those metakeys? -->
 8. Merge the results into a new version of `set_ks`.
 9. Run the `spec/remove` hook on `set_ks` (to remove copied metakeys).
 10. Split `set_ks` into individual backends again.

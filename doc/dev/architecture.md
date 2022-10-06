@@ -24,6 +24,8 @@ Further important concepts are explained in:
 
 ## Outdated
 
+<!-- TODO [new_backend]: Update the text below using the docs listed in the warning. -->
+
 > **Warning** Many of the things described below (especially in relation to backends and mountpoints) are outdated.
 > See [`kdb-operations.md`](kdb-operations.md), [`backend-plugins.md`](backend-plugins.md) and [`mountpoints.md`](mountpoints.md) for more up-to-date information.
 

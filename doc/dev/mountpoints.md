@@ -28,17 +28,16 @@ Specifically, it uses `backend` as `<ref>` and is therefore defined by the keys 
 
 The _mountpoint definition_ for the backend plugin is defined by the keys below `system:/elektra/mountpoints/<mountpoint>/definition`.
 
+<!-- TODO [new_backend]: implement correct config handling as described below -->
+
 The _mountpoint config_ is defined by the keys below `system:/elektra/mountpoints/<mountpoint>/config`.
 It is merged into the configuration keyset of every plugin of this mountpoint (including the backend plugin).
-Specifically, the mountpoint config is put into the `system:/` namespace, while the config from `system:/elektra/mountpoints/<mountpoint>/plugins/<ref>/config` is put into the `user:/` namespace of the keyset passed to a plugin.
+Specifically, the mountpoint config is put into the `user:/` namespace, while the config from `system:/elektra/mountpoints/<mountpoint>/plugins/<ref>/config` is put into the `dir:/` namespace of the keyset passed to a plugin.
 
-<!-- TODO: implement `config/needs` -->
+Additionally, the `config/needs` config from plugins' contract is moved to `system:/`.
+This config is not stored in `system:/elektra/mountpoints` and instead loaded at runtime by `libelektra-kdb` during the `open` operation.
 
-Additionally, there is the `config/needs` part of a plugins contract.
-This part of the contract can be used by a plugin to provide configuration for another plugin it depends on.
-In particular, these keys are put into the `default:/` namespace, meaning this config can be overriden by both the _mountpoint config_ in `system:/elektra/mountpoints/<mountpoint>/config` and the plugin's config in `system:/elektra/mountpoints/<mountpoint>/plugins/<ref>/config`.
-
-<!-- TODO: swap defaul:/ and system:/ to mimic current behaviour? -->
+This leaves the `default:/` namespace for plugins to add their own defaults before calling `ksLookup` to access the config keyset.
 
 > **Note**: This _mountpoint definition_ is separate from the normal configuration keyset passed to a plugin.
 > The backend plugin may still have such a keyset below its `system:/elektra/mountpoints/<mountpoint>/plugins/<ref>/config` key.
@@ -185,8 +184,6 @@ In this case it is configured for a PostgreSQL database running on `127.0.0.1:54
 
 We also configured the `network` plugin to run in the `prestorage` phase of the `set` operation.
 Which phases can be used and how they must be configured of course depends on `db_backend`.
-
-There might also be a (potentially quite complicated) part of the mountpoint definition that defines how the relational tables of the database are mapped into the KDB.
 
 ```
 system:/elektra/mountpoints/\/hosts/plugins/yajl/name (="yajl")

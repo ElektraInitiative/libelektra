@@ -1,6 +1,6 @@
 # Mounting
 
-<!-- TODO: Outdated, only kept as reference until an updated version is written
+<!-- TODO [new_backend]: Outdated, only kept as reference until an updated version is written
 Elektra provides a global key database, that can integrate configuration in various formats.
 
 Conversely configuration managed by Elektra can be integrated into applications.

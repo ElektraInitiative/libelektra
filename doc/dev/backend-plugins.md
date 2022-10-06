@@ -19,6 +19,15 @@ Similarly, for the phases of a `set` operation `elektra<Plugin>Set` is called.
 The current phase is communicated to the backend plugin (and any other plugin) via the global keyset.
 The current phase can be retrieved via the `elektraPluginGetPhase` function.
 
+### `parentKey`
+
+The key `parentKey` that is given to the backend plugin as an input at various points, must be treated carefully.
+Currently, _all_ modifications to this key will be propagated to the `parentKey` that was used to call `kdbGet`.
+
+The name of the `parentKey` is marked read-only and therefore cannot be changed.
+The value and metadata can, and in some cases must be, changed.
+In future this may be restricted further to ensure a more structured communication.
+
 ### Operation `get`
 
 The `get` operation is mandatory and all backend plugins must implement it.
@@ -31,8 +40,8 @@ During the `init` phase the backend plugin is called with:
   The key name and value of this key are read-only.
   The name of `parentKey` is chosen to make it easier for the plugin to produce good error messages.
 - A keyset `definition` containing the mountpoint definition.
-  To make things easier for the plugin, keys in `definition` are translated into cascading keys relative to `parentKey`.
-  For example, if the key `system:/elektra/mountpoints/system:\/hosts/path` is set in the KDB, then `definition` will contain a key `/path`.
+  To make things easier for the plugin, keys in `definition` are renamed to be below `system:/`.
+  For example, if the key `system:/elektra/mountpoints/system:\/hosts/path` is set in the KDB, then `definition` will contain a key `system:/path`.
 - Additionally, the plugins for the current mountpoint are opened by `libelektra-kdb` and provided to the backend plugin via the global keyset.
   They can be accessed via the `elektraPluginFromMountpoint` function.
 
@@ -129,8 +138,6 @@ However, unlike the `prestorage` phase, this phase is a very important one.
 It is where validation, generation of implicit values and similar tasks happen.
 
 Finally, `libelektra-kdb` merges the keyset returned by the `poststorage` phase with the ones returned by other backend plugins for different mountpoints and then returns it to the user.
-
-<!-- TODO: Should modifications to `parentKey` (beyond errors/warnings) be visible to the user? -->
 
 ### Operation `set`
 
@@ -237,8 +244,6 @@ This makes the `postcommit` phase mostly useful for logging.
 
 Finally, `libelektra-kdb` merges the keyset returned by the `postcommit` phase (which is still the same one that was returned by the `prestorage` phase) with the ones returned by other backend plugins for different mountpoints and then returns it to the user.
 
-<!-- TODO: Should modifications to `parentKey` (beyond errors/warnings) be visible to the user? -->
-
 #### Rollback Phases (`set` only)
 
 If any of the phases `prestorage`, `storage`, `poststorage`, `precommit` or `commit` fail, `libelektra-kdb` will continue with the rollback phases.
@@ -267,5 +272,3 @@ In the `rollback` phase the backend plugin:
 - **MAY** act differently depending on which phase failed.
 
 Finally, `libelektra-kdb` will restore `ks` to the state in which the user provided it and return.
-
-<!-- TODO: Should modifications to `parentKey` (beyond errors/warnings) be visible to the user? -->
