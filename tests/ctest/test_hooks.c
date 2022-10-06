@@ -198,7 +198,7 @@ static void test_initHooksSendNotifications_unknownPlugin_shouldReportWarning (v
 	// warning0 contains warning from plugin loader -- message may be platform specific, so don't check that here
 
 	succeed_if (strstr (keyString (warning1), "unknown123") != NULL, "warning should contain the name of the plugin")
-	succeed_if (strstr (keyString (warning1), "referenced by key system:/elektra/hook/notification/send/plugins/#0") != NULL, "warning should contain the configuration path of the plugin");
+	succeed_if (strstr (keyString (warning1), "system:/elektra/hook/notification/send/plugins/#0") != NULL, "warning should contain the configuration path of the plugin");
 
 	ksDel (config);
 	keyDel (errorKey);
