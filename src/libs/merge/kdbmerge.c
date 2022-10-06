@@ -198,15 +198,15 @@ static void addConflictingKeys (Key * informationKey, KeySet * conflictingKeys, 
 	Key * conflictsRoot = keyNew (META_ELEKTRA_MERGE_CONFLICT, KEY_END);
 	for (elektraCursor end, it = ksFindHierarchy (meta, conflictsRoot, &end); it < end; ++it)
 	{
-		Key * metaKey = ksAtCursor(meta, it);
+		Key * metaKey = ksAtCursor (meta, it);
 
-		if(!keyIsDirectlyBelow (conflictsRoot, metaKey))
+		if (!keyIsDirectlyBelow (conflictsRoot, metaKey))
 		{
 			continue;
 		}
 
 		// remove from conflicting keys
-		ksLookupByName(conflictingKeys, keyString (metaKey), KDB_O_POP);
+		ksLookupByName (conflictingKeys, keyString (metaKey), KDB_O_POP);
 	}
 
 	for (elektraCursor it = 0; it < ksGetSize (conflictingKeys); it++)
@@ -221,38 +221,38 @@ static void addConflictingKeys (Key * informationKey, KeySet * conflictingKeys, 
 	keyDel (conflictsRoot);
 }
 
-static bool isSpecifiedRootPartOfMerge(Key * informationKey, const char * root)
+static bool isSpecifiedRootPartOfMerge (Key * informationKey, const char * root)
 {
 	KeySet * meta = keyMeta (informationKey);
 	Key * tmp;
 
-	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_OUR, 0)) != NULL)
+	if ((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_OUR, 0)) != NULL)
 	{
-		if(strcmp (root, keyString (tmp)) == 0)
+		if (strcmp (root, keyString (tmp)) == 0)
 		{
 			return true;
 		}
 	}
 
-	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_THEIR, 0)) != NULL)
+	if ((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_THEIR, 0)) != NULL)
 	{
-		if(strcmp (root, keyString (tmp)) == 0)
+		if (strcmp (root, keyString (tmp)) == 0)
 		{
 			return true;
 		}
 	}
 
-	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_BASE, 0)) != NULL)
+	if ((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_BASE, 0)) != NULL)
 	{
-		if(strcmp (root, keyString (tmp)) == 0)
+		if (strcmp (root, keyString (tmp)) == 0)
 		{
 			return true;
 		}
 	}
 
-	if((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_RESULT, 0)) != NULL)
+	if ((tmp = ksLookupByName (meta, META_ELEKTRA_MERGE_ROOT_RESULT, 0)) != NULL)
 	{
-		if(strcmp (root, keyString (tmp)) == 0)
+		if (strcmp (root, keyString (tmp)) == 0)
 		{
 			return true;
 		}
@@ -272,7 +272,7 @@ static bool isSpecifiedRootPartOfMerge(Key * informationKey, const char * root)
  */
 bool elektraMergeIsKeyConflicting (Key * informationKey, Key * root, Key * key)
 {
-	if (!isSpecifiedRootPartOfMerge(informationKey, keyName (root)))
+	if (!isSpecifiedRootPartOfMerge (informationKey, keyName (root)))
 	{
 		return false;
 	}
@@ -303,7 +303,7 @@ KeySet * elektraMergeGetConflictingKeys (Key * informationKey, Key * root)
 	KeySet * conflictingKeys = ksNew (0, KS_END);
 	const char * rootKeyName = keyName (root);
 
-	if (!isSpecifiedRootPartOfMerge(informationKey, rootKeyName))
+	if (!isSpecifiedRootPartOfMerge (informationKey, rootKeyName))
 	{
 		return conflictingKeys;
 	}
@@ -312,14 +312,14 @@ KeySet * elektraMergeGetConflictingKeys (Key * informationKey, Key * root)
 	Key * conflictsRoot = keyNew (META_ELEKTRA_MERGE_CONFLICT, KEY_END);
 	for (elektraCursor end, it = ksFindHierarchy (meta, conflictsRoot, &end); it < end; ++it)
 	{
-		Key * metaKey = ksAtCursor(meta, it);
+		Key * metaKey = ksAtCursor (meta, it);
 
-		if(!keyIsDirectlyBelow (conflictsRoot, metaKey))
+		if (!keyIsDirectlyBelow (conflictsRoot, metaKey))
 		{
 			continue;
 		}
 
-		Key * tmp = keyNew (keyString(metaKey), KEY_END);
+		Key * tmp = keyNew (keyString (metaKey), KEY_END);
 
 		ksAppendKey (conflictingKeys, prependStringToKeyName (tmp, rootKeyName, informationKey));
 
@@ -495,8 +495,8 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * duplicateKey = removeRootFromKey(currentKey, root, informationKey);
-			if(duplicateKey == NULL)
+			Key * duplicateKey = removeRootFromKey (currentKey, root, informationKey);
+			if (duplicateKey == NULL)
 			{
 				ksDel (result);
 				keyDel (duplicateKey);
@@ -569,13 +569,13 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
 	}
 	if (thisConflict)
 	{
-		addConflictingKeys (informationKey, ksNew(3, checkedKey, keyInFirst, keyInSecond, KS_END), "nonOverlapBaseEmptyCounter");
+		addConflictingKeys (informationKey, ksNew (3, checkedKey, keyInFirst, keyInSecond, KS_END), "nonOverlapBaseEmptyCounter");
 	}
 	if (!keysAreEqual (checkedKey, existingKey))
 	{
 		// overlap  with single empty
 		// This spot is hit twice for a single overlap conflict. Thus calculate half later on.
-		addConflictingKeys (informationKey, ksNew(3, checkedKey, existingKey, KS_END), "overlap1empty");
+		addConflictingKeys (informationKey, ksNew (3, checkedKey, existingKey, KS_END), "overlap1empty");
 		if (checkedIsDominant)
 		{
 			if (ksAppendKey (result, checkedKey) < 0)
@@ -600,7 +600,8 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
 		{
 			// base is empty and other and their have the same (non-empty) value
 			// this is a conflict
-			addConflictingKeys (informationKey, ksNew(3, checkedKey, keyInFirst, keyInSecond, KS_END), "nonOverlapBaseEmptyCounter");
+			addConflictingKeys (informationKey, ksNew (3, checkedKey, keyInFirst, keyInSecond, KS_END),
+					    "nonOverlapBaseEmptyCounter");
 			if (checkedIsDominant)
 			{
 				if (ksAppendKey (result, checkedKey) < 0)
@@ -645,7 +646,8 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 			/** This is a non-overlap conflict
 			 *  Base is currently checked and has value A, their and our have a different value B
 			 */
-			addConflictingKeys (informationKey, ksNew (3, checkedKey, keyInFirst, keyInSecond, KS_END), "nonOverlapAllExistCounter");
+			addConflictingKeys (informationKey, ksNew (3, checkedKey, keyInFirst, keyInSecond, KS_END),
+					    "nonOverlapAllExistCounter");
 			if (checkedIsDominant)
 			{
 				// If base is also dominant then append it's key
@@ -705,7 +707,8 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 				 *  Base is currently firstCompare and has value A, their and our have a different
 				 *  value B
 				 */
-				addConflictingKeys (informationKey, ksNew (2, checkedKey, keyInSecond, KS_END), "nonOverlapAllExistCounter");
+				addConflictingKeys (informationKey, ksNew (2, checkedKey, keyInSecond, KS_END),
+						    "nonOverlapAllExistCounter");
 				if (checkedIsDominant)
 				{
 					// If base is also dominant then append it's key

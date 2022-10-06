@@ -41,14 +41,17 @@ static void test_new_keys_in_both (void)
 	succeed_if (ksLookupByName (result, "system:/test/k3", KDB_O_NONE) != NULL, "system:/test/k3 must be included in result");
 	succeed_if (elektraMergeGetConflicts (information) == 0, "must not have any conflicts");
 
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k1", KEY_END)) == false, "system:/test/k1 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k2", KEY_END)) == false, "system:/test/k2 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k3", KEY_END)) == false, "system:/test/k3 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k1", KEY_END)) == false,
+		    "system:/test/k1 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k2", KEY_END)) == false,
+		    "system:/test/k2 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k3", KEY_END)) == false,
+		    "system:/test/k3 must not conflict");
 
-	KeySet * conflicts = elektraMergeGetConflictingKeys(information, root);
+	KeySet * conflicts = elektraMergeGetConflictingKeys (information, root);
 	succeed_if (ksGetSize (conflicts) == 0, "conflicts must be empty")
 
-	keyDel (baseRoot);
+		keyDel (baseRoot);
 	keyDel (oursRoot);
 	keyDel (theirsRoot);
 	keyDel (root);
@@ -95,14 +98,17 @@ static void test_removed_keys_in_both (void)
 	succeed_if (ksLookupByName (result, "system:/test/k1", KDB_O_NONE) != NULL, "system:/test/k1 must be included in result");
 	succeed_if (elektraMergeGetConflicts (information) == 0, "must not have any conflicts");
 
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k1", KEY_END)) == false, "system:/test/k1 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k2", KEY_END)) == false, "system:/test/k2 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k3", KEY_END)) == false, "system:/test/k3 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k1", KEY_END)) == false,
+		    "system:/test/k1 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k2", KEY_END)) == false,
+		    "system:/test/k2 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k3", KEY_END)) == false,
+		    "system:/test/k3 must not conflict");
 
-	KeySet * conflicts = elektraMergeGetConflictingKeys(information, root);
+	KeySet * conflicts = elektraMergeGetConflictingKeys (information, root);
 	succeed_if (ksGetSize (conflicts) == 0, "conflicts must be empty")
 
-	keyDel (baseRoot);
+		keyDel (baseRoot);
 	keyDel (oursRoot);
 	keyDel (theirsRoot);
 	keyDel (root);
@@ -163,14 +169,17 @@ static void test_changed_different_keys_in_both (void)
 
 	succeed_if (elektraMergeGetConflicts (information) == 0, "must not have any conflicts");
 
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k1", KEY_END)) == false, "system:/test/k1 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k2", KEY_END)) == false, "system:/test/k2 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k3", KEY_END)) == false, "system:/test/k3 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k1", KEY_END)) == false,
+		    "system:/test/k1 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k2", KEY_END)) == false,
+		    "system:/test/k2 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k3", KEY_END)) == false,
+		    "system:/test/k3 must not conflict");
 
-	KeySet * conflicts = elektraMergeGetConflictingKeys(information, root);
+	KeySet * conflicts = elektraMergeGetConflictingKeys (information, root);
 	succeed_if (ksGetSize (conflicts) == 0, "conflicts must be empty")
 
-	keyDel (baseRoot);
+		keyDel (baseRoot);
 	keyDel (oursRoot);
 	keyDel (theirsRoot);
 	keyDel (root);
@@ -214,10 +223,12 @@ static void test_changed_same_key_abort (void)
 	succeed_if (result == NULL, "result must be NULL");
 	succeed_if (elektraMergeGetConflicts (information) == 1, "must have 1 conflicts");
 
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k1", KEY_END)) == false, "system:/test/k1 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k2", KEY_END)) == true, "system:/test/k2 must conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k1", KEY_END)) == false,
+		    "system:/test/k1 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k2", KEY_END)) == true,
+		    "system:/test/k2 must conflict");
 
-	KeySet * conflicts = elektraMergeGetConflictingKeys(information, root);
+	KeySet * conflicts = elektraMergeGetConflictingKeys (information, root);
 	succeed_if (ksGetSize (conflicts) == 1, "conflicts must contain single key");
 	succeed_if (ksLookupByName (conflicts, "system:/test/k2", 0) != NULL, "conflicts must contain entry for system:/test/k2");
 
@@ -274,10 +285,12 @@ static void test_changed_same_key_their (void)
 
 	succeed_if (elektraMergeGetConflicts (information) == 1, "must have 1 conflicts");
 
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k1", KEY_END)) == false, "system:/test/k1 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/k2", KEY_END)) == true, "system:/test/k2 must conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k1", KEY_END)) == false,
+		    "system:/test/k1 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/k2", KEY_END)) == true,
+		    "system:/test/k2 must conflict");
 
-	KeySet * conflicts = elektraMergeGetConflictingKeys(information, root);
+	KeySet * conflicts = elektraMergeGetConflictingKeys (information, root);
 	succeed_if (ksGetSize (conflicts) == 1, "conflicts must contain single key");
 	succeed_if (ksLookupByName (conflicts, "system:/test/k2", 0) != NULL, "conflicts must contain entry for system:/test/k2");
 
@@ -335,10 +348,12 @@ static void test_changed_same_key_our (void)
 
 	succeed_if (elektraMergeGetConflicts (information) == 1, "must have 1 conflicts");
 
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/result/k1", KEY_END)) == false, "system:/test/result/k1 must not conflict");
-	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew("system:/test/result/k2", KEY_END)) == true, "system:/test/result/k2 must conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/result/k1", KEY_END)) == false,
+		    "system:/test/result/k1 must not conflict");
+	succeed_if (elektraMergeIsKeyConflicting (information, root, keyNew ("system:/test/result/k2", KEY_END)) == true,
+		    "system:/test/result/k2 must conflict");
 
-	KeySet * conflicts = elektraMergeGetConflictingKeys(information, oursRoot);
+	KeySet * conflicts = elektraMergeGetConflictingKeys (information, oursRoot);
 	succeed_if (ksGetSize (conflicts) == 1, "conflicts must contain single key");
 	succeed_if (ksLookupByName (conflicts, "system:/test/our/k2", 0) != NULL, "conflicts must contain entry for system:/test/our/k2");
 
