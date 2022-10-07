@@ -59,7 +59,7 @@ void test_resolve (void)
 	{
 		succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
 	}
-	
+
 	// todo: Fix random memory access
 	// succeed_if_same_string (h->user.path, "elektra.ecf");
 
@@ -88,7 +88,7 @@ void test_resolve (void)
 	}
 	// todo: https://github.com/ElektraInitiative/libelektra/pull/4192#issuecomment-990075883
 	// succeed_if (h->user.filename == NULL, "user was initialized, but is not needed");
-	
+
 	plugin->kdbClose (plugin, parentKey);
 
 	keyDel (parentKey);
