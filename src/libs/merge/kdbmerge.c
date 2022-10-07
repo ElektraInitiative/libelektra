@@ -181,13 +181,21 @@ static int getTotalNonOverlaps (Key * informationKey)
 	       getNonOverlapOnlyBaseConflicts (informationKey);
 }
 
+
+int ELEKTRA_SYMVER (getConflicts, v1) (Key * informationKey)
+{
+	return elektraMergeGetConflicts (informationKey);
+}
+
+ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", getConflicts, v1)
+
 /**
  * This function returns the number of conflicts that is store in the key
  *
  * @param informationKey contains the statistics in its meta information
  * @returns the number of conflicts stored in the key
  */
-int getConflicts (Key * informationKey)
+int elektraMergeGetConflicts (Key * informationKey)
 {
 	return getTotalNonOverlaps (informationKey) + getTotalOverlaps (informationKey);
 }
@@ -241,10 +249,10 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Parameter string must not be null.");
 		return -1;
 	}
-	Key * key;
-	ksRewind (input);
-	while ((key = ksNext (input)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (input); ++it)
 	{
+		const Key * key = ksAtCursor (input, it);
 		bool isRoot = strcmp (keyName (key), "/root") == 0;
 		size_t size = strlen (string);
 		if (isRoot)
@@ -289,12 +297,12 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
  */
 static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 {
-	ksRewind (original);
 	KeySet * result = ksNew (0, KS_END);
 	const char * rootKeyNameString = keyName (root);
-	Key * currentKey;
-	while ((currentKey = ksNext (original)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (original); ++it)
 	{
+		const Key * currentKey = ksAtCursor (original, it);
 		char * currentKeyNameString = elektraMalloc (keyGetNameSize (currentKey));
 		if (keyGetName (currentKey, currentKeyNameString, keyGetNameSize (currentKey)) < 0)
 		{
@@ -612,12 +620,9 @@ static int allExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond
 static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
 			   int baseIndicator, Key * informationKey)
 {
-	ksRewind (checkedSet);
-	ksRewind (firstCompared);
-	ksRewind (secondCompared);
-	Key * checkedKey;
-	while ((checkedKey = ksNext (checkedSet)) != NULL)
+	for (elektraCursor it = 0; it < ksGetSize (checkedSet); ++it)
 	{
+		Key * checkedKey = ksAtCursor (checkedSet, it);
 		/**
 		 * Check if a key with the same name exists
 		 * Nothing about values is said yet
@@ -837,15 +842,21 @@ static int numberOfConflictMarkers (const char * text)
 static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
 {
 	ELEKTRA_LOG ("cmerge now handles arrays");
-	Key * checkedKey;
 	KeySet * toAppend = NULL;
-	while ((checkedKey = ksNext (baseSet)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (baseSet); ++it)
 	{
+		Key * checkedKey = ksAtCursor (baseSet, it);
+
 		if (elektraArrayValidateName (checkedKey) >= 0)
 		{
 			Key * keyInOur = ksLookup (ourSet, checkedKey, 0);
 			Key * keyInTheir = ksLookup (theirSet, checkedKey, 0);
+			/* getValuesAsArray() calls ksLookup() with  KDP_O_POP which makes as ksRewind()*/
 			char * baseArray = getValuesAsArray (baseSet, checkedKey, informationKey);
+
+			if (baseArray && *baseArray) it = 0;
+
 			if (baseArray == NULL)
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `base` KeySet into char[] for LibGit.");
@@ -978,9 +989,6 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		return NULL;
 	}
 	KeySet * result = ksNew (0, KS_END);
-	ksRewind (ourCropped);
-	ksRewind (theirCropped);
-	ksRewind (baseCropped);
 	bool ourDominant = false;
 	bool theirDominant = false;
 	switch (strategy)
@@ -1005,9 +1013,6 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
 #endif
 
-	ksRewind (ourCropped);
-	ksRewind (theirCropped);
-	ksRewind (baseCropped);
 	checkSingleSet (baseCropped, ourCropped, theirCropped, result, false, 0, informationKey); // base is never dominant
 	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1, informationKey);
 	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
@@ -1019,13 +1024,13 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not delete a key set.");
 		return NULL;
 	}
-	if (getConflicts (informationKey) > 0)
+	if (elektraMergeGetConflicts (informationKey) > 0)
 	{
 		if (strategy == MERGE_STRATEGY_ABORT)
 		{
 			ksDel (result);
 			ELEKTRA_SET_INTERNAL_ERRORF (informationKey, "Abort strategy was set and %d conflicts occured.",
-						     getConflicts (informationKey));
+						     elektraMergeGetConflicts (informationKey));
 			return NULL;
 		}
 	}

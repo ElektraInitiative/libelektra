@@ -34,12 +34,12 @@ The `elektra-sys`, as well as the `elektra` crate have a feature called `pkg-con
 
 ```toml
 [dependencies]
-elektra = { version = "0.9.0", features = ["pkg-config"] }
+elektra = { version = "0.9.10", features = ["pkg-config"] }
 # Directly depending on elektra-sys is only needed if you need to use the raw bindings
-elektra-sys = { version = "0.9.0", features = ["pkg-config"] }
+elektra-sys = { version = "0.9.10", features = ["pkg-config"] }
 ```
 
-If you don't use the `pkg-config` feature, the build script will look for the elektra installation in `/usr/local/include/elektra` and `/usr/include/elektra`.
+If you don't use the `pkg-config` feature, the build script will look for the Elektra installation in `/usr/local/include/elektra` and `/usr/include/elektra`.
 
 With this in place, the bindings should be built when you run `cargo build`.
 
@@ -64,9 +64,9 @@ To start with a new project, use `cargo new elektra_rust`. Now add the `elektra`
 
 ```toml
 [dependencies]
-elektra = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/rust/elektra" }
+elektra = { version = "0.9.10", path = "~/git/libelektra/build/src/bindings/rust/elektra" }
 # Directly depending on elektra-sys is only needed if you need to use the raw bindings
-elektra-sys = { version = "0.9.0", path = "~/git/libelektra/build/src/bindings/rust/elektra-sys" }
+elektra-sys = { version = "0.9.10", path = "~/git/libelektra/build/src/bindings/rust/elektra-sys" }
 ```
 
 If you run `cargo run` and everything builds correctly and prints `Hello, world!`, you can replace the contents of `main.rs` with the examples shown in the next section.
@@ -177,8 +177,10 @@ extern crate elektra;
 use elektra::{KeySet, StringKey, WriteableKey, KDB};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let contract = KeySet::with_capacity(0);
+
     // Open a KDB session
-    let mut kdb = KDB::open()?;
+    let mut kdb = KDB::open(contract)?;
 
     // Create a keyset that will hold the keys we get from the get call
     let mut ks = KeySet::with_capacity(10);

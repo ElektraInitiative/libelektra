@@ -12,7 +12,7 @@ Elektra-web requires:
 
 - [Elektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/) installed
 - A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
-- [Go](https://golang.org/) with version > 1.13
+- [Go](https://go.dev/) with version > 1.13
 
 ## Building with elektra-web Tool
 
@@ -26,13 +26,14 @@ To build Elektra with the elektra-web tool:
 ## Getting Started
 
 - Start an elektrad instance: `kdb run-elektrad`
-- Start the client: `kdb run-web`
+- Start the client: `kdb run-webd`
 - You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Getting Started (docker)
 
 - Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
 - You can now access the client on: [http://localhost:33334](http://localhost:33334)
+- You can also build it yourself in `scripts/docker/web/` (see [Building Docker Image](#building-docker-image))
 
 ## Running from source
 
@@ -46,9 +47,9 @@ To build Elektra with the elektra-web tool:
 
 - Install and start the client (connects to the elektrad instance):
 
-  - `cd client`
+  - `cd webui`
   - `npm install`
-  - `npm start` (replaces `kdb run-web`)
+  - `npm start` (replaces `kdb run-webd`)
 
 - You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
@@ -69,7 +70,7 @@ instance, after starting elektrad via `kdb run-elektrad`, you can run start the
 client as follows:
 
 ```sh
-INSTANCE="http://localhost:33333" kdb run-web
+INSTANCE="http://localhost:33333" kdb run-webd
 ```
 
 It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
@@ -77,23 +78,11 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 For example (`advanced` visibility, `user` is default):
 
 ```sh
-INSTANCE="advanced@http://localhost:33333" kdb run-web
+INSTANCE="advanced@http://localhost:33333" kdb run-webd
 ```
 
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
 browser, the configuration page for the instance will be opened immediately.
-
-### Using a Different `kdb` Executable
-
-It is possible to change the `kdb` executable that elektra-web uses by setting
-the `KDB` environment variable, this is not needed for `elektrad`.
-
-For example:
-
-```sh
-kdb run-elektrad
-KDB="/usr/local/custom/bin/kdb" kdb run-web
-```
 
 ## Overview
 
@@ -118,7 +107,7 @@ Elektra web consists of multiple components:
 
 In order to test API on localhost, you have to start elektrad instance. You can do it in two ways:
 
-- run manually (if you would like to start it manually or you don't have eletrad-web tool installed)
+- run manually (if you would like to start it manually, or you don't have eletrad-web tool installed)
 
   - `cd libelektra/src/tools/web`
   - `cd elektrad`
@@ -188,7 +177,7 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
 `elektrad/` - contains the daemon to interact with a single elektra instance  
 `webd/` - contains a daemon to serve the client and interact with multiple elektra instances
 
-`client/` - contains the elektra-web client (Web UI)
+`webui/` - contains the elektra-web client (Web UI)
 
 - `src/actions/` - Redux actions to access the KDB or display notifications in the UI
 - `src/components/` - React components
@@ -252,7 +241,7 @@ docker push elektra/web:1.5.0
 
 - Create a new sub dialog by, for example, copying the `NumberSubDialog.jsx`
   file (or similar) to a new file in the
-  `client/src/components/TreeItem/dialogs` folder.
+  `webui/src/components/TreeItem/dialogs` folder.
 
 - Include the sub dialog by adding it to the `SettingsDialog.jsx` file in the
   same folder. For example, it could be added before the
@@ -275,7 +264,7 @@ docker push elektra/web:1.5.0
 ```
 
 - Mark the meta keys as handled by adding them to the `HANDLED_METADATA` array
-  in `client/src/components/TreeItem/dialogs/utils.js`:
+  in `webui/src/components/TreeItem/dialogs/utils.js`:
 
 ```diff
 export const HANDLED_METADATA = [
@@ -287,8 +276,8 @@ export const HANDLED_METADATA = [
 ```
 
 - Validation can then be added by handling metadata in the
-  `client/src/components/TreeItem/fields/validateType.js` file to the
+  `webui/src/components/TreeItem/fields/validateType.js` file to the
   `validateType` function.
 
 - Rendering fields in a special way when certain metakeys are present can be
-  done by adjusting the `renderSpecialValue` function in the `client/src/components/TreeItem/index.js` file.
+  done by adjusting the `renderSpecialValue` function in the `webui/src/components/TreeItem/index.js` file.

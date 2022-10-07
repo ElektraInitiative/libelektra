@@ -15,6 +15,7 @@
  * TODO: Does not work (no example, no test case)
  *
  * @deprecated Does not work
+ * @deprecated Remove references to deprecated and removed KEY_COMMENT flag, use KEY_META instead
  * @param ks the KeySet to lookup into
  * @param where any of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  *        @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.
@@ -24,7 +25,7 @@
  *         @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
  *         indicate @p where the @p regex matched.
  *
- * @see ksLookupByName(), ksLookupByString(), keyCompare() for other types of
+ * @see ksLookupByName(), ksLookupByString() for other types of
  * 	lookups.
  * @see kdbGetByName()
  *
@@ -41,9 +42,6 @@ Key *match = 0;
 regex_t regex;
 
 regcomp(&regex,"^[ \t]*$",REG_NOSUB);
-
-// we start from the first key
-ksRewind(ks);
 
 // show the key that match this string
 match=ksLookupRE(ks,&regex);
@@ -80,13 +78,13 @@ regfree(&regex);        // don't forget to free resources
 
  * @endcode
  */
-Key * ksLookupRE (KeySet * ks, const regex_t * regexp)
+Key * ksLookupRE (KeySet * ks, const regex_t * regexp, elektraCursor startPos)
 {
 	regmatch_t offsets;
-	Key *walker = 0, *end = 0;
 
-	while ((walker = ksNext (ks)) != end)
+	for (elektraCursor it = startPos; it < ksGetSize (ks); ++it)
 	{
+		Key * walker = ksAtCursor (ks, it);
 		if (!regexec (regexp, keyString (walker), 1, &offsets, 0)) return walker;
 	}
 

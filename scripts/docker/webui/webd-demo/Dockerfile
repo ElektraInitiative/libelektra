@@ -1,7 +1,7 @@
 # same as `webd`, but with 2 instances already created, they both connect to http://elektrad-demo.libelektra.org with different visibility levels (for demo)
 
-ARG BASE_IMG
-FROM $BASE_IMG
+ARG PIPELINE_TAG
+FROM hub.libelektra.org/build-elektra-web-base:$PIPELINE_TAG
 
 WORKDIR /home/elektra
 USER elektra

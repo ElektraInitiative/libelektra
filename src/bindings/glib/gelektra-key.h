@@ -22,9 +22,7 @@ typedef struct _GElektraKeyClass GElektraKeyClass;
 // clang-format off
 typedef enum {
 	GELEKTRA_KEY_FLAGS          = KEY_FLAGS,
-	GELEKTRA_KEY_NAME           = KEY_NAME,
 	GELEKTRA_KEY_VALUE          = KEY_VALUE,
-	GELEKTRA_KEY_COMMENT        = KEY_COMMENT,
 	GELEKTRA_KEY_BINARY         = KEY_BINARY,
 	GELEKTRA_KEY_SIZE           = KEY_SIZE,
 	GELEKTRA_KEY_FUNC           = KEY_FUNC,
@@ -54,6 +52,7 @@ struct _GElektraKeyClass
 /* used by GELEKTRA_TYPE_KEY */
 GType gelektra_key_get_type (void);
 
+#include "gelektra-keyset.h"
 
 /*
  * Method definitions.
@@ -113,9 +112,8 @@ gboolean gelektra_key_hasmeta (const GElektraKey * key, const gchar * name);
 GElektraKey * gelektra_key_getmeta (const GElektraKey * key, const gchar * name);
 gint gelektra_key_copymeta (const GElektraKey * key, GElektraKey * dest, const gchar * name);
 gint gelektra_key_copyallmeta (const GElektraKey * key, GElektraKey * dest);
-gint gelektra_key_rewindmeta (GElektraKey * key);
-GElektraKey * gelektra_key_nextmeta (GElektraKey * key);
-GElektraKey * gelektra_key_currentmeta (const GElektraKey * key);
+GElektraKeySet * gelektra_key_meta (const GElektraKey * key);
+
 
 /* validating */
 gboolean gelektra_key_isnull (const GElektraKey * key);

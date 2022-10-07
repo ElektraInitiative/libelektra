@@ -585,6 +585,8 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 
 			elektraErrorReset (&kdbSetError);
 
+			/* TODO: Remove call the ksCurrent () because the internal iterators are deprecated
+			 * PROBLEM: Change in kdbSet necessary (additional output parameter for position?, change return value?) */
 			Key * problemKey = ksCurrent (elektra->config);
 			if (problemKey != NULL)
 			{
@@ -599,9 +601,9 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 
 void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 {
-	ksRewind (defaults);
-	for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+	for (elektraCursor it = 0; it < ksGetSize (defaults); ++it)
 	{
+		Key * key = ksAtCursor (defaults, it);
 		Key * const dup = keyDup (key, KEY_CP_ALL);
 		const char * name = keyName (key);
 		keySetName (dup, keyName (parentKey));

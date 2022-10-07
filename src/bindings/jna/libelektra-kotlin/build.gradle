@@ -1,0 +1,67 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.6.21"
+    id "org.jetbrains.kotlin.plugin.serialization" version "1.6.21"
+}
+
+apply from: "$rootProject.projectDir/java-library.gradle"
+
+apply from: "dependencies.gradle"
+
+fatJar {
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
+}
+
+apply from: "$rootProject.projectDir/maven-publish.gradle"
+
+publishing {
+    publications {
+        libelektra(MavenPublication) {
+            groupId rootProject.group
+            artifactId 'libelektra-kotlin'
+            version project.version
+
+            from components.java
+
+            pom {
+                name = "$project.name - $parent.name"
+                description = 'Elektra Kotlin binding to elektrify Kotlin applications and write Elektra plugins using Kotlin.'
+                url = 'https://www.libelektra.org'
+
+                licenses {
+                    license {
+                        name = 'BSD 3-Clause License'
+                        url = 'https://github.com/ElektraInitiative/libelektra/blob/master/LICENSE.md'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'ElektraInitiative'
+                        name = 'Elektra Initiative'
+                        email = 'elektra@libelektra.org'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/ElektraInitiative/libelektra.git'
+                    developerConnection = 'scm:git:ssh://github.com:ElektraInitiative/libelektra.git'
+                    url = 'https://github.com/ElektraInitiative/libelektra'
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.libelektra
+}
+
+assemble.dependsOn generateMetadataFileForLibelektraPublication
+assemble.dependsOn generatePomFileForLibelektraPublication
+

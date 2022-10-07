@@ -61,11 +61,10 @@ void MountBaseCommand::outputMissingRecommends (std::vector<std::string> missing
  */
 void MountBaseCommand::getMountpoint (Cmdline const & cl)
 {
-	Key cur;
 	std::vector<std::string> mountpoints;
 	mountpoints.push_back ("system:/elektra");
-	mountConf.rewind ();
-	while ((cur = mountConf.next ()))
+
+	for (Key cur : mountConf)
 	{
 		if (cur.getBaseName () == "mountpoint")
 		{
@@ -101,8 +100,7 @@ void MountBaseCommand::askForConfirmation (Cmdline const & cl)
 	if (cl.debug)
 	{
 		cout << "The configuration which will be set is:" << endl;
-		mountConf.rewind ();
-		while (Key k = mountConf.next ())
+		for (Key k : mountConf)
 		{
 			cout << k.getName () << " " << k.getString () << endl;
 		}

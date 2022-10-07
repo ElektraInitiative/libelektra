@@ -62,18 +62,15 @@ static void test_basic (void)
 static void test_null_pointer (void)
 {
 	Key * key;
-
+	KeySet * ks;
 	key = keyNew ("user:/test1", KEY_END);
 	exit_if_fail (key, "could not create new key");
-
-	succeed_if (keyRewindMeta (0) == -1, "Could rewind NULL Key");
 
 	succeed_if (keyGetMeta (0, "test") == 0, "Could get meta of NULL Key");
 	succeed_if (keyGetMeta (key, 0) == 0, "Could get meta of NULL metaName");
 
-	succeed_if (keyMeta (0) == 0, "Could get metadata of NULL Key");
-	succeed_if (keyCurrentMeta (0) == 0, "Could get current meta Key of NULL key");
-	succeed_if (keyNextMeta (0) == 0, "Could get next meta Key of NULL key");
+	succeed_if ((ks = keyMeta (0)) == 0, "Could get metadata of NULL Key");
+	succeed_if (ksAtCursor (ks, 0) == 0, "Could get next meta Key of NULL key");
 
 	succeed_if (keyCopyMeta (0, key, "test") == -1, "Could copy metadata to NULL Key");
 	succeed_if (keyCopyMeta (key, 0, "test") == -1, "Could copy metadata from NULL Key");
@@ -90,26 +87,22 @@ static void test_null_pointer (void)
 static void test_iterate (void)
 {
 	Key * key;
+	KeySet * metaKeys;
 
 	key = keyNew ("user:/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
-	succeed_if (keyRewindMeta (key) == 0, "Could not rewind empty key");
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty");
+
+	metaKeys = keyMeta (key);
+	succeed_if (ksAtCursor (metaKeys, 0) == 0, "Could get metakey from keyset, even if it should be empty");
 
 	keySetMeta (key, "meta1", "meta_value");
-	succeed_if (keyRewindMeta (key) == 0, "Could not rewind key");
-	succeed_if_same_string (keyName (keyNextMeta (key)), "meta:/meta1");
-	succeed_if_same_string (keyValue (keyCurrentMeta (key)), "meta_value");
+	metaKeys = keyMeta (key);
+	succeed_if_same_string (keyName (ksAtCursor (metaKeys, 0)), "meta:/meta1");
+	succeed_if_same_string (keyValue (ksAtCursor (metaKeys, 0)), "meta_value");
 
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 2. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 2. iteration");
-
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 3. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 3. iteration");
-
-	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 4. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 4. iteration");
+	succeed_if (ksAtCursor (metaKeys, 1) == 0, "Could get metakey from keyset, even if it should be empty at 2. position");
+	succeed_if (ksAtCursor (metaKeys, 2) == 0, "Could get metakey from keyset, even if it should be empty at 3. position");
+	succeed_if (ksAtCursor (metaKeys, 3) == 0, "Could get metakey from keyset, even if it should be empty at 4. position");
 
 	keyDel (key);
 }
@@ -303,7 +296,6 @@ static void test_copy (void)
 	keyDel (key1);
 	keyDel (key2);
 
-
 	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
 	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
 
@@ -406,6 +398,20 @@ static void test_copy (void)
 
 	keyDel (k);
 	keyDel (c);
+
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
+
+	succeed_if (keySetMeta (key2, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
+
+	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 0, "could not copy metavalue");
+
+	succeed_if (keyGetMeta (key1, "mymeta") == 0, "value of mymeta is not NULL");
+	succeed_if (keyGetMeta (key2, "mymeta") == 0, "value of mymeta has not been cleared");
+
+	keyDel (key1);
+	keyDel (key2);
 }
 
 static void test_new (void)

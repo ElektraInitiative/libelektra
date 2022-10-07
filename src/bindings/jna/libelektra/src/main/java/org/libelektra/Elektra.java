@@ -225,9 +225,6 @@ interface Elektra extends Library {
   Pointer keyNew(@Nullable String name, @Nullable Object... args);
 
   @Nullable
-  Pointer keyDup(Pointer source, int flags);
-
-  @Nullable
   Pointer keyCopy(Pointer dest, Pointer source, int flags);
 
   int keyDel(Pointer key);
@@ -239,15 +236,6 @@ interface Elektra extends Library {
   // int keyGetRef (Pointer key);
 
   /* Meta Info */
-
-  int keyRewindMeta(Pointer key);
-
-  @Nullable
-  Pointer keyNextMeta(Pointer key);
-
-  @Nullable
-  Pointer keyCurrentMeta(Pointer key);
-
   int keyCopyMeta(Pointer dest, Pointer source, String metaName);
 
   int keyCopyAllMeta(Pointer dest, Pointer source);
@@ -255,10 +243,10 @@ interface Elektra extends Library {
   @Nullable
   Pointer keyGetMeta(Pointer key, String metaName);
 
-  int keySetMeta(Pointer key, String metaName, String newMetaString);
-
   @Nullable
   Pointer keyMeta(Pointer key);
+
+  int keySetMeta(Pointer key, String metaName, String newMetaString);
 
   /* Methods for Making Tests */
 

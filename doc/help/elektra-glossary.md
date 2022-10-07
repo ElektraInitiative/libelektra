@@ -1,7 +1,5 @@
 # elektra-glossary(7) -- glossary of Elektra
 
-## Introduction
-
 - **Configuration settings**:
   customize applications towards the users'
   needs. It fulfills following properties:
@@ -53,6 +51,14 @@
   are single characters prefixed with '-'; **Long options** are
   arbitrarily long and start with '--'.
 
+- **Module**:
+  The parts Elektra is composed of, i.e. either lib, plugin, backend, tool.
+
+- **Class**:
+  A group of functions that logically belong together, working on the same type of objects.
+  A library may implement several classes.
+  E.g., `KDB`, `Key` and `KeySet` are the most important classes.
+
 ## Technical Concepts
 
 - [Backends](elektra-backends.md):
@@ -101,8 +107,8 @@
 - [Sync Flag](elektra-sync-flag.md):
   Marks keys that were changed and need to be written out to disc.
 
-- [Null Keys, Null Values](elektra-values.md):
-  The absence of keys or values.
+- Null Value:
+  The absence of a value, i.e. `keyValue (key) == NULL`.
 
 - **pop**:
   used in `ksPop()` and @ref KDB_O_POP means to remove

@@ -39,7 +39,7 @@ MountCommand::MountCommand ()
 void MountCommand::outputMtab (Cmdline const & cl)
 {
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
-	bool all = cl.first && cl.second && cl.third;
+	bool all = cl.first && cl.second;
 	char delim = '\n';
 	if (cl.null)
 	{
@@ -77,7 +77,6 @@ void MountCommand::processArguments (Cmdline const & cl)
 		cout << "Note that nothing will be made persistent" << endl;
 		cout << "until you say y at the very end of the mounting process" << endl;
 		cout << endl;
-		cout << "Please provide a unique name." << endl;
 	}
 }
 

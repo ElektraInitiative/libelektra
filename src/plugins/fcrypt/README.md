@@ -14,7 +14,7 @@
 
 ## Introduction
 
-This plugin enables file based encryption and decryption using GPG.
+This plugin enables file-based encryption and decryption using GPG.
 Also an option for signing and verifying files using GPG is provided.
 
 This plugin encrypts backend files before the commit is executed (thus `precommit`).

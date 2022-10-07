@@ -175,9 +175,9 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 	{
 		Key * k;
 
-		ksRewind (config);
-		while ((k = ksNext (config)) != 0)
+		for (elektraCursor it = 0; it < ksGetSize (config); ++it)
 		{
+			k = ksAtCursor (config, it);
 			if (keyIsBelow (k, gpgRecipientRoot))
 			{
 				err = gpgme_get_key (ctx, keyString (k), &key, 0);
@@ -375,9 +375,9 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		encryptFlags |= GPGME_ENCRYPT_ALWAYS_TRUST;
 	}
 
-	ksRewind (data);
-	while ((k = ksNext (data)))
+	for (elektraCursor it = 0; it < ksGetSize (data); ++it)
 	{
+		k = ksAtCursor (data, it);
 		gpgme_data_t input;
 		gpgme_data_t ciphertext;
 		gpgme_encrypt_result_t result;
@@ -489,9 +489,9 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		return -1; // at this point nothing has been initialized
 	}
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (data); ++it)
 	{
+		k = ksAtCursor (data, it);
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k) || isNullValue (k))
 		{
 			continue;

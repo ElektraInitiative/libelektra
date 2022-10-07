@@ -24,7 +24,7 @@ KDBSYSTEM=$("$KDB" file system:/)
 KDBUSER=$("$KDB" file user:/)
 KDBSPEC=$("$KDB" file spec:/)
 
-"$KDB" rm -rf --without-elektra system || rm -f "$KDBSYSTEM"
+"$KDB" rm -rf --without-elektra system:/ || rm -f "$KDBSYSTEM"
 
-"$KDB" rm -rf user || rm -f "$KDBUSER"
-"$KDB" rm -rf spec || rm -f "$KDBSPEC"
+"$KDB" rm -rf user:/ || rm -f "$KDBUSER"
+"$KDB" rm -rf spec:/ || rm -f "$KDBSPEC"

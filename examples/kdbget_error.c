@@ -43,7 +43,7 @@ int main (void)
 		// do something with the key
 		const char * key_name = keyName (result);
 		const char * key_value = keyString (result);
-		const char * key_comment = keyString (keyGetMeta (result, "comment"));
+		const char * key_comment = keyString (keyGetMeta (result, "comment/#0"));
 		printf ("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 	}
 
@@ -107,14 +107,19 @@ void printWarnings (Key * key)
  */
 void removeMetaData (Key * key, const char * searchfor)
 {
-	const Key * iter_key;
-	keyRewindMeta (key);
-	while ((iter_key = keyNextMeta (key)) != 0)
+	/* new external iterator */
+	/* TODO: Test code, esp. deletion of metakeys in the iteration loop! */
+	KeySet * metaKeys = keyMeta (key);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		Key * iter_key = ksAtCursor (metaKeys, it);
 		/*startsWith*/
 		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
 		{
-			if (keySetMeta (key, keyName (iter_key), 0) != 0) printf ("Error while deleting %s\n", searchfor);
+			if (keySetMeta (key, keyName (iter_key), 0) != 0)
+			{
+				printf ("Error while deleting %s\n", searchfor);
+			}
 		}
 	}
 }

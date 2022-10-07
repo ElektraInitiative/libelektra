@@ -996,6 +996,7 @@ static void test_help (void)
 		"  --help                      Print this help message\n"
 		"  -a, -b BANANA, -C, --apple, --banana=BANANA, --cherry=[ARG]\n"
 		"                                Apple/Banana/Cherry description\n"
+		"  -i, -I, --interactive=[WHEN]prompt according to WHEN: never, once (-I), or always (-i), without WHEN, prompt always\n"
 		"  -p ARG                      A pear is not an apple, nor a banana, nor a cherry.\n"
 		"\n"
 		"PARAMETERS\n"
@@ -1024,7 +1025,22 @@ static void test_help (void)
 	keySetMeta (k, "env/#1", "BANANA");
 	keySetMeta (k, "env/#2", "CHERRY");
 	keySetMeta (k, "description", "Apple/Banana/Cherry description");
-	ks = ksNew (4, k,
+
+
+	// example from the tutorial
+	Key * k2 = keyNew (SPEC_BASE_KEY "/interactive", KEY_END);
+	keySetMeta (k2, "description", "prompt according to WHEN: never, once (-I), or always (-i), without WHEN, prompt always");
+	keySetMeta (k2, "opt", "#1");
+	keySetMeta (k2, "opt/#0", "i");
+	keySetMeta (k2, "opt/#0/arg", "optional");
+	keySetMeta (k2, "opt/#0/flagvalue", "always");
+	keySetMeta (k2, "opt/#0/long", "interactive");
+	keySetMeta (k2, "opt/#0/arg/help", "WHEN");
+	keySetMeta (k2, "opt/#1", "I");
+	keySetMeta (k2, "opt/#1/arg", "none");
+	keySetMeta (k2, "opt/#1/flagvalue", "once");
+
+	ks = ksNew (5, k, k2,
 		    keyNew (SPEC_BASE_KEY "/pear", KEY_META, "opt", "p", KEY_META, "description",
 			    "A pear is not an apple, nor a banana, nor a cherry.", KEY_END),
 		    keyNew (SPEC_BASE_KEY "/param1", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "description",

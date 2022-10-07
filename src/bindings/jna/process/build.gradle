@@ -1,0 +1,13 @@
+apply from: "$rootProject.projectDir/java-app.gradle"
+
+apply from: 'dependencies.gradle'
+
+application {
+    mainClassName = 'org.libelektra.process.PluginProcess'
+}
+
+version project.version
+
+run {
+    standardInput = System.in
+}

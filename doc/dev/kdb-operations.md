@@ -36,8 +36,8 @@ The basic flow of this operation is:
    This transforms the contents of `system:/elektra/mountpoints` into the internal state stored in a `KDB` instance.
 6. Reconfigure `KDB` with real mountpoints:
    This switches the `KDB` instance from bootstrap mode to use the real mountpoint state created above.
-7. Add hardcoded mountpoints to `KDB` instance:
-   There are a few hardcoded mountpoints (root mountpoints, `system:/elektra/modules`, `system:/elektra/version`, etc.) that are always present.
+7. Add hard coded mountpoints to `KDB` instance:
+   There are a few hard coded mountpoints (root mountpoints, `system:/elektra/modules`, `system:/elektra/version`, etc.) that are always present.
    They are added in this step.
 
 Namespaces in mountpoint configs:
@@ -52,9 +52,9 @@ Reserved sections:
 
 - Creating a mountpoint for `/elektra` or below in _any namespace_ is forbidden.
   This section of the KDB is reserved for Elektra's own config.
-- `system:/elektra/mountpoints`, `user:/elektra/mountpoints` and `dir:/elektra/mountpoints` are all required for the bootstrap process and use a hardcoded backend.
+- `system:/elektra/mountpoints`, `user:/elektra/mountpoints` and `dir:/elektra/mountpoints` are all required for the bootstrap process and use a hard coded backend.
   The backends are implemented by a standard file-based backend plugin that is defined at compile-time of `libelektra-kdb`.
-- `system:/elektra/version` and `system:/elektra/modules` will always use hardcoded read-only backends containing information about this Elektra installation.
+- `system:/elektra/version` and `system:/elektra/modules` will always use hard coded read-only backends containing information about this Elektra installation.
   The backends are implemented by special purpose backend plugins.
 
 ## `get` Operation

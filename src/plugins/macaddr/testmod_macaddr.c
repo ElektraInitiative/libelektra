@@ -29,7 +29,6 @@ static int setKey (KeySet * testKs)
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
-	ksRewind (testKs);
 	int ret = plugin->kdbSet (plugin, testKs, parent);
 	keyDel (parent);
 	PLUGIN_CLOSE ();
@@ -41,7 +40,6 @@ static const char * getKeyString (KeySet * ks, char * keyName)
 	Key * parent = keyNew ("user:/tests/mac", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
-	ksRewind (ks);
 	plugin->kdbGet (plugin, ks, parent);
 	keyDel (parent);
 	PLUGIN_CLOSE ();

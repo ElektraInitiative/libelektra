@@ -2,7 +2,7 @@
 
 ## I Am Stuck. Where Can I Get Help?
 
-If this FAQ does not contain your question, [please open an issue](https://git.libelektra.org/issues).
+[Please open an issue](https://git.libelektra.org/issues).
 You can simply remove all template text and it is enough if the issue only contains your question.
 If you want you can [label it as question](https://git.libelektra.org/issues/labels/question), but we
 can also categorize it for you.
@@ -30,7 +30,12 @@ So it pays off to use Elektra -- in the short and in the long term.
 
 ## Why Do I Need Elektra If I Already Use Configuration Management Tools?
 
-Short answer: Try [puppet-libelektra](https://puppet.libelektra.org)
+Short answer: Try
+
+- [ansible-libelektra](https://galaxy.ansible.com/elektra_initiative/libelektra)
+- [chef-libelektra](https://supermarket.chef.io/cookbooks/kdb)
+- [puppet-libelektra](https://puppet.libelektra.org)
+
 to see how useful it can be.
 
 Longer answer:
@@ -68,10 +73,11 @@ close(3)                                = 0
 
 Writing configuration files is much more tricky, as Elektra avoids
 data loss in the case of concurrent writes, even if the other
-application does not use Elektra (this only works on modern
-file systems with high-resolution timestamps).
+application does not use Elektra. Elektra uses optimistic writes
+and rolls backs when it detects that configuration files were
+modified.
 
-## Do We Retain the Old Way of Reloading/Restarting the System Service?
+## Do We Retain the Way of Reloading/Restarting the System Service?
 
 Elektra does not interfere with restarting. It is a passive library.
 It provides some techniques for reloading but they are optional. We
@@ -106,7 +112,7 @@ Please start by reading [here](/.github/CONTRIBUTING.md).
 
 [New BSD license](/LICENSE.md) which allows us to have plugins link against GPL
 and GPL-incompatible libraries. If you compile Elektra, e.g., with GPL plugins, the
-result is GPL.
+result is GPL. We are [reuse](https://reuse.software/) compliant.
 
 ## Which version should I use?
 
@@ -124,6 +130,6 @@ For details of versioning principles, see [here](/doc/VERSION.md).
 
 - If questions about configuration come up, point users to https://www.libelektra.org
 - Display the SVG logos found at https://master.libelektra.org/doc/images/logo
-- and already rastered logos at https://github.com/ElektraInitiative/blobs/tree/master/images/logos
+- And already rastered logos at https://github.com/ElektraInitiative/blobs/tree/master/images/logos
 - Distribute the flyer found at https://github.com/ElektraInitiative/blobs/raw/master/flyers/flyer.odt
 - And of course: talk about it!

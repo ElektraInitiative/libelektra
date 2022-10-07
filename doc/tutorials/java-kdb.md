@@ -13,7 +13,7 @@ After that you can start loading a `KDB` object as follows:
 ```java
 try (KDB kdb = KDB.open()) {
     // code to manipulate keys
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```
@@ -43,6 +43,8 @@ Now we load all keys located below a specific parent key:
 var parentKey = Key.create("user:/");
 kdb.get(keySet, parentKey);
 ```
+
+Note on `KDB::get`: The resulting key set may contain more keys than requested.
 
 Now we can simply fetch the desired key's value as follows:
 
@@ -98,7 +100,7 @@ try (KDB kdb = KDB.open()) {
                 currentKey.getName(),              // fetch the key's name
                 currentKey.getString()));          // fetch the key's value
     }
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```
@@ -115,7 +117,7 @@ try (KDB kdb = KDB.open()) {
                 currentKey.getName(),              // fetch the key's name
                 currentKey.getString()));          // fetch the key's value
     }
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```
@@ -131,7 +133,48 @@ try (KDB kdb = KDB.open()) {
                 currentKey.getName(),              // fetch the key's name
                 currentKey.getString()));          // fetch the key's value
     }
-} catch (KDB.KDBException e) {
+} catch (KDBException e) {
+    e.printStackTrace();
+}
+```
+
+Another way to traverse is to use the Stream API which was introduced with Java 8:
+
+```java
+var keyNamespace = Key.create("user:/");           // select a namespace from which all keys should be fetched
+try (KDB kdb = KDB.open()) {
+    var keySet = kdb.get(keyNamespace);            // fetch all keys into a new key set
+    keySet.forEach(key -> System.out.printf("%s: %s%n", key.getName(), key.getString()));                              // directly format-print all key value pairs using foreach
+    // or
+    keySet.stream().map(key -> String.format("%s: %s", key.getName(), key.getString())).forEach(System.out::println);  // map the key value paris to the desired format first and then print them using foreach and a function reference
+} catch (KDBException e) {
+    e.printStackTrace();
+}
+```
+
+As the `KeySet` implements the `SortedSet<Key>` interface, all its methods can be used for (not only) a traversal:
+
+```java
+var keyNamespace = Key.create("user:/");           // select a namespace from which all keys should be fetched
+try (KDB kdb = KDB.open()) {
+    var keySet = kdb.get(keyNamespace);            // fetch all keys into a new key set
+    keySet.subSet(Key.create("user:/b"), Key.create("user:/k"))                                  // only select the keys starting with "user:/a" through "user:/k" (excluded).
+        .forEach(key -> System.out.printf("%s: %s%n", key.getName(), key.getString()));          // directly format-print all key value pairs using foreach
+} catch (KDBException e) {
+    e.printStackTrace();
+}
+```
+
+Another way to traverse is to use the Stream API which was introduced with Java 8:
+
+```java
+var keyNamespace = Key.create("user:/");           // select a namespace from which all keys should be fetched
+try (KDB kdb = KDB.open()) {
+    var keySet = kdb.get(keyNamespace);            // fetch all keys into a new key set
+    keySet.forEach(key -> System.out.printf("%s: %s%n", key.getName(), key.getString()));                              // directly format-print all key value pairs using foreach
+    // or
+    keySet.stream().map(key -> String.format("%s: %s", key.getName(), key.getString())).forEach(System.out::println);  // map the key value paris to the desired format first and then print them using foreach and a function reference
+} catch (KDBException e) {
     e.printStackTrace();
 }
 ```

@@ -574,7 +574,7 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 /*Backend handling*/
 Plugin * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
 Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);
-Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey);
+Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey, elektraCursor pos);
 Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey);
 Key * backendGetMountpoint (const Plugin * backend);
 
@@ -585,7 +585,6 @@ int backendUpdateSize (Split * split, int index, Key * parent, int size);
 /*Plugin handling*/
 Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
 int elektraPluginClose (Plugin * handle, Key * errorKey);
-int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 

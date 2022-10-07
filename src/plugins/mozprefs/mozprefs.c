@@ -243,9 +243,10 @@ int elektraMozprefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 
 	FILE * fp = fopen (keyString (parentKey), "w");
 	if (!fp) return -1;
-	Key * cur;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		if (!strcmp (keyName (parentKey), keyName (cur))) continue;
 		writeKey (fp, parentKey, cur);
 	}

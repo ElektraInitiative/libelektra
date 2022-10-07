@@ -174,18 +174,18 @@ static void test_ksReference (void)
 	ks = ksNew (0, KS_END);
 	k1 = keyNew ("user:/aname", KEY_END);
 
-	succeed_if (ksHead (0) == 0, "Not NULL on NULL KeySet");
-	succeed_if (ksTail (0) == 0, "Not NULL on NULL KeySet");
+	succeed_if (ksAtCursor (0, 0) == 0, "Not NULL on NULL KeySet");
+	succeed_if (ksAtCursor (0, ksGetSize (0) - 1) == 0, "Not NULL on NULL KeySet");
 
-	succeed_if (ksHead (ks) == 0, "Not NULL on empty KeySet");
-	succeed_if (ksTail (ks) == 0, "Not NULL on empty KeySet");
+	succeed_if (ksAtCursor (ks, 0) == 0, "Not NULL on empty KeySet");
+	succeed_if (ksAtCursor (ks, ksGetSize (ks) - 1) == 0, "Not NULL on empty KeySet");
 
 	succeed_if (keyGetRef (k1) == 0, "reference counter of new key");
 	succeed_if (ksAppendKey (ks, k1) == 1, "size should be one");
 	succeed_if (keyGetRef (k1) == 1, "reference counter of inserted key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size, should stay after inserting duplication");
-	succeed_if (ksHead (ks) == k1, "head wrong");
-	succeed_if (ksTail (ks) == k1, "tail wrong");
+	succeed_if (ksAtCursor (ks, 0) == k1, "head wrong");
+	succeed_if (ksAtCursor (ks, ksGetSize (ks) - 1) == k1, "tail wrong");
 
 	k2 = keyDup (k1, KEY_CP_ALL);
 	keySetString (k2, "newvalue");
@@ -195,9 +195,7 @@ static void test_ksReference (void)
 	// k1 should be freed by now and instead k2 in the keyset
 	succeed_if (ksGetSize (ks) == 1, "wrong size, should stay after inserting duplication");
 
-	ksRewind (ks);
-	ksNext (ks);
-	succeed_if_same_string (keyValue (ksCurrent (ks)), "newvalue");
+	succeed_if_same_string (keyValue (ksAtCursor (ks, 0)), "newvalue");
 
 	ksDel (ks);
 
@@ -207,8 +205,8 @@ static void test_ksReference (void)
 	k2 = ksLookupByName (ks, "user:/key", 0);
 	succeed_if (keyGetRef (k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef (k2) == 1, "reference counter of new inserted key");
-	succeed_if (ksHead (ks) == k2, "head wrong");
-	succeed_if (ksTail (ks) == k1, "tail wrong");
+	succeed_if (ksAtCursor (ks, 0) == k2, "head wrong");
+	succeed_if (ksAtCursor (ks, ksGetSize (ks) - 1) == k1, "tail wrong");
 
 	ksDel (ks);
 
@@ -219,8 +217,8 @@ static void test_ksReference (void)
 	succeed_if (keyGetRef (k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef (k2) == 1, "reference counter of new inserted key");
 	ks1 = ksDup (ks);
-	succeed_if (ksHead (ks1) == k2, "head in dup wrong");
-	succeed_if (ksTail (ks1) == k1, "tail in dup wrong");
+	succeed_if (ksAtCursor (ks1, 0) == k2, "head in dup wrong");
+	succeed_if (ksAtCursor (ks1, ksGetSize (ks1) - 1) == k1, "tail in dup wrong");
 
 	succeed_if (keyGetRef (k1) == 2, "reference counter after duplication of keyset");
 	succeed_if (keyGetRef (k2) == 2, "reference counter after ksdup");
@@ -1035,8 +1033,8 @@ static void test_ksLookup (void)
 		       k[7] = keyNew ("user:/dir1/key2", KEY_VALUE, "value2", KEY_END),
 		       k[8] = keyNew ("user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
 		       k[9] = keyNew ("user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
-		       k[10] = keyNew ("user:/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[11] = keyNew ("user:/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
+		       k[10] = keyNew ("user:/dir1/.inactive1", KEY_META, "comment/#0", "key is inactive", KEY_END),
+		       k[11] = keyNew ("user:/dir1/.inactive2", KEY_META, "comment/#0", "additional information", KEY_END),
 		       k[12] = keyNew ("user:/dir2", KEY_END),
 		       k[13] = keyNew ("user:/dir2/key1", KEY_VALUE, "value1", KEY_END),
 		       k[14] = keyNew ("user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
@@ -1044,8 +1042,8 @@ static void test_ksLookup (void)
 		       k[16] = keyNew ("user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
 		       k[17] = keyNew ("user:/dir3", KEY_END),
 		       k[18] = keyNew ("user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
-		       k[19] = keyNew ("user:/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[20] = keyNew ("user:/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
+		       k[19] = keyNew ("user:/dir3/.inactive1", KEY_META, "comment/#0", "key is inactive", KEY_END),
+		       k[20] = keyNew ("user:/dir3/.inactive2", KEY_META, "comment/#0", "a users comment", KEY_END),
 		       k[21] = keyNew ("user:/dir4", KEY_END),
 		       k[22] = keyNew ("user:/dir5", KEY_END),
 			     // clang-format on
@@ -1114,8 +1112,8 @@ static void test_ksLookupByName (void)
 			     k[7] = keyNew (name[7] = "user:/dir1/key2", KEY_VALUE, "value2", KEY_END),
 			     k[8] = keyNew (name[8] = "user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
 			     k[9] = keyNew (name[9] = "user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
-			     k[10] = keyNew (name[10] = "user:/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-			     k[11] = keyNew (name[11] = "user:/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
+			     k[10] = keyNew (name[10] = "user:/dir1/.inactive1", KEY_META, "comment/#0", "key is inactive", KEY_END),
+			     k[11] = keyNew (name[11] = "user:/dir1/.inactive2", KEY_META, "comment/#0", "additional information", KEY_END),
 			     k[12] = keyNew (name[12] = "user:/dir2", KEY_END),
 			     k[13] = keyNew (name[13] = "user:/dir2/key1", KEY_VALUE, "value1", KEY_END),
 			     k[14] = keyNew (name[14] = "user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
@@ -1123,8 +1121,8 @@ static void test_ksLookupByName (void)
 			     k[16] = keyNew (name[16] = "user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
 			     k[17] = keyNew (name[17] = "user:/dir3", KEY_END),
 			     k[18] = keyNew (name[18] = "user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
-			     k[19] = keyNew (name[19] = "user:/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-			     k[20] = keyNew (name[20] = "user:/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
+			     k[19] = keyNew (name[19] = "user:/dir3/.inactive1", KEY_META, "comment/#0", "key is inactive", KEY_END),
+			     k[20] = keyNew (name[20] = "user:/dir3/.inactive2", KEY_META, "comment/#0", "a users comment", KEY_END),
 			     k[21] = keyNew (name[21] = "user:/dir4", KEY_END), k[22] = keyNew (name[22] = "user:/dir5", KEY_END), KS_END);
 
 	name[23] = "user:/DiR1";
@@ -1416,13 +1414,13 @@ static void test_ksExample (void)
 				 KEY_BINARY,		 // key type
 				 KEY_SIZE, 7,		 // assume binary length 7
 				 KEY_VALUE, "some data", // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated",
+				 KEY_META, "comment/#0", "value is truncated",
 				 KEY_END)); // end of args
 
 	ksAppendKey (ks, keyNew ("user:/tmp/ex5",
 				 KEY_BINARY,			      // binary value
 				 KEY_SIZE, 7, KEY_VALUE, "some data", // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated",
+				 KEY_META, "comment/#0", "value is truncated",
 				 KEY_END)); // end of args
 
 	ksRewind (ks);
@@ -2749,7 +2747,7 @@ static void test_nsLookup (void)
 
 		for (int i = 0; i < NUMBER_OF_NAMESPACES; ++i)
 	{
-		Key * searchKey = keyNew (namespaces[i], KEY_VALUE, "value1", KEY_COMMENT, "comment1", KEY_END);
+		Key * searchKey = keyNew (namespaces[i], KEY_VALUE, "value1", KEY_META, "comment/#0", "comment1", KEY_END);
 		keyAddName (searchKey, "test/keyset/dir7/key1");
 
 		Key * lookupKey = keyNew (namespaces[i], KEY_END);

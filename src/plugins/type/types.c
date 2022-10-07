@@ -300,11 +300,11 @@ static bool enumValidValues (const Key * key, KeySet * validValues, char * delim
 static char * calculateStringValue (KeySet * validValues, char delimiter, kdb_unsigned_long_long_t value)
 {
 	char * stringValue = elektraStrDup ("");
-
-	ksRewind (validValues);
 	Key * cur = NULL;
-	while ((cur = ksNext (validValues)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (validValues); ++it)
 	{
+		cur = ksAtCursor (validValues, it);
 		const kdb_unsigned_long_long_t * val = keyValue (cur);
 		const char * name = keyName (cur) + sizeof ("user:/") - 1;
 		if (delimiter == 0 && *val == value)

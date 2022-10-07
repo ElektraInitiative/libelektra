@@ -316,15 +316,15 @@ int init (int argc, char ** argv);
 				break;                                                                                                     \
 			}                                                                                                                  \
 			compare_key_name (mmk1, mmk2);                                                                                     \
-                                                                                                                                           \
 			compare_key_value (mmk1, mmk2);                                                                                    \
                                                                                                                                            \
-			const Key * meta;                                                                                                  \
-			keyRewindMeta (mmk1);                                                                                              \
-			keyRewindMeta (mmk2);                                                                                              \
-			while ((meta = keyNextMeta (mmk1)) != 0)                                                                           \
+			KeySet * metaKeys1 = keyMeta (mmk1);                                                                               \
+			KeySet * metaKeys2 = keyMeta (mmk2);                                                                               \
+			ssize_t itMeta = 0;                                                                                                \
+			for (; itMeta < ksGetSize (metaKeys1); ++itMeta)                                                                   \
 			{                                                                                                                  \
-				const Key * const metaCmp = keyNextMeta (mmk2);                                                            \
+				const Key * const meta = ksAtCursor (metaKeys1, itMeta);                                                   \
+				const Key * const metaCmp = ksAtCursor (metaKeys2, itMeta);                                                \
 				if (metaCmp == 0)                                                                                          \
 				{                                                                                                          \
 					nbError++;                                                                                         \
@@ -351,7 +351,7 @@ int init (int argc, char ** argv);
 				}                                                                                                          \
 			}                                                                                                                  \
                                                                                                                                            \
-			const Key * const metaCmp = keyNextMeta (mmk2);                                                                    \
+			const Key * const metaCmp = ksAtCursor (metaKeys2, itMeta);                                                        \
 			if (metaCmp != 0)                                                                                                  \
 			{                                                                                                                  \
 				nbError++;                                                                                                 \
@@ -375,9 +375,6 @@ int init (int argc, char ** argv);
 		int bothEmpty = ksGetSize (mmks1) == 0 && ksGetSize (mmks1) == ksGetSize (mmks2);                                          \
 		if (mmks1 != mmks2 && !bothEmpty)                                                                                          \
 		{                                                                                                                          \
-			Key * cmmk1 = 0;                                                                                                   \
-			Key * cmmk2 = 0;                                                                                                   \
-                                                                                                                                           \
 			if (ksGetSize (mmks1) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks1) " was 0");                          \
 			if (ksGetSize (mmks2) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks2) " was 0");                          \
                                                                                                                                            \
@@ -395,13 +392,10 @@ int init (int argc, char ** argv);
 			}                                                                                                                  \
 			else                                                                                                               \
 			{                                                                                                                  \
-                                                                                                                                           \
-				ksRewind (mmks1);                                                                                          \
-				ksRewind (mmks2);                                                                                          \
-                                                                                                                                           \
-				while ((cmmk1 = ksNext (mmks1)) != 0)                                                                      \
+				for (elektraCursor it = 0; it < ksGetSize (mmks1); ++it)                                                   \
 				{                                                                                                          \
-					cmmk2 = ksNext (mmks2);                                                                            \
+					Key * cmmk1 = ksAtCursor (mmks1, it);                                                              \
+					Key * cmmk2 = ksAtCursor (mmks2, it);                                                              \
 					if (!cmmk2)                                                                                        \
 					{                                                                                                  \
 						yield_error ("Compare keyset " ELEKTRA_QUOTE (mmks1) " with " ELEKTRA_QUOTE (              \

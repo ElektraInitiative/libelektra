@@ -115,6 +115,10 @@ stage('Test packages') {
   parallel generateInstalledPackagesTestStages()
 }
 
+maybeStage('Build ABI images', params.abi_test) {
+  parallel generateAbiImages()
+}
+
 maybeStage('ABI tests', params.abi_test) {
   parallel generateAbiTestStages()
 }
@@ -126,12 +130,12 @@ stage('Publish') {
   parallel generatePublishStages()
 }
 
-stage('Upload release Docker images') {
-  parallel generateImageUploadStages()
-}
-
 stage('Main repository and website publish') {
   parallel generateFinalPublishStages()
+}
+
+stage('Upload release Docker images') {
+  parallel generateImageUploadStages()
 }
 
 /**************/
@@ -152,7 +156,7 @@ def initVariables() {
     } else {
       script {
         PREVIOUS_RELEASE_VERSION = sh(
-          script: "git tag -l '[0-9].[0-9].[0-9]' | tail -n1",
+          script: "git tag -l '[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n1",
           returnStdout: true
         ).trim()
       }
@@ -197,16 +201,16 @@ def dockerInit() {
       './scripts/docker/ubuntu/bionic/Dockerfile'
     )
 
-    DOCKER_IMAGES.fedora_33 = dockerUtils.createDockerImageDesc(
-      'fedora-33', dockerUtils.&idTesting,
-      './scripts/docker/fedora/33',
-      './scripts/docker/fedora/33/Dockerfile'
+    DOCKER_IMAGES.fedora_35 = dockerUtils.createDockerImageDesc(
+      'fedora-35', dockerUtils.&idTesting,
+      './scripts/docker/fedora/35',
+      './scripts/docker/fedora/35/Dockerfile'
     )
 
-    DOCKER_IMAGES.fedora_34 = dockerUtils.createDockerImageDesc(
-      'fedora-34', dockerUtils.&idTesting,
-      './scripts/docker/fedora/34',
-      './scripts/docker/fedora/34/Dockerfile'
+    DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
+      'fedora-36', dockerUtils.&idTesting,
+      './scripts/docker/fedora/36',
+      './scripts/docker/fedora/36/Dockerfile'
     )
 
     DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
@@ -244,17 +248,17 @@ def dockerInit() {
       false
     )
 
-    DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
-      'fedora-33-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/package/fedora33/',
-      './scripts/docker/fedora/33/package.Dockerfile',
+    DOCKER_IMAGES.fedora_35_installed = dockerUtils.createDockerImageDesc(
+      'fedora-35-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/package/fedora35/',
+      './scripts/docker/fedora/35/package.Dockerfile',
       false
     )
 
-    DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
-      'fedora-34-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/package/fedora34/',
-      './scripts/docker/fedora/34/package.Dockerfile',
+    DOCKER_IMAGES.fedora_36_installed = dockerUtils.createDockerImageDesc(
+      'fedora-36-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/package/fedora36/',
+      './scripts/docker/fedora/36/package.Dockerfile',
       false
     )
 
@@ -294,17 +298,17 @@ def dockerInit() {
       false
     )
 
-    DOCKER_IMAGES.fedora_33_release = createDockerImageDescForRelease(
+    DOCKER_IMAGES.fedora_35_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/package/fedora33/',
-      './scripts/docker/fedora/33/release.Dockerfile',
+      './release-artifact/*/package/fedora35/',
+      './scripts/docker/fedora/35/release.Dockerfile',
       false
     )
 
-    DOCKER_IMAGES.fedora_34_release = createDockerImageDescForRelease(
+    DOCKER_IMAGES.fedora_36_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/package/fedora34/',
-      './scripts/docker/fedora/34/release.Dockerfile',
+      './release-artifact/*/package/fedora36/',
+      './scripts/docker/fedora/36/release.Dockerfile',
       false
     )
 
@@ -318,10 +322,10 @@ def dockerInit() {
     /* Build Elektra's documentation with this image.
      * Also contains latex for pdf creation.
      */
-    DOCKER_IMAGES.sid_doc = dockerUtils.createDockerImageDesc(
-      'debian-sid-doc', dockerUtils.&idTesting,
-      './scripts/docker/debian/sid',
-      './scripts/docker/debian/sid/doc.Dockerfile'
+    DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
+      'debian-bullseye-doc', dockerUtils.&idTesting,
+      './scripts/docker/debian/bullseye',
+      './scripts/docker/debian/bullseye/doc.Dockerfile'
     )
 
     /*
@@ -345,10 +349,10 @@ def dockerInit() {
     /*
      * ABI test images
      */
-    DOCKER_IMAGES.fedora_34_abi = dockerUtils.createDockerImageDesc(
-        'fedora-34-abi', dockerUtils.&idArtifact,
-        './release-artifact/*/package/fedora34/',
-        './scripts/docker/fedora/34/abi.Dockerfile',
+    DOCKER_IMAGES.fedora_36_abi = dockerUtils.createDockerImageDesc(
+        'fedora-36-abi', dockerUtils.&idArtifact,
+        './release-artifact/*/package/fedora36/',
+        './scripts/docker/fedora/36/abi.Dockerfile',
         false
     )
 
@@ -370,14 +374,14 @@ def generateReleaseStages() {
   tasks << buildRelease(
     'debian-buster',
     DOCKER_IMAGES.buster,
-    params.debian_revision,
-    true // bundle repository
+    params.debian_revision
   )
 
   tasks << buildRelease(
     'debian-bullseye',
     DOCKER_IMAGES.bullseye,
-    params.debian_revision
+    params.debian_revision,
+    true // bundle repository
   )
 
   tasks << buildRelease(
@@ -393,16 +397,16 @@ def generateReleaseStages() {
   )
 
   tasks << buildRelease(
-    'fedora-33',
-    DOCKER_IMAGES.fedora_33,
+    'fedora-35',
+    DOCKER_IMAGES.fedora_35,
     params.fedora_revision,
     false, // do not bundle git repo
     true // use placeholder dirs
   )
 
   tasks << buildRelease(
-    'fedora-34',
-    DOCKER_IMAGES.fedora_34,
+    'fedora-36',
+    DOCKER_IMAGES.fedora_36,
     params.fedora_revision,
     false, // do not bundle git repo
     true // use placeholder dirs
@@ -437,12 +441,12 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     'ubuntu-bionic'
   )
   tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.fedora_33_installed,
-    'fedora-33'
+    DOCKER_IMAGES.fedora_35_installed,
+    'fedora-35'
   )
   tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.fedora_34_installed,
-    'fedora-34'
+    DOCKER_IMAGES.fedora_36_installed,
+    'fedora-36'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.buster_installed,
@@ -458,17 +462,7 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   )
 
   // build website
-  tasks << buildWebsite('debian-buster')
-
-  // build abi images
-  tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.fedora_34_abi,
-    'fedora-34'
-  )
-  tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.bullseye_abi,
-    'debian-bullseye'
-  )
+  tasks << buildWebsite('debian-bullseye')
 
   return tasks
 }
@@ -487,12 +481,12 @@ def generateInstalledPackagesTestStages() {
     DOCKER_IMAGES.bionic_installed
   )
   tasks << testInstalledPackage(
-    'fedora-33-installed',
-    DOCKER_IMAGES.fedora_33_installed
+    'fedora-35-installed',
+    DOCKER_IMAGES.fedora_35_installed
   )
   tasks << testInstalledPackage(
-    'fedora-34-installed',
-    DOCKER_IMAGES.fedora_34_installed
+    'fedora-36-installed',
+    DOCKER_IMAGES.fedora_36_installed
   )
   tasks << testInstalledPackage(
     'debian-buster-installed',
@@ -510,12 +504,26 @@ def generateInstalledPackagesTestStages() {
   return tasks
 }
 
+def generateAbiImages() {
+  // build abi images
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_36_abi,
+    'fedora-36'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bullseye_abi,
+    'debian-bullseye'
+  )
+
+  return tasks
+}
+
 def generateAbiTestStages() {
   def tasks = [:]
 
   tasks << testAbiPackage(
-    'fedora-34-abi',
-    DOCKER_IMAGES.fedora_34_abi
+    'fedora-36-abi',
+    DOCKER_IMAGES.fedora_36_abi
   )
   tasks << testAbiPackage(
     'debian-bullseye-abi',
@@ -595,19 +603,19 @@ def generatePublishStages() {
   // RPM packges can be published in parallel because
   // no shared DB is used.
   tasks << publish(
-    'fedora-33',
-    'fedora33',
-    'fedora-33',
-    'fedora-33',
+    'fedora-35',
+    'fedora35',
+    'fedora-35',
+    'fedora-35',
     release.&publishRpmPackages,
     params.fedora_revision
   )
 
   tasks << publish(
-    'fedora-34',
-    'fedora34',
-    'fedora-34',
-    'fedora-34',
+    'fedora-36',
+    'fedora36',
+    'fedora-36',
+    'fedora-36',
     release.&publishRpmPackages,
     params.fedora_revision
   )
@@ -623,9 +631,9 @@ def generatePublishStages() {
 
   tasks << buildDoc()
 
-  // publish source package built in debian-buster stage
+  // publish source package built in debian-bullseye stage
   if (params.publish_source_package) {
-    tasks << publishSource('debian-buster')
+    tasks << publishSource('debian-bullseye')
   }
 
   tasks << buildAndPublishMaven()
@@ -682,8 +690,8 @@ def generateFinalPublishStages() {
   def tasks = [:]
 
   // publish main repo which got modified during the
-  // debian-buster release stage
-  tasks << publishMainRepo('debian-buster')
+  // debian-bullseye release stage
+  tasks << publishMainRepo('debian-bullseye')
   // publish website
   tasks << release.deployWebsite(DOCKER_IMAGES.website)
 
@@ -717,16 +725,16 @@ def generateImageUploadStages() {
     'bionic'
   )
   tasks << publishImage(
-    DOCKER_IMAGES.fedora_33_release,
-    'fedora-33',
+    DOCKER_IMAGES.fedora_35_release,
+    'fedora-35',
     fedora_revision,
-    'fedora33'
+    'fedora35'
   )
   tasks << publishImage(
-    DOCKER_IMAGES.fedora_34_release,
-    'fedora-34',
+    DOCKER_IMAGES.fedora_36_release,
+    'fedora-36',
     fedora_revision,
-    'fedora34'
+    'fedora36'
   )
   tasks << publishImage(
     DOCKER_IMAGES.buster_release,
@@ -813,7 +821,8 @@ def buildRelease(stageName, image, packageRevision='1',
               if (params.populate_release_notes) {
                 sh "scripts/release/populate-release-notes.sh ${RELEASE_VERSION} ../${RELEASE_VERSION}/"
                 sh "git add doc/news"
-                sh "git commit -m 'release: add hashsums and statistics to release notes'"
+                sh "git add scripts/docker/alpine"
+                sh "git commit -m 'release: add hashsums and statistics to release notes, update alpine release image'"
               }
               if (bundleRepo) {
                 sh 'git bundle create libelektra.bundle --all'
@@ -877,7 +886,7 @@ def publish(correspondingReleaseStageName, context, repoName,
             repoPrefix, publishPackagesFun, packageRevision) {
   return [(correspondingReleaseStageName): {
     stage(correspondingReleaseStageName) {
-      withDockerEnv(DOCKER_IMAGES.buster) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
         copyReleaseArtifact(correspondingReleaseStageName)
         dir('copy') {
           deleteDir()
@@ -906,7 +915,7 @@ def publishSource(artifactStageName) {
   def stageName = 'publishSourcePackage'
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
         configureGitUser()
         copyReleaseArtifact(artifactStageName)
         dir('ftp') {
@@ -960,7 +969,7 @@ def publishMainRepo(artifactStageName) {
   def stageName = 'publishMainRepo'
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
         configureGitUser()
         copyArtifacts(
           filter: "artifacts/${artifactStageName}/libelektra.bundle",
@@ -996,7 +1005,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid_doc) {
+      withDockerEnv(DOCKER_IMAGES.bullseye_doc) {
         configureGitUser()
 
         dir('build') {
@@ -1094,7 +1103,7 @@ def buildAndPublishMaven() {
           }
           dir('src/bindings/jna') {
             sh """\
-gradle -PreleaseVersion=${mavenReleaseVersion} \
+gradle --debug --full-stacktrace -PreleaseVersion=${mavenReleaseVersion} \
 -PsonatypeUsername=${SONATYPE_USERNAME} -PsonatypePassword=${SONATYPE_PASSWORD} \
 -Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" \
 publishToSonatype closeAndReleaseSonatypeStagingRepository"""

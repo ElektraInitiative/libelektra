@@ -26,7 +26,7 @@ kdb mount file.ini spec:/ni ni
 ```
 
 The strength of this plugin is that it supports arbitrary meta
-data and the file format is still human readable.
+data and the file format is still human-readable.
 For example the following lines:
 
 ```ini
@@ -127,5 +127,3 @@ The memory footprint is for a 190.000 (reduced to 35.000 when
 rewrote first ) line ini file with 1.1MB size is 16.88 MB.
 The sort order is not stable, even not with the same file
 rewritten again.
-
-[bohr libraries](https://lab.burn.capital/chaz-attic/bohr)

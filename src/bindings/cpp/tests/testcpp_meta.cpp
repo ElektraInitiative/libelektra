@@ -92,20 +92,14 @@ TEST (meta, iter)
 	Key end = static_cast<ckdb::Key *> (nullptr); // key = 0
 	succeed_if (!end, "key is a null key");
 
-	int count = 0;
-	k.rewindMeta ();
-	while ((meta = k.nextMeta ()))
-		count++;
-	succeed_if (count == 3, "Not the correct number of metadata");
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+	succeed_if (ckdb::ksGetSize (metaKeys) == 3, "Not the correct number of metadata");
 
 	k.setMeta ("d", "more");
 	k.setMeta ("e", "even more");
 
-	count = 0;
-	k.rewindMeta ();
-	while ((meta = k.nextMeta ()))
-		count++;
-	succeed_if (count == 5, "Not the correct number of metadata");
+	metaKeys = ckdb::keyMeta (k.getKey ());
+	succeed_if (ckdb::ksGetSize (metaKeys) == 5, "Not the correct number of metadata");
 }
 
 TEST (test, copy)
@@ -136,13 +130,13 @@ TEST (test, copy)
 	succeed_if (c.getMeta<int> ("a") == 420, "could not get value copied before (again)");
 	succeed_if (k.getMeta<const ckdb::Key *> ("a") == c.getMeta<const ckdb::Key *> ("a"), "copy meta did not work (again)");
 
-	Key d;
-	Key meta;
 
-	k.rewindMeta ();
-	while ((meta = k.nextMeta ()))
+	Key d;
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
-		d.copyMeta (k, meta.getName ());
+		const Key & curMeta = ckdb::ksAtCursor (metaKeys, it);
+		d.copyMeta (k, curMeta.getName ());
 	}
 
 	succeed_if (d.getMeta<std::string> ("a") == "420", "did not copy metavalue in the loop");
@@ -202,4 +196,50 @@ TEST (meta, copyAll)
 
 	succeed_if (d.getMeta<std::string> ("c") == "c metavalue", "did not copy metavalue in the loop");
 	succeed_if (k.getMeta<const ckdb::Key *> ("c") == d.getMeta<const ckdb::Key *> ("c"), "copy meta did not work in the loop");
+}
+
+/* check the wrappers for underlying c-functions with a metakey
+ * exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (meta, cErrorsMetaKeys)
+{
+	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
+	Key m;
+
+	k.setMeta ("metaKey", "metaValue");
+
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (k.getKey ());
+
+	EXPECT_EQ (ckdb::ksGetSize (metaKeys), 1);
+	m = ckdb::ksAtCursor (metaKeys, 0);
+
+
+	EXPECT_THROW (m.addName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.setName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.addBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.setBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (m.delBaseName (), KeyInvalidName);
+
+	EXPECT_THROW (m.setMeta ("metaKey2", "metaValue2"), KeyException);
+	EXPECT_THROW (m.delMeta ("metaKey2"), KeyException);
+
+	EXPECT_THROW (m.set ("Test"), KeyException);
+
+	/* m should be read-only */
+	EXPECT_THROW (m.copy (k), KeyException);
+	EXPECT_NE (k, m);
+	/* copying m to k should work */
+	EXPECT_NO_THROW (k.copy (m));
+	EXPECT_EQ (k, m);
+
+	EXPECT_THROW (m.setCallback (nullptr), KeyException);
+	EXPECT_THROW (m.setString ("changedMetaValue"), KeyException);
+	EXPECT_EQ (m.getString (), "metaValue");
+	EXPECT_EQ (m.getReferenceCounter (), 1);
+
+	/* should only fail on null key */
+	EXPECT_NO_THROW (m--);
+	EXPECT_EQ (m.getReferenceCounter (), 0);
+
+	/* should only fail on null key */
+	EXPECT_NO_THROW (m.clear ());
 }

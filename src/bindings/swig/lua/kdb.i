@@ -11,6 +11,16 @@
 
 %include "../common.i"
 
+%inline %{
+  long ksSize (const ckdb::_KeySet * ks) {
+  return ckdb::ksGetSize (ks);
+}
+
+ckdb::_Key * ksAt (ckdb::_KeySet * ks, ssize_t pos) {
+  return ckdb::ksAtCursor (ks, pos);
+}
+%}
+
 %fragment("LuaSTLIterator_T", "header") {
   namespace myswig
   {
@@ -216,6 +226,9 @@
 %LuaSTLIterator(kdb::Key::iterator, name_iterator_iter);
 %LuaSTLIterator(kdb::Key::reverse_iterator, name_iterator_iter);
 
+
+
+
 %extend kdb::Key {
   Key(const char *name, int flags = 0) {
     return new kdb::Key(name,
@@ -229,6 +242,10 @@
 
   std::string __tostring() {
     return self->getName();
+  }
+
+  ckdb::_KeySet *__meta__() {
+	  return ckdb::keyMeta($self->getKey());
   }
 
   myswig::LuaSTLIterator_T<kdb::Key::iterator> *name_iterator() {
@@ -322,11 +339,13 @@
   mt[".fn"]["__metaIter"] = function(self)
      return coroutine.wrap(
       function()
-        self:_rewindMeta()
-        local meta = self:_nextMeta()
-        while not meta:isNull() do
-          coroutine.yield(meta)
-          meta = self:_nextMeta()
+        local metaKeys = self:__meta__();
+        local size = kdb.ksSize(metaKeys);
+        if size > 0 then
+          for i = 1, size do
+            local meta = kdb.ksAt(metaKeys, i - 1)
+            coroutine.yield(meta)
+          end
         end
       end
     )

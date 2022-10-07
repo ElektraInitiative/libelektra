@@ -11,7 +11,18 @@
 #define ELEKTRA_KDB_GEN_HIGHLEVEL_COMMON_HPP
 
 #include <kdb.hpp>
+
+#if __GNUC__ >= 12
+#pragma GCC diagnostic error "-Wmaybe-uninitialized"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <regex>
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#else
+#include <regex>
+#endif
+
 
 std::string upCaseFirst (const std::string & str);
 

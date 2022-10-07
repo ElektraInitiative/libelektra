@@ -9,8 +9,7 @@ SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
 cd $BUILD
-cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
-	-DENABLE_OPTIMIZATIONS="OFF" \
+cmake -DENABLE_OPTIMIZATIONS="OFF" \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL;-ruby" \

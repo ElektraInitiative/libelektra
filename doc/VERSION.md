@@ -14,6 +14,10 @@ system:/elektra/version/constants/KDB_VERSION_MINOR
 system:/elektra/version/constants/KDB_VERSION_PATCH
 ```
 
+All libraries and plugins from Elektra must be installed
+in exactly the same major and minor version, so no library
+or plugin-specific version information exists.
+
 ## Scope
 
 The version applies to following parts of Elektra:
@@ -63,9 +67,9 @@ with the extensions explained here.
 
 In `1.0.*` the API and ABI must be always forward-compatible
 and backwards-compatible.
-That means that Elektra's libraries may be upgraded and downgraded
-without any effect on applications, only bug or docu fixes
-are allowed.
+That means that Elektra's libraries and plugins may be
+upgraded and downgraded without any effect on applications,
+only bug or docu fixes are allowed.
 
 In minor or patch version updates the API and ABI must be always forward-compatible,
 but not backwards-compatible.
@@ -77,6 +81,11 @@ for 1.1.0 may not link or compile against Elektra 1.0.0
 by using #ifdefs).
 Also here applications must continue to work as originally
 intended.
+
+Changes in Elektra's datastructure will increase (at least)
+the minor version level. This is required, as the cache plugin
+exposes the datastructure and must have the same version as the
+core and other libraries.
 
 When you add a new function you break ABI and API backward-
 compatibility (but not forward). You are only allowed to

@@ -3,28 +3,18 @@ package org.libelektra;
 import static java.util.Objects.requireNonNull;
 import static org.libelektra.Elektra.KDB_O_NONE;
 import static org.libelektra.Elektra.KS_END;
-import static org.libelektra.ValidationUtil.argNotNull;
-import static org.libelektra.ValidationUtil.argNotNullOrBlank;
-import static org.libelektra.ValidationUtil.checkPointer;
+import static org.libelektra.ValidationUtil.*;
 
 import com.sun.jna.Pointer;
 import java.lang.ref.Cleaner;
-import java.util.AbstractSet;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.libelektra.exception.KeySetException;
 
 /** Java representation of a native Elektra key set, a container for keys */
-public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
+public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
 
   @Nullable private Pointer pointer;
 
@@ -415,11 +405,191 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
   /**
    * {@inheritDoc}
    *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   */
+  @Override
+  public Key lower(Key key) {
+    int index = searchForIndexOf(key);
+    if (index < 0) {
+      index = index * -1 - 1;
+    }
+    if (index == 0) {
+      return null;
+    }
+    return at(index - 1);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   */
+  @Override
+  public Key floor(Key key) {
+    int index = searchForIndexOf(key);
+    if (index == -1) {
+      return null;
+    }
+    if (index < 0) {
+      index = index * -1 - 1 - 1;
+    }
+    if (index >= size()) {
+      index = size() - 1;
+    }
+    return at(index);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   */
+  @Override
+  public Key ceiling(Key key) {
+    int index = searchForIndexOf(key);
+    if (index < 0) {
+      index = index * -1 - 1;
+    }
+    if (index >= size()) {
+      return null;
+    }
+    return at(index);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   */
+  @Override
+  public Key higher(Key key) {
+    int index = searchForIndexOf(key);
+    if (index < 0) {
+      index = index * -1 - 1 - 1;
+    }
+    if (index + 1 >= size()) {
+      return null;
+    }
+    return at(index + 1);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   */
+  @Override
+  public Key pollFirst() {
+    if (isEmpty()) {
+      return null;
+    }
+    final Key first = first();
+    remove(first);
+    return first;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   */
+  @Override
+  public Key pollLast() {
+    if (isEmpty()) {
+      return null;
+    }
+    final Key last = last();
+    remove(last);
+    return last;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * @return New {@link KeySetIterator} backed by this {@link KeySet}
    */
   @Override
   public Iterator<Key> iterator() {
     return new KeySetIterator<>(this, Key::new);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @return New {@link DescendingKeySetView} backed by this {@link KeySet}
+   */
+  @Override
+  public NavigableSet<Key> descendingSet() {
+    return new DescendingKeySetView(this, null, true, null, false);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @return New {@link DescendingKeySetIterator} backed by this {@link KeySet}
+   */
+  @Override
+  public Iterator<Key> descendingIterator() {
+    return this.descendingSet().iterator();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   * @throws NullPointerException if {@code fromElement} or {@code toElement} is {@code null}
+   * @throws IllegalArgumentException {@inheritDoc}
+   */
+  @Override
+  public NavigableSet<Key> subSet(
+      Key fromElement, boolean fromInclusive, Key toElement, boolean toInclusive) {
+    requireNonNull(fromElement);
+    requireNonNull(toElement);
+
+    var fromElementIndex = indexOf(fromElement);
+    var toElementIndex = indexOf(toElement);
+
+    if (fromElementIndex == toElementIndex && !(fromInclusive && toInclusive)) {
+      return Collections.emptyNavigableSet();
+    }
+
+    if (fromElementIndex > toElementIndex) {
+      throw new IllegalArgumentException();
+    }
+
+    return new KeySetView(this, fromElement, fromInclusive, toElement, toInclusive);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   * @throws NullPointerException if {@code toElement} is {@code null}
+   * @throws IllegalArgumentException {@inheritDoc}
+   */
+  @Override
+  public NavigableSet<Key> headSet(Key toElement, boolean inclusive) {
+    if (!contains(toElement)) {
+      throw new IllegalArgumentException();
+    }
+
+    return new KeySetView(this, null, true, toElement, inclusive);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @throws IllegalStateException if this {@link KeySet} has already been released
+   * @throws NullPointerException if {@code fromElement} is {@code null}
+   * @throws IllegalArgumentException {@inheritDoc}
+   */
+  @Override
+  public NavigableSet<Key> tailSet(Key fromElement, boolean inclusive) {
+    if (!contains(fromElement)) {
+      throw new IllegalArgumentException();
+    }
+
+    return new KeySetView(this, fromElement, inclusive, null, false);
   }
 
   /**
@@ -558,21 +728,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
    */
   @Override
   public SortedSet<Key> subSet(Key fromElement, Key toElement) {
-    requireNonNull(fromElement);
-    requireNonNull(toElement);
-
-    var fromElementIndex = indexOf(fromElement);
-    var toElementIndex = indexOf(toElement);
-
-    if (fromElementIndex == toElementIndex) {
-      return Collections.emptySortedSet();
-    }
-
-    if (fromElementIndex > toElementIndex) {
-      throw new IllegalArgumentException();
-    }
-
-    return new KeySetView(this, fromElement, toElement);
+    return subSet(fromElement, true, toElement, false);
   }
 
   /**
@@ -584,11 +740,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
    */
   @Override
   public SortedSet<Key> headSet(Key toElement) {
-    if (!contains(toElement)) {
-      throw new IllegalArgumentException();
-    }
-
-    return new KeySetView(this, null, toElement);
+    return headSet(toElement, false);
   }
 
   /**
@@ -600,11 +752,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
    */
   @Override
   public SortedSet<Key> tailSet(Key fromElement) {
-    if (!contains(fromElement)) {
-      throw new IllegalArgumentException();
-    }
-
-    return new KeySetView(this, fromElement, null);
+    return tailSet(fromElement, true);
   }
 
   /**
@@ -617,7 +765,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
   @Nonnull
   public Key first() {
     return checkPointer(
-        Elektra.INSTANCE.ksHead(getPointer()), Key::new, NoSuchElementException::new);
+        Elektra.INSTANCE.ksAtCursor(getPointer(), 0), Key::new, NoSuchElementException::new);
   }
 
   /**
@@ -630,34 +778,47 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
   @Nonnull
   public Key last() {
     return checkPointer(
-        Elektra.INSTANCE.ksTail(getPointer()), Key::new, NoSuchElementException::new);
+        Elektra.INSTANCE.ksAtCursor(getPointer(), Elektra.INSTANCE.ksGetSize(getPointer()) - 1),
+        Key::new,
+        NoSuchElementException::new);
   }
 
   /**
    * View backed by a {@link KeySet}. Changes in the backing {@link KeySet} are reflected in this
-   * view and vice versa. The range of this view is defined by an inclusive start element and an
-   * inclusive end element.
+   * view and vice versa. The range of this view is defined by the given inclusive and exclusive
+   * start/end element.
    */
-  private static class KeySetView extends AbstractSet<Key> implements SortedSet<Key> {
+  private static class KeySetView extends AbstractSet<Key> implements NavigableSet<Key> {
 
-    private final KeySet keySet;
+    protected final KeySet keySet;
 
     /**
      * Inclusive start element for this view on the backing {@link KeySet keySet}. {@link
      * Optional#empty()} if this view does not have a lower bound.
      */
-    private final Optional<Key> oFromElement;
+    protected final Optional<Key> oFromElement;
 
     /**
      * Exclusive end element for this view on the backing {@link KeySet keySet}. {@link
      * Optional#empty()} if this view does not have an upper bound.
      */
-    private final Optional<Key> oToElement;
+    protected final Optional<Key> oToElement;
 
-    private KeySetView(KeySet keySet, @Nullable Key fromElement, @Nullable Key toElement) {
+    protected final boolean fromInclusive;
+
+    protected final boolean toInclusive;
+
+    private KeySetView(
+        KeySet keySet,
+        @Nullable Key fromElement,
+        boolean fromInclusive,
+        @Nullable Key toElement,
+        boolean toInclusive) {
       this.keySet = keySet;
+      this.fromInclusive = fromInclusive;
       this.oFromElement = Optional.ofNullable(fromElement);
       this.oToElement = Optional.ofNullable(toElement);
+      this.toInclusive = toInclusive;
     }
 
     /**
@@ -665,12 +826,33 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
      * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} or the
      *     {@link Key} signifying this view's lower bound has already been released
      */
-    private int getLowerBound() {
-      return oFromElement.map(keySet::searchForIndexOf).map(i -> i < 0 ? i * -1 - 1 : i).orElse(0);
+    private int getLowerIndex() {
+      return oFromElement.map(this::getLowerIndexOf).orElse(0);
+    }
+
+    /**
+     * @param key the index to find
+     * @return Lower (inclusive) index of element
+     * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} or the
+     *     {@link Key} signifying this view's lower bound has already been released
+     */
+    private int getLowerIndexOf(Key key) {
+      final int i = keySet.searchForIndexOf(key);
+      return i < 0 ? i * -1 - 1 : i;
+    }
+
+    /**
+     * @return Lower bound for this view, depending on if the lower bound is inclusive or not.
+     * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} or the
+     *     {@link Key} signifying this view's lower bound has already been released
+     */
+    protected int getLowerBound() {
+      int lowerIndex = getLowerIndex();
+      return fromInclusive ? lowerIndex : lowerIndex + 1;
     }
 
     /** @return True, if this view has a lower bound, false otherwise */
-    private boolean hasLowerBound() {
+    protected boolean hasLowerBound() {
       return oFromElement.isPresent();
     }
 
@@ -679,16 +861,52 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
      * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} or the
      *     {@link Key} signifying this view's upper bound has already been released
      */
-    private int getUpperBound() {
-      return oToElement
-          .map(keySet::searchForIndexOf)
-          .map(i -> i < 0 ? i * -1 : i)
-          .orElseGet(keySet::size);
+    private int getUpperIndex() {
+      return oToElement.map(this::getUpperIndexOf).orElseGet(keySet::size);
+    }
+
+    /**
+     * @param key the index to find
+     * @return Upper (exclusive) index of element
+     * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} or the
+     *     {@link Key} signifying this view's upper bound has already been released
+     */
+    private int getUpperIndexOf(Key key) {
+      final int i = keySet.searchForIndexOf(key);
+      return i < 0 ? i * -1 : i;
+    }
+
+    /**
+     * @return Upper bound for this view, depending on if the upper bound is inclusive or not.
+     * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} or the
+     *     {@link Key} signifying this view's upper bound has already been released
+     */
+    protected int getUpperBound() {
+      int upperIndex = getUpperIndex();
+      return toInclusive ? upperIndex + 1 : upperIndex;
     }
 
     /** @return True, if this view has an upper bound, false otherwise */
-    private boolean hasUpperBound() {
+    protected boolean hasUpperBound() {
       return oToElement.isPresent();
+    }
+
+    /**
+     * Gets the key at the given cursor position
+     *
+     * @param cursor Cursor position used to fetch key; starting from 0
+     * @return Key found at specified cursor position
+     * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} has
+     *     already been released
+     * @throws IndexOutOfBoundsException if position is out of bounds
+     * @see Key#release()
+     */
+    @Nonnull
+    public Key at(int cursor) {
+      return checkPointer(
+          Elektra.INSTANCE.ksAtCursor(keySet.getPointer(), cursor),
+          Key::new,
+          IndexOutOfBoundsException::new);
     }
 
     /**
@@ -726,11 +944,112 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
       requireNonNull(o);
       if (o instanceof ReadableKey) {
         int foundIndex = keySet.searchForIndexOf((ReadableKey) o);
-        if (foundIndex >= 0 && foundIndex >= getLowerBound() && foundIndex < getUpperBound()) {
-          return true;
-        }
+        return foundIndex >= 0 && foundIndex >= getLowerBound() && foundIndex < getUpperBound();
       }
       return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key lower(Key key) {
+      int index = keySet.searchForIndexOf(key);
+      if (index < 0) {
+        index = index * -1 - 1;
+      }
+      if (index == 0) {
+        return null;
+      }
+      return at(index - 1);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key floor(Key key) {
+      int index = keySet.searchForIndexOf(key);
+      if (index == -1) {
+        return null;
+      }
+      if (index < 0) {
+        index = index * -1 - 1 - 1;
+      }
+      if (index >= size()) {
+        index = size() - 1;
+      }
+      return at(index);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key ceiling(Key key) {
+      int index = keySet.searchForIndexOf(key);
+      if (index < 0) {
+        index = index * -1 - 1;
+      }
+      if (index >= size()) {
+        return null;
+      }
+      return at(index);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key higher(Key key) {
+      int index = keySet.searchForIndexOf(key);
+      if (index < 0) {
+        index = index * -1 - 1 - 1;
+      }
+      if (index + 1 >= size()) {
+        return null;
+      }
+      return at(index + 1);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} has
+     *     already been released
+     */
+    @Override
+    public Key pollFirst() {
+      if (isEmpty()) {
+        return null;
+      }
+      final Key first = first();
+      remove(first);
+      return first;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if the {@link KeySet} backing this {@link KeySetView} has
+     *     already been released
+     */
+    @Override
+    public Key pollLast() {
+      if (isEmpty()) {
+        return null;
+      }
+      final Key last = last();
+      remove(last);
+      return last;
     }
 
     /**
@@ -744,6 +1063,96 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
     @Override
     public Iterator<Key> iterator() {
       return new KeySetIterator<>(keySet, Key::new, getLowerBound(), getUpperBound());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return New {@link DescendingKeySetView} backed by the {@link KeySet} backing this {@link
+     *     KeySetView}
+     */
+    @Override
+    public NavigableSet<Key> descendingSet() {
+      return new DescendingKeySetView(
+          keySet, oToElement.orElse(null), toInclusive, oFromElement.orElse(null), fromInclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return New {@link KeySetIterator} backed by the {@link KeySet} backing this {@link
+     *     KeySetView}
+     * @throws IllegalStateException if any {@link Key} signifying this view's lower or upper bound
+     *     has already been released
+     */
+    @Override
+    public Iterator<Key> descendingIterator() {
+      return new DescendingKeySetIterator<>(keySet, Key::new, getUpperBound(), getLowerBound());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code fromElement} or {@code toElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public NavigableSet<Key> subSet(
+        Key fromElement, boolean fromInclusive, Key toElement, boolean toInclusive) {
+      requireNonNull(fromElement);
+      requireNonNull(toElement);
+
+      var fromElementIndex = keySet.indexOf(fromElement);
+      var toElementIndex = keySet.indexOf(toElement);
+
+      if (fromElementIndex == toElementIndex) {
+        return Collections.emptyNavigableSet();
+      }
+
+      if (fromElementIndex > toElementIndex
+          || (hasLowerBound() && fromElementIndex < getLowerBound())
+          || (hasUpperBound() && toElementIndex > getUpperBound())) {
+        throw new IllegalArgumentException();
+      }
+
+      return new KeySetView(this.keySet, fromElement, fromInclusive, toElement, toInclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code toElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public NavigableSet<Key> headSet(Key toElement, boolean inclusive) {
+      var toElementIndex = keySet.indexOf(toElement);
+      if (toElementIndex < 0 || (hasUpperBound() && toElementIndex > getUpperBound())) {
+        throw new IllegalArgumentException();
+      }
+
+      return new KeySetView(
+          this.keySet, oFromElement.orElse(null), fromInclusive, toElement, inclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code fromElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public NavigableSet<Key> tailSet(Key fromElement, boolean inclusive) {
+      var fromElementIndex = keySet.indexOf(fromElement);
+      if (fromElementIndex < 0 || (hasLowerBound() && fromElementIndex < getLowerBound())) {
+        throw new IllegalArgumentException();
+      }
+
+      return new KeySetView(
+          this.keySet, fromElement, inclusive, oToElement.orElse(null), toInclusive);
     }
 
     /**
@@ -797,7 +1206,9 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
       }
       if ((hasLowerBound() && insertPosition < getLowerBound())
           || (hasUpperBound()
-              && (e.equals(oToElement.get()) || insertPosition > getUpperBound()))) {
+              && (e.equals(oToElement.get())
+                  || (!toInclusive && insertPosition > getUpperBound()
+                      || (toInclusive && insertPosition >= getUpperBound()))))) {
         throw new IllegalArgumentException();
       }
 
@@ -917,23 +1328,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
      */
     @Override
     public SortedSet<Key> subSet(Key fromElement, Key toElement) {
-      requireNonNull(fromElement);
-      requireNonNull(toElement);
-
-      var fromElementIndex = keySet.indexOf(fromElement);
-      var toElementIndex = keySet.indexOf(toElement);
-
-      if (fromElementIndex == toElementIndex) {
-        return Collections.emptySortedSet();
-      }
-
-      if (fromElementIndex > toElementIndex
-          || (hasLowerBound() && fromElementIndex <= getLowerBound())
-          || (hasUpperBound() && toElementIndex > getUpperBound())) {
-        throw new IllegalArgumentException();
-      }
-
-      return new KeySetView(this.keySet, fromElement, toElement);
+      return subSet(fromElement, true, toElement, false);
     }
 
     /**
@@ -945,12 +1340,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
      */
     @Override
     public SortedSet<Key> headSet(Key toElement) {
-      var toElementIndex = keySet.indexOf(toElement);
-      if (toElementIndex < 0 || (hasUpperBound() && toElementIndex > getUpperBound())) {
-        throw new IllegalArgumentException();
-      }
-
-      return new KeySetView(this.keySet, oFromElement.orElse(null), toElement);
+      return headSet(toElement, false);
     }
 
     /**
@@ -962,12 +1352,7 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
      */
     @Override
     public SortedSet<Key> tailSet(Key fromElement) {
-      var fromElementIndex = keySet.indexOf(fromElement);
-      if (fromElementIndex < 0 || (hasLowerBound() && fromElementIndex < getLowerBound())) {
-        throw new IllegalArgumentException();
-      }
-
-      return new KeySetView(this.keySet, fromElement, oToElement.orElse(null));
+      return tailSet(fromElement, true);
     }
 
     /**
@@ -998,6 +1383,233 @@ public class KeySet extends AbstractSet<Key> implements SortedSet<Key> {
           Elektra.INSTANCE.ksAtCursor(keySet.getPointer(), getUpperBound() - 1),
           Key::new,
           NoSuchElementException::new);
+    }
+  }
+
+  /** Descending view of {@link KeySetView} */
+  private static class DescendingKeySetView extends KeySetView {
+
+    private DescendingKeySetView(
+        KeySet keySet,
+        @Nullable Key fromElement,
+        boolean fromInclusive,
+        @Nullable Key toElement,
+        boolean toInclusive) {
+      super(keySet, fromElement, fromInclusive, toElement, toInclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key lower(Key key) {
+      return super.higher(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key floor(Key key) {
+      return super.ceiling(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key ceiling(Key key) {
+      return super.floor(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Key higher(Key key) {
+      return super.lower(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return New {@link KeySetIterator} backed by the {@link KeySet} backing this {@link
+     *     KeySetView}
+     * @throws IllegalStateException if any {@link Key} signifying this view's lower or upper bound
+     *     has already been released
+     */
+    @Override
+    public Iterator<Key> iterator() {
+      return new DescendingKeySetIterator<>(
+          this.keySet, Key::new, getLowerBound(), getUpperBound());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return New {@link KeySetView} backed by the {@link KeySet} backing this {@link KeySetView}
+     */
+    @Override
+    public NavigableSet<Key> descendingSet() {
+      return new KeySetView(
+          keySet, oToElement.orElse(null), toInclusive, oFromElement.orElse(null), fromInclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return New {@link KeySetIterator} backed by the {@link KeySet} backing this {@link
+     *     KeySetView}
+     * @throws IllegalStateException if any {@link Key} signifying this view's lower or upper bound
+     *     has already been released
+     */
+    @Override
+    public Iterator<Key> descendingIterator() {
+      return new KeySetIterator<>(keySet, Key::new, getLowerBound(), getUpperBound());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code fromElement} or {@code toElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public NavigableSet<Key> subSet(
+        Key fromElement, boolean fromInclusive, Key toElement, boolean toInclusive) {
+      requireNonNull(fromElement);
+      requireNonNull(toElement);
+
+      var fromElementIndex = keySet.indexOf(fromElement);
+      var toElementIndex = keySet.indexOf(toElement);
+
+      if (fromElementIndex == toElementIndex) {
+        return Collections.emptyNavigableSet();
+      }
+
+      if (fromElementIndex > toElementIndex
+          || (hasLowerBound() && fromElementIndex < getLowerBound())
+          || (hasUpperBound() && toElementIndex > getUpperBound())) {
+        throw new IllegalArgumentException();
+      }
+
+      return new DescendingKeySetView(
+          this.keySet, fromElement, fromInclusive, toElement, toInclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code toElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public NavigableSet<Key> headSet(Key toElement, boolean inclusive) {
+      var toElementIndex = keySet.indexOf(toElement);
+      if (toElementIndex < 0 || (hasUpperBound() && toElementIndex > getUpperBound())) {
+        throw new IllegalArgumentException();
+      }
+
+      return new DescendingKeySetView(
+          this.keySet, oFromElement.orElse(null), fromInclusive, toElement, inclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code fromElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public NavigableSet<Key> tailSet(Key fromElement, boolean inclusive) {
+      var fromElementIndex = keySet.indexOf(fromElement);
+      if (fromElementIndex < 0 || (hasLowerBound() && fromElementIndex < getLowerBound())) {
+        throw new IllegalArgumentException();
+      }
+
+      return new DescendingKeySetView(
+          this.keySet, fromElement, inclusive, oToElement.orElse(null), toInclusive);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     */
+    @Override
+    public Comparator<? super Key> comparator() {
+      return Comparator.reverseOrder();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code fromElement} or {@code toElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public SortedSet<Key> subSet(Key fromElement, Key toElement) {
+      return subSet(fromElement, true, toElement, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code toElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public SortedSet<Key> headSet(Key toElement) {
+      return headSet(toElement, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NullPointerException if {@code fromElement} is {@code null}
+     * @throws IllegalArgumentException {@inheritDoc}
+     */
+    @Override
+    public SortedSet<Key> tailSet(Key fromElement) {
+      return tailSet(fromElement, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NoSuchElementException {@inheritDoc}
+     * @see Key#release()
+     */
+    @Override
+    public Key first() {
+      return super.last();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalStateException if this {@link KeySet} has already been released
+     * @throws NoSuchElementException {@inheritDoc}
+     * @see Key#release()
+     */
+    @Override
+    public Key last() {
+      return super.first();
     }
   }
 }

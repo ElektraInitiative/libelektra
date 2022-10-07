@@ -263,11 +263,10 @@ void TreeViewModel::importConfiguration (const QString & name, const QString & f
 	{
 		KeySet conflictSet = result.getConflictSet ();
 		QStringList conflicts;
-		conflictSet.rewind ();
-		Key current;
 
-		while ((current = conflictSet.next ()))
+		for (ssize_t it = 0; it < conflictSet.size (); ++it)
 		{
+			Key current (conflictSet.at (it));
 			QString ourConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/our"));
 			QString theirConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/their"));
 
@@ -525,11 +524,9 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 
 void TreeViewModel::createNewNodes (KeySet keySet)
 {
-	keySet.rewind ();
-
-	while (keySet.next ())
+	for (ssize_t it = 0; it < keySet.size (); ++it)
 	{
-		Key k = keySet.current ();
+		Key k = keySet.at (it);
 		QStringList keys = getSplittedKeyname (k);
 		QString root = keys.takeFirst ();
 
@@ -565,7 +562,7 @@ void TreeViewModel::append (ConfigNodePtr node)
 namespace
 {
 
-#if DEBUG && VERBOSE
+#if DEBUG
 std::string printKey (Key const & k)
 {
 	std::string ret;
@@ -583,13 +580,12 @@ std::string printKey (Key const & k)
 
 void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 {
-	theirs.rewind ();
-	base.rewind ();
-	for (Key o : ours)
+	for (elektraCursor it = 0; it < ours.size (); ++it)
 	{
+		const Key o = ours.at (it);
 		std::string prefix ("user:/guitest");
-		Key t = theirs.next ();
-		Key b = base.next ();
+		Key t = theirs.at (it);
+		Key b = base.at (it);
 		if (!((o && !o.getName ().compare (0, prefix.size (), prefix)) &&
 		      (t && !t.getName ().compare (0, prefix.size (), prefix)) && (b && !b.getName ().compare (0, prefix.size (), prefix))))
 			continue;
@@ -608,11 +604,9 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 QStringList getConflicts (KeySet const & conflictSet)
 {
 	QStringList conflicts;
-	conflictSet.rewind ();
-	Key current;
-
-	while ((current = conflictSet.next ()))
+	for (ssize_t it = 0; it < conflictSet.size (); ++it)
 	{
+		Key current (conflictSet.at (it));
 		QString ourConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/our"));
 		QString theirConflict = QString::fromStdString (current.getMeta<string> ("conflict/operation/their"));
 
@@ -629,7 +623,7 @@ void TreeViewModel::synchronize ()
 
 	try
 	{
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "guitest: start" << std::endl;
 		printKeys (ours, ours, ours);
 #endif
@@ -641,7 +635,7 @@ void TreeViewModel::synchronize ()
 		// write our config
 		m_kdb->synchronize (ours, m_root, merger);
 
-#if DEBUG && VERBOSE
+#if DEBUG
 		std::cout << "guitest: after get" << std::endl;
 		printKeys (ours, ours, ours);
 #endif

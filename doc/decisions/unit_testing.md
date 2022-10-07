@@ -24,9 +24,10 @@ the assertion that failed).
 
 ## Decision
 
-- Google Unit testing framework with code downloaded by CMake for
+- Keep C framework for C tests and ABI tests
+- Google Unit testing framework `gtest` with code downloaded by CMake for
   systems where no source is packaged (Debian Wheezy, Arch Linux,
-  Fedora,...)
+  Fedora,...) for C++ tests
 
 ## Rationale
 

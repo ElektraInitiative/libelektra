@@ -34,7 +34,7 @@ static void test_variable_passing (void)
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	exit_if_fail (ksGetSize (ks) == 1, "keyset size is still 0");
-	succeed_if_same_string (keyName (ksHead (ks)), "user:/from_python");
+	succeed_if_same_string (keyName (ksAtCursor (ks, 0)), "user:/from_python");
 
 	ksDel (ks);
 	keyDel (parentKey);

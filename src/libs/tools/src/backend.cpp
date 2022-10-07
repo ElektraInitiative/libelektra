@@ -418,8 +418,7 @@ void Backend::serialize (kdb::KeySet & ret)
 	const string configBasePath = Backends::getBasePath (mp) + "/config";
 	ret.append (Key (configBasePath, KEY_END));
 
-	config.rewind ();
-	Key common = config.next ();
+	Key common = config.at (0);
 	Key oldParent ("system:/", KEY_END);
 	Key newParent (configBasePath, KEY_END);
 

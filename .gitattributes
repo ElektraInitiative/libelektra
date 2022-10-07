@@ -1,0 +1,16 @@
+* text=auto
+
+*.sh text eol=lf
+*.awk text eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+symbols.map text eol=lf
+*-symbols.map text eol=lf
+versions.def eol=lf
+
+/src/symvertest/*.map eol=lf
+
+/src/plugins/filecheck/filecheck/* -text
+/src/plugins/lineendings/lineendings/* -text

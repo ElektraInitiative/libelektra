@@ -55,22 +55,27 @@ static int benchmarkOpenPlugins (void)
 
 static void benchmarkIterate (KeySet * ks)
 {
-	ksRewind (ks);
-	Key * cur;
-	while ((cur = ksNext (ks)))
+	elektraCursor it;
+	ssize_t ksSize = ksGetSize (ks);
+
+	for (it = 0; it < ksSize; ++it)
 	{
+		ksAtCursor (ks, it);
 		__asm__("");
 	}
 }
 
 static int benchmarkIterateName (KeySet * ks)
 {
-	ksRewind (ks);
-	Key * cur;
 	const char * test = "foo";
 	int i = 0;
-	while ((cur = ksNext (ks)))
+	Key * cur;
+	elektraCursor it;
+	ssize_t ksSize = ksGetSize (ks);
+
+	for (it = 0; it < ksSize; ++it)
 	{
+		cur = ksAtCursor (ks, it);
 		i = strncmp (test, keyName (cur), 3);
 	}
 	return i;
@@ -78,12 +83,15 @@ static int benchmarkIterateName (KeySet * ks)
 
 static int benchmarkIterateValue (KeySet * ks)
 {
-	ksRewind (ks);
-	Key * cur;
 	const char * test = "bar";
 	int i = 0;
-	while ((cur = ksNext (ks)))
+	Key * cur;
+	elektraCursor it;
+	ssize_t ksSize = ksGetSize (ks);
+
+	for (it = 0; it < ksSize; ++it)
 	{
+		cur = ksAtCursor (ks, it);
 		i = strncmp (test, keyString (cur), 3);
 	}
 	return i;
@@ -163,6 +171,5 @@ int main (int argc, char ** argv)
 		clean_temp_home ();
 		keyDel (parentKey);
 	}
-
 	benchmarkDel ();
 }

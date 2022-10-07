@@ -69,7 +69,6 @@ static void testreadwriteinvalid (const char * file)
 
 static void testwriteinvalidheader (const char * file)
 {
-
 	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
 			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
@@ -87,7 +86,6 @@ static void testwriteinvalidheader (const char * file)
 
 static void testwritevalidemptycol (const char * file)
 {
-
 	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
 			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
@@ -190,6 +188,23 @@ static void testexportmissing (const char * file)
 	PLUGIN_CLOSE ();
 }
 
+static void testKeyMetaKeyIsSet (const char * file)
+{
+	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END), keyNew ("system:/export", KEY_VALUE, "", KEY_END),
+			       keyNew ("system:/export/a", KEY_VALUE, "", KEY_END), KS_END);
+	PLUGIN_OPEN ("csvstorage");
+	KeySet * ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
+	Key * key;
+	key = ksLookupByName (ks, "user:/tests/csvstorage/#0", 0);
+	succeed_if (keyGetMeta (key, "array") != 0, "metakey not found");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+
 int main (int argc, char ** argv)
 {
 	printf ("CSVSTORAGE     TESTS\n");
@@ -208,6 +223,7 @@ int main (int argc, char ** argv)
 	testreadwritecomplicated ("csvstorage/complicated.csv");
 	testreadunescapedDQuote ("csvstorage/unescapedQuote.csv");
 	testexportmissing ("csvstorage/exporttest.csv");
+	testKeyMetaKeyIsSet ("csvstorage/metakey.csv");
 	print_result ("testmod_csvstorage");
 
 	return nbError;

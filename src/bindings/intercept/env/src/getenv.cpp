@@ -332,10 +332,9 @@ void parseEnvironment ()
 
 void addLayersHelper (KeySet * lookupConfig, string prefix)
 {
-	ksRewind (elektraConfig);
-	Key * c;
-	while ((c = ksNext (elektraConfig)))
+	for (elektraCursor it = 0; it < ksGetSize (elektraConfig); ++it)
 	{
+		const Key * c = ksAtCursor (elektraConfig, it);
 		std::string fullName = keyName (c);
 		size_t pos = fullName.find ('/');
 		if (pos != string::npos && fullName.substr (pos, prefix.size ()) == prefix)

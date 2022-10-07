@@ -13,4 +13,4 @@ echo -n "- sha1: "
 sha1sum $* | cut -f 1 -d " "
 
 echo -n "- sha256: "
-sha256sum $* | cut -f 1 -d " "
+sha256sum $* | cut -f 1 -d " " | head -c -1

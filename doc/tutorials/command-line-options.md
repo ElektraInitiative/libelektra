@@ -98,7 +98,7 @@ Arguments to short and long options are given in the same way as with `getopt_lo
 
 To change whether an option expects an argument set `opt/arg` to either `"none"` or `"optional"` (the default is `"required"`).
 
-- If you choose `"none"`, the corresponding key will be set to `"1"`, if the option is used
+- If you choose `"none"`, the corresponding key will be set to `"1"`, if the option is used.
   This value can be changed by setting `opt/flagvalue`.
 - An option that is set to `"optional"` is treated the same as with `"none"`, except that you can also set the value with the long option form `--option=value`.
   This also means that `opt/flagvalue` is used, if no argument is given.
@@ -113,12 +113,12 @@ You can simply specify one or more environment variables for a key using the `en
 
 ### Arrays
 
-Both options and environment variables expose special behavior, if used in combination with arrays.
+Both, options and environment variables, expose special behavior, if used in combination with arrays.
 
 If an option is specified on a key with basename `#`, the option can be used repeatedly.
 All occurrences will be collected into the array.
 
-Environment variables obviously cannot be repeated, instead a behavior similar that used for PATH is adopted.
+Environment variables obviously cannot be repeated, instead a behavior similar to that used for PATH is adopted.
 On Windows the variable will be split at each ';' character.
 On all other systems ':' is used as a separator.
 
@@ -130,7 +130,7 @@ The array will be copied into this key.
 As is the case with getopt(3) processing of options will stop, if `--` is encountered in `argv`.
 
 If we parse command-line options like the POSIX version of getopt(3) does, then we would also stop processing options at the first non-option argument.
-This not the case by default, but we can enable this behavior.
+This is not the case by default, but we can enable this behavior.
 To do so, you need to pass a Key `/posixly` with value `1` in the `goptsConfig` KeySet of the `gopts` contract.
 
 Additionally, there is `args=indexed`.
@@ -177,8 +177,8 @@ In `git` it is short for `--paginate` and in `add` it is short for `--patch`.
 An important thing to know about sub-commands is that they automatically turn on POSIX mode.
 This means **all** options for a specific sub-command must be given before any non-option arguments (such as parameters or sub-commands).
 Otherwise, we couldn't distinguish between `git -p add` and `git add -p`.
-In other words an option argument is always assigned to the first sub-command to its left.
-Any element of `argv` that is not the argument for an option argument, either switches to a new sub-command or is the start of the parameter arguments.
+In other words, an option argument is always assigned to the first sub-command to its left.
+Any element of `argv` that is not an argument for a sub-command, either switches to a new sub-command or is the start of the parameter arguments.
 
 A sub-command is created by specifying `command` on a key.
 To enable sub-command processing the parent key of the whole specification must have `command` set to an empty string. All keys marked with `command` **directly** below another key `K` marked with `command` (e.g. the parent key) are sub-commands of `K`.
@@ -231,11 +231,11 @@ args = indexed
 args/index = 0
 
 [kdb/setter]
-description = "print additional information about where the value will be stored"
+description = "set a key's value"
 command = set
 
 [kdb/setter/verbose]
-description = "name of the key to write"
+description = "print additional information about where the value will be stored"
 opt = v
 opt/long = verbose
 opt/arg = none
@@ -300,7 +300,7 @@ The order of precedence is simple:
 ### Limitations
 
 - Both options and environment variables can only be specified on a single key. If you need to have the value of one option/environment variable in multiple keys, you may use `fallback`s.
-- `-` cannot be used as a short option, because it would collide with, the "option end marker".
+- `-` cannot be used as a short option, because it would collide with the "option end marker".
 - `help` cannot be used as a long option, because it would collide with the help option.
 
 ## Help Message
@@ -331,7 +331,7 @@ int main (int argc, char ** argv)
 ```
 
 > **Note**: The key `proc:/elektra/gopts/help` will always be generated.
-> Only if its value is set to `1`, was the `--help` option encountered.
+> Only if its value is set to `1`, the `--help` option was encountered.
 
 ### Structure of the Help Message
 
@@ -361,7 +361,7 @@ The standard help message can be modified in a few different ways:
 
 - The usage line can be replaced by a custom string (see below).
 - A custom string can be inserted between the usage line and the options list (see below).
-- An option can can be hidden from the help message by setting `opt/hidden` to `"1"`.
+- An option can be hidden from the help message by setting `opt/hidden` to `"1"`.
   This hides both the long and short form of the option.
   If you want to hide just one form, use an array of two options and hide just one index.
 - If the option has an `"optional"` or `"required"` argument, the string `ARG` will be used as a placeholder by default.
@@ -382,7 +382,7 @@ The value of `/help/prefix` will be inserted between the usage line and the opti
 
 ## Examples
 
-The following specification describes a command line interface similar to the one used by `rm`. (It is based of `rm (GNU coreutils) 8.30`).
+The following specification describes a command line interface similar to the one used by `rm`. (It is based on `rm (GNU coreutils) 8.30`).
 
 ```ini
 [force]
@@ -397,10 +397,10 @@ opt/#0 = i
 opt/#0/long = interactive
 opt/#0/arg = optional
 opt/#0/flagvalue = always
+opt/#0/arg/help = WHEN
 opt/#1 = I
 opt/#1/flagvalue = once
 opt/#1/arg = none
-opt/arg/name = WHEN
 description = prompt according to WHEN: never, once (-I), or always (-i); without WHEN, prompt always
 
 [singlefs]
@@ -416,7 +416,7 @@ description = do not treat '/' specially
 [preserve]
 opt/long = preserve-root
 opt/arg = optional
-opt/arg/name = all
+opt/arg/help = all
 opt/flagvalue = root
 description = do not remove '/' (default); with 'all', reject any command line argument on a separate device from its parent
 
@@ -493,7 +493,7 @@ To access this function, you first need to link your application against `libele
 
 > **Note:** `libelektra-opts` is an internal library and `kdbopts.h` an internal header.
 > We do not make and guarantees to the API stability of the functions declared in `kdbopts.h`.
-> We will do our best to keep the API compatible, but the only way to have guaranteed API stability and backwards compatibility is be only using the parser via `gopts`.
+> We will do our best to keep the API compatible, but the only way to have guaranteed API stability and backwards compatibility is to only use the parser via `gopts`.
 
 Calling `elektraGetOpts` directly has some disadvantages.
 The main one being that there is no way to validate the values of command-line options.
@@ -525,7 +525,7 @@ To access this function, you first need to link your application against `libele
 
 > **Note:** `libelektra-opts` is an internal library and `kdbopts.h` an internal header.
 > We do not make and guarantees to the API stability of the functions declared in `kdbopts.h`.
-> We will do our best to keep the API compatible, but the only way to have guaranteed API stability and backwards compatibility is be only using the parser via `gopts`.
+> We will do our best to keep the API compatible, but the only way to have guaranteed API stability and backwards compatibility is to only use the parser via `gopts`.
 
 Calling `elektraGetOptsHelpMessage` allocates a new string that will contain the generated help message.
 You need to free the string with `elektraFree`, once you are done with it.

@@ -229,15 +229,6 @@ def dockerInit() {
       "./scripts/docker/debian/sid/Dockerfile"
     )
 
-    /* Build Elektra's documentation with this image.
-     * Also contains latex for pdf creation.
-     */
-    DOCKER_IMAGES.sid_doc = dockerUtils.createDockerImageDesc(
-      "debian-sid-doc", dockerUtils.&idTesting,
-      "./scripts/docker/debian/sid",
-      "./scripts/docker/debian/sid/doc.Dockerfile"
-    )
-
     /*
      * Debian Bullseye. Used for testing and packaging.
      */
@@ -264,6 +255,15 @@ def dockerInit() {
       "./scripts/docker/debian/bullseye",
       "./scripts/docker/debian/bullseye/i386.Dockerfile"
     )
+
+	/* Build Elektra's documentation with this image.
+	 * Also contains latex for pdf creation.
+	 */
+	DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
+	  "debian-bullseye-doc", dockerUtils.&idTesting,
+	  "./scripts/docker/debian/bullseye",
+	  "./scripts/docker/debian/bullseye/doc.Dockerfile"
+	)
 
     /* Our main target for compatibility is Debian stable
      * (currently buster).
@@ -296,46 +296,12 @@ def dockerInit() {
       "./scripts/docker/debian/buster/i386.Dockerfile"
     )
 
-    /* A Debian oldstable image used for testing backwards compatibility.
-     */
-    DOCKER_IMAGES.stretch = dockerUtils.createDockerImageDesc(
-      "debian-stretch", dockerUtils.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/Dockerfile"
-    )
-
-    /* A minimal Debian stretch image used to test Elektra without any
-     * additional requirements introduced by optional plugins, bindings,
-     * ...
-     */
-    DOCKER_IMAGES.stretch_minimal = dockerUtils.createDockerImageDesc(
-      "debian-stretch-minimal", dockerUtils.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/minimal.Dockerfile"
-    )
-
-    /* A Docker image for crossbuilding i386
-     */
-    DOCKER_IMAGES.stretch_i386 = dockerUtils.createDockerImageDesc(
-      "debian-stretch-i386", dockerUtils.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/i386.Dockerfile"
-    )
-
-    /* Ubuntu xenial image used to test compatibility with Ubuntu.
-     */
-    DOCKER_IMAGES.xenial = dockerUtils.createDockerImageDesc(
-      "ubuntu-xenial", dockerUtils.&idTesting,
-      "./scripts/docker/ubuntu/xenial",
-      "./scripts/docker/ubuntu/xenial/Dockerfile"
-    )
-
     /* Alpine: used to compile against musl and uses ash as shell
      */
     DOCKER_IMAGES.alpine = dockerUtils.createDockerImageDesc(
       "alpine", dockerUtils.&idTesting,
-      "./scripts/docker/alpine/3.14",
-      "./scripts/docker/alpine/3.14/Dockerfile"
+      "./scripts/docker/alpine/3.16",
+      "./scripts/docker/alpine/3.16/Dockerfile"
     )
 
     /* Ubuntu bionic image*/
@@ -352,18 +318,18 @@ def dockerInit() {
       "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
-    /* Fedora 33 image*/
-    DOCKER_IMAGES.fedora_33 = dockerUtils.createDockerImageDesc(
-      "fedora-33", dockerUtils.&idTesting,
-      "./scripts/docker/fedora/33",
-      "./scripts/docker/fedora/33/Dockerfile"
+    /* Fedora 35 image*/
+    DOCKER_IMAGES.fedora_35 = dockerUtils.createDockerImageDesc(
+      "fedora-35", dockerUtils.&idTesting,
+      "./scripts/docker/fedora/35",
+      "./scripts/docker/fedora/35/Dockerfile"
     )
 
-    /* Fedora 34 image*/
-    DOCKER_IMAGES.fedora_34 = dockerUtils.createDockerImageDesc(
-      "fedora-34", dockerUtils.&idTesting,
-      "./scripts/docker/fedora/34",
-      "./scripts/docker/fedora/34/Dockerfile"
+    /* Fedora 36 image*/
+    DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
+      "fedora-36", dockerUtils.&idTesting,
+      "./scripts/docker/fedora/36",
+      "./scripts/docker/fedora/36/Dockerfile"
     )
 
     /* openSUSE Leap 15.3 image*/
@@ -444,19 +410,19 @@ def dockerInit() {
       false
     )
 
-    /* Fedora 33 image used to install previously built packages */
-    DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
-      "fedora-33-installed", dockerUtils.&idArtifact,
+    /* Fedora 35 image used to install previously built packages */
+    DOCKER_IMAGES.fedora_35_installed = dockerUtils.createDockerImageDesc(
+      "fedora-35-installed", dockerUtils.&idArtifact,
       "./build/package",
-      "./scripts/docker/fedora/33/release.Dockerfile",
+      "./scripts/docker/fedora/35/release.Dockerfile",
       false
     )
 
-    /* Fedora 34 image used to install previously built packages */
-    DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
-      "fedora-34-installed", dockerUtils.&idArtifact,
+    /* Fedora 36 image used to install previously built packages */
+    DOCKER_IMAGES.fedora_36_installed = dockerUtils.createDockerImageDesc(
+      "fedora-36-installed", dockerUtils.&idArtifact,
       "./build/package",
-      "./scripts/docker/fedora/34/release.Dockerfile",
+      "./scripts/docker/fedora/36/release.Dockerfile",
       false
     )
 
@@ -493,6 +459,12 @@ def generateBasicCheckStages() {
   // Check if release notes have been updated
   tasks << buildCheckReleaseNotes()
 
+  // Check if all file names comply with the file name convention
+  tasks << buildCheckFileNames()
+
+  // Check for reuse compliancy
+  tasks << buildCheckReuseCompliant()
+
   // Check formatting of c and CMake files
   tasks << buildFormatChecks()
 
@@ -516,8 +488,8 @@ def generateMainBuildStages() {
   tasks.failFast = true
 
   tasks << buildAndTest(
-    "fedora-34-full",
-    DOCKER_IMAGES.fedora_34,
+    "fedora-36-full",
+    DOCKER_IMAGES.fedora_36,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -548,8 +520,8 @@ def generateFullBuildStages() {
   def tasks = [:]
 
   tasks << buildAndTest(
-    "fedora-33-full",
-    DOCKER_IMAGES.fedora_33,
+    "fedora-35-full",
+    DOCKER_IMAGES.fedora_35,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -560,8 +532,8 @@ def generateFullBuildStages() {
   // Build Elektra with clang and ASAN
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "fedora-34-asan",
-    DOCKER_IMAGES.fedora_34,
+    "fedora-36-asan",
+    DOCKER_IMAGES.fedora_36,
     CMAKE_FLAGS_BUILD_ALL
   )
 
@@ -594,19 +566,6 @@ def generateFullBuildStages() {
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
-
-  tasks << buildAndTest(
-    "debian-stretch-full",
-    DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
 
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
@@ -687,15 +646,7 @@ def generateFullBuildStages() {
     [TEST.ALL]
   )
 
-  // Build Elektra on ubuntu-xenial
-  tasks << buildAndTest(
-    "ubuntu-xenial",
-    DOCKER_IMAGES.xenial,
-    CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
-  )
-
-  // Build Elektra on a minimal Debian stretch Docker image
+  // Build Elektra on a minimal Debian buster Docker image
   tasks << buildAndTest(
     "debian-buster-minimal",
     DOCKER_IMAGES.buster_minimal,
@@ -814,7 +765,7 @@ def buildTodo() {
 '''
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid_doc) {
+      withDockerEnv(DOCKER_IMAGES.bullseye_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         recordIssues(tools: [taskScanner(ignoreCase: true, includePattern: openTaskPatterns, lowTags: 'TODO,FIXME')])
@@ -832,6 +783,32 @@ def buildCheckReleaseNotes() {
     maybeStage(stageName, !isMaster()) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_check_release_notes"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if release notes have been updated */
+def buildCheckFileNames() {
+  def stageName = "check-file-names"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "scripts/dev/filename-checker"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if for reuse compliancy */
+def buildCheckReuseCompliant() {
+  def stageName = "check-reuse-compliant"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "reuse lint"
         deleteDir()
       }
     }
@@ -878,7 +855,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid_doc) {
+      withDockerEnv(DOCKER_IMAGES.bullseye_doc) {
         dir('build') {
           deleteDir()
           utils.cmake(env.WORKSPACE, cmakeFlags)
@@ -1166,21 +1143,21 @@ def generateArtifactStages() {
     this.&updateDebianChangelog
   )
   tasks << buildPackage(
-    "buildPackage/fedora/33",
-    DOCKER_IMAGES.fedora_33,
-    "fedora-33-unstable",
-    "fedora-33-unstable",
-    DOCKER_IMAGES.fedora_33_installed,
+    "buildPackage/fedora/35",
+    DOCKER_IMAGES.fedora_35,
+    "fedora-35-unstable",
+    "fedora-35-unstable",
+    DOCKER_IMAGES.fedora_35_installed,
     release.&publishRpmPackages,
     this.&updateFedoraChangelog,
     true
   )
   tasks << buildPackage(
-    "buildPackage/fedora/34",
-    DOCKER_IMAGES.fedora_34,
-    "fedora-34-unstable",
-    "fedora-34-unstable",
-    DOCKER_IMAGES.fedora_34_installed,
+    "buildPackage/fedora/36",
+    DOCKER_IMAGES.fedora_36,
+    "fedora-36-unstable",
+    "fedora-36-unstable",
+    DOCKER_IMAGES.fedora_36_installed,
     release.&publishRpmPackages,
     this.&updateFedoraChangelog,
     true
@@ -1199,7 +1176,7 @@ def generateArtifactStages() {
   // tasks << buildOpenwrtPackage(DOCKER_IMAGES.openwrt_sdk)
 
   tasks << buildWebsite()
-  // tasks << buildWebUI()
+  tasks << buildWebUI()
 
   return tasks
 }

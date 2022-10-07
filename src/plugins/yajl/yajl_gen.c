@@ -187,7 +187,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	}
 	else if (ksGetSize (returned) == 1) // maybe just parentKey
 	{
-		if (!strcmp (keyName (ksTail (returned)), keyName (parentKey)))
+		if (!strcmp (keyName (ksAtCursor (returned, ksGetSize (returned) - 1)), keyName (parentKey)))
 		{
 			ELEKTRA_LOG_DEBUG ("GEN empty map (got parent)");
 			yajl_gen_map_open (g);
@@ -200,18 +200,18 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 		Key * toCheck = keyDup (parentKey, KEY_CP_ALL);
 
 		keyAddBaseName (toCheck, "###empty_array");
-		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
+		if (!strcmp (keyName (ksAtCursor (returned, ksGetSize (returned) - 1)), keyName (toCheck)))
 		{
-			ELEKTRA_LOG_DEBUG ("GEN empty array (got %s)", keyName (ksTail (returned)));
+			ELEKTRA_LOG_DEBUG ("GEN empty array (got %s)", keyName (ksAtCursor (returned, ksGetSize (returned) - 1)));
 			yajl_gen_array_open (g);
 			yajl_gen_array_close (g);
 			did_something = 1;
 		}
 
 		keySetBaseName (toCheck, "___empty_map");
-		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
+		if (!strcmp (keyName (ksAtCursor (returned, ksGetSize (returned) - 1)), keyName (toCheck)))
 		{
-			ELEKTRA_LOG_DEBUG ("GEN empty map (got %s)", keyName (ksTail (returned)));
+			ELEKTRA_LOG_DEBUG ("GEN empty map (got %s)", keyName (ksAtCursor (returned, ksGetSize (returned) - 1)));
 			yajl_gen_map_open (g);
 			yajl_gen_map_close (g);
 			did_something = 1;
@@ -248,25 +248,21 @@ int elektraGenWriteFile (yajl_gen g, Key * parentKey)
 
 static void elektraCheckForEmptyArray (KeySet * ks)
 {
-	Key * curr = 0;
-	ksRewind (ks);
+	Key * cur = 0;
 
-	while ((curr = ksNext (ks)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
-		ELEKTRA_LOG_DEBUG ("WALK: %s", keyName (curr));
-		const char * meta = keyString (keyGetMeta (curr, "array"));
+		cur = ksAtCursor (ks, it);
+		ELEKTRA_LOG_DEBUG ("WALK: %s", keyName (cur));
+		const char * meta = keyString (keyGetMeta (cur, "array"));
 		if (*meta == '\0')
 		{
-			elektraCursor cursor = ksGetCursor (ks);
-
-			Key * k = keyNew (keyName (curr), KEY_END);
+			Key * k = keyNew (keyName (cur), KEY_END);
 			keyAddBaseName (k, "###empty_array");
 
 			ELEKTRA_LOG_DEBUG ("Add empty array: %s", keyName (k));
 
 			ksAppendKey (ks, k);
-
-			ksSetCursor (ks, cursor);
 		}
 	}
 }
@@ -283,10 +279,10 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	elektraCheckForEmptyArray (returned);
 
-	if (ksGetSize (returned) == 1 && !strcmp (keyName (parentKey), keyName (ksHead (returned))) &&
-	    keyGetValueSize (ksHead (returned)) > 1)
+	if (ksGetSize (returned) == 1 && !strcmp (keyName (parentKey), keyName (ksAtCursor (returned, 0))) &&
+	    keyGetValueSize (ksAtCursor (returned, 0)) > 1)
 	{
-		elektraGenValue (g, parentKey, ksHead (returned));
+		elektraGenValue (g, parentKey, ksAtCursor (returned, 0));
 		int ret = elektraGenWriteFile (g, parentKey);
 		yajl_gen_free (g);
 		return ret;
@@ -299,8 +295,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return ret;
 	}
 
-	ksRewind (returned);
-	Key * cur = elektraNextNotBelow (returned);
+	Key * cur = elektraNextNotBelow (returned, 0);
 	if (!cur)
 	{
 		// empty config should be handled by resolver
@@ -312,8 +307,10 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	ELEKTRA_LOG_DEBUG ("parentKey: %s, cur: %s", keyName (parentKey), keyName (cur));
 	elektraGenOpenInitial (g, parentKey, cur);
 
+
 	Key * next = 0;
-	while ((next = elektraNextNotBelow (returned)) != 0)
+	elektraCursor it = ksSearch (returned, cur) + 1;
+	while ((next = elektraNextNotBelow (returned, it)) != 0)
 	{
 		elektraGenValue (g, parentKey, cur);
 		elektraGenClose (g, cur, next);
@@ -322,6 +319,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		elektraGenOpen (g, cur, next);
 
 		cur = next;
+		it = ksSearch (returned, cur) + 1;
 	}
 
 	ELEKTRA_LOG_DEBUG ("leaving loop: %s", keyName (cur));

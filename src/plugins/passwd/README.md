@@ -47,13 +47,48 @@ If the config key `index` is set to `name` passwd entries will be sorted by name
 
 ## Usage
 
+To mount the passwd file you can run
+
 ```sh
-kdb mount /etc/passwd system:/passwd passwd index=name
-kdb export system:/passwd/root
-#> gecos = root
-#> gid = 0
-#> home = /root
-#> passwd = x
-#> shell = /bin/zsh
-#> uid = 0
+sudo kdb mount /etc/passwd system:/tests/passwd passwd index=name
+```
+
+To see which entries for the root user exist you can run
+
+```sh
+kdb ls system:/tests/passwd/root
+#> system:/tests/passwd/root
+#> system:/tests/passwd/root/gecos
+#> system:/tests/passwd/root/gid
+#> system:/tests/passwd/root/home
+#> system:/tests/passwd/root/passwd
+#> system:/tests/passwd/root/shell
+#> system:/tests/passwd/root/uid
+```
+
+If you want to receive one specific value you can run for example
+
+```sh
+kdb get system:/tests/passwd/root/gecos
+```
+
+You can also export it as whole in any format you like, for example JSON
+
+```sh
+kdb export system:/tests/passwd/root json
+# {
+#    "gecos": "root",
+#    "gid": "0",
+#    "home": "/root",
+#    "passwd": "x",
+#    "shell": "/bin/bash",
+#    "uid": "0"
+# }
+
+```
+
+To unmount it, you can run
+
+```sh
+sudo kdb umount system:/tests/passwd
 ```

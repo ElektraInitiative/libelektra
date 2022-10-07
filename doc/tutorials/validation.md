@@ -123,6 +123,7 @@ If we now set a new key with
 
 ```sh
 kdb set user:/tests/spec/test "not a number"
+#> Create a new key user:/tests/spec/test with string "not a number"
 ```
 
 this key has adopted all metadata from the spec namespace:
@@ -141,7 +142,7 @@ active for this key.
 On that behalf we have to make sure that the validation plugin is loaded for
 this key with:
 
-```
+```sh
 kdb mount tutorial.dump /tests/spec dump validation
 ```
 
@@ -149,6 +150,22 @@ This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mount 
 **/tests/spec** and activates the validation plugin for the keys below the mount point.
 The validation plugin now uses the metadata of the keys below **/tests/spec**
 to validate values before storing them in `tutorial.dump`.
+
+If we try setting the key again, we will get an error:
+
+```sh
+kdb set user:/tests/spec/test "not a number"
+# STDERR: .*Validation Syntactic.*Not a number.*
+# ERROR:  C03100
+# RET: 5
+```
+
+However, if we add a key that adheres to the validation rules, it will work:
+
+```sh
+kdb set user:/tests/spec/test 42
+#> Create a new key user:/tests/spec/test with string "42"
+```
 
 Although this is better than defining metadata in the same place as the data
 itself, we can still do better.
@@ -163,8 +180,9 @@ _schema_ of our configuration and therefore should be stored in the spec namespa
 
 ```sh
 # Undo modifications
-kdb rm -r spec:/tests/spec/test
+kdb rm -r spec:/tests/spec
 kdb rm -r user:/tests/spec || kdb rm -r system:/tests/spec
+kdb umount /tests/spec
 ```
 
 ### Specfiles
@@ -177,7 +195,7 @@ the configuration settings should be validated.
 
 Let us create an example _Specfile_ in the dump format, which supports metadata.
 Although the specfile is stored in the dump format, we can still create it using
-the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`
+the human-readable [ni format](/src/plugins/ni/README.md) by using `kdb import`
 (note that the `\\` are due to [Markdown Shell Recorder][], do not copy them to your shell):
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
@@ -282,4 +300,36 @@ rm $(kdb get system:/tests/specbackup)
 rm $(kdb get system:/tests/userbackup)
 kdb rm system:/tests/specbackup
 kdb rm system:/tests/userbackup
+```
+
+## Validate Existing Keys
+
+To check if an existing set of keys can be read and written with the current validation rules `kdb validate` should be used. Validate will read the values of all string keys under the point defined as argument in the command line, sets the key value to something different, then back to the original and finally writes that original value back to the key database. All loaded [validation plugins](/src/plugins/README.md) are now used to validate the values of keys with the necessary meta-keys (see above).
+
+Only string keys are validated! Binary keys are skipped!
+
+```sh
+# mount test config file and set a value
+sudo kdb mount range.ecf /tests/range range dump
+
+# set value
+kdb set user:/tests/range/value 5
+
+# add range check to all keys under /tests/range/
+kdb meta-set spec:/tests/range/_ check/range "1-10"
+
+# check if validate passes
+kdb validate /tests/range
+
+# set new key to invalid value (with kdb set -f)
+kdb set -f user:/tests/range/value2 11
+
+# validation fails now
+kdb validate /tests/range
+# RET:1
+
+# clean up
+kdb rm -r /tests/range/
+sudo kdb umount /tests/range
+
 ```

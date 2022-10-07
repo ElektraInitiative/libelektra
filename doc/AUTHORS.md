@@ -14,7 +14,7 @@ maintainer, main development, documentation, quality
 maintainer, development of the cache and mmapstorage plugins
 
 - email: mpranj@limun.org
-- github user: [mpranj](https://github.com/mpranj)
+- GitHub user: [mpranj](https://github.com/mpranj)
 - devel/test on: Fedora, Debian, macOS
 
 ## Klemens Böswirth
@@ -22,7 +22,7 @@ maintainer, development of the cache and mmapstorage plugins
 a bit of everything
 
 - email: k.boeswirth+git@gmail.com
-- github user: [kodebach](https://github.com/kodebach)
+- GitHub user: [kodebach](https://github.com/kodebach)
 - devel/test on: Manjaro
 
 ## Robert Sowula
@@ -30,7 +30,7 @@ a bit of everything
 packaging, release automation
 
 - email: robert@sowula.at
-- github user: [robaerd](https://github.com/robaerd)
+- GitHub user: [robaerd](https://github.com/robaerd)
 - devel/test on: Debian, Ubuntu
 
 ## Michael Tucek
@@ -38,7 +38,7 @@ packaging, release automation
 Java bindings
 
 - email: libelektra@hellwach.at
-- github user: [tucek](https://github.com/tucek)
+- GitHub user: [tucek](https://github.com/tucek)
 - devel/test on: Debian (WSL2), Ubuntu (WSL2)
 
 ## Manuel Mausz
@@ -53,7 +53,7 @@ SWIG bindings
 development of KConfig plugin
 
 - email: mail@dardan.im
-- github user: [darddan](https://github.com/darddan)
+- GitHub user: [darddan](https://github.com/darddan)
 - devel/test on: Arch Linux
 
 ## Felix Berlakovich
@@ -77,7 +77,7 @@ ni library
 
 initial concept & implementation
 
-- email: avi@unix.sh
+- email: avi@Unix.sh
 
 ## Patrick Sabin
 
@@ -93,7 +93,7 @@ documentation, web ui
 
 ## Kurt Micheli
 
-optimizing ksLookup with order preserving minimal perfect hash map, markdown link converter for doxygen
+optimizing ksLookup with order preserving minimal perfect hash map, Markdown link converter for doxygen
 
 - email: e1026558@student.tuwien.ac.at
 
@@ -108,7 +108,7 @@ improvements to the dbus plugin
 development of the crypto plugin, minor bug fixes, BSD/macOS support
 
 - email: peter.nirschl@gmail.com
-- github user: [petermax2](http://github.com/petermax2)
+- GitHub user: [petermax2](http://github.com/petermax2)
 - devel on: Fedora
 - test on: Fedora, Debian, macOS
 
@@ -117,7 +117,7 @@ development of the crypto plugin, minor bug fixes, BSD/macOS support
 documentation, bug fixes
 
 - email: sanssecours@me.com
-- github user: [sanssecours](http://github.com/sanssecours)
+- GitHub user: [sanssecours](http://github.com/sanssecours)
 - devel/test on: macOS
 
 ## Marvin Mall
@@ -125,7 +125,7 @@ documentation, bug fixes
 development of the REST service & frontend for sharing of conf. snippets, cachefilter plugin, website
 
 - email: marvin-mall@msn.com
-- github user: [Namoshek](https://github.com/Namoshek)
+- GitHub user: [Namoshek](https://github.com/Namoshek)
 - devel/test on: Debian Jessie
 
 ## Thomas Waser
@@ -133,7 +133,7 @@ development of the REST service & frontend for sharing of conf. snippets, cachef
 main development, many plugins, ansible
 
 - email: thomas.waser@libelektra.org
-- github user: [tom-wa](https://github.com/tom-wa)
+- GitHub user: [tom-wa](https://github.com/tom-wa)
 - devel/test on: Debian Testing/Sid
 
 ## Raffael Pancheri
@@ -141,14 +141,14 @@ main development, many plugins, ansible
 design and implementation of the qt-gui
 
 - email: raffael@libelektra.org
-- github user: [0003088](https://github.com/0003088)
+- GitHub user: [0003088](https://github.com/0003088)
 
 ## Bernhard Denner
 
 ruby bindings, ruby plugin, build server, Puppet module
 
 - email: bernhard.denner@gmail.com
-- github user: [BernhardDenner](https://github.com/BernhardDenner)
+- GitHub user: [BernhardDenner](https://github.com/BernhardDenner)
 - devel/test on: Ubuntu and Debian
 
 ## Thomas Wahringer
@@ -156,5 +156,13 @@ ruby bindings, ruby plugin, build server, Puppet module
 notification system, I/O bindings
 
 - email: waht@libelektra.org
-- github user: [waht](https://github.com/waht)
+- GitHub user: [waht](https://github.com/waht)
 - devel/test on: Debian
+
+## Maximilian Irlinger
+
+documentation, Python bindings for elektraMerge
+
+- email: max@maxirlinger.at
+- GitHub user: [atmaxinger](https://github.com/atmaxinger)
+- devel/test on: Fedora, macOS

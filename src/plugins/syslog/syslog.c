@@ -68,10 +68,10 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraSyslogSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	size_t changed = 0;
-	Key * k = 0;
-	ksRewind (returned);
-	while ((k = ksNext (returned)))
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * k = ksAtCursor (returned, it);
 		if (keyNeedSync (k))
 		{
 			syslog (LOG_NOTICE, "change %s to %s", keyName (k), keyString (k));

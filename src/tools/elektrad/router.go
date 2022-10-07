@@ -10,6 +10,7 @@ import (
 func setupRouter(app *server) http.Handler {
 	r := mux.NewRouter()
 
+	r.Use(loggingMiddleware)
 	r.Use(handleMiddleware(app.pool))
 
 	r.HandleFunc("/", app.getDocHandler).Methods("GET")

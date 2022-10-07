@@ -84,5 +84,9 @@ invocations. Contract `KeySet`s only contain `Key`s below
 ## Related Decisions
 
 - [Hooks](hooks.md)
+- [Notifications](notifications.md)
 
 ## Notes
+
+- Issue [#2764](https://issues.libelektra.org/2764)
+- Implemented in #3651

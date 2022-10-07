@@ -17,6 +17,16 @@ set (CPACK_RPM_PACKAGE_AUTOREQ 1)
 set (CPACK_RPM_PACKAGE_AUTOPROV 1)
 set (CPACK_RPM_PACKAGE_AUTOREQPROV 1)
 
+# package is not relocatable:
+unset (CPACK_RPM_PACKAGE_RELOCATABLE)
+unset (CPACK_RPM_PACKAGE_RELOCATABLE CACHE)
+
+set (CPACK_RPM_SPEC_MORE_DEFINE "%define ignore \#")
+
+# workaround for openSUSE not running ldconfig
+set (CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/scripts/dev/ldconfig.sh")
+set (CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/scripts/dev/ldconfig.sh")
+
 set (CPACK_RPM_CHANGELOG_FILE "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/changelog")
 
 execute_process (COMMAND bash "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/map_licenses.sh" "${CMAKE_SOURCE_DIR}/.reuse/dep5"
@@ -38,7 +48,7 @@ set (
 	discount, gawk, gcc-c++, GConf2-devel, graphviz, libcurl-devel, libdb-devel,
 	libdrm-devel, libgit2-devel, libxml2-devel, lua-devel, python3-devel, python-devel,
 	qt5-qtdeclarative-devel, qt5-qtsvg-devel, swig, systemd-devel, yajl-devel,
-	java-1.8.0-openjdk-devel, jna, ruby-devel, zeromq-devel")
+	java-11-openjdk-devel, jna, ruby-devel, zeromq-devel")
 
 if (CPACK_PACKAGE_ARCHITECTURE MATCHES "x86_64")
 	# workaround because rpm autoprov doesn't include symlinks

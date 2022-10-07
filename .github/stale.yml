@@ -28,10 +28,10 @@ staleLabel: stale
 
 # Comment to post when marking as stale. Set to `false` to disable
 markComment: >
-  I mark this issue stale as it did not have any activity for one year.
+  I mark this stale as it did not have any activity for one year.
   I'll close it in two weeks if no further activity occurs.
-  If you want it to be alive again, ping the issue by writing a message here
-  or create a new issue with the remainder of this issue.
+  If you want it to be alive again, ping by writing a message here
+  or create a new issue/PR with the remainder of this issue/PR.
   
   Thank you for your contributions :sparkling_heart:
 
@@ -41,9 +41,9 @@ markComment: >
 
 # Comment to post when closing a stale Issue or Pull Request.
 closeComment: >
-  I closed this issue now because it has been inactive for more than one year.
+  I closed this now because it has been inactive for more than one year.
   If I closed it by mistake, please do not hesitate to reopen it
-  or create a new issue with the remainder of this issue.
+  or create a new issue/PR with the remainder of this issue/PR.
   
   Thank you for your contributions :sparkling_heart:
 
@@ -51,7 +51,7 @@ closeComment: >
 limitPerRun: 5
 
 # Limit to only `issues` or `pulls`
-only: issues
+#only: issues
 
 # Optionally, specify configuration settings that are specific to just 'issues' or 'pulls':
 # pulls:

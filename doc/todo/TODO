@@ -2,22 +2,6 @@ This is a list of TODO items which do not fit in
 the other TODO categories.
 
 
-== META DATA LIBRARY ==
-
-(maybe generate similar to gen/liberror)
-
-warning/error iterators
-
-comment iterators
-
-documentation:
-	comment -> metadata
-	split real metadata functions + kdbhelpers
-
-library for metadata access functions
-	array access
-
-
 == VARIANTS ==
 
 for python plugin

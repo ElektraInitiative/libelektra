@@ -34,7 +34,18 @@
 
 #include <cassert>
 #include <cctype>
+
+#if __GNUC__ >= 12
+#pragma GCC diagnostic error "-Wmaybe-uninitialized"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <functional>
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#else
+#include <functional>
+#endif
+
 #include <iostream>
 #include <memory>
 #include <sstream>

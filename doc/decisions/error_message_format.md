@@ -85,7 +85,5 @@ the general sentence starting the error message.
 
 - [Error Codes](error_codes.md)
   Shows how the new error codes are meant to be
-- [Ingroup Removal](ingroup_removal.md)
-  Shows the decision of why the `ingoup` field has been removed
 
 ## Notes

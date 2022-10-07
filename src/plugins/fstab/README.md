@@ -23,7 +23,7 @@ The package is called `libelektra5-extra`.
 
 For each device in fstab elektra will store the following keys:
 
-```sh
+```
 pseudoname/device
 pseudoname/mpoint
 pseudoname/type
@@ -124,5 +124,5 @@ Spaces in the names are replaced by \040 in the fstab.
 Mount the plugin:
 
 ```sh
-kdb mount /etc/fstab system:/filesystems fstab struct type path
+sudo kdb mount /etc/fstab system:/filesystems fstab struct type path
 ```

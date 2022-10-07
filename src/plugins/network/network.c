@@ -165,10 +165,9 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	/* check all keys */
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		int s = elektraNetworkAddrInfo (cur);
 		if (s != 0)
 		{

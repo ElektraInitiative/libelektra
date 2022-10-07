@@ -63,9 +63,10 @@ void test_key (void)
 	ks = ksNew (0, KS_END);
 	exit_if_fail (ksFromXMLfile (ks, srcdir_file ("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
-	ksRewind (ks);
-	while ((cur = ksNext (ks)))
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		cur = ksAtCursor (ks, it);
 		counter++;
 		/* Prepend key root */
 		// snprintf(buf, sizeof(buf), "%s/%s", root, keyName(cur));
@@ -150,9 +151,10 @@ void test_keyset (void)
 	ks = ksNew (0, KS_END);
 	exit_if_fail (ksFromXMLfile (ks, srcdir_file ("xmltool/keyset.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
-	ksRewind (ks);
-	while ((cur = ksNext (ks)))
+
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 	{
+		cur = ksAtCursor (ks, it);
 		counter++;
 
 		/* Make tests ... */

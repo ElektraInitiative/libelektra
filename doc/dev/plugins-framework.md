@@ -1,6 +1,6 @@
 # Plugins Framework
 
-<!-- TODO: integrate and remove doc/dev/plugins-framework_old.md -->
+<!-- TODO [new_backend]: Incomplete -->
 
 The key database of Elektra basically passes a `KeySet` from plugin to plugin.
 Plugins can be chained or nested.

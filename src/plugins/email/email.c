@@ -66,10 +66,10 @@ int elektraEmailSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 {
 	// set all keys
 	// this function is optional
-	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		int rc = validateEmail (cur, parentKey);
 		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}

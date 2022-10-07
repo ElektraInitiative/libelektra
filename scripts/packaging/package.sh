@@ -22,7 +22,6 @@ echo "DIST: $DIST_NAME"
 
 CMAKE_ARGS_BASE="-DTARGET_PLUGIN_FOLDER='elektra5' \
 	-DBUILD_STATIC=OFF \
-	-DGTEST_ROOT='/usr/src/gtest' \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DPLUGINS=$ELEKTRA_PLUGINS \
 	-DTOOLS=$ELEKTRA_TOOLS \
@@ -43,11 +42,10 @@ CMAKE_ARGS_BASE="-DTARGET_PLUGIN_FOLDER='elektra5' \
 	-DCPACK_PACKAGE_RELEASE=$PACKAGE_REVISION"
 
 # last disjunct matches all distribution names starting with openSUSE or CentOS
-if [ "$DIST_NAME" = "Fedora" ] || case $DIST_NAME in "openSUSE"*) true ;; "CentOS"*) true ;; *) false ;; esac then
+if case $DIST_NAME in "Fedora"*) true ;; "openSUSE"*) true ;; "CentOS"*) true ;; *) false ;; esac then
 
 	CMAKE_ARGS_SPECIFIC="-DTARGET_LUA_CMOD_FOLDER=lib$LUA_LIB_SUFFIX/lua/$LUA_VERSION \
-	-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION \
-	-DSWIG_EXECUTABLE=/usr/bin/swig"
+	-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION"
 else
 
 	PY3VER=$(py3versions -d -v)
@@ -59,7 +57,6 @@ else
 
 	CMAKE_ARGS_SPECIFIC="-DTARGET_LUA_CMOD_FOLDER=lib/lua/$LUA_VERSION \
 	-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION \
-	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DCMAKE_C_FLAGS=$CFLAGS \
 	-DCMAKE_CXX_FLAGS=$CXXFLAGS \
 	-DCMAKE_EXE_LINKER_FLAGS=$LDFLAGS \

@@ -24,13 +24,6 @@ int main (void)
 	// check for errors in key
 	keyDel (key);
 
-	/*
-	ksRewind(myConfig);
-	while ((key = ksNext(myConfig)))
-	{
-		printf ("%s\n", keyName(key));
-	}
-	*/
 
 	key = ksLookupByName (myConfig, "/test/myapp/key", 0);
 

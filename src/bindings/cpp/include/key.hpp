@@ -11,7 +11,18 @@
 
 #include <cstdarg>
 #include <cstring>
+
+#if __GNUC__ >= 12
+#pragma GCC diagnostic error "-Wmaybe-uninitialized"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <functional>
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#else
+#include <functional>
+#endif
+
 #include <locale>
 #include <sstream>
 #include <string>
@@ -116,7 +127,6 @@ public:
 
 	inline void copy (const Key & other, elektraCopyFlags flags = KEY_CP_ALL);
 	inline void clear ();
-	inline ckdb::Key * operator-> () const;
 
 	inline Key * operator-> ();
 
@@ -222,14 +232,7 @@ public:
 	inline void copyMeta (const Key & other, const std::string & metaName);
 	inline void copyAllMeta (const Key & other);
 
-	inline void rewindMeta ();
-	inline const Key nextMeta ();
-	inline const Key currentMeta () const;
-
-
 	// Methods for Making tests
-
-
 	inline bool isValid () const;
 	inline ElektraNamespace getNamespace () const;
 	inline ssize_t setNamespace (ElektraNamespace ns) const;
@@ -670,7 +673,12 @@ void Key::operator++ (int) const
  */
 void Key::operator++ () const
 {
-	ckdb::keyIncRef (key);
+	if (ckdb::keyIncRef (key) == UINT16_MAX)
+	{
+		/* TODO: if activated, nullptr can't be assigned to a Key-object
+		 * which breaks some existing tests */
+		/* throw KeyException (); */
+	}
 }
 
 /**
@@ -686,7 +694,10 @@ void Key::operator-- (int) const
  */
 void Key::operator-- () const
 {
-	ckdb::keyDecRef (key);
+	if (ckdb::keyDecRef (key) == UINT16_MAX)
+	{
+		throw KeyException ();
+	}
 }
 
 /**
@@ -694,7 +705,15 @@ void Key::operator-- () const
  */
 inline uint16_t Key::getReferenceCounter () const
 {
-	return ckdb::keyGetRef (key);
+	uint16_t result = ckdb::keyGetRef (key);
+	if (result == UINT16_MAX)
+	{
+		throw KeyException ();
+	}
+	else
+	{
+		return result;
+	}
 }
 
 /**
@@ -734,7 +753,10 @@ inline Key & Key::operator= (const Key & k)
  */
 inline void Key::copy (const Key & other, elektraCopyFlags flags)
 {
-	ckdb::keyCopy (key, other.key, flags);
+	if (ckdb::keyCopy (key, other.key, flags) == nullptr)
+	{
+		throw KeyException ();
+	}
 }
 
 /**
@@ -753,7 +775,10 @@ inline void Key::copy (const Key & other, elektraCopyFlags flags)
  */
 inline void Key::clear ()
 {
-	ckdb::keyClear (key);
+	if (ckdb::keyClear (key) == -1)
+	{
+		throw KeyException ();
+	}
 }
 
 /**
@@ -1177,8 +1202,14 @@ inline void Key::setCallback (callback_t fct)
 	static_assert (sizeof (conversation) == sizeof (callback_t), "union does not have size of function pointer");
 
 	conversation.f = fct;
-	ckdb::keySetBinary (getKey (), &conversation.v, sizeof (conversation));
-	ckdb::keySetMeta (getKey (), "callback", "");
+	if (ckdb::keySetBinary (getKey (), &conversation.v, sizeof (conversation)) == -1)
+	{
+		throw KeyException ();
+	}
+	if (ckdb::keySetMeta (getKey (), "callback", "") == -1)
+	{
+		throw KeyException ();
+	}
 }
 
 
@@ -1187,7 +1218,10 @@ inline void Key::setCallback (callback_t fct)
  */
 inline void Key::setString (const char * newString)
 {
-	ckdb::keySetString (getKey (), newString);
+	if (ckdb::keySetString (getKey (), newString) == -1)
+	{
+		throw KeyException ();
+	}
 }
 
 inline void Key::setString (const std::string & newString)
@@ -1371,7 +1405,10 @@ inline void Key::setMeta (const std::string & metaName, T x)
 {
 	Key k;
 	k.set<T> (x);
-	ckdb::keySetMeta (key, metaName.c_str (), k.getString ().c_str ());
+	if (ckdb::keySetMeta (key, metaName.c_str (), k.getString ().c_str ()) == -1)
+	{
+		throw KeyException ();
+	}
 }
 
 /**
@@ -1381,7 +1418,10 @@ inline void Key::setMeta (const std::string & metaName, T x)
  */
 inline void Key::delMeta (const std::string & metaName)
 {
-	ckdb::keySetMeta (key, metaName.c_str (), nullptr);
+	if (ckdb::keySetMeta (key, metaName.c_str (), nullptr) == -1)
+	{
+		throw KeyException ();
+	}
 }
 
 /**
@@ -1391,7 +1431,10 @@ inline void Key::delMeta (const std::string & metaName)
  */
 inline void Key::copyMeta (const Key & other, const std::string & metaName)
 {
-	ckdb::keyCopyMeta (key, other.key, metaName.c_str ());
+	if (ckdb::keyCopyMeta (key, other.key, metaName.c_str ()) == -1)
+	{
+		throw KeyException ();
+	}
 }
 
 /**
@@ -1401,51 +1444,11 @@ inline void Key::copyMeta (const Key & other, const std::string & metaName)
  */
 inline void Key::copyAllMeta (const Key & other)
 {
-	ckdb::keyCopyAllMeta (key, other.key);
+	if (ckdb::keyCopyAllMeta (key, other.key) == -1)
+	{
+		throw KeyException ();
+	}
 }
-
-/**
- * @copydoc keyRewindMeta
- *
- * @see nextMeta(), currentMeta()
- */
-inline void Key::rewindMeta ()
-{
-	ckdb::keyRewindMeta (key);
-}
-
-/**
- * @copydoc keyNextMeta
- *
- * @see rewindMeta(), currentMeta()
- */
-inline const Key Key::nextMeta ()
-{
-	const ckdb::Key * k = ckdb::keyNextMeta (key);
-	return Key (const_cast<ckdb::Key *> (k));
-}
-
-
-/**
- * @copydoc keyCurrentMeta
- *
- * @note that the key will be null if last metadata is found.
- *
- * @code
- * k.rewindMeta();
- * while (meta = k.nextMeta())
- * {
- * 	cout << meta.getName() << " " << meta.getString() << endl;
- * }
- * @endcode
- *
- * @see rewindMeta(), nextMeta()
- */
-inline const Key Key::currentMeta () const
-{
-	return Key (const_cast<ckdb::Key *> (ckdb::keyCurrentMeta (const_cast<const ckdb::Key *> (key))));
-}
-
 
 /** @return if the key is valid
  *

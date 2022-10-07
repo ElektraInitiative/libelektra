@@ -189,10 +189,11 @@ static void closeBackend (SingleConfig * s)
 
 static void closeBackends (KeySet * b)
 {
-	ksRewind (b);
 	Key * k;
-	while ((k = ksNext (b)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (b); ++it)
 	{
+		k = ksAtCursor (b, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		// fprintf (stderr, "closing backend %s:(%s)\n", s->parentString, s->fullPath);
 		closeBackend (s);
@@ -417,13 +418,14 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 		return ERROR;
 	}
 
-	ksRewind (mc->childBackends);
-	ksRewind (found);
 	Key * c;
 	ssize_t cacheHits = 0;
 	ssize_t numBackends = ksGetSize (found);
-	while ((c = ksNext (found)) != NULL)
+
+
+	for (elektraCursor it = 0; it < ksGetSize (found); ++it)
 	{
+		c = ksAtCursor (found, it);
 		if (ksLookup (mc->childBackends, c, KDB_O_POP))
 		{
 			SingleConfig * s = *(SingleConfig **) keyValue (c);
@@ -437,9 +439,7 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 			{
 				if (mc->stayAlive)
 				{
-					elektraCursor savedCursor = ksGetCursor (found);
 					ksAppendKey (found, c);
-					ksSetCursor (found, savedCursor);
 				}
 				else
 				{
@@ -487,12 +487,13 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 
 static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 {
-	ksRewind (mc->childBackends);
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	Key * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (mc->childBackends); ++it)
 	{
+		k = ksAtCursor (mc->childBackends, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		// When we reach this stage, we will need to load
 		// any successfully resolved files (as it is done in the kdb core)
@@ -522,15 +523,15 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 
 static void fillReturned (MultiConfig * mc, KeySet * returned)
 {
-	ksRewind (mc->childBackends);
 	ksClear (returned);
 	Key * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (mc->childBackends); ++it)
 	{
+		k = ksAtCursor (mc->childBackends, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		ksAppend (returned, s->ks);
 	}
-	ksRewind (returned);
 }
 
 int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
@@ -608,12 +609,13 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 
 static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 {
-	ksRewind (mc->childBackends);
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Key * k;
 	Codes rc = NOUPDATE;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (mc->childBackends); ++it)
 	{
+		k = ksAtCursor (mc->childBackends, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		if (s->rcResolver == NOUPDATE)
 		{
@@ -649,12 +651,13 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 
 static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 {
-	ksRewind (mc->childBackends);
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	Key * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (mc->childBackends); ++it)
 	{
+		k = ksAtCursor (mc->childBackends, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		if (s->rcResolver == EMPTY)
 		{
@@ -685,12 +688,13 @@ static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 
 static Codes doCommit (MultiConfig * mc, Key * parentKey)
 {
-	ksRewind (mc->childBackends);
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	Key * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (mc->childBackends); ++it)
 	{
+		k = ksAtCursor (mc->childBackends, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		if (s->rcStorage == EMPTY)
 		{
@@ -719,15 +723,16 @@ static Codes doCommit (MultiConfig * mc, Key * parentKey)
 static int diffOrNeedSync (KeySet * ks, KeySet * checkKS)
 {
 	if (ksGetSize (ks) != ksGetSize (checkKS)) return 1;
-	ksRewind (ks);
-	ksRewind (checkKS);
+
 	Key * key = NULL;
 	Key * check = NULL;
 	int ret = -1;
-	while (ret == -1)
+
+	for (elektraCursor it = 0; ret == -1; ++it)
 	{
-		key = ksNext (ks);
-		check = ksNext (checkKS);
+		key = ksAtCursor (ks, it);
+		check = ksAtCursor (checkKS, it);
+
 		if (!key && !check)
 		{
 			ret = 0;
@@ -750,10 +755,11 @@ static int diffOrNeedSync (KeySet * ks, KeySet * checkKS)
 
 static void flagUpdateBackends (MultiConfig * mc, KeySet * returned)
 {
-	ksRewind (mc->childBackends);
 	Key * k;
-	while ((k = ksNext (mc->childBackends)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (mc->childBackends); ++it)
 	{
+		k = ksAtCursor (mc->childBackends, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		Key * cutKey = keyNew (s->parentString, KEY_END);
 		KeySet * cutKS = ksCut (returned, cutKey);
@@ -826,11 +832,12 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 {
 	MultiConfig * mc = elektraPluginGetData (handle);
 	if (!mc) return 0;
-	ksRewind (mc->childBackends);
 	Key * key;
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
-	while ((key = ksNext (mc->childBackends)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (mc->childBackends); ++it)
 	{
+		key = ksAtCursor (mc->childBackends, it);
 		SingleConfig * s = *(SingleConfig **) keyValue (key);
 		Plugin * resolver = s->resolver;
 		keySetName (parentKey, s->parentString);

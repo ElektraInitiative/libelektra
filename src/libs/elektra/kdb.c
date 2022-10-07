@@ -2332,6 +2332,10 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 	}
 
+
+	// created early for error branch
+	KeySet * setKs = ksNew (0, KS_END);
+
 	if (!backendsInit)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (
@@ -2358,7 +2362,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 4: create deep-copy of ks
 	// Note: This is needed so that ks retains its in-process state,
 	//       after we transform the data into its on-disk state.
-	KeySet * setKs = ksNew (0, KS_END);
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		Key * backendKey = ksAtCursor (backends, i);

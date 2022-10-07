@@ -213,13 +213,11 @@ void test_wchar (void)
 		max = 0xFFFF;
 	}
 
-	size_t c = 0;
 	for (size_t i = 1; i < max; ++i)
 	{
 		size_t ret = wcstombs (s, (wchar_t[]){ (wchar_t) i, 0 }, 3 * MB_CUR_MAX);
 		if (ret > 0)
 		{
-			c++;
 			keySetString (k, s);
 			nbTest++;
 			if (!checkType (k))
@@ -361,14 +359,12 @@ static void test_enumMulti (void)
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);

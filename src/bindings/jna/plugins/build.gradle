@@ -5,4 +5,19 @@ subprojects { subProject ->
 
 	// include project dependencies
 	apply from: '../dependencies.gradle'
+
+	version project.version	
+}
+
+task "printJarPaths" {
+	doLast {
+		for (p in subprojects) {
+			def t = p.tasks.findByPath("jar")
+			if (t != null) {
+				t.outputs.files.files.forEach(f -> {
+					println(rootDir.toPath().relativize(f.toPath()))
+				})
+			}
+		}
+	}
 }

@@ -94,7 +94,7 @@ int loadConfiguration (Elektra ** elektra,
 
 	KeySet * contract = ksNew (4,
 	keyNew ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END),
-	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "1cbc70fee5ca4d36d9dbaf6b37e5595f8d12ad3fa39a6778b512bd2e4b3321bf", KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, "b9879003cc3bb1c92569a95d1b22b2969a33b14a700ad81ef0f73eef086cb151", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);

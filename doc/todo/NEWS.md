@@ -2,14 +2,26 @@
 
 This release did not happen yet.
 
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
+Please always update this file within **every PR**:
 
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
+1. write what changed
+2. use links pointing to your change (See [Documentation Guidelines](/doc/contrib/documentation.md))
+3. add your name at the end of the line **Syntax:** _(your name)_
+
+For example, Max would write:
+
+```
+- Added a new [doc plugin](https://www.libelektra.org/plugins/doc) _(Max)_
+```
+
+Pick a random line to write your changes to minimize the chances of conflicts in this file.
+
+For non-trivial changes, you can choose to be part of the highlighted changes.
+Please write a highlight section in this case.
+
+After the horizontal line the release notes for the next version starts.
+
+---
 
 <<`scripts/generate-news-entry`>>
 
@@ -17,8 +29,7 @@ We are proud to release Elektra 0.9.<<VERSION>>.
 
 ## What is Elektra?
 
-Elektra serves as a universal and secure framework to access
-configuration settings in a global, hierarchical key database.
+Elektra serves as a universal and secure framework to access configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release).
@@ -33,33 +44,57 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
+- <<HIGHLIGHT>>
 
-### <<HIGHLIGHT1>>
+### <<HIGHLIGHT>>
 
-### <<HIGHLIGHT2>>
+### <<HIGHLIGHT>>
 
-### <<HIGHLIGHT2>>
+### <<HIGHLIGHT>>
 
 ## Plugins
 
-The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin2>>
+### <<Plugin>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin3>>
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
 
 - <<TODO>>
 - <<TODO>>
@@ -74,26 +109,50 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Core
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
-### <<Library1>>
-
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Library2>>
+### <<Library>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Library3>>
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Library>>
 
 - <<TODO>>
 - <<TODO>>
@@ -101,16 +160,60 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ## Bindings
 
-Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
-you up to date with the multi-language support provided by Elektra.
+Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme).
+This section keeps you up-to-date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### <<Binding>>
 
-### <<Binding2>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### <<Binding3>>
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Binding>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Tools
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Tool>>
 
 - <<TODO>>
 - <<TODO>>
@@ -121,9 +224,83 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Documentation
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Tutorials
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Man Pages
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -133,9 +310,53 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Shell Recorder
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### C++
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Packaging
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -147,9 +368,15 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Docker
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -161,9 +388,24 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Cirrus
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -173,12 +415,17 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Website
 
-The website is generated from the repository, so all information about
-plugins, bindings and tools are always up-to-date. Furthermore, we changed:
+The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -209,30 +456,32 @@ Contact us via our [issue tracker](https://issues.libelektra.org).
 
 ## Get the Release!
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
+You can download the release from
+
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz) or
+- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz?raw=true)
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
 
 <<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
 
 The release tarball is also available signed using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
+
+- [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or
+- [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
 
 The following GPG Key was used to sign this release: 12CC44541E1B8AD9B66AFAD55262E7353324914A
 
-Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/)
-or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
+Already built API-Docu can be found
+
+- [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/) or
+- [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
 
 ## Stay tuned!
 
-Subscribe to the
-[RSS feed](https://www.libelektra.org/news/feed.rss)
-to always get the release notifications.
+Subscribe to the [RSS feed](https://www.libelektra.org/news/feed.rss) to always get the release notifications.
 
-If you also want to participate, or for any questions and comments
-please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
+If you also want to participate, or for any questions and comments, please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 

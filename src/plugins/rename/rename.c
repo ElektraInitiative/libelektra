@@ -269,8 +269,6 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * config = elektraPluginGetConfig (handle);
 	KeySet * iterateKs = ksDup (returned);
 
-	ksRewind (iterateKs);
-
 	Key * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
 	Key * toUpper = ksLookupByName (config, "/toupper", KDB_O_NONE);
 	Key * toLower = ksLookupByName (config, "/tolower", KDB_O_NONE);
@@ -278,10 +276,9 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * getCase = ksLookupByName (config, "/get/case", KDB_O_NONE);
 
 
-	Key * key;
-	while ((key = ksNext (iterateKs)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (iterateKs); ++it)
 	{
-
+		Key * key = ksAtCursor (iterateKs, it);
 		Key * renamedKey = renameGet (key, parentKey, cutConfig, replaceWith, toUpper, toLower, getCase);
 
 		if (renamedKey)
@@ -352,12 +349,14 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			writeConversion = UNCHNGD;
 		}
 	}
-	ksRewind (iterateKs);
-	Key * key;
+
+
 	char * parentKeyName = elektraMalloc (keyGetNameSize (parentKey));
 	keyGetName (parentKey, parentKeyName, keyGetNameSize (parentKey));
-	while ((key = ksNext (iterateKs)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (iterateKs); ++it)
 	{
+		Key * key = ksAtCursor (iterateKs, it);
 		Key * renamedKey = NULL;
 		if (writeConversion != KEYNAME)
 		{
@@ -400,7 +399,6 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (iterateKs);
 	keyDecRef (parentKey);
 
-	ksRewind (returned);
 	elektraFree (parentKeyName);
 	return 1; /* success */
 }

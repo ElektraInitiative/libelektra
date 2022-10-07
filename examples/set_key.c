@@ -19,10 +19,12 @@
 
 void print_warnings (Key * err)
 {
-	const Key * meta = 0;
-	keyRewindMeta (err);
-	while ((meta = keyNextMeta (err)) != 0)
+	KeySet * metaKeys = keyMeta (err);
+	const Key * meta;
+
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		meta = ksAtCursor (metaKeys, it);
 		printf ("%s:\t%s\n", keyName (meta), keyString (meta));
 	}
 }
@@ -41,7 +43,7 @@ void check_key (void)
 	Key * result = ksLookup (ks, key, KDB_O_NONE);
 	const char * key_name = keyName (result);
 	const char * key_value = keyString (result);
-	const char * key_comment = keyString (keyGetMeta (result, "comment"));
+	const char * key_comment = keyString (keyGetMeta (result, "comment/#0"));
 	printf ("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 	ksDel (ks);
 	keyDel (key);
@@ -64,7 +66,7 @@ int main (void)
 	Key * key = keyNew ("/", KEY_END);
 	keySetName (key, "user:/sw/MyApp/Tests/TestKey1"); // == 31
 	keySetString (key, "NULLTestValue");		   // == 14
-	keySetMeta (key, "comment", "NULLTestComment");	   // == 16
+	keySetMeta (key, "comment/#0", "NULLTestComment"); // == 16
 	ksAppendKey (ks, key);				   // == 1
 	keyNeedSync (key);
 	kdbSet (kdb_handle, ks, top); // == -1

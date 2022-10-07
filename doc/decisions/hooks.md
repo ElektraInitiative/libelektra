@@ -53,7 +53,7 @@ These hooks are not shared, so no `list` plugin is needed.
 
 Installed plugins will be used.
 
-In the beginning, we'll hardcode the names of the plugins. For changing those plugins symlinks will have to be used.
+In the beginning, we'll hard code the names of the plugins. For changing those plugins symlinks will have to be used.
 
 ## Rationale
 
@@ -73,5 +73,6 @@ In the beginning, we'll hardcode the names of the plugins. For changing those pl
 ## Related Decisions
 
 - [Array](array.md)
+- [Ensure](ensure.md)
 
 ## Notes

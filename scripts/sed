@@ -9,6 +9,7 @@ s/\<([Bb])uil([dt])-([Ii])n\>/\1uilt-in/g
 s/([Rr])uning/\1unning/g
 s/\<([Rr])essource(s)?/\1esource\2/g
 s/\<([Aa])dditonal/\1dditional/g
+s/SYNOPSES/SYNOPSIS/g
 
 # ==============================
 # = British → American English =
@@ -26,7 +27,7 @@ s/([Ss])ummarise/\1ummarize/g
 s/([Ss])ynchronisation/\1ynchronization/g
 s/([Ss])ynchronised/\1ynchronized/g
 s/\<([Uu]tili)s/\1z/g
-s/([Pp])rogramm(e)?(s)?/\1rogram\3/g
+s/\<([Pp])rogramm(e)?(s)?\>/\1rogram\3/g
 
 # ==========
 # = Brands =
@@ -65,7 +66,8 @@ s:\<Key/value:Key-value:g
 
 s/[^#"]\<data-?type/data type/g
 
-s/([^\./`-])[Jj]son/\1JSON/
+s/([^\./`-])J[sS][oO][nN]/\1JSON/
+s/([^\./`-])j[sS][oO][nN]/\1json/
 
 s/\<([Mm])etaspecification/\1eta-specification/g
 s/\<([Mm])etamodel/\1eta-model/g
@@ -93,16 +95,16 @@ s/\<[^-]symlink/symbolic link/g
 s/\<([Mm])iddle[- ][Ww]are/\1iddleware/g
 
 # plural
-s/\<([Ff])iles?[- ]?[Ss]ystem(s)?\>/\1ile system\2/g
-s/\<([Tt])ypes?[- ]?[Ss]ystem(s)?\>/\1ype system\2/g
-s/\<([Tt])ypes?[- ]?[Cc]hecker(s)?\>/\1ype checker\2/g
+s/\<([Ff])iles?([- ]?[Ss])ystem(s)?\>/\1ile\2ystem\3/g
+s/\<([Tt])ypes?([- ]?[Ss])ystem(s)?\>/\1ype\2ystem\3/g
+s/\<([Tt])ypes?([- ]?[Cc])hecker(s)?\>/\1ype\2hecker\3/g
 
 s/\<([Tt])ypecheck((s|ing)?)\>/\1ype check\2/g
 s/\<([Ii])nformations\>/\1nformation/g
 
 # hyphens
 s/\<([Ff])ull[- ]?[Bb]lown\>/\1ull-blown/g
-s/\<([Ww])ell[- ]?[Dd]efined\>/\1ell-defined/g"
+s/\<([Ww])ell[- ]?[Dd]efined\>/\1ell-defined/g
 s/\<([Ss])o[- ]?[Cc]alled\>/\1o-called/g
 s/\<([Ee])rror[- ]?[Pp]rone\>/\1rror-prone/g
 s/\<([Ee])rror[- ]?[Rr]elated\>/\1rror-related/g

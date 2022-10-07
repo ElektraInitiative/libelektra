@@ -17,18 +17,18 @@
       <option name="SPACE_AFTER_POINTER_IN_DECLARATION" value="true" />
       <option name="SPACE_AFTER_REFERENCE_IN_DECLARATION" value="true" />
     </Objective-C>
-    <Objective-C-extensions>
-      <extensions>
-        <pair source="cpp" header="hpp" fileNamingConvention="NONE" />
-        <pair source="c" header="h" fileNamingConvention="NONE" />
-      </extensions>
-    </Objective-C-extensions>
     <Shell_Script>
       <option name="REDIRECT_FOLLOWED_BY_SPACE" value="true" />
     </Shell_Script>
     <clangFormatSettings>
       <option name="ENABLED" value="true" />
     </clangFormatSettings>
+    <files>
+      <extensions>
+        <pair source="cpp" header="hpp" fileNamingConvention="NONE" />
+        <pair source="c" header="h" fileNamingConvention="NONE" />
+      </extensions>
+    </files>
     <codeStyleSettings language="CMake">
       <option name="SPACE_BEFORE_METHOD_CALL_PARENTHESES" value="true" />
       <option name="SPACE_BEFORE_METHOD_PARENTHESES" value="true" />

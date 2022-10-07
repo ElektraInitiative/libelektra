@@ -6,7 +6,7 @@
 # @tags development, helper
 
 if [ $# -ne 1 ]; then
-	echo 'No build config found. Please use `@CMAKE_MAKE_PROGRAM_BASENAME@ run_shellcheck` to run this script.'
+	echo 'No build config found. Please use `@CMAKE_MAKE_PROGRAM_BASENAME@ run_checkshell` to run this script.'
 	exit 1
 fi
 

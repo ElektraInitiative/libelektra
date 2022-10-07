@@ -52,16 +52,17 @@ void key2xml (DOMDocument & doc, DOMElement & elem, string const & name ELEKTRA_
 	}
 
 	// meta keys = attributes
-	Key itKey = key.dup (); // We can't use nextMeta on const key
-	itKey.rewindMeta ();
-	while (Key const & meta = itKey.nextMeta ())
+	ckdb::KeySet * metaKeys = ckdb::keyMeta (key.getKey ());
+
+	for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 	{
-		auto metaName = meta.getName ().substr (sizeof ("meta:/") - 1);
+		const Key curMeta = ckdb::ksAtCursor (metaKeys, it);
+		auto metaName = curMeta.getName ().substr (sizeof ("meta:/") - 1);
 		if (metaName != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME && metaName != "array")
 		{
 			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", metaName.c_str (), name.c_str (),
-					   meta.get<string> ().c_str ());
-			elem.setAttribute (asXMLCh (metaName), asXMLCh (meta.get<string> ()));
+					   curMeta.get<string> ().c_str ());
+			elem.setAttribute (asXMLCh (metaName), asXMLCh (curMeta.get<string> ()));
 		}
 	}
 }

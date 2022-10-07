@@ -131,9 +131,11 @@ int keyGenerate (const Key * key, FILE * stream)
 
 	const Key * meta;
 	Key * dup = keyDup (key, KEY_CP_ALL);
-	keyRewindMeta (dup);
-	while ((meta = keyNextMeta (dup)))
+	KeySet * metaKeys = keyMeta (dup);
+
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		meta = ksAtCursor (metaKeys, it);
 		char * metaName = elektraStrDup (keyName (meta) + sizeof ("meta:/") - 1);
 		char * metaStr = elektraStrDup (keyString (meta));
 		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", escapeString (&metaName), escapeString (&metaStr));
@@ -163,14 +165,15 @@ int ksGenerate (const KeySet * ks, FILE * stream)
 	Key * key;
 	KeySet * cks = ksDup (ks);
 
-	ksRewind (cks);
-
 	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (cks));
-	while ((key = ksNext (cks)) != 0)
+
+	for (elektraCursor it = 0; it < ksGetSize (cks); ++it)
 	{
+		key = ksAtCursor (cks, it);
 		keyGenerate (key, stream);
 		fprintf (stream, ",\n");
 	}
+
 	fprintf (stream, "\tKS_END);\n");
 
 	ksDel (cks);

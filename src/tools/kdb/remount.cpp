@@ -47,8 +47,8 @@ void RemountCommand::cloneMountpoint (Cmdline const & cl)
 	KeySet newBackend (existingBackend.size (), KS_END);
 	string configPath = newParent.getName () + "/config/path";
 	string mpPath = newParent.getName () + "/mountpoint";
-	existingBackend.rewind ();
-	while (Key current = existingBackend.next ())
+
+	for (Key current : existingBackend)
 	{
 		Key newKey = rebaseKey (current, existingParent, newParent);
 		newBackend.append (newKey);

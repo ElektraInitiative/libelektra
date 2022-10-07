@@ -3,7 +3,6 @@ include (LibAddBinding)
 include (SafeCheckSymbolExists)
 
 if (DEPENDENCY_PHASE)
-	set (JAVA_HOME $ENV{JAVA_HOME})
 	if (APPLE)
 		if (NOT DEFINED JAVA_HOME)
 			execute_process (
@@ -39,8 +38,7 @@ add_plugin (
 	jni
 	SOURCES jni.c
 	INCLUDE_DIRECTORIES ${DIRS}
-	LINK_LIBRARIES ${LIBS} COMPONENT libelektra${SO_VERSION}-java
-	ONLY_SHARED USE_LINK_RPATH)
+	LINK_LIBRARIES ${LIBS} COMPONENT libelektra${SO_VERSION}-java)
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)

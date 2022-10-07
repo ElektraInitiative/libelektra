@@ -206,12 +206,10 @@ int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern)
 	if (!pattern) return ELEKTRA_GLOB_NOMATCH;
 
 	int ret = 0;
-	Key * current;
 
-	elektraCursor cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (input); ++it)
 	{
+		Key * current = ksAtCursor (input, it);
 		int rc = elektraKeyGlob (current, pattern);
 		if (rc == 0)
 		{
@@ -219,6 +217,5 @@ int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern)
 			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
 		}
 	}
-	ksSetCursor (input, cursor);
 	return ret;
 }

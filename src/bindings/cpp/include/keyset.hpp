@@ -13,11 +13,9 @@
 #define ELEKTRA_WRONG // make swig happy
 #endif
 
-#include <string>
-
-#include <key.hpp>
-
 #include <kdb.h>
+#include <key.hpp>
+#include <string>
 
 namespace kdb
 {
@@ -82,16 +80,6 @@ public:
 	ssize_t append (const Key & toAppend);
 	ssize_t append (const KeySet & toAppend);
 
-	Key head () const;
-	Key tail () const;
-
-	void rewind () const;
-	Key next () const;
-	Key current () const;
-
-	void setCursor (elektraCursor cursor) const;
-	elektraCursor getCursor () const;
-
 	Key pop ();
 	Key at (elektraCursor pos) const;
 
@@ -101,6 +89,9 @@ public:
 	Key lookup (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
 	template <typename T>
 	T get (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
+
+	ssize_t search (const Key & toSearch) const;
+	ssize_t search (std::string const & name) const;
 
 	// operators
 	inline bool operator== (const KeySet & ks) const;
@@ -691,68 +682,6 @@ inline ssize_t KeySet::append (KeySet const & toAppend)
 }
 
 /**
- * @return alphabetical first key
- *
- * @copydoc ksHead()
- */
-inline Key KeySet::head () const
-{
-	return Key (ckdb::ksHead (ks));
-}
-
-/**
- * @return alphabetical last key
- *
- * @copydoc ksTail()
- */
-inline Key KeySet::tail () const
-{
-	return Key (ckdb::ksTail (ks));
-}
-
-
-/**
- * @copydoc ksRewind()
- */
-inline void KeySet::rewind () const
-{
-	ckdb::ksRewind (ks);
-}
-
-/**
- * @copydoc ksNext()
- */
-inline Key KeySet::next () const
-{
-	ckdb::Key * k = ckdb::ksNext (ks);
-	return Key (k);
-}
-
-/**
- * @copydoc ksCurrent()
- */
-inline Key KeySet::current () const
-{
-	return Key (ckdb::ksCurrent (ks));
-}
-
-/**
- * @copydoc ksSetCursor()
- */
-inline void KeySet::setCursor (elektraCursor cursor) const
-{
-	ckdb::ksSetCursor (ks, cursor);
-}
-
-/**
- * @copydoc ksGetCursor()
- */
-inline elektraCursor KeySet::getCursor () const
-{
-	return ckdb::ksGetCursor (ks);
-}
-
-/**
  * @copydoc ksPop()
  */
 inline Key KeySet::pop ()
@@ -860,6 +789,25 @@ inline bool KeySet::operator== (const KeySet & o) const
 inline bool KeySet::operator!= (const KeySet & o) const
 {
 	return !(*this == o);
+}
+
+
+/**
+ * @copydoc ksSearch()
+ */
+inline ssize_t KeySet::search (const Key & toSearch) const
+{
+	return ckdb::ksSearch (ks, toSearch.getKey ());
+}
+
+/**
+ * @copydoc ksSearch()
+ *
+ * @note Accepts a keyname as string instead of a Key object.
+ */
+inline ssize_t KeySet::search (const std::string & name) const
+{
+	return search (Key (name));
 }
 
 

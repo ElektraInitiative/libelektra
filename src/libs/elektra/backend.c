@@ -222,35 +222,28 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
  * @param modules the modules to work with
  * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
+ * @param pos the position of plugin the use in @p modules
  */
-Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
+Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey, elektraCursor pos)
 {
-	Key * mp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
-	Key * cur = ksCurrent (modules);
+	Key * cur = ksAtCursor (modules, pos);
 
 	keySetName (errorKey, keyName (cur));
 
-	keyAddBaseName (mp, keyBaseName (cur));
+	Plugin * plugin = elektraPluginOpen (keyBaseName (cur), modules, ksNew (0, KS_END), errorKey);
+	if (!plugin)
+	{
+		/* Error already set in plugin */
+		return 0;
+	}
+	plugin->global = global;
 
-	KeySet * moduleConfig = ksNew (12, KS_END);
-
-	appendKeyToBackendKs (mp, "", moduleConfig, 0);
-	appendKeyToBackendKs (mp, "/config", moduleConfig, 0);
-	appendKeyToBackendKs (mp, "/config/module", moduleConfig, "1");
-	appendKeyToBackendKs (mp, "/config/mountpoint", moduleConfig, keyName (mp));
-	appendKeyToBackendKs (mp, "/get", moduleConfig, 0);
-	appendKeyToBackendKs (mp, "/get/getstorage", moduleConfig, 0);
-	appendKeyToBackendKs (mp, "/get/getstorage/#0", moduleConfig, 0);
-	appendKeyToBackendKs (mp, "/get/getstorage/#0/config", moduleConfig, 0);
-	appendKeyToBackendKs (mp, "/get/getstorage/#0/config/module", moduleConfig, "1");
-	appendKeyToBackendKs (mp, "/get/getstorage/#0/label", moduleConfig, keyBaseName (cur));
-	appendKeyToBackendKs (mp, "/get/getstorage/#0/name", moduleConfig, keyBaseName (cur));
 
 	keySetName (errorKey, keyName (cur));
 
 	elektraCursor save = ksGetCursor (modules);
 
-	Plugin * backend = elektraPluginOpen ("backend", modules, moduleConfig, errorKey);
+	Plugin * backend = elektraPluginOpen ("backend", modules, ksNew (0, KS_END), errorKey);
 	if (backend == NULL)
 	{
 		return NULL;

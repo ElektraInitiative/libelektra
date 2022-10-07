@@ -258,17 +258,18 @@ void ConfigNode::populateMetaModel ()
 {
 	if (m_key)
 	{
-		m_key.rewindMeta ();
 		m_metaData->clearMetaModel ();
 
-		while (m_key.nextMeta ())
+		ckdb::KeySet * metaKeys = ckdb::keyMeta (m_key.getKey ());
+		for (ssize_t it = 0; it < ckdb::ksGetSize (metaKeys); ++it)
 		{
+			Key curMeta (ckdb::ksAtCursor (metaKeys, it));
 			ConfigNodePtr node (new ConfigNode ());
 
 			node->setName (QString::fromStdString (m_key.getName ()));
 			node->setKey (m_key);
-			node->setMeta (QString::fromStdString (m_key.currentMeta ().getName ()),
-				       QVariant::fromValue (QString::fromStdString (m_key.currentMeta ().getString ())));
+			node->setMeta (QString::fromStdString (curMeta.getName ()),
+				       QVariant::fromValue (QString::fromStdString (curMeta.getString ())));
 
 			m_metaData->insertRow (m_metaData->rowCount (), node, false);
 		}

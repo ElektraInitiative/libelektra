@@ -319,11 +319,11 @@ void clear_sync (KeySet * ks)
 
 void output_meta (Key * k)
 {
-	const Key * meta;
+	KeySet * metaKeys = keyMeta (k);
 
-	keyRewindMeta (k);
-	while ((meta = keyNextMeta (k)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		const Key * meta = ksAtCursor (metaKeys, it);
 		printf (", %s: %s", keyName (meta), (const char *) keyValue (meta));
 	}
 	printf ("\n");

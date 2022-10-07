@@ -1,6 +1,12 @@
+<!--
+Check relevant points but **please do not remove entries**.
+-->
+
 ## Basics
 
-These points need to be fulfilled for every PR:
+<!--
+These points need to be fulfilled for every PR.
+-->
 
 - [ ] Short descriptions of your changes are in the release notes
       (added as entry in `doc/news/_preparation_next_release.md` which
@@ -16,27 +22,32 @@ These points need to be fulfilled for every PR:
   - [ ] fix all memleaks
 - [ ] The PR is rebased with current master.
 
+<!--
 If you have any troubles fulfilling these criteria, please write
-about the trouble as comment in the PR. We will help you.
-But we cannot accept PRs that do not fulfill the basics.
+about the trouble as comment in the PR. We will help you,
+but we cannot accept PRs that do not fulfill the basics.
+-->
 
 ## Checklist
 
-Check relevant points but **please do not remove entries**.
+<!--
 For docu fixes, spell checking, and similar none of these points below
 need to be checked.
+-->
 
 - [ ] I added unit tests for my code
 - [ ] I fully described what my PR does in the documentation
       (not in the PR description)
-- [ ] I fixed all affected documentation
+- [ ] I fixed all affected documentation (see [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md))
 - [ ] I added code comments, logging, and assertions as appropriate (see [Coding Guidelines](https://master.libelektra.org/doc/CODING.md))
 - [ ] I updated all meta data (e.g. README.md of plugins and [METADATA.ini](https://master.libelektra.org/doc/METADATA.ini))
-- [ ] I mentioned every code not directly written by me in [THIRD-PARTY-LICENSES](doc/THIRD-PARTY-LICENSES)
+- [ ] I mentioned [every code](/.reuse/dep5) not directly written by me in [reuse syntax](https://reuse.software/)
 
 ## Review
 
-Reviewers will usually check the following:
+<!--
+Reviewers should check the following.
+-->
 
 - [ ] Documentation is introductory, concise, good to read and describes everything what the PR does
 - [ ] Examples are well chosen and understandable
@@ -46,8 +57,10 @@ Reviewers will usually check the following:
 
 ## Labels
 
-If you are already Elektra developer:
+<!--
+If you are already Elektra developer, please adjust the labels.
+Otherwise, write a comment and it will be done for you.
+-->
 
-- Add the "work in progress" label if you do not want the PR to be reviewed yet.
-- Add the "ready to merge" label **if the basics are fulfilled** and you also
-  say that everything is ready to be merged.
+- [ ] Add the "work in progress" label if you do not want the PR to be reviewed yet.
+- [ ] Add the "ready to merge" label **if the basics are fulfilled** and no further pushes are planned by you.

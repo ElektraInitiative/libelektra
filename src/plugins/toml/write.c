@@ -90,16 +90,15 @@ static bool needNewlineBeforeComment (Node * node);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
-	elektraCursor cursor = ksGetCursor (keys);
 	prepareKeySet (keys, parent);
 
-	ksRewind (keys);
-	ksNext (keys);
-	if (keyCmp (ksCurrent (keys), parent) == 0)
+	elektraCursor it = 0;
+	if (keyCmp (ksAtCursor (keys, it), parent) == 0)
 	{
-		ksNext (keys);
+		it++;
 	}
-	Node * root = buildTree (NULL, parent, keys);
+
+	Node * root = buildTree (NULL, parent, keys, &it);
 	if (root == NULL)
 	{
 		return 1;
@@ -122,7 +121,6 @@ int tomlWrite (KeySet * keys, Key * parent)
 
 	destroyWriter (writer);
 	destroyTree (root);
-	ksSetCursor (keys, cursor);
 	return result;
 }
 
@@ -773,13 +771,16 @@ static int collectComments (CommentList ** comments, Key * key, Writer * writer)
 {
 	int result = 0;
 
-	keyRewindMeta (key);
 	const Key * meta;
 	CommentList * commentRoot = *comments;
 	CommentList * commentBack = NULL;
 	size_t currIndex = 0;
-	while ((meta = keyNextMeta (key)) != NULL)
+
+	KeySet * metaKeys = keyMeta (key);
+
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		meta = ksAtCursor (metaKeys, it);
 		const char * pos = (const char *) keyUnescapedName (meta);
 		const char * stop = pos + keyGetUnescapedNameSize (meta);
 		pos += 2; // skip namespace

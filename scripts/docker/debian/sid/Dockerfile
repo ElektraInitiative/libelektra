@@ -77,7 +77,7 @@ RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.11.0
+ARG GTEST_VER=release-1.12.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -86,7 +86,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # Prettier
-RUN npm install --global prettier@2.3.2
+RUN npm install --global prettier@2.5.1
 
 # Google Java formatter
 RUN cd /opt \
@@ -119,7 +119,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.2-bin.zip && unzip gradle-7.2-bin.zip && rm gradle-7.2-bin.zip && mv gradle-7.2 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
@@ -136,5 +136,5 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # Ronn-NG
-ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/2.7.0/bin"
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.0.0/bin"
 RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version

@@ -25,7 +25,7 @@ pub mod writeable;
 pub mod keyset;
 pub mod kdb;
 
-pub use self::key::{BinaryKey, StringKey, MetaIter, NameIter, KeyNameInvalidError, KeyNameReadOnlyError, KeyNotFoundError, CopyOption};
+pub use self::key::{BinaryKey, StringKey, NameIter, KeyNameInvalidError, KeyNameReadOnlyError, KeyNotFoundError, CopyOption};
 pub use self::keybuilder::KeyBuilder;
 pub use self::readable::ReadableKey;
 pub use self::readonly::ReadOnly;

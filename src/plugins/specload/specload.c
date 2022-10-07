@@ -47,6 +47,7 @@ static bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, ch
 static bool loadSpec (KeySet * returned, const char * directFile, const char * app, char * argv[], Key * parentKey,
 		      ElektraInvokeHandle * quickDump);
 static int isChangeAllowed (Key * oldKey, Key * newKey);
+int keyCompareMeta (const Key * k1, const Key * k2);
 static KeySet * calculateMetaDiff (Key * oldKey, Key * newKey);
 
 static inline void freeArgv (char ** argv)
@@ -65,12 +66,16 @@ static inline void freeArgv (char ** argv)
 
 static int copyError (Key * dest, Key * src)
 {
-	keyRewindMeta (src);
 	const Key * metaKey = keyGetMeta (src, "error");
 	if (!metaKey) return 0;
 	keySetMeta (dest, keyName (metaKey), keyString (metaKey));
-	while ((metaKey = keyNextMeta (src)) != NULL)
+
+
+	KeySet * metaKeys = keyMeta ((Key *) metaKey);
+
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		metaKey = ksAtCursor (metaKeys, it);
 		if (strncmp (keyName (metaKey), "error/", 6) != 0) break;
 		keySetMeta (dest, keyName (metaKey), keyString (metaKey));
 	}
@@ -152,6 +157,10 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
  */
 int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, KeySet * spec, Key * parentKey)
 {
+	if (spec == NULL || parentKey == NULL)
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 	Key * errorKey = keyNew ("/", KEY_END);
 
 	KeySet * quickDumpConf = ksNew (0, KS_END);
@@ -278,13 +287,16 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	KeySet * overrides = ksNew (0, KS_END);
 
-	elektraCursor cursor = ksGetCursor (returned);
-	ksRewind (returned);
 	Key * new;
 	Key * old;
-	while ((new = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		new = ksAtCursor (returned, it);
+
+		/* internal cursor of oldData should not change because of KDB_O_POP argument */
 		old = ksLookup (oldData, new, KDB_O_POP);
+
 		if (old == NULL)
 		{
 			old = ksLookup (spec, new, 0);
@@ -296,7 +308,6 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (changeAllowed < 0)
 		{
 			ELEKTRA_SET_RESOURCE_ERROR (parentKey, "This kind of change is not allowed");
-			ksSetCursor (returned, cursor);
 			ksDel (overrides);
 			ksDel (oldData);
 			ksDel (spec);
@@ -311,19 +322,18 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (spec);
 
 	// check if remaining old keys can be removed
-	while ((old = ksNext (oldData)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (oldData); ++it)
 	{
+		old = ksAtCursor (oldData, it);
 		if (isChangeAllowed (old, NULL) > 0)
 		{
-			ksSetCursor (returned, cursor);
 			ksDel (overrides);
 			ksDel (oldData);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 	ksDel (oldData);
-
-	ksSetCursor (returned, cursor);
 
 	int result = elektraInvoke2Args (specload->quickDump, "set", overrides, parentKey);
 	ksDel (overrides);
@@ -442,10 +452,11 @@ bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** 
 	argv[0] = elektraStrDup (app);
 
 	size_t index = 1;
-	ksRewind (args);
 	Key * cur;
-	while ((cur = ksNext (args)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (args); ++it)
 	{
+		cur = ksAtCursor (args, it);
 		argv[index] = elektraStrDup (keyString (cur));
 		++index;
 	}
@@ -560,27 +571,34 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 {
 	if (oldKey == newKey)
 	{
-		// same key (pointer)
+		/* same key (pointer) */
 		return 0;
 	}
 
-	elektraKeyFlags changes = keyCompare (oldKey, newKey);
-	if (changes == 0)
+	if (oldKey && newKey)
 	{
-		// equal keys
-		return 0;
-	}
+		/* no null key is present */
 
-	if (changes != KEY_NULL && changes != KEY_META)
-	{
-		// only metadata changes allowed
-		return -1;
-	}
+		if (strcmp (keyName (oldKey), keyName (newKey)) != 0)
+		{
+			/* different names */
+			return -2;
+		}
 
-	if ((changes & KEY_NAME) != 0)
-	{
-		// different key names
-		return -2;
+		ssize_t oldKeyValueSize = keyGetValueSize (oldKey);
+		ssize_t newKeyValueSize = keyGetValueSize (newKey);
+
+		if (oldKeyValueSize != newKeyValueSize || memcmp (keyValue (oldKey), keyValue (newKey), oldKeyValueSize) != 0)
+		{
+			/* different values */
+			return -1;
+		}
+
+		if (keyCompareMeta (oldKey, newKey) == 0)
+		{
+			/* equal names, values and metadata --> consider keys as equal */
+			return 0;
+		}
 	}
 
 	if (oldKey == NULL)
@@ -663,6 +681,34 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 }
 
 /**
+ * @brief Compares metadata of two keys
+ *
+ * @retval -1 if there is a difference
+ * @retval 0 if metadata is identical
+ */
+int keyCompareMeta (const Key * k1, const Key * k2)
+{
+	Key * key1 = (Key *) k1;
+	Key * key2 = (Key *) k2;
+
+	KeySet * metaKeys1 = keyMeta (key1);
+	KeySet * metaKeys2 = keyMeta (key2);
+
+	if (ksGetSize (metaKeys1) != ksGetSize (metaKeys2)) return -1;
+
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys1); ++it)
+	{
+		const Key * meta1 = ksAtCursor (metaKeys1, it);
+		const Key * meta2 = ksAtCursor (metaKeys2, it);
+
+		if (strcmp (keyName (meta1), keyName (meta2))) return -1;
+		if (strcmp (keyString (meta1), keyString (meta2))) return -1;
+	}
+
+	return 0;
+}
+
+/**
  * Calculate a diff for the metadata of two keys.
  *
  * For each meta key that is different between @p oldKey and @p newKey,
@@ -683,11 +729,14 @@ KeySet * calculateMetaDiff (Key * oldKey, Key * newKey)
 {
 	KeySet * result = ksNew (0, KS_END);
 
-	keyRewindMeta (oldKey);
-	keyRewindMeta (newKey);
+	KeySet * oldMetaKeys = keyMeta (oldKey);
+	KeySet * newMetaKeys = keyMeta (newKey);
 
-	const Key * oldMeta = keyNextMeta (oldKey);
-	const Key * newMeta = keyNextMeta (newKey);
+	const Key * oldMeta = ksAtCursor (oldMetaKeys, 0);
+	const Key * newMeta = ksAtCursor (newMetaKeys, 0);
+
+	elektraCursor itOldMeta = 1;
+	elektraCursor itNewMeta = 1;
 
 	while (oldMeta != NULL && newMeta != NULL)
 	{
@@ -699,32 +748,32 @@ KeySet * calculateMetaDiff (Key * oldKey, Key * newKey)
 		{
 			// oldKey has to "catch up"
 			ksAppendKey (result, keyNew (oldName, KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
-			oldMeta = keyNextMeta (oldKey);
+			oldMeta = ksAtCursor (oldMetaKeys, itOldMeta++);
 		}
 		else if (cmp > 0)
 		{
 			// newKey has to "catch up"
 			ksAppendKey (result, keyNew (newName, KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
-			newMeta = keyNextMeta (newKey);
+			newMeta = ksAtCursor (newMetaKeys, itNewMeta++);
 		}
 		else
 		{
 			// same name
 			ksAppendKey (result, keyNew (oldName, KEY_VALUE, "edit", KEY_META, "old", keyString (oldMeta), KEY_META, "new",
 						     keyString (newMeta), KEY_END));
-			oldMeta = keyNextMeta (oldKey);
-			newMeta = keyNextMeta (newKey);
+			oldMeta = ksAtCursor (oldMetaKeys, itOldMeta++);
+			newMeta = ksAtCursor (newMetaKeys, itNewMeta++);
 		}
 	}
 
 	// remaining metadata in oldKey was removed
-	while ((oldMeta = keyNextMeta (oldKey)) != NULL)
+	while ((oldMeta = ksAtCursor (oldMetaKeys, itOldMeta++)) != NULL)
 	{
 		ksAppendKey (result, keyNew (keyName (oldMeta), KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
 	}
 
 	// remaining metadata in newKey was added
-	while ((newMeta = keyNextMeta (newKey)) != NULL)
+	while ((newMeta = ksAtCursor (newMetaKeys, itNewMeta++)) != NULL)
 	{
 		ksAppendKey (result, keyNew (keyName (newMeta), KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
 	}

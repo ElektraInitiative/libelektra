@@ -56,26 +56,35 @@ The interface to access metadata consists of the following functions:
 Interface of metadata:
 
 ```c
-const Key *keyGetMeta(const Key *key, const char* metaName);
-ssize_t    keySetMeta(Key *key, const char* metaName,
-	const char *newMetaString);
+const Key * keyGetMeta (const Key * key, const char * metaName);
+ssize_t keySetMeta (Key * key, const char * metaName, const char *newMetaString);
+KeySet * keyMeta (Key * key);
 ```
 
 Inside a `Key`, metadata with a given metaname and a metavalue can be set
 using `keySetMeta()` and retrieved using `keyGetMeta()`.
-Iteration over metadata is possible with:
 
-Interface for iterating metadata:
+With `keyMeta()` you can get a `KeySet` with all metakeys of a given `Key`.
+It's possible to iterate the returned metadata `KeySet` like any other `KeySet`.
+
+Example for iterating metadata:
 
 ```c
-int keyRewindMeta(Key *key);
-const Key *keyNextMeta(Key *key);
-const Key *keyCurrentMeta(const Key *key);
+void printMetaData (Key * key)
+{
+    Key * curMeta;
+    KeySet metaKeys = keyMeta (key);
+    ssize_t ksSize = ksGetSize (metaKeys);
+
+    for (elektraCursor it = 0; it < ksSize; ++it)
+    {
+        curMeta = ksAtCursor (metaKeys, it);
+        printf ("metaname: %s, metavalue: %s\n", keyName (curMeta), keyString (curMeta));
+    }
+}
 ```
 
-Rewinding and forwarding to the next key works as for the `KeySet`.
-Programmers used to Elektra will immediately be familiar with
-the interface.
+Developers used to Elektra will immediately be familiar with the interface.
 Tiny wrapper functions still support the old metadata interface.
 
 ### Sharing of Metakey

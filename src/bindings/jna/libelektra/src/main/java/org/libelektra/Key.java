@@ -11,7 +11,6 @@ import com.sun.jna.Pointer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,12 +18,9 @@ import org.libelektra.exception.KeyBinaryValueException;
 import org.libelektra.exception.KeyException;
 import org.libelektra.exception.KeyMetaException;
 import org.libelektra.exception.KeyNameException;
-import org.libelektra.exception.PluginMisbehaviorException;
 
 /** Key represents a native Elektra key providing access to its name, value and meta information */
 public final class Key extends ReadableKey implements Iterable<ReadableKey> {
-
-  private static final String WARNINGS = "warnings";
 
   /** Argument tags for use with {@link #create(String, Object...)} */
   public enum CreateArgumentTag {
@@ -32,14 +28,8 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
     /** Used as a parameter terminator */
     KEY_END(0),
 
-    /** Flag for the key name */
-    KEY_NAME(1),
-
     /** Flag for the key data */
     KEY_VALUE(1 << 1),
-
-    /** Flag for the key comment */
-    KEY_COMMENT(1 << 3),
 
     /** Flag if the key is binary */
     KEY_BINARY(1 << 4),
@@ -223,13 +213,14 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
   /**
    * Sets the key's value by converting {@code value} to string
    *
+   * @see <a href="https://www.libelektra.org/decisions/boolean">Definition of Bool</a>
    * @param value Value to set
    * @return This {@link Key}, enabling a fluent interface
    * @throws IllegalStateException if this {@link Key} has already been released
    */
   @Nonnull
   public Key setBoolean(boolean value) {
-    return setString(Boolean.toString(value));
+    return setString(value ? BOOLEAN_TRUE : BOOLEAN_FALSE);
   }
 
   /**
@@ -336,6 +327,22 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
     return this;
   }
 
+  /**
+   * Removes the key's value without changing the type
+   *
+   * @return This {@link Key}, enabling a fluent interface
+   * @throws IllegalStateException if this {@link Key} has already been released
+   * @throws KeyException if the key's value is read-only or there have been allocation problems
+   */
+  @Nonnull
+  public Key setNull() {
+    // The function needs to turn the key into a binary one, because the current implementations of
+    // keyString, keyGetValueSize, etc. all behave as if the value was "", when a string key is set
+    // to NULL.
+    checkReturnValue(Elektra.INSTANCE.keySetBinary(getPointer(), null, 0));
+    return this;
+  }
+
   private void checkReturnValue(int returnValue) {
     if (returnValue < 0) {
       throw new KeyException();
@@ -345,62 +352,80 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
   /**
    * Sets proper error meta for key
    *
-   * @param text Reason for the error (format pattern)
-   * @param args Custom arguments to the format pattern {@code text}
+   * @param code {@link ErrorCode} of the error
+   * @param reason Reason for the error
    * @return This {@link Key}, enabling a fluent interface
    */
   @Nonnull
-  public Key setError(String text, Object... args) {
+  public Key setError(ErrorCode code, String reason) {
     StackTraceElement[] e = Thread.currentThread().getStackTrace();
-    setMeta("error", "number description module file line function reason");
-    setMeta("error/number", PluginMisbehaviorException.ERROR_NUMBER);
-    setMeta("error/description", "jni/java error");
-    setMeta("error/module", e[1].getClassName() + " " + e[1].getMethodName());
-    setMeta("error/file", e[1].getFileName());
-    setMeta("error/line", Integer.toString(e[1].getLineNumber()));
-    setMeta("error/mountpoint", getName());
-    setMeta("error/configfile", getString());
-    setMeta("error/reason", String.format(text, args));
+    StackTraceElement caller = e[1];
+    String fileName = caller.getFileName();
+    int line = caller.getLineNumber();
+
+    if (getMeta("error").isPresent()) {
+      addWarning(code, reason, fileName, line);
+    } else {
+      setMeta("error", "number description  module file line mountpoint configfile reason");
+      setMeta("error/number", code.getNumber());
+      setMeta("error/description", code.getDescription());
+      setMeta("error/module", "Java: " + caller.getClassName() + " " + caller.getMethodName());
+      setMeta("error/file", fileName != null ? fileName : "?");
+      setMeta("error/line", String.valueOf(line));
+      setMeta("error/mountpoint", getName());
+      setMeta("error/configfile", getString());
+      setMeta("error/reason", reason);
+    }
     return this;
   }
 
   /**
    * Adds warning meta for key
    *
-   * @param text Reason for the error (format pattern)
-   * @param args Custom arguments to the format pattern {@code text}
+   * @param code {@link ErrorCode} of the warning
+   * @param reason Reason for the error
    * @return This {@link Key}, enabling a fluent interface
    */
   @Nonnull
-  public Key addWarning(String text, Object... args) {
+  public Key addWarning(ErrorCode code, String reason) {
     StackTraceElement[] e = Thread.currentThread().getStackTrace();
-    Optional<String> oMetaKeyValue = getMeta(WARNINGS).map(ReadableKey::getString);
-    StringBuilder builder = new StringBuilder(WARNINGS + "/#");
-    if (oMetaKeyValue.isEmpty()) {
-      builder.append("00");
-      setMeta(Key.WARNINGS, "00");
-    } else {
-      builder.append(oMetaKeyValue.get());
-      builder.setCharAt(11, (char) (builder.charAt(11) + 1));
-      if (builder.charAt(11) > '9') {
-        builder.setCharAt(11, '0');
-        builder.setCharAt(10, (char) (builder.charAt(10) + 1));
-        if (builder.charAt(10) > '9') {
-          builder.setCharAt(10, '0');
-        }
-      }
-      setMeta(Key.WARNINGS, builder.substring(10));
-    }
-    setMeta(builder + "", "number description module file line function reason");
-    setMeta(builder + "/number", PluginMisbehaviorException.ERROR_NUMBER);
-    setMeta(builder + "/description", "jni/java warning");
-    setMeta(builder + "/module", e[1].getClassName() + " " + e[1].getMethodName());
-    setMeta(builder + "/file", e[1].getFileName());
-    setMeta(builder + "/line", Integer.toString(e[1].getLineNumber()));
-    setMeta(builder + "/mountpoint", getName());
-    setMeta(builder + "/configfile", getString());
-    setMeta(builder + "/reason", String.format(text, args));
+    StackTraceElement caller = e[1];
+    String fileName = caller.getFileName();
+    int line = caller.getLineNumber();
+
+    addWarning(code, reason, fileName, line);
+
     return this;
+  }
+
+  private void addWarning(ErrorCode code, String reason, @Nullable String fileName, int line) {
+    String warningIndex =
+        getMeta("warnings")
+            .map(ReadableKey::getString)
+            .map(
+                old -> {
+                  if (old.compareTo("#_99") < 0) {
+                    int i = Integer.valueOf(old.replaceAll("[#_]*", ""), 10);
+                    i = (i + 1) % 100;
+                    return i < 10 ? "#" + i : String.format("#_%02d", i);
+                  } else {
+                    return null;
+                  }
+                })
+            .orElse("#0");
+
+    setMeta("warnings", warningIndex);
+    setMeta(
+        "warnings/" + warningIndex,
+        "number description  module file line mountpoint configfile reason");
+    setMeta("warnings/" + warningIndex + "/number", code.getNumber());
+    setMeta("warnings/" + warningIndex + "/description", code.getDescription());
+    setMeta("warnings/" + warningIndex + "/module", "Java");
+    setMeta("warnings/" + warningIndex + "/file", fileName != null ? fileName : "?");
+    setMeta("warnings/" + warningIndex + "/line", String.valueOf(line));
+    setMeta("warnings/" + warningIndex + "/mountpoint", getName());
+    setMeta("warnings/" + warningIndex + "/configfile", getString());
+    setMeta("warnings/" + warningIndex + "/reason", reason);
   }
 
   /**
@@ -430,52 +455,6 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
       throw new KeyException();
     }
     return this;
-  }
-
-  /**
-   * Rewinds the internal iterator for meta information of this key
-   *
-   * @throws IllegalStateException if this {@link Key} has already been released
-   * @return This {@link Key}, enabling a fluent interface
-   * @see #nextMeta()
-   * @see #currentMeta()
-   */
-  @Nonnull
-  public Key rewindMeta() {
-    Elektra.INSTANCE.keyRewindMeta(getPointer());
-    return this;
-  }
-
-  /**
-   * Gets the next element of this key's internal meta information iterator
-   *
-   * @return New {@link Key} object containing the requested meta information or {@link
-   *     Optional#empty()}, if no next meta key is available
-   * @throws IllegalStateException if this {@link Key} has already been released
-   * @see #rewindMeta()
-   * @see #currentMeta()
-   */
-  @Nonnull
-  public Optional<ReadableKey> nextMeta() {
-    return createReadOnly(Elektra.INSTANCE.keyNextMeta(getPointer()));
-  }
-
-  /**
-   * Gets the current element of this key's internal meta information iterator
-   *
-   * @return new {@link Key} object containing the current meta information
-   * @throws IllegalStateException if this {@link Key} has already been released
-   * @throws NoSuchElementException if no current meta key is available or internal iterator has
-   *     been reset
-   * @see #rewindMeta()
-   * @see #nextMeta()
-   */
-  @Nonnull
-  public ReadableKey currentMeta() {
-    return checkPointer(
-        Elektra.INSTANCE.keyCurrentMeta(getPointer()),
-        ReadableKey::new,
-        NoSuchElementException::new);
   }
 
   /**
@@ -575,6 +554,19 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
       throw new KeyMetaException();
     }
     return this;
+  }
+
+  /**
+   * Get KeySet with metakeys
+   *
+   * @return A KeySet with all metakeys if the given key
+   * @throws KeyMetaException if {@code k} is invalid
+   * @throws IllegalStateException if this {@link Key} has already been released
+   * @throws IllegalArgumentException if {@code k} is null}
+   */
+  @Nonnull
+  public KeySet meta() {
+    return checkPointer(Elektra.INSTANCE.keyMeta(getPointer()), KeySet::new, KeyMetaException::new);
   }
 
   /**

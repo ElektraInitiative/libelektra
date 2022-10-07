@@ -125,14 +125,6 @@ module.exports = function (grunt) {
         src: ["node_modules/docsearch.js/dist/cdn/docsearch.min.js"],
         dest: "public/vendor/docsearch.min.js",
       },
-      pacejs: {
-        src: ["node_modules/pace-progress/pace.min.js"],
-        dest: "public/vendor/pace.min.js",
-      },
-      pacecss: {
-        src: ["node_modules/pace-progress/themes/blue/pace-theme-minimal.css"],
-        dest: "public/vendor/pace.min.css",
-      },
     },
     copy: {
       options: {},

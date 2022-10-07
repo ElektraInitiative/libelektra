@@ -223,7 +223,7 @@ static int parseFile (KeySet * returned, Key * parentKey)
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
 
-	if (!source || (parseINI (source, returned, parentKey) < 0) | (fclose (source) != 0)) //! OCLint
+	if (!source || (parseINI (source, returned, parentKey) < 0) | (int) (fclose (source) != 0)) //! OCLint
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
@@ -285,9 +285,10 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 
 	int status = 0;
 	int errorNumber = errno;
-	ksRewind (keySet);
-	for (Key * key; (key = ksNext (keySet)) != 0 && status >= 0;)
+
+	for (elektraCursor it = 0; it < ksGetSize (keySet) && status >= 0; ++it)
 	{
+		Key * key = ksAtCursor (keySet, it);
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
 
@@ -323,7 +324,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");
 
-	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (fclose (destination) == EOF)) //! OCLint
+	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (int) (fclose (destination) == EOF)) //! OCLint
 	{
 		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errorNumber;

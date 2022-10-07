@@ -35,10 +35,10 @@ static void test_comment (void)
 	succeed_if (key = keyNew ("/", KEY_END), "could not create new key");
 	succeed_if_same_string (keyComment (key), "");
 	succeed_if (keyGetCommentSize (key) == 1, "Empty comment size problem");
-	succeed_if (keyValue (keyGetMeta (key, "comment")) == 0, "No comment up to now");
+	succeed_if (keyValue (keyGetMeta (key, "comment/#0")) == 0, "No comment up to now");
 
 	succeed_if (keySetComment (key, 0) == 1, "could not remove comment");
-	succeed_if (keyValue (keyGetMeta (key, "comment")) == 0, "There should be an no comment");
+	succeed_if (keyValue (keyGetMeta (key, "comment/#0")) == 0, "There should be an no comment");
 	succeed_if_same_string (keyComment (key), "");
 	succeed_if (keyGetCommentSize (key) == 1, "Empty comment size problem");
 	succeed_if (keyGetComment (key, ret, 0) == -1, "Could not get empty comment");
@@ -46,7 +46,7 @@ static void test_comment (void)
 	succeed_if (ret[0] == 0, "keyGetComment did not return empty comment");
 
 	succeed_if (keySetComment (key, "") == 1, "could not remove comment");
-	succeed_if (keyValue (keyGetMeta (key, "comment")) == 0, "There should be an no comment");
+	succeed_if (keyValue (keyGetMeta (key, "comment/#0")) == 0, "There should be an no comment");
 	succeed_if_same_string (keyComment (key), "");
 	succeed_if (keyGetCommentSize (key) == 1, "Empty comment size problem");
 	succeed_if (keyGetComment (key, ret, 0) == -1, "Could not get empty comment");
@@ -54,7 +54,7 @@ static void test_comment (void)
 	succeed_if (ret[0] == 0, "keyGetComment did not return empty comment");
 
 	succeed_if (keySetComment (key, "mycom") == sizeof ("mycom"), "could not set comment");
-	succeed_if_same_string (keyValue (keyGetMeta (key, "comment")), "mycom");
+	succeed_if_same_string (keyValue (keyGetMeta (key, "comment/#0")), "mycom");
 	succeed_if_same_string (keyComment (key), "mycom");
 	succeed_if (keyGetCommentSize (key) == sizeof ("mycom"), "My comment size problem");
 	succeed_if (keyGetComment (key, ret, 0) == -1, "Could not get my comment");
@@ -69,11 +69,11 @@ static void test_metaArrayToKS (void)
 	Key * test = keyNew ("/a", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END);
 	KeySet * ks = elektraMetaArrayToKS (test, "dep");
 	Key * cur;
-	cur = ksNext (ks);
+	cur = ksAtCursor (ks, 0);
 	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep"), "failed!");
-	cur = ksNext (ks);
+	cur = ksAtCursor (ks, 1);
 	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep/#0"), "failed!");
-	cur = ksNext (ks);
+	cur = ksAtCursor (ks, 2);
 	succeed_if (cur && !strcmp (keyName (cur), "meta:/dep/#1"), "failed!");
 	keyDel (test);
 	ksDel (ks);

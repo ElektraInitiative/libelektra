@@ -119,11 +119,6 @@
  *   @snippet keyNew.c With Binary
  *
  *
- * @deprecated The flags below are deprecated and ::KEY_META should be
- * preferred. They remain some time, however, for compatibility:
- *   @snippet keyNew.c With Mode
- * - ::KEY_COMMENT \n
- *   Next parameter is a comment. See keySetComment().
  *   @snippet keyNew.c With Everything
  *
  * @pre @p name is a valid Key name
@@ -212,15 +207,6 @@ Key * keyVNew (const char * name, va_list va)
 		case KEY_LOCK_META:
 			flags |= action;
 			break;
-
-		/* deprecated flags */
-		case KEY_NAME:
-			name = va_arg (va, char *);
-			break;
-		case KEY_COMMENT:
-			keySetMeta (key, "comment", va_arg (va, char *));
-			break;
-
 		default:
 			ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew", (kdb_unsigned_long_long_t) action);
 			break;

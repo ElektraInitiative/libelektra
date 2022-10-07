@@ -38,8 +38,8 @@ mkdir build
 cd build
 cmake ..  # watch output to see if everything needed is included
 ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
-cmake --build build -- -j5
-cmake --build build --target run_nokdbtests # optional: run tests
+cmake --build . -- -j5
+cmake --build . --target run_nokdbtests # optional: run tests
 ```
 
 The last line only runs tests without writing onto your system.
@@ -158,13 +158,16 @@ For a list of compilers we test with have a look at:
 
 Here is an additional list of compilers used by developers (for build servers, see links above):
 
-| Compiler | Version                                           | Target                    |
-| -------- | ------------------------------------------------- | ------------------------- |
-| gcc      | gcc (Debian 8.3.0-6) 8.3.0                        | x86_64-linux-gnu          |
-| gcc      | gcc (GCC) 11.1.1 20210531 (Red Hat 11.1.1-3)      | x86_64-redhat-linux       |
-| gcc      | gcc-11 (Homebrew GCC 11.1.0_1) 11.1.0             | x86_64-apple-darwin20     |
-| clang    | clang version 12.0.0 (Fedora 12.0.0-0.3.rc1.fc34) | x86_64-unknown-linux-gnu  |
-| clang    | Apple clang version 12.0.5 (clang-1205.0.22.9)    | x86_64-apple-darwin20.5.0 |
+| Compiler | Version                                          | Target                    |
+| -------- | ------------------------------------------------ | ------------------------- |
+| gcc      | gcc (Debian 8.3.0-6) 8.3.0                       | x86_64-linux-gnu          |
+| gcc      | gcc (Debian 10.2.1-6) 10.2.1 20210110            | x86_64-linux-gnu          |
+| gcc      | gcc (GCC) 11.2.1 20220127 (Red Hat 11.2.1-9)     | x86_64-redhat-linux       |
+| gcc      | gcc (GCC) 12.2.1 20220819 (Red Hat 12.2.1-2)     | x86_64-redhat-linux       |
+| gcc      | gcc-12 (Homebrew GCC 12.2.0) 12.2.0              | x86_64-apple-darwin21     |
+| gcc      | Homebrew clang version 15.0.1                    | x86_64-apple-darwin21.6.0 |
+| clang    | clang version 14.0.5 (Fedora 14.0.5-1.fc36)      | x86_64-redhat-linux-gnu   |
+| clang    | Apple clang version 14.0.0 (clang-1400.0.29.102) | x86_64-apple-darwin21.6.0 |
 
 > (¹) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD

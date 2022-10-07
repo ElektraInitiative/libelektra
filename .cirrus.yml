@@ -30,23 +30,25 @@ task:
       freebsd_instance:
         cpu: 4
         memory: 8G
-        image_family: freebsd-12-2
+        image_family: freebsd-12-3
 
     - name: 😈 FreeBSD 13
       freebsd_instance:
         cpu: 4
         memory: 8G
-        image_family: freebsd-13-0
+        image_family: freebsd-13-1
 
     - name: 😈 ASAN
       freebsd_instance:
         cpu: 8
         memory: 8G
-        image_family: freebsd-13-0
+        image_family: freebsd-13-1
       env:
         ENABLE_ASAN: ON
 
   install_script:
+    - pkg update -f
+    - pkg upgrade -y
     - >
       pkg install -y
       bison
@@ -161,14 +163,14 @@ task:
       sudo gem install test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
-      npm install --global prettier@2.3.2
+      npm install --global prettier@2.5.1
 
   script:
     - | # Use latest version of LLVM to translate Elektra
-      export CC="/usr/local/opt/llvm/bin/clang" CXX="/usr/local/opt/llvm/bin/clang++"
-      export LDFLAGS="-L/usr/local/opt/llvm/lib"
-      export CPPFLAGS="-I/usr/local/opt/llvm/include"
-      export PATH="/usr/local/opt/llvm/bin:$PATH"
+      export CC="$(brew --prefix llvm)/bin/clang" CXX="$(brew --prefix llvm)/bin/clang++"
+      export LDFLAGS="-L$(brew --prefix llvm)/lib"
+      export CPPFLAGS="-I$(brew --prefix llvm)/include"
+      export PATH="$(brew --prefix llvm)/bin:$PATH"
     - >
       set --
       -DBINDINGS="${BINDINGS:-ALL}"
@@ -236,6 +238,7 @@ task:
   tests_script:
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$CIRRUS_WORKING_DIR/install/lib"
     - *run_tests
 
 task:
@@ -280,6 +283,42 @@ task:
         printf >&2 '—————————————\n'
         false
       fi
+
+task:
+  matrix:
+
+    - name: 📄 Check
+      container:
+        cpu: 2
+        memory: 4G
+        dockerfile: scripts/docker/cirrus/arch/Dockerfile
+
+  clone_script: |
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git \
+                $CIRRUS_WORKING_DIR
+      git reset --hard $CIRRUS_CHANGE_IN_REPO
+    else
+      git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+      git config user.email "nobody@example.com"
+      git config user.name "nobody"
+      git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
+    fi
+
+  script:
+    - *generate
+    - scripts/dev/filename-checker 2> bad_file_names.txt > /dev/null
+
+  tests_script:
+    - |
+      if test -s bad_file_names.txt; then
+        printf >&2 '—————————————\n'
+        cat >&2 bad_file_names.txt
+        printf >&2 '—————————————\n'
+        false
+      fi
+
 
 task:
   matrix:

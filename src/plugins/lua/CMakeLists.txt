@@ -14,7 +14,8 @@ if (DEPENDENCY_PHASE)
 		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -lua -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
+		set (SWIG_COMPILE_FLAGS
+		     "-Wno-unknown-warning-option -Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-but-set-variable")
 		set_source_files_properties (lua.cpp PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT LUA_FOUND)
 		remove_plugin (lua "Lua libs (>= liblua${LUA_REQUIRED_VERSION}-dev) not found")

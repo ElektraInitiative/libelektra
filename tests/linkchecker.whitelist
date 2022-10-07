@@ -28,14 +28,18 @@ issues.libelektra.org
 # Currently broken links
 https://cgit.kde.org/kconfig.git
 https://doc.libelektra.org/coverage/master/debian-buster-full
+https://oyranos.org
+https://www.openicc.info/index.php%3Ftitle=OpenICC_Configuration_0.1.html
+https://cfp.linuxwochen.at/de/LWW18/public/events/798
 
 # Wrongly detected as broken, even though its online
 https://crates.io/crates/elektra
 https://crates.io/crates/elektra-sys
 https://www.sciencedaily.com/releases/2005/11/051103080801.htm
+https://lgtm.com
+https://researchcourse.pbworks.com/f/structural%2Bengineering.pdf
+https://developer.gnome.org/gio/2.26/GSettingsBackend.html
+https://community.kde.org/Akademy/2018/Config_Workshop
 
 # Certificate issues
-https://oyranos.org
-https://www.openicc.info/index.php%3Ftitle=OpenICC_Configuration_0.1.html
-https://cfp.linuxwochen.at/de/LWW18/public/events/798
 https://debian-stretch-repo.libelektra.org

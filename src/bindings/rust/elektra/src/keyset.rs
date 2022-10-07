@@ -293,7 +293,7 @@ impl KeySet {
     /// Return the first key in the KeySet
     /// or None if the KeySet is empty.
     pub fn head(&self) -> Option<StringKey> {
-        let key_ptr = unsafe { elektra_sys::ksHead(self.as_ref()) };
+        let key_ptr = unsafe { elektra_sys::ksAtCursor(self.as_ref(), 0) };
         if key_ptr.is_null() {
             None
         } else {
@@ -315,17 +315,12 @@ impl KeySet {
     /// Return the last key in the KeySet
     /// or None if the KeySet is empty.
     pub fn tail(&self) -> Option<StringKey> {
-        let key_ptr = unsafe { elektra_sys::ksTail(self.as_ref()) };
+        let key_ptr = unsafe { elektra_sys::ksAtCursor(self.as_ref(), (self.size() - 1).try_into().unwrap()) };
         if key_ptr.is_null() {
             None
         } else {
             Some(unsafe { StringKey::from_ptr(key_ptr) })
         }
-    }
-
-    /// Get the KeySet internal cursor.
-    pub fn cursor(&self) -> Cursor {
-        unsafe { elektra_sys::ksGetCursor(self.as_ref()) }
     }
 
     /// Return key at given cursor position or None if the cursor
@@ -336,13 +331,6 @@ impl KeySet {
             None
         } else {
             Some(unsafe { StringKey::from_ptr(key_ptr) })
-        }
-    }
-
-    /// Set the KeySet internal cursor.
-    pub fn set_cursor(&mut self, cursor: Cursor) {
-        unsafe {
-            elektra_sys::ksSetCursor(self.as_ptr(), cursor);
         }
     }
 

@@ -10,10 +10,6 @@
 #include "kdbconfig.h"
 #endif
 
-#if VERBOSE && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif

@@ -13,7 +13,7 @@
 #include <stdlib.h>
 
 
-static bool validateKey (Key * key, Key * parentKey)
+static bool validateKey (Key * key, Key * parentKey, bool addWarningOnly)
 {
 	const Key * meta = keyGetMeta (key, "check/length/max");
 	if (meta == NULL)
@@ -24,9 +24,19 @@ static bool validateKey (Key * key, Key * parentKey)
 	kdb_unsigned_long_long_t max;
 	if (!elektraKeyToUnsignedLongLong (meta, &max))
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-			parentKey, "Couldn't read check/length/max value '%s' on key '%s'. It should be a non-negative integer.",
-			keyString (meta), keyName (key));
+		if (addWarningOnly)
+		{
+			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (
+				parentKey, "Couldn't read check/length/max value '%s' on key '%s'. It should be a non-negative integer.",
+				keyString (meta), keyName (key));
+		}
+		else
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				parentKey, "Couldn't read check/length/max value '%s' on key '%s'. It should be a non-negative integer.",
+				keyString (meta), keyName (key));
+		}
+
 		return false;
 	}
 
@@ -35,11 +45,23 @@ static bool validateKey (Key * key, Key * parentKey)
 
 	if (length > max)
 	{
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-			parentKey,
-			"Length check of key '%s' with value '%s' failed. Maximum length is " ELEKTRA_UNSIGNED_LONG_LONG_F
-			" but the given string has length %zd",
-			keyName (key), keyString (key), max, length);
+		if (addWarningOnly)
+		{
+			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (
+				parentKey,
+				"Length check of key '%s' with value '%s' failed. Maximum length is " ELEKTRA_UNSIGNED_LONG_LONG_F
+				" but the given string has length %zd",
+				keyName (key), keyString (key), max, length);
+		}
+		else
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				parentKey,
+				"Length check of key '%s' with value '%s' failed. Maximum length is " ELEKTRA_UNSIGNED_LONG_LONG_F
+				" but the given string has length %zd",
+				keyName (key), keyString (key), max, length);
+		}
+
 		return false;
 	}
 
@@ -63,14 +85,15 @@ int elektraLengthGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+
 	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/length/max");
 		if (!meta) continue;
-		int rc = validateKey (cur, parentKey);
-		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		validateKey (cur, parentKey, true);
 	}
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -80,12 +103,13 @@ int elektraLengthSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	// set all keys
 	// this function is optional
 	Key * cur;
-	ksRewind (returned);
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/length/max");
 		if (!meta) continue;
-		int rc = validateKey (cur, parentKey);
+		int rc = validateKey (cur, parentKey, false);
 		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;

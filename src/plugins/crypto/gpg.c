@@ -453,10 +453,9 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
 	}
 
 	// verify child elements
-	Key * k;
-	ksRewind (conf);
-	while ((k = ksNext (conf)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (conf); ++it)
 	{
+		Key * k = ksAtCursor (conf, it);
 		if (keyIsBelow (k, root))
 		{
 			const char * childValue = keyString (k);

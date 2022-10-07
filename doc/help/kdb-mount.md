@@ -74,8 +74,6 @@ Use `kdb file <path>` to determine where the file(s) are.
   Suppress the first column.
 - `-2`, `--second`:
   Suppress the second column.
-- `-3`, `--third`:
-  Suppress the third column.
 - `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration for all plugins.
 - `-W`, `--with-recommends`:

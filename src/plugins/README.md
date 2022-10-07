@@ -101,7 +101,6 @@ Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for metadata):
 
 - [ni](ni/) parses INI files based on (including metadata)
-  [ni](https://lab.burn.capital/chaz-attic/bohr/-/blob/main/include/bohr/ni.h).
 
 Only suited for import/export:
 
@@ -254,8 +253,7 @@ binding during run-time:
 - [cache](cache/) caches keysets from previous `kdbGet()` calls
 - [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
-- [process](process/) proxy plugin that executes other plugins in a separate process
-  (useful for interpreter plugins and plugins with global setup like `xerces`)
+- [process](process/) proxy plugin that uses separate executables as plugin implementations
 - [backend](backend/) is the default plugin implementing backend functionality
 
 ### Plugins for Development

@@ -21,6 +21,7 @@ namespace merging
 
 void AutoMergeConfiguration::configureMerger (ThreeWayMerge & merger)
 {
+
 	auto metaMergeStrategy = new MetaMergeStrategy (merger);
 	allocatedStrategies.push_back (metaMergeStrategy);
 	merger.addConflictStrategy (metaMergeStrategy);

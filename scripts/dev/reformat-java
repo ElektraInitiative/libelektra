@@ -41,4 +41,21 @@ if [ $# -gt 0 ]; then
 else
 	source_files=$(git ls-files '*.java')
 fi
-printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs java --illegal-access=permit -jar $FORMATTER_JAR --replace
+
+if [ -z "$JAVA" ]; then
+	JAVA=$(command -v java)
+fi
+
+JDK_VERSION=$("$JAVA" --version | cut -d' ' -f2 | head -n1 | cut -d. -f1)
+
+if [ "$JDK_VERSION" -lt "16" ]; then
+	printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$JAVA" --illegal-access=permit -jar $FORMATTER_JAR --replace
+else
+	printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$JAVA" \
+		--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
+		--add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
+		--add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
+		--add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
+		--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
+		-jar $FORMATTER_JAR --replace
+fi

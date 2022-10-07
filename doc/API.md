@@ -100,7 +100,7 @@ Some general things you can do with each class are:
 - [Create](@ref keyNew) and [Delete](@ref keyDel)
 - Get and Set key the [name](@ref keySetName)
 - Get and Set [string](@ref keySetString) or [binary](@ref keySetBinary) values
-- Get and Set [Meta Data](@ref keymeta)
+- Get and Set [Metadata](@ref keymeta)
 - See [class documentation](@ref key) for more
 
 [KeySet](@ref keyset)
@@ -111,7 +111,8 @@ Some general things you can do with each class are:
 - [Lookup keys](@ref ksLookup)
 - Pop [the last key](@ref ksPop), [a key by name](@ref ksLookup),
   or [every key](@ref ksCopy)
-- [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
+- Get a key at a [specific position](@ref ksAtCursor)
+- Get the [number of elements](@ref ksGetSize) in a KeySet
 - See [class documentation](@ref keyset) for more
 
 [More background information about the classes](/doc/dev/classes.md)

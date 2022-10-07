@@ -302,7 +302,6 @@ void CommitPlugins::tryPlugin (Plugin & plugin)
 	{
 		throw MissingSymbol ("commit", plugin.name ());
 	}
-
 	checkResolver (plugin);
 }
 

@@ -9,7 +9,6 @@ print("Properties of Key1:")
 print("  key1.name     = \"{0}\"".format(key1.name))
 print("  key1.value    = \"{0}\"".format(key1.value))
 print("  key1.basename = \"{0}\"".format(key1.basename))
-print("  key1.fullname = \"{0}\"".format(key1.fullname))
 print("")
 
 key1.value = b"some\0value\0"
@@ -32,7 +31,7 @@ print("")
 
 key1.setMeta("foo",     "bar")
 key1.setMeta("owner",   "manuel")
-key1.setMeta("comment", "this is my example key")
+key1.setMeta("comment/#0", "this is my example key")
 print("Keys can have metadata. We can iterate over or fetch them by name.")
 print("Meta data of Key1 with their values:")
 for meta in key1.getMeta():

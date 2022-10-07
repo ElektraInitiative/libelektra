@@ -3,8 +3,6 @@
 
 == MOUNT ==
 
-lazy-mount (vs. directly improve all mountpoints with lazy wrapper?)
-
 allow --no-env --no-arg --no-default arguments?
 
 == OTHER ==
@@ -130,6 +128,8 @@ kdb tool:
 
 == GEN ==
 
+needs reimplementation (still is python2)
+
 install kdb gen properly
 	search by default in installed paths
 
@@ -174,20 +174,12 @@ generator for:
 
 use spec+proc namespaces
 
-=== Validate
-
-using kdbSet+kdbGet?
-with constraint checking+solving and so on.
-
-
 
 
 
 ## HOMEPAGE ##
 
 - show front page also without javascript
-
-
 
 
 

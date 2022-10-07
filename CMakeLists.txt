@@ -1,35 +1,37 @@
-cmake_minimum_required (VERSION 3.4)
+cmake_minimum_required (VERSION 3.12)
 
 # allows us to override platform specific variables
 set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/scripts/cmake/Platform.cmake")
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 9)
-set (KDB_VERSION_PATCH 8)
+set (KDB_VERSION_PATCH 11)
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_PATCH}")
 
 set (ELEKTRA_DESCRIPTION
      "Elektra serves as a universal and secure framework to access configuration settings in a global, hierarchical key database.")
 set (ELEKTRA_HOMEPAGE_URL "https://www.libelektra.org")
 
-if (CMAKE_VERSION VERSION_LESS 3.9)
-	project (Elektra VERSION "${KDB_VERSION}")
-elseif (CMAKE_VERSION VERSION_LESS 3.12)
-	project (
-		Elektra
-		VERSION ${KDB_VERSION}
-		DESCRIPTION ${ELEKTRA_DESCRIPTION})
-else (CMAKE_VERSION VERSION_LESS 3.12)
-	project (
-		Elektra
-		VERSION ${KDB_VERSION}
-		DESCRIPTION ${ELEKTRA_DESCRIPTION}
-		HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
-endif (CMAKE_VERSION VERSION_LESS 3.9)
+project (
+	Elektra
+	VERSION ${KDB_VERSION}
+	DESCRIPTION ${ELEKTRA_DESCRIPTION}
+	HOMEPAGE_URL ${ELEKTRA_HOMEPAGE_URL})
 
 # fix macOS RPATH issues
-set (CMAKE_MACOSX_RPATH 1)
-set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+if (APPLE)
+	set (CMAKE_MACOSX_RPATH 1)
+	set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif (APPLE)
+
+# use build RPATH for tests
+set (CMAKE_BUILD_RPATH "${CMAKE_BINARY_DIR}/lib")
+
+# when building, don't use the install RPATH already (but later on when installing)
+set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+# add the automatically determined parts of the RPATH which point to directories outside the build tree to the install RPATH
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 set (CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "elektra-misc")
 
@@ -104,9 +106,6 @@ if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
 endif (BUILD_DOCUMENTATION)
 
-# add scripts after doc (without scripts/cmake)
-add_subdirectory (scripts)
-
 # is there anything to build except documentation?
 if (BUILD_FULL
     OR BUILD_STATIC
@@ -123,6 +122,10 @@ if (BUILD_FULL
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
 endif ()
+
+# add scripts after doc and src (without scripts/cmake) adding scripts last allows scripts to be included/excluded based on ADDED_BINDINGS,
+# ADDED_PLUGINS, ...
+add_subdirectory (scripts)
 
 install (
 	FILES LICENSE.md

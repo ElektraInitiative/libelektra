@@ -1,11 +1,6 @@
 package org.libelektra;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -730,6 +725,514 @@ public class KeySetTest {
 
     // tail set [key2 = {key2, key4, key6}
     var tailSet = keySet.tailSet(key2);
+
+    assertEquals(3, tailSet.size());
+    assertEquals(key2, tailSet.first());
+    assertEquals(key6, tailSet.last());
+    assertFalse(tailSet.contains(key));
+    assertTrue(tailSet.contains(key2));
+    assertFalse(tailSet.contains(key3));
+    assertTrue(tailSet.contains(key4));
+    assertFalse(tailSet.contains(key5));
+    assertTrue(tailSet.contains(key6));
+
+    // insert key3 into key set
+    // -> tail set = {key2, key3, key4, key6}
+    // -> key set = {key, key2, key3, key4, key6}
+    assertTrue(keySet.add(key3));
+
+    assertEquals(4, tailSet.size());
+    assertEquals(key2, tailSet.first());
+    assertEquals(key6, tailSet.last());
+    assertFalse(tailSet.contains(key));
+    assertTrue(tailSet.contains(key2));
+    assertTrue(tailSet.contains(key3));
+    assertTrue(tailSet.contains(key4));
+    assertFalse(tailSet.contains(key5));
+    assertTrue(tailSet.contains(key6));
+
+    // tail set already contains key2, key3, key4 and key6
+    assertFalse(tailSet.add(key2));
+    assertFalse(tailSet.add(key3));
+    assertFalse(tailSet.add(key4));
+    assertFalse(tailSet.add(key6));
+
+    // insert key5 into head set
+    // -> tail set = {key2, key3, key4, key5, key6}
+    // -> key set = {key, key2, key3, key4, key5, key6}
+    assertTrue(tailSet.add(key5));
+
+    // key is below inclusive lower bound
+    assertThrows(IllegalArgumentException.class, () -> tailSet.add(key));
+    assertFalse(tailSet.remove(key));
+
+    assertEquals(5, tailSet.size());
+    assertEquals(key2, tailSet.first());
+    assertEquals(key6, tailSet.last());
+    assertFalse(tailSet.contains(key));
+    assertTrue(tailSet.contains(key2));
+    assertTrue(tailSet.contains(key3));
+    assertTrue(tailSet.contains(key4));
+    assertTrue(tailSet.contains(key5));
+    assertTrue(keySet.contains(key5));
+    assertTrue(tailSet.contains(key6));
+
+    // remove key2 from tail set
+    // -> tail set = {key3, key4, key5, key6}
+    // -> key set = {key, key3, key4, key5, key6}
+    assertTrue(tailSet.remove(key2));
+
+    assertEquals(4, tailSet.size());
+    assertEquals(key3, tailSet.first());
+    assertEquals(key6, tailSet.last());
+    assertFalse(tailSet.contains(key));
+    assertFalse(tailSet.contains(key2));
+    assertFalse(keySet.contains(key2));
+    assertTrue(tailSet.contains(key3));
+    assertTrue(tailSet.contains(key4));
+    assertTrue(tailSet.contains(key5));
+    assertTrue(tailSet.contains(key6));
+
+    // re-add key2 to head set
+    // -> tail set = {key2, key3, key4, key5, key6}
+    // -> key set = {key, key2, key3, key4, key5, key6}
+    assertTrue(tailSet.add(key2));
+
+    assertEquals(5, tailSet.size());
+    assertEquals(key2, tailSet.first());
+    assertEquals(key6, tailSet.last());
+    assertFalse(tailSet.contains(key));
+    assertTrue(tailSet.contains(key2));
+    assertTrue(tailSet.contains(key3));
+    assertTrue(tailSet.contains(key4));
+    assertTrue(tailSet.contains(key5));
+    assertTrue(keySet.contains(key5));
+    assertTrue(tailSet.contains(key6));
+  }
+
+  @Test
+  public void test_keySetLower_shouldPass() {
+    var keySet = KeySet.create(5, key2, key3, key4, key5);
+
+    assertNull(keySet.lower(key));
+    assertNull(keySet.lower(key2));
+    assertEquals(key2, keySet.lower(key3));
+    assertEquals(key3, keySet.lower(key4));
+    assertEquals(key4, keySet.lower(key5));
+    assertEquals(key5, keySet.lower(key6));
+    assertEquals(key2, keySet.lower(Key.create(KEY_2_NAME + "/1")));
+  }
+
+  @Test
+  public void test_keySetFloor_shouldPass() {
+    var keySet = KeySet.create(5, key2, key3, key4, key5);
+
+    assertNull(keySet.floor(key));
+    assertEquals(key2, keySet.floor(key2));
+    assertEquals(key3, keySet.floor(key3));
+    assertEquals(key4, keySet.floor(key4));
+    assertEquals(key5, keySet.floor(key5));
+    assertEquals(key5, keySet.floor(key6));
+    assertEquals(key2, keySet.floor(Key.create(KEY_2_NAME + "/1")));
+  }
+
+  @Test
+  public void test_keySetCeiling_shouldPass() {
+    var keySet = KeySet.create(5, key2, key3, key4, key5);
+
+    assertEquals(key3, keySet.ceiling(Key.create(KEY_2_NAME + "/1")));
+    assertEquals(key2, keySet.ceiling(key));
+    assertEquals(key2, keySet.ceiling(key2));
+    assertEquals(key3, keySet.ceiling(key3));
+    assertEquals(key4, keySet.ceiling(key4));
+    assertEquals(key5, keySet.ceiling(key5));
+    assertNull(keySet.ceiling(key6));
+  }
+
+  @Test
+  public void test_keySetHigher_shouldPass() {
+    var keySet = KeySet.create(5, key2, key3, key4, key5);
+
+    assertEquals(key3, keySet.higher(Key.create(KEY_2_NAME + "/1")));
+    assertEquals(key2, keySet.higher(key));
+    assertEquals(key3, keySet.higher(key2));
+    assertEquals(key4, keySet.higher(key3));
+    assertEquals(key5, keySet.higher(key4));
+    assertNull(keySet.higher(key5));
+    assertNull(keySet.higher(key6));
+  }
+
+  @Test
+  public void test_keySetPollFirst_shouldPass() {
+    var keySet = KeySet.create(2, key, key5);
+
+    assertEquals(2, keySet.size());
+    assertTrue(keySet.lookup(key).isPresent());
+    assertEquals(key, keySet.first());
+    var oPolledKey = keySet.pollFirst();
+    assertNotNull(oPolledKey);
+    assertEquals(key.getName(), oPolledKey.getName());
+    assertEquals(1, keySet.size());
+    assertTrue(keySet.lookup(key).isEmpty());
+
+    assertEquals(key5, keySet.pollFirst());
+    assertNull(keySet.pollFirst());
+  }
+
+  @Test
+  public void test_keySetPollLast_shouldPass() {
+    var keySet = KeySet.create(5, key2, key3, key4, key5, key6);
+
+    assertEquals(5, keySet.size());
+    assertTrue(keySet.lookup(key6).isPresent());
+    assertEquals(key6, keySet.last());
+    var oPolledKey = keySet.pollLast();
+    assertNotNull(oPolledKey);
+    assertEquals(key6.getName(), oPolledKey.getName());
+    assertEquals(4, keySet.size());
+    assertTrue(keySet.lookup(key6).isEmpty());
+
+    assertNull(KeySet.create().pollLast());
+  }
+
+  @Test
+  public void test_keySetDescendingSet_shouldPass() {
+    var keySet = KeySet.create(3, key3, key4, key5).descendingSet();
+    // key5, key4, key3
+
+    assertEquals(key5, keySet.first());
+    assertEquals(key3, keySet.last());
+
+    assertNull(keySet.lower(key6));
+    assertNull(keySet.lower(key5));
+    assertEquals(key5, keySet.lower(key4));
+    assertEquals(key4, keySet.lower(key3));
+    assertEquals(key3, keySet.lower(key));
+    assertEquals(key4, keySet.lower(Key.create(KEY_3_NAME + "1")));
+
+    assertNull(keySet.floor(key6));
+    assertEquals(key5, keySet.floor(key5));
+    assertEquals(key4, keySet.floor(key4));
+    assertEquals(key3, keySet.floor(key3));
+    assertEquals(key3, keySet.lower(key));
+    assertEquals(key4, keySet.floor(Key.create(KEY_3_NAME + "1")));
+
+    assertEquals(key3, keySet.ceiling(Key.create(KEY_3_NAME + "1")));
+    assertEquals(key5, keySet.ceiling(key6));
+    assertEquals(key5, keySet.ceiling(key5));
+    assertEquals(key4, keySet.ceiling(key4));
+    assertEquals(key3, keySet.ceiling(key3));
+    assertNull(keySet.ceiling(key2));
+
+    assertEquals(key3, keySet.ceiling(Key.create(KEY_3_NAME + "1")));
+    assertEquals(key5, keySet.ceiling(key6));
+    assertEquals(key4, keySet.higher(key5));
+    assertEquals(key3, keySet.higher(key4));
+    assertNull(keySet.higher(key3));
+    assertNull(keySet.higher(key2));
+    assertNull(keySet.higher(key));
+  }
+
+  @Test
+  public void test_keySetDescendingIterator_shouldPass() {
+    var ks = KeySet.create(6, key, key2, key3, key4, key5, key6);
+    Iterator<Key> iterator = ks.descendingIterator();
+
+    assertTrue(iterator.hasNext());
+    // note: compare key pointer instead of key object
+    assertEquals(key6.getPointer(), iterator.next().getPointer());
+    assertTrue(iterator.hasNext());
+    assertEquals(key5.getPointer(), iterator.next().getPointer());
+    assertTrue(iterator.hasNext());
+    assertEquals(key4.getPointer(), iterator.next().getPointer());
+    assertTrue(iterator.hasNext());
+    assertEquals(key3.getPointer(), iterator.next().getPointer());
+    assertTrue(iterator.hasNext());
+    assertEquals(key2.getPointer(), iterator.next().getPointer());
+    assertTrue(iterator.hasNext());
+    assertEquals(key.getPointer(), iterator.next().getPointer());
+    assertFalse(iterator.hasNext());
+  }
+
+  @Test
+  public void test_keySetDescendingIteratorRemove_shouldPass() {
+    var ks = KeySet.create(6, key, key2, key3, key4, key5, key6);
+    Iterator<Key> iterator = ks.descendingIterator();
+
+    assertTrue(iterator.hasNext());
+
+    while (iterator.hasNext()) {
+      var next = iterator.next();
+      if (key3.getPointer().equals(next.getPointer())) {
+        iterator.remove();
+      }
+    }
+
+    assertFalse(iterator.hasNext());
+    assertEquals(5, ks.size());
+    assertTrue(ks.lookup(key3).isEmpty());
+    assertTrue(ks.lookup(key4).isPresent());
+    assertTrue(ks.lookup(key2).isPresent());
+  }
+
+  @Test
+  public void test_keySetSubSet2_shouldPass() {
+    var keySet = KeySet.create(key, key4, key6);
+
+    // fromElement > toElement
+    assertThrows(IllegalArgumentException.class, () -> keySet.subSet(key4, false, key, true));
+
+    // key2 is not part of key set
+    assertThrows(IllegalArgumentException.class, () -> keySet.subSet(key2, false, key6, true));
+
+    // key3 is not part of key set
+    assertThrows(IllegalArgumentException.class, () -> keySet.subSet(key, false, key3, true));
+
+    // fromElement == toElement
+    assertTrue(keySet.subSet(key, key).isEmpty());
+
+    // sub set key[, [key4 = {key}
+    var subSet = keySet.subSet(key, false, key4, true); // true, false
+
+    assertEquals(1, subSet.size());
+    assertEquals(key4, subSet.first());
+    assertEquals(key4, subSet.last());
+    assertFalse(subSet.contains(key));
+    assertFalse(subSet.contains(key2));
+    assertFalse(subSet.contains(key3));
+    assertTrue(subSet.contains(key4));
+    assertFalse(subSet.contains(key5));
+    assertFalse(subSet.contains(key6));
+
+    // insert key2 into key set
+    // -> sub set = {key2, key4}
+    // -> key set = {key, key2, key4, key6}
+    assertTrue(keySet.add(key2));
+
+    assertEquals(2, subSet.size());
+    assertEquals(key2, subSet.first());
+    assertEquals(key4, subSet.last());
+    assertFalse(subSet.contains(key));
+    assertTrue(subSet.contains(key2));
+    assertFalse(subSet.contains(key3));
+    assertTrue(subSet.contains(key4));
+    assertFalse(subSet.contains(key5));
+    assertFalse(subSet.contains(key6));
+
+    // sub set already contains key and key4
+    assertFalse(subSet.add(key2));
+    assertFalse(subSet.add(key4));
+
+    // insert key3 into sub set
+    // -> sub set = {key2, key3, key4}
+    // -> key set = {key, key2, key3, key4, key6}
+    assertTrue(subSet.add(key3));
+
+    // key, key5 and key6 are above exclusive upper bound
+    assertThrows(IllegalArgumentException.class, () -> subSet.add(key));
+    assertThrows(IllegalArgumentException.class, () -> subSet.add(key5));
+    assertThrows(IllegalArgumentException.class, () -> subSet.add(key6));
+    assertFalse(subSet.remove(key));
+    assertFalse(subSet.remove(key5));
+    assertFalse(subSet.remove(key6));
+
+    assertEquals(3, subSet.size());
+    assertEquals(key2, subSet.first());
+    assertEquals(key4, subSet.last());
+    assertFalse(subSet.contains(key));
+    assertTrue(subSet.contains(key2));
+    assertTrue(subSet.contains(key3));
+    assertTrue(keySet.contains(key3));
+    assertTrue(subSet.contains(key4));
+    assertFalse(subSet.contains(key5));
+    assertFalse(subSet.contains(key6));
+
+    // remove key from sub set
+    // -> sub set = {key2, key4}
+    // -> key set = {key2, key3, key4, key6}
+    assertTrue(subSet.remove(key3));
+
+    assertEquals(2, subSet.size());
+    assertEquals(key2, subSet.first());
+    assertEquals(key4, subSet.last());
+    assertFalse(subSet.contains(key3));
+    assertFalse(keySet.contains(key3));
+    assertTrue(subSet.contains(key2));
+    assertTrue(subSet.contains(key4));
+    assertFalse(subSet.contains(key));
+    assertFalse(subSet.contains(key5));
+    assertFalse(subSet.contains(key6));
+
+    // re-add key to sub set
+    // -> sub set = {key2, key3, key4}
+    // -> key set = {key, key2, key3, key4, key6}
+    assertTrue(subSet.add(key3));
+
+    assertEquals(3, subSet.size());
+    assertEquals(key2, subSet.first());
+    assertEquals(key4, subSet.last());
+    assertTrue(subSet.contains(key2));
+    assertTrue(subSet.contains(key3));
+    assertTrue(subSet.contains(key4));
+    assertTrue(keySet.contains(key3));
+    assertFalse(subSet.contains(key));
+    assertFalse(subSet.contains(key5));
+    assertFalse(subSet.contains(key6));
+
+    // sub sub set key2[, [key6 = {key3, key4, key6}
+    var subSubSet = keySet.subSet(key, false, key6, true).subSet(key2, false, key6, true);
+
+    assertEquals(3, subSubSet.size());
+    assertEquals(key3, subSubSet.first());
+    assertEquals(key6, subSubSet.last());
+    assertFalse(subSubSet.contains(key));
+    assertFalse(subSubSet.contains(key2));
+    assertTrue(subSubSet.contains(key3));
+    assertTrue(subSubSet.contains(key4));
+    assertFalse(subSubSet.contains(key5));
+    assertTrue(subSubSet.contains(key6));
+
+    // add key5 to sub sub set
+    // -> sub set = {key2, key3, key4}
+    // -> sub sub set = {key3, key4, key5, key6}
+    // -> key set = {key, key2, key3, key4, key5, key6}
+    assertTrue(subSubSet.add(key5));
+
+    assertThrows(IllegalArgumentException.class, () -> subSubSet.add(key));
+    assertThrows(IllegalArgumentException.class, () -> subSubSet.add(key2));
+
+    assertEquals(4, subSubSet.size());
+    assertEquals(key3, subSubSet.first());
+    assertEquals(key6, subSubSet.last());
+    assertFalse(subSubSet.contains(key));
+    assertFalse(subSubSet.contains(key2));
+    assertTrue(subSubSet.contains(key3));
+    assertTrue(subSubSet.contains(key4));
+    assertTrue(subSubSet.contains(key5));
+    assertTrue(subSubSet.contains(key6));
+  }
+
+  @Test
+  public void test_keySetHeadSet2ShouldPass() {
+    var keySet = KeySet.create(key, key4, key6);
+
+    // key2 is not part of key set
+    assertThrows(IllegalArgumentException.class, () -> keySet.headSet(key2, false));
+    assertThrows(IllegalArgumentException.class, () -> keySet.headSet(key2, true));
+
+    // key3 is not part of key set
+    assertThrows(IllegalArgumentException.class, () -> keySet.headSet(key3, false));
+    assertThrows(IllegalArgumentException.class, () -> keySet.headSet(key3, true));
+
+    // key5 is not part of key set
+    assertThrows(IllegalArgumentException.class, () -> keySet.headSet(key5, false));
+    assertThrows(IllegalArgumentException.class, () -> keySet.headSet(key5, true));
+
+    // toElement == first()
+    assertTrue(keySet.headSet(key, false).isEmpty());
+    assertFalse(keySet.headSet(key, true).isEmpty());
+    assertEquals(1, keySet.headSet(key, true).size());
+
+    // head set key4( = {key, key4}
+    var headSet = keySet.headSet(key4, true);
+
+    assertEquals(2, headSet.size());
+    assertEquals(key, headSet.first());
+    assertEquals(key4, headSet.last());
+    assertTrue(headSet.contains(key));
+    assertFalse(headSet.contains(key2));
+    assertFalse(headSet.contains(key3));
+    assertTrue(headSet.contains(key4));
+    assertFalse(headSet.contains(key5));
+    assertFalse(headSet.contains(key6));
+
+    // insert key2 into key set
+    // -> head set = {key, key2, key4}
+    // -> key set = {key, key2, key4, key6}
+    assertTrue(keySet.add(key2));
+
+    assertEquals(3, headSet.size());
+    assertEquals(key, headSet.first());
+    assertEquals(key4, headSet.last());
+    assertTrue(headSet.contains(key));
+    assertTrue(headSet.contains(key2));
+    assertFalse(headSet.contains(key3));
+    assertTrue(headSet.contains(key4));
+    assertFalse(headSet.contains(key5));
+    assertFalse(headSet.contains(key6));
+
+    // head set already contains key and key2
+    assertFalse(headSet.add(key));
+    assertFalse(headSet.add(key2));
+    assertFalse(headSet.add(key4));
+
+    // insert key3 into head set
+    // -> head set = {key, key2, key3, key4}
+    // -> key set = {key, key2, key3, key4, key6}
+    assertTrue(headSet.add(key3));
+
+    // key5 and key6 are above exclusive upper bound
+    assertThrows(IllegalArgumentException.class, () -> headSet.add(key5));
+    assertThrows(IllegalArgumentException.class, () -> headSet.add(key6));
+    assertFalse(headSet.remove(key5));
+    assertFalse(headSet.remove(key6));
+
+    assertEquals(4, headSet.size());
+    assertEquals(key, headSet.first());
+    assertEquals(key4, headSet.last());
+    assertTrue(headSet.contains(key));
+    assertTrue(headSet.contains(key2));
+    assertTrue(headSet.contains(key3));
+    assertTrue(keySet.contains(key3));
+    assertTrue(headSet.contains(key4));
+    assertFalse(headSet.contains(key5));
+    assertFalse(headSet.contains(key6));
+
+    // remove key from head set
+    // -> head set = {key2, key3, key4}
+    // -> key set = {key2, key3, key4, key6}
+    assertTrue(headSet.remove(key));
+
+    assertEquals(3, headSet.size());
+    assertEquals(key2, headSet.first());
+    assertEquals(key4, headSet.last());
+    assertFalse(headSet.contains(key));
+    assertFalse(keySet.contains(key));
+    assertTrue(headSet.contains(key2));
+    assertTrue(headSet.contains(key3));
+    assertTrue(headSet.contains(key4));
+    assertFalse(headSet.contains(key5));
+    assertFalse(headSet.contains(key6));
+
+    // re-add key to head set
+    // -> sub set = {key, key2, key3, key4}
+    // -> key set = {key, key2, key3, key4, key6}
+    assertTrue(headSet.add(key));
+
+    assertEquals(4, headSet.size());
+    assertEquals(key, headSet.first());
+    assertEquals(key4, headSet.last());
+    assertTrue(headSet.contains(key));
+    assertTrue(headSet.contains(key2));
+    assertTrue(headSet.contains(key3));
+    assertTrue(keySet.contains(key3));
+    assertTrue(headSet.contains(key4));
+    assertFalse(headSet.contains(key5));
+    assertFalse(headSet.contains(key6));
+  }
+
+  @Test
+  public void test_keySetTailSet2ShouldPass() {
+    var keySet = KeySet.create(key, key2, key4, key6);
+
+    // key3 is not part of key set
+    assertThrows(IllegalArgumentException.class, () -> keySet.tailSet(key3, false));
+
+    // key5 is not part of key set
+    assertThrows(IllegalArgumentException.class, () -> keySet.tailSet(key5, false));
+
+    // tail set key[ = {key2, key4, key6}
+    var tailSet = keySet.tailSet(key, false);
 
     assertEquals(3, tailSet.size());
     assertEquals(key2, tailSet.first());

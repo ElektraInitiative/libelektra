@@ -33,24 +33,22 @@
 
 void test_lookupre (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "a", KEY_META, "comment/#0", "does not match", KEY_END),
+			     keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_META, "comment/#0", "does not match", KEY_END),
+			     keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_META, "comment/#0", "match", KEY_END),
+			     keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_META, "comment/#0", "match", KEY_END), KS_END);
 
 	Key * match = 0;
 	regex_t regex;
 
 	regcomp (&regex, "^[ \t]*$", REG_NOSUB);
 
-	// we start from the first key
-	ksRewind (ks);
 
 	// show the key that match this string
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, 0);
 	succeed_if (!strcmp (keyName (match), "user:/c"), "Key did not match");
 
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, ksSearch (ks, match) + 1);
 	succeed_if (!strcmp (keyName (match), "user:/d"), "Key did not match");
 
 	regfree (&regex); // free regex resources
@@ -59,27 +57,25 @@ void test_lookupre (void)
 
 void test_extended (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "la", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/b", KEY_VALUE, "lalala", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/c", KEY_VALUE, "jump", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/d", KEY_VALUE, "lalalala", KEY_COMMENT, "match", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "la", KEY_META, "comment/#0", "match", KEY_END),
+			     keyNew ("user:/b", KEY_VALUE, "lalala", KEY_META, "comment/#0", "match", KEY_END),
+			     keyNew ("user:/c", KEY_VALUE, "jump", KEY_META, "comment/#0", "does not match", KEY_END),
+			     keyNew ("user:/d", KEY_VALUE, "lalalala", KEY_META, "comment/#0", "match", KEY_END), KS_END);
 
 	Key * match = 0;
 	regex_t regex;
 
 	regcomp (&regex, "^(la)+$", REG_NOSUB | REG_EXTENDED);
 
-	// we start from the first key
-	ksRewind (ks);
 
 	// show the key that match this string
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, 0);
 	succeed_if (!strcmp (keyName (match), "user:/a"), "Key did not match");
 
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, ksSearch (ks, match) + 1);
 	succeed_if (!strcmp (keyName (match), "user:/b"), "Key did not match");
 
-	match = ksLookupRE (ks, &regex);
+	match = ksLookupRE (ks, &regex, ksSearch (ks, match) + 1);
 	succeed_if (!strcmp (keyName (match), "user:/d"), "Key did not match");
 
 	regfree (&regex); // free regex resources
@@ -104,25 +100,21 @@ void word_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
@@ -148,25 +140,21 @@ void line_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
@@ -192,25 +180,21 @@ void invert_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
@@ -232,13 +216,11 @@ void icase_test (void)
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k1);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	ks = ksNew (2, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 

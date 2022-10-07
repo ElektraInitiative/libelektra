@@ -69,10 +69,7 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
 }
 
 /**
- * @brief Forwards to key which is not below the next one
- *
- * Forwards at least forward one element.
- * ksCurrent() will point at the same key as the key which is returned.
+ * @brief Gets the first key which is not below the given one
  *
  * e.g.
  * user:/sw/x
@@ -80,36 +77,26 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
  * user:/sw/x/y/z1
  *
  * @retval last element if no other found.
- * @retval 0 if there is no other element afterwards (keyset will be
- * rewinded then)
+ * @retval 0 if there is no other element afterwards
  *
  * @param ks keyset to use
+ * @param pos the Position where the search should start
  *
  * @return key after starting position which is not below (to any latter
  * one)
  */
-Key * elektraNextNotBelow (KeySet * ks)
+Key * elektraNextNotBelow (KeySet * ks, elektraCursor pos)
 {
-	const Key * previous = ksNext (ks);
+	const Key * previous = ksAtCursor (ks, pos);
 
-	if (!previous)
-	{
-		ksRewind (ks);
-		return 0;
-	}
+	if (!previous) return 0;
 
-	// uninitialized variables are ok, because do{}while guarantees initialisation
-	elektraCursor pos;		// always one before current
-	const Key * current = previous; // current is same as ksCurrent()
+	const Key * current = previous;
 	do
 	{
-		pos = ksGetCursor (ks); // remember candidate
-		previous = current;	// and remember last key
-		current = ksNext (ks);	// look forward to next key
+		previous = current; // remember last key
+		current = ksAtCursor (ks, ++pos);
 	} while (current && keyIsBelow (previous, current));
 
-	// jump to and return candidate, because next is known to be not
-	// below candidate
-	ksSetCursor (ks, pos);
-	return ksCurrent (ks);
+	return ksAtCursor (ks, pos - 1); // return candidate
 }

@@ -1,4 +1,4 @@
-FROM fedora:34
+FROM fedora:36
 
 RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
@@ -16,7 +16,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         git \
         glib2 \
         gpgme-devel \
-        java-11-openjdk-devel \
+        java-17-openjdk-devel \
         jna \
         libasan \
         libcurl-devel \
@@ -50,7 +50,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.11.0
+ARG GTEST_VER=release-1.12.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -59,7 +59,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.2-bin.zip && unzip gradle-7.2-bin.zip && rm gradle-7.2-bin.zip && mv gradle-7.2 /opt/gradle
-ENV PATH "${PATH}:/opt/gradle/bin"
-ENV JAVA_HOME=/etc/alternatives/jre
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
 RUN alternatives --auto java && alternatives --auto javac
+ENV PATH="${PATH}:/opt/gradle/bin" \
+    JAVA_HOME="/usr/lib/jvm/java"

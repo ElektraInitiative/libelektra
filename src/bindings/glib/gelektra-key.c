@@ -430,34 +430,18 @@ gint gelektra_key_copyallmeta (const GElektraKey * key, GElektraKey * dest)
 	return keyCopyAllMeta (dest->key, key->key);
 }
 
-gint gelektra_key_rewindmeta (GElektraKey * key)
-{
-	return keyRewindMeta (key->key);
-}
-
 /**
- * gelektra_key_nextmeta:
+ * gelektra_key_meta:
  * @key: A #GElektraKey
  *
- * Returns: (transfer full): A #GElektraKey holding the next meta information
- * see keyCurrentMeta
+ * Returns: (transfer full): A #GElektraKeySet holding all metakeys of the given key
+ * see keyMeta
  */
-GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
+GElektraKeySet * gelektra_key_meta (const GElektraKey * key)
 {
-	return gelektra_key_make ((Key *) keyNextMeta (key->key));
+	return gelektra_keyset_make ((KeySet *) keyMeta (key->key));
 }
 
-/**
- * gelektra_key_currentmeta:
- * @key: A #GElektraKey
- *
- * Returns: (transfer full): A #GElektraKey holding the current meta information
- * see keyCurrentMeta
- */
-GElektraKey * gelektra_key_currentmeta (const GElektraKey * key)
-{
-	return gelektra_key_make ((Key *) keyCurrentMeta (key->key));
-}
 
 /* validating */
 gboolean gelektra_key_isnull (const GElektraKey * key)

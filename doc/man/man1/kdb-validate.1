@@ -1,0 +1,38 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-VALIDATE" "1" "January 2022" ""
+.SH "NAME"
+\fBkdb\-validate\fR \- Validate key values
+.SH "SYNOPSIS"
+\fBkdb validate\fR
+.SH "DESCRIPTION"
+Validate the values of string keys below a given name using the loaded validation plugins (eg\. range or validation) by reading all values, making them dirty by changing to another value, changing back to original and then writing that back to the key database\.
+.P
+This command is useful for validating configuration files against their specifications\.
+.P
+For keys to be validated, they must contain the 'check'\-metakeys and the respective plugins for validation must be loaded for the backend that was used while mounting\. If a validation is done while using \fBkdb set\fR or \fBkdb get\fR the same validation is also done by \fBkdb validate\fR Only string keys are validated! Binary keys are skipped!
+.P
+Use \fB\-f\fR to do a write\-test even if the previous read from the key database has issued warnings\.
+.SH "OPTIONS"
+.TP
+\fB\-d\fR,\fB\-\-debug\fR
+Give debug information\.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Force writing the configuration even on warnings\.
+.TP
+\fB\-H\fR, \fB\-\-help\fR
+Show the man page\.
+.TP
+\fB\-p <name>\fR, \fB\-\-profile <name>\fR
+Use a different profile for kdb configuration\.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Explain what is happening\.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version info\.
+.TP
+\fB\-C <when>\fR, \fB\-\-color <when>\fR
+Print \fBnever/auto(default)/always\fR colored output\.
+

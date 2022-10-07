@@ -30,7 +30,7 @@ Mount this plugin additionally with a working resolver and a storage
 e.g.:
 
 ```sh
-kdb mount error.dump /error error dump
+sudo kdb mount error.dump /error error dump
 ```
 
 When following metakey is present during storing (`kdbSet()`) the keyset:
@@ -63,6 +63,13 @@ fail for the error plugin then):
 
 ```sh
 kdb meta-set user:/error/key trigger/error C01200
+# RET:5
+```
+
+When you are finished you can unmount it with:
+
+```sh
+sudo kdb umount /error
 ```
 
 ### By config
@@ -80,7 +87,7 @@ on_open/error
 E.g. you can use:
 
 ```sh
-kdb mount error.dump /error error on_open/error=C03100 dump
+sudo kdb mount error.dump /error error on_open/error=C03100 dump
 ```
 
 Then you get an error on any access, e.g.:
@@ -98,3 +105,9 @@ Mountpoint: system:/error
 
 because the opening of the plugin failed (resulting to a missing
 backend).
+
+When you are finished you can unmount it with:
+
+```sh
+sudo kdb umount /error
+```

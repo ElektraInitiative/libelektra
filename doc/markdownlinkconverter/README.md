@@ -20,12 +20,12 @@ markdownlinkconverter [<cmake-cache-file>] <input-file>
 ## Conventions
 
 - Links starting with `@ref`, `#` for anchors and `http`, `https` or `ftp` for extern links
-  wont be touched.
+  won't be touched.
 - All other links to Markdown or arbitrary source files will be converted.
 - All links to folders will be altered to the README.md in the Folder.
   This feature was introduced to be compatible with GitHub, where you can show the content of a folder in
   combination with the README.md of the containing folder.
-- Anchors wont work in imported Markdown pages.
+- Anchors won't work in imported Markdown pages.
 
 ## GitHub Specialities
 

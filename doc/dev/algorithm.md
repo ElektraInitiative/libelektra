@@ -238,7 +238,7 @@ algorithm finally finishes.
 ### Updating Configuration
 
 The user can call `kdbGet()` often even if the configuration or parts
-of it are already up to date. This can happen when applications reread
+of it are already up-to-date. This can happen when applications reread
 configuration in some events. Examples are signals (SIGHUP is
 the signal used for that on Unix systems. It is sent when the program's
 controlling terminal is closed. Daemons do not have a terminal so
@@ -268,7 +268,7 @@ Because of the new way to keep track of removed keys, the internally
 executed `kdbGet()` creates a problem. Without countermeasures even
 the first `kdbGet()` of a user requesting the configuration below
 `system:/elektra` fails, because the resolver finds out that the
-configuration is already up to date. The configuration delivered by the
+configuration is already up-to-date. The configuration delivered by the
 user is empty at this point. As a result, the empty configuration will
 be appointed and returned to the user.
 
@@ -381,7 +381,7 @@ during executions of `kdbGet()` and `kdbSet()` another program has changed
 the key database. In order not to lose any data, `kdbSet()` fails without
 doing anything. In conflict situations Elektra leaves the programmer
 no choice. The programmer has to retrieve the configuration using
-`kdbGet()` again to be up to date with the key database. Afterwards it
+`kdbGet()` again to be up-to-date with the key database. Afterwards it
 is up to the application to decide which configuration to use. In this
 situation it is the best to ask the user, by showing him the description
 and reason of the error, how to continue:
@@ -389,7 +389,7 @@ and reason of the error, how to continue:
 1. Save the configuration again. The changes of the other program
    will be lost in this case.
 2. The key database can also be left unchanged as the other program
-   wrote it. After using `kdbGet()` the application is already up to date
+   wrote it. After using `kdbGet()` the application is already up-to-date
    with the new configuration. All configuration changes the user made
    before will be lost.
 3. The application can try to merge the key sets to get the best

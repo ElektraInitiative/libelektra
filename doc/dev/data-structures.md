@@ -17,27 +17,14 @@ actually **ADT** (abstract data types).
 The API is designed so that different implementations of the
 data structures can be used internally.
 
-A **hash** data structure
-presents a good candidate as alternative data structure, especially for
-the metadata interface.
-It is believed to be much faster on
-lookup, but considerably slower on sorted enumeration.
+A sorted **array** provides very fast iteration O(1) and has nearly no size-overhead.
 
-An **AVL tree** also serves as a competitor.
-AVL trees are expected to be
-faster for inserting keys at any place, but may be slower for appending
-because of the needed reorganizations.
-Their disadvantage is that they need to allocate
-a large number of small pieces of memory.
-Further investigations, namely implementation and benchmarks,
-are required to decide.
+A **hash map** data structure
+presents the best candidate for lookups O(1).
 
-A **trie** could also be used for lookup of key names.
-It performs well for lookup, but needs more memory allocations.
-
-Currently the `KeySet` is implemented as a sorted array.
-It is fast on appending and iterating, and has nearly no size-overhead.
-To improve the lookup-time, an additional **hash** is used, see [OPMPHM](#order-preserving-minimal-perfect-hash-map-aka-opmphm) below.
+`KeySet` combines the best of both worlds:
+`KeySet` is implemented as a sorted array and uses
+an order-preserving minimal perfect hash map (OPMPHM) for lookups.
 
 ### ABI compatibility
 
@@ -55,7 +42,7 @@ only using the public header file `<kdb.h>`. The functions `keyDel()`,
 `ksDel()` and `kdbClose()` free the resources after use. Using the C++
 binding deallocation is done automatically.
 
-## Meta Data
+## Metadata
 
 Read [here](metadata.md).
 
@@ -194,59 +181,24 @@ indicating where the new value should be inserted when the key
 is not found.
 Elektra now also uses this trick internally.
 
-### External Cursor
+### Iteration
 
-External cursor is an alternative to the approach explained above.
-Elektra provides a limited
-_external cursor_
-through the interface
-`ksGetCursor()` and `ksSetCursor()`.
-It is not possible to advance this cursor.
-The difference to the internal cursor
-is that the position is not stored within `KeySet`.
+Iterating over a `KeySet` is similar to iterating over arrays.
+With `ssize_t ksGetSize (const KeySet *ks)`, the total number of `Key`s in a `KeySet`
+can be retrieved and with the function `Key *ksAtCursor (const KeySet *ks, elektraCursor cursor)`
+the `Key *` at the specified position `cursor` in `ks` can be retrieved.
+The first element (`Key`) has the index 0, so the last `Key` in the `KeySet` `ks` can be
+accessed with `Key * k = ksAtCursor (ks, ksGetSize (ks) - 1)`.
+Please be aware the elements in a `KeySet` can move and therefore change their index, e.g. when
+deleting or adding elements or using `ksCut ()`.
 
-We considered providing an external cursor for performance reasons.
-But we found out that
-the speed of iteration is mainly limited because of safety checks.
-The investigated methods become slower proportional to the ease of use
-and safety.
-When using null pointers and
-range checks, the function is noticeably slower than without.
-With the same amount of checks,
-using an external cursor is not much faster than
-`ksNext()`.
-External cursor with checks is in a benchmark
-about 10% faster.
-
-But an external cursor directly accessing the array can be much
-faster. Using an unchecked external cursor can be about 50%
-faster than using the internal cursor with ksNext().
-For this endeavour,
-Elektra’s private header files need to be included.
-Including private header files, however,
-should not be done with levity
-because ABI compatibility will be gone on any changes of the data
-structures.
-This fact means the application or plugin needs to be recompiled
-when any of the internal structures of Elektra are
-changed.
-We strongly discourage including these header files.
-
-Nevertheless, the overall
-performance impact for iteration is minimal
-and should not matter too much.
-Even if only a single `keySetMeta()` is used inside
-the iteration loop, the iteration costs are insignificant.
-Only for trivial
-actions such as just changing a variable, counter or marker for every key
-the iteration costs become the lion's share.
-In such situations
-an _internal iterator_
-yields better results.
-For example,
-`ksForEach()` applies a user defined function
-for every key in a `KeySet` without having null pointer or
-out of range problems.
+```c
+for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+{
+	Key * cur = ksAtCursor (ks, it);
+	// ...
+}
+```
 
 ## Order Preserving Minimal Perfect Hash Map (aka OPMPHM)
 

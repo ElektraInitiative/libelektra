@@ -65,7 +65,7 @@ The following example shows how you can use this plugin together with the TOML p
 
 ```sh
 # Mount the TOML and Base64 plugin
-kdb mount test_config.toml user:/tests/base64 toml base64
+sudo kdb mount test_config.toml user:/tests/base64 toml base64
 
 # Copy binary data
 kdb cp system:/elektra/modules/base64/exports/get user:/tests/base64/binary
@@ -80,7 +80,7 @@ kdb file user:/tests/base64 | xargs cat
 
 # Undo modifications
 kdb rm -r user:/tests/base64
-kdb umount user:/tests/base64
+sudo kdb umount user:/tests/base64
 ```
 
 ### Meta Mode
@@ -111,7 +111,7 @@ The following example shows you how you can use the TOML plugin together with Ba
 
 ```sh
 # Mount ni and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
-kdb mount test_config.ni user:/tests/base64 ni base64 binary/meta=
+sudo kdb mount test_config.ni user:/tests/base64 ni base64 binary/meta=
 
 # Save base64 encoded data `"value"` (`0x76616c7565`)
 kdb set user:/tests/base64/encoded dmFsdWUA
@@ -127,7 +127,7 @@ kdb get user:/tests/base64/encoded
 
 # Undo modifications
 kdb rm -r user:/tests/base64
-kdb umount user:/tests/base64
+sudo kdb umount user:/tests/base64
 ```
 
 For another usage example, please take a look at the ReadMe of the [YAML CPP plugin](../yamlcpp).

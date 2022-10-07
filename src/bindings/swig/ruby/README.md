@@ -26,7 +26,7 @@ The package is called `ruby-elektra`.
 
 - C++ iterators for `Key`/`KeySet` are excluded. Instead `KeySet` implements
   an `each` method and includes `Enumerable`. Therefore it is very similar to
-  a Ruby-Array. However, the `KeySet` cursor methods are still available.
+  a Ruby-Array.
 - Method names are renamed to follow Ruby naming conventions
 - Access to native C-level `KDB` structures (such as `ckdb::Key`) is not
   possible, as this does not make much sense within Ruby.

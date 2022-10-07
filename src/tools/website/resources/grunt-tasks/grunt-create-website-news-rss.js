@@ -65,7 +65,7 @@ module.exports = function (grunt) {
         guid = guid[1]; // first capture group
 
         // parse markdown into html
-        content = marked(content);
+        content = marked.parse(content);
 
         // put content into html template
         content =

@@ -324,9 +324,6 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		elektraPluginSetData (handle, data);
 	}
 
-	Key * cur;
-	ksRewind (returned);
-
 	KeySet * defaultIntegerTypes = ksNew (7, keyNew ("system:/accept/type/#0", KEY_VALUE, "byte", KEY_END),
 					      keyNew ("system:/accept/type/#1", KEY_VALUE, "short", KEY_END),
 					      keyNew ("system:/accept/type/#2", KEY_VALUE, "long", KEY_END),
@@ -336,8 +333,10 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 					      keyNew ("system:/accept/type/#6", KEY_VALUE, "unsigned_long_long", KEY_END), KS_END);
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		if (!keyIsString (cur))
 		{
 			continue;
@@ -395,12 +394,11 @@ int elektraHexnumberSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		elektraPluginSetData (handle, data);
 	}
 
-	Key * cur;
-	ksRewind (returned);
-
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	while ((cur = ksNext (returned)) != NULL)
+
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		if (keyIsString (cur) && hasHexType (cur))
 		{
 			status |= convertDecToHex (cur, parentKey);

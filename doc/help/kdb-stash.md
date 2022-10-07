@@ -1,6 +1,6 @@
 # kdb-stash -- Stash away KDB to be restored later
 
-## SYNOPSES
+## SYNOPSIS
 
 `kdb stash`
 

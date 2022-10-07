@@ -12,10 +12,9 @@
 
 void outputKeySet (KeySet * returned)
 {
-	ksRewind (returned);
-	while (ksNext (returned))
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
-		printf ("%s\n", keyName (ksCurrent (returned)));
+		printf ("%s\n", keyName (ksAtCursor (returned, it)));
 	}
 }
 

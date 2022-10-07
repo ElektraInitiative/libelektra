@@ -12,9 +12,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if defined(HAVE_STDIO_H)
 #include <stdio.h>
-#endif
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -104,12 +102,6 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
 }
 
 /** @class doxygenFlatCopy
- *
- * @brief .
- *
- * @note Because the key is not copied,
- * also the pointer to the current metadata keyNextMeta()
- * will be shared.
  */
 
 /**
@@ -131,19 +123,11 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  * - You can append keys with ksAppendKey() or
  *   with ksAppend() you can append a whole keyset.
  * - Using ksLookup() you can lookup (or pop with #KDB_O_POP) a key.
- * - With ksRewind() and ksNext() you can iterate through the keyset.
+ * - With ksGetSize() and ksAtCursor() you can iterate through the keyset.
  *   Be assured that you will get every key of the set in a stable
  *   order (parents before children).
  *
  * @copydetails doxygenFlatCopy
- *
- * KeySets have an @link ksCurrent() internal cursor @endlink.
- * Methods should avoid to change this cursor, unless they want
- * to communicate something with it.
- * The internal cursor is used:
- *
- * - in ksLookup(): points to the found key
- * - in kdbSet(): points to the key which caused an error
  *
  * KeySet is the most important data structure in Elektra. It makes it possible
  * to get and store many keys at once inside the database. In addition to
@@ -385,8 +369,7 @@ KeySet * ksDeepDup (const KeySet * source)
  *
  * @par Implementation:
  * First all Keys in @p dest will be deleted. Afterwards
- * the content of @p source will be added to the destination
- * and ksCurrent() will be set properly in @p dest.
+ * the content of @p source will be added to the destination.
  *
  * A flat copy is made, so Keys will not be duplicated,
  * but their reference counter is updated, so both KeySets
@@ -979,10 +962,9 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		{
 			size_t n = ks->size - insertpos;
 			memmove (ks->array + (insertpos + 1), ks->array + insertpos, n * sizeof (struct Key *));
-			/*
-			printf ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n",
-				ks->size, insertpos, n);
-			*/
+
+			ELEKTRA_LOG_DEBUG ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n", ks->size, insertpos, n);
+
 			ks->array[insertpos] = toAppend;
 			ksSetCursor (ks, insertpos);
 		}
@@ -1572,7 +1554,6 @@ ksDel (ks2);
  * @since 1.0.0
  * @see ksLookup() to pop Keys by name
  * @see ksCopy() to pop all Keys
- * @see ksTail() for getting the last Key of a KeySet without removing it
  */
 Key * ksPop (KeySet * ks)
 {
@@ -1700,64 +1681,6 @@ Key * ksCurrent (const KeySet * ks)
 	return ks->cursor;
 }
 
-
-/**
- * Return the first Key in the KeySet.
- *
- * The KeySet's cursor will not be affected.
- *
- * If ksCurrent()==ksHead() you know you are
- * on the first Key.
- *
- * @param ks the KeySet object to get the first Key from
- *
- * @return the first Key of a KeySet
- * @retval 0 on NULL pointer or empty KeySet
- *
- * @since 1.0.0
- * @see ksTail() for getting the last Key of the KeySet
- * @see ksRewind(), ksCurrent() and ksNext() for iterating over the KeySet
- */
-Key * ksHead (const KeySet * ks)
-{
-	if (!ks) return 0;
-
-	if (ks->size > 0)
-		return ks->array[0];
-	else
-		return 0;
-}
-
-
-/**
- * Return the last Key in the KeySet.
- *
- * The KeySet's cursor will not be affected.
- *
- * If ksCurrent()==ksTail() you know you
- * are on the last key. ksNext() will return
- * a NULL pointer afterwards.
- *
- * @param ks the KeySet object to get the last Key from
- *
- * @return the last Key of a KeySet
- * @retval 0 on NULL pointer or empty KeySet
- *
- * @since 1.0.0
- * @see ksHead() for getting the first Key of a KeySet
- * @see ksRewind(), ksCurrent() and ksNext() for iterating over the KeySet
- */
-Key * ksTail (const KeySet * ks)
-{
-	if (!ks) return 0;
-
-	if (ks->size > 0)
-		return ks->array[ks->size - 1];
-	else
-		return 0;
-}
-
-
 /**
  * Get the internal cursor of the KeySet.
  *
@@ -1813,7 +1736,7 @@ int f (KeySet *ks)
  *
  * An invalid cursor will be returned directly after
  * ksRewind(). When you set an invalid cursor ksCurrent()
- * is 0 and ksNext() == ksHead().
+ * is 0.
  *
  * @section cursor_directly Using Cursor directly
  *
@@ -1865,8 +1788,6 @@ elektraCursor ksGetCursor (const KeySet * ks)
  * or a position that does not lie within the KeySet @p ks
  *
  * @since 1.0.0
- * @see ksGetCursor() for getting the cursor at the current position
- * @see ksSetCursor() for setting the cursor to a specific position
  */
 Key * ksAtCursor (const KeySet * ks, elektraCursor pos)
 {
@@ -1899,7 +1820,7 @@ ksCurrent(ks); // in same position as before
  *
  * An invalid cursor will set the KeySet to its beginning like
  * ksRewind(). When you set an invalid cursor ksCurrent()
- * is 0 and ksNext() == ksHead().
+ * is 0.
  *
  * @param ks the KeySet object where the cursor should be set
  * @param cursor the cursor to set for @p ks
@@ -1937,19 +1858,22 @@ static void elektraCopyCallbackMeta (Key * dest, Key * source)
 	// possible optimization: only copy when callback is present (keyIsBinary && keyGetValueSize == sizeof(void(int))
 	const Key * m = 0;
 
-	keyRewindMeta (dest);
-	while ((m = keyNextMeta (dest)))
+	KeySet * metaKeys = keyMeta (dest);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		m = ksAtCursor (metaKeys, it);
 		const char * metaname = keyName (m);
 		if (!strncmp (metaname, "callback/", sizeof ("callback")))
 		{
 			keySetMeta (dest, metaname, 0);
+			it--;
 		}
 	}
 
-	keyRewindMeta (source);
-	while ((m = keyNextMeta (source)))
+	metaKeys = keyMeta (source);
+	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
+		m = ksAtCursor (metaKeys, it);
 		const char * metaname = keyName (m);
 		if (!strncmp (metaname, "callback/", sizeof ("callback")))
 		{
@@ -2539,10 +2463,8 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  * Furthermore, using the kdb-tool, it is possible to introspect which values
  * an application will get (by doing the same cascading lookup).
  *
- * If found, @p ks internal cursor will be positioned in the matched Key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor will not move, and a NULL pointer is
- * returned.
+ * If found, a pointer to the Key is returned.
+ * If not found a NULL pointer is returned.
  *
  * Cascading lookups will by default search in
  * all namespaces (proc:/, dir:/, user:/ and system:/), but will also correctly consider
@@ -2564,19 +2486,11 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  *
  *
  * @par KDB_O_POP
- * When ::KDB_O_POP is set the Key which was found will be ksPop()ed. ksCurrent()
- * will not be changed, only iff ksCurrent() is the searched Key, then the KeySet
- * will be ksRewind()ed.
+ * When ::KDB_O_POP is set the Key which was found will be ksPop()ed.
  *
  * @note Like in ksPop() the popped Key always needs to be keyDel() afterwards, even
  * if it is appended to another KeySet.
  *
- * @warning All cursors on the KeySet will be invalid
- * iff you use ::KDB_O_POP, so don't use this if you rely on a cursor, see ksGetCursor().
- *
- * The invalidation of cursors does not matter if you use multiple KeySets, e.g.
- * by using ksDup(). E.g., to separate ksLookup() with ::KDB_O_POP and ksAppendKey():
-
  * @snippet ksLookupPop.c f
  *
  * This is also a nice example how a complete application with ksLookup() can look like.
@@ -2587,8 +2501,9 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  *
  * @par Hybrid search
  * When Elektra is compiled with `ENABLE_OPTIMIZATIONS=ON` a hybrid search decides
- * dynamically between the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
- * The hybrid search can be overruled by passing ::KDB_O_OPMPHM or ::KDB_O_BINSEARCH in the options to ksLookup().
+ * dynamically between the binary search and the
+ * [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm). The hybrid
+ * search can be overruled by passing ::KDB_O_OPMPHM or ::KDB_O_BINSEARCH in the options to ksLookup().
  *
  *
  * @param ks the KeySet that should be searched
@@ -2601,7 +2516,7 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  *
  * @since 1.0.0
  * @see ksLookupByName() to search by a name given by a string
- * @see ksCurrent(), ksRewind(), ksNext() for iterating over a KeySet
+ * @see ksGetSize(), ksAtCursor() for iterating over a KeySet
  */
 Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 {
@@ -2665,7 +2580,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
  *
  * @since 1.0.0
  * @see ksLookup() for explanation of the functionality and examples.
- * @see ksCurrent(), ksRewind(), ksNext() for iterating over a KeySet
+ * @see ksGetSize(), ksAtCursor() for iterating over a KeySet
  */
 Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options)
 {

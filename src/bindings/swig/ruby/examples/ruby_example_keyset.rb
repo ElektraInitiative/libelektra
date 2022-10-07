@@ -74,9 +74,6 @@ key = ks.at 0
 # index operator
 key = ks[0]
 
-# getting the first and the last key
-first = ks.head
-last = ks.tail
 
 # lookup keys in the keyset
 key = ks.lookup "user:/myapp/#1/setting1"
@@ -116,12 +113,6 @@ empty = ks.empty?
 #
 # iterating over keysets
 #
-
-# classic kdb iteration
-ks.rewind
-while ks.next do
-  key = ks.current
-end
 
 # Ruby style iteration
 ks.each do |k|

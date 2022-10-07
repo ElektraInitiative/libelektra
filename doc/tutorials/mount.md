@@ -9,7 +9,7 @@ The best way of integrating Elektra into applications is to [elektrify](/doc/hel
 A simpler form of integration is to let Elektra directly use configuration files as they are present on the system.
 Thus applications can read the configuration files and changes in the key database will be picked up by applications.
 
-The heart of the approach is the so called _mounting_ of configuration files into the key database.
+The heart of the approach is the so-called _mounting_ of configuration files into the key database.
 
 Let us start with a motivating example first:
 
@@ -148,12 +148,12 @@ Elektra accomplishes this task with _storage plugins_.
 When you mount a file you can tell Elektra which plugins it should use for reading and
 writing to configuration files.
 
-#### Meta Data
+#### Metadata
 
 Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys.
 The [ni](/src/plugins/ni/README.md) plugin and the [dump](/src/plugins/dump/README.md) plugin, among others, support this feature.
 
-Meta data comes in handy if we use other plugins, than just the ones that store and retrieve data.
+Metadata comes in handy if we use other plugins, than just the ones that store and retrieve data.
 I chose the `ni` plugin for this demonstration, because it supports metadata and is human-readable.
 So let us have a look at the [type](/src/plugins/type/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
 

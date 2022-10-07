@@ -56,6 +56,7 @@ if (DEPENDENCY_PHASE)
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-literal-suffix")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-attributes")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-pedantic")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-format-overflow")
 		endif ()
 
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")

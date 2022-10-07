@@ -20,14 +20,6 @@ int elektraErrorOpen (Plugin * handle ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * conf = elektraPluginGetConfig (handle);
 
-	/*
-	FILE *f = fopen("error_plugin_debug.log", "a");
-	fprintf (f, "HUHU %s\n", keyName(parentKey));
-	ksRewind(conf);
-	while (ksNext(conf)) fprintf(f, "%s\n", keyName(ksCurrent(conf)));
-	fclose(f);
-	*/
-
 	if (ksLookupByName (conf, "/module", 0))
 	{
 		// suppress warnings + errors if it is just a module
@@ -75,9 +67,9 @@ int elektraErrorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 int elektraErrorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	Key * cur;
-	while ((cur = ksNext (returned)) != 0)
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = 0;
 
 		meta = keyGetMeta (cur, "trigger/warnings");

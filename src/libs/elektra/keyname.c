@@ -175,6 +175,8 @@
  */
 static char * findStartOfLastPart (char * name, size_t len)
 {
+	// compare to elektraKeyNameValidate we can just look for the :,
+	// because we know the name must be valid
 	char * colon = strchr (name, ':');
 	char * start = colon == NULL ? name : colon + 1;
 	++start; // start after first slash
@@ -757,28 +759,32 @@ bool elektraKeyNameValidate (const char * name, bool isComplete)
 
 	if (isComplete)
 	{
-		const char * colon = strchr (name, ':');
-		if (colon != NULL)
+		const char * colonOrSlash = strpbrk (name, ":/");
+		if (colonOrSlash == NULL || *colonOrSlash == '/')
 		{
-			if (elektraReadNamespace (name, colon - name - 1) == KEY_NS_NONE)
+			// if colonOrSlash == NULL the following is always true
+			if (colonOrSlash != name)
+			{
+				ELEKTRA_LOG_DEBUG ("No namespace (and not cascading) or missing colon (:) after namespace: %s", name);
+				return false;
+			}
+		}
+		else
+		{
+			const char * colon = colonOrSlash;
+			if (elektraReadNamespace (name, colon - name) == KEY_NS_NONE)
 			{
 				ELEKTRA_LOG_DEBUG ("Illegal namespace '%.*s': %s", (int) (colon - name - 1), name, name);
-				return 0;
+				return false;
 			}
 
 			if (*(colon + 1) != '/')
 			{
 				ELEKTRA_LOG_DEBUG ("Missing slash after namespace: %s", name);
-				return 0;
+				return false;
 			}
 
 			name = colon + 1;
-		}
-
-		if (*name != '/')
-		{
-			ELEKTRA_LOG_DEBUG ("Illegal name start; expected (namespace +) slash: %s", name);
-			return 0;
 		}
 	}
 
@@ -790,7 +796,7 @@ bool elektraKeyNameValidate (const char * name, bool isComplete)
 		{
 		case '\0':
 			ELEKTRA_LOG_DEBUG ("Dangling escape: %s", name);
-			return 0;
+			return false;
 		case '\\':
 		case '/':
 			++cur;
@@ -825,10 +831,10 @@ bool elektraKeyNameValidate (const char * name, bool isComplete)
 
 
 		ELEKTRA_LOG_DEBUG ("Illegal escape '\\%c': %s", *cur, name);
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 /**
@@ -880,6 +886,8 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 		if (*name != '/')
 		{
 			// find end of namespace
+			// compare to elektraKeyNameValidate we can just look for the :,
+			// because we know the name must be valid
 			const char * colon = strchr (name, ':');
 
 			// copy namespace

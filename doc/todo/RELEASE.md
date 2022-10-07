@@ -25,11 +25,13 @@ If no release critical problems are found during testing, continue.
 - `CMakeLists.txt`
 - Increment version in output of `doc/tutorials/hello-elektra.md`
 - Increment <Version> of libelektra in `examples/external/java/read-keys-example/pom.xml` and `src/bindings/jna/README.md`
-- Increment the Elektra version in `scripts/docker/alpine/*/release.Dockerfile`
 - Change `VERSION` variable in build-server:
   - Go to https://build.libelektra.org
   - Select "Manage Jenkins" -> "Configure System"
   - Scroll down until "Global Properties" and change the variable VERSION
+- Increment version in Wikipedia pages:
+  - https://de.wikipedia.org/wiki/Elektra_(Software)
+  - https://en.wikipedia.org/wiki/Draft:Elektra_(Software)
 
 ### Check
 

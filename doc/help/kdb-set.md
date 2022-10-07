@@ -69,4 +69,3 @@ Followed by:<br>
 
 - [kdb(1)](kdb.md) for how to configure the kdb utility and use the bookmarks.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
-- [elektra-values(7)](elektra-values.md) for the difference between empty and null values.

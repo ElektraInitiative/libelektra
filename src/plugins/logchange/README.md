@@ -23,7 +23,9 @@ Prints every added, changed or deleted key on the console.
 To use it, add it during mounting:
 
 ```sh
-kdb mount logchange.dump user:/logchange dump logchange
+sudo kdb mount logchange.dump user:/tests/logchange dump logchange
+# And to unmount it
+sudo kdb umount user:/tests/logchange
 ```
 
 Configure the plugin with `log/get=1` to enable printing when configuration is

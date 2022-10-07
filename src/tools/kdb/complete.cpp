@@ -154,18 +154,18 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 	Key last;
 	addNamespaces (hierarchy, cl);
 
-	ks.rewind ();
-	if (!(ks.next ()))
+	if (ks.size () == 0)
 	{
 		return hierarchy;
 	}
 
-	const Key first = ks.current ();
+	const Key & first = ks.at (0);
 	int curDepth = getKeyDepth (first) - 1;
 	hierarchy[first] = pair<int, int> (0, curDepth);
 	keyStack.push (first);
 
-	while (!keyStack.empty ())
+
+	for (ssize_t it = 0; !keyStack.empty ();)
 	{
 		Key current = keyStack.top ();
 		keyStack.pop ();
@@ -208,9 +208,9 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 			}
 		}
 
-		if (keyStack.empty () && (ks.next ()))
+		if (keyStack.empty () && (++it < ks.size ()))
 		{ // Current hierarchy processed, we can resume with the next
-			keyStack.push (ks.current ());
+			keyStack.push (ks.at (it));
 		}
 		last = current;
 	}

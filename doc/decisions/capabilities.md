@@ -10,6 +10,8 @@ Some of these limitations were documented `infos/status`, others were not.
 
 ## Constraints
 
+- tooling should be able to query which limitations exist
+
 ## Assumptions
 
 ## Considered Alternatives

@@ -68,9 +68,6 @@ GElektraKey * gelektra_keyset_lookup (GElektraKeySet * ks, GElektraKey * key, GE
 GElektraKey * gelektra_keyset_lookup_byname (GElektraKeySet * ks, const char * name, GElektraKdbOptions options);
 
 /* iterating */
-GElektraKey * gelektra_keyset_head (const GElektraKeySet * ks);
-GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks);
-
 GElektraKey * gelektra_keyset_at (GElektraKeySet * ks, gssize pos);
 
 G_END_DECLS

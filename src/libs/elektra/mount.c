@@ -10,9 +10,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
-#endif
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -24,10 +22,6 @@
 
 #ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
 #endif
 
 #include <kdbassert.h>
@@ -334,7 +328,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 		KeySet * tmp = keys;
 		keys = elektraDefaultGlobalConfig (keys);
 		ksDel (tmp);
-		root = ksHead (keys);
+		root = ksAtCursor (keys, 0);
 	}
 	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
 
@@ -352,9 +346,9 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 		{
 			if (!elektraStrCaseCmp (placement, GlobalpluginPositionsStr[i]))
 			{
-#if DEBUG && VERBOSE
-				printf ("mounting global plugin %s to %s\n", pluginName, placement);
-#endif
+
+				ELEKTRA_LOG_DEBUG ("mounting global plugin %s to %s\n", keyString (cur), placement);
+
 				// load plugins in implicit max once placement
 				Plugin * plugin = 0;
 				int mountRet =
@@ -388,7 +382,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 						if (!elektraStrCaseCmp (subPlacement, GlobalpluginSubPositionsStr[j]))
 						{
 							Plugin * subPlugin = 0;
-							int subRet =
+							int subRet = // makes ksCut on Keyset `global`!
 								elektraMountGlobalsLoadPlugin (&subPlugin, referencePlugins, curSubPosition,
 											       subPositions, system, modules, errorKey);
 							if (subRet == -1)
@@ -428,7 +422,6 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 {
 	Key * root;
-	Key * cur;
 
 	root = ksLookupByName (modules, "system:/elektra/modules", 0);
 
@@ -441,15 +434,15 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 	KeySet * alreadyMounted = ksNew (5, KS_END);
 	ssize_t oldSize = 0;
 
-	while ((cur = ksNext (modules)) != 0)
+	for (elektraCursor it = ksSearch (modules, root) + 1; it < ksGetSize (modules); ++it)
 	{
-		if (!strcmp (keyName (cur), "system:/elektra/modules/backend"))
+		if (!strcmp (keyName (ksAtCursor (modules, it)), "system:/elektra/modules/backend"))
 		{
 			// the backend plugin does not need its own backend
 			continue;
 		}
 
-		Plugin * backend = backendOpenModules (modules, kdb->global, errorKey);
+		Plugin * backend = backendOpenModules (modules, kdb->global, errorKey, it);
 
 		if (!backend)
 		{
@@ -465,7 +458,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 			continue;
 		}
 		++oldSize;
-		mountBackend (kdb, cur, backend);
+		mountBackend (kdb, ksAtCursor (modules, it), backend);
 	}
 
 	ksDel (alreadyMounted);

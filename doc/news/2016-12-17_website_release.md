@@ -46,7 +46,7 @@ you to use them across multiple system by mounting them with the
 
 The website was written by Marvin Mall in the course of his
 [bachelor thesis](https://www.libelektra.org/ftp/elektra/publications/mall2016rest.pdf)
-as part of the front-end he developed for his snippet sharing service.
+as part of the frontend he developed for his snippet sharing service.
 His main goals were to create a proper appearance for Elektra, but
 also to create a platform that promotes his service. We think that
 this worked out quite well by connecting the website with the service
@@ -73,7 +73,7 @@ bindings and libraries sections will get some more attention.
 If you are interested in the techniques we use to structure our files,
 you can have a look at the
 [website readme](/src/tools/website/README.md).
-The website is already the fourth view of our markdown pages!
+The website is already the fourth view of our Markdown pages!
 The others are man pages, doxygen, and github.
 
 ### Homepage & News
@@ -143,7 +143,7 @@ The build Server is no longer reachable at port 8080, but now only directly at
 [https://build.libelektra.org/](https://build.libelektra.org/).
 
 While most `libelektra.org` now point to the new website, you can still
-directly go to [github](https://git.libelektra.org) and also to the
+directly go to [GitHub](https://git.libelektra.org) and also to the
 [bug tracker](https://bugs.libelektra.org).
 
 The old Wordpress installation was shut down because of security concerns.
@@ -154,9 +154,9 @@ At this point there is not much more to say about the new website except for:
 Feel free to explore it!
 
 We greatly appreciate all feedback, be it for the website, the snippet sharing
-service or other parts of the Elektra project. We always have an open ear
+service or other parts of the Elektra Initiative. We always have an open ear
 for suggestions and we also like to help with technical issues, simply
-[leave us a note on github](https://bugs.libelektra.org)!
+[leave us a note on GitHub](https://bugs.libelektra.org)!
 
 ## Stay tuned!
 
@@ -166,7 +166,7 @@ to always get the release notifications.
 
 For any questions and comments, please contact the
 [mailing list](https://lists.sourceforge.net/lists/listinfo/registry-list),
-use the issue tracker [on github](https://bugs.libelektra.org)
+use the issue tracker [on GitHub](https://bugs.libelektra.org)
 or write an email to elektra@markus-raab.org.
 For issues or feedback concerning the website, you can also
 contact us at website@libelektra.org.

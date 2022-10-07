@@ -108,19 +108,10 @@ that way that programs work together well."
 ## Modules
 
 Elektra’s core can be compiled with a C compiler conforming to the
-ISO/IEC 9899:1999 standard:
-
-- One line comments,
-- inline functions,
-- `snprintf()`
-- inttypes.h and
-- variable declaration at any place
-
-are used in addition to what is already defined in the
-standard ISO/IEC 9899:1990, called **C99** in the following text.
+ISO/IEC 9899:1999 standard, called C99 henceforth.
 Functions not conforming to C99 are considered to be not portable
 enough for Elektra and are separated into plugins. But there is
-one notable exception: it must be the core's task to load plugins.
+one notable exception: it must be `libelektra-kdb`'s task to load plugins.
 Unfortunately, C99 does not know anything about modules.
 **POSIX** (Portable Operating System Interface) provides
 `dlopen()`, but other operating systems have dissimilar APIs for that

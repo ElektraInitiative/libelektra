@@ -1,10 +1,11 @@
 # Contributing
 
-We use [GitHub](https://github.com/ElektraInitiative/libelektra/) to maintain this project. First of all you will need a GitHub account and [Git](https://www.git-scm.com/).
-If you are interested to use an IDE, there are two IDEs which Elektra developers currently use:
+We use [GitHub](https://github.com/ElektraInitiative/libelektra/) to maintain this initiative.
+First of all you will need a GitHub account and [Git](https://www.git-scm.com/).
+If you are interested to use an IDE, there are IDEs which Elektra developers currently use, e.g.:
 
-- [CLion](https://www.jetbrains.com/clion/) with a [setup tutorial](/doc/tutorials/contributing-clion.md)
-- [Visual Studio Code](https://code.visualstudio.com/)
+- [CLion](https://www.jetbrains.com/clion/) with a [tutorial](/doc/tutorials/contributing-clion.md)
+- [Visual Studio Code](https://code.visualstudio.com/) with a [tutorial](/doc/tutorials/contributing-windows.md)
 
 ## Configure Git
 

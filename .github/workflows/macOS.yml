@@ -126,7 +126,7 @@ jobs:
         pip3 install cmakelang[yaml]==0.6.13
         # Install JavaScript packages
         npm install dredd --global
-        npm install --global prettier@2.3.2
+        npm install --global prettier@2.5.1
         brew tap homebrew/services
         brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
         brew postinstall dbus
@@ -149,10 +149,10 @@ jobs:
       run: |
         if [ "$CC" = 'clang' ]; then
           # Use latest version of LLVM to translate Elektra
-          export CC="$(brew --prefix llvm)/bin/clang" CXX="$(brew --prefix llvm)/bin/clang++"
-          export LDFLAGS="-L$(brew --prefix llvm)/lib"
-          export CPPFLAGS="-I$(brew --prefix llvm)/include"
-          export PATH="$(brew --prefix llvm)/bin:$PATH"
+          export CC="$(brew --prefix llvm@14)/bin/clang" CXX="$(brew --prefix llvm@14)/bin/clang++"
+          export LDFLAGS="-L$(brew --prefix llvm@14)/lib"
+          export CPPFLAGS="-I$(brew --prefix llvm@14)/include"
+          export PATH="$(brew --prefix llvm@14)/bin:$PATH"
         fi
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(

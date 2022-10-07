@@ -26,12 +26,12 @@ restylers:
         - "-i"
         - "--style=file"
   - prettier:
-      image: restyled/restyler-prettier:v2.3.2
+      image: restyled/restyler-prettier:v2.5.1
   - prettier-markdown:
-      image: restyled/restyler-prettier:v2.3.2
+      image: restyled/restyler-prettier:v2.5.1
       arguments: []
   - shfmt:
-      image: restyled/restyler-shfmt:v3.3.1
+      image: restyled/restyler-shfmt:v3.4.3
       arguments:
         - -s
         - -sr

@@ -1,6 +1,6 @@
 # Documentation Index
 
-This folder contains documentation for “Elektra – the configuration framework for everyone”. If you do not know what Elektra is, then we recommend that you check out our [homepage](https://www.libelektra.org/home) first. This ReadMe deals with the content of the documentation folder and should give you a hint where to look for specific information.
+This folder contains documentation for “Elektra – the configuration framework for everyone”. If you do not know what Elektra is, we recommend that you check out our [homepage](https://www.libelektra.org/home) first. This ReadMe deals with the content of the documentation folder and should give you a hint where to look for specific information.
 
 ## Introductory
 
@@ -16,8 +16,8 @@ This folder contains documentation for “Elektra – the configuration framewor
 ## Using Elektra
 
 - [Installation](INSTALL.md): These instructions tell you how you can install Elektra in your favorite operating system.
-- [Compile](COMPILE.md): If you want to compile Elektra from source please take a look at this document.
-- [Debugging](DEBUGGING.md): If you want to debug Elektra please take a look at this document.
+- [Compile](COMPILE.md): If you want to compile Elektra from source, please look at this document.
+- [Debugging](DEBUGGING.md): If you want to debug Elektra, please look at this document.
 - [Help](help): This folder contains our man pages in Markdown format. The folder [man](man) contains these man pages in roff format, which you can read using the Unix utility [`man`](https://en.wikipedia.org/wiki/Man_page) if you already installed Elektra.
 - [Keynames](KEYNAMES.md): This document describes how Elektra's keynames work.
 

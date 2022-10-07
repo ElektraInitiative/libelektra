@@ -63,7 +63,7 @@ RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.11.0
+ARG GTEST_VER=release-1.12.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -89,11 +89,11 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.2-bin.zip && unzip gradle-7.2-bin.zip && rm gradle-7.2-bin.zip && mv gradle-7.2 /opt/gradle
-ENV PATH "${PATH}:/opt/gradle/bin"
-ENV JAVA_HOME=/etc/alternatives/jre
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
 # Pipe in 1 as Java 11 is first in the list
 RUN echo 1 | alternatives --config java && alternatives --auto javac
+ENV PATH="${PATH}:/opt/gradle/bin" \
+    JAVA_HOME="/usr/lib/jvm/java"
 
 USER ${JENKINS_USERID}
 
