@@ -52,6 +52,18 @@
 #define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")
 
 /**
+ * removes the SYNC flag on all keys of the provided KeySet
+ * @param ks the KeySet
+ */
+static void clearAllSync (KeySet * ks)
+{
+	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
+	{
+		keyClearSync (ksAtCursor (ks, i));
+	}
+}
+
+/**
  * @defgroup kdb KDB
  * @brief General methods to access the Key database.
  *
@@ -1861,6 +1873,17 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
+	while (sendNotificationHook != NULL)
+	{
+		if (sendNotificationHook->get != NULL)
+		{
+			sendNotificationHook->get (sendNotificationHook->plugin, dataKs, parentKey);
+		}
+
+		sendNotificationHook = sendNotificationHook->next;
+	}
+
 	// Step 13: run gopts (if enabled)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME);
 	keySetNamespace (parentKey, KEY_NS_CASCADING);
@@ -1914,6 +1937,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// Step 18: merge data into ks and return
 	backendsMerge (backends, ks);
+	clearAllSync (ks);
 
 	// TODO (atmaxinger): should we have a default:/ backend?
 	ksAppend (ks, defaults);
@@ -2461,6 +2485,20 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 12c: run postcommit phase
 	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_COMMIT, true, KDB_SET_FN_COMMIT);
 
+	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
+	while (sendNotificationHook != NULL)
+	{
+		if (sendNotificationHook->set != NULL)
+		{
+			// TODO (atmaxinger): Is setKs really the correct KeySet?
+			sendNotificationHook->set (sendNotificationHook->plugin, setKs, parentKey);
+		}
+
+		sendNotificationHook = sendNotificationHook->next;
+	}
+
+	clearAllSync (ks);
+
 	// TODO (kodebach): name not needed, once lock is in place
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
@@ -2482,6 +2520,7 @@ error:
 	// TODO (kodebach): name not needed, once lock is in place
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
+	ksDel (setKs);
 	errno = errnosave;
 
 	return -1;

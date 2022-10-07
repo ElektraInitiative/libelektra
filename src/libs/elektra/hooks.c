@@ -8,6 +8,8 @@
 
 #include <kdbinternal.h>
 
+static Plugin * loadPlugin (const char * pluginName, KeySet * global, KeySet * modules, const KeySet * contract, Key * errorKey);
+
 /**
  * Uninitializes and frees all hooks in the passed KDB handle.
  *
@@ -29,6 +31,24 @@ void freeHooks (KDB * kdb, Key * errorKey)
 		kdb->hooks.spec.plugin = NULL;
 		kdb->hooks.spec.copy = NULL;
 		kdb->hooks.spec.remove = NULL;
+	}
+
+	if (kdb->hooks.sendNotification != NULL)
+	{
+		SendNotificationHook * hook = kdb->hooks.sendNotification;
+		while (hook != NULL)
+		{
+			elektraPluginClose (hook->plugin, errorKey);
+			hook->plugin = NULL;
+			hook->get = NULL;
+			hook->set = NULL;
+
+			SendNotificationHook * old = hook;
+			hook = hook->next;
+			elektraFree (old);
+		}
+
+		kdb->hooks.sendNotification = NULL;
 	}
 }
 
@@ -77,6 +97,73 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 	{
 		return -1;
 	}
+
+	return 0;
+}
+
+static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
+{
+	SendNotificationHook * lastHook = kdb->hooks.sendNotification;
+
+	Key * pluginsKey = keyNew ("system:/elektra/hook/notification/send/plugins", KEY_END);
+
+	// Iterate through the config and find all direct children below system:/elektra/hook/notification/send/plugins
+	// This is defined as an array, so the elements should be like
+	//   - system:/elektra/hook/notification/send/plugins/#0
+	//   - system:/elektra/hook/notification/send/plugins/#1
+	// We actually don't check for the # to be present, so it will currently work on all keys directly below.
+	for (elektraCursor end, it = ksFindHierarchy (config, pluginsKey, &end); it < end; it++)
+	{
+		Key * cur = ksAtCursor (config, it);
+		if (keyIsDirectlyBelow (pluginsKey, cur) == 0)
+		{
+			continue;
+		}
+
+		const char * pluginName = keyString (cur);
+		Plugin * plugin = loadPlugin (pluginName, kdb->global, modules, contract, errorKey);
+
+		if (!plugin)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "SendNotification plugin %s not found, referenced by key %s",
+							   pluginName, keyName (cur));
+			continue;
+		}
+
+		kdbHookSendNotificationGetPtr getPtr =
+			(kdbHookSendNotificationGetPtr) getFunction (plugin, "hook/notification/send/get", errorKey);
+		kdbHookSendNotificationSetPtr setPtr =
+			(kdbHookSendNotificationSetPtr) getFunction (plugin, "hook/notification/send/set", errorKey);
+
+		if (getPtr == NULL && setPtr == NULL)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				errorKey,
+				"SendNotification plugin %s exports neither 'hook/notification/send/get' nor 'hook/notification/send/set'",
+				pluginName);
+			continue;
+		}
+
+		SendNotificationHook * hook = elektraMalloc (sizeof (SendNotificationHook));
+
+		hook->next = NULL;
+		hook->plugin = plugin;
+		hook->get = getPtr;
+		hook->set = setPtr;
+
+		if (lastHook == NULL)
+		{
+			kdb->hooks.sendNotification = hook;
+			lastHook = hook;
+		}
+		else
+		{
+			lastHook->next = hook;
+			lastHook = hook;
+		}
+	}
+
+	keyDel (pluginsKey);
 
 	return 0;
 }
@@ -208,6 +295,11 @@ int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet 
 
 	if (isSpecEnabledByConfig (config) &&
 	    initHooksSpec (kdb, loadPlugin ("spec", kdb->global, modules, contract, errorKey), errorKey) != 0)
+	{
+		goto error;
+	}
+
+	if (initHooksSendNotifications (kdb, config, modules, contract, errorKey))
 	{
 		goto error;
 	}

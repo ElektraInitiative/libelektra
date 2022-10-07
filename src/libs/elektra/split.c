@@ -1257,7 +1257,13 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 
 		if (keyIsBelowOrSame (defaultBackendKey, k) == 1)
 		{
-			ksAppendKey (defaultBackendData->keys, keyDup (k, KEY_CP_ALL));
+			Key * d = keyDup (k, KEY_CP_ALL);
+
+			// set the value of the sync flag to the same value as the original key
+			clear_bit (d->flags, KEY_FLAG_SYNC);
+			d->flags |= k->flags & KEY_FLAG_SYNC;
+
+			ksAppendKey (defaultBackendData->keys, d);
 		}
 		// nextBackendKey == NULL happens during bootstrap
 		else if (nextBackendKey != NULL && keyCmp (k, nextBackendKey) >= 0)
@@ -1269,7 +1275,14 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		else if (*curBackend < 0 || keyIsBelowOrSame (backendKey, k) == 1)
 		{
 			backendData->keyNeedsSync = backendData->keyNeedsSync || keyNeedSync (k) == 1;
-			ksAppendKey (backendData->keys, keyDup (k, KEY_CP_ALL));
+
+			Key * d = keyDup (k, KEY_CP_ALL);
+
+			// set the value of the sync flag to the same value as the original key
+			clear_bit (d->flags, KEY_FLAG_SYNC);
+			d->flags |= k->flags & KEY_FLAG_SYNC;
+
+			ksAppendKey (backendData->keys, d);
 		}
 		else
 		{
@@ -1308,10 +1321,6 @@ void backendsMerge (KeySet * backends, KeySet * ks)
 		{
 			ssize_t size = ksGetSize (backendData->keys);
 			backendData->getSize = size;
-			for (elektraCursor j = 0; j < size; j++)
-			{
-				keyClearSync (ksAtCursor (backendData->keys, j));
-			}
 			ksAppend (ks, backendData->keys);
 		}
 	}
