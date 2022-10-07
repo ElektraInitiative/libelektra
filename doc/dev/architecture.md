@@ -14,13 +14,20 @@ To help readers to understand the algorithm that glues together the
 plugins, we first describe some details of the
 [data structures](data-structures.md). Full
 knowledge of the [algorithm](algorithm.md) is not presumed to be able to develop
-most plugins (with the exception of [the resolver](/src/plugins/resolver/)).
+most plugins.
 
 Further important concepts are explained in:
 
 - [bootstrapping](/doc/help/elektra-bootstrapping.md)
 - [granularity](/doc/help/elektra-granularity.md)
 - [sync-flag](/doc/help/elektra-sync-flag.md)
+
+## Outdated
+
+<!-- TODO [new_backend]: Update the text below using the docs listed in the warning. -->
+
+> **Warning** Many of the things described below (especially in relation to backends and mountpoints) are outdated.
+> See [`kdb-operations.md`](kdb-operations.md), [`backend-plugins.md`](backend-plugins.md) and [`mountpoints.md`](mountpoints.md) for more up-to-date information.
 
 ## API
 

@@ -1,5 +1,6 @@
 # Mounting
 
+<!-- TODO [new_backend]: Outdated, only kept as reference until an updated version is written
 Elektra provides a global key database, that can integrate configuration in various formats.
 
 Conversely configuration managed by Elektra can be integrated into applications.
@@ -228,3 +229,4 @@ Furthermore, one cannot simply change the configuration file format, because it 
 
 These limitations are the reasons why [elektrifing](/doc/help/elektra-glossary.md) applications provides even better integration.
 Go on reading [how to elektrify your application](application-integration.md).
+-->

@@ -1,5 +1,16 @@
 # Plugins Ordering
 
+## Outdated
+
+<!-- TODO [new_backend]: Rewrite as part of documentation for the plugin `backend`_.
+        Possibly create more general docs, if multiple backend plugins use these placements.
+    -->
+
+> **Warning** Many of the things described below are outdated.
+> Parts of this document are still valid for the `backend` plugin.
+
+## Introduction
+
 You should first read [elektra-plugins](/src/plugins/) to get
 an idea about plugins.
 

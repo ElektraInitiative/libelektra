@@ -989,7 +989,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
-	// Step 4: setup default global plugins
+	// Step 4: process contract and set up hooks
 	// TODO (kodebach): remove/replace step in global plugins rewrite
 	if (mountGlobals (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
 	{
@@ -1008,14 +1008,13 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
-	// Step 5: process contract
 	if (contract != NULL && !ensureContract (handle, contract, errorKey))
 	{
 		ksDel (elektraKs);
 		goto error;
 	}
 
-	// Step 6: parse mountpoints
+	// Step 5: parse mountpoints
 	KeySet * backends = elektraMountpointsParse (elektraKs, handle->modules, handle->global, errorKey);
 	if (backends == NULL)
 	{
@@ -1023,7 +1022,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
-	// Step 7: switch from boostrap to real config
+	// Step 6: switch from boostrap to real config
 	ksDel (elektraKs);
 	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 
@@ -1034,7 +1033,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 
 	handle->backends = backends;
 
-	// Step 8: add hardcoded mountpoints
+	// Step 7: add hardcoded mountpoints
 	if (!addHardcodedMountpoints (handle, errorKey))
 	{
 		goto error;
@@ -1848,18 +1847,15 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 	keyDel (specRoot);
 
-	// TODO (kodebach) [Q]: can we avoid this merge and the split in step 15?
 	// Step 12: merge data from all backends
 	KeySet * dataKs = ksNew (ksGetSize (ks), KS_END);
 	backendsMerge (backends, dataKs);
 
-	// Step 13: run procgetstorage global plugins
 	if (elektraGlobalGet (handle, dataKs, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		goto error;
 	}
 
-	// Step 14: run postgetstorage global plugins
 	if (elektraGlobalGet (handle, dataKs, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		goto error;
