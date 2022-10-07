@@ -1160,11 +1160,10 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		return NULL;
 	}
 
-	KeySet * informationMeta = keyMeta (informationKey);
-	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_OUR, KEY_VALUE, keyName (ourRoot), KEY_END));
-	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_THEIR, KEY_VALUE, keyName (theirRoot), KEY_END));
-	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_BASE, KEY_VALUE, keyName (baseRoot), KEY_END));
-	ksAppendKey (informationMeta, keyNew (META_ELEKTRA_MERGE_ROOT_RESULT, KEY_VALUE, keyName (resultRoot), KEY_END));
+	keySetMeta (informationKey, META_ELEKTRA_MERGE_ROOT_OUR, keyName (ourRoot));
+	keySetMeta (informationKey, META_ELEKTRA_MERGE_ROOT_THEIR, keyName (theirRoot));
+	keySetMeta (informationKey, META_ELEKTRA_MERGE_ROOT_BASE, keyName (baseRoot));
+	keySetMeta (informationKey, META_ELEKTRA_MERGE_ROOT_RESULT, keyName (resultRoot));
 
 	KeySet * result = ksNew (0, KS_END);
 	bool ourDominant = false;
