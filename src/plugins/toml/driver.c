@@ -929,8 +929,7 @@ static void assignStringMetakeys (Key * key, const char * origStr, const char * 
 	const Key * metaType = keyGetMeta (key, "type");
 	// Don't overwrite "binary" typed metakeys -> See base64 plugin meta mode
 	// Don't assign it empty strings, otherwise the type plugin complains
-	// TODO (kodebach): string length 0, once type allows zero length on type=string
-	if ((metaType == NULL || elektraStrCmp (keyString (metaType), "binary") != 0) && elektraStrLen (translatedStr) > 1)
+	if ((metaType == NULL || elektraStrCmp (keyString (metaType), "binary") != 0))
 	{
 		keySetMeta (key, "type", "string");
 	}
