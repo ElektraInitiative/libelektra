@@ -1913,7 +1913,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	KeySet * defaults = ksCut (dataKs, defaultCutpoint);
 
 	// Step 15: split dataKs for poststorage phase
-	// FIXME (kodebach): handle proc:/ keys
 	if (!backendsDivide (backends, dataKs))
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
