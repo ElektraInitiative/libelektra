@@ -22,7 +22,7 @@ Only `libelektra-core` is supposed to access private data, but this contradicts 
 
 ## Decision
 
-Also allow `libelektra-extra` (and maybe others) to access private Key/KeySet.
+Also allow `libelektra-extra` (and maybe other explicitly documented libraries) to access private Key/KeySet.
 Put struct definitions of Key/KeySet in a separate header file, which gets included by parts that need it.
 
 All currently planned libraries and their respective API prefixes are listed in the [Notes](#notes) below.
@@ -61,7 +61,7 @@ All currently planned libraries and their respective API prefixes are listed in 
   Additional C APIs that are useful when working with `ElektraKey` and `ElektraKeyset`, but not are not minimal API.
   Specifically targets C and not intended for use via bindings.
 
-  **Prefix:** `elektraCKey*`, `elektraCKeyset*`
+  **Prefixes:** `elektraCKey*`, `elektraCKeyset*`
 
 - `libelektra-highlevel-c`:
   The C high-level API for reading/writing configuration with Elektra.
@@ -74,6 +74,7 @@ All currently planned libraries and their respective API prefixes are listed in 
 
 - `libelektra-opts`:
   The API for parsing command-line arguments according to Elektra's spec.
+
   **Prefix:** `elektraOpts*`
 - `libelektra-notification`:
   The API for setting up callbacks and automatically updated variables linked to changes in the KDB.
@@ -121,7 +122,7 @@ All currently planned libraries and their respective API prefixes are listed in 
 
 - `libelektra-extra`:
   Contains extra APIs for `ElektraKey` and `ElektraKeyset` beyond the minimal API of `libelektra-core`.
-  These APIs are things that could be considered part of the "classes" for `ElektraKey` and `ElektraKeyset`, but which we do not consider minimal.
+  These APIs are things that could be considered part of the classes for `ElektraKey` and `ElektraKeyset`, but which we do not consider minimal.
   The APIs should not specifically target C (see `libelektra-lowlevel-c` for that) and should be usable via bindings (if appropriate for the other language).
 
   **Prefix:** `elektraExtra*`
