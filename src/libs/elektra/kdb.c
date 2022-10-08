@@ -379,7 +379,6 @@ static KDB * kdbNew (Key * errorKey)
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, errorKey) == -1)
 	{
-		// TODO (kodebach) [Q]: shouldn't we let elektraModulesInit set this error?
 		ELEKTRA_SET_INSTALLATION_ERROR (
 			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
 
@@ -422,7 +421,6 @@ static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * 
 	}
 	storage->global = global;
 
-	// TODO (kodebach) [Q]: support direct read-write to absolute path in backend plugin to avoid resolver in bootstrap?
 	Plugin * resolver = elektraPluginOpen (KDB_DEFAULT_RESOLVER, modules, ksNew (0, KS_END), errorKey);
 	if (resolver == NULL)
 	{
@@ -1372,7 +1370,6 @@ static bool initBackends (KeySet * backends, Key * parentKey)
 		// set up parentKey and global keyset
 		keySetName (parentKey, KDB_SYSTEM_ELEKTRA "/mountpoints");
 		keyAddBaseName (parentKey, keyName (backendKey));
-		// TODO (kodebach) [Q]: better way to pass plugins? global shouldn't be specific to the mountpoint
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
@@ -1434,7 +1431,7 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 		if (keyGetNamespace (backendKey) == KEY_NS_PROC)
 		{
 			// proc:/ backends only run in poststorage
-			// FIXME (kodebach) [Q]: how to tell if a proc:/ backend needs an update?
+			// TODO [new_backend]: allow proc:/ backends for more than poststorage
 			keySetMeta (backendKey, "meta:/internal/kdbneedsupdate", "1");
 			continue;
 		}
@@ -1537,6 +1534,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 		if (keyGetNamespace (backendKey) == KEY_NS_PROC && strcmp (phase, KDB_GET_PHASE_POST_STORAGE) != 0)
 		{
 			// proc:/ backends only run in poststorage phase
+			// TODO [new_backend]: allow proc:/ backends for more than poststorage
 			continue;
 		}
 

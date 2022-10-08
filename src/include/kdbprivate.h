@@ -358,7 +358,6 @@ typedef struct _KDB KDB;
 
 struct _KDB
 {
-	// TODO (kodebach) [Q]: use global KeySet for modules?
 	KeySet * modules; /*!< A list of all modules loaded at the moment.*/
 
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through

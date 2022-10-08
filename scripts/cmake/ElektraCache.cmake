@@ -135,7 +135,7 @@ set (
 
 set (
 	KDB_DB_DIR
-	".dir" # TODO (kodebach) [Q]: wouldn't .elektra be better? similar to .git
+	".dir"
 	CACHE STRING "The configuration directory for config files in dir namespace.")
 
 set (

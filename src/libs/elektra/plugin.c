@@ -46,7 +46,6 @@
  */
 Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config, Key * errorKey)
 {
-	// TODO (kodebach) [Q]: take global KS as arg?
 	Plugin * handle = 0;
 	const char * n;
 
@@ -97,7 +96,6 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	/* let the plugin initialize itself */
 	if (handle->kdbOpen)
 	{
-		// TODO (kodebach) [Q]: errorKey or parentKey??
 		if ((handle->kdbOpen (handle, errorKey)) == -1)
 		{
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (

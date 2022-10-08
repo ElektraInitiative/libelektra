@@ -23,7 +23,7 @@ FileCommand::FileCommand ()
 
 int FileCommand::execute (Cmdline const & cl)
 {
-	// TODO (kodebach) [Q]: should this work with cascading keys?
+	// FIXME (kodebach): fix, document in kdbGet
 	if (cl.arguments.size () != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
