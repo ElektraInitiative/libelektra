@@ -409,15 +409,14 @@ static void test_validate (void)
 	TEST_VALIDATE_ERROR ("/\\#0/\\#1", NULL);
 	TEST_VALIDATE_ERROR ("/\\#0/..", "/");
 
-	// TODO (kodebach): new root names
-	/*TEST_VALIDATE_ERROR ("/%", NULL);
-	TEST_VALIDATE_ERROR ("//%", NULL);
-	TEST_VALIDATE_ERROR ("///%", NULL);
-	TEST_VALIDATE_ERROR ("user:/%", NULL);
-	TEST_VALIDATE_ERROR ("user://%", NULL);
-	TEST_VALIDATE_ERROR ("user:///%", NULL);
-	TEST_VALIDATE_ERROR ("%", "/");
-	TEST_VALIDATE_ERROR ("%", "user:/");*/
+	TEST_VALIDATE_OK ("/%", NULL);
+	TEST_VALIDATE_OK ("//%", NULL);
+	TEST_VALIDATE_OK ("///%", NULL);
+	TEST_VALIDATE_OK ("user:/%", NULL);
+	TEST_VALIDATE_OK ("user://%", NULL);
+	TEST_VALIDATE_OK ("user:///%", NULL);
+	TEST_VALIDATE_OK ("%", "/");
+	TEST_VALIDATE_OK ("%", "user:/");
 }
 
 #undef TEST_VALIDATE_OK
@@ -702,6 +701,17 @@ static void test_canonicalize (void)
 			      22);
 	TEST_CANONICALIZE_OK ("..", "system:/elektra/mountpoints", "system:/elektra", 22, 10);
 	TEST_CANONICALIZE_OK ("..", "system:/elektra", "system:/", 10, 3);
+
+	/* FIXME: broken, see #3902
+		TEST_CANONICALIZE_OK ("/%", NULL, "/%", 0, 4);
+		TEST_CANONICALIZE_OK ("//%", NULL, "/%", 0, 4);
+		TEST_CANONICALIZE_OK ("///%", NULL, "/%", 0, 4);
+		TEST_CANONICALIZE_OK ("user:/%", NULL, "user:/%", 0, 4);
+		TEST_CANONICALIZE_OK ("user://%", NULL, "user:/%", 0, 4);
+		TEST_CANONICALIZE_OK ("user:///%", NULL, "user:/%", 0, 4);
+		TEST_CANONICALIZE_OK ("%", "/", "/%", 3, 4);
+		TEST_CANONICALIZE_OK ("%", "user:/", "/%", 3, 4);
+	*/
 }
 
 #undef TEST_CANONICALIZE_OK
@@ -869,6 +879,11 @@ static void test_unescape (void)
 	TEST_UNESCAPE_OK ("/abc/\\%def/ghi", KEY_NS_CASCADING, "\0abc\0%def\0ghi");
 	TEST_UNESCAPE_OK ("/abc/\\%d%ef%/ghi", KEY_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
 	TEST_UNESCAPE_OK ("/abc/\\%def%/ghi", KEY_NS_CASCADING, "\0abc\0%def%\0ghi");
+
+	/* FIXME: broken, see #3902
+		TEST_UNESCAPE_OK ("/%", KEY_NS_CASCADING, "\0\0");
+		TEST_UNESCAPE_OK ("user:/%", KEY_NS_USER, "\0\0");
+	*/
 }
 
 #undef TEST_UNESCAPE_OK
