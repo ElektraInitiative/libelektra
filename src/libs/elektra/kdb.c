@@ -1598,40 +1598,61 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 
 
 /**
- * Retrieve Keys from a Key database in an atomic and universal way.
+ * Retrieve Keys from the Key database in an atomic and universal way.
  *
- * @pre The @p handle must be passed as returned from kdbOpen().
+ * @pre The @p handle must be a valid KDB handle as returned from kdbOpen().
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *     keyNew().
  *
- * If you pass NULL on any parameter, kdbGet() will fail immediately without doing anything.
+ * If you pass `NULL` or a key with read-only metadata as @p parentKey,
+ * kdbGet() will fail immediately without doing anything.
+ * If you pass another invalid @p parentKey, or `NULL` as @p ks or @p handle,
+ * kdbGet() will set an error on @p parentKey and then return immediately.
  *
- * The returned KeySet @p ks may already contain some keys, e.g. from previous
- * kdbGet() calls. The newly retrieved Keys will be appended using
- * ksAppendKey().
+ * **Attention**: If you pass a non-NULL @p parentKey with writable metadata, kdbGet() will **always** remove
+ *                any existing errors and warnings from @p parentKey.
  *
- * If not done earlier, kdbGet() will fully retrieve all keys under the @p parentKey
- * folder recursively (See Optimization below when it will not be done).
- * Cascading Keys (starting with /) will retrieve the same path in all namespaces.
- * `/` will retrieve all Keys in @p handle.
+ * @par Loadable Namespaces
  *
- * It is recommended to use the most specific @p parentKey possible. (e.g. using `system:/` is rarely the most specific)
+ * Not all namespace can be loaded.
+ * `spec:/`, `dir:/`, `user:/` and `system:/` are loadable.
+ * `proc:/` keys can be loaded but will never be persisted or cached.
+ * `default:/` keys can be returned by kdbGet() but they will always stem from a specification in `spec:/` keys
+ * If @p ks contains a key with any other namespace, an error will be returned.
  *
- * @note kdbGet() might retrieve more Keys than requested which are not
- *     below parentKey or even in a different namespace.
- *     These keys, except of `proc:/` keys, must be passed to calls of kdbSet(),
- *     otherwise they will be lost. This stems from the fact that the
- *     user has the only copy of the whole configuration and backends
- *     only write configuration that was passed to them.
- *     For example, if you kdbGet() "system:/mountpoint/interest"
- *     you will not only get all Keys below system:/mountpoint/interest,
- *     but also all Keys below system:/mountpoint (if system:/mountpoint
- *     is a mountpoint as the name suggests, but
- *     system:/mountpoint/interest is not a mountpoint).
- *     Make sure to not touch or remove Keys outside the Keys of interest,
- *     because others may need them!
+ * If @p parentKey is in any other namespace, an eror will be returned.
+ *
+ * **Note**: In general it is recommended to use a @p parentKey in the cascading namespace.
+ *
+ * @par Parent Key
+ *
+ * The @p parentKey defines which parts of @p ks will be loaded.
+ * Everything that is at or below @p parentKey wil be loaded together with any key
+ * that shares a backend with such a key. Backends are always loaded as an atomic unit.
+ *
+ * **Note**: If @p parentKey is in the cascading namespace, keys of all loadable
+ *           namspaces (see above) will be loaded.
+ *
+ * Upon sucessfully returning kdbGet() also sets the value of @p parentKey to the storage identifier used
+ * by the backend that contains (or would contain) @p parentKey. For file-based backends this is the absolute
+ * path of the underlying file. Other backends may use different identifiers, but it always uniquely identifies
+ * the underlying storage unit.
+ *
+ * **Note**: If @p parentKey is in the cascading namespace, the value of @p parentKey
+ *           will be set to an empty string.
+ *
+ * @par KeySet Modifications
+ *
+ * Below or at @p parentKey, the KeySet @p ks will mostly contain keys loaded from backends.
+ * The only exception are `proc:/` and `spec:/` keys that were already present, before kdbGet()
+ * was called and do not overlap with an existing backend (for those namespaces).
+ * This can be used to provide a hard-coded fallback specifications and/or process-specific data.
+ *
+ * Keys not below (or at) @p parentKey that were present when kdbGet() was called, may still be removed.
+ * For example, this could be because they overlap with a backend that also has keys below @p parentKey
+ * (backends are atomic units).
  *
  * @par Example:
  * This example demonstrates the typical usecase within an application
@@ -1678,6 +1699,9 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO [new_backend]: handle all namespaces according to kdb-operations.md
+	//  including checking for non-loadable namespace (see above) keys in ks
+	//  including (not) removing keys from ks as described above
+	//  including checking the namespace of parentKey
 
 	// Step 0: check preconditions
 	if (parentKey == NULL)
@@ -1692,7 +1716,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	clearErrorAndWarnings (parentKey); // FIXME (kodebach) [doc]: NEW kdbGet now ALWAYS clears errors AND warnings
+	clearErrorAndWarnings (parentKey);
 
 	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
 	{
@@ -1924,7 +1948,15 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 
-	keyCopy (parentKey, keyGetMeta (backendsFindParent (allBackends, parentKey), "meta:/internal/kdbmountpoint"), KEY_CP_STRING);
+	if (keyGetNamespace (parentKey) == KEY_NS_CASCADING)
+	{
+		keySetString (parentKey, "");
+	}
+	else
+	{
+		keyCopy (parentKey, keyGetMeta (backendsFindParent (allBackends, parentKey), "meta:/internal/kdbmountpoint"),
+			 KEY_CP_STRING);
+	}
 
 	ksDel (backends);
 	ksDel (allBackends);
@@ -2152,7 +2184,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 }
 
 /**
- * Set Keys to a Key database in an atomic and universal way.
+ * Set Keys to the Key database in an atomic and universal way.
  *
  * @pre kdbGet() must be called before kdbSet():
  *    - initially (after kdbOpen())
@@ -2161,27 +2193,47 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
  *     with ksNew().
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *     keyNew(). It must not have read-only name, value or metadata.
+ *     The @p parentKey also must not be in the `meta:/` namespace.
  *
- * If you pass NULL on any parameter, kdbSet() will fail immediately without doing anything.
+ * If you pass `NULL` or a key with read-only metadata as @p parentKey,
+ * kdbSet() will fail immediately without doing anything.
+ * If you pass another invalid @p parentKey, or `NULL` as @p ks or @p handle,
+ * kdbSet() will set an error on @p parentKey and then return immediately.
  *
- * With @p parentKey you can specify which part of the given keyset
- * is of interest for you. Then you promise to only modify or
- * remove keys below this key. All others would be passed back
- * as they were retrieved by kdbGet().
- * Cascading keys (starting with /) will set the path in all namespaces.
- * `/` will commit all keys.
- * This parameter is an optimization toonly save keys of mountpoints affected by the specified @p parentKey. This does not necessarily mean
- * that only changes to keys below that @p parentKey are saved. Meta-names in @p parentKey will be rejected (error C01320). Empty/Invalid
- * Keys will also be rejected (error C01320).
+ * **Attention**: If you pass a non-NULL @p parentKey with writable metadata, kdbSet() will **always** remove
+ *                any existing errors and warnings from @p parentKey.
+ *
+ * @par Persistable Namespaces
+ *
+ * Not all namespace can be persisted.
+ * `default:/` and `proc:/` keys are ignored by kdbSet().
+ * `spec:/`, `dir:/`, `user:/` and `system:/` are persistable.
+ * If @p ks contains a key with any other namespace, an error will be returned.
+ *
+ * If @p parentKey is in any other namesapce, an eror will be returned.
+ *
+ * **Note**: In general it is recommended to use a @p parentKey in the cascading namespace.
+ *
+ * @par Parent Key
+ *
+ * The @p parentKey defines which parts of @p ks will be stored.
+ * Everything that is at or below @p parentKey wil be persisted together with any key
+ * that shares a backend with such a key. Backends are always stored as an atomic unit.
+ *
+ * **Note**: If @p parentKey is in the cascading namespace, keys of all persistable
+ *           namspaces (see above) will be stored.
+ *
+ * @par KeySet modifications
+ *
+ * The contents of @p ks will mostly not be modified by kdbSet().
+ * The only modifications made are those caused by applying the specification in
+ * `spec:/` to `dir:/`, `user:/` and `system:/`.
  *
  * @par Errors
  * If `parentKey == NULL` or @p parentKey has read-only metadata, kdbSet() will
  * immediately return the error code -1. In all other error cases the following happens:
- * - kdbSet() will leave the KeySet's * internal cursor on the key that generated the error.
- * - Error information will be written into the metadata of
- *   the parent key, if possible.
- * - None of the keys are actually committed in this situation, i.e. no
- *   configuration file will be modified.
+ * - Error information will be written into the metadata of the parent key, if possible.
+ * - None of the keys are actually committed in this situation, i.e. no configuration file will be modified.
  *
  * In case of errors you should present the error message to the user and let the user decide what
  * to do. Possible solutions are:
@@ -2192,15 +2244,18 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
  *   - drop the old keyset (in favour of what was set from another application)
  *   - merge the original, your own and the other keyset
  * - export the configuration into a file (for unresolvable errors)
- * - repeat the same kdbSet might be of limited use if the user does
- *   not explicitly request it, because temporary
- *   errors are rare and its unlikely that they fix themselves
- *   (e.g. disc full, permission problems)
+ * - repeating the same kdbSet() might be of limited use, if the user does
+ *   not explicitly request it, because temporary errors are rare and its
+ *   unlikely that they fix themselves (e.g. disc full, permission problems)
  *
  * @par Optimization
- * Each key is checked with keyNeedSync() before being actually committed.
- * If no key of a backend needs to be synced
- * any affairs to backends are omitted and 0 is returned.
+ * Only backends that
+ * - contain at least changed key according to keyNeedSync(),
+ * - contain fewer keys than at the end of kdbGet()
+ * will be called.
+ * There won't be an unnecessary write for unchanged keys.
+ *
+ * If none of the backends need an update, kdbSet() returns 0 and does nothing.
  *
  * @snippet kdbset.c set
  *
@@ -2227,6 +2282,8 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO [new_backend]: handle all namespaces according to kdb-operations.md
+	//    including returning an error, as described above (Persistable Namespaces)
+	//    including checking the namespace of parentKey
 
 	// Step 0: check preconditions
 	if (parentKey == NULL)
@@ -2241,7 +2298,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	clearErrorAndWarnings (parentKey); // FIXME (kodebach) [doc]: NEW kdbSet now ALWAYS clears errors AND warnings
+	clearErrorAndWarnings (parentKey);
 
 	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
 	{

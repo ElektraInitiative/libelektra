@@ -329,8 +329,6 @@ TEST_F (Simple, GetAppendCascading)
 	EXPECT_EQ (parentKey.getString (), "");
 	kdb.get (ks, parentKey);
 	EXPECT_EQ (parentKey.getName (), myRoot);
-	std::string fn = parentKey.getString ();
-	EXPECT_EQ (fn.substr (fn.find_last_of ('/') + 1), "kdbFile.dump");
 	parentKey.setString ("");
 
 	ASSERT_EQ (ks.size (), 1) << "no key stayed" << ks;
@@ -353,9 +351,6 @@ TEST_F (Simple, GetAppendCascading)
 	EXPECT_EQ (parentKey.getString (), "");
 	kdb.get (ks2, parentKey);
 	EXPECT_EQ (parentKey.getName (), myRoot);
-	fn = parentKey.getString ();
-	// FIXME (kodebach): cascading key file name
-	EXPECT_EQ (fn.substr (fn.find_last_of ('/') + 1), "kdbFile.dump");
 	ASSERT_EQ (ks2.size (), 0) << "got keys from freshly mounted backends";
 }
 

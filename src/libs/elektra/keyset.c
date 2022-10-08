@@ -1255,7 +1255,17 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 }
 
 /**
- * // FIXME (kodebach): documentation
+ * Retrieves all Keys from KeySet @p ks that are below or at @p root
+ *
+ * This function is similar to ksCut().
+ * It returns an identical KeySet, but the Keys also remain in @p ks
+ *
+ * @param ks the Keyset to copy from
+ * @param root the point where to copy from the Keyset
+ *
+ * @return a new allocated KeySet which needs to deleted with ksDel().
+ *         The KeySet consists of all Keys (of the original KeySet ks)
+ *         below @p root. If @p root exists, it will also be appended.
  */
 KeySet * ksBelow (const KeySet * ks, const Key * root)
 {

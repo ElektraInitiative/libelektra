@@ -431,16 +431,27 @@ struct _Plugin
 	KeySet * modules; /*!< A list of all currently loaded modules.*/
 };
 
-// FIXME (kodebach): document
+/**
+ * Holds all data for one backend.
+ * 
+ * This struct is used for the key values in @ref _KDB.backends
+ * 
+ * @ingroup backend
+ */
 typedef struct _BackendData
 {
-	struct _Plugin * backend;
-	struct _KeySet * keys;
-	struct _KeySet * plugins;
-	struct _KeySet * definition;
-	size_t getSize;
-	bool initialized;
-	bool keyNeedsSync;
+	struct _Plugin * backend; /*!< the backend plugin for this backend */
+	struct _KeySet * keys; /*!< holds the keys for this backend, assigned by backendsDivide() */
+	struct _KeySet * plugins; /*!< Holds all the plugins of this backend.
+	 The key names are all `system:/<ref>` where `<ref>` is the same as in
+	 `system:/elektra/mountpoints/<mp>/plugins/<ref>` */
+	struct _KeySet * definition; /*!< Holds all the mountpoint definition of this backend.
+	 This is a copy of `system:/elektra/mountpoints/<mp>/defintion` moved to `system:/` */
+	size_t getSize; /*!< the size of @ref _BackendData.keys at the end of kdbGet()
+	 More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
+	bool initialized; /*!< whether or not the init function of this backend has been called */
+	bool keyNeedsSync; /*!< whether or not any key in this backend needs a sync (keyNeedSync())
+	 More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
 } BackendData;
 
 // clang-format on

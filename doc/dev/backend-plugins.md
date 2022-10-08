@@ -139,7 +139,7 @@ During the `resolver` phase the backend plugin is called with:
 
 The backend plugin then:
 
-- **MUST** set the value of the `parentKey` to a value identifying the storage unit that contains the data of the mountpoint.
+- **MUST** set the value of the `parentKey` to a value identifying the storage unit (the _storage identifier_) that contains the data of the mountpoint.
   For file-based backend plugins, this means setting the value of `parentKey` to an absolute filename.
 - **MAY** set metadata on `parentKey`, if encoding the information required for the following phases is too hard to encode in a single string value.
 

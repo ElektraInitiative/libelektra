@@ -70,17 +70,14 @@ Properties of `kdbGet()`:
   The exception here are `proc:/` and `spec:/` keys.
   For other namespaces, all keys below `parentKey` will be removed from `ks`.
   For `proc:/` and `spec:/` only keys that overlap with a backend that was loaded will be removed from `ks`.
-- The KeySet `ks` _may_ contain other keys not below `parentKey`.
-  These keys fall into one of three categories:
+- The KeySet `ks` _may_ contain other keys not below `parentKey`:
   1. Keys that are not below `parentKey`, but are stored in a backend that contains other keys which are below `parentKey`.
      These keys are returned, because backends are treated as one atomic unit.
      Either all keys within a backend are read, or none of them are.
-  2. Keys that are stored in a backend that is not below `parentKey`.
-     `kdbGet()` may decide that it is more efficient (e.g., because of a cache) to return more keys than requested.
-  3. Keys that were already present in `ks` when `kdbGet()` was called and do not conflict with the goal of representing the current state of the KDB.
-     > **Note:** While it is possible that keys not below `parentKey` exist within `ks`, there are no guarantees. `kdbGet()` only makes guarantees about the keys _below `parentKey`_.
+  2. Keys that were already present in `ks` when `kdbGet()` was called and do not conflict with the goal of representing the current state of the KDB below `parentKey`.
 - After calling `kdbGet (kdb, ks, parentKey)`, the Key `parentKey` will only have the `meta:/error/*` or `meta:/warnings/#/*` metakeys, if the errors/warnings originate from this `kdbGet()` call.
   In other words, `kdbGet ()` first clears any existing errors/warnings and only then starts doing the actual work.
+- It is an error to use a `parentKey` with a namespace other than: `default:/`, `proc:/`, `spec:`, `dir:/`, `user:/`, `system:/` or cascading
 
 To the caller it looks as if `kdbGet()` had removed all keys below `parentKey`, as well as some others, from `ks` and then loaded the data from the backends.
 Which backends are actually read is an implementation detail.
@@ -145,6 +142,9 @@ Properties of `kdbSet()`:
 - _All keys_ in `ks` that are below `parentKey` will be persisted in the KDB, when a `kdbSet (kdb, ks, parentKey)` call returns successfully.
   Additionally, any key in `ks` that shares a backend with another key which is below `parentKey` will also be persisted.
 - Calling `kdbSet` may result in an error, if `kdbGet` wasn't called on this `KDB` instance with the same `parentKey` at least once.
+- After calling `kdbSet (kdb, ks, parentKey)`, the Key `parentKey` will only have the `meta:/error/*` or `meta:/warnings/#/*` metakeys, if the errors/warnings originate from this `kdbSet()` call.
+  In other words, `kdbSet ()` first clears any existing errors/warnings and only then starts doing the actual work.
+- It is an error to use a `parentKey` with a namespace other than: `default:/`, `proc:/`, `spec:`, `dir:/`, `user:/`, `system:/` or cascading
 
 The flow of this operation is:
 
