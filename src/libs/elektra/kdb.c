@@ -1614,6 +1614,10 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
  * **Attention**: If you pass a non-NULL @p parentKey with writable metadata, kdbGet() will **always** remove
  *                any existing errors and warnings from @p parentKey.
  *
+ * **Important**: The KDB @p handle DOES NOT store a copy of the retrieved @p ks internally.
+ *                This means if you later call kdbSet() with the same @p handle you must make sure to
+ *                pass all keys from @p ks, which you do not want to remove.
+ *
  * @par Loadable Namespaces
  *
  * Not all namespace can be loaded.
