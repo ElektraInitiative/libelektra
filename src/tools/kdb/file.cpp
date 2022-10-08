@@ -23,7 +23,6 @@ FileCommand::FileCommand ()
 
 int FileCommand::execute (Cmdline const & cl)
 {
-	// FIXME (kodebach): error on cascading
 	if (cl.arguments.size () != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
@@ -32,6 +31,17 @@ int FileCommand::execute (Cmdline const & cl)
 	if (!x.isValid ())
 	{
 		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
+	}
+
+	if (x.getNamespace () == ElektraNamespace::CASCADING)
+	{
+		throw invalid_argument ("Cannot retrieve the file for a cascading key. Use a concrete namespace.");
+	}
+
+	if (x.getNamespace () != ElektraNamespace::SPEC && x.getNamespace () != ElektraNamespace::SYSTEM &&
+	    x.getNamespace () != ElektraNamespace::USER && x.getNamespace () != ElektraNamespace::DIR)
+	{
+		throw invalid_argument ("Can only retrieve file for a persistable namespace: spec:/, system:/, user:/ or dir:/");
 	}
 
 	try

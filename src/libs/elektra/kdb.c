@@ -1640,7 +1640,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
  * path of the underlying file. Other backends may use different identifiers, but it always uniquely identifies
  * the underlying storage unit.
  *
- * **Note**: If @p parentKey is in the cascading namespace, the value of @p parentKey
+ * **Note**: If @p parentKey is in the cascading, `default:/` or `proc:/ namespace, the value of @p parentKey
  *           will be set to an empty string.
  *
  * @par KeySet Modifications
@@ -1948,7 +1948,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 
-	if (keyGetNamespace (parentKey) == KEY_NS_CASCADING)
+	elektraNamespace parentNs = keyGetNamespace (parentKey);
+	if (parentNs == KEY_NS_CASCADING || parentNs == KEY_NS_PROC || parentNs == KEY_NS_DEFAULT)
 	{
 		keySetString (parentKey, "");
 	}
