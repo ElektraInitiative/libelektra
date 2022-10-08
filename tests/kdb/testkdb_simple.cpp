@@ -84,9 +84,8 @@ TEST_F (Simple, TryChangeAfterSet)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), 0) << "did not find config file";
 }
 
-TEST_F (Simple, DISABLED_MetaInSet)
+TEST_F (Simple, MetaInSet)
 {
-	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -100,14 +99,15 @@ TEST_F (Simple, DISABLED_MetaInSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 1) << "got wrong keys:\n" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
 }
 
-TEST_F (Simple, DISABLED_InvalidKeysInSet)
+TEST_F (Simple, InvalidKeysInSet)
 {
-	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -122,6 +122,8 @@ TEST_F (Simple, DISABLED_InvalidKeysInSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 2) << "got wrong keys:\n" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
@@ -146,9 +148,8 @@ void compareKeySet (kdb::KeySet ks1, kdb::KeySet ks2)
 	EXPECT_EQ (i1, ks1.end ()) << "second iterator not at end";
 }
 
-TEST_F (Simple, DISABLED_EverythingInGetSet)
+TEST_F (Simple, EverythingInGetSet)
 {
-	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks = getAll ();
@@ -159,6 +160,8 @@ TEST_F (Simple, DISABLED_EverythingInGetSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 816) << "got wrong keys:\n" << ks;
 	// KeySet cmp = getAll();
 	// ASSERT_EQ(ks, cmp);
@@ -168,9 +171,8 @@ TEST_F (Simple, DISABLED_EverythingInGetSet)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
 }
 
-TEST_F (Simple, DISABLED_EverythingInSet)
+TEST_F (Simple, EverythingInSet)
 {
-	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -183,6 +185,8 @@ TEST_F (Simple, DISABLED_EverythingInSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 816) << "got wrong keys:\n" << ks;
 	// KeySet cmp = getAll();
 	// ASSERT_EQ(ks, cmp);
@@ -313,9 +317,8 @@ TEST_F (Simple, GetCascading)
 }
 
 
-TEST_F (Simple, DISABLED_GetAppendCascading)
+TEST_F (Simple, GetAppendCascading)
 {
-	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -351,13 +354,13 @@ TEST_F (Simple, DISABLED_GetAppendCascading)
 	kdb.get (ks2, parentKey);
 	EXPECT_EQ (parentKey.getName (), myRoot);
 	fn = parentKey.getString ();
+	// FIXME (kodebach): cascading key file name
 	EXPECT_EQ (fn.substr (fn.find_last_of ('/') + 1), "kdbFile.dump");
 	ASSERT_EQ (ks2.size (), 0) << "got keys from freshly mounted backends";
 }
 
-TEST_F (Simple, DISABLED_GetAppendMeta)
+TEST_F (Simple, GetAppendMeta)
 {
-	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
