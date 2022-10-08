@@ -50,6 +50,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	Plugin * handle = 0;
 	const char * n;
 
+	// TODO [new_backend]: change elektraPluginFactory to return contract KeySet instead of half-initialized Plugin*
 	elektraPluginFactory pluginFactory = 0;
 
 	if (!name || name[0] == '\0')
@@ -94,10 +95,9 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	config = 0;		   // for err_clup case
 
 	/* let the plugin initialize itself */
-	// TODO (kodebach): lazy open
 	if (handle->kdbOpen)
 	{
-		// TODO (kodebach): errorKey or parentKey??
+		// TODO (kodebach) [Q]: errorKey or parentKey??
 		if ((handle->kdbOpen (handle, errorKey)) == -1)
 		{
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (

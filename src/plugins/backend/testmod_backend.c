@@ -15,7 +15,8 @@
 
 #include <tests_plugin.h>
 
-/* FIXME: TESTS
+// FIXME [new_backend]: tests
+/*
 KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
@@ -382,7 +383,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	/* FIXME: TESTS
+	// FIXME [new_backend]: tests
+	/*
 		test_simple ();
 		test_default ();
 		test_backref ();

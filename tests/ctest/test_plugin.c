@@ -66,7 +66,6 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_process ();
 	test_simple ();
 	test_name ();
 

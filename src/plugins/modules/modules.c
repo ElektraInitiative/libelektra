@@ -84,7 +84,6 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		Plugin * plugin = elektraPluginGetData (handle);
 
 		// create separate parentKey so that symlinked/aliased plugins still work
-		// TODO (kodebach): use separate function for contract to avoid all of this
 		keyAddBaseName (modulesRoot, plugin->name);
 		int ret = plugin->kdbGet (plugin, returned, modulesRoot);
 		keyDel (modulesRoot);

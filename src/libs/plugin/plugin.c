@@ -174,13 +174,13 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 
 const char * elektraPluginGetPhase (Plugin * plugin)
 {
-	// TODO (kodebach): switch to integer value? (uint32_t?)
+	// FIXME (kodebach): switch to integer value? (uint32_t?)
 	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }
 
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 {
-	// TODO (kodebach): docs, precond checks
+	// FIXME (kodebach): docs, precond checks
 	KeySet * plugins = *(KeySet **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
 
 	Key * lookupHelper = keyNew ("system:/", KEY_END);

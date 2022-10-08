@@ -354,7 +354,7 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
  */
 static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
 {
-	// TODO (kodebach): tests
+	// FIXME [new_backend]: tests
 	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
 	KeySet * dup = ksDeepDup (contract);
 
@@ -411,8 +411,8 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 
 static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * global, Key * errorKey)
 {
-	// TODO (kodebach): implement user:/elektra and dir:/elektra
-	// FIXME (kodebach): replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
+	// TODO [new_backend]: implement user:/elektra and dir:/elektra
+	// TODO [new_backend]: replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
 	Plugin * storage = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, ksNew (0, KS_END), errorKey);
 	if (storage == NULL)
 	{
@@ -623,7 +623,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 		return false;
 	}
 
-	// FIXME (kodebach): reserve /elektra/... in every namespace
+	// TODO [new_backend]: reserve /elektra/... in every namespace
 	Key * elektraRoot = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
 	if (keyIsBelowOrSame (elektraRoot, mountpoint) != 0)
 	{
@@ -659,7 +659,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 		return false;
 	}
 
-	// TODO (kodebach): read and process config/needs from contract
+	// TODO [new_backend]: read and process config/needs from contract
 	ksDel (systemConfig);
 
 	Key * pluginsRoot = keyNew ("system:/", KEY_END);
@@ -725,7 +725,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	return true;
 }
 
-// FIXME (kodebach): write tests
+// FIXME [new_backend]: write tests
 KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	KeySet * mountpoints = ksNew (0, KS_END);
@@ -979,7 +979,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	ELEKTRA_LOG ("called with %s", keyName (errorKey));
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 
-	int errnosave = errno; // TODO (kodebach) [Q]: really needed?
+	int errnosave = errno;
 
 	// Step 1: create empty KDB instance
 	KDB * handle = kdbNew (errorKey);
@@ -1002,7 +1002,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// Step 4: process contract and set up hooks
-	// TODO (kodebach): remove/replace step in global plugins rewrite
+	// TODO [new_backend]: remove once all globals are replacd by hooks
 	if (mountGlobals (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
@@ -1346,7 +1346,7 @@ static bool initBackends (KeySet * backends, Key * parentKey)
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		// TODO (kodebach): lazy open
+		// TODO [new_backend]: lazy open plugins here instead of opening all mountpoints in kdbOpen
 
 		Key * backendKey = ksAtCursor (backends, i);
 		keySetMeta (backendKey, "meta:/internal/kdbreadonly", NULL);
@@ -1372,7 +1372,7 @@ static bool initBackends (KeySet * backends, Key * parentKey)
 		// set up parentKey and global keyset
 		keySetName (parentKey, KDB_SYSTEM_ELEKTRA "/mountpoints");
 		keyAddBaseName (parentKey, keyName (backendKey));
-		// TODO (kodebach): find a better way to pass plugins, global shouldn't be specific to the mountpoint
+		// TODO (kodebach) [Q]: better way to pass plugins? global shouldn't be specific to the mountpoint
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
@@ -1442,7 +1442,6 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 		// check if get function exists
-		// TODO (kodebach): move check into kdbOpen
 		kdbGetPtr getFn = backendData->backend->kdbGet;
 		if (getFn == NULL)
 		{
@@ -1542,7 +1541,6 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 		}
 
 		// check if get function exists
-		// TODO (kodebach): move check into kdbOpen
 		kdbGetPtr getFn = backendData->backend->kdbGet;
 		if (getFn == NULL)
 		{
@@ -1683,8 +1681,6 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO (kodebach): different handling of namespaces
-	// FIXME (kodebach): write tests
-
 	// Step 0: check preconditions
 	if (parentKey == NULL)
 	{
@@ -1732,7 +1728,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
+	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
@@ -1798,18 +1794,18 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// check if cache is enabled, Steps 7-9 only run with cache
-	// FIXME (kodebach): implement cache
+	// TODO [new_backend]: implement cache
 	bool cacheEnabled = false;
 	if (cacheEnabled)
 	{
 		// Step 7: get cache entry IDs
-		// FIXME (kodebach): implement cache
+		// TODO [new_backend]: implement cache
 
 		// Step 8: run cachecheck phase
-		// FIXME (kodebach): implement cache
+		// TODO [new_backend]: implement cache
 
 		// Step 9: retrieve cache data
-		// FIXME (kodebach): implement cache
+		// TODO [new_backend]: implement cache
 	}
 
 	// Step 10a: run prestorage phase
@@ -1893,7 +1889,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// FIXME (kodebach): handle proc:/ keys
 	if (!backendsDivide (backends, dataKs))
 	{
-		// FIXME (kodebach): report key that can't be divided
+		// FIXME (kodebach): log key that can't be divided
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
 					    "Couldn't divide keys into mountpoints before poststorage. Please report this bug at "
 					    "https://issues.libelektra.org.");
@@ -1926,7 +1922,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (defaultCutpoint);
 
 	// Step 19: update cache
-	// FIXME (kodebach): implement cache
+	// TODO [new_backend]: implement cache
 
 	// TODO (kodebach): name not needed, once lock is in place
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
@@ -1965,7 +1961,6 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 		// check if set function exists
-		// TODO (kodebach): move check into kdbOpen
 		kdbSetPtr setFn = backendData->backend->kdbSet;
 		if (setFn == NULL)
 		{
@@ -2058,7 +2053,6 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 		// check if function exists
-		// TODO (kodebach): move checks into kdbOpen
 		if (function == KDB_SET_FN_SET && backendData->backend->kdbSet == NULL)
 		{
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
@@ -2238,7 +2232,6 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO (kodebach): different handling of namespaces
-	// FIXME (kodebach): write tests
 
 	// Step 0: check preconditions
 	if (parentKey == NULL)
@@ -2289,7 +2282,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
-	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
+	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
 	// Step 1: find backends for parentKey
@@ -2326,7 +2319,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 3: run spec to add metadata
-	// TODO (kodebach): change once new global plugins are done
+	// TODO [new_backend]: remove once all globals are replaced by hooks
 	if (elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		goto error;
@@ -2336,9 +2329,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		goto error;
 	}
-
-	// TODO (kodebach) [opt]: merge steps 4-6
-	// By merging steps 4-6, we MAY be able to avoid copying keys from unchanged and read-only backends.
 
 	// Step 4: create deep-copy of ks
 	// Note: This is needed so that ks retains its in-process state,
@@ -2406,22 +2396,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		goto rollback;
 	}
-
-	/* TODO (kodebach): enable steps when spec is ready
-		// Step 8: merge data from all backends (for spec removal)
-		ksClear (setKs);
-		backendsMerge (backends, setKs);
-
-		// Step 9: run the spec plugin to remove copied metadata
-		// FIXME (kodebach): implement spec
-
-		// Step 10: split setKs for remaining phases
-		if (!backendsDivide (backends, setKs))
-		{
-			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints after spec removal. Please report this
-	   bug at https://issues.libelektra.org."); goto rollback;
-		}
-	*/
 
 	// Step 8: merge data from all backends (for spec removal)
 	ksClear (setKs);

@@ -7,7 +7,7 @@
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
-// FIXME: TESTS
+// FIXME [new_backend]: tests
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -267,7 +267,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 		}
 	}
 
-	// TODO (Q): support for read-write to absolute path?
+	// TODO (kodebach) [Q]: support for read-write to absolute path?
 	bool readOnly = handle->setPositions.resolver == NULL;
 
 	if (handle->getPositions.storage == NULL && ksLookupByName (definition, "system:/positions/get/storage/omit", 0) == NULL)
@@ -450,7 +450,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey
 		if (handle->getPositions.resolver == NULL)
 		{
 			// no resolver configured -> path is absolute
-			// TODO (Q): check mtime to determine up date needed?
+			// TODO (kodebach) [Q]: check mtime to determine up date needed?
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
 
@@ -458,7 +458,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey
 	}
 	else if (strcmp (phase, KDB_GET_PHASE_CACHECHECK) == 0)
 	{
-		// FIXME (kodebach): implement cache
+		// TODO [new_backend]: implement cache
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 	else if (strcmp (phase, KDB_GET_PHASE_PRE_STORAGE) == 0)
@@ -528,7 +528,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 		if (handle->setPositions.resolver == NULL)
 		{
 			// no resolver configured -> path is absolute
-			// TODO (Q): support for read-write?
+			// TODO (kodebach) [Q]: support for read-write?
 			ELEKTRA_SET_INTERNAL_ERROR (
 				parentKey,
 				"No resolver, but initialized as read-write. Please report this bug at https://issues.libelektra.org.");

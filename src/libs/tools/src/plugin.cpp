@@ -208,7 +208,7 @@ void Plugin::check (vector<string> & warnings)
 		if (placements == "backend")
 		{
 			// accepted
-			// TODO (kodebach): fix this code
+			// FIXME (kodebach): fix this code
 		}
 		else
 		{
