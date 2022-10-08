@@ -180,6 +180,8 @@ libelektraprivate_1.0 {
 
 	elektraIsArrayPart;
 
+	backendsDivide;
+
 	# kdblogger.h
 	elektraLog;
 

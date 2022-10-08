@@ -21,11 +21,4 @@ void clear_sync (KeySet * ks);
 void output_plugin (Plugin * plugin);
 void output_backend (Plugin * backend);
 
-#if 1 == 0
-void output_trie (Trie * trie);
-
-void generate_split (Split * split);
-void output_split (Split * split);
-#endif
-
 #endif

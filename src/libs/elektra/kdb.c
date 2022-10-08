@@ -1107,24 +1107,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 	int errnosave = errno;
-#if 1 == 0
-	if (handle->split)
-	{
-		splitDel (handle->split);
-	}
 
-	trieClose (handle->trie, errorKey);
-
-	elektraPluginClose (handle->defaultBackend, errorKey);
-	handle->defaultBackend = 0;
-
-	// not set in fallback mode, so lets check:
-	if (handle->initBackend)
-	{
-		elektraPluginClose (handle->initBackend, errorKey);
-		handle->initBackend = 0;
-	}
-#endif
 	if (handle->backends)
 	{
 
@@ -1166,6 +1149,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 }
 
 #if 2 == 0
+// TODO [new_backend]: re-implement cache
 static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * initialParent)
 {
 	const char * cacheName = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "" : keyName (cacheParent);
@@ -1753,9 +1737,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
-#if 1 == 0
-	Split * split = splitNew ();
-#endif
 	// Step 1: find backends for parentKey
 	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
