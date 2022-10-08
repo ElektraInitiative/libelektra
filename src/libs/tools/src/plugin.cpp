@@ -208,7 +208,7 @@ void Plugin::check (vector<string> & warnings)
 		if (placements == "backend")
 		{
 			// accepted
-			// FIXME (kodebach): fix this code
+			// TODO (flo91): add checks in new mount tooling
 		}
 		else
 		{

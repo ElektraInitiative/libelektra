@@ -1916,7 +1916,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// FIXME (kodebach): handle proc:/ keys
 	if (!backendsDivide (backends, dataKs))
 	{
-		// FIXME (kodebach): log key that can't be divided
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
 					    "Couldn't divide keys into mountpoints before poststorage. Please report this bug at "
 					    "https://issues.libelektra.org.");
