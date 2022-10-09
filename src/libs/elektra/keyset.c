@@ -1269,7 +1269,20 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
  */
 KeySet * ksBelow (const KeySet * ks, const Key * root)
 {
-	// FIXME (kodebach): tests
+	if (ks == NULL)
+	{
+		return NULL;
+	}
+	if (root == NULL)
+	{
+		return NULL;
+	}
+
+	if (ks->array == NULL)
+	{
+		return ksNew (0, KS_END);
+	}
+
 	if (keyGetNamespace (root) == KEY_NS_CASCADING)
 	{
 		KeySet * returned = ksNew (0, KS_END);

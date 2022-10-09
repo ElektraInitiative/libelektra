@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <kdbprivate.h> // for ksBelow
 #include <tests.h>
 
 #define NUMBER_OF_NAMESPACES 5
@@ -2172,6 +2173,77 @@ static KeySet * set_oa (void)
 		      keyNew ("user:/a/x/c/a", KEY_END), keyNew ("user:/a/x/c/b", KEY_END), KS_END);
 }
 
+static void test_below (void)
+{
+	printf ("Testing ksBelow\n");
+
+	KeySet * orig;
+	ssize_t origSize;
+	Key * cutpoint;
+	KeySet * result;
+	KeySet * real_orig;
+
+	orig = ksNew (0, KS_END);
+	cutpoint = keyNew ("user:/b", KEY_END);
+
+	succeed_if (ksBelow (0, cutpoint) == 0, "No Error on NULL pointer");
+	succeed_if (ksBelow (orig, 0) == 0, "No Error on NULL pointer");
+
+	result = ksBelow (orig, cutpoint);
+	succeed_if (result, "result is null");
+	succeed_if (ksGetSize (result) == 0, "result not empty");
+	succeed_if (ksGetSize (orig) == 0, "orig size changed");
+	ksDel (orig);
+	ksDel (result);
+	keyDel (cutpoint);
+
+	orig = set_oa ();
+	origSize = ksGetSize (orig);
+	cutpoint = keyNew ("user:/a", KEY_END);
+	result = ksBelow (orig, cutpoint);
+	succeed_if (ksGetSize (orig) == origSize, "orig size changed");
+	real_orig = set_oa ();
+	compare_keyset (result, real_orig);
+	ksDel (orig);
+	ksDel (result);
+	ksDel (real_orig);
+	keyDel (cutpoint);
+
+	KeySet * cmp_orig[16];
+	KeySet * cmp_result[16];
+#include "data_cut.c"
+
+	for (int i = 0; i < 16; ++i)
+	{
+		orig = set_a ();
+		KeySet * origCopy = set_a ();
+		origSize = ksGetSize (orig);
+		cutpoint = keyDup (ksAtCursor (orig, i), KEY_CP_ALL);
+		result = ksBelow (orig, cutpoint);
+
+		compare_keyset (result, cmp_result[i]);
+		compare_keyset (orig, origCopy);
+
+		/*
+		Key *key;
+		printf ("orig[%d] = ksNew (%zd, ", i, ksGetSize(orig));
+		ksRewind(orig); while ((key=ksNext(orig))!= 0) printf ("keyNew (\"%s\", KEY_END), ", keyName(key));
+		printf ("KS_END);\n");
+
+		printf ("result[%d] = ksNew (%zd, ", i, ksGetSize(result));
+		ksRewind(result); while ((key=ksNext(result))!= 0) printf ("keyNew (\"%s\", KEY_END), ", keyName(key));
+		printf ("KS_END);\n");
+		*/
+
+		keyDel (cutpoint);
+		ksDel (result);
+		ksDel (orig);
+		ksDel (origCopy);
+		ksDel (cmp_orig[i]);
+		ksDel (cmp_result[i]);
+	}
+}
+
 
 static void test_cut (void)
 {
@@ -2917,6 +2989,7 @@ int main (int argc, char ** argv)
 	test_keyVNew ();
 	test_ksModifyKey ();
 	test_cut ();
+	test_below ();
 	test_cutpoint ();
 	test_cascadingCutpoint ();
 	test_cascadingRootCutpoint ();
