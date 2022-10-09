@@ -1688,7 +1688,8 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * the underlying storage unit.
  *
  * **Note**: If @p parentKey is in the cascading, `default:/` or `proc:/ namespace, the value of @p parentKey
- *           will be set to an empty string.
+ *           will be set to an empty string. This is done, because those namespaces are not persistable (see kdbSet())
+ *           and therfore have no storage identifier.
  *
  * @par KeySet Modifications
  *
