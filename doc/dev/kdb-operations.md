@@ -21,6 +21,8 @@ The operations `get` and `set` also have different _phases_:
 These phases are implemented by a backend plugin.
 Read the [Documentation on Backend Plugins](./backend-plugins.md) for more information on what backend plugins do.
 
+> **Note** The steps of the operations described below, are referenced in the source code with `// Step X` comments.
+
 ## `open` Operation
 
 The `open` operation implemented in `kdbOpen` is the first thing that happens to all `KDB` instances.
@@ -47,6 +49,8 @@ Namespaces in mountpoint configs:
 - `proc:/` mountpoints are always read-only and receive special treatment during `get`
 - `default:/` mountpoints are read-only and receive special treatment during `get`, specifically they only go through the `poststorage` phase
 - mountpoints in all other namespaces are entirely illegal
+
+> **Note** The special treatments of the various namespaces are explained below in the sections for the `get` and `set` operation.
 
 Reserved sections:
 
