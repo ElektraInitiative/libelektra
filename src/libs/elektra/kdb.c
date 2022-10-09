@@ -596,8 +596,7 @@ static KeySet * dupPluginSet (KeySet * plugins, Key * errorKey)
 	}
 }
 
-static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, Key * backendPluginKey, KeySet * plugins, KeySet * definition,
-			      Key * errorKey)
+static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, KeySet * plugins, KeySet * definition, Key * errorKey)
 {
 	KeySet * dupPlugins = dupPluginSet (plugins, errorKey);
 	if (dupPlugins == NULL)
@@ -605,7 +604,7 @@ static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, Key * back
 		keyDel (mountpoint);
 		return false;
 	}
-	Plugin * backendPlugin = *(Plugin **) keyValue (backendPluginKey);
+	Plugin * backendPlugin = *(Plugin **) keyValue (ksLookupByName (dupPlugins, "system:/backend", 0));
 	addMountpoint (mountpoints, keyDup (mountpoint, KEY_CP_NAME), backendPlugin, dupPlugins, ksDup (definition));
 	return true;
 }
@@ -689,25 +688,25 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	if (keyGetNamespace (mountpoint) == KEY_NS_CASCADING)
 	{
 		keySetNamespace (mountpoint, KEY_NS_SYSTEM);
-		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
 			return false;
 		}
 
 		keySetNamespace (mountpoint, KEY_NS_USER);
-		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
 			return false;
 		}
 
 		keySetNamespace (mountpoint, KEY_NS_DIR);
-		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
 			return false;
 		}
 
 		keySetNamespace (mountpoint, KEY_NS_PROC);
-		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
 			return false;
 		}

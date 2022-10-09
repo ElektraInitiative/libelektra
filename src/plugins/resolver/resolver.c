@@ -294,10 +294,6 @@ static char * elektraAddErrnoText (void)
 
 static int needsMapping (Key * testKey, Key * errorKey)
 {
-	// FIXME (kodebach): fix resolver
-	// we don't need to always init everything, but lazy init doesn't work right now
-	return 1;
-
 	elektraNamespace ns = keyGetNamespace (errorKey);
 
 	if (ns == KEY_NS_NONE) return 1;      // for unit tests
@@ -642,6 +638,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 
 	if (pk->isMissing)
 	{
+		ELEKTRA_LOG_DEBUG ("creating %s", pk->filename);
 		// it must be created newly, otherwise we have an conflict
 		flags = O_RDWR | O_CREAT | O_EXCL;
 
@@ -650,6 +647,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	}
 	else
 	{
+		ELEKTRA_LOG_DEBUG ("opening %s", pk->filename);
 		// file was there before, so opening should work!
 		flags = O_RDWR;
 	}
@@ -712,6 +710,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
  */
 static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 {
+	ELEKTRA_LOG_DEBUG ("creating %s", pk->filename);
 	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
 
 	if (pk->fd == -1)
@@ -989,6 +988,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 {
 	int ret = 0;
 
+	ELEKTRA_LOG_DEBUG ("committing %s to %s", pk->tempfile, pk->filename);
+
 	int fd = open (pk->tempfile, O_RDWR);
 	if (fd == -1)
 	{
@@ -1084,7 +1085,6 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 
 int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
-	// FIXME (kodebach): resolver creates tmp files but doesn't delete?
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
 	int errnoSave = errno;
@@ -1103,7 +1103,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 			ret = 0;
 
 			ELEKTRA_LOG ("check if removal of the configuration file \"%s\" would work later", pk->filename);
-			if (access (pk->dirname, F_OK) == 0 && access (pk->dirname, W_OK | X_OK) == -1)
+			if (access (pk->dirname, W_OK | X_OK) == -1)
 			{
 				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename,
 							     strerror (errno));
@@ -1125,7 +1125,14 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 	else if (pk->fd == -2)
 	{
 		ELEKTRA_LOG ("unlink configuration file \"%s\"", pk->filename);
-		if (access (pk->filename, F_OK) == 0 && unlink (pk->filename) == -1)
+		if (unlink (pk->filename) == -1)
+		{
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
+			ret = -1;
+		}
+
+		ELEKTRA_LOG ("unlink temp file \"%s\"", pk->tempfile);
+		if (unlink (pk->tempfile) == -1)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
 			ret = -1;
@@ -1159,6 +1166,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 
 static void elektraUnlinkFile (char * filename, Key * parentKey)
 {
+	ELEKTRA_LOG ("unlinking %s", filename);
 	int errnoSave = errno;
 	if (unlink (filename) == -1)
 	{
