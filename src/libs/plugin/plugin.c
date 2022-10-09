@@ -180,15 +180,37 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
  *
  * @param plugin plugin handle
  * @return current phase
+ * @retval 0 if @p plugin is `NULL`
  */
 ElektraKdbPhase elektraPluginGetPhase (Plugin * plugin)
 {
+	if (plugin == NULL)
+	{
+		return 0;
+	}
+
 	return *(ElektraKdbPhase *) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }
 
+/**
+ * Retrieves the handle for another plugin in the same mountpoint based on a reference.
+ *
+ * The plugins of a mountpoint are defined via `system:/elektra/mountpoint/<mp>/pluigns/<ref>` keys
+ * in the declaration of the mountpoint. To use this function, you must provide the `<ref>` part as
+ * @p ref.
+ *
+ * @param plugin active plugin handle
+ * @param ref reference to another plugin
+ * @return the plugin referenced by @p ref
+ * @retval NULL if @p plugin, or @p ref are `NULL`
+ */
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 {
-	// FIXME (kodebach): docs, precond checks
+	if (plugin == NULL || ref == NULL)
+	{
+		return NULL;
+	}
+
 	KeySet * plugins = *(KeySet **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
 
 	Key * lookupHelper = keyNew ("system:/", KEY_END);
