@@ -1339,6 +1339,44 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 }
 #endif
 
+static const char * phaseName (ElektraKdbPhase phase)
+{
+	switch (phase)
+	{
+	case ELEKTRA_KDB_GET_PHASE_RESOLVER: // ELEKTRA_KDB_SET_PHASE_RESOLVER
+		return "RESOLVER";
+	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
+		return "CACHECHECK";
+	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE: // ELEKTRA_KDB_SET_PHASE_PRE_STORAGE
+		return "PRE_STORAGE";
+	case ELEKTRA_KDB_GET_PHASE_STORAGE: // ELEKTRA_KDB_SET_PHASE_STORAGE
+		return "STORAGE";
+	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE: // ELEKTRA_KDB_SET_PHASE_POST_STORAGE
+		return "POST_STORAGE";
+	case ELEKTRA_KDB_SET_PHASE_PRE_COMMIT:
+		return "PRE_COMMIT";
+	case ELEKTRA_KDB_SET_PHASE_COMMIT:
+		return "COMMIT";
+	case ELEKTRA_KDB_SET_PHASE_POST_COMMIT:
+		return "POST_COMMIT";
+	case ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK:
+		return "PRE_ROLLBACK";
+	case ELEKTRA_KDB_SET_PHASE_ROLLBACK:
+		return "ROLLBACK";
+	case ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK:
+		return "POST_ROLLBACK";
+	default:
+		ELEKTRA_LOG_DEBUG ("Unknown phase converted to string: %02x", phase);
+		return "???";
+	}
+}
+
+static void setBackendPhase (BackendData * backendData, ElektraKdbPhase phase)
+{
+	ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_BINARY, KEY_SIZE,
+							   sizeof (ElektraKdbPhase), KEY_VALUE, &phase, KEY_END));
+}
+
 static bool initBackends (KeySet * backends, Key * parentKey)
 {
 	bool success = true;
@@ -1452,7 +1490,7 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 		// set up parentKey and global keyset for plugin
 		keyCopy (parentKey, backendKey, KEY_CP_NAME);
 		keySetString (parentKey, "");
-		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, "resolver", KEY_END));
+		setBackendPhase (backendData, ELEKTRA_KDB_GET_PHASE_RESOLVER);
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
@@ -1479,17 +1517,18 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 			// handle error
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
 							"Calling the kdbGet function for the backend plugin ('%s') of the mountpoint '%s' "
-							"has failed during the resolver phase.",
-							backendData->backend->name, keyName (backendKey));
+							"has failed during the %s phase.",
+							backendData->backend->name, keyName (backendKey),
+							phaseName (ELEKTRA_KDB_GET_PHASE_RESOLVER));
 			success = false;
 			continue;
 		default:
 			// unknown result -> treat as error
-			ELEKTRA_ADD_INTERFACE_WARNINGF (
-				parentKey,
-				"The kdbGet function for the backend plugin ('%s') of the mountpoint '%s' returned "
-				"an unknown result code '%d' during the resolver phase. Treating the call as failed.",
-				backendData->backend->name, keyName (backendKey), ret);
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The kdbGet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+							"an unknown result code '%d' during the %s phase. Treating the call as failed.",
+							backendData->backend->name, keyName (backendKey), ret,
+							phaseName (ELEKTRA_KDB_GET_PHASE_RESOLVER));
 			success = false;
 			continue;
 		}
@@ -1497,21 +1536,25 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 
 	if (!success)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The resolve phase of kdbGet() has failed. See warnings for details.");
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbGet() has failed. See warnings for details.",
+					      phaseName (ELEKTRA_KDB_GET_PHASE_RESOLVER));
 	}
 
 	return success;
 }
 
-static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
+static const uint16_t ELEKTRA_KDB_GET_PHASE_POST_STORAGE_SPEC = 1 << 8 | ELEKTRA_KDB_GET_PHASE_POST_STORAGE;
+static const uint16_t ELETKRA_KDB_GET_PHASE_POST_STORAGE_NONSPEC = ELEKTRA_KDB_GET_PHASE_POST_STORAGE;
+
+static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
 {
 	bool speconly = false;
 	bool skipspec = false;
-	if (strncmp (phase, KDB_GET_PHASE_POST_STORAGE, sizeof (KDB_GET_PHASE_POST_STORAGE) - 1) == 0)
+	if ((phase & 0xFF) == ELEKTRA_KDB_GET_PHASE_POST_STORAGE)
 	{
-		speconly = strcmp (phase, KDB_GET_PHASE_POST_STORAGE_SPEC);
+		speconly = phase == ELEKTRA_KDB_GET_PHASE_POST_STORAGE_SPEC;
 		skipspec = !speconly;
-		phase = KDB_GET_PHASE_POST_STORAGE;
+		phase = ELEKTRA_KDB_GET_PHASE_POST_STORAGE;
 	}
 
 	bool success = true;
@@ -1530,7 +1573,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 			continue;
 		}
 
-		if (keyGetNamespace (backendKey) == KEY_NS_PROC && strcmp (phase, KDB_GET_PHASE_POST_STORAGE) != 0)
+		if (keyGetNamespace (backendKey) == KEY_NS_PROC && phase != ELEKTRA_KDB_GET_PHASE_POST_STORAGE)
 		{
 			// proc:/ backends only run in poststorage phase
 			// TODO [new_backend]: allow proc:/ backends for more than poststorage
@@ -1551,7 +1594,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 		// set up parentKey and global keyset for plugin
 		keyCopy (parentKey, backendKey, KEY_CP_NAME);
 		keyCopy (parentKey, keyGetMeta (backendKey, "meta:/internal/kdbmountpoint"), KEY_CP_STRING);
-		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, phase, KEY_END));
+		setBackendPhase (backendData, phase);
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
@@ -1574,7 +1617,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
 							"Calling the kdbGet function for the backend plugin ('%s') of the mountpoint '%s' "
 							"has failed during the %s phase.",
-							backendData->backend->name, keyName (backendKey), phase);
+							backendData->backend->name, keyName (backendKey), phaseName (phase));
 			success = false;
 			continue;
 		default:
@@ -1582,7 +1625,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
 							"The kdbGet function for the backend plugin ('%s') of the mountpoint '%s' returned "
 							"an unknown result code '%d' during the %s phase. Treating the call as failed.",
-							backendData->backend->name, keyName (backendKey), ret, phase);
+							backendData->backend->name, keyName (backendKey), ret, phaseName (phase));
 			success = false;
 			continue;
 		}
@@ -1590,7 +1633,8 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 
 	if (!success)
 	{
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbGet() has failed. See warnings for details.", phase);
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbGet() has failed. See warnings for details.",
+					      phaseName (phase));
 	}
 
 	return success;
@@ -1833,7 +1877,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 10a: run prestorage phase
-	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_PRE_STORAGE))
+	if (!runGetPhase (backends, parentKey, ELEKTRA_KDB_GET_PHASE_PRE_STORAGE))
 	{
 		goto error;
 	}
@@ -1846,14 +1890,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 10c: run storage phase
-	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_STORAGE))
+	if (!runGetPhase (backends, parentKey, ELEKTRA_KDB_GET_PHASE_STORAGE))
 	{
 		goto error;
 	}
 
 	// Step 11: run poststorage phase for spec:/
 	Key * specRoot = keyNew ("spec:/", KEY_END);
-	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_SPEC))
+	if (!runGetPhase (backends, parentKey, ELEKTRA_KDB_GET_PHASE_POST_STORAGE_SPEC))
 	{
 		keyDel (specRoot);
 		goto error;
@@ -1922,7 +1966,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 16: run poststorage phase for non-spec:/
-	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_NONSPEC))
+	if (!runGetPhase (backends, parentKey, ELETKRA_KDB_GET_PHASE_POST_STORAGE_NONSPEC))
 	{
 		goto error;
 	}
@@ -2004,7 +2048,7 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 		// set up parentKey and global keyset for plugin
 		keyCopy (parentKey, backendKey, KEY_CP_NAME);
 		keySetString (parentKey, "");
-		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, "resolver", KEY_END));
+		setBackendPhase (backendData, ELEKTRA_KDB_SET_PHASE_RESOLVER);
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
@@ -2022,9 +2066,9 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 			ELEKTRA_ADD_INTERFACE_WARNINGF (
 				parentKey,
 				"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
-				"ELEKTRA_PLUGIN_STATUS_NO_UPDATE in the 'resolver' phase. This is interpreted the same way as "
+				"ELEKTRA_PLUGIN_STATUS_NO_UPDATE in the '%s' phase. This is interpreted the same way as "
 				"ELEKTRA_PLUGIN_STATUS_SUCCESS, i.e. the mountpoint will still go through the rest of kdbSet()'s phases.",
-				backendData->backend->name, keyName (backendKey));
+				backendData->backend->name, keyName (backendKey), phaseName (ELEKTRA_KDB_SET_PHASE_RESOLVER));
 			// FALLTHROUGH
 		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
 			// Store returned mountpoint ID and mark for update
@@ -2034,17 +2078,18 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 			// handle error
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
 							"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' "
-							"has failed during the resolver phase.",
-							backendData->backend->name, keyName (backendKey));
+							"has failed during the %s phase.",
+							backendData->backend->name, keyName (backendKey),
+							phaseName (ELEKTRA_KDB_SET_PHASE_RESOLVER));
 			success = false;
 			continue;
 		default:
 			// unknown result -> treat as error
-			ELEKTRA_ADD_INTERFACE_WARNINGF (
-				parentKey,
-				"The kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
-				"an unknown result code '%d' during the resolver phase. Treating the call as failed.",
-				backendData->backend->name, keyName (backendKey), ret);
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+							"an unknown result code '%d' during the %s phase. Treating the call as failed.",
+							backendData->backend->name, keyName (backendKey), ret,
+							phaseName (ELEKTRA_KDB_SET_PHASE_RESOLVER));
 			success = false;
 			continue;
 		}
@@ -2052,7 +2097,8 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 
 	if (!success)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The resolve phase of kdbSet() has failed. See warnings for details.");
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbSet() has failed. See warnings for details.",
+					      phaseName (ELEKTRA_KDB_SET_PHASE_RESOLVER));
 	}
 
 	return success;
@@ -2065,7 +2111,7 @@ enum KdbSetFn
 	KDB_SET_FN_ERROR,
 };
 
-static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase, bool blockErrors, enum KdbSetFn function)
+static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase phase, bool blockErrors, enum KdbSetFn function)
 {
 	bool existingError = keyGetMeta (parentKey, "error") != NULL;
 
@@ -2114,7 +2160,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 		// set up parentKey and global keyset for plugin
 		keyCopy (parentKey, backendKey, KEY_CP_NAME);
 		keyCopy (parentKey, keyGetMeta (backendKey, "meta:/internal/kdbmountpoint"), KEY_CP_STRING);
-		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, phase, KEY_END));
+		setBackendPhase (backendData, phase);
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
@@ -2149,7 +2195,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
 							"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' "
 							"has failed during the %s phase.",
-							backendData->backend->name, keyName (backendKey), phase);
+							backendData->backend->name, keyName (backendKey), phaseName (phase));
 			success = false;
 			continue;
 		default:
@@ -2157,7 +2203,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
 							"The kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
 							"an unknown result code '%d' during the %s phase. Treating the call as failed.",
-							backendData->backend->name, keyName (backendKey), ret, phase);
+							backendData->backend->name, keyName (backendKey), ret, phaseName (phase));
 			success = false;
 			continue;
 		}
@@ -2165,7 +2211,8 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 
 	if (!success)
 	{
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbSet() has failed. See warnings for details.", phase);
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbSet() has failed. See warnings for details.",
+					      phaseName (phase));
 	}
 
 	if (blockErrors)
@@ -2178,8 +2225,9 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 
 		if (!success)
 		{
-			ELEKTRA_ADD_INTERFACE_WARNINGF (
-				parentKey, "Errors in %s are ignored. The error that occurred was converted into a warning.", phase);
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"Errors in %s are ignored. The error that occurred was converted into a warning.",
+							phaseName (phase));
 		}
 	}
 
@@ -2446,7 +2494,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 7b: run prestorage phase
-	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_STORAGE, false, KDB_SET_FN_SET))
+	if (!runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_PRE_STORAGE, false, KDB_SET_FN_SET))
 	{
 		goto rollback;
 	}
@@ -2471,31 +2519,31 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 11a: run storage phase
-	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_STORAGE, false, KDB_SET_FN_SET))
+	if (!runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_STORAGE, false, KDB_SET_FN_SET))
 	{
 		goto rollback;
 	}
 
 	// Step 11b: run poststorage phase
-	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_STORAGE, false, KDB_SET_FN_SET))
+	if (!runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_POST_STORAGE, false, KDB_SET_FN_SET))
 	{
 		goto rollback;
 	}
 
 	// Step 12a: run precommit phase
-	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_COMMIT, false, KDB_SET_FN_COMMIT))
+	if (!runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_PRE_COMMIT, false, KDB_SET_FN_COMMIT))
 	{
 		goto rollback;
 	}
 
 	// Step 12b: run commit phase
-	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_COMMIT, false, KDB_SET_FN_COMMIT))
+	if (!runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_COMMIT, false, KDB_SET_FN_COMMIT))
 	{
 		goto rollback;
 	}
 
 	// Step 12c: run postcommit phase
-	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_COMMIT, true, KDB_SET_FN_COMMIT);
+	runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_POST_COMMIT, true, KDB_SET_FN_COMMIT);
 
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while (sendNotificationHook != NULL)
@@ -2519,13 +2567,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 rollback:
 	// Step E1: run prerollback phase
-	runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_ROLLBACK, true, KDB_SET_FN_ERROR);
+	runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK, true, KDB_SET_FN_ERROR);
 
 	// Step E2: run rollback phase
-	runSetPhase (backends, parentKey, KDB_SET_PHASE_ROLLBACK, true, KDB_SET_FN_ERROR);
+	runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_ROLLBACK, true, KDB_SET_FN_ERROR);
 
 	// Step E3: run postrollback phase
-	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_ROLLBACK, true, KDB_SET_FN_ERROR);
+	runSetPhase (backends, parentKey, ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK, true, KDB_SET_FN_ERROR);
 
 error:
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);

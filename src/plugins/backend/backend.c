@@ -441,9 +441,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
+	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
+	switch (phase)
 	{
+	case ELEKTRA_KDB_GET_PHASE_RESOLVER:
 		keySetString (parentKey, handle->path);
 
 		if (handle->getPositions.resolver == NULL)
@@ -454,32 +455,20 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey
 		}
 
 		return runPluginGet (handle->getPositions.resolver, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_GET_PHASE_CACHECHECK) == 0)
-	{
+	case ELEKTRA_KDB_GET_PHASE_CACHECHECK:
 		// TODO [new_backend]: implement cache
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	}
-	else if (strcmp (phase, KDB_GET_PHASE_PRE_STORAGE) == 0)
-	{
+	case ELEKTRA_KDB_GET_PHASE_PRE_STORAGE:
 		return runPluginListGet (handle->getPositions.prestorage, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
-	{
+	case ELEKTRA_KDB_GET_PHASE_STORAGE:
 		return runPluginGet (handle->getPositions.storage, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_GET_PHASE_POST_STORAGE) == 0)
-	{
+	case ELEKTRA_KDB_GET_PHASE_POST_STORAGE:
 		return runPluginListGet (handle->getPositions.poststorage, ks, parentKey);
-	}
-	else
-	{
+	default:
 		ELEKTRA_SET_INTERNAL_ERRORF (
-			parentKey, "Unknown phase of kdbGet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
+			parentKey, "Unknown phase of kdbGet(): %02x\n Please report this bug at https://issues.libelektra.org.", phase);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 static int runPluginSet (Plugin * plugin, KeySet * ks, Key * parentKey)
@@ -519,9 +508,10 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_SET_PHASE_RESOLVER) == 0)
+	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
+	switch (phase)
 	{
+	case ELEKTRA_KDB_SET_PHASE_RESOLVER:
 		keySetString (parentKey, handle->path);
 
 		if (handle->setPositions.resolver == NULL)
@@ -534,27 +524,18 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 		}
 
 		return runPluginSet (handle->setPositions.resolver, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_SET_PHASE_PRE_STORAGE) == 0)
-	{
+	case ELEKTRA_KDB_SET_PHASE_PRE_STORAGE:
 		return runPluginListSet (handle->setPositions.prestorage, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_SET_PHASE_STORAGE) == 0)
-	{
+	case ELEKTRA_KDB_SET_PHASE_STORAGE:
 		return runPluginSet (handle->setPositions.storage, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_SET_PHASE_POST_STORAGE) == 0)
-	{
+	case ELEKTRA_KDB_SET_PHASE_POST_STORAGE:
 		return runPluginListSet (handle->setPositions.poststorage, ks, parentKey);
-	}
-	else
-	{
+	default:
+
 		ELEKTRA_SET_INTERNAL_ERRORF (
-			parentKey, "Unknown phase of kdbSet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
+			parentKey, "Unknown phase of kdbSet(): %02x\n Please report this bug at https://issues.libelektra.org.", phase);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 static int runPluginCommit (Plugin * plugin, KeySet * ks, Key * parentKey)
@@ -594,27 +575,20 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks, Key * parent
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
+	switch (phase)
 	{
+	case ELEKTRA_KDB_SET_PHASE_PRE_COMMIT:
 		return runPluginListCommit (handle->setPositions.precommit, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_SET_PHASE_COMMIT) == 0)
-	{
+	case ELEKTRA_KDB_SET_PHASE_COMMIT:
 		return runPluginCommit (handle->setPositions.commit, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_SET_PHASE_POST_COMMIT) == 0)
-	{
+	case ELEKTRA_KDB_SET_PHASE_POST_COMMIT:
 		return runPluginListCommit (handle->setPositions.postcommit, ks, parentKey);
-	}
-	else
-	{
+	default:
 		ELEKTRA_SET_INTERNAL_ERRORF (
-			parentKey, "Unknown phase of kdbSet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
+			parentKey, "Unknown phase of kdbSet(): %02x\n Please report this bug at https://issues.libelektra.org.", phase);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 static int runPluginError (Plugin * plugin, KeySet * ks, Key * parentKey)
@@ -654,27 +628,20 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks, Key * parentK
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	const char * phase = elektraPluginGetPhase (plugin);
-	if (strcmp (phase, KDB_SET_PHASE_PRE_ROLLBACK) == 0)
+	ElektraKdbPhase phase = elektraPluginGetPhase (plugin);
+	switch (phase)
 	{
+	case ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK:
 		return runPluginListError (handle->setPositions.prerollback, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_SET_PHASE_ROLLBACK) == 0)
-	{
+	case ELEKTRA_KDB_SET_PHASE_ROLLBACK:
 		return runPluginError (handle->setPositions.rollback, ks, parentKey);
-	}
-	else if (strcmp (phase, KDB_SET_PHASE_POST_ROLLBACK) == 0)
-	{
+	case ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK:
 		return runPluginListError (handle->setPositions.postrollback, ks, parentKey);
-	}
-	else
-	{
+	default:
 		ELEKTRA_SET_INTERNAL_ERRORF (
-			parentKey, "Unknown phase of kdbSet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
+			parentKey, "Unknown phase of kdbSet(): %02x\n Please report this bug at https://issues.libelektra.org.", phase);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 static void freePluginList (PluginList ** pluginsPtr)

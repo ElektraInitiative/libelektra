@@ -26,7 +26,10 @@ static void test_basics (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
+	ElektraKdbPhase phase = ELEKTRA_KDB_GET_PHASE_STORAGE;
+	plugin->global = ksNew (
+		1, keyNew ("system:/elektra/kdb/backend/phase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase), KEY_VALUE, &phase, KEY_END),
+		KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
@@ -63,7 +66,10 @@ static void test_rename (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
+	ElektraKdbPhase phase = ELEKTRA_KDB_GET_PHASE_STORAGE;
+	plugin->global = ksNew (
+		1, keyNew ("system:/elektra/kdb/backend/phase", KEY_BINARY, KEY_SIZE, sizeof (ElektraKdbPhase), KEY_VALUE, &phase, KEY_END),
+		KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 

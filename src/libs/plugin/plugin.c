@@ -172,10 +172,18 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 	return plugin->global;
 }
 
-const char * elektraPluginGetPhase (Plugin * plugin)
+/**
+ * Returns the current phase of the current KDB operation.
+ *
+ * During kdbGet() this will be one of the `ELEKTRA_KDB_GET_PHASE_*` constants
+ * and during kdbSet() it will be one of the `ELEKTRA_KDB_SET_PHASE_*` constants.@
+ *
+ * @param plugin plugin handle
+ * @return current phase
+ */
+ElektraKdbPhase elektraPluginGetPhase (Plugin * plugin)
 {
-	// FIXME (kodebach): switch to integer value? (uint32_t?)
-	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
+	return *(ElektraKdbPhase *) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }
 
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)

@@ -35,13 +35,11 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	const char * phase = elektraPluginGetPhase (handle);
-	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
+	switch (elektraPluginGetPhase (handle))
 	{
+	case ELEKTRA_KDB_GET_PHASE_RESOLVER:
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	}
-	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
-	{
+	case ELEKTRA_KDB_GET_PHASE_STORAGE: {
 		KeySet * info = elektraVersionKeySet ();
 		Key * versionRoot = keyNew ("system:/elektra/version", KEY_END);
 
@@ -64,8 +62,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	else
-	{
+	default:
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 }
