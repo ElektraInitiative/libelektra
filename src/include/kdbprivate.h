@@ -530,8 +530,6 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
 
-/* global plugins */
-
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
 /** Set a bit. @see clear_bit() */

@@ -51,6 +51,7 @@ docker run -it elektra/elektra
 ### New Backend
 
 - Implement [hooks](../decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
+- Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<HIGHLIGHT>>
 
@@ -197,9 +198,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
+### kdb
 
-- <<TODO>>
+- Removed `global-mount` and `global-umount` commands. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 

@@ -271,7 +271,7 @@ static int ensureContractMountGlobal (KeySet * contract)
  *
  * @see kdbOpen()
  */
-static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
+static bool ensureContract (KDB * handle, const KeySet * contract)
 {
 	// FIXME [new_backend]: tests
 	// deep dupContract, so modifications to the keys in contract after kdbOpen() cannot modify the contract
@@ -927,7 +927,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
-	if (contract != NULL && !ensureContract (handle, contract, errorKey))
+	if (contract != NULL && !ensureContract (handle, contract))
 	{
 		ksDel (elektraKs);
 		goto error;
