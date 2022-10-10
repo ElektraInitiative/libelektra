@@ -3,7 +3,7 @@
 ## Problem
 
 Simply discussing in an issue and then doing an implementation is okay for non-substantial changes.
-But substantial decisions must be made transparent and participative way.
+But substantial decisions must be made transparently and in a participative way.
 
 ## Constraints
 
@@ -62,11 +62,11 @@ Here you must ensure:
 ### In Progress
 
 - You must include all further alternative proposals made in the "Considered Alternatives" section.
-- Now it is allowed to have the from the previous round preferred decision in the decision section.
+- Now it is allowed to have the ??? from the previous round's preferred decision in the decision section.
 
 ### Decided
 
-- decision, rationale and implication are now filled out and fixed according the reviews
+- decision, rationale and implication are now filled out and fixed according to the reviews
 - decisions of this status usually already have an implementation PR
 
 ### Mostly Implemented
@@ -80,6 +80,7 @@ This step is mandatory.
 
 - Here the details of the decisions are stripped from the decision and moved to the documentation.
 - The documentation links to the decision.
+- The decision links to the new documentation.
 
 ### Rejected
 

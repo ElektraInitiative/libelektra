@@ -1,6 +1,6 @@
 # Introduction
 
-If you write your first decision, read [Decision Process](decision_process.md).
+Before you write your first decision, read [Decision Process](decision_process.md).
 
 ## Implemented
 
