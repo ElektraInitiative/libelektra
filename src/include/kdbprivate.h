@@ -23,7 +23,6 @@
 #include <kdbopmphm.h>
 #include <kdbopmphmpredictor.h>
 #endif
-#include <kdbglobal.h>
 
 #include <limits.h>
 
