@@ -20,6 +20,7 @@ It complements the man pages found [here](/doc/help).
 - [Mountpoints](mountpoints.md)
 - [Backend Plugins](backend-plugins.md)
 - [Hook Plugins](hooks.md)
+
 ## Internals
 
 - [Algorithm](algorithm.md)

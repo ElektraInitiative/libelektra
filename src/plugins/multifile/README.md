@@ -44,7 +44,6 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 
 ## Examples
 
-
 ```
 rm -rf $(dirname $(kdb file user:/))/multitest || $(exit 0)
 mkdir -p $(dirname $(kdb file user:/))/multitest || $(exit 0)
