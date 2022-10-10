@@ -747,6 +747,7 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 		}
 		else
 		{
+			// TODO [new_backend]: use real mountpoint in error message
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (
 				errorKey,
 				"The key '%s' is below 'system:/elektra/mountpoints', but doesn't belong to a mountpoint configuration. To "

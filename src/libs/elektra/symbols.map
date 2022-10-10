@@ -180,6 +180,7 @@ libelektraprivate_1.0 {
 
 	elektraIsArrayPart;
 
+	# TODO [new_backend]: should be removed, tests should depend differently on this
 	backendsDivide;
 
 	# kdblogger.h
