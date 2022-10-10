@@ -36,8 +36,6 @@
 #include <find.hpp>
 #include <gen.hpp>
 #include <get.hpp>
-#include <globalmount.hpp>
-#include <globalumount.hpp>
 #include <import.hpp>
 #include <listcommands.hpp>
 #include <ls.hpp>
@@ -122,10 +120,6 @@ public:
 		m_factory.insert (std::make_pair ("editor", std::make_shared<Cnstancer<EditorCommand>> ()));
 		m_factory.insert (std::make_pair ("spec-mount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
 		m_factory.insert (std::make_pair ("smount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
-		m_factory.insert (std::make_pair ("global-mount", std::make_shared<Cnstancer<GlobalMountCommand>> ()));
-		m_factory.insert (std::make_pair ("global-umount", std::make_shared<Cnstancer<GlobalUmountCommand>> ()));
-		m_factory.insert (std::make_pair ("gmount", std::make_shared<Cnstancer<GlobalMountCommand>> ()));
-		m_factory.insert (std::make_pair ("gumount", std::make_shared<Cnstancer<GlobalUmountCommand>> ()));
 		m_factory.insert (std::make_pair ("list-commands", std::make_shared<Cnstancer<ListCommandsCommand>> ()));
 		m_factory.insert (std::make_pair ("gen", std::make_shared<Cnstancer<GenCommand>> ()));
 		m_factory.insert (std::make_pair ("namespace", std::make_shared<Cnstancer<NamespaceCommand>> ()));

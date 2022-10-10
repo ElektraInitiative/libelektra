@@ -23,7 +23,6 @@
 #include <kdbopmphm.h>
 #include <kdbopmphmpredictor.h>
 #endif
-#include <kdbglobal.h>
 
 #include <limits.h>
 
@@ -364,7 +363,6 @@ struct _KDB
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
 
-	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 	KeySet * backends;
 
 	struct
@@ -476,11 +474,12 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
 int elektraPluginClose (Plugin * handle, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
-Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 
 /* Hooks handling */
 int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey);
 void freeHooks (KDB * kdb, Key * errorKey);
+Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
+
 
 /*Private helper for key*/
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
@@ -529,13 +528,6 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
-
-/* global plugins */
-// TODO [new_backend]: remove when all globals are replaced by hooks
-int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
-int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))

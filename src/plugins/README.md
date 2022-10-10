@@ -274,6 +274,6 @@ Don't try to use manually.
 
 ### Deprecated Plugins
 
-Please avoid, if possible, to use following plugin:
+Please avoid, if possible, to use following plugins:
 
-- [list](list/) loads other plugins
+- (currently none 🎉)
