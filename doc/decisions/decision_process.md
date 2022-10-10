@@ -10,6 +10,7 @@ But substantial decisions must be made transparent and participative way.
 - All relevant information about decisions must be within Elektra's repository.
 - All decisions must go through at least two review rounds, with a merge in between.
 - At least two people need to be in favor of the decision in both rounds.
+- [Documentation guidelines](/doc/contrib/documentation.md) apply.
 
 ## Assumptions
 
@@ -80,17 +81,24 @@ This step is mandatory.
 - Here the details of the decisions are stripped from the decision and moved to the documentation.
 - The documentation links to the decision.
 
+### Rejected
+
+Alternatively, decisions might be rejected (i.e. status quo wins).
+These decision PRs are also merged for documentation purposes.
+
 ## Rationale
 
 - The process is lightweight and simple.
 - The template helps not forgetting important points.
+- PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected PRs).
+- PRs allow to suggest changes and review individual sentences of the decision.
 
 ## Implications
 
-The decision process creates at least:
-
-- two chances to say something to the decision, and
-- two commits in the git history.
+- Proposal issues are obsolete.
+- The decision process creates at least:
+  - two chances to comment decisions, and
+  - two commits in the git history.
 
 ## Related Decisions
 

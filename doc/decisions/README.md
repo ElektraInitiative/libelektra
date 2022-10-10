@@ -67,6 +67,7 @@ If you write your first decision, read [Decision Process](decision_process.md).
 - [Error Handling](error_handling.md)
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
+- [Decision Process](decision_process.md).
 
 ## Drafts
 
@@ -77,6 +78,7 @@ If you write your first decision, read [Decision Process](decision_process.md).
 
 - [Plugin Variants](plugin_variants.md)
 - [Global Validation](global_validation.md)
+- [Template](template.md)
 
 ## Rejected
 
