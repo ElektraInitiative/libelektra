@@ -33,7 +33,7 @@ different formats can be mixed).
 
 ## Related Decisions
 
-- [Global Plugins](global_plugins.md)
+- [hooks](hooks.md)
 - [Ensure](ensure.md)
 
 ## Notes

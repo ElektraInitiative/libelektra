@@ -17,6 +17,8 @@
 #include <kdbconfig.h>
 #include <string>
 
+// FIXME [new_backend]: all tests disabled, mount tooling will be rewritten in C
+
 std::string makeLiteralString (std::string str)
 {
 	std::string ret;
@@ -52,7 +54,7 @@ void outputGTest (kdb::KeySet tocheck, std::string name)
 	}
 }
 
-TEST (Backend, backendName)
+TEST (Backend, DISABLED_backendName)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -61,7 +63,7 @@ TEST (Backend, backendName)
 	EXPECT_EQ (b.getMountpoint (), "user:/a");
 }
 
-TEST (Backend, SimpleBackend)
+TEST (Backend, DISABLED_SimpleBackend)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -194,7 +196,7 @@ TEST (Backend, SimpleBackend)
 	EXPECT_EQ (mountConfig.at (it).getString (), "dump") << "string of element in keyset wrong";
 }
 
-TEST (Backend, CrazyName)
+TEST (Backend, DISABLED_CrazyName)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -271,7 +273,7 @@ TEST (Backend, CrazyName)
 	EXPECT_EQ (mountConfig.at (it).getString (), "") << "string of element in keyset wrong";
 }
 
-TEST (Backend, SimpleBackendWithConf)
+TEST (Backend, DISABLED_SimpleBackendWithConf)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -392,7 +394,7 @@ TEST (Backend, SimpleBackendWithConf)
 }
 
 
-TEST (Backend, SimpleBackendWithNeededConf)
+TEST (Backend, DISABLED_SimpleBackendWithNeededConf)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -528,7 +530,7 @@ TEST (Backend, SimpleBackendWithNeededConf)
 }
 
 
-TEST (Backend, SimpleBackendWithUnderscore)
+TEST (Backend, DISABLED_SimpleBackendWithUnderscore)
 {
 	using namespace kdb;
 	using namespace kdb::tools;

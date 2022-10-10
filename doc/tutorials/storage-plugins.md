@@ -217,27 +217,27 @@ the comments of the file in the respective Elektra configuration Key:
 
 ```sh
 # Mount empty hosts file
-sudo kdb mount --with-recommends hosts /tests/hosts hosts
+sudo kdb mount --with-recommends hosts user:/tests/hosts hosts
 
 # Add a line to the hosts file containing a comment
-echo '127.0.0.1    localhost # test comment' >  `kdb file /tests/hosts`
+echo '127.0.0.1    localhost # test comment' >  `kdb file user:/tests/hosts`
 
 # Check if the line has been synced successfully
-kdb get /tests/hosts/ipv4/localhost
+kdb get user:/tests/hosts/ipv4/localhost
 #> 127.0.0.1
 
-kdb meta-ls /tests/hosts/ipv4/localhost
+kdb meta-ls user:/tests/hosts/ipv4/localhost
 #> comment/#0
 #> comment/#0/space
 #> comment/#0/start
 #> order
 
-kdb meta-get /tests/hosts/ipv4/localhost 'comment/#0'
+kdb meta-get user:/tests/hosts/ipv4/localhost 'comment/#0'
 #>  test comment
 
 # Undo modifications to the key database
-kdb rm -r /tests/hosts
-sudo kdb umount /tests/hosts
+kdb rm -r user:/tests/hosts
+sudo kdb umount user:/tests/hosts
 ```
 
 ## Ordering of Elements
@@ -248,54 +248,54 @@ This behavior can be illustrated via the usage of the `hosts` plugin, which hono
 
 ```sh
 # Mount empty hosts file
-sudo kdb mount --with-recommends hosts /tests/hosts hosts
+sudo kdb mount --with-recommends hosts user:/tests/hosts hosts
 
 # Add lines to the hosts file
-echo '127.0.0.1    localhost.1' >  `kdb file /tests/hosts`
-echo '127.0.0.1    localhost.2' >>  `kdb file /tests/hosts`
+echo '127.0.0.1    localhost.1' >  `kdb file user:/tests/hosts`
+echo '127.0.0.1    localhost.2' >>  `kdb file user:/tests/hosts`
 
 # Check if the lines have been synced successfully
-kdb ls /tests/hosts/ipv4
-#> system:/tests/hosts/ipv4/localhost.1
-#> system:/tests/hosts/ipv4/localhost.2
+kdb ls user:/tests/hosts/ipv4
+#> user:/tests/hosts/ipv4/localhost.1
+#> user:/tests/hosts/ipv4/localhost.2
 
 # Checking the created Meta KeySet
-kdb meta-ls /tests/hosts/ipv4/localhost.1
+kdb meta-ls user:/tests/hosts/ipv4/localhost.1
 #> comment/#0
 #> order
 
 # Getting the content of the order
-kdb meta-get /tests/hosts/ipv4/localhost.1 order
+kdb meta-get user:/tests/hosts/ipv4/localhost.1 order
 #> 1
 
-kdb meta-get /tests/hosts/ipv4/localhost.2 order
+kdb meta-get user:/tests/hosts/ipv4/localhost.2 order
 #> 2
 
 # adding some additional Keys out of order
-kdb set system:/tests/hosts/ipv4/localhost.4 127.0.0.1
-kdb set system:/tests/hosts/ipv4/localhost.3 127.0.0.1
+kdb set user:/tests/hosts/ipv4/localhost.4 127.0.0.1
+kdb set user:/tests/hosts/ipv4/localhost.3 127.0.0.1
 
 # lines in hosts file have improper ordering
-cat `kdb file /tests/hosts`
+cat `kdb file user:/tests/hosts`
 #> 127.0.0.1	localhost.3
 #> 127.0.0.1	localhost.4
 #> 127.0.0.1	localhost.1
 #> 127.0.0.1	localhost.2
 
 # setting the correct order
-kdb meta-set system:/tests/hosts/ipv4/localhost.4 order 4
-kdb meta-set system:/tests/hosts/ipv4/localhost.3 order 3
+kdb meta-set user:/tests/hosts/ipv4/localhost.4 order 4
+kdb meta-set user:/tests/hosts/ipv4/localhost.3 order 3
 
 # lines in hosts file are also in correct order afterwards
-cat `kdb file /tests/hosts`
+cat `kdb file user:/tests/hosts`
 #> 127.0.0.1	localhost.1
 #> 127.0.0.1	localhost.2
 #> 127.0.0.1	localhost.3
 #> 127.0.0.1	localhost.4
 
 # Undo modifications to the key database
-kdb rm -r /tests/hosts
-sudo kdb umount /tests/hosts
+kdb rm -r user:/tests/hosts
+sudo kdb umount user:/tests/hosts
 ```
 
 As you can see by setting the order metakey in the respective KDB entries, we can manipulate the order in which entries get written to the hosts file. Also when importing from the initial hosts file, the plugin stores the correct order in the meta KeySet.

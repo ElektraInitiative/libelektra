@@ -51,7 +51,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			ksNew (30, keyNew ("system:/elektra/modules/shell", KEY_VALUE, "shell plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/shell/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/shell/exports/get", KEY_FUNC, elektraShellGet, KEY_END),
-			       keyNew ("system:/elektra/modules/shell/exports/set", KEY_FUNC, elektraShellSet, KEY_END),
+			       keyNew ("system:/elektra/modules/shell/exports/commit", KEY_FUNC, elektraShellCommit, KEY_END),
 			       keyNew ("system:/elektra/modules/shell/exports/error", KEY_FUNC, elektraShellError, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system:/elektra/modules/shell/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -87,7 +87,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return 1; // success
 }
 
-int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraShellCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * cmdKey = ksLookupByName (config, "/execute/set", KDB_O_NONE);
@@ -147,6 +147,6 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
-	return elektraPluginExport ("shell", ELEKTRA_PLUGIN_GET, &elektraShellGet, ELEKTRA_PLUGIN_SET, &elektraShellSet,
+	return elektraPluginExport ("shell", ELEKTRA_PLUGIN_GET, &elektraShellGet, ELEKTRA_PLUGIN_COMMIT, &elektraShellCommit,
 				    ELEKTRA_PLUGIN_ERROR, &elektraShellError, ELEKTRA_PLUGIN_END);
 }

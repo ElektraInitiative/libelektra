@@ -633,7 +633,8 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		kdb::printError (std::cerr, parentKeyMaybeWithErrors, false, false);
 		throw CommandAbortException ("Error during calculation of specification token.");
 	}
-	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, token, KEY_END));
+	// FIXME [new_backend]: token calculation broken
+	// contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, token, KEY_END));
 
 
 	data["keys_count"] = std::to_string (keys.size ());

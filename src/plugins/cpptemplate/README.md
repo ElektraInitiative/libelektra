@@ -33,15 +33,12 @@ sudo kdb mount -R noresolver none user:/tests/cpptemplate cpptemplate some=thing
 
 # This example plugin adds configuration values at the mount point
 kdb ls user:/tests/cpptemplate
+#> user:/tests/cpptemplate/%
 #> user:/tests/cpptemplate/config
-#> user:/tests/cpptemplate/path
 #> user:/tests/cpptemplate/some
 
 kdb get user:/tests/cpptemplate/config
 #> value
-
-kdb get user:/tests/cpptemplate/path
-#> none
 
 sudo kdb umount user:/tests/cpptemplate
 ```

@@ -111,9 +111,6 @@ static int initData (Plugin * handle, Key * parentKey)
 		Key * key = ksLookupByName (config, "/identifier", KDB_O_NONE);
 		if (!key) return -1;
 		data->identifier = (char *) keyString (key);
-		key = ksLookupByName (config, "/path", KDB_O_NONE);
-		if (!key) return -1;
-		keySetString (parentKey, keyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
 			return -1;

@@ -50,7 +50,7 @@ docker run -it elektra/elektra
 
 ### New Backend
 
-- Implement [hooks](doc/decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
+- Implement [hooks](../decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
 
 ### <<HIGHLIGHT>>
 
