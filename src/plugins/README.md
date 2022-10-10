@@ -263,6 +263,15 @@ binding during run-time:
 - [doc](doc/) contains the documentation of the plugin interface
 - [error](error/) yields errors as described in metadata (handy for test purposes)
 
+### Internal Plugins
+
+Internally used and hard coded into `libelektra-kdb`.
+Don't try to use manually.
+
+- [missing](missing/)
+- [modules](modules/)
+- [version](version/)
+
 ### Deprecated Plugins
 
 Please avoid, if possible, to use following plugin:
