@@ -218,8 +218,6 @@ The minimal set of plugins you should add:
 - [resolver](/src/plugins/resolver) is the default resolver.
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_RESOLVER` to it.
-- [list](/src/plugins/list) delegates work to a list of plugins.
-  Needed for tests. (Required with `ENABLE_TESTING`.)
 - [spec](/src/plugins/spec) copies metadata from spec namespace
   to other namespaces.
   Needed for tests. (Required with `ENABLE_TESTING`, except on mingw.)
