@@ -61,11 +61,9 @@ docker run -it elektra/elektra
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin>>
+### list
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Removed the `list` plugin. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<Plugin>>
 
