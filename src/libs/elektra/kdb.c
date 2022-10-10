@@ -231,40 +231,6 @@ static void ensureContractGlobalKs (KDB * handle, KeySet * contract)
 	keyDel (globalKsRoot);
 }
 
-/**
- * Handles the system:/elektra/contract/mountglobal part of kdbOpen() contracts
- * This function is only necessary for the GOPTS hook.
- *
- * NOTE: @p contract will be modified
- *
- * @see kdbOpen()
- */
-static int ensureContractMountGlobal (KeySet * contract)
-{
-	Key * mountContractRoot = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
-	Key * pluginConfigRoot = keyNew ("user:/", KEY_END);
-
-	for (elektraCursor it = ksFindHierarchy (contract, mountContractRoot, NULL); it < ksGetSize (contract); it++)
-	{
-		Key * cur = ksAtCursor (contract, it);
-		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
-		{
-			KeySet * pluginConfig = ksCut (contract, cur);
-
-			ksRename (pluginConfig, cur, pluginConfigRoot);
-
-			keyDel (cur);
-
-			// adjust cursor, because we removed the current key
-			--it;
-		}
-	}
-
-	keyDel (mountContractRoot);
-	keyDel (pluginConfigRoot);
-
-	return 0;
-}
 
 /**
  * Handles the @p contract argument of kdbOpen().
@@ -278,11 +244,10 @@ static bool ensureContract (KDB * handle, const KeySet * contract)
 	KeySet * dupContract = ksDeepDup (contract);
 
 	ensureContractGlobalKs (handle, dupContract);
-	int ret = ensureContractMountGlobal (dupContract);
 
 	ksDel (dupContract);
 
-	return ret == 0;
+	return true;
 }
 
 /**
