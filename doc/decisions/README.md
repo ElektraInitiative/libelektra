@@ -1,16 +1,6 @@
 # Introduction
 
-We use decision template is based on
-[''using patterns to capture architectural decisions''](https://dl.acm.org/doi/10.1109/MS.2007.124)
-and [arc42 decisions](http://docs.arc42.org/section-9/)
-
-Decisions need to:
-
-- be implementable within the next major release
-- be according to [Elektra's goals](/doc/GOALS.md)
-
-To add a new decision copy `template.md` and add a link in the appropriate
-section here.
+If you write your first decision, read [Decision Process](decision_process.md).
 
 ## Implemented
 

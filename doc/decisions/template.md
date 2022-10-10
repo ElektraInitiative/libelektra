@@ -4,9 +4,21 @@
 
 ## Constraints
 
+-
+-
+-
+
 ## Assumptions
 
+-
+-
+-
+
 ## Considered Alternatives
+
+1.
+2.
+3.
 
 ## Decision
 
@@ -14,6 +26,14 @@
 
 ## Implications
 
+-
+-
+-
+
 ## Related Decisions
+
+- []()
+- []()
+- []()
 
 ## Notes
