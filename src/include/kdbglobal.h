@@ -1,3 +1,6 @@
+// TODO: THIS FILE SHOULD BE REMOVED OR RENAMED
+//       Global plugins don't exist anymore, yet the contents are necessary for some parts of elektra, like the list plugin.
+
 /**
  * @file
  *

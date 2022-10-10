@@ -101,9 +101,28 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 	return 0;
 }
 
+static KeySet * getSendNotificationHooksEnforcedByContract (const KeySet * contract)
+{
+	KeySet * returned = ksNew (0, KS_END);
+
+	KeySet * dupContract = ksDup (contract);
+
+	if (ksLookupByName (dupContract, "system:/elektra/contract/mountglobal/internalnotification", 0) != NULL)
+	{
+		ksAppendKey (returned, keyNew ("system:/elektra/hook/notification/send/plugins/byContractInternalnotification", KEY_VALUE, "internalnotification", KEY_END));
+	}
+
+	ksDel (dupContract);
+
+	return returned;
+}
+
 static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
 	SendNotificationHook * lastHook = kdb->hooks.sendNotification;
+
+	KeySet * pluginsToLoad = getSendNotificationHooksEnforcedByContract (contract);
+	ksAppend (pluginsToLoad, config);
 
 	Key * pluginsKey = keyNew ("system:/elektra/hook/notification/send/plugins", KEY_END);
 
@@ -112,15 +131,37 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 	//   - system:/elektra/hook/notification/send/plugins/#0
 	//   - system:/elektra/hook/notification/send/plugins/#1
 	// We actually don't check for the # to be present, so it will currently work on all keys directly below.
-	for (elektraCursor end, it = ksFindHierarchy (config, pluginsKey, &end); it < end; it++)
+	for (elektraCursor end, it = ksFindHierarchy (pluginsToLoad, pluginsKey, &end); it < end; it++)
 	{
-		Key * cur = ksAtCursor (config, it);
+		Key * cur = ksAtCursor (pluginsToLoad, it);
 		if (keyIsDirectlyBelow (pluginsKey, cur) == 0)
 		{
 			continue;
 		}
 
 		const char * pluginName = keyString (cur);
+
+		// Check whether this plugin has already been loaded
+		// TODO: This makes this function have a runtime complexity of O(n^2).
+		//       Use a better algorithm, e.g. a hashmap.
+		bool alreadyLoaded = false;
+		SendNotificationHook *tmp = kdb->hooks.sendNotification;
+		while (tmp != NULL)
+		{
+			if (strcmp (pluginName, tmp->plugin->name) == 0)
+			{
+				alreadyLoaded = true;
+				break; // cancel this while loop
+			}
+
+			tmp = tmp->next;
+		}
+
+		if (alreadyLoaded)
+		{
+			continue;
+		}
+
 		Plugin * plugin = loadPlugin (pluginName, kdb->global, modules, contract, errorKey);
 
 		if (!plugin)
@@ -163,6 +204,7 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 		}
 	}
 
+	ksDel (pluginsToLoad);
 	keyDel (pluginsKey);
 
 	return 0;
@@ -261,6 +303,29 @@ static bool isSpecEnabledByConfig (const KeySet * config ELEKTRA_UNUSED)
 	//       See this discussion: https://github.com/ElektraInitiative/libelektra/issues/4499
 	return true;
 }
+
+/**
+ * This method looks for the hook plugin 'internalnotification'
+ *
+ * @param kdb the KDB instance in which to search
+ * @return NULL if not loaded, pointer to the plugin otherwise
+ */
+Plugin * elektraFindInternalNotificationPlugin(KDB * kdb)
+{
+	SendNotificationHook * hook = kdb->hooks.sendNotification;
+	while (hook != NULL)
+	{
+		if (strcmp(hook->plugin->name, "internalnotification") == 0)
+		{
+			return hook->plugin;
+		}
+
+		hook = hook->next;
+	}
+
+	return NULL;
+}
+
 
 /**
  * Initializes the hooks stored in the passed KDB handle.

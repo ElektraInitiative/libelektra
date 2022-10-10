@@ -209,56 +209,6 @@ static void clearErrorAndWarnings (Key * key)
 }
 
 /**
- * Checks whether the same instance of the list plugin is mounted in the global (maxonce) positions:
- *
- * pregetstorage, procgetstorage, postgetstorage, postgetcleanup,
- * presetstorage, presetcleanup, precommit, postcommit,
- * prerollback and postrollback
- *
- * @param handle the KDB handle to check
- * @param errorKey used for error reporting
- *
- * @retval 1 if list is mounted everywhere
- * @retval 0 otherwise
- */
-static int ensureListPluginMountedEverywhere (KDB * handle, Key * errorKey)
-{
-	GlobalpluginPositions expectedPositions[] = { PREGETSTORAGE,
-						      PROCGETSTORAGE,
-						      POSTGETSTORAGE,
-						      POSTGETCLEANUP,
-						      PRESETSTORAGE,
-						      PRESETCLEANUP,
-						      PRECOMMIT,
-						      POSTCOMMIT,
-						      PREROLLBACK,
-						      POSTROLLBACK,
-						      -1 };
-
-	Plugin * list = handle->globalPlugins[expectedPositions[0]][MAXONCE];
-	if (list == NULL || elektraStrCmp (list->name, "list") != 0)
-	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "list plugin not mounted at position %s/maxonce",
-						 GlobalpluginPositionsStr[expectedPositions[0]]);
-		return 0;
-	}
-
-	for (int i = 1; expectedPositions[i] > 0; ++i)
-	{
-		Plugin * plugin = handle->globalPlugins[expectedPositions[i]][MAXONCE];
-		if (plugin != list)
-		{
-			// must always be the same instance
-			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "list plugin not mounted at position %s/maxonce",
-							 GlobalpluginPositionsStr[expectedPositions[i]]);
-			return 0;
-		}
-	}
-
-	return 1;
-}
-
-/**
  * Handles the system:/elektra/contract/globalkeyset part of kdbOpen() contracts
  *
  * NOTE: @p contract will be modified
@@ -283,25 +233,14 @@ static void ensureContractGlobalKs (KDB * handle, KeySet * contract)
 
 /**
  * Handles the system:/elektra/contract/mountglobal part of kdbOpen() contracts
+ * This function is only necessary for the GOPTS hook.
  *
  * NOTE: @p contract will be modified
  *
  * @see kdbOpen()
  */
-static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * parentKey)
+static int ensureContractMountGlobal (KeySet * contract)
 {
-	if (!ensureListPluginMountedEverywhere (handle, parentKey))
-	{
-		return -1;
-	}
-
-	Plugin * listPlugin = handle->globalPlugins[PREGETSTORAGE][MAXONCE];
-	typedef int (*mountPluginFun) (Plugin *, const char *, KeySet *, Key *);
-	mountPluginFun listAddPlugin = (mountPluginFun) elektraPluginGetFunction (listPlugin, "mountplugin");
-	typedef int (*unmountPluginFun) (Plugin *, const char *, Key *);
-	unmountPluginFun listRemovePlugin = (unmountPluginFun) elektraPluginGetFunction (listPlugin, "unmountplugin");
-
-
 	Key * mountContractRoot = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
 	Key * pluginConfigRoot = keyNew ("user:/", KEY_END);
 
@@ -310,31 +249,11 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 		Key * cur = ksAtCursor (contract, it);
 		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
 		{
-			const char * pluginName = keyBaseName (cur);
 			KeySet * pluginConfig = ksCut (contract, cur);
 
-			// increment ref count, because cur is part of pluginConfig and
-			// we hold a reference to cur that is still needed (via pluginName)
-			keyIncRef (cur);
 			ksRename (pluginConfig, cur, pluginConfigRoot);
 
-			int ret = listRemovePlugin (listPlugin, pluginName, parentKey);
-			if (ret != ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ret = listAddPlugin (listPlugin, pluginName, pluginConfig, parentKey);
-			}
-
-			// we ned to delete cur separately, because it was ksCut() from contract
-			// we also need to decrement the ref count, because it was incremented above
-			keyDecRef (cur);
 			keyDel (cur);
-
-			if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_SET_INSTALLATION_ERRORF (
-					parentKey, "The plugin '%s' couldn't be mounted globally (via the 'list' plugin).", pluginName);
-				return -1;
-			}
 
 			// adjust cursor, because we removed the current key
 			--it;
@@ -355,13 +274,13 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
 {
 	// FIXME [new_backend]: tests
-	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
-	KeySet * dup = ksDeepDup (contract);
+	// deep dupContract, so modifications to the keys in contract after kdbOpen() cannot modify the contract
+	KeySet * dupContract = ksDeepDup (contract);
 
-	ensureContractGlobalKs (handle, dup);
-	int ret = ensureContractMountGlobal (handle, dup, parentKey);
+	ensureContractGlobalKs (handle, dupContract);
+	int ret = ensureContractMountGlobal (dupContract);
 
-	ksDel (dup);
+	ksDel (dupContract);
 
 	return ret == 0;
 }
@@ -999,15 +918,6 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	}
 
 	// Step 4: process contract and set up hooks
-	// TODO [new_backend]: remove once all globals are replacd by hooks
-	if (mountGlobals (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
-	{
-		// mountGlobals also sets a warning containing the name of the plugin that failed to load
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
-		ksDel (elektraKs);
-		goto error;
-	}
-
 	// TODO (atmaxinger): improve
 	// TODO: combine with ensureContract below
 	if (initHooks (handle, elektraKs, handle->modules, contract, errorKey) == -1)
@@ -1110,14 +1020,6 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 		closeBackends (handle->backends, errorKey);
 		handle->backends = NULL;
-	}
-
-	for (int i = 0; i < NR_GLOBAL_POSITIONS; ++i)
-	{
-		for (int j = 0; j < NR_GLOBAL_SUBPOSITIONS; ++j)
-		{
-			elektraPluginClose (handle->globalPlugins[i][j], errorKey);
-		}
 	}
 
 	freeHooks (handle, errorKey);
@@ -1908,16 +1810,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	KeySet * dataKs = ksNew (ksGetSize (ks), KS_END);
 	backendsMerge (backends, dataKs);
 
-	if (elektraGlobalGet (handle, dataKs, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-
-	if (elektraGlobalGet (handle, dataKs, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-
 	SendNotificationHook * sendNotificationHook = handle->hooks.sendNotification;
 	while (sendNotificationHook != NULL)
 	{
@@ -2422,11 +2314,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 3: run spec to add metadata
-	// TODO [new_backend]: remove once all globals are replaced by hooks
-	if (elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
 
 	if (handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, ks, parentKey, false) == -1)
 	{

@@ -149,15 +149,12 @@ libelektra_1.0 {
 libelektraprivate_1.0 {
 	# kdbprivate.h
 	elektraAbort;
-	elektraGlobalError;
-	elektraGlobalGet;
-	elektraGlobalSet;
 	elektraKeyNameCanonicalize;
 	elektraKeyNameEscapePart;
 	elektraKeyNameUnescape;
 	elektraKeyNameValidate;
 	elektraKsPopAtCursor;
-	elektraPluginFindGlobal;
+	elektraFindInternalNotificationPlugin;
 	elektraPluginMissing;
 	elektraPluginVersion;
 	elektraRenameKeys;
