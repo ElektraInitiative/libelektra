@@ -109,7 +109,8 @@ static KeySet * getSendNotificationHooksEnforcedByContract (const KeySet * contr
 
 	if (ksLookupByName (dupContract, "system:/elektra/contract/mountglobal/internalnotification", 0) != NULL)
 	{
-		ksAppendKey (returned, keyNew ("system:/elektra/hook/notification/send/plugins/byContractInternalnotification", KEY_VALUE, "internalnotification", KEY_END));
+		ksAppendKey (returned, keyNew ("system:/elektra/hook/notification/send/plugins/byContractInternalnotification", KEY_VALUE,
+					       "internalnotification", KEY_END));
 	}
 
 	ksDel (dupContract);
@@ -145,7 +146,7 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 		// TODO: This makes this function have a runtime complexity of O(n^2).
 		//       Use a better algorithm, e.g. a hashmap.
 		bool alreadyLoaded = false;
-		SendNotificationHook *tmp = kdb->hooks.sendNotification;
+		SendNotificationHook * tmp = kdb->hooks.sendNotification;
 		while (tmp != NULL)
 		{
 			if (strcmp (pluginName, tmp->plugin->name) == 0)
@@ -310,12 +311,12 @@ static bool isSpecEnabledByConfig (const KeySet * config ELEKTRA_UNUSED)
  * @param kdb the KDB instance in which to search
  * @return NULL if not loaded, pointer to the plugin otherwise
  */
-Plugin * elektraFindInternalNotificationPlugin(KDB * kdb)
+Plugin * elektraFindInternalNotificationPlugin (KDB * kdb)
 {
 	SendNotificationHook * hook = kdb->hooks.sendNotification;
 	while (hook != NULL)
 	{
-		if (strcmp(hook->plugin->name, "internalnotification") == 0)
+		if (strcmp (hook->plugin->name, "internalnotification") == 0)
 		{
 			return hook->plugin;
 		}

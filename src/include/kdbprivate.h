@@ -479,7 +479,7 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 /* Hooks handling */
 int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey);
 void freeHooks (KDB * kdb, Key * errorKey);
-Plugin * elektraFindInternalNotificationPlugin(KDB * kdb);
+Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
 
 
 /*Private helper for key*/

@@ -331,7 +331,7 @@ static void test_initHooksSendNotifications_InternalNotificationsEnabledByContra
 
 
 	// Act
-	int cret = elektraNotificationContract(contract);
+	int cret = elektraNotificationContract (contract);
 	succeed_if (cret == 0, "elektraNotificationContract should succeed");
 
 	int result = initHooksSendNotifications (kdb, config, modules, contract, errorKey);
@@ -342,8 +342,7 @@ static void test_initHooksSendNotifications_InternalNotificationsEnabledByContra
 
 	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
 	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
-	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0,
-		    "plugin must be internalnotification");
+	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0, "plugin must be internalnotification");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
 
@@ -365,10 +364,8 @@ static void test_initHooksSendNotifications_samePluginMultipleTimes_ShouldOnlyBe
 	KeySet * contract = ksNew (0, KS_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config =
-		ksNew (2,
-		       keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END),
-		       keyNew ("system:/elektra/hook/notification/send/plugins/#1", KEY_VALUE, "internalnotification", KEY_END),
-		       KS_END);
+		ksNew (2, keyNew ("system:/elektra/hook/notification/send/plugins/#0", KEY_VALUE, "internalnotification", KEY_END),
+		       keyNew ("system:/elektra/hook/notification/send/plugins/#1", KEY_VALUE, "internalnotification", KEY_END), KS_END);
 
 	// Act
 	int result = initHooksSendNotifications (kdb, config, modules, contract, errorKey);
@@ -404,8 +401,8 @@ int main (int argc, char ** argv)
 	test_initHooksSendNotifications_existingPlugin ();
 	test_initHooksSendNotifications_multipleExistingPlugins ();
 	test_initHooksSendNotifications_multipleExistingPluginsAndOneUnknownPlugin ();
-	test_initHooksSendNotifications_InternalNotificationsEnabledByContract();
-	test_initHooksSendNotifications_samePluginMultipleTimes_ShouldOnlyBeLoadedOnce();
+	test_initHooksSendNotifications_InternalNotificationsEnabledByContract ();
+	test_initHooksSendNotifications_samePluginMultipleTimes_ShouldOnlyBeLoadedOnce ();
 
 	printf ("\ntest_hooks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
