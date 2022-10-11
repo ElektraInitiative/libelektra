@@ -1125,14 +1125,14 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 	else if (pk->fd == -2)
 	{
 		ELEKTRA_LOG ("unlink configuration file \"%s\"", pk->filename);
-		if (access(pk->filename, F_OK) == 0 && unlink (pk->filename) == -1)
+		if (access (pk->filename, F_OK) == 0 && unlink (pk->filename) == -1)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
 			ret = -1;
 		}
 
 		ELEKTRA_LOG ("unlink temp file \"%s\"", pk->tempfile);
-		if (access(pk->tempfile, F_OK) == 0 && unlink (pk->tempfile) == -1)
+		if (access (pk->tempfile, F_OK) == 0 && unlink (pk->tempfile) == -1)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
 			ret = -1;
@@ -1168,7 +1168,7 @@ static void elektraUnlinkFile (char * filename, Key * parentKey)
 {
 	ELEKTRA_LOG ("unlinking %s", filename);
 	int errnoSave = errno;
-	if (access(filename, F_OK) == 0 && unlink (filename) == -1)
+	if (access (filename, F_OK) == 0 && unlink (filename) == -1)
 	{
 		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not unlink the file '%s'. Reason: %s", filename, strerror (errno));
 		errno = errnoSave;

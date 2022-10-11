@@ -60,7 +60,8 @@ void testinconsistent (const char * file)
 		    "kdbGet returned an unexpected value (ELEKTRA_PLUGIN_STATUS_ERROR was expected)");
 
 	/* check if an error was added to the parent key because of the previous set value */
-	succeed_if (keyGetMeta (parentKey, "error") != NULL, "An error on the parentKey was not present after an invalid call to kdbCommit.");
+	succeed_if (keyGetMeta (parentKey, "error") != NULL,
+		    "An error on the parentKey was not present after an invalid call to kdbCommit.");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -93,7 +94,8 @@ void testinvalid (const char * file, const char * lineending)
 		    "kdbCommit returned an unexpected value (ELEKTRA_PLUGIN_STATUS_ERROR was expected).");
 
 	/* check if an error was added to the parent key because of the previous set value */
-	succeed_if (keyGetMeta (parentKey, "error") != NULL, "An error on the parentKey was not present after an invalid call to kdbCommit.");
+	succeed_if (keyGetMeta (parentKey, "error") != NULL,
+		    "An error on the parentKey was not present after an invalid call to kdbCommit.");
 
 	ksDel (ks);
 	keyDel (parentKey);
