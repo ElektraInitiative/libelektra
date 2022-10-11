@@ -11,10 +11,14 @@ But substantial decisions must be made transparently and in a participative way.
 - All decisions must go through at least two review rounds, with a merge in between.
 - At least two people need to be in favor of the decision in both rounds.
 - [Documentation guidelines](/doc/contrib/documentation.md) apply.
+- During the decision process, the PRs constantly get updated.
+  Questions in the PRs are answered by updating the PR and answering with the commit id.
 
 ## Assumptions
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
+- We will always be able to reach an consensus.
+  We don't need a vote or a benevolent dictatorship.
 
 ## Considered Alternatives
 
@@ -65,6 +69,8 @@ Here you must ensure:
 Here "the decision" should not have one decision but several well-described solutions.
 So for several solutions a proposal, rationale and implication should be given.
 
+This step is finished when every reviewer approves.
+
 ### In Progress
 
 - You must include all further alternative proposals made in the "Considered Alternatives" section.
@@ -87,6 +93,8 @@ This step is mandatory.
 - Here the details of the decisions are stripped from the decision and moved to the documentation.
 - The documentation links to the decision.
 - The decision links to the new documentation.
+
+This step is finished when every reviewer approves.
 
 ### Rejected
 
