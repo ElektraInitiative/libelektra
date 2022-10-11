@@ -34,6 +34,7 @@ Key * backendsFindParent (KeySet * backends, const Key * key)
 
 	// lookup root key or fallback to default:/
 	Key * parent = ksLookup (backends, lookup, 0);
+	keyDel (lookup);
 	return parent != NULL ? parent : ksLookupByName (backends, "default:/", 0);
 }
 
