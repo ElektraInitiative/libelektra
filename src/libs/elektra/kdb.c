@@ -497,7 +497,6 @@ static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, KeySet * p
 	KeySet * dupPlugins = dupPluginSet (plugins, errorKey);
 	if (dupPlugins == NULL)
 	{
-		keyDel (mountpoint);
 		return false;
 	}
 	Plugin * backendPlugin = *(Plugin **) keyValue (ksLookupByName (dupPlugins, "system:/backend", 0));
