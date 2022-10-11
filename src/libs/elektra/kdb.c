@@ -525,8 +525,13 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 			"The mountpoint '%s' (defined at '%s') is not allowed. Everything below '" KDB_SYSTEM_ELEKTRA
 			"' is reserved for use by Elektra.",
 			keyBaseName (root), keyName (root));
+
+		keyDel (elektraRoot);
 		return false;
 	}
+
+	keyDel (elektraRoot);
+	elektraRoot = NULL;
 
 
 	// load mountpoint level config
@@ -653,6 +658,8 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 			++i;
 		}
 	}
+
+	keyDel (mountpointsRoot);
 
 	if (error)
 	{
