@@ -232,7 +232,7 @@ static void test_initHooksSendNotifications_existingPlugin (void)
 	// Assert
 	succeed_if (result == 0, "result should be 0");
 	succeed_if (ksGetSize (keyMeta (errorKey)) == 0, "should not have any warnings");
-	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
+	exit_if_fail (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
 	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
@@ -268,15 +268,15 @@ static void test_initHooksSendNotifications_multipleExistingPlugins (void)
 	succeed_if (result == 0, "result should be 0");
 	succeed_if (ksGetSize (keyMeta (errorKey)) == 0, "should not have any warnings");
 
-	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
-	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
+	exit_if_fail (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
+	exit_if_fail (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
 	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0,
 		    "first plugin must be internalnotification");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
 
-	succeed_if (kdb->hooks.sendNotification->next != NULL, "sendNotification->next must not be null");
-	succeed_if (kdb->hooks.sendNotification->next->plugin != NULL, "sendNotification->next->plugin must not be null");
+	exit_if_fail (kdb->hooks.sendNotification->next != NULL, "sendNotification->next must not be null");
+	exit_if_fail (kdb->hooks.sendNotification->next->plugin != NULL, "sendNotification->next->plugin must not be null");
 	succeed_if (strcmp (kdb->hooks.sendNotification->next->plugin->name, "dbus") == 0, "second plugin must be dbus");
 	succeed_if (kdb->hooks.sendNotification->next->get != NULL, "sendNotification->next->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->next->set != NULL, "sendNotification->next->set must not be null");
@@ -314,15 +314,15 @@ static void test_initHooksSendNotifications_multipleExistingPluginsAndOneUnknown
 	succeed_if (result == 0, "result should be 0");
 	succeed_if (ksGetSize (keyMeta (errorKey)) != 0, "should have some warnings");
 
-	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
-	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
+	exit_if_fail (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
+	exit_if_fail (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
 	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0,
 		    "first plugin must be internalnotification");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
 
-	succeed_if (kdb->hooks.sendNotification->next != NULL, "sendNotification->next must not be null");
-	succeed_if (kdb->hooks.sendNotification->next->plugin != NULL, "sendNotification->next->plugin must not be null");
+	exit_if_fail (kdb->hooks.sendNotification->next != NULL, "sendNotification->next must not be null");
+	exit_if_fail (kdb->hooks.sendNotification->next->plugin != NULL, "sendNotification->next->plugin must not be null");
 	succeed_if (strcmp (kdb->hooks.sendNotification->next->plugin->name, "dbus") == 0, "second plugin must be dbus");
 	succeed_if (kdb->hooks.sendNotification->next->get != NULL, "sendNotification->next->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->next->set != NULL, "sendNotification->next->set must not be null");
@@ -361,8 +361,8 @@ static void test_initHooksSendNotifications_InternalNotificationsEnabledByContra
 	succeed_if (result == 0, "result should be 0");
 	succeed_if (ksGetSize (keyMeta (errorKey)) == 0, "should have no warnings");
 
-	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
-	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
+	exit_if_fail (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
+	exit_if_fail (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
 	succeed_if (strcmp (kdb->hooks.sendNotification->plugin->name, "internalnotification") == 0, "plugin must be internalnotification");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
@@ -398,7 +398,7 @@ static void test_initHooksSendNotifications_samePluginMultipleTimes_ShouldOnlyBe
 	// Assert
 	succeed_if (result == 0, "result should be 0");
 	succeed_if (ksGetSize (keyMeta (errorKey)) == 0, "should not have any warnings");
-	succeed_if (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
+	exit_if_fail (kdb->hooks.sendNotification != NULL, "sendNotification must not be null");
 	succeed_if (kdb->hooks.sendNotification->get != NULL, "sendNotification->get must not be null");
 	succeed_if (kdb->hooks.sendNotification->set != NULL, "sendNotification->set must not be null");
 	succeed_if (kdb->hooks.sendNotification->plugin != NULL, "sendNotification->plugin must not be null");
