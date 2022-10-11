@@ -570,10 +570,9 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "The mountpoint '%s' defined in '%s' does not specify a backend plugin.",
 						   keyName (mountpoint), keyName (root));
-		keyDel (mountpoint);
 		keyDel (lookupHelper);
-		ksDel (plugins);
-		return false;
+
+		goto error;
 	}
 
 	// get definition section
@@ -591,36 +590,61 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 		keySetNamespace (mountpoint, KEY_NS_SYSTEM);
 		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
-			return false;
+			goto error;
 		}
 
 		keySetNamespace (mountpoint, KEY_NS_USER);
 		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
-			return false;
+			goto error;
 		}
 
 		keySetNamespace (mountpoint, KEY_NS_DIR);
 		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
-			return false;
+			goto error;
 		}
 
 		keySetNamespace (mountpoint, KEY_NS_PROC);
 		if (!addDupMountpoint (mountpoints, mountpoint, plugins, definition, errorKey))
 		{
-			return false;
+			goto error;
 		}
 
+		// adDupMounptoints duplicates everthing, including reopening the plugins
+		// so we have to close the originals
+		for (elektraCursor it = 0; it < ksGetSize (plugins); it ++)
+		{
+			Plugin * plugin = *(Plugin **) keyValue (ksAtCursor (plugins, it));
+			elektraPluginClose (plugin, errorKey);
+		}
+
+		ksDel (plugins);
+		ksDel (definition);
 		keyDel (mountpoint);
-	}
-	else
-	{
-		Plugin * backendPlugin = *(Plugin **) keyValue (backendPluginKey);
-		addMountpoint (mountpoints, mountpoint, backendPlugin, plugins, definition);
+
+		return true;
 	}
 
+	Plugin * backendPlugin = *(Plugin **) keyValue (backendPluginKey);
+
+	addMountpoint (mountpoints, mountpoint, backendPlugin, plugins, definition);
+	keyDel (mountpoint);
+	// Don't delete plugins, definition as addMountpoint takes ownership of it
+
 	return true;
+
+error:
+	for (elektraCursor it = 0; it < ksGetSize (plugins); it ++)
+	{
+		Plugin * plugin = *(Plugin **) keyValue (ksAtCursor (plugins, it));
+		elektraPluginClose (plugin, errorKey);
+	}
+
+	ksDel (plugins);
+	ksDel (definition);
+	keyDel (mountpoint);
+	return false;
 }
 
 // FIXME [new_backend]: tests needed
@@ -1898,6 +1922,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ksDel (backends);
 	ksDel (allBackends);
+	ksDel (dataKs);
+
 	errno = errnosave;
 	return procOnly ? 2 : 1;
 
@@ -1911,6 +1937,8 @@ error:
 
 	ksDel (backends);
 	ksDel (allBackends);
+	ksDel (dataKs);
+
 	errno = errnosave;
 	return -1;
 }
@@ -2326,7 +2354,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		Key * backendKey = ksAtCursor (backends, i);
 
-		ksAppend (setKs, ksDeepDup (ksBelow (ks, backendKey)));
+		KeySet * below = ksBelow (ks, backendKey);
+		KeySet * deepDupedBelow = ksDeepDup (below);
+		ksAppend (setKs, deepDupedBelow);
+		ksDel (below);
+		ksDel (deepDupedBelow);
 	}
 
 	// Step 5: split ks (for resolver and prestorage phases)
@@ -2447,6 +2479,9 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
+	ksDel (setKs);
+	ksDel (backends);
+
 	errno = errnosave;
 
 	return 1;
@@ -2465,6 +2500,8 @@ error:
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	ksDel (setKs);
+	ksDel (backends);
+
 	errno = errnosave;
 
 	return -1;
