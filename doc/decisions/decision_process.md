@@ -33,12 +33,15 @@ Decisions need to:
 
 We base our decision process and template on:
 
-- [''using patterns to capture architectural decisions''](https://dl.acm.org/doi/10.1109/MS.2007.124)
-- [arc42 decisions](http://docs.arc42.org/section-9/), and
+- [''using patterns to capture architectural decisions''](https://dl.acm.org/doi/10.1109/MS.2007.124),
+- [arc42 decisions](http://docs.arc42.org/section-9/),
+- [ADR](https://adr.github.io/), and
 - [RFCs in rust-lang](https://github.com/rust-lang/rfcs).
 
 Following subsections describe all steps a decision might run through.
 Only two of them are mandatory.
+
+Explanations of the template are in [explanations.md](explanations.md).
 
 ### Drafts
 
@@ -62,7 +65,7 @@ Here you must ensure:
 ### In Progress
 
 - You must include all further alternative proposals made in the "Considered Alternatives" section.
-- Now it is allowed to have the ??? from the previous round's preferred decision in the decision section.
+- Now it is allowed to have the decision from the previous round in the "Decision" section.
 
 ### Decided
 
