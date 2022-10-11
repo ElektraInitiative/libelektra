@@ -112,7 +112,8 @@ These decision PRs are also merged for documentation purposes.
 ## Rationale
 
 - The process is lightweight and simple.
-- The template helps not forgetting important points.
+- The template makes sure important points are not forgotten.
+- Every decision is by design in its own file with its own git history.
 - PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected PRs).
 - PRs allow to suggest changes and review individual sentences of the decision.
 
