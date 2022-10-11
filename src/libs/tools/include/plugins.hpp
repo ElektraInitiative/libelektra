@@ -54,6 +54,7 @@ protected:
 
 public:
 	Plugins ();
+	virtual ~Plugins ();
 
 	/** Add needed, provided and recommend information */
 	void addInfo (Plugin & plugin);
