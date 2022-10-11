@@ -35,7 +35,10 @@ target_link_elektra (test_cmerge elektra-merge)
 
 target_link_elektra (test_sha-256 elektra-ease)
 
-if (TARGET elektra-notification)
+if (TARGET elektra-notification
+    AND TARGET elektra-dbus
+    AND TARGET elektra-internalnotification
+    AND TARGET elektra-gopts)
 	do_test (test_hooks)
 	target_link_elektra (test_hooks elektra-plugin elektra-notification)
 else ()
