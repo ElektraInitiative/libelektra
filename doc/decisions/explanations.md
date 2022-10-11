@@ -88,4 +88,3 @@ Decisions that give constraints must be listed in "Constraints" above.
 
 Here is a full list of off-line discussions, issue trackers, PRs etc. related to this decision.
 Furthermore, the author, acknowledgements, dates etc. can be written here.
-
