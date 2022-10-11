@@ -11,8 +11,11 @@ But substantial decisions must be made transparently and in a participative way.
 - All decisions must go through at least two review rounds, with a merge in between.
 - At least two people need to be in favor of the decision in both rounds.
 - [Documentation guidelines](/doc/contrib/documentation.md) apply.
-- During the decision process, the PRs constantly get updated.
-  Questions in the PRs are answered by updating the PR and answering with the commit id.
+- During the decision process, the PRs constantly get updated:
+  - Make changes as new commits to the pull request.
+  - Questions in the PRs are answered by updating the PR and answering with the commit id.
+  - As generally recommended in Elektra, do not squash after they are visible on the pull request.
+  - Rebase only if the decision was already accepted and has a merge conflict.
 
 ## Assumptions
 
