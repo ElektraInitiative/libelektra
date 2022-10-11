@@ -62,6 +62,9 @@ Here you must ensure:
 - there are several considered alternatives, each with rationale and implication
 - decision, rationale and implications is **not** yet filled out if there are people arguing for different options (to keep the discussion unbiased)
 
+Here "the decision" should not have one decision but several well-described solutions.
+So for several solutions a proposal, rationale and implication should be given.
+
 ### In Progress
 
 - You must include all further alternative proposals made in the "Considered Alternatives" section.
