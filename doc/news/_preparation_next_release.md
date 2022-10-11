@@ -374,7 +374,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Docker
 
-- <<TODO>>
+- Update packagename `libpcrec++-dev` to `libpcrecpp0v5` in Debian Sid. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
