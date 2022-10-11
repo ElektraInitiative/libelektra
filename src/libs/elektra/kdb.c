@@ -613,7 +613,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 
 		// adDupMounptoints duplicates everthing, including reopening the plugins
 		// so we have to close the originals
-		for (elektraCursor it = 0; it < ksGetSize (plugins); it ++)
+		for (elektraCursor it = 0; it < ksGetSize (plugins); it++)
 		{
 			Plugin * plugin = *(Plugin **) keyValue (ksAtCursor (plugins, it));
 			elektraPluginClose (plugin, errorKey);
@@ -635,7 +635,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	return true;
 
 error:
-	for (elektraCursor it = 0; it < ksGetSize (plugins); it ++)
+	for (elektraCursor it = 0; it < ksGetSize (plugins); it++)
 	{
 		Plugin * plugin = *(Plugin **) keyValue (ksAtCursor (plugins, it));
 		elektraPluginClose (plugin, errorKey);
