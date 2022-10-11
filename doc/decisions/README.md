@@ -34,7 +34,7 @@ Before you write your first decision, read [Decision Process](decision_process.m
 - [Memory Layout](memory_layout.md)
 - [Backend Plugin](backend_plugin.md)
 
-## Mostly Implemented
+## Partially Implemented
 
 - [Hooks](hooks.md) (@atmaxinger)
 - [Array for Warnings](warning_array.md)

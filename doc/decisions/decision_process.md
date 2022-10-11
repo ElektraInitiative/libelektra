@@ -89,10 +89,12 @@ This step is finished when every reviewer approves.
 - decision, rationale and implication are now filled out and fixed according to the reviews
 - decisions of this status usually already have an implementation PR
 
-### Mostly Implemented
+### Partially Implemented
 
 This can be useful for decisions that need to be done for every module like plugin or library.
 It is for decisions where only a few not-so-important modules are missing and/or issues exist for the remaining pieces.
+
+The "Implication" must clearly say how much of the decision is already implemented.
 
 ### Implemented
 
