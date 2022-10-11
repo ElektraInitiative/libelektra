@@ -16,6 +16,9 @@ But substantial decisions must be made transparently and in a participative way.
   - Questions in the PRs are answered by updating the PR and answering with the commit id.
   - As generally recommended in Elektra, do not squash after they are visible on the pull request.
   - Rebase only if the decision was already accepted and has a merge conflict.
+- For reviewers:
+  - Prefer to directly give suggestions how to change sentences.
+  - General points should be asked in the root of "Conversation" and not at random sentences in the review.
 
 ## Assumptions
 
