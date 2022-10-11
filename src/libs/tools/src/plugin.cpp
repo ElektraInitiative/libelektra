@@ -114,7 +114,8 @@ void Plugin::loadInfo ()
 
 void Plugin::parse ()
 {
-	Key root (std::string ("system:/elektra/modules/") + spec.getName (), KEY_END);
+	Key root ("system:/elektra/modules/", KEY_END);
+	root.addBaseName(spec.getName());
 
 	Key k = info.lookup (root);
 	if (!k)
@@ -122,7 +123,7 @@ void Plugin::parse ()
 		throw PluginNoContract ();
 	}
 
-	root.setName (std::string ("system:/elektra/modules/") + spec.getName () + "/exports");
+	root.addBaseName("exports");
 
 	ssize_t it = info.search (root) + 1;
 	if (it > 0)
@@ -131,11 +132,11 @@ void Plugin::parse ()
 		{
 			k = info.at (it);
 			if (!k.isBelow (root)) break;
-			symbols[k.getBaseName ()] = (*k.getFunc ());
+			symbols[k.getName().substr(root.getName().length() + 1)] = (*k.getFunc ());
 		}
 	}
 
-	root.setName (std::string ("system:/elektra/modules/") + spec.getName () + "/infos");
+	root.setBaseName("infos");
 
 	it = info.search (root) + 1;
 	if (it > 0)
@@ -144,7 +145,7 @@ void Plugin::parse ()
 		{
 			k = info.at (it);
 			if (!k.isBelow (root)) break;
-			infos[k.getBaseName ()] = k.getString ();
+			infos[k.getName().substr(root.getName().length() + 1)] = k.getString ();
 		}
 	}
 	else

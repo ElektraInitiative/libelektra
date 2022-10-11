@@ -87,10 +87,10 @@ int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 			keyNew ("system:/elektra/modules/zeromqsend/exports", KEY_END),
 			keyNew ("system:/elektra/modules/zeromqsend/exports/open", KEY_FUNC, elektraZeroMqSendOpen, KEY_END),
 			keyNew ("system:/elektra/modules/zeromqsend/exports/get", KEY_FUNC, elektraZeroMqSendGet, KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/set", KEY_FUNC, elektraZeroMqSendSet, KEY_END),
+			keyNew ("system:/elektra/modules/zeromqsend/exports/commit", KEY_FUNC, elektraZeroMqSendCommit, KEY_END),
 			keyNew ("system:/elektra/modules/zeromqsend/exports/hook/notification/send/get", KEY_FUNC, elektraZeroMqSendGet,
 				KEY_END),
-			keyNew ("system:/elektra/modules/zeromqsend/exports/hook/notification/send/set", KEY_FUNC, elektraZeroMqSendSet,
+			keyNew ("system:/elektra/modules/zeromqsend/exports/hook/notification/send/set", KEY_FUNC, elektraZeroMqSendCommit,
 				KEY_END),
 			keyNew ("system:/elektra/modules/zeromqsend/exports/close", KEY_FUNC, elektraZeroMqSendClose, KEY_END),
 #include ELEKTRA_README
@@ -104,7 +104,7 @@ int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	return 1; /* success */
 }
 
-int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraZeroMqSendCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	ElektraZeroMqSendPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
@@ -162,7 +162,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	return elektraPluginExport("zeromqsend",
 		ELEKTRA_PLUGIN_OPEN,	&elektraZeroMqSendOpen,
 		ELEKTRA_PLUGIN_GET,	&elektraZeroMqSendGet,
-		ELEKTRA_PLUGIN_SET,	&elektraZeroMqSendSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraZeroMqSendCommit,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraZeroMqSendClose,
 		ELEKTRA_PLUGIN_END);
 }

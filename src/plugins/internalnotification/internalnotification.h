@@ -15,7 +15,7 @@
 #include <kdbplugin.h>
 
 int elektraInternalnotificationGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraInternalnotificationSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraInternalnotificationCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraInternalnotificationClose (Plugin * handle, Key * errorKey);
 int elektraInternalnotificationOpen (Plugin * handle, Key * errorKey);
 

@@ -17,7 +17,7 @@
 #include <kdbconfig.h>
 #include <string>
 
-// FIXME [new_backend]: all tests disabled, mount tooling will be rewritten in C
+// FIXME [new_backend]: tests disabled, mount tooling will be rewritten in C
 
 std::string makeLiteralString (std::string str)
 {

@@ -98,13 +98,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	}
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	Plugin * plugin = elektraPluginGetData (handle);
-	if (!elektraPluginClose (plugin, errorKey))
-	{
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
 	elektraPluginSetData (handle, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

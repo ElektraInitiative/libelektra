@@ -34,7 +34,7 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 			30, keyNew ("system:/elektra/modules/logchange", KEY_VALUE, "logchange plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports", KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
-			keyNew ("system:/elektra/modules/logchange/exports/set", KEY_FUNC, elektraLogchangeSet, KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/commit", KEY_FUNC, elektraLogchangeCommit, KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports/close", KEY_FUNC, elektraLogchangeClose, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/logchange/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -59,9 +59,9 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	return 1; /* success */
 }
 
-int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraLogchangeCommit (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
+	// because elektraLogchangeGet will always be executed before elektraLogchangeCommit
 	// we know that oldKeys must exist here!
 	KeySet * oldKeys = (KeySet *) elektraPluginGetData (handle);
 	KeySet * addedKeys = ksDup (returned);
@@ -95,7 +95,7 @@ int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	ksDel (changedKeys);
 	ksDel (removedKeys);
 
-	// for next invocation of elektraLogchangeSet, remember our current keyset
+	// for next invocation of elektraLogchangeCommit, remember our current keyset
 	elektraPluginSetData (handle, ksDup (returned));
 
 	return 1; /* success */
@@ -113,7 +113,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	// clang-format off
 	return elektraPluginExport("logchange",
 		ELEKTRA_PLUGIN_GET,	&elektraLogchangeGet,
-		ELEKTRA_PLUGIN_SET,	&elektraLogchangeSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraLogchangeCommit,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraLogchangeClose,
 		ELEKTRA_PLUGIN_END);
 }

@@ -137,7 +137,7 @@ int elektraLineendingsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			30, keyNew ("system:/elektra/modules/lineendings", KEY_VALUE, "lineendings plugin waits for your orders", KEY_END),
 			keyNew ("system:/elektra/modules/lineendings/exports", KEY_END),
 			keyNew ("system:/elektra/modules/lineendings/exports/get", KEY_FUNC, elektraLineendingsGet, KEY_END),
-			keyNew ("system:/elektra/modules/lineendings/exports/set", KEY_FUNC, elektraLineendingsSet, KEY_END),
+			keyNew ("system:/elektra/modules/lineendings/exports/commit", KEY_FUNC, elektraLineendingsCommit, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/lineendings/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -156,7 +156,7 @@ int elektraLineendingsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraLineendingsSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraLineendingsCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * valid = ksLookupByName (config, "/valid", 0);
@@ -182,7 +182,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	// clang-format off
 	return elektraPluginExport("lineendings",
 			ELEKTRA_PLUGIN_GET,	&elektraLineendingsGet,
-			ELEKTRA_PLUGIN_SET,	&elektraLineendingsSet,
+			ELEKTRA_PLUGIN_COMMIT,	&elektraLineendingsCommit,
 			//	ELEKTRA_PLUGIN_ERROR,	&elektraLineendingsError,
 			ELEKTRA_PLUGIN_END);
 }

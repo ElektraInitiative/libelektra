@@ -239,7 +239,7 @@ static void ensureContractGlobalKs (KDB * handle, KeySet * contract)
  */
 static bool ensureContract (KDB * handle, const KeySet * contract)
 {
-	// FIXME [new_backend]: tests
+	// FIXME [new_backend]: tests needed
 	// deep dupContract, so modifications to the keys in contract after kdbOpen() cannot modify the contract
 	KeySet * dupContract = ksDeepDup (contract);
 
@@ -606,7 +606,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	return true;
 }
 
-// FIXME [new_backend]: write tests
+// FIXME [new_backend]: tests needed
 KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	KeySet * mountpoints = ksNew (0, KS_END);
@@ -1465,7 +1465,13 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		// TODO [new_backend]: should lock value, but fcrypt needs to change the parentKey value after the resolver has run
+		// set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+
+		// START fcrypt workaround
+		clear_bit (parentKey->flags, KEY_FLAG_RO_VALUE);
+		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		// END fcrypt workaround
 
 		int ret = getFn (backendData->backend, backendData->keys, parentKey);
 
@@ -1478,6 +1484,10 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
 		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
 		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
 			// success
+
+			// START fcrypt workaround
+			keySetMeta (backendKey, "meta:/internal/kdbmountpoint", keyString (parentKey));
+			// END fcrypt workaround
 			break;
 		case ELEKTRA_PLUGIN_STATUS_ERROR:
 			// handle error
@@ -1598,10 +1608,12 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
  *
+ * @retval 2 if only `proc:/` backends were executed. This means no data was loaded from storage.
+ * There might be warnings attached to the parentKey! Depending on your use case, you might need to treat them as erorrs!
  * @retval 1 if the Keys were retrieved successfully. There might be warnings attached to the parentKey! Depending on your use case, you
  * might need to treat them as errors!
- * @retval 0 if there was no update - no changes are made to the KeySet then. There might be warnings attached to the parentKey! Depending
- * on your use case, you might need to treat them as erorrs!
+ * @retval 0 if there was no update at all - no changes are made to the KeySet then. There might be warnings attached to the parentKey!
+ * Depending on your use case, you might need to treat them as erorrs!
  * @retval -1 on failure - no changes are made to the KeySet then
  *
  * @since 1.0.0
@@ -1712,10 +1724,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 	}
 
+	bool procOnly = keyGetNamespace (ksAtCursor (backends, 0)) == KEY_NS_PROC &&
+			keyGetNamespace (ksAtCursor (backends, ksGetSize (backends) - 1)) == KEY_NS_PROC;
+
 	// Step 6: return if no backends left
 	// HACK: for gopts
-	if (ksGetSize (backends) == 0 || (goptsActive && keyGetNamespace (ksAtCursor (backends, 0)) == KEY_NS_PROC &&
-					  keyGetNamespace (ksAtCursor (backends, ksGetSize (backends) - 1)) == KEY_NS_PROC))
+	if (ksGetSize (backends) == 0 || (goptsActive && procOnly && ksGetSize (backends) == 1))
 	{
 		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
@@ -1726,7 +1740,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ksDel (backends);
 		ksDel (allBackends);
 		errno = errnosave;
-		return 0;
+		return 2;
 	}
 
 	// check if cache is enabled, Steps 7-9 only run with cache
@@ -1866,7 +1880,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	ksDel (backends);
 	ksDel (allBackends);
 	errno = errnosave;
-	return 1;
+	return procOnly ? 2 : 1;
 
 error:
 	ELEKTRA_LOG_DEBUG ("now in error state");

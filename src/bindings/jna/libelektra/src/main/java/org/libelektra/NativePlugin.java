@@ -180,6 +180,10 @@ public class NativePlugin implements Plugin {
       int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
     }
 
+    public interface KdbInit extends Callback {
+      int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
+    }
+
     public interface KdbSet extends Callback {
       int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
     }
@@ -188,12 +192,18 @@ public class NativePlugin implements Plugin {
       int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
     }
 
+    public interface KdbCommit extends Callback {
+      int invoke(ElektraPlugin handle, Pointer returned, Pointer parentKey);
+    }
+
     public Pointer config;
     public KdbOpen kdbOpen;
     public KdbClose kdbClose;
+    public KdbInit kdbInit;
     public KdbGet kdbGet;
     public KdbSet kdbSet;
     public KdbError kdbError;
+    public KdbCommit kdbCommit;
     public String name;
 
     @Override
@@ -202,9 +212,11 @@ public class NativePlugin implements Plugin {
       list.add("config");
       list.add("kdbOpen");
       list.add("kdbClose");
+      list.add("kdbInit");
       list.add("kdbGet");
       list.add("kdbSet");
       list.add("kdbError");
+      list.add("kdbCommit");
       list.add("name");
       return list;
     }

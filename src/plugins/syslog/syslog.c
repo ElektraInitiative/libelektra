@@ -48,7 +48,7 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				     keyNew ("system:/elektra/modules/syslog/exports/open", KEY_FUNC, elektraSyslogOpen, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/close", KEY_FUNC, elektraSyslogClose, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/set", KEY_FUNC, elektraSyslogSet, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/commit", KEY_FUNC, elektraSyslogCommit, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
 #include "readme_syslog.c"
 				     keyNew ("system:/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
@@ -65,7 +65,7 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1;
 }
 
-int elektraSyslogSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraSyslogCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	size_t changed = 0;
 
@@ -98,7 +98,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_OPEN,	&elektraSyslogOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraSyslogClose,
 		ELEKTRA_PLUGIN_GET,	&elektraSyslogGet,
-		ELEKTRA_PLUGIN_SET,	&elektraSyslogSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraSyslogCommit,
 		ELEKTRA_PLUGIN_ERROR,	&elektraSyslogError,
 		ELEKTRA_PLUGIN_END);
 }

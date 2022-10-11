@@ -7,8 +7,6 @@
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
-// FIXME [new_backend]: tests
-
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
 {
 	BackendHandle * handle = elektraCalloc (sizeof (BackendHandle));

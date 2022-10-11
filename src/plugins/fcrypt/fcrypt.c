@@ -668,7 +668,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 	int encryptionResult = fcryptEncrypt (pluginConfig, parentKey);
@@ -733,6 +733,6 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 			ELEKTRA_PLUGIN_OPEN,  &ELEKTRA_PLUGIN_FUNCTION(open),
 			ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION(close),
 			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(get),
-			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(set),
+			ELEKTRA_PLUGIN_COMMIT,   &ELEKTRA_PLUGIN_FUNCTION(commit),
 			ELEKTRA_PLUGIN_END);
 }

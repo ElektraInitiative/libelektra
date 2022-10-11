@@ -483,7 +483,7 @@ TEST_F (Simple, TriggerError)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	EXPECT_EQ (kdb.get (ks, testRoot), 0) << "nothing to do in get";
+	EXPECT_EQ (kdb.get (ks, testRoot), 2) << "nothing to do in get";
 	ks.append (Key ("system:" + testRoot + "a", KEY_END));
 	ks.append (Key ("system:" + testRoot + "k", KEY_META, "trigger/error", "10", KEY_END));
 	ks.append (Key ("system:" + testRoot + "z", KEY_END));

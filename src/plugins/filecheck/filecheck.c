@@ -314,7 +314,7 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 			keyNew ("system:/elektra/modules/filecheck/exports/open", KEY_FUNC, elektraFilecheckOpen, KEY_END),
 			keyNew ("system:/elektra/modules/filecheck/exports/close", KEY_FUNC, elektraFilecheckClose, KEY_END),
 			keyNew ("system:/elektra/modules/filecheck/exports/get", KEY_FUNC, elektraFilecheckGet, KEY_END),
-			keyNew ("system:/elektra/modules/filecheck/exports/set", KEY_FUNC, elektraFilecheckSet, KEY_END),
+			keyNew ("system:/elektra/modules/filecheck/exports/commit", KEY_FUNC, elektraFilecheckCommit, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/filecheck/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -330,7 +330,7 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1; // success
 }
 
-int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraFilecheckCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// get all keys
 	checkStruct * checkConf = elektraPluginGetData (handle);
@@ -347,7 +347,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 			ELEKTRA_PLUGIN_OPEN,	&elektraFilecheckOpen,
 			ELEKTRA_PLUGIN_CLOSE,	&elektraFilecheckClose,
 			ELEKTRA_PLUGIN_GET,	&elektraFilecheckGet,
-			ELEKTRA_PLUGIN_SET,	&elektraFilecheckSet,
+			ELEKTRA_PLUGIN_COMMIT,	&elektraFilecheckCommit,
 			ELEKTRA_PLUGIN_END);
 }
 

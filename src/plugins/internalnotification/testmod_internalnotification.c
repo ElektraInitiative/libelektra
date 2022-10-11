@@ -130,7 +130,7 @@ static void test_basics (void)
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
 
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbCommit (plugin, ks, parentKey) == 1, "call to kdbCommit was not successful");
 
 	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "call to kdbClose was not successful");
 
@@ -163,9 +163,9 @@ static void test_updateOnKdbGet (void)
 	PLUGIN_CLOSE ();
 }
 
-static void test_updateOnKdbSet (void)
+static void test_updateOnKdbCommit (void)
 {
-	printf ("test update on kdbSet\n");
+	printf ("test update on kdbCommit\n");
 
 	Key * parentKey = keyNew ("user:/tests/internalnotification", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -178,7 +178,7 @@ static void test_updateOnKdbSet (void)
 	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 
 	succeed_if (value == 42, "registered value was not updated");
 
@@ -726,7 +726,7 @@ int main (int argc, char ** argv)
 
 	test_basics ();
 	test_updateOnKdbGet ();
-	test_updateOnKdbSet ();
+	test_updateOnKdbCommit ();
 	test_conversionError ();
 
 	printf ("\nregisterInt\n-----------\n");

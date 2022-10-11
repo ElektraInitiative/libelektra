@@ -42,7 +42,7 @@ int elektraDbusTeardownReceiveMessage (DBusConnection * connection, DBusHandleMe
 int elektraDbusOpen (Plugin * handle, Key * errorKey);
 int elektraDbusClose (Plugin * handle, Key * errorKey);
 int elektraDbusGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDbusSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDbusCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
