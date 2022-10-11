@@ -79,6 +79,7 @@ Before you write your first decision, read [Decision Process](decision_process.m
 - [Plugin Variants](plugin_variants.md)
 - [Global Validation](global_validation.md)
 - [Template](template.md)
+- [Explanations](explanations.md)
 
 ## Rejected
 
