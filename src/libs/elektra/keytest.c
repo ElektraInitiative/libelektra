@@ -61,7 +61,7 @@ int keyClearSync (Key * key)
 {
 	if (!key) return -1;
 
-	key->flags &= ~KEY_FLAG_SYNC;
+	key->flags &= ~(keyflag_t) KEY_FLAG_SYNC;
 	return key->flags;
 }
 

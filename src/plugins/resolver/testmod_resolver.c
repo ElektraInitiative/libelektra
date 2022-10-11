@@ -245,7 +245,6 @@ void test_checkfile (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	succeed_if (keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END), "Could not create parent Key!");
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "did not find a resolver");
 
@@ -298,7 +297,6 @@ static void check_xdg (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	succeed_if (keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END), "Could not create parent Key!");
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "did not find a resolver");
 

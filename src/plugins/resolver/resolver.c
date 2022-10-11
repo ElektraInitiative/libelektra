@@ -114,10 +114,13 @@ static void resolverCloseOne (resolverHandle * p)
 
 static void resolverClose (resolverHandles * p)
 {
+	// shared by all, freed at the end
+	char * path = (char *) p->system.path;
 	resolverCloseOne (&p->spec);
 	resolverCloseOne (&p->dir);
 	resolverCloseOne (&p->user);
 	resolverCloseOne (&p->system);
+	elektraFree (path);
 	elektraFree (p);
 }
 
@@ -431,7 +434,7 @@ static char * elektraCacheKeyName (char * filename)
 
 static int initHandles (Plugin * handle, Key * parentKey)
 {
-	const char * path = keyString (parentKey);
+	const char * path = elektraStrDup (keyString (parentKey));
 
 	resolverHandles * p = elektraMalloc (sizeof (resolverHandles));
 	resolverInit (&p->spec, path);

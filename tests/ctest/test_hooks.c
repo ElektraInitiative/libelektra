@@ -165,6 +165,9 @@ static void test_initHooks_shouldInitAllHooksWithoutFailure (void)
 	ksDel (modules);
 	ksDel (contract);
 
+	freeHooks (kdb, errorKey);
+	keyDel (errorKey);
+	ksDel (kdb->global);
 	elektraFree (kdb);
 }
 
@@ -189,17 +192,23 @@ static void test_initHooksSendNotifications_unknownPlugin_shouldReportWarning (v
 	KeySet * meta = keyMeta (errorKey);
 	Key * warning0 = ksLookupByName (meta, "meta:/warnings/#0/reason", 0);
 	Key * warning1 = ksLookupByName (meta, "meta:/warnings/#1/reason", 0);
+	Key * warning2 = ksLookupByName (meta, "meta:/warnings/#2/reason", 0);
 
-	succeed_if (warning0 != NULL, "there should be at least 2 warnings (0 found)");
-	succeed_if (warning1 != NULL, "there should be at least 2 warnings (1 found)");
+	succeed_if (warning0 != NULL, "there should be at least 3 warnings (0 found)");
+	succeed_if (warning1 != NULL, "there should be at least 3 warnings (1 found)");
+	succeed_if (warning2 != NULL, "there should be at least 3 warnings (2 found)");
 
 	// warning0 contains warning from plugin loader -- message may be platform specific, so don't check that here
 
-	succeed_if (strstr (keyString (warning1), "unknown123") != NULL, "warning should contain the name of the plugin")
-		succeed_if (strstr (keyString (warning1), "system:/elektra/hook/notification/send/plugins/#0") != NULL,
-			    "warning should contain the configuration path of the plugin");
+	succeed_if (strstr (keyString (warning2), "unknown123") != NULL, "warning should contain the name of the plugin");
+	succeed_if (strstr (keyString (warning2), "system:/elektra/hook/notification/send/plugins/#0") != NULL,
+		    "warning should contain the configuration path of the plugin");
 
 	ksDel (config);
+	ksDel (modules);
+	ksDel (contract);
+
+	freeHooks (kdb, errorKey);
 	keyDel (errorKey);
 	elektraFree (kdb);
 }
@@ -230,6 +239,10 @@ static void test_initHooksSendNotifications_existingPlugin (void)
 	succeed_if (kdb->hooks.sendNotification->next == NULL, "sendNotification->next must be null");
 
 	ksDel (config);
+	ksDel (modules);
+	ksDel (contract);
+
+	freeHooks (kdb, errorKey);
 	keyDel (errorKey);
 	elektraFree (kdb);
 }
@@ -271,6 +284,10 @@ static void test_initHooksSendNotifications_multipleExistingPlugins (void)
 	succeed_if (kdb->hooks.sendNotification->next->next == NULL, "sendNotification->next->next must be null");
 
 	ksDel (config);
+	ksDel (modules);
+	ksDel (contract);
+
+	freeHooks (kdb, errorKey);
 	keyDel (errorKey);
 	elektraFree (kdb);
 }
@@ -313,6 +330,10 @@ static void test_initHooksSendNotifications_multipleExistingPluginsAndOneUnknown
 	succeed_if (kdb->hooks.sendNotification->next->next == NULL, "sendNotification->next->next must be null");
 
 	ksDel (config);
+	ksDel (modules);
+	ksDel (contract);
+
+	freeHooks (kdb, errorKey);
 	keyDel (errorKey);
 	elektraFree (kdb);
 }
@@ -349,6 +370,10 @@ static void test_initHooksSendNotifications_InternalNotificationsEnabledByContra
 	succeed_if (kdb->hooks.sendNotification->next == NULL, "sendNotification->next must be null");
 
 	ksDel (config);
+	ksDel (modules);
+	ksDel (contract);
+
+	freeHooks (kdb, errorKey);
 	keyDel (errorKey);
 	elektraFree (kdb);
 }
@@ -380,6 +405,10 @@ static void test_initHooksSendNotifications_samePluginMultipleTimes_ShouldOnlyBe
 	succeed_if (kdb->hooks.sendNotification->next == NULL, "sendNotification->next must be null");
 
 	ksDel (config);
+	ksDel (modules);
+	ksDel (contract);
+
+	freeHooks (kdb, errorKey);
 	keyDel (errorKey);
 	elektraFree (kdb);
 }

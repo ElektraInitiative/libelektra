@@ -75,6 +75,7 @@ static int initHooksGopts (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 	if ((kdb->hooks.gopts.get = (kdbHookGoptsGetPtr) getFunction (plugin, "hook/gopts/get", errorKey)) == NULL)
 	{
+		elektraPluginClose (plugin, errorKey);
 		return -1;
 	}
 
@@ -95,6 +96,7 @@ static int initHooksSpec (KDB * kdb, Plugin * plugin, Key * errorKey)
 
 	if (kdb->hooks.spec.copy == NULL || kdb->hooks.spec.remove == NULL)
 	{
+		elektraPluginClose (plugin, errorKey);
 		return -1;
 	}
 
@@ -183,6 +185,7 @@ static int initHooksSendNotifications (KDB * kdb, const KeySet * config, KeySet 
 				errorKey,
 				"SendNotification plugin %s exports neither 'hook/notification/send/get' nor 'hook/notification/send/set'",
 				pluginName);
+			elektraPluginClose (plugin, errorKey);
 			continue;
 		}
 
@@ -251,6 +254,7 @@ static KeySet * getPluginConfigFromContract (const char * pluginName, const KeyS
 			keyIncRef (cur);
 			ksRename (pluginConfig, cur, pluginConfigRoot);
 			ksAppend (config, pluginConfig);
+			ksDel (pluginConfig);
 
 			// we need to delete cur separately, because it was ksCut() from contract
 			// we also need to decrement the ref count, because it was incremented above
@@ -270,17 +274,13 @@ static KeySet * getPluginConfigFromContract (const char * pluginName, const KeyS
 
 static Plugin * loadPlugin (const char * pluginName, KeySet * global, KeySet * modules, const KeySet * contract, Key * errorKey)
 {
-	Key * openKey = keyDup (errorKey, KEY_CP_ALL);
-
 	KeySet * config = getPluginConfigFromContract (pluginName, contract);
 
-	Plugin * plugin = elektraPluginOpen (pluginName, modules, config, openKey);
+	Plugin * plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
 
 	if (!plugin)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Could not load plugin '%s'", pluginName);
-		keyCopyAllMeta (errorKey, openKey);
-		keyDel (openKey);
 		return NULL;
 	}
 
