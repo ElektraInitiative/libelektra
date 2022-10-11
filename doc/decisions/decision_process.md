@@ -19,6 +19,8 @@ But substantial decisions must be made transparently and in a participative way.
 - People want to be informed about or even participate in what Elektra looks like in the future.
 - We will always be able to reach an consensus.
   We don't need a vote or a benevolent dictatorship.
+- Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
+  Only the end results counts.
 
 ## Considered Alternatives
 
@@ -118,5 +120,9 @@ These decision PRs are also merged for documentation purposes.
 ## Related Decisions
 
 ## Notes
+
+- Early discussions in issues or in discussions is not prohibited.
+  They don't bring a decision forward, though.
+  To not waste time, it is recommended to start with the decision process as described here asap.
 
 Written by Markus Raab 10.10.2022
