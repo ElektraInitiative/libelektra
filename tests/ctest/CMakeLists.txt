@@ -33,7 +33,11 @@ target_link_elektra (test_cmerge elektra-merge)
 
 target_link_elektra (test_sha-256 elektra-ease)
 
-target_link_elektra (test_hooks elektra-plugin elektra-notification)
+if (TARGET elektra-notification)
+	target_link_elektra (test_hooks elektra-plugin elektra-notification)
+else ()
+	message (STATUS "excluding test_hooks, because elektra-notification not found")
+endif ()
 
 target_link_elektra (test_merge elektra-merge)
 
