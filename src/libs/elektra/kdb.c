@@ -143,16 +143,28 @@ static bool closeBackends (KeySet * backends, Key * errorKey)
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		Key * backendKey = ksAtCursor (backends, i);
-		const BackendData * backendData = keyValue (backendKey);
+
+		// The cast is necessary, as keyValue would return (const *)
+		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 		for (elektraCursor p = 0; p < ksGetSize (backendData->plugins); p++)
 		{
 			Plugin * plugin = *(Plugin **) keyValue (ksAtCursor (backendData->plugins, p));
+
+			if (plugin == backendData->backend)
+			{
+				// Set the backend to NULL, so the call to elektraPluginClose (backendData->backend, ...) is a NOP.
+				// Otherwise we would cause an error by closing it twice.
+				backendData->backend = NULL;
+			}
+
 			if (elektraPluginClose (plugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 			{
 				return false;
 			}
 		}
+
+		elektraPluginClose (backendData->backend, errorKey);
 
 		ksDel (backendData->plugins);
 		ksDel (backendData->keys);
