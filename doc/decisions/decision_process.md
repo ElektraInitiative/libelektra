@@ -63,13 +63,13 @@ We base our decision process and template on:
 Following subsections describe all steps a decision might run through.
 Only two of them are mandatory.
 
-Explanations of the template are in [explanations.md](explanations.md).
+Explanations of the template are in [EXPLANATIONS.md](EXPLANATIONS.md).
 
 ### Drafts
 
 The first step is to create a PR with:
 
-- **one** decision copied from [template.md](template.md), where at least the "Problem" and "Considered Alternatives" are filled out.
+- **one** decision copied from [TEMPLATE.md](TEMPLATE.md), where at least the "Problem" and "Considered Alternatives" are filled out.
 - a link from [README.md](README.md) from the "Drafts" section to this decision.
 
 ### In Discussion
