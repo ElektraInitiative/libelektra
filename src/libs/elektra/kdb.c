@@ -2430,6 +2430,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
+		ksDel (backends);
+		ksDel (setKs);
 		errno = errnosave;
 
 		return 0;
