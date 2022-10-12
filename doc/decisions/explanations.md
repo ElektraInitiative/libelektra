@@ -36,7 +36,7 @@ Assumptions is what we believe to be true but do not or cannot really know, e.g.
 - problems/risks that might turn up
 
 > Note:
-> The decision (but not necessarily the considered alternatives) must fulfill all assumptions.
+> The decision (but not necessarily the considered alternatives) must not break any assumptions.
 
 ## Considered Alternatives
 
@@ -56,7 +56,7 @@ Here should be a detailed description of the best solution, i.e., the decision.
 It should:
 
 - give all details why the solution:
-  - the solution solves the problem best
+  - solves the problem best
   - is best in line with our goals
   - fulfills all constraints and assumptions
 - describe what needs to be changed

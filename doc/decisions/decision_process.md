@@ -14,11 +14,11 @@ But substantial decisions must be made transparently and in a participative way.
 - During the decision process, the PRs constantly get updated:
   - Make changes as new commits to the pull request.
   - Questions in the PRs are answered by updating the PR and answering with the commit id.
-  - As generally recommended in Elektra, do not squash after they are visible on the pull request.
+  - As generally recommended in Elektra, do not squash commits after they are visible on the pull request.
   - Rebase only if the decision was already accepted and has a merge conflict.
 - For reviewers:
   - Prefer to directly give suggestions how to change sentences.
-  - General points should be asked in the root of "Conversation" and not at random sentences in the review.
+  - General questions should be asked in the root of "Conversation" and not at random sentences in the review.
 
 ## Assumptions
 
@@ -41,7 +41,7 @@ Decisions need to:
 
 - be implementable within the next major release
 - be according to [Elektra's goals](/doc/GOALS.md)
-- first being decided upon using the decision process described here
+- first be decided upon using the decision process described here
 
 We base our decision process and template on:
 
