@@ -24,7 +24,7 @@ But substantial decisions must be made transparently and in a participative way.
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
 - We will always be able to reach an consensus.
-  We don't need a vote or a benevolent dictatorship.
+  We don't need a vote (besides the approved review) or a benevolent dictatorship.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
   Only the end results counts.
 
@@ -45,7 +45,7 @@ Decisions need to:
 
 We base our decision process and template on:
 
-- [''using patterns to capture architectural decisions''](https://dl.acm.org/doi/10.1109/MS.2007.124),
+- [''using patterns to capture architectural decisions''](http://eprints.cs.univie.ac.at/2345/1/02_Using_Patterns_to_Capture.pdf),
 - [arc42 decisions](http://docs.arc42.org/section-9/),
 - [ADR](https://adr.github.io/), and
 - [RFCs in rust-lang](https://github.com/rust-lang/rfcs).
