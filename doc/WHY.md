@@ -1,5 +1,7 @@
 # Why Should I use Elektra?
 
+Because it's an interesting initiative.
+
 The three main points relevant for most people are:
 
 1. Even though Elektra provides a global key database,
