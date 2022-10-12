@@ -26,19 +26,13 @@ namespace kdb
 namespace tools
 {
 
-struct Slot
-{
-	Plugin * value;
-	Slot * next;
-};
-
 /**
  * @brief A collection of plugins (either get, set or error)
  */
 class Plugins
 {
 protected:
-	std::vector<Slot *> plugins;
+	std::map<std::string, std::vector<Plugin *>> plugins;
 
 	std::vector<std::string> needed;
 	std::vector<std::string> recommended;
@@ -47,10 +41,6 @@ protected:
 
 	int nrStoragePlugins;
 	int nrResolverPlugins;
-
-	std::map<std::string, int> placementInfo;
-
-	void addPluginToSlot (Plugin * plugin, std::string which);
 
 public:
 	Plugins ();

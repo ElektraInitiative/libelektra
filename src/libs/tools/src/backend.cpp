@@ -60,8 +60,8 @@ Backend::~Backend ()
 }
 
 Backend::Backend (Backend && other)
-: getplugins (other.getplugins), setplugins (other.setplugins), commitplugins (other.commitplugins), mp (other.mp),
-  configFile (other.configFile), modules (other.modules), config (other.config), plugins (std::move (other.plugins))
+: getplugins (other.getplugins), setplugins (other.setplugins), errorplugins (other.errorplugins), commitplugins (other.commitplugins),
+  mp (other.mp), configFile (other.configFile), modules (other.modules), config (other.config), plugins (std::move (other.plugins))
 {
 }
 

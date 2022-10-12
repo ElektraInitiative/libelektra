@@ -31,26 +31,6 @@
 	it says how much can actually be stored.*/
 #define KEYSET_SIZE 16
 
-#define NR_OF_GET_PLUGINS 4
-#define NR_OF_SET_PLUGINS 6
-#define NR_OF_ERROR_PLUGINS 3
-
-#define GET_GETRESOLVER 0
-#define GET_PREGETSTORAGE 1
-#define GET_GETSTORAGE 2
-#define GET_POSTGETSTORAGE 3
-
-#define SET_SETRESOLVER 0
-#define SET_PRESETSTORAGE 1
-#define SET_SETSTORAGE 2
-#define SET_PRECOMMIT 3
-#define SET_COMMIT 4
-#define SET_POSTCOMMIT 5
-
-#define ERROR_PREROLLBACK 0
-#define ERROR_ROLLBACK 1
-#define ERROR_POSTROLLBACK 2
-
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
 
