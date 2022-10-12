@@ -57,6 +57,19 @@ static int elektraDummyClose (Plugin * handle, Key * errorKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+static int elektraDummyInit (Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (elektraPluginProcessIsParent (pp))
+	{
+		return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_INIT, returned, parentKey);
+	}
+
+	keySetMeta (parentKey, "user:/tests/pluginprocess/init", "");
+	ksAppendKey (returned, keyNew ("user:/tests/pluginprocess/init", KEY_END));
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 static int elektraDummyGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
@@ -84,6 +97,19 @@ static int elektraDummySet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+static int elektraDummyCommit (Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (elektraPluginProcessIsParent (pp))
+	{
+		return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_COMMIT, returned, parentKey);
+	}
+
+	keySetMeta (parentKey, "user:/tests/pluginprocess/commit", "value");
+	ksAppendKey (returned, keyNew ("user:/tests/pluginprocess/commit", KEY_END));
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 static int elektraDummyError (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
@@ -103,6 +129,8 @@ static Plugin * createDummyPlugin (KeySet * conf)
 	plugin->kdbGet = &elektraDummyGet;
 	plugin->kdbSet = &elektraDummySet;
 	plugin->kdbError = &elektraDummyError;
+	plugin->kdbInit = &elektraDummyInit;
+	plugin->kdbCommit = &elektraDummyCommit;
 	plugin->name = "dummy";
 	plugin->refcounter = 1;
 	plugin->data = NULL;

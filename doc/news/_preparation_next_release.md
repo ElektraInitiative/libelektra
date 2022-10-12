@@ -48,7 +48,10 @@ docker run -it elektra/elektra
 - <<HIGHLIGHT>>
 - <<HIGHLIGHT>>
 
-### <<HIGHLIGHT>>
+### New Backend
+
+- Implement [hooks](../decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
+- Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<HIGHLIGHT>>
 
@@ -58,11 +61,9 @@ docker run -it elektra/elektra
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin>>
+### list
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Removed the `list` plugin. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<Plugin>>
 
@@ -195,9 +196,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
+### kdb
 
-- <<TODO>>
+- Removed `global-mount` and `global-umount` commands. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 

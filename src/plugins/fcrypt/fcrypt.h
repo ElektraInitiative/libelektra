@@ -16,7 +16,7 @@
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, KeySet * ks, Key * parentKey);
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, KeySet * ks, Key * parentKey);
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * handle, KeySet * ks, Key * parentKey);
 int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

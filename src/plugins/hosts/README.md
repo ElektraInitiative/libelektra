@@ -80,12 +80,14 @@ sudo kdb set system:/hosts/ipv4/localhost ::1
 
 sudo kdb mount --with-recommends hosts /tests/hosts hosts
 
+mkdir -p $(dirname `kdb file user:/tests/hosts`)
+
 # Create hosts file for testing
-echo '127.0.0.1	localhost' >  `kdb file /tests/hosts`
-echo '::1	localhost'	    >> `kdb file /tests/hosts`
+echo '127.0.0.1	localhost' >  `kdb file user:/tests/hosts`
+echo '::1	localhost'	    >> `kdb file user:/tests/hosts`
 
 # Check the file
-cat `kdb file /tests/hosts`
+cat `kdb file user:/tests/hosts`
 #> 127.0.0.1	localhost
 #> ::1	localhost
 

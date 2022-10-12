@@ -26,28 +26,13 @@ namespace kdb
 namespace tools
 {
 
-
-struct Place
-{
-	int current;
-	int max;
-
-	Place () : current (-1), max (0)
-	{
-	}
-
-	Place (int current_, int max_) : current (current_), max (max_)
-	{
-	}
-};
-
 /**
  * @brief A collection of plugins (either get, set or error)
  */
 class Plugins
 {
 protected:
-	std::vector<Plugin *> plugins;
+	std::map<std::string, std::vector<Plugin *>> plugins;
 
 	std::vector<std::string> needed;
 	std::vector<std::string> recommended;
@@ -56,10 +41,6 @@ protected:
 
 	int nrStoragePlugins;
 	int nrResolverPlugins;
-
-	int revPostGet;
-
-	std::map<std::string, Place> placementInfo;
 
 public:
 	Plugins ();
@@ -119,6 +100,21 @@ public:
  * @brief Plugins to handle errors during configuration access
  */
 class ErrorPlugins : private Plugins
+{
+public:
+	void status (std::ostream & os) const;
+
+	void tryPlugin (Plugin & plugin);
+	void addPlugin (Plugin & plugin);
+	bool validated () const;
+
+	void serialise (kdb::Key & baseKey, kdb::KeySet & ret);
+};
+
+/**
+ * @brief Plugins to handle errors during configuration access
+ */
+class CommitPlugins : private Plugins
 {
 public:
 	void status (std::ostream & os) const;

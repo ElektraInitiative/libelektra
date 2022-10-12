@@ -16,7 +16,7 @@ class RemountCommand : public MountBaseCommand
 	void getExistingMountpoint (Cmdline const & cl);
 	void cloneMountpoint (Cmdline const & cl);
 
-	std::string existingName;
+	std::string existingMountpoint;
 
 public:
 	RemountCommand ();

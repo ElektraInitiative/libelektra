@@ -54,7 +54,7 @@ int elektraZeroMqSendNotification (void * socket, const char * changeType, const
 int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey);
 int elektraZeroMqSendClose (Plugin * handle, Key * errorKey);
 int elektraZeroMqSendGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraZeroMqSendSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraZeroMqSendCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 

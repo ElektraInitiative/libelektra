@@ -83,3 +83,6 @@ elektra-install/
 # Flatpak directories
 .flatpak-builder/
 .flatpak-app/
+
+# CMake Presets
+CMakeUserPresets.json

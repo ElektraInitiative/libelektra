@@ -251,16 +251,9 @@ static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
 	return;
 }
 
-int elektraWresolverOpen (Plugin * handle, Key * errorKey)
+static int initHandles (Plugin * handle, Key * parentKey)
 {
-	KeySet * resolverConfig = elektraPluginGetConfig (handle);
-	const char * path = keyString (ksLookupByName (resolverConfig, "/path", 0));
-
-	if (!path)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not find file configuration");
-		return -1;
-	}
+	const char * path = keyString (parentKey);
 
 	resolverHandles * p = elektraMalloc (sizeof (resolverHandles));
 
@@ -272,19 +265,19 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 	{
 	case KEY_NS_SPEC:
 		resolverInit (&p->spec, path);
-		elektraResolveSpec (&p->spec, errorKey);
+		elektraResolveSpec (&p->spec, parentKey);
 	// FALLTHROUGH
 	case KEY_NS_DIR:
 		resolverInit (&p->dir, path);
-		elektraResolveDir (&p->dir, errorKey);
+		elektraResolveDir (&p->dir, parentKey);
 	// FALLTHROUGH
 	case KEY_NS_USER:
 		resolverInit (&p->user, path);
-		elektraResolveUser (&p->user, errorKey);
+		elektraResolveUser (&p->user, parentKey);
 	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
 		resolverInit (&p->system, path);
-		elektraResolveSystem (&p->system, errorKey);
+		elektraResolveSystem (&p->system, parentKey);
 	// FALLTHROUGH
 	case KEY_NS_PROC:
 	case KEY_NS_NONE:
@@ -297,6 +290,12 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 	elektraPluginSetData (handle, p);
 
 	return 0; /* success */
+}
+
+int elektraWresolverOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+{
+	elektraPluginSetData (handle, NULL);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
@@ -352,6 +351,14 @@ int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1; /* success */
 	}
 	/* get all keys */
+
+	if (elektraPluginGetData (handle) == NULL)
+	{
+		if (initHandles (handle, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
 
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);

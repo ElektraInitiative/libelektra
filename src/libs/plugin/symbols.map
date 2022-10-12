@@ -6,3 +6,8 @@ libelektra_0.8 {
 	elektraPluginGetGlobalKeySet;
 	elektraPluginSetData;
 };
+
+libelektra_1.0 {
+	elektraPluginGetPhase;
+	elektraPluginFromMountpoint;
+};

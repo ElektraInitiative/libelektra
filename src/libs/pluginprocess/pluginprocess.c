@@ -191,6 +191,12 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 			case ELEKTRA_PLUGINPROCESS_ERROR:
 				result = handle->kdbError (handle, keySet, key);
 				break;
+			case ELEKTRA_PLUGINPROCESS_COMMIT:
+				result = handle->kdbCommit (handle, keySet, key);
+				break;
+			case ELEKTRA_PLUGINPROCESS_INIT:
+				result = handle->kdbInit (handle, keySet, key);
+				break;
 			default:
 				result = ELEKTRA_PLUGIN_STATUS_ERROR;
 			}

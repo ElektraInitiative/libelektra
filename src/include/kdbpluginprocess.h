@@ -25,6 +25,8 @@ ELEKTRA_PLUGINPROCESS_CLOSE=1<<1,	/*!< Call the plugin's close function */
 ELEKTRA_PLUGINPROCESS_GET=1<<2,		/*!< Call the plugin's get function */
 ELEKTRA_PLUGINPROCESS_SET=1<<3,		/*!< Call the plugin's set function */
 ELEKTRA_PLUGINPROCESS_ERROR=1<<4,	/*!< Call the plugin's error function */
+ELEKTRA_PLUGINPROCESS_COMMIT=1<<5,	/*!< Call the plugin's commit function */
+ELEKTRA_PLUGINPROCESS_INIT=1<<6,	/*!< Call the plugin's init function */
 ELEKTRA_PLUGINPROCESS_END=0			/*!< End of arguments */
 	// clang-format on
 } pluginprocess_t;

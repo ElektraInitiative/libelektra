@@ -9,6 +9,8 @@
 - infos/metadata =
 - infos/description = mounts multiple files within a directory
 
+<!-- FIXME [new_backend]: tests disabled, plugin must be rewritten to properly handle phases, might need to be full backend plugin -->
+
 ## Introduction
 
 For some applications it is beneficially to have multiple configuration files.
@@ -42,7 +44,7 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 
 ## Examples
 
-```sh
+```
 rm -rf $(dirname $(kdb file user:/))/multitest || $(exit 0)
 mkdir -p $(dirname $(kdb file user:/))/multitest || $(exit 0)
 

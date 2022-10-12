@@ -33,6 +33,20 @@ int FileCommand::execute (Cmdline const & cl)
 		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
 	}
 
+	// Not all namespaces are supported, because we don't know if the key actually exists
+	// If it does not exist, the key name alone must uniquely determine the storage location
+	// That's only the case for spec:/, system:/, user:/ and dir:/ keys
+	if (x.getNamespace () == ElektraNamespace::CASCADING)
+	{
+		throw invalid_argument ("Cannot retrieve the file for a cascading key. Use a concrete namespace.");
+	}
+
+	if (x.getNamespace () != ElektraNamespace::SPEC && x.getNamespace () != ElektraNamespace::SYSTEM &&
+	    x.getNamespace () != ElektraNamespace::USER && x.getNamespace () != ElektraNamespace::DIR)
+	{
+		throw invalid_argument ("Can only retrieve file for a persistable namespace: spec:/, system:/, user:/ or dir:/");
+	}
+
 	try
 	{
 		kdb.get (conf, x);

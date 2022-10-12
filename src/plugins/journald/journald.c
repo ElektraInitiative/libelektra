@@ -28,7 +28,7 @@ int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 				   keyNew ("system:/elektra/modules/journald", KEY_VALUE, "journald plugin waits for your orders", KEY_END),
 				   keyNew ("system:/elektra/modules/journald/exports", KEY_END),
 				   keyNew ("system:/elektra/modules/journald/exports/get", KEY_FUNC, elektraJournaldGet, KEY_END),
-				   keyNew ("system:/elektra/modules/journald/exports/set", KEY_FUNC, elektraJournaldSet, KEY_END),
+				   keyNew ("system:/elektra/modules/journald/exports/commit", KEY_FUNC, elektraJournaldCommit, KEY_END),
 				   keyNew ("system:/elektra/modules/journald/exports/error", KEY_FUNC, elektraJournaldError, KEY_END),
 #include "readme_journald.c"
 				   keyNew ("system:/elektra/modules/journald/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
@@ -47,7 +47,7 @@ int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return 1;
 }
 
-int elektraJournaldSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraJournaldCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	sd_journal_send ("MESSAGE=committed configuration %s with %zd keys", keyName (parentKey), ksGetSize (returned),
 			 "MESSAGE_ID=fc65eab25c18463f97e4f9b61ea31eae", "PRIORITY=5", /* notice priority */
@@ -71,7 +71,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	// clang-format off
 	return elektraPluginExport ("journald",
 		ELEKTRA_PLUGIN_GET,	&elektraJournaldGet,
-		ELEKTRA_PLUGIN_SET,	&elektraJournaldSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraJournaldCommit,
 		ELEKTRA_PLUGIN_ERROR,	&elektraJournaldError,
 		ELEKTRA_PLUGIN_END);
 }

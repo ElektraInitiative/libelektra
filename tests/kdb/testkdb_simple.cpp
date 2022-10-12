@@ -91,7 +91,7 @@ TEST_F (Simple, MetaInSet)
 	KeySet ks;
 	Key parent (testRoot, KEY_END);
 	kdb.get (ks, parent);
-	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backend" << ks;
+	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backend\n" << ks;
 
 	ks.append (Key ("meta:" + testRoot + "wrong_meta_key", KEY_END));
 
@@ -99,6 +99,8 @@ TEST_F (Simple, MetaInSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 1) << "got wrong keys:\n" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
@@ -120,6 +122,8 @@ TEST_F (Simple, InvalidKeysInSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 2) << "got wrong keys:\n" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
@@ -156,6 +160,8 @@ TEST_F (Simple, EverythingInGetSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 816) << "got wrong keys:\n" << ks;
 	// KeySet cmp = getAll();
 	// ASSERT_EQ(ks, cmp);
@@ -179,6 +185,8 @@ TEST_F (Simple, EverythingInSet)
 	kdb.set (ks, parent);
 	printError (std::cout, parent, true, true);
 	printWarnings (std::cout, parent, true, true);
+	// TODO [new_backend]: warning on non-storable namespace in ks
+	// EXPECT_NE (ckdb::keyGetMeta(parent.getKey(), "warnings"), nullptr);
 	ASSERT_EQ (ks.size (), 816) << "got wrong keys:\n" << ks;
 	// KeySet cmp = getAll();
 	// ASSERT_EQ(ks, cmp);
@@ -321,8 +329,6 @@ TEST_F (Simple, GetAppendCascading)
 	EXPECT_EQ (parentKey.getString (), "");
 	kdb.get (ks, parentKey);
 	EXPECT_EQ (parentKey.getName (), myRoot);
-	std::string fn = parentKey.getString ();
-	EXPECT_EQ (fn.substr (fn.find_last_of ('/') + 1), "kdbFile.dump");
 	parentKey.setString ("");
 
 	ASSERT_EQ (ks.size (), 1) << "no key stayed" << ks;
@@ -345,8 +351,6 @@ TEST_F (Simple, GetAppendCascading)
 	EXPECT_EQ (parentKey.getString (), "");
 	kdb.get (ks2, parentKey);
 	EXPECT_EQ (parentKey.getName (), myRoot);
-	fn = parentKey.getString ();
-	EXPECT_EQ (fn.substr (fn.find_last_of ('/') + 1), "kdbFile.dump");
 	ASSERT_EQ (ks2.size (), 0) << "got keys from freshly mounted backends";
 }
 
@@ -479,7 +483,7 @@ TEST_F (Simple, TriggerError)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	EXPECT_EQ (kdb.get (ks, testRoot), 0) << "nothing to do in get";
+	EXPECT_EQ (kdb.get (ks, testRoot), 2) << "nothing to do in get";
 	ks.append (Key ("system:" + testRoot + "a", KEY_END));
 	ks.append (Key ("system:" + testRoot + "k", KEY_META, "trigger/error", "10", KEY_END));
 	ks.append (Key ("system:" + testRoot + "z", KEY_END));

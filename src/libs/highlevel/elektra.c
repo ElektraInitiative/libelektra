@@ -418,52 +418,27 @@ static kdb_boolean_t checkSpecProperlyMounted (KDB * const kdb, const char * app
 static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs, const char * application, const char * mountPoint,
 						   ElektraError ** error)
 {
-	// Construct the lookup key
 	Key * mountPointLookupKey = keyNew ("system:/elektra/mountpoints/", KEY_END);
 	keyAddBaseName (mountPointLookupKey, mountPoint);
-	keyAddBaseName (mountPointLookupKey, "mountpoint");
+	keyAddName (mountPointLookupKey, "plugins/backend/name");
 
-	Key * mountPointKey = ksLookup (mountPointsKs, mountPointLookupKey, 0);
-	// If the mountPointKey does not exist, the specification was not properly mounted.
-	if (mountPointKey == NULL)
+	bool mountPointExists = ksLookup (mountPointsKs, mountPointLookupKey, 0) != NULL;
+	if (!mountPointExists)
 	{
 		char * errorMessage = generateSpecProblemErrorMessage (application);
 		char * description = elektraFormat (
 			"%s\n"
 			"Technical details: \n"
-			"The mountPointKey \"%s\" should exist, but it does not.\n"
+			"The key \"%s\" should exist, but it does not.\n"
 			"This was likely caused by an incomplete installation of the application.\n",
 			errorMessage, keyName (mountPointLookupKey));
 		elektraFree (errorMessage);
-		keyDel (mountPointLookupKey);
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
 		elektraFree (description);
-		return false;
 	}
-	// If the mountPointKey's value is not equal to "application", the specification was not properly mounted.
-	else if (elektraStrCmp (keyString (mountPointKey), mountPoint) != 0)
-	{
-		char * errorMessage = generateSpecProblemErrorMessage (application);
-		char * description = elektraFormat (
-			"%s\n"
-			"Technical details: \n"
-			"The value of key \"%s\" should be \"%s\" but it is \"%s\".\n"
-			"This was likely caused by an incomplete installation of the application.\n",
-			errorMessage, keyName (mountPointKey), mountPoint, keyString (mountPointKey));
-		elektraFree (errorMessage);
-		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
-		keyDel (mountPointLookupKey);
-		keyDel (mountPointKey);
-		elektraFree (description);
-		return false;
-	}
-	// Both checks succeeded.
-	else
-	{
-		keyDel (mountPointLookupKey);
-		keyDel (mountPointKey);
-		return true;
-	}
+
+	keyDel (mountPointLookupKey);
+	return mountPointExists;
 }
 
 /**

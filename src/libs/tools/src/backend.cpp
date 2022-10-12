@@ -60,8 +60,8 @@ Backend::~Backend ()
 }
 
 Backend::Backend (Backend && other)
-: getplugins (other.getplugins), setplugins (other.setplugins), errorplugins (other.errorplugins), mp (other.mp),
-  configFile (other.configFile), modules (other.modules), config (other.config), plugins (std::move (other.plugins))
+: getplugins (other.getplugins), setplugins (other.setplugins), errorplugins (other.errorplugins), commitplugins (other.commitplugins),
+  mp (other.mp), configFile (other.configFile), modules (other.modules), config (other.config), plugins (std::move (other.plugins))
 {
 }
 
@@ -71,6 +71,7 @@ Backend & Backend::operator= (Backend && other)
 	getplugins = other.getplugins;
 	setplugins = other.setplugins;
 	errorplugins = other.errorplugins;
+	commitplugins = other.commitplugins;
 	mp = other.mp;
 	configFile = other.configFile;
 	modules = other.modules;
@@ -261,7 +262,7 @@ void Backend::useConfigFile (std::string file)
 
 	if (!checkFileFunction)
 	{
-		throw MissingSymbol ("No resolver with checkfile found");
+		throw MissingSymbol ("No resolver with checkfile found", "");
 	}
 
 
@@ -278,6 +279,7 @@ void Backend::tryPlugin (PluginSpec const & spec)
 	PluginPtr plugin = modules.load (spec);
 
 	errorplugins.tryPlugin (*plugin.get ());
+	commitplugins.tryPlugin (*plugin.get ());
 	getplugins.tryPlugin (*plugin.get ());
 	setplugins.tryPlugin (*plugin.get ());
 
@@ -310,6 +312,7 @@ void Backend::addPlugin (PluginSpec const & plugin)
 	KeySet fullPluginConfig = plugin.getConfig ();
 	fullPluginConfig.append (plugin.getConfig ()); // add previous configs
 	tryPlugin (plugin);
+	commitplugins.addPlugin (*plugins.back ());
 	errorplugins.addPlugin (*plugins.back ());
 	getplugins.addPlugin (*plugins.back ());
 	setplugins.addPlugin (*plugins.back ());
@@ -328,6 +331,7 @@ bool Backend::validated () const
 	bool ret = true;
 
 
+	if (!commitplugins.validated ()) ret = false;
 	if (!errorplugins.validated ()) ret = false;
 	if (!getplugins.validated ()) ret = false;
 	if (!setplugins.validated ()) ret = false;
@@ -345,6 +349,11 @@ void Backend::status (std::ostream & os) const
 	else
 	{
 		os << "Backend is not validated" << std::endl;
+		if (!commitplugins.validated ())
+		{
+			os << "Commit Plugins are not validated" << std::endl;
+		}
+
 		if (!errorplugins.validated ())
 		{
 			os << "Error Plugins are not validated" << std::endl;
@@ -361,6 +370,7 @@ void Backend::status (std::ostream & os) const
 		}
 	}
 	errorplugins.status (os);
+	commitplugins.status (os);
 }
 
 /**
@@ -388,34 +398,22 @@ std::ostream & operator<< (std::ostream & os, Backend const & b)
 void Backend::serialize (kdb::KeySet & ret)
 {
 	assert (!mp.empty ());
-	Key backendRootKey (Backends::mountpointsPath, KEY_END);
-	backendRootKey.addBaseName (mp);
-	backendRootKey.setString ("This is a configuration for a backend, see subkeys for more information");
-	ret.append (backendRootKey);
 
+	if (ret.lookup (Backends::getBasePath (mp)))
+	{
+		throw MountpointAlreadyInUseException ("mountpoint exists already");
+	}
 
-	if (mp == "/")
-	{
-		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, "/", KEY_META, "comment/#0",
-				  "The mount point stores the location where the backend should be mounted.\n"
-				  "This is the root mountpoint.\n",
-				  KEY_END));
-	}
-	else if (mp.at (0) == '/')
-	{
-		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_META, "comment/#0",
-				  "The mount point stores the location where the backend should be mounted.\n"
-				  "This is a cascading mountpoint.\n"
-				  "That means it is both mounted to dir, user and system.",
-				  KEY_END));
-	}
-	else
-	{
-		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_META, "comment/#0",
-				  "The mount point stores the location where the backend should be mounted.\n"
-				  "This is a normal mount point.\n",
-				  KEY_END));
-	}
+	Key backendRootKey = Key (Backends::getBasePath (mp), KEY_END);
+
+	commitplugins.serialise (backendRootKey, ret);
+	errorplugins.serialise (backendRootKey, ret);
+	getplugins.serialise (backendRootKey, ret);
+	setplugins.serialise (backendRootKey, ret);
+
+	ret.append (Key (Backends::getBasePath (mp) + "/plugins/backend", KEY_END));
+	ret.append (Key (Backends::getBasePath (mp) + "/plugins/backend/name", KEY_VALUE, "backend", KEY_END));
+	ret.append (*Key (backendRootKey.getName () + "/definition/path", KEY_VALUE, configFile.c_str (), KEY_END));
 
 	const string configBasePath = Backends::getBasePath (mp) + "/config";
 	ret.append (Key (configBasePath, KEY_END));
@@ -430,13 +428,7 @@ void Backend::serialize (kdb::KeySet & ret)
 		ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
 	}
 
-
-	errorplugins.serialise (backendRootKey, ret);
-	getplugins.serialise (backendRootKey, ret);
-	setplugins.serialise (backendRootKey, ret);
-
-	ret.append (*Key (backendRootKey.getName () + "/config/path", KEY_VALUE, configFile.c_str (), KEY_META, "comment/#0",
-			  "The path for this backend. Note that plugins can override that with more specific configuration.", KEY_END));
+	ret.append (backendRootKey);
 }
 
 void PluginAdder::addPlugin (PluginSpec const & spec)

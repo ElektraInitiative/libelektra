@@ -36,11 +36,13 @@ static KeySet * elektraNoresolverModules (void)
 		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraNoresolverGet, KEY_END),
 		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraNoresolverSet, KEY_END),
 		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", KEY_FUNC, elektraNoresolverError, KEY_END),
+		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/commit", KEY_FUNC, elektraNoresolverCommit, KEY_END),
 		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile", KEY_FUNC, elektraNoresolverCheckFile, KEY_END),
 #include ELEKTRA_README
 		keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+// TODO: remove, handled by backend
 int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 
@@ -91,6 +93,13 @@ int elektraNoresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	return 1; /* success */
 }
 
+int elektraNoresolverCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	/* set all keys */
+
+	return 1; /* success */
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
@@ -98,6 +107,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraNoresolverGet,
 		ELEKTRA_PLUGIN_SET,	&elektraNoresolverSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraNoresolverError,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraNoresolverCommit,
 		ELEKTRA_PLUGIN_END);
 }
 

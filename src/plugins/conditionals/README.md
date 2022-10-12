@@ -71,7 +71,9 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 
 Another full example:
 
-```sh
+<!-- FIXME [new_backend]: tests disabled -->
+
+```
 #Backup-and-Restore:user:/tests/conditionals
 
 sudo kdb mount conditionals.dump user:/tests/conditionals conditionals dump
@@ -90,7 +92,9 @@ kdb meta-set user:/tests/conditionals/key check/condition "(../hkey == 'hello') 
 
 Assignment example:
 
-```sh
+<!-- FIXME [new_backend]: tests disabled -->
+
+```
 kdb set user:/tests/conditionals/hkey Hello
 kdb meta-set user:/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
 # alternative syntax: "(../hkey == 'Hello') ? ('World')
@@ -105,7 +109,10 @@ sudo kdb umount user:/tests/conditionals
 
 Global plugin example:
 
-```sh
+<!-- FIXME [new_backend]: tests disabled -->
+<!-- FIXME [new_backend]: outdated (global-mount) -->
+
+```
 # Backup old list of global plugins
 kdb set user:/tests/msr $(mktemp)
 kdb export system:/elektra/globalplugins > $(kdb get user:/tests/msr)

@@ -32,7 +32,7 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			ksNew (30, keyNew ("system:/elektra/modules/sync", KEY_VALUE, "sync plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/sync/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/sync/exports/get", KEY_FUNC, elektraSyncGet, KEY_END),
-			       keyNew ("system:/elektra/modules/sync/exports/set", KEY_FUNC, elektraSyncSet, KEY_END),
+			       keyNew ("system:/elektra/modules/sync/exports/commit", KEY_FUNC, elektraSyncCommit, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system:/elektra/modules/sync/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -45,7 +45,7 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; /* success */
 }
 
-int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraSyncCommit (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	/* set all keys */
 	const char * configFile = keyString (parentKey);
@@ -96,7 +96,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	// clang-format off
 	return elektraPluginExport("sync",
 		ELEKTRA_PLUGIN_GET,	&elektraSyncGet,
-		ELEKTRA_PLUGIN_SET,	&elektraSyncSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraSyncCommit,
 		ELEKTRA_PLUGIN_END);
 }
 

@@ -110,7 +110,7 @@ class ProcessProtocol {
               return false;
             }
             var parent = parentKs.first();
-            executeOperation(parent, pk -> plugin.open(config, parent));
+            executeOperation(parent, pk -> plugin.open(config, pk));
           }
           break;
         case "get":

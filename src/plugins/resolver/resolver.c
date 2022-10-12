@@ -114,10 +114,13 @@ static void resolverCloseOne (resolverHandle * p)
 
 static void resolverClose (resolverHandles * p)
 {
+	// shared by all, freed at the end
+	char * path = (char *) p->system.path;
 	resolverCloseOne (&p->spec);
 	resolverCloseOne (&p->dir);
 	resolverCloseOne (&p->user);
 	resolverCloseOne (&p->system);
+	elektraFree (path);
 	elektraFree (p);
 }
 
@@ -429,17 +432,9 @@ static char * elektraCacheKeyName (char * filename)
 	return name;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
+static int initHandles (Plugin * handle, Key * parentKey)
 {
-	KeySet * resolverConfig = elektraPluginGetConfig (handle);
-	if (ksLookupByName (resolverConfig, "/module", 0)) return 0;
-	const char * path = keyString (ksLookupByName (resolverConfig, "/path", 0));
-
-	if (!path)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not find file configuration");
-		return -1;
-	}
+	const char * path = elektraStrDup (keyString (parentKey));
 
 	resolverHandles * p = elektraMalloc (sizeof (resolverHandles));
 	resolverInit (&p->spec, path);
@@ -459,7 +454,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 
 		if ((mutexError = pthread_mutexattr_init (&mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d",
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d",
 						     mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
@@ -467,13 +462,13 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 		if ((mutexError = pthread_mutexattr_settype (&mutexAttr, PTHREAD_MUTEX_RECURSIVE)) != 0)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (
-				errorKey, "Could not initialize recursive mutex: pthread_mutexattr_settype returned %d", mutexError);
+				parentKey, "Could not initialize recursive mutex: pthread_mutexattr_settype returned %d", mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
 		if ((mutexError = pthread_mutex_init (&elektraResolverMutex, &mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d",
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d",
 						     mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
@@ -490,7 +485,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 	p->spec.filemode = 0644;
 	p->spec.dirmode = 0755;
 
-	int ret = mapFilesForNamespaces (p, errorKey);
+	int ret = mapFilesForNamespaces (p, parentKey);
 
 	if (ret != -1)
 	{
@@ -498,6 +493,13 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 	}
 
 	return ret;
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+{
+	elektraPluginSetData (handle, NULL);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
@@ -528,6 +530,14 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		return 1;
 	}
 	keyDel (root);
+
+	if (elektraPluginGetData (handle) == NULL)
+	{
+		if (initHandles (handle, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
 
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
@@ -569,8 +579,11 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	KeySet * global;
 	char * name = elektraCacheKeyName (pk->filename);
 
+
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
+		// TODO [new_backend]: implement cache
+		/*
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
 		Key * time = ksLookupByName (global, name, KDB_O_NONE);
 		if (time && keyGetValueSize (time) == sizeof (struct timespec))
@@ -593,6 +606,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
 			}
 		}
+		*/
 	}
 
 	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
@@ -627,6 +641,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 
 	if (pk->isMissing)
 	{
+		ELEKTRA_LOG_DEBUG ("creating %s", pk->filename);
 		// it must be created newly, otherwise we have an conflict
 		flags = O_RDWR | O_CREAT | O_EXCL;
 
@@ -635,6 +650,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	}
 	else
 	{
+		ELEKTRA_LOG_DEBUG ("opening %s", pk->filename);
 		// file was there before, so opening should work!
 		flags = O_RDWR;
 	}
@@ -697,6 +713,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
  */
 static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 {
+	ELEKTRA_LOG_DEBUG ("creating %s", pk->filename);
 	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
 
 	if (pk->fd == -1)
@@ -974,6 +991,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 {
 	int ret = 0;
 
+	ELEKTRA_LOG_DEBUG ("committing %s to %s", pk->tempfile, pk->filename);
+
 	int fd = open (pk->tempfile, O_RDWR);
 	if (fd == -1)
 	{
@@ -1109,7 +1128,14 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 	else if (pk->fd == -2)
 	{
 		ELEKTRA_LOG ("unlink configuration file \"%s\"", pk->filename);
-		if (unlink (pk->filename) == -1)
+		if (access (pk->filename, F_OK) == 0 && unlink (pk->filename) == -1)
+		{
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
+			ret = -1;
+		}
+
+		ELEKTRA_LOG ("unlink temp file \"%s\"", pk->tempfile);
+		if (access (pk->tempfile, F_OK) == 0 && unlink (pk->tempfile) == -1)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
 			ret = -1;
@@ -1143,8 +1169,9 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 
 static void elektraUnlinkFile (char * filename, Key * parentKey)
 {
+	ELEKTRA_LOG ("unlinking %s", filename);
 	int errnoSave = errno;
-	if (unlink (filename) == -1)
+	if (access (filename, F_OK) == 0 && unlink (filename) == -1)
 	{
 		ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey, "Could not unlink the file '%s'. Reason: %s", filename, strerror (errno));
 		errno = errnoSave;

@@ -128,6 +128,7 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system:/elektra/modules/timeofday/exports/close", KEY_FUNC, elektraTimeofdayClose, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/get", KEY_FUNC, elektraTimeofdayGet, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/set", KEY_FUNC, elektraTimeofdaySet, KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/commit", KEY_FUNC, elektraTimeofdaySet, KEY_END),
 			keyNew ("system:/elektra/modules/timeofday/exports/error", KEY_FUNC, elektraTimeofdayError, KEY_END),
 #include "readme_timeofday.c"
 			keyNew ("system:/elektra/modules/timeofday/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -201,6 +202,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTimeofdayClose,
 		ELEKTRA_PLUGIN_GET,	&elektraTimeofdayGet,
 		ELEKTRA_PLUGIN_SET,	&elektraTimeofdaySet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraTimeofdaySet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraTimeofdayError,
 		ELEKTRA_PLUGIN_END);
 }

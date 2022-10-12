@@ -48,6 +48,8 @@ system keys always stay separated.
 
 ## TRACEABILITY
 
+<!-- FIXME: functions changed -->
+
 - `elektraOpenBootstrap()` implements above algorithm
 - `backendOpenDefault()` opens the default backend
 - `/src/include/kdbconfig.h.in` contains above `KDB_*` variables

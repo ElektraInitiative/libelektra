@@ -771,7 +771,7 @@ QStringList TreeViewModel::mountedBackends ()
 
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
-		mountedBends.append (QString::fromStdString (it->name));
+		mountedBends.append (QString::fromStdString (it->mountpoint));
 	}
 
 	// cannot read the size of the QStringList in QML

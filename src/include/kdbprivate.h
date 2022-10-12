@@ -23,7 +23,6 @@
 #include <kdbopmphm.h>
 #include <kdbopmphmpredictor.h>
 #endif
-#include <kdbglobal.h>
 
 #include <limits.h>
 
@@ -31,18 +30,6 @@
 	NULL byte. ksGetAlloc() will return one less because
 	it says how much can actually be stored.*/
 #define KEYSET_SIZE 16
-
-/** How many plugins can exist in an backend. */
-#define NR_OF_PLUGINS 10
-
-/** The index of the commit plugin */
-#define COMMIT_PLUGIN 7
-
-/** The index of the storage plugin */
-#define STORAGE_PLUGIN 5
-
-/** The index of the resolver plugin */
-#define RESOLVER_PLUGIN 0
 
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
@@ -75,22 +62,27 @@ namespace ckdb
 extern "C" {
 #endif
 
-typedef struct _Trie Trie;
-typedef struct _Split Split;
-typedef struct _Backend Backend;
-
 
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
 typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
 
+typedef int (*kdbInitPtr) (Plugin * handle, KeySet * definition, Key * parentKey);
 typedef int (*kdbGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbErrorPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbCommitPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 
-typedef Backend * (*OpenMapper) (const char *, const char *, KeySet *);
-typedef int (*CloseMapper) (Backend *);
+typedef int (*kdbHookGoptsGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
+typedef int (*kdbHookSpecCopyPtr) (Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet);
+typedef int (*kdbHookSpecRemovePtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
+typedef int (*kdbHookSendNotificationGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
+
+typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
+typedef int (*CloseMapper) (Plugin *);
 
 
 /*****************
@@ -309,6 +301,21 @@ struct _KeySet
 #endif
 };
 
+typedef struct _SendNotificationHook
+{
+	struct _Plugin * plugin;
+	struct _SendNotificationHook * next;
+
+	/**
+	 * Optional, may be NULL
+	 */
+	kdbHookSendNotificationGetPtr get;
+
+	/**
+	 * Optional, may be NULL
+	 */
+	kdbHookSendNotificationSetPtr set;
+} SendNotificationHook;
 
 /**
  * The access point to the key database.
@@ -330,76 +337,31 @@ typedef struct _KDB KDB;
 
 struct _KDB
 {
-	Trie * trie; /*!< The pointer to the trie holding backends.*/
-
-	Split * split; /*!< A list of all mountpoints. It basically has the
-			same information than in the trie, but it is not trivial
-			to convert from one to the other.*/
-
 	KeySet * modules; /*!< A list of all modules loaded at the moment.*/
-
-	Backend * defaultBackend; /*!< The default backend as fallback when nothing else is found.*/
-
-	Backend * initBackend; /*!< The init backend for bootstrapping.*/
 
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
 
-	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
-};
+	KeySet * backends;
 
+	struct
+	{
+		struct
+		{
+			struct _Plugin * plugin;
+			kdbHookGoptsGetPtr get;
+		} gopts;
 
-/**
- * Holds all information related to a backend.
- *
- * Since Elektra 0.8 a Backend consists of many plugins.
- * A backend is responsible for everything related to the process
- * of writing out or reading in configuration.
- *
- * So this holds a list of set and get plugins.
- *
- * Backends are put together through the configuration
- * in system:/elektra/mountpoints
- *
- * See kdb mount tool to mount new backends.
- *
- * To develop a backend you have first to develop plugins and describe
- * through dependencies how they belong together.
- *
- * @ingroup backend
- */
-struct _Backend
-{
-	Key * mountpoint; /*!< The mountpoint where the backend resides.
-	  The keyName() is the point where the backend was mounted.
-	  The keyValue() is the name of the backend without pre/postfix, e.g.
-	  filesys.
-	  NOTE: This is NULL, if this is a default backend (created by backendOpenDefault).
-	  */
+		struct
+		{
+			struct _Plugin * plugin;
+			kdbHookSpecCopyPtr copy;
+			kdbHookSpecRemovePtr remove;
+		} spec;
 
-	Plugin * setplugins[NR_OF_PLUGINS];
-	Plugin * getplugins[NR_OF_PLUGINS];
-	Plugin * errorplugins[NR_OF_PLUGINS];
-
-	ssize_t specsize;	/*!< The size of the spec key from the previous get.
-		-1 if still uninitialized.
-		Needed to know if a key was removed from a keyset. */
-	ssize_t dirsize;	/*!< The size of the dir key from the previous get.
-		-1 if still uninitialized.
-		Needed to know if a key was removed from a keyset. */
-	ssize_t usersize;	/*!< The size of the users key from the previous get.
-		-1 if still uninitialized.
-		Needed to know if a key was removed from a keyset. */
-	ssize_t systemsize; /*!< The size of the systems key from the previous get.
-		-1 if still uninitialized.
-		Needed to know if a key was removed from a keyset. */
-
-	size_t refcounter; /*!< This refcounter shows how often the backend
-	   is used.  Not cascading or default backends have 1 in it.
-	   More than three is not possible, because a backend
-	   can be only mounted in dir, system and user each once
-	   OR only in spec.*/
+		struct _SendNotificationHook * sendNotification;
+	} hooks;
 };
 
 /**
@@ -426,6 +388,7 @@ struct _Plugin
 	kdbOpenPtr kdbOpen;   /*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose; /*!< The pointer to kdbClose_template() of the backend. */
 
+	kdbInitPtr kdbInit;	  /*!< The pointer to kdbInit_template() of the backend. */
 	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
 	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
@@ -442,57 +405,32 @@ struct _Plugin
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
-};
 
+	KeySet * modules; /*!< A list of all currently loaded modules.*/
+};
 
 /**
- *
- * The private trie structure.
- *
- * A trie is a data structure which can handle the longest prefix matching very
- * fast. This is exactly what needs to be done when using kdbGet() and kdbSet()
- * in a hierarchy where backends are mounted - you need the backend mounted
- * closest to the parentKey.
+ * Holds all data for one backend.
+ * 
+ * This struct is used for the key values in @ref _KDB.backends
+ * 
+ * @ingroup backend
  */
-struct _Trie
+typedef struct _BackendData
 {
-	struct _Trie * children[KDB_MAX_UCHAR]; /*!< The children building up the trie recursively */
-	char * text[KDB_MAX_UCHAR];		/*!< Text identifying this node */
-	size_t textlen[KDB_MAX_UCHAR];		/*!< Length of the text */
-	Backend * value[KDB_MAX_UCHAR];		/*!< Pointer to a backend */
-	Backend * empty_value;			/*!< Pointer to a backend for the empty string "" */
-};
-
-typedef enum {
-	SPLIT_FLAG_SYNC = 1, /*!< KeySet in Split need sync.
-		 Is there any key in there which need to be synced?
-		 If keys were popped from the Keyset
-		 this flag will be set, so that the backend will sync
-		 the keys to database.
-		 */
-
-	SPLIT_FLAG_CASCADING = 1 << 1 /*!< Do we need relative checks?
-			  Is this a cascading backend?
-			  */
-} splitflag_t;
-
-
-/** The private split structure.
- *
- * kdbGet() and kdbSet() split keysets. This structure contains arrays for
- * various information needed to process the keysets afterwards.
- */
-struct _Split
-{
-	size_t size;		/*!< Number of keysets */
-	size_t alloc;		/*!< How large the arrays are allocated  */
-	KeySet ** keysets;		/*!< The keysets */
-	Backend ** handles;		/*!< The KDB for the keyset */
-	Key ** parents;		/*!< The parentkey for the keyset.
-				Is either the mountpoint of the backend
-				or "user", "system", "spec" for the split root/cascading backends */
-	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
-};
+	struct _Plugin * backend; /*!< the backend plugin for this backend */
+	struct _KeySet * keys; /*!< holds the keys for this backend, assigned by backendsDivide() */
+	struct _KeySet * plugins; /*!< Holds all the plugins of this backend.
+	 The key names are all `system:/<ref>` where `<ref>` is the same as in
+	 `system:/elektra/mountpoints/<mp>/plugins/<ref>` */
+	struct _KeySet * definition; /*!< Holds all the mountpoint definition of this backend.
+	 This is a copy of `system:/elektra/mountpoints/<mp>/defintion` moved to `system:/` */
+	size_t getSize; /*!< the size of @ref _BackendData.keys at the end of kdbGet()
+	 More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
+	bool initialized; /*!< whether or not the init function of this backend has been called */
+	bool keyNeedsSync; /*!< whether or not any key in this backend needs a sync (keyNeedSync())
+	 More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
+} BackendData;
 
 // clang-format on
 
@@ -502,75 +440,31 @@ struct _Split
  *
  **************************************/
 
-ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
+/* Backends handling */
+Key * backendsFindParent (KeySet * backends, const Key * key);
+KeySet * backendsForParentKey (KeySet * backends, Key * parentKey);
+bool backendsDivide (KeySet * backends, const KeySet * ks);
+void backendsMerge (KeySet * backends, KeySet * ks);
 
-/*Methods for split keysets */
-Split * splitNew (void);
-void splitDel (Split * keysets);
-void splitRemove (Split * split, size_t where);
-ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits);
-int splitBuildup (Split * split, KDB * handle, Key * parentKey);
-void splitUpdateFileName (Split * split, KDB * handle, Key * key);
+/* Mountpoint parsing */
+// visible for testing
+KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey);
 
-/* for kdbGet() algorithm */
-int splitAppoint (Split * split, KDB * handle, KeySet * ks);
-int splitGet (Split * split, Key * warningKey, KDB * handle);
-int splitMergeBackends (Split * split, KeySet * dest);
-int splitMergeDefault (Split * split, KeySet * dest);
-
-/* for kdbSet() algorithm */
-int splitDivide (Split * split, KDB * handle, KeySet * ks);
-int splitSync (Split * split);
-void splitPrepare (Split * split);
-int splitUpdateSize (Split * split);
-
-/* for cache: store/load state to/from global keyset */
-void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
-int splitCacheCheckState (Split * split, KeySet * global);
-int splitCacheLoadState (Split * split, KeySet * global);
-
-
-/*Backend handling*/
-Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
-Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);
-Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey, elektraCursor pos);
-Backend * backendOpenVersion (KeySet * global, Key * errorKey);
-int backendClose (Backend * backend, Key * errorKey);
-
-int backendUpdateSize (Backend * backend, Key * parent, int size);
-
-/*Plugin handling*/
+/* Plugin handling */
 Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
 int elektraPluginClose (Plugin * handle, Key * errorKey);
-int elektraProcessPlugin (const Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
-int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
-			   KeySet * global, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
-Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 
-Plugin * elektraPluginMissing (void);
-Plugin * elektraPluginVersion (void);
+/* Hooks handling */
+int initHooks (KDB * kdb, const KeySet * config, KeySet * modules, const KeySet * contract, Key * errorKey);
+void freeHooks (KDB * kdb, Key * errorKey);
+Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
 
-/*Trie handling*/
-int trieClose (Trie * trie, Key * errorKey);
-Backend * trieLookup (Trie * trie, const char * name);
-Trie * trieInsert (Trie * trie, const char * name, Backend * value);
 
-/*Mounting handling */
-int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
-int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey);
-int mountModules (KDB * kdb, KeySet * modules, Key * errorKey);
-int mountVersion (KDB * kdb, Key * errorKey);
-int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
-int mountBackend (KDB * kdb, Backend * backend, Key * errorKey);
-
-Key * mountGetMountpoint (KDB * handle, const char * where);
-Backend * mountGetBackend (KDB * handle, const char * where);
-
+/*Private helper for key*/
+ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 void keyInit (Key * key);
-
 int keyClearSync (Key * key);
-
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
 /*Private helper for keyset*/
@@ -583,20 +477,19 @@ KeySet * ksDeepDup (const KeySet * source);
 
 Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos);
 
+KeySet * ksRenameKeys (KeySet * config, const char * name);
+
+ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
+
+elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
+KeySet * ksBelow (const KeySet * ks, const Key * root);
+
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
 /*Internally used for array handling*/
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
-
-
-KeySet * ksRenameKeys (KeySet * config, const char * name);
-
-ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
-
-elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
-
 
 /* Conveniences Methods for Making Tests */
 
@@ -613,10 +506,8 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 void elektraKeyNameUnescape (const char * name, char * unescapedName);
 size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 
-/* global plugin calls */
-int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+// TODO (kodebaach) [Q]: make public?
+int elektraIsArrayPart (const char * namePart);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))

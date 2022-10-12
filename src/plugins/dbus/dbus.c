@@ -35,15 +35,17 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbus"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/dbus", KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/open", KEY_FUNC, elektraDbusOpen, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/get", KEY_FUNC, elektraDbusGet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/set", KEY_FUNC, elektraDbusSet, KEY_END),
-			       keyNew ("system:/elektra/modules/dbus/exports/close", KEY_FUNC, elektraDbusClose, KEY_END),
+		KeySet * contract = ksNew (
+			30, keyNew ("system:/elektra/modules/dbus", KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports", KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/open", KEY_FUNC, elektraDbusOpen, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/get", KEY_FUNC, elektraDbusGet, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/commit", KEY_FUNC, elektraDbusCommit, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/hook/notification/send/get", KEY_FUNC, elektraDbusGet, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/hook/notification/send/set", KEY_FUNC, elektraDbusCommit, KEY_END),
+			keyNew ("system:/elektra/modules/dbus/exports/close", KEY_FUNC, elektraDbusClose, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/dbus/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/dbus/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -83,12 +85,12 @@ static void announceKeys (KeySet * ks, const char * signalName, DBusBusType busT
 	}
 }
 
-int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraDbusCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
+	// because elektraLogchangeGet will always be executed before elektraLogchangeCommit
 	// we know that oldKeys must exist here!
 	KeySet * oldKeys = pluginData->keys;
 
@@ -155,7 +157,7 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (changedKeys);
 	ksDel (removedKeys);
 
-	// for next invocation of elektraLogchangeSet, remember our current keyset
+	// for next invocation of elektraLogchangeCommit, remember our current keyset
 	pluginData->keys = ksDup (returned);
 
 	return 1; /* success */
@@ -195,7 +197,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	return elektraPluginExport("dbus",
 		ELEKTRA_PLUGIN_OPEN,	&elektraDbusOpen,
 		ELEKTRA_PLUGIN_GET,	&elektraDbusGet,
-		ELEKTRA_PLUGIN_SET,	&elektraDbusSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraDbusCommit,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraDbusClose,
 		ELEKTRA_PLUGIN_END);
 }

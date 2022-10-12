@@ -19,11 +19,11 @@ maintainer, development of the cache and mmapstorage plugins
 
 ## Klemens Böswirth
 
-development of the highlevel API and code-generation; various other things
+a bit of everything
 
 - email: k.boeswirth+git@gmail.com
 - GitHub user: [kodebach](https://github.com/kodebach)
-- devel/test on: Fedora
+- devel/test on: Manjaro
 
 ## Robert Sowula
 

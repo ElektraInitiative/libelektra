@@ -26,8 +26,8 @@ void testvalid (const char * file, const char * lineending)
 		    "kdbGet returned an unexpected value (ELEKTRA_PLUGIN_STATUS_SUCCESS was expected)");
 
 	/* get value should be successful */
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
-		    "kdbSet returned an unexpected value (ELEKTRA_PLUGIN_STATUS_SUCCESS was expected)");
+	succeed_if (plugin->kdbCommit (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+		    "kdbCommit returned an unexpected value (ELEKTRA_PLUGIN_STATUS_SUCCESS was expected)");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -53,14 +53,15 @@ void testinconsistent (const char * file)
 		    "A warning on the parentKey was not present after an invalid call to kdbGet.");
 
 	/* check if no errors are initial present in the parent key */
-	succeed_if (keyGetMeta (parentKey, "error") == NULL, "An error on the parentKey was present before the call the kdbSet");
+	succeed_if (keyGetMeta (parentKey, "error") == NULL, "An error on the parentKey was present before the call the kdbCommit");
 
 	/* set value should produce an error */
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+	succeed_if (plugin->kdbCommit (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
 		    "kdbGet returned an unexpected value (ELEKTRA_PLUGIN_STATUS_ERROR was expected)");
 
 	/* check if an error was added to the parent key because of the previous set value */
-	succeed_if (keyGetMeta (parentKey, "error") != NULL, "An error on the parentKey was not present after an invalid call to kdbSet.");
+	succeed_if (keyGetMeta (parentKey, "error") != NULL,
+		    "An error on the parentKey was not present after an invalid call to kdbCommit.");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -86,14 +87,15 @@ void testinvalid (const char * file, const char * lineending)
 		    "A warning on the parentKey was not present after an invalid call to kdbGet.");
 
 	/* check if no errors are initial present in the parent key */
-	succeed_if (keyGetMeta (parentKey, "error") == NULL, "An error on the parentKey was present before the call the kdbSet");
+	succeed_if (keyGetMeta (parentKey, "error") == NULL, "An error on the parentKey was present before the call the kdbCommit");
 
 	/* set value should produce an error */
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
-		    "kdbSet returned an unexpected value (ELEKTRA_PLUGIN_STATUS_ERROR was expected).");
+	succeed_if (plugin->kdbCommit (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+		    "kdbCommit returned an unexpected value (ELEKTRA_PLUGIN_STATUS_ERROR was expected).");
 
 	/* check if an error was added to the parent key because of the previous set value */
-	succeed_if (keyGetMeta (parentKey, "error") != NULL, "An error on the parentKey was not present after an invalid call to kdbSet.");
+	succeed_if (keyGetMeta (parentKey, "error") != NULL,
+		    "An error on the parentKey was not present after an invalid call to kdbCommit.");
 
 	ksDel (ks);
 	keyDel (parentKey);

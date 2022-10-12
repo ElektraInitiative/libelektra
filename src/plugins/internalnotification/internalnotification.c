@@ -247,7 +247,7 @@ static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
  *
  * @param plugin    internal plugin handle
  * @param keySet    key set retrieved from hooks
- *                  e.g. elektraInternalnotificationGet or elektraInternalnotificationSet)
+ *                  e.g. elektraInternalnotificationGet or elektraInternalnotificationCommit)
  *
  */
 void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet)
@@ -522,12 +522,16 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			keyNew ("system:/elektra/modules/internalnotification/exports", KEY_END),
 			keyNew ("system:/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet,
 				KEY_END),
-			keyNew ("system:/elektra/modules/internalnotification/exports/set", KEY_FUNC, elektraInternalnotificationSet,
+			keyNew ("system:/elektra/modules/internalnotification/exports/commit", KEY_FUNC, elektraInternalnotificationCommit,
 				KEY_END),
 			keyNew ("system:/elektra/modules/internalnotification/exports/open", KEY_FUNC, elektraInternalnotificationOpen,
 				KEY_END),
 			keyNew ("system:/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
+			keyNew ("system:/elektra/modules/internalnotification/exports/hook/notification/send/get", KEY_FUNC,
+				elektraInternalnotificationGet, KEY_END),
+			keyNew ("system:/elektra/modules/internalnotification/exports/hook/notification/send/set", KEY_FUNC,
+				elektraInternalnotificationCommit, KEY_END),
 
 			// Export register* functions
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (Int), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedInt),
@@ -578,7 +582,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraInternalnotificationCommit (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
 
@@ -691,7 +695,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	// clang-format off
 	return elektraPluginExport ("internalnotification",
 		ELEKTRA_PLUGIN_GET,	&elektraInternalnotificationGet,
-		ELEKTRA_PLUGIN_SET,	&elektraInternalnotificationSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraInternalnotificationCommit,
 		ELEKTRA_PLUGIN_OPEN, &elektraInternalnotificationOpen,
 		ELEKTRA_PLUGIN_CLOSE, &elektraInternalnotificationClose,
 		ELEKTRA_PLUGIN_END);

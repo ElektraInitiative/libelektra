@@ -72,7 +72,7 @@ public:
 	{
 		unlink ();
 		mount (mountpoint, configFile_);
-		mount ("spec:/" + mountpoint, configFile_);
+		mount ("spec:" + mountpoint, configFile_);
 
 		userConfigFile = getConfigFileName ("user", mountpoint);
 		specConfigFile = getConfigFileName ("spec", mountpoint);
@@ -85,8 +85,9 @@ public:
 
 	~Mountpoint ()
 	{
-		umount ("spec:/" + mountpoint);
+		umount ("spec:" + mountpoint);
 		umount (mountpoint);
+
 		unlink ();
 	}
 

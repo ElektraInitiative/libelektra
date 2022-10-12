@@ -48,8 +48,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     && ldconfig
 
 ARG URL=https://www.libelektra.org/
-RUN kdb global-mount \
-    && kdb mount-website-config \
+RUN kdb mount-website-config \
     && kdb set system:/sw/elektra/websitefrontend/#0/current/website/url "${URL}" \
     && kdb build-website
 

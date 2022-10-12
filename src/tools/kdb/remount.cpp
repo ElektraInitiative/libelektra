@@ -29,17 +29,17 @@ void RemountCommand::getExistingMountpoint (Cmdline const & cl)
 	std::string search = cl.arguments[2];
 	BackendInfo bi = Backends::findBackend (search, mountConf);
 
-	if (bi.name.empty ())
+	if (bi.mountpoint.empty ())
 	{
 		throw invalid_argument ("could not find the mountpoint \"" + search + "\"");
 	}
 
-	existingName = bi.name;
+	existingMountpoint = bi.mountpoint;
 }
 
 void RemountCommand::cloneMountpoint (Cmdline const & cl)
 {
-	Key existingParent (Backends::getBasePath (existingName), KEY_END);
+	Key existingParent (Backends::getBasePath (existingMountpoint), KEY_END);
 	Key newParent (Backends::getBasePath (mp), KEY_END);
 
 	KeySet existingBackend = mountConf.cut (existingParent);

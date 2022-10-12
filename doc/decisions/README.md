@@ -42,9 +42,11 @@ section here.
 - [Ensure](ensure.md) (@kodebach)
 - [Null](null.md)
 - [Memory Layout](memory_layout.md)
+- [Backend Plugin](backend_plugin.md)
 
 ## Mostly Implemented
 
+- [Hooks](hooks.md) (@atmaxinger)
 - [Array for Warnings](warning_array.md)
 - [Array](array.md)
 - [Boolean](boolean.md)
@@ -71,7 +73,6 @@ section here.
 ## In Discussion
 
 - [keyString() return value](key_string_return_value.md)
-- [Global Plugins](global_plugins.md) (@mpranj)
 - [Error Semantics](error_semantics.md) (API)
 - [Error Handling](error_handling.md)
 - [Spec Expressiveness](spec_expressiveness.md)

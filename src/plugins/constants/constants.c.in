@@ -339,6 +339,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 	ksAppendKey (ks, key);
 }
 
+// TODO [new_backend]: this plugin should be standalone backend like version
 int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/constants"))

@@ -44,6 +44,14 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		# output on open/close
 		continue
 		;;
+	"spec")
+		# hook - no placement
+		continue
+		;;
+	"gopts")
+		# hook - no placement
+		continue
+		;;
 	"specload")
 		ARGS="-c app=$(dirname "$KDB")/elektra-specload-testapp"
 		# exclude; cannot open on travis?

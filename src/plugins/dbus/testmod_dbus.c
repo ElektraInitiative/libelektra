@@ -200,7 +200,7 @@ static void test_keyAdded (void)
 	TestContext * context = createTestContext (connection, "KeyAdded");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	runDispatch (context);
 
 	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
@@ -219,7 +219,7 @@ static void test_keyChanged (void)
 
 	// All keys created by keyNew have the KEY_FLAG_SYNC set and will be
 	// detected as changed by the dbus plugin
-	// This flag is only cleared after kdbSet or when keys come from a backend.
+	// This flag is only cleared after kdbCommit or when keys come from a backend.
 
 	// (namespace)/tests/foo
 	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
@@ -245,7 +245,7 @@ static void test_keyChanged (void)
 	TestContext * context = createTestContext (connection, "KeyChanged");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	runDispatch (context);
 
 	succeed_if_same_string (keyName (toChange), context->receivedKeyName);
@@ -287,7 +287,7 @@ static void test_keyDeleted (void)
 	TestContext * context = createTestContext (connection, "KeyDeleted");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	runDispatch (context);
 
 	succeed_if_same_string (keyName (toDelete), context->receivedKeyName);
@@ -340,7 +340,7 @@ static void test_announceOnce (void)
 	TestContext * context = createTestContext (connection, "Commit");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	runDispatch (context);
 
 	succeed_if_same_string (keyName (parentKey), context->receivedKeyName);
@@ -383,7 +383,7 @@ static void test_cascadedChangeNotification (void)
 	TestContext * context = createTestContext (connection, "KeyAdded");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	runDispatch (context);
 
 	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
@@ -426,7 +426,7 @@ static void test_cascadedAnnounceOnce (void)
 	TestContext * context = createTestContext (connection, "Commit");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	runDispatch (context);
 
 	succeed_if_same_string (keyName (completeParentKey), context->receivedKeyName);

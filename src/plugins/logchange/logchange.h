@@ -14,7 +14,7 @@
 
 
 int elektraLogchangeGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraLogchangeSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraLogchangeCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraLogchangeClose (Plugin * handle, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

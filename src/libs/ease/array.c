@@ -11,6 +11,7 @@
 #include <kdb.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
+#include <kdbprivate.h> // for elektraIsArrayPart
 #include <kdbtypes.h>
 
 #include <ctype.h>
@@ -48,44 +49,18 @@ int elektraArrayValidateName (const Key * key)
  */
 int elektraArrayValidateBaseNameString (const char * baseName)
 {
-	const char * current = baseName;
-	if (current == NULL || *current != '#')
+	if (baseName == NULL)
 	{
 		return -1;
 	}
 
-	current++;
-
-	if (*current == '\0')
+	if (strcmp (baseName, "#") == 0)
 	{
 		return 0;
 	}
 
-	int underscores = 0;
-	int digits = 0;
-
-	while (*current == '_')
-	{
-		current++;
-		underscores++;
-	}
-
-	while (isdigit ((unsigned char) *current))
-	{
-		current++;
-		digits++;
-	}
-
-	bool underscoresCorrect = underscores == digits - 1;
-	bool totalLengthCorrect = underscores + digits <= ELEKTRA_MAX_ARRAY_SIZE - 2;
-	bool reachedEnd = *current == '\0' || *current == '/';
-
-	if (underscoresCorrect && totalLengthCorrect && reachedEnd)
-	{
-		return underscores + 1;
-	}
-
-	return -1;
+	int ret = elektraIsArrayPart (baseName);
+	return ret == 0 ? -1 : ret;
 }
 
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)

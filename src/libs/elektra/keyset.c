@@ -1255,6 +1255,83 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 }
 
 /**
+ * Retrieves all Keys from KeySet @p ks that are below or at @p root
+ *
+ * This function is similar to ksCut().
+ * It returns an identical KeySet, but the Keys also remain in @p ks
+ *
+ * @param ks the Keyset to copy from
+ * @param root the point where to copy from the Keyset
+ *
+ * @return a new allocated KeySet which needs to deleted with ksDel().
+ *         The KeySet consists of all Keys (of the original KeySet ks)
+ *         below @p root. If @p root exists, it will also be appended.
+ */
+KeySet * ksBelow (const KeySet * ks, const Key * root)
+{
+	if (ks == NULL)
+	{
+		return NULL;
+	}
+	if (root == NULL)
+	{
+		return NULL;
+	}
+
+	if (ks->array == NULL)
+	{
+		return ksNew (0, KS_END);
+	}
+
+	if (keyGetNamespace (root) == KEY_NS_CASCADING)
+	{
+		KeySet * returned = ksNew (0, KS_END);
+		// HACK: ksBelow does not use escaped name (key->key), so we don't need to change it
+		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
+		{
+			switch (ns)
+			{
+			case KEY_NS_PROC:
+			case KEY_NS_DIR:
+			case KEY_NS_USER:
+			case KEY_NS_SYSTEM:
+			case KEY_NS_SPEC:
+			case KEY_NS_META:
+			case KEY_NS_DEFAULT: {
+				((Key *) root)->ukey[0] = ns;
+
+				KeySet * n = ksBelow (ks, root);
+				ksAppend (returned, n);
+				ksDel (n);
+				break;
+			}
+			case KEY_NS_NONE:
+			case KEY_NS_CASCADING:
+				break;
+			}
+		}
+		((Key *) root)->ukey[0] = KEY_NS_CASCADING;
+		return returned;
+	}
+
+	elektraCursor end;
+	elektraCursor start = ksFindHierarchy (ks, root, &end);
+
+	KeySet * returned = ksNew (end - start, KS_END);
+	elektraMemcpy (returned->array, ks->array + start, end - start);
+	returned->size = end - start;
+	if (returned->size > 0)
+	{
+		returned->array[returned->size] = 0;
+	}
+	for (size_t i = 0; i < returned->size; i++)
+	{
+		keyIncRef (returned->array[i]);
+	}
+	return returned;
+}
+
+/**
  * Searches for the start and end indicies corresponding to the given cutpoint.
  *
  * @see ksCut() for explanation of cutpoints

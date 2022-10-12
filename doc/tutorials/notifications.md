@@ -1,5 +1,7 @@
 # Notification Tutorial
 
+<!-- FIXME [new_backend]: outdated (global-mount)-->
+
 ## Preface
 
 **The features described in this document are experimental.**

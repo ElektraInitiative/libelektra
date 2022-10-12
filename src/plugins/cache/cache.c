@@ -322,7 +322,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
+	// construct cache file name from parentKey (which stores the mountpoint)
 	Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
@@ -387,7 +387,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE; // TODO: do we fail silently here?
 	}
 
-	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
+	// construct cache file name from parentKey (which stores the mountpoint)
 	Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");

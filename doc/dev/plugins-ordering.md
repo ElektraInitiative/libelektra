@@ -1,5 +1,16 @@
 # Plugins Ordering
 
+## Outdated
+
+<!-- TODO [new_backend]: Rewrite as part of documentation for the plugin `backend`_.
+        Possibly create more general docs, if multiple backend plugins use these placements.
+    -->
+
+> **Warning** Many of the things described below are outdated.
+> Parts of this document are still valid for the `backend` plugin.
+
+## Introduction
+
 You should first read [elektra-plugins](/src/plugins/) to get
 an idea about plugins.
 
@@ -43,11 +54,21 @@ rollback or error notification are inserted into it.
 The resolver plugin requires this error list to do a proper rollback.
 Another use case is logging after a failure has happened.
 
+## Arrays of linked lists
+
+A disadvantage of using arrays is that they contain a fixed amount of slots. This means
+that when a certain amount of slots is full, it is no longer possible to add more.
+Therefore, the plugin arrays are structured as arrays of linked lists.
+
+Each plugin role is assigned its own slot in the array, which contains a linked list. Plugins
+fulfilling that role are added to the list. That way, much greater and more flexible plugin
+numbers can be added to a single role.
+
 ## Placements
 
 The ordering of plugins inside these three arrays is controlled by
 [elektra-contracts(7)](/doc/help/elektra-contracts.md).
-Each of the three arrays has ten slots. These slots have
+Each of the three arrays has one slot for each role. These slots have
 names to be referred to in the contract.
 
 Here you see a table that contains all names:
@@ -55,16 +76,12 @@ Here you see a table that contains all names:
 | Slot | Error        | Get            | Set           |
 | ---- | ------------ | -------------- | ------------- |
 | 0    | prerollback  | getresolver    | setresolver   |
-| 1    | prerollback  | pregetstorage  | presetstorage |
-| 2    | prerollback  | pregetstorage  | presetstorage |
-| 3    | prerollback  | pregetstorage  | presetstorage |
-| 4    | prerollback  | pregetstorage  | presetstorage |
-| 5    | rollback     | getstorage     | setstorage    |
-| 6    | postrollback | postgetstorage | precommit     |
-| 7    | postrollback | postgetstorage | commit        |
-| 8    | postrollback | postgetstorage | postcommit    |
-| 9    | postrollback | postgetstorage | postcommit    |
+| 1    | rollback     | pregetstorage  | presetstorage |
+| 2    | postrollback | getstorage     | setstorage    |
+| 3    |              | postgetstorage | precommit     |
+| 4    |              |                | commit        |
+| 5    |              |                | postcommit    |
 
-. How the placement is influenced using `infos/placement`, `infos/ordering`
+How the placement is influenced using `infos/placement`, `infos/ordering`
 and `infos/stacking` is described in
 [CONTRACT.ini](/doc/CONTRACT.ini).

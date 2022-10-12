@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides = resolver
 - infos/needs =
-- infos/placements = rollback getresolver setresolver
+- infos/placements = rollback getresolver setresolver commit
 - infos/status = maintained nodep libc configurable discouraged
 - infos/description = resolver dummy that always succeeds
 

@@ -89,6 +89,7 @@ private:
 	GetPlugins getplugins;
 	SetPlugins setplugins;
 	ErrorPlugins errorplugins;
+	CommitPlugins commitplugins;
 
 	std::string mp;		// empty or valid canonified mountpoint
 	std::string configFile; // empty or valid configuration file

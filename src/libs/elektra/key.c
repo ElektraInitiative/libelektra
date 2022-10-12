@@ -433,7 +433,15 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	// free old resources of destination
 	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
 	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
-	if (test_bit (flags, KEY_CP_VALUE) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
+	if (test_bit (flags, KEY_CP_VALUE) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA))
+	{
+		elektraFree (orig.data.v);
+	}
+	else if (test_bit (flags, KEY_CP_STRING) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA))
+	{
+		elektraFree (orig.data.c);
+	}
+
 	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
 
 	return dest;

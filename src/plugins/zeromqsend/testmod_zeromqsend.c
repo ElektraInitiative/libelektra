@@ -204,7 +204,7 @@ static void test_commit (void)
 	receivedChangeType = NULL;
 
 	pthread_t * thread = startNotificationReaderThread ("Commit");
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	pthread_join (*thread, NULL);
 
 	succeed_if (receiveTimeout == 0, "receiving did time out");
@@ -239,7 +239,7 @@ static void test_timeoutConnect (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 
 	char * expectedWarningNumber = elektraFormat ("%s", ELEKTRA_ERROR_INSTALLATION);
 	succeed_if (keyGetMeta (parentKey, "warnings"), "warning meta key was not set");
@@ -277,7 +277,7 @@ static void test_timeoutSubscribe (void)
 	// do not subscribe to Commit messages, this makes the plugin timeout due to no subscribers
 	pthread_t * thread = startNotificationReaderThread (NULL);
 
-	plugin->kdbSet (plugin, ks, parentKey);
+	plugin->kdbCommit (plugin, ks, parentKey);
 	// without timeout we won't return here
 
 	pthread_join (*thread, NULL);

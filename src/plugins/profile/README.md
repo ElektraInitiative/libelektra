@@ -32,6 +32,8 @@ The package is called `libelektra5-extra`.
 
 ## Example
 
+<!-- FIXME [new_backend]: outdated -->
+
 Suppose we have the configuration file `profile.ini` in `~/.config`:
 
 ```sh

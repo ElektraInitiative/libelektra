@@ -76,6 +76,9 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 		case ELEKTRA_PLUGIN_CLOSE:
 			returned->kdbClose = va_arg (va, kdbClosePtr);
 			break;
+		case ELEKTRA_PLUGIN_INIT:
+			returned->kdbInit = va_arg (va, kdbInitPtr);
+			break;
 		case ELEKTRA_PLUGIN_GET:
 			returned->kdbGet = va_arg (va, kdbGetPtr);
 			break;
@@ -167,4 +170,54 @@ void * elektraPluginGetData (Plugin * plugin)
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 {
 	return plugin->global;
+}
+
+/**
+ * Returns the current phase of the current KDB operation.
+ *
+ * During kdbGet() this will be one of the `ELEKTRA_KDB_GET_PHASE_*` constants
+ * and during kdbSet() it will be one of the `ELEKTRA_KDB_SET_PHASE_*` constants.@
+ *
+ * @param plugin plugin handle
+ * @return current phase
+ * @retval 0 if @p plugin is `NULL`
+ */
+ElektraKdbPhase elektraPluginGetPhase (Plugin * plugin)
+{
+	if (plugin == NULL)
+	{
+		return 0;
+	}
+
+	return *(ElektraKdbPhase *) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
+}
+
+/**
+ * Retrieves the handle for another plugin in the same mountpoint based on a reference.
+ *
+ * The plugins of a mountpoint are defined via `system:/elektra/mountpoint/<mp>/pluigns/<ref>` keys
+ * in the declaration of the mountpoint. To use this function, you must provide the `<ref>` part as
+ * @p ref.
+ *
+ * @param plugin active plugin handle
+ * @param ref reference to another plugin
+ * @return the plugin referenced by @p ref
+ * @retval NULL if @p plugin, or @p ref are `NULL`, or no plugin was found for @p ref
+ */
+Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
+{
+	if (plugin == NULL || ref == NULL)
+	{
+		return NULL;
+	}
+
+	KeySet * plugins = *(KeySet **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
+
+	Key * lookupHelper = keyNew ("system:/", KEY_END);
+	keyAddBaseName (lookupHelper, ref);
+
+	Key * pluginKey = ksLookup (plugins, lookupHelper, 0);
+	keyDel (lookupHelper);
+
+	return pluginKey == NULL ? NULL : *(Plugin **) keyValue (pluginKey);
 }

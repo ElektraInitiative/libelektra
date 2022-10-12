@@ -29,28 +29,10 @@
  * - [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
  * - [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
  *
- * @par Global Mounting
+ * @par Hook Setup
  *
  * elektraNotificationContract() returns a contract for use with kdbOpen().
- * The contract ensures that the internalnotification plugin is mounted and configured correctly.
- *
- * The internalnotification plugin is mounted at its defined positions
- * (see
- * <a href="https://www.libelektra.org/plugins/internalnotification">its plugin docs</a>).
- *
- * - If there is no plugin mounted at a required position the internalnotification
- *   plugin is mounted at this position.
- * - In the default configuration or when mounting a plugin globally using
- *   `kdb global-mount` the
- *   <a href="https://www.libelektra.org/plugins/list">list plugin</a> is
- *   mounted at all positions.
- *   This plugin allows to mount multiple plugins at a position.
- *   If this plugin is present at a position the internalnotification plugin is
- *   added to the list plugin's configuration at run-time.
- * - If another plugin is mounted at a desired position the configuration is
- *   considered broken and mounting is aborted.
- *   The list plugin requires to be mounted at all positions in order to keep
- *   track of the current position and call plugins accordingly.
+ * The contract ensures that the internalnotification plugin is registered into the correct hook and configured correctly.
  *
  * @par Transport Plugins
  *

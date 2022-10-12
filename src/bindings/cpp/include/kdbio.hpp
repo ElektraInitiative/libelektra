@@ -69,25 +69,34 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 		{
 			return os;
 		}
-		else if (warnings.size () == 1)
-		{
-			os << "1 Warning was issued:" << std::endl;
-		}
-		else
-		{
-			os << warnings.size () << " Warnings were issued:" << std::endl;
-		}
 
+		int total = 0;
 		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
 		{
 			auto name = it->getName ();
 			if (it->isDirectBelow (parent))
 			{
-				os << "\tSorry, module " << warnings.get<std::string> (name + "/module") << " issued the warning "
-				   << warnings.get<std::string> (name + "/number") << ":" << std::endl;
+				total++;
+			}
+		}
+
+		if (total == 0)
+		{
+			return os;
+		}
+
+		os << " Sorry, " << total << " warning" << (total == 1 ? " was" : "s were") << " issued ;(" << std::endl;
+
+		int nr = 1;
+		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
+		{
+			auto name = it->getName ();
+			if (it->isDirectBelow (parent))
+			{
+				os << "[" << nr << "] Sorry, module " << warnings.get<std::string> (name + "/module")
+				   << " issued the warning " << warnings.get<std::string> (name + "/number") << ":" << std::endl;
 				os << "\t" << warnings.get<std::string> (name + "/description") << ": "
 				   << warnings.get<std::string> (name + "/reason") << std::endl;
-				// os << "\t" << name << ": " << warnings.get<std::string>(name) << std::endl;
 				if (printVerbose)
 				{
 					os << "\tMountpoint: " << warnings.get<std::string> (name + "/mountpoint") << std::endl;
@@ -98,6 +107,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 					os << "\tAt: " << warnings.get<std::string> (name + "/file") << ":"
 					   << warnings.get<std::string> (name + "/line") << std::endl;
 				}
+				nr++;
 			}
 		}
 	}

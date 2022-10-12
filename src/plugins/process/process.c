@@ -592,7 +592,9 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	keyCopy (parentKey, ksAtCursor (newParentKs, 0), KEY_CP_ALL);
+	// Note: value might be read-only, so copy value and meta separately to ensure we copy as much as possible
+	keyCopy (parentKey, ksAtCursor (newParentKs, 0), KEY_CP_VALUE);
+	keyCopy (parentKey, ksAtCursor (newParentKs, 0), KEY_CP_META);
 	ksDel (newParentKs);
 
 	if (ks != NULL && readKs)
@@ -620,6 +622,10 @@ static int executeOperation (IoData * data, const char * op, KeySet * ks, bool r
 	}
 	else if (strcmp (result, "error") == 0)
 	{
+		if (keyGetMeta (parentKey, "error") == NULL)
+		{
+			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Process returned error result without setting meta:/error on parent key.");
+		}
 		rc = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else

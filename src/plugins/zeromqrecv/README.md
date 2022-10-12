@@ -24,6 +24,8 @@ The package is called `libelektra5-zeromq`.
 
 ## Usage
 
+<!-- FIXME [new_backend]: outdated -->
+
 The recommended way is to globally mount the plugin together with the zeromqsend plugin:
 
     kdb global-mount zeromqsend zeromqrecv
@@ -41,6 +43,8 @@ The kdb tool ["hub-zeromq"](https://www.libelektra.org/tools/hub-zeromq)
 provides these endpoints.
 
 # Transport Plugin
+
+<!-- FIXME [new_backend]: outdated -->
 
 Mount this plugin globally with default settings to use it as _receiving_
 transport plugin for Elektra's notification feature:

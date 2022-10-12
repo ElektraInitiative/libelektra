@@ -562,7 +562,6 @@ inline KeySet::~KeySet ()
  * If you don't want destruction of keyset at
  * the end you can release the pointer.
  * */
-// TODO (kodebach): remove?
 inline ckdb::KeySet * KeySet::release ()
 {
 	ckdb::KeySet * ret = ks;

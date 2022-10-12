@@ -36,17 +36,12 @@ Backends::BackendInfoVector Backends::getBackendInfo (KeySet mountConf)
 		{
 			BackendInfo bi;
 
-			Key path = mountConf.lookup (cur.getName () + "/config/path");
+			Key path = mountConf.lookup (cur.getName () + "/definition/path");
 			if (path)
 			{
 				bi.path = path.getString ();
 			}
-			Key mp = mountConf.lookup (cur.getName () + "/mountpoint");
-			if (mp)
-			{
-				bi.mountpoint = mp.getString ();
-			}
-			bi.name = cur.getBaseName ();
+			bi.mountpoint = cur.getBaseName ();
 
 			ret.push_back (bi);
 		}
@@ -121,11 +116,10 @@ BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountCo
 bool Backends::umount (std::string const & mountPath, KeySet & mountConf)
 {
 	BackendInfo bi = Backends::findBackend (mountPath, mountConf);
-	if (!bi.name.empty ())
+	if (!bi.mountpoint.empty ())
 	{
 		Key x (Backends::mountpointsPath, KEY_END);
-		;
-		x.addBaseName (bi.name);
+		x.addBaseName (bi.mountpoint);
 		mountConf.cut (x);
 		return true;
 	}

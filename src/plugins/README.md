@@ -254,6 +254,7 @@ binding during run-time:
 - [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
 - [process](process/) proxy plugin that uses separate executables as plugin implementations
+- [backend](backend/) is the default plugin implementing backend functionality
 
 ### Plugins for Development
 
@@ -262,8 +263,17 @@ binding during run-time:
 - [doc](doc/) contains the documentation of the plugin interface
 - [error](error/) yields errors as described in metadata (handy for test purposes)
 
+### Internal Plugins
+
+Internally used and hard coded into `libelektra-kdb`.
+Don't try to use manually.
+
+- [missing](missing/)
+- [modules](modules/)
+- [version](version/)
+
 ### Deprecated Plugins
 
-Please avoid, if possible, to use following plugin:
+Please avoid, if possible, to use following plugins:
 
-- [list](list/) loads other plugins
+- (currently none 🎉)

@@ -14,13 +14,20 @@ To help readers to understand the algorithm that glues together the
 plugins, we first describe some details of the
 [data structures](data-structures.md). Full
 knowledge of the [algorithm](algorithm.md) is not presumed to be able to develop
-most plugins (with the exception of [the resolver](/src/plugins/resolver/)).
+most plugins.
 
 Further important concepts are explained in:
 
 - [bootstrapping](/doc/help/elektra-bootstrapping.md)
 - [granularity](/doc/help/elektra-granularity.md)
 - [sync-flag](/doc/help/elektra-sync-flag.md)
+
+## Outdated
+
+<!-- TODO [new_backend]: Update the text below using the docs listed in the warning. -->
+
+> **Warning** Many of the things described below (especially in relation to backends and mountpoints) are outdated.
+> See [`kdb-operations.md`](kdb-operations.md), [`backend-plugins.md`](backend-plugins.md) and [`mountpoints.md`](mountpoints.md) for more up-to-date information.
 
 ## API
 
@@ -166,43 +173,69 @@ internally.
 ## Mount Point Configuration
 
 `kdb mount` creates a **mount point configuration** as shown
-in the example below. `fstab` is a unique name
+in the example below. `/hosts` is a unique name
 within the mount point configuration provided by the administrator.
+To escape the `/` character, the name is changed to `\/hosts` in the
+configuration.
 
 Example for a mount point configuration:
 
 ```
-system:/elektra/mountpoints
-system:/elektra/mountpoints/fstab
-system:/elektra/mountpoints/fstab/config
-system:/elektra/mountpoints/fstab/config/path=fstab
-system:/elektra/mountpoints/fstab/config/struct=list FStab
-system:/elektra/mountpoints/fstab/config/struct/FStab
-system:/elektra/mountpoints/fstab/config/struct/FStab/device
-system:/elektra/mountpoints/fstab/config/struct/FStab/dumpfreq
-system:/elektra/mountpoints/fstab/config/struct/FStab/mpoint
-system:/elektra/mountpoints/fstab/config/struct/FStab/options
-system:/elektra/mountpoints/fstab/config/struct/FStab/passno
-system:/elektra/mountpoints/fstab/config/struct/FStab/type
-system:/elektra/mountpoints/fstab/errorplugins
-system:/elektra/mountpoints/fstab/errorplugins/#5#resolver#resolver#
-system:/elektra/mountpoints/fstab/getplugins
-system:/elektra/mountpoints/fstab/getplugins/#0#resolver
-system:/elektra/mountpoints/fstab/getplugins/#5#fstab#fstab#
-system:/elektra/mountpoints/fstab/mountpoint /fstab
-system:/elektra/mountpoints/fstab/setplugins
-system:/elektra/mountpoints/fstab/setplugins/#0#resolver
-system:/elektra/mountpoints/fstab/setplugins/#1#struct#struct#
-system:/elektra/mountpoints/fstab/setplugins/#2#type#type#
-system:/elektra/mountpoints/fstab/setplugins/#3#path#path#
-system:/elektra/mountpoints/fstab/setplugins/#3#path#path#/config
-system:/elektra/mountpoints/fstab/setplugins/#3#path#path#/config/path/allow=proc tmpfs none
-system:/elektra/mountpoints/fstab/setplugins/#5#fstab
-system:/elektra/mountpoints/fstab/setplugins/#7#resolver
+system:/elektra/mountpoints/\/hosts
+system:/elektra/mountpoints/\/hosts/config
+system:/elektra/mountpoints/\/hosts/config/glob/set/#0
+system:/elektra/mountpoints/\/hosts/config/glob/set/#1
+system:/elektra/mountpoints/\/hosts/config/glob/set/#2
+system:/elektra/mountpoints/\/hosts/config/glob/set/#3
+system:/elektra/mountpoints/\/hosts/config/glob/set/#4
+system:/elektra/mountpoints/\/hosts/config/glob/set/#4/flags
+system:/elektra/mountpoints/\/hosts/config/mountpoint
+system:/elektra/mountpoints/\/hosts/config/path
+system:/elektra/mountpoints/\/hosts/error
+system:/elektra/mountpoints/\/hosts/error/rollback
+system:/elektra/mountpoints/\/hosts/error/rollback/#0
+system:/elektra/mountpoints/\/hosts/error/rollback/#0/label (="resolver")
+system:/elektra/mountpoints/\/hosts/error/rollback/#0/name (="resolver_fm_hpu_b")
+system:/elektra/mountpoints/\/hosts/get
+system:/elektra/mountpoints/\/hosts/get/postgetstorage
+system:/elektra/mountpoints/\/hosts/get/postgetstorage/#0
+system:/elektra/mountpoints/\/hosts/get/postgetstorage/#0/label (="glob")
+system:/elektra/mountpoints/\/hosts/get/postgetstorage/#0/name (="glob")
+system:/elektra/mountpoints/\/hosts/get/getresolver
+system:/elektra/mountpoints/\/hosts/get/getresolver/#0
+system:/elektra/mountpoints/\/hosts/get/getresolver/#0/reference (="resolver")
+system:/elektra/mountpoints/\/hosts/get/getstorage
+system:/elektra/mountpoints/\/hosts/get/getstorage/#0
+system:/elektra/mountpoints/\/hosts/get/getstorage/#0/label (="hosts")
+system:/elektra/mountpoints/\/hosts/get/getstorage/#0/name (="hosts")
+system:/elektra/mountpoints/\/hosts/set
+system:/elektra/mountpoints/\/hosts/set/commit
+system:/elektra/mountpoints/\/hosts/set/commit/#0
+system:/elektra/mountpoints/\/hosts/set/commit/#0/reference (="resolver")
+system:/elektra/mountpoints/\/hosts/set/precommit
+system:/elektra/mountpoints/\/hosts/set/precommit/#0
+system:/elektra/mountpoints/\/hosts/set/precommit/#0/label (="sync")
+system:/elektra/mountpoints/\/hosts/set/precommit/#0/name (="sync")
+system:/elektra/mountpoints/\/hosts/set/presetstorage
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#0
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#0/reference (="glob")
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#1
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#1/label (="error")
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#1/name (="error")
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#2
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#2/label (="network")
+system:/elektra/mountpoints/\/hosts/set/presetstorage/#2/name (="network")
+system:/elektra/mountpoints/\/hosts/set/setresolver
+system:/elektra/mountpoints/\/hosts/set/setresolver/#0
+system:/elektra/mountpoints/\/hosts/set/setresolver/#0/reference (="resolver")
+system:/elektra/mountpoints/\/hosts/set/setstorage
+system:/elektra/mountpoints/\/hosts/set/setstorage/#0
+system:/elektra/mountpoints/\/hosts/set/setstorage/#0/reference (="hosts")
+
 ```
 
 Let us look at the subkeys below the key
-`system:/elektra/mountpoints/fstab`:
+`system:/elektra/mountpoints/\/hosts`:
 
 - **config**:
   Everything below `config` is the system's
@@ -211,73 +244,100 @@ Let us look at the subkeys below the key
   **plugin configuration**. For example,
 
   ```
-  system:/elektra/mountpoints/fstab/config/struct/FStab/mpoint
+  system:/elektra/mountpoints/\/hosts/config/glob/set/#4/flags
   ```
 
   will be translated to
 
   ```
-  system:/struct/FStab/mpoint
+  system:/glob/set/#4/flags
   ```
 
   and inserted into the plugin configuration for all plugins in the
-  `fstab` backend.
+  `/hosts` backend.
 
 It is the place where configuration can be provided for every plugin
 of a backend. The contract checker deduces this configuration to
-satisfy the contract for a plugin. Fstab, for example, claims in
-a contract that it needs "struct". But the struct plugin needs a
-configuration to work properly. Fstab will provide this configuration.
+satisfy the contract for a plugin.
+
+For example, `/hosts` recommends the use of the `glob` plugin. In this case, it is included.
+To work properly, the `glob` plugin needs to receive certain configuration, which is provided
+by `/hosts`:
+
+```
+system:/elektra/mountpoints/\/hosts/config/glob/set/#0
+system:/elektra/mountpoints/\/hosts/config/glob/set/#1
+system:/elektra/mountpoints/\/hosts/config/glob/set/#2
+system:/elektra/mountpoints/\/hosts/config/glob/set/#3
+system:/elektra/mountpoints/\/hosts/config/glob/set/#4
+system:/elektra/mountpoints/\/hosts/config/glob/set/#4/flags
+```
+
 The **contract checker** writes out the configuration looking like
 the one in this example.
 
 - **config/path**:
   is a common setting needed by the resolver plugin. It
   is the relative path to a filename that is used by this backend. On Unix
-  systems, the resolver would determine the name `/etc/fstab`
+  systems, the resolver would determine the name `/etc/hosts`
   for system configuration.
 
-- **mount point**:
+- **config/mountpoint**:
   is a key that represents the mount point. Its value is
   the location where the backend is mounted. If a mount point has an entry
   for both the user and the system hierarchy, it is called
   **cascading mount point**. A cascading mount point differs from two separate mount
   points because internally only one backend is created. In the example,
-  the mount point `/fstab` means that the backend handles both
-  `user:/fstab` and `system:/fstab`. If the mount point
-  is `/`, the backend will be mounted to all namespaces except `spec`,
-  including both `user` and `system`.
+  the mount point `/hosts` means that the backend handles both
+  `user:/hosts` and `system:/hosts`. If the mount point
+  is `/`, the backend will be mounted to `dir:/`, `user:/` and `system:/`.
 
-* **errorplugins**:
+* **error**:
   presents a list of all plugins to be executed in
   the error case of `kdbSet()` which will be explained in
   **error situation**.
 
-* **getplugins**:
+* **get**:
   is a list of all plugins used when reading the
   configuration from the key database. They are executed in `kdbGet()`.
 
-* **setplugins**:
+* **set**:
   contains a list of all plugins used when storing
   configuration. They are executed in `kdbSet()`.
 
-Each of the plugins inside the three lists may have the subkey
+Each of the plugins inside the three lists may itself have the subkey
 `config`. The configuration below this subkey provides plugin specific
 configuration. This configuration appears in the user's configuration
-of the plugin. Configuration is renamed properly. For example, the key
+of the plugin. Configuration is renamed properly. For a fictional backend named
+`backendname` and a plugin named `pluginname` containing configuration
+named `property`, the key
 
 ```
-system:/elektra/mountpoints/fstab/setplugins/#3#path#path#/config/path/allow
+system:/elektra/mountpoints/backendname/set/storage/config/pluginname/property
 ```
 
 is transformed to
 
 ```
-user:/path/allow
+user:/pluginname/property
 ```
 
-and appears in the plugin configuration of the path plugin
-inside the fstab backend.
+and appears in the plugin configuration of the `pluginname` plugin
+inside the `backendname` backend.
+
+### Roles and Placements
+
+Expressions after `get`, `set` or `error` such as `poststorage`, `storage` or `resolver`
+describe the role that the plugin fulfills. For example, the key
+
+```
+system:/elektra/mountpoints/\/hosts/set/precommit/#0/name
+```
+
+belongs to a plugin fulfilling the `precommit` role.
+
+The cypher `#0` describes the placement of the plugin in relation to potential other plugins
+fulfilling the same role. More on roles and placements [here](plugins-ordering.md).
 
 ### Referencing
 
@@ -289,19 +349,42 @@ preserves state between the executions.
 Other plugins additionally have to handle error or success situations.
 One example of exceptional intensive use is the resolver plugin. It is
 executed twice in `kdbSet()`. In `kdbGet()` it is also used as shown
-above.
+above. Plugins can be defined in the following ways:
 
-- `#n<name>`:
+- **Single use**:
+
+  Assuming that the following key contains the value `"pluginname"`,
+
+  ```
+  system:/elektra/mountpoints/backendname/get/poststorage/#0/name
+  ```
+
   introduces a new plugin from the module
-  `name` which cannot be referenced later. The cypher `n` appoints the
-  actual placement of the plugin.
-- `#n#<name>#<label>#`:
-  also introduces a new plugin from the module `name` and gives it the
-  name `label`. The last `#` shows that a new name is being introduced.
-- `#n#<ref>`:
-  references back to
-  a label which was introduced before. This configuration does not create
-  a new plugin.
+  `pluginname` which cannot be referenced later.
+
+- **Labelling**:
+
+  Assuming that the key ending with `label` contains the value `"pluginlabel"`
+  and the key ending with `name` stays the same,
+
+  ```
+  system:/elektra/mountpoints/backendname/get/poststorage/#0/label
+  system:/elektra/mountpoints/backendname/get/poststorage/#0/name
+  ```
+
+  also introduces a new plugin from the module `pluginname` and gives it the
+  name `pluginlabel`. By using the introduced label, the plugin can be used later.
+
+- **Referencing**:
+
+  Assuming that the following key contains the value `"pluginlabel"`,
+
+  ```
+  system:/elektra/mountpoints/backendname/get/poststorage/#0/reference
+  ```
+
+  references back to the label which was introduced before. That way,
+  the same plugin which was created previously is used.
 
 `kdb mount` implements the generation of these names as described above.
 

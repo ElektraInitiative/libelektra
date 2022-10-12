@@ -196,7 +196,7 @@ QString GUIBackend::mountPoints () const
 
 	foreach (BackendInfo info, vec)
 	{
-		QString backend = QString::fromStdString (info.name);
+		QString backend = QString::fromStdString (info.mountpoint);
 
 		if (backend.startsWith ("/"))
 		{

@@ -51,7 +51,7 @@ TEST_F (Error, Simple)
 
 	ks.append (Key ("system:" + testRoot + "key", KEY_META, "trigger/error", "C01310", KEY_END));
 
-	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
+	ASSERT_EQ (kdb.get (ks, testRoot), 2) << "should be nothing to update";
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at get" << ks;
 
 	Key parentKey (testRoot, KEY_END);
@@ -74,7 +74,7 @@ TEST_F (Error, Again)
 
 	ks.append (Key ("system:" + testRoot + "key", KEY_META, "trigger/error", "C01310", KEY_END));
 
-	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
+	ASSERT_EQ (kdb.get (ks, testRoot), 2) << "should be nothing to update";
 
 	Key parentKey (testRoot, KEY_END);
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error";
@@ -105,7 +105,7 @@ TEST_F (Error, AgainRepeat)
 
 	ks.append (Key ("system:" + testRoot + "key", KEY_META, "trigger/error", "C01310", KEY_END));
 
-	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
+	ASSERT_EQ (kdb.get (ks, testRoot), 2) << "should be nothing to update";
 
 	Key parentKey (testRoot, KEY_END);
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error";
@@ -145,7 +145,7 @@ TEST_F (Error, CSimple)
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_META, "trigger/error", "C01310", KEY_END));
 
-	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 0) << "should be nothing to update";
+	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
 	ASSERT_EQ (ksGetSize (ks), 1) << "did not keep key at get" << ks;
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
@@ -168,7 +168,7 @@ TEST_F (Error, ToWarning)
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key1").c_str (), KEY_META, "trigger/error/nofail", "C01310", KEY_END));
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key2").c_str (), KEY_META, "trigger/error", "C01110", KEY_END));
 
-	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 0) << "should be nothing to update";
+	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
 	ASSERT_EQ (ksGetSize (ks), 2) << "did not keep key at get" << ks;
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
@@ -194,7 +194,7 @@ TEST_F (Error, Persists)
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_META, "trigger/error", "C01310", KEY_END));
 
-	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 0) << "should be nothing to update";
+	ASSERT_EQ (kdbGet (kdb, ks, parentKey), 2) << "should be nothing to update";
 	ASSERT_EQ (ksGetSize (ks), 1) << "did not keep key at get" << ks;
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), -1) << "could not trigger error";
@@ -206,8 +206,8 @@ TEST_F (Error, Persists)
 	keyDel (ksLookup (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_END), KDB_O_POP | KDB_O_DEL));
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), 0) << "kdbSet failed";
-	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));
-	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "C01310");
+	EXPECT_FALSE (ckdb::keyGetMeta (parentKey, "error"));
+	EXPECT_FALSE (ckdb::keyGetMeta (parentKey, "error/number"));
 
 
 	kdbClose (kdb, parentKey);

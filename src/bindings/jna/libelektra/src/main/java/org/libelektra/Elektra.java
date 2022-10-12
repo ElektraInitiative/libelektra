@@ -331,12 +331,6 @@ interface Elektra extends Library {
   int ksRewind(Pointer ks);
 
   @Nullable
-  Pointer ksHead(Pointer ks);
-
-  @Nullable
-  Pointer ksTail(Pointer ks);
-
-  @Nullable
   Pointer ksAtCursor(Pointer ks, int cursor);
 
   /**

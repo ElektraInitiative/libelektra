@@ -17,8 +17,12 @@ It complements the man pages found [here](/doc/help).
 - [Metadata](metadata.md)
 - [Symbol Versioning](symbol-versioning.md)
 - [Iterators](iterators.md)
+- [Mountpoints](mountpoints.md)
+- [Backend Plugins](backend-plugins.md)
+- [Hook Plugins](hooks.md)
 
 ## Internals
 
 - [Algorithm](algorithm.md)
 - [Plugins Ordering](plugins-ordering.md)
+- [KDB Operations](kdb-operations.md)

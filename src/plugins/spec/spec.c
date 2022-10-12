@@ -895,28 +895,12 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 	return ret;
 }
 
-int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraSpecCopy (Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/spec"))
-	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/spec/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
-			       keyNew ("system:/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
-#include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
-
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS; // success
-	}
-
 	// parse configuration
 	ConflictHandling ch;
-
 	KeySet * config = elektraPluginGetConfig (handle);
-	parseConfig (config, &ch, CONFIG_BASE_NAME_GET);
+	parseConfig (config, &ch, isKdbGet ? CONFIG_BASE_NAME_GET : CONFIG_BASE_NAME_SET);
 
 	// build spec
 	KeySet * specKS = ksNew (0, KS_END);
@@ -957,13 +941,23 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	for (elektraCursor it = 0; it < ksGetSize (specKS); ++it)
 	{
 		specKey = ksAtCursor (specKS, it);
-		if (processSpecKey (specKey, parentKey, ks, &ch, true) != 0)
+		if (processSpecKey (specKey, parentKey, ks, &ch, isKdbGet) != 0)
 		{
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+
+		if (!isKdbGet)
+		{
+			keySetMeta (specKey, "internal/spec/array/validated", NULL);
+
+			if (keyGetMeta (specKey, "internal/spec/array") == NULL && keyGetMeta (specKey, "internal/spec/remove") == NULL)
+			{
+				ksAppendKey (returned, specKey);
+			}
+		}
 	}
 
-	if (processAllConflicts (specKey, ks, parentKey, &ch, true) != 0)
+	if (processAllConflicts (specKey, ks, parentKey, &ch, isKdbGet) != 0)
 	{
 		ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -981,95 +975,69 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return ret;
 }
 
-int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraSpecRemove (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	// parse configuration
-	ConflictHandling ch;
+	Key * specName = keyNew ("spec:/", KEY_END);
 
-	KeySet * config = elektraPluginGetConfig (handle);
-	parseConfig (config, &ch, CONFIG_BASE_NAME_SET);
-
-	// build spec
-	KeySet * specKS = ksNew (0, KS_END);
-
-	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	for (elektraCursor i = 0; i < ksGetSize (returned); i++)
 	{
-		Key * cur = ksAtCursor (returned, it);
-		if (keyGetNamespace (cur) == KEY_NS_SPEC)
-		{
-			if (isArraySpec (cur))
-			{
-				KeySet * specs = instantiateArraySpec (returned, cur, parentKey, ch.member);
-				ksAppend (specKS, specs);
-				ksDel (specs);
-			}
+		Key * cur = ksAtCursor (returned, i);
 
-			ksAppendKey (specKS, cur);
-		}
-	}
-
-	int ret = ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	if (keyGetMeta (parentKey, "internal/spec/error") != NULL)
-	{
-		ret = ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	// remove spec namespace from returned
-	Key * specParent = keyNew ("spec:/", KEY_END);
-	ksDel (ksCut (returned, specParent));
-	keyDel (specParent);
-
-	// extract other namespaces
-	KeySet * ks = ksCut (returned, parentKey);
-
-	// do actual work
-	Key * specKey = NULL;
-
-	for (elektraCursor it = 0; it < ksGetSize (specKS); ++it)
-	{
-		specKey = ksAtCursor (specKS, it);
-		if (processSpecKey (specKey, parentKey, ks, &ch, false) != 0)
-		{
-			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-
-		keySetMeta (specKey, "internal/spec/array/validated", NULL);
-
-		if (keyGetMeta (specKey, "internal/spec/array") == NULL && keyGetMeta (specKey, "internal/spec/remove") == NULL)
-		{
-			ksAppendKey (returned, specKey);
-		}
-	}
-
-	if (processAllConflicts (specKey, ks, parentKey, &ch, false) != 0)
-	{
-		ret = ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	// reconstruct KeySet
-	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
-	{
-		Key * cur = ksAtCursor (ks, it);
 		if (keyGetNamespace (cur) == KEY_NS_SPEC)
 		{
 			continue;
 		}
 
-		keySetMeta (cur, "internal/spec/array/validated", NULL);
+		// Find out if there is a spec:/ key for the current key
+		keySetName (specName, "spec:/");
+		keyAddName (specName, strchr (keyName (cur), '/'));
+		Key * specKey = ksLookup (returned, specName, KDB_O_NONE);
 
-		if (keyGetMeta (cur, "internal/spec/array") == NULL && keyGetMeta (cur, "internal/spec/remove") == NULL)
+		if (specKey != NULL)
 		{
-			ksAppendKey (returned, cur);
+			// Found a spec:/ key!
+			// Now remove all meta from the current key that is also contained in the spec:/ key
+
+			KeySet * specMeta = keyMeta (specKey);
+			KeySet * meta = keyMeta (cur);
+
+			for (elektraCursor j = 0; j < ksGetSize (specMeta); j++)
+			{
+				Key * m = ksAtCursor (specMeta, j);
+				if (ksLookup (meta, m, 0) == m)
+				{
+					keySetMeta (cur, keyName (m), NULL);
+				}
+			}
 		}
 	}
 
-	// cleanup
-	ksDel (ks);
-	ksDel (specKS);
+	keyDel (specName);
 
 	keySetMeta (parentKey, "internal/spec/error", NULL);
 
-	return ret;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+int elektraSpecGet (ELEKTRA_UNUSED Plugin * handle, KeySet * returned, Key * parentKey)
+{
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/spec"))
+	{
+		KeySet * contract =
+			ksNew (30, keyNew ("system:/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/hook/spec/copy", KEY_FUNC, elektraSpecCopy, KEY_END),
+			       keyNew ("system:/elektra/modules/spec/exports/hook/spec/remove", KEY_FUNC, elektraSpecRemove, KEY_END),
+#include ELEKTRA_README
+			       keyNew ("system:/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
+
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS; // success
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
@@ -1077,7 +1045,6 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 	// clang-format off
 	return elektraPluginExport ("spec",
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
-			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,
 			ELEKTRA_PLUGIN_END);
 }
 

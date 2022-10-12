@@ -67,8 +67,8 @@ The following example shows you how you can read data using this plugin.
 sudo kdb mount configrc /tests/kconfig kconfig
 
 # Manually add a key-value pair to the database
-mkdir -p "$(dirname "$(kdb file /tests/kconfig)")"
-echo 'key=Value' > "$(kdb file /tests/kconfig)"
+mkdir -p "$(dirname "$(kdb file user:/tests/kconfig)")"
+echo 'key=Value' > "$(kdb file user:/tests/kconfig)"
 
 # Retrieve the new value
 kdb get /tests/kconfig/key
@@ -78,14 +78,14 @@ kdb get /tests/kconfig/key
 kdb set /tests/kconfig/key Example
 
 # Verify that the value has changed in the file too
-cat `kdb file /tests/kconfig`
+cat `kdb file user:/tests/kconfig`
 #> key=Example
 
 # Manually add a gorup to the database
-echo '[group][subgroup]' >> "$(kdb file /tests/kconfig)"
+echo '[group][subgroup]' >> "$(kdb file user:/tests/kconfig)"
 
 # Manually add a key that contains metas to that group
-echo 'key.name[$a][$i]=New Value' >> "$(kdb file /tests/kconfig)"
+echo 'key.name[$a][$i]=New Value' >> "$(kdb file user:/tests/kconfig)"
 
 # Retrieve the new value
 kdb get /tests/kconfig/group/subgroup/key.name
@@ -96,9 +96,9 @@ kdb meta-get /tests/kconfig/group/subgroup/key.name kconfig
 #> ai
 
 # Manually add a group and a localized key
-echo '[localized keys]' >> `kdb file /tests/kconfig`
-echo 'greeting[en]=Hello' >> `kdb file /tests/kconfig`
-echo 'greeting[de]=Hallo' >> `kdb file /tests/kconfig`
+echo '[localized keys]' >> `kdb file user:/tests/kconfig`
+echo 'greeting[en]=Hello' >> `kdb file user:/tests/kconfig`
+echo 'greeting[de]=Hallo' >> `kdb file user:/tests/kconfig`
 
 # Retrieve the english greeting
 kdb get '/tests/kconfig/localized keys/greeting[en]'

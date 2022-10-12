@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-PLUGINS" "7" "February 2022" ""
+.TH "ELEKTRA\-PLUGINS" "7" "October 2022" ""
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
 .P
@@ -287,6 +287,8 @@ sync \fIsync/\fR uses POSIX APIs to sync configuration files with the hard disk
 gopts \fIgopts/\fR global plugin to automatically call \fBelektraGetOpts\fR
 .IP "\(bu" 4
 process \fIprocess/\fR proxy plugin that uses separate executables as plugin implementations
+.IP "\(bu" 4
+backend \fIbackend/\fR is the default plugin implementing backend functionality
 .IP "" 0
 .SS "Plugins for Development"
 .IP "\(bu" 4
@@ -298,9 +300,18 @@ doc \fIdoc/\fR contains the documentation of the plugin interface
 .IP "\(bu" 4
 error \fIerror/\fR yields errors as described in metadata (handy for test purposes)
 .IP "" 0
-.SS "Deprecated Plugins"
-Please avoid, if possible, to use following plugin:
+.SS "Internal Plugins"
+Internally used and hard coded into \fBlibelektra\-kdb\fR\. Don't try to use manually\.
 .IP "\(bu" 4
-list \fIlist/\fR loads other plugins
+missing \fImissing/\fR
+.IP "\(bu" 4
+modules \fImodules/\fR
+.IP "\(bu" 4
+version \fIversion/\fR
+.IP "" 0
+.SS "Deprecated Plugins"
+Please avoid, if possible, to use following plugins:
+.IP "\(bu" 4
+(currently none 🎉)
 .IP "" 0
 

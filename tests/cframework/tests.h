@@ -304,6 +304,17 @@ int init (int argc, char ** argv);
 		}                                                                                                                          \
 		else if (mmk1 != mmk2)                                                                                                     \
 		{                                                                                                                          \
+			if (mmk1 == NULL)                                                                                                  \
+			{                                                                                                                  \
+				printf ("%s:%d: error in %s: First key is NULL (but second isn't)\n", __FILE__, __LINE__, __func__);       \
+				break;                                                                                                     \
+			}                                                                                                                  \
+                                                                                                                                           \
+			if (mmk2 == NULL)                                                                                                  \
+			{                                                                                                                  \
+				printf ("%s:%d: error in %s: Second key is NULL (but first isn't)\n", __FILE__, __LINE__, __func__);       \
+				break;                                                                                                     \
+			}                                                                                                                  \
 			compare_key_name (mmk1, mmk2);                                                                                     \
 			compare_key_value (mmk1, mmk2);                                                                                    \
                                                                                                                                            \

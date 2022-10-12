@@ -56,7 +56,7 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 {
 	ELEKTRA_NOT_NULL (kdb);
 
-	Plugin * notificationPlugin = elektraPluginFindGlobal (kdb, "internalnotification");
+	Plugin * notificationPlugin = elektraFindInternalNotificationPlugin (kdb);
 	if (notificationPlugin)
 	{
 		return notificationPlugin;

@@ -1,9 +1,13 @@
 ## Ignored compiler errors
-
 ### GCC
 - Ignoring some "maybe-uninitialized" upstream errors from libstdc++ 12.x.x in commit bd1543a1b98fb988f01bedcc266b35b5c4d6240f
 
 ## disabled tests
+
+There are many disabled tests because of the new-backend updates.
+All these tests are marked with a `TODO [new_backend]` or `FIXME [new_backend]` comment.
+
+unit tests for elektraMountpointsParse in src/libs/elektra/kdb.c
 
 src/plugins/lua/CMakeLists.txt  for APPLE
 src/plugins/jni/CMakeLists.txt

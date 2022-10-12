@@ -60,11 +60,10 @@ if (BUILD_SHARED)
 	file (
 		GLOB
 		KDB_FILES
-		backend.c
 		kdb.c
 		mount.c
-		split.c
-		trie.c
+		hooks.c
+		backends.c
 		plugin.c
 		contracts.c)
 	set (CORE_FILES ${SOURCES})

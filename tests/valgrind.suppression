@@ -102,7 +102,6 @@
    fun:dlopen@@GLIBC_2.2.5
    fun:elektraModulesLoad
    fun:elektraPluginOpen
-   fun:backendOpenDefault
 }
 {
    <insert_a_suppression_name_here>
@@ -137,7 +136,6 @@
    fun:dlopen@@GLIBC_2.2.5
    fun:elektraModulesLoad
    fun:elektraPluginOpen
-   fun:elektraProcessPlugins
 }
 {
    <insert_a_suppression_name_here>

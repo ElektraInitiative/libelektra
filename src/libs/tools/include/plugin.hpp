@@ -151,7 +151,7 @@ public:
 	 */
 	func_t getSymbol (std::string which)
 	{
-		if (symbols.find (which) == symbols.end ()) throw MissingSymbol (which);
+		if (symbols.find (which) == symbols.end ()) throw MissingSymbol (which, name ());
 		return symbols[which];
 	}
 
@@ -202,6 +202,7 @@ public:
 	std::string getFullName ();
 
 private:
+	friend class CommitPlugins;
 	friend class ErrorPlugins;
 	friend class GetPlugins;
 	friend class SetPlugins;

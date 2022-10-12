@@ -16,7 +16,7 @@
 int elektraShellOpen (Plugin * handle, Key * errorKey);
 int elektraShellClose (Plugin * handle, Key * errorKey);
 int elektraShellGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraShellSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraShellCommit (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraShellError (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT;

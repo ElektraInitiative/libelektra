@@ -43,6 +43,7 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ksNew (30, keyNew ("system:/elektra/modules/gopts", KEY_VALUE, "gopts plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/gopts/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/gopts/exports/get", KEY_FUNC, elektraGOptsGet, KEY_END),
+			       keyNew ("system:/elektra/modules/gopts/exports/hook/gopts/get", KEY_FUNC, elektraGOptsGet, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system:/elektra/modules/gopts/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);

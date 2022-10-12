@@ -72,6 +72,7 @@ typedef enum
 	ELEKTRA_PLUGIN_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
 	ELEKTRA_PLUGIN_ERROR=1<<4,	/*!< Next arg is backend for kdbError() */
 	ELEKTRA_PLUGIN_COMMIT=1<<5,	/*!< Next arg is backend for kdbCommit()*/
+	ELEKTRA_PLUGIN_INIT=1<<6,	/*!< Next arg is backend for kdbInit()*/
 	ELEKTRA_PLUGIN_END=0		/*!< End of arguments */
 	// clang-format on
 } plugin_t;
@@ -96,6 +97,33 @@ namespace ckdb
 extern "C" {
 #endif
 
+typedef uint8_t ElektraKdbPhase;
+
+enum
+{
+	ELEKTRA_KDB_GET_PHASE_RESOLVER = 0x01,
+
+	ELEKTRA_KDB_GET_PHASE_CACHECHECK = 0x11,
+
+	ELEKTRA_KDB_GET_PHASE_PRE_STORAGE = 0x71,
+	ELEKTRA_KDB_GET_PHASE_STORAGE = 0x78,
+	ELEKTRA_KDB_GET_PHASE_POST_STORAGE = 0x7F,
+
+	ELEKTRA_KDB_SET_PHASE_RESOLVER = 0x01,
+
+	ELEKTRA_KDB_SET_PHASE_PRE_STORAGE = 0x71,
+	ELEKTRA_KDB_SET_PHASE_STORAGE = 0x78,
+	ELEKTRA_KDB_SET_PHASE_POST_STORAGE = 0x7F,
+
+	ELEKTRA_KDB_SET_PHASE_PRE_COMMIT = 0xE1,
+	ELEKTRA_KDB_SET_PHASE_COMMIT = 0xE8,
+	ELEKTRA_KDB_SET_PHASE_POST_COMMIT = 0xEF,
+
+	ELEKTRA_KDB_SET_PHASE_PRE_ROLLBACK = 0xF1,
+	ELEKTRA_KDB_SET_PHASE_ROLLBACK = 0xF8,
+	ELEKTRA_KDB_SET_PHASE_POST_ROLLBACK = 0xFF,
+};
+
 typedef struct _Plugin Plugin;
 
 Plugin * elektraPluginExport (const char * pluginName, ...);
@@ -105,6 +133,8 @@ void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
 
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
+ElektraKdbPhase elektraPluginGetPhase (Plugin * plugin);
+Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref);
 
 #define PLUGINVERSION "1"
 

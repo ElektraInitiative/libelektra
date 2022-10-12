@@ -3,7 +3,6 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = check apply
-- infos/placements = postgetstorage presetstorage
 - infos/status = recommended productive nodep configurable global unfinished
 - infos/description = allows to give specifications for keys
 
@@ -138,6 +137,8 @@ This array will contain a list of the missing keys. The key `missing/log` can on
 not individual keys' metakeys. It also applies to `kdbGet` and `kdbSet` calls.
 
 ## Examples
+
+<!-- FIXME [new_backend]: outdated -->
 
 Ni files can be found in [/examples/spec](/examples/spec) which should be PWD
 so that the example works:

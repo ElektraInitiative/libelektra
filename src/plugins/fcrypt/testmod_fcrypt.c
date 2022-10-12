@@ -136,7 +136,7 @@ static void test_init (void)
 		succeed_if (plugin->kdbOpen != 0, "no open pointer");
 		succeed_if (plugin->kdbClose != 0, "no close pointer");
 		succeed_if (plugin->kdbGet != 0, "no get pointer");
-		succeed_if (plugin->kdbSet != 0, "no set pointer");
+		succeed_if (plugin->kdbCommit != 0, "no set pointer");
 
 		elektraPluginClose (plugin, 0);
 	}
@@ -186,7 +186,7 @@ static void test_file_crypto_operations (void)
 			keySetString (parentKey, tmpFile);
 
 			// try to encrypt the file
-			succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
+			succeed_if (plugin->kdbCommit (plugin, data, parentKey) == 1, "kdb set failed");
 			succeed_if (isTestFileCorrect (tmpFile) == -1, "file content did not change during encryption");
 
 			// try to decrypt the file again (simulating the pregetstorage call)
@@ -230,7 +230,7 @@ static void test_file_signature_operations (void)
 			keySetString (parentKey, tmpFile);
 
 			// try to encrypt the file
-			succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
+			succeed_if (plugin->kdbCommit (plugin, data, parentKey) == 1, "kdb set failed");
 			succeed_if (isTestFileCorrect (tmpFile) == -1, "file content did not change during encryption");
 
 			// try to decrypt/verify the file
