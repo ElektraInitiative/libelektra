@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = backend
-- infos/status = unfinished
+- infos/status = nodep
 - infos/description = Plugin implementing full backend functionality
 
 ## Introduction

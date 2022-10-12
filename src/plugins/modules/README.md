@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = backend
-- infos/status =
+- infos/status = nodep
 - infos/metadata =
 - infos/description = For internal use only
 
