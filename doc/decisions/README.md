@@ -78,8 +78,6 @@ Before you write your first decision, read [Decision Process](decision_process.m
 
 - [Plugin Variants](plugin_variants.md)
 - [Global Validation](global_validation.md)
-- [Template](template.md)
-- [Explanations](explanations.md)
 
 ## Rejected
 
@@ -89,3 +87,10 @@ Before you write your first decision, read [Decision Process](decision_process.m
 - [Elektra Web Publish Subscribe](elektra_web_pubsub.md)
 - [Internal Cache](internal_cache.md)
 - [Vendor Spec](vendor_spec.md)
+
+## Meta-Information
+
+Even though they use the decision template, following decisions are not real decisions:
+
+- [Template](TEMPLATE.md)
+- [Explanations](EXPLANATIONS.md)

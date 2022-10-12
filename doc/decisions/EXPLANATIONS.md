@@ -1,4 +1,4 @@
-# Explanations
+# EXPLANATIONS
 
 ## Problem
 

@@ -1,4 +1,4 @@
-# Template
+# TEMPLATE
 
 ## Problem
 
