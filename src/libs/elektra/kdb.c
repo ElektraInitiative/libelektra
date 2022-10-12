@@ -289,6 +289,19 @@ static KDB * kdbNew (Key * errorKey)
 	return handle;
 }
 
+/**
+ * Adds a new backend to @p backends
+ * Takes ownership of the following params, so don't free them until you close the backends:
+ *  - @p backend
+ *  - @p plugins
+ *  - @p definition
+ *
+ * @param backends the keyset where the new backend will be addeed
+ * @param mountpoint the key for the mountpoint. The backend will be set as the data of that key. The key will then be added to @p backends
+ * @param backend the backend plugin
+ * @param plugins plugins for the backend
+ * @param definition configuration for the backend
+ */
 static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend, KeySet * plugins, KeySet * definition)
 {
 	BackendData backendData = {
@@ -492,6 +505,20 @@ static KeySet * dupPluginSet (KeySet * plugins, Key * errorKey)
 	}
 }
 
+/**
+ * Adds a duplicated mounpoint
+ * Creates duplicates of
+ *  - @p mountpoint
+ *  - @p plugins, including reopening of the plugins
+ *  - @p definition
+ *
+ * @param mountpoints KeySet containing all backends.
+ * @param mountpoint The mountpoint where the backend should be mounted.
+ * @param plugins KeySet containing all plugins to use, including the backend plugin. The backend plugin has the key system:/backend.
+ * @param definition KeySet containing the definition/configuration for the backend plugin.
+ * @param errorKey The error key.
+ * @return true if the mounting was successful, false otherwise
+ */
 static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, KeySet * plugins, KeySet * definition, Key * errorKey)
 {
 	KeySet * dupPlugins = dupPluginSet (plugins, errorKey);
