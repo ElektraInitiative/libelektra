@@ -386,7 +386,9 @@ static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
 						"'. If the error persists, please report this bug at https://issues.libelektra.org.");
 
 		Key * warningsRoot = keyNew ("meta:/warnings", KEY_END);
-		ksAppend (keyMeta (errorKey), ksBelow (keyMeta (bootstrapParent), warningsRoot));
+		KeySet * warnings = ksBelow (keyMeta (bootstrapParent), warningsRoot);
+		ksAppend (keyMeta (errorKey), warnings);
+		ksDel (warnings);
 		keyDel (warningsRoot);
 		elektraTriggerWarnings (keyString (keyGetMeta (bootstrapParent, "meta:/error/number")), errorKey,
 					keyString (keyGetMeta (bootstrapParent, "meta:/error/reason")));
