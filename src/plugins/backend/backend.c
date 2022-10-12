@@ -328,46 +328,51 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 				keyName (parentKey), handle->setPositions.resolver->name, keyName (parentKey), keyBaseName (parentKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
-	}
 
-	if (handle->getPositions.resolver != handle->setPositions.resolver &&
-	    ksLookupByName (definition, "system:/positions/set/resolver/differs", 0) == NULL)
-	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (
-			parentKey,
-			"The resolver plugin for kdbSet() ('%s') differs from the resolver plugin for kdbGet() ('%s'). This is a "
-			"non-standard configuration. Normally, '%s/definition/positions/get/resolver' and "
-			"'%s/definition/positions/set/resolver' should have the same value. If the configuration is intentional, you can "
-			"silence this warning by setting '%s/definition/positions/set/resolver/differs' to any value. (Configuration of "
-			"mountpoint: '%s')",
-			handle->getPositions.resolver->name, handle->setPositions.resolver->name, keyName (parentKey), keyName (parentKey),
-			keyName (parentKey), keyBaseName (parentKey));
-	}
+		if (handle->getPositions.resolver != handle->setPositions.resolver &&
+		    ksLookupByName (definition, "system:/positions/set/resolver/differs", 0) == NULL)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				parentKey,
+				"The resolver plugin for kdbSet() ('%s') differs from the resolver plugin for kdbGet() ('%s'). This is a "
+				"non-standard configuration. Normally, '%s/definition/positions/get/resolver' and "
+				"'%s/definition/positions/set/resolver' should have the same value. If the configuration is intentional, "
+				"you can "
+				"silence this warning by setting '%s/definition/positions/set/resolver/differs' to any value. "
+				"(Configuration of "
+				"mountpoint: '%s')",
+				handle->getPositions.resolver->name, handle->setPositions.resolver->name, keyName (parentKey),
+				keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+		}
 
-	if (handle->setPositions.resolver != handle->setPositions.commit &&
-	    ksLookupByName (definition, "system:/positions/set/commit/differs", 0) == NULL)
-	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (
-			parentKey,
-			"The resolver plugin ('%s') differs from the commit plugin ('%s'). This is a non-standard configuration. Normally, "
-			"'%s/definition/positions/set/resolver' and '%s/definition/positions/set/commit' should have the same value. If "
-			"the configuration is intentional, you can silence this warning by setting "
-			"'%s/definition/positions/set/commit/differs' to any value. (Configuration of mountpoint: '%s')",
-			handle->setPositions.resolver->name, handle->setPositions.commit->name, keyName (parentKey), keyName (parentKey),
-			keyName (parentKey), keyBaseName (parentKey));
-	}
+		if (handle->setPositions.resolver != handle->setPositions.commit &&
+		    ksLookupByName (definition, "system:/positions/set/commit/differs", 0) == NULL)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				parentKey,
+				"The resolver plugin ('%s') differs from the commit plugin ('%s'). This is a non-standard configuration. "
+				"Normally, "
+				"'%s/definition/positions/set/resolver' and '%s/definition/positions/set/commit' should have the same "
+				"value. If "
+				"the configuration is intentional, you can silence this warning by setting "
+				"'%s/definition/positions/set/commit/differs' to any value. (Configuration of mountpoint: '%s')",
+				handle->setPositions.resolver->name, handle->setPositions.commit->name, keyName (parentKey),
+				keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+		}
 
-	if (handle->setPositions.resolver != handle->setPositions.rollback &&
-	    ksLookupByName (definition, "system:/positions/set/rollback/differs", 0) == NULL)
-	{
-		ELEKTRA_ADD_INSTALLATION_WARNINGF (
-			parentKey,
-			"The resolver plugin ('%s') differs from the rollback plugin ('%s'). This is a non-standard configuration. "
-			"Normally, '%s/definition/positions/set/resolver' and '%s/definition/positions/set/rollback' should have the same "
-			"value. If the configuration is intentional, you can silence this warning by setting "
-			"'%s/definition/positions/set/rollback/differs' to any value. (Configuration of mountpoint: '%s')",
-			handle->setPositions.resolver->name, handle->setPositions.rollback->name, keyName (parentKey), keyName (parentKey),
-			keyName (parentKey), keyBaseName (parentKey));
+		if (handle->setPositions.resolver != handle->setPositions.rollback &&
+		    ksLookupByName (definition, "system:/positions/set/rollback/differs", 0) == NULL)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				parentKey,
+				"The resolver plugin ('%s') differs from the rollback plugin ('%s'). This is a non-standard configuration. "
+				"Normally, '%s/definition/positions/set/resolver' and '%s/definition/positions/set/rollback' should have "
+				"the same "
+				"value. If the configuration is intentional, you can silence this warning by setting "
+				"'%s/definition/positions/set/rollback/differs' to any value. (Configuration of mountpoint: '%s')",
+				handle->setPositions.resolver->name, handle->setPositions.rollback->name, keyName (parentKey),
+				keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+		}
 	}
 
 	return readOnly ? ELEKTRA_PLUGIN_STATUS_NO_UPDATE : ELEKTRA_PLUGIN_STATUS_SUCCESS;
