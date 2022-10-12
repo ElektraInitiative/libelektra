@@ -334,7 +334,7 @@ typedef struct _SendNotificationHook
 	/**
 	 * Optional, may be NULL
 	 */
-	kdbHookSendNotificationGetPtr set;
+	kdbHookSendNotificationSetPtr set;
 } SendNotificationHook;
 
 /**
