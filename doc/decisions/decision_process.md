@@ -3,7 +3,7 @@
 ## Problem
 
 Simply discussing in an issue and then doing an implementation is okay for non-substantial changes.
-But substantial decisions must be made transparently and in a participative way.
+But substantial decisions must be made in a transparent and participative way.
 
 ## Constraints
 
@@ -23,6 +23,8 @@ But substantial decisions must be made transparently and in a participative way.
 ## Assumptions
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
+- People writing or reviewing decisions want Elektra to improve, so they also want to accept (acceptable) decisions.
+  In general they also want change if it brings Elektra towards its [goals](/doc/GOALS.md) (but doesn't violate Elektra's stability guarantees).
 - We will always be able to reach an consensus.
   We don't need a vote (besides the approved review) or a benevolent dictatorship.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
@@ -118,6 +120,8 @@ These decision PRs are also merged for documentation purposes.
 - Every decision is by design in its own file with its own git history.
 - PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected PRs).
 - PRs allow to suggest changes and review individual sentences of the decision.
+- Several "Related Decisions" are very important even if everyone agrees on one solution.
+  They allow reviewers and future readers of the decision to understand which options were considered and why they were rejected.
 
 ## Implications
 

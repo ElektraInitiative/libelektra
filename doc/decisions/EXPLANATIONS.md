@@ -72,7 +72,7 @@ Also describe all drawbacks the solution has.
 Here is a full description of everything that the decision will change or whatever needs to be changed because of the decision.
 This can be:
 
-- affect on other decisions, goals, etc.
+- effect on other decisions, goals, etc.
 - non-obvious implementation tasks, e.g. changing in different needs to be implemented
 - which issues get solved
 - which documentation needs to be updated
@@ -87,4 +87,7 @@ Decisions that give constraints must be listed in "Constraints" above.
 ## Notes
 
 Here is a full list of off-line discussions, issue trackers, PRs etc. related to this decision.
+Preferable it is linked, but if it is not possible, it can also be in full-text here.
+If particular information is important and not present in any sections above, please quote it here.
+
 Furthermore, the author, acknowledgements, dates etc. can be written here.
