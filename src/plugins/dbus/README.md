@@ -64,6 +64,8 @@ Alternatively, (with the option announce=once) only a single message is send:
 
 ## Usage
 
+<!-- FIXME [new_backend]: outdated -->
+
 The recommended way is to globally mount the plugin:
 
 ```sh

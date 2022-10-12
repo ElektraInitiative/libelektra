@@ -25,6 +25,8 @@ The package is called `libelektra5-dbus`.
 
 ## Usage
 
+<!-- FIXME [new_backend]: outdated -->
+
 The recommended way is to globally mount the plugin together with the dbus plugin:
 
 ```sh
@@ -42,6 +44,8 @@ Applications that use the notification feature implicitly use it when this
 plugin is mounted globally.
 
 # Transport Plugin
+
+<!-- FIXME [new_backend]: outdated -->
 
 Mount this plugin globally with default settings to use it as _receiving_
 transport plugin for Elektra's notification feature:

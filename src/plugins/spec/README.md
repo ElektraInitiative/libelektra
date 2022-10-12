@@ -138,6 +138,8 @@ not individual keys' metakeys. It also applies to `kdbGet` and `kdbSet` calls.
 
 ## Examples
 
+<!-- FIXME [new_backend]: outdated -->
+
 Ni files can be found in [/examples/spec](/examples/spec) which should be PWD
 so that the example works:
 

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-SPEC\-MOUNT" "1" "November 2020" ""
+.TH "KDB\-SPEC\-MOUNT" "1" "October 2022" ""
 .SH "NAME"
 \fBkdb\-spec\-mount\fR \- Mount a spec file to the key database
 .SH "SYNOPSIS"
@@ -44,13 +44,6 @@ sudo kdb spec\-mount /example/mountpoint  # mounts /example/mountpoint according
 .IP "" 0
 .SH "IMPORTANT"
 This command writes into the \fB/etc\fR directory and as such it requires root permissions\. Use \fBkdb file system:/elektra/mountpoints\fR to find out where exactly it will write to\.
-.P
-Note that many specifications have globs like \fB_\fR and \fB#\fR\. They will only work if the \fBspec\fR plugin is present:
-.IP "" 4
-.nf
-kdb global\-mount
-.fi
-.IP "" 0
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR

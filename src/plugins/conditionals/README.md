@@ -110,6 +110,7 @@ sudo kdb umount user:/tests/conditionals
 Global plugin example:
 
 <!-- FIXME [new_backend]: tests disabled -->
+<!-- FIXME [new_backend]: outdated (global-mount) -->
 
 ```
 # Backup old list of global plugins

@@ -39,6 +39,8 @@ sudo apt-get install \
 
 ### Change Notification
 
+<!-- FIXME [new_backend]: outdated -->
+
 It is recommended to use the viewer mode if DBus notifications are expected.
 Use "Settings -> Viewermode" to activate the viewermode.
 
