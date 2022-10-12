@@ -29,13 +29,10 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUS
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	Key * pluginKey = ksLookupByName (definition, "system:/plugin", 0);
-	if (pluginKey != NULL)
-	{
-		elektraPluginSetData (handle, *(Plugin **) keyValue (pluginKey));
-	}
+	Plugin * plugin = elektraPluginFromMountpoint (handle, "plugin");
+	elektraPluginSetData (handle, plugin);
 	// init as read-only
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }

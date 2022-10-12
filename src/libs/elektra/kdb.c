@@ -806,8 +806,9 @@ static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey
 		return false;
 	}
 	modules->global = handle->global;
-	addMountpoint (handle->backends, mountpoint, modules, ksNew (0, KS_END),
-		       ksNew (1, keyNew ("system:/plugin", KEY_BINARY, KEY_SIZE, sizeof (plugin), KEY_VALUE, &plugin, KEY_END), KS_END));
+	addMountpoint (handle->backends, mountpoint, modules,
+		       ksNew (1, keyNew ("system:/plugin", KEY_BINARY, KEY_SIZE, sizeof (plugin), KEY_VALUE, &plugin, KEY_END), KS_END),
+		       ksNew (0, KS_END));
 	return true;
 }
 
