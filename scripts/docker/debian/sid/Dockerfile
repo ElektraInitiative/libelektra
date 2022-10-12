@@ -35,7 +35,7 @@ RUN apt-get update && apt-get -y install \
         libglib2.0-dev \
         libgpgme-dev \
         liblua5.3-dev \
-        libpcre++-dev \
+        libpcrecpp0v5 \
         libpcre3-dev \
         libpython3-dev \
         libssl-dev \
