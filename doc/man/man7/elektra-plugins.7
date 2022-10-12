@@ -1,317 +1,317 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "ELEKTRA\-PLUGINS" "7" "October 2022" ""
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
 .P
 Multiple plugins can be mounted into the key database \fI/doc/help/elektra\-glossary\.md\fR (KDB)\. On every access to the key data base they are executed and thus can change the functionality and behavior\.
 .P
-Unlike Elektra's core the plugins have all kinds of dependencies\. It is the responsibility of the plugin to find and check its dependencies using CMake\. If a dependency cannot be found, the plugin will automatically disable itself\.
+Unlike Elektra\'s core the plugins have all kinds of dependencies\. It is the responsibility of the plugin to find and check its dependencies using CMake\. If a dependency cannot be found, the plugin will automatically disable itself\.
 .SH "Description"
 Elektra has a wide range of different plugins\. The plugin folders should contain a README\.md with further information\. (Or follow links below\.) The plugins are:
 .P
 .SS "C\-Interface"
 All plugins implement the same interface:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBkdbOpen()\fR calls \fBelektraPluginOpen()\fR of every plugin to let them do their initialisation\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBkdbGet()\fR requests \fBelektraPluginGet()\fR of every plugin in the queried backends to return a key set\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBkdbSet()\fR usually calls \fBelektraPluginSet()\fR of every plugin in the queried backends to store the configuration\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBkdbSet()\fR also calls \fBelektraPluginError()\fR for every plugin when an error happens\. Because of \fBelektraPluginError()\fR, plugins are guaranteed to have their chance for necessary cleanups\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBkdbClose()\fR makes sure that plugins can finally free their own resources in \fBelektraPluginClose()\fR\.
 .IP "" 0
 .P
 Furthermore, plugins might export symbols:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBcheckconf\fR can be called during mounting to ensure a plugin has valid configuration\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBgenconf\fR can be called to produce all valid configurations of a plugin\.
 .IP "" 0
 .SS "KDB\-Interface"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 To list all plugins use kdb\-plugin\-list(1) \fI/doc/help/kdb\-plugin\-list\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 To check a plugin use kdb\-plugin\-check(1) \fI/doc/help/kdb\-plugin\-check\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 For information on a plugin use kdb\-plugin\-info(1) \fI/doc/help/kdb\-plugin\-info\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 For mount plugin(s) use kdb\-mount(1) \fI/doc/help/kdb\-mount\.md\fR\.
 .IP "" 0
 .SH "Installation"
-See INSTALL \fI/doc/INSTALL\.md\fR\. Many plugins are already part of the core package \fBlibelektra5\fR\. The package that includes a plugin which does not belong to the \fBlibelektra5\fR package can be found in it's README\.md\.
+See INSTALL \fI/doc/INSTALL\.md\fR\. Many plugins are already part of the core package \fBlibelektra5\fR\. The package that includes a plugin which does not belong to the \fBlibelektra5\fR package can be found in it\'s README\.md\.
 .SH "See Also"
 For an easy introduction, see this tutorial how to write a storage plugin \fI/doc/tutorials/plugins\.md\fR\. For more background information of the plugins framework, continue here \fI/doc/dev/plugins\-framework\.md\fR\. Otherwise, you can visit the the API documentation \fIhttps://doc\.libelektra\.org/api/latest/html/group__plugin\.html\fR\.
 .SH "Plugins"
 .SS "Resolver"
 Before configuration is actually written, the file name needs to be determined (resolvers will be automatically added by kdb mount):
-.IP "\(bu" 4
+.IP "\[ci]" 4
 resolver \fIresolver/\fR uses advanced POSIX APIs to handle conflicts gracefully
-.IP "\(bu" 4
+.IP "\[ci]" 4
 noresolver \fInoresolver/\fR does not resolve as no file name is needed (for non\-file storage plugins)
-.IP "\(bu" 4
+.IP "\[ci]" 4
 wresolver \fIwresolver/\fR minimalistic resolver for non\-POSIX systems
 .IP "" 0
 .P
 Furthermore, there are following experimental resolvers:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 blockresolver \fIblockresolver/\fR resolves tagged blocks inside config files
-.IP "\(bu" 4
+.IP "\[ci]" 4
 curlget \fIcurlget/\fR fetches configuration file from a remote host
-.IP "\(bu" 4
+.IP "\[ci]" 4
 gitresolver \fIgitresolver/\fR checks out and commits files to a local git repository
-.IP "\(bu" 4
+.IP "\[ci]" 4
 multifile \fImultifile/\fR
 .IP "" 0
 .SS "Storage"
 Are responsible for reading writing the configuration to configuration files\.
 .P
 Read and write everything a KeySet might contain:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 dump \fIdump/\fR makes a dump of a KeySet in an Elektra\-specific format
-.IP "\(bu" 4
+.IP "\[ci]" 4
 quickdump \fIquickdump/\fR uses binary portable format based on dump \fIdump/\fR, but more efficient
-.IP "\(bu" 4
+.IP "\[ci]" 4
 mmapstorage \fImmapstorage/\fR uses binary, not portable memory mapped file for a high performance storage
 .IP "" 0
 .P
 Read (and write) standard config files:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 toml \fItoml/\fR reads and writes data using a parser generated by Flex \fIhttps://github\.com/westes/flex\fR and Bison \fIhttps://www\.gnu\.org/software/bison\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 hosts \fIhosts/\fR reads/writes hosts files
-.IP "\(bu" 4
+.IP "\[ci]" 4
 kconfig \fIkconfig/\fR reads/writes KConfig ini files
-.IP "\(bu" 4
+.IP "\[ci]" 4
 line \fIline/\fR reads/writes any file line by line
-.IP "\(bu" 4
+.IP "\[ci]" 4
 yajl \fIyajl/\fR reads/writes JSON\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 augeas \fIaugeas/\fR reads/writes many different configuration files using the Augeas library
 .IP "" 0
 .P
 Using semi\-structured data for config files, mainly suitable for spec\-namespace (put a focus on having nice syntax for metadata):
-.IP "\(bu" 4
+.IP "\[ci]" 4
 ni \fIni/\fR parses INI files based on (including metadata)
 .IP "" 0
 .P
 Only suited for import/export:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 mini \fImini/\fR dependency free, line based key\-value storage plugin\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 simpleini \fIsimpleini/\fR line\-based key\-value pairs with configurable format (without sections)\. Only works on glibc systems\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 xerces \fIxerces/\fR uses XML (without a specific schema)\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 xmltool \fIxmltool/\fR uses XML in the deprecated Elektra XML schema for importing configuration from Elektra 0\.7\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 c \fIc/\fR writes Elektra C\-structures (\fBksNew(\.\. keyNew(\|\.\|\.\|\.\fR)
 .IP "" 0
 .P
 Plugins that just show some functionality, (currently) not intended for productive use:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 csvstorage \fIcsvstorage/\fR for csv files
-.IP "\(bu" 4
+.IP "\[ci]" 4
 dpkg \fIdpkg/\fR reads /var/lib/dpkg/{available,status}
-.IP "\(bu" 4
+.IP "\[ci]" 4
 file \fIfile/\fR reads and writes a file from/to a single key
-.IP "\(bu" 4
+.IP "\[ci]" 4
 fstab \fIfstab/\fR for fstab files\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 mozprefs \fImozprefs/\fR for Mozilla preference files
-.IP "\(bu" 4
+.IP "\[ci]" 4
 passwd \fIpasswd/\fR for passwd files
-.IP "\(bu" 4
+.IP "\[ci]" 4
 specload \fIspecload/\fR calls an external application to request its specification, depends on quickdump \fIquickdump/\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 yamlcpp \fIyamlcpp/\fR reads and writes data in the YAML \fIhttp://www\.yaml\.org\fR format using yaml\-cpp \fIhttps://github\.com/jbeder/yaml\-cpp\fR
 .IP "" 0
 .SS "System Information"
 Information compiled in Elektra:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 version is a built\-in plugin directly within the core so that it cannot give wrong version information
-.IP "\(bu" 4
+.IP "\[ci]" 4
 constants \fIconstants/\fR various constants fixed when Elektra was compiled
-.IP "\(bu" 4
+.IP "\[ci]" 4
 desktop \fIdesktop/\fR contains information which desktop is currently running
 .IP "" 0
 .P
 Providing information found on the system not available in persistent files:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 uname \fIuname/\fR information from the uname syscall\.
 .IP "" 0
 .SS "Filter"
 \fIFilter plugins\fR process keys and their values in both directions\. In one direction they undo what they do in the other direction\. Most filter plugins available now encode and decode values\. Storage plugins that use characters to separate key names, values or metadata will not work without them\.
 .P
 Rewrite unwanted characters within strings (\fBcode\fR\-plugins):
-.IP "\(bu" 4
+.IP "\[ci]" 4
 ccode \fIccode/\fR using the technique from arrays in the programming language C
-.IP "\(bu" 4
+.IP "\[ci]" 4
 hexcode \fIhexcode/\fR using hex codes
 .IP "" 0
 .P
 Rewrite unwanted characters within binary data (\fBbinary\fR\-plugins):
-.IP "\(bu" 4
+.IP "\[ci]" 4
 base64 \fIbase64/\fR using the Base64 encoding scheme (RFC4648)
 .IP "" 0
 .P
 Other filters:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 crypto \fIcrypto/\fR encrypts / decrypts confidential values
-.IP "\(bu" 4
+.IP "\[ci]" 4
 fcrypt \fIfcrypt/\fR encrypts / decrypts entire files
-.IP "\(bu" 4
+.IP "\[ci]" 4
 gpgme \fIgpgme/\fR encrypts / decrypts confidential values (with GPGME)
-.IP "\(bu" 4
+.IP "\[ci]" 4
 iconv \fIiconv/\fR makes sure the configuration will have correct character encoding
 .IP "" 0
 .P
 Experimental transformations (are \fBnot\fR recommended to be used in production):
-.IP "\(bu" 4
+.IP "\[ci]" 4
 directoryvalue \fIdirectoryvalue/\fR converts directory values to leaf values
-.IP "\(bu" 4
+.IP "\[ci]" 4
 hexnumber \fIhexnumber/\fR converts between hexadecimal and decimal
-.IP "\(bu" 4
+.IP "\[ci]" 4
 keytometa \fIkeytometa/\fR transforms keys to metadata
-.IP "\(bu" 4
+.IP "\[ci]" 4
 rename \fIrename/\fR renames keys according to different rules
-.IP "\(bu" 4
+.IP "\[ci]" 4
 profile \fIprofile/\fR renames keys according to current profile
 .IP "" 0
 .SS "Notification and Logging"
 Log/Send out all changes to configuration to:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 dbus \fIdbus/\fR sends notifications for every change via dbus \fBnotification\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 journald \fIjournald/\fR logs key database changes to journald
-.IP "\(bu" 4
+.IP "\[ci]" 4
 syslog \fIsyslog/\fR logs key database changes to syslog
-.IP "\(bu" 4
+.IP "\[ci]" 4
 zeromqsend \fIzeromqsend/\fR sends notifications for every change via ZeroMQ sockets \fBnotification\fR
 .IP "" 0
 .P
 Notification of key changes:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 internalnotification \fIinternalnotification/\fR get updates automatically when registered keys were changed
-.IP "\(bu" 4
+.IP "\[ci]" 4
 dbusrecv \fIdbusrecv/\fR receives notifications via dbus \fBnotification\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 zeromqrecv \fIzeromqrecv/\fR receives notifications via ZeroMQ sockets \fBnotification\fR
 .IP "" 0
 .SS "Debug"
 Trace everything that happens within KDB:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 counter \fIcounter/\fR count and print how often a plugin is used
-.IP "\(bu" 4
+.IP "\[ci]" 4
 timeofday \fItimeofday/\fR prints timestamps
-.IP "\(bu" 4
+.IP "\[ci]" 4
 tracer \fItracer/\fR traces all calls
-.IP "\(bu" 4
+.IP "\[ci]" 4
 iterate \fIiterate/\fR iterate over all keys and run exported functions on tagged keys
-.IP "\(bu" 4
+.IP "\[ci]" 4
 logchange \fIlogchange/\fR prints the change of every key on the console
 .IP "" 0
 .SS "Checker"
 Copies metadata to keys:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 glob \fIglob/\fR using globbing techniques (needed by some plugins)
-.IP "\(bu" 4
+.IP "\[ci]" 4
 spec \fIspec/\fR copies metadata from spec namespace (the standard way)
 .IP "" 0
 .P
 Plugins that check if values are valid based on metadata (typically copied by the \fBspec\fR plugin just before) to validate values:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 type \fItype/\fR type checking (CORBA types) with enum functionality
-.IP "\(bu" 4
+.IP "\[ci]" 4
 ipaddr \fIipaddr/\fR checks IP addresses using regular expressions
-.IP "\(bu" 4
+.IP "\[ci]" 4
 email \fIemail/\fR checks email addresses using regular expressions
-.IP "\(bu" 4
+.IP "\[ci]" 4
 network \fInetwork/\fR by using network APIs
-.IP "\(bu" 4
+.IP "\[ci]" 4
 path \fIpath/\fR by checking files on file system
-.IP "\(bu" 4
+.IP "\[ci]" 4
 unit \fIunit/\fR validates and normalizes units of memory (e\.g\. 20KB to 20000 Bytes)
-.IP "\(bu" 4
+.IP "\[ci]" 4
 blacklist \fIblacklist/\fR blacklist and reject values
-.IP "\(bu" 4
+.IP "\[ci]" 4
 length \fIlength/\fR validates that string length is less or equal to given value
 .IP "" 0
 .P
 The same but experimental:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 conditionals \fIconditionals/\fR by using if\-then\-else like statements
-.IP "\(bu" 4
+.IP "\[ci]" 4
 date \fIdate/\fR validates date and time data
-.IP "\(bu" 4
+.IP "\[ci]" 4
 mathcheck \fImathcheck/\fR by mathematical expressions using key values as operands
-.IP "\(bu" 4
+.IP "\[ci]" 4
 macaddr \fImacaddr/\fR checks if MAC addresses are valid and normalizes them
-.IP "\(bu" 4
+.IP "\[ci]" 4
 range \fIrange/\fR checks if a value is within a given range
-.IP "\(bu" 4
+.IP "\[ci]" 4
 reference \fIreference/\fR checks if a value is a valid reference to another key
-.IP "\(bu" 4
+.IP "\[ci]" 4
 rgbcolor \fIrgbcolor/\fR validates and normalizes hexcolors
-.IP "\(bu" 4
+.IP "\[ci]" 4
 validation \fIvalidation/\fR by using regex
 .IP "" 0
 .P
 Other validation mechanisms not based on metadata:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 filecheck \fIfilecheck/\fR does sanity checks on a file
-.IP "\(bu" 4
+.IP "\[ci]" 4
 lineendings \fIlineendings/\fR tests file for consistent line endings
 .IP "" 0
 .SS "Interpreter"
 These plugins start an interpreter and allow you to execute a script in an interpreted language whenever Elektra’s key database gets accessed\. Note that they depend on the presence of the respective binding during run\-time:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 jni \fIjni/\fR java plugins started by jni, works with jna plugins
-.IP "\(bu" 4
+.IP "\[ci]" 4
 lua \fIlua/\fR Lua plugins
-.IP "\(bu" 4
+.IP "\[ci]" 4
 python \fIpython/\fR Python 3 plugins
-.IP "\(bu" 4
+.IP "\[ci]" 4
 ruby \fIruby/\fR Ruby plugins
-.IP "\(bu" 4
+.IP "\[ci]" 4
 shell \fIshell/\fR executes shell commandos
 .IP "" 0
 .SS "Other Important Plugins"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 cache \fIcache/\fR caches keysets from previous \fBkdbGet()\fR calls
-.IP "\(bu" 4
+.IP "\[ci]" 4
 sync \fIsync/\fR uses POSIX APIs to sync configuration files with the hard disk
-.IP "\(bu" 4
+.IP "\[ci]" 4
 gopts \fIgopts/\fR global plugin to automatically call \fBelektraGetOpts\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 process \fIprocess/\fR proxy plugin that uses separate executables as plugin implementations
-.IP "\(bu" 4
+.IP "\[ci]" 4
 backend \fIbackend/\fR is the default plugin implementing backend functionality
 .IP "" 0
 .SS "Plugins for Development"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 template \fItemplate/\fR to be copied for new plugins
-.IP "\(bu" 4
+.IP "\[ci]" 4
 cpptemplate \fIcpptemplate/\fR a template for C++ based plugins
-.IP "\(bu" 4
+.IP "\[ci]" 4
 doc \fIdoc/\fR contains the documentation of the plugin interface
-.IP "\(bu" 4
+.IP "\[ci]" 4
 error \fIerror/\fR yields errors as described in metadata (handy for test purposes)
 .IP "" 0
 .SS "Internal Plugins"
-Internally used and hard coded into \fBlibelektra\-kdb\fR\. Don't try to use manually\.
-.IP "\(bu" 4
+Internally used and hard coded into \fBlibelektra\-kdb\fR\. Don\'t try to use manually\.
+.IP "\[ci]" 4
 missing \fImissing/\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 modules \fImodules/\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 version \fIversion/\fR
 .IP "" 0
 .SS "Deprecated Plugins"
 Please avoid, if possible, to use following plugins:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 (currently none 🎉)
 .IP "" 0
 

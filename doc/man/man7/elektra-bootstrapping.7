@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "ELEKTRA\-BOOTSTRAPPING" "7" "October 2022" ""
 .SH "NAME"
 \fBelektra\-bootstrapping\fR \- default backend
@@ -18,19 +18,19 @@ To summarize, this approach delivers a good out\-of\-the\-box experience capable
 .P
 The default backend consists of a default storage plugin and default resolver plugin\. The default resolver has no specific requirements, but the default storage plugin must be able to handle full Elektra semantics\. The backend is mounted to root (\fB/\fR), so any keys can be stored in it\. The implementation of the core guarantees that user and system keys always stay separated\.
 .SH "TRACEABILITY"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBelektraOpenBootstrap()\fR implements above algorithm
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBbackendOpenDefault()\fR opens the default backend
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fB/src/include/kdbconfig\.h\.in\fR contains above \fBKDB_*\fR variables
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBsrc/plugins/CMakeLists\.txt\fR creates the symbolic links
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBscripts/cmake/Modules/LibAddMacros\.cmake\fR \fBcreate_lib_symlink\fR function
 .IP "" 0
 .SH "SEE ALSO"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 bootstrap decision \fI/doc/decisions/bootstrap\.md\fR
 .IP "" 0
 

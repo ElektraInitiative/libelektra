@@ -1,47 +1,38 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "KDB\-SPEC\-MOUNT" "1" "October 2022" ""
 .SH "NAME"
 \fBkdb\-spec\-mount\fR \- Mount a spec file to the key database
 .SH "SYNOPSIS"
 \fBkdb spec\-mount [/<mountpoint>] [<plugin> [<config>] [\.\.]]\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBmountpoint\fR is where in the key database the new backend should be mounted to\. It must be a cascading mount point, i\.e\., \fBmountpoint\fR must start with \fB/\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBplugin\fR are extra Elektra plugins to be used (next to the one specified in \fBspec:/<mountpoint>\fR)\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 Plugins may be followed by a \fB,\fR separated list of \fBkeys=values\fR pairs which will be used as plugin configuration\.
 .IP "" 0
 .P
 \fBkdb smount\fR is an alias and can be used in the same way as \fBkdb spec\-mount\fR\.
 .SH "DESCRIPTION"
 This command allows a user to mount a new \fIbackend\fR described by a previously mounted specification\. To mount a specification file to \fBspec\fR\-namespace \fIelektra\-namespaces\.md\fR first use kdb\-mount(7) \fIkdb\-mount\.md\fR:
-.IP "" 4
-.nf
-sudo kdb mount /path/to/some\-spec\-file\.ini spec:/example/mountpoint ni
-.fi
-.IP "" 0
+.P
+\fBsh sudo kdb mount /path/to/some\-spec\-file\.ini spec:/example/mountpoint ni\fR
 .P
 The idea of mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.md\fR\. The \fBspec\fR namespace \fIelektra\-namespaces\.md\fR contains metaconfiguration that describes the configuration in all other namespaces\. The metadata used for the specification is described in METADATA\.ini \fI/doc/METADATA\.ini\fR\.
 .P
 During \fBspec\-mount\fR the \fBspec\fR keys are searched for relevant metadata:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 For every metadata \fBmountpoint\fR an additional cascading mount point will be mounted\. The metadata \fBmountpoint\fR is usually at the parent key (the top\-level key of the specification)\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 The \fBinfos/*\fR and \fBconfig/needs\fR from CONTRACT\.ini \fI/doc/CONTRACT\.ini\fR, that are tagged by \fBusedby = spec\fR, will work as described there\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 For other metadata suitable plugins are searched and mounted additionally\.
 .IP "" 0
 .P
 For example:
-.IP "" 4
-.nf
-kdb meta\-get spec:/example/mountpoint mountpoint  # verify that we have a mountpoint here
-sudo kdb spec\-mount /example/mountpoint  # mounts /example/mountpoint according to
-                                         # the specification as found at
-                                         # spec:/example/mountpoint
-.fi
-.IP "" 0
+.P
+\fBsh kdb meta\-get spec:/example/mountpoint mountpoint # verify that we have a mountpoint here sudo kdb spec\-mount /example/mountpoint # mounts /example/mountpoint according to # the specification as found at # spec:/example/mountpoint\fR
 .SH "IMPORTANT"
 This command writes into the \fB/etc\fR directory and as such it requires root permissions\. Use \fBkdb file system:/elektra/mountpoints\fR to find out where exactly it will write to\.
 .SH "OPTIONS"
@@ -94,15 +85,15 @@ Additionally, add \fBini\fR plugin (instead of some default resolver) with a con
 .br
 \fBsudo kdb spec\-mount /example ini section=NULL\fR
 .SH "SEE ALSO"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 elektra\-glossary(7) \fIelektra\-glossary\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 kdb\-umount(7) \fIkdb\-umount\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 see application integration tutorial \fI/doc/tutorials/application\-integration\.md\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 see validation tutorial \fI/doc/tutorials/validation\.md\fR
 .IP "" 0
 

@@ -245,7 +245,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Documentation
 
-- <<TODO>>
+- Regenerate man pages to make master build again. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
