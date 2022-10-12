@@ -50,6 +50,7 @@ static void test_basics (void)
 
 
 	keyDel (parentKey);
+	ksDel (expectedKs);
 	ksDel (ks);
 	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
@@ -92,6 +93,7 @@ static void test_rename (void)
 
 
 	keyDel (parentKey);
+	ksDel (expectedKs);
 	ksDel (ks);
 	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
