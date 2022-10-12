@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <tests.h>
 
-void addBackendForDivide (KeySet * backends, const char * mountpoint)
+static void addBackendForDivide (KeySet * backends, const char * mountpoint)
 {
 	BackendData data = {
 		.backend = NULL,
@@ -21,6 +21,17 @@ void addBackendForDivide (KeySet * backends, const char * mountpoint)
 		.initialized = false,
 	};
 	ksAppendKey (backends, keyNew (mountpoint, KEY_BINARY, KEY_SIZE, sizeof (data), KEY_VALUE, &data, KEY_END));
+}
+
+static void deleteBackends (KeySet * backends)
+{
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		BackendData * data = (BackendData *) keyValue (ksAtCursor (backends, i));
+		ksDel (data->keys);
+	}
+
+	ksDel (backends);
 }
 
 // TODO [new_backend]: more thorough tests
@@ -101,6 +112,19 @@ void test_backendsDivide (void)
 	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "system:/", 0)))->keyNeedsSync == false,
 		    "shouldn't need sync");
 	succeed_if (((const BackendData *) keyValue (ksLookupByName (backends, "default:/", 0)))->keyNeedsSync == true, "should need sync");
+
+	deleteBackends (backends);
+	ksDel (ks);
+	ksDel (ks0);
+	ksDel (ks1);
+	ksDel (ks2);
+	ksDel (ks3);
+	ksDel (ks4);
+	ksDel (ks5);
+	ksDel (ks6);
+	ksDel (ks7);
+	ksDel (ks8);
+	ksDel (ks9);
 }
 
 int main (int argc, char ** argv)
