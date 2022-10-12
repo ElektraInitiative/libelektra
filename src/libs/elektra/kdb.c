@@ -1851,6 +1851,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (goptsActive && !handle->hooks.gopts.get (handle->hooks.gopts.plugin, dataKs, parentKey))
 	{
 		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		ksDel (dataKs);
 		goto error;
 	}
 	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
@@ -1862,6 +1863,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, dataKs, parentKey, true) == -1)
 	{
 		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		ksDel (dataKs);
 		goto error;
 	}
 	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
@@ -1876,12 +1878,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
 					    "Couldn't divide keys into mountpoints before poststorage. Please report this bug at "
 					    "https://issues.libelektra.org.");
+		ksDel (dataKs);
 		goto error;
 	}
 
 	// Step 16: run poststorage phase for non-spec:/
 	if (!runGetPhase (backends, parentKey, ELETKRA_KDB_GET_PHASE_POST_STORAGE_NONSPEC))
 	{
+		ksDel (dataKs);
 		goto error;
 	}
 
@@ -1936,7 +1940,6 @@ error:
 
 	ksDel (backends);
 	ksDel (allBackends);
-	ksDel (dataKs);
 
 	errno = errnosave;
 	return -1;
