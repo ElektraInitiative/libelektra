@@ -202,7 +202,7 @@ ElektraKdbPhase elektraPluginGetPhase (Plugin * plugin)
  * @param plugin active plugin handle
  * @param ref reference to another plugin
  * @return the plugin referenced by @p ref
- * @retval NULL if @p plugin, or @p ref are `NULL`
+ * @retval NULL if @p plugin, or @p ref are `NULL`, or no plugin was found for @p ref
  */
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 {
