@@ -13,7 +13,12 @@ But substantial decisions must be made in a transparent and participative way.
 - [Documentation guidelines](/doc/contrib/documentation.md) apply.
 - During the decision process, the PRs constantly get updated:
   - Make changes as new commits to the pull request.
-  - Questions in the PRs are answered by updating the PR and answering with the commit id.
+  - Questions in the PRs are answered by:
+    1. updating the PR
+    2. either:
+       - reply with a quote of the change and the commit SHA-ID
+       - reply with a diff of the change
+       - give a thumbs-up if the change was done exactly as suggested
   - As generally recommended in Elektra, do not squash commits after they are visible on the pull request.
   - Rebase only if the decision was already accepted and has a merge conflict.
 - For reviewers:
@@ -29,6 +34,9 @@ But substantial decisions must be made in a transparent and participative way.
   We don't need a vote (besides the approved review) or a benevolent dictatorship.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
   Only the end results counts.
+- Different to initiatives like Rust, most contributors in Elektra are not experts in configuration management or programming languages.
+  So we do not expect that a clear problem or solution is in the decision's write mind beforehand.
+  Instead the decisions is also a supported learning process about the problem and solution.
 
 ## Considered Alternatives
 
