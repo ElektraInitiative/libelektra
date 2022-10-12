@@ -16,6 +16,7 @@ But substantial decisions must be made in a transparent and participative way.
   - Questions in the PRs are answered by:
     1. updating the PR
     2. either:
+       - accept the suggested change
        - reply with a quote of the change and the commit SHA-ID
        - reply with a diff of the change
        - give a thumbs-up if the change was done exactly as suggested
