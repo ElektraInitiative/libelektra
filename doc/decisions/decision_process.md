@@ -35,8 +35,8 @@ But substantial decisions must be made in a transparent and participative way.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
   Only the end results counts.
 - Different to initiatives like Rust, most contributors in Elektra are not experts in configuration management or programming languages.
-  So we do not expect that a clear problem or solution is in the decision's write mind beforehand.
-  Instead the decisions is also a supported learning process about the problem and solution.
+  So we do not expect that a clear problem or solution is in the decision writer's mind beforehand.
+  Instead the decision process is a supported learning process.
 
 ## Considered Alternatives
 
