@@ -590,6 +590,9 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	ksRename (plugins, lookupHelper, pluginsRoot);
 	keyDel (pluginsRoot);
 
+	// declare early because of goto error
+	KeySet * definition = NULL;
+
 	// find backend plugin
 	Key * backendPluginKey = ksLookupByName (plugins, "system:/backend", 0);
 	if (backendPluginKey == NULL)
@@ -603,7 +606,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 
 	// get definition section
 	keySetBaseName (lookupHelper, "definition");
-	KeySet * definition = ksBelow (elektraKs, lookupHelper);
+	definition = ksBelow (elektraKs, lookupHelper);
 	Key * definitionRoot = keyNew ("system:/", KEY_END);
 	ksRename (definition, lookupHelper, definitionRoot);
 	keyDel (definitionRoot);
