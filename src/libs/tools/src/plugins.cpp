@@ -267,24 +267,6 @@ void Plugins::addPluginToSlot (Plugin * plugin, std::string which)
 	cur->next->next = NULL;
 }
 
-Plugins::~Plugins ()
-{
-	for (auto & plugin : plugins)
-	{
-		if (plugin != nullptr)
-		{
-			auto slot = plugin->next;
-			while (slot != nullptr)
-			{
-				auto tmp = slot->next;
-				ckdb::elektraFree (tmp);
-				slot = tmp;
-			}
-
-			ckdb::elektraFree (plugin);
-		}
-	}
-}
 
 void ErrorPlugins::tryPlugin (Plugin & plugin)
 {
