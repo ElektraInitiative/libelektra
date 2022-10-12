@@ -244,7 +244,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Documentation
 
-- <<TODO>>
+- Extend introduction in doc/WHY.md
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
