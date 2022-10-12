@@ -1,6 +1,7 @@
 # Why Should I use Elektra?
 
 Because it's an interesting initiative.
+new change
 
 The three main points relevant for most people are:
 
