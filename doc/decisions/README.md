@@ -1,16 +1,6 @@
 # Introduction
 
-We use decision template is based on
-[''using patterns to capture architectural decisions''](https://dl.acm.org/doi/10.1109/MS.2007.124)
-and [arc42 decisions](http://docs.arc42.org/section-9/)
-
-Decisions need to:
-
-- be implementable within the next major release
-- be according to [Elektra's goals](/doc/GOALS.md)
-
-To add a new decision copy `template.md` and add a link in the appropriate
-section here.
+Before you write your first decision, read [Decision Process](decision_process.md).
 
 ## Implemented
 
@@ -44,7 +34,7 @@ section here.
 - [Memory Layout](memory_layout.md)
 - [Backend Plugin](backend_plugin.md)
 
-## Mostly Implemented
+## Partially Implemented
 
 - [Hooks](hooks.md) (@atmaxinger)
 - [Array for Warnings](warning_array.md)
@@ -77,11 +67,13 @@ section here.
 - [Error Handling](error_handling.md)
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
+- [Decision Process](decision_process.md).
 
 ## Drafts
 
 - [Notifications](notifications.md)
 - [Header File Structure](header_file_structure.md)
+- [Manpages](manpages.md)
 
 ## Delayed
 
@@ -96,3 +88,10 @@ section here.
 - [Elektra Web Publish Subscribe](elektra_web_pubsub.md)
 - [Internal Cache](internal_cache.md)
 - [Vendor Spec](vendor_spec.md)
+
+## Meta-Information
+
+Even though they use the decision template, following decisions are not real decisions:
+
+- [Template](TEMPLATE.md)
+- [Explanations](EXPLANATIONS.md)
