@@ -14,12 +14,12 @@ But substantial decisions must be made in a transparent and participative way.
 - During the decision process, the PRs constantly get updated:
   - Make changes as new commits to the pull request.
   - Questions in the PRs are answered by:
-    1. updating the PR
-    2. either:
-       - accept the suggested change
-       - reply with a quote of the change and the commit SHA-ID
-       - reply with a diff of the change
-       - give a thumbs-up if the change was done exactly as suggested
+    1. Update the PR and incorporate the review.
+    2. Reply on GitHub:
+       - Give a short summary of what you did in a single comment, and reply to individual questions if necessary.
+       - Link to commit SHA-IDs for details.
+    3. Mark all GitHub threads as resolved, if you incorporated the feedback as suggested.
+       Committing a suggestion directly on GitHub does this automatically.
   - As generally recommended in Elektra, do not squash commits after they are visible on the pull request.
   - Rebase only if the decision was already accepted and has a merge conflict.
 - For reviewers:
@@ -86,8 +86,8 @@ Here you must ensure:
 - there are several considered alternatives, each with rationale and implication
 - decision, rationale and implications is **not** yet filled out if there are people arguing for different options (to keep the discussion unbiased)
 
-Here "the decision" should not have one decision but several well-described solutions.
-So for several solutions a proposal, rationale and implication should be given.
+Here "the decision" should not only have one decision but should describe several solutions.
+For each solution a proposal, rationale and implication should be given.
 
 This step is finished when every reviewer approves.
 
