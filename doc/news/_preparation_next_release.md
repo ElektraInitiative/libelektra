@@ -229,7 +229,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Scripts
 
-- <<TODO>>
+- Added [automatic spelling corrections](https://master.libelektra.org/scripts/sed) for changeset. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -289,6 +289,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
 - draft for [man pages](/doc/decisions/man_pages.md) _(Markus Raab)_
 - <<TODO>>
+- Add decision for [change tracking](/doc/decision/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -478,6 +479,7 @@ The website is generated from the repository, so all information about plugins, 
 We are currently working on following topics:
 
 - Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
+- Change tracking. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
