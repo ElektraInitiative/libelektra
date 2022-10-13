@@ -73,6 +73,7 @@ Before you write your first decision, read [Decision Process](decision_process.m
 
 - [Notifications](notifications.md)
 - [Header File Structure](header_file_structure.md)
+- [Manpages](manpages.md)
 
 ## Delayed
 

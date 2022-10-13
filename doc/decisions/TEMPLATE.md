@@ -4,15 +4,15 @@
 
 ## Constraints
 
--
--
--
+1.
+2.
+3.
 
 ## Assumptions
 
--
--
--
+1.
+2.
+3.
 
 ## Considered Alternatives
 
