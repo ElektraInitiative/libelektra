@@ -25,9 +25,8 @@ List all constraints given by:
 
 ## Assumptions
 
-Often we are quite blind and do not see assumptions we have.
-So this section needs special care and honesty.
-Assumptions is what we believe to be true but do not or cannot really know, e.g.:
+Assumptions are often overlooked, so this section needs special care and honesty.
+Assumptions are what we believe to be true but do not or cannot really know, e.g.:
 
 - what users will accept
 - perceived usability

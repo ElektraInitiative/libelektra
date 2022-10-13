@@ -2,8 +2,8 @@
 
 ## Problem
 
-Simply discussing in an issue and then doing an implementation is okay for non-substantial changes.
-But substantial decisions must be made in a transparent and participative way.
+Simply discussing in an issue and then implementing a solution is okay for non-substantial changes.
+Substantial decisions must be made in a transparent and participative way.
 
 ## Constraints
 
