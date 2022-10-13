@@ -2,7 +2,7 @@
 
 ## Problem
 
-Our manpages are written as markdown in doc/help and then converted to roff and stored in doc/man.
+Our manpages are written as Markdown in doc/help and then converted to roff and stored in doc/man.
 Storing generated files is annoying, as it requires:
 
 - developers to always update generated files if the sources are changed
