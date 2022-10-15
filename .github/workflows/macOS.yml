@@ -10,6 +10,11 @@ env:
   HOMEBREW_NO_INSTALL_CLEANUP: 1
 
 jobs:
+  cancel:
+    name: auto-cancellation-running-action
+    runs-on: macos-11
+    steps:
+      - uses: fauguste/auto-cancellation-running-action@0.1.4
   build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
