@@ -25,16 +25,6 @@ TEST (GetEnv, ExistOverride)
 	elektraClose ();
 }
 
-TEST (GetEnv, ExistOverrideFallback)
-{
-	using namespace ckdb;
-	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user:/env/override/does-exist-fb", KEY_VALUE, "hello", KEY_END));
-	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
-	EXPECT_EQ (getenv ("does-exist-fb"), std::string ("hello"));
-	elektraClose ();
-}
-
 TEST (GetEnv, ExistEnv)
 {
 	using namespace ckdb;
