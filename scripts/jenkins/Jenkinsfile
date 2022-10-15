@@ -776,7 +776,7 @@ def buildTodo() {
   }]
 }
 
-/* Stage checking if release notes have been updated */
+/* Stage checking if release notes have been updated (only on PRs, as it doesn't make sense on master) */
 def buildCheckReleaseNotes() {
   def stageName = "check-release-notes"
   return [(stageName): {
@@ -789,11 +789,11 @@ def buildCheckReleaseNotes() {
   }]
 }
 
-/* Stage checking if release notes have been updated */
+/* Stage checking for correct file names in the repository */
 def buildCheckFileNames() {
   def stageName = "check-file-names"
   return [(stageName): {
-    maybeStage(stageName, !isMaster()) {
+    stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/dev/filename-checker"
         deleteDir()
@@ -806,7 +806,7 @@ def buildCheckFileNames() {
 def buildCheckReuseCompliant() {
   def stageName = "check-reuse-compliant"
   return [(stageName): {
-    maybeStage(stageName, !isMaster()) {
+    stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "reuse lint"
         deleteDir()
