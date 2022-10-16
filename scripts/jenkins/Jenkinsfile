@@ -248,7 +248,7 @@ def dockerInit() {
       "./scripts/docker/debian/bullseye/minimal.Dockerfile"
     )
 
-    /* A Docker image for crossbuilding i386
+    /* A Docker image for cross-building i386
      */
     DOCKER_IMAGES.bullseye_i386 = dockerUtils.createDockerImageDesc(
       "debian-bullseye-i386", dockerUtils.&idTesting,
@@ -256,14 +256,14 @@ def dockerInit() {
       "./scripts/docker/debian/bullseye/i386.Dockerfile"
     )
 
-	/* Build Elektra's documentation with this image.
-	 * Also contains latex for pdf creation.
-	 */
-	DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
-	  "debian-bullseye-doc", dockerUtils.&idTesting,
-	  "./scripts/docker/debian/bullseye",
-	  "./scripts/docker/debian/bullseye/doc.Dockerfile"
-	)
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-doc", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/doc.Dockerfile"
+    )
 
     /* Our main target for compatibility is Debian stable
      * (currently buster).
@@ -471,9 +471,6 @@ def generateBasicCheckStages() {
   // Run the open tasks plugin and sloccount
   tasks << buildTodo()
 
-  // Build doc and upload
-  tasks << buildDoc()
-
   return tasks
 }
 
@@ -484,7 +481,7 @@ def generateBasicCheckStages() {
  */
 def generateMainBuildStages() {
   def tasks = [:]
-  // We want fo fail fast (i.e. abort parallel stages if one fails
+  // We want to fail fast (i.e. abort parallel stages if one fails
   tasks.failFast = true
 
   tasks << buildAndTest(
@@ -496,6 +493,9 @@ def generateMainBuildStages() {
       CMAKE_FLAGS_BUILD_STATIC,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
+
+  // Build doc and upload
+  tasks << buildDoc()
 
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
@@ -776,7 +776,7 @@ def buildTodo() {
   }]
 }
 
-/* Stage checking if release notes have been updated */
+/* Stage checking if release notes have been updated (only on PRs, as it doesn't make sense on master) */
 def buildCheckReleaseNotes() {
   def stageName = "check-release-notes"
   return [(stageName): {
@@ -789,11 +789,11 @@ def buildCheckReleaseNotes() {
   }]
 }
 
-/* Stage checking if release notes have been updated */
+/* Stage checking for correct file names in the repository */
 def buildCheckFileNames() {
   def stageName = "check-file-names"
   return [(stageName): {
-    maybeStage(stageName, !isMaster()) {
+    stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/dev/filename-checker"
         deleteDir()
@@ -806,7 +806,7 @@ def buildCheckFileNames() {
 def buildCheckReuseCompliant() {
   def stageName = "check-reuse-compliant"
   return [(stageName): {
-    maybeStage(stageName, !isMaster()) {
+    stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "reuse lint"
         deleteDir()
@@ -1435,7 +1435,7 @@ def ctest(target = "Test") {
   */
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
-          -E 'testmod_(dbus(recv)?|zeromqsend)'"""
+          -E 'testmod_(dbus(recv)?|zeromqsend)' || ctest --rerun-failed"""
 }
 
 /* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
@@ -1444,7 +1444,7 @@ def ctest(target = "Test") {
 def ctestcryptoplugins(target = "MemCheck") {
   sh """ctest --force-new-ctest-process \
         --output-on-failure --no-compress-output -T ${target} \
-        -R 'testmod_(crypto|fcrypt|gpgme)'"""
+        -R 'testmod_(crypto|fcrypt|gpgme)' || ctest --rerun-failed"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests

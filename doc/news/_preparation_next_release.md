@@ -424,7 +424,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Run more tests also on Master. _(Markus Raab)_
+- Move doc to main build stage. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
