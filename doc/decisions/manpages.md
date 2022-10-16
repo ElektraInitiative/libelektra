@@ -19,7 +19,7 @@ Storing generated files is annoying, as it requires:
 ## Considered Alternatives
 
 0. ronn-ng, which doesn't have packages on most distribution (violates constraint 2.) and thus created this problem
-1. Write a tool that converts our specification, similar to [pythongen](src/tools/pythongen/template/template.man)
+1. Write a tool that converts our specification, similar to [pythongen](/src/tools/pythongen/template/template.man)
 2. Write a tool that parses our `--help` output
 3. [help2man](https://www.gnu.org/software/help2man/)
 4. Doxygen:
