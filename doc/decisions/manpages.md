@@ -8,7 +8,6 @@ Storing generated files is annoying, as it requires:
 - developers to always update generated files if the sources are changed
 - developers not committing irrelevant changes to generated files (e.g. as may occur with different CMAKE_INSTALL_PREFIX etc.)
 - require extra effort for continuous integration, e.g. [#4542](https://issues.libelektra.org/4542)
-- ronn-ng, which doesn't have packages on most distribution (violates constraint 2.)
 
 ## Constraints
 
@@ -19,11 +18,15 @@ Storing generated files is annoying, as it requires:
 
 ## Considered Alternatives
 
+0. ronn-ng, which doesn't have packages on most distribution (violates constraint 2.) and thus created this problem
 1. Write a tool that converts our specification, similar to [pythongen](src/tools/pythongen/template/template.man)
 2. Write a tool that parses our `--help` output
 3. [help2man](https://www.gnu.org/software/help2man/)
-4. Doxygen: will be rechecked in the latest version, see [#4551](https://issues.libelektra.org/4551)
-5. Pandoc 2.9: doesn't have the Markdown description-list feature¹ like ronn-ng has (violates constraint 1.)
+4. Doxygen:
+   - doesn't have definition lists
+5. Pandoc: has quite a few dependencies and would need rewrite of the current documentation in doc/help:
+   - definition lists via https://pandoc.org/MANUAL.html#definition-lists
+   - would need YAML metadata for every file
 
 ## Decision
 
@@ -39,9 +42,7 @@ Storing generated files is annoying, as it requires:
 
 ## Notes
 
-Currently no solution found, we recheck assumptions and/or check out new tools.
-
-¹ronn-ng description-list feature converts:
+ronn-ng definition lists feature converts:
 
 ```
 - `-H`, `--help`:
