@@ -1434,8 +1434,8 @@ def ctest(target = "Test") {
      See also: https://issues.libelektra.org/2439
   */
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
-          --output-on-failure --no-compress-output --rerun-failed -T ${target} \
-          -E 'testmod_(dbus(recv)?|zeromqsend)'"""
+          --output-on-failure --no-compress-output -T ${target} \
+          -E 'testmod_(dbus(recv)?|zeromqsend)' || ctest --rerun-failed"""
 }
 
 /* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
@@ -1443,8 +1443,8 @@ def ctest(target = "Test") {
  */
 def ctestcryptoplugins(target = "MemCheck") {
   sh """ctest --force-new-ctest-process \
-        --output-on-failure --no-compress-output --rerun-failed -T ${target} \
-        -R 'testmod_(crypto|fcrypt|gpgme)'"""
+        --output-on-failure --no-compress-output -T ${target} \
+        -R 'testmod_(crypto|fcrypt|gpgme)' || ctest --rerun-failed"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
