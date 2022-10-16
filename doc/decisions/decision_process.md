@@ -3,14 +3,14 @@
 ## Problem
 
 Simply discussing in an issue and then implementing a solution is okay for non-substantial changes.
-Substantial decisions must be made in a transparent and participative way.
+Substantial decisions, however, must be made in a transparent and participative way.
 
 ## Constraints
 
 - All relevant information about decisions must be within Elektra's repository.
 - All decisions must go through at least two review rounds, with a merge in between.
-- At least two people need to be in favor of the decision in both rounds.
-- [Documentation guidelines](/doc/contrib/documentation.md) apply.
+- At least two people need to approve the decision in each round.
+- [Documentation guidelines](https://www.libelektra.org/devgettingstarted/documentation) apply.
 - During the decision process, the PRs constantly get updated:
   - Make changes as new commits to the pull request.
   - Questions in the PRs are answered by:
@@ -24,13 +24,13 @@ Substantial decisions must be made in a transparent and participative way.
   - Rebase only if the decision was already accepted and has a merge conflict.
 - For reviewers:
   - Prefer to directly give suggestions how to change sentences.
-  - General questions should be asked in the root of "Conversation" and not at random sentences in the review.
+  - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
 
 ## Assumptions
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
 - People writing or reviewing decisions want Elektra to improve, so they also want to accept (acceptable) decisions.
-  In general they also want change if it brings Elektra towards its [goals](/doc/GOALS.md) (but doesn't violate Elektra's stability guarantees).
+  In general people want change if it brings Elektra towards its [goals](/doc/GOALS.md) (but doesn't violate Elektra's stability guarantees).
 - We will always be able to reach an consensus.
   We don't need a vote (besides the approved review) or a benevolent dictatorship.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
@@ -42,6 +42,9 @@ Substantial decisions must be made in a transparent and participative way.
 ## Considered Alternatives
 
 - Issues like https://issues.libelektra.org/4521
+- GitHub discussions
+- Voting in Meetings
+- The maintainer decides
 - PEPs: https://peps.python.org
 - RFCs: https://www.ietf.org/standards/rfcs/
 - Change requests: https://en.wikipedia.org/wiki/Change_request
@@ -76,7 +79,7 @@ The first step is to create a PR with:
 
 ### In Discussion
 
-This step is mandatory.
+> This step is mandatory.
 
 Here you must ensure:
 
@@ -89,14 +92,14 @@ Here you must ensure:
 Here "the decision" should not only have one decision but should describe several solutions.
 For each solution a proposal, rationale and implication should be given.
 
-This step is finished when every reviewer approves.
-
 ### In Progress
 
 - You must include all further alternative proposals made in the "Considered Alternatives" section.
 - Now it is allowed to have the decision from the previous round in the "Decision" section.
 
 ### Decided
+
+> This step is recommended.
 
 - decision, rationale and implication are now filled out and fixed according to the reviews
 - decisions of this status usually already have an implementation PR
@@ -110,13 +113,11 @@ The "Implication" must clearly say how much of the decision is already implement
 
 ### Implemented
 
-This step is mandatory.
+> This step is mandatory.
 
 - Here the details of the decisions are stripped from the decision and moved to the documentation.
 - The documentation links to the decision.
 - The decision links to the new documentation.
-
-This step is finished when every reviewer approves.
 
 ### Rejected
 

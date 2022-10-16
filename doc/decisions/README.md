@@ -44,6 +44,7 @@ Before you write your first decision, read [Decision Process](decision_process.m
 
 ## Decided
 
+- [Decision Process](decision_process.md)
 - [Capabilities](capabilities.md)
 - [Make elektraMalloc et al. private](elektra_malloc.md)
 - [Elektra Prefix](elektra_prefix.md)
@@ -68,7 +69,6 @@ Before you write your first decision, read [Decision Process](decision_process.m
 - [Error Handling](error_handling.md)
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
-- [Decision Process](decision_process.md).
 
 ## Drafts
 
