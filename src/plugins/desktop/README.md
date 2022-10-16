@@ -12,7 +12,7 @@
 ## Introduction
 
 The plugin is informational and mainly be used to provide context for
-other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
+other configuration. See [elektrify-getenv](/src/bindings/intercept/env/README.md).
 
 ## Installation
 

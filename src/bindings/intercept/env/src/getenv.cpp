@@ -72,9 +72,6 @@ extern "C" {
 Key * elektraParentKey;
 KeySet * elektraConfig;
 KDB * elektraRepo;
-Key * elektraFallbackParentKey;
-KeySet * elektraFallbackConfig;
-KDB * elektraFallbackRepo;
 
 } // extern "C"
 
@@ -354,9 +351,6 @@ void addLayers ()
 	using namespace ckdb;
 	KeySet * lookupConfig = ksDup (elektraConfig);
 
-	// add fallback config
-	addLayersHelper (lookupConfig, "/env/layer/");
-	// override fallback config if new config is found
 	addLayersHelper (lookupConfig, "/elektra/intercept/getenv/layer/");
 
 	ksDel (lookupConfig);
@@ -370,16 +364,12 @@ void elektraSingleCleanup ()
 }
 
 
-// always preffer new config path over old/fallback path
-
 void applyOptions ()
 {
 	Key * k = nullptr;
 
 	elektraLog.reset ();
-	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/debug", 0)) ||
-	     (k = ksLookupByName (elektraConfig, "/env/option/debug", 0))) &&
-	    !keyIsBinary (k))
+	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/debug", 0))) && !keyIsBinary (k))
 	{
 		if (keyGetValueSize (k) > 1)
 		{
@@ -401,9 +391,7 @@ void applyOptions ()
 		LOG << endl;
 	}
 
-	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/clearenv", 0)) ||
-	     (k = ksLookupByName (elektraConfig, "/env/option/clearenv", 0))) &&
-	    !keyIsBinary (k))
+	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/clearenv", 0))) && !keyIsBinary (k))
 	{
 		LOG << "clearing the environment" << endl;
 #ifdef HAVE_CLEARENV
@@ -415,9 +403,7 @@ void applyOptions ()
 	}
 
 	elektraReloadTimeout = std::chrono::milliseconds::zero ();
-	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/reload_timeout", 0)) ||
-	     (k = ksLookupByName (elektraConfig, "/env/option/reload_timeout", 0))) &&
-	    !keyIsBinary (k))
+	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/reload_timeout", 0))) && !keyIsBinary (k))
 	{
 		LOG << "activate reloading feature" << endl;
 
@@ -426,17 +412,13 @@ void applyOptions ()
 		elektraReloadTimeout = std::chrono::milliseconds (v);
 	}
 
-	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/help", 0)) ||
-	     (k = ksLookupByName (elektraConfig, "/env/option/help", 0))) &&
-	    !keyIsBinary (k))
+	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/help", 0))) && !keyIsBinary (k))
 	{
 		cout << keyString (ksLookupByName (elektraDocu, "system:/elektra/modules/elektrify-getenv/infos/description", 0)) << endl;
 		exit (0);
 	}
 
-	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/version", 0)) ||
-	     (k = ksLookupByName (elektraConfig, "/env/option/version", 0))) &&
-	    !keyIsBinary (k))
+	if (((k = ksLookupByName (elektraConfig, "/elektra/intercept/getenv/option/version", 0))) && !keyIsBinary (k))
 	{
 		printVersion ();
 		exit (0);
@@ -454,12 +436,6 @@ extern "C" void elektraOpen (int * argc, char ** argv)
 	elektraConfig = ksNew (20, KS_END);
 	elektraRepo = kdbOpen (NULL, elektraParentKey);
 	kdbGet (elektraRepo, elektraConfig, elektraParentKey);
-
-	elektraFallbackParentKey = keyNew ("/env", KEY_END);
-	elektraFallbackConfig = ksNew (20, KS_END);
-	elektraFallbackRepo = kdbOpen (NULL, elektraFallbackParentKey);
-	kdbGet (elektraFallbackRepo, elektraFallbackConfig, elektraFallbackParentKey);
-	ksAppend (elektraConfig, elektraFallbackConfig);
 
 	parseEnvironment ();
 	if (argc && argv)
@@ -486,13 +462,6 @@ extern "C" void elektraClose ()
 		ksDel (elektraConfig);
 		keyDel (elektraParentKey);
 		elektraRepo = nullptr;
-	}
-	if (elektraFallbackRepo)
-	{
-		kdbClose (elektraFallbackRepo, elektraFallbackParentKey);
-		ksDel (elektraFallbackConfig);
-		keyDel (elektraFallbackParentKey);
-		elektraFallbackRepo = nullptr;
 	}
 	elektraUnlockMutex ();
 }
@@ -645,7 +614,6 @@ char * elektraGetEnv (const char * cname, gfcn origGetenv)
 	bool finish = false;
 	char * ret = nullptr;
 	ret = elektraGetEnvKey ("/elektra/intercept/getenv/override/" + name, finish);
-	if (!ret) ret = elektraGetEnvKey ("/env/override/" + name, finish);
 	if (finish) return ret;
 
 	ret = (*origGetenv) (name.c_str ());
@@ -658,7 +626,6 @@ char * elektraGetEnv (const char * cname, gfcn origGetenv)
 		LOG << " tried environ,";
 
 	ret = elektraGetEnvKey ("/elektra/intercept/getenv/fallback/" + name, finish);
-	if (!ret) ret = elektraGetEnvKey ("/env/fallback/" + name, finish);
 	if (finish) return ret;
 
 	LOG << " nothing found" << endl;
