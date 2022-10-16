@@ -248,7 +248,7 @@ def dockerInit() {
       "./scripts/docker/debian/bullseye/minimal.Dockerfile"
     )
 
-    /* A Docker image for crossbuilding i386
+    /* A Docker image for cross-building i386
      */
     DOCKER_IMAGES.bullseye_i386 = dockerUtils.createDockerImageDesc(
       "debian-bullseye-i386", dockerUtils.&idTesting,
@@ -256,14 +256,14 @@ def dockerInit() {
       "./scripts/docker/debian/bullseye/i386.Dockerfile"
     )
 
-	/* Build Elektra's documentation with this image.
-	 * Also contains latex for pdf creation.
-	 */
-	DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
-	  "debian-bullseye-doc", dockerUtils.&idTesting,
-	  "./scripts/docker/debian/bullseye",
-	  "./scripts/docker/debian/bullseye/doc.Dockerfile"
-	)
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.bullseye_doc = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-doc", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/doc.Dockerfile"
+    )
 
     /* Our main target for compatibility is Debian stable
      * (currently buster).
@@ -471,9 +471,6 @@ def generateBasicCheckStages() {
   // Run the open tasks plugin and sloccount
   tasks << buildTodo()
 
-  // Build doc and upload
-  tasks << buildDoc()
-
   return tasks
 }
 
@@ -484,7 +481,7 @@ def generateBasicCheckStages() {
  */
 def generateMainBuildStages() {
   def tasks = [:]
-  // We want fo fail fast (i.e. abort parallel stages if one fails
+  // We want to fail fast (i.e. abort parallel stages if one fails
   tasks.failFast = true
 
   tasks << buildAndTest(
@@ -496,6 +493,9 @@ def generateMainBuildStages() {
       CMAKE_FLAGS_BUILD_STATIC,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
+
+  // Build doc and upload
+  tasks << buildDoc()
 
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
