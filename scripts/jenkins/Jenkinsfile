@@ -1434,7 +1434,7 @@ def ctest(target = "Test") {
      See also: https://issues.libelektra.org/2439
   */
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
-          --output-on-failure --no-compress-output -T ${target} \
+          --output-on-failure --no-compress-output --rerun-failed -T ${target} \
           -E 'testmod_(dbus(recv)?|zeromqsend)'"""
 }
 
@@ -1443,7 +1443,7 @@ def ctest(target = "Test") {
  */
 def ctestcryptoplugins(target = "MemCheck") {
   sh """ctest --force-new-ctest-process \
-        --output-on-failure --no-compress-output -T ${target} \
+        --output-on-failure --no-compress-output --rerun-failed -T ${target} \
         -R 'testmod_(crypto|fcrypt|gpgme)'"""
 }
 
