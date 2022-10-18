@@ -41,9 +41,6 @@ All currently planned libraries and their respective API prefixes are listed in 
 
 ## Related Decisions
 
-- [Lowlevel library](lowlevel_library.md)
-- [Extra library](extra_library.md)
-
 ## Notes
 
 - `libelektra-core`:
