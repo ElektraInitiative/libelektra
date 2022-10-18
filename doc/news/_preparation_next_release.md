@@ -294,6 +294,15 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add decision for [change tracking](../decisions/0_drafts/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
+- Documented [decision process](/doc/decisions/decision_process.md) _(Markus Raab)_
+- <<TODO>>
+- Add decisions about [location of headers](../decisions/header_file_structure.md) and [use of `#include`](../decisions/header_include.md) in the repo _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
