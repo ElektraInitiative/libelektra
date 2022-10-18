@@ -638,7 +638,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 			goto error;
 		}
 
-		// adDupMounptoints duplicates everything, including reopening the plugins
+		// addDupMounptoint duplicates everything, including reopening the plugins
 		// so we have to close the originals
 		for (elektraCursor it = 0; it < ksGetSize (plugins); it++)
 		{
