@@ -76,6 +76,7 @@ All currently planned libraries and their respective API prefixes are listed in 
   The API for parsing command-line arguments according to Elektra's spec.
 
   **Prefix:** `elektraOpts*`
+
 - `libelektra-notification`:
   The API for setting up callbacks and automatically updated variables linked to changes in the KDB.
 
