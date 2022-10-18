@@ -278,7 +278,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Decisions
 
 - Documented [decision process](/doc/decisions/decision_process.md) _(Markus Raab)_
-- <<TODO>>
+- Decided future [library split](../decisions/library_split.md) _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
