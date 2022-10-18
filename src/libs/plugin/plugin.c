@@ -176,7 +176,7 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
  * Returns the current phase of the current KDB operation.
  *
  * During kdbGet() this will be one of the `ELEKTRA_KDB_GET_PHASE_*` constants
- * and during kdbSet() it will be one of the `ELEKTRA_KDB_SET_PHASE_*` constants.@
+ * and during kdbSet() it will be one of the `ELEKTRA_KDB_SET_PHASE_*` constants.
  *
  * @param plugin plugin handle
  * @return current phase

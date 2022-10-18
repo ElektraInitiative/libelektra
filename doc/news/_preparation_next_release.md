@@ -51,7 +51,13 @@ docker run -it elektra/elektra
 ### New Backend
 
 - Implement [hooks](../decisions/4_partially_implemented/hooks.md). _(Maximilian Irlinger @atmaxinger)_
+The entire logic for backends has been rewritten.
+
+<!-- TODO [new_backend]: finish release notes -->
+
+- Implement [hooks](../decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
+- New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
 
 ### <<HIGHLIGHT>>
 

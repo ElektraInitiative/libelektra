@@ -28,19 +28,6 @@ if is_plugin_available dump; then
 	succeed_if "could not unmount previously mounted mountpoint"
 fi
 
-# TODO [new_backend]: tests disabled
-# if is_plugin_available tracer; then
-# 	if is_plugin_available sync; then
-# 		"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT tracer sync 1> /dev/null 2> /dev/null
-# 		[ $? != 0 ]
-# 		succeed_if "could mount the backend, even though tracer+sync conflict"
-#
-# 		"$KDB" umount $ROOT_MOUNTPOINT
-# 		[ $? != 0 ]
-# 		succeed_if "could unmount what should not be mounted"
-# 	fi
-# fi
-
 echo "Test mounting plugin stack"
 
 if is_plugin_available hosts; then

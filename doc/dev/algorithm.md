@@ -7,7 +7,7 @@ You might want to read [about architecture](architecture.md) and [data structure
 <!-- TODO [new_backend]: Update the text below using the docs listed in the warning. -->
 
 > **Warning** Many of the things described below (especially about `KDB` and the `kdb*` functions) are outdated.
-> See [`kdb-operations.md`](kdb-operations.md) and [`kdb-contracts.md`](kdb-contracts.md) for more up-to-date information.
+> See [`kdb-operations.md`](kdb-operations.md) and [`kdb-contracts.md`](kdb-contracts.md) for up-to-date information.
 
 ## Introduction
 

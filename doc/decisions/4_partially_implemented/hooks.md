@@ -53,7 +53,7 @@ These hooks are not shared, so no `list` plugin is needed.
 
 Installed plugins will be used.
 
-In the beginning, we'll hard code the names of the plugins. For changing those plugins symlinks will have to be used.
+We'll hard code the names of the plugins. For changing those plugins symlinks will have to be used.
 
 ## Rationale
 

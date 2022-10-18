@@ -3,7 +3,10 @@
 ## Backend Contract
 
 There exists a _backend contract_ between `libelektra-kdb` and any plugin acting as a backend plugin.
-This contract sets, the order of the phases described above and defines the interaction between a backend plugin and `libelektra-kdb`.
+This contract describes:
+
+- the order of the phases (see [kdb-operations.md](kdb-operations.md))
+- the interactions between a backend plugin and `libelektra-kdb`.
 
 ```mermaid
 sequenceDiagram
@@ -25,17 +28,17 @@ sequenceDiagram
     other->>-kdb: "storage-unit-b", no update needed
     kdb->>backend: prestorage
     kdb->>+backend: storage
-    backend->>+storage: &nbsp;
-    storage->>+sa: &nbsp;
-    sa-->>-storage: &nbsp;
-    storage-->>-backend: &nbsp;
-    backend-->>-kdb: &nbsp;
+    backend->>+storage: #
+    storage->>+sa: #
+    sa-->>-storage: #
+    storage-->>-backend: #
+    backend-->>-kdb: #
     kdb->>+backend: poststorage
-    backend->>+validation: &nbsp;
-    validation-->>-backend: &nbsp;
-    backend-->>-kdb: &nbsp;
+    backend->>+validation: #
+    validation-->>-backend: #
+    backend-->>-kdb: #
     kdb->>kdb: merge backends
-    kdb-->>-user: &nbsp;
+    kdb-->>-user: #
 ```
 
 ```mermaid
@@ -54,34 +57,34 @@ sequenceDiagram
     backend-->>-kdb: "storage-unit-a"
     critical try to store
       kdb->>+backend: prestorage
-      backend->>+validation: &nbsp;
-      validation-->>-backend: &nbsp;
-      backend-->>-kdb: &nbsp;
+      backend->>+validation: #
+      validation-->>-backend: #
+      backend-->>-kdb: #
       kdb->>+backend: storage
-      backend->>+storage: &nbsp;
+      backend->>+storage: #
       storage->>+sa: write to temp
-      sa-->>-storage: &nbsp;
-      storage-->>-backend: &nbsp;
-      backend-->>-kdb: &nbsp;
+      sa-->>-storage: #
+      storage-->>-backend: #
+      backend-->>-kdb: #
       kdb->>backend: poststorage
       kdb->>backend: precommit
       backend->>sa: make changes permanent
       kdb->>+backend: commit
-      backend-->-kdb: &nbsp;
+      backend-->-kdb: #
       kdb->>backend: postcommit
     option on failure
       kdb->>backend: prerollback
       kdb->>+backend: rollback
       backend->>sa: revert changes
-      backend-->>-kdb: &nbsp;
+      backend-->>-kdb: #
       kdb->>backend: postrollback
     end
-    kdb-->>-user: &nbsp;
+    kdb-->>-user: #
 ```
 
-The diagrams above show possible sequences of phases during a `get` and a `set` operation.
+The diagrams above show some typical sequences of phases during a `get` and a `set` operation.
 For each of the phases of a `get` operation `libelektra-kdb` calls the backend plugin's `elektra<Plugin>Get` function once.
-Similarly, for the phases of a `set` operation `elektra<Plugin>Set` is called.
+Similarly, for the phases of a `set` operation `elektra<Plugin>Set` is called once.
 The backend plugin can also (optionally) delegate to other plugins.
 
 The current phase is communicated to the backend plugin (and any other plugin) via the global keyset.
@@ -90,11 +93,11 @@ It can be retrieved via the `elektraPluginGetPhase` function.
 ### `parentKey`
 
 The key `parentKey` that is given to the backend plugin as an input at various points, must be treated carefully.
-Currently, _all_ modifications to this key will be propagated to the `parentKey` that was used to call `kdbGet`.
+_All_ modifications to this key will be propagated to the `parentKey` that was used to call `kdbGet`.
 
 The name of the `parentKey` is marked read-only and therefore cannot be changed.
 The value and metadata can, and in some cases must be, changed.
-In future this may be restricted further to ensure a more structured communication.
+Importantly however, there are no guarantees that the metadata of `parentKey` can be changed arbitrarily.
 
 ### Operation `get`
 
@@ -120,7 +123,7 @@ The backend plugin then:
 - **SHOULD NOT** do other validation.
   For example a file-based backend, _should not_ check whether the file(s) or path(s) referenced in the mountpoint definition exist.
   Such a check should be done in the `resolver` phase.
-- **MAY** decided that the mountpoint should be read-only.
+- **MAY** decide that the mountpoint should be read-only.
   If so, this must be indicated to `libelektra-kdb` via the return value.
 
 This phase exists purely for the backend plugin to initialize and configure itself for the mountpoint.
@@ -141,13 +144,16 @@ The backend plugin then:
 
 - **MUST** set the value of the `parentKey` to a value identifying the storage unit (the _storage identifier_) that contains the data of the mountpoint.
   For file-based backend plugins, this means setting the value of `parentKey` to an absolute filename.
-- **MAY** set metadata on `parentKey`, if encoding the information required for the following phases is too hard to encode in a single string value.
+- **MAY** set additional metadata on `parentKey`, if it is not suitable to encode the information required for the following phases as a single string.
 
 > **Note**: The backend plugin may also modify the keyset `ks`, but `libelektra-kdb` will discard this keyset after this phase, so these modifications won't have any effects.
 
-During a `set` operation the backend plugin must also ensure that errors in the storage phases can be safely rolled back and that the `set` operation does not affect concurrent operations.
-For file-based backends, this means creating a temporary storage file and returning its absolute filename instead of the name of the actual storage file.
-In other words, in a `set` operation the `resolver` phase is also about preparing a transaction in addition to resolving the storage unit.
+During a `set` operation, the backend plugin must ensure
+
+- that errors in the storage phases can be safely rolled back and
+- that the `set` operation does not affect concurrent operations.
+  For file-based backends, this means creating a temporary storage file and returning its absolute filename instead of the name of the actual storage file.
+  In other words, in a `set` operation the `resolver` phase is also about preparing a transaction in addition to resolving the storage unit.
 
 #### Cache-Check Phase
 
@@ -182,7 +188,7 @@ There are no restrictions on what the backend plugin may do in this phase, but j
 This phase is useful for file-level manipulations, like file-based encryption, line ending conversion or verifying file signatures.
 In this sense, it is the counter-part of the `precommit` phase of the `set` operation.
 
-The `storage` phase is the where the actual data is read.
+The `storage` phase is for reading the actual data.
 In this phase the backend plugin is called with:
 
 - The exact `parentKey` that was returned by the `prestorage` phase of this `get` operation.
@@ -226,7 +232,7 @@ The backend plugin then:
 
 - **MUST** set the value of the `parentKey` to a value identifying the storage unit that contains the data of the mountpoint.
   For file-based backend plugins, this means setting the value of `parentKey` to an absolute filename.
-- **MAY** set metadata on `parentKey`, if encoding the information required for the following phases is too hard to encode in a single string value.
+- **MAY** set metadata on `parentKey`, if it is not suitable to encode the information required for the following phases as a single string.
 - **MUST** check whether the data was changed since the last `get` operation.
   The result of this check is given to `libelektra-kdb` via the return value of the `get` function.
 - **MUST** ensure that errors in the storage phases can be safely rolled back and that the `set` operation does not affect concurrent operations.
@@ -252,7 +258,7 @@ That way there cannot be conflicts, if a key that implies another keys value cha
 
 > **Note**: Just in case there is actually a use case, where keys have to be generated, removed or modified during this phase, we do _not_ discard changes to `ks` (like we would do in a `get` operation).
 
-The `storage` phase is the where the actual data is written.
+The `storage` phase is for writing the actual data.
 In this phase the backend plugin is called with:
 
 - The exact `parentKey` that was returned by the `prestorage` phase of this `set` operation.
@@ -262,7 +268,7 @@ In this phase the backend plugin is called with:
 
 The backend plugin then:
 
-- **MUST** serialize the data and below `parentKey` in `ks`.
+- **MUST** serialize the data at and below `parentKey` in `ks`.
 - **MUST** write the data for the mountpoint into the storage unit that was selected in the `resolver` phase.
 - **MUST** ensure that the data is written in such a way that
 
@@ -276,7 +282,7 @@ In this phase the backend plugin is called with:
 
 - The exact `parentKey` that was returned by the `storage` phase of this `set` operation.
   The key name and value of this key are read-only.
-- The exact keyset `ks` that was returned by the `prestorage` phase of this `set` operation.
+- The exact keyset `ks` that was returned by the `storage` phase of this `set` operation.
   All keys in this keyset and the keyset itself are fully read-only.
 
 There are no formal restrictions, other than those enforced by `parentKey` and `ks` being (partially) read-only.
@@ -287,7 +293,7 @@ Therefore, the `poststorage` phase has very little use cases other than logging 
 #### Commit Phases (`set` only)
 
 If all storage phases completed successfully, `libelektra-kdb` will continue with calling the `commit` phases.
-Even though this phase is part of the `set` operation, `libelektra-kdb` calls `elektra<Plugin>Commit` and not `elektra<Plugin>Set` for these phases.
+Even though the `commit` phases are part of the `set` operation, `libelektra-kdb` calls `elektra<Plugin>Commit` and not `elektra<Plugin>Set` for these phases.
 
 All the `commit` phases (`precommit`, `commit`, `postcommit`) are called with:
 
@@ -298,7 +304,7 @@ All the `commit` phases (`precommit`, `commit`, `postcommit`) are called with:
 
 There are no restrictions on the `precommit` phase, other than those enforced by `parentKey` and `ks` being (partially) read-only.
 This phase can be used for file-level manipulations, like file-based encryption, line ending conversion or adding file signatures.
-In this sense, it is the counter-part of the `prestorage` phase of the `set` operation.
+In this sense, it is the counter-part of the `prestorage` phase of the `get` operation.
 
 In the `commit` phase the backend plugin:
 
@@ -310,12 +316,12 @@ Once the `commit` phase completes successfully, the `set` operation is also deem
 If an error does occur in the `postcommit` phase, it is reported as warning.
 This makes the `postcommit` phase mostly useful for logging.
 
-Finally, `libelektra-kdb` merges the keyset returned by the `postcommit` phase (which is still the same one that was returned by the `prestorage` phase) with the ones returned by other backend plugins for different mountpoints and then returns it to the user.
+Finally, `libelektra-kdb` merges the keyset returned by the `postcommit` phase (still the same one that was returned by the `prestorage` phase) with the ones returned by other backend plugins for different mountpoints and then returns it to the user.
 
 #### Rollback Phases (`set` only)
 
 If any of the phases `prestorage`, `storage`, `poststorage`, `precommit` or `commit` fail, `libelektra-kdb` will continue with the rollback phases.
-Even though this phase is part of the `set` operation, `libelektra-kdb` calls `elektra<Plugin>Error` and not `elektra<Plugin>Set` for these phases.
+Even though the `rollback` phases are part of the `set` operation, `libelektra-kdb` calls `elektra<Plugin>Error` and not `elektra<Plugin>Set` for these phases.
 
 Similar to the commit phases, the rollback phases (`prerollback`, `rollback` and `postrollback`) are called with:
 
@@ -328,9 +334,9 @@ Additionally, the phase that reported an error is communicated to the backend pl
 The value of the key `system:/elektra/kdb/backend/failedphase` is set to the failed phase.
 
 The `prerollback` and `postrollback` phases are mostly useful for logging.
-There are no restrictions on these phase, other than those enforced by `parentKey` and `ks` being (partially) read-only.
+There are no restrictions on these phases, other than those enforced by `parentKey` and `ks` being (partially) read-only.
 However, they are similar to the `postcommit` phase, in that any errors they report will be ignored and reported as warnings.
-In particular, even if the `prerollback` phase fails, we will `libelektra-kdb` will continue with the `rollback` phase as if `prerollback` succeeded.
+In particular, even if the `prerollback` phase fails, `libelektra-kdb` will continue with the `rollback` phase as if `prerollback` succeeded.
 
 In the `rollback` phase the backend plugin:
 

@@ -36,6 +36,6 @@ e.g. 20 KB will become 20000 Bytes
 
 ## Limitations
 
-Only basic units are supported (everthing from Bytes to Petabytes, but no KiB, MiB or Gib)
+Only basic units are supported (everything from Bytes to Petabytes, but no KiB, MiB or Gib)
 The max value is limited by the capacity of unsigned Longs. Using greater values will result
 in an error.

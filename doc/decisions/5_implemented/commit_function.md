@@ -1,6 +1,11 @@
 # Commit Function
 
-<!-- FIXME (kodebach): update -->
+<!-- FIXME [new_backend]: Decide whether the extra commit/error/init functions make sense.
+      Possible options are:
+      1. keep the separate functions
+      2. merge them into set, and let backend plugins dispatch based on elektraPluginGetPhase
+      3. in addition to merging into set, add an extra `ElektraGetPhase phase`/`ElektraSetPhase phase` argument to get/set so it is clear that the phase must be taken into account
+ -->
 
 ## Problem
 

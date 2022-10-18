@@ -1257,13 +1257,13 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 /**
  * Retrieves all Keys from KeySet @p ks that are below or at @p root
  *
- * This function is similar to ksCut().
+ * This function works very much like ksCut().
  * It returns an identical KeySet, but the Keys also remain in @p ks
  *
  * @param ks the Keyset to copy from
  * @param root the point where to copy from the Keyset
  *
- * @return a new allocated KeySet which needs to deleted with ksDel().
+ * @return a new allocated KeySet which needs to be deleted with ksDel().
  *         The KeySet consists of all Keys (of the original KeySet ks)
  *         below @p root. If @p root exists, it will also be appended.
  */
@@ -1447,7 +1447,7 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
  *           all Keys at or below the cutpoint.
  * @param cutpoint the point where to cut out the Keyset
  *
- * @return a new allocated KeySet which needs to deleted with ksDel().
+ * @return a new allocated KeySet which needs to be deleted with ksDel().
  *         The KeySet consists of all Keys (of the original KeySet ks)
  *         below the cutpoint. If the Key cutpoint exists, it will
  *         also be appended.
