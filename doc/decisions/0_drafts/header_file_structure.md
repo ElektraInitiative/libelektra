@@ -81,7 +81,7 @@ A modularized library `foo` may have these headers (covering categories 3 & 4 fr
   Additional public API header of `libelektra-foo`.
   Will be installed as `<include-root>/elektra/foo/*.h`.
 
-  All of these installed headers `installed.h` must be included from `src/include/elektra/foo.h` via a line `#include <elektra/foo/installed.h>`.
+  Any one `installed.h` of these installed headers must be included from `src/include/elektra/foo.h` via a line `#include <elektra/foo/installed.h>`.
 
 - `src/include/internal/foo.h`:
   Declares the internal API of `libelektra-foo`, by including `#include <internal/foo/*.h>`.
@@ -93,7 +93,7 @@ A modularized library `foo` may have these headers (covering categories 3 & 4 fr
   Additional internal header of `libelektra-foo`.
   Will not be installed.
 
-  All of these installed headers `installed.h` must be included from `src/include/internal/foo.h` via a line `#include <internal/foo/installed.h>`.
+  Any one `installed.h` of these installed headers must be included from `src/include/internal/foo.h` via a line `#include <internal/foo/installed.h>`.
 
 Additionally, all libraries may also have private headers:
 

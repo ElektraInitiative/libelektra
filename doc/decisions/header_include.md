@@ -68,7 +68,13 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
 
 - Put all headers into one directory and use the same relative layout as will be installed. Then use `""`:
 
-  This makes for an inconvenient development experience. It is also pretty hard to achieve for plugins and private headers would clutter the include-directory.
+  This makes for an inconvenient development experience.
+  It is also pretty hard to achieve for plugins and private headers would clutter the include-directory.
+
+- Only use `#include <>` and add everything to include path.
+
+  This makes the build setup more complicated.
+  It also makes it much easier to accidentally include a non-installed header in an installed one.
 
 ## Decision
 
@@ -110,7 +116,6 @@ The entire `build/include/elektra` directory is installed as-is, with the exact 
 This is enough for `#include <>`s to work.
 
 We will also enforce that the path in a `#include ""` always starts with a `./` and does not contain any `/../`.
-To do this, we will use a simple `grep` based script that runs as a test case and as an early part of the CI (like e.g., the formatting check).
 
 The rules for `#include ""` do not apply to tests.
 Tests can include anything from anywhere within the code base to allow testing private APIs.
@@ -126,7 +131,9 @@ See also considered alternatives.
 ## Implications
 
 - All installed headers (and only those) must be put into `src/include/elektra`.
+- To enfore the restrictions on the path in an `#include ""`, we will use a simple `grep`-based script that runs as a test case and as an early part of the CI (like e.g., the formatting check).
 - There must not be any `#include <internal/...>`s anywhere within `src/include/elektra`.
+  This will be enforced by the same `grep`-based script as the paths in `#include ""`.
 
 ## Related Decisions
 
