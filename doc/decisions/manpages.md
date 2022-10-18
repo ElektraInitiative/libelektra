@@ -3,6 +3,7 @@
 ## Problem
 
 Our manpages are written as Markdown in doc/help and then converted to roff and stored in doc/man.
+This was a workaround, because `ronn-ng` isn't available on most distributions and we want to avoid packages without manpages are being built.
 Storing generated files is annoying, as it requires:
 
 - developers to always update generated files if the sources are changed
@@ -11,22 +12,23 @@ Storing generated files is annoying, as it requires:
 
 ## Constraints
 
-1. we want beautiful rendered man pages, e.g., OPTIONS section looks like normal man pages
-2. we cannot require rare tools for the build process
+1. we want beautiful rendered manpages, e.g., OPTIONS section looks like normal manpages, see in Notes¹ below
+2. we cannot require rare tools for the build process: the manpages must be present in every package
 
 ## Assumptions
 
 ## Considered Alternatives
 
-0. ronn-ng, which doesn't have packages on most distribution (violates constraint 2.) and thus created this problem
+0. `ronn-ng`, which doesn't have packages on most distribution (violates constraint 2.) and thus created this problem
 1. Write a tool that converts our specification, similar to [pythongen](/src/tools/pythongen/template/template.man)
-2. Write a tool that parses our `--help` output
+2. Write a tool that parses gopts `--help` output
 3. [help2man](https://www.gnu.org/software/help2man/)
 4. Doxygen:
-   - doesn't have definition lists
+   - Constraint 1 probably broken
 5. Pandoc: has quite a few dependencies and would need rewrite of the current documentation in doc/help:
-   - definition lists via https://pandoc.org/MANUAL.html#definition-lists
+   - Constraint 1 fulfilled via https://pandoc.org/MANUAL.html#definition-lists
    - would need YAML metadata for every file
+     (it is possible to also pass this as command-line arguments via `--variable` but then we would move meta-information about manpages to the build system)
 
 ## Decision
 
@@ -42,7 +44,7 @@ Storing generated files is annoying, as it requires:
 
 ## Notes
 
-ronn-ng definition lists feature converts:
+¹ ronn-ng converts:
 
 ```
 - `-H`, `--help`:
