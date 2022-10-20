@@ -1,3 +1,5 @@
+#!/bin/sh
+
 @INCLUDE_COMMON@
 
 echo
