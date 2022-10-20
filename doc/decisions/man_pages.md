@@ -1,9 +1,9 @@
-# Manpages
+# Man Pages
 
 ## Problem
 
-Our manpages are written as Markdown in doc/help and then converted to roff and stored in doc/man.
-This was a workaround, because `ronn-ng` isn't available on most distributions and we want to avoid packages without manpages are being built.
+Our man pages are written as Markdown in doc/help and then converted to roff and stored in doc/man.
+This was a workaround, because `ronn-ng` isn't available on most distributions and we want to avoid packages without man pages are being built.
 Storing generated files is annoying, as it requires:
 
 - developers to always update generated files if the sources are changed
@@ -12,8 +12,8 @@ Storing generated files is annoying, as it requires:
 
 ## Constraints
 
-1. we want beautiful rendered manpages, e.g., OPTIONS section looks like normal manpages, see in Notes¹ below
-2. we cannot require rare tools for the build process: the manpages must be present in every package
+1. we want beautiful rendered man pages, e.g., OPTIONS section looks like normal man pages, see in Notes¹ below
+2. we cannot require rare tools for the build process: the man pages must be present in every package
 
 ## Assumptions
 
@@ -31,10 +31,12 @@ Storing generated files is annoying, as it requires:
      - To fulfill Constraint 1 [https://pandoc.org/MANUAL.html#definition-lists](definition lists) would be needed
      - would need YAML metadata/front matter for every file
        (It would be possible, but not advisable, to:
-         - also pass information as command-line arguments via `--variable` but then we would move meta-information about manpages to the build system
+         - also pass information as command-line arguments via `--variable` but then we would move meta-information about man pages to the build system
          - that we use the current (non-standard) front matter and convert it to Pandoc's frontmatter but this makes the build system more complicated)
 
 ## Decision
+
+Not yet done except spelling of man pages, see [#4567](https://issues.libelektra.org/4567).
 
 ## Rationale
 
