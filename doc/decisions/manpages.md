@@ -30,7 +30,9 @@ Storing generated files is annoying, as it requires:
    - would need rewrite of the current documentation in doc/help:
      - To fulfill Constraint 1 [https://pandoc.org/MANUAL.html#definition-lists](definition lists) would be needed
      - would need YAML metadata/front matter for every file
-       (it is possible to also pass this as command-line arguments via `--variable` but then we would move meta-information about manpages to the build system)
+       (It would be possible, but not advisable, to:
+         - also pass information as command-line arguments via `--variable` but then we would move meta-information about manpages to the build system
+         - that we use the current (non-standard) front matter and convert it to Pandoc's frontmatter but this makes the build system more complicated)
 
 ## Decision
 
