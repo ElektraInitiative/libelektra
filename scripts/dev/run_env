@@ -1,3 +1,5 @@
+#!/bin/sh
+
 if [ ! -f CMakeCache.txt ]
 then
 	echo "You must be within the build folder before you source this script"
