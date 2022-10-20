@@ -363,6 +363,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fixed Coverage Badge Link _(@janldeboer)_
 - <<TODO>>
+- Update Doxyfile with Doxygen 1.9.4 _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
