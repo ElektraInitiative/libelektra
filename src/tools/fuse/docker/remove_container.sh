@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 RUNNING_CONTAINERS=$(docker ps -a -q --filter ancestor="elektra-deb:1.0" --format="{{.ID}}")
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # @author Klemens Böswirth <k.boeswirth+git@gmail.com>
 # @brief Mount a Java Plugin
