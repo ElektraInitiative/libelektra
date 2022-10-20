@@ -22,8 +22,19 @@ const char * META_ELEKTRA_MERGE_ROOT_THEIR = "meta:/elektra/merge/root/their";
 const char * META_ELEKTRA_MERGE_ROOT_BASE = "meta:/elektra/merge/root/base";
 const char * META_ELEKTRA_MERGE_ROOT_RESULT = "meta:/elektra/merge/root/result";
 
-static Key * prependStringToKeyName (Key * key, const char * string, Key * informationKey);
+static Key * prependStringToKeyName (const Key * key, const char * string, Key * informationKey);
 static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * informationKey);
+
+/**
+ * Internal enum for the baseIndicator parameter of several functions.
+ * Indicates which of the 3 passed Key(Sets) represents the base Key(Set).
+ */
+enum BaseIndicator
+{
+	BASE_CHECKED_SET = 0,     /*!< base Key(Set) is the checked Key(Set) */
+	BASE_FIRST_COMPARED = 1,  /*!< base Key(Set) is the first compared Key(Set) */
+	BASE_SECOND_COMPARED = 2, /*!< base Key(Set) is the second compared Key(Set) */
+};
 
 /**
  * @brief Get a statistical value from an information key
@@ -369,7 +380,18 @@ static char * strremove (char * string, const char * sub)
 	return string;
 }
 
-static Key * prependStringToKeyName (Key * key, const char * string, Key * informationKey)
+/**
+ * Prepends the given @p string to the name of the given @p key.
+ * The resulting key will be returned
+ *
+ * Will also convert the previously generated /root key back into its original name.
+ *
+ * @param key the key to which something shall be appended
+ * @param string the string to append
+ * @param informationKey errors will be set here
+ * @return the key with the prepended name
+ */
+static Key * prependStringToKeyName (const Key * key, const char * string, Key * informationKey)
 {
 	bool isRoot = strcmp (keyName (key), "/root") == 0;
 	size_t size = strlen (string);
@@ -441,6 +463,18 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 	return 0;
 }
 
+/**
+ * Removes the root from a keys name
+ * If the key is the root key itself, it gets renamed to /root
+ *
+ * Example: If root is user:/example and @p currentKey has the name user:/example/something then
+ * the returned Key will have the name /something.
+ *
+ * @param currentKey the key
+ * @param root the root
+ * @param informationKey errors will be reported here
+ * @return a new key without the root name prefix
+ */
 static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * informationKey)
 {
 	char * currentKeyNameString = elektraMalloc (keyGetNameSize (currentKey));
@@ -477,7 +511,7 @@ static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * 
 
 /**
  * @brief Remove the root from each key of a set
- * @param original the key set from which root will be rmeoved
+ * @param original the key set from which root will be removed
  * @param root remove this from all the keys
  * @param informationKey will contain information if an error occurs
  * @returns a new key set without the root
@@ -546,7 +580,7 @@ static bool keysAreEqual (Key * a, Key * b)
  * @retval 0 on success
  */
 static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
-				  int baseIndicator, Key * informationKey)
+				  enum BaseIndicator baseIndicator, Key * informationKey)
 {
 	Key * existingKey;
 	bool thisConflict = false;
@@ -588,11 +622,11 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
 	else
 	{
 		// uses the NULL properties of keysAreEqual
-		if (keysAreEqual (checkedKey, keyInFirst) && baseIndicator == 2)
+		if (keysAreEqual (checkedKey, keyInFirst) && baseIndicator == BASE_SECOND_COMPARED)
 		{
 			thisConflict = true;
 		}
-		if (keysAreEqual (checkedKey, keyInSecond) && baseIndicator == 1)
+		if (keysAreEqual (checkedKey, keyInSecond) && baseIndicator == BASE_FIRST_COMPARED)
 		{
 			thisConflict = true;
 		}
@@ -621,7 +655,7 @@ static int twoOfThreeExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyI
  * @retval false otherwise
  */
 static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
-				    int baseIndicator, Key * informationKey)
+				    enum BaseIndicator baseIndicator, Key * informationKey)
 {
 	/**
 	 * One example for the next 3 ifs
@@ -641,7 +675,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 	 */
 	if (keysAreEqual (keyInFirst, keyInSecond))
 	{
-		if (baseIndicator == 0)
+		if (baseIndicator == BASE_CHECKED_SET)
 		{
 			/** This is a non-overlap conflict
 			 *  Base is currently checked and has value A, their and our have a different value B
@@ -661,7 +695,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 	}
 	else if (keysAreEqual (checkedKey, keyInFirst))
 	{
-		if (baseIndicator == 0)
+		if (baseIndicator == BASE_CHECKED_SET)
 		{
 			if (ksAppendKey (result, keyInSecond) < 0)
 			{
@@ -670,7 +704,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 		}
 		else
 		{
-			if (baseIndicator == 2)
+			if (baseIndicator == BASE_SECOND_COMPARED)
 			{
 				/** This is a non-overlap conflict
 				 *  Base is currently secondCompare and has value A, their and our have a different
@@ -692,7 +726,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 	else if (keysAreEqual (checkedKey, keyInSecond))
 	{
 
-		if (baseIndicator == 0)
+		if (baseIndicator == BASE_CHECKED_SET)
 		{
 			if (ksAppendKey (result, keyInFirst) < 0)
 			{
@@ -701,7 +735,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
 		}
 		else
 		{
-			if (baseIndicator == 1)
+			if (baseIndicator == BASE_FIRST_COMPARED)
 			{
 				/** This is a non-overlap conflict
 				 *  Base is currently firstCompare and has value A, their and our have a different
@@ -733,7 +767,7 @@ static bool twoOfThoseKeysAreEqual (Key * checkedKey, Key * keyInFirst, Key * ke
  * @retval 0 on success
  */
 static int allExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond, KeySet * result, bool checkedIsDominant,
-			   int baseIndicator, Key * informationKey)
+			   enum BaseIndicator baseIndicator, Key * informationKey)
 {
 	if (keysAreEqual (checkedKey, keyInFirst) && keysAreEqual (checkedKey, keyInSecond))
 	{
@@ -781,15 +815,15 @@ static int allExistHelper (Key * checkedKey, Key * keyInFirst, Key * keyInSecond
  * @param checkedIsDominant parameter is for the merge strategy. If a conflict occurs and checkedIsDominant is true then the current element
  * of checkedSet is inserted. Consequently, it has to be set to true for exactly one of the three calls of this function.
  *
- * @param baseIndicator indicates which of the three key sets is the base key set. 0 is checkedSet, 1 firstcompared, 2 secondCompared
- * @param informationKey will contain information if an error ocurred
+ * @param baseIndicator indicates which of the three key sets is the base key set.
+ * @param informationKey will contain information if an error occurred
  *
  * @retval -1 on error
  * @retval 0 on success
  *
  */
 static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet * secondCompared, KeySet * result, bool checkedIsDominant,
-			   int baseIndicator, Key * informationKey)
+			   enum BaseIndicator baseIndicator, Key * informationKey)
 {
 	for (elektraCursor it = 0; it < ksGetSize (checkedSet); ++it)
 	{
@@ -806,7 +840,7 @@ static int checkSingleSet (KeySet * checkedSet, KeySet * firstCompared, KeySet *
 		}
 		else if (keyInFirst == NULL && keyInSecond == NULL)
 		{
-			if (baseIndicator == 0)
+			if (baseIndicator == BASE_CHECKED_SET)
 			{
 				/**
 				 * Non-overlap conflict https://www.gnu.org/software/diffutils/manual/html_node/diff3-Merging.html
@@ -1010,7 +1044,7 @@ static int numberOfConflictMarkers (const char * text)
  * @retval 0 on success
  * @retval -1 on error
  */
-static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, int strategy)
+static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, enum MergeStrategy strategy)
 {
 	ELEKTRA_LOG ("cmerge now handles arrays");
 	KeySet * toAppend = NULL;
@@ -1137,9 +1171,26 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
  * @returns the merged key set and NULL on error
  */
 KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirRoot, KeySet * base, Key * baseRoot, Key * resultRoot,
-		       int strategy, Key * informationKey)
+		       enum MergeStrategy strategy, Key * informationKey)
 {
 	ELEKTRA_LOG ("cmerge starts with strategy %d (see kdbmerge.h)", strategy);
+
+	bool isOurDominant = false;
+	bool isTheirDominant = false;
+	switch (strategy)
+	{
+	case MERGE_STRATEGY_OUR:
+		isOurDominant = true;
+		break;
+	case MERGE_STRATEGY_THEIR:
+		isTheirDominant = true;
+		break;
+	case MERGE_STRATEGY_ABORT:
+		break;
+	default:
+		ELEKTRA_SET_INTERNAL_ERRORF (informationKey, "Unknown merge strategy %d", strategy);
+		return NULL;
+	}
 
 	KeySet * ourCropped = removeRoot (our, ourRoot, informationKey);
 	if (ourCropped == NULL)
@@ -1166,17 +1217,6 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	keySetMeta (informationKey, META_ELEKTRA_MERGE_ROOT_RESULT, keyName (resultRoot));
 
 	KeySet * result = ksNew (0, KS_END);
-	bool ourDominant = false;
-	bool theirDominant = false;
-	switch (strategy)
-	{
-	case MERGE_STRATEGY_OUR:
-		ourDominant = true;
-		break;
-	case MERGE_STRATEGY_THEIR:
-		theirDominant = true;
-		break;
-	}
 
 #ifdef LIBGITFOUND
 	git_libgit2_init ();
@@ -1190,9 +1230,9 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 	ELEKTRA_LOG ("cmerge can NOT use libgit2 to handle arrays");
 #endif
 
-	checkSingleSet (baseCropped, ourCropped, theirCropped, result, false, 0, informationKey); // base is never dominant
-	checkSingleSet (theirCropped, baseCropped, ourCropped, result, theirDominant, 1, informationKey);
-	checkSingleSet (ourCropped, theirCropped, baseCropped, result, ourDominant, 2, informationKey);
+	checkSingleSet (baseCropped, ourCropped, theirCropped, result, false, BASE_CHECKED_SET, informationKey); // base is never dominant
+	checkSingleSet (theirCropped, baseCropped, ourCropped, result, isTheirDominant, BASE_FIRST_COMPARED, informationKey);
+	checkSingleSet (ourCropped, theirCropped, baseCropped, result, isOurDominant, BASE_SECOND_COMPARED, informationKey);
 	ksRewind (ourCropped);
 
 	if (ksDel (ourCropped) != 0 || ksDel (theirCropped) != 0 || ksDel (baseCropped) != 0)
