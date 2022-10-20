@@ -25,6 +25,8 @@ Substantial decisions, however, must be made in a transparent and participative 
 - For reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
+- Decision PRs do not significantly change anything but one decision to make discussions clearly structured.
+- Changes not changing the decision step or the direction of the decision are not decision PRs.
 
 ## Assumptions
 
