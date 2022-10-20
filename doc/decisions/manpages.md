@@ -25,10 +25,12 @@ Storing generated files is annoying, as it requires:
 3. [help2man](https://www.gnu.org/software/help2man/)
 4. Doxygen:
    - Constraint 1 probably broken
-5. Pandoc: has quite a few dependencies and would need rewrite of the current documentation in doc/help:
-   - Constraint 1 fulfilled via https://pandoc.org/MANUAL.html#definition-lists
-   - would need YAML metadata for every file
-     (it is possible to also pass this as command-line arguments via `--variable` but then we would move meta-information about manpages to the build system)
+5. Pandoc:
+   - has a few standard dependencies
+   - would need rewrite of the current documentation in doc/help:
+     - To fulfill Constraint 1 [https://pandoc.org/MANUAL.html#definition-lists](definition lists) would be needed
+     - would need YAML metadata/front matter for every file
+       (it is possible to also pass this as command-line arguments via `--variable` but then we would move meta-information about manpages to the build system)
 
 ## Decision
 
