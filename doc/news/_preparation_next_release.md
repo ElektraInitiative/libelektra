@@ -280,7 +280,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Documented [decision process](/doc/decisions/decision_process.md) _(Markus Raab)_
 - Decided future [library split](../decisions/library_split.md) _(@kodebach)_
 - decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
-- draft for [manpages](/doc/decisions/manpages.md) _(Markus Raab)_
+- draft for [man pages](/doc/decisions/man_pages.md) _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
