@@ -200,7 +200,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Removed `global-mount` and `global-umount` commands. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
-- <<TODO>>
+- Fixed SIGSEGV when using find without argument _(Christian Jonak-Moechel @joni1993)_
 
 ### <<Tool>>
 

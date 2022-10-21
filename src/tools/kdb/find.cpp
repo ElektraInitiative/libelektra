@@ -24,6 +24,8 @@ FindCommand::FindCommand ()
 
 int FindCommand::execute (Cmdline const & cl)
 {
+	if (cl.arguments.size () != 1) throw invalid_argument ("Need one argument");
+
 	Key root ("/", KEY_END);
 	KDB kdb (root);
 	KeySet ks;
