@@ -27,6 +27,7 @@ Substantial decisions, however, must be made in a transparent and participative 
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
 - Decision PRs do not significantly change anything but one decision to make discussions clearly structured.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
+- The person merging the decision PR must be someone else as the person that created the decision.
 
 ## Assumptions
 
