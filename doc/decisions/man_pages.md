@@ -28,7 +28,7 @@ Storing generated files is annoying, as it requires:
 5. Pandoc:
    - has a few standard dependencies
    - would need rewrite of the current documentation in doc/help:
-     - To fulfill Constraint 1 [https://pandoc.org/MANUAL.html#definition-lists](definition lists) would be needed
+     - To fulfill Constraint 1 [definition lists](https://pandoc.org/MANUAL.html#definition-lists) would be needed
      - would need YAML metadata/front matter for every file
        (It would be possible, but not advisable, to:
        - also pass information as command-line arguments via `--variable` but then we would move meta-information about man pages to the build system
