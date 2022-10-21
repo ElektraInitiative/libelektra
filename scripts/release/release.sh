@@ -19,17 +19,17 @@ get_previous_git_version_tag() {
 	git tag -l '[0-9].[0-9].[0-9]*' --sort=version:refname | tail -n2 | head -n1
 }
 
-cd $SRC_DIR
+cd "$SRC_DIR"
 
 PACKAGE_REVISION=${1:-1}
 PREVIOUS_RELEASE_VERSION=${2:-$(get_previous_git_version_tag)}
 
 find_version_codename() {
 	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
-	if [ -z ${VERSION_CODENAME} ]; then
+	if [ -z "${VERSION_CODENAME}" ]; then
 		OS_ID=$(grep "^ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 		VERSION_ID=$(grep "VERSION_ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
-		if [ -z ${OS_ID} ] || [ -z ${VERSION_ID} ]; then
+		if [ -z "${OS_ID}" ] || [ -z "${VERSION_ID}" ]; then
 			VERSION_CODENAME=$(dpkg --status tzdata | grep Provides | cut -f2 -d'-')
 		else
 			VERSION_CODENAME="$OS_ID$VERSION_ID"
@@ -41,9 +41,9 @@ find_version_codename() {
 
 install_elektra() {
 	echo "Installing elektra..."
-	rm -rf $BUILD_DIR
-	mkdir $BUILD_DIR
-	cd $BUILD_DIR
+	rm -rf "$BUILD_DIR"
+	mkdir "$BUILD_DIR"
+	cd "$BUILD_DIR"
 	cmake -DBUILD_SHARED=ON \
 		-DBUILD_FULL=ON \
 		-DBUILD_STATIC=ON \
@@ -64,12 +64,12 @@ install_elektra() {
 
 run_updates() {
 	echo "Running updates..."
-	rm -rf $BASE_DIR/$VERSION
-	mkdir $BASE_DIR/$VERSION
+	rm -rf "$BASE_DIR"/"$VERSION"
+	mkdir "$BASE_DIR"/"$VERSION"
 
 	# regenerate dot of plugins
-	$SRC_DIR/scripts/dev/draw-all-plugins 2> $BASE_DIR/$VERSION/draw-all-plugins.error > $BASE_DIR/$VERSION/draw-all-plugins
-	git add $SRC_DIR/doc/images/plugins.*
+	"$SRC_DIR"/scripts/dev/draw-all-plugins 2> "$BASE_DIR"/"$VERSION"/draw-all-plugins.error > "$BASE_DIR"/"$VERSION"/draw-all-plugins
+	git add "$SRC_DIR"/doc/images/plugins.*
 	git commit -a -m "release: regenerate plugins overview picture" || true
 
 	# update info status
@@ -78,15 +78,15 @@ run_updates() {
 	# git commit -a -m "release: update plugin info status" || true
 
 	# run link checker
-	cd $BUILD_DIR
-	$SRC_DIR/scripts/link-checker external-links.txt 2> $BASE_DIR/$VERSION/link-checker.error > $BASE_DIR/$VERSION/link-checker
+	cd "$BUILD_DIR"
+	"$SRC_DIR"/scripts/link-checker external-links.txt 2> "$BASE_DIR"/"$VERSION"/link-checker.error > "$BASE_DIR"/"$VERSION"/link-checker
 }
 
 git_tag() {
-	cd $SRC_DIR
+	cd "$SRC_DIR"
 	PREVIOUS_RELEASE_TAG=$(get_current_git_version_tag)
-	if [ $PREVIOUS_RELEASE_TAG != $VERSION ]; then
-		git tag $VERSION -m "Release $VERSION" # needed by `make source-package` and `git-release-stats
+	if [ "$PREVIOUS_RELEASE_TAG" != "$VERSION" ]; then
+		git tag "$VERSION" -m "Release $VERSION" # needed by `make source-package` and `git-release-stats
 	else
 		echo "VERSION equals latest git version tag. Git tag will not be created."
 	fi
@@ -95,9 +95,9 @@ git_tag() {
 update_debian_changelog() {
 	echo "Updating debian changelog..."
 
-	cd $PACKAGING_DIR
-	dch --newversion $PVERSION "New upstream version."
-	dch --release $PVERSION "New upstream version"
+	cd "$PACKAGING_DIR"
+	dch --newversion "$PVERSION" "New upstream version."
+	dch --release "$PVERSION" "New upstream version"
 	git add debian/changelog
 	git commit -m "release: update debian/changelog"
 }
@@ -105,7 +105,7 @@ update_debian_changelog() {
 update_fedora_changelog() {
 	echo "Updating fedora changelog..."
 
-	cd $PACKAGING_DIR/fedora
+	cd "$PACKAGING_DIR"/fedora
 	./update-rpm-changelog.sh -v "$PVERSION"
 	git add changelog
 	git commit -m "release: update fedora/changelog"
@@ -121,14 +121,14 @@ export_git_log() {
 	PREVIOUS_RELEASE=$(get_previous_git_version_tag)
 	CURRENT_RELEASE=$(get_current_git_version_tag)
 	# generate git statistics
-	$SCRIPTS_DIR/git-release-stats "$PREVIOUS_RELEASE" "$CURRENT_RELEASE" > "$GIT_LOG_DIR/statistics"
+	"$SCRIPTS_DIR"/git-release-stats "$PREVIOUS_RELEASE" "$CURRENT_RELEASE" > "$GIT_LOG_DIR/statistics"
 }
 
 run_checks() {
 	echo "Running checks..."
 
 	# check build-server
-	kdb --version > $BASE_DIR/$VERSION/version
+	kdb --version > "$BASE_DIR"/"$VERSION"/version
 
 	# Rebuild cleanly, run all tests and also check for memleaks:
 	cd "$BUILD_DIR"
@@ -148,31 +148,31 @@ run_checks() {
 	make run_all
 	memcheck
 
-	$SCRIPTS_DIR/release/release-tests.sh $BASE_DIR $VERSION "src"
+	"$SCRIPTS_DIR"/release/release-tests.sh "$BASE_DIR" "$VERSION" "src"
 
 	# Check which files changed
 	cd "$BUILD_DIR"
 	DESTDIR=D make install
-	DESTDIR_DEPTH=$(printf $BUILD_DIR/D | awk -F"/" '{print NF-1}')
-	cd $BUILD_DIR/D && find . | cut -sd / -f $DESTDIR_DEPTH- | sort > $BASE_DIR/"$VERSION"/installed_files
+	DESTDIR_DEPTH=$(printf "$BUILD_DIR"/D | awk -F"/" '{print NF-1}')
+	cd "$BUILD_DIR"/D && find . | cut -sd / -f "$DESTDIR_DEPTH"- | sort > "$BASE_DIR"/"$VERSION"/installed_files
 
 	# create diff of installed files
 	# diff returns 0 if no diff, 1 if diff and 2 on errors
 	DIFF_RET_VAL=0
-	diff $BASE_DIR/"$VERSION"/installed_files $PREVIOUS_RELEASE_LOGS/installed_files > $BASE_DIR/"$VERSION"/installed_files_diff || DIFF_RET_VAL=$?
+	diff "$BASE_DIR"/"$VERSION"/installed_files "$PREVIOUS_RELEASE_LOGS"/installed_files > "$BASE_DIR"/"$VERSION"/installed_files_diff || DIFF_RET_VAL=$?
 	if [ "$DIFF_RET_VAL" -gt "1" ]; then
 		echo "diff command returned status code $DIFF_RET_VAL"
 		exit 1
 	fi
 
 	# get size of libs
-	cd ${WORKSPACE}/system/lib/
-	ls -l libelektra*"$VERSION" > $BASE_DIR/"$VERSION"/size
+	cd "${WORKSPACE}"/system/lib/
+	ls -l libelektra*"$VERSION" > "$BASE_DIR"/"$VERSION"/size
 
 	# readelf of all libs
-	mkdir $BASE_DIR/"$VERSION"/readelf
+	mkdir "$BASE_DIR"/"$VERSION"/readelf
 	for file in *.so; do
-		readelf -a "$file" > $BASE_DIR/"$VERSION"/readelf/readelf-"$file"
+		readelf -a "$file" > "$BASE_DIR"/"$VERSION"/readelf/readelf-"$file"
 	done
 }
 
@@ -182,16 +182,16 @@ create_source_package() {
 	export KDB_VERSION=$(kdb get system:/elektra/version/constants/KDB_VERSION)
 	export CMAKE_BINARY_DIR=$BUILD_DIR
 
-	cd $BUILD_DIR
+	cd "$BUILD_DIR"
 	make source-package
 
 	# Check if tar is reproduceable + sign it:
-	gpg --sign elektra-$VERSION.tar.gz
+	gpg --sign elektra-"$VERSION".tar.gz
 
 	# Unpack + compile (with all available plugins) + test those sources:
-	tar xvzf elektra-$VERSION.tar.gz
-	mkdir $BUILD_DIR/builder
-	cd $BUILD_DIR/builder
+	tar xvzf elektra-"$VERSION".tar.gz
+	mkdir "$BUILD_DIR"/builder
+	cd "$BUILD_DIR"/builder
 	cmake -DPLUGINS="ALL" \
 		-DTOOLS="ALL" \
 		-DENABLE_DEBUG="OFF" \
@@ -203,26 +203,26 @@ create_source_package() {
 		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
 		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
 		-DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" \
-		../elektra-$VERSION
+		../elektra-"$VERSION"
 	make
 	make run_all
 	memcheck
 
-	cp $BUILD_DIR/elektra-$VERSION.tar.gz* $BASE_DIR/$VERSION/
+	cp "$BUILD_DIR"/elektra-"$VERSION".tar.gz* "$BASE_DIR"/"$VERSION"/
 }
 
 build_package() {
 	echo "Building packages..."
 
-	cd $SRC_DIR
+	cd "$SRC_DIR"
 	git clean -fdx
-	mkdir $BUILD_DIR
-	cd $BUILD_DIR
+	mkdir "$BUILD_DIR"
+	cd "$BUILD_DIR"
 
-	mkdir -p $BASE_DIR/$VERSION/package/$VERSION_CODENAME
-	$SCRIPTS_DIR/packaging/package.sh "$PACKAGE_REVISION" 2> $BASE_DIR/$VERSION/package/$VERSION_CODENAME/elektra_$PVERSION.build.error > $BASE_DIR/$VERSION/package/$VERSION_CODENAME/elektra_$PVERSION.build
+	mkdir -p "$BASE_DIR"/"$VERSION"/package/"$VERSION_CODENAME"
+	"$SCRIPTS_DIR"/packaging/package.sh "$PACKAGE_REVISION" 2> "$BASE_DIR"/"$VERSION"/package/"$VERSION_CODENAME"/elektra_"$PVERSION".build.error > "$BASE_DIR"/"$VERSION"/package/"$VERSION_CODENAME"/elektra_"$PVERSION".build
 
-	mv $BUILD_DIR/package/* $BASE_DIR/$VERSION/package/$VERSION_CODENAME/
+	mv "$BUILD_DIR"/package/* "$BASE_DIR"/"$VERSION"/package/"$VERSION_CODENAME"/
 }
 
 memcheck() {
@@ -238,7 +238,7 @@ memcheck() {
 }
 
 cmemcheck() {
-	ctest -j $CTEST_PARALLEL_LEVEL --force-new-ctest-process \
+	ctest -j "$CTEST_PARALLEL_LEVEL" --force-new-ctest-process \
 		--output-on-failure --no-compress-output \
 		-T MemCheck -LE memleak -E "$1"
 }
@@ -255,6 +255,6 @@ export_git_log
 run_checks
 create_source_package
 build_package
-cd $BASE_DIR
-$SCRIPTS_DIR/release/sign-packages.sh $BASE_DIR/$VERSION/package/$VERSION_CODENAME
-tar -czvf release.tar.gz ./$VERSION
+cd "$BASE_DIR"
+"$SCRIPTS_DIR"/release/sign-packages.sh "$BASE_DIR"/"$VERSION"/package/"$VERSION_CODENAME"
+tar -czvf release.tar.gz ./"$VERSION"

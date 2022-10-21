@@ -20,7 +20,7 @@ genLevel() {
 	local pad
 	local counter=0
 
-	while [ $counter -lt $level ]; do
+	while [ $counter -lt "$level" ]; do
 		pad=$(echo -n " $pad")
 		counter=$(expr $counter + 1)
 	done
@@ -32,20 +32,20 @@ genLevel() {
 	local k=0
 	while [ $k -lt $KEYS ]; do
 		echo "$pad<key basename=\"$k-${RANDOM}${RANDOM}\" value=\"$k ${RANDOM}${RANDOM}\"></key>"
-		keyCounter=$(expr $keyCounter + 1)
+		keyCounter=$(expr "$keyCounter" + 1)
 		$KDB set "$myRoot/${RANDOM}${RANDOM}" \
 			"${RANDOM}${RANDOM}"
 
 		k=$(expr $k + 1)
 	done
 
-	if [ $level -lt $LEVELS ]; then
+	if [ "$level" -lt $LEVELS ]; then
 		# Generate sublevels
 		local d=0
 		while [ $d -lt $DIRS ]; do
 			echo "$pad<key type=\"directory\" basename=\"dir-$level-$d\">"
-			keyCounter=$(expr $keyCounter + 1)
-			genLevel $(expr $level + 1) "${RANDOM}${RANDOM}"
+			keyCounter=$(expr "$keyCounter" + 1)
+			genLevel $(expr "$level" + 1) "${RANDOM}${RANDOM}"
 			echo "$pad</key>"
 			d=$(expr $d + 1)
 		done

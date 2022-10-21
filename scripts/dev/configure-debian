@@ -8,10 +8,10 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-cd $BUILD
+cd "$BUILD" || exit
 cmake \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DENABLE_DEBUG="OFF" \
 	-DENABLE_LOGGER="OFF" \
-	$*
+	"$*"

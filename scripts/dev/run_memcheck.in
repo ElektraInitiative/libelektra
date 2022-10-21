@@ -6,4 +6,4 @@ if [ $# -ne 1 ]; then
 fi
 
 ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process -T memcheck --build-config $1 --output-on-failure -LE memleak"
-ctest $ARGS || ctest $ARGS --rerun-failed
+ctest "$ARGS" || ctest "$ARGS" --rerun-failed

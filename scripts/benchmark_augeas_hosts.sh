@@ -15,7 +15,7 @@ if [ -z "$1" ]; then
 fi
 
 measure_time() {
-	{ time -f "%e" $1 > /dev/null; } 2>&1
+	{ time -f "%e" "$1" > /dev/null; } 2>&1
 }
 
 HOSTSFILE=$(echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")")
@@ -23,9 +23,9 @@ AUGEASPATH="system:/benchmarks/$$/augeasplugin-hostsfile"
 KEYTOMETAPATH="system:/benchmarks/$$/augeaskeytometahostsfile"
 HOSTSPATH="system:/benchmarks/$$/hostsplugin-hostsfile"
 
-$KDB mount $HOSTSFILE $AUGEASPATH augeas lens=Hosts.lns
-$KDB mount $HOSTSFILE $HOSTSPATH hosts
-$KDB mount $HOSTSFILE $KEYTOMETAPATH augeas lens=Hosts.lns glob keytometa
+$KDB mount "$HOSTSFILE" $AUGEASPATH augeas lens=Hosts.lns
+$KDB mount "$HOSTSFILE" $HOSTSPATH hosts
+$KDB mount "$HOSTSFILE" $KEYTOMETAPATH augeas lens=Hosts.lns glob keytometa
 
 for run in $(seq 0 11); do
 	echo "RUN: #$run"
@@ -35,4 +35,4 @@ for run in $(seq 0 11); do
 	echo "augeas: $augeaswalltime; hosts: $hostswalltime; augeas with keytometa: $keytometawalltime"
 done
 
-for x in $($KDB mount | grep system:/benchmarks/$$ | awk '{print $3}'); do $KDB umount $x; done
+for x in $($KDB mount | grep system:/benchmarks/$$ | awk '{print $3}'); do $KDB umount "$x"; done

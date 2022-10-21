@@ -12,18 +12,18 @@ echo
 # $1 ... namespace
 # $2 ... key name
 prepend_namespace_if_not_present() {
-	local present_namespace=$("$KDB" namespace $2)
+	local present_namespace=$("$KDB" namespace "$2")
 
 	if [ -z "$present_namespace" ]; then
-		echo $1:$2
+		echo "$1":"$2"
 	else
-		echo $2
+		echo "$2"
 	fi
 }
 
 #set tmp path (mainly for macOS compatibility)
 TMPPATH=$(
-	cd /tmp
+	cd /tmp || exit
 	pwd -P
 )
 
@@ -72,28 +72,28 @@ check_resolver() {
 
 	MOUNTPOINT=$1:$ROOT_MOUNTPOINT
 
-	"$KDB" mount --resolver $PLUGIN "$3" $MOUNTPOINT dump 1> /dev/null
-	succeed_if "could not mount root using: "$KDB" mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
+	"$KDB" mount --resolver "$PLUGIN" "$3" "$MOUNTPOINT" dump 1> /dev/null
+	succeed_if "could not mount root using: ""$KDB"" mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
 
-	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present $1 $ROOT_MOUNTPOINT) 2> /dev/null)
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present "$1" $ROOT_MOUNTPOINT) 2> /dev/null)
 	echo "For $1 $2 $3 we got $FILE"
 	[ "x$FILE" = "x$4" ]
 	succeed_if "resolving of $MOUNTPOINT did not yield $4 but $FILE"
 
 	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
 		KEY=$ROOT_MOUNTPOINT/key
-		"$KDB" set $(prepend_namespace_if_not_present $1 $KEY) value
+		"$KDB" set $(prepend_namespace_if_not_present "$1" $KEY) value
 		succeed_if "could not set $KEY"
 
 		echo "remove $FILE and its directories"
-		rm $FILE
+		rm "$FILE"
 		succeed_if "could not remove $FILE"
 
-		dirname $FILE
-		rmdir -p --ignore-fail-on-non-empty $(dirname $FILE)
+		dirname "$FILE"
+		rmdir -p --ignore-fail-on-non-empty $(dirname "$FILE")
 	fi
 
-	"$KDB" umount $MOUNTPOINT > /dev/null
+	"$KDB" umount "$MOUNTPOINT" > /dev/null
 	succeed_if "could not umount $MOUNTPOINT"
 }
 
@@ -153,12 +153,12 @@ else
 	check_resolver system x app/config_file /etc/xdg/app/config_file
 
 	OD=$(pwd)
-	cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
-	check_resolver dir x /a $TMPPATH/a
-	check_resolver dir x /a/b $TMPPATH/a/b
+	cd "$TMPPATH" || exit # hopefully no @KDB_DB_DIR@ is in $TMPPATH
+	check_resolver dir x /a "$TMPPATH"/a
+	check_resolver dir x /a/b "$TMPPATH"/a/b
 	check_resolver dir x a "$TMPPATH/@KDB_DB_DIR@/a"
 	check_resolver dir x a/b "$TMPPATH/@KDB_DB_DIR@/a/b"
-	cd "$OD"
+	cd "$OD" || exit
 
 fi # end of XDG tests
 
@@ -220,14 +220,14 @@ check_resolver user b x/a "@KDB_DB_HOME@/@KDB_DB_USER@/x/a"
 check_resolver user b /a "@KDB_DB_HOME@/a"
 
 OD=$(pwd)
-cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
+cd "$TMPPATH" || exit # hopefully no @KDB_DB_DIR@ is in $TMPPATH
 check_resolver dir b /a "$TMPPATH/a"
 check_resolver dir b /a/b "$TMPPATH/a/b"
 check_resolver dir b a "$TMPPATH/@KDB_DB_DIR@/a"
 check_resolver dir b a/b "$TMPPATH/@KDB_DB_DIR@/a/b"
 
 T="$(
-	cd $(mktempdir_elektra)
+	cd $(mktempdir_elektra) || exit
 	pwd -P
 )"
 
@@ -235,18 +235,18 @@ cleanup() {
 	rm -rf "$T"
 }
 
-cd $T
-check_resolver dir b /a $T/a
-check_resolver dir b /a/b $T/a/b
+cd "$T" || exit
+check_resolver dir b /a "$T"/a
+check_resolver dir b /a/b "$T"/a/b
 check_resolver dir b a "$T/@KDB_DB_DIR@/a"
 check_resolver dir b a/b "$T/@KDB_DB_DIR@/a/b"
 
-mkdir $T/sub
-cd $T/sub
-touch $T/a
-check_resolver dir b /a $T/a
-check_resolver dir b /a/b $T/sub/a/b
-rm $T/a
+mkdir "$T"/sub
+cd "$T"/sub || exit
+touch "$T"/a
+check_resolver dir b /a "$T"/a
+check_resolver dir b /a/b "$T"/sub/a/b
+rm "$T"/a
 
 mkdir "$T/@KDB_DB_DIR@"
 touch "$T/@KDB_DB_DIR@/a"
@@ -254,7 +254,7 @@ check_resolver dir b a "$T/@KDB_DB_DIR@/a"
 check_resolver dir b a/b "$T/sub/@KDB_DB_DIR@/a/b"
 rm "$T/@KDB_DB_DIR@/a"
 
-cd "$OD"
+cd "$OD" || exit
 
 unset HOME
 unset USER

@@ -19,7 +19,7 @@ else
 fi
 
 if [ "$SOURCE" = "$BUILD" ]; then
-	if echo $* | grep FORCE_IN_SOURCE_BUILD=ON; then
+	if echo "$*" | grep FORCE_IN_SOURCE_BUILD=ON; then
 		echo "Warning: in-source build!"
 		echo "It is recommended to create a new directory and run $SELF there"
 		echo "Proceeding as requested"

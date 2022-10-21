@@ -9,7 +9,7 @@ SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 . "${SCRIPTS_DIR}/list-shell-scripts"
 
-cd "$SOURCE"
+cd "$SOURCE" || exit
 
 SHFMT="$(which shfmt)"
 SHFMT_VERSION="$(shfmt --version 2> /dev/null | sed s/^v//)"

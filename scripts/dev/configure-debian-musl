@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-cd $BUILD
+cd "$BUILD" || exit
 # CFLAGS="-fPIC" LDFLAGS="-fPIC" CXXFLAGS="-fPIC"
 CC=musl-gcc CXX=g++ cmake \
 	-DINSTALL_BUILD_TOOLS=ON \
@@ -18,4 +18,4 @@ CC=musl-gcc CXX=g++ cmake \
 	-KDB_DEFAULT_STORAGE=ini \
 	-DTARGET_PLUGIN_FOLDER="" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	$*
+	"$*"

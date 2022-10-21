@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-cd $BUILD
+cd "$BUILD" || exit
 cmake -DKDB_DB_FILE="default.ini" \
 	-DKDB_DB_INIT="elektra.ini" \
 	-DKDB_DEFAULT_STORAGE="ini" \
@@ -16,4 +16,4 @@ cmake -DKDB_DB_FILE="default.ini" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL;-ruby" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	$*
+	"$*"

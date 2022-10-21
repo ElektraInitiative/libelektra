@@ -49,12 +49,12 @@ do_tests() {
 
 echo "Testing build with cmake"
 
-cd "$EXTERNAL_FOLDER"
+cd "$EXTERNAL_FOLDER" || exit
 mkdir build
-cd build
+cd build || exit
 
 # manually set Elektra_DIR and KDB to support non-standard install locations
-cmake ../cmake -DElektra_DIR:PATH="$(realpath $(dirname $0)/../../scripts/cmake/Elektra)"
+cmake ../cmake -DElektra_DIR:PATH="$(realpath $(dirname "$0")/../../scripts/cmake/Elektra)"
 succeed_if "could not run cmake"
 
 cmake --build .
@@ -68,7 +68,7 @@ rm -r build
 
 echo "Testing build with pkgconfig"
 
-cd "$EXTERNAL_FOLDER/pkgconfig"
+cd "$EXTERNAL_FOLDER/pkgconfig" || exit
 make
 succeed_if "could not build pkgconfig project"
 

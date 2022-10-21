@@ -17,7 +17,7 @@ resetGlobals() {
 
 writeBlock() {
 	OUTFILE="$1"
-	[ -n "$RET" ] && printf 'RET: %s\n' $RET >> "$OUTFILE" || { [ -z "$ERROR" ] && printf 'RET: 0\n' >> "$OUTFILE"; }
+	[ -n "$RET" ] && printf 'RET: %s\n' "$RET" >> "$OUTFILE" || { [ -z "$ERROR" ] && printf 'RET: 0\n' >> "$OUTFILE"; }
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OUTFILE"
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OUTFILE"
 	[ -n "${STDERR+unset}" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OUTFILE"

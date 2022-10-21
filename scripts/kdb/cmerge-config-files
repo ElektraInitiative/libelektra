@@ -20,14 +20,14 @@ kdb rm -rf $ourpath
 kdb rm -rf $theirpath
 kdb rm -rf $basepath
 kdb rm -rf $resultpath
-cat $1 | kdb import $ourpath $format
-cat $2 | kdb import $theirpath $format
-cat $3 | kdb import $basepath $format
+cat "$1" | kdb import $ourpath "$format"
+cat "$2" | kdb import $theirpath "$format"
+cat "$3" | kdb import $basepath "$format"
 # uncomment lines to debug
 # valgrind --leak-check=full --show-leak-kinds=all kdb cmerge $ourpath $theirpath $basepath $resultpath
 # valgrind --leak-check=full kdb cmerge $ourpath $theirpath $basepath $resultpath
 kdb cmerge $ourpath $theirpath $basepath $resultpath
-kdb export $resultpath $format > $resultfile
+kdb export $resultpath "$format" > $resultfile
 kdb rm -rf $ourpath
 kdb rm -rf $theirpath
 kdb rm -rf $basepath

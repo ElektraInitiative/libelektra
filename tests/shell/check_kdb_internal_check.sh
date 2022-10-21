@@ -74,12 +74,12 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		esac
 	fi
 
-	> $FILE
-	"$KDB" plugin-check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
+	> "$FILE"
+	"$KDB" plugin-check "$ARGS" "$PLUGIN" 1> "$FILE" 2> "$FILE"
 	succeed_if "check of plugin $PLUGIN with args '$ARGS' failed"
 
-	test ! -s $FILE
-	succeed_if "check of plugin $PLUGIN produced: \"$(cat $FILE)\""
+	test ! -s "$FILE"
+	succeed_if "check of plugin $PLUGIN produced: \"$(cat "$FILE")\""
 done
 
 end_script basic commands

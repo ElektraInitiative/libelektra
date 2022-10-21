@@ -159,7 +159,7 @@ if is_plugin_available dump; then
 	succeed_if "could not umount $ROOT_MOUNTPOINT"
 fi
 
-rm -f $USER_FOLDER/$FILE_SUFFIX*
-rm -f $SYSTEM_FOLDER/$FILE_SUFFIX*
+rm -f "$USER_FOLDER"/$FILE_SUFFIX*
+rm -f "$SYSTEM_FOLDER"/$FILE_SUFFIX*
 
 end_script basic commands

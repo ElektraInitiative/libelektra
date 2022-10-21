@@ -76,7 +76,7 @@ initialize() {
 	if [ "$resNo" -gt 1 ]; then
 		i=1
 		for line in ${Profile}; do
-			echo "$i) $(basename $line)"
+			echo "$i) $(basename "$line")"
 			i=$((++i))
 		done
 		echo -n "Select your Firefox profile directory: "
@@ -84,7 +84,7 @@ initialize() {
 		Profile=$(sed "${sel}q;d" <<< "$Profile")
 	fi
 
-	echo "Firefox profile directory: $(basename $Profile)"
+	echo "Firefox profile directory: $(basename "$Profile")"
 	echo
 
 	PrefsFile=$(readlink -f "${Profile}/prefs.js")

@@ -11,13 +11,13 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-cd $BUILD
+cd "$BUILD" || exit
 cmake -DKDB_DB_USER=".config/kdb/user" \
 	-DKDB_DB_SYSTEM="~/.config/kdb/system" \
 	-DKDB_DB_SPEC="~/.config/kdb/spec" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	$*
+	"$*"
 
 #-DKDB_DB_SPEC="~/.config/kdb/spec" \ # see ##691
