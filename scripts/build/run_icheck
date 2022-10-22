@@ -32,7 +32,8 @@ init_cmake() {
 canonify() {
 	init_build
 	init_cmake
-	icheck --canonify -I"$BASE_DIR/src/include" -I"$BUILD_DIR/src/include" "${FILES}" -o "$1"
+	# shellcheck disable=SC2086
+	icheck --canonify -I"$BASE_DIR/src/include" -I"$BUILD_DIR/src/include" ${FILES} -o "$1"
 }
 
 # Remove old dir

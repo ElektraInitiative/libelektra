@@ -26,7 +26,9 @@ else
 fi
 
 cd "$EDIR"/src/plugins/yajl
-cbmc --function elektraYajlSet "$ARG" "$YINC" "$EINC" yajl_gen.c
+# shellcheck disable=SC2086
+cbmc --function elektraYajlSet $ARG $YINC $EINC yajl_gen.c
 
 cd "$EDIR"/src/libs/elektra
-cbmc -D HAVE_KDBCONFIG_H --function kdbSet "$ARG" "$EINC" kdb.c
+# shellcheck disable=SC2086
+cbmc -D HAVE_KDBCONFIG_H --function kdbSet $ARG $EINC kdb.c
