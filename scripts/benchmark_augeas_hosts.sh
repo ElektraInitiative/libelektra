@@ -15,7 +15,7 @@ if [ -z "$1" ]; then
 fi
 
 measure_time() {
-	{ time -f "%e" "$1" > /dev/null; } 2>&1
+	{ time -f "%e" "$*" > /dev/null; } 2>&1
 }
 
 HOSTSFILE=$(echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")")
@@ -29,9 +29,9 @@ $KDB mount "$HOSTSFILE" $KEYTOMETAPATH augeas lens=Hosts.lns glob keytometa
 
 for run in $(seq 0 11); do
 	echo "RUN: #$run"
-	augeaswalltime=$(measure_time "$KDB ls $AUGEASPATH")
-	hostswalltime=$(measure_time "$KDB ls $HOSTSPATH")
-	keytometawalltime=$(measure_time "$KDB ls $KEYTOMETAPATH")
+	augeaswalltime=$(measure_time "$KDB" "ls" "$AUGEASPATH")
+	hostswalltime=$(measure_time "$KDB" "ls" "$HOSTSPATH")
+	keytometawalltime=$(measure_time "$KDB" "ls" "$KEYTOMETAPATH")
 	echo "augeas: $augeaswalltime; hosts: $hostswalltime; augeas with keytometa: $keytometawalltime"
 done
 
