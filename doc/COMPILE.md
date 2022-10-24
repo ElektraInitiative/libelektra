@@ -427,7 +427,7 @@ For a list of available bindings see
 See help bar at bottom of `ccmake` for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
-### `BUILD_SHARED BUILD_FULL BUILD_STATIC`
+#### `BUILD_SHARED`, `BUILD_FULL` and `BUILD_STATIC`
 
 `BUILD_SHARED` is the typical build you want to have on systems that support `dlopen`.
 It can be used for desktop builds, but also embedded systems as long as they support
@@ -452,7 +452,7 @@ one would use:
 cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 ```
 
-#### BUILD_DOCUMENTATION
+#### `BUILD_DOCUMENTATION`
 
 Build documentation with doxygen (API) and ronn-ng (man pages).
 
