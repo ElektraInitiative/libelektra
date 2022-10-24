@@ -489,8 +489,8 @@ To reformat a Markdown document in [TextMate][] every time you save it, please f
 
 Every shell script must start with either of two shebangs:
 
-* `#!/bin/sh`
-* `#!/usr/bin/env <shell>`, where `<shell>` is an appropriate shell, e.g. `#!/usr/bin/env bash`
+- `#!/bin/sh`
+- `#!/usr/bin/env <shell>`, where `<shell>` is an appropriate shell, e.g. `#!/usr/bin/env bash`
 
 Note that even if a shebang is added by a preprocessor macro or similar code generation tools, it must also be present in the templated file.
 
