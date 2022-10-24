@@ -1593,10 +1593,9 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * Retrieve Keys from the Key database in an atomic and universal way.
  *
  * @pre The @p handle must be a valid KDB handle as returned from kdbOpen().
- * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed with ksNew().
- * @pre The @p returend KeySet must only contain only keys in the `spec:/`,
- * 	`dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
- * @pre The @p parentKey Key must be a valid Key, e.g. constructed with keyNew().
+ * @pre The KeySet @p returned must be a valid KeySet, i.e., constructed with ksNew().
+ * @pre The KeySet @p returned must contain keys only from the `spec:/`, `dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
+ * @pre The @p parentKey Key must be a valid Key, i.e., constructed with keyNew().
  * @pre The @p parentKey Key must not have read-only name, value or metadata.
  * @pre The @p parentKey Key must use the `spec:/`, `dir:/`, `user:/`, `system:/`,
  * 	`default:/`, `proc:/` or cascading namespace.
@@ -1619,7 +1618,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  *
  * - `spec:/`, `dir:/`, `user:/` and `system:/` can be loaded via kdbGet().
  * - `proc:/` keys can be loaded via kdbGet(), but are not persisted or cached.
- * - `default:/` keys can be returned by kdbGet() but they will always stem from a specification in `spec:/` keys
+ * - `default:/` keys can be inserted by kdbGet() but they will always stem from a specification in `spec:/` keys
  * - If @p ks contains a key with any other namespace, an error will be returned.
  *
  * @par Parent Key
@@ -2190,7 +2189,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  * @pre kdbGet() must be called before kdbSet():
  *   	 - initially (after kdbOpen())
  *   	 - after conflict errors in kdbSet().
- * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed with ksNew().
+ * @pre The KeySet @p returned must be a valid KeySet, e.g. constructed with ksNew().
  * @pre The @p returend KeySet must only contain only keys in the `spec:/`,
  * 	`dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with keyNew().

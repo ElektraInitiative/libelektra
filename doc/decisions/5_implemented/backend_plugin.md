@@ -21,8 +21,9 @@
 
 ## Decision
 
-- The current backend implementation will be redeveloped into a backend plugin. That way, the core of Elektra will only access backends through the standard plugin interface.
-- The new backend plugin will support an unlimited number of plugins in any position where more than one plugin is sensible, e.g., unlimited plugins in `poststorage`, but only a single one in `storage`
+- The current backend implementation was redeveloped into a backend plugin.
+   The core of Elektra accesses backends through the standard plugin interface.
+- The new backend plugin supports an unlimited number of plugins in any position where more than one plugin is sensible, e.g., unlimited plugins in `poststorage`, but only a single one in `storage` and `resolver`
 
 ## Rationale
 
