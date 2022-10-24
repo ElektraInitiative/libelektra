@@ -18,7 +18,7 @@ List of currently supported bindings (use `cmake -DBINDINGS=ALL;-EXPERIMENTAL;-D
 - [python](swig/python/) Python 3 SWIG bindings
 - [ruby](swig/ruby/) Ruby bindings
 - [jna](jna/) Java binding using JNA
-  - [kotlin](jna/kotlin) Kotlin binding (based on JNA)
+  - [kotlin](jna/libelektra-kotlin) Kotlin binding (based on JNA)
 - [rust](rust/) Rust bindings
 
 Experimental bindings (included in `cmake -DBINDINGS=EXPERIMENTAL`):
