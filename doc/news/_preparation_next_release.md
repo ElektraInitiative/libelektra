@@ -398,6 +398,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### CMake
 
 - Fix warning for CMP0115 _(0x6178656c)_
+- Change Doxygen configuration for LaTeX _(0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
