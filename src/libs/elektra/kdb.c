@@ -2190,7 +2190,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  *   	 - initially (after kdbOpen())
  *   	 - after conflict errors in kdbSet().
  * @pre The KeySet @p returned must be a valid KeySet, e.g. constructed with ksNew().
- * @pre The @p returend KeySet must only contain only keys in the `spec:/`,
+ * @pre The KeySet @p returend must only contain only keys in the `spec:/`,
  * 	`dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with keyNew().
  * @pre The @p parentKey Key must not have read-only name, value or metadata.
