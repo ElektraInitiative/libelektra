@@ -86,10 +86,13 @@ You can install it as follows:
 - on APT-based systems (Ubuntu, Debian):
 
   ```sh
-  apt-get install pdflatex \
-          texlive-fonts-recommended texlive-fonts-extra \
-          texlive-latex-recommended texlive-latex-extra \
-          texlive-math-extra
+  apt-get install \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    texlive-fonts-extra \
+    texlive-science
   ```
 
 ### Plugin dependencies
@@ -459,6 +462,12 @@ used instead.
 > Note: Turning off building the documentation, also turns off
 > installing the documentation, see https://issues.libelektra.org/2522
 > Then no man pages are available.
+
+#### `BUILD_PDF`
+
+Build documentation with LaTeX.
+
+See [Documentation dependencies](#documentation-dependencies) for the required dependencies.
 
 #### Developer Options
 
