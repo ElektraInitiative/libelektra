@@ -9,7 +9,7 @@
 
 ## Constraints
 
-- All existing plugins should continue working normally.
+- All existing plugins, except [hooks](hooks.md), should continue working as before.
 
 ## Assumptions
 
