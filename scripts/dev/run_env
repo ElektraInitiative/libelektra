@@ -1,24 +1,21 @@
 #!/bin/sh
 
-if [ ! -f CMakeCache.txt ]
-then
+if [ ! -f CMakeCache.txt ]; then
 	echo "You must be within the build folder before you source this script"
 	echo
 	echo "Usage: cd build && source ../scripts/dev/run_env"
 	return
 fi
 
-
 # common configure script
-ELEKTRA_DIR=`grep "^Elektra_SOURCE_DIR" CMakeCache.txt | cut -f 2 -d "="`
+ELEKTRA_DIR=$(grep "^Elektra_SOURCE_DIR" CMakeCache.txt | cut -f 2 -d "=")
 export SCRIPTS_DIR="${ELEKTRA_DIR}/scripts/dev"
 . "${SCRIPTS_DIR}/include-common"
 
-BUILD=`pwd`
+BUILD=$(pwd)
 
 # set paths
-if [ -z "$PATH" ]
-then
+if [ -z "$PATH" ]; then
 	export PATH="$BUILD/bin:$SCRIPTS_DIR"
 else
 	export PATH="$BUILD/bin:$SCRIPTS_DIR:$PATH"
@@ -26,22 +23,19 @@ fi
 
 COMMON_PATH="$SOURCE/scripts/kdb:$BUILD/scripts/kdb:$BUILD/scripts/dev:$BUILD/bin"
 
-if [ -z "$KDB_EXEC_PATH" ]
-then
+if [ -z "$KDB_EXEC_PATH" ]; then
 	export KDB_EXEC_PATH="$COMMON_PATH"
 else
 	export KDB_EXEC_PATH="$COMMON_PATH:$KDB_EXEC_PATH"
 fi
 
-if [ -z "$LD_LIBRARY_PATH" ]
-then
+if [ -z "$LD_LIBRARY_PATH" ]; then
 	export LD_LIBRARY_PATH="$BUILD/lib"
 else
 	export LD_LIBRARY_PATH="$BUILD/lib:$LD_LIBRARY_PATH"
 fi
 
-if [ -z "$MANPATH" ]
-then
+if [ -z "$MANPATH" ]; then
 	export MANPATH="$SOURCE/doc/man:/usr/man:/usr/share/man"
 else
 	export MANPATH="$SOURCE/doc/man:$MANPATH"

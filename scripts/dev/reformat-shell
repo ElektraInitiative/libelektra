@@ -26,8 +26,8 @@ if [ -z "${SHFMT}" ] || [ "$SHFMT_MAJOR_VERSION" = "(devel)" ] || [ "$SHFMT_MAJO
 fi
 
 shell_files=$(
-	git ls-tree --full-tree -r -z --name-only HEAD \
-	| xargs -0 awk 'BEGIN {pattern = "^#!(/bin/sh|/usr/bin/env [a-z]*sh)$"} FNR==1 && $0 ~ pattern {print FILENAME}'
+	git ls-tree --full-tree -r -z --name-only HEAD |
+		xargs -0 awk 'BEGIN {pattern = "^#!(/bin/sh|/usr/bin/env [a-z]*sh)$"} FNR==1 && $0 ~ pattern {print FILENAME}'
 )
 
 ignore_file=$(dirname "$0")/.shfmtignore
