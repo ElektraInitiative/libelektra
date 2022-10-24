@@ -16,7 +16,7 @@ The big problem is kdbprivate.h. It has two main problems:
 
   Without this constraint, we would constantly include things that aren't needed.
   This is inconvenient as it clutters the auto-suggestions of IDEs.
-  It also slows down the compile process, since the compiler has to parse everything that was included (see [also](https://lore.kernel.org/lkml/YdIfz+LMewetSaEB@gmail.com/T/)).
+  It also slows down the compile process, since the compiler has to parse everything that was included.
 
 - Non-public API and public API should be kept in separate files
 - Some non-public APIs need to be accessible for testing, such headers should not be packaged/installed
@@ -27,14 +27,16 @@ The big problem is kdbprivate.h. It has two main problems:
 
   1.  Some parts are truly private, i.e., shouldn't be used outside the library that defines them.
       These things are only there because a library was split into multiple `.c` files.
-      This includes e.g., `splitNew` and `struct _Split`.
+      This includes e.g., `opmphmNew` or `struct _BackendData`.
 
       Symbols belonging to this category should not appear at all in the `symbols.map` file.
+      Headers declaring such symbols must never be installed.
 
   2.  Other things are truly private, but must be tested.
-      This includes e.g., most other `split*` functions or the `elektraKeyName*` functions.
+      This includes e.g., most `backends*` functions or the `elektraKeyName*` functions.
 
       Symbols belonging to this category should not appear in at all in the `symbols.map` file.
+      Headers declaring such symbols must never be installed.
 
   3.  Some things are not part of the public API and will never be part of the public API.
       This includes the `struct _Key` and `struct _KeySet`, but `elektraMalloc` and the high-level functions needed for codegen.
@@ -43,6 +45,7 @@ The big problem is kdbprivate.h. It has two main problems:
       Each of these functions/structs/symbols has a specific "target audience" that needs access.
 
       Symbols belonging to this category should not appear in a public section of the `symbols.map` file.
+      Headers declaring such symbols generally should not be installed.
 
   4.  Finally, there things that aren't part of the public API, but may be in future.
       This includes e.g., `ksFindHierarchy` or `elektraReadArrayNumber`.
@@ -50,10 +53,14 @@ The big problem is kdbprivate.h. It has two main problems:
       Maybe they are not well-tested, or maybe we just don't want to commit to the function yet.
 
       Symbols belonging to this category should not appear in a public section of the `symbols.map` file.
+      Headers declaring such symbols can be installed, if symbols are in a kind of experimental pre-release cycle.
+      If there is no concrete plan to make symbols public, the headers should, however, not be installed.
 
 ## Considered Alternatives
 
 ## Decision
+
+The decision is split into 4 subsections "Libraries", "Plugins", "Tools" and "Tests", because the different parts of Elektra have different requirements.
 
 ### Libraries
 
@@ -106,6 +113,15 @@ Additionally, all libraries may also have private headers:
 Plugins do not declare their API via header files.
 Their headers are never installed and can be named any way the developer wants.
 
+Importantly, however, headers belonging to plugins must not be used outside the plugin.
+
+### Tools
+
+Tools do not have a C API, so their headers are also never installed.
+Consequently, there are no naming rules for header files belonging to tools.
+
+Just like with plugins, the headers belonging to tools must not be used elsewhere.
+
 ### Tests
 
 For category 2 from above (private but needs to be tested), one of the following should be done:
@@ -144,3 +160,6 @@ This way we don't pollute our `symbols.map` files and keep the number of exporte
 - [Library Directory Structure](library_directory_structure.md)
 
 ## Notes
+
+- The Linux kernel also has many header files with many cross-dependencies.
+  Recently people started to look into the effect of this "dependency hell" on compile time (see [LKML](https://lore.kernel.org/lkml/YdIfz+LMewetSaEB@gmail.com/T/)).

@@ -57,8 +57,11 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
 ## Assumptions
 
 - Modern Compilers work like [GCC](https://gcc.gnu.org/onlinedocs/cpp/Search-Path.html):
+
   - `#include "[header]"` treats `[header]` as file path relative to the current file (as defined by the standard, if such a file doesn't exist there is a fallback to the `<>` behavior)
   - `#include <[header]>` treats `[header]` as file path relative to one of the pre-defined include-paths
+
+- We can write a tool that enforces all rules in this decision, in such a way that new contributors can learn the rules as they go.
 
 ## Considered Alternatives
 
@@ -115,10 +118,11 @@ The entire `build/include/elektra` directory is installed as-is, with the exact 
 
 This is enough for `#include <>`s to work.
 
+But we will create an additional script that enforces that `internal/*` headers are not included from headers in `src/include/elektra`.
 We will also enforce that the path in a `#include ""` always starts with a `./` and does not contain any `/../`.
 
-The rules for `#include ""` do not apply to tests.
-Tests can include anything from anywhere within the code base to allow testing private APIs.
+These include-rules do not apply to tests.
+Tests can include anything (including `.c` files) from anywhere within the code base to allow testing private APIs.
 
 ## Rationale
 
@@ -131,7 +135,7 @@ See also considered alternatives.
 ## Implications
 
 - All installed headers (and only those) must be put into `src/include/elektra`.
-- To enfore the restrictions on the path in an `#include ""`, we will use a simple `grep`-based script that runs as a test case and as an early part of the CI (like e.g., the formatting check).
+- To enforce the restrictions on the path in an `#include ""`, we will use a simple `grep`-based script that runs as a test case and as an early part of the CI (like e.g., the formatting check).
 - There must not be any `#include <internal/...>`s anywhere within `src/include/elektra`.
   This will be enforced by the same `grep`-based script as the paths in `#include ""`.
 
