@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# list_shell_files lists all files which start with a shebang indicating it is a
+# shell script. The output contains one filename per line (assuming no filename
+# contains a linebreak).
+list_shell_scripts() {
+	git ls-tree --full-tree -r -z --name-only HEAD |
+		xargs -0 awk 'BEGIN {pattern = "^#!(/bin/sh|/usr/bin/env [a-z]*sh)$"} FNR==1 && $0 ~ pattern {print FILENAME}'
+}
