@@ -86,10 +86,13 @@ You can install it as follows:
 - on APT-based systems (Ubuntu, Debian):
 
   ```sh
-  apt-get install pdflatex \
-          texlive-fonts-recommended texlive-fonts-extra \
-          texlive-latex-recommended texlive-latex-extra \
-          texlive-math-extra
+  apt-get install \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    texlive-fonts-extra \
+    texlive-science
   ```
 
 ### Plugin dependencies
@@ -424,7 +427,7 @@ For a list of available bindings see
 See help bar at bottom of `ccmake` for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
-### `BUILD_SHARED BUILD_FULL BUILD_STATIC`
+#### `BUILD_SHARED`, `BUILD_FULL` and `BUILD_STATIC`
 
 `BUILD_SHARED` is the typical build you want to have on systems that support `dlopen`.
 It can be used for desktop builds, but also embedded systems as long as they support
@@ -449,7 +452,7 @@ one would use:
 cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 ```
 
-#### BUILD_DOCUMENTATION
+#### `BUILD_DOCUMENTATION`
 
 Build documentation with doxygen (API) and ronn-ng (man pages).
 
@@ -459,6 +462,12 @@ used instead.
 > Note: Turning off building the documentation, also turns off
 > installing the documentation, see https://issues.libelektra.org/2522
 > Then no man pages are available.
+
+#### `BUILD_PDF`
+
+Build documentation with LaTeX.
+
+See [Documentation dependencies](#documentation-dependencies) for the required dependencies.
 
 #### Developer Options
 
