@@ -267,7 +267,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Write about [history](/doc/dev/history.md) to make plans of Elektra's adoption more clear. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
