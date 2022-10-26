@@ -111,8 +111,8 @@ static void init (void) __attribute__ ((constructor));
 static void cleanup (void) __attribute__ ((destructor));
 void init (void)
 {
-	char cwd[PATH_MAX];
-	getcwd (cwd, PATH_MAX);
+	char cwd[KDB_MAX_PATH_LENGTH];
+	getcwd (cwd, KDB_MAX_PATH_LENGTH);
 	KeySet * tmpKS = ksNew (0, KS_END);
 	Key * parentKey = keyNew (PRELOAD_PATH, KEY_END);
 	KDB * handle = kdbOpen (NULL, parentKey);
@@ -218,8 +218,8 @@ static Node * resolvePathname (const char * pathname)
 	Node * node = NULL;
 	if (pathname)
 	{
-		char cwd[PATH_MAX];
-		getcwd (cwd, PATH_MAX);
+		char cwd[KDB_MAX_PATH_LENGTH];
+		getcwd (cwd, KDB_MAX_PATH_LENGTH);
 		char * resolvedPath = NULL;
 		if (pathname[0] != '/')
 		{

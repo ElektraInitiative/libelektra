@@ -169,6 +169,13 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Remove fallback code. _(Markus Raab)_
 - Command-line functionality broken due to new-backend differences.
 - <<TODO>>
+- <<TODO>>
+
+### intercept/fs
+
+- Use `KDB_MAX_PATH_LENGTH` for better portability. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
 
 ### <<Binding>>
 
