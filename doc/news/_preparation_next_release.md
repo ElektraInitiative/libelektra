@@ -173,7 +173,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### intercept/fs
 
-- Use KDB_MAX_PATH_LENGTH for better portability. _(Markus Raab)_
+- Use `KDB_MAX_PATH_LENGTH` for better portability. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
