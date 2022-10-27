@@ -2,7 +2,7 @@
 
 ## Problem
 
-`kdbGet` might return more or less keys than requested.
+`kdbGet` might return more or fewer keys than requested.
 This was found confusing several times.
 
 ### More Keys
@@ -15,9 +15,9 @@ kdbGet (kdb, ks, keyNew("/mountpoint/below"));
 assert (ksLookup (ks, "/mountpoint/other") == NULL);
 ```
 
-If was found unexpected that this assert will fail.
+It was found unexpected that this assert will fail.
 
-### Less Keys
+### Fewer Keys
 
 When doing a second `kdbGet` with a new keyset no keys might be returned, because kdb internally is up-to-date.
 Pseudo code example, assuming there is a key `/somewhere/key`:
@@ -29,7 +29,7 @@ kdbGet (kdb, ks2, keyNew("/somewhere"));
 assert (ksLookup (ks2, "/somewhere/key") != NULL);
 ```
 
-If was found unexpected that the second assert will fail.
+It was found unexpected that the second assert will fail.
 
 ## Constraints
 
@@ -76,7 +76,8 @@ We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset o
 We keep a duplicated keyset in-memory and tag the keys as copy-on-write (COW).
 From this keyset, we use `ksBelow` to return the correct keyset.
 If the user tries to change the keys, the value or metadata gets duplicated, so that the original keyset is not changed.
-The name can stay shared.
+The name is not relevant.
+It is always read-only, because the key is in at least one keyset (the internal one).
 Pseudo code example:
 
 ```
