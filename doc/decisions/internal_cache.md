@@ -20,14 +20,37 @@ It was found unexpected that this assert will fail.
 ### Fewer Keys
 
 When doing a second `kdbGet` with a new keyset no keys might be returned, because kdb internally is up-to-date.
-Pseudo code example, assuming there is a key `/somewhere/key`:
+A unit test by @atmaxinger:
 
 ```
-kdbGet (kdb, ks1, keyNew("/somewhere"));
-assert (ksLookup (ks1, "/somewhere/key") != NULL);
-kdbGet (kdb, ks2, keyNew("/somewhere"));
-assert (ksLookup (ks2, "/somewhere/key") != NULL);
+static void test_doubleGet (void)
+{
+	printf("running %s\n", __func__);
+
+	// Setup
+	Key * parentKey = keyNew("/somewhere", KS_END);
+	KeySet * ks = ksNew(0, KS_END);
+	KDB * kdb = kdbOpen (ksNew(0, KS_END), parentKey);
+	kdbGet (kdb, ks, parentKey);
+	ksAppendKey (ks, keyNew ("user:/somewhere", KEY_VALUE, "abc", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/somewhere/key", KEY_VALUE, "xyz", KEY_END));
+	kdbSet (kdb, ks, parentKey);
+	kdbClose (kdb, parentKey);
+
+	// Scenario
+	kdb = kdbOpen (ksNew(0, KS_END), parentKey);
+
+	KeySet * ks1 = ksNew (0, KS_END);
+	KeySet * ks2 = ksNew (0, KS_END);
+
+	kdbGet (kdb, ks1, keyNew("/somewhere", KEY_END));
+	succeed_if (ksLookupByName (ks1, "/somewhere/key", 0) != NULL, "should find key (1)");
+	kdbGet (kdb, ks2, keyNew("/somewhere", KEY_END));
+	succeed_if (ksLookupByName (ks2, "/somewhere/key", 0) != NULL, "should find key (2)");
+}
 ```
+
+> It actually outputs should find key (2) so the assertion fails.
 
 It was found unexpected that the second assert will fail.
 
@@ -95,6 +118,24 @@ This is already implemented for the MMAP cache, so the implementation should be 
 **Pros:**
 
 - Elektra doesn't require MMAP
+
+### Data restrictions
+
+@kodebach wrote:
+> Make all the keys returned by kdbGet completely read-only.
+> To change the data you need to append an entirely new key to replace the existing one.
+> Then we just need to keep a shallow copy internally.
+
+### API restrictions
+
+@kodebach wrote:
+> Change the API and remove KeySet * from kdbGet and kdbSet (also option 4 in #4574).
+> If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
+> I certainly wouldn't try to asset anything on the contents of a KeySet * that I don't own directly, unless the condition is explicitly documented somewhere.
+
+@markus2330 wrote:
+> I disagree, it is actually the same kind of surprise for "More Keys".
+> Only the "Fewer Keys" would get fixed.
 
 ## Decision
 
