@@ -16,9 +16,11 @@
 
 ## Considered Alternatives
 
-1.
-2.
-3.
+### Alternative A
+
+### Alternative B
+
+### Alternative C
 
 ## Decision
 

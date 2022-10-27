@@ -5,6 +5,8 @@
 Simply discussing in an issue and then implementing a solution is okay for non-substantial changes.
 Substantial decisions, however, must be made in a transparent and participative way.
 
+The main purpose of the decision process is to get a common understanding of the problems and the impacts of possible solutions.
+
 ## Constraints
 
 - All relevant information about decisions must be within Elektra's repository.
@@ -70,6 +72,8 @@ We base our decision process and template on:
 Following subsections describe all steps a decision might run through.
 Only two of them are mandatory.
 
+In all steps we avoid discussions in issues or PRs but directly update the decision text with the different opinions and discuss the text of the decision PR.
+
 We use the template [TEMPLATE.md](TEMPLATE.md).
 Explanations of the template are in [EXPLANATIONS.md](EXPLANATIONS.md).
 
@@ -79,6 +83,8 @@ The first step is to create a PR with:
 
 - **one** decision, where at least the "Problem" and "Considered Alternatives" are filled out.
 - a link from [README.md](README.md) from the "Drafts" section to this decision.
+
+> At least the problem must be clear to everyone involved before the decision can leave the "Drafts" status.
 
 ### In Discussion
 

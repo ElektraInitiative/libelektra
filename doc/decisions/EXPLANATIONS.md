@@ -83,10 +83,15 @@ This can be:
 This section has links to other decisions with description what the relation is.
 Decisions that give constraints must be listed in "Constraints" above.
 
+> Note:
+> Sometimes the best solution is only understood if the relation between decisions becomes clear.
+
 ## Notes
 
 Here is a full list of off-line discussions, issue trackers, PRs etc. related to this decision.
 Preferable it is linked, but if it is not possible, it can also be in full-text here.
 If particular information is important and not present in any sections above, please quote it here.
+
+Any discarded ideas and opinions that are not complete enough to be a "Considered Alternatives" can be written here.
 
 Furthermore, the author, acknowledgements, dates etc. can be written here.
