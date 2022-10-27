@@ -33,7 +33,7 @@ If was found unexpected that the second assert will fail.
 
 ## Constraints
 
-- memory consumption must be low for `kdbGet`, see [4. Goal: Performance](/doc/GOAL.md), in particular, deep duplication is too expensive
+- memory consumption must be low for `kdbGet`, see [4. Goal: Performance](/doc/GOALS.md), in particular, deep duplication is too expensive
 
 ## Assumptions
 
