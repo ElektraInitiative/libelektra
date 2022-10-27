@@ -95,11 +95,14 @@ them, everything else is an extension.
 
 ## 4. Goal: Performance
 
-Accessing configuration settings has impact on bootup and startup-time
-of applications.
-Elektra needs to be similar fast then current solutions.
-Ideally it should get faster because of centralized optimization
-endeavours where everyone using Elektra can benefit from.
+Accessing configuration settings has impact on bootup and startup-time of applications.
+Elektra needs to have similar performance as current solutions.
+Of particular importance is that `kdbGet` invocations:
+
+- are fast
+- have low memory usage
+
+The plugin system has as guideline:
 
 > Only pay for what you need.
 
