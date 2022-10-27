@@ -98,7 +98,8 @@ We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset o
 
 We keep a duplicated keyset in-memory and tag the keys as copy-on-write (COW).
 From this keyset, we use `ksBelow` to return the correct keyset.
-If the user tries to change the keys, the value or metadata gets duplicated, so that the original keyset is not changed.
+If the user tries to change the value or metadata of these keys, the data gets duplicated.
+I.e. the original keyset is not changed.
 The name is not relevant.
 It is always read-only, because the key is in at least one keyset (the internal one).
 Pseudo code example:
