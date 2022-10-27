@@ -13,4 +13,4 @@ cmake -DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="cpp;python;jna" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	"$*"
+	"$@"

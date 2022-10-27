@@ -29,7 +29,7 @@ else
 fi
 
 do_race_test() {
-	RES=$($RACE "$*")
+	RES=$($RACE "$@")
 	succeed_if "$RACE $* did not run successfully with error $?"
 
 	WHERE=user:/test/race/keys

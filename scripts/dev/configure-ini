@@ -16,4 +16,4 @@ cmake -DKDB_DB_FILE="default.ini" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL;-ruby" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	"$*"
+	"$@"

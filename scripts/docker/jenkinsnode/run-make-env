@@ -3,4 +3,4 @@
 set -ex
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
-env -i PATH="$PATH" HOME="$HOME" "$SCRIPTPATH"/run-make "$*"
+env -i PATH="$PATH" HOME="$HOME" "$SCRIPTPATH"/run-make "$@"

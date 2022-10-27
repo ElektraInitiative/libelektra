@@ -14,4 +14,4 @@ cd "$BUILD" || exit
 cmake -DPLUGINS="$XDG_RESOLVER;dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob" \
 	-DKDB_DEFAULT_RESOLVER="$XDG_RESOLVER" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	"$*"
+	"$@"

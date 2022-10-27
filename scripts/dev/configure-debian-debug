@@ -15,4 +15,4 @@ cmake -DPLUGINS="ALL" \
 	-DENABLE_DEBUG="ON" \
 	-DENABLE_LOGGER="ON" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	"$*"
+	"$@"

@@ -30,4 +30,4 @@ cmake -DENABLE_TESTING=OFF \
 	-DCMAKE_PIC_FLAGS="" \
 	-DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	"$*"
+	"$@"

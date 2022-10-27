@@ -18,6 +18,6 @@ cmake -DKDB_DB_USER=".config/kdb/user" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	"$*"
+	"$@"
 
 #-DKDB_DB_SPEC="~/.config/kdb/spec" \ # see ##691

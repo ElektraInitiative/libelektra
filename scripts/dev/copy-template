@@ -75,10 +75,10 @@ do_replacements() {
 	# BSD version of `sed`. Only GNU `sed` supports the switch `--version`.
 	sed --version &> /dev/null && args=(-i) || args=(-i '')
 
-	sed -E "${args[@]}" "s/(CPP)?TEMPLATE/$ALL/g" "$*"
-	sed -E "${args[@]}" "s/(Cpp)?Template/$First/g" "$*"
-	sed -E "${args[@]}" "s/(cpp)?template/$PLUGIN/g" "$*"
-	if [ $CPP ]; then sed -E "${args[@]}" 's/(written in )C/\1C++/g' "$*"; fi
+	sed -E "${args[@]}" "s/(CPP)?TEMPLATE/$ALL/g" "$@"
+	sed -E "${args[@]}" "s/(Cpp)?Template/$First/g" "$@"
+	sed -E "${args[@]}" "s/(cpp)?template/$PLUGIN/g" "$@"
+	if [ $CPP ]; then sed -E "${args[@]}" 's/(written in )C/\1C++/g' "$@"; fi
 }
 
 if [ $CPP ]; then

@@ -1,4 +1,4 @@
 #!/bin/sh
 
 set -ex
-run-nice make -j 1 "$*" VERBOSE=1
+run-nice make -j 1 "$@" VERBOSE=1

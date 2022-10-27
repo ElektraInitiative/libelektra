@@ -15,7 +15,7 @@ if [ -z "$1" ]; then
 fi
 
 measure_time() {
-	{ time -f "%e" "$*" > /dev/null; } 2>&1
+	{ time -f "%e" "$@" > /dev/null; } 2>&1
 }
 
 HOSTSFILE=$(echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")")

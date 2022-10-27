@@ -18,4 +18,4 @@ CC=musl-gcc CXX=g++ cmake \
 	-KDB_DEFAULT_STORAGE=ini \
 	-DTARGET_PLUGIN_FOLDER="" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	"$*"
+	"$@"

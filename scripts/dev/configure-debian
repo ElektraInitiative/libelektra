@@ -14,4 +14,4 @@ cmake \
 	-DTOOLS="ALL" \
 	-DENABLE_DEBUG="OFF" \
 	-DENABLE_LOGGER="OFF" \
-	"$*"
+	"$@"
