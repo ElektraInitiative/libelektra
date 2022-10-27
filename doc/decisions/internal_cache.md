@@ -19,7 +19,7 @@ It was found unexpected that this assert will fail.
 
 ### Fewer Keys
 
-When doing a second `kdbGet` with a new keyset no keys might be returned, because kdb internally is up-to-date.
+When doing a second `kdbGet` with a new keyset no keys will be returned when no backends report changed data, because kdb internally thinks the data is already up-to-date.
 A unit test by @atmaxinger:
 
 ```
