@@ -113,7 +113,8 @@ assert (keySetName (key_dup, "dir:/valid") == -1); // must fail, as we have a CO
 assert (keyName(key) == keyName(key_dup)); // stays always valid
 ```
 
-This is already implemented for the MMAP cache, so the implementation should be straightforward (do the same COW duplications as done for MMAP).
+This is already implemented for the MMAP cache, so the implementation should be straightforward:
+Do the same COW duplications as done for MMAP but with a different flag.
 
 **Pros:**
 
