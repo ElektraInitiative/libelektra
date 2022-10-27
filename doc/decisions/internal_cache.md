@@ -124,6 +124,7 @@ Do the same COW duplications as done for MMAP but with a different flag.
 ### Data restrictions
 
 @kodebach wrote:
+
 > Make all the keys returned by kdbGet completely read-only.
 > To change the data you need to append an entirely new key to replace the existing one.
 > Then we just need to keep a shallow copy internally.
@@ -131,11 +132,13 @@ Do the same COW duplications as done for MMAP but with a different flag.
 ### API restrictions
 
 @kodebach wrote:
-> Change the API and remove KeySet * from kdbGet and kdbSet (also option 4 in #4574).
+
+> Change the API and remove KeySet from kdbGet and kdbSet (also option 4 in #4574).
 > If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
-> I certainly wouldn't try to asset anything on the contents of a KeySet * that I don't own directly, unless the condition is explicitly documented somewhere.
+> I certainly wouldn't try to asset anything on the contents of a KeySet that I don't own directly, unless the condition is explicitly documented somewhere.
 
 @markus2330 wrote:
+
 > I disagree, it is actually the same kind of surprise for "More Keys".
 > Only the "Fewer Keys" would get fixed.
 
