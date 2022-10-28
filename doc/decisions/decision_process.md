@@ -27,7 +27,7 @@ The main purpose of the decision process is to get a common understanding of the
 - For reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
-- Decision PRs do not significantly change anything but one decision to make discussions clearly structured.
+- Decision PRs do not significantly change anything but one decision.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone else as the person that created the decision.
 
