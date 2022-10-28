@@ -95,4 +95,4 @@ In theory the same issue with the 'key needs sync' flag based change tracking ap
 ## Notes
 
 - [Issue #404](https://issues.libelektra.org/404) - dbus and rename plugin do not work together
-- [Issue #955](https://issues.libelektra.ort/955) - dbus: non-UTF8 key names 
+- [Issue #955](https://issues.libelektra.org/955) - dbus: non-UTF8 key names 
