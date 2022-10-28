@@ -92,6 +92,7 @@ Here is a full list of off-line discussions, issue trackers, PRs etc. related to
 Preferable it is linked, but if it is not possible, it can also be in full-text here.
 If particular information is important and not present in any sections above, please quote it here.
 
-Any discarded ideas and opinions that are not complete enough to be a "Considered Alternatives" can be written here.
+Any discarded, incomplete and unexplored ideas/opinions, which are not complete enough to be "Considered Alternatives", can be written here.
+For example, if it is obvious that the idea does not even solve the problem.
 
 Furthermore, the author, acknowledgements, dates etc. can be written here.
