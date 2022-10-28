@@ -436,7 +436,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Upgrade Jenkins node container to Debian bullseye _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
