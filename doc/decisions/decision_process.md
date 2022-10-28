@@ -60,7 +60,7 @@ The main purpose of the decision process is to get a common understanding of the
 
 - Issues like https://issues.libelektra.org/4521
 - GitHub discussions
-- Voting in Meetings
+- Votings
 - The maintainer decides
 - PEPs: https://peps.python.org
 - RFCs: https://www.ietf.org/standards/rfcs/
