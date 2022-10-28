@@ -72,7 +72,8 @@ We base our decision process and template on:
 Following subsections describe all steps a decision might run through.
 Only two of them are mandatory.
 
-In all steps we avoid discussions in issues or PRs but directly update the decision text with the different opinions and discuss the text of the decision PR.
+In all steps we directly update the decision text with the different opinions.
+Discussions should focus on the decision text so that the text evolves with the opinions.
 
 We use the template [TEMPLATE.md](TEMPLATE.md).
 Explanations of the template are in [EXPLANATIONS.md](EXPLANATIONS.md).
@@ -142,6 +143,10 @@ These decision PRs are also merged for documentation purposes.
 - PRs allow to suggest changes and review individual sentences of the decision.
 - Several "Related Decisions" are very important even if everyone agrees on one solution.
   They allow reviewers and future readers of the decision to understand which options were considered and why they were rejected.
+- The decision process is focused around the decision text (and not forum-like discussions), so that:
+  - The resulting text is understandable without reading any discussions.
+  - There is a common understanding after only reading the decision text.
+  - To avoid any gaps of reading discussions and the decision.
 
 ## Implications
 
@@ -154,7 +159,7 @@ These decision PRs are also merged for documentation purposes.
 
 ## Notes
 
-- Early discussions in issues or in discussions is not prohibited.
+- Discussions in issues/discussions are not prohibited.
   They don't bring a decision forward, though.
   To not waste time, it is recommended to start with the decision process as described here asap.
 
