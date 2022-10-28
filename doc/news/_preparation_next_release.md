@@ -300,7 +300,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Update [internal cache](/doc/decisions/internal_cache.md) _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
