@@ -96,5 +96,6 @@ If particular information is important and not present in any sections above, pl
 
 Any discarded, incomplete and unexplored ideas/opinions, which are not complete enough to be "Considered Alternatives", can be written here.
 For example, if it is obvious that the idea does not even solve the problem.
+Unlike the main decisions and considered alternatives text in the notes does not need rationale.
 
 Furthermore, the author, acknowledgements, dates etc. can be written here.
