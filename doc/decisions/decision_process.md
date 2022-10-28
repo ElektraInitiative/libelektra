@@ -53,6 +53,8 @@ The main purpose of the decision process is to get a common understanding of the
   So we do not expect that a clear problem or solution is in the decision writer's mind beforehand.
   Instead the decision process is a supported learning process.
 - People focus on getting the best solutions and not to wish for the impossible.
+- People creating decision PRs have strong motives to also finish it.
+  They take extra effort on them to be clear about the problem and find the best solution.
 - After 1.0, due to stability guarantees, not so many decisions are required anymore.
   People are free to reimplement the libraries or plugins of Elektra if they disagree with Elektra's [quality goals](/doc/GOALS.md) and still help with our vision.
 
