@@ -44,8 +44,8 @@ The main purpose of the decision process is to get a common understanding of the
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
 - People writing or reviewing decisions want Elektra to improve, so they also want to accept (acceptable) decisions.
-  In general people want change if it brings Elektra towards its [goals](/doc/GOALS.md) (but doesn't violate Elektra's stability guarantees).
-- We will always be able to reach an consensus.
+  In general people want change if it brings Elektra towards its [goals](/doc/GOALS.md).
+- We will always be able to reach an consensus even if it requires that the core or plugins get multiple implementations.
   We don't need a vote (besides the approved review) or a benevolent dictatorship.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
   Only the end results counts.
@@ -53,6 +53,8 @@ The main purpose of the decision process is to get a common understanding of the
   So we do not expect that a clear problem or solution is in the decision writer's mind beforehand.
   Instead the decision process is a supported learning process.
 - People focus on getting the best solutions and not to wish for the impossible.
+- After 1.0, due to stability guarantees, not so many decisions are required anymore.
+  People are free to reimplement the libraries or plugins of Elektra if they disagree with Elektra's [quality goals](/doc/GOALS.md) and still help with our vision.
 
 ## Considered Alternatives
 
@@ -173,4 +175,5 @@ These decision PRs are also merged for documentation purposes.
   They don't bring a decision forward, though.
   To not waste time, it is recommended to start with the decision process as described here asap.
 
-Written by Markus Raab 10.10.2022
+Written by Markus Raab 10.10.2022.
+Second discussion round 28.10.2022.
