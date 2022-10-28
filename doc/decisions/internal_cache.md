@@ -22,7 +22,7 @@ It was found unexpected that this assert will fail.
 When doing a second `kdbGet` with a new keyset no keys will be returned when no backends report changed data, because kdb internally thinks the data is already up-to-date.
 A unit test by @atmaxinger:
 
-```
+```c
 static void test_doubleGet (void)
 {
 	printf("running %s\n", __func__);
@@ -104,9 +104,9 @@ The name is not relevant.
 It is always read-only, because the key is in at least one keyset (the internal one).
 Pseudo code example:
 
-```
+```c
 Key * key = keyNew ("dir:/something", KEY_VALUE, "my value", KEY_END);
-keyCopy (key_dup, key, ELEKTRA_COW);
+keyCopy (key_dup, key, ELEKTRA_CP_COW);
 assert (keyString(key) == keyString(key_dup));
 keySetString (key_dup, "other value"); // COW done here
 assert (keyString(key) != keyString(key_dup));
@@ -116,6 +116,21 @@ assert (keyName(key) == keyName(key_dup)); // stays always valid
 
 This is already implemented for the MMAP cache, so the implementation should be straightforward:
 Do the same COW duplications as done for MMAP but with a different flag.
+
+@kodebach wrote:
+
+> What I wanted to say is that mmap already does COW, so we can reuse the code and probably the flag.
+> If there is some code that is only needed for mmap and not COW, we could make mmap set two flags one for mmap and one for the general COW code.
+
+For the metadata, however, also COW KeySets might be needed (at least with the current API).
+Example:
+
+```c
+keyCopy (cow, key, ELEKTRA_CP_COW);
+KeySet * cowMeta = keyMeta (cow);
+ksAppendKey (cowMeta, keyNew ("meta:/whatever", KEY_VALUE, "abc", KEY_END));
+ksRemoveByName (cowMeta, "meta:/type");
+```
 
 **Pros:**
 
@@ -133,7 +148,7 @@ Do the same COW duplications as done for MMAP but with a different flag.
 
 @kodebach wrote:
 
-> Change the API and remove KeySet from kdbGet and kdbSet (also option 4 in #4574).
+> Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [#4574](https://pull.libelektra.org/4574).
 > If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
 > I certainly wouldn't try to asset anything on the contents of a KeySet that I don't own directly, unless the condition is explicitly documented somewhere.
 
@@ -158,7 +173,13 @@ Semantics can be provided without additional code or overhead in the core.
 
 ## Notes
 
+Problem "Fewer Keys" was found to be a ["horrible problem"](https://pull.libelektra.org/4619)
+
 Issues where the problem described here was found confusing:
 
 - [#760](https://issues.libelektra.org/760)
 - [#1363](https://issues.libelektra.org/1363)
+
+@mpranj wrote about the performance for `MMAP Cache without parent key`:
+
+> in my benchmarks the pointer correction was never a bottleneck.
