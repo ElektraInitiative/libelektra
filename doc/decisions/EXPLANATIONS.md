@@ -81,10 +81,12 @@ This can be:
 ## Related Decisions
 
 This section has links to other decisions with description what the relation is.
+One-side relations are allowed, not every decision must link back.
 Decisions that give constraints must be listed in "Constraints" above.
 
 > Note:
 > Sometimes the best solution is only understood if the relation between decisions becomes clear.
+> Make sure that everything that requires updates to a decision, is listed as "Constraints" or "Assumptions".
 
 ## Notes
 
