@@ -30,6 +30,15 @@ The main purpose of the decision process is to get a common understanding of the
 - Decision PRs do not significantly change anything but one decision.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone else as the person that created the decision.
+- The purpose of decisions is to have clear descriptions of technical problems and solutions.
+  There is no claim that decisions contain everything that was said.
+  In particular corrections of wrong decision text is, if at all, only visible via git history.
+  Rather it is important that decisions:
+  - contain everything relevant, and
+  - what is written is technically correct.
+- Participants are explicitly allowed to skip discussions and only read the decisions text.
+  If the problem is not yet clear, only partial reviews are encouraged.
+  @markus2330 will do so of time budget reasons and to make sure the decisions stay understandable.
 
 ## Assumptions
 
@@ -43,6 +52,7 @@ The main purpose of the decision process is to get a common understanding of the
 - Different to initiatives like Rust, most contributors in Elektra are not experts in configuration management or programming languages.
   So we do not expect that a clear problem or solution is in the decision writer's mind beforehand.
   Instead the decision process is a supported learning process.
+- People focus on getting the best solutions and not to wish for the impossible.
 
 ## Considered Alternatives
 
