@@ -12,7 +12,7 @@ The main purpose of the decision process is to get a common understanding of the
 - All relevant information about decisions must be within Elektra's repository.
 - All decisions must go through at least two review rounds, with a merge in between.
 - At least two people need to approve the decision in each round.
-- [Documentation guidelines](https://www.libelektra.org/devgettingstarted/documentation) apply.
+- [Documentation guidelines](../contrib/documentation) apply.
 - During the decision process, the PRs constantly get updated:
   - Make changes as new commits to the pull request.
   - Questions in the PRs are answered by:
