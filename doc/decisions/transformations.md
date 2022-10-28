@@ -90,7 +90,7 @@ In theory the same issue with the 'key needs sync' flag based change tracking ap
 
 - [Hooks](hooks.md)
 - [Change Tracking](https://github.com/ElektraInitiative/libelektra/pull/4554)
-- []()
+- [Internal Cache](internal_cache.md)
 
 ## Notes
 
