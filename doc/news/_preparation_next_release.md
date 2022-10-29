@@ -444,7 +444,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### GitHub Actions
 
-- <<TODO>>
+- Add auto-cancellation-running action. _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
