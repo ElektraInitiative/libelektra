@@ -27,18 +27,20 @@ The main purpose of the decision process is to get a common understanding of the
 - For reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
-- Decision PRs do not significantly change anything but one decision.
+- Decision PRs only contain a single decision and changes directly related to the decision. (e.g. adding it as a "Related Decision" elsewhere)
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
-- The person merging the decision PR must be someone else as the person that created the decision.
+- The person merging the decision PR must be someone other than the person that created the decision.
 - The purpose of decisions is to have clear descriptions of technical problems and solutions.
   There is no claim that decisions contain everything that was said.
   In particular corrections of wrong decision text is, if at all, only visible via git history.
   Rather it is important that decisions:
   - contain everything relevant, and
   - what is written is technically correct.
-- Participants are explicitly allowed to skip discussions and only read the decisions text.
-  If the problem is not yet clear, only partial reviews are encouraged.
-  @markus2330 will do so of time budget reasons and to make sure the decisions stay understandable.
+- Reviewers are only required to read the files in the PR.
+  They may ignore the discussions surrounding the decision.
+  Reviews should focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
+  It is encouraged that at least one reviewer provides a review _without_ participating in the discussion.
+  This ensures that there aren't any unintentional shared assumptions between discussion participants.
 
 ## Assumptions
 
