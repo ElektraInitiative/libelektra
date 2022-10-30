@@ -5,14 +5,17 @@
 Simply discussing in an issue and then implementing a solution is okay for non-substantial changes.
 Substantial decisions, however, must be made in a transparent and participative way.
 
-The main purpose of the decision process is to get a common understanding of the problems and the impacts of possible solutions.
-
-## Terminology
+### Terminology
 
 - `Decision`:
   A text file which contains the content as [explained here](EXPLANATIONS.md).
 - `Decision PR`:
   A pull request that contains changes for decisions.
+
+### Main Purpose
+
+- of decisions is to have clear descriptions of technical problems and solutions.
+- of the decision process is to get a common understanding of the problems and the impacts of possible solutions.
 
 ## Constraints
 
@@ -38,7 +41,6 @@ The main purpose of the decision process is to get a common understanding of the
   Small exceptions like backlinks from other decisions are okay, though.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone other than the person that created the decision.
-- The purpose of decisions is to have clear descriptions of technical problems and solutions.
   There is no claim that decisions contain everything that was said.
   In particular corrections of wrong decision text is, if at all, only visible via git history.
   Rather it is important that decisions:
