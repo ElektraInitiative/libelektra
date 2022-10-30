@@ -94,8 +94,8 @@ Here is a full list of off-line discussions, issue trackers, PRs etc. related to
 Preferable it is linked, but if it is not possible, it can also be in full-text here.
 If particular information is important and not present in any sections above, please quote it here.
 
-Any discarded, incomplete and unexplored ideas/opinions, which are not complete enough to be "Considered Alternatives", can be written here.
+Any incomplete and unexplored idea/opinion, which is not complete enough to be in "Considered Alternatives", can be written here.
 For example, if it is obvious that the idea does not even solve the problem.
-Unlike the main decisions and considered alternatives text in the notes does not need rationale.
+Unlike the main decisions and considered alternatives, text in the notes does not need rationale.
 
 Furthermore, the author, acknowledgements, dates etc. can be written here.
