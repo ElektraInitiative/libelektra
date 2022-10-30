@@ -4,6 +4,8 @@
 
 Simply discussing in an issue and then implementing a solution is okay for non-substantial changes.
 Substantial decisions, however, must be made in a transparent and participative way.
+Discussing fundamental problems in forum-like threads showed to be repetitive and ineffective.
+Decisions by supervisors are undemocratic and decisions in meetings are nontransparent for the outside world.
 
 ### Terminology
 
