@@ -64,6 +64,8 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
 ## Assumptions
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
+- Decision authors have some scientific background and want decisions based on science, and not only on opinions.
+- If assumptions, including this ones written here, are broken, decisions will be redone.
 - Decision authors and reviewers want Elektra to improve, so they also want to accept (acceptable) decisions.
   In general people want change if it brings Elektra towards its [goals](/doc/GOALS.md).
 - All decision reviewers want to help the decision authors to write a good decision.
