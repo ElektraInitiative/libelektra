@@ -7,6 +7,13 @@ Substantial decisions, however, must be made in a transparent and participative 
 
 The main purpose of the decision process is to get a common understanding of the problems and the impacts of possible solutions.
 
+## Terminology
+
+- `Decision`:
+  A text file which contains the content as [explained here](EXPLANATIONS.md).
+- `Decision PR`:
+  A pull request that contains changes for decisions.
+
 ## Constraints
 
 - All relevant information about decisions must be within Elektra's repository.
@@ -27,7 +34,8 @@ The main purpose of the decision process is to get a common understanding of the
 - For reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
-- Decision PRs only contain a single decision and changes directly related to the decision. (e.g. adding it as a "Related Decision" elsewhere)
+- Decision PRs only modify a *single* decision.
+  Small exceptions like backlinks from other decisions are okay, though.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone other than the person that created the decision.
 - The purpose of decisions is to have clear descriptions of technical problems and solutions.
