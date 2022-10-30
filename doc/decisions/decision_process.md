@@ -46,6 +46,9 @@ Substantial decisions, however, must be made in a transparent and participative 
   Rather it is important that decisions:
   - contain everything relevant, and
   - what is written is technically correct.
+- Usually no decisions are needed for libraries, plugins, tools or bindings if:
+  - they are similar to already existing modules (e.g. yet another checker plugin)
+  - if they reimplement some existing module (e.g. reimplementation in other programming languages)
 - Reviewers are only required to read the files in the PR.
   They may ignore the discussions surrounding the decision.
   Reviews should focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
@@ -67,8 +70,6 @@ Substantial decisions, however, must be made in a transparent and participative 
 - People focus on getting the best solutions and not to wish for the impossible.
 - People creating decision PRs have strong motives to also finish it.
   They take extra effort on them to be clear about the problem and find the best solution.
-- After 1.0, due to stability guarantees, not so many decisions are required anymore.
-  People are free to reimplement the libraries or plugins of Elektra if they disagree with Elektra's [quality goals](/doc/GOALS.md) and still help with our vision.
 
 ## Considered Alternatives
 
