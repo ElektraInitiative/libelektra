@@ -6,7 +6,7 @@ Our man pages are written as Markdown in `doc/help` and then converted to roff a
 These are the only generated files in our version control system.
 Having such files is a problematic workaround, which was introduced because `ronn-ng` is not available on most distributions.
 The poor availability of the package `ronn-ng` is a problem because distributions usually build packages by exclusively relying on other packages of the distribution.
-E.g. `dpkg-buildpackage` must work with only `deb` packages installed (and not any packages via `gem`).
+E.g. `dpkg-buildpackage` must work with only `deb` packages installed (and not any packages via `gem`, as would be needed to get `ronn-ng v0.10.1`).
 
 We have a mechanism to automatically disable (re)building man pages.
 But we want to avoid that distributions build packages without man pages, hence we added the generated files.
