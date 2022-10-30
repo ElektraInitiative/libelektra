@@ -2,13 +2,22 @@
 
 ## Problem
 
-Our man pages are written as Markdown in doc/help and then converted to roff and stored in doc/man.
-This was a workaround, because `ronn-ng` isn't available on most distributions and we want to avoid packages without man pages are being built.
-Storing generated files is annoying, as it requires:
+Our man pages are written as Markdown in `doc/help` and then converted to roff and stored in `doc/man`.
+These are the only generated files in our version control system.
+Having such files is a problematic workaround, which was introduced because `ronn-ng` is not available on most distributions.
+The poor availability of the package `ronn-ng` is a problem because distributions usually build packages by exclusively relying on other packages of the distribution.
+E.g. `dpkg-buildpackage` must work with only `deb` packages installed (and not any packages via `gem`).
+
+We have a mechanism to automatically disable (re)building man pages.
+But we want to avoid that distributions build packages without man pages, hence we added the generated files.
+
+Storing generated files, however, is problematic, as it requires:
 
 - developers to always update generated files if the sources are changed
-- developers not committing irrelevant changes to generated files (e.g. as may occur with different CMAKE_INSTALL_PREFIX etc.)
+- developers not committing irrelevant changes to generated files (e.g. as may occur with different `CMAKE_INSTALL_PREFIX` etc.)
 - require extra effort for continuous integration, e.g. [#4542](https://issues.libelektra.org/4542)
+
+TODO: everything below is draft, please don't comment on it.
 
 ## Constraints
 
