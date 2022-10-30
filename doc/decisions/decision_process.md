@@ -13,6 +13,10 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
   A text file which contains the content as [explained here](EXPLANATIONS.md).
 - `Decision PR`:
   A pull request that contains changes for decisions.
+- `Decision author`:
+  Is the person who creates the decision PR.
+- `Decision reviewer`:
+  Is the person who reviews the decision PR.
 
 ### Main Purpose
 
@@ -36,7 +40,7 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
        Committing a suggestion directly on GitHub does this automatically.
   - As generally recommended in Elektra, do not squash commits after they are visible on the pull request.
   - Rebase only if the decision was already accepted and has a merge conflict.
-- For reviewers:
+- For decision reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
 - Decision PRs only modify a *single* decision.
@@ -54,14 +58,17 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
 - Reviewers are only required to read the files in the PR.
   They may ignore the discussions surrounding the decision.
   Reviews should focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
-  It is encouraged that at least one reviewer provides a review _without_ participating in the discussion.
+  It is encouraged that at least one decision reviewer provides a review _without_ participating in the discussion.
   This ensures that there aren't any unintentional shared assumptions between discussion participants.
 
 ## Assumptions
 
 - People want to be informed about or even participate in what Elektra looks like in the future.
-- People writing or reviewing decisions want Elektra to improve, so they also want to accept (acceptable) decisions.
+- Decision authors and reviewers want Elektra to improve, so they also want to accept (acceptable) decisions.
   In general people want change if it brings Elektra towards its [goals](/doc/GOALS.md).
+- All decision reviewers want to help the decision authors to write a good decision.
+- Decision authors are the main force behind a decision and possibly also of specific solutions.
+  Nevertheless they don't want to avoid other solutions, are open to arguments/facts/etc. and incorporate all input of decision PR fairly.
 - We will always be able to reach an consensus even if it requires that the core or plugins get multiple implementations.
   We don't need a vote (besides the approved review) or a benevolent dictatorship.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
