@@ -105,15 +105,18 @@ Discussions should focus on the decision text so that the text evolves with the 
 We use the template [TEMPLATE.md](TEMPLATE.md).
 Explanations of the template are in [EXPLANATIONS.md](EXPLANATIONS.md).
 
+We use following steps for decision PRs:
+
 ### Drafts
 
 The first step is to create a PR with:
 
-- **one** decision, where at least the "Problem" is filled out.
+- **one** decision, where at least the "Problem" is filled out and "Decision", "Rationale" and "Implications" are **not** yet filled out.
 - a link from [README.md](README.md) from the "Drafts" section to this decision.
 - optional backlinks from related decisions.
 
 > At least the problem must be clear to everyone involved before the decision can leave the "Drafts" status.
+> It must be so clear that everyone would be able to write a test case that shows if a solution fixes the problem.
 
 ### In Discussion
 
@@ -121,14 +124,14 @@ The first step is to create a PR with:
 
 Here you must ensure:
 
+- problem, constraint and assumptions are well-explained and sound
 - consistency with other decisions
 - links from/to related decisions are created
-- problem, constraint and assumptions are fully described and sound
 - there are several considered alternatives, each with rationale and implication
-- decision, rationale and implications is **not** yet filled out if there are people arguing for different options (to keep the discussion unbiased)
+- "Decision", "Rationale" and "Implications" are **not** yet filled out if there are people arguing for different options
 
-Here "the decision" should not only have one decision but should describe several solutions.
-For each solution a proposal, rationale and implication should be given.
+Here the decision should not only have one decision but should describe several solutions.
+For each solution a proposal, rationale and optionally implications should be given.
 
 ### In Progress
 
@@ -139,7 +142,7 @@ For each solution a proposal, rationale and implication should be given.
 
 > This step is recommended.
 
-- decision, rationale and implication are now filled out and fixed according to the reviews
+- "Decision", "Rationale" and "Implications" are now filled out and fixed according to the reviews
 - decisions of this status usually already have an implementation PR
 
 ### Partially Implemented
@@ -168,6 +171,7 @@ These decision PRs are also merged for documentation purposes.
 - The template makes sure important points are not forgotten.
 - Every decision is by design in its own file with its own git history.
 - PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected PRs).
+- "Decision", "Rationale" and "Implications" are filled out later to keep the discussion unbiased
 - PRs allow to suggest changes and review individual sentences of the decision.
 - Several "Related Decisions" are very important even if everyone agrees on one solution.
   They allow reviewers and future readers of the decision to understand which options were considered and why they were rejected.
