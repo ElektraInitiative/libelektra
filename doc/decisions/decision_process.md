@@ -195,6 +195,8 @@ These decision PRs are also merged for documentation purposes.
 - The decision process creates at least:
   - two chances to comment decisions, and
   - two commits in the git history.
+- It might be a barrier for newcomers to write a decision.
+  This is considered to be okay, as topics that need a decision are not the topics for newcomers.
 
 ## Related Decisions
 
