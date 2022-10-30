@@ -43,7 +43,7 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
 - For decision reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
-- Decision PRs only modify a *single* decision.
+- Decision PRs only modify a _single_ decision.
   Small exceptions like backlinks from other decisions are okay, though.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone other than the person that created the decision.
