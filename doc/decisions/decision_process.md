@@ -109,8 +109,9 @@ Explanations of the template are in [EXPLANATIONS.md](EXPLANATIONS.md).
 
 The first step is to create a PR with:
 
-- **one** decision, where at least the "Problem" and "Considered Alternatives" are filled out.
+- **one** decision, where at least the "Problem" is filled out.
 - a link from [README.md](README.md) from the "Drafts" section to this decision.
+- optional backlinks from related decisions.
 
 > At least the problem must be clear to everyone involved before the decision can leave the "Drafts" status.
 
