@@ -28,7 +28,7 @@ TODO: everything below is draft, please don't comment on it.
 
 ## Considered Alternatives
 
-0. `ronn-ng`, which doesn't have packages on most distribution (violates constraint 2.) and thus created this problem
+0. staying with `ronn-ng` but add the man pages only in the release tarballs but not to `git`
 1. Write a tool that converts our specification, similar to [pythongen](/src/tools/pythongen/template/template.man)
 2. Write a tool that parses gopts `--help` output
 3. [help2man](https://www.gnu.org/software/help2man/)
