@@ -9,6 +9,10 @@ env:
   # Skip homebrew cleanup to avoid issues with removal of packages
   HOMEBREW_NO_INSTALL_CLEANUP: 1
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     # The CMake configure and build commands are platform agnostic and should work equally
