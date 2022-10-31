@@ -65,9 +65,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Removed the `list` plugin. _(Maximilian Irlinger @atmaxinger)_
 
-### <<Plugin>>
+### logchange
 
-- <<TODO>>
+- Made logchange a notification-send hook plugin _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
