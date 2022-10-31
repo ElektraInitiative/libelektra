@@ -107,16 +107,14 @@ We base our decision process and template on:
 - [ADR](https://adr.github.io/), and
 - [RFCs in rust-lang](https://github.com/rust-lang/rfcs).
 
-Following subsections describe all steps a decision might run through.
-Only two of them are mandatory.
-
-In all steps we directly update the decision text with the different opinions.
-Discussions should focus on the decision text so that the text evolves with the opinions.
-
 We use the template [TEMPLATE.md](TEMPLATE.md).
 Explanations of the template are in [EXPLANATIONS.md](EXPLANATIONS.md).
 
-We use following steps for decision PRs:
+Following subsections describe all steps a decision might run through.
+Each step requires two reviews and the merging of the decision PR.
+
+In each step we directly update the decision text with the different opinions.
+Discussions should focus on the decision text so that the text evolves with the opinions.
 
 ### Drafts
 
