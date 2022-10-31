@@ -19,7 +19,7 @@ The problem, in general, can be described as: Which phase of the KDB should be u
 
 ### Observed problems with changing key names
 
-For example, the `rename` plugin supports different transformations for `get` and `set`.
+For example, the [`rename` plugin](../../src/plugins/rename/README.md) supports different transformations for `get` and `set`.
 The plugin is executed in the post-storage phase for the `get` operation and the pre-storage phase for the `set` operation.
 We can instruct it to convert the keynames to lowercase in the `get` operation, and to UPPERCASE in the `set` operation.
 This results in the keys being in UPPERCASE in the configuration files, but they are presented in lowercase to other plugins and applications using the Elektra API.
