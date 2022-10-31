@@ -35,8 +35,10 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 			keyNew ("system:/elektra/modules/logchange/exports", KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports/commit", KEY_FUNC, elektraLogchangeCommit, KEY_END),
-			keyNew ("system:/elektra/modules/logchange/exports/hook/notification/send/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
-			keyNew ("system:/elektra/modules/logchange/exports/hook/notification/send/set", KEY_FUNC, elektraLogchangeCommit, KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/hook/notification/send/get", KEY_FUNC, elektraLogchangeGet,
+				KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/hook/notification/send/set", KEY_FUNC, elektraLogchangeCommit,
+				KEY_END),
 			keyNew ("system:/elektra/modules/logchange/exports/close", KEY_FUNC, elektraLogchangeClose, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/logchange/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
