@@ -28,7 +28,6 @@ For example, here is a configuration file with a hypothetical format:
 
 ```
 /DISPLAY/BRIGHTNESS = 100
-/DISPLAY/COLOR = #FFFFFF
 ``` 
 
 As can be seen, the keys are in UPPERCASE within the configuration file.
