@@ -54,6 +54,7 @@ task:
       bison
       cmake
       flex
+      gcc12
       git
       libgit2
       llvm12
