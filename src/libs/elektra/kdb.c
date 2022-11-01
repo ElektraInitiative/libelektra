@@ -1596,8 +1596,8 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * @pre The KeySet @p returned must be a valid KeySet, i.e., constructed with ksNew().
  * @pre The KeySet @p returned must contain keys only from the `spec:/`, `dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
  * @pre The Key @p parentKey must be a valid Key, i.e., constructed with keyNew().
- * @pre The @p parentKey Key must not have read-only name, value or metadata.
- * @pre The @p parentKey Key must use the `spec:/`, `dir:/`, `user:/`, `system:/`,
+ * @pre The Key @p parentKey must not have read-only name, value or metadata.
+ * @pre The Key @p parentKey must use the `spec:/`, `dir:/`, `user:/`, `system:/`,
  * 	`default:/`, `proc:/` or cascading namespace.
  *
  * If you pass `NULL` or a key with read-only metadata as @p parentKey,
@@ -1626,7 +1626,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * Everything that is at or below @p parentKey wil be loaded together with any key
  * that shares a backend with such a key. Backends are always loaded as an atomic unit.
  *
- * @note If @p parentKey is in the cascading namespace, keys of all loadable namespaces (see above) will be loaded. 
+ * @note If @p parentKey is in the cascading namespace, keys of all loadable namespaces (see above) will be loaded.
  *       This is generally the recommended approach.
  *
  * Upon sucessfully returning kdbGet() also sets the value of @p parentKey to the storage identifier used
@@ -2191,9 +2191,9 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  * @pre The KeySet @p returned must be a valid KeySet, i.e., constructed with ksNew().
  * @pre The KeySet @p returend must only contain only keys in the `spec:/`,
  * 	`dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
- * @pre The @p parentKey Key must be a valid Key, e.g. constructed with keyNew().
- * @pre The @p parentKey Key must not have read-only name, value or metadata.
- * @pre The @p parentKey Key must use the `spec:/`, `dir:/`, `user:/`, `system:/`,
+ * @pre The Key @p parentKey must be a valid Key, e.g. constructed with keyNew().
+ * @pre The Key @p parentKey must not have read-only name, value or metadata.
+ * @pre The Key @p parentKey must use the `spec:/`, `dir:/`, `user:/`, `system:/`,
  * 	`default:/`, `proc:/` or cascading namespace.
  *
  * If you pass `NULL` or a key with read-only metadata as @p parentKey,
