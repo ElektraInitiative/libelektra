@@ -81,12 +81,21 @@ This can be:
 ## Related Decisions
 
 This section has links to other decisions with description what the relation is.
+One-side relations are allowed, not every decision must link back.
 Decisions that give constraints must be listed in "Constraints" above.
+
+> Note:
+> Sometimes the best solution is only understood if the relation between decisions becomes clear.
+> Make sure that everything that requires updates to a decision, is listed as "Constraints" or "Assumptions".
 
 ## Notes
 
 Here is a full list of off-line discussions, issue trackers, PRs etc. related to this decision.
 Preferable it is linked, but if it is not possible, it can also be in full-text here.
 If particular information is important and not present in any sections above, please quote it here.
+
+Any incomplete and unexplored idea/opinion, which is not complete enough to be in "Considered Alternatives", can be written here.
+For example, if it is obvious that the idea does not even solve the problem.
+Unlike the main decisions and considered alternatives, text in the notes does not need rationale.
 
 Furthermore, the author, acknowledgements, dates etc. can be written here.
