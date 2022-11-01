@@ -134,4 +134,4 @@ In general we use [arc42.org](https://arc42.org/) but we use specialized templat
 - [libs](/src/libs/template/README.md)
 - [bindings](/src/bindings/template/README.md)
 - [tools](/src/tools/template/README.md)
-- [decisions](/doc/decisions/template.md)
+- [decisions](/doc/decisions/TEMPLATE.md)
