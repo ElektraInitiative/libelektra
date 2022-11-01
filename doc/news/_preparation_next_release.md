@@ -289,7 +289,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
 - draft for [man pages](/doc/decisions/man_pages.md) _(Markus Raab)_
 - <<TODO>>
-- Add decision for [change tracking](/doc/decision/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
+- Add decision for [change tracking](/doc/decisions/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
