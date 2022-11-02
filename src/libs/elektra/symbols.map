@@ -9,6 +9,13 @@ libelektra_0.8 {
 	elektraPluginGetFunction;
 	elektraPluginOpen;
 
+	# kdbmount.h
+	cProcessArguments;
+	cGetMountpoint;
+	cBuildBackend;
+	cOutputMtab;
+	getMountConfig;
+
 	# kdbhelper.h
 	elektraCalloc;
 	elektraFormat;

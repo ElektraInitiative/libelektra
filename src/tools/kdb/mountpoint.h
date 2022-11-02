@@ -11,8 +11,6 @@
 
 #include <kdb.h>
 
-#define MOUNTPOINTS_PATH "system:/elektra/mountpoints"
-
 /**
  * Adds options specification of mountpoint command to @spec
  *
@@ -31,8 +29,5 @@ void addMountpointSpec (KeySet * spec);
  *
  */
 int execMountpoint (KeySet * options, Key * errorKey);
-
-// helper functions
-KeySet * getMountConfig (KDB * handle, Key *);
 
 #endif // ELEKTRA_KDB_MOUNTPOINT_H
