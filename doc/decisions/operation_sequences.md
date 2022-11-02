@@ -227,7 +227,7 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
    This way, we have only one such algorithm in a central place, and plugin authors don't have to think about the sequences their plugins are called by developers.
    
    This approach can also be paired with [COW semantics](internal_cache.md), so that memory toll will be kept low.
-   A separate [decision for change tracking](https://github.com/ElektraInitiative/libelektra/pull/4554) is currently in progress.
+   A separate [decision for change tracking](change_tracking.md) is currently in progress.
    
    Should we observe this problem with use cases other than change tracking, we can provide general frameworks for those too.
 
@@ -243,7 +243,7 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
 
 ## Related Decisions
 
-- [Change Tracking](https://github.com/ElektraInitiative/libelektra/pull/4554)
+- [Change Tracking](change_tracking.md)
 - [Internal KeySet Cache](internal_cache.md)
 - []()
 
