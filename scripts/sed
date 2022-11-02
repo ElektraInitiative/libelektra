@@ -59,6 +59,8 @@ s/\<([Mm])eta[- ][Dd]ata\>/\1etadata/g
 s/\<([Nn])ame [Ss]pace\>/\1amespace/g
 s/\<([Pp])lug-[Ii]n(s)?\>/\1lugin\2/g
 
+s/\<([Cc])hange[- ][Ss]et\>/\1hangeset/g
+s/\<([Cc])hange[- ]([Tt])racking\>/\1hange \2racking/g
 
 # key-value pair
 s:\<key/value:key-value:g
