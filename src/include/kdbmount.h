@@ -22,13 +22,28 @@ struct cListBackendInfo {
 
 
 /* Actual mounting functionality */
+
+/* from mountbase.cpp */
 const KeySet * cReadMountConf (bool clNull, bool clFirst, bool clSecond, bool clThird, bool clVerbose, bool clDebug);
-void cOutputMtab (const KeySet * const mountConf, bool clFirst, bool clSecond, bool clNull);
+const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive);
+
+/* from mount.cpp */
+void cOutputMtab (KeySet * const mountConf, bool clFirst, bool clSecond, bool clNull);
+void cProcessArguments (bool clInteractive, int numArgs);
+void buildBackend (KeySet * const mountconf, const char * const mountpoint, bool clForce, const char * const clStrategy, bool clInteractive, const char * const pluginsconfig);
+
+
 
 /* Backend related stuff */
 struct cListBackendInfo * cGetBackendInfo (KeySet * const mountConf);
 
+/* from backendparser.cpp */
+const KeySet * cParsePluginArguments (char * const pluginArguments, const char * const basepath);
+
+
+
 /* Helper functions, TODO: refactor */
 void cPrintWarnings (Key * error, bool printVerbose, bool printDebug);
+void freeListBackendInfo (struct cListBackendInfo * const first);
 
 #endif // KDB_MOUNT_H
