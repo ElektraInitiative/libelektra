@@ -37,7 +37,7 @@ Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to s
 If you want to publish your local changes to this project you have to create a new pull-request.
 
 1. Open GitHub and navigate to _your_ libelektra-fork
-2. In the tab _Codes_ press the _New Pull-Request_ button and choose a title and fill in the [pull-request template](/.github/PULL_REQUEST_TEMPLATE.md)
+2. In the tab _Code_ press the _New Pull-Request_ button and choose a title and fill in the [pull-request template](/.github/PULL_REQUEST_TEMPLATE.md)
 3. Now you should be able to set up the _Comparing changes_ settings. Choose the head repository and base repository. E.g.: if you have some changes in the master branch of your forked repository, select *head repository: yournickname/libelektra and *compare: master* and *base repositroy: ElektraInitiative/libelektra* and *base: master\*
 4. Add some information about the changes in the release notes (path of the file: /libelektra/doc/news/\_preparation_next_release.md), skipping this step may cause a rejected pull-request
 5. Do not forget to format your code since the build server fails instantly. Take a look at the [coding guidelines](/doc/CODING.md) for more information.
@@ -46,7 +46,7 @@ If you want to publish your local changes to this project you have to create a n
 
 ## Code-Review
 
-After opening the pull-request, your code will be reviewed and if your pull-request passes the review and build server steps , your changes will be merged to master.
+After opening the pull-request, your code will be reviewed and if your pull-request passes the review and build server steps, your changes will be merged to master.
 Get rejected? Don't worry... there are many reasons why the build server could fail. Open your created pull-request in github and scroll to the bottom of the site, there should be a list of all checks - by clicking on the _Details_, you get more infomation about the checks. However, there are also cases where the websites are down, build server stucks or times-out etc., please get also an overview of the [build server](/doc/BUILDSERVER.md) to avoid frustration and long review times.
 
 # General

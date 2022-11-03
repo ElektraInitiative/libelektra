@@ -269,7 +269,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
