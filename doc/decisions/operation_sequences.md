@@ -107,7 +107,7 @@ Right after `(B)`, the two keysets are filled with the following values:
 If a plugin calculates a changeset during `kdbSet` by comparing to the `KeySet` from the last `kdbGet` (as described above), the plugin will wrongly calculate the following changeset at `(C)`:
 
 | Added Keys           | Removed Keys         | Modified Keys |
-|----------------------|----------------------| ------------- |
+| -------------------- | -------------------- | ------------- |
 | `user:/a/brightness` | `user:/b/background` |               |
 | `user:/a/saturation` | `user:/b/foreground` |               |
 | `user:/a/test`       |                      |               |
@@ -116,7 +116,7 @@ This is obviously wrong. Looking at the example above, the changeset should only
 So the correct changeset should look like:
 
 | Added Keys     | Removed Keys | Modified Keys |
-|----------------| ------------ | ------------- |
+| -------------- | ------------ | ------------- |
 | `user:/a/test` |              |               |
 
 The erroneous behaviour can be noticed by the output of `dbus-monitor`:
@@ -174,19 +174,19 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
 
    ```c
    KDB * kdb = ...;
-   
+
    Key * keyA = ...;
-   Key * keyB = ...; 
-   
+   Key * keyB = ...;
+
    KeySet * a = ...;
    KeySet * b = ...;
-   
+
    // These sequences will work fine
    assert (kdbGet (kdb, a, keyA) == 0);
    assert (kdbSet (kdb, a, keyA) == 0);
    assert (kdbGet (kdb, b, keyB) == 0);
    assert (kdbSet (kdb, b, keyB) == 0);
-   
+
    // These will not
    assert (kdbGet (kdb, a, keyA) == 0);
    assert (kdbGet (kdb, b, keyB) == 0);
@@ -217,18 +217,18 @@ As can be seen, the change tracking within the `dbus` and `logchange` plugins wr
 5. Allow arbitrary sequences and let each plugin deal with it on a case-by-case basis.
    This alternative would put most of the burden onto the plugin authors.
    Depending on what the plugins do, every plugin may also need to deep-dup every keyset of every parent it ever receives via `kdbGet`.
-   This will increase memory usage. 
+   This will increase memory usage.
    However, this could be paired with the [COW semantics](internal_cache.md) so the memory toll would not be that big of a deal.
    The biggest problem with this approach would be the unnecessary duplication of the non-trivial change tracking algorithm.
 
 6. Don't restrict sequences further and provide a common framework to handle change tracking correctly.
-   
+
    As the problem has only been observed with plugins doing their own change tracking, we could provide a general change tracking framework within Elektra.
    This way, we have only one such algorithm in a central place, and plugin authors don't have to think about the sequences their plugins are called by developers.
-   
+
    This approach can also be paired with [COW semantics](internal_cache.md), so that memory toll will be kept low.
    A separate [decision for change tracking](change_tracking.md) is currently in progress.
-   
+
    Should we observe this problem with use cases other than change tracking, we can provide general frameworks for those too.
 
 ## Decision
