@@ -442,7 +442,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix mistakes in multiple tutorials _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 - Reinstate mounting tutorial _(@Bujuhu)_

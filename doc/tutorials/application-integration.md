@@ -168,7 +168,7 @@ Key *k = ksLookupByName(conf,
 	0);
 ```
 
-We see in this example that only Elektra paths are hard coded in
+We see in this example that only Elektra paths are hardcoded in
 the application, no configuration file or similar.
 
 As already mentioned keys starting with slash `/` do not exist
@@ -191,7 +191,7 @@ need.
 
 To do this manually has severe drawbacks:
 
-- hard coded names might have typos or might be inconsistent
+- hardcoded names might have typos or might be inconsistent
 - tedious handling if key or value might be absent
 - always calling `ksLookup` which gets tiresome for arrays
 - converting to needed data type is error-prone
@@ -204,7 +204,7 @@ For more information about that, continue reading
 
 ## Specification
 
-Now, we have a fully working configuration system without any hard coded
+Now, we have a fully working configuration system without any hardcoded
 information (such as configuration files). We already gained something.
 But, we did not discuss how we can actually achieve application integration,
 the goal of Elektra.
@@ -320,9 +320,9 @@ For a description which metadata is available, have a look in
 
 ## Conclusion
 
-Elektra does not hard code any configuration data in your application.
+Elektra does not hardcode any configuration data in your application.
 Using the `default` specification, we even can startup applications without
-any configuration file _at all_ and still do not have anything hard coded
+any configuration file _at all_ and still do not have anything hardcoded
 in the applications binary.
 Furthermore, by using cascading keys for `kdbGet()` and `ksLookup()`
 Elektra gives you the possibility to specify how to retrieve configuration data.

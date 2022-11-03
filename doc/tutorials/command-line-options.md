@@ -69,7 +69,7 @@ The parser will use the keys below the `spec:/` namespace key equivalent to `par
 
 The last parameter `goptsConfig` can be used to provide additional configuration values to `gopts`.
 For example, this can be used to configure the auto-generated help message.
-The keys that `gopts` accepts in this KeySet will be explained throughout the document .
+The keys that `gopts` accepts in this KeySet will be explained throughout the document.
 A full list can be found in the [`gopts` README](../../src/plugins/gopts/README.md).
 
 ## Specification
@@ -477,7 +477,7 @@ Calling `FILES="abcd.txt" erm 123.txt 456.txt` meanwhile will result in:
 
 NOTE: `proc:/sw/org/erm/#0/current/files [array] = "#1"` means the `array` metadata of `proc:/sw/org/erm/#0/current/files` is `#1`.
 
-You can find a full working example [here](/examples/gopts.c). However, it uses a hard coded specification which is a bit harder to read.
+You can find a full working example [here](/examples/gopts.c). However, it uses a hardcoded specification which is a bit harder to read.
 
 <a id="elektra-opts"></a>
 
