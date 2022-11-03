@@ -280,7 +280,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Improve reference to Podman documentation _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Unify spelling of documentation in README _(@Joni1993)_
 - <<TODO>>
 
 ### Decisions
