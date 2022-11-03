@@ -76,7 +76,7 @@ Before you write your first decision, read [Decision Process](decision_process.m
 - [Header File Structure](header_file_structure.md)
 - [Man Pages](man_pages.md)
 - [Change Tracking](change_tracking.md)
-- [Operation Sequnces](operation_sequences.md)
+- [Operation Sequences](operation_sequences.md)
 
 ## Delayed
 
