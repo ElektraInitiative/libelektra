@@ -6,17 +6,17 @@ This document aims to provide information about how to build Elektra’s Website
 .SH "Design and Structure"
 The website is developed as a single\-page application (SPA) in AngularJS (v1\.5) \fIhttps://angularjs\.org/\fR\. All dependencies are either already contained in the application project or (preferred) resolved through the dependency manager npm \fIhttps://www\.npmjs\.com/\fR during installation (requires active internet connection)\. Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner grunt \fIhttp://gruntjs\.com/\fR (installed by npm)\.
 .SH "Run and Configure"
-To install the website, make sure \fBwebsite\fR is included in TOOLS\. You can use this guide \fIhttps://github\.com/ElektraInitiative/libelektra/blob/master/doc/COMPILE\.md\fR to add the required website tool\. \fBnpm\fR is the only dependency\. Then use \fBmake install\fR to install the website\. It will be installed in \fB/usr/local/share/elektra/tool_data/website/public\fR\. Default values for \fBCMAKE_INSTALL_PREFIX\fR can be found here \fIhttps://cmake\.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX\.html\fR\.
+To install the website, make sure \fBwebsite\fR is included in TOOLS\. You can use this guide \fIhttps://github\.com/ElektraInitiative/libelektra/blob/master/doc/COMPILE\.md\fR to add the required website tool\. \fBnpm\fR is the only dependency\. Then use \fBmake install\fR to install the website\. It will be installed in \fB/home/klemens/coding/elektra/libelektra/cmake\-build\-debug/install/share/elektra/tool_data/website/public\fR\. Default values for \fBCMAKE_INSTALL_PREFIX\fR can be found here \fIhttps://cmake\.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX\.html\fR\.
 .P
-As next step, the website configuration needs to be copied and mounted: \fB/usr/local/lib/elektra/tool_exec/mount\-website\-config\fR
+As next step, the website configuration needs to be copied and mounted: \fB/home/klemens/coding/elektra/libelektra/cmake\-build\-debug/install/lib/elektra/tool_exec/mount\-website\-config\fR
 .P
 The configuration will be mounted to \fBsystem:/sw/elektra/website/#0/current\fR in Elektra (\fB/sw/elektra/website/#0//current\fR) and contains some URLs for GitHub resources and translation, as well as logger settings\. Usually, no changes are required there, see Configuration Options below for some useful options\.
 .P
-As next step, you can build the website: \fB/usr/local/lib/elektra/tool_exec/build\-website\fR (or \fBkdb build\-website\fR)
+As next step, you can build the website: \fB/home/klemens/coding/elektra/libelektra/cmake\-build\-debug/install/lib/elektra/tool_exec/build\-website\fR (or \fBkdb build\-website\fR)
 .P
 To run the application, basically two options are available:
 .IP "\(bu" 4
-Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory \fB/usr/local/share/elektra/tool_data/website\fR) or \fBkdb run\-website\fR from anywhere\. To stop the \fBwebsite\fR, run \fBkdb stop\-website\fR\.
+Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory \fB/home/klemens/coding/elektra/libelektra/cmake\-build\-debug/install/share/elektra/tool_data/website\fR) or \fBkdb run\-website\fR from anywhere\. To stop the \fBwebsite\fR, run \fBkdb stop\-website\fR\.
 .IP "\(bu" 4
 Use an own webserver to distribute the application\. In order to do so, only \fBgrunt full\fR (or \fBkdb build\-website\fR, see above) needs to be run\. After that, the content of the public \fIpublic/\fR directory can be copied to any location that suits the needs\. \fBnpm\fR dependencies in the node_modules \fInode_modules/\fR directory and the resources \fIresources/\fR directory are only necessary for development, but can be ignored for deployment\. The required dependencies were copied to the public \fIpublic/\fR directory already\.
 .IP "" 0

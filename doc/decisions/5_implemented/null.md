@@ -40,6 +40,6 @@ key2 = ""
 
 ## Related Decisions
 
-- [Key Name](separate_key_name.md)
+- [Key Name](../0b_rejected/separate_key_name.md)
 
 ## Notes

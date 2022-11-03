@@ -58,4 +58,4 @@ system keys always stay separated.
 
 ## SEE ALSO
 
-- [bootstrap decision](/doc/decisions/bootstrap.md)
+- [bootstrap decision](../decisions/5_implemented/bootstrap.md)

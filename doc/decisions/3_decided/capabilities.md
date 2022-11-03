@@ -43,7 +43,7 @@ they mount. They need to test the setup.
 
 ## Related Decisions
 
-- [Base Name](base_name.md)
+- [Base Name](../5_implemented/base_name.md)
 
 ## Notes
 

@@ -32,8 +32,7 @@ a PR to Elektra's repo.
 Now we will investigate each category in more detail and when to put an
 error/warning in there.
 
-For a complete structural overview please visit the corresponding [design
-decision document](../decisions/error_codes.md)
+For a complete structural overview please visit the corresponding [design decision document](../decisions/5_implemented/error_codes.md)
 
 ### Permanent errors ("C01000", abstract)
 
@@ -164,5 +163,5 @@ again.
 
 ## Underlying design decision document
 
-- [Decision Document](../decisions/error_codes.md) The underlying design
+- [Decision Document](../decisions/5_implemented/error_codes.md) The underlying design
   decision document.

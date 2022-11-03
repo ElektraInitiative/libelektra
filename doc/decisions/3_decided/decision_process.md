@@ -10,7 +10,7 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
 ### Terminology
 
 - `Decision`:
-  A text file which contains the content as [explained here](EXPLANATIONS.md).
+  A text file which contains the content as [explained here](../EXPLANATIONS.md).
 - `Decision PR`:
   A pull request that contains changes for decisions.
 - `Decision author`:
@@ -28,7 +28,7 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
 - All relevant information about decisions must be within Elektra's repository.
 - All decisions must go through at least two review rounds, with a merge in between.
 - At least two people need to approve the decision in each round.
-- [Documentation guidelines](../contrib/documentation.md) apply.
+- [Documentation guidelines](../../contrib/documentation.md) apply.
 - During the decision process, the PRs constantly get updated:
   - Make changes as new commits to the pull request.
   - Questions in the PRs are answered by:
@@ -107,8 +107,8 @@ We base our decision process and template on:
 - [ADR](https://adr.github.io/), and
 - [RFCs in rust-lang](https://github.com/rust-lang/rfcs).
 
-We use the template [TEMPLATE.md](TEMPLATE.md).
-Explanations of the template are in [EXPLANATIONS.md](EXPLANATIONS.md).
+We use the template [TEMPLATE.md](../TEMPLATE.md).
+Explanations of the template are in [EXPLANATIONS.md](../EXPLANATIONS.md).
 
 Following subsections describe all steps a decision might run through.
 Each step requires two reviews and the merging of the decision PR.
@@ -121,7 +121,7 @@ Discussions should focus on the decision text so that the text evolves with the 
 The first step is to create a PR with:
 
 - **one** decision, where at least the "Problem" is filled out and "Decision", "Rationale" and "Implications" are **not** yet filled out.
-- a link from [README.md](README.md) from the "Drafts" section to this decision.
+- a link from [README.md](../README.md) from the "Drafts" section to this decision.
 - optional backlinks from related decisions.
 
 > At least the problem must be clear to everyone involved before the decision can leave the "Drafts" status.

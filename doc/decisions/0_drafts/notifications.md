@@ -33,7 +33,7 @@ different formats can be mixed).
 
 ## Related Decisions
 
-- [hooks](hooks.md)
-- [Ensure](ensure.md)
+- [hooks](../4_partially_implemented/hooks.md)
+- [Ensure](../5_implemented/ensure.md)
 
 ## Notes

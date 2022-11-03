@@ -73,6 +73,6 @@ In the beginning, we'll hard code the names of the plugins. For changing those p
 ## Related Decisions
 
 - [Array](array.md)
-- [Ensure](ensure.md)
+- [Ensure](../5_implemented/ensure.md)
 
 ## Notes
