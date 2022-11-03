@@ -69,6 +69,9 @@ module.exports = function (grunt) {
           case "section":
             result = self.handleSectionEntry(entry);
             break;
+          case "parsefolders":
+            result = self.handleParsefoldersEntry(entry);
+            break;
           default:
             grunt.log.error(
               'The menu type "' + entry.type + '" is not supported.'
@@ -305,6 +308,84 @@ module.exports = function (grunt) {
 
       this.handleSectionEntry = function (entry) {
         var result = { name: entry.name, type: "section" };
+        return result;
+      };
+
+      this.handleParsefoldersEntry = function (entry) {
+        var sections = [];
+        var result = {
+          name: entry.name,
+          type: "listfiles",
+          ref: entry.ref,
+          children: [
+            {
+              name: "README",
+              type: "file",
+              options: {
+                path: path.join(entry.options.path, entry.options.base_toc),
+              },
+              slug: "readme",
+            },
+            {
+              name: "README",
+              type: "buildtoc",
+              options: {
+                path: path.join(entry.options.path, entry.options.base_toc),
+                sections: sections,
+              },
+            },
+          ],
+        };
+
+        entry.options.folders.forEach(function (folder) {
+          result.children.push({
+            name: folder.title,
+            type: "section",
+          });
+
+          var entries = [];
+          sections.push({
+            title: folder.title,
+            title_level: folder.title_level,
+            entries: entries,
+          });
+
+          self
+            .listDirectory(path.join(entry.options.path, folder.path))
+            .filter(function (elem) {
+              return elem.stats.isFile() === true;
+            })
+            .forEach(function (elem) {
+              var text = fs
+                .readFileSync(
+                  path.join(
+                    root_dir,
+                    entry.options.path,
+                    folder.path,
+                    elem.name
+                  )
+                )
+                .toString();
+
+              var titleMatch = text.match(/^# (.*)$/m);
+
+              if (titleMatch) {
+                result.children.push({
+                  name: titleMatch[1],
+                  type: "file",
+                  options: {
+                    path: path.join(entry.options.path, folder.path, elem.name),
+                  },
+                  slug: self.createSlugFromName(titleMatch[1]),
+                });
+                entries.push({
+                  name: titleMatch[1],
+                  path: path.join(folder.path, elem.name),
+                });
+              }
+            });
+        });
+
         return result;
       };
 
