@@ -413,7 +413,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Fix warning for CMP0115 _(0x6178656c)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Pass `--stacktrace` to gradle for the JNA builds. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -423,7 +423,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Use `openjdk-17-jdk` in Debian Sid. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ## Infrastructure

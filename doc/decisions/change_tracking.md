@@ -67,7 +67,7 @@ When change tracking is enabled, this one will have the most memory overhead, as
 Do the per-parent-key tracking within `libelektra-kdb`, but with meta keys.
 
 Essentially the same approach as above, but instead of deep-duping, we add the original value
-as a meta-key to every key. Not yet clear how we handle changes to meta-data then.
+as a metakey to every key. Not yet clear how we handle changes to metadata then.
 
 ### Alternative 3 - Change tracking within a separate plugin
 
@@ -104,7 +104,7 @@ We need to extend `Key` with the following info:
 - Whether tracking is enabled for this key
 
 The tracking itself would be done within the `ks*` and `key*` methods, after checking if it is enabled.
-It would also transparently work for meta-data, as meta-data itself is implemented as a keyset with keys.
+It would also transparently work for metadata, as metadata itself is implemented as a keyset with keys.
 
 Downsides of this approach:
 
@@ -125,11 +125,11 @@ Use the `backendData->keys` for change tracking
 
 We already store which keys have been returned by `kdbGet` for each backend within KDB.
 Currently, however, this is not a deep duplication, as we are returning the keys from `backendData->keys` directly.
-This means we can not detect changes to the values or meta-data of keys right now.
+This means we can not detect changes to the values or metadata of keys right now.
 We can, however, rely on this for detecting removed and added keys in its current form.
 
 If we don't want to deep-dup it, we'd need to do something different to detect which keys have been modified.
-One possibility would be to add meta-data within the `key` functions (e.g. `meta:/elektra/original`), but that would violate the `libelektra-core` must be minimal constraint.
+One possibility would be to add metadata within the `key` functions (e.g. `meta:/elektra/original`), but that would violate the `libelektra-core` must be minimal constraint.
 
 There is already [another decision](internal_cache.md) which discusses adding general copy-on-write semantics to Elektra.
 We could use this together with `backendData->keys` deep-duped to do memory efficient change tracking.
