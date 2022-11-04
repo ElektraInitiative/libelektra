@@ -17,13 +17,13 @@ In applications, `kdbGet` and `kdbSet` of different parent keys might be interwo
 This is problematic, as plugins may store the result of `kdbGet` and use the stored data in the following `kdbSet` to calculate a changeset.
 Plugins have to do this, as there isn't any other Elektra-provided mechanism currently to do change tracking for them.
 
-Note, that erroneous behaviour only occurs if plugins are used globally, i.e. as `notification-send` hook plugins.
-If they are mounted for specific backends (via `kdb mount`), this behaviour will not occur as plugins from different backends are isolated.
+Note, that erroneous behavior only occurs if plugins are used globally, i.e. as `notification-send` hook plugins.
+If they are mounted for specific backends (via `kdb mount`), this behavior will not occur as plugins from different backends are isolated.
 
 ### Reproducible Example
 
 The following example will demonstrate the problematic sequence as real, runnable code.
-This example will show the erroneous behaviour for the `dbus` and `logchange` plugins, if used as `notification-send` hooks.
+This example will show the erroneous behavior for the `dbus` and `logchange` plugins, if used as `notification-send` hooks.
 These both plugins just serve as a general demonstration, and there may be more plugins that do change tracking this way.
 
 First, run some setup steps:
@@ -119,7 +119,7 @@ So the correct changeset should look like:
 | -------------- | ------------ | ------------- |
 | `user:/a/test` |              |               |
 
-The erroneous behaviour can be noticed by the output of `dbus-monitor`:
+The erroneous behavior can be noticed by the output of `dbus-monitor`:
 
 ```
 signal time=1666993066.749997 sender=:1.364 -> destination=(null destination) serial=2 path=/org/libelektra/configuration; interface=org.libelektra; member=KeyAdded
@@ -134,7 +134,7 @@ signal time=1666993066.750866 sender=:1.364 -> destination=(null destination) se
    string "user:/b/foreground"
 ```
 
-The same behaviour is present in the `logchange` plugin. Notice its output onto `stdout`:
+The same behavior is present in the `logchange` plugin. Notice its output onto `stdout`:
 
 ```
 added key: user:/a/brightness
