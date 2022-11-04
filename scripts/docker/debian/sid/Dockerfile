@@ -49,7 +49,7 @@ RUN apt-get update && apt-get -y install \
         moreutils \
         ninja-build \
         npm \
-        openjdk-11-jdk \
+        openjdk-17-jdk \
         pkg-config \
         python3-dev \
         python3-pip \
