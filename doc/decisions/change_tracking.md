@@ -13,7 +13,7 @@ These competing change tracking implementations create multiple problems:
 1. pointless waste of resources, as data is duplicated in each plugin,
 2. multiplication of code, generating a maintenance burden.
 3. various subtle differences in change tracking behavior, e.g., `kdbSet` might write a config file but notification is not sent out
-4. the current approach to change tracking in plugins is fragile, which is outlined in [a separate decision about valid kdbGet/kdbSet sequences](https://github.com/ElektraInitiative/libelektra/pull/4574).
+4. the current approach to change tracking in plugins is fragile, which is outlined in [a separate decision about valid kdbGet/kdbSet sequences](operation_sequences.md).
 
 For `KeySet` we need to track which of the keys:
 
@@ -41,7 +41,7 @@ Change tracking must:
 - if overhead is not negligible: only do tracking as required, i.e., a plugin specifically requests it
 - have negligible overhead if disabled
 - not duplicate data for each plugin that wants change tracking
-- work with all allowed sequences of `kdbGet` and `kdbSet` as [per this decision](https://github.com/ElektraInitiative/libelektra/pull/4574)
+- work with all allowed sequences of `kdbGet` and `kdbSet` as [per this decision](operation_sequences.md)
 
 The library `libelektra-core` must be kept minimal.
 
@@ -146,7 +146,7 @@ We could use this together with `backendData->keys` deep-duped to do memory effi
 
 ## Related Decisions
 
-- [Valid kdbGet/kdbSet sequences](https://github.com/ElektraInitiative/libelektra/pull/4574).
+- [Valid kdbGet/kdbSet sequences](operation_sequences.md).
 - [Internal cache](internal_cache.md)
 - []()
 
