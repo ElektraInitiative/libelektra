@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:bullseye
 
 # install dependencies
 RUN apt-get update && apt-get -y upgrade
@@ -28,7 +28,7 @@ RUN apt-get -y install \
   libxerces-c-dev \
   libyajl-dev \
   libzmq3-dev \
-  openjdk-8-jdk-headless \
+  openjdk-11-jdk-headless \
   openssh-server \
   python3-dev \
   python3-all \
