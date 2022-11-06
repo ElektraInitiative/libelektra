@@ -113,6 +113,7 @@ module.exports = function (grunt) {
         fs.writeFileSync(file, content);
       };
 
+      // for parsefolders
       this.handleTocEntry = function (entry) {
         var file = path.join(target_dir, entry.options.path);
         var dir = path.dirname(file);
