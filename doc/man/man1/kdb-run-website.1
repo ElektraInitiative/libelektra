@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "README" "" "February 2022" ""
+.TH "README" "" "November 2022" ""
 .SH "Introduction"
 This document aims to provide information about how to build Elektra’s Website\.
 .SH "Design and Structure"
@@ -329,6 +329,55 @@ Example:
   "ref": "buildserver",
   "options": {
     "path": "https://build\.libelektra\.org/"
+  }
+}
+.fi
+.IP "" 0
+.P
+The \fBparsefolders\fR element type looks at list of folders and creates table of contents (TOC) file for the contents\. For every folder a section is appended to the TOC file\. The section will contain a list linking to all the files in the folder\.
+.P
+This field type support following attributes:
+.IP "\(bu" 4
+\fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
+.IP "\(bu" 4
+\fBref\fR (string) for the dynamic URL part (\fIcurrently unused\fR)
+.IP "\(bu" 4
+\fBoptions\fR (object) with further options:
+.IP "\(bu" 4
+\fBpath\fR (string) containing the path of the base folder
+.IP "\(bu" 4
+\fBbase_toc\fR (string) filename of the base file for generating the TOC
+.IP "\(bu" 4
+\fBfolders\fR (array of objects) list of folder to traverse
+.IP "\(bu" 4
+\fBpath\fR (string) path of folder relative to base folder
+.IP "\(bu" 4
+\fBtitle\fR (string) title for the section of this folder
+.IP "\(bu" 4
+\fBtitle_level\fR (number) level of the title (adds this number of \fB#\fR before the title to create a Markdown title)
+.IP "" 0
+
+.IP "" 0
+
+.IP "" 0
+.P
+Example:
+.IP "" 4
+.nf
+{
+  "name": "Decisions",
+  "type": "parsefolders",
+  "ref": "decisions",
+  "options": {
+    "path": "doc/decisions",
+    "base_toc": "README\.md",
+    "folders": [
+      {
+        "path": "0_drafts",
+        "title": "Drafts",
+        "title_level": 2
+      }
+    ]
   }
 }
 .fi
