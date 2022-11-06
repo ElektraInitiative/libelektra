@@ -113,7 +113,7 @@ Explanations of the template are in [EXPLANATIONS.md](../EXPLANATIONS.md).
 
 ```mermaid
 flowchart LR
-    s((Start)) --> Drafts --> In Discussion -> In Progress -> Decided -> Partially Implemented -> Implemented
+    s((Start)) --> Drafts --> In_Discussion -> In_Progress -> Decided -> Partially_Implemented -> Implemented
 
     %% Shortcuts:
     s --> Decided
@@ -124,10 +124,10 @@ flowchart LR
     s --o Delayed
     Drafts --x Rejected
     Drafts --o Delayed
-    In Discussion --x Rejected
-    In Discussion --o Delayed
-    In Progress --x Rejected
-    In Progress --o Delayed
+    In_Discussion --x Rejected
+    In_Discussion --o Delayed
+    In_Progress --x Rejected
+    In_Progress --o Delayed
 ```
 
 Following subsections describe all steps a decision might run through.
