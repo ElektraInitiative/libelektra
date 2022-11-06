@@ -4,8 +4,10 @@
 
 Simply discussing in an issue and then implementing a solution is okay for non-substantial changes.
 Substantial decisions, however, must be made in a transparent and participative way.
-Discussing fundamental problems in forum-like threads showed to be repetitive and ineffective.
-Decisions by supervisors are undemocratic and decisions in meetings are nontransparent for the outside world.
+
+- Discussing fundamental problems in forum-like threads showed to be repetitive and ineffective.
+- Decisions by supervisors are undemocratic.
+- Decisions in meetings are nontransparent for the outside world.
 
 ### Terminology
 
@@ -15,20 +17,20 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
   A pull request that contains changes for decisions.
 - `Decision author`:
   Is the person who creates the decision PR.
-- `Decision reviewer`:
-  Is the person who reviews the decision PR.
+- `Decision reviewers`:
+  Are the persons who review the decision PR.
 
 ### Main Purpose
 
-- of decisions is to have clear descriptions of technical problems and solutions.
-- of the decision process is to get a common understanding of the problems and the impacts of possible solutions.
+- Of decisions is to have clear descriptions of technical problems and solutions.
+- Of the decision process is to get a common understanding of the problems and the impacts of possible solutions.
 
 ## Constraints
 
 - All relevant information about decisions must be within Elektra's repository.
 - All decisions must go through at least two review rounds, with a merge in between.
 - At least two people need to approve the decision in each round.
-- [Documentation guidelines](../../contrib/documentation.md) apply.
+- [Documentation guidelines](../../contrib/documentation.md) apply to decisions.
 - During the decision process, the PRs constantly get updated:
   - Make changes as new commits to the pull request.
   - Questions in the PRs are answered by:
@@ -38,12 +40,11 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
        - Link to commit SHA-IDs for details.
     3. Mark all GitHub threads as resolved, if you incorporated the feedback as suggested.
        Committing a suggestion directly on GitHub does this automatically.
-  - As generally recommended in Elektra, do not squash commits after they are visible on the pull request.
+  - As generally recommended in Elektra, do not squash commits after they are visible in a pull request.
   - Rebase only if the decision was already accepted and has a merge conflict.
 - For decision reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
-- Decision PRs only modify a _single_ decision.
   Small exceptions like backlinks from other decisions are okay, though.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone other than the person that created the decision.
@@ -58,7 +59,7 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
 - Reviewers are only required to read the files in the PR.
   They may ignore the discussions surrounding the decision.
   Reviews should focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
-  It is encouraged that at least one decision reviewer provides a review _without_ participating in the discussion.
+  It is encouraged that at least one decision reviewers provides a review _without_ participating in the discussion.
   This ensures that there aren't any unintentional shared assumptions between discussion participants.
 
 ## Assumptions
@@ -110,6 +111,25 @@ We base our decision process and template on:
 We use the template [TEMPLATE.md](../TEMPLATE.md).
 Explanations of the template are in [EXPLANATIONS.md](../EXPLANATIONS.md).
 
+```mermaid
+flowchart LR
+    s((Start)) --> Drafts --> In Discussion -> In Progress -> Decided -> Partially Implemented -> Implemented
+
+    %% Shortcuts:
+    s --> Decided
+    Decided --> Implemented
+
+    %% Dead ends:
+    s --x Rejected
+    s --o Delayed
+    Drafts --x Rejected
+    Drafts --o Delayed
+    In Discussion --x Rejected
+    In Discussion --o Delayed
+    In Progress --x Rejected
+    In Progress --o Delayed
+```
+
 Following subsections describe all steps a decision might run through.
 Each step requires two reviews and the merging of the decision PR.
 
@@ -117,6 +137,8 @@ In each step we directly update the decision text with the different opinions.
 Discussions should focus on the decision text so that the text evolves with the opinions.
 
 ### Drafts
+
+> This step is recommended if the problem is not yet clear.
 
 The first step is to create a PR with:
 
@@ -129,7 +151,7 @@ The first step is to create a PR with:
 
 ### In Discussion
 
-> This step is mandatory.
+> This step is recommended if it is not yet clear which solution is the best.
 
 Here you must ensure:
 
@@ -149,10 +171,12 @@ For each solution a proposal, rationale and optionally implications should be gi
 
 ### Decided
 
-> This step is recommended.
+> This step is mandatory.
 
 - "Decision", "Rationale" and "Implications" are now filled out and fixed according to the reviews
 - decisions of this status usually already have an implementation PR
+
+> In this step, decision PRs only modify a _single_ decision.
 
 ### Partially Implemented
 
