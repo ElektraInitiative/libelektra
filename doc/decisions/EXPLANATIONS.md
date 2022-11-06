@@ -1,5 +1,14 @@
 # EXPLANATIONS
 
+We base our decision process and template on:
+
+- [''using patterns to capture architectural decisions''](http://eprints.cs.univie.ac.at/2345/1/02_Using_Patterns_to_Capture.pdf),
+- [arc42 decisions](http://docs.arc42.org/section-9/),
+- [ADR](https://adr.github.io/), and
+- [RFCs in rust-lang](https://github.com/rust-lang/rfcs).
+
+This document describes every section of our [TEMPLATE.md](TEMPLATE.md).
+
 ## Problem
 
 Clearly define:

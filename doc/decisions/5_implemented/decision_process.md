@@ -56,11 +56,12 @@ Substantial decisions, however, must be made in a transparent and participative 
   - they are similar to already existing modules (e.g. yet another checker plugin)
   - if they reimplement some existing module (e.g. reimplementation in other programming languages)
 - Reviewers are only required to read the files in the PR.
-  They may ignore the discussions surrounding the decision.
-  Reviews should focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
+  They may not read the discussions surrounding the decision.
   It is encouraged that at least one decision reviewers provides a review _without_ participating in the discussion.
   This ensures that there aren't any unintentional shared assumptions between discussion participants.
-- The decision process itself shouldn't be a barrier for people to write their first decision.
+- Reviews focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
+- The decision author invites several decision reviewers.
+  As for help in the decision if you do not know whom to invite.
 
 ## Assumptions
 
@@ -74,21 +75,20 @@ Substantial decisions, however, must be made in a transparent and participative 
   Nevertheless they don't want to avoid other solutions, are open to arguments/facts/etc. and incorporate all input of decision PR fairly.
 - We will always be able to reach an consensus even if it requires that the core or plugins get multiple implementations.
   We don't need a vote (besides the approved review) or a benevolent dictatorship.
-- Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
-  Only the end results counts.
 - Different to initiatives like Rust, most contributors in Elektra are not experts in configuration management or programming languages.
   So we do not expect that a clear problem or solution is in the decision writer's mind beforehand.
   Instead the decision process is a supported learning process.
 - People focus on getting the best solutions and not to wish for the impossible.
 - People creating decision PRs have strong motives to also finish it.
   They take extra effort on them to be clear about the problem and find the best solution.
+- The decision process itself isn't a barrier for people to write their first decision.
 
 ## Considered Alternatives
 
 - Issues like https://issues.libelektra.org/4521
 - GitHub discussions
 - Votings
-- The maintainer decides
+- maintainer decides
 - PEPs: https://peps.python.org
 - RFCs: https://www.ietf.org/standards/rfcs/
 - Change requests: https://en.wikipedia.org/wiki/Change_request
@@ -101,104 +101,15 @@ Decisions need to:
 - be according to [Elektra's goals](/doc/GOALS.md)
 - first be decided upon using the decision process described here
 
-We base our decision process and template on:
-
-- [''using patterns to capture architectural decisions''](http://eprints.cs.univie.ac.at/2345/1/02_Using_Patterns_to_Capture.pdf),
-- [arc42 decisions](http://docs.arc42.org/section-9/),
-- [ADR](https://adr.github.io/), and
-- [RFCs in rust-lang](https://github.com/rust-lang/rfcs).
-
 We use the template [TEMPLATE.md](../TEMPLATE.md).
 Explanations of the template are in [EXPLANATIONS.md](../EXPLANATIONS.md).
 
-```mermaid
-flowchart LR
-    s((Start)) --> Drafts --> In_Discussion --> In_Progress --> Decided --> Partially_Implemented --> Implemented
-
-    %% Shortcuts:
-    s --> Decided
-    Decided --> Implemented
-
-    %% Dead ends:
-    s --x Rejected
-    s --o Delayed
-    Drafts --x Rejected
-    Drafts --o Delayed
-    In_Discussion --x Rejected
-    In_Discussion --o Delayed
-    In_Progress --x Rejected
-    In_Progress --o Delayed
-```
-
-Following subsections describe all steps a decision might run through.
-Each step requires two reviews and the merging of the decision PR.
+Steps are described in [STEPS.md](../STEPS.md).
+Each mandatory step requires two reviews and the merging of the decision PR.
 
 In each step we directly update the decision text with the different opinions.
 Discussions should focus on the decision text so that the text evolves and improves.
 
-### Drafts
-
-> This step is recommended if the problem is not yet clear.
-
-The first step is to create a PR with:
-
-- **one** decision, where at least the "Problem" is filled out and "Decision", "Rationale" and "Implications" are **not** yet filled out.
-- a link from [README.md](../README.md) from the "Drafts" section to this decision.
-- optional backlinks from related decisions.
-
-> Everyone must agree that the problem exists so that a decision PR in "Drafts" step can be merged.
-> At least the problem must be clear to everyone involved before the decision can leave the "Drafts" step.
-> It must be so clear that everyone would be able to describe a test case that shows if a solution fixes the problem.
-
-### In Discussion
-
-> This step is recommended if it is not yet clear which solution is the best.
-
-Here you must ensure:
-
-- problem, constraint and assumptions are well-explained and sound
-- consistency with other decisions
-- links from/to related decisions are created
-- there are several considered alternatives, each with rationale and implication
-- "Decision", "Rationale" and "Implications" are **not** yet filled out if there are people arguing for different options
-
-Here the decision should not only have one decision but should describe several solutions.
-For each solution a proposal, rationale and optionally implications should be given.
-
-### In Progress
-
-- You must include all further alternative proposals made in the "Considered Alternatives" section.
-- Now it is allowed to have the decision from the previous round in the "Decision" section.
-
-### Decided
-
-> This step is mandatory.
-
-- "Decision", "Rationale" and "Implications" are now filled out and fixed according to the reviews
-- decisions of this step usually already have an implementation PR
-
-> In this step, decision PRs only modify a _single_ decision.
-> Only exceptions like backlinks from other decisions are allowed.
-
-### Partially Implemented
-
-This can be useful for decisions that need to be done for every module like plugin or library.
-It is for decisions where only a few not-so-important modules are missing and/or issues exist for the remaining pieces.
-
-The "Implication" must clearly say how much of the decision is already implemented.
-
-### Implemented
-
-> This step is mandatory.
-
-- Here the details of the decisions are stripped from the decision and moved to the documentation.
-- The documentation links to the decision.
-- The decision links to the new documentation.
-
-### Rejected
-
-Alternatively, decisions might be rejected (i.e. status quo wins).
-These decision PRs are also merged for documentation purposes.
 
 ## Rationale
 
@@ -232,6 +143,8 @@ These decision PRs are also merged for documentation purposes.
 - Discussions in issues/discussions are not prohibited.
   They don't bring a decision forward, though.
   To not waste time, it is recommended to start with the decision process as described here asap.
+- Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
+  Only the end results counts.
 
 Written by Markus Raab 10.10.2022.
 Second discussion round 28.10.2022.
