@@ -292,7 +292,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Add decision for [change tracking](../decisions/0_drafts/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
-- Create [decision](../decisions/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
+- Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
