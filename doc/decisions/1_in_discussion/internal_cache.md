@@ -141,6 +141,40 @@ ksRemoveByName (cowMeta, "meta:/type");
 - Lifetime of a copied COW key MUST be less than the key it was copied from.
   We can not track how many keys point to the same data this way, so we can only free data if the key does not have the COW flag.
   If the original key gets deleted, using a COW key that points to the same data will lead to corrupt data.
+  The same is true for updating values of the original key.
+  
+  This is only problematic if we want to use COW for keys outside of `KDB`.
+  If it is only for use within `KDB`, especially for usage as internal cache and in change tracking, we always know that the original keys are going to last as long as the `KDB` instance.
+  However, we need to document for the users of Elektra that keys returned from `kdbGet` are only valid until `kdbClose`.
+  If they want to continue using them afterwards, they'd have to deep copy them.
+  
+  Triggering the delete problem:
+  ```c
+  Key * originalKey;
+  Key * copiedKey;
+  keyCopy (copiedKey, originalKey, ELEKTRA_CP_COW);
+  
+  assert (keyString(copiedKey) == keyString(originalKey));
+  keyDel (originalKey);
+  
+  keyString(copiedKey); // Error! Original value has been deleted. Pointer to data in copiedKey points to freed memory
+  ```
+ 
+  Triggering the update problem:
+  ```c
+  Key * originalKey;
+  Key * copiedKey;
+  keyCopy (copiedKey, originalKey, ELEKTRA_CP_COW);
+  
+  assert (keyString(copiedKey) == keyString(originalKey));
+  keySetString (originalKey, "new value!");
+  
+  keyString(copiedKey); // Error! Original value has been deleted. Pointer to data in copiedKey points to potentially freed memory
+  ```
+
+  The same problems in principle exist for `mmapstorage`, however this is just a storage plugin and the user does not have any API to create COW keys themselves.
+  We can still let users access the flag `ELEKTRA_CP_COW`, we just need to clearly document what is forbidden.
+  Maybe set the `KEY_FLAG_RO_VALUE` on the original key, so that the API itself detects the error. 
 
 ### Data restrictions
 
