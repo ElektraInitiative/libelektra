@@ -258,6 +258,15 @@ struct _Key {
 For `KeySet`, we need to split out everything to do with the stored keys into a separate datastructure.
 This includes the array itself, the sizes and the hashmap.
 
+Why don't we just add the number of references to the original `KeySet`?
+
+- If we delete a copied KeySet, we don't know which KeySet is the original, so we couldn't decrement the counter. 
+  This could be dealt with storing a pointer to the original KeySet.
+- If the original KeySet is deleted, we don't know which other KeySets point at the data, so updating their count would not work
+- In similar fashion, if you update the original KeySet, the copied KeySets will also contain the new data (if the memory address does not change). 
+  This is unexpected behaviour.
+
+
 An empty keyset with the datastructure below has 80 bytes.
 An empty keyset with the current implementation has 64 bytes.
 
