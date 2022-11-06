@@ -45,7 +45,6 @@ Substantial decisions, however, must be made in a transparent and participative 
 - For decision reviewers:
   - Prefer to directly give suggestions how to change sentences.
   - General questions should be asked in the root of "Conversation" and not at vaguely related sentences in the review.
-  Small exceptions like backlinks from other decisions are okay, though.
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone other than the person that created the decision.
   There is no claim that decisions contain everything that was said.
@@ -61,6 +60,7 @@ Substantial decisions, however, must be made in a transparent and participative 
   Reviews should focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
   It is encouraged that at least one decision reviewers provides a review _without_ participating in the discussion.
   This ensures that there aren't any unintentional shared assumptions between discussion participants.
+- The decision process itself shouldn't be a barrier for people to write their first decision.
 
 ## Assumptions
 
@@ -134,7 +134,7 @@ Following subsections describe all steps a decision might run through.
 Each step requires two reviews and the merging of the decision PR.
 
 In each step we directly update the decision text with the different opinions.
-Discussions should focus on the decision text so that the text evolves with the opinions.
+Discussions should focus on the decision text so that the text evolves and improves.
 
 ### Drafts
 
@@ -146,8 +146,9 @@ The first step is to create a PR with:
 - a link from [README.md](../README.md) from the "Drafts" section to this decision.
 - optional backlinks from related decisions.
 
-> At least the problem must be clear to everyone involved before the decision can leave the "Drafts" status.
-> It must be so clear that everyone would be able to write a test case that shows if a solution fixes the problem.
+> Everyone must agree that the problem exists so that a decision PR in "Drafts" step can be merged.
+> At least the problem must be clear to everyone involved before the decision can leave the "Drafts" step.
+> It must be so clear that everyone would be able to describe a test case that shows if a solution fixes the problem.
 
 ### In Discussion
 
@@ -174,9 +175,10 @@ For each solution a proposal, rationale and optionally implications should be gi
 > This step is mandatory.
 
 - "Decision", "Rationale" and "Implications" are now filled out and fixed according to the reviews
-- decisions of this status usually already have an implementation PR
+- decisions of this step usually already have an implementation PR
 
 > In this step, decision PRs only modify a _single_ decision.
+> Only exceptions like backlinks from other decisions are allowed.
 
 ### Partially Implemented
 
@@ -219,8 +221,9 @@ These decision PRs are also merged for documentation purposes.
 - The decision process creates at least:
   - two chances to comment decisions, and
   - two commits in the Git history.
-- It might be a barrier for newcomers to write a decision.
-  This is considered to be okay, as topics that need a decision are not the topics for newcomers.
+- Decision PRs might be merged quite often until they reach the step "Implemented".
+  They might even be merged several times within the same step.
+- Decisions encourage to write documentation before actually writing code.
 
 ## Related Decisions
 
