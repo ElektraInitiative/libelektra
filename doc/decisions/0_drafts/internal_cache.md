@@ -78,7 +78,7 @@ This idea was implemented and later on discarded: a3d95f07160d792fdd0f169d854313
 The main problems are:
 
 - very high memory consumption (duplication of KeySets)
-- problems specific to [hooks](hooks.md), see [#1072](https://issues.libelektra.org/1072)
+- problems specific to [hooks](../4_partially_implemented/hooks.md), see [#1072](https://issues.libelektra.org/1072)
 
 ### MMAP Cache with parent key
 
@@ -169,7 +169,7 @@ Semantics can be provided without additional code or overhead in the core.
 
 ## Related Decisions
 
-- [Global Validation](global_validation.md)
+- [Global Validation](../0a_delayed/global_validation.md)
 
 ## Notes
 

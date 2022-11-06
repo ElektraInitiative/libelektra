@@ -39,7 +39,7 @@ kdb rm -r user:/tests/storage
 sudo kdb umount user:/tests/storage
 ```
 
-. For more information on why we allow “holes” in the hierarchy, please take a look [here](../decisions/holes.md).
+. For more information on why we allow “holes” in the hierarchy, please take a look [here](../decisions/5_implemented/holes.md).
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
@@ -67,7 +67,10 @@ sudo kdb umount user:/tests/storage
 
 ## Convert Boolean Data
 
-Elektra uses [`0` and `1` to represent binary data](../decisions/boolean.md). A storage plugin that uses other values (e.g. `false` and `true`) needs to convert these values to `0` and `1`. The [Markdown Shell Recorder][] test below shows that [YAML CPP](../../src/plugins/yamlcpp/README.md) handles the conversion from and to [YAML’s boolean type](https://yaml.org/spec/1.2/spec.html#id2803629) properly. In the test we also use the [`type` plugin](../../src/plugins/type/README.md) to makes sure that YAML CPP interacts correctly with this essential plugin.
+Elektra uses [`0` and `1` to represent binary data](../decisions/4_partially_implemented/boolean.md).
+A storage plugin that uses other values (e.g. `false` and `true`) needs to convert these values to `0` and `1`.
+The [Markdown Shell Recorder][] test below shows that [YAML CPP](../../src/plugins/yamlcpp/README.md) handles the conversion from and to [YAML’s boolean type](https://yaml.org/spec/1.2/spec.html#id2803629) properly.
+In the test we also use the [`type` plugin](../../src/plugins/type/README.md) to makes sure that YAML CPP interacts correctly with this essential plugin.
 
 ```sh
 # Mount plugin

@@ -81,6 +81,6 @@ Otherwise, fully separate projects for every plugin/library/etc. should be used 
 
 ## Related Decisions
 
-- [Header File Structure](header_file_structure.md)
+- [Header File Structure](../0_drafts/header_file_structure.md)
 
 ## Notes

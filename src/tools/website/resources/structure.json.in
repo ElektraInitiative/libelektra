@@ -374,21 +374,54 @@
             },
             {
                 "name": "Decisions",
-                "type": "parsereadme",
+                "type": "parsefolders",
                 "ref": "decisions",
                 "options": {
-                    "path": "doc/decisions/README.md",
-                    "target_file": [],
-                    "parsing": {
-                        "stop_regex": "####### UNUSED",
-                        "section_regex": "## ([^#]+)",
-                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-                    },
-                    "name": {
-                        "make_pretty": false
-                    }
-                },
-                "dev-comment": "The readme does already contain nicely formatted decision titles."
+                    "path": "doc/decisions",
+                    "base_toc": "README.md",
+                    "folders": [
+                        {
+                            "path": "5_implemented",
+                            "title": "Implemented",
+                            "title_level": 2
+                        },
+                        {
+                            "path": "4_partially_implemented",
+                            "title": "Partially Implemented",
+                            "title_level": 2
+                        },
+                        {
+                            "path": "3_decided",
+                            "title": "Decided",
+                            "title_level": 2
+                        },
+                        {
+                            "path": "2_in_progress",
+                            "title": "In Progress",
+                            "title_level": 2
+                        },
+                        {
+                            "path": "1_in_discussion",
+                            "title": "In Discussion",
+                            "title_level": 2
+                        },
+                        {
+                            "path": "0_drafts",
+                            "title": "Drafts",
+                            "title_level": 2
+                        },
+                        {
+                            "path": "0a_delayed",
+                            "title": "Delayed",
+                            "title_level": 2
+                        },
+                        {
+                            "path": "0b_rejected",
+                            "title": "Rejected",
+                            "title_level": 2
+                        }
+                    ]
+                }
             },
             {
                 "name": "Developer Docu",

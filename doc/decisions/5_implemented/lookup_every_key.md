@@ -2,7 +2,7 @@
 
 ## Problem
 
-On structures like maps or [arrays](array.md) there are different
+On structures like maps or [arrays](../4_partially_implemented/array.md) there are different
 possibilities which keys are looked up in the KeySet and which
 are simply iterated.
 
@@ -42,6 +42,6 @@ is a bit tricky to implement e.g. for arrays.
 
 ## Related Decisions
 
-- [Arrays](array.md)
+- [Arrays](../4_partially_implemented/array.md)
 
 ## Notes

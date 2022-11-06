@@ -74,6 +74,8 @@ module.exports = function (grunt) {
           case "file":
             self.handleFileEntry(entry);
             break;
+          case "buildtoc":
+            self.handleTocEntry(entry);
           case "ref":
           case "link":
           case "section":
@@ -104,6 +106,35 @@ module.exports = function (grunt) {
         var content = fs.readFileSync(path.join(root_dir, entry.options.path), {
           encoding: "utf8",
         });
+        content = self.ensureProperFileContentFormat(
+          entry.options.path,
+          content
+        );
+        fs.writeFileSync(file, content);
+      };
+
+      this.handleTocEntry = function (entry) {
+        var file = path.join(target_dir, entry.options.path);
+        var dir = path.dirname(file);
+        // first create dir
+        if (!fs.existsSync(dir)) {
+          fs.ensureDirSync(dir);
+        }
+
+        var content = fs.readFileSync(path.join(root_dir, entry.options.path), {
+          encoding: "utf8",
+        });
+        entry.options.sections.forEach(function (section) {
+          content += "\n";
+          content +=
+            "#".repeat(section.title_level) + " " + section.title + "\n";
+          content += "\n";
+
+          section.entries.forEach(function (elem) {
+            content += "- [" + elem.name + "](" + elem.path + ")\n";
+          });
+        });
+
         content = self.ensureProperFileContentFormat(
           entry.options.path,
           content
