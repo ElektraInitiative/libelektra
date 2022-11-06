@@ -84,4 +84,3 @@ The "Implication" must clearly say how much of the decision is already implement
 
 Alternatively, decisions might be rejected (i.e. status quo wins).
 These decision PRs are also merged for documentation purposes.
-

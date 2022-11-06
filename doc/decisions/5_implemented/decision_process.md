@@ -110,7 +110,6 @@ Each mandatory step requires two reviews and the merging of the decision PR.
 In each step we directly update the decision text with the different opinions.
 Discussions should focus on the decision text so that the text evolves and improves.
 
-
 ## Rationale
 
 - The process is lightweight and simple.
