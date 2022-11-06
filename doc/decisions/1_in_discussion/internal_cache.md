@@ -136,6 +136,12 @@ ksRemoveByName (cowMeta, "meta:/type");
 
 - Elektra doesn't require MMAP
 
+**Cons:**
+
+- Lifetime of a copied COW key MUST be less than the key it was copied from.
+  We can not track how many keys point to the same data this way, so we can only free data if the key does not have the COW flag.
+  If the original key gets deleted, using a COW key that points to the same data will lead to corrupt data.
+
 ### Data restrictions
 
 @kodebach wrote:
@@ -157,9 +163,98 @@ ksRemoveByName (cowMeta, "meta:/type");
 > I disagree, it is actually the same kind of surprise for "More Keys".
 > Only the "Fewer Keys" would get fixed.
 
-## Decision
+### Full-blown copy-on-write implementation
 
-Not yet decided.
+Make Elektras `Key` and `KeySet` datastructures copy-on-write.
+This requires some major refactoring of code within `libelektra-core`.
+Code that does only interact with the datastructures via the public `libelektra-core` API should not notice any differences.
+The `mmapstorage` plugin will need a major refactoring.
+
+### Changes to `Key`
+
+For the `Key`, we need to extract everything for the data and name into their own structs.
+This is done for memory-management reasons, as we need to track how many keys point to the same data and/or name.
+
+In the data structures below, an empty key does have 96 bytes.
+An empty key of the current implementation has 64 bytes.
+
+A copied, non-modified key with the data structure below does always have 32 bytes.
+A copied, non-modified key of the current implementation has at least 64 bytes (for an empty key), but in reality much more as the name and the data are also copied.
+
+```c
+struct _KeyData {
+    union {
+        char * c;
+        void * v;
+    } data;
+
+    size_t dataSize;
+
+    uint16_t refs;
+    uint16_t reserved;
+};
+
+struct _KeyName {
+    char * key;
+    size_t keySize;
+
+    char * ukey;
+    size_t keyUSize;
+
+    uint16_t refs;
+    uint16_t reserved;
+};
+
+struct _Key {
+    struct _KeyData * keyData;    
+    struct _KeyName * keyName;
+    KeySet * meta;
+    keyflag_t flags;
+
+    uint16_t refs;
+    uint16_t reserved;
+};
+```
+
+### Changes to `KeySet`
+
+For `KeySet`, we need to split out everything to do with the stored keys into a separate datastructure.
+This includes the array itself, the sizes and the hashmap.
+
+An empty keyset with the datastructure below has 80 bytes.
+An empty keyset with the current implementation has 64 bytes.
+
+A copied, non-modified keyset with the datastructure below has always 32 bytes.
+A copied, non-modified keyset with the current implementation has at least 64 bytes (for an empty keyset).
+
+```c
+struct _KeySetData {
+    struct _Key ** array;
+    size_t size;  /**< Number of keys contained in the KeySet */
+    size_t alloc; /**< Allocated size of array */
+
+    Opmphm * opmphm;
+    OpmphmPredictor * opmphmPredictor;
+
+    uint16_t refs; /**< Reference counter */
+    uint16_t reserved; /**< Reserved for future use */
+};
+
+struct _KeySet {
+    struct _KeySetData * data;
+
+    struct _Key * cursor; /**< Internal cursor */
+    size_t current;		  /**< Current position of cursor */
+	
+    ksflag_t flags;
+
+    uint16_t refs; /**< Reference counter */
+    uint16_t reserved; /**< Reserved for future use */
+};
+```
+
+
+## Decision
 
 ## Rationale
 
