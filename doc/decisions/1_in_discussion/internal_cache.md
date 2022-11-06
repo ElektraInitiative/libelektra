@@ -212,12 +212,6 @@ The `mmapstorage` plugin will need a major refactoring.
 For the `Key`, we need to extract everything for the data and name into their own structs.
 This is done for memory-management reasons, as we need to track how many keys point to the same data and/or name.
 
-In the data structures below, an empty key does have 96 bytes.
-An empty key of the current implementation has 64 bytes.
-
-A copied, non-modified key with the data structure below does always have 32 bytes.
-A copied, non-modified key of the current implementation has at least 64 bytes (for an empty key), but in reality much more as the name and the data are also copied.
-
 ```c
 struct _KeyData {
     union {
@@ -228,7 +222,6 @@ struct _KeyData {
     size_t dataSize;
 
     uint16_t refs;
-    uint16_t reserved;
 };
 
 struct _KeyName {
@@ -239,7 +232,6 @@ struct _KeyName {
     size_t keyUSize;
 
     uint16_t refs;
-    uint16_t reserved;
 };
 
 struct _Key {
@@ -249,9 +241,31 @@ struct _Key {
     keyflag_t flags;
 
     uint16_t refs;
-    uint16_t reserved;
 };
 ```
+
+The following calculations are based on the AMD64 platform:
+
+In the data structures above, an empty key does have
+- with `_keyData` and `_keyName` allocated: 96 bytes.
+- with `_keyData` and `_keyName` `NULL`: 32 bytes.
+
+An empty key of the current implementation has 64 bytes.
+
+A copied, non-modified key with the data structure above does always have 32 bytes.
+A copied, non-modified key of the current implementation has at least 64 bytes (for an empty key), but in reality much more as the name and the data are also copied.
+
+As an example, let's take `user:/hosts/ipv6/example.com = 2606:2800:220:1:248:1893:25c8:1946`.
+
+For two keys (one original and one copy), it would take for the COW implementation:
+
+`sizeof(_Key)*2 + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + usize + value + 1 /* \0 */` =
+32*2 + 40 + 24 + 28 + 1  + 25 + 34 + 1 = 217 bytes.
+
+The current implementation would take:
+
+`(sizeof(_Key) + name + 1 + usize + value + 1) * 2` =
+(64 + 28 + 1 + 25 + 34 + 1) * 2 = 306 bytes.
 
 #### Changes to `KeySet`
 
@@ -266,13 +280,6 @@ Why don't we just add the number of references to the original `KeySet`?
 - In similar fashion, if you update the original KeySet, the copied KeySets will also contain the new data (if the memory address does not change). 
   This is unexpected behaviour.
 
-
-An empty keyset with the datastructure below has 80 bytes.
-An empty keyset with the current implementation has 64 bytes.
-
-A copied, non-modified keyset with the datastructure below has always 32 bytes.
-A copied, non-modified keyset with the current implementation has at least 64 bytes (for an empty keyset).
-
 ```c
 struct _KeySetData {
     struct _Key ** array;
@@ -283,7 +290,6 @@ struct _KeySetData {
     OpmphmPredictor * opmphmPredictor;
 
     uint16_t refs; /**< Reference counter */
-    uint16_t reserved; /**< Reserved for future use */
 };
 
 struct _KeySet {
@@ -295,9 +301,16 @@ struct _KeySet {
     ksflag_t flags;
 
     uint16_t refs; /**< Reference counter */
-    uint16_t reserved; /**< Reserved for future use */
 };
 ```
+
+The following calculations are based on the AMD64 platform:
+
+An empty keyset with the datastructure above has 80 bytes.
+An empty keyset with the current implementation has 64 bytes.
+
+A copied, non-modified keyset with the datastructure above has always 32 bytes.
+A copied, non-modified keyset with the current implementation has at least 64 bytes (for an empty keyset).
 
 
 ## Decision
