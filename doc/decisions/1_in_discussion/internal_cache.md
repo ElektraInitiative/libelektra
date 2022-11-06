@@ -139,8 +139,8 @@ ksRemoveByName (cowMeta, "meta:/type");
 **Cons:**
 
 - Lifetime of a copied COW key MUST be less than the key it was copied from.
-  We can not track how many keys point to the same data this way, so we can only free data if the key does not have the COW flag.
-  If the original key gets deleted, using a COW key that points to the same data will lead to corrupt data.
+  We can not track how many keys point to the same data and name this way, so we can only free data and name if the key does not have the COW flag.
+  If the original key gets deleted, using a COW key that points to the same data and name will lead to corrupt data.
   The same is true for updating values of the original key.
   
   This is only problematic if we want to use COW for keys outside of `KDB`.
@@ -154,10 +154,13 @@ ksRemoveByName (cowMeta, "meta:/type");
   Key * copiedKey;
   keyCopy (copiedKey, originalKey, ELEKTRA_CP_COW);
   
-  assert (keyString(copiedKey) == keyString(originalKey));
+  assert (keyString (copiedKey) == keyString (originalKey));
+  assert (keyName (copiedKey) == keyName (originalKey));
+
   keyDel (originalKey);
   
-  keyString(copiedKey); // Error! Original value has been deleted. Pointer to data in copiedKey points to freed memory
+  keyString (copiedKey); // Error! Original value has been deleted. Pointer to data in copiedKey points to freed memory
+  keyName (copiedKey);   // Error! Original name has been deleted.
   ```
  
   Triggering the update problem:
