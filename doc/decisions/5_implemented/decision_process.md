@@ -113,7 +113,7 @@ Explanations of the template are in [EXPLANATIONS.md](../EXPLANATIONS.md).
 
 ```mermaid
 flowchart LR
-    s((Start)) --> Drafts --> In_Discussion -> In_Progress -> Decided -> Partially_Implemented -> Implemented
+    s((Start)) --> Drafts --> In_Discussion --> In_Progress --> Decided --> Partially_Implemented --> Implemented
 
     %% Shortcuts:
     s --> Decided
