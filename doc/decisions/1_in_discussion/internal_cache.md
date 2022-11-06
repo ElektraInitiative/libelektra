@@ -178,6 +178,7 @@ ksRemoveByName (cowMeta, "meta:/type");
   The same problems in principle exist for `mmapstorage`, however this is just a storage plugin and the user does not have any API to create COW keys themselves.
   We can still let users access the flag `ELEKTRA_CP_COW`, we just need to clearly document what is forbidden.
   Maybe set the `KEY_FLAG_RO_VALUE` on the original key, so that the API itself detects the error. 
+  There is, however, no flag for `keyDel` that we could set.
 
 ### Data restrictions
 
