@@ -30,7 +30,7 @@ cd src/plugins
 ../../scripts/copy-template yourplugin
 ```
 
-Then update the README.md of your newly created plugin:
+Then update the `README.md` of your newly created plugin:
 
 - enter your full name+email in `infos/author`
 - make sure `status`, `placements`, and other clauses conform to

@@ -108,7 +108,7 @@ that way that programs work together well."
 ## Modules
 
 Elektra’s core can be compiled with a C compiler conforming to the
-ISO/IEC 9899:1999 standard, called C99 henceforth.
+[ISO/IEC 9899:1999 standard](https://www.open-std.org/JTC1/SC22/WG14/www/projects#9899), called C99 henceforth.
 Functions not conforming to C99 are considered to be not portable
 enough for Elektra and are separated into plugins. But there is
 one notable exception: it must be `libelektra-kdb`'s task to load plugins.

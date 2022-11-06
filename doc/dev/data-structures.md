@@ -24,7 +24,7 @@ presents the best candidate for lookups O(1).
 
 `KeySet` combines the best of both worlds:
 `KeySet` is implemented as a sorted array and uses
-an order-preserving minimal perfect hash map (OPMPHM) for lookups.
+an [order-preserving minimal perfect hash map (OPMPHM)](#order-preserving-minimal-perfect-hash-map-aka-opmphm) for lookups.
 
 ### ABI compatibility
 

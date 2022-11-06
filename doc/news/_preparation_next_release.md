@@ -321,6 +321,10 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
+- Add links and formatting to documents affected by PR#4492 (Document Guidelines) and rephrase some parts. _(Florian Lindner @flo91)_
+- Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
+- Apply fix spelling to more files. _(Markus Raab)_
 
 ### Tutorials
 
