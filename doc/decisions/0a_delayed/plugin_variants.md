@@ -173,7 +173,7 @@ gets ignored.
 
 ## Related Decisions
 
-- [CMake Plugins](cmake_plugins.md)
+- [CMake Plugins](../5_implemented/cmake_plugins.md)
 
 ## Notes
 

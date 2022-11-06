@@ -101,7 +101,7 @@ See the [Java binding](../../src/bindings/jna/CMakeLists.txt) for examples.
 
 ## Error Handling
 
-Since v0.9.0, Elektra has a new error code system. You might want to take a look in the [design decision](../decisions/error_codes.md)
+Since v0.9.0, Elektra has a new error code system. You might want to take a look in the [design decision](../decisions/5_implemented/error_codes.md)
 first to understand the concept of the error codes. These codes are hierarchically structured
 and are therefore perfectly suitable for inheritance if the language supports it.
 
@@ -121,7 +121,7 @@ public abstract class PermanentException extends Exception {...}
 ...
 ```
 
-All error codes as well as the hierarchy itself is depicted in the [design decision](../decisions/error_codes.md).
+All error codes as well as the hierarchy itself is depicted in the [design decision](../decisions/5_implemented/error_codes.md).
 
 If you have a language which does not support inheritance this way like GoLang, you can still use the
 error code itself since the hierarchy is integrated in it. For example you can check if the code starts with
@@ -129,7 +129,7 @@ error code itself since the hierarchy is integrated in it. For example you can c
 
 ### Error Message
 
-In Elektra every error has a predefined format. You can take a look at the [related design decision](../decisions/error_message_format.md)
+In Elektra every error has a predefined format. You can take a look at the [related design decision](../decisions/5_implemented/error_message_format.md)
 to see how it looks like.
 
 Every Exception/Error struct/etc. should have separate accessors to individual parts of the message.

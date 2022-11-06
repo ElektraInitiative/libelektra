@@ -107,7 +107,10 @@ ruby -e 'print("#", "_" * (ARGV[0].length - 1), ARGV[0])' 42
 
 ### Metadata
 
-Elektra’s arrays **require** that you always add the metakey `array` to the array parent. Otherwise the values below the parent will not be interpreted as array elements, but rather as normal key-value pairs. To make the `array` metakey more useful [storage plugins](plugins.md) should save the [basename of the last key in the array parent](../decisions/array.md). This of course works only, if the plugins already stores this information in the config file, either
+Elektra’s arrays **require** that you always add the metakey `array` to the array parent.
+Otherwise the values below the parent will not be interpreted as array elements, but rather as normal key-value pairs.
+To make the `array` metakey more useful [storage plugins](plugins.md) should save the [basename of the last key in the array parent](../decisions/4_partially_implemented/array.md).
+This of course works only, if the plugins already stores this information in the config file, either
 
 - implicitly (e.g. the data below the array parent is stored as array/list/sequence in the config file), or
 - explicitly (e.g. the plugin stores the metakey `array` directly in the config file)

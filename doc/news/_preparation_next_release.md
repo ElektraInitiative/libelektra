@@ -50,7 +50,7 @@ docker run -it elektra/elektra
 
 ### New Backend
 
-- Implement [hooks](../decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
+- Implement [hooks](../decisions/4_partially_implemented/hooks.md). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 
 ### <<HIGHLIGHT>>
@@ -285,16 +285,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Decisions
 
-- Documented [decision process](/doc/decisions/decision_process.md) _(Markus Raab)_
-- Decided future [library split](../decisions/library_split.md) _(@kodebach)_
+- Documented [decision process](../decisions/3_decided/decision_process.md) _(Markus Raab)_
+- Decided future [library split](../decisions/3_decided/library_split.md) _(@kodebach)_
 - decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
-- draft for [man pages](/doc/decisions/man_pages.md) _(Markus Raab)_
+- draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
 - <<TODO>>
-- Add decision for [change tracking](/doc/decisions/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
+- Add decision for [change tracking](../decisions/0_drafts/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
-- Create [decision](../decisions/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
+- Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -307,13 +305,16 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Update [internal cache](/doc/decisions/internal_cache.md) _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- Update [internal cache](../decisions/0_drafts/internal_cache.md) _(Markus Raab)_
+- Move [internal cache](../decisions/0_drafts/internal_cache.md) back to draft _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Replace TOC-style [README.md](../decisions/README.md) with folders and generate HTML for website _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

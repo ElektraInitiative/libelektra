@@ -261,7 +261,7 @@ kdb_long_long_t arraySize = elektraArraySize (elektra, "message");
 ```
 
 For some background information on arrays in Elektra see the [Array](/doc/tutorials/arrays.md) tutorial, as well as our
-[decision document](/doc/decisions/array.md) on this topic. Please note that the high level API does not support arrays with missing
+[decision document](/doc/decisions/4_partially_implemented/array.md) on this topic. Please note that the high level API does not support arrays with missing
 elements. If an element is missing (and the specification provides no default value), getters will fail.
 
 Notice that both the getters for primitive types and the getters for array types do not accept error parameters. The library expects you to

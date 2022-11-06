@@ -390,6 +390,45 @@ Example:
 }
 ```
 
+#### parsefolders
+
+The `parsefolders` element type looks at list of folders and creates table of contents (TOC) file for the contents.
+For every folder a section is appended to the TOC file.
+The section will contain a list linking to all the files in the folder.
+
+This field type support following attributes:
+
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `ref` (string) for the dynamic URL part (_currently unused_)
+- `options` (object) with further options:
+  - `path` (string) containing the path of the base folder
+  - `base_toc` (string) filename of the base file for generating the TOC
+  - `folders` (array of objects) list of folder to traverse
+    - `path` (string) path of folder relative to base folder
+    - `title` (string) title for the section of this folder
+    - `title_level` (number) level of the title (adds this number of `#` before the title to create a Markdown title)
+
+Example:
+
+```json
+{
+  "name": "Decisions",
+  "type": "parsefolders",
+  "ref": "decisions",
+  "options": {
+    "path": "doc/decisions",
+    "base_toc": "README.md",
+    "folders": [
+      {
+        "path": "0_drafts",
+        "title": "Drafts",
+        "title_level": 2
+      }
+    ]
+  }
+}
+```
+
 ## Development
 
 When attempting to change the AngularJS application, it can be useful to first

@@ -49,8 +49,8 @@ consistency.
 ## Related Decisions
 
 - [Metadata in Spec Namespace](spec_metadata.md)
-- [Capabilities](capabilities.md)
-- [Boolean](boolean.md)
+- [Capabilities](../3_decided/capabilities.md)
+- [Boolean](../4_partially_implemented/boolean.md)
 
 ## Notes
 

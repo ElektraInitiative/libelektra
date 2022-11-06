@@ -15,7 +15,7 @@ Binary
 ## Assumptions
 
 - byte-array values are a rarely used feature in configuration settings
-- absence of values, i.e., [null keys](null.md) however, is quite common
+- absence of values, i.e., [null keys](../5_implemented/null.md) however, is quite common
 
 ## Considered Alternatives
 
@@ -40,6 +40,6 @@ Binary
 
 ## Related Decisions
 
-- [null](null.md))
+- [null](../5_implemented/null.md)
 
 ## Notes

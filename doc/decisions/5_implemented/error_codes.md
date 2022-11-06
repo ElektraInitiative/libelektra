@@ -97,7 +97,7 @@ is the abbreviation for "Code".
   - Semantic C03200
 
 To see an explanation of the categories along with a guideline on how to categorize please
-see the [Error Codes Guideline](../dev/error-categorization.md)
+see the [Error Codes Guideline](../../dev/error-categorization.md)
 
 ## Rationale
 
@@ -122,7 +122,7 @@ Current errors will be migrated.
 
 - [Error Message Format](error_message_format.md)
   Shows the new format of the error message
-- [Error Codes Guideline](../dev/error-categorization.md)
+- [Error Codes Guideline](../../dev/error-categorization.md)
   Shows how to categorize errors
 
 ## Notes

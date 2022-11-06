@@ -83,8 +83,8 @@ invocations. Contract `KeySet`s only contain `Key`s below
 
 ## Related Decisions
 
-- [Hooks](hooks.md)
-- [Notifications](notifications.md)
+- [Hooks](../4_partially_implemented/hooks.md)
+- [Notifications](../0_drafts/notifications.md)
 
 ## Notes
 
