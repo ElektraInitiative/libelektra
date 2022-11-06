@@ -202,12 +202,12 @@ ksRemoveByName (cowMeta, "meta:/type");
 
 ### Full-blown copy-on-write implementation
 
-Make Elektras `Key` and `KeySet` datastructures copy-on-write.
+Make Elektra's `Key` and `KeySet` data structures copy-on-write.
 This requires some major refactoring of code within `libelektra-core`.
-Code that does only interact with the datastructures via the public `libelektra-core` API should not notice any differences.
+Code that does only interact with the data structures via the public `libelektra-core` API should not notice any differences.
 The `mmapstorage` plugin will need a major refactoring.
 
-### Changes to `Key`
+#### Changes to `Key`
 
 For the `Key`, we need to extract everything for the data and name into their own structs.
 This is done for memory-management reasons, as we need to track how many keys point to the same data and/or name.
@@ -253,7 +253,7 @@ struct _Key {
 };
 ```
 
-### Changes to `KeySet`
+#### Changes to `KeySet`
 
 For `KeySet`, we need to split out everything to do with the stored keys into a separate datastructure.
 This includes the array itself, the sizes and the hashmap.
