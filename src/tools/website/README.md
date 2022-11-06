@@ -406,7 +406,7 @@ This field type support following attributes:
   - `folders` (array of objects) list of folder to traverse
     - `path` (string) path of folder relative to base folder
     - `title` (string) title for the section of this folder
-    - `title_level` (number) level of the title (adds this number of `#` before the title to create a markdown title)
+    - `title_level` (number) level of the title (adds this number of `#` before the title to create a Markdown title)
 
 Example:
 
