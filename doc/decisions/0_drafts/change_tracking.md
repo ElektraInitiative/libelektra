@@ -131,7 +131,7 @@ We can, however, rely on this for detecting removed and added keys in its curren
 If we don't want to deep-dup it, we'd need to do something different to detect which keys have been modified.
 One possibility would be to add metadata within the `key` functions (e.g. `meta:/elektra/original`), but that would violate the `libelektra-core` must be minimal constraint.
 
-There is already [another decision](../0_drafts/internal_cache.md) which discusses adding general copy-on-write semantics to Elektra.
+There is already [another decision](../1_in_discussion/internal_cache.md) which discusses adding general copy-on-write semantics to Elektra.
 We could use this together with `backendData->keys` deep-duped to do memory efficient change tracking.
 
 ## Decision
@@ -147,7 +147,7 @@ We could use this together with `backendData->keys` deep-duped to do memory effi
 ## Related Decisions
 
 - [Valid kdbGet/kdbSet sequences](operation_sequences.md) from [#4574](https://github.com/ElektraInitiative/libelektra/pull/4574).
-- [Internal cache](../0_drafts/internal_cache.md)
+- [Internal cache](../1_in_discussion/internal_cache.md)
 
 ## Notes
 
