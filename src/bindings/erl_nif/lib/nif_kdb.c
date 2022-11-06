@@ -1,5 +1,6 @@
 #include <kdb.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "erl_nif.h"
 
@@ -13,33 +14,28 @@
 #define _ERL_NIF_INIT(MODULE, FUNCS, LOAD, RELOAD, UPGRADE, UNLOAD) ERL_NIF_INIT (MODULE, FUNCS, LOAD, RELOAD, UPGRADE, UNLOAD)
 #endif
 
+#define ERL_MAX_ATOM_LENGTH 1000
+
 ErlNifResourceType * KDB_RESOURCE_TYPE;
 ErlNifResourceType * KEY_RESOURCE_TYPE;
 ErlNifResourceType * KEY_SET_RESOURCE_TYPE;
 
-// Destructors are called when the Erlang VM no longer holds a reference to the
-// resources.
+int is_atom_with_value(ErlNifEnv * env, const ERL_NIF_TERM arg, char* value) {
+	char value_from_atom[ERL_MAX_ATOM_LENGTH];
 
-void kdb_resource_destructor (ErlNifEnv * env, void * res)
-{
-	printf ("kdb_resource_destructor\n");
-	KDB ** handle_resource = (KDB **) res;
-	kdbClose (*handle_resource, NULL);
+	int rc = enif_get_atom(env, arg, value_from_atom, ERL_MAX_ATOM_LENGTH, ERL_NIF_LATIN1);
+
+	if (!rc) {
+		return 0;
+	}
+	
+	return strncmp(value, value_from_atom, ERL_MAX_ATOM_LENGTH) == 0;
 }
 
-void key_resource_destructor (ErlNifEnv * env, void * res)
-{
-	printf ("key_resource_destructor\n");
-	Key ** key_resource = (Key **) res;
-	keyDel (*key_resource);
+int is_null_atom(ErlNifEnv * env, const ERL_NIF_TERM arg) {
+	return is_atom_with_value(env, arg, "null");
 }
 
-void key_set_resource_destructor (ErlNifEnv * env, void * res)
-{
-	printf ("key_set_resource_destructor\n");
-	KeySet ** ks_resource = (KeySet **) res;
-	ksDel (*ks_resource);
-}
 
 /**************************************
  *
@@ -53,38 +49,27 @@ static ERL_NIF_TERM nif_kdb_open (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 	KeySet ** contract_resource;
 	Key ** parentKey_resource;
 
-	printf ("kdb_open before get_resource\n");
-	if (argc == 2)
-	{
-		printf ("two args\n");
-		if (!enif_get_resource (env, argv[0], KEY_SET_RESOURCE_TYPE, (void *) &contract_resource) ||
-		    !enif_get_resource (env, argv[1], KEY_RESOURCE_TYPE, (void *) &parentKey_resource))
-		{
-			return enif_make_badarg (env);
-		}
-	}
-	else
-	{
-		printf ("one args\n");
-		if (!enif_get_resource (env, argv[0], KEY_RESOURCE_TYPE, (void *) &parentKey_resource))
-		{
-			return enif_make_badarg (env);
-		}
+	if (is_null_atom(env, argv[0])) {
 		contract_resource = NULL;
+	} else if (!enif_get_resource (env, argv[0], KEY_SET_RESOURCE_TYPE, (void *) &contract_resource) )
+	{
+		return enif_make_badarg (env);
 	}
-	printf ("after get_resource\n");
+	if (is_null_atom(env, argv[1])) {
+		parentKey_resource = NULL;
+	} else if (!enif_get_resource (env, argv[1], KEY_RESOURCE_TYPE, (void *) &parentKey_resource) )
+	{
+		return enif_make_badarg (env);
+	}
 
-	KeySet * contract = contract_resource == NULL ? NULL : *contract_resource;
-	Key * parentKey = *parentKey_resource;
+	KeySet * contract = contract_resource == NULL ? NULL : * contract_resource;
+	Key * parentKey = parentKey_resource == NULL ? NULL : * parentKey_resource;
 
-	printf ("before alloc\n");
 	KDB ** kdb_resource = enif_alloc_resource (KDB_RESOURCE_TYPE, sizeof (KDB *));
-	printf ("after alloc\n");
 
-	printf ("before open\n");
-	KDB * kdb = kdbOpen (NULL, parentKey);
-	printf ("after open\n");
-	*kdb_resource = kdb;
+	KDB * kdb = kdbOpen (contract, parentKey);
+
+	* kdb_resource = kdb;
 
 	ERL_NIF_TERM term = enif_make_resource (env, kdb_resource);
 	enif_release_resource (kdb_resource);
@@ -93,6 +78,32 @@ static ERL_NIF_TERM nif_kdb_open (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 }
 
 // int kdbClose (KDB *handle, Key *errorKey);
+static ERL_NIF_TERM nif_kdb_close (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+{
+	KDB ** handle_resource;
+	Key ** errorKey_resource;
+
+	if (is_null_atom(env, argv[0])) {
+		handle_resource = NULL;
+	} else if (!enif_get_resource (env, argv[0], KDB_RESOURCE_TYPE, (void *) &handle_resource))
+	{
+		return enif_make_badarg (env);
+	}
+	if (is_null_atom(env, argv[1])) {
+		handle_resource = NULL;
+	} else if (!enif_get_resource (env, argv[1], KEY_RESOURCE_TYPE, (void *) &errorKey_resource))
+	{
+		return enif_make_badarg (env);
+	}
+
+	KDB * handle = handle_resource == NULL ? NULL : * handle_resource;
+	Key * errorKey = errorKey_resource == NULL ? NULL : * errorKey_resource;
+
+	int rc = kdbClose(handle, errorKey);
+	ERL_NIF_TERM term = enif_make_int(env, rc);
+
+	return term;
+}
 
 // int kdbGet (KDB *handle, KeySet *returned, Key *parentKey);
 static ERL_NIF_TERM nif_kdb_get (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
@@ -101,16 +112,28 @@ static ERL_NIF_TERM nif_kdb_get (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 	KeySet ** returned_resource;
 	Key ** parentKey_resource;
 
-	if (!enif_get_resource (env, argv[0], KDB_RESOURCE_TYPE, (void *) &handle_resource) ||
-	    !enif_get_resource (env, argv[1], KEY_SET_RESOURCE_TYPE, (void *) &returned_resource) ||
-	    !enif_get_resource (env, argv[2], KEY_RESOURCE_TYPE, (void *) &parentKey_resource))
+	if (is_null_atom(env, argv[0])) {
+		handle_resource = NULL;
+	} else if (!enif_get_resource (env, argv[0], KDB_RESOURCE_TYPE, (void *) &handle_resource))
 	{
-		enif_make_badarg (env);
+		return enif_make_badarg (env);
+	}
+	if (is_null_atom(env, argv[1])) {
+		returned_resource = NULL;
+	} else if (!enif_get_resource (env, argv[1], KEY_SET_RESOURCE_TYPE, (void *) &returned_resource))
+	{
+		return enif_make_badarg (env);
+	}
+	if (is_null_atom(env, argv[2])) {
+		parentKey_resource = NULL;
+	} else if (!enif_get_resource (env, argv[2], KEY_RESOURCE_TYPE, (void *) &parentKey_resource))
+	{
+		return enif_make_badarg (env);
 	}
 
-	KDB * handle = *handle_resource;
-	KeySet * returned = *returned_resource;
-	Key * parentKey = *parentKey_resource;
+	KDB * handle = handle_resource == NULL ? NULL : * handle_resource;
+	KeySet * returned = returned_resource == NULL ? NULL : * returned_resource;
+	Key * parentKey = parentKey_resource == NULL ? NULL : * parentKey_resource;
 
 	int rc = kdbGet (handle, returned, parentKey);
 
@@ -126,20 +149,29 @@ static ERL_NIF_TERM nif_kdb_set (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 	KeySet ** returned_resource;
 	Key ** parentKey_resource;
 
-	printf ("kdb_set before get_resource\n");
-
-	if (!enif_get_resource (env, argv[0], KDB_RESOURCE_TYPE, (void *) &handle_resource) ||
-	    !enif_get_resource (env, argv[1], KEY_SET_RESOURCE_TYPE, (void *) &returned_resource) ||
-	    !enif_get_resource (env, argv[2], KEY_RESOURCE_TYPE, (void *) &parentKey_resource))
+	if (is_null_atom(env, argv[0])) {
+		handle_resource = NULL;
+	} else if (!enif_get_resource (env, argv[0], KDB_RESOURCE_TYPE, (void *) &handle_resource))
 	{
-		enif_make_badarg (env);
+		return enif_make_badarg (env);
+	}
+	if (is_null_atom(env, argv[1])) {
+		returned_resource = NULL;
+	} else if (!enif_get_resource (env, argv[1], KEY_SET_RESOURCE_TYPE, (void *) &returned_resource))
+	{
+		return enif_make_badarg (env);
+	}
+	if (is_null_atom(env, argv[2])) {
+		parentKey_resource = NULL;
+	} else if (!enif_get_resource (env, argv[2], KEY_RESOURCE_TYPE, (void *) &parentKey_resource))
+	{
+		return enif_make_badarg (env);
 	}
 
-	KDB * handle = *handle_resource;
-	KeySet * returned = *returned_resource;
-	Key * parentKey = *parentKey_resource;
+	KDB * handle = handle_resource == NULL ? NULL : * handle_resource;
+	KeySet * returned = returned_resource == NULL ? NULL : * returned_resource;
+	Key * parentKey = parentKey_resource == NULL ? NULL : * parentKey_resource;
 
-	printf ("before kdbSet\n");
 	int rc = kdbSet (handle, returned, parentKey);
 
 	ERL_NIF_TERM term = enif_make_int (env, rc);
@@ -167,7 +199,6 @@ static ERL_NIF_TERM nif_ks_append_key (ErlNifEnv * env, int argc, const ERL_NIF_
 	KeySet ** ks_resource;
 	Key ** toAppend_resource;
 
-
 	printf ("ks_append_key before get_resource\n");
 	if (!enif_get_resource (env, argv[0], KEY_SET_RESOURCE_TYPE, (void *) &ks_resource) ||
 	    !enif_get_resource (env, argv[1], KEY_RESOURCE_TYPE, (void *) &toAppend_resource))
@@ -179,8 +210,10 @@ static ERL_NIF_TERM nif_ks_append_key (ErlNifEnv * env, int argc, const ERL_NIF_
 	Key * toAppend = *toAppend_resource;
 
 	printf ("before append\n");
+	printf ("Number of key-value pairs: %zd\n", ksGetSize (ks));
 	ssize_t size = ksAppendKey (ks, toAppend);
 	printf ("after append\n");
+	printf ("Number of key-value pairs: %zd\n", ksGetSize (ks));
 
 	ERL_NIF_TERM term = enif_make_int (env, size);
 
@@ -217,6 +250,9 @@ static ERL_NIF_TERM nif_key_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 		key = keyNew (keyname, KEY_END);
 	}
 
+	printf("CINFO\n");
+	printf ("\n%s, %s\n\n", keyBaseName (key), keyString (key));
+
 	*key_resource = key;
 
 	ERL_NIF_TERM term = enif_make_resource (env, key_resource);
@@ -226,19 +262,23 @@ static ERL_NIF_TERM nif_key_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 }
 
 static ErlNifFunc nif_funcs[] = {
-	{ "nif_ks_new", 0, nif_ks_new },     { "nif_ks_append_key", 2, nif_ks_append_key },
-	{ "nif_kdb_open", 2, nif_kdb_open }, { "nif_kdb_open", 1, nif_kdb_open },
-	{ "nif_kdb_get", 3, nif_kdb_get },   { "nif_kdb_set", 3, nif_kdb_set },
-	{ "nif_key_new", 1, nif_key_new },   { "nif_key_new", 2, nif_key_new },
+	{ "nif_ks_new", 0, nif_ks_new },
+    	{ "nif_ks_append_key", 2, nif_ks_append_key },
+	{ "nif_kdb_open", 2, nif_kdb_open },
+	{ "nif_kdb_close", 2, nif_kdb_close },
+	{ "nif_kdb_get", 3, nif_kdb_get },
+      	{ "nif_kdb_set", 3, nif_kdb_set },
+	{ "nif_key_new", 1, nif_key_new },
+      	{ "nif_key_new", 2, nif_key_new },
 };
 
 int load (ErlNifEnv * env, void ** priv_data, ERL_NIF_TERM load_info)
 {
 	int flags = ERL_NIF_RT_CREATE;
 
-	KDB_RESOURCE_TYPE = enif_open_resource_type (env, NULL, "KDB", kdb_resource_destructor, flags, NULL);
-	KEY_RESOURCE_TYPE = enif_open_resource_type (env, NULL, "Key", key_resource_destructor, flags, NULL);
-	KEY_SET_RESOURCE_TYPE = enif_open_resource_type (env, NULL, "KeySet", key_set_resource_destructor, flags, NULL);
+	KDB_RESOURCE_TYPE = enif_open_resource_type (env, NULL, "KDB", NULL, flags, NULL);
+	KEY_RESOURCE_TYPE = enif_open_resource_type (env, NULL, "Key", NULL, flags, NULL);
+	KEY_SET_RESOURCE_TYPE = enif_open_resource_type (env, NULL, "KeySet", NULL, flags, NULL);
 
 	printf ("Loading...\n");
 

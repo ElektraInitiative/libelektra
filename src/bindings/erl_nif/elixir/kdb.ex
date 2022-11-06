@@ -17,8 +17,8 @@ defmodule Elektra.System do
     raise "NIF nif_kdb_open/2 not implemented"
   end
 
-  def nif_kdb_open(_parent_key) do
-    raise "NIF nif_kdb_open/1 not implemented"
+  def nif_kdb_close(_handle, _errorKey) do
+    raise "NIF nif_kdb_close/2 not implemented"
   end
 
   def nif_kdb_get(_handle, _returned, _parent_key) do
