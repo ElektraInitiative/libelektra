@@ -144,7 +144,7 @@ ksRemoveByName (cowMeta, "meta:/type");
   The same is true for updating values of the original key.
   
   This is only problematic if we want to use COW for keys outside of `KDB`.
-  If it is only for use within `KDB`, especially for usage as internal cache and in change tracking, we always know that the original keys are going to last as long as the `KDB` instance.
+  If it is only for use within `KDB`, especially for usage as internal cache and in change tracking, we could always guarantee that the original keys are going to last as long as the `KDB` instance.
   However, we need to document for the users of Elektra that keys returned from `kdbGet` are only valid until `kdbClose`.
   If they want to continue using them afterwards, they'd have to deep copy them.
   
