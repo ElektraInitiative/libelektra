@@ -94,6 +94,27 @@ From this keyset, we use `ksBelow` to return the correct keyset.
 We make the mmap cache non-optional and only use a single cache, caching everything.
 We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset of the whole KDB.
 
+### Data restrictions
+
+@kodebach wrote:
+
+> Make all the keys returned by kdbGet completely read-only.
+> To change the data you need to append an entirely new key to replace the existing one.
+> Then we just need to keep a shallow copy internally.
+
+### API restrictions
+
+@kodebach wrote:
+
+> Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [the operation sequences decision](../0_drafts/operation_sequences.md).
+> If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
+> I certainly wouldn't try to asset anything on the contents of a KeySet that I don't own directly, unless the condition is explicitly documented somewhere.
+
+@markus2330 wrote:
+
+> I disagree, it is actually the same kind of surprise for "More Keys".
+> Only the "Fewer Keys" would get fixed.
+
 ### In-Memory COW Cache
 
 We keep a duplicated keyset in-memory and tag the keys as copy-on-write (COW).
@@ -179,27 +200,6 @@ ksRemoveByName (cowMeta, "meta:/type");
   We can still let users access the flag `ELEKTRA_CP_COW`, we just need to clearly document what is forbidden.
   Maybe set the `KEY_FLAG_RO_VALUE` on the original key, so that the API itself detects the error. 
   There is, however, no flag for `keyDel` that we could set.
-
-### Data restrictions
-
-@kodebach wrote:
-
-> Make all the keys returned by kdbGet completely read-only.
-> To change the data you need to append an entirely new key to replace the existing one.
-> Then we just need to keep a shallow copy internally.
-
-### API restrictions
-
-@kodebach wrote:
-
-> Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [the operation sequences decision](../0_drafts/operation_sequences.md).
-> If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
-> I certainly wouldn't try to asset anything on the contents of a KeySet that I don't own directly, unless the condition is explicitly documented somewhere.
-
-@markus2330 wrote:
-
-> I disagree, it is actually the same kind of surprise for "More Keys".
-> Only the "Fewer Keys" would get fixed.
 
 ### Full-blown copy-on-write implementation
 
