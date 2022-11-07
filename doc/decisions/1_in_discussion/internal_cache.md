@@ -260,22 +260,22 @@ As an example, let's take `user:/hosts/ipv6/example.com = 2606:2800:220:1:248:18
 
 For a single key, it would take for the COW implementation:
 
-`sizeof(_Key) + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + usize + value + 1 /* \0 */` =
+`sizeof(_Key) + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + ukey + value + 1 /* \0 */` =
 32 + 40 + 24 + 28 + 1  + 25 + 34 + 1 = 185 bytes.
 
 For two keys (one original and one copy), it would take for the COW implementation:
 
-`sizeof(_Key)*2 + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + usize + value + 1 /* \0 */` =
+`sizeof(_Key)*2 + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + ukey + value + 1 /* \0 */` =
 32*2 + 40 + 24 + 28 + 1  + 25 + 34 + 1 = 217 bytes.
 
 For a single key, it would take the current implementation:
 
-`sizeof(_Key) + name + 1 + usize + value + 1` =
+`sizeof(_Key) + name + 1 + ukey + value + 1` =
 64 + 28 + 1 + 25 + 34 + 1 = 153 bytes
 
 For two keys, the current implementation would take:
 
-`(sizeof(_Key) + name + 1 + usize + value + 1) * 2` =
+`(sizeof(_Key) + name + 1 + ukey + value + 1) * 2` =
 (64 + 28 + 1 + 25 + 34 + 1) * 2 = 306 bytes.
 
 #### Changes to `KeySet`
