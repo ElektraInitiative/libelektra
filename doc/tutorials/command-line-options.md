@@ -508,6 +508,8 @@ This can be useful, if you are writing a custom configuration tool (like the sta
 Such tools normally don't need (or want) to be configured via persistent config files, but often have an advanced command-line interface.
 Using the fairly feature-rich parser implemented in `elektraGetOpts` could be a good option here.
 
+<a id="manual-help-message"></a>
+
 ## Advanced Use: Manually Generating the Help Message
 
 When using `gopts` you automatically get a generated help message via the key `proc:/elektra/gopts/help/message`, whenever the `--help` option is used.
