@@ -50,9 +50,7 @@ static void test_doubleGet (void)
 }
 ```
 
-> It actually outputs should find key (2) so the assertion fails.
-
-It was found unexpected that the second assert will fail.
+It was found unexpected that the second assert - should find key (2) - will fail.
 
 ## Constraints
 
