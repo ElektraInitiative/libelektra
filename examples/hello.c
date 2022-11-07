@@ -15,7 +15,5 @@ int main (void)
 	printf ("%s\n", (char *) keyValue (k));
 	keyDel (k);
 
-	Key * k2 = keyNew ("user:/hosts/ipv6/example.com", KEY_VALUE, "2606:2800:220:1:248:1893:25c8:1946", KEY_END);
-
 	return 0;
 }
