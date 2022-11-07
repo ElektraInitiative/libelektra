@@ -88,6 +88,9 @@ s/\<([Ww])orstcase/\1orst-case/g
 
 s/\<([Cc])olon[- ]?[Ss]eparated/\1olon-separated/g
 
+s/([Dd])(ocu)(\W)/\1\2mentation\3/g
+s/API-[dD]ocumentation/API documentation/g
+
 # get- and setmethods -> getter and setter methods
 s/\<([Hh])ard-?[Cc]od/\1ard cod/g
 s/\<([Ss])traight[- ][Ff]orward/\1traightforward/g

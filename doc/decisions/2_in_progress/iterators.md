@@ -33,7 +33,7 @@ iterators for 1.0 and only the external instead.
 - change `ksAtCursor` to `ksAt`
 - add implementation / documentation / tests for the external iterator
 - start using external iterators in new code
-- remove docu about internal cursor from all functions.
+- remove documentation about internal cursor from all functions.
 
 ## Rationale
 
