@@ -305,9 +305,6 @@ struct _KeySetData {
 
 struct _KeySet {
     struct _KeySetData * data;
-
-    struct _Key * cursor; /**< Internal cursor */
-    size_t current;		  /**< Current position of cursor */
 	
     ksflag_t flags;
 
@@ -317,10 +314,10 @@ struct _KeySet {
 
 The following calculations are based on the AMD64 platform:
 
-An empty keyset with the datastructure above has 80 bytes.
+An empty keyset with the datastructure above has 64 bytes (it's missing the soon-to-be-removed cursor and current).
 An empty keyset with the current implementation has 64 bytes.
 
-A copied, non-modified keyset with the datastructure above has always 32 bytes.
+A copied, non-modified keyset with the datastructure above has always 16 bytes.
 A copied, non-modified keyset with the current implementation has at least 64 bytes (for an empty keyset).
 
 
