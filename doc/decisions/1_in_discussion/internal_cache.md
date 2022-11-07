@@ -249,6 +249,7 @@ The following calculations are based on the AMD64 platform:
 
 In the data structures above, an empty key does have
 - with `_keyData` and `_keyName` allocated: 96 bytes.
+- without `_keyData` but with `_keyName`: 72 bytes.
 - with `_keyData` and `_keyName` `NULL`: 32 bytes.
 
 An empty key of the current implementation has 64 bytes.
