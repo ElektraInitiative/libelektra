@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # @author Klemens Böswirth <k.boeswirth+git@gmail.com>
 # @brief Mount a Java Plugin
@@ -9,49 +9,49 @@
 # e.g. CLASSPATH=/path/to/foo.jar kdb mount-java config.file user:/foo java:com.example.Foo
 
 if [ -z "$KDB" ]; then
-        KDB="@CMAKE_INSTALL_PREFIX@/bin/kdb"
+	KDB="@CMAKE_INSTALL_PREFIX@/bin/kdb"
 fi
 
 if [ -z "$JAVA_BIN" ]; then
-        if ! command -v java > /dev/null; then
-                echo >&2 "No Java installation found. Install java or provide JAVA_BIN."
-                exit 1
-        fi
-        JAVA_BIN=$(command -v java)
+	if ! command -v java > /dev/null; then
+		echo >&2 "No Java installation found. Install java or provide JAVA_BIN."
+		exit 1
+	fi
+	JAVA_BIN=$(command -v java)
 fi
 
 if [ -z "$ELEKTRA_CLASSPATH" ]; then
-        KDB_VERSION="$("$KDB" --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')"
-        JAVA_DIR="@CMAKE_INSTALL_PREFIX@/share/java"
-        PLUGIN_JARS="$(find "$JAVA_DIR/plugins" -type f -name "*-$KDB_VERSION.jar" | tr "\n" ':')"
-        ELEKTRA_CLASSPATH="$JAVA_DIR/libelektra-$KDB_VERSION-all.jar:$JAVA_DIR/process-$KDB_VERSION.jar:${PLUGIN_JARS%:}"
+	KDB_VERSION="$("$KDB" --version | sed -nE 's/KDB_VERSION: (.+)/\1/gp')"
+	JAVA_DIR="@CMAKE_INSTALL_PREFIX@/share/java"
+	PLUGIN_JARS="$(find "$JAVA_DIR/plugins" -type f -name "*-$KDB_VERSION.jar" | tr "\n" ':')"
+	ELEKTRA_CLASSPATH="$JAVA_DIR/libelektra-$KDB_VERSION-all.jar:$JAVA_DIR/process-$KDB_VERSION.jar:${PLUGIN_JARS%:}"
 fi
 
 if [ -z "$CLASSPATH" ]; then
-        CLASSPATH="$ELEKTRA_CLASSPATH"
+	CLASSPATH="$ELEKTRA_CLASSPATH"
 else
-        CLASSPATH="${CLASSPATH}:${ELEKTRA_CLASSPATH}"
+	CLASSPATH="${CLASSPATH}:${ELEKTRA_CLASSPATH}"
 fi
 
 if [ $# -lt 2 ]; then
-        echo >&2 "Usage: kdb mount-java CONFIG_FILE MOUNTPOINT [PLUGINS...]"
-        echo >&2 ""
-        echo >&2 "PLUGINS is mostly a list of arguments that could be passed at"
-        echo >&2 "the end of kdb mount command. But arguments starting with kdb:"
-        echo >&2 "or java: are treated specially."
-        echo >&2 "The kdb: prefix is simply removed. It only exists to avoid"
-        echo >&2 "name collisions. The java: prefix must be followed by the"
-        echo >&2 "fully qualified class name of a valid plugin class. It will be"
-        echo >&2 "expanded into a correct configuration for the process plugin."
-        echo >&2 ""
-        echo >&2 "For example, the following command"
-        echo >&2 ""
-        echo >&2 "    kdb mount-java config.file user:/test/foo dump java:org.libelektra.plugin.WhitelistPlugin kdb:type"
-        echo >&2 ""
-        echo >&2 "is equivalent to"
-        echo >&2 ""
-        echo >&2 "    kdb mount config.file user:/test/foo dump process executable=$JAVA_BIN args=#3 args/#0=-cp args/#1=$CLASSPATH args/#2=org.libelektra.process.PluginProcess args/#3=org.libelektra.plugin.WhitelistPlugin type"
-        exit 1
+	echo >&2 "Usage: kdb mount-java CONFIG_FILE MOUNTPOINT [PLUGINS...]"
+	echo >&2 ""
+	echo >&2 "PLUGINS is mostly a list of arguments that could be passed at"
+	echo >&2 "the end of kdb mount command. But arguments starting with kdb:"
+	echo >&2 "or java: are treated specially."
+	echo >&2 "The kdb: prefix is simply removed. It only exists to avoid"
+	echo >&2 "name collisions. The java: prefix must be followed by the"
+	echo >&2 "fully qualified class name of a valid plugin class. It will be"
+	echo >&2 "expanded into a correct configuration for the process plugin."
+	echo >&2 ""
+	echo >&2 "For example, the following command"
+	echo >&2 ""
+	echo >&2 "    kdb mount-java config.file user:/test/foo dump java:org.libelektra.plugin.WhitelistPlugin kdb:type"
+	echo >&2 ""
+	echo >&2 "is equivalent to"
+	echo >&2 ""
+	echo >&2 "    kdb mount config.file user:/test/foo dump process executable=$JAVA_BIN args=#3 args/#0=-cp args/#1=$CLASSPATH args/#2=org.libelektra.process.PluginProcess args/#3=org.libelektra.plugin.WhitelistPlugin type"
+	exit 1
 fi
 
 CONFIG_FILE="$1"
@@ -60,18 +60,18 @@ shift 2
 
 PLUGINS=()
 for plugin in "$@"; do
-        case "$plugin" in
-        java:*)
-                PLUGINS=("${PLUGINS[@]}" process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$CLASSPATH" 'args/#2=org.libelektra.process.PluginProcess' "args/#3=${plugin#java:}" 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH")
-                ;;
-        kdb:*)
-                PLUGINS=("${PLUGINS[@]}" "${plugin#kdb:}")
-                ;;
+	case "$plugin" in
+	java:*)
+		PLUGINS=("${PLUGINS[@]}" process 'executable=/usr/bin/java' 'args=#3' 'args/#0=-cp' "args/#1=$CLASSPATH" 'args/#2=org.libelektra.process.PluginProcess' "args/#3=${plugin#java:}" 'copyenv=#0' "copyenv/#0=LD_LIBRARY_PATH")
+		;;
+	kdb:*)
+		PLUGINS=("${PLUGINS[@]}" "${plugin#kdb:}")
+		;;
 
-        *)
-                PLUGINS=("${PLUGINS[@]}" "$plugin")
-                ;;
-        esac
+	*)
+		PLUGINS=("${PLUGINS[@]}" "$plugin")
+		;;
+	esac
 done
 
 $KDB mount "$CONFIG_FILE" "$MOUNTPOINT" "${PLUGINS[@]}"

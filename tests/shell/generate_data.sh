@@ -1,3 +1,5 @@
+#!/bin/sh
+
 @INCLUDE_COMMON@
 
 #comment out next line to re-generate test data

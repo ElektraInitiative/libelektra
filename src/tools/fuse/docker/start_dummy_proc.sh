@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if [ "$#" -ne 1 ]; then
 	echo "Usage: ./start_dummy_proc.sh user"
 	exit 1

@@ -7,6 +7,7 @@
 
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
+. "${SCRIPTS_DIR}/list-shell-scripts"
 
 cd "$SOURCE"
 
@@ -25,32 +26,12 @@ if [ -z "${SHFMT}" ] || [ "$SHFMT_MAJOR_VERSION" = "(devel)" ] || [ "$SHFMT_MAJO
 	fi
 fi
 
+shell_files=$(list_shell_scripts)
+
 ignore_file=$(dirname "$0")/.shfmtignore
 if [ -f "$ignore_file" ]; then
-	shell_files=$("$SHFMT" -f 'scripts' 'src' 'tests/shell' | grep -v -f "$ignore_file")
-else
-	shell_files=$("$SHFMT" -f 'scripts' 'src' 'tests/shell')
+	shell_files=$(printf "%s\n" "$shell_files" | grep -v -f "$ignore_file")
 fi
-
-additional_files=$(
-	for filepath in 'scripts/change-resolver-symlink.in' \
-		'scripts/change-storage-symlink.in' \
-		'scripts/configure-firefox.in' \
-		'scripts/kdb/backup.in' \
-		'scripts/kdb/elektrify-getenv.in' \
-		'scripts/kdb/elektrify-open.in' \
-		'scripts/completion/install-sh-completion.in' \
-		'scripts/kdb/list-tools.in' \
-		'scripts/make-source-package.in' \
-		'src/bindings/jna/gradlew' \
-		'scripts/dev/run_all.in' \
-		'scripts/dev/run_memcheck.in' \
-		'scripts/dev/run_nocheckshell.in' \
-		'scripts/dev/run_nokdbtests.in'; do
-		printf '%s\n' "$filepath"
-	done
-)
-shell_files=$(printf '%s\n' "$shell_files" "$additional_files")
 
 if [ $# -gt 0 ]; then
 	tmpfile=$(mktemp /tmp/elektra-reformat-shell.XXXXXX)

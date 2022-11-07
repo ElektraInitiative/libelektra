@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #make sure we have the right build context
 cd $(dirname "$0")/..
