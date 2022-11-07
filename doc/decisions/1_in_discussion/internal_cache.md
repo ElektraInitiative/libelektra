@@ -73,7 +73,7 @@ Improve documentation to make people more aware of these two problems:
 
 Naively one would simply cache the whole keyset and use `ksBelow` to always get the keyset.
 
-This idea was implemented and later on discarded: a3d95f07160d792fdd0f169d8543138c32a2f580
+This idea was implemented and later on [discarded: a3d95f](https://github.com/ElektraInitiative/libelektra/commit/a3d95f07160d792fdd0f169d8543138c32a2f580)
 
 The main problems are:
 
