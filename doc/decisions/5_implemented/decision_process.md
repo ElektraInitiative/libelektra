@@ -115,7 +115,7 @@ Discussions should focus on the decision text so that the text evolves and impro
 - The process is lightweight and simple.
 - The template makes sure important points are not forgotten.
 - Every decision is by design in its own file with its own Git history.
-- PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected PRs).
+- PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected decisions).
 - "Decision", "Rationale" and "Implications" are filled out later to keep the discussion unbiased
 - PRs allow to suggest changes and review individual sentences of the decision.
 - Several "Related Decisions" are very important even if everyone agrees on one solution.
@@ -134,16 +134,35 @@ Discussions should focus on the decision text so that the text evolves and impro
 - Decision PRs might be merged quite often until they reach the step "Implemented".
   They might even be merged several times within the same step.
 - Decisions encourage to write documentation before actually writing code.
+- The proposal encourages healthier discussions despite cognitive biases we all have, see in Notes below.
 
 ## Related Decisions
 
+This is the only non-technical decision, so no issues are related.
+
 ## Notes
 
+- The first idea often is not the best, don't fixate on it.
+  Abraham Luchins called this the “Einstellung effect.”
+  Thus we encourage to generate as many ideas as possible for any problem (interrupt effect).
+- We have a tendency to add:
+  Take courage to also propose solutions that (mostly) remove code.
+  See Leidy Klotz et al., e.g. “People systematically overlook subtractive changes“.
+- Failures are not a bad thing.
+  It is a good thing to have "rejected" decisions for future references and to recheck if assumptions change.
+- Decisions are about "Why?" and not about "Who?" or "When?".
+  Such discussions should be in separate issues.
 - Discussions in issues/discussions are not prohibited.
   They don't bring a decision forward, though.
   To not waste time, it is recommended to start with the decision process as described here asap.
 - Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
   Only the end results counts.
 
-Written by Markus Raab 10.10.2022.
-Second discussion round 28.10.2022.
+
+Written by Markus Raab.
+
+- First discussion round starting 10.10.2022.
+- Second discussion round starting 28.10.2022.
+- Third discussion round starting 6.11.2022.
+
+
