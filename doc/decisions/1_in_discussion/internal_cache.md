@@ -161,42 +161,44 @@ ksRemoveByName (cowMeta, "meta:/type");
   We can not track how many keys point to the same data and name this way, so we can only free data and name if the key does not have the COW flag.
   If the original key gets deleted, using a COW key that points to the same data and name will lead to corrupt data.
   The same is true for updating values of the original key.
-  
+
   This is only problematic if we want to use COW for keys outside of `KDB`.
   If it is only for use within `KDB`, especially for usage as internal cache and in change tracking, we could always guarantee that the original keys are going to last as long as the `KDB` instance.
   However, we need to document for the users of Elektra that keys returned from `kdbGet` are only valid until `kdbClose`.
   If they want to continue using them afterwards, they'd have to deep copy them.
-  
+
   Triggering the delete problem:
+
   ```c
   Key * originalKey;
   Key * copiedKey;
   keyCopy (copiedKey, originalKey, ELEKTRA_CP_COW);
-  
+
   assert (keyString (copiedKey) == keyString (originalKey));
   assert (keyName (copiedKey) == keyName (originalKey));
 
   keyDel (originalKey);
-  
+
   keyString (copiedKey); // Error! Original value has been deleted. Pointer to data in copiedKey points to freed memory
   keyName (copiedKey);   // Error! Original name has been deleted.
   ```
- 
+
   Triggering the update problem:
+
   ```c
   Key * originalKey;
   Key * copiedKey;
   keyCopy (copiedKey, originalKey, ELEKTRA_CP_COW);
-  
+
   assert (keyString(copiedKey) == keyString(originalKey));
   keySetString (originalKey, "new value!");
-  
+
   keyString(copiedKey); // Error! Original value has been deleted. Pointer to data in copiedKey points to potentially freed memory
   ```
 
   The same problems in principle exist for `mmapstorage` where `kdbSet` frees (`munmap`) the keyset.
   We can still let users access the flag `ELEKTRA_CP_COW`, we just need to clearly document what is forbidden.
-  Maybe set the `KEY_FLAG_RO_VALUE` on the original key, so that the API itself detects the error. 
+  Maybe set the `KEY_FLAG_RO_VALUE` on the original key, so that the API itself detects the error.
   There is, however, no flag for `keyDel` that we could set.
 
 #### Changes to `libelektra-core`
@@ -262,7 +264,6 @@ A `ksDeepDup()` of a keyset with COW keys will create a keyset with deep-copied 
 Internally we may need a `ksCowDup()` function to create a keyset with copy-on-write keys from another keyset.
 Whether this function will be part of the public API is a point for discussion.
 
-
 ### Full-blown copy-on-write implementation
 
 Make Elektra's `Key` and `KeySet` data structures copy-on-write.
@@ -298,7 +299,7 @@ struct _KeyName {
 };
 
 struct _Key {
-    struct _KeyData * keyData;    
+    struct _KeyData * keyData;
     struct _KeyName * keyName;
     KeySet * meta;
     keyflag_t flags;
@@ -310,6 +311,7 @@ struct _Key {
 The following calculations are based on the AMD64 platform:
 
 In the data structures above, an empty key does have
+
 - with `_keyData` and `_keyName` allocated: 96 bytes.
 - without `_keyData` but with `_keyName`: 72 bytes.
 - with `_keyData` and `_keyName` `NULL`: 32 bytes.
@@ -324,12 +326,12 @@ As an example, let's take `user:/hosts/ipv6/example.com = 2606:2800:220:1:248:18
 For a single key, it would take for the COW implementation:
 
 `sizeof(_Key) + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + ukey + value + 1 /* \0 */` =
-32 + 40 + 24 + 28 + 1  + 25 + 34 + 1 = 185 bytes.
+32 + 40 + 24 + 28 + 1 + 25 + 34 + 1 = 185 bytes.
 
 For two keys (one original and one copy), it would take for the COW implementation:
 
 `sizeof(_Key)*2 + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + ukey + value + 1 /* \0 */` =
-32*2 + 40 + 24 + 28 + 1  + 25 + 34 + 1 = 217 bytes.
+32\*2 + 40 + 24 + 28 + 1 + 25 + 34 + 1 = 217 bytes.
 
 For a single key, it would take the current implementation:
 
@@ -339,7 +341,7 @@ For a single key, it would take the current implementation:
 For two keys, the current implementation would take:
 
 `(sizeof(_Key) + name + 1 + ukey + value + 1) * 2` =
-(64 + 28 + 1 + 25 + 34 + 1) * 2 = 306 bytes.
+(64 + 28 + 1 + 25 + 34 + 1) \* 2 = 306 bytes.
 
 #### Changes to `KeySet`
 
@@ -348,10 +350,10 @@ This includes the array itself, the sizes and the hashmap.
 
 Why don't we just add the number of references to the original `KeySet`?
 
-- If we delete a copied KeySet, we don't know which KeySet is the original, so we couldn't decrement the counter. 
+- If we delete a copied KeySet, we don't know which KeySet is the original, so we couldn't decrement the counter.
   This could be dealt with storing a pointer to the original KeySet.
 - If the original KeySet is deleted, we don't know which other KeySets point at the data, so updating their count would not work
-- In similar fashion, if you update the original KeySet, the copied KeySets will also contain the new data (if the memory address does not change). 
+- In similar fashion, if you update the original KeySet, the copied KeySets will also contain the new data (if the memory address does not change).
   This is unexpected behaviour.
 
 ```c
@@ -368,7 +370,7 @@ struct _KeySetData {
 
 struct _KeySet {
     struct _KeySetData * data;
-	
+
     ksflag_t flags;
 
     uint16_t refs; /**< Reference counter */
@@ -383,10 +385,7 @@ An empty keyset with the current implementation has 64 bytes.
 A copied, non-modified keyset with the datastructure above has always 16 bytes.
 A copied, non-modified keyset with the current implementation has at least 64 bytes (for an empty keyset).
 
-
 ## Decision
-
-
 
 ## Rationale
 
