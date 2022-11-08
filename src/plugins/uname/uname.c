@@ -28,7 +28,14 @@ static void elektraAddUname (KeySet * returned, Key * parentKey)
 
 	struct utsname buf;
 
-	uname (&buf); // TODO: handle error
+	if (uname (&buf) < 0)
+	{
+		dir = keyDup (parentKey, KEY_CP_ALL);
+		keyAddBaseName (dir, "error");
+		keySetString (dir, strerror (errno));
+		ksAppendKey (returned, dir);
+		return;
+	}
 
 	dir = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (dir, "sysname");
