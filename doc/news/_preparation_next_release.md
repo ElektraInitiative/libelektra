@@ -113,6 +113,13 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Remove code duplication in the data block calculation _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+
+### network
+
+- Add the retry mechanism _(Richard Stöckl @Eiskasten)_
+- <<TODO>>
+- <<TODO>>
 
 ### <<Plugin>>
 
