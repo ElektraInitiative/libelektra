@@ -16,7 +16,7 @@ find_package (
 	Qt5
 	OPTIONAL_COMPONENTS DBus
 	QUIET)
-find_package (Discount)
+find_package (DISCOUNT)
 
 if (NOT Qt5_FOUND)
 	remove_tool (qt-gui "qt5 (Components: ${QCOMPONENTS}) not found")
