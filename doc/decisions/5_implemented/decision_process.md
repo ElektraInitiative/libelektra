@@ -155,12 +155,11 @@ This is the only non-technical decision, so no issues are related.
 - Discussions in issues/discussions are not prohibited.
   They don't bring a decision forward, though.
   To not waste time, it is recommended to start with the decision process as described here asap.
-
+- Make sure that moving between the stages is detected by git.
+  E.g. rename in a commit that doesn't rewrite too much of the decision.
 
 Written by Markus Raab.
 
 - First discussion round starting 10.10.2022.
 - Second discussion round starting 28.10.2022.
 - Third discussion round starting 6.11.2022.
-
-
