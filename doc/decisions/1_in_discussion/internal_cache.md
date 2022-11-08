@@ -199,6 +199,70 @@ ksRemoveByName (cowMeta, "meta:/type");
   Maybe set the `KEY_FLAG_RO_VALUE` on the original key, so that the API itself detects the error. 
   There is, however, no flag for `keyDel` that we could set.
 
+#### Changes to `libelektra-core`
+
+The `struct _Key` will be extended with two more pointers, if we want to eliminate the lifetime problem:
+
+- `struct _Key * origData`: points to the key containing the referenced data
+- `struct _Key * origName`: points to the key containing the referenced name
+
+Those two pointers are needed for memory management.
+Each referenced key will also have its reference counter increased.
+This way, an original key can be `keyDel()`d without impacting the copied keys.
+
+Three new key flags will be added:
+
+- `KEY_FLAG_COW_VALUE`: the value points to a value of another key
+- `KEY_FLAG_COW_NAME`: the name points to the name of another key
+- `KEY_FLAG_COW_META`: metakeys are copy-on-write
+
+A new copy flag will be added:
+
+- `KEY_CP_COW`: instructs `keyCopy` to copy whatever it should copy as copy-on-write.
+  This will NOT be part of `KEY_CP_ALL`.
+  We don't want developers outside of Elektra to accidentally use this.
+
+If `keyCopy()` is instructed to do a copy-on-write copy:
+
+- `dest->data.v` and `dest->data.c` point to the exact same location as in the source.
+  `dest->dataSize` is set to the same value as `source->dataSize`.
+  `KEY_FLAG_COW_VALUE` is set on `dest->flags`.
+  `KEY_FLAG_RO_VALUE` is set on `source->flags`.
+  `dest->originalData` is set to `source`.
+  `source->refs` is incremented.
+
+- `dest->key` points to `source->key`.
+  `dest->keySize` is set to the same value as `source->keySize`.
+  `dest->ukey` points to `source->ukey`.
+  `dest->keyUSize` is set to the same value as `source->keyUSize`.
+  `KEY_FLAG_COW_NAME` is set on `dest->flags`.
+  `KEY_FLAG_RO_NAME` is set on `source->flags`.
+  `dest->originalName` is set to `source`.
+  `source->refs` is incremented.
+
+- `dest->meta` points to a **new** keyset.
+  The keys in `dest->meta` are also copied with `KEY_CP_COW`, i.e. they are also copy-on-write keys.
+  `KEY_FLAG_COW_META` is set on `dest->flags`.
+  `KEY_FLAG_RO_META` is set on `source->flags`.
+
+The source key will remain as a read-only key.
+This constraint is needed, because the source key is the only key we can free the resources on.
+If the data or the name would change in the source key, all COW-copied keys would suddenly have another value.
+For the same reason, the source key will need to live longer than all COW-copied keys from it.
+
+A `keyCopy()` without `KEY_CP_COW` from an COW key will create a deep copy of the key.
+These keys are "normal" non-COW keys and can live on their own.
+
+Every `key*()` method that modifies data on a COW-copied key will need to allocate new memory for this data and remove the `KEY_FLAG_COW_DATA` flag.
+Every `key*()` method that modifies the name of a COW-copied key will need to allocate new memory for this name and remove the `KEY_FLAG_COW_NAME` flag.
+Every `key*()` method that modifies metadata needs to make sure that the same happens for metakeys.
+
+Keysets are not copy-on-write.
+A `ksDeepDup()` of a keyset with COW keys will create a keyset with deep-copied non-COW keys.
+Internally we may need a `ksCowDup()` function to create a keyset with copy-on-write keys from another keyset.
+Whether this function will be part of the public API is a point for discussion.
+
+
 ### Full-blown copy-on-write implementation
 
 Make Elektra's `Key` and `KeySet` data structures copy-on-write.
@@ -322,69 +386,6 @@ A copied, non-modified keyset with the current implementation has at least 64 by
 
 ## Decision
 
-Do `mmapstorage`-like copy-on-write for keys.
-
-### Changes to `libelektra-core`
-
-The `struct _Key` stays as it is.
-
-Three new key flags will be added:
-
-- `KEY_FLAG_COW_VALUE`: the value points to a value of another key
-- `KEY_FLAG_COW_NAME`: the name points to the name of another key
-- `KEY_FLAG_COW_META`: metakeys are copy-on-write
-
-A new copy flag will be added:
-
-- `KEY_CP_COW`: instructs `keyCopy` to copy whatever it should copy as copy-on-write.
-  This will NOT be part of `KEY_CP_ALL`.
-  We don't want developers outside of Elektra to accidentally use this.
-
-If `keyCopy()` is instructed to do a copy-on-write copy:
-
-- `dest->data.v` and `dest->data.c` point to the exact same location as in the source.
-  `dest->dataSize` is set to the same value as `source->dataSize`. 
-  `KEY_FLAG_COW_VALUE` is set on `dest->flags`.
-  `KEY_FLAG_RO_VALUE` is set on `source->flags`.
-
-- `dest->key` points to `source->key`.
-  `dest->keySize` is set to the same value as `source->keySize`.
-  `dest->ukey` points to `source->ukey`.
-  `dest->keyUSize` is set to the same value as `source->keyUSize`.
-  `KEY_FLAG_COW_NAME` is set on `dest->flags`.
-  `KEY_FLAG_RO_NAME` is set on `source->flags`.
-
-- `dest->meta` points to a **new** keyset.
-  The keys in `dest->meta` are also copied with `KEY_CP_COW`, i.e. they are also copy-on-write keys.
-  `KEY_FLAG_COW_META` is set on `dest->flags`.
-  `KEY_FLAG_RO_META` is set on `source->flags`.
-
-The source key will remain as a read-only key.
-This constraint is needed, because the source key is the only key we can free the resources on.
-If the data or the name would change in the source key, all COW-copied keys would suddenly have another value.
-For the same reason, the source key will need to live longer than all COW-copied keys from it.
-
-A `keyCopy()` without `KEY_CP_COW` from an COW key will create a deep copy of the key.
-These keys are "normal" non-COW keys and can live on their own.
-
-Every `key*()` method that modifies data on a COW-copied key will need to allocate new memory for this data and remove the `KEY_FLAG_COW_DATA` flag.
-Every `key*()` method that modifies the name of a COW-copied key will need to allocate new memory for this name and remove the `KEY_FLAG_COW_NAME` flag.
-Every `key*()` method that modifies metadata needs to make sure that the same happens for metakeys.
-
-Keysets are not copy-on-write.
-A `ksDeepDup()` of a keyset with COW keys will create a keyset with deep-copied non-COW keys.
-Internally we may need a `ksCowDup()` function to create a keyset with copy-on-write keys from another keyset.
-Whether this function will be part of the public API is a point for discussion.
-
-### Changes to `libelektra-kdb`
-
-As the main purpose of this decision is an internal cache, there are some things that need to change in `libelektra-kdb`.
-
-Instead of returning the keys from `backendData->keys` directly, we return copy-on-write keys pointing to those keys.
-
-WARNING: as of now, every `kdbGet` operation clears the keys stored in `backendData->keys`!
-This means ALL keys returned by a previous `kdbGet` will instantly point to potentially freed data!
-See [operation sequences](../0_drafts/operation_sequences.md).
 
 
 ## Rationale
