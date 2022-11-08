@@ -10,7 +10,7 @@ The graph below shows an (incomplete) list of available packages for Elektra.
 
 For the following Linux distributions and package managers 0.9 packages are available:
 
-- [Arch Linux](https://aur.archlinux.org/packages/elektra/)
+- [Arch Linux (AUR)](https://aur.archlinux.org/packages/libelektra/)
 - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
 - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
 
@@ -106,6 +106,25 @@ For our latest builds from master append `-unstable` to the suite name:
 ```sh
 sudo zypper ar -f https://rpms.libelektra.org/opensuse-leap-15.3-unstable libelektra-unstable
 sudo zypper update
+```
+
+### Arch Linux
+
+We provide an package for Arch Linux through the [Arch User Repository](https://wiki.archlinux.org/title/Arch_User_Repository)
+
+You can either install it using any AUR helper or manually using makepkg
+
+#### Manual install
+
+Make you have `base-devel` and `git` installed (`sudo pacman -S base-devel git`)
+
+Then you can install it using the following commands:
+
+```sh
+cd /tmp
+git clone https://aur.archlinux.org/libelektra.git
+cd libelektra
+makepkg -si
 ```
 
 ### Install
