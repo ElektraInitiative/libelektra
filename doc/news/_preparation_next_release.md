@@ -96,6 +96,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Fix broken /pythongen link on homepage _(@stefnotch)_
 - Fix redirect logic to not cause loops _(@stefnotch)_
 - <<TODO>>
+### uname
+
+- Add error handling if uname call fails _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 
 ### quickdump
