@@ -155,8 +155,6 @@ This is the only non-technical decision, so no issues are related.
 - Discussions in issues/discussions are not prohibited.
   They don't bring a decision forward, though.
   To not waste time, it is recommended to start with the decision process as described here asap.
-- Unlike the Rust Decision process, decisions in Elektra do not have a disadvantage if they were flawed in early stages.
-  Only the end results counts.
 
 
 Written by Markus Raab.

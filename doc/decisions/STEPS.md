@@ -9,21 +9,16 @@ flowchart LR
     %% Shortcuts:
     s --> Decided
     Decided --> Implemented
-
-    %% Dead ends:
-    s --x Rejected
-    s --o Delayed
-    Drafts --x Rejected
-    Drafts --o Delayed
-    In_Discussion --x Rejected
-    In_Discussion --o Delayed
-    In_Progress --x Rejected
-    In_Progress --o Delayed
 ```
+
+Additionally, decision that are not yet "Decided" can be become "Rejected" or "Delayed" at any point.
+
+> The first PR for a decision must always create the decision in the "Draft" state.
+> If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "In Discussion" or "In Progress" before the merge.
 
 ## Drafts
 
-> This step is recommended if the problem is not yet clear.
+> This step is recommended if the problem is not yet clear to the core developers.
 
 The first step is to create a PR with:
 
@@ -37,7 +32,7 @@ The first step is to create a PR with:
 
 ## In Discussion
 
-> This step is recommended if it is not yet clear which solution is the best.
+> This step is recommended if it is not yet clear to the core developers which solution is the best.
 
 Here you must ensure:
 
@@ -58,6 +53,7 @@ For each solution a proposal, rationale and optionally implications should be gi
 ## Decided
 
 > This step is mandatory.
+> I.e., there must be a decision PR that puts the decision into "Decided".
 
 - "Decision", "Rationale" and "Implications" are now filled out and fixed according to the reviews
 - decisions of this step usually already have an implementation PR
@@ -75,10 +71,14 @@ The "Implication" must clearly say how much of the decision is already implement
 ## Implemented
 
 > This step is mandatory.
+> I.e., there must be a decision PR that puts the decision into "Implemented".
 
 - Here the details of the decisions are stripped from the decision and moved to the documentation.
 - The documentation links to the decision.
 - The decision links to the new documentation.
+
+> In this step, decision PRs only modify a _single_ decision.
+> Here more exceptions are allowed, in particular documentation updates concerning the decision.
 
 ## Rejected
 
