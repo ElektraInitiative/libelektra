@@ -85,6 +85,9 @@ correct number between 1 and 65535.
 If `check/port/listen` is specified, the plugin will check if the application can be started
 and listen on the given port.
 
+If `gethostbyname()` returns a "try again" error, two retries will be attempted.
+If all retries were consumed, the plugin will proceed in the same manner as with other errors.
+
 ## Future Work
 
 `check/port/connect` to check if the port can be pinged/reached (usually for clients).
