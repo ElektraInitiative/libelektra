@@ -50,7 +50,7 @@ which are essential for Elektra to operate. Resource errors is a branch category
 which also allows for errors to be put in. Compared to validation errors this
 category has its focus the underlying system resources whereas validation errors
 for usages with specifications. Examples are missing files/ directories or
-insufficient permission to execute certain commands (eg. you would require sudo
+insufficient permission to execute certain commands (e.g. you would require sudo
 permissions). Reactions are fixing the permissions, remount, creating the
 file/directory and retry the operation. Compared to validation errors,
 administrators would change the specification or retry with a different value.
@@ -68,7 +68,7 @@ cannot deal with such errors as of now.
 `Installation Errors` are errors that are related to a wrong installation such
 as wrong plugin names, missing backends, initialization errors, misconfiguration
 of Elektra etc. Installation errors might also be non-Elektra specific but also
-from dependent library/applications such as gpg. Also plugin configuration
+from dependent library/applications such as gpg. Also, plugin configuration
 errors belong to `Installation Errors` as this happens during mounting. Users
 will have to reconfigure, reinstall, recompile (with other settings) Elektra in
 order to get rid of this error or fix the installation of the corresponding
@@ -97,10 +97,10 @@ this error please add a message indicating that this bug should be reported.
 
 `Interface Errors` indicate a wrong usage of Elektra's API. Compared to
 `internal` errors this category does not indicate a bug but a misuse. An example
-would be to pass a NULL pointer to `kdbGet`. Also violations of the backend
+would be to pass a NULL pointer to `kdbGet`. Also, violations of the backend
 belong into this category. Compared to semantic validation errors, this category
 has its focus on detecting wrong usages of the API instead of a "retry with a
-different value" approach. Also validation errors focus on specifications of
+different value" approach. Also, validation errors focus on specifications of
 configurations whereas this category tries to handle specifications for APIs.
 Users should investigate the concrete reason and might use a different, more
 appropriate method or change their passed values before retrying.
@@ -109,7 +109,7 @@ appropriate method or change their passed values before retrying.
 
 `Plugin Misbehavior Errors` indicate that a plugin does not behave in an
 intended way. Unrecognized commands, unknown return codes, plugin creation
-errors, etc. belong to this category. Also uncaught exceptions belong here
+errors, etc. belong to this category. Also, uncaught exceptions belong here
 because Elektra expects all exceptions to be caught. For wrong plugin versions
 please use `Installation` errors. Users can try to remount, recompile the plugin
 under different options or use a different plugin (e.g., switching to `mini`
@@ -137,10 +137,10 @@ Validation errors can either be syntactic or semantic.
 
 `Syntactic Errors` are errors which tell users or applications that the current
 format is not valid. Examples are wrong date formats or missing closing brackets
-`]` inside of a regular expression when it is checked. Also path related errors
+`]` inside of a regular expression when it is checked. Also, path related errors
 like missing slashes come into this category. Parsing errors are also associated
 with syntactic errors such as unexpected encounters like missing line endings,
-illegal characters or wrong encodings. Also transformation and conversion errors
+illegal characters or wrong encodings. Also, transformation and conversion errors
 are to be categorizes here because the format of the given input does not allow
 such actions. Since syntactic errors demand a specific format and structure,
 also structural validation errors belong here. Users should try a different
@@ -152,7 +152,7 @@ value/format and retry setting it with Elektra.
 meaning between a user's/developer's/administrator's way of seeing a setting and
 the application's one. The main focus of this category is to enforce
 specifications compared to other categories. So if users provide input which do
-not match prespecified criterias even though syntactically everything is valid,
+not match prespecified criteria even though syntactically everything is valid,
 this category should be used. Examples are references to non-existent keys
 (`reference` plugin), setting values to keys which require to be empty
 (`required` plugin), wrong provided values in a specification if you restricted
