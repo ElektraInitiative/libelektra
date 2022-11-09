@@ -84,7 +84,6 @@ We make the mmap cache non-optional so that we always have a keyset of configura
 The cache will be used to do change tracking.
 From this keyset, we use `ksBelow` to return the correct keyset.
 
-
 - Disadvantage: mmap implementation for Windows would be needed
 
 ### MMAP Cache without parent key
@@ -392,15 +391,17 @@ A copied, non-modified keyset with the current implementation has at least 64 by
 API notes:
 
 - `ksNew()`:
+
   - if size is 0, `data` will be NULL
 
 - `ksDup()`: creates a new instance of `struct _KeySet`, points its `data` to the `source->data`, increases `source->data->refs` by 1.
 
 - `ksCopy(dest, source)`
+
   - if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
   - if `dest->data` is NOT NULL:
     - if `dest->data->refs` == 0 (meaning no other keysets points to it):
-      - deallocate `dest->data` 
+      - deallocate `dest->data`
       - point `dest->data` to `source->data`, increase `source->data->refs` by 1.
     - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
       - decrease `dest->data->refs` by 1.
@@ -408,12 +409,13 @@ API notes:
       - copy the keys from old to `dest->data`
       - copy the keys of `source->data->array` over to `dest->data->array`
 
-- `ksAppend(dest, source)`: 
+- `ksAppend(dest, source)`:
+
   - if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
   - if `dest->data` is NOT NULL:
     - if `dest->data->refs` == 0 (meaning no other keysets points to it):
       - if `dest->data->size` == 0 (no keys are in this keyset):
-        - deallocate `dest->data` and point `dest->data` to `source->data`, increase `source->data->refs` by 1.   
+        - deallocate `dest->data` and point `dest->data` to `source->data`, increase `source->data->refs` by 1.
       - else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
         - copy the keys of `source->data->array` over to `dest->data->array`
     - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
@@ -426,11 +428,11 @@ API notes:
         - copy the keys from old to `dest->data`
         - copy the keys of `source->data->array` over to `dest->data->array`
 
-- `ksAppendKey(dest, key)`: 
+- `ksAppendKey(dest, key)`:
   - Pretty much the same `ksAppend()` but only for a single key
   - if `dest->data` is NULL, allocate `dest->data` and put the key there
-  
 - `ksClear(dest)`:
+
   - if `dest->data->refs` == 0 (meaning no other keysets points to it):
     - deletes the keys in `dest->data`
   - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
@@ -438,6 +440,7 @@ API notes:
     - point `dest->data` to NULL
 
 - `ksCut(dest, key)`:
+
   - if `dest->data->refs` == 0 (meaning no other keysets points to it):
     - perform the cutting algorithm directly on these keys
   - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
@@ -446,6 +449,7 @@ API notes:
     - copy over the non-cut keys into `dest->data` from the old `dest->data`
 
 - `ksPop(dest)`:
+
   - if `dest->data->refs` == 0 (meaning no other keysets points to it):
     - pop the last key directly on the keys
   - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
@@ -462,7 +466,6 @@ This approach requires more allocation than previously.
 We have not benchmarked whether this is big of an issue.
 One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
 We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
-
 
 ## Decision
 
