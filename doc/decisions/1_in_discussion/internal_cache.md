@@ -270,9 +270,11 @@ Make Elektra's `Key` and `KeySet` data structures copy-on-write.
 This requires some major refactoring of code within `libelektra-core`.
 Code that does only interact with the data structures via the public `libelektra-core` API should not notice any differences.
 The `mmapstorage` plugin needs to be fixed.
+
 Unlike "In-Memory COW Cache" keyDup, keyCopy, ksCopy and ksDup will always use COW.
 `ksCopy` and `ksDup` is needed for (de)duplication of metadata.
 Furthermore, the API has better usability if Key and KeySet behave the same, especially for bindings where duplication might happen implicitly.
+
 #### Changes to `Key`
 
 For the `Key`, we need to extract everything for the data and name into their own structs.
@@ -386,6 +388,81 @@ An empty keyset with the current implementation has 64 bytes.
 
 A copied, non-modified keyset with the datastructure above has always 16 bytes.
 A copied, non-modified keyset with the current implementation has at least 64 bytes (for an empty keyset).
+
+API notes:
+
+- `ksNew()`:
+  - if size is 0, `data` will be NULL
+
+- `ksDup()`: creates a new instance of `struct _KeySet`, points its `data` to the `source->data`, increases `source->data->refs` by 1.
+
+- `ksCopy(dest, source)`
+  - if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
+  - if `dest->data` is NOT NULL:
+    - if `dest->data->refs` == 0 (meaning no other keysets points to it):
+      - deallocate `dest->data` 
+      - point `dest->data` to `source->data`, increase `source->data->refs` by 1.
+    - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+      - decrease `dest->data->refs` by 1.
+      - allocate new `dest->data`
+      - copy the keys from old to `dest->data`
+      - copy the keys of `source->data->array` over to `dest->data->array`
+
+- `ksAppend(dest, source)`: 
+  - if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
+  - if `dest->data` is NOT NULL:
+    - if `dest->data->refs` == 0 (meaning no other keysets points to it):
+      - if `dest->data->size` == 0 (no keys are in this keyset):
+        - deallocate `dest->data` and point `dest->data` to `source->data`, increase `source->data->refs` by 1.   
+      - else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
+        - copy the keys of `source->data->array` over to `dest->data->array`
+    - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+      - if `dest->data->size` == 0 (no keys are in this keyset):
+        - decrease `dest->data->refs` by 1.
+        - point `dest->data` to `source->data`, increase `source->data->refs` by 1.
+      - else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
+        - decrease `dest->data->refs` by 1.
+        - allocate new `dest->data`
+        - copy the keys from old to `dest->data`
+        - copy the keys of `source->data->array` over to `dest->data->array`
+
+- `ksAppendKey(dest, key)`: 
+  - Pretty much the same `ksAppend()` but only for a single key
+  - if `dest->data` is NULL, allocate `dest->data` and put the key there
+  
+- `ksClear(dest)`:
+  - if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    - deletes the keys in `dest->data`
+  - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    - decrease `dest->data->refs` by 1
+    - point `dest->data` to NULL
+
+- `ksCut(dest, key)`:
+  - if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    - perform the cutting algorithm directly on these keys
+  - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    - decrease `dest->data->refs` by 1
+    - create a new `dest->data`
+    - copy over the non-cut keys into `dest->data` from the old `dest->data`
+
+- `ksPop(dest)`:
+  - if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    - pop the last key directly on the keys
+  - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    - decrease `dest->data->refs` by 1
+    - create a new `dest->data`
+    - copy over all but the last keys from the old `dest->data`
+
+- `ksLookup()`:
+  - if the `DEL` or `POP` flag is specified, do the COW-stuff as described multiple times now in the operations above
+
+#### Optimizations
+
+This approach requires more allocation than previously.
+We have not benchmarked whether this is big of an issue.
+One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
+We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
+
 
 ## Decision
 
