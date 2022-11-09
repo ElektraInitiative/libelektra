@@ -224,15 +224,15 @@ You can find the generated packages in the `package` directory of the build dire
 
 #### Debian/Ubuntu
 
-First make sure you have debhelper and d-shlibs installed:
+First make sure you have `debhelper` and `d-shlibs` installed:
 
 ```sh
 apt-get install debhelper d-shlibs
 ```
 
-(Otherwise you'll see an error file utility is not available, breaking CPACK_DEBIAN_PACKAGE_SHLIBDEPS and CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS.)
+(Otherwise you'll see an error file utility is not available, breaking `CPACK_DEBIAN_PACKAGE_SHLIBDEPS` and `CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS`.)
 
-On Debian-based distributions you will need to set LD_LIBRARY_PATH before generating the package.
+On Debian-based distributions you will need to set `LD_LIBRARY_PATH` before generating the package.
 Simply `cd` into the build directory and run following command:
 
 ```sh
