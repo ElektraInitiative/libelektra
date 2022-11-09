@@ -355,6 +355,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Added links to the website & webui after further reading. _(Philipp Nirnberger @nirnberger)_
 - <<TODO>>
 
 ## Tests
