@@ -15,6 +15,7 @@
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
+#include <fcntl.h>
 #include <stdio.h>
 
 int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding)
@@ -409,8 +410,14 @@ int elektraIoFdSetFlags (ElektraIoFdOperation * fdOp, int flags)
 		ELEKTRA_LOG_WARNING ("operation was NULL");
 		return 0;
 	}
-
-	fdOp->flags = flags; // TODO check if flags are valid
+	int rdwrFlags = flags & (O_RDONLY | O_WRONLY | O_RDWR);
+	// `open(2)` requires exactly one of these:
+	if (!(rdwrFlags == O_RDONLY || rdwrFlags == O_WRONLY || rdwrFlags == O_RDWR))
+	{
+		ELEKTRA_LOG_NOTICE ("file flags must be exactly one of: read only, write only or read write. actual flag is: %0d", flags);
+		return -1;
+	}
+	// since custom flags are allowed by `fcntl.h`, no further checks are required
 	return 1;
 }
 
