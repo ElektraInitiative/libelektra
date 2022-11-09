@@ -123,7 +123,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add missing source documentation in key.c _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
