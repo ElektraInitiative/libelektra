@@ -275,7 +275,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Denoted pacakage names & global variable names in [INSTALL.d](../INSTALL.md) as `Code` (@janldeboer)
 - <<TODO>>
 - <<TODO>>
 - Improve reference to Podman documentation _(@0x6178656c)_
