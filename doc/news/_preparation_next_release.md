@@ -266,7 +266,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Fix internal links _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Update AUR Link from `elektra` to `libelektra` package _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -329,7 +329,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Tutorials
 
-- <<TODO>>
+- Add tutorial for manual installation from the AUR on Arch Linux _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
