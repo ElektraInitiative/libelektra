@@ -187,7 +187,7 @@ You can install Elektra using [Homebrew](http://brew.sh) via the shell command:
 brew install elektra
 ```
 
-. We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
+We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
 
 ## Windows
 
