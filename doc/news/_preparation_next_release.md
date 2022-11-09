@@ -129,9 +129,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### io
 
-- <<TODO>>
+- Check file flags _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
