@@ -455,6 +455,11 @@ memerror:
 	return NULL;
 }
 
+/**
+ * Frees the `key`, `ukey` and `data.v` fields from the provided key parameter, if the `KEY_FLAG_MMAP_KEY` is not set.
+ * The checks are made separately which makes this call not atomic.
+ * @param key the key to free the attributes from, must not be NULL
+ */
 static void keyClearNameValue (Key * key)
 {
 	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
