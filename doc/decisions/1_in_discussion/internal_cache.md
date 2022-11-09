@@ -19,8 +19,7 @@ It was found unexpected that this assert will fail.
 
 ### Fewer Keys
 
-When doing a second `kdbGet` with a new keyset no keys will be returned when no backends report changed data, because kdb internally thinks the data is already up-to-date.
-A unit test by @atmaxinger:
+When doing a second `kdbGet` with a new keyset no keys will be returned when no backends report changed data, because kdb internally thinks the data is already up-to-date:
 
 ```c
 static void test_doubleGet (void)
@@ -55,6 +54,7 @@ It was found unexpected that the second assert - should find key (2) - will fail
 ## Constraints
 
 - memory consumption must be low for `kdbGet`, see [4. Goal: Performance](/doc/GOALS.md), in particular, deep duplication is too expensive
+- For non-optional parts of Elektra, also non-POSIX systems must be supported
 
 ## Assumptions
 
@@ -81,11 +81,11 @@ The main problems are:
 ### MMAP Cache with parent key
 
 We make the mmap cache non-optional so that we always have a keyset of configuration data internally.
+The cache will be used to do change tracking.
 From this keyset, we use `ksBelow` to return the correct keyset.
 
-**Cons:**
 
-- invalidation of OPMPHM
+- Disadvantage: mmap implementation for Windows would be needed
 
 ### MMAP Cache without parent key
 
@@ -269,8 +269,10 @@ Whether this function will be part of the public API is a point for discussion.
 Make Elektra's `Key` and `KeySet` data structures copy-on-write.
 This requires some major refactoring of code within `libelektra-core`.
 Code that does only interact with the data structures via the public `libelektra-core` API should not notice any differences.
-The `mmapstorage` plugin will need a major refactoring.
-
+The `mmapstorage` plugin needs to be fixed.
+Unlike "In-Memory COW Cache" keyDup, keyCopy, ksCopy and ksDup will always use COW.
+`ksCopy` and `ksDup` is needed for (de)duplication of metadata.
+Furthermore, the API has better usability if Key and KeySet behave the same, especially for bindings where duplication might happen implicitly.
 #### Changes to `Key`
 
 For the `Key`, we need to extract everything for the data and name into their own structs.
