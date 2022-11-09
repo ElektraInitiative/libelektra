@@ -3,7 +3,7 @@
 ## Introduction
 
 Many applications use command-line options and environment variables as a way to override configuration values.
-In Elektra this can be automated by providing a specification that maps command-line options and environment variables to keys in the KDB.
+In Elektra, this can be automated by providing a specification that maps command-line options and environment variables to keys in the KDB.
 
 The recommended way to do this is via the `gopts` plugin.
 This plugin internally calls the actual parser `elektraGetOpts`.
@@ -64,12 +64,12 @@ Similarly, if you pass `envp=NULL` to `elektraGOptsContract` or `envSize=0` **an
 The other parameters are the same for both functions.
 The contract will be written into the `contract` KeySet.
 The `parentKey` indicates where to find the specification.
-The actual namespace that `parentKey` uses is irrelevant (we recommend a cascading key, so that it can be re-used for `kdbGet()`).
+The actual namespace that `parentKey` uses is irrelevant (we recommend a cascading key, so that it can be reused for `kdbGet()`).
 The parser will use the keys below the `spec:/` namespace key equivalent to `parentKey` as the specification, and it will write keys to the equivalent key in `proc:/`.
 
 The last parameter `goptsConfig` can be used to provide additional configuration values to `gopts`.
 For example, this can be used to configure the auto-generated help message.
-The keys that `gopts` accepts in this KeySet will be explained throughout the document .
+The keys that `gopts` accepts in this KeySet will be explained throughout the document.
 A full list can be found in the [`gopts` README](../../src/plugins/gopts/README.md).
 
 ## Specification
