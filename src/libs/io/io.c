@@ -418,6 +418,7 @@ int elektraIoFdSetFlags (ElektraIoFdOperation * fdOp, int flags)
 		return -1;
 	}
 	// since custom flags are allowed by `fcntl.h`, no further checks are required
+	fdOp->flags = flags;
 	return 1;
 }
 
