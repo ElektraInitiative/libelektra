@@ -216,7 +216,7 @@ Then use:
 make package
 ```
 
-which will create packages for distributions where a Generator is implemented.
+which will create packages for distributions where a generator is implemented.
 
 You can find the generated packages in the `package` directory of the build directory.
 
