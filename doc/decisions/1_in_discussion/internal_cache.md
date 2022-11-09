@@ -86,6 +86,14 @@ From this keyset, we use `ksBelow` to return the correct keyset.
 
 - Disadvantage: mmap implementation for Windows would be needed
 
+@kodebach wrote:
+
+> I'm not entirely sure this is possible (@mpranj may know more), but the way I understand it the cache should be updated at the end of every kdbGet that was a cache miss. So during kdbSet (assuming there is no external modification, i.e. conflict) the on-disk data of the cache should always be up-to-date. My idea would be to just read the cached keyset from disk and diff against the current keyset in kdbSet.
+>
+> This would mean enabling change tracking also enables the cache (or at least updating the cache, we don't have to use it in kdbGet). If that's not wanted or if the cache data cannot be used directly for some other reason, the same approach could still be used. We'd just have to write the keyset to disk during kdbGet and use it during kdbSet. Since disk space is far less precious than RAM, we could even create separate files for every parent key. If we do go down this route, kdbClose should cleanup the files created by this KDB instance to avoid wasting disk space.
+>
+> This approach wouldn't be very performant (since it uses disk IO), but especially if we can use the cache data, it should be pretty easy to do.
+
 ### MMAP Cache without parent key
 
 We make the mmap cache non-optional and only use a single cache, caching everything.
