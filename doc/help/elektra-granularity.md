@@ -1,6 +1,6 @@
 # elektra-granularity(7) -- relation of keys to files
 
-Keys of a backend can only be retrieved as a full key set. Currently it
+Keys of a backend can only be retrieved as a full key set. Currently, it
 is not possible to fetch a part of the keys of a backend. So the user
 needs to cut out the interesting keys with `ksCut()` afterwards.
 If the keys should be committed again, the whole key set must be
@@ -12,7 +12,7 @@ the full `KeySet`. For example, a plugin that checks the availability
 and structure of all keys cannot work with a partial key set.
 
 It is problematic to have too many keys in one backend. The applications
-would need memory for unnecessary configuration data. Instead we
+would need memory for unnecessary configuration data. Instead, we
 recommend introducing several mount points to split up the keys into
 different backends. Splitting up key sets makes sense if any application
 requests only a part of the configuration. No benefits arise if every
