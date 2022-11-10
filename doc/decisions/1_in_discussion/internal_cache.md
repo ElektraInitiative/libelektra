@@ -476,9 +476,8 @@ All results are in bytes unless stated otherwise.
 
 Example key: `user:/hosts/ipv6/example.com = 2606:2800:220:1:248:1893:25c8:1946`
 
-We want to measure the following properties:
+We want to measure the following properties for the key:
 
-- Empty KeySet: size of a simple malloc of the keyset struct
 - Empty Key: size of a simple malloc of the key struct
 - Empty Key (with name): size of simple malloc of all structs, so that the key has a name, but without including the size of the name
 - Empty Key (with name + data): size of a simple malloc of all structs, so that the key has a name and data, but without including the size of the name or data
@@ -493,6 +492,22 @@ We want to measure the following properties:
 | In-Memory COW cache (with additional pointers)    |           64 |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
 | Full-blown COW implementation                     |           16 |        32 |                    72 |                           96 |                185 |                       217 |                        249 |
 
+We want to measure the following properties for the keyset:
+
+- Empty KeySet: size of a simple malloc of the keyset struct
+- Empty KeySet (with data): size of a simple malloc of all structs
+- Example KeySet: size of a keyset with 15 keys + NULL byte
+- Example KeySet + 1 Duplicate: two instance of Example KeySet, one of them is a duplication
+- Example KeySet + 2 Duplicates: three instances of Example KeySet, two of them are duplications
+
+| Approach                                          | Empty KeySet | Empty KeySet (with data) | Example KeySet | Example KeySet + 1 Duplicate | Example KeySet + 2 Duplicates |
+|:--------------------------------------------------|-------------:|-------------------------:|---------------:|-----------------------------:|------------------------------:|
+| Current Implementation                            |           64 |                       64 |            192 |                          384 |                           576 |
+| In-Memory COW cache (without additional pointers) |           64 |                       64 |            192 |                          384 |                           576 |
+| In-Memory COW cache (with additional pointers)    |           64 |                       64 |            192 |                          384 |                           576 |
+| Full-blown COW implementation                     |           16 |                       64 |            192 |                          208 |                           224 |
+
+
 ### Calculations
 
 Raw data size:
@@ -503,7 +518,6 @@ Raw data size:
 
 Current Implementation:
 
-- Empty KeySet [measured via `sizeof`]: `64`
 - Empty Key [measured via `sizeof`]: `64`
 - Empty Key (with name): `64`
 - Empty Key (with name + data): `64`
@@ -511,15 +525,22 @@ Current Implementation:
 - Single Example Key + 1 Duplicate = `Single Example Key * 2` = `153 * 2` = `306`
 - Single Example Key + 2 Duplicates = `Single Example Key * 3` = `153 * 3` = `459`
 
+- Empty KeySet [measured via `sizeof`]: `64`
+- Empty KeySet (with data): `64`
+- Example KeySet: `Empty KeySet (with data) + 16 * pointer to keys` = `64 + 16 * 8` = `192`
+- Example KeySet + 1 Duplicate: `Example KeySet * 2` = `192 * 2` = `384`
+- Example KeySet + 2 Duplicates: `Example KeySet * 3` = `192 * 3` = `576`
+
 In-Memory COW cache (without additional pointers):
 
-- Empty KeySet [measured via `sizeof`]: `64`
 - Empty Key [measured via `sizeof`]: `64`
 - Empty Key (with name): `64`
 - Empty Key (with name + data): `64`
 - Single Example Key = `Empty Key + keyname + unescaped keyname + data` = `64 + 29 + 25 + 35` = `153`
 - Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `153 + 64` = `217`
 - Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `153 + 64 * 2` = `281`
+
+- KeySets are not COW in this approach --> same as current implementation
 
 In-Memory COW cache (with additional pointers):
 
@@ -531,9 +552,10 @@ In-Memory COW cache (with additional pointers):
 - Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `169 + 80` = `249`
 - Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `169 + 80 * 2` = `329`
 
+- KeySets are not COW in this approach --> same as current implementation
+
 Full-blown COW implementation:
 
-- Empty KeySet [measured via `sizeof`]: `16`
 - Empty Key [measured via `sizeof`]: `32`
 - Empty Key (with name) [measured via `sizeof`]: `Empty Key + sizeof(KeyName)` = `32 + 40` = `72`
 - Empty Key (with name + data) [measured via `sizeof`]: `Empty Key + sizeof(KeyName) + sizeof(KeyData)` = `32 + 40 + 24` = `96`
@@ -541,6 +563,11 @@ Full-blown COW implementation:
 - Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `185 + 32` = `217`
 - Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `185 + 32 * 2` = `249`
 
+- Empty KeySet [measured via `sizeof`]: `16`
+- Empty KeySet (with data): `Empty KeySet + sizeof(KeySetData)` = `16 + 48` = `64`
+- Example KeySet: `Empty KeySet (with data) + 16 * pointer to keys` = `64 + 16 * 8` = `192`
+- Example KeySet + 1 Duplicate: `Example KeySet + Empty KeySet` = `192 + 16` = `208`
+- Example KeySet + 2 Duplicates: `Example KeySet + Empty KeySet * 2` = `192 + 16 * 2` = `224`
 ### Allocations & Indirections comparison of COW approaches
 
 For allocations want to measure the following properties:
