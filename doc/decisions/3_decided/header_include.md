@@ -56,7 +56,7 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
 
 ## Assumptions
 
-- Modern Compilers work like [GCC](https://gcc.gnu.org/onlinedocs/cpp/Search-Path.html):
+- Modern Compilers work like [GCC](https://gcc.gnu.org/onlinedocs/cpp/header-files/search-path.html):
 
   - `#include "[header]"` treats `[header]` as file path relative to the current file (as defined by the standard, if such a file doesn't exist there is a fallback to the `<>` behavior)
   - `#include <[header]>` treats `[header]` as file path relative to one of the pre-defined include-paths

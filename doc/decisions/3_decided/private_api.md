@@ -48,6 +48,6 @@ All other headers are anybody's guess.
 
 ## Related Decisions
 
-- [Header File Structure](../0_drafts/header_file_structure.md)
+- [Header File Structure](header_file_structure.md)
 
 ## Notes
