@@ -365,7 +365,7 @@ Why don't we just add the number of references to the original `KeySet`?
   This could be dealt with storing a pointer to the original KeySet.
 - If the original KeySet is deleted, we don't know which other KeySets point at the data, so updating their count would not work
 - In similar fashion, if you update the original KeySet, the copied KeySets will also contain the new data (if the memory address does not change).
-  This is unexpected behaviour.
+  This is unexpected behavior.
 
 ```c
 struct _KeySetData {
