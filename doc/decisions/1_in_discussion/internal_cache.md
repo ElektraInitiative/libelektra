@@ -501,12 +501,11 @@ We want to measure the following properties for the keyset:
 - Example KeySet + 2 Duplicates: three instances of Example KeySet, two of them are duplications
 
 | Approach                                          | Empty KeySet | Empty KeySet (with data) | Example KeySet | Example KeySet + 1 Duplicate | Example KeySet + 2 Duplicates |
-|:--------------------------------------------------|-------------:|-------------------------:|---------------:|-----------------------------:|------------------------------:|
+| :------------------------------------------------ | -----------: | -----------------------: | -------------: | ---------------------------: | ----------------------------: |
 | Current Implementation                            |           64 |                       64 |            192 |                          384 |                           576 |
 | In-Memory COW cache (without additional pointers) |           64 |                       64 |            192 |                          384 |                           576 |
 | In-Memory COW cache (with additional pointers)    |           64 |                       64 |            192 |                          384 |                           576 |
 | Full-blown COW implementation                     |           16 |                       64 |            192 |                          208 |                           224 |
-
 
 ### Calculations
 
@@ -568,6 +567,7 @@ Full-blown COW implementation:
 - Example KeySet: `Empty KeySet (with data) + 16 * pointer to keys` = `64 + 16 * 8` = `192`
 - Example KeySet + 1 Duplicate: `Example KeySet + Empty KeySet` = `192 + 16` = `208`
 - Example KeySet + 2 Duplicates: `Example KeySet + Empty KeySet * 2` = `192 + 16 * 2` = `224`
+
 ### Allocations & Indirections comparison of COW approaches
 
 For allocations want to measure the following properties:
