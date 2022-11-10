@@ -402,7 +402,6 @@ API notes:
   ```
   if size is 0, `data` will be NULL
   ```
-  
 - `ksDup()`: creates a new instance of `struct _KeySet`, points its `data` to the `source->data`, increases `source->data->refs` by 1.
 
 - `ksCopy(dest, source)`:
@@ -418,7 +417,6 @@ API notes:
       copy the keys from old to `dest->data`
       copy the keys of `source->data->array` over to `dest->data->array`
   ```
-  
 - `ksAppend(dest, source)`:
   ```
   if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
@@ -438,12 +436,13 @@ API notes:
         copy the keys from old to `dest->data`
         copy the keys of `source->data->array` over to `dest->data->array`
   ```
-  
 - `ksAppendKey(dest, key)`:
+
   - Pretty much the same `ksAppend()` but only for a single key
   - if `dest->data` is NULL, allocate `dest->data` and put the key there
 
 - `ksClear(dest)`:
+
   ```
   if `dest->data->refs` == 0 (meaning no other keysets points to it):
     deletes the keys in `dest->data`
@@ -461,8 +460,8 @@ API notes:
     create a new `dest->data`
     copy over the non-cut keys into `dest->data` from the old `dest->data`
   ```
-  
 - `ksPop(dest)`:
+
   ```
   if `dest->data->refs` == 0 (meaning no other keysets points to it):
     pop the last key directly on the keys
