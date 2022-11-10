@@ -542,6 +542,25 @@ Full-blown COW implementation:
 - Single Example Key + 1 Duplicate = Single Example Key + Empty Key = 185 + 32 = 217
 - Single Example Key + 2 Duplicates = Single Example Key + Empty Key * 2 = 185 + 32*2 = 249
 
+### Allocations & Indirections comparison of COW approaches
+
+For allocations want to measure the following properties:
+
+- Empty key: how many objects to allocate for an empty key
+- Empty Key (with name): how many objects to allocate for an empty key + name
+- Empty Key (with name + data): how many objects to allocate for an empty key + name + data
+- Duplication: how many objects to allocate for a duplication
+- Key + 1 Duplication: how many objects to allocate for a full key + 1 duplication
+- Key + 2 Duplications: how many objects to allocate for a full key + 2 duplications
+
+| Approach                                          | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Duplication | Key + 1 Duplication | Key + 2 Duplications |
+|:--------------------------------------------------|----------:|----------------------:|-----------------------------:|------------:|--------------------:|---------------------:|
+| Current Implementation                            |         1 |                     1 |                            1 |           1 |                   2 |                    3 |
+| In-Memory COW cache (without additional pointers) |         1 |                     1 |                            1 |           1 |                   2 |                    3 |
+| In-Memory COW cache (with additional pointers)    |         1 |                     1 |                            1 |           1 |                   2 |                    3 |
+| Full-blown COW implementation                     |         1 |                     2 |                            3 |           1 |                   4 |                    5 |
+
+
 ## Decision
 
 ## Rationale
