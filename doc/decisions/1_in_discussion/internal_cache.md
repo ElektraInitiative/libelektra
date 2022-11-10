@@ -99,6 +99,31 @@ From this keyset, we use `ksBelow` to return the correct keyset.
 We make the mmap cache non-optional and only use a single cache, caching everything.
 We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset of the whole KDB.
 
+- Disadvantage: mmap implementation for Windows would be needed
+- Then also symlinks (fallback, override etc.) and constraints for keys outside of the parentKey would work.
+  It would make the `-a` option of `kdb get` unnecessary.
+
+@kodebach wrote (in response to the 'symlinks' point):
+
+> You still haven't addressed why this would actually be a good default behavior.
+> You just claim it is an advantage without any explanation.
+>
+> Like I said, I would normally expect mountpoints to be isolated.
+> If symlinks work like this, the isolation is partially broken.
+> One could argue that the problem right now is that such "broken" symlinks are not prevented.
+> But your solution doesn't completely fix the problem either.
+>
+> Take a variant of my previous example:
+>
+> - `system:/foo` is a mountpoint, there are no other mountpoints
+> - `spec:/foo/bar` refers to `system:/abc` via `meta:/override`
+>
+> Now in a plugin that is part of the mountpoint `system:/foo` doing a `ksLookupByName (ks, "/foo/bar", 0)` would NOT use `system:/abc`, because that key is never part of the keyset passed to this plugin.
+>
+> However, in an application that used `system:/foo` as the parent, the `meta:/override` would work with your proposal.
+> To me that seems like very confusing behavior, because both the application and the plugin seemingly use the same parent key.
+
+
 ### Data restrictions
 
 @kodebach wrote:
