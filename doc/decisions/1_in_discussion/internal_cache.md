@@ -485,12 +485,12 @@ We want to measure the following properties for the key:
 - Example Key + 1 Duplicate: two instances of the key defined above, one of them is a duplication of the first
 - Example Key + 2 Duplicates: three instances of the key defined above, two of them are duplications of the first
 
-| Approach                                          | Empty KeySet | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Single Example Key | Example Key + 1 Duplicate | Example Key + 2 Duplicates |
-| :------------------------------------------------ | -----------: | --------: | --------------------: | ---------------------------: | -----------------: | ------------------------: | -------------------------: |
-| Current Implementation                            |           64 |        64 |                    64 |                           64 |                153 |                       306 |                        459 |
-| In-Memory COW cache (without additional pointers) |           64 |        64 |                    64 |                           64 |                153 |                       217 |                        281 |
-| In-Memory COW cache (with additional pointers)    |           64 |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
-| Full-blown COW implementation                     |           16 |        32 |                    72 |                           96 |                185 |                       217 |                        249 |
+| Approach                                          | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Single Example Key | Example Key + 1 Duplicate | Example Key + 2 Duplicates |
+| :------------------------------------------------ | --------: | --------------------: | ---------------------------: | -----------------: | ------------------------: | -------------------------: |
+| Current Implementation                            |        64 |                    64 |                           64 |                153 |                       306 |                        459 |
+| In-Memory COW cache (without additional pointers) |        64 |                    64 |                           64 |                153 |                       217 |                        281 |
+| In-Memory COW cache (with additional pointers)    |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
+| Full-blown COW implementation                     |        32 |                    72 |                           96 |                185 |                       217 |                        249 |
 
 We want to measure the following properties for the keyset:
 
