@@ -67,6 +67,21 @@ Improve documentation to make people more aware of these two problems:
 - add a tutorial about `kdbGet` semantics
 - add full examples how to correctly work with `kdbGet`
 
+### Simple Solution by @kodebach
+
+"More keys":
+
+Upon returning from `kdbGet`/`kdbSet`, set the keyname of parentKey to the key that actually is parent of the data that was loaded.
+I.e. to the mountpoint of the backend that contains parentKey.
+
+> @markus2330 and @atmaxinger find this behavior very unexpected
+
+"Fewer keys":
+
+IMO this is simply a bug in the "nothing changed" logic.
+I don't think we need some complicated COW scheme to solve this.
+I haven't had a chance to check this yet, but I think it is just a matter of copying the keys from `backendData->keys`, so they are actually there and we don't just assume they are there.
+
 ### Cachefilter Plugin
 
 Naively one would simply cache the whole keyset and use `ksBelow` to always get the keyset.
