@@ -609,6 +609,41 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader, PluginM
 #endif
 
 /**
+ * Calculate the data block size of all keys within a key set.
+ * @param mmapMetaData the structure where to add the allocation size to
+ * @param keySet the key set which contains all the keys to use for calculation
+ * @param dynArray used for the `dynArrayFindOrInsert` function
+ * @return the sum of all the data block sizes
+ */
+static size_t calculateDataBlockSize (MmapMetaData * mmapMetaData, const KeySet * keySet, DynArray * dynArray)
+{
+	Key * cur;
+	size_t dataBlocksSize = 0;
+	for (elektraCursor it = 0; it < ksGetSize (keySet); ++it)
+	{
+		cur = ksAtCursor (keySet, it);
+		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
+
+		if (cur->meta && cur->meta->size > 0)
+		{
+			++mmapMetaData->numKeySets;
+
+			Key * curMeta;
+			for (elektraCursor itMeta = 0; itMeta < ksGetSize (cur->meta); ++itMeta)
+			{
+				curMeta = ksAtCursor (cur->meta, itMeta);
+				if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
+				{
+					// key was just inserted
+					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
+				}
+			}
+			mmapMetaData->ksAlloc += (cur->meta->alloc);
+		}
+	}
+	return dataBlocksSize;
+}
+/**
  * @brief Calculates the size, in bytes, needed to store the KeySet in a mmap region.
  *
  * Iterates over the KeySet and calculates the complete size in bytes, needed to store the KeySet
@@ -630,66 +665,20 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader, PluginM
 static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, KeySet * global,
 				   DynArray * dynArray)
 {
-	Key * cur;
-	size_t dataBlocksSize = 0; // sum of keyName and keyValue sizes
+	size_t dataBlocksSize; // sum of keyName and keyValue sizes
 	mmapMetaData->numKeys = 0;
 	mmapMetaData->numKeySets = 3;		 // include the magic, global and main keyset
 	mmapMetaData->ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
 
-	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
-	{
-		cur = ksAtCursor (returned, it);
-		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
+	dataBlocksSize = calculateDataBlockSize (mmapMetaData, returned, dynArray);
 
-		if (cur->meta && cur->meta->size > 0)
-		{
-			++mmapMetaData->numKeySets;
-
-			Key * curMeta;
-			for (elektraCursor itMeta = 0; itMeta < ksGetSize (cur->meta); ++itMeta)
-			{
-				curMeta = ksAtCursor (cur->meta, itMeta);
-				if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
-				{
-					// key was just inserted
-					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
-				}
-			}
-			mmapMetaData->ksAlloc += (cur->meta->alloc);
-		}
-	}
-
-	if (global) // TODO: remove this code duplication
+	if (global)
 	{
 		ELEKTRA_LOG_DEBUG ("calculate global keyset into size");
 		mmapMetaData->ksAlloc += global->alloc;
 		mmapMetaData->numKeys += global->size;
 
-		Key * globalKey;
-
-		for (elektraCursor it = 0; it < ksGetSize (global); ++it)
-		{
-			globalKey = ksAtCursor (global, it);
-			dataBlocksSize += (globalKey->keySize + globalKey->keyUSize + globalKey->dataSize);
-
-			if (globalKey->meta && globalKey->meta->size > 0)
-			{
-				++mmapMetaData->numKeySets;
-
-				Key * curMeta;
-
-				for (elektraCursor itMeta = 0; itMeta < ksGetSize (globalKey->meta); ++itMeta)
-				{
-					curMeta = ksAtCursor (globalKey->meta, itMeta);
-					if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
-					{
-						// key was just inserted
-						dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
-					}
-				}
-				mmapMetaData->ksAlloc += (globalKey->meta->alloc);
-			}
-		}
+		dataBlocksSize += calculateDataBlockSize (mmapMetaData, global, dynArray);
 	}
 	mmapMetaData->numKeys += returned->size + dynArray->size + 1; // +1 for magic Key
 

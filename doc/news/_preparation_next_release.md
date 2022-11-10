@@ -89,9 +89,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### mmapstorage
 
-- <<TODO>>
+- Remove code duplication in the data block calculation _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
