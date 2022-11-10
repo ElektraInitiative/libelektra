@@ -2,7 +2,7 @@
 
 ## Problem
 
-`struct _Plugin` contains some unnecessary
+`struct _Plugin` contains some unnecessary data
 
 ## Constraints
 
