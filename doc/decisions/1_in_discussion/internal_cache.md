@@ -351,42 +351,6 @@ struct _Key {
 >
 > 2. Adding more indirections is probably not going to help performance. (I understand that we save memory here)
 
-
-The following calculations are based on the AMD64 platform:
-
-In the data structures above, an empty key does have
-
-- with `_keyData` and `_keyName` allocated: 96 bytes.
-- without `_keyData` but with `_keyName`: 72 bytes.
-- with `_keyData` and `_keyName` `NULL`: 32 bytes.
-
-An empty key of the current implementation has 64 bytes.
-
-A copied, non-modified key with the data structure above does always have 32 bytes.
-A copied, non-modified key of the current implementation has at least 64 bytes (for an empty key), but in reality much more as the name and the data are also copied.
-
-As an example, let's take `user:/hosts/ipv6/example.com = 2606:2800:220:1:248:1893:25c8:1946`.
-
-For a single key, it would take for the COW implementation:
-
-`sizeof(_Key) + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + ukey + value + 1 /* \0 */` =
-32 + 40 + 24 + 28 + 1 + 25 + 34 + 1 = 185 bytes.
-
-For two keys (one original and one copy), it would take for the COW implementation:
-
-`sizeof(_Key)*2 + sizeof(_KeyName) + sizeof(_KeyData) + name + 1 /* \0 */ + ukey + value + 1 /* \0 */` =
-32\*2 + 40 + 24 + 28 + 1 + 25 + 34 + 1 = 217 bytes.
-
-For a single key, it would take the current implementation:
-
-`sizeof(_Key) + name + 1 + ukey + value + 1` =
-64 + 28 + 1 + 25 + 34 + 1 = 153 bytes
-
-For two keys, the current implementation would take:
-
-`(sizeof(_Key) + name + 1 + ukey + value + 1) * 2` =
-(64 + 28 + 1 + 25 + 34 + 1) \* 2 = 306 bytes.
-
 #### Changes to `KeySet`
 
 For `KeySet`, we need to split out everything to do with the stored keys into a separate datastructure.
@@ -420,14 +384,6 @@ struct _KeySet {
     uint16_t refs; /**< Reference counter */
 };
 ```
-
-The following calculations are based on the AMD64 platform:
-
-An empty keyset with the datastructure above has 64 bytes (it's missing the soon-to-be-removed cursor and current).
-An empty keyset with the current implementation has 64 bytes.
-
-A copied, non-modified keyset with the datastructure above has always 16 bytes.
-A copied, non-modified keyset with the current implementation has at least 64 bytes (for an empty keyset).
 
 API notes:
 
@@ -513,6 +469,78 @@ This approach requires more allocation than previously.
 We have not benchmarked whether this is big of an issue.
 One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
 We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
+
+## Memory comparison of COW approaches
+
+The following calculations are based on the AMD64 platform.
+All results are in bytes unless stated otherwise.
+
+Example key: `user:/hosts/ipv6/example.com = 2606:2800:220:1:248:1893:25c8:1946`
+
+We want to measure the following properties:
+
+- Empty KeySet: size of a simple malloc of the keyset struct
+- Empty Key: size of a simple malloc of the key struct
+- Empty Key (with name): size of simple malloc of all structs, so that the key has a name, but without including the size of the name
+- Empty Key (with name + data): size of a simple malloc of all structs, so that the key has a name and data, but without including the size of the name or data
+- Single Example Key: a single instance of the key defined above
+- Example Key + 1 Duplicate: two instances of the key defined above, one of them is a duplication of the first
+- Example Key + 2 Duplicates: three instances of the key defined above, two of them are duplications of the first
+
+| Approach                                          | Empty KeySet | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Single Example Key | Example Key + 1 Duplicate | Example Key + 2 Duplicates |
+|:--------------------------------------------------|-------------:|----------:|----------------------:|-----------------------------:|-------------------:|--------------------------:|---------------------------:|
+| Current Implementation                            |           64 |        64 |                    64 |                           64 |                153 |                       306 |                        459 |
+| In-Memory COW cache (without additional pointers) |           64 |        64 |                    64 |                           64 |                153 |                       217 |                        281 |
+| In-Memory COW cache (with additional pointers)    |           64 |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
+| Full-blown COW implementation                     |           16 |        32 |                    72 |                           96 |                185 |                       217 |                        249 |
+
+### Calculations
+
+Raw data size:
+
+- keyname : 28 + 1 = 29
+- unescaped keyname (measured): 25
+- data: 34 + 1 = 35
+
+Current Implementation:
+
+- Empty KeySet [measured via `sizeof`]: 64
+- Empty Key [measured via `sizeof`]: 64
+- Empty Key (with name): 64
+- Empty Key (with name + data): 64
+- Single Example Key = Empty Key + keyname + unescaped keyname + data = 64 + 29 + 25 + 35 = 153
+- Single Example Key + 1 Duplicate = Single Example Key * 2 = 153 * 2 = 306
+- Single Example Key + 2 Duplicates = Single Example Key * 3 = 153 * 3 = 459
+
+In-Memory COW cache (without additional pointers):
+
+- Empty KeySet [measured via `sizeof`]: 64
+- Empty Key [measured via `sizeof`]: 64
+- Empty Key (with name): 64
+- Empty Key (with name + data): 64
+- Single Example Key = Empty Key + keyname + unescaped keyname + data = 64 + 29 + 25 + 35 = 153
+- Single Example Key + 1 Duplicate = Single Example Key + Empty Key = 153 + 64 = 217
+- Single Example Key + 2 Duplicates = Single Example Key + Empty Key * 2 = 153 + 64*2 = 281
+
+In-Memory COW cache (with additional pointers):
+
+- Empty KeySet [measured via `sizeof`]: 64
+- Empty Key [measured via `sizeof`]: 80
+- Empty Key (with name): 80
+- Empty Key (with name + data): 80S
+- Single Example Key = Empty Key + keyname + unescaped keyname + data = 80 + 29 + 25 + 35 = 169
+- Single Example Key + 1 Duplicate = Single Example Key + Empty Key = 169 + 80 = 249
+- Single Example Key + 2 Duplicates = Single Example Key + Empty Key * 2 = 169 + 80*2 = 329
+
+Full-blown COW implementation:
+
+- Empty KeySet [measured via `sizeof`]: 16
+- Empty Key [measured via `sizeof`]: 32
+- Empty Key (with name) [measured via `sizeof`]: Empty Key + sizeof(KeyName) = 32 + 40 = 72
+- Empty Key (with name + data) [measured via `sizeof`]: Empty Key + sizeof(KeyName) + sizeof(KeyData) = 32 + 40 + 24 = 96
+- Single Example Key = Empty Key (with name + data) + keyname + unescaped keyname + data = 96 + 29 + 25 + 35 = 185
+- Single Example Key + 1 Duplicate = Single Example Key + Empty Key = 185 + 32 = 217
+- Single Example Key + 2 Duplicates = Single Example Key + Empty Key * 2 = 185 + 32*2 = 249
 
 ## Decision
 
