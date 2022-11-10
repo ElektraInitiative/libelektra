@@ -259,7 +259,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix grammar for `elektra-granularity.md` _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
