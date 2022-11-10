@@ -319,6 +319,14 @@ struct _Key {
 };
 ```
 
+@mpranj's thoughts regarding moving name and data to separate structures:
+
+> 1. If they [key name and data] are a separate entity, `mmapstorage` will need a flag once again for each of those. 
+>    This is used to mark whether the data is in an mmap region or not. (or we find some bit somewhere that we can steal for this purpose)
+>
+> 2. Adding more indirections is probably not going to help performance. (I understand that we save memory here)
+
+
 The following calculations are based on the AMD64 platform:
 
 In the data structures above, an empty key does have
