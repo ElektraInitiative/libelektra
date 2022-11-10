@@ -399,71 +399,78 @@ A copied, non-modified keyset with the current implementation has at least 64 by
 API notes:
 
 - `ksNew()`:
-
-  - if size is 0, `data` will be NULL
-
+  ```
+  if size is 0, `data` will be NULL
+  ```
+  
 - `ksDup()`: creates a new instance of `struct _KeySet`, points its `data` to the `source->data`, increases `source->data->refs` by 1.
 
-- `ksCopy(dest, source)`
-
-  - if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
-  - if `dest->data` is NOT NULL:
-    - if `dest->data->refs` == 0 (meaning no other keysets points to it):
-      - deallocate `dest->data`
-      - point `dest->data` to `source->data`, increase `source->data->refs` by 1.
-    - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
-      - decrease `dest->data->refs` by 1.
-      - allocate new `dest->data`
-      - copy the keys from old to `dest->data`
-      - copy the keys of `source->data->array` over to `dest->data->array`
-
+- `ksCopy(dest, source)`:
+  ```
+  if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
+  if `dest->data` is NOT NULL:
+    if `dest->data->refs` == 0 (meaning no other keysets points to it):
+      deallocate `dest->data`
+      point `dest->data` to `source->data`, increase `source->data->refs` by 1.
+    else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+      decrease `dest->data->refs` by 1.
+      allocate new `dest->data`
+      copy the keys from old to `dest->data`
+      copy the keys of `source->data->array` over to `dest->data->array`
+  ```
+  
 - `ksAppend(dest, source)`:
-
-  - if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
-  - if `dest->data` is NOT NULL:
-    - if `dest->data->refs` == 0 (meaning no other keysets points to it):
-      - if `dest->data->size` == 0 (no keys are in this keyset):
-        - deallocate `dest->data` and point `dest->data` to `source->data`, increase `source->data->refs` by 1.
-      - else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
-        - copy the keys of `source->data->array` over to `dest->data->array`
-    - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
-      - if `dest->data->size` == 0 (no keys are in this keyset):
-        - decrease `dest->data->refs` by 1.
-        - point `dest->data` to `source->data`, increase `source->data->refs` by 1.
-      - else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
-        - decrease `dest->data->refs` by 1.
-        - allocate new `dest->data`
-        - copy the keys from old to `dest->data`
-        - copy the keys of `source->data->array` over to `dest->data->array`
-
+  ```
+  if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
+  if `dest->data` is NOT NULL:
+    if `dest->data->refs` == 0 (meaning no other keysets points to it):
+      if `dest->data->size` == 0 (no keys are in this keyset):
+        deallocate `dest->data` and point `dest->data` to `source->data`, increase `source->data->refs` by 1.
+      else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
+        copy the keys of `source->data->array` over to `dest->data->array`
+    else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+      if `dest->data->size` == 0 (no keys are in this keyset):
+        decrease `dest->data->refs` by 1.
+        point `dest->data` to `source->data`, increase `source->data->refs` by 1.
+      else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
+        decrease `dest->data->refs` by 1.
+        allocate new `dest->data`
+        copy the keys from old to `dest->data`
+        copy the keys of `source->data->array` over to `dest->data->array`
+  ```
+  
 - `ksAppendKey(dest, key)`:
   - Pretty much the same `ksAppend()` but only for a single key
   - if `dest->data` is NULL, allocate `dest->data` and put the key there
-- `ksClear(dest)`:
 
-  - if `dest->data->refs` == 0 (meaning no other keysets points to it):
-    - deletes the keys in `dest->data`
-  - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
-    - decrease `dest->data->refs` by 1
-    - point `dest->data` to NULL
+- `ksClear(dest)`:
+  ```
+  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    deletes the keys in `dest->data`
+  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    decrease `dest->data->refs` by 1
+    point `dest->data` to NULL
+  ```
 
 - `ksCut(dest, key)`:
-
-  - if `dest->data->refs` == 0 (meaning no other keysets points to it):
-    - perform the cutting algorithm directly on these keys
-  - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
-    - decrease `dest->data->refs` by 1
-    - create a new `dest->data`
-    - copy over the non-cut keys into `dest->data` from the old `dest->data`
-
+  ```
+  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    perform the cutting algorithm directly on these keys
+  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    decrease `dest->data->refs` by 1
+    create a new `dest->data`
+    copy over the non-cut keys into `dest->data` from the old `dest->data`
+  ```
+  
 - `ksPop(dest)`:
-
-  - if `dest->data->refs` == 0 (meaning no other keysets points to it):
-    - pop the last key directly on the keys
-  - else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
-    - decrease `dest->data->refs` by 1
-    - create a new `dest->data`
-    - copy over all but the last keys from the old `dest->data`
+  ```
+  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    pop the last key directly on the keys
+  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    decrease `dest->data->refs` by 1
+    create a new `dest->data`
+    copy over all but the last keys from the old `dest->data`
+  ```
 
 - `ksLookup()`:
   - if the `DEL` or `POP` flag is specified, do the COW-stuff as described multiple times now in the operations above
