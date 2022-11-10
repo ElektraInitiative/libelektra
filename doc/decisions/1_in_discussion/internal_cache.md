@@ -497,49 +497,49 @@ We want to measure the following properties:
 
 Raw data size:
 
-- keyname : 28 + 1 = 29
-- unescaped keyname (measured): 25
-- data: 34 + 1 = 35
+- keyname : `28 + 1` = `29`
+- unescaped keyname (measured): `25`
+- data: `34 + 1` = `35`
 
 Current Implementation:
 
-- Empty KeySet [measured via `sizeof`]: 64
-- Empty Key [measured via `sizeof`]: 64
-- Empty Key (with name): 64
-- Empty Key (with name + data): 64
-- Single Example Key = Empty Key + keyname + unescaped keyname + data = 64 + 29 + 25 + 35 = 153
-- Single Example Key + 1 Duplicate = Single Example Key * 2 = 153 * 2 = 306
-- Single Example Key + 2 Duplicates = Single Example Key * 3 = 153 * 3 = 459
+- Empty KeySet [measured via `sizeof`]: `64`
+- Empty Key [measured via `sizeof`]: `64`
+- Empty Key (with name): `64`
+- Empty Key (with name + data): `64`
+- Single Example Key = `Empty Key + keyname + unescaped keyname + data` = `64 + 29 + 25 + 35` = `153`
+- Single Example Key + 1 Duplicate = `Single Example Key * 2` = `153 * 2` = `306`
+- Single Example Key + 2 Duplicates = `Single Example Key * 3` = `153 * 3` = `459`
 
 In-Memory COW cache (without additional pointers):
 
-- Empty KeySet [measured via `sizeof`]: 64
-- Empty Key [measured via `sizeof`]: 64
-- Empty Key (with name): 64
-- Empty Key (with name + data): 64
-- Single Example Key = Empty Key + keyname + unescaped keyname + data = 64 + 29 + 25 + 35 = 153
-- Single Example Key + 1 Duplicate = Single Example Key + Empty Key = 153 + 64 = 217
-- Single Example Key + 2 Duplicates = Single Example Key + Empty Key * 2 = 153 + 64*2 = 281
+- Empty KeySet [measured via `sizeof`]: `64`
+- Empty Key [measured via `sizeof`]: `64`
+- Empty Key (with name): `64`
+- Empty Key (with name + data): `64`
+- Single Example Key = `Empty Key + keyname + unescaped keyname + data` = `64 + 29 + 25 + 35` = `153`
+- Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `153 + 64` = `217`
+- Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `153 + 64 * 2` = `281`
 
 In-Memory COW cache (with additional pointers):
 
-- Empty KeySet [measured via `sizeof`]: 64
-- Empty Key [measured via `sizeof`]: 80
-- Empty Key (with name): 80
-- Empty Key (with name + data): 80S
-- Single Example Key = Empty Key + keyname + unescaped keyname + data = 80 + 29 + 25 + 35 = 169
-- Single Example Key + 1 Duplicate = Single Example Key + Empty Key = 169 + 80 = 249
-- Single Example Key + 2 Duplicates = Single Example Key + Empty Key * 2 = 169 + 80*2 = 329
+- Empty KeySet [measured via `sizeof`]: `64`
+- Empty Key [measured via `sizeof`]: `80`
+- Empty Key (with name): `80`
+- Empty Key (with name + data): `80`
+- Single Example Key = `Empty Key + keyname + unescaped keyname + data` = `80 + 29 + 25 + 35` = `169`
+- Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `169 + 80` = `249`
+- Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `169 + 80 * 2` = `329`
 
 Full-blown COW implementation:
 
-- Empty KeySet [measured via `sizeof`]: 16
-- Empty Key [measured via `sizeof`]: 32
-- Empty Key (with name) [measured via `sizeof`]: Empty Key + sizeof(KeyName) = 32 + 40 = 72
-- Empty Key (with name + data) [measured via `sizeof`]: Empty Key + sizeof(KeyName) + sizeof(KeyData) = 32 + 40 + 24 = 96
-- Single Example Key = Empty Key (with name + data) + keyname + unescaped keyname + data = 96 + 29 + 25 + 35 = 185
-- Single Example Key + 1 Duplicate = Single Example Key + Empty Key = 185 + 32 = 217
-- Single Example Key + 2 Duplicates = Single Example Key + Empty Key * 2 = 185 + 32*2 = 249
+- Empty KeySet [measured via `sizeof`]: `16`
+- Empty Key [measured via `sizeof`]: `32`
+- Empty Key (with name) [measured via `sizeof`]: `Empty Key + sizeof(KeyName)` = `32 + 40` = `72`
+- Empty Key (with name + data) [measured via `sizeof`]: `Empty Key + sizeof(KeyName) + sizeof(KeyData)` = `32 + 40 + 24` = `96`
+- Single Example Key = `Empty Key (with name + data) + keyname + unescaped keyname + data` = `96 + 29 + 25 + 35` = `185`
+- Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `185 + 32` = `217`
+- Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `185 + 32 * 2` = `249`
 
 ### Allocations & Indirections comparison of COW approaches
 
