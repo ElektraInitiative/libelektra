@@ -152,7 +152,7 @@ We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset o
 
 > Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [the operation sequences decision](../0_drafts/operation_sequences.md).
 > If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
-> I certainly wouldn't try to asset anything on the contents of a KeySet that I don't own directly, unless the condition is explicitly documented somewhere.
+> I certainly wouldn't try to assert anything on the contents of a KeySet that I don't own directly, unless the condition is explicitly documented somewhere.
 
 @markus2330 wrote:
 
