@@ -50,27 +50,26 @@ docker run -it elektra/elektra
 
 ### New Backend
 
-- Implement [hooks](../decisions/4_partially_implemented/hooks.md). _(Maximilian Irlinger @atmaxinger)_
-  The entire logic for backends has been rewritten.
-  Instead of calling most plugin directly, `libelektra-kdb` now only calls so-called backend plugins and special hook plugins.
-  There is a [contract](../dev/backend-plugins.md) between `libelektra-kdb` and the backend plugins.
-  All backend plugins must adhere to this contract.
-  To achieve this goal, most backend plugins will call other plugins (like `libelektra-kdb` did previously).
+The entire logic for backends has been rewritten.
+Instead of calling most plugin directly, `libelektra-kdb` now only calls so-called backend plugins and special hook plugins.
+There is a [contract](../dev/backend-plugins.md) between `libelektra-kdb` and the backend plugins.
+All backend plugins must adhere to this contract.
+To achieve this goal, most backend plugins will call other plugins (like `libelektra-kdb` did previously).
 
-  The logic previously implemented in `libelektra-kdb` was moved to the new default backend plugin `backend`.
-  It works like the old system, but now also allows an unlimited number of plugins in positions where that makes sense.
-  For example, you can have unlimited `postgetstorage` plugins, but only a single `getresolver`.
+The logic previously implemented in `libelektra-kdb` was moved to the new default backend plugin `backend`.
+It works like the old system, but now also allows an unlimited number of plugins in positions where that makes sense.
+For example, you can have unlimited `postgetstorage` plugins, but only a single `getresolver`.
 
-  There have also been slight changes to `kdbGet` and `kdbSet`.
-  Please read their API docs to find out, if you rely on any behavior that has been altered.
-  You can also read the [new low-level docs](../dev/kdb-operations.md) to find out all the intricate details.
+There have also been slight changes to `kdbGet` and `kdbSet`.
+Please read their API docs to find out, if you rely on any behavior that has been altered.
+You can also read the [new low-level docs](../dev/kdb-operations.md) to find out all the intricate details.
 
-  The structure of `system:/elektra/mountpoints` changed as well.
-  Take a look at the [new docs](../dev/mountpoints.md), if you need to know details.
+The structure of `system:/elektra/mountpoints` changed as well.
+Take a look at the [new docs](../dev/mountpoints.md), if you need to know details.
 
 <!-- TODO [new_backend]: finish release notes, explain new mount stuff -->
 
-- Implement [hooks](../decisions/hooks.md). _(Maximilian Irlinger @atmaxinger)_
+- Implement [hooks](../decisions/4_partially_implemented/hooks.md). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 - New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
 

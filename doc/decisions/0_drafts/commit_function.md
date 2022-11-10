@@ -7,7 +7,7 @@ This limits the possibilities of plugin reuse and the ways plugins can be combin
 
 More generally, this problem applies to all plugins with one function that is called multiple times for different reasons.
 
-Between `libelektra-kdb` and a backend plugins there is a [contract](../dev/backend-plugins.md) that uses "phases" for this.
+Between `libelektra-kdb` and a backend plugins there is a [contract](../../dev/backend-plugins.md) that uses "phases" for this.
 
 With the introduction of the new backend, a new `kdbCommit` function was introduced to `struct _Plugin` (matching `kdbError`).
 We also added a `kdbInit`.

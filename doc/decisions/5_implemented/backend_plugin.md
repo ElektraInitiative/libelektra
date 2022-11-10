@@ -9,7 +9,7 @@
 
 ## Constraints
 
-- All existing plugins, except [hooks](hooks.md), should continue working as before.
+- All existing plugins, except [hooks](../4_partially_implemented/hooks.md), should continue working as before.
 
 ## Assumptions
 
