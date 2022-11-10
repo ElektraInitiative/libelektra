@@ -6,11 +6,11 @@ This document is intended for developers who want to get started with developing
 
 - Operating system
 
-  We recommend a Unix-based operating system to run Elektra (Linux, BSD, macOS) but it's also possible to use Windows which is supported but not yet fully tested.
+  We recommend a Unix-based operating system to run Elektra (Linux, BSD, macOS) but [it's also possible to use Windows which is supported but not yet fully tested](https://www.libelektra.org/tutorials/contributing-with-visual-studio-windows).
 
 - Using command-line interface and commands
 
-  The easiest way to compile, install and use Elektra is by using the terminal. We will introduce the basic commands which you will need to run Elektra for the very first time.
+  The easiest way to compile, install and use Elektra is by using the terminal. We will introduce the basic commands which you will need to run Elektra for the very first time. [It's also possible to use CLion](https://www.libelektra.org/tutorials/contributing-with-clion)
 
 - Basic knowledge about git
 
