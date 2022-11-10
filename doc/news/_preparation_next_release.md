@@ -277,7 +277,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Improve readability of doc/tutorials/highlevel.md _(@deoknats861)_
 - Improve reference to Podman documentation _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
