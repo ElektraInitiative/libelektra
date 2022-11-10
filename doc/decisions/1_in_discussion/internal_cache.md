@@ -123,7 +123,6 @@ We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset o
 > However, in an application that used `system:/foo` as the parent, the `meta:/override` would work with your proposal.
 > To me that seems like very confusing behavior, because both the application and the plugin seemingly use the same parent key.
 
-
 ### Data restrictions
 
 @kodebach wrote:
@@ -346,7 +345,7 @@ struct _Key {
 
 @mpranj's thoughts regarding moving name and data to separate structures:
 
-> 1. If they [key name and data] are a separate entity, `mmapstorage` will need a flag once again for each of those. 
+> 1. If they [key name and data] are a separate entity, `mmapstorage` will need a flag once again for each of those.
 >    This is used to mark whether the data is in an mmap region or not. (or we find some bit somewhere that we can steal for this purpose)
 >
 > 2. Adding more indirections is probably not going to help performance. (I understand that we save memory here)
@@ -488,7 +487,7 @@ We want to measure the following properties:
 - Example Key + 2 Duplicates: three instances of the key defined above, two of them are duplications of the first
 
 | Approach                                          | Empty KeySet | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Single Example Key | Example Key + 1 Duplicate | Example Key + 2 Duplicates |
-|:--------------------------------------------------|-------------:|----------:|----------------------:|-----------------------------:|-------------------:|--------------------------:|---------------------------:|
+| :------------------------------------------------ | -----------: | --------: | --------------------: | ---------------------------: | -----------------: | ------------------------: | -------------------------: |
 | Current Implementation                            |           64 |        64 |                    64 |                           64 |                153 |                       306 |                        459 |
 | In-Memory COW cache (without additional pointers) |           64 |        64 |                    64 |                           64 |                153 |                       217 |                        281 |
 | In-Memory COW cache (with additional pointers)    |           64 |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
@@ -554,12 +553,11 @@ For allocations want to measure the following properties:
 - Key + 2 Duplications: how many objects to allocate for a full key + 2 duplications
 
 | Approach                                          | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Duplication | Key + 1 Duplication | Key + 2 Duplications |
-|:--------------------------------------------------|----------:|----------------------:|-----------------------------:|------------:|--------------------:|---------------------:|
+| :------------------------------------------------ | --------: | --------------------: | ---------------------------: | ----------: | ------------------: | -------------------: |
 | Current Implementation                            |         1 |                     1 |                            1 |           1 |                   2 |                    3 |
 | In-Memory COW cache (without additional pointers) |         1 |                     1 |                            1 |           1 |                   2 |                    3 |
 | In-Memory COW cache (with additional pointers)    |         1 |                     1 |                            1 |           1 |                   2 |                    3 |
 | Full-blown COW implementation                     |         1 |                     2 |                            3 |           1 |                   4 |                    5 |
-
 
 ## Decision
 
