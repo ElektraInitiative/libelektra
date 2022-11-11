@@ -162,4 +162,4 @@ This way we don't pollute our `symbols.map` files and keep the number of exporte
 ## Notes
 
 - The Linux kernel also has many header files with many cross-dependencies.
-  Recently people started to look into the effect of this "dependency hell" on compile time (see [LKML](https://lore.kernel.org/lkml/YdIfz+LMewetSaEB@gmail.com/T/)).
+  Recently people started to look into the effect of this "dependency hell" on compile-time (see [LKML](https://lore.kernel.org/lkml/YdIfz+LMewetSaEB@gmail.com/T/)).
