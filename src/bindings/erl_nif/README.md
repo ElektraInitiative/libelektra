@@ -19,7 +19,7 @@ For instance, `ksNew` is available under the name `ks_new`.
 
 Due to the limitations of NIFs the signatures of the functions have not been translated faithfully and some functions are currently not implemented at all.
 
-One major limitation is that any strings may only contain ASCII (ISO/IEC 8859-1 Latin 1) characters.
+### Different arguments
 
 * `keyNew` takes a single argument which must be a valid key name
 * `ksNew` takes a single argument which is the number of keys for which to pre-allocate memory
