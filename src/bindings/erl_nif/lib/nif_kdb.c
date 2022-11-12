@@ -935,7 +935,7 @@ static ERL_NIF_TERM nif_key_set_base_name (ErlNifEnv * env, int argc, const ERL_
 }
 
 // ssize_t keyAddBaseName (Key *key,const char *baseName);
-static ERL_NIF_TERM nif_key_add_base_name_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM nif_key_add_base_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char baseName[_ERL_MAX_STRING_LENGTH];
@@ -1682,20 +1682,76 @@ static ERL_NIF_TERM nif_ks_search (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 	return term;
 }
 
+// clang-format off
 static ErlNifFunc nif_funcs[] = {
-	{ "nif_kdb_open", 2, nif_kdb_open },
-	{ "nif_kdb_close", 2, nif_kdb_close },
-	{ "nif_kdb_get", 3, nif_kdb_get },
-	{ "nif_kdb_set", 3, nif_kdb_set },
-	{ "nif_key_new", 1, nif_key_new },
-	{ "nif_key_name", 1, nif_key_name },
-	{ "nif_key_set_name", 2, nif_key_set_name },
-	{ "nif_key_add_name", 2, nif_key_add_name },
-	{ "nif_key_string", 1, nif_key_string},
-	{ "nif_ks_new", 0, nif_ks_new },
-	{ "nif_ks_append_key", 2, nif_ks_append_key },
-	{ "nif_ks_lookup_by_name", 3, nif_ks_lookup_by_name },
+	{"nif_kdb_open", 2, nif_kdb_open},
+	{"nif_kdb_close", 2, nif_kdb_close},
+	{"nif_kdb_get", 3, nif_kdb_get},
+	{"nif_kdb_set", 3, nif_kdb_set},
+	{"nif_key_new", 1, nif_key_new},
+	{"nif_key_copy", 3, nif_key_copy},
+	{"nif_key_clear", 1, nif_key_clear},
+	{"nif_key_del", 1, nif_key_del},
+	{"nif_key_inc_ref", 1, nif_key_inc_ref},
+	{"nif_key_dec_ref", 1, nif_key_dec_ref},
+	{"nif_key_get_ref", 1, nif_key_get_ref},
+	{"nif_key_copy_meta", 3, nif_key_copy_meta},
+	{"nif_key_copy_all_meta", 2, nif_key_copy_all_meta},
+	{"nif_key_get_meta", 2, nif_key_get_meta},
+	{"nif_key_set_meta", 3, nif_key_set_meta},
+	{"nif_key_meta", 1, nif_key_meta},
+	{"nif_key_cmp", 2, nif_key_cmp},
+	{"nif_key_need_sync", 1, nif_key_need_sync},
+	{"nif_key_is_below", 2, nif_key_is_below},
+	{"nif_key_is_below_or_same", 2, nif_key_is_below_or_same},
+	{"nif_key_is_directly_below", 2, nif_key_is_directly_below},
+	{"nif_key_is_binary", 1, nif_key_is_binary},
+	{"nif_key_is_string", 1, nif_key_is_string},
+	{"nif_key_name", 1, nif_key_name},
+	{"nif_key_get_name_size", 1, nif_key_get_name_size},
+	{"nif_key_set_name", 2, nif_key_set_name},
+	{"nif_key_add_name", 2, nif_key_add_name},
+	{"nif_key_unescaped_name", 1, nif_key_unescaped_name},
+	{"nif_key_get_unescaped_name_size", 1, nif_key_get_unescaped_name_size},
+	{"nif_key_base_name", 1, nif_key_base_name},
+	{"nif_key_get_base_name_size", 1, nif_key_get_base_name_size},
+	{"nif_key_set_base_name", 2, nif_key_set_base_name},
+	{"nif_key_add_base_name", 2, nif_key_add_base_name},
+	{"nif_key_get_namespace", 1, nif_key_get_namespace},
+	{"nif_key_set_namespace", 2, nif_key_set_namespace},
+	{"nif_key_value", 1, nif_key_value},
+	{"nif_key_get_value_size", 1, nif_key_get_value_size},
+	{"nif_key_string", 1, nif_key_string},
+	{"nif_key_set_string", 2, nif_key_set_string},
+	{"nif_key_get_binary", 1, nif_key_get_binary},
+	{"nif_key_set_binary", 2, nif_key_set_binary},
+	{"nif_key_lock", 2, nif_key_lock},
+	{"nif_key_is_locked", 1, nif_key_is_locked},
+	{"nif_key_dup", 2, nif_key_dup},
+	{"nif_ks_new", 1, nif_ks_new},
+	{"nif_ks_dup", 1, nif_ks_dup},
+	{"nif_ks_copy", 2, nif_ks_copy},
+	{"nif_ks_inc_ref", 1, nif_ks_inc_ref},
+	{"nif_ks_dec_ref", 1, nif_ks_dec_ref},
+	{"nif_ks_get_ref", 1, nif_ks_get_ref},
+	{"nif_ks_clear", 1, nif_ks_clear},
+	{"nif_ks_del", 1, nif_ks_del},
+	{"nif_ks_get_size", 1, nif_ks_get_size},
+	{"nif_ks_append_key", 2, nif_ks_append_key},
+	{"nif_ks_append", 2, nif_ks_append},
+	{"nif_ks_cut", 2, nif_ks_cut},
+	{"nif_ks_pop", 1, nif_ks_pop},
+	{"nif_ks_rewind", 1, nif_ks_rewind},
+	{"nif_ks_next", 1, nif_ks_next},
+	{"nif_ks_current", 1, nif_ks_current},
+	{"nif_ks_get_cursor", 1, nif_ks_get_cursor},
+	{"nif_ks_set_cursor", 2, nif_ks_set_cursor},
+	{"nif_ks_at_cursor", 2, nif_ks_at_cursor},
+	{"nif_ks_lookup", 3, nif_ks_lookup},
+	{"nif_ks_lookup_by_name", 3, nif_ks_lookup_by_name},
+	{"nif_ks_search", 2, nif_ks_search},
 };
+// clang-format on
 
 int load (ErlNifEnv * env, void ** priv_data, ERL_NIF_TERM load_info)
 {
