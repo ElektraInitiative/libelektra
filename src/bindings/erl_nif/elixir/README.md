@@ -2,11 +2,55 @@
 
 The functions of the underlying C API are exposed by the modules in `Elektra.System`
 
-* `Elektra.System.Kdb`
-* `Elektra.System.Key`
-* `Elektra.System.KeySet`
+* `Elektra.System`
 
-## Example
+However, see [`src/bindings/erl_nif/README.md`](../README.md) for an overview of the differences to the C API and the limitations.
+
+Each of the Elektra classes is also available as a Elixir modules which implement a `GenServer` behaviour:
+
+* `Elektra.Kdb`
+* `Elektra.Key`
+* `Elektra.KeySet`
+
+## Conveniences
+
+### Creating keys using maps
+
+```elixir
+Elektra.Key.new(%{name: "user:/test"})
+Elektra.Key.new(%{name: "user:/test", value: "value"})
+Elektra.Key.new(
+  %{
+    name: "user:/test",
+    value: "value",
+    meta: [
+      {"metaname1", "metavalue1"},
+      {"metaname2", "metavalue2"},
+    ],
+  }
+)
+```
+
+### Iterating over key sets
+
+```elixir
+ks
+|> Enum.each(
+  fn %{name: name, value: value} ->
+    IO.puts("(name: #{name}, value: #{value})")
+  end
+)
+```
+
+### Generate a stream of keys from a key set
+
+```elixir
+key_stream = Elektra.KeySet.stream(ks)
+```
+
+## Examples
+
+### Hello Elektra with `Elektra.System`
 
 The analogue of the [`helloElektra.c`](../../../../examples/helloElektra.c) example is given by the following snippet
 
@@ -15,31 +59,69 @@ defmodule Main do
   use Elektra
 
   def main do
-    config = Elektra.System.KeySet.new() 
-    root = Elektra.System.Key.new("user:/test")
+    config = Elektra.System.ks_new() 
+    root = Elektra.System.key_new('user:/test')
 
     IO.puts("Open key database")
-    handle = Elektra.System.Kdb.open()
+    handle = Elektra.System.kdb_open()
 
     IO.puts("Retrieve key set")
-    Elektra.System.Kdb.get(handle, config, root)
+    Elektra.System.kdb_get(handle, config, root)
 
-    IO.puts("Number of key-value pairs: #{Elektra.System.KeySet.get_size(config)}")
+    IO.puts("Number of key-value pairs: #{Elektra.System.ks_get_size(config)}")
 
-    key = Kdb.Key.new("user:/test/hello", "elektra")
-    IO.puts("Add key #{Elektra.System.Key.base_name(key)}")
-    Elektra.System.KeySet.append_key(config, key)
-    IO.puts("Number of key-value pairs: #{Elektra.System.KeySet.get_size(config)}")
-    IO.puts("#{Elektra.System.Key.base_name(key)}, #{Elektra.System.Key.string(key)}")
+    key = Eletkra.System.key_new('user:/test/hello', 'elektra')
+    IO.puts("Add key #{Elektra.System.key_base_name(key)}")
+    Elektra.System.ks_append_key(config, key)
+    IO.puts("Number of key-value pairs: #{Elektra.System.ks_get_size(config)}")
+    IO.puts("#{Elektra.System.key_base_name(key)}, #{Elektra.System.key_string(key)}")
 
     # If you want to store the key database on disk, then please uncomment the following two lines
     # IO.puts("Write key set to disk")
-    # :ok = Elektra.System.Kdb.set(handle, config, root)
+    # :ok = Elektra.System.kdb_set(handle, config, root)
 
     IO.puts("Delete key-value pairs inside memory")
-    Elektra.System.KeySet.del(config)
+    Elektra.System.ks_del(config)
     IO.puts("Close key database")
-    Elektra.System.Kdb.close(handle)
+    Elektra.System.kdb_close(handle)
+  end
+end
+
+Main.main()
+```
+
+### Hello Elektra with `Elektra`
+
+```elixir
+defmodule Main do
+  use Elektra
+
+  def main do
+    {:ok, config} = Elektra.KeySet.new() 
+    {:ok, root} = Elektra.Key.new(%{name: "user:/test"})
+
+    IO.puts("Open key database")
+    {:ok, handle} = Elektra.Kdb.open()
+
+    IO.puts("Retrieve key set")
+    Elektra.Kdb.get(handle, config, root)
+
+    IO.puts("Number of key-value pairs: #{Elektra.KeySet.get_size(config)}")
+
+    {:ok, key} = Elektra.Key.new("user:/test/hello", "elektra")
+    IO.puts("Add key #{Elektra.Key.base_name(key)}")
+    Elektra.KeySet.append_key(config, key)
+    IO.puts("Number of key-value pairs: #{Elektra.KeySet.get_size(config)}")
+    IO.puts("#{Elektra.Key.base_name(key)}, #{Elektra.Key.string(key)}")
+
+    # If you want to store the key database on disk, then please uncomment the following two lines
+    # IO.puts("Write key set to disk")
+    # Elektra.Kdb.set(handle, config, root)
+
+    IO.puts("Delete key-value pairs inside memory")
+    Elektra.KeySet.del(config)
+    IO.puts("Close key database")
+    Elektra.Kdb.close(handle)
   end
 end
 
