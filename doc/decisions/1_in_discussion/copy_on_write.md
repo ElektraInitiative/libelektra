@@ -4,7 +4,7 @@
 
 One of Elektra's core goals is low memory usage.
 Currently, there are many places within Elektra where keys and keysets are duplicated and copied around.
-Most of those copied keys are never modified.
+Most of those copied keys are never modified, but are required to be detached from the lifetime of the original instance.
 We want to introduce an in-memory copy-on-write mechanism to lower our memory usage.
 
 In the near future, Elektra will also gain facilities for [change tracking](../0_drafts/change_tracking.md) and session recording, both of which will potentially again duplicate keys.
@@ -37,10 +37,6 @@ assert (keyName(key) == keyName(key_dup)); // stays always valid
 This is already implemented for the MMAP cache, so the implementation should be straightforward:
 Do the same COW duplications as done for MMAP but with a different flag.
 
-@kodebach wrote:
-
-> What I wanted to say is that mmap already does COW, so we can reuse the code and probably the flag.
-> If there is some code that is only needed for mmap and not COW, we could make mmap set two flags one for mmap and one for the general COW code.
 
 For the metadata, however, also COW KeySets might be needed (at least with the current API).
 Example:
@@ -170,7 +166,7 @@ Whether this function will be part of the public API is a point for discussion.
 Make Elektra's `Key` and `KeySet` data structures copy-on-write.
 This requires some major refactoring of code within `libelektra-core`.
 Code that does only interact with the data structures via the public `libelektra-core` API should not notice any differences.
-The `mmapstorage` plugin needs to be fixed.
+The `mmapstorage` plugin needs to be updated.
 
 Unlike "mmapstorage-like COW implementation" keyDup, keyCopy, ksCopy and ksDup will always use COW.
 `ksCopy` and `ksDup` is needed for (de)duplication of metadata.
@@ -334,8 +330,8 @@ API notes:
 
 #### Optimizations
 
-This approach requires more allocation than previously.
-We have not benchmarked whether this is big of an issue.
+This approach requires more allocations than previously.
+We have not fully benchmarked whether this is a big issue.
 One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
 We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
 

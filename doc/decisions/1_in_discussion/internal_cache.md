@@ -168,7 +168,7 @@ I.e. the original keyset is not changed.
 The name is not relevant.
 It is always read-only, because the key is in at least one keyset (the internal one).
 
-Possible copy-on-write implementations are described in [another discussion](../1_in_discussion/copy_on_write.md).
+Possible copy-on-write implementations are described in [another decision](../1_in_discussion/copy_on_write.md).
 
 ## Decision
 
