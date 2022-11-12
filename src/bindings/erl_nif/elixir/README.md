@@ -31,6 +31,13 @@ Elektra.Key.new(
 )
 ```
 
+### Converting keys to maps
+
+```elixir
+{name: name, value: value} = Elektra.Key.to_map(key)
+```
+
+
 ### Iterating over key sets
 
 ```elixir
