@@ -321,6 +321,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Add decision for [copy-on-write](../decisions/1_in_discussion/copy_on_write.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -329,9 +330,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- Update [internal cache](../decisions/0_drafts/internal_cache.md) _(Markus Raab)_
-- Move [internal cache](../decisions/0_drafts/internal_cache.md) back to draft _(@kodebach)_
+- Update [internal cache](../decisions/1_in_discussion/internal_cache.md) _(Markus Raab)_
+- Move [internal cache](../decisions/1_in_discussion/internal_cache.md) back to draft _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
