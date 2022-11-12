@@ -37,7 +37,6 @@ assert (keyName(key) == keyName(key_dup)); // stays always valid
 This is already implemented for the MMAP cache, so the implementation should be straightforward:
 Do the same COW duplications as done for MMAP but with a different flag.
 
-
 For the metadata, however, also COW KeySets might be needed (at least with the current API).
 Example:
 
