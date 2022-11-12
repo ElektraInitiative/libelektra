@@ -4,7 +4,7 @@
 
 The key database of Elektra basically passes a `KeySet` from plugin to plugin.
 Plugins can be chained or nested.
-The library `libelektra-kdb` only interacts with one special type of plugin called a _backend plugin_, usually with other plugins nested below.
+The library `libelektra-kdb` only interacts with specially designed hook plugins as well as one special type of plugin called a _backend plugin_, usually with other plugins nested below.
 All other plugins must be called by these backend plugins.
 Backend plugins then usually implement some kind of plugin chaining.
 

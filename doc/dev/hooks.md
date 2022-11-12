@@ -4,7 +4,7 @@ Hooks are central points in the KDB lifecycle, where specialized plugins are cal
 
 ## Selecting which Plugin will be Used for a Specific Hook
 
-Currently, the names of the plugins are hard coded.
+The names of the plugins are hard coded.
 This [decision](../decisions/4_partially_implemented/hooks.md) was made, because these plugins are meant to fulfil very specific purposes.
 A symlink replacing the shared library file of the plugin could be used to change the implementation.
 
@@ -19,7 +19,7 @@ Other hooks (e.g. `spec`) require multiple exported functions.
 
 ### `gopts` hook
 
-Currently hard coded to search for a plugin named `gopts`.
+Hard coded to search for a plugin named `gopts`.
 
 The following function **must** be exported:
 
@@ -30,7 +30,7 @@ The following function **must** be exported:
 
 ### `spec` hook
 
-Currently hard coded to search for a plugin named `spec`.
+Hard coded to search for a plugin named `spec`.
 
 The following functions **must** be exported:
 

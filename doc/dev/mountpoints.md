@@ -3,7 +3,7 @@
 A mountpoint is defined by adding keys below `system:/elekta/mountpoints/<mountpoint>`, where `<mountpoint>` is the key name for the parent key of the mountpoint with slashes properly escaped.
 For example for the mountpoint `user:/mymountpoint` you have to add keys below `system:/elekta/mountpoints/user:\/mymountpoint`.
 
-Every mountpoint consists of exactly three parts:
+Every mountpoint consists of four parts:
 
 1. A set of plugins required for the mountpoint.
 2. A single _backend plugin_ within the set of plugins.
@@ -196,6 +196,6 @@ system:/elektra/mountpoints/\/hosts/decoder (="yajl")
 ```
 
 The hypothetical `http_backend` plugin is a read-only backend plugin.
-In the example above, it is configured load the URL `https://api.ipify.org/?format=JSON` and use the `yajl` plugin to parse the result into a keyset.
+In the example above, it is configured to load the URL `https://api.ipify.org/?format=JSON` and use the `yajl` plugin to parse the result into a keyset.
 Both the HTTP request and the decoding would likely happen in the `storage` phase of the `get` operation.
 The `resolver` phase could perform an HTTP cache check, for example.
