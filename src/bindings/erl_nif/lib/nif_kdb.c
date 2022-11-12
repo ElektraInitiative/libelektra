@@ -105,7 +105,7 @@ int is_null_atom(ErlNifEnv * env, const ERL_NIF_TERM arg) {
  **************************************/
 
 // KDB * kdbOpen (const KeySet * contract, Key *parentKey);
-static ERL_NIF_TERM nif_kdb_open (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM kdb_open (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** contract_resource;
 	Key ** parentKey_resource;
@@ -139,7 +139,7 @@ static ERL_NIF_TERM nif_kdb_open (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 }
 
 // int kdbClose (KDB *handle, Key *errorKey);
-static ERL_NIF_TERM nif_kdb_close (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM kdb_close (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KDB ** handle_resource;
 	Key ** errorKey_resource;
@@ -167,7 +167,7 @@ static ERL_NIF_TERM nif_kdb_close (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 }
 
 // int kdbGet (KDB *handle, KeySet *returned, Key *parentKey);
-static ERL_NIF_TERM nif_kdb_get (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM kdb_get (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KDB ** handle_resource;
 	KeySet ** returned_resource;
@@ -204,7 +204,7 @@ static ERL_NIF_TERM nif_kdb_get (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 }
 
 // int kdbSet (KDB *handle, KeySet *returned, Key *parentKey);
-static ERL_NIF_TERM nif_kdb_set (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM kdb_set (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KDB ** handle_resource;
 	KeySet ** returned_resource;
@@ -248,7 +248,7 @@ static ERL_NIF_TERM nif_kdb_set (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
  **************************************/
 
 // Key *keyNew (const char *keyname, ...) ELEKTRA_SENTINEL;
-static ERL_NIF_TERM nif_key_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	char name[_ERL_MAX_STRING_LENGTH];
 
@@ -269,7 +269,7 @@ static ERL_NIF_TERM nif_key_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 }
 
 // Key * keyCopy (Key *dest, const Key *source, elektraCopyFlags flags);
-static ERL_NIF_TERM nif_key_copy (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_copy (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** dest_resource;
 	Key ** source_resource;
@@ -309,7 +309,7 @@ static ERL_NIF_TERM nif_key_copy (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 }
 
 // int keyClear (Key *key);
-static ERL_NIF_TERM nif_key_clear (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_clear (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -327,7 +327,7 @@ static ERL_NIF_TERM nif_key_clear (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 }
 
 // int keyDel (Key *key);
-static ERL_NIF_TERM nif_key_del (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_del (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -345,7 +345,7 @@ static ERL_NIF_TERM nif_key_del (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 }
 
 // uint16_t keyIncRef (Key *key);
-static ERL_NIF_TERM nif_key_inc_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_inc_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -363,7 +363,7 @@ static ERL_NIF_TERM nif_key_inc_ref (ErlNifEnv * env, int argc, const ERL_NIF_TE
 }
 
 // uint16_t keyDecRef (Key *key);
-static ERL_NIF_TERM nif_key_dec_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_dec_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -381,7 +381,7 @@ static ERL_NIF_TERM nif_key_dec_ref (ErlNifEnv * env, int argc, const ERL_NIF_TE
 }
 
 // uint16_t keyGetRef (const Key *key);
-static ERL_NIF_TERM nif_key_get_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -399,7 +399,7 @@ static ERL_NIF_TERM nif_key_get_ref (ErlNifEnv * env, int argc, const ERL_NIF_TE
 }
 
 // int keyCopyMeta (Key *dest, const Key *source, const char *metaName);
-static ERL_NIF_TERM nif_key_copy_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_copy_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** dest_resource;
 	Key ** source_resource;
@@ -435,7 +435,7 @@ static ERL_NIF_TERM nif_key_copy_meta (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // int keyCopyAllMeta (Key *dest, const Key *source);
-static ERL_NIF_TERM nif_key_copy_all_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_copy_all_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** dest_resource;
 	Key ** source_resource;
@@ -466,7 +466,7 @@ static ERL_NIF_TERM nif_key_copy_all_meta (ErlNifEnv * env, int argc, const ERL_
 }
 
 // const Key *keyGetMeta (const Key *key, const char* metaName);
-static ERL_NIF_TERM nif_key_get_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char metaName[_ERL_MAX_STRING_LENGTH];
@@ -497,7 +497,7 @@ static ERL_NIF_TERM nif_key_get_meta (ErlNifEnv * env, int argc, const ERL_NIF_T
 }
 
 // ssize_t keySetMeta (Key *key, const char* metaName, const char *newMetaString);
-static ERL_NIF_TERM nif_key_set_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_set_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char metaName[_ERL_MAX_STRING_LENGTH];
@@ -529,7 +529,7 @@ static ERL_NIF_TERM nif_key_set_meta (ErlNifEnv * env, int argc, const ERL_NIF_T
 }
 
 // KeySet * keyMeta (Key * key);
-static ERL_NIF_TERM nif_key_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -555,7 +555,7 @@ static ERL_NIF_TERM nif_key_meta (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 }
 
 // int keyCmp (const Key *k1, const Key *k2);
-static ERL_NIF_TERM nif_key_cmp (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_cmp (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** k1_resource;
 	Key ** k2_resource;
@@ -586,7 +586,7 @@ static ERL_NIF_TERM nif_key_cmp (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 }
 
 // int keyNeedSync (const Key *key);
-static ERL_NIF_TERM nif_key_need_sync (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_need_sync (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -608,7 +608,7 @@ static ERL_NIF_TERM nif_key_need_sync (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // int keyIsBelow (const Key *key, const Key *check);
-static ERL_NIF_TERM nif_key_is_below (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_is_below (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	Key ** check_resource;
@@ -639,7 +639,7 @@ static ERL_NIF_TERM nif_key_is_below (ErlNifEnv * env, int argc, const ERL_NIF_T
 }
 
 // int keyIsBelowOrSame (const Key *key, const Key *check);
-static ERL_NIF_TERM nif_key_is_below_or_same (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_is_below_or_same (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	Key ** check_resource;
@@ -670,7 +670,7 @@ static ERL_NIF_TERM nif_key_is_below_or_same (ErlNifEnv * env, int argc, const E
 }
 
 // int keyIsDirectlyBelow (const Key *key, const Key *check);
-static ERL_NIF_TERM nif_key_is_directly_below (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_is_directly_below (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	Key ** check_resource;
@@ -701,7 +701,7 @@ static ERL_NIF_TERM nif_key_is_directly_below (ErlNifEnv * env, int argc, const 
 }
 
 // int keyIsBinary (const Key *key);
-static ERL_NIF_TERM nif_key_is_binary (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_is_binary (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -723,7 +723,7 @@ static ERL_NIF_TERM nif_key_is_binary (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // int keyIsString (const Key *key);
-static ERL_NIF_TERM nif_key_is_string (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_is_string (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -745,7 +745,7 @@ static ERL_NIF_TERM nif_key_is_string (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // const char *keyName (const Key *key);
-static ERL_NIF_TERM nif_key_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -767,7 +767,7 @@ static ERL_NIF_TERM nif_key_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 }
 
 // ssize_t keyGetNameSize (const Key *key);
-static ERL_NIF_TERM nif_key_get_name_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_name_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -789,7 +789,7 @@ static ERL_NIF_TERM nif_key_get_name_size (ErlNifEnv * env, int argc, const ERL_
 }
 
 // ssize_t keySetName (Key *key, const char *newname);
-static ERL_NIF_TERM nif_key_set_name(ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_set_name(ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char newname[_ERL_MAX_STRING_LENGTH];
@@ -811,7 +811,7 @@ static ERL_NIF_TERM nif_key_set_name(ErlNifEnv * env, int argc, const ERL_NIF_TE
 }
 
 // ssize_t keyAddName (Key *key, const char *addName);
-static ERL_NIF_TERM nif_key_add_name(ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_add_name(ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char addName[_ERL_MAX_STRING_LENGTH];
@@ -833,7 +833,7 @@ static ERL_NIF_TERM nif_key_add_name(ErlNifEnv * env, int argc, const ERL_NIF_TE
 }
 
 // const void *keyUnescapedName (const Key *key);
-static ERL_NIF_TERM nif_key_unescaped_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_unescaped_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -855,7 +855,7 @@ static ERL_NIF_TERM nif_key_unescaped_name (ErlNifEnv * env, int argc, const ERL
 }
 
 // ssize_t keyGetUnescapedNameSize (const Key *key);
-static ERL_NIF_TERM nif_key_get_unescaped_name_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_unescaped_name_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -873,7 +873,7 @@ static ERL_NIF_TERM nif_key_get_unescaped_name_size (ErlNifEnv * env, int argc, 
 }
 
 // const char *keyBaseName (const Key *key);
-static ERL_NIF_TERM nif_key_base_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_base_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -895,7 +895,7 @@ static ERL_NIF_TERM nif_key_base_name (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // ssize_t keyGetBaseNameSize (const Key *key);
-static ERL_NIF_TERM nif_key_get_base_name_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_base_name_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -913,7 +913,7 @@ static ERL_NIF_TERM nif_key_get_base_name_size (ErlNifEnv * env, int argc, const
 }
 
 // ssize_t keySetBaseName (Key *key,const char *baseName);
-static ERL_NIF_TERM nif_key_set_base_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_set_base_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char baseName[_ERL_MAX_STRING_LENGTH];
@@ -935,7 +935,7 @@ static ERL_NIF_TERM nif_key_set_base_name (ErlNifEnv * env, int argc, const ERL_
 }
 
 // ssize_t keyAddBaseName (Key *key,const char *baseName);
-static ERL_NIF_TERM nif_key_add_base_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_add_base_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char baseName[_ERL_MAX_STRING_LENGTH];
@@ -957,7 +957,7 @@ static ERL_NIF_TERM nif_key_add_base_name (ErlNifEnv * env, int argc, const ERL_
 }
 
 // elektraNamespace keyGetNamespace (Key const* key);
-static ERL_NIF_TERM nif_key_get_namespace (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_namespace (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -975,7 +975,7 @@ static ERL_NIF_TERM nif_key_get_namespace (ErlNifEnv * env, int argc, const ERL_
 }
 
 // ssize_t keySetNamespace (Key * key, elektraNamespace ns);
-static ERL_NIF_TERM nif_key_set_namespace (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_set_namespace (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	int ns;
@@ -997,7 +997,7 @@ static ERL_NIF_TERM nif_key_set_namespace (ErlNifEnv * env, int argc, const ERL_
 }
 
 // const void *keyValue (const Key *key);
-static ERL_NIF_TERM nif_key_value (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_value (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -1016,7 +1016,7 @@ static ERL_NIF_TERM nif_key_value (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 }
 
 // ssize_t keyGetValueSize (const Key *key);
-static ERL_NIF_TERM nif_key_get_value_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_value_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -1034,7 +1034,7 @@ static ERL_NIF_TERM nif_key_get_value_size (ErlNifEnv * env, int argc, const ERL
 }
 
 // const char *keyString (const Key *key);
-static ERL_NIF_TERM nif_key_string (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_string (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -1056,7 +1056,7 @@ static ERL_NIF_TERM nif_key_string (ErlNifEnv * env, int argc, const ERL_NIF_TER
 }
 
 // ssize_t keySetString (Key *key, const char *newString);
-static ERL_NIF_TERM nif_key_set_string (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_set_string (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char newString[_ERL_MAX_STRING_LENGTH];
@@ -1078,7 +1078,7 @@ static ERL_NIF_TERM nif_key_set_string (ErlNifEnv * env, int argc, const ERL_NIF
 }
 
 // ssize_t keyGetBinary (const Key *key, void *returnedBinary, size_t maxSize);
-static ERL_NIF_TERM nif_key_get_binary (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_get_binary (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 
@@ -1099,7 +1099,7 @@ static ERL_NIF_TERM nif_key_get_binary (ErlNifEnv * env, int argc, const ERL_NIF
 }
 
 // ssize_t keySetBinary (Key *key, const void *newBinary, size_t dataSize);
-static ERL_NIF_TERM nif_key_set_binary (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_set_binary (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	char newBinary[_ERL_MAX_BINARY_LENGTH];
@@ -1125,7 +1125,7 @@ static ERL_NIF_TERM nif_key_set_binary (ErlNifEnv * env, int argc, const ERL_NIF
 }
 
 // int keyLock (Key * key, elektraLockFlags what);
-static ERL_NIF_TERM nif_key_lock (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_lock (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	elektraLockFlags what;
@@ -1146,7 +1146,7 @@ static ERL_NIF_TERM nif_key_lock (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 	return term;
 }
 // int keyIsLocked (const Key * key, elektraLockFlags what);
-static ERL_NIF_TERM nif_key_is_locked (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_is_locked (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** key_resource;
 	elektraLockFlags what;
@@ -1171,7 +1171,7 @@ static ERL_NIF_TERM nif_key_is_locked (ErlNifEnv * env, int argc, const ERL_NIF_
 // {
 //	return keyCopy (keyNew ("/", KEY_END), source, flags);
 // }
-static ERL_NIF_TERM nif_key_dup (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM key_dup (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	Key ** source_resource;
 	elektraCopyFlags flags;
@@ -1203,7 +1203,7 @@ static ERL_NIF_TERM nif_key_dup (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
  **************************************/
 
 // KeySet * ksNew (size_t alloc, ...) ELEKTRA_SENTINEL;
-static ERL_NIF_TERM nif_ks_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	size_t alloc;
 	if (!enif_get_uint64(env, argv[0], &alloc)) {
@@ -1223,7 +1223,7 @@ static ERL_NIF_TERM nif_ks_new (ErlNifEnv * env, int argc, const ERL_NIF_TERM ar
 }
 
 // KeySet * ksDup (const KeySet * source);
-static ERL_NIF_TERM nif_ks_dup (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_dup (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** source_resource;
 
@@ -1245,7 +1245,7 @@ static ERL_NIF_TERM nif_ks_dup (ErlNifEnv * env, int argc, const ERL_NIF_TERM ar
 }
 
 // int ksCopy (KeySet * dest, const KeySet * source);
-static ERL_NIF_TERM nif_ks_copy (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_copy (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** dest_resource;
 	KeySet ** source_resource;
@@ -1268,7 +1268,7 @@ static ERL_NIF_TERM nif_ks_copy (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 }
 
 // uint16_t ksIncRef (KeySet * ks);
-static ERL_NIF_TERM nif_ks_inc_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_inc_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1286,7 +1286,7 @@ static ERL_NIF_TERM nif_ks_inc_ref (ErlNifEnv * env, int argc, const ERL_NIF_TER
 }
 
 // uint16_t ksDecRef (KeySet * ks);
-static ERL_NIF_TERM nif_ks_dec_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_dec_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1304,7 +1304,7 @@ static ERL_NIF_TERM nif_ks_dec_ref (ErlNifEnv * env, int argc, const ERL_NIF_TER
 }
 
 // uint16_t ksGetRef (const KeySet * ks);
-static ERL_NIF_TERM nif_ks_get_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_get_ref (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1322,7 +1322,7 @@ static ERL_NIF_TERM nif_ks_get_ref (ErlNifEnv * env, int argc, const ERL_NIF_TER
 }
 
 // int ksClear (KeySet * ks);
-static ERL_NIF_TERM nif_ks_clear (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_clear (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1340,7 +1340,7 @@ static ERL_NIF_TERM nif_ks_clear (ErlNifEnv * env, int argc, const ERL_NIF_TERM 
 }
 
 // int ksDel (KeySet * ks);
-static ERL_NIF_TERM nif_ks_del (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_del (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1358,7 +1358,7 @@ static ERL_NIF_TERM nif_ks_del (ErlNifEnv * env, int argc, const ERL_NIF_TERM ar
 }
 
 // ssize_t ksGetSize (const KeySet * ks);
-static ERL_NIF_TERM nif_ks_get_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_get_size (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1376,7 +1376,7 @@ static ERL_NIF_TERM nif_ks_get_size (ErlNifEnv * env, int argc, const ERL_NIF_TE
 }
 
 // ssize_t ksAppendKey (KeySet * ks, Key * toAppend);
-static ERL_NIF_TERM nif_ks_append_key (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_append_key (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	Key ** toAppend_resource;
@@ -1399,7 +1399,7 @@ static ERL_NIF_TERM nif_ks_append_key (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // ssize_t ksAppend (KeySet * ks, const KeySet * toAppend);
-static ERL_NIF_TERM nif_ks_append (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_append (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	KeySet ** toAppend_resource;
@@ -1422,7 +1422,7 @@ static ERL_NIF_TERM nif_ks_append (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 }
 
 // KeySet * ksCut (KeySet * ks, const Key * cutpoint);
-static ERL_NIF_TERM nif_ks_cut (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_cut (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	Key ** cutpoint_resource;
@@ -1449,7 +1449,7 @@ static ERL_NIF_TERM nif_ks_cut (ErlNifEnv * env, int argc, const ERL_NIF_TERM ar
 }
 
 // Key * ksPop (KeySet * ks);
-static ERL_NIF_TERM nif_ks_pop (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_pop (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1471,7 +1471,7 @@ static ERL_NIF_TERM nif_ks_pop (ErlNifEnv * env, int argc, const ERL_NIF_TERM ar
 }
 
 // int ksRewind (KeySet * ks);
-static ERL_NIF_TERM nif_ks_rewind (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_rewind (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1489,7 +1489,7 @@ static ERL_NIF_TERM nif_ks_rewind (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 }
 
 // Key * ksNext (KeySet * ks);
-static ERL_NIF_TERM nif_ks_next (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_next (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1511,7 +1511,7 @@ static ERL_NIF_TERM nif_ks_next (ErlNifEnv * env, int argc, const ERL_NIF_TERM a
 }
 
 // Key * ksCurrent (const KeySet * ks);
-static ERL_NIF_TERM nif_ks_current (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_current (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1533,7 +1533,7 @@ static ERL_NIF_TERM nif_ks_current (ErlNifEnv * env, int argc, const ERL_NIF_TER
 }
 
 // elektraCursor ksGetCursor (const KeySet * ks);
-static ERL_NIF_TERM nif_ks_get_cursor (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_get_cursor (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 
@@ -1551,7 +1551,7 @@ static ERL_NIF_TERM nif_ks_get_cursor (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // int ksSetCursor (KeySet * ks, elektraCursor cursor);
-static ERL_NIF_TERM nif_ks_set_cursor (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_set_cursor (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	elektraCursor cursor;
@@ -1573,7 +1573,7 @@ static ERL_NIF_TERM nif_ks_set_cursor (ErlNifEnv * env, int argc, const ERL_NIF_
 }
 
 // Key * ksAtCursor (const KeySet * ks, elektraCursor cursor);
-static ERL_NIF_TERM nif_ks_at_cursor (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_at_cursor (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	elektraCursor cursor;
@@ -1599,7 +1599,7 @@ static ERL_NIF_TERM nif_ks_at_cursor (ErlNifEnv * env, int argc, const ERL_NIF_T
 }
 
 // Key * ksLookup (KeySet * ks, Key * k, elektraLookupFlags options);
-static ERL_NIF_TERM nif_ks_lookup (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_lookup (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	Key ** k_resource;
@@ -1630,7 +1630,7 @@ static ERL_NIF_TERM nif_ks_lookup (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 }
 
 // Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options);
-static ERL_NIF_TERM nif_ks_lookup_by_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_lookup_by_name (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	char name[_ERL_MAX_STRING_LENGTH];
@@ -1660,7 +1660,7 @@ static ERL_NIF_TERM nif_ks_lookup_by_name (ErlNifEnv * env, int argc, const ERL_
 }
 
 // ssize_t ksSearch (const KeySet * ks, const Key * key);
-static ERL_NIF_TERM nif_ks_search (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
+static ERL_NIF_TERM ks_search (ErlNifEnv * env, int argc, const ERL_NIF_TERM argv[])
 {
 	KeySet ** ks_resource;
 	Key ** key_resource;
@@ -1683,73 +1683,73 @@ static ERL_NIF_TERM nif_ks_search (ErlNifEnv * env, int argc, const ERL_NIF_TERM
 }
 
 // clang-format off
-static ErlNifFunc nif_funcs[] = {
-	{"nif_kdb_open", 2, nif_kdb_open},
-	{"nif_kdb_close", 2, nif_kdb_close},
-	{"nif_kdb_get", 3, nif_kdb_get},
-	{"nif_kdb_set", 3, nif_kdb_set},
-	{"nif_key_new", 1, nif_key_new},
-	{"nif_key_copy", 3, nif_key_copy},
-	{"nif_key_clear", 1, nif_key_clear},
-	{"nif_key_del", 1, nif_key_del},
-	{"nif_key_inc_ref", 1, nif_key_inc_ref},
-	{"nif_key_dec_ref", 1, nif_key_dec_ref},
-	{"nif_key_get_ref", 1, nif_key_get_ref},
-	{"nif_key_copy_meta", 3, nif_key_copy_meta},
-	{"nif_key_copy_all_meta", 2, nif_key_copy_all_meta},
-	{"nif_key_get_meta", 2, nif_key_get_meta},
-	{"nif_key_set_meta", 3, nif_key_set_meta},
-	{"nif_key_meta", 1, nif_key_meta},
-	{"nif_key_cmp", 2, nif_key_cmp},
-	{"nif_key_need_sync", 1, nif_key_need_sync},
-	{"nif_key_is_below", 2, nif_key_is_below},
-	{"nif_key_is_below_or_same", 2, nif_key_is_below_or_same},
-	{"nif_key_is_directly_below", 2, nif_key_is_directly_below},
-	{"nif_key_is_binary", 1, nif_key_is_binary},
-	{"nif_key_is_string", 1, nif_key_is_string},
-	{"nif_key_name", 1, nif_key_name},
-	{"nif_key_get_name_size", 1, nif_key_get_name_size},
-	{"nif_key_set_name", 2, nif_key_set_name},
-	{"nif_key_add_name", 2, nif_key_add_name},
-	{"nif_key_unescaped_name", 1, nif_key_unescaped_name},
-	{"nif_key_get_unescaped_name_size", 1, nif_key_get_unescaped_name_size},
-	{"nif_key_base_name", 1, nif_key_base_name},
-	{"nif_key_get_base_name_size", 1, nif_key_get_base_name_size},
-	{"nif_key_set_base_name", 2, nif_key_set_base_name},
-	{"nif_key_add_base_name", 2, nif_key_add_base_name},
-	{"nif_key_get_namespace", 1, nif_key_get_namespace},
-	{"nif_key_set_namespace", 2, nif_key_set_namespace},
-	{"nif_key_value", 1, nif_key_value},
-	{"nif_key_get_value_size", 1, nif_key_get_value_size},
-	{"nif_key_string", 1, nif_key_string},
-	{"nif_key_set_string", 2, nif_key_set_string},
-	{"nif_key_get_binary", 1, nif_key_get_binary},
-	{"nif_key_set_binary", 2, nif_key_set_binary},
-	{"nif_key_lock", 2, nif_key_lock},
-	{"nif_key_is_locked", 1, nif_key_is_locked},
-	{"nif_key_dup", 2, nif_key_dup},
-	{"nif_ks_new", 1, nif_ks_new},
-	{"nif_ks_dup", 1, nif_ks_dup},
-	{"nif_ks_copy", 2, nif_ks_copy},
-	{"nif_ks_inc_ref", 1, nif_ks_inc_ref},
-	{"nif_ks_dec_ref", 1, nif_ks_dec_ref},
-	{"nif_ks_get_ref", 1, nif_ks_get_ref},
-	{"nif_ks_clear", 1, nif_ks_clear},
-	{"nif_ks_del", 1, nif_ks_del},
-	{"nif_ks_get_size", 1, nif_ks_get_size},
-	{"nif_ks_append_key", 2, nif_ks_append_key},
-	{"nif_ks_append", 2, nif_ks_append},
-	{"nif_ks_cut", 2, nif_ks_cut},
-	{"nif_ks_pop", 1, nif_ks_pop},
-	{"nif_ks_rewind", 1, nif_ks_rewind},
-	{"nif_ks_next", 1, nif_ks_next},
-	{"nif_ks_current", 1, nif_ks_current},
-	{"nif_ks_get_cursor", 1, nif_ks_get_cursor},
-	{"nif_ks_set_cursor", 2, nif_ks_set_cursor},
-	{"nif_ks_at_cursor", 2, nif_ks_at_cursor},
-	{"nif_ks_lookup", 3, nif_ks_lookup},
-	{"nif_ks_lookup_by_name", 3, nif_ks_lookup_by_name},
-	{"nif_ks_search", 2, nif_ks_search},
+static ErlNifFunc funcs[] = {
+	{"kdb_open", 2, kdb_open},
+	{"kdb_close", 2, kdb_close},
+	{"kdb_get", 3, kdb_get},
+	{"kdb_set", 3, kdb_set},
+	{"key_new", 1, key_new},
+	{"key_copy", 3, key_copy},
+	{"key_clear", 1, key_clear},
+	{"key_del", 1, key_del},
+	{"key_inc_ref", 1, key_inc_ref},
+	{"key_dec_ref", 1, key_dec_ref},
+	{"key_get_ref", 1, key_get_ref},
+	{"key_copy_meta", 3, key_copy_meta},
+	{"key_copy_all_meta", 2, key_copy_all_meta},
+	{"key_get_meta", 2, key_get_meta},
+	{"key_set_meta", 3, key_set_meta},
+	{"key_meta", 1, key_meta},
+	{"key_cmp", 2, key_cmp},
+	{"key_need_sync", 1, key_need_sync},
+	{"key_is_below", 2, key_is_below},
+	{"key_is_below_or_same", 2, key_is_below_or_same},
+	{"key_is_directly_below", 2, key_is_directly_below},
+	{"key_is_binary", 1, key_is_binary},
+	{"key_is_string", 1, key_is_string},
+	{"key_name", 1, key_name},
+	{"key_get_name_size", 1, key_get_name_size},
+	{"key_set_name", 2, key_set_name},
+	{"key_add_name", 2, key_add_name},
+	{"key_unescaped_name", 1, key_unescaped_name},
+	{"key_get_unescaped_name_size", 1, key_get_unescaped_name_size},
+	{"key_base_name", 1, key_base_name},
+	{"key_get_base_name_size", 1, key_get_base_name_size},
+	{"key_set_base_name", 2, key_set_base_name},
+	{"key_add_base_name", 2, key_add_base_name},
+	{"key_get_namespace", 1, key_get_namespace},
+	{"key_set_namespace", 2, key_set_namespace},
+	{"key_value", 1, key_value},
+	{"key_get_value_size", 1, key_get_value_size},
+	{"key_string", 1, key_string},
+	{"key_set_string", 2, key_set_string},
+	{"key_get_binary", 1, key_get_binary},
+	{"key_set_binary", 2, key_set_binary},
+	{"key_lock", 2, key_lock},
+	{"key_is_locked", 1, key_is_locked},
+	{"key_dup", 2, key_dup},
+	{"ks_new", 1, ks_new},
+	{"ks_dup", 1, ks_dup},
+	{"ks_copy", 2, ks_copy},
+	{"ks_inc_ref", 1, ks_inc_ref},
+	{"ks_dec_ref", 1, ks_dec_ref},
+	{"ks_get_ref", 1, ks_get_ref},
+	{"ks_clear", 1, ks_clear},
+	{"ks_del", 1, ks_del},
+	{"ks_get_size", 1, ks_get_size},
+	{"ks_append_key", 2, ks_append_key},
+	{"ks_append", 2, ks_append},
+	{"ks_cut", 2, ks_cut},
+	{"ks_pop", 1, ks_pop},
+	{"ks_rewind", 1, ks_rewind},
+	{"ks_next", 1, ks_next},
+	{"ks_current", 1, ks_current},
+	{"ks_get_cursor", 1, ks_get_cursor},
+	{"ks_set_cursor", 2, ks_set_cursor},
+	{"ks_at_cursor", 2, ks_at_cursor},
+	{"ks_lookup", 3, ks_lookup},
+	{"ks_lookup_by_name", 3, ks_lookup_by_name},
+	{"ks_search", 2, ks_search},
 };
 // clang-format on
 
@@ -1764,4 +1764,4 @@ int load (ErlNifEnv * env, void ** priv_data, ERL_NIF_TERM load_info)
 	return 0;
 }
 
-_ERL_NIF_INIT (_ELEKTRA_NIF_MODULE_NAME, nif_funcs, load, NULL, NULL, NULL);
+_ERL_NIF_INIT (_ELEKTRA_NIF_MODULE_NAME, funcs, load, NULL, NULL, NULL);
