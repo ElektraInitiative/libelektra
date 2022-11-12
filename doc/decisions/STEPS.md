@@ -18,13 +18,22 @@ Additionally, decision that are not yet "Decided" can be become "Rejected" or "D
 
 ## Drafts
 
-> This step is recommended if the problem is not yet clear to the core developers.
+> This step is highly recommended and it is even required if the problem is not yet clear to all the core developers.
 
 The first step is to create a PR with:
 
 - **one** decision, where at least the "Problem" is filled out and "Decision", "Rationale" and "Implications" are **not** yet filled out.
 - a link from [README.md](../README.md) from the "Drafts" section to this decision.
 - optional backlinks from related decisions.
+
+This step is very important:
+
+- it is brainstorming for completely new ideas.
+- it clarifies the scope of the decision.
+- it clarifies relation to other problems.
+
+Decisions will have much smoother further steps if this step is done carefully without prejudice.
+It is especially important that one shouldn't have a fixed mind-set about a preferred solution from the beginning.
 
 > Everyone must agree that the problem exists so that a decision PR in "Drafts" step can be merged.
 > At least the problem must be clear to everyone involved before the decision can leave the "Drafts" step.
