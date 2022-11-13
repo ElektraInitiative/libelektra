@@ -91,9 +91,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### website
 
-- <<TODO>>
+- Fix broken /pythongen link on homepage _(@stefnotch)_
+- Fix redirect logic to not cause loops _(@stefnotch)_
 - <<TODO>>
 - <<TODO>>
 
