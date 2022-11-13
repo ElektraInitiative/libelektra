@@ -32,7 +32,7 @@ the presence of warning information. They may not be interested in any
 warning information at all. It is no problem if warning information is
 ignored because they are stored and remain accessible in a circular
 buffer. The implementation prevents an overflow of the buffer.
-Instead the oldest warnings are overwritten.
+Instead, the oldest warnings are overwritten.
 
 When error or warning information is presented to the user, it is called
 _error message_ or _warning message_. The user may reply
@@ -48,7 +48,7 @@ the addition of warning information is possible:
 
 - The main purpose of `kdbClose()` is to free the
   handle. This operation is always successful and is carried out even
-  if some of the resources cannot be freed. Therefore, in `kdbClose()`,
+  if some resources cannot be freed. Therefore, in `kdbClose()`,
   setting error information is prohibited. Warning information is, however,
   very useful to tell the user the circumstance that some actions during
   cleanup failed.
@@ -129,7 +129,7 @@ The error information is categorized in metadata as follows:
 - [error] indicates that a faulty state is present. The value
   of the metakey contains the name of all the subkeys that are used for
   error indication. Metakeys do not guarantee any particular order on
-  iteration. Instead the user can find out the information by looking at
+  iteration. Instead, the user can find out the information by looking at
   this metavalue.
 
 Additional metakeys yield all the details.
@@ -174,7 +174,7 @@ can be added in a flexible manner by using additional metakeys.
 The error specification in Elektra is written in simple colon-separated
 text files. Each entry has a unique identifier and all the information
 we already discussed above. No part of Elektra ever reads this file
-directly. Instead it is used to generate source code which contains
+directly. Instead, it is used to generate source code which contains
 everything needed to add a particular error or warning information.
 With that file we achieved a central place for error-related information.
 All other locations are automatically generated instead of having
@@ -290,7 +290,7 @@ plugin[POSTCOMMIT].set(); // does not throw
 return 1; // commit successful
 ```
 
-This pseudo code is much clearer than the corresponding C code. Let us
+This pseudocode is much clearer than the corresponding C code. Let us
 explain the guarantee Elektra provides using this example. One by one
 plugin gets its chance to process the configuration. If any plugin fails,
 the semantics resemble that of a thrown exception. All other plugins
