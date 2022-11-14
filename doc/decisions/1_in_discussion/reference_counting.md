@@ -178,7 +178,7 @@ typedef struct {
 static ObjectRecord *toRecord(void *object) { return (ObjectRecord*)(object) - 1; }
 static void *fromRecord(ObjectRecord *record) { return record + 1; }
 
-void * elektraMalloc(size_t size, ) {
+void * elektraMalloc(size_t size, Destructor destroy) {
   ObjectRecord *record = malloc (sizeof (ObjectRecord) + size);
   if (record == NULL) {
     return NULL;
