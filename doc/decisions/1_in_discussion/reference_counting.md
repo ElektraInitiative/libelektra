@@ -175,8 +175,8 @@ typedef struct {
   unsigned int count;
 } ObjectRecord;
 
-static ObjectRecord *toRecord(void *object) { return (ObjectRecord*)(object) - 1; }
-static void *fromRecord(ObjectRecord *record) { return record + 1; }
+static ObjectRecord *objectToRecord(void *object) { return (ObjectRecord*)(object) - 1; }
+static void *recordToObject(ObjectRecord *record) { return record + 1; }
 
 void * elektraMalloc(size_t size, Destructor destroy) {
   ObjectRecord *record = malloc (sizeof (ObjectRecord) + size);
