@@ -329,7 +329,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Reopen decision on [reference counting](../decisions/1_in_discussion/reference_counting.md) _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
