@@ -80,8 +80,41 @@ I.e. to the mountpoint of the backend that contains parentKey.
 "Fewer keys":
 
 IMO this is simply a bug in the "nothing changed" logic.
-I don't think we need some complicated COW scheme to solve this.
-I haven't had a chance to check this yet, but I think it is just a matter of copying the keys from `backendData->keys`, so they are actually there and we don't just assume they are there.
+It is just a matter of copying the keys from `backendData->keys`, so they are actually there and we don't just assume they are there.
+It is only a partial solution.
+You still need an extra step to make this work:
+
+```c
+TEST_F (Simple, NothingToDo2)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+
+	auto parentKey = "system:" + testRoot;
+
+	EXPECT_EQ (kdb.get (ks, parentKey), 0) << "nothing to do in get";
+
+	ks.append (Key (parentKey + "a", KEY_VALUE, "x", KEY_END));
+	kdb.set (ks, parentKey);
+
+	EXPECT_EQ (kdb.get (ks, parentKey), 0) << "nothing to do in get";
+	EXPECT_TRUE (ks.lookup (parentKey + "a")) << "key a not found";
+	EXPECT_EQ (ks.lookup (parentKey + "a").get<std::string> (), "x") << "key a with wrong value";
+	// TODO: adding the line below breaks the test
+	//	 This is because the Key instance is shared between `ks` and the internal data of `kdb`.
+	// ks.lookup(parentKey + "a").set("y");
+
+	KeySet ks2;
+	EXPECT_EQ (kdb.get (ks2, parentKey), 0) << "nothing to do in get";
+	EXPECT_TRUE (ks2.lookup (parentKey + "a")) << "key a not found";
+	EXPECT_EQ (ks2.lookup (parentKey + "a").get<std::string> (), "x") << "key a with wrong value";
+}
+```
+
+A very simple way to make it work would be to make the keys returned by kdbGet read-only.
+Otherwise, I think we need a deep-copy or COW-copy.
+
 
 ### Cachefilter Plugin
 
