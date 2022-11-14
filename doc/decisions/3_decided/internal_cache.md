@@ -173,11 +173,22 @@ Possible copy-on-write implementations are described in [another decision](../1_
 
 ## Decision
 
+Implement the copy-on-write approach.
+As we need COW for change tracking anyway, it makes sense to also use this approach for the internal cache.
+This also does not require any changes or restrictions to the current API.
+
+We keep a copy of all keys returned by the backends in memory.
+We use `ksBelow` to only return the keys the user requested on `kdbGet`.
+On `kdbSet` we use the cached in-memory keys to fill in the missing keys outside of `parentKey` that are needed for all the backends to save.
+
+
 ## Rationale
 
 Semantics can be provided without additional code or overhead in the core.
 
 ## Implications
+
+- We need to implement the copy-on-write decision
 
 ## Related Decisions
 
