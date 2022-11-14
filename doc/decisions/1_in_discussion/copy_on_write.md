@@ -12,9 +12,6 @@ There are also aspirations to create a new, simple [internal cache](../3_decided
 
 ## Constraints
 
-1. Elektra's public API should require no changes
-2. Modifying keys and keysets returned by `kdbGet` should work as expected
-
 ## Assumptions
 
 ## Considered Alternatives
