@@ -73,6 +73,7 @@ Improve documentation to make people more aware of these two problems:
 
 Upon returning from `kdbGet`/`kdbSet`, set the keyname of parentKey to the key that actually is parent of the data that was loaded.
 I.e. to the mountpoint of the backend that contains parentKey.
+`parentKey` is already an inout-type argument, since we use both it's value and metadata to return some information.
 
 > @markus2330 and @atmaxinger find this behavior very unexpected
 
