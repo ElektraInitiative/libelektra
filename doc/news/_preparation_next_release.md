@@ -350,6 +350,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update example ansible playbook in VISION.md _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
+- Harmonize spelling of Git _(@Joni1993)_
 - <<TODO>>
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
 - <<TODO>>
