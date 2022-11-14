@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-cd $BUILD
+cd "$BUILD" || exit
 cmake -DENABLE_OPTIMIZATIONS="OFF" \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
@@ -17,4 +17,4 @@ cmake -DENABLE_OPTIMIZATIONS="OFF" \
 	-DENABLE_LOGGER="ON" \
 	-DBUILD_DOCUMENTATION="OFF" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	$*
+	"$@"

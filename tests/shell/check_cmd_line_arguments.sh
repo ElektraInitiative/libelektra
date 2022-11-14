@@ -32,15 +32,15 @@ cleanup() {
 	rm -f "$TMPFILE"
 }
 
-"$KDB" export -vd $ROOT > $TMPFILE 2>&1
+"$KDB" export -vd $ROOT > "$TMPFILE" 2>&1
 
-sed -i 1,7d $TMPFILE
-CONTENT=$(cat $TMPFILE)
+sed -i 1,7d "$TMPFILE"
+CONTENT=$(cat "$TMPFILE")
 
-grep "Mountpoint:" $TMPFILE > /dev/null
+grep "Mountpoint:" "$TMPFILE" > /dev/null
 succeed_if "Verbose output does not work, got $CONTENT"
 
-grep "At:" $TMPFILE > /dev/null
+grep "At:" "$TMPFILE" > /dev/null
 succeed_if "Debug output does not work, got $CONTENT"
 
 rm -f "$TMPFILE"

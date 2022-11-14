@@ -38,30 +38,30 @@ fi
 
 # use the file name (without path) of <config file> as special path
 # in Elektra
-specialPathEnd=$(basename $their)
+specialPathEnd=$(basename "$their")
 if [ -z "$specialPathEnd" ]; then
 	specialPathEnd=$their
 fi
 base="${specialPathStart}${specialPathEnd}"
 
 # check if something is in <elektra path>
-contentOfElektraPath=$("$kdbBinary" ls $our)
+contentOfElektraPath=$("$kdbBinary" ls "$our")
 if [ $? -ne 0 ]; then
 	echo "ERROR: Could not use kdb ls on $our." >&2
 	exit 30
 fi
 if [ -z "$contentOfElektraPath" ]; then
-	"$kdbBinary" mount $their $our $format
+	"$kdbBinary" mount "$their" "$our" "$format"
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their to $our with $format." >&2
 		exit 31
 	fi
-	resolvedLocation=$("$kdbBinary" file $our)
-	if ! [ -f $resolvedLocation ]; then
+	resolvedLocation=$("$kdbBinary" file "$our")
+	if ! [ -f "$resolvedLocation" ]; then
 		echo "Could not import file $resolvedLocation as it does not exist!" >&2
 		exit 32
 	fi
-	cat $resolvedLocation | "$kdbBinary" import $base $format
+	cat "$resolvedLocation" | "$kdbBinary" import "$base" "$format"
 	if ! [ $? -eq 0 ]; then
 		echo "Could not import file from $resolvedLocation to $base." >&2
 		exit 33
@@ -71,12 +71,12 @@ else
 	# however, mounting a second time gives a more consistent user experience
 	# as like this the resolver is used for <config file> each time the script
 	# is called
-	"$kdbBinary" mount -q $their $tempPath $format
+	"$kdbBinary" mount -q "$their" $tempPath "$format"
 	if ! [ $? -eq 0 ]; then
 		echo "Could not mount file $their. Got code $?" >&2
 		exit 34
 	fi
-	"$kdbBinary" cmerge -f $our $tempPath $base $our $format
+	"$kdbBinary" cmerge -f "$our" $tempPath "$base" "$our" "$format"
 	if ! [ $? -eq 0 ]; then
 		echo "Merging $our, $tempPath and $base into $our failed." >&2
 		exit 35

@@ -5,7 +5,7 @@
 
 LICENSE_FILE=$1
 
-LICENSES_WITHOUT_BSD=$(cat $LICENSE_FILE | grep "License:" | awk -F": " {' print $2'} | grep -v "^BSD.*" | sort | uniq | tr '\n' ',' | sed '$s/,$/\n/' | sed 's/,/ and /g')
+LICENSES_WITHOUT_BSD=$(cat "$LICENSE_FILE" | grep "License:" | awk -F": " {' print $2'} | grep -v "^BSD.*" | sort | uniq | tr '\n' ',' | sed '$s/,$/\n/' | sed 's/,/ and /g')
 
 declare -A arr
 
@@ -16,7 +16,7 @@ arr["Zlib"]="zlib"
 arr["public-domain"]="Public Domain"
 
 for key in ${!arr[@]}; do
-	LICENSES_WITHOUT_BSD=$(echo $LICENSES_WITHOUT_BSD | sed "s/$key[^ ]*/${arr[${key}]}/g")
+	LICENSES_WITHOUT_BSD=$(echo "$LICENSES_WITHOUT_BSD" | sed "s/$key[^ ]*/${arr[${key}]}/g")
 done
 
 echo "BSD and $LICENSES_WITHOUT_BSD"

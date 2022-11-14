@@ -25,23 +25,23 @@ kdb set user:/dir_and_file_at_once/leaf "leaf node"
 #need to be created from the leafes to the top
 mkdir -p /root/dirkeys/{a,b}
 
-cd /root/dirkeys/a
+cd /root/dirkeys/a || exit
 kdb set dir:/dirkey "Key from /root/dirkeys/a"
 
-cd /root/dirkeys/b
+cd /root/dirkeys/b || exit
 kdb set dir:/dirkey "Key from /root/dirkeys/b"
 
-cd /root/dirkeys
+cd /root/dirkeys || exit
 kdb set dir:/dirkey "Key from /root/dirkeys"
 
 #create dummy processes (that expose different values in dir:)
-cd /root/dirkeys/a
+cd /root/dirkeys/a || exit
 sudo -u testuser -i nohup sleep infinity &
-cd /root/dirkeys/b
+cd /root/dirkeys/b || exit
 sudo -u root -i nohup sleep infinity &
 
 #gopts example (adapted from test_gopts.py)
-cd /root/elektra_fuse/docker/
+cd /root/elektra_fuse/docker/ || exit
 ./create_gopts_keys.py
 gcc -o do_nothing do_nothing.c
 nohup ./do_nothing get -v user:/ &

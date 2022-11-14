@@ -10,7 +10,7 @@ check_version
 
 check_wrong_export() {
 	WC=$(grep -r "ELEKTRA_PLUGIN_$1" "$2" | wc -l)
-	[ $WC -le 1 ]
+	[ "$WC" -le 1 ]
 	succeed_if "It is likely that you are resetting a function pointer $WC times in your export, please use the word ELEKTRA_PLUGIN_$1 only once in your plugin $2"
 }
 
@@ -26,10 +26,10 @@ for PLUGIN in $(ls "$PLUGINS_DIR"); do
 
 	README="$PLUGINS_DIR/README.md"
 	WC=$(grep "^- \[$PLUGIN\]($PLUGIN/)" "$README" | wc -l)
-	[ $WC -eq 1 ]
+	[ "$WC" -eq 1 ]
 	succeed_if "Your plugin $PLUGIN does not have an entry ^- [$PLUGIN]($PLUGIN/) in $README"
 
-	if [ $PLUGIN != doc ]; then
+	if [ "$PLUGIN" != doc ]; then
 		check_wrong_export GET "$PLUGIN_DIR"
 		check_wrong_export SET "$PLUGIN_DIR"
 		check_wrong_export OPEN "$PLUGIN_DIR"

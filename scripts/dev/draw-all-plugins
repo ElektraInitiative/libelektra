@@ -22,7 +22,7 @@ for i in $(ls "$SOURCE/src/plugins"); do
 		p=$(grep "^- infos/provides" "$r" | cut -f 2 -d =)
 		if [ "$p" ]; then
 			p=$(echo "$p" | tr '/' ' ')
-			for x in $(echo $p); do
+			for x in $(echo "$p"); do
 				echo "	$x [shape=Mdiamond];" >> "$OUTPUT"
 				echo "	$i -> $x;" >> "$OUTPUT" #  [label=\"provides\"];"
 				#echo "	$x -> plugin;" >> $OUTPUT  # [label=\"is a\"];"

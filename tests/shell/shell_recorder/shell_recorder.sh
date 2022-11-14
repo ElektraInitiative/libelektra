@@ -75,7 +75,7 @@ execute() {
 
 	if [ -n "$RETCMP" ]; then
 		executedTests=$((executedTests + 1))
-		if ! printf '%s' "$RETVAL" | grep -Ewq $RETCMP; then
+		if ! printf '%s' "$RETVAL" | grep -Ewq "$RETCMP"; then
 			printerr '\nERROR - RET:\nReturn value “%s” does not match “%s”\n\n' "$RETVAL" "$RETCMP"
 			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
 			numberErrors=$((numberErrors + 1))

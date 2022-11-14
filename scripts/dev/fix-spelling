@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-cd "$SOURCE"
+cd "$SOURCE" || exit
 
 sed --version &> /dev/null
 if [ $? -eq 0 ]; then

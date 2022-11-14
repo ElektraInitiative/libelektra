@@ -252,6 +252,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Added [automatic spelling corrections](https://master.libelektra.org/scripts/sed) for changeset. _(Maximilian Irlinger @atmaxinger)_
 - Introduce shebang-conventions _(@0x6178656c)_
+- Apply auto-fixes from shellcheck _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

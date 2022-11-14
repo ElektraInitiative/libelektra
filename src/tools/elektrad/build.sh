@@ -1,6 +1,6 @@
 #!/bin/sh
-cd @CMAKE_INSTALL_PREFIX@/@install_directory@
+cd @CMAKE_INSTALL_PREFIX@/@install_directory@ || exit
 
-cd elektrad
+cd elektrad || exit
 go install .
 cd ..

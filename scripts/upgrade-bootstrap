@@ -8,14 +8,14 @@ globalplugins=$(mktemp)
 #debug:
 #$KDB file system:/elektra
 
-$KDB export system:/elektra/mountpoints dump > $mountpoints
+$KDB export system:/elektra/mountpoints dump > "$mountpoints"
 
 if [ $? -ne 0 ]; then
 	echo "Could not export to $mountpoints"
 	exit 1
 fi
 
-$KDB export system:/elektra/globalplugins dump > $globalplugins
+$KDB export system:/elektra/globalplugins dump > "$globalplugins"
 
 if [ $? -ne 0 ]; then
 	echo "Could not export to $globalplugins (already have exported $mountpoints)"
@@ -35,19 +35,19 @@ ret=0
 #debug:
 #$KDB file system:/elektra
 
-cat $globalplugins | $KDB import system:/elektra/globalplugins dump
+cat "$globalplugins" | $KDB import system:/elektra/globalplugins dump
 
 if [ $? -eq 0 ]; then
-	rm $globalplugins
+	rm "$globalplugins"
 else
 	echo "Warning: could not import globalplugins: $globalplugins"
 fi
 
 # now import old mountpoints:
-cat $mountpoints | $KDB import system:/elektra/mountpoints dump
+cat "$mountpoints" | $KDB import system:/elektra/mountpoints dump
 
 if [ $? -eq 0 ]; then
-	rm $mountpoints
+	rm "$mountpoints"
 else
 	echo "Upgrade failed, could not import mountpoints: $mountpoints"
 	ret=1

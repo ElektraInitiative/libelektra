@@ -47,16 +47,16 @@ if is_plugin_available error; then
 	"$KDB" mount $ERROR_FILE $ERROR_MOUNTPOINT dump error > /dev/null 2>&1
 	succeed_if "could not mount error at $ERROR_MOUNTPOINT"
 
-	"$KDB" mv $ROOT/valueable_data $ROOT/error/dump > $TMPFILE 2>&1
+	"$KDB" mv $ROOT/valueable_data $ROOT/error/dump > "$TMPFILE" 2>&1
 	[ $? -ne 0 ]
 	succeed_if "Was able to move to error plugin"
 
-	CONTENT=$(cat $TMPFILE)
+	CONTENT=$(cat "$TMPFILE")
 
-	grep "issued the error C03100" $TMPFILE > /dev/null
+	grep "issued the error C03100" "$TMPFILE" > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
-	grep "from error plugin" $TMPFILE > /dev/null
+	grep "from error plugin" "$TMPFILE" > /dev/null
 	succeed_if "Error does not stem from error plugin"
 
 	[ "x$("$KDB" ls $ROOT 2> /dev/null)" = "x$ROOT/valueable_data" ]
@@ -65,14 +65,14 @@ if is_plugin_available error; then
 	[ "x$("$KDB" get $ROOT/valueable_data 2> /dev/null)" = "ximportant_unrecoverable_data" ]
 	succeed_if "Important data lost"
 
-	"$KDB" cp $ROOT/valueable_data $ROOT/error/dump > $TMPFILE 2>&1
+	"$KDB" cp $ROOT/valueable_data $ROOT/error/dump > "$TMPFILE" 2>&1
 	[ $? -ne 0 ]
 	succeed_if "Was able to copy to error plugin"
 
-	grep "issued the error C03100" $TMPFILE > /dev/null
+	grep "issued the error C03100" "$TMPFILE" > /dev/null
 	succeed_if "Triggered error did not occur, got $CONTENT"
 
-	grep "from error plugin" $TMPFILE > /dev/null
+	grep "from error plugin" "$TMPFILE" > /dev/null
 	succeed_if "Error does not stem from error plugin, got $CONTENT"
 
 	[ "x$("$KDB" ls $ROOT 2> /dev/null)" = "x$ROOT/valueable_data" ]
@@ -118,8 +118,8 @@ fi
 succeed_if "could not umount $ROOT_MOUNTPOINT"
 
 rm -f "$TMPFILE"
-rm -f $USER_FOLDER/$FILE_SUFFIX*
-rm -f $SYSTEM_FOLDER/$FILE_SUFFIX*
+rm -f "$USER_FOLDER"/$FILE_SUFFIX*
+rm -f "$SYSTEM_FOLDER"/$FILE_SUFFIX*
 #rmdir $USER_ERROR_FOLDER
 #rmdir $SYSTEM_ERROR_FOLDER
 

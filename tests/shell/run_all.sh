@@ -9,7 +9,7 @@ echo
 check_version
 echo
 
-cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
+cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@" || exit
 
 nbTests="0"
 nbFailed=""
@@ -33,7 +33,7 @@ done
 shift "$((OPTIND - 1))"
 
 for t in test* check*; do
-	if [ $t = "testmod_zeromqsend" ]; then
+	if [ "$t" = "testmod_zeromqsend" ]; then
 		echo
 		printf "Skipping $t, see 'doc/todo/TESTING'\n"
 		echo
@@ -42,7 +42,7 @@ for t in test* check*; do
 
 	echo "Running $t"
 
-	OUTPUT="$("$KDB" $t 2>&1)"
+	OUTPUT="$("$KDB" "$t" 2>&1)"
 	status=$?
 
 	if [ $status != 0 ] || [ $verbose ]; then
@@ -54,7 +54,7 @@ for t in test* check*; do
 	if [ $status != "0" ]; then
 		nbError=$((nbError + 1))
 		nbFailed="$nbFailed\n$t"
-		echo error: $t
+		echo error: "$t"
 		echo
 	fi
 	nbTests=$((nbTests + 1))

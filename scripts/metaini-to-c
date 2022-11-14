@@ -17,7 +17,7 @@ const char * metaNames[] =
 EOF
 )
 
-METANAMES=$(grep -Po "(?<=^\[)(.*)(?=\]$)" $1)
+METANAMES=$(grep -Po "(?<=^\[)(.*)(?=\]$)" "$1")
 
 for key in $METANAMES; do
 	echo -e "\t\"$key\","
@@ -37,16 +37,16 @@ section=
 while read line; do
 	case $line in
 	\[*\])
-		section=$(grep -Po "(?<=\[)(.*)(?=\])" <<< $line)
+		section=$(grep -Po "(?<=\[)(.*)(?=\])" <<< "$line")
 		;;
 	usedby\/plugin*)
-		plugins=$(grep -Po "(?<=usedby\/plugin= )(.*)" <<< $line)
+		plugins=$(grep -Po "(?<=usedby\/plugin= )(.*)" <<< "$line")
 		for p in ${plugins}; do
 			echo -e -n "\t{\"$section\", \"$p\"},\n"
 		done
 		;;
 	esac
-done < $1
+done < "$1"
 
 (
 	cat << EOF
@@ -62,16 +62,16 @@ section=
 while read line; do
 	case $line in
 	\[*\])
-		section=$(grep -Po "(?<=\[)(.*)(?=\])" <<< $line)
+		section=$(grep -Po "(?<=\[)(.*)(?=\])" <<< "$line")
 		;;
 	usedby\/api*)
-		apis=$(grep -Po "(?<=usedby\/api= )(.*)" <<< $line)
+		apis=$(grep -Po "(?<=usedby\/api= )(.*)" <<< "$line")
 		for a in ${apis}; do
 			echo -e -n "\t{\"$section\", \"$a\"},\n"
 		done
 		;;
 	esac
-done < $1
+done < "$1"
 
 (
 	cat << EOF

@@ -6,7 +6,7 @@ echo
 echo ELEKTRA CHECK SPELLING
 echo
 
-cd "@CMAKE_SOURCE_DIR@"
+cd "@CMAKE_SOURCE_DIR@" || exit
 
 if ! git diff --exit-code; then
 	printf >&2 'Seems like source is already modified, aborting test\n'

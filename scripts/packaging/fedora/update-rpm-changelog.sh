@@ -85,4 +85,4 @@ fi
 ENTRY_HEADER="* $DATE $AUTHOR - $VERSION"
 ENTRY_LOG="- $MESSAGE"
 
-sed -i "1s/^/$ENTRY_HEADER\n$ENTRY_LOG\n\n/" $FILE
+sed -i "1s/^/$ENTRY_HEADER\n$ENTRY_LOG\n\n/" "$FILE"

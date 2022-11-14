@@ -11,7 +11,7 @@ command -v git > /dev/null 2>&1 || {
 	exit 0
 }
 
-cd "@CMAKE_SOURCE_DIR@"
+cd "@CMAKE_SOURCE_DIR@" || exit
 
 if ! git diff --quiet; then
 	printf >&2 'Source is already modified, aborting test!\n\n'
@@ -20,7 +20,7 @@ fi
 
 reformat() {
 	reformat_command=$1
-	reformat_command_output="$(scripts/dev/$reformat_command 2>&1)" || {
+	reformat_command_output="$(scripts/dev/"$reformat_command" 2>&1)" || {
 		printf >&2 -- '————————————————————————————————————————————————————————————\n'
 		printf >&2 -- 'Warning — Reformatting command `%s` failed\n' "$reformat_command"
 		printf >&2 -- '\n%s\n' "$reformat_command_output"
