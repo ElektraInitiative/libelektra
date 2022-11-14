@@ -36,7 +36,7 @@ The job also takes care of handling build artifacts that are archived and
 cleaning them out once the PRs are closed and a grace period has expired.
 
 Summarized libelektra's job purpose is to combine the where
-(our GIT repository), with a when (tracking changes via polling or webhooks)
+(our Git repository), with a when (tracking changes via polling or webhooks)
 with a how (pointing to the Jenkinsfile + configuration).
 
 ### Jenkins Shared Library
@@ -222,7 +222,7 @@ After manually verifying the correctness, the pipeline run can be resumed.
 
 The previously generated packages are published to the repositories, as described
 above in _Jenkinsfile (Main CI Pipeline)_.
-The API documentation and source packages get published to the relevant git repositories.
+The API documentation and source packages get published to the relevant Git repositories.
 Finally the Alpine release image is published to Docker Hub.
 
 ## Jenkins Setup
@@ -237,7 +237,7 @@ It is easiest to add via the BlueOcean interface.
 Most of the default settings should be ok, however some settings need to be
 verified or added to build Elektra correctly:
 
-- `Advanced clone behaviors` should be added and the path to the git mirror
+- `Advanced clone behaviors` should be added and the path to the Git mirror
   needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
   This reference repository is created and maintained by our
   [daily buildjob](https://build.libelektra.org/job/libelektra-daily/).
@@ -261,7 +261,7 @@ Most of the default settings can be used.
 
 ### General Set-Up of a New Pipeline
 
-We will cover how to set-up a pipeline that uses a different git repository than
+We will cover how to set-up a pipeline that uses a different Git repository than
 this `libelektra` repository.
 
 Most of the default settings can be used.
@@ -342,7 +342,7 @@ def generateTestStages() {
 }
 ```
 
-Suppose we have a bash script `test.sh` in the root of our git repository.
+Suppose we have a bash script `test.sh` in the root of our Git repository.
 This script can be executed inside one of our Docker images by using the
 `withDockerEnv` function:
 

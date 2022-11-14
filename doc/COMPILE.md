@@ -3,7 +3,7 @@
 ## Dependencies
 
 For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
-[git](https://git-scm.com/), a C99 compiler and essential build tools
+[Git](https://git-scm.com/), a C99 compiler and essential build tools
 (make and some standard Unix tools; alternatively ninja and
 clang are also supported but not described here). Those can be installed as follows:
 
@@ -19,7 +19,7 @@ clang are also supported but not described here). Those can be installed as foll
   sudo yum install -y cmake git gcc-c++ make
   ```
 
-- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake and git in order to complete the basic requirements:
+- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake and Git in order to complete the basic requirements:
 
   ```sh
   brew install cmake git

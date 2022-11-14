@@ -14,7 +14,7 @@ This document is intended for developers who want to get started with developing
 
 - Basic knowledge about git
 
-  [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
+  [Git](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single Git command to get
   the source code of Elektra.
 
 - Basic knowledge about make/cmake
@@ -28,7 +28,7 @@ This document is intended for developers who want to get started with developing
 
 ## Software requirements
 
-We need to install some basic tools to run Elektra: cmake, git and essential build tools (make, gcc, and some standard Unix tools;
+We need to install some basic tools to run Elektra: cmake, Git and essential build tools (make, gcc, and some standard Unix tools;
 alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here).
 Depending on your Linux distribution use the following commands to install these tools:
 

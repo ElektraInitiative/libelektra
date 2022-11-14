@@ -27,7 +27,7 @@ After this, you should see this copy in the list of your own repositories with a
 ## Getting the Code
 
 To develop for libelektra, we now have to "download" your copy of its
-original repository. In git this process is called "cloning". CLion has
+original repository. In Git this process is called "cloning". CLion has
 built-in Git support which we will use for this tutorial. Once you have
 opened CLion click on the button _Get from VCS_ in the welcome-window.
 
@@ -267,7 +267,7 @@ select _+ New Branch_. Type in the name of your new branch (e.g.
 "testbranch") and keep _Checkout branch_ checked to automatically switch to
 it as your working branch.
 
-![git branch](/doc/images/clion/git_create_branch.png)
+![Git branch](/doc/images/clion/git_create_branch.png)
 
 Alternatively open a terminal, navigate to the root directory of your local
 code and type:
@@ -293,7 +293,7 @@ The first line should have the following syntax:
 module: short statement
 ```
 
-![git commit](/doc/images/clion/git_commit.png)
+![Git commit](/doc/images/clion/git_commit.png)
 
 If you fixed a bug in `kdb cp` the first line of your commit message could
 be `KDB: Fixed cp not copying value`. Your commit message should also
@@ -304,7 +304,7 @@ make sure that _Reformat code_ and _Rearrange code_ are disabled in the
 commit dialog. Otherwise, Clions formatter might produce files that don't
 adhere to our formatting guidelines.
 
-![git settings](/doc/images/clion/git_settings.png)
+![Git settings](/doc/images/clion/git_settings.png)
 
 If you installed the `pre-commit-check-formatting` pre-commit-hook from the
 `scripts` directory ensure that _Run Git hooks_ is enabled in the commit dialog.

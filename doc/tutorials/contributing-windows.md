@@ -22,7 +22,7 @@ Install the packages required for building from VS2022:
 apt install g++ gdb make ninja-build rsync zip
 ```
 
-Then clone the libelektra git repository:
+Then clone the libelektra Git repository:
 
 ```sh
 git clone git@github.com:ElektraInitiative/libelektra.git

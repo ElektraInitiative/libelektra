@@ -48,7 +48,7 @@ Decisions by supervisors are undemocratic and decisions in meetings are nontrans
 - Changes not changing the decision step or the direction of the decision are not decision PRs.
 - The person merging the decision PR must be someone other than the person that created the decision.
   There is no claim that decisions contain everything that was said.
-  In particular corrections of wrong decision text is, if at all, only visible via git history.
+  In particular corrections of wrong decision text is, if at all, only visible via Git history.
   Rather it is important that decisions:
   - contain everything relevant, and
   - what is written is technically correct.
@@ -178,7 +178,7 @@ These decision PRs are also merged for documentation purposes.
 
 - The process is lightweight and simple.
 - The template makes sure important points are not forgotten.
-- Every decision is by design in its own file with its own git history.
+- Every decision is by design in its own file with its own Git history.
 - PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected PRs).
 - "Decision", "Rationale" and "Implications" are filled out later to keep the discussion unbiased
 - PRs allow to suggest changes and review individual sentences of the decision.
@@ -194,7 +194,7 @@ These decision PRs are also merged for documentation purposes.
 - Proposal issues are obsolete.
 - The decision process creates at least:
   - two chances to comment decisions, and
-  - two commits in the git history.
+  - two commits in the Git history.
 - It might be a barrier for newcomers to write a decision.
   This is considered to be okay, as topics that need a decision are not the topics for newcomers.
 

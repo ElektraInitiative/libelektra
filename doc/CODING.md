@@ -587,7 +587,7 @@ Links between Markdown files will be converted with the
 provide a proper encoding!**
 
 - use `@` to start Doxygen tags
-- Do not duplicate information available in git in Doxygen comments.
+- Do not duplicate information available in Git in Doxygen comments.
 - Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file headers).
 
 ### File Headers
@@ -611,7 +611,7 @@ Note:
   so that your file gets listed at https://doc.libelektra.org/api/master/html/files.html
 
 The duplication of the filename, author and date is not needed, because
-this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.
+this information is tracked using Git and [doc/AUTHORS.md](AUTHORS.md) already.
 
 ## Further Readings
 
