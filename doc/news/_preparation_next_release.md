@@ -309,6 +309,26 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Unify spelling of documentation _(@Joni1993)_
 - <<TODO>>
 - Fix typo in dev/hooks.md _(@dtdirect)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Move note in GETSTARTED.md _(@Joni1993)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Decisions
 

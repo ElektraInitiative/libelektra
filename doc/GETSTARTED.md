@@ -14,12 +14,12 @@ This document is intended for developers who want to get started with developing
 
 - Basic knowledge about git
 
-  Don't panic! [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
+  [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
   the source code of Elektra.
 
 - Basic knowledge about make/cmake
 
-  [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code.
+  Don't panic! [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code.
   If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
 
 - We also need your skill set to improve Elektra
