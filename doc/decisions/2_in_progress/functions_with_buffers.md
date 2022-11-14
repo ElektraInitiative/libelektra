@@ -21,7 +21,7 @@ code, checking for the size of every value / name they want to copy into a buffe
   - keyGetBaseName()
   - keyGetString()
   - keyGetBinary()
-- add documentation in API docu about life-time and add in release notes that you should use strncpy() / memcpy() instead:
+- add documentation in API documentation about life-time and add in release notes that you should use strncpy() / memcpy() instead:
 
 ```c
 // str values

@@ -19,7 +19,7 @@ What is its responsibility?
 ## Classes
 
 Explain which [classes](/doc/help/elektra-glossary.md) the library contains.
-Add a link to the API docu.
+Add a link to the API documentation.
 
 ## Dependencies
 

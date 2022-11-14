@@ -305,7 +305,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Improve reference to Podman documentation _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Unify spelling of documentation _(@Joni1993)_
 - <<TODO>>
 - Fix typo in dev/hooks.md _(@dtdirect)_
 
@@ -552,7 +552,7 @@ The release tarball is also available signed using GnuPG from
 
 The following GPG Key was used to sign this release: 12CC44541E1B8AD9B66AFAD55262E7353324914A
 
-Already built API-Docu can be found
+Already built API documentation can be found
 
 - [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/) or
 - [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).
