@@ -362,8 +362,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Update [internal cache](../decisions/1_in_discussion/internal_cache.md) _(Markus Raab)_
-- Move [internal cache](../decisions/1_in_discussion/internal_cache.md) back to draft _(@kodebach)_
+- Update [internal cache](../decisions/3_decided/internal_cache.md) _(Markus Raab)_
+- Move [internal cache](../decisions/3_decided/internal_cache.md) back to draft _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
