@@ -1,13 +1,13 @@
 defmodule NifUtil do
   @doc"""
-  Convert `term` to an atom if it is `nil`.
+  Prepare `term` to be passed to a NIF.
   """
-  @spec nullify(term()) :: :null | term()
-  def nullify(term)
-  def nullify(nil) do
+  @spec unwrap(term()) :: :null | term()
+  def unwrap(term)
+  def unwrap(nil) do
     :null
   end
-  def nullify(term) do
-    term
+  def unwrap(term) do
+    NifResource.nif_resource(term)
   end
 end
