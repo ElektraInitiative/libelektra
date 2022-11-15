@@ -258,7 +258,7 @@ API notes:
   ```
   if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
   if `dest->data` is NOT NULL:
-    if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    if `dest->data->refs` == 1 (meaning no other keysets points to it):
       deallocate `dest->data`
       point `dest->data` to `source->data`, increase `source->data->refs` by 1.
     else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
@@ -271,12 +271,12 @@ API notes:
   ```
   if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
   if `dest->data` is NOT NULL:
-    if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    if `dest->data->refs` == 1 (meaning no other keysets points to it):
       if `dest->data->size` == 0 (no keys are in this keyset):
         deallocate `dest->data` and point `dest->data` to `source->data`, increase `source->data->refs` by 1.
       else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
         copy the keys of `source->data->array` over to `dest->data->array`
-    else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
       if `dest->data->size` == 0 (no keys are in this keyset):
         decrease `dest->data->refs` by 1.
         point `dest->data` to `source->data`, increase `source->data->refs` by 1.
@@ -294,18 +294,18 @@ API notes:
 - `ksClear(dest)`:
 
   ```
-  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+  if `dest->data->refs` == 1 (meaning no other keysets points to it):
     deletes the keys in `dest->data`
-  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+  else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
     decrease `dest->data->refs` by 1
     point `dest->data` to NULL
   ```
 
 - `ksCut(dest, key)`:
   ```
-  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+  if `dest->data->refs` == 1 (meaning no other keysets points to it):
     perform the cutting algorithm directly on these keys
-  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+  else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
     decrease `dest->data->refs` by 1
     create a new `dest->data`
     copy over the non-cut keys into `dest->data` from the old `dest->data`
@@ -313,9 +313,9 @@ API notes:
 - `ksPop(dest)`:
 
   ```
-  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+  if `dest->data->refs` == 1 (meaning no other keysets points to it):
     pop the last key directly on the keys
-  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+  else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
     decrease `dest->data->refs` by 1
     create a new `dest->data`
     copy over all but the last keys from the old `dest->data`
