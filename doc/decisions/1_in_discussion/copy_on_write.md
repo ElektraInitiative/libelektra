@@ -324,12 +324,77 @@ API notes:
 - `ksLookup()`:
   - if the `DEL` or `POP` flag is specified, do the COW-stuff as described multiple times now in the operations above
 
-#### Optimizations
+#### Reference Counting
 
-This approach requires more allocations than previously.
-We have not fully benchmarked whether this is a big issue.
-One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
-We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
+We need reference counting for the internal COW datastructures.
+For the beginning, we can just do it the same way reference counting currently works for `Key` and `KeySet`.
+One tweak though is that the refcount should never be 0, as this does not make sense for internal datastructures.
+
+This means we always increment the refcount after creation and always decrement before deletion, so that the refcount is never zero.
+An example implementation is shown below:
+
+```c
+static void keySetValue(Key * key, void * value, size_t size) {
+  // [...] removal of current value from key
+  struct _KeyData data = keyDataNew (value, size);
+  keyDataIncRef (data);
+  key->data = data;
+}
+
+static void keyDel(Key * key) {
+  keyDataDecRef (key->data);
+  keyDataDel (key->data);
+  // [...] other cleanup
+}
+```
+
+#### Possible Edge Cases
+
+In general, it should be possible to always do copy-on-write.
+From a users perspective, copy-on-write copies of a key (and a keyset) should behave the same.
+There is, however, one edge case: the user modifying the value of a key directly.
+This is shown in the following example:
+
+```c
+Key * key;
+struct foo myFoo = {
+  .x = 0
+};
+keySetBinary (key, &myFoo, sizeof(myFoo));
+
+Key * dup = keyDup (key);
+
+((struct foo *)keyValue (key))->x = 1;
+
+// with COW
+assert (((struct foo *)keyValue (dup))->x == 1);
+// without COW
+assert (((struct foo *)keyValue (dup))->x == 0);
+```
+
+This edge case can be accounted for by providing a function, i.e. `keyDetach`, that forces that the key has its very own copy of the data.
+We can then document that the user has to call `keyDetach` when she wants to modify the value directly.
+
+```c
+((struct foo *)keyValue (keyDetach(key)))->x = 1;
+
+// with COW
+assert (((struct foo *)keyValue (dup))->x == 0);
+// without COW
+assert (((struct foo *)keyValue (dup))->x == 0);
+```
+
+#### Possible Optimizations
+
+- This approach requires more allocations than previously.
+  We have not fully benchmarked whether this is a big issue.
+  One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
+  We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
+
+- Embed the `KeySet * meta` directly in `struct _Key`.
+  This may help with performance in cases we need metadata.
+  It will, however, increase memory usage.
+  This should only be considered after some benchmarking shows this is a real issue.
 
 ## Memory comparison of COW approaches
 
@@ -449,6 +514,9 @@ For allocations want to measure the following properties:
 | Full-blown COW implementation                                     |         1 |                     2 |                            3 |           1 |                   4 |                    5 |
 
 ## Decision
+
+Implement the full-blown COW approach.
+
 
 ## Rationale
 
