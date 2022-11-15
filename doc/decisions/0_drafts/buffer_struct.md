@@ -48,7 +48,7 @@ const char * keyName (ElektraKey * key) {
     return key->name.data;
 }
 
-const char * keyNameSize (ElektraKey * key) {
+const size_t keyNameSize (ElektraKey * key) {
     return key->name.size;
 }
 ```
@@ -83,7 +83,7 @@ void foo(ElektraKey * key) {
 A [short investigation](https://godbolt.org/z/r8q7YfqaW) into the generated assembly code indicates that the pointer version is likely superior.
 
 The buffer struct could also be used as an argument in the public API.
-For simple functions that would only take one such `ElektraBuffer` argument this there is little benefit.
+For simple functions that would only take one such `ElektraBuffer` argument there is little benefit.
 Especially on the caller side, the code becomes less readable:
 
 ```c
