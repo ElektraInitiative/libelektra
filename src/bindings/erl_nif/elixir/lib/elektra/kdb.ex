@@ -46,41 +46,41 @@ defmodule Elektra.Kdb do
 
   @impl true
   def init({contract, parent_key}) do
-    contract = NifUtil.unwrap(contract)
-    parent_key = NifUtil.unwrap(parent_key)
+    contract_resource = NifUtil.unwrap(contract)
+    parent_key_resource = NifUtil.unwrap(parent_key)
 
-    kdb = Elektra.System.kdb_open(contract, parent_key)
-    {:ok, kdb}
+    kdb_resource = Elektra.System.kdb_open(contract_resource, parent_key_resource)
+    {:ok, kdb_resource}
   end
 
   @impl true
-  def handle_call({:close, error_key}, _from, kdb) do
-    error_key = NifUtil.unwrap(error_key)
+  def handle_call({:close, error_key}, _from, kdb_resource) do
+    error_key_resource = NifUtil.unwrap(error_key)
 
-    rc = Elektra.System.kdb_close(kdb, error_key)
-    {:stop, :normal, rc, kdb}
+    rc = Elektra.System.kdb_close(kdb_resource, error_key_resource)
+    {:stop, :normal, rc, kdb_resource}
   end
 
   @impl true
-  def handle_call({:get, {ks, parent_key}}, _from, kdb) do
-    ks = NifUtil.unwrap(ks)
-    parent_key = NifUtil.unwrap(parent_key)
+  def handle_call({:get, {ks, parent_key}}, _from, kdb_resource) do
+    ks_resource = NifUtil.unwrap(ks)
+    parent_key_resource = NifUtil.unwrap(parent_key)
 
-    rc = Elektra.System.kdb_get(kdb, ks, parent_key)
-    {:reply, rc, kdb}
+    rc = Elektra.System.kdb_get(kdb_resource, ks_resource, parent_key_resource)
+    {:reply, rc, kdb_resource}
   end
 
   @impl true
-  def handle_call({:set, {ks, parent_key}}, _from, kdb) do
-    ks = NifUtil.unwrap(ks)
-    parent_key = NifUtil.unwrap(parent_key)
+  def handle_call({:set, {ks, parent_key}}, _from, kdb_resource) do
+    ks_resource = NifUtil.unwrap(ks)
+    parent_key_resource = NifUtil.unwrap(parent_key)
 
-    rc = Elektra.System.kdb_set(kdb, ks, parent_key)
-    {:reply, rc, kdb}
+    rc = Elektra.System.kdb_set(kdb_resource, ks_resource, parent_key_resource)
+    {:reply, rc, kdb_resource}
   end
 
   @impl true
-  def handle_call(:nif_resource, _from, kdb) do
-    {:reply, kdb, kdb}
+  def handle_call(:nif_resource, _from, kdb_resource) do
+    {:reply, kdb_resource, kdb_resource}
   end
 end
