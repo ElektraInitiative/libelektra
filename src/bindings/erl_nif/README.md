@@ -4,11 +4,7 @@ This binding provides the possibility to access Elektra from Erlang.
 
 ## Module name
 
-When compiling the module one needs to set a module name.
-This is because the naming conventions differ between Erlang and Elixir.
-The standard module name `Elixir.Elektra` is for an Elixir binding.
-
-The module name can be set with the CMake option `ELEKTRA_NIF_MODULE_NAME`.
+The module name of the NIF module is `Elixir.Elektra.System`.
 
 ## Naming
 
