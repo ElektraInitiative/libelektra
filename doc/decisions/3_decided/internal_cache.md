@@ -75,14 +75,13 @@ Upon returning from `kdbGet`/`kdbSet`, set the keyname of parentKey to the key t
 I.e. to the mountpoint of the backend that contains parentKey.
 `parentKey` is already an inout-type argument, since we use both it's value and metadata to return some information.
 
-> @markus2330 and @atmaxinger find this behavior very unexpected
+This behaviour was found very unexpected by @markus2330 and @atmaxinger.
 
 "Fewer keys":
 
-IMO this is simply a bug in the "nothing changed" logic.
-It is just a matter of copying the keys from `backendData->keys`, so they are actually there and we don't just assume they are there.
-It is only a partial solution.
-You still need an extra step to make this work:
+@kodebach considers this simply a bug in the "nothing changed" logic.
+A partial solution would be to copy the keys from `backendData->keys`, so they are actually there, and we don't just assume they are there.
+Still some extra steps are required to make this work:
 
 ```c
 TEST_F (Simple, NothingToDo2)
@@ -113,8 +112,7 @@ TEST_F (Simple, NothingToDo2)
 ```
 
 A very simple way to make it work would be to make the keys returned by kdbGet read-only.
-Otherwise, I think we need a deep-copy or COW-copy.
-
+If we do not do this, we need a deep-copy or a copy-on-write copy.
 
 ### Cachefilter Plugin
 
@@ -133,15 +131,19 @@ We make the mmap cache non-optional so that we always have a keyset of configura
 The cache will be used to do change tracking.
 From this keyset, we use `ksBelow` to return the correct keyset.
 
-- Disadvantage: mmap implementation for Windows would be needed
+Disadvantage: mmap implementation for Windows would be needed.
 
-@kodebach wrote:
+The cache should be updated at the end of every kdbGet that was a cache miss.
+So during kdbSet (assuming there is no external modification, i.e. conflict) the on-disk data of the cache should always be up-to-date.
+The idea would be to just read the cached keyset from disk and diff against the current keyset in kdbSet.
 
-> I'm not entirely sure this is possible (@mpranj may know more), but the way I understand it the cache should be updated at the end of every kdbGet that was a cache miss. So during kdbSet (assuming there is no external modification, i.e. conflict) the on-disk data of the cache should always be up-to-date. My idea would be to just read the cached keyset from disk and diff against the current keyset in kdbSet.
->
-> This would mean enabling change tracking also enables the cache (or at least updating the cache, we don't have to use it in kdbGet). If that's not wanted or if the cache data cannot be used directly for some other reason, the same approach could still be used. We'd just have to write the keyset to disk during kdbGet and use it during kdbSet. Since disk space is far less precious than RAM, we could even create separate files for every parent key. If we do go down this route, kdbClose should cleanup the files created by this KDB instance to avoid wasting disk space.
->
-> This approach wouldn't be very performant (since it uses disk IO), but especially if we can use the cache data, it should be pretty easy to do.
+This would mean enabling change tracking also enables the cache (or at least updating the cache, we don't have to use it in kdbGet).
+If that's not wanted or if the cache data cannot be used directly for some other reason, the same approach could still be used.
+We'd just have to write the keyset to disk during kdbGet and use it during kdbSet.
+Since disk space is far less precious than RAM, we could even create separate files for every parent key.
+If we do go down this route, kdbClose should clean up the files created by this KDB instance to avoid wasting disk space.
+
+This approach wouldn't be very performant (since it uses disk IO), but especially if we can use the cache data, it should be pretty easy to do.
 
 ### MMAP Cache without parent key
 
@@ -174,24 +176,17 @@ We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset o
 
 ### Data restrictions
 
-@kodebach wrote:
-
-> Make all the keys returned by kdbGet completely read-only.
-> To change the data you need to append an entirely new key to replace the existing one.
-> Then we just need to keep a shallow copy internally.
+Make all the keys returned by kdbGet completely read-only.
+To change the data it is required to append an entirely new key to replace the existing one.
+Then we just need to keep a shallow copy internally.
 
 ### API restrictions
 
-@kodebach wrote:
+Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [the operation sequences decision](../0_drafts/operation_sequences.md).
+If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
 
-> Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [the operation sequences decision](../0_drafts/operation_sequences.md).
-> If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
-> I certainly wouldn't try to assert anything on the contents of a KeySet that I don't own directly, unless the condition is explicitly documented somewhere.
+@kodebach found this easier to understand than the current solution, but @markus2330 disagreed and found it only fixed the "Fewer Keys" issue.
 
-@markus2330 wrote:
-
-> I disagree, it is actually the same kind of surprise for "More Keys".
-> Only the "Fewer Keys" would get fixed.
 
 ### Copy On Write
 
