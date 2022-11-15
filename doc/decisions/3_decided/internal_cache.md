@@ -187,7 +187,6 @@ If the keyset is owned by the KDB handle, it should not be as big surprise, if t
 
 @kodebach found this easier to understand than the current solution, but @markus2330 disagreed and found it only fixed the "Fewer Keys" issue.
 
-
 ### Copy On Write
 
 We keep a duplicated keyset in-memory and tag the keys as copy-on-write (COW).
