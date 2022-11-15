@@ -341,7 +341,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
-- <<TODO>>
+- Create decision draft for a new [buffer struct](../decisions/0_drafts/buffer_struct.md). _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
