@@ -205,7 +205,10 @@ Implement the copy-on-write approach.
 We keep a copy of all keys returned by the backends in memory.
 We use `ksBelow` to only return a copy-on-write copy of keys the user requested on `kdbGet`.
 
-On `kdbSet` we use the cached in-memory keys to fill in the missing keys outside of `parentKey` that are needed for all the backends to save.
+In `kdbSet` we use the user-provided `KeySet` for all backends strictly below `parentKey` as before.
+For the backend that contains `parentKey`, we start with the internally cached data.
+We then remove everything that is at or below `parentKey` (via `ksCut`) and replace it with the data from the user-provided `KeySet`.
+Keys not at or below `parentKey` therefore remain untouched.
 
 ## Rationale
 
