@@ -85,7 +85,7 @@ Upon returning from `kdbGet`/`kdbSet`, set the keyname of parentKey to the key t
 I.e. to the mountpoint of the backend that contains parentKey.
 `parentKey` is already an inout-type argument, since we use both it's value and metadata to return some information.
 
-A few people found this behaviour just as unexpected as the current problem.
+A few people found this behavior just as unexpected as the current problem.
 E.g. a sequence of `kdbGet` and `kdbSet` with the same parent key might lead to different outcomes depending on the mountpoints.
 
 "Fewer keys":
