@@ -144,7 +144,6 @@ We'd just have to write the keyset to disk during kdbGet and use it during kdbSe
 Since disk space is far less precious than RAM, we could even create separate files for every parent key.
 If we do go down this route, kdbClose should clean up the files created by this KDB instance to avoid wasting disk space.
 
-
 ### MMAP Cache without parent key
 
 We make the mmap cache non-optional and only use a single cache, caching everything.
