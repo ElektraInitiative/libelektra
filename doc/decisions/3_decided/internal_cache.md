@@ -24,7 +24,7 @@ kdbGet (kdb, ks, keyNew("/mountpoint/below"));
 KeySet * below = ksCut (ks, keyNew("/mountpoint/below"));
 
 ksSet (kdb, below, keyNew("/mountpoint/below"));
-// suddenly /mountpoint/other has been removed from the configuration file on disk, even if the user explicitly stated to only change stuff in /mountpoint/below 
+// suddenly /mountpoint/other has been removed from the configuration file on disk, even if the user explicitly stated to only change stuff in /mountpoint/below
 ```
 
 ### Fewer Keys
