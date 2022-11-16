@@ -131,7 +131,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### io
 
-- Check file flags _(Richard Stöckl @Eiskasten)_
+- Check file flags for elektraIoFdSetFlags: file flags must be exactly one of: read only, write only or read write _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
