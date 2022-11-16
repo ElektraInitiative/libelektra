@@ -456,7 +456,9 @@ memerror:
 }
 
 /**
- * Frees the `key`, `ukey` and `data.v` fields from the provided key parameter, if the `KEY_FLAG_MMAP_KEY` is not set.
+ * Frees the `key`, `ukey` and `data.v` fields from the provided `key` parameter.
+ * `key` and `ukey` are only freed if the flag `KEY_FLAG_MMAP_KEY` is NOT set.
+ * `data.v` is only freed if the flag `KEY_FLAG_MMAP_DATA` is NOT set.
  * The checks are made separately which makes this call not atomic.
  * @param key the key to free the attributes from, must not be NULL
  */
