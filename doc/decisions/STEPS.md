@@ -13,7 +13,7 @@ flowchart LR
 
 Additionally, decision that are not yet "Decided" can be become "Rejected" or "Delayed" at any point.
 
-> The first PR for a decision must always create the decision in the "Draft" state.
+> The first PR for a decision must always create the decision in the "Drafts" state.
 > If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "In Discussion" or "In Progress" before the merge.
 
 ## Drafts
@@ -58,6 +58,9 @@ For each solution a proposal, rationale and optionally implications should be gi
 
 - You must include all further alternative proposals made in the "Considered Alternatives" section.
 - Now it is allowed to have the decision from the previous round in the "Decision" section.
+
+> For decisions "In Progress", unlike "In Discussion", also the solution space next to the problem is clear.
+> It is the highest of the steps reachable for a decision PR that started in "Drafts".
 
 ## Decided
 
