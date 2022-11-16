@@ -10,12 +10,22 @@ This was found confusing several times.
 Even if calling `kdbGet` with a parent key below a mountpoint, `kdbGet` will nevertheless return all keys of the mountpoint.
 Pseudo code example, assuming there is a mountpoint at `/mountpoint` and a key `/mountpoint/other`:
 
-```
+```c
 kdbGet (kdb, ks, keyNew("/mountpoint/below"));
 assert (ksLookup (ks, "/mountpoint/other") == NULL);
 ```
 
 It was found unexpected that this assert will fail.
+
+In a similar fashion, calling `kdbSet` without the seemingly superfluous keys causes Elektra to unintentionally delete them from disk.
+
+```c
+kdbGet (kdb, ks, keyNew("/mountpoint/below"));
+KeySet * below = ksCut (ks, keyNew("/mountpoint/below"));
+
+ksSet (kdb, below, keyNew("/mountpoint/below"));
+// suddenly /mountpoint/other has been removed from the configuration file on disk, even if the user explicitly stated to only change stuff in /mountpoint/below 
+```
 
 ### Fewer Keys
 
