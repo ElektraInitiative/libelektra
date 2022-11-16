@@ -67,7 +67,7 @@ Improve documentation to make people more aware of these two problems:
 - add a tutorial about `kdbGet` semantics
 - add full examples how to correctly work with `kdbGet`
 
-### Simple Solution by @kodebach
+### Changing `parentKey` according mountpoints
 
 "More keys":
 
@@ -75,11 +75,12 @@ Upon returning from `kdbGet`/`kdbSet`, set the keyname of parentKey to the key t
 I.e. to the mountpoint of the backend that contains parentKey.
 `parentKey` is already an inout-type argument, since we use both it's value and metadata to return some information.
 
-This behaviour was found very unexpected by @markus2330 and @atmaxinger.
+This behaviour was found very unexpected.
+E.g. a sequence of `kdbGet` and `kdbSet` with the same parent key might lead to different outcomes depending on the mountpoints.
 
 "Fewer keys":
 
-@kodebach considers this simply a bug in the "nothing changed" logic.
+This is a bug in the "nothing changed" logic.
 A partial solution would be to copy the keys from `backendData->keys`, so they are actually there, and we don't just assume they are there.
 Still some extra steps are required to make this work:
 
@@ -153,25 +154,21 @@ We remove the parent key of `kdbGet` and `kdbSet` and always return the keyset o
 - Then also symlinks (fallback, override etc.) and constraints for keys outside of the parentKey would work.
   It would make the `-a` option of `kdb get` unnecessary.
 
-@kodebach wrote (in response to the 'symlinks' point):
+It is still unclear whether this would actually be a good default behavior.
+Normally it is expected for mountpoints to be isolated
+If symlinks work like this, the isolation is partially broken.
+One could argue that the problem right now is that such "broken" symlinks are not prevented.
+The proposed solution doesn't completely fix the problem either
 
-> You still haven't addressed why this would actually be a good default behavior.
-> You just claim it is an advantage without any explanation.
->
-> Like I said, I would normally expect mountpoints to be isolated.
-> If symlinks work like this, the isolation is partially broken.
-> One could argue that the problem right now is that such "broken" symlinks are not prevented.
-> But your solution doesn't completely fix the problem either.
->
-> Take a variant of my previous example:
->
-> - `system:/foo` is a mountpoint, there are no other mountpoints
-> - `spec:/foo/bar` refers to `system:/abc` via `meta:/override`
->
-> Now in a plugin that is part of the mountpoint `system:/foo` doing a `ksLookupByName (ks, "/foo/bar", 0)` would NOT use `system:/abc`, because that key is never part of the keyset passed to this plugin.
->
-> However, in an application that used `system:/foo` as the parent, the `meta:/override` would work with your proposal.
-> To me that seems like very confusing behavior, because both the application and the plugin seemingly use the same parent key.
+For example:
+
+- `system:/foo` is a mountpoint, there are no other mountpoints
+- `spec:/foo/bar` refers to `system:/abc` via `meta:/override`
+
+Now in a plugin that is part of the mountpoint `system:/foo` doing a `ksLookupByName (ks, "/foo/bar", 0)` would NOT use `system:/abc`, because that key is never part of the keyset passed to this plugin.
+
+However, in an application that used `system:/foo` as the parent, the `meta:/override` would work with your proposal.
+This seems like very confusing behavior, because both the application and the plugin seemingly use the same parent key.
 
 ### Data restrictions
 
@@ -184,7 +181,7 @@ Then we just need to keep a shallow copy internally.
 Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [the operation sequences decision](../0_drafts/operation_sequences.md).
 If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
 
-@kodebach found this easier to understand than the current solution, but @markus2330 disagreed and found it only fixed the "Fewer Keys" issue.
+This only fixes the "Fewer Keys" issue.
 
 ### Copy On Write
 
