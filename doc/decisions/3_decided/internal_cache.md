@@ -67,7 +67,7 @@ Improve documentation to make people more aware of these two problems:
 - add a tutorial about `kdbGet` semantics
 - add full examples how to correctly work with `kdbGet`
 
-### Changing `parentKey` according mountpoints
+### Changing `parentKey` according to mountpoints
 
 "More keys":
 
@@ -75,14 +75,14 @@ Upon returning from `kdbGet`/`kdbSet`, set the keyname of parentKey to the key t
 I.e. to the mountpoint of the backend that contains parentKey.
 `parentKey` is already an inout-type argument, since we use both it's value and metadata to return some information.
 
-This behaviour was found very unexpected.
+A few people found this behaviour just as unexpected as the current problem.
 E.g. a sequence of `kdbGet` and `kdbSet` with the same parent key might lead to different outcomes depending on the mountpoints.
 
 "Fewer keys":
 
-This is a bug in the "nothing changed" logic.
+This is a bug in the logic of the "nothing changed" optimization.
 A partial solution would be to copy the keys from `backendData->keys`, so they are actually there, and we don't just assume they are there.
-Still some extra steps are required to make this work:
+Still some extra steps are required to make it work in all cases, e.g.:
 
 ```c
 TEST_F (Simple, NothingToDo2)
@@ -178,7 +178,7 @@ Then we just need to keep a shallow copy internally.
 ### API restrictions
 
 Change the API and remove KeySet from kdbGet and kdbSet also option 4 in [the operation sequences decision](../0_drafts/operation_sequences.md).
-If the keyset is owned by the KDB handle, it should not be as big surprise, if there is extra data in there.
+If the keyset is owned by the KDB handle, it should not be such a big surprise, if there is extra data in there.
 
 This only fixes the "Fewer Keys" issue.
 
