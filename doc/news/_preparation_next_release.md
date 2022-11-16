@@ -341,6 +341,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- Add decisions about [location of headers](../decisions/3_decided/header_file_structure.md) and [use of `#include`](../decisions/3_decided/header_include.md) in the repo _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
