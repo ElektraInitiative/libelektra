@@ -318,18 +318,18 @@ def dockerInit() {
       "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
-    /* Fedora 35 image*/
-    DOCKER_IMAGES.fedora_35 = dockerUtils.createDockerImageDesc(
-      "fedora-35", dockerUtils.&idTesting,
-      "./scripts/docker/fedora/35",
-      "./scripts/docker/fedora/35/Dockerfile"
-    )
-
     /* Fedora 36 image*/
     DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
       "fedora-36", dockerUtils.&idTesting,
       "./scripts/docker/fedora/36",
       "./scripts/docker/fedora/36/Dockerfile"
+    )
+
+    /* Fedora 37 image*/
+    DOCKER_IMAGES.fedora_37 = dockerUtils.createDockerImageDesc(
+      "fedora-37", dockerUtils.&idTesting,
+      "./scripts/docker/fedora/37",
+      "./scripts/docker/fedora/37/Dockerfile"
     )
 
     /* openSUSE Leap 15.3 image*/
@@ -410,19 +410,19 @@ def dockerInit() {
       false
     )
 
-    /* Fedora 35 image used to install previously built packages */
-    DOCKER_IMAGES.fedora_35_installed = dockerUtils.createDockerImageDesc(
-      "fedora-35-installed", dockerUtils.&idArtifact,
-      "./build/package",
-      "./scripts/docker/fedora/35/release.Dockerfile",
-      false
-    )
-
     /* Fedora 36 image used to install previously built packages */
     DOCKER_IMAGES.fedora_36_installed = dockerUtils.createDockerImageDesc(
       "fedora-36-installed", dockerUtils.&idArtifact,
       "./build/package",
       "./scripts/docker/fedora/36/release.Dockerfile",
+      false
+    )
+
+    /* Fedora 37 image used to install previously built packages */
+    DOCKER_IMAGES.fedora_37_installed = dockerUtils.createDockerImageDesc(
+      "fedora-37-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/fedora/37/release.Dockerfile",
       false
     )
 
@@ -485,8 +485,8 @@ def generateMainBuildStages() {
   tasks.failFast = true
 
   tasks << buildAndTest(
-    "fedora-36-full",
-    DOCKER_IMAGES.fedora_36,
+    "fedora-37-full",
+    DOCKER_IMAGES.fedora_37,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -520,8 +520,8 @@ def generateFullBuildStages() {
   def tasks = [:]
 
   tasks << buildAndTest(
-    "fedora-35-full",
-    DOCKER_IMAGES.fedora_35,
+    "fedora-36-full",
+    DOCKER_IMAGES.fedora_36,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -532,8 +532,8 @@ def generateFullBuildStages() {
   // Build Elektra with clang and ASAN
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "fedora-36-asan",
-    DOCKER_IMAGES.fedora_36,
+    "fedora-37-asan",
+    DOCKER_IMAGES.fedora_37,
     CMAKE_FLAGS_BUILD_ALL
   )
 
@@ -1143,21 +1143,21 @@ def generateArtifactStages() {
     this.&updateDebianChangelog
   )
   tasks << buildPackage(
-    "buildPackage/fedora/35",
-    DOCKER_IMAGES.fedora_35,
-    "fedora-35-unstable",
-    "fedora-35-unstable",
-    DOCKER_IMAGES.fedora_35_installed,
-    release.&publishRpmPackages,
-    this.&updateFedoraChangelog,
-    true
-  )
-  tasks << buildPackage(
     "buildPackage/fedora/36",
     DOCKER_IMAGES.fedora_36,
     "fedora-36-unstable",
     "fedora-36-unstable",
     DOCKER_IMAGES.fedora_36_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
+  tasks << buildPackage(
+    "buildPackage/fedora/37",
+    DOCKER_IMAGES.fedora_37,
+    "fedora-37-unstable",
+    "fedora-37-unstable",
+    DOCKER_IMAGES.fedora_37_installed,
     release.&publishRpmPackages,
     this.&updateFedoraChangelog,
     true

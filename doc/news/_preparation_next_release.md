@@ -487,6 +487,12 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Use `openjdk-17-jdk` in Debian Sid. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- Update Alpine Linux to 3.16.3. _(Mihael Pranjić @mpranj)_
+- Add Fedora 37 images. _(Mihael Pranjić @mpranj)_
+
+## Gradle
+
+- Use Gradle 7.5.1. _(Mihael Pranjić @mpranj)_
 
 ## Infrastructure
 
@@ -496,7 +502,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add Fedora 37 builds, drop Fedora 35 builds. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - Run more tests also on Master. _(Markus Raab)_
@@ -511,7 +517,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Cirrus
 
-- <<TODO>>
+- Use Fedora 37. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

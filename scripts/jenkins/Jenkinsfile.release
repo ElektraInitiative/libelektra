@@ -201,16 +201,16 @@ def dockerInit() {
       './scripts/docker/ubuntu/bionic/Dockerfile'
     )
 
-    DOCKER_IMAGES.fedora_35 = dockerUtils.createDockerImageDesc(
-      'fedora-35', dockerUtils.&idTesting,
-      './scripts/docker/fedora/35',
-      './scripts/docker/fedora/35/Dockerfile'
-    )
-
     DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
       'fedora-36', dockerUtils.&idTesting,
       './scripts/docker/fedora/36',
       './scripts/docker/fedora/36/Dockerfile'
+    )
+
+    DOCKER_IMAGES.fedora_37 = dockerUtils.createDockerImageDesc(
+      'fedora-37', dockerUtils.&idTesting,
+      './scripts/docker/fedora/37',
+      './scripts/docker/fedora/37/Dockerfile'
     )
 
     DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
@@ -248,19 +248,20 @@ def dockerInit() {
       false
     )
 
-    DOCKER_IMAGES.fedora_35_installed = dockerUtils.createDockerImageDesc(
-      'fedora-35-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/package/fedora35/',
-      './scripts/docker/fedora/35/package.Dockerfile',
-      false
-    )
-
     DOCKER_IMAGES.fedora_36_installed = dockerUtils.createDockerImageDesc(
       'fedora-36-installed', dockerUtils.&idArtifact,
       './release-artifact/*/package/fedora36/',
       './scripts/docker/fedora/36/package.Dockerfile',
       false
     )
+
+    DOCKER_IMAGES.fedora_37_installed = dockerUtils.createDockerImageDesc(
+      'fedora-37-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/package/fedora37/',
+      './scripts/docker/fedora/37/package.Dockerfile',
+      false
+    )
+
 
     DOCKER_IMAGES.opensuse_15_3_installed = dockerUtils.createDockerImageDesc(
       'opensuse-15-3-installed', dockerUtils.&idArtifact,
@@ -298,17 +299,17 @@ def dockerInit() {
       false
     )
 
-    DOCKER_IMAGES.fedora_35_release = createDockerImageDescForRelease(
-      'elektra/elektra',
-      './release-artifact/*/package/fedora35/',
-      './scripts/docker/fedora/35/release.Dockerfile',
-      false
-    )
-
     DOCKER_IMAGES.fedora_36_release = createDockerImageDescForRelease(
       'elektra/elektra',
       './release-artifact/*/package/fedora36/',
       './scripts/docker/fedora/36/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.fedora_37_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/package/fedora37/',
+      './scripts/docker/fedora/37/release.Dockerfile',
       false
     )
 
@@ -349,10 +350,10 @@ def dockerInit() {
     /*
      * ABI test images
      */
-    DOCKER_IMAGES.fedora_36_abi = dockerUtils.createDockerImageDesc(
-        'fedora-36-abi', dockerUtils.&idArtifact,
-        './release-artifact/*/package/fedora36/',
-        './scripts/docker/fedora/36/abi.Dockerfile',
+    DOCKER_IMAGES.fedora_37_abi = dockerUtils.createDockerImageDesc(
+        'fedora-37-abi', dockerUtils.&idArtifact,
+        './release-artifact/*/package/fedora37/',
+        './scripts/docker/fedora/37/abi.Dockerfile',
         false
     )
 
@@ -397,16 +398,16 @@ def generateReleaseStages() {
   )
 
   tasks << buildRelease(
-    'fedora-35',
-    DOCKER_IMAGES.fedora_35,
+    'fedora-36',
+    DOCKER_IMAGES.fedora_36,
     params.fedora_revision,
     false, // do not bundle git repo
     true // use placeholder dirs
   )
 
   tasks << buildRelease(
-    'fedora-36',
-    DOCKER_IMAGES.fedora_36,
+    'fedora-37',
+    DOCKER_IMAGES.fedora_37,
     params.fedora_revision,
     false, // do not bundle git repo
     true // use placeholder dirs
@@ -441,12 +442,12 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     'ubuntu-bionic'
   )
   tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.fedora_35_installed,
-    'fedora-35'
-  )
-  tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.fedora_36_installed,
     'fedora-36'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_37_installed,
+    'fedora-37'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.buster_installed,
@@ -481,12 +482,12 @@ def generateInstalledPackagesTestStages() {
     DOCKER_IMAGES.bionic_installed
   )
   tasks << testInstalledPackage(
-    'fedora-35-installed',
-    DOCKER_IMAGES.fedora_35_installed
-  )
-  tasks << testInstalledPackage(
     'fedora-36-installed',
     DOCKER_IMAGES.fedora_36_installed
+  )
+  tasks << testInstalledPackage(
+    'fedora-37-installed',
+    DOCKER_IMAGES.fedora_37_installed
   )
   tasks << testInstalledPackage(
     'debian-buster-installed',
@@ -507,8 +508,8 @@ def generateInstalledPackagesTestStages() {
 def generateAbiImages() {
   // build abi images
   tasks << buildImageWithPackagesStage(
-    DOCKER_IMAGES.fedora_36_abi,
-    'fedora-36'
+    DOCKER_IMAGES.fedora_37_abi,
+    'fedora-37'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.bullseye_abi,
@@ -522,8 +523,8 @@ def generateAbiTestStages() {
   def tasks = [:]
 
   tasks << testAbiPackage(
-    'fedora-36-abi',
-    DOCKER_IMAGES.fedora_36_abi
+    'fedora-37-abi',
+    DOCKER_IMAGES.fedora_37_abi
   )
   tasks << testAbiPackage(
     'debian-bullseye-abi',
@@ -603,19 +604,19 @@ def generatePublishStages() {
   // RPM packges can be published in parallel because
   // no shared DB is used.
   tasks << publish(
-    'fedora-35',
-    'fedora35',
-    'fedora-35',
-    'fedora-35',
+    'fedora-36',
+    'fedora36',
+    'fedora-36',
+    'fedora-36',
     release.&publishRpmPackages,
     params.fedora_revision
   )
 
   tasks << publish(
-    'fedora-36',
-    'fedora36',
-    'fedora-36',
-    'fedora-36',
+    'fedora-37',
+    'fedora37',
+    'fedora-37',
+    'fedora-37',
     release.&publishRpmPackages,
     params.fedora_revision
   )
@@ -725,16 +726,16 @@ def generateImageUploadStages() {
     'bionic'
   )
   tasks << publishImage(
-    DOCKER_IMAGES.fedora_35_release,
-    'fedora-35',
-    fedora_revision,
-    'fedora35'
-  )
-  tasks << publishImage(
     DOCKER_IMAGES.fedora_36_release,
     'fedora-36',
     fedora_revision,
     'fedora36'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.fedora_37_release,
+    'fedora-37',
+    fedora_revision,
+    'fedora37'
   )
   tasks << publishImage(
     DOCKER_IMAGES.buster_release,
