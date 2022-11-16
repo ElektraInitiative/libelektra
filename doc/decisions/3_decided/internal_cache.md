@@ -205,6 +205,12 @@ Implement the copy-on-write approach.
 We keep a copy of all keys returned by the backends in memory.
 We use `ksBelow` to only return a copy-on-write copy of keys the user requested on `kdbGet`.
 
+If the user tries to change the value or metadata of these keys, the data gets duplicated (copy-on-write).
+I.e. the data of the original keys is not changed.
+The name is not relevant.
+It is always read-only, because the key is in at least one keyset (the internal one).
+Possible copy-on-write implementations are described in [another decision](../1_in_discussion/copy_on_write.md).
+
 In `kdbSet` we use the user-provided `KeySet` for all backends strictly below `parentKey` as before.
 For the backend that contains `parentKey`, we start with the internally cached data.
 We then remove everything that is at or below `parentKey` (via `ksCut`) and replace it with the data from the user-provided `KeySet`.
@@ -214,11 +220,13 @@ Keys not at or below `parentKey` therefore remain untouched.
 
 Semantics can be provided without additional code or overhead in the core.
 As we need copy-on-write for efficient change tracking anyway, it makes sense to also use this approach for the internal cache.
-This also does not require any changes or restrictions to the current API.
+The copy-on-write solution also does not require any changes or restrictions to the current API.
 
 ## Implications
 
-- We need to implement the copy-on-write decision
+- Before we can implement this decision, we need to implement the [copy-on-write decision](../1_in_discussion/copy_on_write.md).
+- `kdbGet` will only return copy-on-write copies of keys below `parentKey` from the internal cache.
+- `kdbSet` will use the keys within the internal cache to supplement all the keys above `parentKey` so that backends can write the correct data.
 
 ## Related Decisions
 
