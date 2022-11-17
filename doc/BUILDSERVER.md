@@ -111,7 +111,7 @@ source code.
 
 We also provide a number of helper functions in our Jenkinsfiles that are
 documented at the function head.
-Most common use cases, for example adding a new build with certain cmake flags,
+Most common use cases, for example adding a new build with certain CMake flags,
 are easy to add because of them.
 For example, the configuration that is responsible for the `debian-stable-full`
 stage is generated completely by a single helper function called `buildAndTest`:

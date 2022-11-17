@@ -19,7 +19,7 @@ clang are also supported but not described here). Those can be installed as foll
   sudo yum install -y cmake git gcc-c++ make
   ```
 
-- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake and Git in order to complete the basic requirements:
+- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get CMake and Git in order to complete the basic requirements:
 
   ```sh
   brew install cmake git
@@ -119,8 +119,8 @@ A small subset of build dependencies to get you started:
 
 ## Preparation
 
-Elektra uses [cmake3](https://cmake.org/cmake/help/v3.0/).
-Tested are cmake version 3.0.2 and 3.7.2 among others.
+Elektra uses [CMake3](https://cmake.org/cmake/help/v3.0/).
+Tested are CMake version 3.0.2 and 3.7.2 among others.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
 
@@ -146,7 +146,7 @@ E.g.:
 cmake -DPLUGINS="dump;resolver;yajl;list;spec" ..
 ```
 
-Some scripts in the folder of the same name may help you running cmake.
+Some scripts in the folder of the same name may help you running CMake.
 
 ### Compilers
 
@@ -179,7 +179,7 @@ Here is an additional list of compilers used by developers (for build servers, s
 > The packages are called gcc and g++.
 > Compile with `CC=/usr/local/bin/egcc CXX=/usr/local/bin/eg++`.
 
-To change the compiler, use cmake settings `CMAKE_C_COMPILER` and `CMAKE_CXX_COMPILER`.
+To change the compiler, use CMake settings `CMAKE_C_COMPILER` and `CMAKE_CXX_COMPILER`.
 
 To use gcc-4.3 for example
 
@@ -331,7 +331,7 @@ The user flags are (the order matters!):
 - `p` use passwd/ldap to lookup home directory using `getpwuid_r`
 - `h` use the environment variable HOME
 - `u` use the environment variable USER
-- `b` use the built-in default cmake variable `KDB_DB_HOME`
+- `b` use the built-in default CMake variable `KDB_DB_HOME`
 
 The system flags are (the order matters!):
 
@@ -339,7 +339,7 @@ The system flags are (the order matters!):
   (`:` are interpreted as part of filename, no searching is done!)
   This option is not recommended (unless for testing), because it
   allows users to fake system configuration.
-- `b` use the built-in default cmake variable `KDB_DB_SYSTEM`
+- `b` use the built-in default CMake variable `KDB_DB_SYSTEM`
 - note: if a path that begins with a slash (`/`) is chosen, the system flags are irrelevant
   and the path is taken as-is.
 
@@ -403,7 +403,7 @@ The SWIG executable may be specified with:
 -DSWIG_EXECUTABLE=/usr/bin/swig3.0
 ```
 
-If this option is not used, cmake will find the first occurrence of
+If this option is not used, CMake will find the first occurrence of
 `swig` in your environment's path.
 
 Some bindings provide different APIs (and not a different language), e.g:

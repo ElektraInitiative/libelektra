@@ -17,9 +17,9 @@ This document is intended for developers who want to get started with developing
   [Git](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single Git command to get
   the source code of Elektra.
 
-- Basic knowledge about make/cmake
+- Basic knowledge about make/CMake
 
-  Don't panic! [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code.
+  Don't panic! [make](https://www.gnu.org/software/make/) or [CMake](https://cmake.org/) are used to generate an executable program from the code.
   If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
 
 - We also need your skill set to improve Elektra
@@ -28,7 +28,7 @@ This document is intended for developers who want to get started with developing
 
 ## Software requirements
 
-We need to install some basic tools to run Elektra: cmake, Git and essential build tools (make, gcc, and some standard Unix tools;
+We need to install some basic tools to run Elektra: CMake, Git and essential build tools (make, gcc, and some standard Unix tools;
 alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here).
 Depending on your Linux distribution use the following commands to install these tools:
 
@@ -43,7 +43,7 @@ sudo yum install -y cmake git gcc-c++
 ```
 
 Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew](https://brew.sh/).
-First, install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+First, install brew as described on their website. Then issue the following command to get CMake to complete the basic requirements:
 
 ```sh
 brew install cmake git
