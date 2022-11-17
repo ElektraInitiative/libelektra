@@ -98,11 +98,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### quickdump
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- elektraQuickdumpSet: don't fclose if stdout _(@hannes99)_
 
 ### <<Plugin>>
 

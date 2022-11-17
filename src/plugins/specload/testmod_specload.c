@@ -303,8 +303,6 @@ static void test_sendspec (void)
 
 	PLUGIN_OPEN ("specload");
 
-	// TODO: if elektraSpecloadSendSpec should not fail as expected stdout will be closed with the current quickdump implementation
-
 	int tmp = elektraSpecloadSendSpec (plugin, NULL, parentKey);
 	succeed_if (tmp == ELEKTRA_PLUGIN_STATUS_ERROR, "sendspec should return an error if spec is NULL");
 
