@@ -45,3 +45,5 @@ In some situations, it may be wise to reuse a key instead of deleting it and cre
 - []()
 
 ## Notes
+
+- [Issue 2202](https://issues.libelektra.org/2202) talks about how unexpected it is that keys will be readonly once in a keyset, but they don't get unlocked when removing them from a keyset.
