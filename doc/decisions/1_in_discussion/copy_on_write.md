@@ -8,7 +8,7 @@ Most of those copied keys are never modified, but are required to be detached fr
 We want to introduce an in-memory copy-on-write mechanism to lower our memory usage.
 
 In the near future, Elektra will also gain facilities for [change tracking](../0_drafts/change_tracking.md) and session recording, both of which will potentially again duplicate keys.
-There are also aspirations to create a new, simple [internal cache](../1_in_discussion/internal_cache.md) that would also benefit from a copy-on-write mechanism.
+There are also aspirations to create a new, simple [internal cache](../3_decided/internal_cache.md) that would also benefit from a copy-on-write mechanism.
 
 ## Constraints
 
@@ -464,6 +464,6 @@ For allocations want to measure the following properties:
 ## Related Decisions
 
 - [change tracking](../0_drafts/change_tracking.md)
-- [internal cache](../1_in_discussion/internal_cache.md)
+- [internal cache](../3_decided/internal_cache.md)
 
 ## Notes

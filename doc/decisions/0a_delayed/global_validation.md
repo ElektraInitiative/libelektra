@@ -36,7 +36,7 @@ Not supported, admins/maintainers need to stay with their spec within what appli
 
 ## Related Decisions
 
-- [Internal Cache](../1_in_discussion/internal_cache.md)
+- [Internal Cache](../3_decided/internal_cache.md)
 
 ## Notes
 
