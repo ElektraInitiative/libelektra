@@ -348,6 +348,30 @@ static void keyDel(Key * key) {
 }
 ```
 
+#### Variation 1 - RcBuffer
+
+Instead of using different structs for `_KeyData`, and `_KeyName` use a more generic struct for reference counting.
+This would avoid some duplication on the reference counting code for the key.
+Keysets will still have their own data struct, as it contains more than just a pointer and a size.
+
+```c
+typedef struct {
+	void * data;
+	size_t size;
+	uint16_t refs;
+} RcBuffer;
+
+struct _Key {
+	RcBuffer * uname;
+	RcBuffer * ename; // will be removed soon
+	RcBuffer * value;
+	
+	KeySet * meta;
+	keyflag_t flags;
+	uint16_t refs;
+};
+```
+
 #### Possible Edge Cases
 
 In general, it should be possible to always do copy-on-write.
@@ -413,11 +437,12 @@ We want to measure the following properties for the key:
 - Example Key + 2 Duplicates: three instances of the key defined above, two of them are duplications of the first
 
 | Approach                                                          | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Single Example Key | Example Key + 1 Duplicate | Example Key + 2 Duplicates |
-| :---------------------------------------------------------------- | --------: | --------------------: | ---------------------------: | -----------------: | ------------------------: | -------------------------: |
+|:------------------------------------------------------------------|----------:|----------------------:|-----------------------------:|-------------------:|--------------------------:|---------------------------:|
 | Current Implementation                                            |        64 |                    64 |                           64 |                153 |                       306 |                        459 |
 | mmapstorage-like COW implementation (without additional pointers) |        64 |                    64 |                           64 |                153 |                       217 |                        281 |
 | mmapstorage-like COW implementation (with additional pointers)    |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
 | Full-blown COW implementation                                     |        32 |                    72 |                           96 |                185 |                       217 |                        249 |
+| Full-blown COW implementation - Variant 1 (RcBuffer)              |        40 |                    88 |                          112 |                201 |                       241 |                        281 |
 
 We want to measure the following properties for the keyset:
 
@@ -488,6 +513,21 @@ Full-blown COW implementation:
 - Single Example Key = `Empty Key (with name + data) + keyname + unescaped keyname + data` = `96 + 29 + 25 + 35` = `185`
 - Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `185 + 32` = `217`
 - Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `185 + 32 * 2` = `249`
+
+- Empty KeySet [measured via `sizeof`]: `16`
+- Empty KeySet (with data): `Empty KeySet + sizeof(KeySetData)` = `16 + 48` = `64`
+- Example KeySet: `Empty KeySet (with data) + 16 * pointer to keys` = `64 + 16 * 8` = `192`
+- Example KeySet + 1 Duplicate: `Example KeySet + Empty KeySet` = `192 + 16` = `208`
+- Example KeySet + 2 Duplicates: `Example KeySet + Empty KeySet * 2` = `192 + 16 * 2` = `224`
+
+Full-blown COW implementation - Variant 1 (RcBuffer):
+
+- Empty Key [measured via `sizeof`]: `40`
+- Empty Key (with name) [measured via `sizeof`]: `Empty Key + sizeof(RcBuffer)*2` = `40 + 24*2` = `88`
+- Empty Key (with name + data) [measured via `sizeof`]: `Empty Key + sizeof(RcBuffer)*3` = `40 + 24*3` = `112`
+- Single Example Key = `Empty Key (with name + data) + keyname + unescaped keyname + data` = `112 + 29 + 25 + 35` = `201`
+- Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `201 + 40` = `241`
+- Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `201 + 40 * 2` = `281`
 
 - Empty KeySet [measured via `sizeof`]: `16`
 - Empty KeySet (with data): `Empty KeySet + sizeof(KeySetData)` = `16 + 48` = `64`
