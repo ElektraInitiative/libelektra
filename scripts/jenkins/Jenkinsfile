@@ -311,7 +311,7 @@ def dockerInit() {
       "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
-    /* Ubuntu bionic image*/
+    /* Ubuntu focal image*/
     DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
       "focal", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/focal",
