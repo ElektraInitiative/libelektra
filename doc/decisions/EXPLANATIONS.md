@@ -93,6 +93,11 @@ This section has links to other decisions with description what the relation is.
 One-side relations are allowed, not every decision must link back.
 Decisions that give constraints must be listed in "Constraints" above.
 
+> Guideline:
+> Links to decisions should be in the form `- [name of decision](../step of decision/name of decision.md)`.
+> In particular, they should always contain the step of the decision, even if they are in the same directory.
+> This makes renaming issues easier.
+
 > Note:
 > Sometimes the best solution is only understood if the relation between decisions becomes clear.
 > Make sure that everything that requires updates to a decision, is listed as "Constraints" or "Assumptions".
