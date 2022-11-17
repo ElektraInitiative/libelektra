@@ -150,9 +150,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### io
 
-- <<TODO>>
+- Check file flags for elektraIoFdSetFlags: file flags must be exactly one of: read only, write only or read write _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
