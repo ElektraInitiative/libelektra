@@ -20,16 +20,15 @@ The cache files get discarded if these checks fail.
 
 ## Rationale
 
-See Implications.
+- will also discard cache files from different architectures
+- representation of `struct _Key` can be changed as wanted
 
 ## Implications
 
-- will also discard cache files from different architectures
-- representation of `struct _Key` can be changed as wanted
+See Rationale.
 
 ## Related Decisions
 
 ## Notes
 
-¹ A `KeySet` with known content gets written and mmapstorage checks if this
-`KeySet` was restored correctly.
+¹ A `KeySet` with known content gets written and mmapstorage checks if this `KeySet` was restored correctly.

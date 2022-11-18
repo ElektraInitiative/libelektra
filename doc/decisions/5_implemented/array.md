@@ -2,9 +2,7 @@
 
 ## Problem
 
-Currently it is inefficient to detect the length of an array and
-it is impossible to know if a key (without subkeys) should be
-an array or not.
+Currently it is inefficient to detect the length of an array and it is impossible to know if a key (without subkeys) should be an array or not.
 
 ## Constraints
 
@@ -89,19 +87,17 @@ The `spec` plugin should check if it is a valid array, i.e.:
 
 ## Rationale
 
-- Is very similar to `binary` metadata.
-- The key alone suffices to know if it's an array
-- One can distinguish an array with keys that are called by chance e.g. `#0`
+- Is very similar to `binary` metadata but without its [problems](../2_in_progress/binary.md).
+- The key alone suffices to know if it is an array.
+- One can distinguish an array with keys that are called by chance e.g. `#0`.
 
 ## Implications
 
-- yajl needs to be fixed
+- The plugin yajl needs to be fixed
 - metadata library needs to be adapted
 - spec plugin needs to be fixed, a lot of work needed there.
-  Most amount of work is to detect misstructured nested arrays (`#` intermixed with non `#` keys)
-  which is a possibility also in all the alternatives of this decision.
-- A `user:/` or `dir:/` key can change the semantics of a `system:/` array,
-  if not avoided by `spec`.
+  Most amount of work is to detect misstructured nested arrays (`#` intermixed with non `#` keys) which is a possibility also in all the alternatives of this decision.
+- A `user:/` or `dir:/` key can change the semantics of a `system:/` array, if not avoided by `spec`.
 - user-facing documentation should contain a note like:
   "Mixing array and non-array keys in arrays is not supported.
   In many cases the trivial solution is to move the array part into a separate child-key."
@@ -113,6 +109,7 @@ The `spec` plugin should check if it is a valid array, i.e.:
 - [Base Names](../5_implemented/base_name.md)
 - [Metadata in Spec Namespace](../1_in_discussion/spec_metadata.md)
 - [Spec Expressiveness](../1_in_discussion/spec_expressiveness.md)
+- [Binary](../2_in_progress/binary.md).
 
 ## Notes
 

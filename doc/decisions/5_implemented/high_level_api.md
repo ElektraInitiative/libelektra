@@ -3,8 +3,7 @@
 ## Problem
 
 Projects usually do not want to use low-level APIs.
-`KDB` and `KeySet` is useful for plugins and to
-implement APIs but not to be directly used in applications.
+`KDB` and `KeySet` is useful for plugins and to implement APIs but not to be directly used in applications.
 
 ## Constraints
 
@@ -18,12 +17,11 @@ implement APIs but not to be directly used in applications.
 
 ## Assumptions
 
-- Thread-safety: a handle is the accepted better solution than having to
-  care about whether it is reentrant, thread-safe, ...
+- Thread-safety:
+  a handle is the accepted better solution than having to care about whether it is reentrant, thread-safe, ...
 - assumes that spec is available (either by compiled-in `KeySet` or exit after elektraOpen)
-- many projects do not care about some limitations (no binary, no metadata)
-  but prefer a straightforward way to get/set config
-- When people hit limitations they fall back to direct use of ^KeySet^, ^Key^
+- many projects do not care about some limitations (no binary, no metadata) but prefer a straightforward way to get/set config
+- when people hit limitations they fall back to direct use of `KeySet`, `Key`
 
 ## Considered Alternatives
 
@@ -37,12 +35,10 @@ implement APIs but not to be directly used in applications.
 
 ## Decision
 
-We provide 3 high-level C APIs:
+We provide two high-level C APIs:
 
 1. libelektra-highlevel (generic key-value getter/setter)
-2. libelektra-hierarchy (generic hierarchical getter/setter in a tree)
-3. code generator (specified key-value getter/setter with function names,
-   KeySets, or strings from specifications)
+2. code generator (specified key-value getter/setter with function names, KeySets, or strings from specifications)
 
 Furthermore, we will:
 
@@ -70,4 +66,6 @@ Furthermore, we will:
 
 ## Notes
 
-https://issues.libelektra.org/1359
+- Currently it is not possible to combine low-level and high-level API.
+- Hierarchical version not implemented and probably not needed.
+- [#1359](https://issues.libelektra.org/1359)

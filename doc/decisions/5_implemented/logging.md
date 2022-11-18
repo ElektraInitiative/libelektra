@@ -3,19 +3,16 @@
 ## Problem
 
 Both code comments and assertions are unfortunately not very popular.
-A quite efficient way to still get some documentation about the code
-are logging statements. In Elektra they are currently inconsistent
-and unusable. Thus there is an urge for this decision.
+A quite efficient way to still get some documentation about the code are logging statements.
+In Elektra they are currently inconsistent and unusable.
+Thus there is an urge for this decision.
 
 ## Constraints
 
-- this decision is irrelevant for plugins and bindings that are not
-  written in C/C++. In any case, however, logging must be disabled
-  by default.
-- should completely compile away with ENABLE_LOGGER=OFF
-- should support minimalistic, compile-time filtering
-  (per modules and verbosity level?) and some sinks (stderr, syslog
-  or files)
+- Logging must be disabled by default.
+- This decision is irrelevant for plugins and bindings that are not written in C/C++.
+- Should completely compile away with the cmake variable `ENABLE_LOGGER=OFF`
+- Should support minimalistic, compile-time filtering (per modules and verbosity level) and some sinks (stderr, syslog or files)
 
 ## Assumptions
 
@@ -24,22 +21,15 @@ and unusable. Thus there is an urge for this decision.
 - filtering with grep is not enough
 - per default there should be no output
 - with ENABLE_LOGGER=ON only warnings and errors should be shown on stderr
-- other sinks like syslog and file may log more (they are not immediately
-  visible and distracting)
-- performance is not so important (because logging is usually turned off
-  anyway)
+- other sinks like syslog and file may log more (they are not immediately visible and distracting)
+- performance is not so important (because logging is usually turned off anyway)
 
 ## Considered Alternatives
 
-- log similar to the warnings/error system work, discarded because
-  of the run-time overhead and no use case why end users should see
-  log statements.
-- C++ logging library (boost, apache,..), discarded because C++
-  should not be in core
-- libraries needed static initializing: problematic, logging should
-  just work, even if application does not initialize anything
-- using syslog: no info from which source file the logging statement
-  comes from
+- log similar to the warnings/error system work, discarded because of the run-time overhead and no use case why end users should see log statements.
+- C++ logging library (boost, apache,..), discarded because C++ should not be in core
+- libraries needed static initializing: problematic, logging should just work, even if application does not initialize anything
+- using syslog: no info from which source file the logging statement comes from
 - using journald: adds deps problematic for non-linux
 - zlog: incompatible licence (LGPL)
 
@@ -66,11 +56,9 @@ simply modifies `log.c`.
 
 ### Severity
 
-The severity passed to `ELEKTRA_LOG_` should be as in syslog's priority,
-except the error conditions which are not needed (asserts should be used
-in these situations).
+The severity passed to `ELEKTRA_LOG_` should be as in syslog's priority, except the error conditions which are not needed (asserts should be used in these situations).
 
-So we would have:
+So we have:
 
 - `ELEKTRA_LOG_WARNING`: warning conditions
 - `ELEKTRA_LOG_NOTICE`: normal, but significant, condition
@@ -91,27 +79,22 @@ The module name `<NAME>` shall be consistent with module names used in
 
 ## Rationale
 
-A more complex system seems to be overkill. Thus libraries should not have
-any effects other than what is described by their API, logging should nearly
-always be disabled.
+A more complex system is overkill.
+Thus libraries should not have any effects other than what is described by their API, logging should nearly always be disabled.
 
 A more "hackable" logger seems to be more suitable for individual needs.
-Having a separate `log.c` means that the logger can be changed without the
-need to recompile anything but a single file. It also removes the dependency
-of `stdio.h` from every individual file to a single place.
+Having a separate `log.c` means that the logger can be changed without the need to recompile anything but a single file.
+It also removes the dependency of `stdio.h` from every individual file to a single place.
 
-Thus logging is very easy to use (only include `elektralog.h` and use
-`ELEKTRA_LOG`) and still very flexible (with modules, severity, file, line
-and function information nearly everything someone wants from a logging
-system can be achieved in `log.c`.
+- Logging is very easy to use (only include `elektralog.h` and use `ELEKTRA_LOG`)
+- Logging is still flexible enough (with modules, severity, file, line and function information)
 
 ## Implications
 
-The current VERBOSE would be turned off forever and the code within VERBOSE
-needs to be migrated to `ELEKTRA_LOG`.
+The current VERBOSE would be turned off forever and the code within VERBOSE needs to be migrated to `ELEKTRA_LOG`.
 
 ## Related Decisions
 
-- assertions
-
 ## Notes
+
+See [CODING.md](/doc/CODING.md) for recommendations how to use the logger.
