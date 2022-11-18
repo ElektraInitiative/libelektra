@@ -2,8 +2,7 @@
 
 ## Problem
 
-Memory Consumption in Elektra is quite high as the key names
-are long and stored twice in memory.
+Memory Consumption in Elektra is quite high as the key names are long and stored twice in memory.
 
 ## Constraints
 
