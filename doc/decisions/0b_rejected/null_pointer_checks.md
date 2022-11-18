@@ -2,8 +2,7 @@
 
 ## Problem
 
-Currently all functions do proper argument checking which might degrade
-performance.
+Currently all functions do proper argument checking which might degrade performance.
 
 ## Constraints
 
@@ -21,7 +20,7 @@ Rejected (keep checks) due to time constraints
 
 ## Rationale
 
-- should have consistent, defined behavior
+- also passing NULL pointers should have consistent, defined behavior
 
 ## Implications
 

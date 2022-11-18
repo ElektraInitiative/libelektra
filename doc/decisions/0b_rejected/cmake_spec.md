@@ -3,20 +3,16 @@
 ## Problem
 
 The compilation variants of plugins blow up the number of plugins.
-Additionally there is the concept of default storage + resolver that is
-needed for bootstrapping plugins.
+Additionally there is the concept of default storage + resolver that is needed for bootstrapping plugins.
 
 ## Constraints
 
-- full default resolver need to be different from other default resolver
-  for testing
-- there is no standard resolver, they always should state their
-  configuration
+- full default resolver need to be different from other default resolver for testing
+- there is no standard resolver, they always should state their configuration
 
 ## Assumptions
 
-- keep it not too difficult to configure, even though most people will
-  go for the defaults
+- keep it not too difficult to configure, even though most people will go for the defaults
 
 ## Considered Alternatives
 
