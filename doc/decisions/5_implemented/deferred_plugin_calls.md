@@ -79,8 +79,8 @@ Callback function declarations are not limited by this decision.
 - `int elektraInvokeFunctionDeferred (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * ks)` which defers a call if the plugin exports `deferredCall`.
 - `void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list)` which executes deferred calls for an encapsulated plugin loaded with invoke.
 
-- Functions supporting deferred calls should allow for multiple calls (i.e.  they should be idempotent).
-  This leaves state at affected plugins and does avoid duplicating state (e.g.  "was this function called for this plugin before?") in encapsulating plugins.
+- Functions supporting deferred calls should allow for multiple calls (i.e. they should be idempotent).
+  This leaves state at affected plugins and does avoid duplicating state (e.g. "was this function called for this plugin before?") in encapsulating plugins.
 
 ## Notes
 
