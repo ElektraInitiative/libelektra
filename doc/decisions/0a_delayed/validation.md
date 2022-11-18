@@ -3,26 +3,18 @@
 ## Problem
 
 Validation plugins operate as independent blackboxes.
-For every backend each mounted validation plugin iterates
-over the whole keyset, checks every key for its trigger metakey,
-and validates the key.
+For every backend each mounted validation plugin iterates over the whole keyset, checks every key for its trigger metakey, and validates the key.
 
-Currently all needed validation plugins need to be specified at
-mount-time - if additional validation is required, the backend
-has to be remounted with the required plugins and plugin
-configuration.
+Currently all needed validation plugins need to be specified at mount-time;
+if additional validation is required, the backend has to be remounted with the required plugins and plugin configuration.
 
-If validation of a key fails, each plugin decides on its own
-how to handle the issue and proceed in ways that might be
-different from what is expected or desired.
+If validation of a key fails, each plugin decides on its own how to handle the issue and proceed in ways that might be different from what is expected or desired.
 
 ## Constraints
 
 ## Assumptions
 
-While plugins should always fail and return an error if validation
-fails on kdbSet, there are several different requirements
-for what should happen on kdbGet and handle problems e.g.
+While plugins should always fail and return an error if validation fails on kdbSet, there are several different requirements for what should happen on kdbGet and handle problems e.g.
 
 - only issue warnings
 
@@ -45,15 +37,14 @@ for what should happen on kdbGet and handle problems e.g.
 
 ## Considered Alternatives
 
-- Extend validation plugins to allow us to specify what should happen
-  if a key fails to validate
-- Export a validation function that allows us to use an additional plugin
-  to decide what should be done
+- Extend validation plugins to allow us to specify what should happen if a key fails to validate
+- Export a validation function that allows us to use an additional plugin to decide what should be done
 
 ## Decision
 
-Use a wrapper plugin to iterate over the keyset and delegate the validation
-of each key to the corresponding validation plugin.
+Don't do anything for 1.0.
+
+Later, maybe introduce a wrapper plugin to iterate over the keyset and delegate the validation of each key to the corresponding validation plugin.
 
 ## Rationale
 
@@ -63,11 +54,11 @@ of each key to the corresponding validation plugin.
 
 ## Implications
 
-validation plugins have to export their validation routine
+Validation plugins have to export their validation routine
 
 `static int validateKey(const Key * key, const Key * errorKey)`
 
-returning 1 if validation succeeded, 0 on failure
+Returning 1 if validation succeeded, 0 on failure
 
 ## Related Decisions
 

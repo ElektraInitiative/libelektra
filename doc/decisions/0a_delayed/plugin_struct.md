@@ -2,7 +2,7 @@
 
 ## Problem
 
-`struct _Plugin` contains some unnecessary data
+`struct _Plugin` contains some unnecessary data.
 
 ## Constraints
 
@@ -73,6 +73,8 @@
    In that case, it would only be one `struct _KeySet` per backend, when otherwise we would also add one pointer for every loaded plugin instance.
 
 ## Decision
+
+Don't do anything for 1.0.
 
 ## Rationale
 

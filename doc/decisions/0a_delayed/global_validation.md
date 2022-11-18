@@ -2,14 +2,16 @@
 
 ## Problem
 
-Links and validation constraints might point to keys not loaded
-with the respective `kdbGet`.
+Links (`fallback` and `override`) and validation constraints might point to keys not loaded with the respective `kdbGet`.
 
 ## Constraints
 
 - no workaround such as `kdb get -a`
 
 ## Assumptions
+
+- it is too expensive to always load all keys
+  (as some backends are not cacheable)
 
 ## Considered Alternatives
 
@@ -19,18 +21,18 @@ with the respective `kdbGet`.
   2. first do `kdbGet` on the `spec:/`-namespace
   3. then calculate which backends are needed
   4. then fetch all backends as needed
-- split loops in `kdbGet` not only according placements
-  but also according namespace (get spec first)
+- split loops in `kdbGet` not only according placements but also according namespace (get spec first)
 
 ## Decision
 
-Not supported, admins/maintainers need to stay with their spec within what applications request by `kdbGet`.
+Implementation delayed after 1.0.
+
+For now, the specification can only refer to what applications request by `kdbGet`.
 
 ## Rationale
 
-- it is too expensive to always load all keys (@mpranj: is this true?)
 - problems in implementing to always get everything
-- it makes the parameter to `kdbGet` basically useless
+- it would make the parameter `parentKey` to `kdbGet` useless
 
 ## Implications
 
@@ -40,4 +42,4 @@ Not supported, admins/maintainers need to stay with their spec within what appli
 
 ## Notes
 
-see #1291
+- Was part of [improved KDB logic #1291](https://issues.libelektra.org/1291)
