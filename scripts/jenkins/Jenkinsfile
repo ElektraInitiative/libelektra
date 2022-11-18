@@ -288,7 +288,7 @@ def dockerInit() {
       "./scripts/docker/debian/buster/minimal.Dockerfile"
     )
 
-    /* A Docker image for crossbuilding i386
+    /* A Docker image for cross-building i386
      */
     DOCKER_IMAGES.buster_i386 = dockerUtils.createDockerImageDesc(
       "debian-buster-i386", dockerUtils.&idTesting,
@@ -354,7 +354,7 @@ def dockerInit() {
       false
     )
 
-    /* Image building elektra web base image */
+    /* Image building Elektra webui base image */
     DOCKER_IMAGES.webui_base = dockerUtils.createDockerImageDesc(
       "web-base", dockerUtils.&idArtifact,
       ".",
