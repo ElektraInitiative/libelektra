@@ -58,6 +58,6 @@ This partial use of separate functions can be weird and unintuitive.
 ## Related Decisions
 
 - [Plugin Contract Function](plugin_contract_function.md)
-- [Plugin Struct](plugin_struct.md)
+- [Plugin Struct](../0a_delayed/plugin_struct.md)
 
 ## Notes
