@@ -2,9 +2,8 @@
 
 ## Problem
 
-Only plugins like `dump` and `quickdump` are able to represent any KeySet
-(as they are designed to do so). Limitations of other storage plugins are
-e.g., that not every structure of configuration is allowed.
+Only plugins like `dump` and `quickdump` are able to represent any KeySet (as they are designed to do so).
+Limitations of other storage plugins are e.g., that not every structure of configuration is allowed.
 
 Some of these limitations were documented `infos/status`, others were not.
 
@@ -29,13 +28,11 @@ Some of these limitations were documented `infos/status`, others were not.
 ## Decision
 
 Add `infos/features/storage` to document limitations of storage plugins.
-Ideally, storage plugins should throw an error in `kdbSet` for
-unrepresentable KeySets.
+Ideally, storage plugins should throw an error in `kdbSet` for unrepresentable KeySets.
 
-Elektra cannot guarantee that any configuration file format can
-be mounted anywhere.
-Developers, maintainers and administrators are responsible for what
-they mount. They need to test the setup.
+Elektra cannot guarantee that any configuration file format can be mounted anywhere.
+Developers, maintainers and administrators are responsible for what they mount.
+They need to test the setup.
 
 ## Rationale
 
