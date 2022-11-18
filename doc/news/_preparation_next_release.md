@@ -174,9 +174,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### xfconf
 
-- <<TODO>>
+- Add xfconf storage plugin with the ability to read and write to xfconf channels _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
