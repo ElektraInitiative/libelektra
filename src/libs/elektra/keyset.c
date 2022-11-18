@@ -36,6 +36,61 @@
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
 
+static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const struct _KeySetData * source ELEKTRA_UNUSED);
+
+static struct _KeySetData * keySetDataCopy (const struct _KeySetData * original)
+{
+	struct _KeySetData * copy = keySetDataNew ();
+	copy->alloc = original->alloc;
+	copy->current = original->current;
+	copy->cursor = original->cursor;
+	copy->size = original->size;
+	copy->flags = original->flags;
+
+	if (original->alloc > 0)
+	{
+		copy->array = elektraMalloc (original->alloc * sizeof (struct _Key *));
+		memcpy (copy->array, original->array, original->alloc * sizeof (struct _Key *));
+		for (size_t i = 0; i < copy->size; i++)
+		{
+			Key * k = copy->array[i];
+			keyIncRef (k);
+		}
+	}
+
+	elektraOpmphmCopy (copy, original);
+
+	return copy;
+}
+
+/**
+ * Helper method: Ensures, that the supplied keyset has its own KeySetData instance
+ * @param keyset the keyset to ensure it has its own KeySetData instance
+ */
+void keySetDetachData (KeySet * keyset)
+{
+	if (!keyset)
+	{
+		return;
+	}
+
+	if (keyset->data == NULL)
+	{
+		keyset->data = keySetDataNew ();
+		keySetDataRefInc (keyset->data);
+	}
+	else if (keyset->data->refs > 1 || test_bit (keyset->flags, KS_FLAG_MMAP_ARRAY))
+	{
+		struct _KeySetData * copied = keySetDataCopy (keyset->data);
+		keySetDataRefDecAndDel (keyset->data, !test_bit (keyset->flags, KS_FLAG_MMAP_ARRAY));
+		keyset->data = copied;
+		keySetDataRefInc (keyset->data);
+
+		clear_bit(keyset->flags, KS_FLAG_MMAP_ARRAY);
+	}
+}
+
+
 /**
  * @internal
  *
@@ -47,11 +102,11 @@
  *
  * @param ks the KeySet
  */
-static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
+static void elektraOpmphmInvalidate (struct _KeySetData * ksdata ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	set_bit (ks->flags, KS_FLAG_NAME_CHANGE);
-	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
+	set_bit (ksdata->flags, KS_FLAG_NAME_CHANGE);
+	if (ksdata && ksdata->opmphm) opmphmClear (ksdata->opmphm);
 #endif
 }
 
@@ -65,7 +120,7 @@ static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
  * @param dest the destination KeySet
  * @param source the source KeySet
  */
-static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * source ELEKTRA_UNUSED)
+static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const struct _KeySetData * source ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (!source || !dest)
@@ -235,6 +290,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	KeySet * keyset = 0;
 
 	keyset = (KeySet *) elektraMalloc (sizeof (KeySet));
+	memset (keyset, 0, sizeof (KeySet));
 	if (!keyset)
 	{
 		return 0;
@@ -244,18 +300,21 @@ KeySet * ksVNew (size_t alloc, va_list va)
 
 	if (alloc == 0) return keyset;
 
+	keyset->data = keySetDataNew();
+	keySetDataRefInc (keyset->data);
+
 	alloc++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE)
-		keyset->alloc = KEYSET_SIZE;
+		keyset->data->alloc = KEYSET_SIZE;
 	else
-		keyset->alloc = alloc;
+		keyset->data->alloc = alloc;
 
-	keyset->array = elektraMalloc (sizeof (struct _Key *) * keyset->alloc);
-	if (!keyset->array)
+	keyset->data->array = elektraMalloc (sizeof (struct _Key *) * keyset->data->alloc);
+	if (!keyset->data->array)
 	{
 		return 0;
 	}
-	keyset->array[0] = 0;
+	keyset->data->array[0] = 0;
 
 	if (alloc != 0)
 	{
@@ -266,6 +325,8 @@ KeySet * ksVNew (size_t alloc, va_list va)
 			key = (struct _Key *) va_arg (va, struct _Key *);
 		}
 	}
+
+	elektraOpmphmInvalidate (keyset->data);
 
 	ksRewind (keyset); // ksAppendKey changed the internal cursor
 	return keyset;
@@ -297,15 +358,15 @@ KeySet * ksDup (const KeySet * source)
 {
 	if (!source) return 0;
 
-	size_t size = source->alloc;
-	if (size < KEYSET_SIZE)
+	KeySet * keyset = elektraMalloc (sizeof (KeySet));
+	memset (keyset, 0, sizeof(KeySet));
+
+	keyset->data = source->data;
+	if (keyset->data != NULL)
 	{
-		size = KEYSET_SIZE;
+		keySetDataRefInc (keyset->data);
 	}
 
-	KeySet * keyset = ksNew (size, KS_END);
-	ksAppend (keyset, source);
-	elektraOpmphmCopy (keyset, source);
 	return keyset;
 }
 
@@ -329,15 +390,16 @@ KeySet * ksDup (const KeySet * source)
 KeySet * ksDeepDup (const KeySet * source)
 {
 	if (!source) return 0;
+	if (!source->data) return ksNew (0, KS_END);
 
-	size_t s = source->size;
+	size_t s = source->data->size;
 	size_t i = 0;
 	KeySet * keyset = 0;
 
-	keyset = ksNew (source->alloc, KS_END);
+	keyset = ksNew (source->data->alloc, KS_END);
 	for (i = 0; i < s; ++i)
 	{
-		Key * k = source->array[i];
+		Key * k = source->data->array[i];
 		Key * d = keyDup (k, KEY_CP_ALL);
 		if (!test_bit (k->flags, KEY_FLAG_SYNC))
 		{
@@ -350,7 +412,7 @@ KeySet * ksDeepDup (const KeySet * source)
 		}
 	}
 
-	elektraOpmphmCopy (keyset, source);
+	elektraOpmphmCopy (keyset->data, source->data);
 	return keyset;
 }
 
@@ -404,13 +466,24 @@ int f (KeySet *ks)
 int ksCopy (KeySet * dest, const KeySet * source)
 {
 	if (!dest) return -1;
-	ksClear (dest);
-	if (!source) return 0;
 
-	ksAppend (dest, source);
-	ksSetCursor (dest, ksGetCursor (source));
+	if (!source)
+	{
+		ksClear (dest);
+		return 0;
+	}
 
-	elektraOpmphmCopy (dest, source);
+	if (dest->data != NULL)
+	{
+		keySetDataRefDecAndDel (dest->data, !test_bit (dest->flags, KS_FLAG_MMAP_ARRAY));
+	}
+
+	dest->data = source->data;
+	if (dest->data != NULL)
+	{
+		keySetDataRefInc (dest->data);
+	}
+
 	return 1;
 }
 
@@ -449,18 +522,6 @@ int ksDel (KeySet * ks)
 
 	ksClose (ks);
 
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (ks->opmphm)
-	{
-		opmphmDel (ks->opmphm);
-	}
-	if (ks->opmphmPredictor)
-	{
-		opmphmPredictorDel (ks->opmphmPredictor);
-	}
-
-#endif
-
 	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
 	{
 		elektraFree (ks);
@@ -487,16 +548,18 @@ int ksClear (KeySet * ks)
 {
 	if (ks == NULL) return -1;
 	ksClose (ks);
-	// ks->array empty now
 
-	if ((ks->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
+	ks->data = keySetDataNew();
+	keySetDataRefInc (ks->data);
+
+	if ((ks->data->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
 	{
-		ks->size = 0;
+		ks->data->size = 0;
 		return -1;
 	}
-	ks->alloc = KEYSET_SIZE;
+	ks->data->alloc = KEYSET_SIZE;
 
-	elektraOpmphmInvalidate (ks);
+	elektraOpmphmInvalidate (ks->data);
 	return 0;
 }
 
@@ -718,8 +781,9 @@ int keyCmp (const Key * k1, const Key * k2)
 ssize_t ksGetSize (const KeySet * ks)
 {
 	if (!ks) return -1;
+	if (!ks->data) return 0;
 
-	return ks->size;
+	return ks->data->size;
 }
 
 
@@ -754,22 +818,27 @@ if (result >= 0)
  */
 static ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 {
+	if (ks->data == NULL)
+	{
+		return -1;
+	}
+
 	ssize_t left = 0;
-	ssize_t right = ks->size;
+	ssize_t right = ks->data->size;
 	--right;
 	register int cmpresult;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
 
-	if (ks->size == 0)
+	if (ks->data->size == 0)
 	{
 		return -1;
 	}
 
-	cmpresult = keyCompareByName (&toAppend, &ks->array[right]);
+	cmpresult = keyCompareByName (&toAppend, &ks->data->array[right]);
 	if (cmpresult > 0)
 	{
-		return -((ssize_t) ks->size) - 1;
+		return -((ssize_t) ks->data->size) - 1;
 	}
 	cmpresult = 1;
 
@@ -781,7 +850,7 @@ static ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 			break;
 		}
 		middle = left + ((right - left) / 2);
-		cmpresult = keyCompareByName (&toAppend, &ks->array[middle]);
+		cmpresult = keyCompareByName (&toAppend, &ks->data->array[middle]);
 		if (cmpresult > 0)
 		{
 			insertpos = left = middle + 1;
@@ -899,6 +968,8 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		return -1;
 	}
 
+	keySetDetachData (ks);
+
 	keyLock (toAppend, KEY_LOCK_NAME);
 
 	result = ksSearchInternal (ks, toAppend);
@@ -906,19 +977,19 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 	if (result >= 0)
 	{
 		/* Seems like the key already exist. */
-		if (toAppend == ks->array[result])
+		if (toAppend == ks->data->array[result])
 		{
 			/* user tried to insert the key with same identity */
-			return ks->size;
+			return ks->data->size;
 		}
 
 		/* Pop the key in the result */
-		keyDecRef (ks->array[result]);
-		keyDel (ks->array[result]);
+		keyDecRef (ks->data->array[result]);
+		keyDel (ks->data->array[result]);
 
 		/* And use the other one instead */
 		keyIncRef (toAppend);
-		ks->array[result] = toAppend;
+		ks->data->array[result] = toAppend;
 		ksSetCursor (ks, result);
 	}
 	else
@@ -927,51 +998,51 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 
 		/* We want to append a new key
 		  in position insertpos */
-		++ks->size;
-		if (ks->size >= ks->alloc)
+		++ks->data->size;
+		if (ks->data->size >= ks->data->alloc)
 		{
 
-			size_t newSize = ks->alloc == 0 ? KEYSET_SIZE : ks->alloc * 2;
+			size_t newSize = ks->data->alloc == 0 ? KEYSET_SIZE : ks->data->alloc * 2;
 			--newSize;
 
 			if (ksResize (ks, newSize) == -1)
 			{
 				keyDel (toAppend);
-				--ks->size;
+				--ks->data->size;
 				return -1;
 			}
 
 			/* If the array was null before ksResize,
 			it was newly allocated and the size is 0.
 			So we redo the increment from earlier */
-			if (ks->size == 0)
+			if (ks->data->size == 0)
 			{
-				++ks->size;
+				++ks->data->size;
 			}
 		}
 		keyIncRef (toAppend);
 
-		if (insertpos == (ssize_t) ks->size - 1)
+		if (insertpos == (ssize_t) ks->data->size - 1)
 		{
 			/* Append it to the very end */
-			ks->array[ks->size - 1] = toAppend;
-			ks->array[ks->size] = 0;
-			ksSetCursor (ks, ks->size - 1);
+			ks->data->array[ks->data->size - 1] = toAppend;
+			ks->data->array[ks->data->size] = 0;
+			ksSetCursor (ks, ks->data->size - 1);
 		}
 		else
 		{
-			size_t n = ks->size - insertpos;
-			memmove (ks->array + (insertpos + 1), ks->array + insertpos, n * sizeof (struct Key *));
+			size_t n = ks->data->size - insertpos;
+			memmove (ks->data->array + (insertpos + 1), ks->data->array + insertpos, n * sizeof (struct Key *));
 
 			ELEKTRA_LOG_DEBUG ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n", ks->size, insertpos, n);
 
-			ks->array[insertpos] = toAppend;
+			ks->data->array[insertpos] = toAppend;
 			ksSetCursor (ks, insertpos);
 		}
-		elektraOpmphmInvalidate (ks);
+		elektraOpmphmInvalidate (ks->data);
 	}
 
-	return ks->size;
+	return ks->data->size;
 }
 
 
@@ -1004,25 +1075,27 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!ks) return -1;
 	if (!toAppend) return -1;
 
-	if (toAppend->size == 0) return ks->size;
-	if (toAppend->array == NULL) return ks->size;
+	keySetDetachData (ks);
 
-	if (ks->array == NULL)
+	if (toAppend->data == NULL || toAppend->data->size == 0) return ks->data->size;
+	if (toAppend->data->array == NULL) return ks->data->size;
+
+	if (ks->data->array == NULL)
 		toAlloc = KEYSET_SIZE;
 	else
-		toAlloc = ks->alloc;
+		toAlloc = ks->data->alloc;
 
 	/* Do only one resize in advance */
-	for (; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
+	for (; ks->data->size + toAppend->data->size >= toAlloc; toAlloc *= 2)
 		;
 	ksResize (ks, toAlloc - 1);
 
 	/* TODO: here is lots of room for optimizations */
-	for (size_t i = 0; i < toAppend->size; ++i)
+	for (size_t i = 0; i < toAppend->data->size; ++i)
 	{
-		ksAppendKey (ks, toAppend->array[i]);
+		ksAppendKey (ks, toAppend->data->array[i]);
 	}
-	return ks->size;
+	return ks->data->size;
 }
 
 /**
@@ -1032,22 +1105,22 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 {
 	for (size_t it = start; it < end; ++it)
 	{
-		if (ks->array[it]->refs == 1)
+		if (ks->data->array[it]->refs == 1)
 		{
 			// only referenced in this KeySet -> just override read-only flag
-			clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+			clear_bit (ks->data->array[it]->flags, KEY_FLAG_RO_NAME);
 		}
 		else
 		{
 			// key has other references -> dup in-place so we can safely rename it
-			Key * dup = keyDup (ks->array[it], KEY_CP_ALL);
-			keyDecRef (ks->array[it]);
+			Key * dup = keyDup (ks->data->array[it], KEY_CP_ALL);
+			keyDecRef (ks->data->array[it]);
 			dup->refs = 1;
-			ks->array[it] = dup;
+			ks->data->array[it] = dup;
 		}
-		keyReplacePrefix (ks->array[it], root, newRoot);
+		keyReplacePrefix (ks->data->array[it], root, newRoot);
 		// lock key with new name
-		set_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+		set_bit (ks->data->array[it]->flags, KEY_FLAG_RO_NAME);
 	}
 	return end - start;
 }
@@ -1099,12 +1172,15 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	if (ks == NULL || root == NULL || newRoot == NULL) return -1;
 	if (keyGetNamespace (root) == KEY_NS_CASCADING || keyGetNamespace (newRoot) == KEY_NS_CASCADING) return -1;
 
+	// TODO: do we really need to detach here?
+	keySetDetachData (ks);
+
 	// search the root
 	elektraCursor end;
 	size_t start = ksFindHierarchy (ks, root, &end);
 
 	// we found nothing
-	if (start == ks->size) return 0;
+	if (start == ks->data->size) return 0;
 
 	if (keyCmp (root, newRoot) == 0)
 	{
@@ -1113,7 +1189,7 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	}
 
 	size_t newStart = ksFindHierarchy (ks, newRoot, NULL);
-	if (newStart < ks->size && keyIsBelowOrSame (newRoot, ks->array[newStart]) == 1)
+	if (newStart < ks->data->size && keyIsBelowOrSame (newRoot, ks->data->array[newStart]) == 1)
 	{
 		// has keys below newRoot
 		if (start == newStart)
@@ -1138,8 +1214,8 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	size_t renamed = ksRenameInternal (ks, start, end, root, newRoot);
 
 	// fix order and invalidate hashmap after renaming
-	qsort (ks->array, ks->size, sizeof (struct _Key *), keyCompareByName);
-	elektraOpmphmInvalidate (ks);
+	qsort (ks->data->array, ks->data->size, sizeof (struct _Key *), keyCompareByName);
+	elektraOpmphmInvalidate (ks->data);
 
 	return renamed;
 }
@@ -1157,7 +1233,9 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
  */
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 {
-	ssize_t ssize = ks->size;
+	keySetDetachData (ks);
+
+	ssize_t ssize = ks->data->size;
 	ssize_t sto = to;
 	ssize_t sfrom = from;
 
@@ -1168,16 +1246,16 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
 	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
 
-	ks->size = ssize + sizediff;
+	ks->data->size = ssize + sizediff;
 
 	if (length != 0)
 	{
-		ret = elektraMemmove (ks->array + to, ks->array + from, length);
+		ret = elektraMemmove (ks->data->array + to, ks->data->array + from, length);
 	}
 
-	ks->array[ks->size] = 0;
+	ks->data->array[ks->data->size] = 0;
 
-	if (ret) elektraOpmphmInvalidate (ks);
+	if (ret) elektraOpmphmInvalidate (ks->data);
 
 	return ret;
 }
@@ -1213,16 +1291,17 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end)
 {
 	if (ks == NULL || root == NULL) return -1;
+	if (ks->data == NULL) return 0;
 
 	ssize_t search = ksSearchInternal (ks, root);
 	size_t it = search < 0 ? -search - 1 : search;
-	if (it == ks->size || keyGetNamespace (root) != keyGetNamespace (ks->array[it]) || keyIsBelowOrSame (root, ks->array[it]) != 1)
+	if (it == ks->data->size || keyGetNamespace (root) != keyGetNamespace (ks->data->array[it]) || keyIsBelowOrSame (root, ks->data->array[it]) != 1)
 	{
 		if (end != NULL)
 		{
-			*end = ks->size;
+			*end = ks->data->size;
 		}
-		return ks->size;
+		return ks->data->size;
 	}
 
 	if (end != NULL)
@@ -1285,7 +1364,7 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 		return NULL;
 	}
 
-	if (ks->array == NULL)
+	if (ks->data == NULL || ks->data->array == NULL)
 	{
 		return ksNew (0, KS_END);
 	}
@@ -1328,15 +1407,18 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 	elektraCursor start = ksFindHierarchy (ks, root, &end);
 
 	KeySet * returned = ksNew (end - start, KS_END);
-	elektraMemcpy (returned->array, ks->array + start, end - start);
-	returned->size = end - start;
-	if (returned->size > 0)
+	if (returned->data)
 	{
-		returned->array[returned->size] = 0;
-	}
-	for (size_t i = 0; i < returned->size; i++)
-	{
-		keyIncRef (returned->array[i]);
+		elektraMemcpy (returned->data->array, ks->data->array + start, end - start);
+		returned->data->size = end - start;
+		if (returned->data->size > 0)
+		{
+			returned->data->array[returned->data->size] = 0;
+		}
+		for (size_t i = 0; i < returned->data->size; i++)
+		{
+			keyIncRef (returned->data->array[i]);
+		}
 	}
 	return returned;
 }
@@ -1364,19 +1446,19 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
 	size_t it = search < 0 ? -search - 1 : search;
 
 	// we found nothing
-	if (it == ks->size) return -1;
+	if (it == ks->data->size) return -1;
 
 	// we found the cutpoint
 	size_t found = it;
 
 	// search the end of the keyset to cut
-	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
+	while (it < ks->data->size && keyIsBelowOrSame (cutpoint, ks->data->array[it]) == 1)
 	{
 		++it;
 	}
 
 	// correct cursor if cursor is in cut keyset
-	if (ks->current >= found && ks->current < it)
+	if (ks->data->current >= found && ks->data->current < it)
 	{
 		if (found == 0)
 		{
@@ -1384,21 +1466,21 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
 		}
 		else
 		{
-			ks->current = found - 1;
+			ks->data->current = found - 1;
 			set_cursor = 1;
 		}
 	}
 
 	// correct the cursor for the keys after the cut keyset
-	if (ks->current >= it)
+	if (ks->data->current >= it)
 	{
-		if (it >= ks->size)
+		if (it >= ks->data->size)
 		{
 			ksRewind (ks);
 		}
 		else
 		{
-			ks->current = found + ks->current - it;
+			ks->data->current = found + ks->data->current - it;
 			set_cursor = 1;
 		}
 	}
@@ -1479,13 +1561,15 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 
-	if (!ks->array) return ksNew (0, KS_END);
+	if (!ks->data || !ks->data->array) return ksNew (0, KS_END);
 
 	const char * name = keyName(cutpoint);
 	if (!name) return 0;
 	if (strcmp (name, "") == 0) return 0;
 
-	elektraOpmphmInvalidate (ks);
+	keySetDetachData (ks);
+
+	elektraOpmphmInvalidate (ks->data);
 
 	if (cutpoint->keyName->ukey[0] == KEY_NS_CASCADING)
 	{
@@ -1533,13 +1617,16 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	newsize = it - found;
 
 	returned = ksNew (newsize, KS_END);
-	elektraMemcpy (returned->array, ks->array + found, newsize);
-	returned->size = newsize;
-	if (returned->size > 0) returned->array[returned->size] = 0;
+	if (returned->data)
+	{
+		elektraMemcpy (returned->data->array, ks->data->array + found, newsize);
+		returned->data->size = newsize;
+		if (returned->data->size > 0) returned->data->array[returned->data->size] = 0;
+	}
 
 	ksCopyInternal (ks, found, it);
 
-	if (set_cursor) ks->cursor = ks->array[ks->current];
+	if (set_cursor) ks->data->cursor = ks->data->array[ks->data->current];
 
 	if (ret)
 	{
@@ -1594,18 +1681,20 @@ Key * ksPop (KeySet * ks)
 {
 	Key * ret = 0;
 
-	if (!ks) return 0;
+	if (!ks || !ks->data) return 0;
+
+	keySetDetachData (ks);
 
 	ks->flags |= KS_FLAG_SYNC;
 
-	if (ks->size == 0) return 0;
+	if (ks->data->size == 0) return 0;
 
-	elektraOpmphmInvalidate (ks);
+	elektraOpmphmInvalidate (ks->data);
 
-	--ks->size;
-	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);
-	ret = ks->array[ks->size];
-	ks->array[ks->size] = 0;
+	--ks->data->size;
+	if (ks->data->size + 1 < ks->data->alloc / 2) ksResize (ks, ks->data->alloc / 2 - 1);
+	ret = ks->data->array[ks->data->size];
+	ks->data->array[ks->data->size] = 0;
 	keyDecRef (ret);
 
 	return ret;
@@ -1641,9 +1730,12 @@ while ((key = ksNext (ks))!=0) {}
 int ksRewind (KeySet * ks)
 {
 	if (!ks) return -1;
+	if (!ks->data) return 0;
 
-	ks->cursor = 0;
-	ks->current = 0;
+	keySetDetachData (ks);
+
+	ks->data->cursor = 0;
+	ks->data->current = 0;
 	return 0;
 }
 
@@ -1678,16 +1770,18 @@ int ksRewind (KeySet * ks)
  */
 Key * ksNext (KeySet * ks)
 {
-	if (!ks) return 0;
+	if (!ks || !ks->data) return 0;
 
-	if (ks->size == 0) return 0;
-	if (ks->current >= ks->size)
+	keySetDetachData (ks);
+
+	if (ks->data->size == 0) return 0;
+	if (ks->data->current >= ks->data->size)
 	{
 		return 0;
 	}
 
-	if (ks->cursor) ks->current++;
-	return ks->cursor = ks->array[ks->current];
+	if (ks->data->cursor) ks->data->current++;
+	return ks->data->cursor = ks->data->array[ks->data->current];
 }
 
 
@@ -1711,9 +1805,9 @@ Key * ksNext (KeySet * ks)
  */
 Key * ksCurrent (const KeySet * ks)
 {
-	if (!ks) return 0;
+	if (!ks || ! ks->data) return 0;
 
-	return ks->cursor;
+	return ks->data->cursor;
 }
 
 /**
@@ -1802,12 +1896,12 @@ int f (KeySet *ks)
  */
 elektraCursor ksGetCursor (const KeySet * ks)
 {
-	if (!ks) return (elektraCursor) -1;
+	if (!ks || !ks->data) return (elektraCursor) -1;
 
-	if (ks->cursor == 0)
+	if (ks->data->cursor == 0)
 		return (elektraCursor) -1;
 	else
-		return (elektraCursor) ks->current;
+		return (elektraCursor) ks->data->current;
 }
 
 /**
@@ -1827,9 +1921,10 @@ elektraCursor ksGetCursor (const KeySet * ks)
 Key * ksAtCursor (const KeySet * ks, elektraCursor pos)
 {
 	if (!ks) return 0;
+	if (!ks->data) return 0;
 	if (pos < 0) return 0;
-	if (ks->size <= (size_t) pos) return 0;
-	return ks->array[pos];
+	if (ks->data->size <= (size_t) pos) return 0;
+	return ks->data->array[pos];
 }
 
 
@@ -1873,13 +1968,15 @@ int ksSetCursor (KeySet * ks, elektraCursor cursor)
 {
 	if (!ks) return -1;
 
+	keySetDetachData (ks);
+
 	if ((elektraCursor) -1 == cursor)
 	{
 		ksRewind (ks);
 		return 0;
 	}
-	ks->current = (size_t) cursor;
-	ks->cursor = ks->array[ks->current];
+	ks->data->current = (size_t) cursor;
+	ks->data->cursor = ks->data->array[ks->data->current];
 	return 1;
 }
 
@@ -2186,11 +2283,11 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, elektraLoo
 	Key ** found;
 	size_t jump = 0;
 	/*If there is a known offset in the beginning jump could be set*/
-	found = (Key **) bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByName);
+	found = (Key **) bsearch (&key, ks->data->array + jump, ks->data->size - jump, sizeof (Key *), keyCompareByName);
 
 	if (found)
 	{
-		cursor = found - ks->array;
+		cursor = found - ks->data->array;
 		if (options & KDB_O_POP)
 		{
 			return elektraKsPopAtCursor (ks, cursor);
@@ -2239,24 +2336,24 @@ static const char * elektraOpmphmGetString (void * data)
  */
 static int elektraLookupBuildOpmphm (KeySet * ks)
 {
-	if (ks->size > KDB_OPMPHM_MAX_N)
+	if (ks->data->size > KDB_OPMPHM_MAX_N)
 	{
 		return -1;
 	}
-	if (!ks->opmphm)
+	if (!ks->data->opmphm)
 	{
-		ks->opmphm = opmphmNew ();
-		if (!ks->opmphm)
+		ks->data->opmphm = opmphmNew ();
+		if (!ks->data->opmphm)
 		{
 			return -1;
 		}
 	}
 	ELEKTRA_ASSERT (!opmphmIsBuild (ks->opmphm), "OPMPHM already build");
 	// make graph
-	uint8_t r = opmphmOptR (ks->size);
+	uint8_t r = opmphmOptR (ks->data->size);
 	double c = opmphmMinC (r);
-	c += opmphmOptC (ks->size);
-	OpmphmGraph * graph = opmphmGraphNew (ks->opmphm, r, ks->size, c);
+	c += opmphmOptC (ks->data->size);
+	OpmphmGraph * graph = opmphmGraphNew (ks->data->opmphm, r, ks->data->size, c);
 	if (!graph)
 	{
 		return -1;
@@ -2264,7 +2361,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	// make init
 	OpmphmInit init;
 	init.getName = elektraOpmphmGetString;
-	init.data = (void **) ks->array;
+	init.data = (void **) ks->data->array;
 	init.initSeed = elektraRandGetInitSeed ();
 
 	// mapping
@@ -2272,7 +2369,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	int ret;
 	do
 	{
-		ret = opmphmMapping (ks->opmphm, graph, &init, ks->size);
+		ret = opmphmMapping (ks->data->opmphm, graph, &init, ks->data->size);
 		++mappings;
 	} while (ret && mappings < 10);
 	if (ret && mappings == 10)
@@ -2282,7 +2379,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	}
 
 	// assign
-	if (opmphmAssignment (ks->opmphm, graph, ks->size, 1))
+	if (opmphmAssignment (ks->data->opmphm, graph, ks->data->size, 1))
 	{
 		opmphmGraphDel (graph);
 		return -1;
@@ -2312,13 +2409,13 @@ static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, elektraLoo
 	ELEKTRA_ASSERT (opmphmIsBuild (ks->opmphm), "OPMPHM not build");
 	elektraCursor cursor = 0;
 	cursor = ksGetCursor (ks);
-	size_t index = opmphmLookup (ks->opmphm, ks->size, keyName (key));
-	if (index >= ks->size)
+	size_t index = opmphmLookup (ks->data->opmphm, ks->data->size, keyName (key));
+	if (index >= ks->data->size)
 	{
 		return 0;
 	}
 
-	Key * found = ks->array[index];
+	Key * found = ks->data->array[index];
 
 	if (!strcmp (keyName (found), keyName (key)))
 	{
@@ -2349,7 +2446,7 @@ static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, elektraLoo
  */
 static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags options)
 {
-	if (!ks->size) return 0;
+	if (!ks->data || !ks->data->size) return 0;
 	typedef Key * (*callback_t) (KeySet * ks, Key * key, Key * found, elektraLookupFlags options);
 	union
 	{
@@ -2360,22 +2457,22 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (!ks->opmphmPredictor && ks->size > opmphmPredictorActionLimit)
+	if (!ks->data->opmphmPredictor && ks->data->size > opmphmPredictorActionLimit)
 	{
 		// lazy loading of predictor when over action limit
-		ks->opmphmPredictor = opmphmPredictorNew ();
+		ks->data->opmphmPredictor = opmphmPredictorNew ();
 	}
 
 	// predictor
 	if (!test_bit (options, (KDB_O_BINSEARCH | KDB_O_OPMPHM)))
 	{
 		// predictor not overruled
-		if (ks->opmphmPredictor)
+		if (ks->data->opmphmPredictor)
 		{
-			if (test_bit (ks->flags, KS_FLAG_NAME_CHANGE))
+			if (test_bit (ks->data->flags, KS_FLAG_NAME_CHANGE))
 			{
 				// KeySet changed ask predictor
-				if (opmphmPredictor (ks->opmphmPredictor, ks->size))
+				if (opmphmPredictor (ks->data->opmphmPredictor, ks->data->size))
 				{
 					set_bit (options, KDB_O_OPMPHM);
 				}
@@ -2384,16 +2481,16 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 					set_bit (options, KDB_O_BINSEARCH);
 				}
 				// resolve flag
-				clear_bit (ks->flags, (keyflag_t) KS_FLAG_NAME_CHANGE);
+				clear_bit (ks->data->flags, (keyflag_t) KS_FLAG_NAME_CHANGE);
 			}
 			else
 			{
-				if (opmphmIsBuild (ks->opmphm))
+				if (opmphmIsBuild (ks->data->opmphm))
 				{
-					opmphmPredictorIncCountOpmphm (ks->opmphmPredictor);
+					opmphmPredictorIncCountOpmphm (ks->data->opmphmPredictor);
 					set_bit (options, KDB_O_OPMPHM);
 				}
-				else if (opmphmPredictorIncCountBinarySearch (ks->opmphmPredictor, ks->size))
+				else if (opmphmPredictorIncCountBinarySearch (ks->data->opmphmPredictor, ks->data->size))
 				{
 					// endless binary search protection
 					set_bit (options, KDB_O_OPMPHM);
@@ -2414,7 +2511,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 	// the actual lookup
 	if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_OPMPHM)
 	{
-		if (opmphmIsBuild (ks->opmphm) || !elektraLookupBuildOpmphm (ks))
+		if (opmphmIsBuild (ks->data->opmphm) || !elektraLookupBuildOpmphm (ks))
 		{
 			found = elektraLookupOpmphmSearch (ks, key, options);
 		}
@@ -2431,7 +2528,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 	else
 	{
 		// both flags set, make the best out of it
-		if (opmphmIsBuild (ks->opmphm))
+		if (opmphmIsBuild (ks->data->opmphm))
 		{
 			found = elektraLookupOpmphmSearch (ks, key, options);
 		}
@@ -2624,7 +2721,7 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	if (!ks) return 0;
 	if (!name) return 0;
 
-	if (!ks->size) return 0;
+	if (!ks->data || !ks->data->size) return 0;
 
 	struct _Key key;
 	key.meta = NULL;
@@ -2672,47 +2769,49 @@ int ksResize (KeySet * ks, size_t alloc)
 {
 	if (!ks) return -1;
 
+	keySetDetachData (ks);
+
 	alloc++; /* for ending null byte */
-	if (alloc == ks->alloc) return 1;
-	if (alloc < ks->size) return 0;
+	if (alloc == ks->data->alloc) return 1;
+	if (alloc < ks->data->size) return 0;
 	if (alloc < KEYSET_SIZE)
 	{
-		if (ks->alloc != KEYSET_SIZE)
+		if (ks->data->alloc != KEYSET_SIZE)
 			alloc = KEYSET_SIZE;
 		else
 			return 0;
 	}
 
-	if (ks->array == NULL)
+	if (ks->data->array == NULL)
 	{ /* Not allocated up to now */
-		ks->alloc = alloc;
-		ks->size = 0;
-		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		ks->data->alloc = alloc;
+		ks->data->size = 0;
+		ks->data->array = elektraMalloc (sizeof (struct _Key *) * ks->data->alloc);
 		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
-		if (!ks->array)
+		if (!ks->data->array)
 		{
 			return -1;
 		}
 	}
-	ks->alloc = alloc;
+	ks->data->alloc = alloc;
 
 	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
 	{
 		// need to move the ks->array out of mmap
-		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->data->alloc);
 		if (!new)
 		{
 			return -1;
 		}
-		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
-		ks->array = new;
+		elektraMemcpy (new, ks->data->array, ks->data->size + 1); // copy including ending NULL
+		ks->data->array = new;
 		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 	}
 
-	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
+	if (elektraRealloc ((void **) &ks->data->array, sizeof (struct _Key *) * ks->data->alloc) == -1)
 	{
-		elektraFree (ks->array);
-		ks->array = 0;
+		elektraFree (ks->data->array);
+		ks->data->array = 0;
 		return -1;
 	}
 
@@ -2731,7 +2830,12 @@ int ksResize (KeySet * ks, size_t alloc)
  * @return allocated size*/
 size_t ksGetAlloc (const KeySet * ks)
 {
-	return ks->alloc - 1;
+	if(!ks->data)
+	{
+		return 0;
+	}
+
+	return ks->data->alloc - 1;
 }
 
 
@@ -2751,22 +2855,16 @@ size_t ksGetAlloc (const KeySet * ks)
  */
 int ksInit (KeySet * ks)
 {
-	ks->array = 0;
-
-	ks->size = 0;
-	ks->alloc = 0;
 	ks->flags = 0;
 	ks->refs = 0;
-	ks->cursor = 0;
 
-	ksRewind (ks);
+	if (ks->data == NULL)
+	{
+		return 0;
+	}
 
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->opmphm = NULL;
-	// first lookup should predict so invalidate it
-	elektraOpmphmInvalidate (ks);
-	ks->opmphmPredictor = NULL;
-#endif
+	keySetDataRefDecAndDel (ks->data, true);
+	ks->data = NULL;
 
 	return 0;
 }
@@ -2792,26 +2890,9 @@ int ksClose (KeySet * ks)
 {
 	if (ks == NULL) return -1;
 
-	if (ks->array)
-	{
-		for (size_t i = 0; i < ks->size; i++)
-		{
-			keyDecRef (ks->array[i]);
-			keyDel (ks->array[i]);
-		}
-	}
-	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
-	{
-		elektraFree (ks->array);
-	}
+	keySetDataRefDecAndDel (ks->data, !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY));
+	ks->data = NULL;
 	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
-
-	ks->array = NULL;
-	ks->alloc = 0;
-	ks->size = 0;
-	ksRewind (ks);
-
-	elektraOpmphmInvalidate (ks);
 
 	return 0;
 }

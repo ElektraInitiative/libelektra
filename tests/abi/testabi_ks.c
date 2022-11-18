@@ -221,8 +221,10 @@ static void test_ksReference (void)
 	succeed_if (ksAtCursor (ks1, 0) == k2, "head in dup wrong");
 	succeed_if (ksAtCursor (ks1, ksGetSize (ks1) - 1) == k1, "tail in dup wrong");
 
-	succeed_if (keyGetRef (k1) == 2, "reference counter after duplication of keyset");
-	succeed_if (keyGetRef (k2) == 2, "reference counter after ksdup");
+	// COW - key references stay the same
+	succeed_if (keyGetRef (k1) == 1, "reference counter after duplication of keyset");
+	succeed_if (keyGetRef (k2) == 1, "reference counter after ksdup");
+
 	k1 = ksPop (ks);
 	succeed_if (keyGetRef (k1) == 1, "reference counter after pop");
 	keyDel (k1);
@@ -257,7 +259,8 @@ static void test_ksReference (void)
 		succeed_if (keyGetRef (k1) == i, "reference counter");
 		succeed_if (keyGetRef (k2) == 1, "reference counter");
 		kss[i] = ksDup (kss[i - 1]);
-		succeed_if (keyGetRef (k2) == 2, "reference counter");
+		// COW - key references stay the same after a ksDup
+		succeed_if (keyGetRef (k2) == 1, "reference counter");
 		succeed_if_same_string (keyName (ksPop (kss[i - 1])), "system:/key");
 		succeed_if (keyGetRef (k2) == 1, "reference counter");
 		succeed_if (keyDel (k2) == 1, "delete key");
@@ -2905,7 +2908,8 @@ static void test_ksAppend2 (void)
 	ksAppendKey (ks, parent);
 	succeed_if (keyGetRef (parent) == 1, "ref wrong");
 	KeySet * iter = ksDup (ks);
-	succeed_if (keyGetRef (parent) == 2, "ref wrong");
+	// COW - key reference stays same after ksDup
+	succeed_if (keyGetRef (parent) == 1, "ref wrong");
 	ksRewind (iter);
 	Key * key = ksNext (iter);
 	succeed_if (keyGetMeta (key, "name") == 0, "no such meta exists");

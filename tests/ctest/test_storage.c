@@ -191,7 +191,7 @@ static void test_double_get (const size_t storagePlugin, const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, first, parentKey) == 1, "kdbGet was not successful");
 	KeySet * second = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, second, parentKey) == 1, "kdbGet was not successful");
-	succeed_if (first->array != second->array, "ks->array points to same thing");
+	succeed_if (first->data->array != second->data->array, "ks->array points to same thing");
 
 	compare_keyset (first, ks);
 	compare_keyset (ks, first);

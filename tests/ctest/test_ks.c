@@ -178,17 +178,15 @@ static void test_ksNoAlloc (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (ks->alloc == 0, "alloc is not 0");
-	succeed_if (ks->size == 0, "size is not 0");
-	succeed_if (ks->array == NULL, "array is not NULL");
+	succeed_if (ks->data == NULL, "should not allocate data");
 
 	ksDel (ks);
 
 	ks = ksNew (1, KS_END);
 
-	succeed_if (ks->alloc != 0, "alloc is 0");
-	succeed_if (ks->size == 0, "size is not 0");
-	succeed_if (ks->array != NULL, "array is NULL");
+	succeed_if (ks->data->alloc != 0, "alloc is 0");
+	succeed_if (ks->data->size == 0, "size is not 0");
+	succeed_if (ks->data->array != NULL, "array is NULL");
 
 	ksDel (ks);
 }

@@ -312,6 +312,44 @@ struct _Key
 	uint16_t reserved;
 };
 
+struct _KeySetData
+{
+	struct _Key ** array; /**<Array which holds the keys */
+
+	size_t size;  /**< Number of keys contained in the KeySet */
+	size_t alloc; /**< Allocated size of array */
+
+	struct _Key * cursor; /**< Internal cursor */
+	size_t current;		  /**< Current position of cursor */
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map.
+	 */
+	Opmphm * opmphm;
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map Predictor.
+	 */
+	OpmphmPredictor * opmphmPredictor;
+#endif
+
+	/**
+	 * Some control and internal flags.
+	 */
+	ksflag_t flags;
+
+	uint16_t refs; /**< Reference counter */
+};
+
+// COW methods for keyset
+
+struct _KeySetData * keySetDataNew (void);
+uint16_t keySetDataRefInc (struct _KeySetData * keysetdata);
+uint16_t keySetDataRefDec (struct _KeySetData * keysetdata);
+uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata, bool deleteData);
+void keySetDataDel (struct _KeySetData * keysetdata, bool deleteData);
+
+void keySetDetachData (KeySet * keyset);
 
 /**
  * The private KeySet structure.
@@ -328,13 +366,10 @@ typedef struct _KeySet KeySet;
  */
 struct _KeySet
 {
-	struct _Key ** array; /**<Array which holds the keys */
-
-	size_t size;  /**< Number of keys contained in the KeySet */
-	size_t alloc; /**< Allocated size of array */
-
-	struct _Key * cursor; /**< Internal cursor */
-	size_t current;		  /**< Current position of cursor */
+	/**
+	 * Copy-on-write data
+	 */
+	struct _KeySetData * data;
 
 	/**
 	 * Some control and internal flags.
@@ -344,17 +379,6 @@ struct _KeySet
 	uint16_t refs; /**< Reference counter */
 
 	uint16_t reserved; /**< Reserved for future use */
-
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	/**
-	 * The Order Preserving Minimal Perfect Hash Map.
-	 */
-	Opmphm * opmphm;
-	/**
-	 * The Order Preserving Minimal Perfect Hash Map Predictor.
-	 */
-	OpmphmPredictor * opmphmPredictor;
-#endif
 };
 
 typedef struct _SendNotificationHook
