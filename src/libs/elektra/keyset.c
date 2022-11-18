@@ -1291,7 +1291,15 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end)
 {
 	if (ks == NULL || root == NULL) return -1;
-	if (ks->data == NULL) return 0;
+	if (ks->data == NULL)
+	{
+		if (end != NULL)
+		{
+			*end = 0;
+		}
+
+		return 0;
+	}
 
 	ssize_t search = ksSearchInternal (ks, root);
 	size_t it = search < 0 ? -search - 1 : search;
