@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage/xfconf
 - infos/recommends =
-- infos/placements = getstorage setstorage
+- infos/placements = postgetstorage presetstorage
 - infos/status = maintained libc configurable experimental unfinished
 - infos/metadata =
 - infos/description = storage plugin for xfconf
@@ -23,7 +23,7 @@ The usage is identical to most storage plugins except that the channel option du
 
 ## Examples
 
-```sh
+```zsh
 # Backup-and-Restore: user:/tests/xfconf
 
 # mount the xfwm channel
