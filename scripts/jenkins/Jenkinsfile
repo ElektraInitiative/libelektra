@@ -304,35 +304,30 @@ def dockerInit() {
       "./scripts/docker/alpine/3.16/Dockerfile"
     )
 
-    /* Ubuntu bionic image*/
     DOCKER_IMAGES.bionic = dockerUtils.createDockerImageDesc(
       "bionic", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/bionic",
       "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
-    /* Ubuntu focal image*/
     DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
       "focal", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/focal",
       "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
-    /* Fedora 36 image*/
     DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
       "fedora-36", dockerUtils.&idTesting,
       "./scripts/docker/fedora/36",
       "./scripts/docker/fedora/36/Dockerfile"
     )
 
-    /* Fedora 37 image*/
     DOCKER_IMAGES.fedora_37 = dockerUtils.createDockerImageDesc(
       "fedora-37", dockerUtils.&idTesting,
       "./scripts/docker/fedora/37",
       "./scripts/docker/fedora/37/Dockerfile"
     )
 
-    /* openSUSE Leap 15.3 image*/
     DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
       "opensuse-15-3", dockerUtils.&idTesting,
       "./scripts/docker/opensuse/15.3",
