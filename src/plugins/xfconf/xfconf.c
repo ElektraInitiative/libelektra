@@ -8,6 +8,7 @@
  */
 
 #include "xfconf.h"
+#include "kdberrors.h"
 
 #include <kdb.h>
 #include <kdbease.h>
@@ -27,6 +28,7 @@ int elektraXfconfOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UN
 	else
 	{
 		ELEKTRA_LOG ("unable to initialize xfconf(%d): %s\n", err->code, err->message);
+		ELEKTRA_SET_INTERFACE_ERROR (errorKey, err->message);
 		g_error_free (err);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
