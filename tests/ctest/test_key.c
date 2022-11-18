@@ -410,14 +410,14 @@ static void test_keySetName (void)
 
 	keySetName (key, "meta:/");
 	succeed_if_same_string (keyName (key), "meta:/");
-	succeed_if (key->key != 0, "null pointer?");
+	succeed_if (key->keyName->key != 0, "null pointer?");
 	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/");
 	keyDel (dup);
 
 	keySetName (key, "meta:/other");
 	succeed_if_same_string (keyName (key), "meta:/other");
-	succeed_if (key->key != 0, "null pointer?");
+	succeed_if (key->keyName->key != 0, "null pointer?");
 	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/other");
 	keyDel (dup);

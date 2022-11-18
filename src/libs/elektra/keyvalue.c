@@ -162,17 +162,17 @@ kdbClose (handle);
  */
 const void * keyValue (const Key * key)
 {
-	if (!key) return 0;
+	if (!key) return NULL;
 
-	if (!key->data.v)
+	if (!key->keyData || !key->keyData->data.v)
 	{
 		if (keyIsBinary (key))
-			return 0;
+			return NULL;
 		else
 			return "";
 	}
 
-	return key->data.v;
+	return key->keyData->data.v;
 }
 
 
@@ -209,7 +209,7 @@ const char * keyString (const Key * key)
 {
 	if (!key) return "(null)";
 
-	if (!key->data.c)
+	if (!key->keyData || !key->keyData->data.c)
 	{
 		return "";
 	}
@@ -219,7 +219,7 @@ const char * keyString (const Key * key)
 		return "(binary)";
 	}
 
-	return key->data.c;
+	return key->keyData->data.c;
 }
 
 
@@ -267,7 +267,7 @@ ssize_t keyGetValueSize (const Key * key)
 {
 	if (!key) return -1;
 
-	if (!key->data.v)
+	if (!key->keyData || !key->keyData->data.v)
 	{
 		if (keyIsBinary (key))
 			return 0;
@@ -275,7 +275,7 @@ ssize_t keyGetValueSize (const Key * key)
 			return 1;
 	}
 
-	return key->dataSize;
+	return key->keyData->dataSize;
 }
 
 
@@ -331,20 +331,20 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
 		return -1;
 	}
 
-	if (!key->data.v)
+	if (!key->keyData || !key->keyData->data.v)
 	{
 		returnedString[0] = 0;
 		return 1;
 	}
 
-	if (key->dataSize > maxSize)
+	if (key->keyData->dataSize > maxSize)
 	{
 		return -1;
 	}
 
 
-	strncpy (returnedString, key->data.c, maxSize);
-	return key->dataSize;
+	strncpy (returnedString, key->keyData->data.c, maxSize);
+	return key->keyData->dataSize;
 }
 
 
@@ -453,18 +453,18 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 		return -1;
 	}
 
-	if (!key->data.v)
+	if (!key->keyData || !key->keyData->data.v)
 	{
 		return 0;
 	}
 
-	if (key->dataSize > maxSize)
+	if (key->keyData->dataSize > maxSize)
 	{
 		return -1;
 	}
 
-	memcpy (returnedBinary, key->data.v, key->dataSize);
-	return key->dataSize;
+	memcpy (returnedBinary, key->keyData->data.v, key->keyData->dataSize);
+	return key->keyData->dataSize;
 }
 
 
@@ -551,53 +551,66 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	if (!key) return -1;
 	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
 
+	if ((key->keyData != NULL && key->keyData->refs > 1))
+	{
+		keyDataRefDecAndDel (key->keyData, !test_bit (key->flags, KEY_FLAG_MMAP_DATA));
+		key->keyData = NULL;
+	}
+
+	if (key->keyData == NULL)
+	{
+		key->keyData = keyDataNew ();
+		keyDataRefInc (key->keyData);
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
+	}
+
 	if (!dataSize || !newBinary)
 	{
-		if (key->data.v)
+		if (key->keyData->data.v)
 		{
-			if (!test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
-			key->data.v = NULL;
+			if (!test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->keyData->data.v);
+			key->keyData->data.v = NULL;
 			clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
 		}
-		key->dataSize = 0;
+		key->keyData->dataSize = 0;
 		set_bit (key->flags, KEY_FLAG_SYNC);
 		if (keyIsBinary (key)) return 0;
 		return 1;
 	}
 
-	key->dataSize = dataSize;
-	if (key->data.v)
+	key->keyData->dataSize = dataSize;
+	if (key->keyData->data.v)
 	{
-		char * previous = key->data.v;
+		char * previous = key->keyData->data.v;
 
 		if (test_bit (key->flags, KEY_FLAG_MMAP_DATA))
 		{
 			clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
-			key->data.v = elektraMalloc (key->dataSize);
-			if (key->data.v == NULL) return -1;
+			key->keyData->data.v = elektraMalloc (key->keyData->dataSize);
+			if (key->keyData->data.v == NULL) return -1;
 		}
 		else
 		{
-			if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
+			if (-1 == elektraRealloc ((void **) &key->keyData->data.v, key->keyData->dataSize)) return -1;
 		}
 
-		if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
-		if (previous == key->data.v)
+		if (-1 == elektraRealloc ((void **) &key->keyData->data.v, key->keyData->dataSize)) return -1;
+		if (previous == key->keyData->data.v)
 		{
 			// In case the regions overlap, use memmove to stay safe
-			memmove (key->data.v, newBinary, key->dataSize);
+			memmove (key->keyData->data.v, newBinary, key->keyData->dataSize);
 		}
 		else
 		{
-			memcpy (key->data.v, newBinary, key->dataSize);
+			memcpy (key->keyData->data.v, newBinary, key->keyData->dataSize);
 		}
 	}
 	else
 	{
-		char * p = elektraMalloc (key->dataSize);
+		char * p = elektraMalloc (key->keyData->dataSize);
 		if (NULL == p) return -1;
-		key->data.v = p;
-		memcpy (key->data.v, newBinary, key->dataSize);
+		key->keyData->data.v = p;
+		memcpy (key->keyData->data.v, newBinary, key->keyData->dataSize);
 	}
 
 	set_bit (key->flags, KEY_FLAG_SYNC);

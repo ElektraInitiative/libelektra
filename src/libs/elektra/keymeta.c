@@ -442,7 +442,6 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString)
 {
 	Key * toSet;
-	char * metaStringDup;
 	ssize_t metaNameSize;
 	ssize_t metaStringSize = 0;
 
@@ -483,19 +482,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	if (newMetaString != NULL)
 	{
 		/*Add the meta information to the key*/
-		metaStringDup = elektraMemDup (newMetaString, metaStringSize);
-		if (metaStringDup == NULL)
-		{
-			// TODO: actually we might already have changed
-			// the key
-			keyDel (toSet);
-			return -1;
-		}
-
-		if (toSet->data.v && !test_bit (toSet->flags, KEY_FLAG_MMAP_DATA)) elektraFree (toSet->data.v);
-		clear_bit (toSet->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
-		toSet->data.c = metaStringDup;
-		toSet->dataSize = metaStringSize;
+		keySetRaw (toSet, newMetaString, metaStringSize);
 	}
 	else
 	{

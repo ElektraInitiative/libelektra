@@ -39,7 +39,7 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 		return -1;
 	}
 
-	if (key->data.c && !test_bit (key->flags, KEY_FLAG_MMAP_DATA))
+	/*if (key->data.c && !test_bit (key->flags, KEY_FLAG_MMAP_DATA))
 	{
 		elektraFree (key->data.c);
 	}
@@ -48,7 +48,9 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 	key->dataSize = elektraStrLen (key->data.c);
 	set_bit (key->flags, KEY_FLAG_SYNC);
 
-	return key->dataSize;
+	return key->dataSize;*/
+
+	return keySetRaw (key, p, elektraStrLen (p));
 }
 
 static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t spaces, const char * commentStart, const char * comment)

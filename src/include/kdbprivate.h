@@ -177,21 +177,14 @@ typedef enum {
 		 It prevents erroneous free() calls on these arrays. */
 } ksflag_t;
 
-
 /**
- * The private Key struct.
+ * The private copy-on-write key data structure.
  *
  * Its internal private attributes should not be accessed directly by regular
- * programs. Use the @ref key "Key access methods" instead.
- * Only a backend writer needs to have access to the private attributes of the
- * Key object which is defined as:
- * @code
-typedef struct _Key Key;
- * @endcode
+ * programs.
  *
- * @ingroup backend
  */
-struct _Key
+struct _KeyData
 {
 	/**
 	 * The value, which is a NULL terminated string or binary.
@@ -210,6 +203,21 @@ struct _Key
 	 */
 	size_t dataSize;
 
+	/**
+	 * Reference counter
+	 */
+	uint16_t refs;
+};
+
+/**
+ * The private copy-on-write keyname structure.
+ *
+ * Its internal private attributes should not be accessed directly by regular
+ * programs.
+ *
+ */
+struct _KeyName
+{
 	/**
 	 * The canonical (escaped) name of the key.
 	 * @see keyGetName(), keySetName()
@@ -234,6 +242,54 @@ struct _Key
 	 * @see keyBaseName(), keyUnescapedName()
 	 */
 	size_t keyUSize;
+
+	/**
+	 * Reference counter
+	 */
+	uint16_t refs;
+};
+
+// private methods for COW keys
+struct _KeyName * keyNameNew (void);
+struct _KeyName * keyNameCopy (struct _KeyName * source);
+uint16_t keyNameRefInc (struct _KeyName * keyname);
+uint16_t keyNameRefDec (struct _KeyName * keyname);
+uint16_t keyNameRefDecAndDel (struct _KeyName * keyname, bool deleteData);
+void keyNameDel (struct _KeyName * keyname, bool deleteData);
+
+void keyDetachKeyName (Key * key);
+
+struct _KeyData * keyDataNew (void);
+uint16_t keyDataRefInc (struct _KeyData * keydata);
+uint16_t keyDataRefDec (struct _KeyData * keydata);
+uint16_t keyDataRefDecAndDel (struct _KeyData * keydata, bool deleteData);
+void keyDataDel (struct _KeyData * keydata, bool deleteData);
+
+
+/**
+ * The private Key struct.
+ *
+ * Its internal private attributes should not be accessed directly by regular
+ * programs. Use the @ref key "Key access methods" instead.
+ * Only a backend writer needs to have access to the private attributes of the
+ * Key object which is defined as:
+ * @code
+typedef struct _Key Key;
+ * @endcode
+ *
+ * @ingroup backend
+ */
+struct _Key
+{
+	/**
+	 * Copy-on-write structure for the key data
+	 */
+	struct _KeyData * keyData;
+
+	/**
+	 * Copy-on-write structure for the key name
+	 */
+	struct _KeyName * keyName;
 
 	/**
 	 * All the key's meta information.

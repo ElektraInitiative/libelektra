@@ -623,10 +623,10 @@ static int keyCompareByName (const void * p1, const void * p2)
 	Key * k1 = *(Key **) p1;
 	Key * k2 = *(Key **) p2;
 
-	int k1Shorter = k1->keyUSize < k2->keyUSize;
-	size_t size = k1Shorter ? k1->keyUSize : k2->keyUSize;
-	int cmp = memcmp (k1->ukey, k2->ukey, size);
-	if (cmp != 0 || k1->keyUSize == k2->keyUSize)
+	int k1Shorter = k1->keyName->keyUSize < k2->keyName->keyUSize;
+	size_t size = k1Shorter ? k1->keyName->keyUSize : k2->keyName->keyUSize;
+	int cmp = memcmp (k1->keyName->ukey, k2->keyName->ukey, size);
+	if (cmp != 0 || k1->keyName->keyUSize == k2->keyName->keyUSize)
 	{
 		return cmp;
 	}
@@ -698,9 +698,9 @@ int keyCmp (const Key * k1, const Key * k2)
 	if (!k1) return -1;
 	if (!k2) return 1;
 
-	if (!k1->key && !k2->key) return 0;
-	if (!k1->key) return -1;
-	if (!k2->key) return 1;
+	if (!k1->keyName->key && !k2->keyName->key) return 0;
+	if (!k1->keyName->key) return -1;
+	if (!k2->keyName->key) return 1;
 
 	return keyCompareByName (&k1, &k2);
 }
@@ -892,7 +892,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 
 	if (!ks) return -1;
 	if (!toAppend) return -1;
-	if (!toAppend->key)
+	if (!toAppend->keyName->key)
 	{
 		// needed for ksAppendKey(ks, keyNew(0))
 		keyDel (toAppend);
@@ -1227,15 +1227,19 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 
 	if (end != NULL)
 	{
-		if (root->keyUSize == 3)
-		{
+		struct _KeyName * copy = keyNameCopy (root->keyName);
+		struct _KeyName * old = root->keyName;
+		((Key *)root)->keyName = copy;
+		keyNameRefInc(copy);
 
+		if (root->keyName->keyUSize == 3)
+		{
 			// special handling for root keys
 			// we just increment the namespace byte and search
 			// for the next theoretically possible namespace
-			root->ukey[0]++;
+			root->keyName->ukey[0]++;
 			ssize_t endSearch = ksSearchInternal (ks, root);
-			root->ukey[0]--;
+			root->keyName->ukey[0]--;
 			*end = endSearch < 0 ? -endSearch - 1 : endSearch;
 		}
 		else
@@ -1244,11 +1248,14 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 			// Overwriting the null terminator works fine, because
 			// all accesses to root->ukey inside of ksSearchInternal()
 			// use root->keyUSize explicitly.
-			root->ukey[root->keyUSize - 1] = '\1';
+			root->keyName->ukey[root->keyName->keyUSize - 1] = '\1';
 			ssize_t endSearch = ksSearchInternal (ks, root);
-			root->ukey[root->keyUSize - 1] = '\0';
+			root->keyName->ukey[root->keyName->keyUSize - 1] = '\0';
 			*end = endSearch < 0 ? -endSearch - 1 : endSearch;
 		}
+
+		((Key *)root)->keyName = old;
+		keyNameRefDecAndDel (copy, true);
 	}
 
 	return it;
@@ -1287,6 +1294,9 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 	{
 		KeySet * returned = ksNew (0, KS_END);
 		// HACK: ksBelow does not use escaped name (key->key), so we don't need to change it
+		// DANGER !!! In the following lines, the contents of keyName are changed directly
+		//            This should normally NOT be done with copy-on-write keys, as it changes the values for all other keys that have the same name
+		//            HOWEVER, the name is changed right back afterwards, so we allow it for now
 		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
 			switch (ns)
@@ -1298,7 +1308,7 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 			case KEY_NS_SPEC:
 			case KEY_NS_META:
 			case KEY_NS_DEFAULT: {
-				((Key *) root)->ukey[0] = ns;
+				((Key *) root)->keyName->ukey[0] = ns;
 
 				KeySet * n = ksBelow (ks, root);
 				ksAppend (returned, n);
@@ -1310,7 +1320,7 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 				break;
 			}
 		}
-		((Key *) root)->ukey[0] = KEY_NS_CASCADING;
+		((Key *) root)->keyName->ukey[0] = KEY_NS_CASCADING;
 		return returned;
 	}
 
@@ -1471,13 +1481,13 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	if (!ks->array) return ksNew (0, KS_END);
 
-	char * name = cutpoint->key;
+	const char * name = keyName(cutpoint);
 	if (!name) return 0;
 	if (strcmp (name, "") == 0) return 0;
 
 	elektraOpmphmInvalidate (ks);
 
-	if (cutpoint->ukey[0] == KEY_NS_CASCADING)
+	if (cutpoint->keyName->ukey[0] == KEY_NS_CASCADING)
 	{
 		ret = ksNew (0, KS_END);
 
@@ -1493,7 +1503,9 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			case KEY_NS_USER:
 			case KEY_NS_SYSTEM:
 			case KEY_NS_META:
-				((Key *) cutpoint)->ukey[0] = ns;
+				// DANGER !!! With copy-on-write we should NOT be modifying the key name directly, as this changes the values for all keys with the same name!
+				//            However, right after this loop we reset the value to its original value, so we shut one eye in this case ...
+				((Key *) cutpoint)->keyName->ukey[0] = ns;
 				break;
 			case KEY_NS_NONE:
 			case KEY_NS_CASCADING:
@@ -1509,7 +1521,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		}
 
 		// restore old cascading name
-		((Key *) cutpoint)->ukey[0] = KEY_NS_CASCADING;
+		((Key *) cutpoint)->keyName->ukey[0] = KEY_NS_CASCADING;
 
 		// now look for cascading keys
 		// TODO: cascading keys shouldn't be allowed in KeySet anymore
@@ -2546,7 +2558,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	if (!ks) return 0;
 	if (!key) return 0;
 
-	const char * name = key->key;
+	const char * name = keyName(key);
 	if (!name) return 0;
 
 	Key * ret = 0;
@@ -2620,8 +2632,8 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	keySetName (&key, name);
 
 	found = ksLookup (ks, &key, options);
-	elektraFree (key.key);
-	elektraFree (key.ukey);
+	keyNameDel(key.keyName, true);
+	keyDataDel (key.keyData, true);
 	ksDel (key.meta); // sometimes owner is set
 	return found;
 }

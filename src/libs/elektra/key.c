@@ -341,81 +341,54 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 
 	if (source == dest) return dest;
 
-	// remember original data of dest
-	Key orig = *dest;
-
 	// duplicate dynamic properties
 	if (test_bit (flags, KEY_CP_NAME))
 	{
-		if (source->key != NULL)
+		if (dest->keyName != NULL)
 		{
-			dest->key = elektraMemDup (source->key, source->keySize);
-			if (!dest->key) goto memerror;
-			dest->keySize = source->keySize;
+			keyNameRefDecAndDel (dest->keyName, !test_bit (dest->flags, KEY_FLAG_MMAP_KEY));
+			dest->keyName = NULL;
+		}
 
-			ELEKTRA_ASSERT (source->ukey != NULL, "key != NULL but ukey == NULL");
-			dest->ukey = elektraMemDup (source->ukey, source->keyUSize);
-			if (!dest->ukey) goto memerror;
-			dest->keyUSize = source->keyUSize;
+		if (source->keyName != NULL)
+		{
+			dest->keyName = source->keyName;
+			keyNameRefInc (dest->keyName);
 		}
 		else
 		{
-			dest->key = elektraStrDup ("/");
-			dest->keySize = 2;
-
-			dest->ukey = elektraMalloc (3);
-			dest->ukey[0] = KEY_NS_CASCADING;
-			dest->ukey[1] = '\0';
-			dest->ukey[2] = '\0';
-			dest->keyUSize = 3;
+			keySetName (dest, "/");
 		}
+
 		clear_bit (dest->flags, KEY_FLAG_MMAP_KEY);
 	}
 
-	if (test_bit (flags, KEY_CP_STRING))
+	if (test_bit (flags, KEY_CP_STRING) || test_bit (flags, KEY_CP_VALUE))
 	{
-		if (source->data.v != NULL)
+		if (dest->keyData != NULL)
 		{
-			dest->data.v = elektraMemDup (source->data.v, source->dataSize);
-			if (!dest->data.v) goto memerror;
-			dest->dataSize = source->dataSize;
+			keyDataRefDecAndDel (dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
+			dest->keyData = NULL;
+		}
+
+		if (source->keyData != NULL)
+		{
+			dest->keyData = source->keyData;
+			keyDataRefInc (dest->keyData);
 
 			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
 			{
 				keySetMeta (dest, "binary", "");
 			}
 		}
-		else
-		{
-			dest->data.v = NULL;
-			dest->dataSize = 0;
-		}
-		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
-	}
 
-	if (test_bit (flags, KEY_CP_VALUE))
-	{
-		if (source->data.v != NULL)
-		{
-			dest->data.v = elektraMemDup (source->data.v, source->dataSize);
-			if (!dest->data.v) goto memerror;
-			dest->dataSize = source->dataSize;
-
-			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
-			{
-				keySetMeta (dest, "binary", "");
-			}
-		}
-		else
-		{
-			dest->data.v = NULL;
-			dest->dataSize = 0;
-		}
 		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
 
 	if (test_bit (flags, KEY_CP_META))
 	{
+		ksDel (dest->meta);
+
 		if (source->meta != NULL)
 		{
 			dest->meta = ksDup (source->meta);
@@ -423,43 +396,30 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 		}
 		else
 		{
-			dest->meta = 0;
+			dest->meta = NULL;
 		}
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
 	set_bit (dest->flags, KEY_FLAG_SYNC);
 
-	// free old resources of destination
-	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
-	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
-	if (test_bit (flags, KEY_CP_VALUE) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA))
-	{
-		elektraFree (orig.data.v);
-	}
-	else if (test_bit (flags, KEY_CP_STRING) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA))
-	{
-		elektraFree (orig.data.c);
-	}
-
-	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
-
 	return dest;
 
 memerror:
-	elektraFree (dest->key);
-	elektraFree (dest->data.v);
+	keyNameDel (dest->keyName, !test_bit (dest->flags, KEY_FLAG_MMAP_KEY));
+	keyDataDel(dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
 	ksDel (dest->meta);
 
-	*dest = orig;
 	return NULL;
 }
 
 static void keyClearNameValue (Key * key)
 {
-	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
-	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
-	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
+	keyNameRefDecAndDel (key->keyName, !test_bit (key->flags, KEY_FLAG_MMAP_KEY));
+	key->keyName = NULL;
+
+	keyDataRefDecAndDel (key->keyData, !test_bit (key->flags, KEY_FLAG_MMAP_DATA));
+	key->keyData = NULL;
 }
 
 
@@ -751,4 +711,142 @@ int keyIsLocked (const Key * key, elektraLockFlags what)
 	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
 	what >>= 16; // to KEY_FLAG_RO_xyz
 	return (test_bit (key->flags, what) << 16);
+}
+
+struct _KeyName * keyNameNew (void)
+{
+	struct _KeyName * name = elektraMalloc (sizeof (struct _KeyName));
+	name->key = NULL;
+	name->keySize = 0;
+	name->ukey = NULL;
+	name->keyUSize = 0;
+	name->refs = 0;
+	return name;
+}
+
+uint16_t keyNameRefInc (struct _KeyName * keyname)
+{
+	if (!keyname)
+	{
+		return UINT16_MAX;
+	}
+
+	keyname->refs++;
+	return keyname->refs;
+}
+
+uint16_t keyNameRefDec (struct _KeyName * keyname)
+{
+	if (!keyname)
+	{
+		return UINT16_MAX;
+	}
+
+	keyname->refs--;
+	return keyname->refs;
+}
+
+uint16_t keyNameRefDecAndDel (struct _KeyName * keyname, bool deleteData)
+{
+	if (!keyname)
+	{
+		return UINT16_MAX;
+	}
+
+	uint16_t refs = keyNameRefDec (keyname);
+	if (keyname->refs == 0)
+	{
+		keyNameDel (keyname, deleteData);
+	}
+	return refs;
+}
+
+void keyNameDel (struct _KeyName * keyname, bool deleteData)
+{
+	if (!keyname)
+	{
+		return;
+	}
+
+	if (keyname->refs == 0)
+	{
+		if (deleteData)
+		{
+			if (keyname->key)
+			{
+				elektraFree (keyname->key);
+			}
+
+			if (keyname->ukey)
+			{
+				elektraFree (keyname->ukey);
+			}
+		}
+
+		elektraFree (keyname);
+	}
+}
+
+struct _KeyData * keyDataNew (void)
+{
+	struct _KeyData * data = elektraMalloc (sizeof(struct _KeyData));
+	data->data.v = NULL;
+	data->dataSize = 0;
+	data->refs = 0;
+	return data;
+}
+
+uint16_t keyDataRefInc (struct _KeyData * keydata)
+{
+	if (!keydata)
+	{
+		return UINT16_MAX;
+	}
+
+	keydata->refs++;
+	return keydata->refs;
+}
+
+uint16_t keyDataRefDec (struct _KeyData * keydata)
+{
+	if (!keydata)
+	{
+		return UINT16_MAX;
+	}
+
+	keydata->refs--;
+	return keydata->refs;
+}
+
+uint16_t keyDataRefDecAndDel (struct _KeyData * keydata, bool deleteData)
+{
+	if (!keydata)
+	{
+		return UINT16_MAX;
+	}
+
+	uint16_t refs = keyDataRefDec (keydata);
+	if (keydata->refs == 0)
+	{
+		keyDataDel (keydata, deleteData);
+	}
+	return refs;
+}
+
+void keyDataDel (struct _KeyData * keydata, bool deleteData)
+{
+	if (!keydata)
+	{
+		return;
+	}
+
+	if (keydata->refs == 0)
+	{
+		if (deleteData && keydata->data.v != NULL)
+		{
+			elektraFree (keydata->data.v);
+		}
+
+		elektraFree (keydata);
+	}
 }
