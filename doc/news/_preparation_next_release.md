@@ -143,7 +143,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Core
 
 - <<TODO>>
-- <<TODO>>
+- The Key and KeySet datastructures are now fully copy-on-write. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
