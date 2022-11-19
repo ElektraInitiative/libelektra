@@ -60,7 +60,7 @@
      Then the function will be looked up in `kdb->contracts`.
      Inside `libelektra-kdb` the existing `Plugin *` is faked with a stack allocated `struct _Plugin` containing only a `KDB *`.
 
-     > **Note** If the changes to `KeySet * modules` from the ["Plugin Contract Function"](plugin_contract_function.md) decision are implemented, then `kdb->contracts` becomes `kdb->modules`.
+     > **Note** If the changes to `KeySet * modules` from the ["Plugin Contract Function"](../0_drafts/plugin_contract_function.md) decision are implemented, then `kdb->contracts` becomes `kdb->modules`.
 
 5. Introduce a new `KeySet * shared` for sharing data among plugins of a single backend.
 
@@ -82,7 +82,7 @@ Don't do anything for 1.0.
 
 ## Related Decisions
 
-- [Plugin Contract Function](plugin_contract_function.md)
+- [Plugin Contract Function](../0_drafts/plugin_contract_function.md)
 - [Commit Function](commit_function.md)
 
 ## Notes
