@@ -319,9 +319,6 @@ struct _KeySetData
 	size_t size;  /**< Number of keys contained in the KeySet */
 	size_t alloc; /**< Allocated size of array */
 
-	struct _Key * cursor; /**< Internal cursor */
-	size_t current;		  /**< Current position of cursor */
-
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
 	 * The Order Preserving Minimal Perfect Hash Map.
@@ -370,6 +367,9 @@ struct _KeySet
 	 * Copy-on-write data
 	 */
 	struct _KeySetData * data;
+
+	struct _Key * cursor; /**< Internal cursor */
+	size_t current;	      /**< Current position of cursor */
 
 	/**
 	 * Some control and internal flags.

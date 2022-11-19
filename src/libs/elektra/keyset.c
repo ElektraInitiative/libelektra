@@ -47,8 +47,6 @@ static struct _KeySetData * keySetDataCopy (const struct _KeySetData * original)
 {
 	struct _KeySetData * copy = keySetDataNew ();
 	copy->alloc = original->alloc;
-	copy->current = original->current;
-	copy->cursor = original->cursor;
 	copy->size = original->size;
 	copy->flags = original->flags;
 
@@ -1477,7 +1475,7 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
 	}
 
 	// correct cursor if cursor is in cut keyset
-	if (ks->data->current >= found && ks->data->current < it)
+	if (ks->current >= found && ks->current < it)
 	{
 		if (found == 0)
 		{
@@ -1485,13 +1483,13 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
 		}
 		else
 		{
-			ks->data->current = found - 1;
+			ks->current = found - 1;
 			set_cursor = 1;
 		}
 	}
 
 	// correct the cursor for the keys after the cut keyset
-	if (ks->data->current >= it)
+	if (ks->current >= it)
 	{
 		if (it >= ks->data->size)
 		{
@@ -1499,7 +1497,7 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
 		}
 		else
 		{
-			ks->data->current = found + ks->data->current - it;
+			ks->current = found + ks->current - it;
 			set_cursor = 1;
 		}
 	}
@@ -1647,7 +1645,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	ksCopyInternal (ks, found, it);
 
-	if (set_cursor) ks->data->cursor = ks->data->array[ks->data->current];
+	if (set_cursor) ks->cursor = ks->data->array[ks->current];
 
 	if (ret)
 	{
@@ -1753,10 +1751,9 @@ int ksRewind (KeySet * ks)
 	if (!ks) return -1;
 	if (!ks->data) return 0;
 
-	keySetDetachData (ks);
+	ks->cursor = 0;
+	ks->current = 0;
 
-	ks->data->cursor = 0;
-	ks->data->current = 0;
 	return 0;
 }
 
@@ -1793,16 +1790,14 @@ Key * ksNext (KeySet * ks)
 {
 	if (!ks || !ks->data) return 0;
 
-	keySetDetachData (ks);
-
 	if (ks->data->size == 0) return 0;
-	if (ks->data->current >= ks->data->size)
+	if (ks->current >= ks->data->size)
 	{
 		return 0;
 	}
 
-	if (ks->data->cursor) ks->data->current++;
-	return ks->data->cursor = ks->data->array[ks->data->current];
+	if (ks->cursor) ks->current++;
+	return ks->cursor = ks->data->array[ks->current];
 }
 
 
@@ -1828,7 +1823,7 @@ Key * ksCurrent (const KeySet * ks)
 {
 	if (!ks || !ks->data) return 0;
 
-	return ks->data->cursor;
+	return ks->cursor;
 }
 
 /**
@@ -1919,10 +1914,10 @@ elektraCursor ksGetCursor (const KeySet * ks)
 {
 	if (!ks || !ks->data) return (elektraCursor) -1;
 
-	if (ks->data->cursor == 0)
+	if (ks->cursor == 0)
 		return (elektraCursor) -1;
 	else
-		return (elektraCursor) ks->data->current;
+		return (elektraCursor) ks->current;
 }
 
 /**
@@ -1989,15 +1984,13 @@ int ksSetCursor (KeySet * ks, elektraCursor cursor)
 {
 	if (!ks) return -1;
 
-	keySetDetachData (ks);
-
 	if ((elektraCursor) -1 == cursor)
 	{
 		ksRewind (ks);
 		return 0;
 	}
-	ks->data->current = (size_t) cursor;
-	ks->data->cursor = ks->data->array[ks->data->current];
+	ks->current = (size_t) cursor;
+	ks->cursor = ks->data->array[ks->current];
 	return 1;
 }
 

@@ -2914,7 +2914,7 @@ static void test_ksAppend2 (void)
 	Key * key = ksNext (iter);
 	succeed_if (keyGetMeta (key, "name") == 0, "no such meta exists");
 	Key * result = keyDup (key, KEY_CP_ALL);
-	succeed_if (keyGetRef (parent) == 2, "ref wrong");
+	succeed_if (keyGetRef (parent) == 1, "ref wrong");
 	succeed_if (keyGetRef (result) == 0, "ref wrong");
 	keySetName (result, keyName (parent));
 	keyAddBaseName (result, "cut");
