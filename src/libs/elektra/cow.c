@@ -3,11 +3,7 @@
 struct _KeyName * keyNameNew (void)
 {
 	struct _KeyName * name = elektraMalloc (sizeof (struct _KeyName));
-	name->key = NULL;
-	name->keySize = 0;
-	name->ukey = NULL;
-	name->keyUSize = 0;
-	name->refs = 0;
+	memset (name, 0, sizeof (struct _KeyName));
 	return name;
 }
 
@@ -77,9 +73,7 @@ void keyNameDel (struct _KeyName * keyname, bool deleteData)
 struct _KeyData * keyDataNew (void)
 {
 	struct _KeyData * data = elektraMalloc (sizeof (struct _KeyData));
-	data->data.v = NULL;
-	data->dataSize = 0;
-	data->refs = 0;
+	memset (data, 0, sizeof (struct _KeyData));
 	return data;
 }
 
