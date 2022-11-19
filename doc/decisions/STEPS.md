@@ -63,7 +63,7 @@ For each solution a proposal, rationale and optionally implications should be gi
 - Now it is allowed to have the decision from the previous round in the "Decision" section.
 
 > For decisions "In Progress", unlike "In Discussion", also the solution space next to the problem is clear.
-> It is the highest of the steps reachable for a decision PR that started in "Drafts".
+> Without merges in between, this is the last step reachable for a decision PR that started in "Drafts".
 
 ## Decided
 
