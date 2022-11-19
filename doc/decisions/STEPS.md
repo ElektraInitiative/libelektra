@@ -4,16 +4,19 @@ This document describes all steps a decision can run through.
 
 ```mermaid
 flowchart LR
-    s((Start)) --> Drafts --> In_Discussion --> In_Progress --> Decided --> Partially_Implemented --> Implemented
+  s((Start)) --> Drafts --> In_Discussion --> In_Progress -- merge --> Decided
+    -- merge --> Partially_Implemented --> Implemented
 
-    %% Shortcuts:
-    s --> Decided
-    Decided --> Implemented
+  %% Shortcuts:
+  s --> Decided
+  Drafts -- merge --> Decided
+  In_Discussion -- merge --> Decided
+  Decided -- merge --> Implemented
 ```
 
 Additionally, decision that are not yet "Decided" can be become "Rejected" or "Delayed" at any point.
 
-> The first PR for a decision must always create the decision in the "Drafts" state.
+> The first PR for a decision usually creates the decision in the "Drafts" state.
 > If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "In Discussion" or "In Progress" before the merge.
 
 ## Drafts
