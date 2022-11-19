@@ -407,7 +407,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 
 memerror:
 	keyNameDel (dest->keyName, !test_bit (dest->flags, KEY_FLAG_MMAP_KEY));
-	keyDataDel(dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
+	keyDataDel (dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
 	ksDel (dest->meta);
 
 	return NULL;

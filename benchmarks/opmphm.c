@@ -1958,7 +1958,8 @@ static void benchmarkPredictionTime (char * name)
 					// do the lookups
 					for (size_t lookups = 0; lookups < pattern[s]; ++lookups)
 					{
-						keyFound = ksLookup (ks, ks->data->array[searchHashSeed % ks->data->size], KDB_O_NOCASCADING);
+						keyFound =
+							ksLookup (ks, ks->data->array[searchHashSeed % ks->data->size], KDB_O_NOCASCADING);
 						if (!keyFound || keyFound != ks->data->array[searchHashSeed % ks->data->size])
 						{
 							printExit ("Sanity Check Failed: found wrong Key");

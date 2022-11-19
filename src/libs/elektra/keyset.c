@@ -86,7 +86,7 @@ void keySetDetachData (KeySet * keyset)
 		keyset->data = copied;
 		keySetDataRefInc (keyset->data);
 
-		clear_bit(keyset->flags, KS_FLAG_MMAP_ARRAY);
+		clear_bit (keyset->flags, KS_FLAG_MMAP_ARRAY);
 	}
 }
 
@@ -300,7 +300,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 
 	if (alloc == 0) return keyset;
 
-	keyset->data = keySetDataNew();
+	keyset->data = keySetDataNew ();
 	keySetDataRefInc (keyset->data);
 
 	alloc++; /* for ending null byte */
@@ -359,7 +359,7 @@ KeySet * ksDup (const KeySet * source)
 	if (!source) return 0;
 
 	KeySet * keyset = elektraMalloc (sizeof (KeySet));
-	memset (keyset, 0, sizeof(KeySet));
+	memset (keyset, 0, sizeof (KeySet));
 
 	keyset->data = source->data;
 	if (keyset->data != NULL)
@@ -549,7 +549,7 @@ int ksClear (KeySet * ks)
 	if (ks == NULL) return -1;
 	ksClose (ks);
 
-	ks->data = keySetDataNew();
+	ks->data = keySetDataNew ();
 	keySetDataRefInc (ks->data);
 
 	if ((ks->data->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
@@ -1303,7 +1303,8 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 
 	ssize_t search = ksSearchInternal (ks, root);
 	size_t it = search < 0 ? -search - 1 : search;
-	if (it == ks->data->size || keyGetNamespace (root) != keyGetNamespace (ks->data->array[it]) || keyIsBelowOrSame (root, ks->data->array[it]) != 1)
+	if (it == ks->data->size || keyGetNamespace (root) != keyGetNamespace (ks->data->array[it]) ||
+	    keyIsBelowOrSame (root, ks->data->array[it]) != 1)
 	{
 		if (end != NULL)
 		{
@@ -1316,8 +1317,8 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 	{
 		struct _KeyName * copy = keyNameCopy (root->keyName);
 		struct _KeyName * old = root->keyName;
-		((Key *)root)->keyName = copy;
-		keyNameRefInc(copy);
+		((Key *) root)->keyName = copy;
+		keyNameRefInc (copy);
 
 		if (root->keyName->keyUSize == 3)
 		{
@@ -1341,7 +1342,7 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 			*end = endSearch < 0 ? -endSearch - 1 : endSearch;
 		}
 
-		((Key *)root)->keyName = old;
+		((Key *) root)->keyName = old;
 		keyNameRefDecAndDel (copy, true);
 	}
 
@@ -1382,8 +1383,8 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 		KeySet * returned = ksNew (0, KS_END);
 		// HACK: ksBelow does not use escaped name (key->key), so we don't need to change it
 		// DANGER !!! In the following lines, the contents of keyName are changed directly
-		//            This should normally NOT be done with copy-on-write keys, as it changes the values for all other keys that have the same name
-		//            HOWEVER, the name is changed right back afterwards, so we allow it for now
+		//            This should normally NOT be done with copy-on-write keys, as it changes the values for all other keys that
+		//            have the same name HOWEVER, the name is changed right back afterwards, so we allow it for now
 		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
 			switch (ns)
@@ -1571,7 +1572,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	if (!ks->data || !ks->data->array) return ksNew (0, KS_END);
 
-	const char * name = keyName(cutpoint);
+	const char * name = keyName (cutpoint);
 	if (!name) return 0;
 	if (strcmp (name, "") == 0) return 0;
 
@@ -1595,8 +1596,10 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			case KEY_NS_USER:
 			case KEY_NS_SYSTEM:
 			case KEY_NS_META:
-				// DANGER !!! With copy-on-write we should NOT be modifying the key name directly, as this changes the values for all keys with the same name!
-				//            However, right after this loop we reset the value to its original value, so we shut one eye in this case ...
+				// DANGER !!! With copy-on-write we should NOT be modifying the key name directly, as this changes the
+				// values for all keys with the same name!
+				//            However, right after this loop we reset the value to its original value, so we shut one eye in
+				//            this case ...
 				((Key *) cutpoint)->keyName->ukey[0] = ns;
 				break;
 			case KEY_NS_NONE:
@@ -1813,7 +1816,7 @@ Key * ksNext (KeySet * ks)
  */
 Key * ksCurrent (const KeySet * ks)
 {
-	if (!ks || ! ks->data) return 0;
+	if (!ks || !ks->data) return 0;
 
 	return ks->data->cursor;
 }
@@ -2663,7 +2666,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	if (!ks) return 0;
 	if (!key) return 0;
 
-	const char * name = keyName(key);
+	const char * name = keyName (key);
 	if (!name) return 0;
 
 	Key * ret = 0;
@@ -2737,7 +2740,7 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	keySetName (&key, name);
 
 	found = ksLookup (ks, &key, options);
-	keyNameDel(key.keyName, true);
+	keyNameDel (key.keyName, true);
 	keyDataDel (key.keyData, true);
 	ksDel (key.meta); // sometimes owner is set
 	return found;
@@ -2838,7 +2841,7 @@ int ksResize (KeySet * ks, size_t alloc)
  * @return allocated size*/
 size_t ksGetAlloc (const KeySet * ks)
 {
-	if(!ks->data)
+	if (!ks->data)
 	{
 		return 0;
 	}

@@ -1,17 +1,17 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "kdbprivate.h"
 #include <tests_internal.h>
 
 static void keyNew_should_only_set_keyName (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange & Act
 	Key * key = keyNew ("system:/hello", KEY_END);
@@ -28,7 +28,7 @@ static void keyNew_should_only_set_keyName (void)
 
 static void keyNew_should_set_name_and_data (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange & Act
 	Key * key = keyNew ("system:/test", KEY_VALUE, "original", KEY_END);
@@ -86,7 +86,7 @@ static void keyDetachKeyName_should_copy_keyName_if_other_references (void)
 
 static void keyCopy_should_copy_and_set_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_VALUE, "original", KEY_END);
@@ -107,7 +107,7 @@ static void keyCopy_should_copy_and_set_references (void)
 
 static void keyDel_should_decrease_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_VALUE, "original", KEY_END);
@@ -129,7 +129,7 @@ static void keyDel_should_decrease_references (void)
 
 static void keySetString_should_not_replace_keyData_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_VALUE, "original", KEY_END);
@@ -148,7 +148,7 @@ static void keySetString_should_not_replace_keyData_when_no_other_references (vo
 
 static void keySetString_should_replace_keyData_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_VALUE, "original", KEY_END);
@@ -170,17 +170,17 @@ static void keySetString_should_replace_keyData_when_other_references (void)
 
 static void keySetBinary_should_not_replace_keyData_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
-	const uint8_t originalBinary[3] = {1, 2, 3};
-	const uint8_t newBinary[4] = {4, 3, 2, 1};
+	const uint8_t originalBinary[3] = { 1, 2, 3 };
+	const uint8_t newBinary[4] = { 4, 3, 2, 1 };
 
 	Key * key = keyNew ("system:/test", KEY_BINARY, KEY_SIZE, 3, KEY_VALUE, originalBinary, KEY_END);
 	const struct _KeyData * original = key->keyData;
 
 	// Act
-	keySetBinary(key, newBinary, 4);
+	keySetBinary (key, newBinary, 4);
 
 	// Assert
 	succeed_if (key->keyData == original, "keyData should not have been replaced");
@@ -192,18 +192,18 @@ static void keySetBinary_should_not_replace_keyData_when_no_other_references (vo
 
 static void keySetBinary_should_replace_keyData_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
-	const uint8_t originalBinary[3] = {1, 2, 3};
-	const uint8_t newBinary[4] = {4, 3, 2, 1};
+	const uint8_t originalBinary[3] = { 1, 2, 3 };
+	const uint8_t newBinary[4] = { 4, 3, 2, 1 };
 
 	Key * key = keyNew ("system:/test", KEY_BINARY, KEY_SIZE, 3, KEY_VALUE, originalBinary, KEY_END);
 	const struct _KeyData * original = key->keyData;
 	Key * copy = keyCopy (keyNew ("/", KEY_END), key, KEY_CP_ALL);
 
 	// Act
-	keySetBinary(key, newBinary, 4);
+	keySetBinary (key, newBinary, 4);
 
 	// Assert
 	succeed_if (key->keyData != original, "keyData should have been replaced");
@@ -217,7 +217,7 @@ static void keySetBinary_should_replace_keyData_when_other_references (void)
 
 static void keySetName_should_not_replace_keyName_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
@@ -236,7 +236,7 @@ static void keySetName_should_not_replace_keyName_when_no_other_references (void
 
 static void keySetName_should_replace_keyName_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
@@ -258,7 +258,7 @@ static void keySetName_should_replace_keyName_when_other_references (void)
 
 static void keySetBaseName_should_not_replace_keyName_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test/x", KEY_END);
@@ -277,7 +277,7 @@ static void keySetBaseName_should_not_replace_keyName_when_no_other_references (
 
 static void keySetBaseName_should_replace_keyName_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test/x", KEY_END);
@@ -299,7 +299,7 @@ static void keySetBaseName_should_replace_keyName_when_other_references (void)
 
 static void keyAddName_should_not_replace_keyName_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
@@ -318,7 +318,7 @@ static void keyAddName_should_not_replace_keyName_when_no_other_references (void
 
 static void keyAddName_should_replace_keyName_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
@@ -341,7 +341,7 @@ static void keyAddName_should_replace_keyName_when_other_references (void)
 
 static void keyAddBaseName_should_not_replace_keyName_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
@@ -360,7 +360,7 @@ static void keyAddBaseName_should_not_replace_keyName_when_no_other_references (
 
 static void keyAddBaseName_should_replace_keyName_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
@@ -383,7 +383,7 @@ static void keyAddBaseName_should_replace_keyName_when_other_references (void)
 
 static void keyReplacePrefix_same_as_original_should_replace_with_new (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
@@ -405,7 +405,7 @@ static void keyReplacePrefix_same_as_original_should_replace_with_new (void)
 
 static void keyReplacePrefix_should_not_replace_keyName_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test/first", KEY_END);
@@ -429,7 +429,7 @@ static void keyReplacePrefix_should_not_replace_keyName_when_no_other_references
 
 static void keyReplacePrefix_should_replace_keyName_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test/first", KEY_END);
@@ -457,14 +457,14 @@ static void keyReplacePrefix_should_replace_keyName_when_other_references (void)
 
 static void keySetNamespace_should_not_replace_keyName_when_no_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
 	const struct _KeyName * original = key->keyName;
 
 	// Act
-	keySetNamespace(key, KEY_NS_USER);
+	keySetNamespace (key, KEY_NS_USER);
 
 	// Assert
 	succeed_if (key->keyName == original, "keyName should not have been replaced");
@@ -476,15 +476,15 @@ static void keySetNamespace_should_not_replace_keyName_when_no_other_references 
 
 static void keySetNamespace_should_replace_keyName_when_other_references (void)
 {
-	printf ("Test %s\n", __func__ );
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * key = keyNew ("system:/test", KEY_END);
 	const struct _KeyName * original = key->keyName;
-	Key * copy = keyCopy (keyNew("/", KEY_END), key, KEY_CP_ALL);
+	Key * copy = keyCopy (keyNew ("/", KEY_END), key, KEY_CP_ALL);
 
 	// Act
-	keySetNamespace(key, KEY_NS_USER);
+	keySetNamespace (key, KEY_NS_USER);
 
 	// Assert
 	succeed_if (key->keyName != original, "keyName should have been replaced");
@@ -538,7 +538,7 @@ int main (int argc, char ** argv)
 
 	keySetNamespace_should_not_replace_keyName_when_no_other_references ();
 	keySetNamespace_should_replace_keyName_when_other_references ();
-	
+
 	print_result ("test_key_cow");
 	return nbError;
 }

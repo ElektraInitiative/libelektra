@@ -486,7 +486,7 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
 	if (!key) return -1;
 	if (!returnedName) return -1;
 
-	if (!key->keyName || ! key->keyName->ukey)
+	if (!key->keyName || !key->keyName->ukey)
 	{
 		returnedName[0] = 0;
 		return 1;

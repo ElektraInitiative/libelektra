@@ -76,7 +76,7 @@ void keyNameDel (struct _KeyName * keyname, bool deleteData)
 
 struct _KeyData * keyDataNew (void)
 {
-	struct _KeyData * data = elektraMalloc (sizeof(struct _KeyData));
+	struct _KeyData * data = elektraMalloc (sizeof (struct _KeyData));
 	data->data.v = NULL;
 	data->dataSize = 0;
 	data->refs = 0;
@@ -141,7 +141,7 @@ void keyDataDel (struct _KeyData * keydata, bool deleteData)
 
 struct _KeySetData * keySetDataNew (void)
 {
-	struct _KeySetData * data = elektraMalloc (sizeof(struct _KeySetData));
+	struct _KeySetData * data = elektraMalloc (sizeof (struct _KeySetData));
 	memset (data, 0, sizeof (struct _KeySetData));
 	return data;
 }

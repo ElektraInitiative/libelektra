@@ -158,14 +158,14 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 		int found;
 		size_t skip = parentSize ? parentSize : elektraStrLen (parent) - 1;
 
-		found = memcmp (parent, keyName(key), skip);
+		found = memcmp (parent, keyName (key), skip);
 		if (found == 0)
 		{
-			while (*(keyName(key) + skip) == KDB_PATH_SEPARATOR)
+			while (*(keyName (key) + skip) == KDB_PATH_SEPARATOR)
 				++skip;
 
-			if (*(keyName(key) + skip) != 0) /* we don't want a null basename */
-				written += fprintf (stream, "<key basename=\"%s\"", keyName(key) + skip);
+			if (*(keyName (key) + skip) != 0) /* we don't want a null basename */
+				written += fprintf (stream, "<key basename=\"%s\"", keyName (key) + skip);
 		}
 	}
 
@@ -178,7 +178,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 			written += fprintf (stream, "<key name=\"%s\"", buffer);
 		}
 		else
-			written += fprintf (stream, "<key name=\"%s\"", keyName(key));
+			written += fprintf (stream, "<key name=\"%s\"", keyName (key));
 	}
 
 	if (!keyValue (key) && !keyComment (key))
@@ -190,7 +190,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 	}
 	else
 	{
-		if (keyValue(key))
+		if (keyValue (key))
 		{
 			if ((keyGetValueSize (key) <= 16) && keyIsString (key) && /*TODO: is this for string?*/
 			    !strchr (keyString (key), '\n'))
