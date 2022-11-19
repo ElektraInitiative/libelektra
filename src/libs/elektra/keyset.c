@@ -1244,7 +1244,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	size_t ret = 0;
 
 	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
-	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
+	ELEKTRA_ASSERT (ks->data->size >= to, "ks->size %zu smaller than %zu", ks->data->size, to);
 
 	ks->data->size = ssize + sizediff;
 
@@ -2359,7 +2359,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 			return -1;
 		}
 	}
-	ELEKTRA_ASSERT (!opmphmIsBuild (ks->opmphm), "OPMPHM already build");
+	ELEKTRA_ASSERT (!opmphmIsBuild (ks->data->opmphm), "OPMPHM already build");
 	// make graph
 	uint8_t r = opmphmOptR (ks->data->size);
 	double c = opmphmMinC (r);
@@ -2417,7 +2417,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
  */
 static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, elektraLookupFlags options)
 {
-	ELEKTRA_ASSERT (opmphmIsBuild (ks->opmphm), "OPMPHM not build");
+	ELEKTRA_ASSERT (opmphmIsBuild (ks->data->opmphm), "OPMPHM not build");
 	elektraCursor cursor = 0;
 	cursor = ksGetCursor (ks);
 	size_t index = opmphmLookup (ks->data->opmphm, ks->data->size, keyName (key));
