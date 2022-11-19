@@ -2,7 +2,7 @@
 
 ## Problem
 
-According to [symbols.map](src/libs/elektra/symbols.map) the public core API has 124 symbols¹, which is arguable too much for a key-value API which has as highest goal simplicity.
+According to [symbols.map](/src/libs/elektra/symbols.map) the public core API has 124 symbols¹, which is arguable too much for a key-value API which has as highest goal simplicity.
 
 In particular following areas have many functions and are not simple:
 

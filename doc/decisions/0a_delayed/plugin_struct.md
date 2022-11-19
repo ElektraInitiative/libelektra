@@ -83,6 +83,6 @@ Don't do anything for 1.0.
 ## Related Decisions
 
 - [Plugin Contract Function](../0_drafts/plugin_contract_function.md)
-- [Commit Function](commit_function.md)
+- [Commit Function](../0_drafts/commit_function.md)
 
 ## Notes
