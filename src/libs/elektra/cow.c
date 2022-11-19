@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief Shared methods for key and keyset copy-on-write.
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief Shared methods for key and keyset copy-on-write.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include <kdbprivate.h>
 
