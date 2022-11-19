@@ -38,6 +38,11 @@
 
 static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const struct _KeySetData * source ELEKTRA_UNUSED);
 
+/**
+ * @internal
+ *
+ * @brief helper function that copies a KeySetData object, without copying the reference counter.
+ */
 static struct _KeySetData * keySetDataCopy (const struct _KeySetData * original)
 {
 	struct _KeySetData * copy = keySetDataNew ();
@@ -64,7 +69,12 @@ static struct _KeySetData * keySetDataCopy (const struct _KeySetData * original)
 }
 
 /**
- * Helper method: Ensures, that the supplied keyset has its own KeySetData instance
+ * @internal
+ *
+ * @brief Helper method: Ensures, that the supplied keyset has its own KeySetData instance
+ *
+ * @post @p keyset's data field != NULL
+ *
  * @param keyset the keyset to ensure it has its own KeySetData instance
  */
 void keySetDetachData (KeySet * keyset)

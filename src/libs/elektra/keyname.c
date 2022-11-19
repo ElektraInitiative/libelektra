@@ -166,8 +166,12 @@
 #include "kdbinternal.h"
 
 /**
- * Helper method: creates a deep copy of a keyname. Does not copy the refs counter.
+ * @internal
+ *
+ * @brief Helper method: creates a deep copy of a keyname. Does not copy the reference counter.
+ *
  * @param source the keyname to copy
+ *
  * @return copied keyname
  */
 struct _KeyName * keyNameCopy (struct _KeyName * source)
@@ -185,7 +189,12 @@ struct _KeyName * keyNameCopy (struct _KeyName * source)
 }
 
 /**
- * Helper method: Ensures, that the supplied key has its own KeyName instance
+ * @internal
+ *
+ * @brief Helper method: Ensures, that the supplied key has its own KeyName instance
+ *
+ * @post @p key's keyName field != NULL
+ *
  * @param key the key to ensure it has its own KeyName instance
  */
 void keyDetachKeyName (Key * key)
