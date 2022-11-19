@@ -14,6 +14,11 @@ uint16_t keyNameRefInc (struct _KeyName * keyname)
 		return UINT16_MAX;
 	}
 
+	if (keyname->refs == UINT16_MAX - 1)
+	{
+		return UINT16_MAX;
+	}
+
 	keyname->refs++;
 	return keyname->refs;
 }
@@ -23,6 +28,11 @@ uint16_t keyNameRefDec (struct _KeyName * keyname)
 	if (!keyname)
 	{
 		return UINT16_MAX;
+	}
+
+	if (keyname->refs == 0)
+	{
+		return 0;
 	}
 
 	keyname->refs--;
@@ -84,6 +94,11 @@ uint16_t keyDataRefInc (struct _KeyData * keydata)
 		return UINT16_MAX;
 	}
 
+	if (keydata->refs == UINT16_MAX - 1)
+	{
+		return UINT16_MAX;
+	}
+
 	keydata->refs++;
 	return keydata->refs;
 }
@@ -93,6 +108,11 @@ uint16_t keyDataRefDec (struct _KeyData * keydata)
 	if (!keydata)
 	{
 		return UINT16_MAX;
+	}
+
+	if (keydata->refs == 0)
+	{
+		return 0;
 	}
 
 	keydata->refs--;
@@ -147,6 +167,11 @@ uint16_t keySetDataRefInc (struct _KeySetData * keysetdata)
 		return UINT16_MAX;
 	}
 
+	if (keysetdata->refs == UINT16_MAX - 1)
+	{
+		return UINT16_MAX;
+	}
+
 	keysetdata->refs++;
 	return keysetdata->refs;
 }
@@ -156,6 +181,11 @@ uint16_t keySetDataRefDec (struct _KeySetData * keysetdata)
 	if (!keysetdata)
 	{
 		return UINT16_MAX;
+	}
+
+	if (keysetdata->refs == 0)
+	{
+		return 0;
 	}
 
 	keysetdata->refs--;
