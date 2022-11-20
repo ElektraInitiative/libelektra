@@ -353,7 +353,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Add decision for [copy-on-write](../decisions/1_in_discussion/copy_on_write.md) _(Maximilian Irlinger @atmaxinger)_
+- Add decision for [copy-on-write](../decisions/1_in_discussion/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
