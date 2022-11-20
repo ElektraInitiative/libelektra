@@ -341,6 +341,11 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 
 	if (source == dest) return dest;
 
+	// remember original data of dest
+	Key orig = *dest;
+	if (orig.keyName != NULL) keyNameRefInc (orig.keyName);
+	if (orig.keyData != NULL) keyDataRefInc (orig.keyData);
+
 	// duplicate dynamic properties
 	if (test_bit (flags, KEY_CP_NAME))
 	{
@@ -387,8 +392,6 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 
 	if (test_bit (flags, KEY_CP_META))
 	{
-		ksDel (dest->meta);
-
 		if (source->meta != NULL)
 		{
 			dest->meta = ksDup (source->meta);
@@ -403,12 +406,19 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	// successful, now do the irreversible stuff: we obviously modified dest
 	set_bit (dest->flags, KEY_FLAG_SYNC);
 
+	// free old resources of destination
+	keyNameRefDecAndDel (orig.keyName, !test_bit (orig.flags, KEY_FLAG_MMAP_KEY));
+	keyDataRefDecAndDel (orig.keyData, !test_bit (orig.flags, KEY_FLAG_MMAP_DATA));
+	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
+
 	return dest;
 
 memerror:
-	keyNameDel (dest->keyName, !test_bit (dest->flags, KEY_FLAG_MMAP_KEY));
-	keyDataDel (dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
+	keyNameRefDecAndDel (dest->keyName, !test_bit (dest->flags, KEY_FLAG_MMAP_KEY));
+	keyDataRefDecAndDel (dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
 	ksDel (dest->meta);
+
+	*dest = orig;
 
 	return NULL;
 }

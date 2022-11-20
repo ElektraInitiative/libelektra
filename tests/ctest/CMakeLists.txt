@@ -22,6 +22,7 @@ target_link_elektra (test_meta elektra-meta)
 target_link_elektra (test_ks elektra-ease)
 target_link_elektra (test_key elektra-meta)
 target_link_elektra (test_key_cow elektra-meta)
+target_link_elektra (test_keyCopy_memerror elektra-meta)
 target_link_elektra (test_ease_keyname elektra-ease)
 
 target_link_elektra (test_operation elektra-meta)
