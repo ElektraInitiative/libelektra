@@ -73,6 +73,13 @@ Take a look at the [new docs](../dev/mountpoints.md), if you need to know detail
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 - New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
 
+### Copy-on-write of `libelektra-core`
+
+Thanks to _(Maximilian Irlinger @atmaxinger)_ our `Key` and `KeySet` datastructures are now fully copy-on-write!
+This means noticeably reduced memory usage for cases where keys and keysets are copied and/or duplicated!
+
+<!-- TODO: add some benchmarks -->
+
 ### <<HIGHLIGHT>>
 
 ### <<HIGHLIGHT>>
