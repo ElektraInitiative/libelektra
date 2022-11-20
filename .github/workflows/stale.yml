@@ -1,0 +1,49 @@
+name: Close inactive issues and PRs
+on:
+  schedule:
+    - cron: "30 1 * * *"
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v5
+
+        with:
+          days-before-issue-stale: 365
+          days-before-issue-close: 14
+          exempt-issue-labels: "good first issue"
+          stale-issue-label: "stale"
+          stale-issue-message: >
+            I mark this stale as it did not have any activity for one year.
+            I'll close it in two weeks if no further activity occurs. If you
+            want it to be alive again, ping by writing a message here or create
+            a new issue with the remainder of this issue.
+            
+            Thank you for your contributions :sparkling_heart:
+          close-issue-message: >
+            I closed this now because it has been inactive for more than one
+            year. If I closed it by mistake, please do not hesitate to reopen
+            it or create a new issue with the remainder of this issue.
+            
+            Thank you for your contributions :sparkling_heart:
+          days-before-pr-stale: 365
+          days-before-pr-close: 14
+          stale-pr-label: "stale"
+          stale-pr-message: >
+            I mark this stale as it did not have any activity for one year.
+            I'll close it in two weeks if no further activity occurs. If you
+            want it to be alive again, ping by writing a message here or create
+            a new PR with the remainder of this PR.
+            
+            Thank you for your contributions :sparkling_heart:
+          close-pr-message: >
+            I closed this now because it has been inactive for more than one
+            year. If I closed it by mistake, please do not hesitate to reopen
+            it or create a new PR with the remainder of this PR.
+            
+            Thank you for your contributions :sparkling_heart:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
