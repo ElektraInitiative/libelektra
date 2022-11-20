@@ -367,7 +367,7 @@ struct _Key {
 	RcBuffer * uname;
 	RcBuffer * ename; // will be removed soon
 	RcBuffer * value;
-	
+
 	KeySet * meta;
 	keyflag_t flags;
 	uint16_t refs;
@@ -418,22 +418,22 @@ Thus all the newly added structures as proposed will need some kind of an mmap f
 `mmapstorage` only calls `munmap` in some error cases, so basically `munmap` is almost never done and the keyset is never invalidated.
 
 During `kdbSet` the storage plugins always write to a temp file, due to how the resolver works.
-We also don't need to mmap the temp file here: when doing `kdbSet` we already have the `KeySet` at hand, mmap-ing it is not needed at all, because we have the data. 
+We also don't need to mmap the temp file here: when doing `kdbSet` we already have the `KeySet` at hand, mmap-ing it is not needed at all, because we have the data.
 We just want to update the cache file.
-The `mmap`/`munmap` in kdbSet are just so we can write the KeySet to a file in our format. 
+The `mmap`/`munmap` in kdbSet are just so we can write the KeySet to a file in our format.
 (`mmap()` is just simpler, but we could also `malloc()` a region and then `fwrite()` the stuff)
 
 Therefore the only case where we return a `mmap()`ed KeySet should be in `kdbGet`.
 
-When the `mmapstorage` was designed/implemented, not all structures had refcounters, so there was no way to know when a `munmap` is safe. 
+When the `mmapstorage` was designed/implemented, not all structures had refcounters, so there was no way to know when a `munmap` is safe.
 This was simply out of scope at that point in time.
 
 If refcounting is now implemented for all structures, we might be able to properly `munmap` in future.
 
 Two ideas to deal with this in conjunction with our reference counting implementation:
 
-If we have `free` function-pointer along side the refcount, `mmapstorage` (and also other plugins with different allocators) could set it to their own implementation. 
-To mimic the current behaviour of `mmapstorage` this would point to a no-op function. 
+If we have `free` function-pointer along side the refcount, `mmapstorage` (and also other plugins with different allocators) could set it to their own implementation.
+To mimic the current behaviour of `mmapstorage` this would point to a no-op function.
 However, we could also improve things and keep track of when all data has been freed and only then call `munmap`.
 
 Another simpler way to avoid the flag, which doesn't really allow for further improvements, would be using the refcount.
@@ -441,7 +441,6 @@ Another simpler way to avoid the flag, which doesn't really allow for further im
 This would allow us to detect the keys.
 Depending on the refcount implementation good values would probably be 0 or UINT16_MAX.
 The special value would have to ignored by all refcounting functions (inc, dec, del) and turn the functions into no-ops.
-
 
 #### Possible Optimizations
 
@@ -472,7 +471,7 @@ We want to measure the following properties for the key:
 - Example Key + 2 Duplicates: three instances of the key defined above, two of them are duplications of the first
 
 | Approach                                                          | Empty Key | Empty Key (with name) | Empty Key (with name + data) | Single Example Key | Example Key + 1 Duplicate | Example Key + 2 Duplicates |
-|:------------------------------------------------------------------|----------:|----------------------:|-----------------------------:|-------------------:|--------------------------:|---------------------------:|
+| :---------------------------------------------------------------- | --------: | --------------------: | ---------------------------: | -----------------: | ------------------------: | -------------------------: |
 | Current Implementation                                            |        64 |                    64 |                           64 |                153 |                       306 |                        459 |
 | mmapstorage-like COW implementation (without additional pointers) |        64 |                    64 |                           64 |                153 |                       217 |                        281 |
 | mmapstorage-like COW implementation (with additional pointers)    |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
@@ -591,7 +590,6 @@ For allocations want to measure the following properties:
 ## Decision
 
 Implement the full-blown COW approach.
-
 
 ## Rationale
 
