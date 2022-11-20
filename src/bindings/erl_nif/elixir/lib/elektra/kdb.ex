@@ -11,6 +11,10 @@ defmodule Elektra.Kdb do
 
   @doc """
   Open a connection to a KDB.
+
+  ## Examples
+
+      iex> {:ok, open} = Elektra.Kdb.open(nil, nil)
   """
   @spec open(key_set(), key()) :: GenServer.on_start()
   def open(contract, parent_key) do
@@ -33,7 +37,7 @@ defmodule Elektra.Kdb do
     GenServer.call(handle, {:get, ks, parent_key})
   end
 
-  @doc"""
+  @doc """
   Set the keys in `handle` according to `ks`. Only keys below `parent_key` are
   modified.
   """
