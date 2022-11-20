@@ -221,6 +221,38 @@ void keyDetachKeyName (Key * key)
 }
 
 /**
+ * @internal
+ *
+ * @brief Helper method: Ensures, that the supplied key has its own KeyName instance.
+ *        If the name is shared with other keys, the key gets an empty KeyName instance.
+ *
+ * @post @p key's keyName field != NULL
+ *
+ * @param key the key to ensure it has its own KeyName instance
+ */
+static inline void keyDetachKeyNameWithoutCopy (Key * key)
+{
+	if (!key)
+	{
+		return;
+	}
+
+	if (key->keyName == NULL)
+	{
+		key->keyName = keyNameNew ();
+		keyNameRefInc (key->keyName);
+	}
+	else if (key->keyName->refs > 1 || test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	{
+		keyNameRefDecAndDel (key->keyName, !test_bit (key->flags, KEY_FLAG_MMAP_KEY));
+		key->keyName = keyNameNew ();
+		keyNameRefInc (key->keyName);
+
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+	}
+}
+
+/**
  * Helper method: returns a pointer to the start of the last part of the given key name
  *
  * @param name a canonical key name
@@ -566,7 +598,7 @@ ssize_t keySetName (Key * key, const char * newName)
 
 	// from now on this function CANNOT fail -> we may modify the key
 
-	keyDetachKeyName (key);
+	keyDetachKeyNameWithoutCopy (key);
 
 	elektraKeyNameCanonicalize (newName, &key->keyName->key, &key->keyName->keySize, 0, &key->keyName->keyUSize);
 
