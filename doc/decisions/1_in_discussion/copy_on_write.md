@@ -12,6 +12,8 @@ There are also aspirations to create a new, simple [internal cache](../3_decided
 
 ## Constraints
 
+1. The lifetime of a `Key` and a `KeySet` must be unaffected by copy-on-write.
+
 ## Assumptions
 
 ## Considered Alternatives
@@ -327,7 +329,7 @@ API notes:
 #### Reference Counting
 
 We need reference counting for the internal COW datastructures.
-For the beginning, we can just do it the same way reference counting currently works for `Key` and `KeySet`.
+We do it the same way reference counting currently works for `Key` and `KeySet`.
 One tweak though is that the refcount should never be 0, as this does not make sense for internal datastructures.
 
 This means we always increment the refcount after creation and always decrement before deletion, so that the refcount is never zero.
@@ -396,8 +398,7 @@ assert (((struct foo *)keyValue (dup))->x == 1);
 assert (((struct foo *)keyValue (dup))->x == 0);
 ```
 
-This edge case can be accounted for by providing a function, i.e. `keyDetach`, that forces that the key has its very own copy of the data.
-We can then document that the user has to call `keyDetach` when she wants to modify the value directly.
+This edge case can be accounted for by providing a private function `keyDetach`, that forces that the key has its very own copy of the data.
 
 ```c
 ((struct foo *)keyValue (keyDetach(key)))->x = 1;
