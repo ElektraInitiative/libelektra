@@ -9,7 +9,21 @@ defmodule Elektra.KeySet do
 
   # Client API
 
+  @doc """
+  Create a new key set with pre-allocated memory of size `size`.
+  """
+  @spec new(non_neg_integer()) :: key_set()
+  def new(size \\ 0) do
+    GenServer.start_link(__MODULE__, size)
+  end
+
   # Server API
+
+  @impl true
+  def init(size) do
+    ks_resource = Elektra.System.ks_new(size)
+    {:ok, ks_resource}
+  end
 
   @impl true
   def handle_call(:nif_resource, _from, ks_resource) do
