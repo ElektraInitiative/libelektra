@@ -344,7 +344,7 @@ const char * keyName (const Key * key)
 {
 	if (!key) return 0;
 
-	if(!key->keyName) return "";
+	if (!key->keyName) return "";
 
 	ELEKTRA_ASSERT (key->keyName->key != NULL, "invalid name");
 	return key->keyName->key;
