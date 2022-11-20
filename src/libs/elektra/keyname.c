@@ -342,10 +342,11 @@ keyDel(key);
  */
 const char * keyName (const Key * key)
 {
-	if (!key || !key->keyName) return 0;
+	if (!key) return 0;
+
+	if(!key->keyName) return "";
 
 	ELEKTRA_ASSERT (key->keyName->key != NULL, "invalid name");
-
 	return key->keyName->key;
 }
 
@@ -402,7 +403,9 @@ ssize_t keyGetNameSize (const Key * key)
 const void * keyUnescapedName (const Key * key)
 {
 	if (!key) return 0;
-	ELEKTRA_ASSERT (key->keyName != NULL, "invalid name");
+
+	if (!key->keyName) return "";
+
 	ELEKTRA_ASSERT (key->keyName->ukey != NULL, "invalid name");
 	return key->keyName->ukey;
 }
@@ -427,6 +430,8 @@ const void * keyUnescapedName (const Key * key)
 ssize_t keyGetUnescapedNameSize (const Key * key)
 {
 	if (!key) return -1;
+
+	if (!key->keyName) return 0;
 
 	return key->keyName->keyUSize;
 }
