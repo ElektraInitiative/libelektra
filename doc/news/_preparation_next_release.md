@@ -288,7 +288,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fix grammar for `elektra-granularity.md` _(@dtdirect)_
 - Rephrase sections in doc/dev/error-\* _(@dtdirect)_
-- <<TODO>>
+- Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
