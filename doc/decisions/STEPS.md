@@ -16,8 +16,22 @@ flowchart LR
 
 Additionally, decision that are not yet "Decided" can be become "Rejected" or "Delayed" at any point.
 
+The label `merge` on the edges mean that a decision PR must be merged before it can target the next step.
+
 > The first PR for a decision usually creates the decision in the "Drafts" state.
 > If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "In Discussion" or "In Progress" before the merge.
+
+Short summary:
+
+1. The first PR for a decision can be created as "Drafts", "In Discussion", "In Progress" or "Decided".
+2. A decision PR that wants to merge a decision as "Decided" must:
+    1. Already start with the decision as "Decided".
+    2. Already have all the considered alternatives fully explored.
+    3. Only contain discussions/reviews about deciding between one of the considered alternatives.
+    4. If there is any significant change in the PR (i.e. information changes, not just typos) then the PR cannot be merged as "Decided". The decision must be moved back to "In Progress".
+3. After a decision is merged as "Decided", it can be moved to "Partially Implemented" or "Implemented" by any PR.
+
+The rest of the document describes the steps in more details.
 
 ## Drafts
 
