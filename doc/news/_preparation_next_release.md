@@ -345,7 +345,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
