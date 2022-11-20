@@ -2740,7 +2740,10 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	struct _Key key;
 	key.meta = NULL;
 	keyInit (&key);
-	keySetName (&key, name);
+	if (keySetName (&key, name) == -1)
+	{
+		return 0;
+	}
 
 	found = ksLookup (ks, &key, options);
 	keyNameDel (key.keyName, true);
