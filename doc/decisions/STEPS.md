@@ -25,10 +25,10 @@ Short summary:
 
 1. The first PR for a decision can be created as "Drafts", "In Discussion", "In Progress" or "Decided".
 2. A decision PR that wants to merge a decision as "Decided" must:
-    1. Already start with the decision as "Decided".
-    2. Already have all the considered alternatives fully explored.
-    3. Only contain discussions/reviews about deciding between one of the considered alternatives.
-    4. If there is any significant change in the PR (i.e. information changes, not just typos) then the PR cannot be merged as "Decided". The decision must be moved back to "In Progress".
+   1. Already start with the decision as "Decided".
+   2. Already have all the considered alternatives fully explored.
+   3. Only contain discussions/reviews about deciding between one of the considered alternatives.
+   4. If there is any significant change in the PR (i.e. information changes, not just typos) then the PR cannot be merged as "Decided". The decision must be moved back to "In Progress".
 3. After a decision is merged as "Decided", it can be moved to "Partially Implemented" or "Implemented" by any PR.
 
 The rest of the document describes the steps in more details.
