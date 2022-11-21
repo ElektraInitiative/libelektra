@@ -14,7 +14,7 @@ command -v checkbashisms > /dev/null 2>&1 || {
 cd "@CMAKE_SOURCE_DIR@"
 
 # Use (non-emacs) extended regex for GNU find or BSD find
-find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egrep' || FIND='find -E scripts'
+find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype grep -E' || FIND='find -E scripts'
 
 # - The scripts `reformat-c`, `reformat-java` and `install-config-file` use `command -v`,
 # which was optional in POSIX until issue 7. Since `which` is not part of POSIX

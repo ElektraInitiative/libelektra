@@ -22,5 +22,5 @@ else
 	inplace=(-i '')
 fi
 
-$(sed "${inplace[@]}" -E -f "$script" $(find . -type f -name '*.md' | egrep -v "^./(.git|scripts/sed|scripts/dev/fix-spelling|doc/images)"))
+$(sed "${inplace[@]}" -E -f "$script" $(find . -type f -name '*.md' | grep -E -v "^./(.git|scripts/sed|scripts/dev/fix-spelling|doc/images)"))
 $(sed "${inplace[@]}" -E -f "$script" doc/*.ini)
