@@ -1590,6 +1590,8 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	elektraOpmphmInvalidate (ks->data);
 
+	// NOTE: Works only because KEY_NS_CASCADING is the first namespace
+	// TODO: Should use ksFindHierarchy like ksBelow
 	if (cutpoint->keyName->ukey[0] == KEY_NS_CASCADING)
 	{
 		ret = ksNew (0, KS_END);
