@@ -1268,6 +1268,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	return ret;
 }
 
+// TODO: update the part about cascading keys when cascading keys are banned from keysets
 /**
  * Searches for the start and optionally end of the key hierarchy rooted at @p root in @p ks.
  * The hierarchy will only contain keys in the same namespace as @p root.
