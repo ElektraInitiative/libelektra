@@ -497,6 +497,44 @@ static void keySetNamespace_should_replace_keyName_when_other_references (void)
 	keyDel (copy);
 }
 
+static void keyLock_should_work_with_copies (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * original = keyNew ("system:/original", KEY_VALUE, "orig", KEY_END);
+	keySetMeta (original, "meta:/what", "nothing");
+
+	Key * copy = keyCopy (keyNew ("/", KEY_END), original, KEY_CP_ALL);
+
+	keyLock (original, KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
+
+	// Act
+	keyAddName (copy, "modified");
+	keySetString (copy, "modified value");
+	keySetMeta (copy, "meta:/what", "idontknow");
+
+	// Assert
+	succeed_if (keyIsLocked (original, KEY_LOCK_NAME), "original key name should be locked");
+	succeed_if (keyIsLocked (original, KEY_LOCK_VALUE), "original key value should be locked");
+	succeed_if (keyIsLocked (original, KEY_LOCK_META), "original key meta should be locked");
+
+	succeed_if (!keyIsLocked (copy, KEY_LOCK_NAME), "copied key name should not be locked");
+	succeed_if (!keyIsLocked (copy, KEY_LOCK_VALUE), "copied key value should not be locked");
+	succeed_if (!keyIsLocked (copy, KEY_LOCK_META), "copied key meta should not be locked");
+
+	succeed_if (strcmp (keyName (original), "system:/original") == 0, "original key value should not have been changed");
+	succeed_if (strcmp (keyString (original), "orig") == 0, "original key name should not have been changed");
+	succeed_if (strcmp (keyString (keyGetMeta (original, "meta:/what")), "nothing") == 0, "original key meta should not have been changed");
+
+	succeed_if (strcmp (keyName (copy), "system:/original/modified") == 0, "copied key value should have been changed");
+	succeed_if (strcmp (keyString (copy), "modified value") == 0, "copied key name should have been changed");
+	succeed_if (strcmp (keyString (keyGetMeta (copy, "meta:/what")), "idontknow") == 0, "copied key meta should have been changed");
+
+	keyDel (original);
+	keyDel (copy);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KEY COW      TESTS\n");
@@ -538,6 +576,8 @@ int main (int argc, char ** argv)
 
 	keySetNamespace_should_not_replace_keyName_when_no_other_references ();
 	keySetNamespace_should_replace_keyName_when_other_references ();
+
+	keyLock_should_work_with_copies ();
 
 	print_result ("test_key_cow");
 	return nbError;
