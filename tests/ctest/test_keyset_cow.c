@@ -1,28 +1,29 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include "kdbprivate.h"
 #include <tests_internal.h>
 
 static void ksBelow_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * below = ksBelow (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (below) == 2, "should contain 2 keys, was %zd", ksGetSize (below));
+	succeed_if_fmt (ksGetSize (below) == 2, "should contain 2 keys, was %zd", ksGetSize (below));
 	succeed_if (ksLookupByName (below, "system:/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (below, "system:/root/abc", 0) != NULL, "should contain key below root");
 	succeed_if (ksGetSize (ks) == 4, "all keys should remain in keyset");
@@ -34,19 +35,20 @@ static void ksBelow_root_in_keyset_should_work (void)
 
 static void ksBelow_key_copied_from_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * below = ksBelow (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (below) == 2, "should contain 2 keys, was %zd", ksGetSize (below));
+	succeed_if_fmt (ksGetSize (below) == 2, "should contain 2 keys, was %zd", ksGetSize (below));
 	succeed_if (ksLookupByName (below, "system:/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (below, "system:/root/abc", 0) != NULL, "should contain key below root");
 	succeed_if (ksGetSize (ks) == 4, "all keys should remain in keyset");
@@ -59,18 +61,19 @@ static void ksBelow_key_copied_from_root_in_keyset_should_work (void)
 
 static void ksBelow_cascading_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * below = ksBelow (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (below) == 3, "should contain 3 keys, was %zd", ksGetSize (below));
+	succeed_if_fmt (ksGetSize (below) == 3, "should contain 3 keys, was %zd", ksGetSize (below));
 	succeed_if (ksLookupByName (below, "/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (below, "/root/def", 0) != NULL, "should contain /root/def");
 	succeed_if (ksLookupByName (below, "system:/root/abc", 0) != NULL, "should contain system:/root/abc");
@@ -83,19 +86,20 @@ static void ksBelow_cascading_root_in_keyset_should_work (void)
 
 static void ksBelow_cascading_key_copied_from_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * below = ksBelow (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (below) == 3, "should contain 3 keys, was %zd", ksGetSize (below));
+	succeed_if_fmt (ksGetSize (below) == 3, "should contain 3 keys, was %zd", ksGetSize (below));
 	succeed_if (ksLookupByName (below, "/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (below, "/root/def", 0) != NULL, "should contain /root/def");
 	succeed_if (ksLookupByName (below, "system:/root/abc", 0) != NULL, "should contain system:/root/abc");
@@ -108,21 +112,21 @@ static void ksBelow_cascading_key_copied_from_root_in_keyset_should_work (void)
 }
 
 
-
 static void ksCut_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * cut = ksCut (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (cut) == 2, "should contain 2 keys, was %zd", ksGetSize (cut));
+	succeed_if_fmt (ksGetSize (cut) == 2, "should contain 2 keys, was %zd", ksGetSize (cut));
 	succeed_if (ksLookupByName (cut, "system:/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (cut, "system:/root/abc", 0) != NULL, "should contain key below root");
 	succeed_if_fmt (ksGetSize (ks) == 2, "2 keys should remain in keyset, was %zd", ksGetSize (ks));
@@ -136,19 +140,20 @@ static void ksCut_root_in_keyset_should_work (void)
 
 static void ksCut_key_copied_from_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * cut = ksCut (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (cut) == 2, "should contain 2 keys, was %zd", ksGetSize (cut));
+	succeed_if_fmt (ksGetSize (cut) == 2, "should contain 2 keys, was %zd", ksGetSize (cut));
 	succeed_if (ksLookupByName (cut, "system:/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (cut, "system:/root/abc", 0) != NULL, "should contain key below root");
 	succeed_if_fmt (ksGetSize (ks) == 2, "2 keys should remain in keyset, was %zd", ksGetSize (ks));
@@ -163,18 +168,19 @@ static void ksCut_key_copied_from_root_in_keyset_should_work (void)
 
 static void ksCut_cascading_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * cut = ksCut (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (cut) == 3, "should contain 3 keys, was %zd", ksGetSize (cut));
+	succeed_if_fmt (ksGetSize (cut) == 3, "should contain 3 keys, was %zd", ksGetSize (cut));
 	succeed_if (ksLookupByName (cut, "/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (cut, "/root/def", 0) != NULL, "should contain /root/def");
 	succeed_if (ksLookupByName (cut, "system:/root/abc", 0) != NULL, "should contain system:/root/abc");
@@ -188,19 +194,20 @@ static void ksCut_cascading_root_in_keyset_should_work (void)
 
 static void ksCut_cascading_key_copied_from_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	// Act
 	KeySet * cut = ksCut (ks, root);
 
 	// Assert
-	succeed_if_fmt(ksGetSize (cut) == 3, "should contain 3 keys, was %zd", ksGetSize (cut));
+	succeed_if_fmt (ksGetSize (cut) == 3, "should contain 3 keys, was %zd", ksGetSize (cut));
 	succeed_if (ksLookupByName (cut, "/root", 0) != NULL, "should contain root");
 	succeed_if (ksLookupByName (cut, "/root/def", 0) != NULL, "should contain /root/def");
 	succeed_if (ksLookupByName (cut, "system:/root/abc", 0) != NULL, "should contain system:/root/abc");
@@ -214,15 +221,15 @@ static void ksCut_cascading_key_copied_from_root_in_keyset_should_work (void)
 }
 
 
-
 static void ksFindHierarchy_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
 
@@ -236,8 +243,8 @@ static void ksFindHierarchy_root_in_keyset_should_work (void)
 	// - system:/root
 	// - system:/root/abc
 
-	succeed_if_fmt(start == 2, "start should be 2, was %zd", start);
-	succeed_if_fmt(end == 4, "end should be 4, was %zd", end);
+	succeed_if_fmt (start == 2, "start should be 2, was %zd", start);
+	succeed_if_fmt (end == 4, "end should be 4, was %zd", end);
 
 	keyDel (root);
 	ksDel (ks);
@@ -245,13 +252,14 @@ static void ksFindHierarchy_root_in_keyset_should_work (void)
 
 static void ksFindHierarchy_key_copied_from_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("system:/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
 
@@ -265,8 +273,8 @@ static void ksFindHierarchy_key_copied_from_root_in_keyset_should_work (void)
 	// - system:/root
 	// - system:/root/abc
 
-	succeed_if_fmt(start == 2, "start should be 2, was %zd", start);
-	succeed_if_fmt(end == 4, "end should be 4, was %zd", end);
+	succeed_if_fmt (start == 2, "start should be 2, was %zd", start);
+	succeed_if_fmt (end == 4, "end should be 4, was %zd", end);
 
 	keyDel (root);
 	keyDel (copy);
@@ -275,12 +283,13 @@ static void ksFindHierarchy_key_copied_from_root_in_keyset_should_work (void)
 
 static void ksFindHierarchy_cascading_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, root, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
 
@@ -294,8 +303,8 @@ static void ksFindHierarchy_cascading_root_in_keyset_should_work (void)
 	// - system:/other
 	// - system:/root/abc
 
-	succeed_if_fmt(start == 0, "start should be 0, was %zd", start);
-	succeed_if_fmt(end == 2, "end should be 2, was %zd", end);
+	succeed_if_fmt (start == 0, "start should be 0, was %zd", start);
+	succeed_if_fmt (end == 2, "end should be 2, was %zd", end);
 
 	keyDel (root);
 	ksDel (ks);
@@ -303,13 +312,14 @@ static void ksFindHierarchy_cascading_root_in_keyset_should_work (void)
 
 static void ksFindHierarchy_cascading_key_copied_from_root_in_keyset_should_work (void)
 {
-	printf("Test %s\n", __func__);
+	printf ("Test %s\n", __func__);
 
 	// Arrange
 	Key * root = keyNew ("/root", KS_END);
 	Key * copy = keyCopy (keyNew ("/", KEY_END), root, KEY_CP_ALL);
 
-	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END), keyNew ("system:/other", KEY_END), KS_END);
+	KeySet * ks = ksNew (KEYSET_SIZE, copy, keyNew ("system:/root/abc", KEY_END), keyNew ("/root/def", KEY_END),
+			     keyNew ("system:/other", KEY_END), KS_END);
 
 	elektraCursor end = 999;
 
@@ -323,8 +333,8 @@ static void ksFindHierarchy_cascading_key_copied_from_root_in_keyset_should_work
 	// - system:/other
 	// - system:/root/abc
 
-	succeed_if_fmt(start == 0, "start should be 0, was %zd", start);
-	succeed_if_fmt(end == 2, "end should be 2, was %zd", end);
+	succeed_if_fmt (start == 0, "start should be 0, was %zd", start);
+	succeed_if_fmt (end == 2, "end should be 2, was %zd", end);
 
 	keyDel (root);
 	keyDel (copy);

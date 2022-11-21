@@ -2748,8 +2748,8 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	}
 
 	found = ksLookup (ks, &key, options);
-	keyNameRefDecAndDel(key.keyName, true);
-	keyDataRefDecAndDel(key.keyData, true);
+	keyNameRefDecAndDel (key.keyName, true);
+	keyDataRefDecAndDel (key.keyData, true);
 	ksDel (key.meta); // sometimes owner is set
 	return found;
 }

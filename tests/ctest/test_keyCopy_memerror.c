@@ -1,19 +1,19 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
-#include "../../src/libs/elektra/key.c"
-#include "../../src/libs/elektra/keyname.c"
-#include "../../src/libs/elektra/keyvalue.c"
-#include "../../src/libs/elektra/keyhelpers.c"
 #include "../../src/libs/elektra/cow.c"
 #include "../../src/libs/elektra/internal.c"
-#include "../../src/libs/elektra/opmphmpredictor.c"
+#include "../../src/libs/elektra/key.c"
+#include "../../src/libs/elektra/keyhelpers.c"
+#include "../../src/libs/elektra/keyname.c"
+#include "../../src/libs/elektra/keyvalue.c"
 #include "../../src/libs/elektra/opmphm.c"
+#include "../../src/libs/elektra/opmphmpredictor.c"
 
 #include <tests_internal.h>
 
