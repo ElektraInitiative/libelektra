@@ -1042,7 +1042,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 			size_t n = ks->data->size - insertpos;
 			memmove (ks->data->array + (insertpos + 1), ks->data->array + insertpos, n * sizeof (struct Key *));
 
-			ELEKTRA_LOG_DEBUG ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n", ks->size, insertpos, n);
+			ELEKTRA_LOG_DEBUG ("memmove -- ks->data->size: %zd insertpos: %zd n: %zd\n", ks->data->size, insertpos, n);
 
 			ks->data->array[insertpos] = toAppend;
 			ksSetCursor (ks, insertpos);
