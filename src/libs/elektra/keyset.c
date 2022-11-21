@@ -1269,7 +1269,9 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 }
 
 /**
- * Searches for the start and optionally end of the key hierachy rooted at @p root in @p ks.
+ * Searches for the start and optionally end of the key hierarchy rooted at @p root in @p ks.
+ * The hierarchy will only contain keys in the same namespace as @p root.
+ * If @p root is a cascading key, only cascading keys will be part of the hierarchy.
  *
  * The main use-case for this function is this kind of loop:
  *
