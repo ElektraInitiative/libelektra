@@ -388,7 +388,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Reinstate mounting tutorial _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
