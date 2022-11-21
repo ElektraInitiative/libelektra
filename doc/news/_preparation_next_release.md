@@ -151,7 +151,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - <<TODO>>
 - The Key and KeySet datastructures are now fully copy-on-write. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
+- `keyCopy` now only allocates additional memory if `KEY_CP_META` or `KEY_CP_ALL` is used. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
