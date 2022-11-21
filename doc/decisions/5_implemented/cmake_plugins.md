@@ -2,22 +2,18 @@
 
 ## Problem
 
-- Plugin names and plugin folders not always exactly
-  match (`resolver_*`, `crypto_*`)
+- plugin names and plugin folders not always exactly match (`resolver_*`, `crypto_*`)
 - plugin should be able to register new variants
 - there should be only one place to define a new plugin
-- Multiple categories should be possible per plugin,
-  defined in README.md
-- On some OS some plugins won't work (simpleini)
-- Some unit tests depend on bindings
+- multiple categories should be possible per plugin, defined in README.md
+- on some OS some plugins won't work (simpleini)
+- some unit tests depend on bindings
 
 ## Constraints
 
 - should work with supported CMake
-- It should be easy to add trivial plugins
-  (without dependency and variants)
-- It should be possible to add complex plugins
-  (with dependencies on plugins/unit tests and many variants)
+- It should be easy to add trivial plugins (without dependency and variants)
+- It should be possible to add complex plugins (with dependencies on plugins/unit tests and many variants)
 
 ## Assumptions
 
@@ -53,13 +49,11 @@ Following CMake variables are used for the phases:
 - `DEPENDENCY_PHASE` .. resolve all dependencies, do `add_plugins` again
 - `ADDTESTING_PHASE` .. (reserve for potential 3rd phase)
 
-1. Collection phase (`COLLECTION_PHASE` is `ON`),
-   add_plugin internally builds up:
+1. Collection phase (`COLLECTION_PHASE` is `ON`), add_plugin internally builds up:
    - `ADDED_PLUGINS`
    - `REMOVED_PLUGINS`
    - `ADDED_DIRECTORIES`
-2. assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`),
-   with:
+2. assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`), with:
    - `find_libraries`, actually search for libraries on the system
      (only relevant libraries of plugins that are considered for inclusion)
    - `add_plugin`, with _actually adding_ the plugins
@@ -77,8 +71,7 @@ It would:
 
 - clutter the cmake output (especially in the case of errors)
 - introduce more variables into the CMakeCache which are irrelevant for the user
-- maybe even find libraries in wrong versions which are incompatible to what other
-  plugins need
+- maybe even find libraries in wrong versions which are incompatible to what other plugins need
 
 ## Implications
 
@@ -92,6 +85,5 @@ It would:
 
 ## Limitations
 
-- `ADDED_DIRECTORIES` of variants will be kept
-- Typos in plugin names are currently not checked,
-  strings that are not plugin names are simply ignored.
+- `ADDED_DIRECTORIES` of variants will be kept.
+- Typos in plugin names are currently not checked, strings that are not plugin names are simply ignored.

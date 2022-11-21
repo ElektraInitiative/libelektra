@@ -2,8 +2,7 @@
 
 ## Problem
 
-While we have a classification of errors and warnings, it remains
-unclear when plugins actually should emit errors and warnings.
+While we have a classification of errors and warnings, it remains unclear when plugins actually should emit errors and warnings.
 
 ## Constraints
 
@@ -27,8 +26,7 @@ Provide guidelines in the form as tutorials, covering:
 - that wrong specifications, like `kdb meta-set /tests/ipaddr/ipv4 check/ipaddr ipv8` should be rejected
 - if the value does not confirm **exactly** to the specified type, an error should be emitted
   (e.g. only `0` or `1` as boolean)
-- anything else that is beyond the capabilities of a plugin (not implemented),
-  should lead to an error
+- anything else that is beyond the capabilities of a plugin (not implemented), should lead to an error
 
 Violations against these guidelines can be reported as bug and then either:
 
@@ -38,9 +36,8 @@ Violations against these guidelines can be reported as bug and then either:
 
 ## Rationale
 
-It is easier for developers if there are clear expectations on how a plugin
-should behave. And it is much easier for overall Elektra if there is more
-consistency.
+It is easier for developers if there are clear expectations on how a plugin should behave.
+And it is much easier for overall Elektra if there is more consistency.
 
 ## Implications
 

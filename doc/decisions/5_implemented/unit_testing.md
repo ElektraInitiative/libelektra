@@ -2,18 +2,15 @@
 
 ## Problem
 
-The previous unit testing framework started as hack to have a bit more
-than simple asserts. It is not easy to use (needs explicit enumeration
-of all test cases) and lacks really important features (e.g. output of
-the assertion that failed).
+The previous unit testing framework started as hack to have a bit more than simple asserts.
+It is not easy to use (needs explicit enumeration of all test cases) and lacks really important features (e.g. output of the assertion that failed).
 
 ## Constraints
 
 - Must be BSD licenced
 - Must be easy to use
 - should be portable
-- container testing?
-- mocking?
+- should support mocking
 
 ## Assumptions
 
@@ -25,9 +22,7 @@ the assertion that failed).
 ## Decision
 
 - Keep C framework for C tests and ABI tests
-- Google Unit testing framework `gtest` with code downloaded by CMake for
-  systems where no source is packaged (Debian Wheezy, Arch Linux,
-  Fedora,...) for C++ tests
+- Google Unit testing framework `gtest` with code downloaded by CMake for systems where no source is packaged (Debian Wheezy, Arch Linux, Fedora,...) for C++ tests
 
 ## Rationale
 
@@ -45,14 +40,13 @@ the assertion that failed).
 
 ## Implications
 
-- It adds lots of code in the repository
-- It is not ideal to have different frameworks intermixed (C vs. C++ frameworks, but most code is C)
-- In the end we have to write a lot of functionality ourselves anyway (e.g. comparing Keys and KeySets)
+- It is not ideal to have different frameworks intermixed (C vs. C++ frameworks, but most code is C).
+- In the end we have to write a lot of functionality ourselves anyway (e.g. comparing Keys and KeySets).
 - Testsuite execution are already handled by cmake and kdb run-all.
 - The selection of tests within a test suite does not play well with ctest.
-- Rewriting all current tests to have unified behavior is a lot of work
-- Won't work for ABI compatibility tests
-- Mock only by extra framework
+- Rewriting all current tests to have unified behavior is a lot of work.
+- Might not work for ABI compatibility tests.
+- Mock only by extra framework.
 
 ## Related Decisions
 
@@ -61,4 +55,4 @@ the assertion that failed).
 ## Notes
 
 - We had discussions on Mailinglists
-- We had discussions on [GitHub](https://github.com/ElektraInitiative/libelektra/pull/26)
+- We had discussions in [#26](https://pull.libelektra.org/26)

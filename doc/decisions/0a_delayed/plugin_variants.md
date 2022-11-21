@@ -2,17 +2,12 @@
 
 ## Problem
 
-Some plugins are generic in the sense that they cannot fully
-define their contract statically.
-(Note: if they can decide it statically, you should prefer
-[compilation variants](/doc/tutorials/compilation-variants.md).)
-Instead their contract is based on their
-configuration. We will call every combination of plugins+configuration
-where we get a different contract **plugin variant**.
+Some plugins are generic in the sense that they cannot fully define their contract statically.
+(Note: if they can decide it statically, you should prefer [compilation variants](/doc/tutorials/compilation-variants.md).)
+Instead their contract is based on their configuration.
+We will call every combination of plugins+configuration, where we get a different contract **plugin variant**.
 
-The current issue is that there is no way to enumerate
-possible plugin variants as needed to list all functionality
-of Elektra.
+The current issue is that there is no way to enumerate possible plugin variants as needed to list all functionality of Elektra.
 
 ## Constraints
 

@@ -1,11 +1,9 @@
-# Functions copying into buffers
+# Functions with buffers
 
 ## Problem
 
-Currently the way functions like keyGetName() work is by passing a buffer with
-a maxSize and if the buffer is large enough, the value gets copied into the
-buffer. This leads to the user having to write a lot of surrounding boilerplate
-code, checking for the size of every value / name they want to copy into a buffer.
+Currently the way functions like `keyGetName()` work is by passing a buffer with a `maxSize` and if the buffer is large enough, the value gets copied into the buffer.
+This leads to the user having to write a lot of surrounding boilerplate code, checking for the size of every value / name they want to copy into a buffer.
 
 ## Constraints
 

@@ -2,18 +2,15 @@
 
 ## Problem
 
-To develop a [Web UI](https://github.com/ElektraInitiative/libelektra/issues/252),
-we need to be able to remotely configure Elektra via a network socket.
+To develop a [Web UI](https://github.com/ElektraInitiative/libelektra/issues/252), we need to be able to remotely configure Elektra via a network socket.
 
-The idea is to use a Pub/Sub concept to synchronize actions which describe
-changes in the Elektra state.
+The idea is to use a Pub/Sub concept to synchronize actions which describe changes in the Elektra state.
 
 ## Constraints
 
 - We need to be able to synchronize all changes in Elektra with the Web UI.
 - This needs to be done via a network socket due to limitations of the Web.
-- That means we need to run an Elektra daemon (`elektrad`) to be able to
-  connect to Elektra at any time.
+- That means we need to run an Elektra daemon (`elektrad`) to be able to connect to Elektra at any time.
 
 ## Assumptions
 
@@ -27,13 +24,13 @@ changes in the Elektra state.
 
 ## Decision
 
-REST Api is used.
+Don't use pubsub at all.
+
+Instead use [REST API](/doc/api_blueprints/elektrad.apib) implemented by [`elektrad`](/src/tools/elektrad).
 
 ## Rationale
 
-nanomsg sounds interesting, but isn't as popular as ZeroMQ, which is why there
-are no browser JS bindings available (only Node.js, which cannot be easily
-used for the Web UI).
+nanomsg sounds interesting, but isn't as popular as ZeroMQ, which is why there are no browser JS bindings available (only Node.js, which cannot be easily used for the Web UI).
 
 ## Implications
 

@@ -30,7 +30,7 @@ This partial use of separate functions can be weird and unintuitive.
 2. Fully separate the functions with one function for each of the phases `libelektra-kdb` knows.
 
    This would introduce a lot of symbols, which would bloat `struct _Plugin`.
-   The bloat could be avoided by choosing the approach in the ["Plugin Contract Function"](plugin_contract_function.md) decision that removes the function pointers from `struct _Plugin`.
+   The bloat could be avoided by choosing the approach in the ["Plugin Contract Function"](../0_drafts/plugin_contract_function.md) decision that removes the function pointers from `struct _Plugin`.
 
 3. Only use `kdbOpen`, `kdbGet`, `kdbSet` and `kdbClose` functions matching the ones in `libelektra-kdb`.
    Communicate the current phase via the `elektraPluginGetPhase` function.
@@ -57,7 +57,7 @@ This partial use of separate functions can be weird and unintuitive.
 
 ## Related Decisions
 
-- [Plugin Contract Function](plugin_contract_function.md)
-- [Plugin Struct](plugin_struct.md)
+- [Plugin Contract Function](../0_drafts/plugin_contract_function.md)
+- [Plugin Struct](../0a_delayed/plugin_struct.md)
 
 ## Notes

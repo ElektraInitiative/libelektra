@@ -29,8 +29,8 @@ The default backend reading `default.ecf` is only relevant as long as no root ba
 
 Algorithm:
 
-1. try to get system:/elektra using the file elektra.ecf (KDB_DB_INIT)
-2. mount the init backend to system:/elektra
+1. get system:/elektra using the file elektra.ecf (KDB_DB_INIT)
+2. mount `elektra.ecf` (the init backend) to system:/elektra
 
 ## Rationale
 
@@ -40,8 +40,7 @@ Algorithm:
 
 ## Notes
 
-Added scripts/upgrade-bootstrap to migrate from previous setups
-to upgrade to new system, either:
+Added scripts/upgrade-bootstrap to migrate from previous setups to upgrade to new system, either:
 
 - touch /etc/kdb/elektra.ecf (loses old mount points)
 - or do kdb export system:/elektra/mountpoints, kdb rm -r system:/elektra/mountpoints, kdb import system:/elektra/mountpoints
