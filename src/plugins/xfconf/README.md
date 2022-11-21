@@ -5,7 +5,7 @@
 - infos/provides = storage/xfconf
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained libc configurable experimental unfinished
+- infos/status = maintained libc configurable experimental unfinished concept limited
 - infos/metadata =
 - infos/description = storage plugin for xfconf
 
