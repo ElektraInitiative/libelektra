@@ -66,6 +66,8 @@ s/\<([Cc])hange[- ]([Tt])racking\>/\1hange \2racking/g
 s:\<key/value:key-value:g
 s:\<Key/value:Key-value:g
 
+s/([Kk])ey[ -](value[ -])?storage/\1ey-value storage/g
+
 s/[^#"]\<data-?type/data type/g
 
 s/([^\./`-])J[sS][oO][nN]/\1JSON/

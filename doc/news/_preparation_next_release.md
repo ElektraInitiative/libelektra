@@ -260,7 +260,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Sed: Add spelling correction for "key-value storage" _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
