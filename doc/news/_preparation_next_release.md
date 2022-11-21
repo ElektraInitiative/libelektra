@@ -323,7 +323,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Use cases for KDB _(@kodebach)_
-- <<TODO>>
+- Use cases for `libelektra-core` _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
