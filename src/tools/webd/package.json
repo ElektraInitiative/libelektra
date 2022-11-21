@@ -44,7 +44,7 @@
     "babel-register": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "babel-watch": "^2.0.8",
-    "concurrently": "^3.6.1",
+    "concurrently": "^7.6.0",
     "webpack": "^3.12.0"
   }
 }
