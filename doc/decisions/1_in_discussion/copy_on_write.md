@@ -433,7 +433,7 @@ If refcounting is now implemented for all structures, we might be able to proper
 Two ideas to deal with this in conjunction with our reference counting implementation:
 
 If we have `free` function-pointer along side the refcount, `mmapstorage` (and also other plugins with different allocators) could set it to their own implementation.
-To mimic the current behaviour of `mmapstorage` this would point to a no-op function.
+To mimic the current behavior of `mmapstorage` this would point to a no-op function.
 However, we could also improve things and keep track of when all data has been freed and only then call `munmap`.
 
 Another simpler way to avoid the flag, which doesn't really allow for further improvements, would be using the refcount.
