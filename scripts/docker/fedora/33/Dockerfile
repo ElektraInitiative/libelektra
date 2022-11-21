@@ -7,6 +7,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
+    	dbus-x11 \
         devscripts \
         diffutils \
         discount \

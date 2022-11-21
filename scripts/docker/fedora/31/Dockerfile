@@ -7,6 +7,7 @@ RUN dnf upgrade -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
+    	dbus-x11 \
         diffutils \
         dnf-plugins-core \
         file \

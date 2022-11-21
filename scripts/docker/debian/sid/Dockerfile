@@ -15,6 +15,7 @@ RUN apt-get update && apt-get -y install \
         clang-format-13 \
         cmake \
         curl \
+    	dbus-x11 \
         dh-lua \
         ed \
         flex \

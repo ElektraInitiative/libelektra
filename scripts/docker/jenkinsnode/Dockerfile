@@ -7,6 +7,7 @@ RUN apt-get -y install \
   clang \
   cmake \
   curl \
+  dbus-x11 \
   dh-lua \
   discount \
   git \

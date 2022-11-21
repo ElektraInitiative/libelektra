@@ -13,6 +13,7 @@ RUN apt-get update && apt-get -y install \
         clang-11 \
         cmake \
         curl \
+    	dbus-x11 \
         debsigs \
         default-jdk \
         devscripts \
