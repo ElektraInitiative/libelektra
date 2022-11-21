@@ -1325,10 +1325,18 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 
 	if (end != NULL)
 	{
-		struct _KeyName * copy = keyNameCopy (root->keyName);
-		struct _KeyName * old = root->keyName;
-		((Key *) root)->keyName = copy;
-		keyNameRefInc (copy);
+		struct _KeyName * oldName = NULL;
+		struct _KeyName * copy = NULL;
+
+		if (search >= 0)
+		{
+			// root or a copy of root is part of ks
+			// we need to temporarily create a copy of the keyName, as to not change the name of keys in ks
+			copy = keyNameCopy (root->keyName);
+			oldName = root->keyName;
+			((Key *) root)->keyName = copy;
+			keyNameRefInc (copy);
+		}
 
 		if (root->keyName->keyUSize == 3)
 		{
@@ -1352,8 +1360,11 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 			*end = endSearch < 0 ? -endSearch - 1 : endSearch;
 		}
 
-		((Key *) root)->keyName = old;
-		keyNameRefDecAndDel (copy, true);
+		if (oldName != NULL)
+		{
+			((Key *) root)->keyName = oldName;
+			keyNameRefDecAndDel (copy, true);
+		}
 	}
 
 	return it;
