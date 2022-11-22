@@ -265,7 +265,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix warning parsing in shell recorder _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

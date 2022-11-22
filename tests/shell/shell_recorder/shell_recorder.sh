@@ -132,9 +132,10 @@ execute() {
 	# = WARNINGS =
 	# ============
 
-	WARNINGS=$(printf '%s' "$STDERR" | sed -nE 's/.*Warning (number: |\(#)([0-9]+).*/\2/p' | tr '\n' ',' | sed 's/.$//')
+	WARNINGS=$(printf '%s' "$STDERR" | sed -nE 's/.*warning (C[A-Z0-9]+):/\1/p' | tr '\n' ',' | sed 's/.$//')
 
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
+
 	if [ -n "$WARNINGSCMP" ]; then
 		executedTests=$((executedTests + 1))
 		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq -- "$WARNINGSCMP"; then
