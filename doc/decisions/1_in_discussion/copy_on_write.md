@@ -12,8 +12,7 @@ There are also aspirations to create a new, simple [internal cache](../3_decided
 
 ## Constraints
 
-1. Elektra's public API should require no changes
-2. Modifying keys and keysets returned by `kdbGet` should work as expected
+1. The lifetime of a `Key` and a `KeySet` must be unaffected by copy-on-write.
 
 ## Assumptions
 
@@ -261,7 +260,7 @@ API notes:
   ```
   if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
   if `dest->data` is NOT NULL:
-    if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    if `dest->data->refs` == 1 (meaning no other keysets points to it):
       deallocate `dest->data`
       point `dest->data` to `source->data`, increase `source->data->refs` by 1.
     else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
@@ -274,12 +273,12 @@ API notes:
   ```
   if `dest->data` is NULL, then point `dest->data` to `source->data` and increase `source->data->refs` by 1
   if `dest->data` is NOT NULL:
-    if `dest->data->refs` == 0 (meaning no other keysets points to it):
+    if `dest->data->refs` == 1 (meaning no other keysets points to it):
       if `dest->data->size` == 0 (no keys are in this keyset):
         deallocate `dest->data` and point `dest->data` to `source->data`, increase `source->data->refs` by 1.
       else if `dest->data->size` > 0 (meaning there are already keys in this keyset):
         copy the keys of `source->data->array` over to `dest->data->array`
-    else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+    else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
       if `dest->data->size` == 0 (no keys are in this keyset):
         decrease `dest->data->refs` by 1.
         point `dest->data` to `source->data`, increase `source->data->refs` by 1.
@@ -297,18 +296,18 @@ API notes:
 - `ksClear(dest)`:
 
   ```
-  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+  if `dest->data->refs` == 1 (meaning no other keysets points to it):
     deletes the keys in `dest->data`
-  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+  else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
     decrease `dest->data->refs` by 1
     point `dest->data` to NULL
   ```
 
 - `ksCut(dest, key)`:
   ```
-  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+  if `dest->data->refs` == 1 (meaning no other keysets points to it):
     perform the cutting algorithm directly on these keys
-  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+  else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
     decrease `dest->data->refs` by 1
     create a new `dest->data`
     copy over the non-cut keys into `dest->data` from the old `dest->data`
@@ -316,9 +315,9 @@ API notes:
 - `ksPop(dest)`:
 
   ```
-  if `dest->data->refs` == 0 (meaning no other keysets points to it):
+  if `dest->data->refs` == 1 (meaning no other keysets points to it):
     pop the last key directly on the keys
-  else if `dest->data->refs` > 0: (there are other keysets sharing the same data):
+  else if `dest->data->refs` > 1: (there are other keysets sharing the same data):
     decrease `dest->data->refs` by 1
     create a new `dest->data`
     copy over all but the last keys from the old `dest->data`
@@ -327,12 +326,133 @@ API notes:
 - `ksLookup()`:
   - if the `DEL` or `POP` flag is specified, do the COW-stuff as described multiple times now in the operations above
 
-#### Optimizations
+#### Reference Counting
 
-This approach requires more allocations than previously.
-We have not fully benchmarked whether this is a big issue.
-One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
-We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
+We need reference counting for the internal COW datastructures.
+We do it the same way reference counting currently works for `Key` and `KeySet`.
+One tweak though is that the refcount should never be 0, as this does not make sense for internal datastructures.
+
+This means we always increment the refcount after creation and always decrement before deletion, so that the refcount is never zero.
+An example implementation is shown below:
+
+```c
+static void keySetValue(Key * key, void * value, size_t size) {
+  // [...] removal of current value from key
+  struct _KeyData data = keyDataNew (value, size);
+  keyDataIncRef (data);
+  key->data = data;
+}
+
+static void keyDel(Key * key) {
+  keyDataDecRef (key->data);
+  keyDataDel (key->data);
+  // [...] other cleanup
+}
+```
+
+#### Variation 1 - RcBuffer
+
+Instead of using different structs for `_KeyData`, and `_KeyName` use a more generic struct for reference counting.
+This would avoid some duplication on the reference counting code for the key.
+Keysets will still have their own data struct, as it contains more than just a pointer and a size.
+
+```c
+typedef struct {
+	void * data;
+	size_t size;
+	uint16_t refs;
+} RcBuffer;
+
+struct _Key {
+	RcBuffer * uname;
+	RcBuffer * ename; // will be removed soon
+	RcBuffer * value;
+
+	KeySet * meta;
+	keyflag_t flags;
+	uint16_t refs;
+};
+```
+
+#### Possible Edge Cases
+
+In general, it should be possible to always do copy-on-write.
+From a users perspective, copy-on-write copies of a key (and a keyset) should behave the same.
+There is, however, one edge case: the user modifying the value of a key directly.
+This is shown in the following example:
+
+```c
+Key * key;
+struct foo myFoo = {
+  .x = 0
+};
+keySetBinary (key, &myFoo, sizeof(myFoo));
+
+Key * dup = keyDup (key);
+
+((struct foo *)keyValue (key))->x = 1;
+
+// with COW
+assert (((struct foo *)keyValue (dup))->x == 1);
+// without COW
+assert (((struct foo *)keyValue (dup))->x == 0);
+```
+
+This edge case can be accounted for by providing a private function `keyDetach`, that forces that the key has its very own copy of the data.
+
+```c
+((struct foo *)keyValue (keyDetach(key)))->x = 1;
+
+// with COW
+assert (((struct foo *)keyValue (dup))->x == 0);
+// without COW
+assert (((struct foo *)keyValue (dup))->x == 0);
+```
+
+#### Compatibility with `mmapstorage` plugin
+
+If we do change the internal data structures it makes much more sense to fix the cache and mmapstorage afterwards (or in tandem).
+The most important constraint for mmap is that any structure (or bytes) that is an allocation unit (e.g. we malloc() the bytes needed for KeySet struct, so this is an unit) needs to have a flag to determine whether those bytes are actually malloc()ed or they are mmap()ed.
+Thus all the newly added structures as proposed will need some kind of an mmap flag.
+
+`mmapstorage` only calls `munmap` in some error cases, so basically `munmap` is almost never done and the keyset is never invalidated.
+
+During `kdbSet` the storage plugins always write to a temp file, due to how the resolver works.
+We also don't need to mmap the temp file here: when doing `kdbSet` we already have the `KeySet` at hand, mmap-ing it is not needed at all, because we have the data.
+We just want to update the cache file.
+The `mmap`/`munmap` in kdbSet are just so we can write the KeySet to a file in our format.
+(`mmap()` is just simpler, but we could also `malloc()` a region and then `fwrite()` the stuff)
+
+Therefore the only case where we return a `mmap()`ed KeySet should be in `kdbGet`.
+
+When the `mmapstorage` was designed/implemented, not all structures had refcounters, so there was no way to know when a `munmap` is safe.
+This was simply out of scope at that point in time.
+
+If refcounting is now implemented for all structures, we might be able to properly `munmap` in future.
+
+Two ideas to deal with this in conjunction with our reference counting implementation:
+
+If we have `free` function-pointer along side the refcount, `mmapstorage` (and also other plugins with different allocators) could set it to their own implementation.
+To mimic the current behavior of `mmapstorage` this would point to a no-op function.
+However, we could also improve things and keep track of when all data has been freed and only then call `munmap`.
+
+Another simpler way to avoid the flag, which doesn't really allow for further improvements, would be using the refcount.
+`mmapstorage` could set the refcount to a value that is otherwise illegal.
+This would allow us to detect the keys.
+Depending on the refcount implementation good values would probably be 0 or UINT16_MAX.
+The special value would have to ignored by all refcounting functions (inc, dec, del) and turn the functions into no-ops.
+
+#### Possible Optimizations
+
+- This approach requires more allocations than previously.
+  We have not fully benchmarked whether this is a big issue.
+  One optimization could be an expanding "pool" of `_KeySetData`, `_KeyData` and `_KeyName`.
+  We could then allocate multiple of them at the same time, and borrow and give back instance from and to the pool.
+
+- Embed the `KeySet * meta` directly in `struct _Key`.
+  This may help with performance in cases we need metadata.
+  It will, however, increase memory usage.
+  This should only be considered after some benchmarking shows this is a real issue.
 
 ## Memory comparison of COW approaches
 
@@ -356,6 +476,7 @@ We want to measure the following properties for the key:
 | mmapstorage-like COW implementation (without additional pointers) |        64 |                    64 |                           64 |                153 |                       217 |                        281 |
 | mmapstorage-like COW implementation (with additional pointers)    |        80 |                    80 |                           80 |                169 |                       249 |                        329 |
 | Full-blown COW implementation                                     |        32 |                    72 |                           96 |                185 |                       217 |                        249 |
+| Full-blown COW implementation - Variant 1 (RcBuffer)              |        40 |                    88 |                          112 |                201 |                       241 |                        281 |
 
 We want to measure the following properties for the keyset:
 
@@ -433,6 +554,21 @@ Full-blown COW implementation:
 - Example KeySet + 1 Duplicate: `Example KeySet + Empty KeySet` = `192 + 16` = `208`
 - Example KeySet + 2 Duplicates: `Example KeySet + Empty KeySet * 2` = `192 + 16 * 2` = `224`
 
+Full-blown COW implementation - Variant 1 (RcBuffer):
+
+- Empty Key [measured via `sizeof`]: `40`
+- Empty Key (with name) [measured via `sizeof`]: `Empty Key + sizeof(RcBuffer)*2` = `40 + 24*2` = `88`
+- Empty Key (with name + data) [measured via `sizeof`]: `Empty Key + sizeof(RcBuffer)*3` = `40 + 24*3` = `112`
+- Single Example Key = `Empty Key (with name + data) + keyname + unescaped keyname + data` = `112 + 29 + 25 + 35` = `201`
+- Single Example Key + 1 Duplicate = `Single Example Key + Empty Key` = `201 + 40` = `241`
+- Single Example Key + 2 Duplicates = `Single Example Key + Empty Key * 2` = `201 + 40 * 2` = `281`
+
+- Empty KeySet [measured via `sizeof`]: `16`
+- Empty KeySet (with data): `Empty KeySet + sizeof(KeySetData)` = `16 + 48` = `64`
+- Example KeySet: `Empty KeySet (with data) + 16 * pointer to keys` = `64 + 16 * 8` = `192`
+- Example KeySet + 1 Duplicate: `Example KeySet + Empty KeySet` = `192 + 16` = `208`
+- Example KeySet + 2 Duplicates: `Example KeySet + Empty KeySet * 2` = `192 + 16 * 2` = `224`
+
 ### Allocations & Indirections comparison of COW approaches
 
 For allocations want to measure the following properties:
@@ -452,6 +588,8 @@ For allocations want to measure the following properties:
 | Full-blown COW implementation                                     |         1 |                     2 |                            3 |           1 |                   4 |                    5 |
 
 ## Decision
+
+Implement the full-blown COW approach.
 
 ## Rationale
 
