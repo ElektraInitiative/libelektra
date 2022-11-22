@@ -114,7 +114,6 @@ task:
         augeas \
         bison \
         clang-format \
-        coreutils \
         dbus \
         discount \
         doxygen \
