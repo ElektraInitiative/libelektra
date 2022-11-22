@@ -653,7 +653,7 @@ static void ksRename_with_root_part_of_ks_should_work (void)
 	Key * k1 = keyNew ("system:/test", KEY_END);
 	Key * k2 = keyNew ("system:/test/1", KEY_END);
 	Key * k3 = keyNew ("system:/other", KEY_END);
-	Key * newRoot = keyNew("system:/renamed", KEY_END);
+	Key * newRoot = keyNew ("system:/renamed", KEY_END);
 
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
 
@@ -678,7 +678,7 @@ static void ksRename_with_copy_of_key_as_root_should_work (void)
 	Key * k2 = keyNew ("system:/test/1", KEY_END);
 	Key * k3 = keyNew ("system:/other", KEY_END);
 	Key * root = keyDup (k1, KEY_CP_ALL);
-	Key * newRoot = keyNew("system:/renamed", KEY_END);
+	Key * newRoot = keyNew ("system:/renamed", KEY_END);
 
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
 
@@ -705,7 +705,7 @@ static void ksRename_should_not_replace_data_when_no_references (void)
 	Key * k2 = keyNew ("system:/test/1", KEY_END);
 	Key * k3 = keyNew ("system:/other", KEY_END);
 	Key * root = keyNew ("system:/test", KEY_END);
-	Key * newRoot = keyNew("system:/renamed", KEY_END);
+	Key * newRoot = keyNew ("system:/renamed", KEY_END);
 
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
 	const struct _KeySetData * original = ks->data;
@@ -730,7 +730,7 @@ static void ksRename_should_replace_data_when_references (void)
 	Key * k2 = keyNew ("system:/test/1", KEY_END);
 	Key * k3 = keyNew ("system:/other", KEY_END);
 	Key * root = keyNew ("system:/test", KEY_END);
-	Key * newRoot = keyNew("system:/renamed", KEY_END);
+	Key * newRoot = keyNew ("system:/renamed", KEY_END);
 
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
 	const struct _KeySetData * original = ks->data;
