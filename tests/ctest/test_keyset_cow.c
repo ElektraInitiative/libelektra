@@ -342,6 +342,538 @@ static void ksFindHierarchy_cascading_key_copied_from_root_in_keyset_should_work
 }
 
 
+static void ksNew_with_0_should_leave_empty_data (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange & Act
+	KeySet * ks = ksNew (0, KS_END);
+
+	// Assert
+	succeed_if (ks->data == NULL, "ks->data should be NULL");
+
+	ksDel (ks);
+}
+
+static void ksNew_should_alloc_data (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange & Act
+	KeySet * ks = ksNew (KEYSET_SIZE, KS_END);
+
+	// Assert
+	succeed_if (ks->data != NULL, "ks->data should not be NULL");
+	succeed_if (ks->data->alloc == KEYSET_SIZE + 1, "ks->data->alloc should be KEYSET_SIZE + 1");
+	succeed_if (ks->data->size == 0, "ks->data->size should be 0");
+
+	ksDel (ks);
+}
+
+static void ksDup_should_point_to_the_same_data (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * key = keyNew ("system:/test", KEY_END);
+	KeySet * original = ksNew (KEYSET_SIZE, key, KS_END);
+
+	// Act
+	KeySet * copy = ksDup (original);
+
+	// Assert
+	succeed_if (original->data == copy->data, "original->data and copy->data should point to the same thing");
+	succeed_if (original->data->refs == 2, "data->refs should be 2");
+	succeed_if (key->refs == 1, "key->refs should be 1");
+
+	ksDel (original);
+	ksDel (copy);
+}
+
+static void ksDup_of_key_with_NULL_data_should_point_NULL (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * original = ksNew (0, KS_END);
+
+	// Act
+	KeySet * copy = ksDup (original);
+
+	// Assert
+	succeed_if (copy->data == NULL, "copy->data should be NULL");
+
+	ksDel (original);
+	ksDel (copy);
+}
+
+static void ksCopy_should_point_to_the_same_data (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * key = keyNew ("system:/test", KEY_END);
+
+	KeySet * original = ksNew (KEYSET_SIZE, key, KS_END);
+	KeySet * copied = ksNew (KEYSET_SIZE, KS_END);
+
+	// Act
+	ksCopy (copied, original);
+
+	// Assert
+	succeed_if (original->data == copied->data, "original->data and copied->data should point to the same thing");
+	succeed_if (original->data->refs == 2, "data->refs should be 2");
+	succeed_if (key->refs == 1, "key->refs should be 1");
+
+	ksDel (copied);
+	ksDel (original);
+}
+
+static void ksDel_should_decrease_reference_pointer (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * original = ksNew (KEYSET_SIZE, KS_END);
+	KeySet * copy = ksDup (original);
+
+	succeed_if (copy->data->refs == 2, "data->refs should be 2");
+
+	// Act
+	ksDel (original);
+
+	// Assert
+	succeed_if (copy->data->refs == 1, "data->refs should be 1");
+
+	ksDel (copy);
+}
+
+static void ksAppendKey_should_not_replace_data_when_no_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * ks = ksNew(10, keyNew ("system:/test", KEY_END), KS_END);
+	const struct _KeySetData * originalData = ks->data;
+
+	// Act
+	ksAppendKey (ks, keyNew ("system:/test2", KEY_END));
+
+	// Assert
+	succeed_if (ks->data == originalData, "should not replace data instance");
+	succeed_if (ks->data->refs == 1, "reference counter of data should still be 1");
+	succeed_if (ksLookupByName (ks, "system:/test", 0) != NULL, "should contain key system:/test");
+	succeed_if (ksLookupByName (ks, "system:/test2", 0) != NULL, "should contain key system:/test2");
+
+	ksDel (ks);
+}
+
+static void ksAppendKey_should_replace_data_when_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k = keyNew ("system:/test", KEY_END);
+	Key * addedKey = keyNew ("system:/test2", KEY_END);
+
+	KeySet * ks = ksNew(10, k, KS_END);
+	const struct _KeySetData * originalData = ks->data;
+	KeySet * dup = ksDup (ks);
+
+	succeed_if (keyGetRef (k) == 1, "key should have 1 reference");
+
+	// Act
+	ksAppendKey (ks, addedKey);
+
+	// Assert
+	succeed_if (ks->data != originalData, "should replace data instance");
+	succeed_if (ks->data->refs == 1, "reference counter of data should still be 1");
+
+	succeed_if (dup->data == originalData, "should not replace data instance of other keyset");
+	succeed_if (dup->data->refs == 1, "reference counter of dup data should still be 1");
+
+	succeed_if (ksLookupByName (ks, "system:/test", 0) != NULL, "should contain key system:/test");
+	succeed_if (ksLookupByName (ks, "system:/test2", 0) != NULL, "should contain key system:/test2");
+
+	succeed_if (ksLookupByName (dup, "system:/test", 0) != NULL, "dup should contain key system:/test");
+	succeed_if (ksLookupByName (dup, "system:/test2", 0) == NULL, "dup should not contain key system:/test2");
+
+	succeed_if (keyGetRef (k) == 2, "key should have 2 references");
+	succeed_if (keyGetRef (addedKey) == 1, "added key should have 1 reference");
+
+	ksDel (ks);
+	ksDel (dup);
+}
+
+static void ksAppend_should_not_replace_data_when_no_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * ks = ksNew(10, keyNew ("system:/test", KEY_END), KS_END);
+	const struct _KeySetData * originalData = ks->data;
+
+	KeySet * ksOther = ksNew (10, keyNew ("system:/test2", KEY_END), KS_END);
+
+	// Act
+	ksAppend (ks, ksOther);
+
+	// Assert
+	succeed_if (ks->data == originalData, "should not replace data instance");
+	succeed_if (ks->data->refs == 1, "reference counter of data should still be 1");
+	succeed_if (ksLookupByName (ks, "system:/test", 0) != NULL, "should contain key system:/test");
+	succeed_if (ksLookupByName (ks, "system:/test2", 0) != NULL, "should contain key system:/test2");
+
+	succeed_if (keyGetRef(ksLookupByName (ks, "system:/test", 0)) == 1, "system:/test should have 1 reference");
+	succeed_if (keyGetRef(ksLookupByName (ks, "system:/test2", 0)) == 2, "system:/test2 should have 2 references");
+
+	ksDel (ks);
+	ksDel (ksOther);
+}
+
+static void ksAppend_should_replace_data_when_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k = keyNew ("system:/test", KEY_END);
+	Key * addedKey = keyNew ("system:/test2", KEY_END);
+	KeySet * addedKs = ksNew (10, addedKey, KS_END);
+
+	KeySet * ks = ksNew(10, k, KS_END);
+	const struct _KeySetData * originalData = ks->data;
+	KeySet * dup = ksDup (ks);
+
+	succeed_if (keyGetRef (k) == 1, "key should have 1 reference");
+	succeed_if (keyGetRef (addedKey) == 1, "addedKey should have 1 reference");
+
+	// Act
+	ksAppend (ks, addedKs);
+
+	// Assert
+	succeed_if (ks->data != originalData, "should replace data instance");
+	succeed_if (ks->data->refs == 1, "reference counter of data should still be 1");
+
+	succeed_if (dup->data == originalData, "should not replace data instance of other keyset");
+	succeed_if (dup->data->refs == 1, "reference counter of dup data should still be 1");
+
+	succeed_if (ksLookupByName (ks, "system:/test", 0) != NULL, "should contain key system:/test");
+	succeed_if (ksLookupByName (ks, "system:/test2", 0) != NULL, "should contain key system:/test2");
+
+	succeed_if (ksLookupByName (dup, "system:/test", 0) != NULL, "dup should contain key system:/test");
+	succeed_if (ksLookupByName (dup, "system:/test2", 0) == NULL, "dup should not contain key system:/test2");
+
+	succeed_if (keyGetRef (k) == 2, "key should have 2 references");
+	succeed_if (keyGetRef (addedKey) == 2, "added key should have 2 references");
+
+	ksDel (ks);
+	ksDel (dup);
+	ksDel (addedKs);
+}
+
+static void ksCut_should_not_replace_data_when_no_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test1", KEY_END);
+	Key * k2 = keyNew ("system:/test2", KEY_END);
+	Key * cutpoint = keyNew ("system:/test2", KEY_END);
+
+	KeySet * ks = ksNew(10, k1, k2, KS_END);
+	const struct _KeySetData * originalData = ks->data;
+
+	// Act
+	KeySet * cut = ksCut (ks, cutpoint);
+
+	// Assert
+	succeed_if (ks->data == originalData, "should not replace data instance");
+	succeed_if (ks->data->refs == 1, "reference counter of data should still be 1");
+	succeed_if (ksLookupByName (ks, "system:/test1", 0) != NULL, "keyset should contain key system:/test1");
+	succeed_if (ksLookupByName (ks, "system:/test2", 0) == NULL, "keyset should not contain key system:/test2");
+
+	succeed_if (cut->data->refs == 1, "cut reference counter of data should still be 1");
+	succeed_if (ksLookupByName (cut, "system:/test1", 0) == NULL, "cut should not contain key system:/test1");
+	succeed_if (ksLookupByName (cut, "system:/test2", 0) != NULL, "cut should contain key system:/test2");
+
+	succeed_if (keyGetRef(k1) == 1, "system:/test1 should have 1 reference");
+	succeed_if (keyGetRef(k2) == 1, "system:/test2 should have 1 reference");
+
+	ksDel (ks);
+	ksDel (cut);
+	keyDel (cutpoint);
+}
+
+static void ksCut_should_replace_data_when_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test1", KEY_END);
+	Key * k2 = keyNew ("system:/test2", KEY_END);
+	Key * cutpoint = keyNew ("system:/test2", KEY_END);
+
+	KeySet * ks = ksNew(10, k1, k2, KS_END);
+	const struct _KeySetData * originalData = ks->data;
+	KeySet * dup = ksDup (ks);
+
+	// Act
+	KeySet * cut = ksCut (ks, cutpoint);
+
+	// Assert
+	succeed_if (ks->data != originalData, "should replace data instance");
+
+	succeed_if (ks->data->refs == 1, "reference counter of data should still be 1");
+	succeed_if (ksLookupByName (ks, "system:/test1", 0) != NULL, "keyset should contain key system:/test1");
+	succeed_if (ksLookupByName (ks, "system:/test2", 0) == NULL, "keyset should not contain key system:/test2");
+
+	succeed_if (cut->data->refs == 1, "cut reference counter of data should still be 1");
+	succeed_if (ksLookupByName (cut, "system:/test1", 0) == NULL, "cut should not contain key system:/test1");
+	succeed_if (ksLookupByName (cut, "system:/test2", 0) != NULL, "cut should contain key system:/test2");
+
+	succeed_if (dup->data == originalData, "dup->data should point to original instance");
+	succeed_if (dup->data->refs == 1, "dup references should be 1");
+	succeed_if (ksLookupByName (dup, "system:/test1", 0) != NULL, "dup should contain key system:/test1");
+	succeed_if (ksLookupByName (dup, "system:/test2", 0) != NULL, "dup should contain key system:/test2");
+
+	succeed_if (keyGetRef(k1) == 2, "system:/test1 should have 2 references");
+	succeed_if (keyGetRef(k2) == 2, "system:/test2 should have 2 references");
+
+	ksDel (ks);
+	ksDel (dup);
+	ksDel (cut);
+	keyDel (cutpoint);
+}
+
+static void ksPop_with_null_data_should_return_null (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	KeySet * ks = ksNew(0, KS_END);
+
+	// Act
+	Key * poped = ksPop (ks);
+
+	// Assert
+	succeed_if (ks->data == NULL, "data should be NULL");
+	succeed_if (poped == NULL, "popped key should be NULL");
+
+	ksDel (ks);
+}
+
+static void ksPop_should_not_replace_data_when_no_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test1", KEY_END);
+	Key * k2 = keyNew ("system:/test2", KEY_END);
+
+	KeySet * ks = ksNew(2, k1, k2, KS_END);
+	const struct _KeySetData * original = ks->data;
+
+	// Act
+	Key * poped = ksPop (ks);
+
+	// Assert
+	succeed_if (ks->data == original, "should not replace data");
+	succeed_if (ks->data->refs == 1, "data references should be 1");
+	succeed_if (k1->refs == 1, "system:/test1 refs should be 1");
+	succeed_if (k2->refs == 0, "system:/test2 refs should be 0");
+
+	keyDel (poped);
+	ksDel (ks);
+}
+
+static void ksPop_replace_data_when_other_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test1", KEY_END);
+	Key * k2 = keyNew ("system:/test2", KEY_END);
+
+	KeySet * ks = ksNew(2, k1, k2, KS_END);
+	const struct _KeySetData * original = ks->data;
+	KeySet * dup = ksDup (ks);
+
+	// Act
+	ksPop (ks);
+
+	// Assert
+	succeed_if (ks->data != original, "should replace data");
+	succeed_if (ks->data->refs == 1, "data references should be 1");
+	succeed_if (k1->refs == 2, "system:/test1 refs should be 2");
+	succeed_if (k2->refs == 1, "system:/test2 refs should be 1");
+	succeed_if (ksGetSize (dup) == 2, "dup should contain 2 keys");
+
+	ksDel (ks);
+	ksDel (dup);
+}
+
+static void ksRewind_ksNext_ksCurrent_should_not_replace_data (void)
+{
+	printf ("Test %s\n", __func__);
+
+	Key * k1 = keyNew ("system:/test1", KEY_END);
+	Key * k2 = keyNew ("system:/test2", KEY_END);
+
+	KeySet * ks = ksNew(2, k1, k2, KS_END);
+	const struct _KeySetData * original = ks->data;
+	KeySet * dup = ksDup (ks);
+
+	ksNext (ks);
+	succeed_if (ks->data == original, "ksNext should not replace data");
+	succeed_if (ks->data->refs == 2, "data references should be 2");
+
+	ksRewind (ks);
+	succeed_if (ks->data == original, "ksRewind should not replace data");
+	succeed_if (ks->data->refs == 2, "data references should be 2");
+
+	ksCurrent(ks);
+	succeed_if (ks->data == original, "ksCurrent should not replace data");
+	succeed_if (ks->data->refs == 2, "data references should be 2");
+
+	succeed_if (k1->refs == 1, "system:/test1 refs should be 1");
+	succeed_if (k2->refs == 1, "system:/test2 refs should be 0");
+
+	ksDel (ks);
+	ksDel (dup);
+}
+
+static void ksSetCursor_should_not_replace_data (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test1", KEY_END);
+	Key * k2 = keyNew ("system:/test2", KEY_END);
+
+	KeySet * ks = ksNew(2, k1, k2, KS_END);
+	const struct _KeySetData * original = ks->data;
+	KeySet * dup = ksDup (ks);
+
+	// Act
+	ksSetCursor (ks, 1);
+
+	// Assert
+	succeed_if (ks->data == original, "should not replace data");
+	succeed_if (ks->data->refs == 2, "data references should be 2");
+	succeed_if (k1->refs == 1, "system:/test1 refs should be 1");
+	succeed_if (k2->refs == 1, "system:/test2 refs should be 0");
+
+	ksDel (ks);
+	ksDel (dup);
+}
+
+static void ksLookup_modifying_flags_should_replace_data_when_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	elektraLookupFlags modifyingFlags[] = { KDB_O_CREATE, KDB_O_POP };
+
+	for (size_t i = 0; i < sizeof (modifyingFlags) / sizeof (elektraLookupFlags); i++)
+	{
+		elektraLookupFlags flag = modifyingFlags[i];
+
+		// Arrange
+		KeySet * ks = ksNew (2, keyNew ("system:/test1", KEY_END), keyNew("system:/test2", KEY_END), KS_END);
+		const struct _KeySetData * original = ks->data;
+		KeySet * dup = ksDup (ks);
+
+		Key * lookupKey = keyNew ("system:/test1", KEY_END);
+
+		if (flag == KDB_O_CREATE)
+		{
+			keySetName (lookupKey, "system:/unknown");
+		}
+
+		// Act
+		ksLookup (ks, lookupKey, flag);
+
+		// Assert
+		printf("  - testing flag %zu\n", i);
+		succeed_if (ks->data != original, "should replace data");
+
+		ksDel (ks);
+		ksDel (dup);
+		keyDel (lookupKey);
+	}
+}
+
+static void ksLookup_modifying_flags_should_not_replace_data_when_no_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	elektraLookupFlags modifyingFlags[] = { KDB_O_CREATE, KDB_O_POP };
+
+	for (size_t i = 0; i < sizeof (modifyingFlags) / sizeof (elektraLookupFlags); i++)
+	{
+		elektraLookupFlags flag = modifyingFlags[i];
+
+		// Arrange
+		KeySet * ks = ksNew (2, keyNew ("system:/test1", KEY_END), keyNew("system:/test2", KEY_END), KS_END);
+		const struct _KeySetData * original = ks->data;
+
+		Key * lookupKey = keyNew ("system:/test1", KEY_END);
+
+		if (flag == KDB_O_CREATE)
+		{
+			keySetName (lookupKey, "system:/unknown");
+		}
+
+		// Act
+		ksLookup (ks, lookupKey, flag);
+
+		// Assert
+		printf("  - testing flag %zu\n", i);
+		succeed_if (ks->data == original, "should not replace data");
+
+		ksDel (ks);
+		keyDel (lookupKey);
+	}
+}
+
+static void ksLookup_non_modifying_flags_should_not_replace_data (void)
+{
+	printf ("Test %s\n", __func__);
+
+	elektraLookupFlags modifyingFlags[] = { KDB_O_NONE, KDB_O_DEL };
+
+	for (size_t i = 0; i < sizeof (modifyingFlags) / sizeof (elektraLookupFlags); i++)
+	{
+		elektraLookupFlags flag = modifyingFlags[i];
+
+		// Arrange
+		KeySet * ks = ksNew (2, keyNew ("system:/test1", KEY_END), keyNew("system:/test2", KEY_END), KS_END);
+		const struct _KeySetData * original = ks->data;
+		KeySet * dup = ksDup (ks);
+
+		Key * lookupKey = keyNew ("system:/test1", KEY_END);
+
+		if (flag == KDB_O_CREATE)
+		{
+			keySetName (lookupKey, "system:/unknown");
+		}
+
+		// Act
+		ksLookup (ks, lookupKey, flag);
+
+		// Assert
+		printf("  - testing flag %zu\n", i);
+		succeed_if (ks->data == original, "should not replace data");
+
+		ksDel (ks);
+		ksDel (dup);
+
+		if (flag != KDB_O_DEL)
+		{
+			keyDel (lookupKey);
+		}
+	}
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KEYSET COW   TESTS\n");
@@ -363,6 +895,36 @@ int main (int argc, char ** argv)
 	ksFindHierarchy_key_copied_from_root_in_keyset_should_work ();
 	ksFindHierarchy_cascading_root_in_keyset_should_work ();
 	ksFindHierarchy_cascading_key_copied_from_root_in_keyset_should_work ();
+
+	ksNew_with_0_should_leave_empty_data ();
+	ksNew_should_alloc_data ();
+
+	ksDup_should_point_to_the_same_data ();
+	ksDup_of_key_with_NULL_data_should_point_NULL ();
+
+	ksCopy_should_point_to_the_same_data ();
+
+	ksDel_should_decrease_reference_pointer ();
+
+	ksAppendKey_should_not_replace_data_when_no_other_references ();
+	ksAppendKey_should_replace_data_when_other_references ();
+
+	ksAppend_should_not_replace_data_when_no_other_references ();
+	ksAppend_should_replace_data_when_other_references ();
+
+	ksCut_should_not_replace_data_when_no_other_references ();
+	ksCut_should_replace_data_when_other_references ();
+
+	ksPop_with_null_data_should_return_null ();
+	ksPop_should_not_replace_data_when_no_other_references ();
+	ksPop_replace_data_when_other_references ();
+
+	ksRewind_ksNext_ksCurrent_should_not_replace_data ();
+	ksSetCursor_should_not_replace_data ();
+
+	ksLookup_modifying_flags_should_replace_data_when_references ();
+	ksLookup_modifying_flags_should_not_replace_data_when_no_references ();
+	ksLookup_non_modifying_flags_should_not_replace_data ();
 
 	print_result ("test_keyset_cow");
 	return nbError;
