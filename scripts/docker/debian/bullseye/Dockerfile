@@ -71,6 +71,7 @@ RUN apt-get update && apt-get -y install \
         ruby \
         ruby-dev \
         rustc \
+        shellcheck \
         swig4.0 \
         systemd \
         tclcl-dev \

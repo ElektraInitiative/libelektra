@@ -70,6 +70,7 @@ RUN apt-get update && apt-get -y install \
         reprepro \
         ruby \
         ruby-dev \
+        shellcheck \
         swig3.0 \
         systemd \
         tclcl-dev \

@@ -55,6 +55,7 @@ RUN apt-get update && apt-get -y install \
         python3-pip \
         ruby \
         ruby-dev \
+        shellcheck \
         sloccount \
         swig4.0 \
         systemd \
