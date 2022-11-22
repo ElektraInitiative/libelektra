@@ -525,7 +525,8 @@ static void keyLock_should_work_with_copies (void)
 
 	succeed_if (strcmp (keyName (original), "system:/original") == 0, "original key value should not have been changed");
 	succeed_if (strcmp (keyString (original), "orig") == 0, "original key name should not have been changed");
-	succeed_if (strcmp (keyString (keyGetMeta (original, "meta:/what")), "nothing") == 0, "original key meta should not have been changed");
+	succeed_if (strcmp (keyString (keyGetMeta (original, "meta:/what")), "nothing") == 0,
+		    "original key meta should not have been changed");
 
 	succeed_if (strcmp (keyName (copy), "system:/original/modified") == 0, "copied key value should have been changed");
 	succeed_if (strcmp (keyString (copy), "modified value") == 0, "copied key name should have been changed");
