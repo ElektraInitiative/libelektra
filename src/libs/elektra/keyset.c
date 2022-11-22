@@ -1403,6 +1403,18 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 	if (keyGetNamespace (root) == KEY_NS_CASCADING)
 	{
 		KeySet * returned = ksNew (0, KS_END);
+
+		// First, find all keys with cascading namespace and add them to the returned keyset
+		// TODO: remove when cascading keys are no longer allowed to be in KeySets
+		elektraCursor end;
+		elektraCursor start = ksFindHierarchy (ks, root, &end);
+
+		for (; start < end; start++)
+		{
+			ksAppendKey (returned, ksAtCursor (ks, start));
+		}
+
+		// Then iterate through all namespaces to find keys belows the root
 		// HACK: ksBelow does not use escaped name (key->key), so we don't need to change it
 		// DANGER !!! In the following lines, the contents of keyName are changed directly
 		//            This should normally NOT be done with copy-on-write keys, as it changes the values for all other keys that
