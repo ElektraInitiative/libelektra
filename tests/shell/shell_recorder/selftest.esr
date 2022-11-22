@@ -5,22 +5,25 @@ File: config.ini
 RET: 0
 < kdb mount $File $Mountpoint $Storage
 
-STDOUT: Create a new key user:/test/key with string "value"
+STDOUT: Create a new key user:/tests/key with string "value"
 < kdb set $Mountpoint/key value
 
 STDOUT: Set string to "value"
 < kdb set $Mountpoint/key value
 
-STDOUT-REGEX: .*value.
-< kdb set $Mountpoint/key value
+STDOUT-REGEX: .*value2.
+< kdb set $Mountpoint/key2 value2
 
-STDERR: The command kdb.* not-a-command is not known
+STDOUT: user:/tests/keyuser:/tests/key2
+< kdb find -0 user:/tests
+
+STDERR: The command .*kdb.* not-a-command is not known
 < kdb not-a-command 1>/dev/null
 
 STDERR: .+not-a-command.+
 < kdb not-a-command 1>/dev/null
 
-STDOUT: Create a new key user:/test/\/evil\\\/tripleEscaped\\/doubleEscaped/key/.withADot/..andADoubleDot with string "txt"
+STDOUT: Create a new key user:/tests/\/evil\\\/tripleEscaped\\/doubleEscaped/key/.withADot/..andADoubleDot with string "txt"
 < kdb set $Mountpoint/\\/evil\\\\\\/tripleEscaped\\\\/doubleEscaped/key/.withADot/..andADoubleDot txt
 
 < cat > `kdb file $Mountpoint` <<EOF
@@ -32,10 +35,15 @@ STDOUT: Create a new key user:/test/\/evil\\\/tripleEscaped\\/doubleEscaped/key/
 STDOUT: [section]⏎key="multi⏎line"
 < cat `kdb file $Mountpoint`
 
-WARNINGS: 175,175
+WARNINGS: C03100,C03100
 < kdb ls $Mountpoint
 
 < kdb rm -r $Mountpoint
 
 RET: 0
 < kdb umount $Mountpoint
+
+STDERR: Regex error.*
+< kdb find "["
+
+

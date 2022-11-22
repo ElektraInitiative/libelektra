@@ -261,7 +261,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix/extends some shell recorder tests _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
