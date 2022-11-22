@@ -645,6 +645,118 @@ static void ksCut_should_replace_data_when_other_references (void)
 	keyDel (cutpoint);
 }
 
+static void ksRename_with_root_part_of_ks_should_work (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test", KEY_END);
+	Key * k2 = keyNew ("system:/test/1", KEY_END);
+	Key * k3 = keyNew ("system:/other", KEY_END);
+	Key * newRoot = keyNew("system:/renamed", KEY_END);
+
+	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
+
+	// Act
+	ksRename (ks, k1, newRoot);
+
+	// Assert
+	succeed_if (ksLookupByName (ks, "system:/renamed", 0) != NULL, "system:/renamed should be in ks");
+	succeed_if (ksLookupByName (ks, "system:/renamed/1", 0) != NULL, "system:/renamed/1 should be in ks");
+	succeed_if (ksLookupByName (ks, "system:/other", 0) != NULL, "system:/other should be in ks");
+
+	keyDel (newRoot);
+	ksDel (ks);
+}
+
+static void ksRename_with_copy_of_key_as_root_should_work (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test", KEY_END);
+	Key * k2 = keyNew ("system:/test/1", KEY_END);
+	Key * k3 = keyNew ("system:/other", KEY_END);
+	Key * root = keyDup (k1, KEY_CP_ALL);
+	Key * newRoot = keyNew("system:/renamed", KEY_END);
+
+	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
+
+	// Act
+	ksRename (ks, root, newRoot);
+
+	// Assert
+	succeed_if (ksLookupByName (ks, "system:/renamed", 0) != NULL, "system:/renamed should be in ks");
+	succeed_if (ksLookupByName (ks, "system:/renamed/1", 0) != NULL, "system:/renamed/1 should be in ks");
+	succeed_if (ksLookupByName (ks, "system:/other", 0) != NULL, "system:/other should be in ks");
+	succeed_if (strcmp (keyName (root), "system:/test") == 0, "should NOT rename root");
+
+	keyDel (root);
+	keyDel (newRoot);
+	ksDel (ks);
+}
+
+static void ksRename_should_not_replace_data_when_no_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test", KEY_END);
+	Key * k2 = keyNew ("system:/test/1", KEY_END);
+	Key * k3 = keyNew ("system:/other", KEY_END);
+	Key * root = keyNew ("system:/test", KEY_END);
+	Key * newRoot = keyNew("system:/renamed", KEY_END);
+
+	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
+	const struct _KeySetData * original = ks->data;
+
+	// Act
+	ksRename (ks, root, newRoot);
+
+	// Assert
+	succeed_if (ks->data == original, "should not replace data");
+
+	keyDel (root);
+	keyDel (newRoot);
+	ksDel (ks);
+}
+
+static void ksRename_should_replace_data_when_references (void)
+{
+	printf ("Test %s\n", __func__);
+
+	// Arrange
+	Key * k1 = keyNew ("system:/test", KEY_END);
+	Key * k2 = keyNew ("system:/test/1", KEY_END);
+	Key * k3 = keyNew ("system:/other", KEY_END);
+	Key * root = keyNew ("system:/test", KEY_END);
+	Key * newRoot = keyNew("system:/renamed", KEY_END);
+
+	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
+	const struct _KeySetData * original = ks->data;
+	KeySet * dup = ksDup (ks);
+
+	// Act
+	ksRename (ks, root, newRoot);
+
+	// Assert
+	succeed_if (ks->data != original, "should not replace data");
+	succeed_if (ksLookupByName (ks, "system:/renamed", 0) != NULL, "system:/renamed should be in ks");
+	succeed_if (ksLookupByName (ks, "system:/renamed/1", 0) != NULL, "system:/renamed/1 should be in ks");
+	succeed_if (ksLookupByName (ks, "system:/other", 0) != NULL, "system:/other should be in ks");
+	succeed_if (ksLookupByName (dup, "system:/test", 0) != NULL, "system:/test should be in dup");
+	succeed_if (ksLookupByName (dup, "system:/test/1", 0) != NULL, "system:/test/1 should be in dup");
+	succeed_if (ksLookupByName (dup, "system:/other", 0) != NULL, "system:/other should be in dup");
+
+	succeed_if (keyGetRef (k1) == 1, "k1 should have 1 reference");
+	succeed_if (keyGetRef (k2) == 1, "k2 should have 1 reference");
+	succeed_if (keyGetRef (k3) == 2, "k3 should have 2 reference");
+
+	keyDel (root);
+	keyDel (newRoot);
+	ksDel (ks);
+}
+
 static void ksPop_with_null_data_should_return_null (void)
 {
 	printf ("Test %s\n", __func__);
@@ -914,6 +1026,11 @@ int main (int argc, char ** argv)
 
 	ksCut_should_not_replace_data_when_no_other_references ();
 	ksCut_should_replace_data_when_other_references ();
+
+	ksRename_with_root_part_of_ks_should_work ();
+	ksRename_with_copy_of_key_as_root_should_work ();
+	ksRename_should_not_replace_data_when_no_references ();
+	ksRename_should_replace_data_when_references ();
 
 	ksPop_with_null_data_should_return_null ();
 	ksPop_should_not_replace_data_when_no_other_references ();

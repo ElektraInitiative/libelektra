@@ -1180,7 +1180,6 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	if (ks == NULL || root == NULL || newRoot == NULL) return -1;
 	if (keyGetNamespace (root) == KEY_NS_CASCADING || keyGetNamespace (newRoot) == KEY_NS_CASCADING) return -1;
 
-	// TODO: do we really need to detach here?
 	keySetDetachData (ks);
 
 	// search the root
@@ -1196,6 +1195,12 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 		return end - start;
 	}
 
+	bool dupedRoot = false;
+	if (ksAtCursor (ks, start) == root)
+	{
+		root = keyDup (root, KEY_CP_NAME);
+	}
+
 	size_t newStart = ksFindHierarchy (ks, newRoot, NULL);
 	if (newStart < ks->data->size && keyIsBelowOrSame (newRoot, ks->data->array[newStart]) == 1)
 	{
@@ -1206,7 +1211,9 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 			// -> we can just rename keys and everything will be fine
 			// we don't need to re-sort/invalidate the hashmap,
 			// because the renamed subset is already in the right place
-			return ksRenameInternal (ks, start, end, root, newRoot);
+			size_t ret = ksRenameInternal (ks, start, end, root, newRoot);
+			if (dupedRoot) keyDel ((Key *) root);
+			return ret;
 		}
 
 		// possible name collisions after rename
@@ -1215,6 +1222,7 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 		size_t renamed = ksRenameInternal (toRename, 0, ksGetSize (toRename), root, newRoot);
 		ksAppend (ks, toRename);
 		ksDel (toRename);
+		if (dupedRoot) keyDel ((Key *) root);
 		return renamed;
 	}
 
@@ -1224,6 +1232,8 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	// fix order and invalidate hashmap after renaming
 	qsort (ks->data->array, ks->data->size, sizeof (struct _Key *), keyCompareByName);
 	elektraOpmphmInvalidate (ks->data);
+
+	if (dupedRoot) keyDel ((Key *) root);
 
 	return renamed;
 }
