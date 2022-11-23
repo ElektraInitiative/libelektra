@@ -66,7 +66,7 @@ defmodule Elektra.Kdb do
   end
 
   @impl true
-  def handle_call({:get, {ks, parent_key}}, _from, kdb_resource) do
+  def handle_call({:get, ks, parent_key}, _from, kdb_resource) do
     ks_resource = NifUtil.unwrap(ks)
     parent_key_resource = NifUtil.unwrap(parent_key)
 
@@ -75,7 +75,7 @@ defmodule Elektra.Kdb do
   end
 
   @impl true
-  def handle_call({:set, {ks, parent_key}}, _from, kdb_resource) do
+  def handle_call({:set, ks, parent_key}, _from, kdb_resource) do
     ks_resource = NifUtil.unwrap(ks)
     parent_key_resource = NifUtil.unwrap(parent_key)
 
