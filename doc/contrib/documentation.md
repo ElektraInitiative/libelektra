@@ -79,11 +79,11 @@ Elektra's documentation must fulfill:
   "We" refers to the community around the Elektra Initiative.
 - Use headings and lists to keep a clear structure in the text.
 - Use examples and images to emphasize important points, don't overuse emphasis in text (bold, etc.).
-- Spelling is American English with [spellings as defined here](/scripts/sed).
+- Spelling is American English with [spellings as defined here](/scripts/spelling.sed).
 - It is consistent with our [terminology](/doc/help/elektra-glossary.md).
 
 > **Note:**
-> Please extend [terminology](/doc/help/elektra-glossary.md) and [spellings](/scripts/sed) as needed.
+> Please extend [terminology](/doc/help/elektra-glossary.md) and [spellings](/scripts/spelling.sed) as needed.
 
 ## Completeness
 
