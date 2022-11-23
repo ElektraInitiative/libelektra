@@ -10,7 +10,7 @@ function (add_shell_recorder_test FILENAME)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
 
 	get_filename_component (testname_we ${FILENAME} NAME_WE)
-	add_test (testshell_${testname_we} "${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh" "${CMAKE_CURRENT_SOURCE_DIR}/${name}")
+	add_test (testshell_${testname_we} "${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh" "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
 	set_property (TEST testshell_${testname_we} PROPERTY LABELS memleak kdbtests)
 	set_property (TEST testshell_${testname_we} PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib)
 	set_property (TEST testshell_${testname_we} PROPERTY RUN_SERIAL TRUE)
