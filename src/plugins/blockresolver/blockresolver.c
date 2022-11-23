@@ -211,6 +211,7 @@ static const char * getBlock (FILE * fp, const long startPos, const long endPos)
 		elektraFree (block);
 		return NULL;
 	}
+	// FIXME: out of bound memory access - the write operation can alter fields beyond the accessed memory
 	block[read] = '\0';
 	return block;
 }
