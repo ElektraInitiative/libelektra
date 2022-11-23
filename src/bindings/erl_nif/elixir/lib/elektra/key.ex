@@ -39,12 +39,20 @@ defmodule Elektra.Key do
       iex> {:ok, key} = Elektra.Key.new(key_map)
   """
   @spec new(%{name: String.t(), value: String.t(), meta: meta_list()}) :: key()
-  def new(map) when is_map(map) do
+  def new(map = %{name: _name}) do
     GenServer.start_link(__MODULE__, struct(__MODULE__, map))
   end
 
   @doc """
-  Get the name of the `key`.
+  Create a key from `ref`.
+  """
+  @spec from_reference(reference()) :: key()
+  def from_reference(ref) when is_reference(ref) do
+    GenServer.start_link(__MODULE__, ref)
+  end
+
+  @doc """
+  Get the name of the key `key`.
 
   ## Examples
 
@@ -55,6 +63,40 @@ defmodule Elektra.Key do
   @spec name(key()) :: String.t()
   def name(key) do
     GenServer.call(key, :name)
+  end
+
+  @doc """
+  Get the base name of the key `key`.
+  """
+  @spec base_name(key()) :: String.t()
+  def base_name(key) do
+    GenServer.call(key, :base_name)
+  end
+
+  @doc """
+  Get the string value of the key `key`.
+  """
+  @spec string(key()) :: String.t()
+  def string(key) do
+    GenServer.call(key, :string)
+  end
+
+  @doc """
+  Get the value of the key `key`.
+  """
+  @spec value(key()) :: binary()
+  def value(key) do
+    GenServer.call(key, :value)
+  end
+
+  @doc """
+  Get a map corresponding to the name and value of the key `key`.
+  """
+  @spec to_map(key()) :: %{name: String.t(), value: binary()}
+  def to_map(key) do
+    name = Elektra.Key.name(key)
+    value = Elektra.Key.value(key)
+    %{name: name, value: value}
   end
 
   # Server API
@@ -75,9 +117,32 @@ defmodule Elektra.Key do
   end
 
   @impl true
+  def init(ref) when is_reference(ref) do
+    {:ok, ref}
+  end
+
+  @impl true
   def handle_call(:name, _from, key_resource) do
     name = Elektra.System.key_name(key_resource)
     {:reply, name, key_resource}
+  end
+
+  @impl true
+  def handle_call(:base_name, _from, key_resource) do
+    base_name = Elektra.System.key_base_name(key_resource)
+    {:reply, base_name, key_resource}
+  end
+
+  @impl true
+  def handle_call(:string, _from, key_resource) do
+    string = Elektra.System.key_string(key_resource)
+    {:reply, string, key_resource}
+  end
+
+  @impl true
+  def handle_call(:value, _from, key_resource) do
+    value = Elektra.System.key_value(key_resource)
+    {:reply, value, key_resource}
   end
 
   @impl true

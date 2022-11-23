@@ -18,6 +18,30 @@ defmodule Elektra.KeySet do
   end
 
   @doc """
+  Create a stream of keys from `ks`.
+  """
+  @spec stream(key_set()) :: Enumerable.t()
+  def stream(ks) do
+    GenServer.call(ks, :stream)
+  end
+
+  @doc """
+  Add the key `key` to the key set `ks`.
+  """
+  @spec append_key(key_set(), key()) :: integer()
+  def append_key(ks, key) do
+    GenServer.call(ks, {:append_key, key})
+  end
+
+  @doc """
+  Get the size of the key set `ks`.
+  """
+  @spec get_size(key_set()) :: integer()
+  def get_size(ks) do
+    GenServer.call(ks, :get_size)
+  end
+
+  @doc """
   Delete the key set `ks` from memory.
   """
   @spec del(key_set()) :: integer()
@@ -31,6 +55,45 @@ defmodule Elektra.KeySet do
   def init(size) do
     ks_resource = Elektra.System.ks_new(size)
     {:ok, ks_resource}
+  end
+
+  @impl true
+  def handle_call(:stream, _from, ks_resource) do
+    stream =
+      Stream.resource(
+        fn ->
+          {
+            ks_resource,
+            0,
+            Elektra.System.ks_get_size(ks_resource)
+          }
+        end,
+        fn {ks_resource, i, len} ->
+          if i < len do
+            key_resource = Elektra.System.ks_at_cursor(ks_resource, i)
+            {:ok, key} = Elektra.Key.from_reference(key_resource)
+            {[key], {ks_resource, i + 1, len}}
+          else
+            {:halt, ks_resource}
+          end
+        end,
+        fn _ks_resource -> nil end
+      )
+
+    {:reply, stream, ks_resource}
+  end
+
+  @impl true
+  def handle_call({:append_key, key}, _from, ks_resource) do
+    key_resource = NifUtil.unwrap(key)
+    rc = Elektra.System.ks_append_key(ks_resource, key_resource)
+    {:reply, rc, ks_resource}
+  end
+
+  @impl true
+  def handle_call(:get_size, _from, ks_resource) do
+    rc = Elektra.System.ks_get_size(ks_resource)
+    {:reply, rc, ks_resource}
   end
 
   @impl true
