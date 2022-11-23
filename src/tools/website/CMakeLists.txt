@@ -39,6 +39,6 @@ else ()
 	)
 
 	generate_man_page (kdb-run-${tool} FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
-			  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+			   "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 endif ()

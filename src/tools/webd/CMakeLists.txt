@@ -45,6 +45,6 @@ else ()
 
 	# generate man pages
 	generate_man_page (kdb-run-webd FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
-			  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+			   "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 endif ()
