@@ -23,10 +23,19 @@ If this fails, make sure you have at least Java version 11 or higher installed a
 
 To use the bindings in a Java project, we have to include the jar file
 libelektra-\$VERSION.jar in the project. The version number is the same
-one as used for Elektra. This jar is created upon build of Elektra if
-you enable the JNA bindings, e.g., with `cmake -DBINDINGS=jna`, see also
-[COMPILE](/doc/COMPILE.md#bindings). Internally, Gradle will be used to
-actually compile the plugin.
+one as used for Elektra.
+
+### Build
+
+This jar is created upon building Elektra if you include the JNA bindings during the build process, e.g., with `cmake -DBINDINGS=jna`. Check out [COMPILE](/doc/COMPILE.md#bindings) for more details on how to include bindings in the build process.
+To make sure the build will be successfull, make sure the following requirements are met:
+
+- `gradle` must be installed on your machine, otherwise jna will not be included during compilation.
+- Use a JDK version <=17. Higher versions will result in _Unsupported class file major version 62/63_ errors.
+
+Internally, Gradle will be used to actually compile the plugin.
+
+### JNI
 
 Please note that the [JNI plugin](/src/plugins/jni) serves a different purpose. We
 use the JNI plugin to develop plugins for Elektra itself, whereas the JNA
