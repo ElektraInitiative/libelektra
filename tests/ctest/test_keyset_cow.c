@@ -999,7 +999,7 @@ static void test_mmap_flag_methods (void)
 	setKeySetDataIsInMmap (data, false);
 	succeed_if (isKeySetDataInMmap (data) == false, "keyset data should not have MMAP flag");
 
-	elektraFree(data);
+	elektraFree (data);
 }
 
 int main (int argc, char ** argv)

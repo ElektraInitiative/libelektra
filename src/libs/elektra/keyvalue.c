@@ -545,7 +545,7 @@ static inline void keyDetachKeyDataWithoutCopy (Key * key)
 	{
 		keyDataRefDecAndDel (key->keyData);
 
-		key->keyData = keyDataNew();
+		key->keyData = keyDataNew ();
 		keyDataRefInc (key->keyData);
 	}
 }

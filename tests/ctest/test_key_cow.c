@@ -549,7 +549,7 @@ static void test_mmap_flag_methods (void)
 	setKeyDataIsInMmap (data, false);
 	succeed_if (isKeyDataInMmap (data) == false, "key data should not have MMAP flag");
 
-	elektraFree(data);
+	elektraFree (data);
 
 
 	struct _KeyName * name = elektraCalloc (sizeof (struct _KeyName));
@@ -561,7 +561,7 @@ static void test_mmap_flag_methods (void)
 	setKeyNameIsInMmap (name, false);
 	succeed_if (isKeyNameInMmap (name) == false, "key name should not have MMAP flag");
 
-	elektraFree(name);
+	elektraFree (name);
 }
 
 int main (int argc, char ** argv)
