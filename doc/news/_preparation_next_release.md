@@ -170,6 +170,11 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Add encoding test for blockresolver read _(@dtdirect)_
 - Refactor and restructure blockresolver _(@dtdirect)_
+### desktop
+
+- Provide unit tests _(Richard Stöckl @Eiskasten)_
+- <<TODO>>
+- <<TODO>>
 
 ### mini
 
