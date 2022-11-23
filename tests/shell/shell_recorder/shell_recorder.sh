@@ -279,6 +279,12 @@ if [ "$#" -lt '1' ] || [ "$#" -gt '2' ]; then
 	exit 0
 fi
 
+if [ ! -f "$FILE" ]; then
+	printf 'File not found: %s' "$FILE"
+	rm "$OutFile"
+	exit 1
+fi
+
 BACKUP=1
 
 EXPORT_DIR="$(mktempdir_elektra)"
