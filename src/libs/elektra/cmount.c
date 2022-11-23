@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <kdbmerge.h>
 
 
 
@@ -118,7 +118,7 @@ const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive)
 }
 
 
-void buildBackend (KeySet * const mountconf, const char * const mountpoint, bool clForce, const char * const clStrategy, bool clInteractive, const char * const pluginsconfig)
+void cBuildBackend (KeySet * const mountconf, const char * const mountpoint, bool clForce, int mergeStrategy, bool clInteractive, const char * const pluginsconfig)
 {
 	const Key * const keyMountpoint = keyNew (mountpoint, KEY_END);
 
@@ -134,7 +134,8 @@ void buildBackend (KeySet * const mountconf, const char * const mountpoint, bool
 
 	const KeySet * const ksDupMountConf = ksDup (mountconf);
 
-	if (clForce || strcmp (clStrategy, "preserve") != 0)
+	/* TODO: Strategy was "preserve" in cpp-code, check merging for mounting */
+	if (clForce || mergeStrategy == MERGE_STRATEGY_ABORT)
 	{
 		/* TODO: 1st parameter is mountpointsPath (taken src/libs/tools/src/backends.cpp)
 	 * --> define constant at better place! */
