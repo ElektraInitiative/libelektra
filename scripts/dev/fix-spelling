@@ -23,5 +23,5 @@ else
 fi
 
 $(find . -type f \( -iname '*.md' ! -ipath '**/node_modules/**/*' ! -ipath '**/doc/images/*' ! -ipath '**/.git*/*' ! -ipath '**/googletest-src/*' \) -exec \
-sed "${inplace[@]}" -E -f "$script" '{}' +;)
+	sed "${inplace[@]}" -E -f "$script" '{}' +)
 $(sed "${inplace[@]}" -E -f "$script" doc/*.ini)
