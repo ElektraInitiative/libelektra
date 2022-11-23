@@ -51,6 +51,7 @@ int elektraNetworkAddrInfo (Key * toCheck)
 }
 
 #define NETWORK_ATTEMPTS 3
+#define NETWORK_SECONDS_BETWEEN_ATTEMPTS 5
 
 int elektraPortInfo (Key * toCheck, Key * parentKey)
 {
@@ -99,7 +100,8 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open a socket. Reason: %s", strerror (errno));
 	}
 
-	for (int attempt = 1; attempt <= NETWORK_ATTEMPTS; attempt++)
+	for (unsigned int attempt = 1, seconds = NETWORK_SECONDS_BETWEEN_ATTEMPTS; attempt <= NETWORK_ATTEMPTS;
+	     attempt++, seconds *= NETWORK_SECONDS_BETWEEN_ATTEMPTS)
 	{
 		server = gethostbyname (hostname);
 		if (server == NULL)
@@ -113,7 +115,10 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 			{
 				if (errno == TRY_AGAIN && attempt < NETWORK_ATTEMPTS)
 				{
-					ELEKTRA_LOG_DEBUG ("Could not connect, %d retries left", NETWORK_ATTEMPTS - attempt);
+					ELEKTRA_LOG_DEBUG ("Could not connect, %d retries left, wait for next attempt...",
+							   NETWORK_ATTEMPTS - attempt);
+					sleep (seconds);
+					ELEKTRA_LOG_DEBUG ("Done with waiting, continue");
 				}
 				else
 				{
