@@ -2,15 +2,15 @@
 
 The functions of the underlying C API are exposed by the modules in `Elektra.System`
 
-* `Elektra.System`
+- `Elektra.System`
 
 However, see [`src/bindings/erl_nif/README.md`](../README.md) for an overview of the differences to the C API and the limitations.
 
 Each of the Elektra classes is also available as a Elixir modules which implement a `GenServer` behaviour:
 
-* `Elektra.Kdb`
-* `Elektra.Key`
-* `Elektra.KeySet`
+- `Elektra.Kdb`
+- `Elektra.Key`
+- `Elektra.KeySet`
 
 ## Conveniences
 
@@ -37,22 +37,23 @@ Elektra.Key.new(
 {name: name, value: value} = Elektra.Key.to_map(key)
 ```
 
-
-### Iterating over key sets
-
-```elixir
-ks
-|> Enum.each(
-  fn %{name: name, value: value} ->
-    IO.puts("(name: #{name}, value: #{value})")
-  end
-)
-```
-
 ### Generate a stream of keys from a key set
 
 ```elixir
 key_stream = Elektra.KeySet.stream(ks)
+```
+
+### Iterating over key sets
+
+Using the `Elektra.KeySet.stream` function it is straightforward to iterate over the keys of a key set
+
+```elixir
+ks
+|> Elektra.KeySet.stream
+|> Stream.map(&Elektra.Key.to_map/1)
+|> Enum.each(fn %{name: name, value: value} ->
+  IO.puts("#{name}, #{value}")
+end)
 ```
 
 ## Examples
@@ -66,7 +67,7 @@ defmodule Main do
   use Elektra
 
   def main do
-    config = Elektra.System.ks_new() 
+    config = Elektra.System.ks_new()
     root = Elektra.System.key_new('user:/test')
 
     IO.puts("Open key database")
@@ -104,18 +105,18 @@ defmodule Main do
   use Elektra
 
   def main do
-    {:ok, config} = Elektra.KeySet.new() 
+    {:ok, config} = Elektra.KeySet.new()
     {:ok, root} = Elektra.Key.new(%{name: "user:/test"})
 
     IO.puts("Open key database")
-    {:ok, handle} = Elektra.Kdb.open()
+    {:ok, handle} = Elektra.Kdb.open(nil, nil)
 
     IO.puts("Retrieve key set")
     Elektra.Kdb.get(handle, config, root)
 
     IO.puts("Number of key-value pairs: #{Elektra.KeySet.get_size(config)}")
 
-    {:ok, key} = Elektra.Key.new("user:/test/hello", "elektra")
+    {:ok, key} = Elektra.Key.new(%{name: "user:/test/hello", value: "elektra"})
     IO.puts("Add key #{Elektra.Key.base_name(key)}")
     Elektra.KeySet.append_key(config, key)
     IO.puts("Number of key-value pairs: #{Elektra.KeySet.get_size(config)}")

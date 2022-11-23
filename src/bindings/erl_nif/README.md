@@ -17,12 +17,12 @@ Due to the limitations of NIFs the signatures of the functions have not been tra
 
 ### Different arguments
 
-* `keyNew` takes a single argument which must be a valid key name
-* `ksNew` takes a single argument which is the number of keys for which to pre-allocate memory
+- `keyNew` takes a single argument which must be a valid key name
+- `ksNew` takes a single argument which is the number of keys for which to pre-allocate memory
 
 ### Not implemented
 
-* `keyVNew`
-* `keyGetString`
-* `keyGetBaseName`
-* `ksVNew`
+- `keyVNew`
+- `keyGetString`
+- `keyGetBaseName`
+- `ksVNew`
