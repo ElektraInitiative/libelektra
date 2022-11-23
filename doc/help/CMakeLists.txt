@@ -25,7 +25,7 @@ file (
 	kdb*.md)
 foreach (FULLNAME ${KDBNAMES})
 	get_filename_component (NAME ${FULLNAME} NAME_WE)
-	generate_manpage (${NAME} COMPONENT elektra-bin)
+	generate_man_page (${NAME} COMPONENT elektra-bin)
 endforeach ()
 
 file (
@@ -34,5 +34,5 @@ file (
 	elektra*.md)
 foreach (FULLNAME ${KDBNAMES})
 	get_filename_component (NAME ${FULLNAME} NAME_WE)
-	generate_manpage (${NAME} SECTION 7 COMPONENT elektra-doc)
+	generate_man_page (${NAME} SECTION 7 COMPONENT elektra-doc)
 endforeach ()

@@ -40,7 +40,7 @@ foreach (subdir ${SUBDIRS})
 	add_subdirectory ("${subdir}")
 endforeach (subdir)
 
-generate_manpage (
+generate_man_page (
 	elektra-libs
 	FILENAME
 	"${CMAKE_CURRENT_SOURCE_DIR}/README.md"

@@ -51,7 +51,7 @@
  *   An alternative approach would be to test compiler CPU architecture marcros.
  *
  *   This header has had *limited* testing on recent C11/C++11 compilers and is
- *   based on the austin bug tracker interface, manpages, and headers present in
+ *   based on the austin bug tracker interface, man pages, and headers present in
  *   Linux, FreeBSD, Windows, Solaris and Darwin.
  *
  *   The header uses __builtin_bswapXX intrinsic with GCC/Clang (__GNUC__) on

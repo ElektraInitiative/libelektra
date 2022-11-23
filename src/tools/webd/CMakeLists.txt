@@ -43,8 +43,8 @@ else ()
 		CODE "execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
 	)
 
-	# generate manpages
-	generate_manpage (kdb-run-webd FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
+	# generate man pages
+	generate_man_page (kdb-run-webd FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
 			  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 endif ()
