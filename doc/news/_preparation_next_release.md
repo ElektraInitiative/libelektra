@@ -419,7 +419,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tests
 
-- <<TODO>>
+- Fix an Issue where scripts/dev/fix-spelling does not work, if a resolved path contains whitespaces _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

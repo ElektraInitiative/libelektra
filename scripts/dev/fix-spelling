@@ -13,7 +13,7 @@ cd "$SOURCE" || exit
 sed --version &> /dev/null
 if [ $? -eq 0 ]; then
 	# GNU sed
-	script="scripts/sed"
+	script="scripts/spelling.sed"
 	inplace=(-i)
 else
 	# BSD sed
@@ -22,5 +22,6 @@ else
 	inplace=(-i '')
 fi
 
-$(sed "${inplace[@]}" -E -f "$script" $(find . -type f -name '*.md' | egrep -v "^./(.git|scripts/sed|scripts/dev/fix-spelling|doc/images)"))
+$(find . -type f \( -iname '*.md' ! -ipath '**/node_modules/**/*' ! -ipath '**/doc/images/*' ! -ipath '**/.git*/*' ! -ipath '**/googletest-src/*' \) -exec \
+sed "${inplace[@]}" -E -f "$script" '{}' +;)
 $(sed "${inplace[@]}" -E -f "$script" doc/*.ini)
