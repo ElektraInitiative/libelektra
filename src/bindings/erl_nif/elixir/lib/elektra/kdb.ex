@@ -62,7 +62,7 @@ defmodule Elektra.Kdb do
     error_key_resource = NifUtil.unwrap(error_key)
 
     rc = Elektra.System.kdb_close(kdb_resource, error_key_resource)
-    {:stop, :normal, rc, kdb_resource}
+    {:stop, :normal, rc, nil}
   end
 
   @impl true
@@ -86,5 +86,15 @@ defmodule Elektra.Kdb do
   @impl true
   def handle_call(:nif_resource, _from, kdb_resource) do
     {:reply, kdb_resource, kdb_resource}
+  end
+
+  @impl true
+  def terminate(:normal, nil) do
+    :ok
+  end
+
+  @impl true
+  def terminate(_reason, kdb_resource) when not is_nil(kdb_resource) do
+    Elektra.System.kdb_close(kdb_resource, :null)
   end
 end

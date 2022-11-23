@@ -17,6 +17,14 @@ defmodule Elektra.KeySet do
     GenServer.start_link(__MODULE__, size)
   end
 
+  @doc """
+  Delete the key set `ks` from memory.
+  """
+  @spec del(key_set()) :: integer()
+  def del(ks) do
+    GenServer.call(ks, :del)
+  end
+
   # Server API
 
   @impl true
@@ -26,7 +34,23 @@ defmodule Elektra.KeySet do
   end
 
   @impl true
+  def handle_call(:del, _from, ks_resource) do
+    rc = Elektra.System.ks_del(ks_resource)
+    {:reply, rc, nil}
+  end
+
+  @impl true
   def handle_call(:nif_resource, _from, ks_resource) do
     {:reply, ks_resource, ks_resource}
+  end
+
+  @impl true
+  def terminate(:normal, nil) do
+    :ok
+  end
+
+  @impl true
+  def terminate(_reason, ks_resource) when not is_nil(ks_resource) do
+    Elektra.System.ks_del(ks_resource)
   end
 end

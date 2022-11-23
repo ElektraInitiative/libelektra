@@ -81,7 +81,23 @@ defmodule Elektra.Key do
   end
 
   @impl true
+  def handle_call(:del, _from, key_resource) do
+    rc = Elektra.System.key_del(key_resource)
+    {:stop, :normal, rc, nil}
+  end
+
+  @impl true
   def handle_call(:nif_resource, _from, key_resource) do
     {:reply, key_resource, key_resource}
+  end
+
+  @impl true
+  def terminate(:normal, nil) do
+    :ok
+  end
+
+  @impl true
+  def terminate(_reason, key_resource) when not is_nil(key_resource) do
+    Elektra.System.key_del(key_resource)
   end
 end
