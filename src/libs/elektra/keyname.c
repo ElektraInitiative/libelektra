@@ -209,14 +209,12 @@ void keyDetachKeyName (Key * key)
 		key->keyName = keyNameNew ();
 		keyNameRefInc (key->keyName);
 	}
-	else if (key->keyName->refs > 1 || test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	else if (key->keyName->refs > 1 || isKeyNameInMmap (key->keyName))
 	{
 		struct _KeyName * copiedKeyName = keyNameCopy (key->keyName);
-		keyNameRefDecAndDel (key->keyName, !test_bit (key->flags, KEY_FLAG_MMAP_KEY));
+		keyNameRefDecAndDel (key->keyName);
 		key->keyName = copiedKeyName;
 		keyNameRefInc (key->keyName);
-
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 }
 
@@ -242,13 +240,11 @@ static inline void keyDetachKeyNameWithoutCopy (Key * key)
 		key->keyName = keyNameNew ();
 		keyNameRefInc (key->keyName);
 	}
-	else if (key->keyName->refs > 1 || test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	else if (key->keyName->refs > 1 || isKeyNameInMmap (key->keyName))
 	{
-		keyNameRefDecAndDel (key->keyName, !test_bit (key->flags, KEY_FLAG_MMAP_KEY));
+		keyNameRefDecAndDel (key->keyName);
 		key->keyName = keyNameNew ();
 		keyNameRefInc (key->keyName);
-
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 }
 

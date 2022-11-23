@@ -62,6 +62,12 @@ namespace ckdb
 extern "C" {
 #endif
 
+/** Test a bit. @see set_bit(), clear_bit() */
+#define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
+/** Set a bit. @see clear_bit() */
+#define set_bit(var, bit) ((var) |= ((unsigned long long) (bit)))
+/** Clear a bit. @see set_bit() */
+#define clear_bit(var, bit) ((var) &= ~((unsigned long long) (bit)))
 
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
@@ -207,6 +213,8 @@ struct _KeyData
 	 * Reference counter
 	 */
 	uint16_t refs;
+
+	uint16_t flags;
 };
 
 /**
@@ -247,6 +255,8 @@ struct _KeyName
 	 * Reference counter
 	 */
 	uint16_t refs;
+
+	uint16_t flags;
 };
 
 // private methods for COW keys
@@ -254,17 +264,50 @@ struct _KeyName * keyNameNew (void);
 struct _KeyName * keyNameCopy (struct _KeyName * source);
 uint16_t keyNameRefInc (struct _KeyName * keyname);
 uint16_t keyNameRefDec (struct _KeyName * keyname);
-uint16_t keyNameRefDecAndDel (struct _KeyName * keyname, bool deleteData);
-void keyNameDel (struct _KeyName * keyname, bool deleteData);
+uint16_t keyNameRefDecAndDel (struct _KeyName * keyname);
+void keyNameDel (struct _KeyName * keyname);
 
 void keyDetachKeyName (Key * key);
 
 struct _KeyData * keyDataNew (void);
 uint16_t keyDataRefInc (struct _KeyData * keydata);
 uint16_t keyDataRefDec (struct _KeyData * keydata);
-uint16_t keyDataRefDecAndDel (struct _KeyData * keydata, bool deleteData);
-void keyDataDel (struct _KeyData * keydata, bool deleteData);
+uint16_t keyDataRefDecAndDel (struct _KeyData * keydata);
+void keyDataDel (struct _KeyData * keydata);
 
+static inline bool isKeyNameInMmap (const struct _KeyName * keyname)
+{
+	return test_bit(keyname->flags, KEY_FLAG_MMAP_KEY);
+}
+
+static inline void setKeyNameIsInMmap (struct _KeyName * keyname, bool isInMmap)
+{
+	if (isInMmap)
+	{
+		set_bit (keyname->flags, KEY_FLAG_MMAP_KEY);
+	}
+	else
+	{
+		clear_bit(keyname->flags, KEY_FLAG_MMAP_KEY);
+	}
+}
+
+static inline bool isKeyDataInMmap (const struct _KeyData * keydata)
+{
+	return test_bit(keydata->flags, KEY_FLAG_MMAP_DATA);
+}
+
+static inline void setKeyDataIsInMmap (struct _KeyData * keydata, bool isInMmap)
+{
+	if (isInMmap)
+	{
+		set_bit (keydata->flags, KEY_FLAG_MMAP_DATA);
+	}
+	else
+	{
+		clear_bit(keydata->flags, KEY_FLAG_MMAP_DATA);
+	}
+}
 
 /**
  * The private Key struct.
@@ -343,10 +386,28 @@ struct _KeySetData
 struct _KeySetData * keySetDataNew (void);
 uint16_t keySetDataRefInc (struct _KeySetData * keysetdata);
 uint16_t keySetDataRefDec (struct _KeySetData * keysetdata);
-uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata, bool deleteData);
-void keySetDataDel (struct _KeySetData * keysetdata, bool deleteData);
+uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata);
+void keySetDataDel (struct _KeySetData * keysetdata);
 
 void keySetDetachData (KeySet * keyset);
+
+static inline bool isKeySetDataInMmap (const struct _KeySetData *keysetdata)
+{
+	return test_bit(keysetdata->flags, KS_FLAG_MMAP_ARRAY);
+}
+
+static inline void setKeySetDataIsInMmap (struct _KeySetData * keysetdata, bool isInMmap)
+{
+	if (isInMmap)
+	{
+		set_bit (keysetdata->flags, KS_FLAG_MMAP_ARRAY);
+	}
+	else
+	{
+		clear_bit(keysetdata->flags, KS_FLAG_MMAP_ARRAY);
+	}
+}
+
 
 /**
  * The private KeySet structure.
@@ -589,12 +650,6 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
 
-/** Test a bit. @see set_bit(), clear_bit() */
-#define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
-/** Set a bit. @see clear_bit() */
-#define set_bit(var, bit) ((var) |= ((unsigned long long) (bit)))
-/** Clear a bit. @see set_bit() */
-#define clear_bit(var, bit) ((var) &= ~((unsigned long long) (bit)))
 
 #ifdef __cplusplus
 }

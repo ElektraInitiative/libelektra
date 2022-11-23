@@ -17,8 +17,7 @@
  */
 struct _KeyName * keyNameNew (void)
 {
-	struct _KeyName * name = elektraMalloc (sizeof (struct _KeyName));
-	memset (name, 0, sizeof (struct _KeyName));
+	struct _KeyName * name = elektraCalloc (sizeof (struct _KeyName));
 	return name;
 }
 
@@ -93,14 +92,13 @@ uint16_t keyNameRefDec (struct _KeyName * keyname)
  * @brief Decrement the reference counter of a KeyName object and delete it if the counter reaches 0.
  *
  * @param keyname the KeyName object whose reference counter should get decreased
- * @param deleteData if the data (name and unescaped name) should be freed
  *
  * @return the updated value of the reference counter
  * @retval UINT16_MAX on NULL pointer
  * @retval 0 when the reference counter already was the minimum value 0,
  *         the object has been deleted in this case
  */
-uint16_t keyNameRefDecAndDel (struct _KeyName * keyname, bool deleteData)
+uint16_t keyNameRefDecAndDel (struct _KeyName * keyname)
 {
 	if (!keyname)
 	{
@@ -110,7 +108,7 @@ uint16_t keyNameRefDecAndDel (struct _KeyName * keyname, bool deleteData)
 	uint16_t refs = keyNameRefDec (keyname);
 	if (keyname->refs == 0)
 	{
-		keyNameDel (keyname, deleteData);
+		keyNameDel (keyname);
 	}
 	return refs;
 }
@@ -121,9 +119,8 @@ uint16_t keyNameRefDecAndDel (struct _KeyName * keyname, bool deleteData)
  * @brief Delete a KeyName object if its reference counter is 0
  *
  * @param keyname the KeyName object whose reference counter should get decreased
- * @param deleteData if the data (name and unescaped name) should be freed
  */
-void keyNameDel (struct _KeyName * keyname, bool deleteData)
+void keyNameDel (struct _KeyName * keyname)
 {
 	if (!keyname)
 	{
@@ -132,7 +129,7 @@ void keyNameDel (struct _KeyName * keyname, bool deleteData)
 
 	if (keyname->refs == 0)
 	{
-		if (deleteData)
+		if (!isKeyNameInMmap (keyname))
 		{
 			if (keyname->key)
 			{
@@ -158,8 +155,7 @@ void keyNameDel (struct _KeyName * keyname, bool deleteData)
  */
 struct _KeyData * keyDataNew (void)
 {
-	struct _KeyData * data = elektraMalloc (sizeof (struct _KeyData));
-	memset (data, 0, sizeof (struct _KeyData));
+	struct _KeyData * data = elektraCalloc (sizeof (struct _KeyData));
 	return data;
 }
 
@@ -234,14 +230,13 @@ uint16_t keyDataRefDec (struct _KeyData * keydata)
  * @brief Decrement the reference counter of a KeyData object and delete it if the counter reaches 0.
  *
  * @param keydata the KeyData object whose reference counter should get decreased
- * @param deleteData if the data (data.v) should be freed
  *
  * @return the updated value of the reference counter
  * @retval UINT16_MAX on NULL pointer
  * @retval 0 when the reference counter already was the minimum value 0,
  *         the object has been deleted in this case
  */
-uint16_t keyDataRefDecAndDel (struct _KeyData * keydata, bool deleteData)
+uint16_t keyDataRefDecAndDel (struct _KeyData * keydata)
 {
 	if (!keydata)
 	{
@@ -251,7 +246,7 @@ uint16_t keyDataRefDecAndDel (struct _KeyData * keydata, bool deleteData)
 	uint16_t refs = keyDataRefDec (keydata);
 	if (keydata->refs == 0)
 	{
-		keyDataDel (keydata, deleteData);
+		keyDataDel (keydata);
 	}
 	return refs;
 }
@@ -264,7 +259,7 @@ uint16_t keyDataRefDecAndDel (struct _KeyData * keydata, bool deleteData)
  * @param keydata the KeyName object whose reference counter should get decreased
  * @param deleteData if the data (data.v) should be freed
  */
-void keyDataDel (struct _KeyData * keydata, bool deleteData)
+void keyDataDel (struct _KeyData * keydata)
 {
 	if (!keydata)
 	{
@@ -273,7 +268,7 @@ void keyDataDel (struct _KeyData * keydata, bool deleteData)
 
 	if (keydata->refs == 0)
 	{
-		if (deleteData && keydata->data.v != NULL)
+		if (!isKeyDataInMmap (keydata) && keydata->data.v != NULL)
 		{
 			elektraFree (keydata->data.v);
 		}
@@ -291,8 +286,7 @@ void keyDataDel (struct _KeyData * keydata, bool deleteData)
  */
 struct _KeySetData * keySetDataNew (void)
 {
-	struct _KeySetData * data = elektraMalloc (sizeof (struct _KeySetData));
-	memset (data, 0, sizeof (struct _KeySetData));
+	struct _KeySetData * data = elektraCalloc (sizeof (struct _KeySetData));
 	return data;
 }
 
@@ -367,14 +361,13 @@ uint16_t keySetDataRefDec (struct _KeySetData * keysetdata)
  * @brief Decrement the reference counter of a KeySetData object and delete it if the counter reaches 0.
  *
  * @param keysetdata the KeySetData object whose reference counter should get decreased
- * @param deleteData if the data (array) should be freed
  *
  * @return the updated value of the reference counter
  * @retval UINT16_MAX on NULL pointer
  * @retval 0 when the reference counter already was the minimum value 0,
  *         the object has been deleted in this case
  */
-uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata, bool deleteData)
+uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata)
 {
 	if (!keysetdata)
 	{
@@ -384,7 +377,7 @@ uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata, bool deleteDat
 	uint16_t refs = keySetDataRefDec (keysetdata);
 	if (keysetdata->refs == 0)
 	{
-		keySetDataDel (keysetdata, deleteData);
+		keySetDataDel (keysetdata);
 	}
 	return refs;
 }
@@ -395,9 +388,8 @@ uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata, bool deleteDat
  * @brief Delete a KeySetData object if its reference counter is 0
  *
  * @param keysetdata the KeyName object whose reference counter should get decreased
- * @param deleteData if the data (array) should be freed
  */
-void keySetDataDel (struct _KeySetData * keysetdata, bool deleteData)
+void keySetDataDel (struct _KeySetData * keysetdata)
 {
 	if (!keysetdata)
 	{
@@ -415,7 +407,7 @@ void keySetDataDel (struct _KeySetData * keysetdata, bool deleteData)
 			}
 		}
 
-		if (keysetdata->array && deleteData)
+		if (keysetdata->array && !isKeySetDataInMmap (keysetdata))
 		{
 			elektraFree (keysetdata->array);
 		}

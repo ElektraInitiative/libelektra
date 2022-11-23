@@ -351,7 +351,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	{
 		if (dest->keyName != NULL)
 		{
-			keyNameRefDecAndDel (dest->keyName, !test_bit (dest->flags, KEY_FLAG_MMAP_KEY));
+			keyNameRefDecAndDel (dest->keyName);
 			dest->keyName = NULL;
 		}
 
@@ -364,15 +364,13 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 		{
 			keySetName (dest, "/");
 		}
-
-		clear_bit (dest->flags, KEY_FLAG_MMAP_KEY);
 	}
 
 	if (test_bit (flags, KEY_CP_STRING) || test_bit (flags, KEY_CP_VALUE))
 	{
 		if (dest->keyData != NULL)
 		{
-			keyDataRefDecAndDel (dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
+			keyDataRefDecAndDel (dest->keyData);
 			dest->keyData = NULL;
 		}
 
@@ -386,8 +384,6 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 				keySetMeta (dest, "binary", "");
 			}
 		}
-
-		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
 
 	if (test_bit (flags, KEY_CP_META))
@@ -407,15 +403,15 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	set_bit (dest->flags, KEY_FLAG_SYNC);
 
 	// free old resources of destination
-	keyNameRefDecAndDel (orig.keyName, !test_bit (orig.flags, KEY_FLAG_MMAP_KEY));
-	keyDataRefDecAndDel (orig.keyData, !test_bit (orig.flags, KEY_FLAG_MMAP_DATA));
+	keyNameRefDecAndDel (orig.keyName);
+	keyDataRefDecAndDel (orig.keyData);
 	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
 
 	return dest;
 
 memerror:
-	keyNameRefDecAndDel (dest->keyName, !test_bit (dest->flags, KEY_FLAG_MMAP_KEY));
-	keyDataRefDecAndDel (dest->keyData, !test_bit (dest->flags, KEY_FLAG_MMAP_DATA));
+	keyNameRefDecAndDel (dest->keyName);
+	keyDataRefDecAndDel (dest->keyData);
 	ksDel (dest->meta);
 
 	*dest = orig;
@@ -425,10 +421,10 @@ memerror:
 
 static void keyClearNameValue (Key * key)
 {
-	keyNameRefDecAndDel (key->keyName, !test_bit (key->flags, KEY_FLAG_MMAP_KEY));
+	keyNameRefDecAndDel (key->keyName);
 	key->keyName = NULL;
 
-	keyDataRefDecAndDel (key->keyData, !test_bit (key->flags, KEY_FLAG_MMAP_DATA));
+	keyDataRefDecAndDel (key->keyData);
 	key->keyData = NULL;
 }
 

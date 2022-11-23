@@ -39,17 +39,6 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 		return -1;
 	}
 
-	/*if (key->data.c && !test_bit (key->flags, KEY_FLAG_MMAP_DATA))
-	{
-		elektraFree (key->data.c);
-	}
-
-	key->data.c = p;
-	key->dataSize = elektraStrLen (key->data.c);
-	set_bit (key->flags, KEY_FLAG_SYNC);
-
-	return key->dataSize;*/
-
 	return keySetRaw (key, p, elektraStrLen (p));
 }
 

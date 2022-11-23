@@ -87,14 +87,12 @@ void keySetDetachData (KeySet * keyset)
 		keyset->data = keySetDataNew ();
 		keySetDataRefInc (keyset->data);
 	}
-	else if (keyset->data->refs > 1 || test_bit (keyset->flags, KS_FLAG_MMAP_ARRAY))
+	else if (keyset->data->refs > 1 || isKeySetDataInMmap (keyset->data))
 	{
 		struct _KeySetData * copied = keySetDataCopy (keyset->data);
-		keySetDataRefDecAndDel (keyset->data, !test_bit (keyset->flags, KS_FLAG_MMAP_ARRAY));
+		keySetDataRefDecAndDel (keyset->data);
 		keyset->data = copied;
 		keySetDataRefInc (keyset->data);
-
-		clear_bit (keyset->flags, KS_FLAG_MMAP_ARRAY);
 	}
 }
 
@@ -483,7 +481,7 @@ int ksCopy (KeySet * dest, const KeySet * source)
 
 	if (dest->data != NULL)
 	{
-		keySetDataRefDecAndDel (dest->data, !test_bit (dest->flags, KS_FLAG_MMAP_ARRAY));
+		keySetDataRefDecAndDel (dest->data);
 	}
 
 	dest->data = source->data;
@@ -1374,7 +1372,7 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 		if (oldName != NULL)
 		{
 			((Key *) root)->keyName = oldName;
-			keyNameRefDecAndDel (copy, true);
+			keyNameRefDecAndDel (copy);
 		}
 	}
 
@@ -2784,8 +2782,8 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	}
 
 	found = ksLookup (ks, &key, options);
-	keyNameRefDecAndDel (key.keyName, true);
-	keyDataRefDecAndDel (key.keyData, true);
+	keyNameRefDecAndDel (key.keyName);
+	keyDataRefDecAndDel (key.keyData);
 	ksDel (key.meta); // sometimes owner is set
 	return found;
 }
@@ -2842,26 +2840,12 @@ int ksResize (KeySet * ks, size_t alloc)
 		ks->data->alloc = alloc;
 		ks->data->size = 0;
 		ks->data->array = elektraMalloc (sizeof (struct _Key *) * ks->data->alloc);
-		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 		if (!ks->data->array)
 		{
 			return -1;
 		}
 	}
 	ks->data->alloc = alloc;
-
-	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
-	{
-		// need to move the ks->array out of mmap
-		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->data->alloc);
-		if (!new)
-		{
-			return -1;
-		}
-		elektraMemcpy (new, ks->data->array, ks->data->size + 1); // copy including ending NULL
-		ks->data->array = new;
-		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
-	}
 
 	if (elektraRealloc ((void **) &ks->data->array, sizeof (struct _Key *) * ks->data->alloc) == -1)
 	{
@@ -2918,7 +2902,7 @@ int ksInit (KeySet * ks)
 		return 0;
 	}
 
-	keySetDataRefDecAndDel (ks->data, true);
+	keySetDataRefDecAndDel (ks->data);
 	ks->data = NULL;
 
 	return 0;
@@ -2945,9 +2929,8 @@ int ksClose (KeySet * ks)
 {
 	if (ks == NULL) return -1;
 
-	keySetDataRefDecAndDel (ks->data, !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY));
+	keySetDataRefDecAndDel (ks->data);
 	ks->data = NULL;
-	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 
 	return 0;
 }

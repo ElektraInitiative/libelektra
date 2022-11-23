@@ -536,6 +536,34 @@ static void keyLock_should_work_with_copies (void)
 	keyDel (copy);
 }
 
+static void test_mmap_flag_methods (void)
+{
+	printf ("Test %s\n", __func__);
+
+	struct _KeyData * data = elektraCalloc (sizeof (struct _KeyData));
+	succeed_if (isKeyDataInMmap (data) == false, "newly created key data should not have MMAP flag");
+
+	setKeyDataIsInMmap (data, true);
+	succeed_if (isKeyDataInMmap (data) == true, "key data should have MMAP flag");
+
+	setKeyDataIsInMmap (data, false);
+	succeed_if (isKeyDataInMmap (data) == false, "key data should not have MMAP flag");
+
+	elektraFree(data);
+
+
+	struct _KeyName * name = elektraCalloc (sizeof (struct _KeyName));
+	succeed_if (isKeyNameInMmap (name) == false, "newly created key name should not have MMAP flag");
+
+	setKeyNameIsInMmap (name, true);
+	succeed_if (isKeyNameInMmap (name) == true, "key name should have MMAP flag");
+
+	setKeyNameIsInMmap (name, false);
+	succeed_if (isKeyNameInMmap (name) == false, "key name should not have MMAP flag");
+
+	elektraFree(name);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KEY COW      TESTS\n");
@@ -579,6 +607,8 @@ int main (int argc, char ** argv)
 	keySetNamespace_should_replace_keyName_when_other_references ();
 
 	keyLock_should_work_with_copies ();
+
+	test_mmap_flag_methods ();
 
 	print_result ("test_key_cow");
 	return nbError;

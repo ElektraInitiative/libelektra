@@ -986,6 +986,22 @@ static void ksLookup_non_modifying_flags_should_not_replace_data (void)
 	}
 }
 
+static void test_mmap_flag_methods (void)
+{
+	printf ("Test %s\n", __func__);
+
+	struct _KeySetData * data = elektraCalloc (sizeof (struct _KeySetData));
+	succeed_if (isKeySetDataInMmap (data) == false, "newly created keyset data should not have MMAP flag");
+
+	setKeySetDataIsInMmap (data, true);
+	succeed_if (isKeySetDataInMmap (data) == true, "keyset data should have MMAP flag");
+
+	setKeySetDataIsInMmap (data, false);
+	succeed_if (isKeySetDataInMmap (data) == false, "keyset data should not have MMAP flag");
+
+	elektraFree(data);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KEYSET COW   TESTS\n");
@@ -1042,6 +1058,8 @@ int main (int argc, char ** argv)
 	ksLookup_modifying_flags_should_replace_data_when_references ();
 	ksLookup_modifying_flags_should_not_replace_data_when_no_references ();
 	ksLookup_non_modifying_flags_should_not_replace_data ();
+
+	test_mmap_flag_methods ();
 
 	print_result ("test_keyset_cow");
 	return nbError;

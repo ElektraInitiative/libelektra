@@ -529,6 +529,27 @@ ssize_t keySetBinary (Key * key, const void * newBinary, size_t dataSize)
 	return ret;
 }
 
+static inline void keyDetachKeyDataWithoutCopy (Key * key)
+{
+	if (key == NULL)
+	{
+		return;
+	}
+
+	if (key->keyData == NULL)
+	{
+		key->keyData = keyDataNew ();
+		keyDataRefInc (key->keyData);
+	}
+	else if (key->keyData->refs > 1 || isKeyDataInMmap (key->keyData))
+	{
+		keyDataRefDecAndDel (key->keyData);
+
+		key->keyData = keyDataNew();
+		keyDataRefInc (key->keyData);
+	}
+}
+
 /**
  * @internal
  *
@@ -551,26 +572,14 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	if (!key) return -1;
 	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
 
-	if ((key->keyData != NULL && key->keyData->refs > 1))
-	{
-		keyDataRefDecAndDel (key->keyData, !test_bit (key->flags, KEY_FLAG_MMAP_DATA));
-		key->keyData = NULL;
-	}
-
-	if (key->keyData == NULL)
-	{
-		key->keyData = keyDataNew ();
-		keyDataRefInc (key->keyData);
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
-	}
+	keyDetachKeyDataWithoutCopy (key);
 
 	if (!dataSize || !newBinary)
 	{
 		if (key->keyData->data.v)
 		{
-			if (!test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->keyData->data.v);
+			elektraFree (key->keyData->data.v);
 			key->keyData->data.v = NULL;
-			clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
 		}
 		key->keyData->dataSize = 0;
 		set_bit (key->flags, KEY_FLAG_SYNC);
@@ -582,17 +591,6 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	if (key->keyData->data.v)
 	{
 		char * previous = key->keyData->data.v;
-
-		if (test_bit (key->flags, KEY_FLAG_MMAP_DATA))
-		{
-			clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
-			key->keyData->data.v = elektraMalloc (key->keyData->dataSize);
-			if (key->keyData->data.v == NULL) return -1;
-		}
-		else
-		{
-			if (-1 == elektraRealloc ((void **) &key->keyData->data.v, key->keyData->dataSize)) return -1;
-		}
 
 		if (-1 == elektraRealloc ((void **) &key->keyData->data.v, key->keyData->dataSize)) return -1;
 		if (previous == key->keyData->data.v)
