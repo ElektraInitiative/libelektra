@@ -32,7 +32,7 @@ if (ENABLE_KDB_TESTING)
 			"${CMAKE_CURRENT_BINARY_DIR}/tutorial_wrapper/markdown_shell_recorder.sh" @ONLY)
 
 	add_shell_recorder_test (db_changes.esr)
-	add_shell_recorder_test (host.esr REQUIRED_PLUGINS hosts)
+	add_shell_recorder_test (hosts.esr REQUIRED_PLUGINS hosts)
 	add_shell_recorder_test (listtest.esr REQUIRED_PLUGINS dump list)
 	add_shell_recorder_test (mathcheck.esr REQUIRED_PLUGINS math)
 	add_shell_recorder_test (profiletest.esr)
