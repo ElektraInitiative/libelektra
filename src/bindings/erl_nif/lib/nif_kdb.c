@@ -162,7 +162,7 @@ static ERL_NIF_TERM kdb_close (ErlNifEnv * env, int argc, const ERL_NIF_TERM arg
 	}
 	if (is_null_atom (env, argv[1]))
 	{
-		handle_resource = NULL;
+		errorKey_resource = NULL;
 	}
 	else if (!enif_get_resource (env, argv[1], KEY_RESOURCE_TYPE, (void *) &errorKey_resource))
 	{
