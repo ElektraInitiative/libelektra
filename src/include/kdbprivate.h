@@ -376,7 +376,7 @@ struct _KeySetData
 	/**
 	 * Some control and internal flags.
 	 */
-	ksflag_t flags;
+	uint16_t flags;
 
 	uint16_t refs; /**< Reference counter */
 };
