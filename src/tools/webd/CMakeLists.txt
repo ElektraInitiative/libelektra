@@ -34,7 +34,7 @@ else ()
 	# build elektra-web
 	install (CODE "message (\"-- Installing: elektra-web > webd\")")
 	install (
-		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
+		CODE "execute_process (COMMAND npm install --no-audit --no-save --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
 	)
 	install (
 		CODE "execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
