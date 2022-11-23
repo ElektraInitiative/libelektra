@@ -296,6 +296,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update AUR Link from `elektra` to `libelektra` package _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
+- Update example ansible playbook in VISION.md _(@Bujuhu)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
