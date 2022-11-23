@@ -29,6 +29,7 @@ one as used for Elektra.
 
 This jar is created upon building Elektra if you include the JNA bindings during the build process, e.g., with `cmake -DBINDINGS=jna`. Check out [COMPILE](/doc/COMPILE.md#bindings) for more details on how to include bindings in the build process.
 To make sure the build will be successfull, make sure the following requirements are met:
+
 - `gradle` must be installed on your machine, otherwise jna will not be included during compilation.
 - Use a JDK version <=17. Higher versions will result in _Unsupported class file major version 62/63_ errors.
 
