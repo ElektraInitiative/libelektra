@@ -266,7 +266,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Sed: Add spelling correction for "key-value storage" _(@Bujuhu)_
 - <<TODO>>
-- <<TODO>>
+- Fix/extends some shell recorder tests _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - Fix warning parsing in shell recorder _(@Joni1993)_
