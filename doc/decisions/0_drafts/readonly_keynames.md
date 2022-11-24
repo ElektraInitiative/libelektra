@@ -3,7 +3,8 @@
 ## Problem
 
 It might be a good idea to prevent changes to the keyname after creation.
-Currently, key names are automatically read-only when they are contained in a keyset.
+Currently, the name of a key is automatically made read-only, when it is currently part of or at some point in the past was part of at least one `KeySet`.
+There are discussions about making key names writable again, when the key is removed from all `KeySet`s.
 
 There may also be situations where changing the name of a key after its creation is required.
 In some situations, it may be wise to reuse a key instead of deleting it and creating a new one.
@@ -22,7 +23,9 @@ In some situations, it may be wise to reuse a key instead of deleting it and cre
 
 ## Considered Alternatives
 
-### Alternative A
+### Separate API for keynames
+
+Use the proposed `ElektraBuffer` struct to create a separate API for keynames independent of the `Key` API.
 
 ### Alternative B
 
