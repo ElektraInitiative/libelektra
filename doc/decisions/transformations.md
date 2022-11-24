@@ -75,9 +75,10 @@ In theory the same issue with the 'key needs sync' flag based change tracking ap
    This would require making the 'key sync' APIs public.
 
 2. Use change tracking to detect whether something has changed, replacing the `keyNeedsSync` flag.
-   
 
-3.
+3. For key name transformations - require that plugins set a meta key (e.g. `meta:/elektra/visiblename`) with the name before the transformation in the `kdbSet` phase.
+   This _must not_ be done if the meta key already exists, i.e. another plugin already tranformed it beforehand.
+   This allows notification and changetracking functionality to work with the "Elektra-visible" name of the key.
 
 ## Decision
 
