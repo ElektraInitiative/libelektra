@@ -66,11 +66,11 @@ The library `libelektra-core` must be kept minimal.
 
 ## Considered Alternatives
 
-### Alternative 1 - Tracking withn `libelektra-kdb`
+### Alternative 1 - Tracking within `libelektra-kdb`
 
 Do the tracking within `libelektra-kdb`, within the `kdbGet` and `kdbSet` operations.
 
-Essentially, we'd have a 'giant' keyset for all keys that were used returned by a `kdbGet` operation in the lifetime of the `kdb` instance.
+Essentially, we'd have an internal cache for all keys that were used returned by a `kdbGet` operation in the lifetime of the `kdb` instance.
 We also need to update it on `kdbSet` so that a future `kdbSet` operation without a `kdbGet` will also work.
 
 This approach does not limit which sequences of `kdbGet` and `kdbSet` calls are valid.
