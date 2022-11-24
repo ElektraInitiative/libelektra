@@ -273,6 +273,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Add audit-dependencies script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- <<TODO>>
 - <<TODO>>
 
 ## Documentation
@@ -480,6 +482,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Fix developer warning for package DISCOUNT _(Dennis Toth @dtdirect)_
 - Pass `--stacktrace` to gradle for the JNA builds. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- <<TODO>>
+- Adapt npm build flags to remove reproducability issues _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 
 ### Docker
