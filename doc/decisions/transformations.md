@@ -71,8 +71,12 @@ In theory the same issue with the 'key needs sync' flag based change tracking ap
 
 ## Considered Alternatives
 
-1.
-2.
+1. Require plugins that rename keys to remove the `keyNeedsSync` flag.
+   This would require making the 'key sync' APIs public.
+
+2. Use change tracking to detect whether something has changed, replacing the `keyNeedsSync` flag.
+   
+
 3.
 
 ## Decision
