@@ -295,8 +295,8 @@ KeySet * ksVNew (size_t alloc, va_list va)
 {
 	KeySet * keyset = 0;
 
-	keyset = (KeySet *) elektraMalloc (sizeof (KeySet));
-	memset (keyset, 0, sizeof (KeySet));
+	keyset = (KeySet *) elektraCalloc (sizeof (KeySet));
+
 	if (!keyset)
 	{
 		return 0;
@@ -315,7 +315,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	else
 		keyset->data->alloc = alloc;
 
-	keyset->data->array = elektraMalloc (sizeof (struct _Key *) * keyset->data->alloc);
+	keyset->data->array = elektraCalloc (sizeof (struct _Key *) * keyset->data->alloc);
 	if (!keyset->data->array)
 	{
 		return 0;
@@ -364,8 +364,7 @@ KeySet * ksDup (const KeySet * source)
 {
 	if (!source) return 0;
 
-	KeySet * keyset = elektraMalloc (sizeof (KeySet));
-	memset (keyset, 0, sizeof (KeySet));
+	KeySet * keyset = elektraCalloc (sizeof (KeySet));
 
 	keyset->data = source->data;
 	if (keyset->data != NULL)
@@ -558,7 +557,7 @@ int ksClear (KeySet * ks)
 	ks->data = keySetDataNew ();
 	keySetDataRefInc (ks->data);
 
-	if ((ks->data->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
+	if ((ks->data->array = elektraCalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
 	{
 		ks->data->size = 0;
 		return -1;
@@ -2839,7 +2838,7 @@ int ksResize (KeySet * ks, size_t alloc)
 	{ /* Not allocated up to now */
 		ks->data->alloc = alloc;
 		ks->data->size = 0;
-		ks->data->array = elektraMalloc (sizeof (struct _Key *) * ks->data->alloc);
+		ks->data->array = elektraCalloc (sizeof (struct _Key *) * ks->data->alloc);
 		if (!ks->data->array)
 		{
 			return -1;
