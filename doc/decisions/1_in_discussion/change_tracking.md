@@ -43,28 +43,43 @@ Change tracking must:
 - not duplicate data for each plugin that wants change tracking
 - work with all allowed sequences of `kdbGet` and `kdbSet` as [per this decision](operation_sequences.md)
 
+We only want to track changes that are done by the user, not changes that are done by plugins.
+I.e. the scope of change tracking is on what happens _outside_ of `kdbGet` and `kdbSet`.
+
 The library `libelektra-core` must be kept minimal.
 
 ## Assumptions
 
 - It is possible to do change tracking with reasonable memory and computation overhead
-- It is possible to design a single change tracking API that is useful
-  for all existing and future plugins
+- It is possible to design a single change tracking API that is useful for all existing and future plugins
+- False positivies are okay
+  - this may happend when some keys may have been changed by the user, but have subsequentially been "unchanged" by a transformation plugin
+    Scenario: hypothetical plugin that converts all values to UPPERCASE.
+      - user gets key `system:/background` with value `RED`
+      - user changes it to `red`
+      - changetracking detects that value has been changed, because `RED` != `red`
+      - plugin changes value to UPPERCASE `RED`
+      - consumers of the changetracking API will now get a false positive if they query whether `system:/background` has been changed
+
+- False negatives are not okay
+
 
 ## Considered Alternatives
 
-### Alternative 1 - Per-parent key tracking within `libelektra-kdb`
+### Alternative 1 - Tracking withn `libelektra-kdb`
 
-Do the per-parent-key tracking within `libelektra-kdb`, within the `kdbGet` and `kdbSet` operations.
+Do the tracking within `libelektra-kdb`, within the `kdbGet` and `kdbSet` operations.
 
-Essentially, we'd have a 'giant' hashmap in the form of (parent key)->(KeySet) for all parent keys that were used for a `kdbGet` operation in the lifetime of the `kdb` instance.
+Essentially, we'd have a 'giant' keyset for all keys that were used returned by a `kdbGet` operation in the lifetime of the `kdb` instance.
 We also need to update it on `kdbSet` so that a future `kdbSet` operation without a `kdbGet` will also work.
 
-When change tracking is enabled, this one will have the most memory overhead, as we need to deep-dup every key we have read or stored.
+This approach does not limit which sequences of `kdbGet` and `kdbSet` calls are valid.
 
-### Alternative 2 - Per-parent key tracking with meta keys
+With Elektra's global copy-on-write approach, the memory overhead of this approach shouldn't be too concerning.
 
-Do the per-parent-key tracking within `libelektra-kdb`, but with meta keys.
+### Alternative 2 - Tracking with meta keys
+
+Do the tracking within `libelektra-kdb`, but with meta keys.
 
 Essentially the same approach as above, but instead of deep-duping, we add the original value
 as a metakey to every key. Not yet clear how we handle changes to metadata then.
@@ -124,15 +139,13 @@ Downsides of this approach:
 Use the `backendData->keys` for change tracking
 
 We already store which keys have been returned by `kdbGet` for each backend within KDB.
-Currently, however, this is not a deep duplication, as we are returning the keys from `backendData->keys` directly.
+Currently, however, this is not a deep copy, as we are returning the keys from `backendData->keys` directly.
 This means we can not detect changes to the values or metadata of keys right now.
 We can, however, rely on this for detecting removed and added keys in its current form.
 
-If we don't want to deep-dup it, we'd need to do something different to detect which keys have been modified.
-One possibility would be to add metadata within the `key` functions (e.g. `meta:/elektra/original`), but that would violate the `libelektra-core` must be minimal constraint.
+As we now implement copy-on-write for all keys and keysets within Elektra, we can deep copy what we return in `kdbGet`.
 
-There is already [another decision](../2_in_progress/copy_on_write.md) which discusses adding general copy-on-write semantics to Elektra.
-We could use this together with `backendData->keys` deep-duped to do memory efficient change tracking.
+Another problem with this approach is that `backendData->keys` get cleared every time `kdbGet` is called.
 
 ## Decision
 
