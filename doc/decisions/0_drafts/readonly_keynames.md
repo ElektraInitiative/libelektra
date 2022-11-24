@@ -27,7 +27,41 @@ In some situations, it may be wise to reuse a key instead of deleting it and cre
 
 Use the proposed `ElektraBuffer` struct to create a separate API for keynames independent of the `Key` API.
 
-### Alternative B
+### Read-only keynames
+
+The key name should be permanently read-only after creation.
+
+TBD: How would we dynamically create keynames with this approach?
+
+### Re-entrant lock for the key name
+
+Since we assume a single threaded context, this can be implemented as a simple counter.
+
+```c
+struct _Key {
+    // [...] other stuff
+   uint16_t nameLock; // if zero, name is writable, otherwise name is readonly
+};
+
+void keyLockName (Key * k) {
+    k->nameLock++;
+}
+
+void keyUnlockName (Key * k) {
+    if (k->nameLock == 0) return;
+    k->nameLock--;
+}
+
+void ksAppendKey (KeySet * ks, Key * k) {
+    keyLockName (k);
+    // [...]
+}
+
+void ksRemove (KeySet * ks, elektraCursor cursor) {
+    keyUnlockName (ks->array[cursor]);
+    // [...]
+}
+```
 
 ### Alternative C
 
