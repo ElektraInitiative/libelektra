@@ -53,16 +53,16 @@ The library `libelektra-core` must be kept minimal.
 - It is possible to do change tracking with reasonable memory and computation overhead
 - It is possible to design a single change tracking API that is useful for all existing and future plugins
 - False positivies are okay
+
   - this may happend when some keys may have been changed by the user, but have subsequentially been "unchanged" by a transformation plugin
     Scenario: hypothetical plugin that converts all values to UPPERCASE.
-      - user gets key `system:/background` with value `RED`
-      - user changes it to `red`
-      - changetracking detects that value has been changed, because `RED` != `red`
-      - plugin changes value to UPPERCASE `RED`
-      - consumers of the changetracking API will now get a false positive if they query whether `system:/background` has been changed
+    - user gets key `system:/background` with value `RED`
+    - user changes it to `red`
+    - changetracking detects that value has been changed, because `RED` != `red`
+    - plugin changes value to UPPERCASE `RED`
+    - consumers of the changetracking API will now get a false positive if they query whether `system:/background` has been changed
 
 - False negatives are not okay
-
 
 ## Considered Alternatives
 
