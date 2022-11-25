@@ -9,7 +9,7 @@ As a consequence, duplicated keys or keysets only require a fraction of the memo
 
 The main principle for the copy-on-write approach is simple: seperate the "real" data from the user-facing identifying entity, in our case `Key` and `KeySet`.
 Developers using Elektra only get references to `Key` and `KeySet` objects.
-Those objects themselves do not hold any data. 
+Those objects themselves do not hold any data.
 They only contain references to other entities holding the data.
 
 The main entities for copy-on-write are depicted in the following diagram:
@@ -45,7 +45,6 @@ classDiagram
   - `KeyData`: holds the value of a key. May be shared between multiple `Key` objects.
 - `KeySet`: logically represents a collection of keys. No real data is actually stored in it.
   - `KeySetData`: holds an array of `Key` objects. May be shared between multiple `KeySet` objects.
-
 
 When creating instances of `Key` and `KeySet` via `keyNew` or `ksNew`, we allocate the least amount.
 For `Key`, we only allocate a `KeyName` entity.
