@@ -139,13 +139,13 @@ Downsides of this approach:
 Use the `backendData->keys` for change tracking
 
 We already store which keys have been returned by `kdbGet` for each backend within KDB.
-Currently, however, this is not a deep copy, as we are returning the keys from `backendData->keys` directly.
+Currently, however, this is not a deep copy, as we are returning the internally stored `Key` instances directly.
 This means we can not detect changes to the values or metadata of keys right now.
 We can, however, rely on this for detecting removed and added keys in its current form.
 
 As we now implement copy-on-write for all keys and keysets within Elektra, we can deep copy what we return in `kdbGet`.
 
-Another problem with this approach is that `backendData->keys` get cleared every time `kdbGet` is called.
+Another problem with this approach is that the internally stored keys are recreated as new instances every time `kdbGet` is called.
 
 ## Decision
 
