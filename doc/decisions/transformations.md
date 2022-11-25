@@ -17,6 +17,12 @@ More specifically, problems have been observed in conjunction with the following
 
 The problem, in general, can be described as: Which phase of the KDB should be used for notifications/change tracking?
 
+We differntiate between three types:
+
+- *stored* name/value/metadata: How it is actually stored, i.e. the state returned by and passed to the `storage` plugins.
+- *runtime* name/value/metadata: How it is at runtime, i.e. what is returned by `kdbGet` and passed to `kdbSet`.
+- *intermediate* name/value/metadata: Any state inbetween the two.
+
 ### Observed problems with changing key names
 
 For example, the [`rename` plugin](../../src/plugins/rename/README.md) supports different transformations for `get` and `set`.
@@ -32,7 +38,7 @@ For example, here is a configuration file with a hypothetical format:
 
 As can be seen, the keys are in UPPERCASE within the configuration file.
 In Elektra keys are case-sensitive. 
-As operations on keysets such as `ksLookup` operate after the post-storage phase, `kdb get /DISPLAY/BRIGHTNESS` will fail.
+As operations on keysets such as `ksLookup` operate with *runtime* data after the post-storage phase, `kdb get /DISPLAY/BRIGHTNESS` will fail.
 For Elektra, the key `/DISPLAY/BRIGHTNESS` does not exist, as the `rename` plugin transformed this into the lowercase `/display/brightness`.
 
 This leads to problems with the notification plugins.
@@ -76,9 +82,10 @@ In theory the same issue with the 'key needs sync' flag based change tracking ap
 
 2. Use change tracking to detect whether something has changed, replacing the `keyNeedsSync` flag.
 
-3. For key name transformations - require that plugins set a meta key (e.g. `meta:/elektra/visiblename`) with the name before the transformation in the `kdbSet` phase.
-   This _must not_ be done if the meta key already exists, i.e. another plugin already tranformed it beforehand.
-   This allows notification and changetracking functionality to work with the "Elektra-visible" name of the key.
+3. For key name transformations - require that transformation plugins set a metakey (e.g. `meta:/elektra/runtimename`) with the runtime name before they do any transformations in the `kdbSet` phase.
+   This _must not_ be done if this metakey already exists, i.e. another plugin already tranformed it beforehand.
+   This allows notification and change tracking functionality to work determine and work with the runtime name of the key.
+
 
 ## Decision
 
