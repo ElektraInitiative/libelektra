@@ -534,6 +534,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Restructured decisions directories based on new agreed-upon [steps](../decisions/STEPS.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
+- Decision for [types of `KeySet`s](../decisions/0_drafts/keyset_types.md) _(@kodebach)_
+- <<TODO>>
 - Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
 - Add links and formatting to documents affected by PR#4492 (Document Guidelines) and rephrase some parts. _(Florian Lindner @flo91)_
 - Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
