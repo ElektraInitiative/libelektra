@@ -355,7 +355,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
 - <<TODO>>
-- <<TODO>>
+- Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
