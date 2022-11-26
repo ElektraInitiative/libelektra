@@ -29,9 +29,12 @@ classDiagram
     Key : - uint16_t refs
     Key : - keyflag_t flags
 
+    KeyName : - char * name
+    KeyName : - char * uname
     KeyName : - uint16_t refs
     KeyName : - uint16_t flags
 
+    KeyData : - void * data
     KeyData : - uint16_t refs
     KeyData : - uint16_t flags
 
