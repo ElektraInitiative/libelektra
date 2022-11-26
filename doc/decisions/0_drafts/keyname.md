@@ -22,7 +22,7 @@ The question now is, which representations should be used by `libelektra-core` a
 
 ## Assumptions
 
-- In most cases the escaped name is used for developer convenience not, because of actual requirements.
+- In most cases the escaped name is used for developer convenience and not because of actual requirements.
 - The most common requirement for using the escaped name is UI: reading names from or displaying them in a user interface (e.g., `kdb` CLI)
 
 ## Considered Alternatives
@@ -44,7 +44,7 @@ Similarly, iterating over the individual parts of a name (and/or manipulating th
 
 ### Only unescaped name
 
-The unescaped name contains zero bytes.
+The unescaped name contains zero-bytes (`\0`).
 It therefore must be represented as a pointer and a size.
 
 This can make for less convenient API, but there are mitigation strategies using additional types.
@@ -72,7 +72,7 @@ Comparisons are exactly the same, just with an additional namespace byte compari
 
 ### Both escaped and unescaped name
 
-To combine the advantages of escaped and unescaped name, both could be used.
+The previous approach used both to combine the advantages of escaped and unescaped name.
 
 The API could largely rely on the escaped name, while e.g., comparisons can use the unescaped name.
 
