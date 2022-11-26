@@ -500,6 +500,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Add decisions about [location of headers](../decisions/4_decided/header_file_structure.md) and [use of `#include`](../decisions/4_decided/header_include.md) in the repo _(@kodebach)_
 - <<TODO>>
+- Add decisions about [location of headers](../decisions/3_decided/header_file_structure.md) and [use of `#include`](../decisions/3_decided/header_include.md) in the repo _(@kodebach)_
+- <<TODO>>
+- Revive error decisions for [core](../decisions/0_drafts/errors_core.md) and [plugins](../decisions/0_drafts/errors_plugins.md) _(@kodebach)_
 - <<TODO>>
 - Add decision about [metadata semantics](../decisions/0_drafts/metakey_semantics.md) _(@kodebach)_
 - <<TODO>>
