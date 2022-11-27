@@ -18,55 +18,64 @@ public class WhitelistPlugin implements Plugin {
   private static final Pattern META_WHITELISTENTRY_VALID_PATTERN =
       Pattern.compile("meta:/check/whitelist/#_*\\d+");
 
-  private static int validate(KeySet keySet, Key parentKey, BiFunction<ErrorCode, String, Key> setErrorOrWarning, int problemStatus) {
+  private static int validate(
+      KeySet keySet,
+      Key parentKey,
+      BiFunction<ErrorCode, String, Key> setErrorOrWarning,
+      int problemStatus) {
     // iterate key set and validate each key
     var status = STATUS_SUCCESS;
     for (var key : keySet) {
-      if(validate(key, parentKey, setErrorOrWarning, problemStatus) == STATUS_ERROR) {
+      if (validate(key, parentKey, setErrorOrWarning, problemStatus) == STATUS_ERROR) {
         status = STATUS_ERROR;
       }
     }
     return status;
   }
-  private static int validate(Key key, Key parentKey, BiFunction<ErrorCode, String, Key> setErrorOrWarning, int problemStatus) {
-      // look whether a whitelist has been defined
-      Set<String> whitelist = new HashSet<>();
-      for (var metaKey : key) {
-        if (META_WHITELISTENTRY_PATTERN.matcher(metaKey.getName()).matches()) {
-          if (META_WHITELISTENTRY_VALID_PATTERN.matcher(metaKey.getName()).matches()) {
-            whitelist.add(metaKey.getString());
-          } else {
-            parentKey.addWarning(
-                ErrorCode.VALIDATION_SEMANTIC,
-                String.format(
-                    "Key '%s' specification contains an invalid whitelist check '%s' which is"
-                        + " therefore ignored.",
-                    key.getName(), metaKey.getName()));
-          }
-        }
-      }
 
-      if (!whitelist.isEmpty()) {
-        if (key.isBinary()) {
-          setErrorOrWarning.apply(
+  private static int validate(
+      Key key,
+      Key parentKey,
+      BiFunction<ErrorCode, String, Key> setErrorOrWarning,
+      int problemStatus) {
+    // look whether a whitelist has been defined
+    Set<String> whitelist = new HashSet<>();
+    for (var metaKey : key) {
+      if (META_WHITELISTENTRY_PATTERN.matcher(metaKey.getName()).matches()) {
+        if (META_WHITELISTENTRY_VALID_PATTERN.matcher(metaKey.getName()).matches()) {
+          whitelist.add(metaKey.getString());
+        } else {
+          parentKey.addWarning(
               ErrorCode.VALIDATION_SEMANTIC,
               String.format(
-                  "Key '%s' has a binary value but has a whitelist check specification.",
-                  key.getName()));
-          return problemStatus;
-        }
-        if (!whitelist.contains(key.getString())) {
-          setErrorOrWarning.apply(
-              ErrorCode.VALIDATION_SEMANTIC,
-              String.format(
-                  "Value of key '%s' with value '%s' does not adhere to whitelist of possible"
-                      + " values: %s",
-                  key.getName(), key.getString(), String.join(", ", whitelist)));
-          return problemStatus;
+                  "Key '%s' specification contains an invalid whitelist check '%s' which is"
+                      + " therefore ignored.",
+                  key.getName(), metaKey.getName()));
         }
       }
-      return STATUS_SUCCESS;
     }
+
+    if (!whitelist.isEmpty()) {
+      if (key.isBinary()) {
+        setErrorOrWarning.apply(
+            ErrorCode.VALIDATION_SEMANTIC,
+            String.format(
+                "Key '%s' has a binary value but has a whitelist check specification.",
+                key.getName()));
+        return problemStatus;
+      }
+      if (!whitelist.contains(key.getString())) {
+        setErrorOrWarning.apply(
+            ErrorCode.VALIDATION_SEMANTIC,
+            String.format(
+                "Value of key '%s' with value '%s' does not adhere to whitelist of possible"
+                    + " values: %s",
+                key.getName(), key.getString(), String.join(", ", whitelist)));
+        return problemStatus;
+      }
+    }
+    return STATUS_SUCCESS;
+  }
 
   @Override
   public int open(KeySet conf, Key errorKey) {
@@ -92,7 +101,7 @@ public class WhitelistPlugin implements Plugin {
       keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/infos/status", "preview maintained"));
       keySet.append(Key.create(PROCESS_CONTRACT_ROOT + "/exports/has/set", "1"));
 
-      //validate
+      // validate
       return validate(keySet, parentKey, parentKey::addWarning, STATUS_SUCCESS);
     }
 
