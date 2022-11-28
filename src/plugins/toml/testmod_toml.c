@@ -145,6 +145,7 @@ static const char * prefix = NULL;
 		if (lastKey != NULL) keySetMeta (lastKey, "binary", NULL);                                                                 \
 	}
 
+static bool writeFile (const char * filename, KeySet * ksWrite, int pluginStatus);
 static void testRoundtrip (const char * filePath);
 static void testRead (void);
 static void testReadRoot (void);
@@ -176,6 +177,7 @@ static void testWriteReadComments (void);
 static void testWriteReadCommentsArray (void);
 static void testWriteReadOrderTableNonTable (void);
 static void testWriteReadNull (void);
+static void testWriteReadBogusMetaMustError(void);
 // static void testWriteReadBase64(void);
 static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order);
@@ -341,6 +343,7 @@ static void testWriteRead (const char * _prefix)
 	testWriteReadInlineTableInArray ();
 	testWriteReadArrayInlineTableAlternating ();
 	testWriteReadOrderTableNonTable ();
+	testWriteReadBogusMetaMustError();
 	prefix = NULL;
 }
 
@@ -455,6 +458,19 @@ static void testWriteReadNull (void)
 	SET_META ("tomltype", "string_basic");
 
 	TEST_WR_FOOT;
+}
+
+static void testWriteReadBogusMetaMustError (void)
+{
+	TEST_WR_HEAD;                                                                                            \
+	WRITE_KEY ("asdf");
+	SET_META("asdf", "asdf");
+	writeFile("test_write_read.toml", writeKs, ELEKTRA_PLUGIN_STATUS_ERROR);
+	keyDel (lastKey);   
+	ksDel (expectedKs);                                                                                                                \
+	ksDel (writeKs);                                                                                                           \
+	printf ("End Test: %s\n\n", __func__); 
+	remove (filename);                                                                      \
 }
 
 /*static void testWriteReadBase64 (void)
@@ -1423,7 +1439,7 @@ static KeySet * readFile (const char * filename)
 	return ks;
 }
 
-static bool writeFile (const char * filename, KeySet * ksWrite)
+static bool writeFile (const char * filename, KeySet * ksWrite, int pluginStatus)
 {
 	bool success = true;
 	ELEKTRA_LOG_DEBUG ("Writing '%s'\n", filename);
@@ -1433,8 +1449,8 @@ static bool writeFile (const char * filename, KeySet * ksWrite)
 	PLUGIN_OPEN ("toml");
 
 	int setStatus = plugin->kdbSet (plugin, ksWrite, parentKey);
-	succeed_if (setStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not write keys");
-	if (setStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	succeed_if (setStatus == pluginStatus, "Writing keys did not return with expected Status");
+	if (setStatus != pluginStatus)
 	{
 		output_error (parentKey);
 		success = false;
@@ -1448,7 +1464,7 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 {
 	const char * filename = "test_write_read.toml";
 
-	if (writeFile (filename, ksWrite))
+	if (writeFile (filename, ksWrite, ELEKTRA_PLUGIN_STATUS_SUCCESS))
 	{
 		{
 			KeySet * ksRead = readFile (filename);
@@ -1469,7 +1485,7 @@ static bool roundtripFile (const char * filenameIn, const char * filenameOut)
 	{
 		return false;
 	}
-	bool success = writeFile (filenameOut, ksRead);
+	bool success = writeFile (filenameOut, ksRead, ELEKTRA_PLUGIN_STATUS_SUCCESS);
 	ksDel (ksRead);
 	return success;
 }
