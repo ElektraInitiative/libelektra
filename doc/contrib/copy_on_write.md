@@ -45,10 +45,10 @@ classDiagram
     KeySetData : - uint16_t flags
 ```
 
-- `Key`: logically represents a key. No real data is actually stored in it.
+- `Key`: logically represents a key. No data is actually stored in it.
   - `KeyName`: holds the name of a key. May be shared between multiple `Key` objects.
   - `KeyData`: holds the value of a key. May be shared between multiple `Key` objects.
-- `KeySet`: logically represents a collection of keys. No real data is actually stored in it.
+- `KeySet`: logically represents a collection of keys. No data is actually stored in it.
   - `KeySetData`: holds an array of `Key` objects. May be shared between multiple `KeySet` objects.
 
 When creating instances of `Key` and `KeySet` via `keyNew` or `ksNew`, we allocate the least amount possible.
