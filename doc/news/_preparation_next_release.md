@@ -288,7 +288,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fix grammar for `elektra-granularity.md` _(@dtdirect)_
 - Rephrase sections in doc/dev/error-\* _(@dtdirect)_
-- Unify spelling of man pages and change URLs to use man-page with a dash _(@stefnotch)_ _(@janldeboer)_
+- Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -547,7 +547,7 @@ The website is generated from the repository, so all information about plugins, 
 - <<TODO>>
 - <<TODO>>
 - Update npm packages. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
+- Change URLs to say man-page with a dash _(@stefnotch)_ _(@janldeboer)_
 - <<TODO>>
 - <<TODO>>
 
