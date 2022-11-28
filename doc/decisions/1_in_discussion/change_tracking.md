@@ -55,11 +55,12 @@ The library `libelektra-core` must be kept minimal.
 - False positivies are okay
 
   - this may happend when some keys may have been changed by the user, but have subsequentially been "unchanged" by a transformation plugin
-    Scenario: hypothetical plugin that converts all values to UPPERCASE.
-    - user gets key `system:/background` with value `RED`
-    - user changes it to `red`
-    - changetracking detects that value has been changed, because `RED` != `red`
-    - plugin changes value to UPPERCASE `RED`
+    Scenario: plugin that converts `false`<->`0` and `true`<->`1`
+    - `system:/background` is stored with value `false`
+    - user gets key `system:/background` with value `0` (after conversion by plugin)
+    - user changes it to `false`
+    - changetracking detects that value has been changed, because `false` != `0`
+    - plugin changes value from `false` to `0`
     - consumers of the changetracking API will now get a false positive if they query whether `system:/background` has been changed
 
 - False negatives are not okay
