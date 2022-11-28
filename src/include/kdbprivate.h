@@ -116,7 +116,8 @@ struct _KeyData
 	 * @see keyGetString(), keyGetBinary(),
 	 * @see keySetString(), keySetBinary()
 	 */
-	union {
+	union
+	{
 		char * c;
 		void * v;
 	} data;
@@ -272,26 +273,26 @@ struct _Key
 	bool isInMmap : 1;
 
 	/**
-	* Key need sync.
-	* If name, value or metadata are changed this flag will be set,
-	* so that the backend will sync the key to database.
-	*/
+	 * Key need sync.
+	 * If name, value or metadata are changed this flag will be set,
+	 * so that the backend will sync the key to database.
+	 */
 	bool needsSync : 1;
 
 	/**
-	* Read only flag for name.
-	* Key name is read only and not allowed to be changed.
-	* All attempts to change the name will lead to an error.
-	* Needed for metakeys and keys that are in a data structure that depends on name ordering.
-	*/
+	 * Read only flag for name.
+	 * Key name is read only and not allowed to be changed.
+	 * All attempts to change the name will lead to an error.
+	 * Needed for metakeys and keys that are in a data structure that depends on name ordering.
+	 */
 	bool hasReadOnlyName : 1;
 
 	/**
-	* Read only flag for value.
-	* Key value is read only and not allowed  to be changed.
-	* All attempts to change the value will lead to an error.
-	* Needed for metakeys
-	*/
+	 * Read only flag for value.
+	 * Key value is read only and not allowed  to be changed.
+	 * All attempts to change the value will lead to an error.
+	 * Needed for metakeys
+	 */
 	bool hasReadOnlyValue : 1;
 
 	/**
@@ -356,7 +357,7 @@ void keySetDataDel (struct _KeySetData * keysetdata);
 
 void keySetDetachData (KeySet * keyset);
 
-static inline bool isKeySetDataInMmap (const struct _KeySetData *keysetdata)
+static inline bool isKeySetDataInMmap (const struct _KeySetData * keysetdata)
 {
 	return keysetdata->isInMmap;
 }
@@ -498,10 +499,10 @@ struct _Plugin
 	kdbOpenPtr kdbOpen;   /*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose; /*!< The pointer to kdbClose_template() of the backend. */
 
-	kdbInitPtr kdbInit;	  /*!< The pointer to kdbInit_template() of the backend. */
-	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
-	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
-	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
+	kdbInitPtr kdbInit;	/*!< The pointer to kdbInit_template() of the backend. */
+	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
+	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
+	kdbErrorPtr kdbError;	/*!< The pointer to kdbError_template() of the backend. */
 	kdbCommitPtr kdbCommit; /*!< The pointer to kdbCommit_template() of the backend. */
 
 	const char * name; /*!< The name of the module responsible for that plugin. */
@@ -521,25 +522,25 @@ struct _Plugin
 
 /**
  * Holds all data for one backend.
- * 
+ *
  * This struct is used for the key values in @ref _KDB.backends
- * 
+ *
  * @ingroup backend
  */
 typedef struct _BackendData
 {
-	struct _Plugin * backend; /*!< the backend plugin for this backend */
-	struct _KeySet * keys; /*!< holds the keys for this backend, assigned by backendsDivide() */
-	struct _KeySet * plugins; /*!< Holds all the plugins of this backend.
-	 The key names are all `system:/<ref>` where `<ref>` is the same as in
-	 `system:/elektra/mountpoints/<mp>/plugins/<ref>` */
+	struct _Plugin * backend;    /*!< the backend plugin for this backend */
+	struct _KeySet * keys;	     /*!< holds the keys for this backend, assigned by backendsDivide() */
+	struct _KeySet * plugins;    /*!< Holds all the plugins of this backend.
+	    The key names are all `system:/<ref>` where `<ref>` is the same as in
+	    `system:/elektra/mountpoints/<mp>/plugins/<ref>` */
 	struct _KeySet * definition; /*!< Holds all the mountpoint definition of this backend.
 	 This is a copy of `system:/elektra/mountpoints/<mp>/defintion` moved to `system:/` */
-	size_t getSize; /*!< the size of @ref _BackendData.keys at the end of kdbGet()
-	 More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
-	bool initialized; /*!< whether or not the init function of this backend has been called */
-	bool keyNeedsSync; /*!< whether or not any key in this backend needs a sync (keyNeedSync())
-	 More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
+	size_t getSize;		     /*!< the size of @ref _BackendData.keys at the end of kdbGet()
+		      More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
+	bool initialized;	     /*!< whether or not the init function of this backend has been called */
+	bool keyNeedsSync;	     /*!< whether or not any key in this backend needs a sync (keyNeedSync())
+		   More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
 } BackendData;
 
 // clang-format on
