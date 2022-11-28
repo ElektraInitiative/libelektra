@@ -1970,6 +1970,12 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 		}
 		else
 			keySetName (k, keyString (m));
+		// circular reference: abort
+		if (!strcmp (keyName (specKey), keyName (k)))
+		{
+			ret = NULL;
+			break;
+		}
 		ret = ksLookup (ks, k, KDB_O_NODEFAULT);
 		if (ret) break;
 		++i;

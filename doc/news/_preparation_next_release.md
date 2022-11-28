@@ -147,7 +147,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Check for circular links (overrides) _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
