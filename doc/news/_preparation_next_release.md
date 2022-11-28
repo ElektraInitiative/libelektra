@@ -491,7 +491,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update packagename `libpcrec++-dev` to `libpcrecpp0v5` in Debian Sid. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add shellcheck to Debian containers. _(@0x6178656c)_
 - Use `openjdk-17-jdk` in Debian Sid. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - Update Alpine Linux to 3.16.3. _(Mihael Pranjić @mpranj)_
