@@ -158,7 +158,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### blockresolver
 
 - Mentioned memory access bug in readBlock functionality _(@dtdirect)_
-- <<TODO>>
+- Add test for memory access beyond allocated memory _(@dtdirect)_
 - <<TODO>>
 
 ### mmapstorage
