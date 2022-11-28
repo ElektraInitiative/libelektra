@@ -1,0 +1,5 @@
+key=outside start
+### block config start
+key=some text
+### block config stop
+key=outside end
