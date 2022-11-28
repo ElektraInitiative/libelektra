@@ -169,6 +169,47 @@
  * @internal
  *
  * @brief Helper method: creates a deep copy of a keyname. Does not copy the reference counter.
+ *        The escaped and unescaped name have the provided sizes.
+ *        If the size is less then the sizes of @p source, not everything will be copied!
+
+ * @param source the keyname to copy
+ * @param escapedSize size of the escaped name
+ * @param unescapedSize size of the unescaped name
+ * @return
+ */
+static struct _KeyName * keyNameCopyWithSize (struct _KeyName * source, size_t escapedSize, size_t unescapedSize)
+{
+	struct _KeyName * dest = keyNameNew ();
+	dest->key = elektraMalloc (escapedSize);
+	dest->keySize = escapedSize;
+
+	size_t copySize = source->keySize;
+	if (copySize > escapedSize)
+	{
+		copySize = escapedSize;
+	}
+
+	memcpy (dest->key, source->key, copySize);
+	dest->key [copySize - 1] = 0;
+
+	dest->ukey = elektraMalloc (unescapedSize);
+	dest->keyUSize = unescapedSize;
+
+	copySize = source->keyUSize;
+	if (copySize > unescapedSize)
+	{
+		copySize = unescapedSize;
+	}
+
+	memcpy (dest->ukey, source->ukey, copySize);
+
+	return dest;
+}
+
+/**
+ * @internal
+ *
+ * @brief Helper method: creates a deep copy of a keyname. Does not copy the reference counter.
  *
  * @param source the keyname to copy
  *
@@ -176,16 +217,7 @@
  */
 struct _KeyName * keyNameCopy (struct _KeyName * source)
 {
-	struct _KeyName * dest = keyNameNew ();
-	dest->key = elektraMalloc (source->keySize);
-	dest->keySize = source->keySize;
-	memcpy (dest->key, source->key, source->keySize);
-
-	dest->ukey = elektraMalloc (source->keyUSize);
-	dest->keyUSize = source->keyUSize;
-	memcpy (dest->ukey, source->ukey, source->keyUSize);
-
-	return dest;
+	return keyNameCopyWithSize (source, source->keySize, source->keyUSize);
 }
 
 /**
@@ -215,6 +247,67 @@ void keyDetachKeyName (Key * key)
 		keyNameRefDecAndDel (key->keyName);
 		key->keyName = copiedKeyName;
 		keyNameRefInc (key->keyName);
+	}
+}
+
+/**
+ * @internal
+ *
+ * @brief Helper method: Ensures, that the supplied key has its own KeyName instance.
+ *        Also ensures, that the key and unescaped key have the specified size.
+ *
+ * @post @p key's keyName field != NULL
+ * @post @p key's escaped name has @p escapeSize size
+ * @post @p key's unescaped name has @p unescapedSize size
+ *
+ * @param key the key to ensure it has its own KeyName instance
+ * @param escapedSize the new size of the escaped name
+ * @param unescapedSize the new size of the unescaped name
+ */
+static void keyDetachKeyNameAndRealloc (Key * key, size_t escapedSize, size_t unescapedSize)
+{
+	if (!key)
+	{
+		return;
+	}
+
+	if (key->keyName == NULL)
+	{
+		key->keyName = keyNameNew ();
+		keyNameRefInc (key->keyName);
+	}
+	else if (key->keyName->refs > 1 || isKeyNameInMmap (key->keyName))
+	{
+		struct _KeyName * copiedKeyName = keyNameCopyWithSize(key->keyName, escapedSize, unescapedSize);
+		keyNameRefDecAndDel (key->keyName);
+		key->keyName = copiedKeyName;
+		keyNameRefInc (key->keyName);
+
+		return;
+	}
+
+	if (key->keyName->keySize != escapedSize)
+	{
+		elektraRealloc ((void **) &key->keyName->key, escapedSize * sizeof (char));
+
+		if (key->keyName->keySize > escapedSize)
+		{
+			key->keyName->key[escapedSize - 1] = 0;
+		}
+
+		key->keyName->keySize = escapedSize;
+	}
+
+	if (key->keyName->keyUSize != unescapedSize)
+	{
+		elektraRealloc ((void **) &key->keyName->ukey, unescapedSize * sizeof (char));
+
+		if (key->keyName->keyUSize > unescapedSize)
+		{
+			key->keyName->ukey[unescapedSize - 1] = 0;
+		}
+
+		key->keyName->keyUSize = unescapedSize;
 	}
 }
 
@@ -1547,10 +1640,10 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 	size_t newKeySize = key->keyName->keySize + escapedSize;
 	size_t newKeyUSize = key->keyName->keyUSize + unescapedSize;
 
-	keyDetachKeyName (key);
+	size_t oldKeySize = key->keyName->keySize;
+	size_t oldKeyUSize = key->keyName->keyUSize;
 
-	elektraRealloc ((void **) &key->keyName->key, newKeySize);
-	elektraRealloc ((void **) &key->keyName->ukey, newKeyUSize);
+	keyDetachKeyNameAndRealloc (key, newKeySize, newKeyUSize);
 
 	if (baseName == NULL)
 	{
@@ -1565,33 +1658,31 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 	if (hasPath)
 	{
 		// more than just namespace -> must add separator
-		key->keyName->key[key->keyName->keySize - 1] = '/';
-		memcpy (&key->keyName->key[key->keyName->keySize], escaped, escapedSize);
+		key->keyName->key[oldKeySize - 1] = '/';
+		memcpy (&key->keyName->key[oldKeySize], escaped, escapedSize);
 	}
 	else
 	{
-		memcpy (&key->keyName->key[key->keyName->keySize - 1], escaped, escapedSize);
+		memcpy (&key->keyName->key[oldKeySize - 1], escaped, escapedSize);
 	}
 	elektraFree (escaped);
 
-	// set keySize and terminate escaped name
-	key->keyName->keySize += escapedSize;
+	// terminate escaped name
 	key->keyName->key[key->keyName->keySize - 1] = '\0';
 
 	// add unescaped name
 	if (hasPath)
 	{
 		// more than just namespace -> must add separator
-		key->keyName->ukey[key->keyName->keyUSize - 1] = '\0';
-		memcpy (&key->keyName->ukey[key->keyName->keyUSize], baseName, unescapedSize);
+		key->keyName->ukey[oldKeyUSize - 1] = '\0';
+		memcpy (&key->keyName->ukey[oldKeyUSize], baseName, unescapedSize);
 	}
 	else
 	{
-		memcpy (&key->keyName->ukey[key->keyName->keyUSize - 1], baseName, unescapedSize);
+		memcpy (&key->keyName->ukey[oldKeyUSize - 1], baseName, unescapedSize);
 	}
 
-	// set keyUSize and terminate escaped name
-	key->keyName->keyUSize += unescapedSize;
+	// terminate unescaped name
 	key->keyName->ukey[key->keyName->keyUSize - 1] = '\0';
 
 	key->needsSync = true;
