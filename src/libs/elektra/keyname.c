@@ -190,7 +190,7 @@ static struct _KeyName * keyNameCopyWithSize (struct _KeyName * source, size_t e
 	}
 
 	memcpy (dest->key, source->key, copySize);
-	dest->key [copySize - 1] = 0;
+	dest->key[copySize - 1] = 0;
 
 	dest->ukey = elektraMalloc (unescapedSize);
 	dest->keyUSize = unescapedSize;
@@ -278,7 +278,7 @@ static void keyDetachKeyNameAndRealloc (Key * key, size_t escapedSize, size_t un
 	}
 	else if (key->keyName->refs > 1 || isKeyNameInMmap (key->keyName))
 	{
-		struct _KeyName * copiedKeyName = keyNameCopyWithSize(key->keyName, escapedSize, unescapedSize);
+		struct _KeyName * copiedKeyName = keyNameCopyWithSize (key->keyName, escapedSize, unescapedSize);
 		keyNameRefDecAndDel (key->keyName);
 		key->keyName = copiedKeyName;
 		keyNameRefInc (key->keyName);
