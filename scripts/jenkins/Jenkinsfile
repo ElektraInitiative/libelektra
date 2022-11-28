@@ -1429,7 +1429,7 @@ def ctest(target = "Test") {
      , since they are known to fail in scenarios with high load.
      See also: https://issues.libelektra.org/2439
   */
-  sh """export $(dbus-launch); ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
+  sh """export \$(dbus-launch); ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
           -E 'testmod_(dbus(recv)?|zeromqsend)' || ctest --rerun-failed"""
 }
