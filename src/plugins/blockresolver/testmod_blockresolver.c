@@ -88,6 +88,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_BlockresolverRead ("blockresolver/test.block");
+	test_BlockresolverRead ("blockresolver/memorytest.block");
 	test_BlockresolverWrite ("blockresolver/test.block", "blockresolver/compare.block");
 
 	print_result ("testmod_blockresolver");
