@@ -1971,7 +1971,7 @@ static void benchmarkPredictionTime (char * name)
 						printExit ("Sanity Check Failed: no predictor used");
 					}
 					// simulate data change
-					ks->flags |= KS_FLAG_NAME_CHANGE;
+					ks->data->isOpmphmInvalid = true;
 					if (ks->data->opmphm) opmphmClear (ks->data->opmphm);
 				}
 

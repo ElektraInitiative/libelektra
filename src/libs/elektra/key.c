@@ -320,9 +320,9 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 {
 	if (dest == NULL) return NULL;
 
-	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) && test_bit (flags, KEY_CP_NAME)) return NULL;
-	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_CP_VALUE)) return NULL;
-	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_CP_META)) return NULL;
+	if (dest->hasReadOnlyName && test_bit (flags, KEY_CP_NAME)) return NULL;
+	if (dest->hasReadOnlyValue && test_bit (flags, KEY_CP_VALUE)) return NULL;
+	if (dest->hasReadOnlyMeta && test_bit (flags, KEY_CP_META)) return NULL;
 
 	if (test_bit (flags, KEY_CP_STRING) && test_bit (flags, KEY_CP_VALUE)) return NULL;
 
@@ -406,7 +406,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
-	set_bit (dest->flags, KEY_FLAG_SYNC);
+	dest->needsSync = true;
 
 	// free old resources of destination
 	keyNameRefDecAndDel (orig.keyName);
@@ -471,7 +471,7 @@ int keyDel (Key * key)
 		return key->refs;
 	}
 
-	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+	int keyInMmap = key->isInMmap;
 
 	keyClearNameValue (key);
 
@@ -529,14 +529,14 @@ int keyClear (Key * key)
 
 	ref = key->refs;
 
-	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+	int keyStructInMmap = key->isInMmap;
 
 	keyClearNameValue (key);
 
 	ksDel (key->meta);
 
 	keyInit (key);
-	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
+	key->isInMmap = keyStructInMmap;
 
 	keySetName (key, "/");
 
@@ -696,11 +696,28 @@ uint16_t keyGetRef (const Key * key)
 int keyLock (Key * key, elektraLockFlags what)
 {
 	if (!key) return -1;
-	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
-	what >>= 16; // to KEY_FLAG_RO_xyz
-	int ret = test_bit (~key->flags, what);
-	set_bit (key->flags, what);
-	return (ret << 16);
+
+	int lockedBits = 0;
+
+	if (test_bit (what, KEY_LOCK_NAME))
+	{
+		if (!key->hasReadOnlyName) lockedBits |= KEY_LOCK_NAME;
+		key->hasReadOnlyName = true;
+	}
+
+	if (test_bit (what, KEY_LOCK_VALUE))
+	{
+		if (!key->hasReadOnlyValue) lockedBits |= KEY_LOCK_VALUE;
+		key->hasReadOnlyValue = true;
+	}
+
+	if (test_bit (what, KEY_LOCK_META))
+	{
+		if (!key->hasReadOnlyMeta) lockedBits |= KEY_LOCK_META;
+		key->hasReadOnlyMeta = true;
+	}
+
+	return lockedBits;
 }
 
 /**
@@ -720,7 +737,11 @@ int keyLock (Key * key, elektraLockFlags what)
 int keyIsLocked (const Key * key, elektraLockFlags what)
 {
 	if (!key) return -1;
-	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
-	what >>= 16; // to KEY_FLAG_RO_xyz
-	return (test_bit (key->flags, what) << 16);
+
+	int locked = 0;
+	if (test_bit (what, KEY_LOCK_NAME) && key->hasReadOnlyName) locked |= KEY_LOCK_NAME;
+	if (test_bit (what, KEY_LOCK_VALUE) && key->hasReadOnlyValue) locked |= KEY_LOCK_VALUE;
+	if (test_bit (what, KEY_LOCK_META) && key->hasReadOnlyMeta) locked |= KEY_LOCK_META;
+
+	return locked;
 }

@@ -1349,12 +1349,12 @@ static bool initBackends (KeySet * backends, Key * parentKey)
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = true;
 
 		int ret = initFn (backendData->backend, backendData->definition, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = false;
 
 		// check return code
 		switch (ret)
@@ -1432,12 +1432,12 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = true;
 
 		int ret = getFn (backendData->backend, backendData->keys, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = false;
 
 		// check return code
 		switch (ret)
@@ -1540,14 +1540,15 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
 		// set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
 
 		// START fcrypt workaround
-		clear_bit (parentKey->flags, KEY_FLAG_RO_VALUE);
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyValue = false;
+		parentKey->hasReadOnlyName = true;
 		// END fcrypt workaround
 
 		int ret = getFn (backendData->backend, backendData->keys, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 
 		// check return code
 		switch (ret)
@@ -1707,7 +1708,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
+	if (parentKey->hasReadOnlyMeta)
 	{
 		ELEKTRA_LOG_WARNING ("parentKey KEY_FLAG_RO_META");
 		return -1;
@@ -1715,14 +1716,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	clearErrorAndWarnings (parentKey);
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	if (parentKey->hasReadOnlyName)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	if (parentKey->hasReadOnlyValue)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");
@@ -1775,7 +1776,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		errno = errnosave;
 		return -1;
 	}
-	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+
+	parentKey->hasReadOnlyName = false;
+	parentKey->hasReadOnlyValue = false;
 
 	// Step 4: run resolver phase
 	if (!resolveBackendsForGet (backends, parentKey))
@@ -1874,26 +1877,32 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME);
 	keySetNamespace (parentKey, KEY_NS_CASCADING);
 
-	set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = true;
+	parentKey->hasReadOnlyValue = true;
 	if (goptsActive && !handle->hooks.gopts.get (handle->hooks.gopts.plugin, dataKs, parentKey))
 	{
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 		ksDel (dataKs);
 		goto error;
 	}
-	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = false;
+	parentKey->hasReadOnlyValue = false;
 
 	keySetNamespace (parentKey, keyGetNamespace (initialParent));
 
 	// Step 14: run spec plugin
-	set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = true;
+	parentKey->hasReadOnlyValue = true;
 	if (handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, dataKs, parentKey, true) == -1)
 	{
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 		ksDel (dataKs);
 		goto error;
 	}
-	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = false;
+	parentKey->hasReadOnlyValue = false;
 
 	// TODO (atmaxinger): should we have a default:/ backend?
 	Key * defaultCutpoint = keyNew ("default:/", KEY_END);
@@ -2000,12 +2009,12 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = true;
 
 		int ret = setFn (backendData->backend, backendData->keys, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = false;
 
 		// check return code
 		switch (ret)
@@ -2112,7 +2121,8 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = true;
+		parentKey->hasReadOnlyValue = true;
 
 		int ret;
 		switch (function)
@@ -2129,7 +2139,8 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
 		}
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 
 		// check return code
 		switch (ret)
@@ -2292,7 +2303,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
+	if (parentKey->hasReadOnlyMeta)
 	{
 		ELEKTRA_LOG_WARNING ("parentKey KEY_FLAG_RO_META");
 		return -1;
@@ -2300,14 +2311,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	clearErrorAndWarnings (parentKey);
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	if (parentKey->hasReadOnlyName)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	if (parentKey->hasReadOnlyValue)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");

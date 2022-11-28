@@ -501,10 +501,7 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 	succeed_if (found, "did not find key");
 
 	// currently, KDB_O_POP doest not clear the readonly name flag
-	if (test_bit (found->flags, KEY_FLAG_RO_NAME))
-	{
-		clear_bit (found->flags, KEY_FLAG_RO_NAME);
-	}
+	found->hasReadOnlyName = false;
 
 	// overwrite Key
 	succeed_if (keyCopy (found, 0, KEY_CP_ALL) != NULL, "keyCopy: clear destination failed");

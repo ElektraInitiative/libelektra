@@ -588,7 +588,7 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
 ssize_t keySetName (Key * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
 
 	if (!elektraKeyNameValidate (newName, true))
@@ -607,7 +607,7 @@ ssize_t keySetName (Key * key, const char * newName)
 
 	elektraKeyNameUnescape (key->keyName->key, key->keyName->ukey);
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	key->needsSync = true;
 
 	return key->keyName->keySize;
 }
@@ -651,7 +651,7 @@ ssize_t keySetName (Key * key, const char * newName)
 ssize_t keyAddName (Key * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 	if (!newName) return -1;
 
 	while (*newName == '/')
@@ -683,7 +683,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	elektraKeyNameUnescape (key->keyName->key, key->keyName->ukey);
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	key->needsSync = true;
 	return key->keyName->keySize;
 }
 
@@ -750,7 +750,7 @@ static size_t replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, 
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 {
 	if (key == NULL || oldPrefix == NULL || newPrefix == NULL) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 
 	// check namespace manually, because keyIsBelowOrSame has special handling for cascading keys
 	if (keyGetNamespace (key) != keyGetNamespace (oldPrefix)) return 0;
@@ -1594,7 +1594,7 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 	key->keyName->keyUSize += unescapedSize;
 	key->keyName->ukey[key->keyName->keyUSize - 1] = '\0';
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	key->needsSync = true;
 	return key->keyName->keySize;
 }
 
@@ -1641,7 +1641,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
 	if (!baseName) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 	if (!key->keyName || !key->keyName->key) return -1;
 
 	return keyAddBaseNameInternal (key, baseName);
@@ -1698,7 +1698,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 ssize_t keySetBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 	if (!key->keyName || !key->keyName->key) return -1;
 
 	keyDetachKeyName (key);

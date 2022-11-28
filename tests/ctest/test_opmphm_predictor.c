@@ -153,21 +153,21 @@ void test_internal_change_whitebox (void)
 void test_ks_flag (void)
 {
 	KeySet * ks = ksNew (10, KS_END);
-	succeed_if (ks->data->flags & KS_FLAG_NAME_CHANGE, "flag not set at fresh ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at fresh ks");
 
 	KeySet * copy = ksDup (ks);
 	exit_if_fail (copy, "copy");
-	succeed_if (copy->data->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at copy ks");
 	ksDel (copy);
 
 	copy = ksDeepDup (ks);
 	exit_if_fail (copy, "copy");
-	succeed_if (copy->data->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at copy ks");
 	ksDel (copy);
 
 	copy = ksNew (0, KS_END);
 	succeed_if (ksCopy (copy, ks) == 1, "copy");
-	succeed_if (copy->data->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at copy ks");
 	ksDel (copy);
 
 	ksDel (ks);

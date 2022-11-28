@@ -101,99 +101,6 @@ typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
 
-
-/*****************
- * Key Flags
- *****************/
-
-enum
-{
-	KEY_EMPTY_NAME = 1 << 22
-};
-
-// clang-format off
-
-/**
- * Key Flags.
- *
- * Store a synchronizer state so that the Elektra knows if something
- * has changed or not.
- *
- * @ingroup backend
- */
-typedef enum {
-	KEY_FLAG_SYNC = 1,	  /*!<
-			Key need sync.
-			If name, value or metadata
-			are changed this flag will be set, so that the backend will sync
-			the key to database.*/
-	KEY_FLAG_RO_NAME = 1 << 1,	/*!<
-			 Read only flag for name.
-			 Key name is read only and not allowed
-			 to be changed. All attempts to change the name
-			 will lead to an error.
-			 Needed for metakeys and keys that are in a data
-			 structure that depends on name ordering.*/
-	KEY_FLAG_RO_VALUE = 1 << 2, /*!<
-			 Read only flag for value.
-			 Key value is read only and not allowed
-			 to be changed. All attempts to change the value
-			 will lead to an error.
-			 Needed for metakeys*/
-	KEY_FLAG_RO_META = 1 << 3,	/*!<
-			 Read only flag for meta.
-			 Key meta is read only and not allowed
-			 to be changed. All attempts to change the value
-			 will lead to an error.
-			 Needed for metakeys.*/
-	KEY_FLAG_MMAP_STRUCT = 1 << 4,	/*!<
-			 Key struct lies inside a mmap region.
-			 This flag is set for Keys inside a mapped region.
-			 It prevents erroneous free() calls on these keys. */
-	KEY_FLAG_MMAP_KEY = 1 << 5,	/*!<
-			 Key name lies inside a mmap region.
-			 This flag is set once a Key name has been moved to a mapped region,
-			 and is removed if the name moves out of the mapped region.
-			 It prevents erroneous free() calls on these keys. */
-	KEY_FLAG_MMAP_DATA = 1 << 6	/*!<
-			 Key value lies inside a mmap region.
-			 This flag is set once a Key value has been moved to a mapped region,
-			 and is removed if the value moves out of the mapped region.
-			 It prevents erroneous free() calls on these keys. */
-} keyflag_t;
-
-
-/**
- * Advanced KS Flags.
- *
- * Store a synchronizer state so that the Elektra knows if something
- * has changed or not.
- *
- * @ingroup backend
- */
-typedef enum {
-	KS_FLAG_SYNC = 1 /*!<
-		 KeySet need sync.
-		 If keys were popped from the Keyset
-		 this flag will be set, so that the backend will sync
-		 the keys to database.*/
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	,KS_FLAG_NAME_CHANGE = 1 << 1 /*!<
-		 The OPMPHM needs to be rebuild.
-		 Every Key add, Key removal or Key name change operation
-		 sets this flag.*/
-#endif
-	,KS_FLAG_MMAP_STRUCT = 1 << 2	/*!<
-		 KeySet struct lies inside a mmap region.
-		 This flag is set for KeySets inside a mapped region.
-		 It prevents erroneous free() calls on these KeySets. */
-	,KS_FLAG_MMAP_ARRAY = 1 << 3	/*!<
-		 Array of the KeySet lies inside a mmap region.
-		 This flag is set for KeySets where the array is in a mapped region,
-		 and is removed if the array is moved out from the mapped region.
-		 It prevents erroneous free() calls on these arrays. */
-} ksflag_t;
-
 /**
  * The private copy-on-write key data structure.
  *
@@ -225,7 +132,16 @@ struct _KeyData
 	 */
 	uint16_t refs;
 
-	uint16_t flags;
+	/**
+	 * Is this structure and its data stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 15;
 };
 
 /**
@@ -267,7 +183,16 @@ struct _KeyName
 	 */
 	uint16_t refs;
 
-	uint16_t flags;
+	/**
+	 * Is this structure and its data stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 15;
 };
 
 // private methods for COW keys
@@ -288,36 +213,22 @@ void keyDataDel (struct _KeyData * keydata);
 
 static inline bool isKeyNameInMmap (const struct _KeyName * keyname)
 {
-	return test_bit(keyname->flags, KEY_FLAG_MMAP_KEY);
+	return keyname->isInMmap;
 }
 
 static inline void setKeyNameIsInMmap (struct _KeyName * keyname, bool isInMmap)
 {
-	if (isInMmap)
-	{
-		set_bit (keyname->flags, KEY_FLAG_MMAP_KEY);
-	}
-	else
-	{
-		clear_bit(keyname->flags, KEY_FLAG_MMAP_KEY);
-	}
+	keyname->isInMmap = isInMmap;
 }
 
 static inline bool isKeyDataInMmap (const struct _KeyData * keydata)
 {
-	return test_bit(keydata->flags, KEY_FLAG_MMAP_DATA);
+	return keydata->isInMmap;
 }
 
 static inline void setKeyDataIsInMmap (struct _KeyData * keydata, bool isInMmap)
 {
-	if (isInMmap)
-	{
-		set_bit (keydata->flags, KEY_FLAG_MMAP_DATA);
-	}
-	else
-	{
-		clear_bit(keydata->flags, KEY_FLAG_MMAP_DATA);
-	}
+	keydata->isInMmap = isInMmap;
 }
 
 /**
@@ -351,19 +262,51 @@ struct _Key
 	KeySet * meta;
 
 	/**
-	 * Some control and internal flags.
-	 */
-	keyflag_t flags;
-
-	/**
 	 * Reference counter
 	 */
 	uint16_t refs;
 
 	/**
-	 * Reserved for future use
+	 * Is this structure and its data stored in an mmap()ed memory area?
 	 */
-	uint16_t reserved;
+	bool isInMmap : 1;
+
+	/**
+	* Key need sync.
+	* If name, value or metadata are changed this flag will be set,
+	* so that the backend will sync the key to database.
+	*/
+	bool needsSync : 1;
+
+	/**
+	* Read only flag for name.
+	* Key name is read only and not allowed to be changed.
+	* All attempts to change the name will lead to an error.
+	* Needed for metakeys and keys that are in a data structure that depends on name ordering.
+	*/
+	bool hasReadOnlyName : 1;
+
+	/**
+	* Read only flag for value.
+	* Key value is read only and not allowed  to be changed.
+	* All attempts to change the value will lead to an error.
+	* Needed for metakeys
+	*/
+	bool hasReadOnlyValue : 1;
+
+	/**
+	 * Read only flag for meta.
+	 * Key meta is read only and not allowed to be changed.
+	 * All attempts to change the value will lead to an error.
+	 * Needed for metakeys.
+	 */
+	bool hasReadOnlyMeta : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 11;
 };
 
 struct _KeySetData
@@ -384,12 +327,23 @@ struct _KeySetData
 	OpmphmPredictor * opmphmPredictor;
 #endif
 
-	/**
-	 * Some control and internal flags.
-	 */
-	uint16_t flags;
-
 	uint16_t refs; /**< Reference counter */
+
+	/**
+	 * Is this structure and its data stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
+
+	/**
+	 * Whether opmphm needs to be rebuilt
+	 */
+	bool isOpmphmInvalid : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 14;
 };
 
 // COW methods for keyset
@@ -404,19 +358,12 @@ void keySetDetachData (KeySet * keyset);
 
 static inline bool isKeySetDataInMmap (const struct _KeySetData *keysetdata)
 {
-	return test_bit(keysetdata->flags, KS_FLAG_MMAP_ARRAY);
+	return keysetdata->isInMmap;
 }
 
 static inline void setKeySetDataIsInMmap (struct _KeySetData * keysetdata, bool isInMmap)
 {
-	if (isInMmap)
-	{
-		set_bit (keysetdata->flags, KS_FLAG_MMAP_ARRAY);
-	}
-	else
-	{
-		clear_bit(keysetdata->flags, KS_FLAG_MMAP_ARRAY);
-	}
+	keysetdata->isInMmap = isInMmap;
 }
 
 
@@ -443,14 +390,25 @@ struct _KeySet
 	struct _Key * cursor; /**< Internal cursor */
 	size_t current;	      /**< Current position of cursor */
 
-	/**
-	 * Some control and internal flags.
-	 */
-	ksflag_t flags;
-
 	uint16_t refs; /**< Reference counter */
 
-	uint16_t reserved; /**< Reserved for future use */
+	/**
+	 * Is this structure and its data stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
+
+	/**
+	 * KeySet need sync.
+	 * If keys were popped from the Keyset this flag will be set,
+	 * so that the backend will sync the keys to database.
+	 */
+	bool needsSync : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 14;
 };
 
 typedef struct _SendNotificationHook
@@ -616,7 +574,7 @@ Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
 /*Private helper for key*/
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 void keyInit (Key * key);
-int keyClearSync (Key * key);
+void keyClearSync (Key * key);
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
 /*Private helper for keyset*/

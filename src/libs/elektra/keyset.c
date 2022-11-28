@@ -48,7 +48,8 @@ static struct _KeySetData * keySetDataCopy (const struct _KeySetData * original)
 	struct _KeySetData * copy = keySetDataNew ();
 	copy->alloc = original->alloc;
 	copy->size = original->size;
-	copy->flags = original->flags;
+	copy->isOpmphmInvalid = original->isOpmphmInvalid;
+	// We don't need to copy the isInMmap flag, because copied data is never in mmap
 
 	if (original->alloc > 0)
 	{
@@ -111,7 +112,7 @@ void keySetDetachData (KeySet * keyset)
 static void elektraOpmphmInvalidate (struct _KeySetData * ksdata ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	set_bit (ksdata->flags, KS_FLAG_NAME_CHANGE);
+	ksdata->isOpmphmInvalid = true;
 	if (ksdata && ksdata->opmphm) opmphmClear (ksdata->opmphm);
 #endif
 }
@@ -413,7 +414,7 @@ KeySet * ksDeepDup (const KeySet * source)
 	{
 		Key * k = source->data->array[i];
 		Key * d = keyDup (k, KEY_CP_ALL);
-		if (!test_bit (k->flags, KEY_FLAG_SYNC))
+		if (!k->needsSync)
 		{
 			keyClearSync (d);
 		}
@@ -534,7 +535,7 @@ int ksDel (KeySet * ks)
 
 	ksClose (ks);
 
-	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
+	if (!ks->isInMmap)
 	{
 		elektraFree (ks);
 	}
@@ -1120,7 +1121,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 		if (ks->data->array[it]->refs == 1)
 		{
 			// only referenced in this KeySet -> just override read-only flag
-			clear_bit (ks->data->array[it]->flags, KEY_FLAG_RO_NAME);
+			ks->data->array[it]->hasReadOnlyName = false;
 		}
 		else
 		{
@@ -1132,7 +1133,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 		}
 		keyReplacePrefix (ks->data->array[it], root, newRoot);
 		// lock key with new name
-		set_bit (ks->data->array[it]->flags, KEY_FLAG_RO_NAME);
+		ks->data->array[it]->hasReadOnlyName = true;
 	}
 	return end - start;
 }
@@ -1746,7 +1747,7 @@ Key * ksPop (KeySet * ks)
 
 	keySetDetachData (ks);
 
-	ks->flags |= KS_FLAG_SYNC;
+	ks->needsSync = true;
 
 	if (ks->data->size == 0) return 0;
 
@@ -2525,7 +2526,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 		// predictor not overruled
 		if (ks->data->opmphmPredictor)
 		{
-			if (test_bit (ks->data->flags, KS_FLAG_NAME_CHANGE))
+			if (ks->data->isOpmphmInvalid)
 			{
 				// KeySet changed ask predictor
 				if (opmphmPredictor (ks->data->opmphmPredictor, ks->data->size))
@@ -2536,8 +2537,8 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 				{
 					set_bit (options, KDB_O_BINSEARCH);
 				}
-				// resolve flag
-				clear_bit (ks->data->flags, (keyflag_t) KS_FLAG_NAME_CHANGE);
+
+				ks->data->isOpmphmInvalid = false;
 			}
 			else
 			{
@@ -2720,9 +2721,9 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	if (options & KDB_O_SPEC)
 	{
 		Key * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, KEY_CP_NAME);
+		if (key->hasReadOnlyName) lookupKey = keyDup (key, KEY_CP_NAME);
 		ret = elektraLookupBySpec (ks, lookupKey, options & mask);
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
+		if (key->hasReadOnlyName)
 		{
 			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);
@@ -2731,9 +2732,9 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	else if (!(options & KDB_O_NOCASCADING) && strcmp (name, "") && name[0] == '/')
 	{
 		Key * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, KEY_CP_NAME);
+		if (key->hasReadOnlyName) lookupKey = keyDup (key, KEY_CP_NAME);
 		ret = elektraLookupByCascading (ks, lookupKey, options & mask);
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
+		if (key->hasReadOnlyName)
 		{
 			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);
@@ -2900,16 +2901,12 @@ size_t ksGetAlloc (const KeySet * ks)
  */
 int ksInit (KeySet * ks)
 {
-	ks->flags = 0;
-	ks->refs = 0;
-
-	if (ks->data == NULL)
+	if (ks->data != NULL)
 	{
-		return 0;
+		keySetDataRefDecAndDel (ks->data);
 	}
 
-	keySetDataRefDecAndDel (ks->data);
-	ks->data = NULL;
+	memset (ks, 0, sizeof (KeySet));
 
 	return 0;
 }

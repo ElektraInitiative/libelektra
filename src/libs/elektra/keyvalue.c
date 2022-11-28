@@ -519,7 +519,7 @@ ssize_t keySetBinary (Key * key, const void * newBinary, size_t dataSize)
 
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (key->hasReadOnlyValue) return -1;
 
 	keySetMeta (key, "binary", "");
 
@@ -570,7 +570,7 @@ static inline void keyDetachKeyDataWithoutCopy (Key * key)
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 {
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (key->hasReadOnlyValue) return -1;
 
 	keyDetachKeyDataWithoutCopy (key);
 
@@ -582,7 +582,7 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 			key->keyData->data.v = NULL;
 		}
 		key->keyData->dataSize = 0;
-		set_bit (key->flags, KEY_FLAG_SYNC);
+		key->needsSync = true;
 		if (keyIsBinary (key)) return 0;
 		return 1;
 	}
@@ -611,6 +611,6 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 		memcpy (key->keyData->data.v, newBinary, key->keyData->dataSize);
 	}
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	key->needsSync = true;
 	return keyGetValueSize (key);
 }

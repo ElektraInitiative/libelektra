@@ -13,15 +13,15 @@ static void test_ro (void)
 	Key * key;
 
 	key = keyNew ("/", KEY_END);
-	key->flags |= KEY_FLAG_RO_VALUE;
+	key->hasReadOnlyValue = true;
 
 	succeed_if (keySetString (key, "a") == -1, "read only string, not allowed to set");
 	succeed_if (keySetBinary (key, "a", 2) == -1, "read only string, not allowed to set");
 
-	key->flags |= KEY_FLAG_RO_NAME;
+	key->hasReadOnlyName = true;
 	succeed_if (keySetName (key, "user:/") == -1, "read only name, not allowed to set");
 
-	key->flags |= KEY_FLAG_RO_META;
+	key->hasReadOnlyMeta = true;
 	succeed_if (keySetMeta (key, "meta", "value") == -1, "read only meta, not allowed to set");
 
 	keyDel (key);
