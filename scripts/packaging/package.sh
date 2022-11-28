@@ -4,7 +4,7 @@ set -ex
 
 ELEKTRA_PLUGINS='ALL;mozprefs;multifile;gitresolver;jni;ruby;yamlcpp;toml'
 ELEKTRA_TOOLS='ALL'
-ELEKTRA_BINDINGS='cpp;lua;python;ruby;jna;glib;IO;INTERCEPT'
+ELEKTRA_BINDINGS='cpp;ruby;jna;glib;IO;INTERCEPT'
 
 PACKAGE_REVISION=${1:-1}
 DIST_NAME=${2:-$(grep "^NAME=" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g')}
@@ -16,7 +16,15 @@ else
 	LUA_LIB_SUFFIX=""
 fi
 
-LUA_VERSION=$(lua -v | grep -Po '(?<=Lua )\d.\d')
+if LUA_BIN=$(command -v lua); then
+	LUA_VERSION=$(lua -v | grep -Po '(?<=Lua )\d.\d')
+	ELEKTRA_BINDINGS="lua;${ELEKTRA_BINDINGS}"
+fi
+
+if PY3VERSIONS_BIN=$(command -v py3versions); then
+	PY3VER=$(py3versions -d -v)
+	ELEKTRA_BINDINGS="python;${ELEKTRA_BINDINGS}"
+fi
 
 echo "DIST: $DIST_NAME"
 
@@ -44,24 +52,32 @@ CMAKE_ARGS_BASE="-DTARGET_PLUGIN_FOLDER='elektra5' \
 # last disjunct matches all distribution names starting with openSUSE or CentOS
 if case $DIST_NAME in "Fedora"*) true ;; "openSUSE"*) true ;; "CentOS"*) true ;; *) false ;; esac then
 
-	CMAKE_ARGS_SPECIFIC="-DTARGET_LUA_CMOD_FOLDER=lib$LUA_LIB_SUFFIX/lua/$LUA_VERSION \
-	-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION"
+	CMAKE_ARGS_SPECIFIC=""
+
+	if [ ! -z "$LUA_BIN" ]; then
+		CMAKE_ARGS_SPECIFIC="-DTARGET_LUA_CMOD_FOLDER=lib$LUA_LIB_SUFFIX/lua/$LUA_VERSION \
+		-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION \
+		${CMAKE_ARGS_SPECIFIC}"
+	fi
 else
 
-	PY3VER=$(py3versions -d -v)
 	# workaround for hardening flags
 	CPPFLAGS=$(dpkg-buildflags --get CPPFLAGS)
 	CFLAGS=$(dpkg-buildflags --get CFLAGS)
 	CXXFLAGS=$(dpkg-buildflags --get CXXFLAGS)
 	LDFLAGS=$(dpkg-buildflags --get LDFLAGS)
 
-	CMAKE_ARGS_SPECIFIC="-DTARGET_LUA_CMOD_FOLDER=lib/lua/$LUA_VERSION \
-	-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION \
-	-DCMAKE_C_FLAGS=$CFLAGS \
+	CMAKE_ARGS_SPECIFIC="-DCMAKE_C_FLAGS=$CFLAGS \
 	-DCMAKE_CXX_FLAGS=$CXXFLAGS \
 	-DCMAKE_EXE_LINKER_FLAGS=$LDFLAGS \
 	-DCMAKE_MODULE_LINKER_FLAGS=$LDFLAGS \
 	-DCMAKE_SHARED_LINKER_FLAGS=$LDFLAGS"
+
+	if [ ! -z "$LUA_BIN" ]; then
+		CMAKE_ARGS_SPECIFIC="-DTARGET_LUA_CMOD_FOLDER=lib/lua/$LUA_VERSION \
+		-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION \
+		${CMAKE_ARGS_SPECIFIC}"
+	fi
 fi
 
 # shellcheck disable=SC2086
