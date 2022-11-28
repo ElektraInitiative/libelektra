@@ -177,7 +177,7 @@ static void testWriteReadComments (void);
 static void testWriteReadCommentsArray (void);
 static void testWriteReadOrderTableNonTable (void);
 static void testWriteReadNull (void);
-static void testWriteReadBogusMetaMustError(void);
+static void testWriteReadBogusMetaMustError (void);
 // static void testWriteReadBase64(void);
 static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order);
@@ -343,7 +343,7 @@ static void testWriteRead (const char * _prefix)
 	testWriteReadInlineTableInArray ();
 	testWriteReadArrayInlineTableAlternating ();
 	testWriteReadOrderTableNonTable ();
-	testWriteReadBogusMetaMustError();
+	testWriteReadBogusMetaMustError ();
 	prefix = NULL;
 }
 
@@ -460,17 +460,19 @@ static void testWriteReadNull (void)
 	TEST_WR_FOOT;
 }
 
-static void testWriteReadBogusMetaMustError (void)
+static void testWriteReadBogusMetaMustError (void) 
 {
-	TEST_WR_HEAD;                                                                                            \
+	TEST_WR_HEAD;
+	
+	char * fileName = "test_write_read.toml";
 	WRITE_KEY ("asdf");
-	SET_META("asdf", "asdf");
-	writeFile("test_write_read.toml", writeKs, ELEKTRA_PLUGIN_STATUS_ERROR);
-	keyDel (lastKey);   
-	ksDel (expectedKs);                                                                                                                \
-	ksDel (writeKs);                                                                                                           \
-	printf ("End Test: %s\n\n", __func__); 
-	remove (filename);                                                                      \
+	SET_META ("asdf", "asdf");
+	writeFile (fileName, writeKs, ELEKTRA_PLUGIN_STATUS_ERROR);
+	keyDel (lastKey);
+	ksDel (expectedKs);
+	ksDel (writeKs);
+	printf ("End Test: %s\n\n", __func__);
+	remove (fileName);
 }
 
 /*static void testWriteReadBase64 (void)

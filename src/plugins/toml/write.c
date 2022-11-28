@@ -858,14 +858,12 @@ static int collectComments (CommentList ** comments, Key * key, Writer * writer)
 				subDepth++;
 				pos += elektraStrLen (pos);
 			}
-		//Accept valid metakeys, throw error for everything else
-		} else if(elektraStrCmp(pos, "order") != 0 && 
-			elektraStrCmp(pos, "type") != 0 && 
-			elektraStrCmp(pos, "tomltype") != 0 && 
-			elektraStrCmp(pos, "origvalue") != 0 &&
-			elektraStrCmp(pos, "binary") != 0 &&
-			elektraStrCmp(pos, "array") != 0) {
-			ELEKTRA_SET_RESOURCE_ERRORF(key, "The Metakey %s is not supported by TOML", keyString(meta));
+			// Accept valid metakeys, throw error for everything else
+		}
+		else if (elektraStrCmp (pos, "order") != 0 && elektraStrCmp (pos, "type") != 0 && elektraStrCmp (pos, "tomltype") != 0 &&
+			 elektraStrCmp (pos, "origvalue") != 0 && elektraStrCmp (pos, "binary") != 0 && elektraStrCmp (pos, "array") != 0)
+		{
+			ELEKTRA_SET_RESOURCE_ERRORF (key, "The Metakey %s is not supported by TOML", keyString (meta));
 			return -1;
 		}
 	}
