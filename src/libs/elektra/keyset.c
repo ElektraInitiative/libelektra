@@ -202,6 +202,13 @@ static void elektraOpmphmCopy (struct _KeySetData * dest ELEKTRA_UNUSED, const s
  *
  * @snippet ksNewExample.c Full Example
  *
+ * @par Copy-on-Write
+ *
+ * Keysets employ copy-on-write techniques to minimize memory footprint.
+ * If you create a copy or a duplication of a keyset, the resulting keyset
+ * initially references the same data as the source keyset.
+ * Only if add or remove keys from a keyset additional memory is allocated.
+ *
  * @{
  */
 

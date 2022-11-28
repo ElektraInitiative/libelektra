@@ -70,6 +70,12 @@
  * own data structures.
  * It can be a very powerful feature, e.g. if you need your own-defined
  * ordering or different Models of your configuration.
+ *
+ * @par Copy-On-Write
+ * Keys employ copy-on-write techniques to minimize memory footprint.
+ * If keys are copied or duplicated, they will point at the same name
+ * and value as the source key.
+ * Only if this data is changed, additional memory is allocated.
  */
 
 /**
