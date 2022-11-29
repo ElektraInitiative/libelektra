@@ -728,8 +728,35 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 	return 1;
 }
 
+static bool elektraCheckForInvalidMetaKey (Key * parentKey, KeySet * ks)
+{
+	Key * cur = 0;
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+	{
+		cur = ksAtCursor (ks, it);
+		const KeySet * metaKeys = keyMeta (cur);
+		for (elektraCursor jt = 0; jt < ksGetSize (metaKeys); ++jt)
+		{
+			const Key * meta = ksAtCursor (metaKeys, jt);
+			const char * pos = (const char *) keyName (meta);
+			if (elektraStrCmp (pos, "meta:/type") != 0 && elektraStrCmp (pos, "meta:/array") != 0 &&
+			    (elektraStrNCmp (pos, "meta:/internal/csvstorage", 25)) != 0)
+			{
+				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "The Metakey %s is not supported by csvstorage", keyName (meta));
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
+	if (!elektraCheckForInvalidMetaKey (parentKey, returned))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * delimKey = ksLookupByName (config, "/delimiter", 0);
 	char outputDelim;

@@ -84,6 +84,21 @@ static void testwriteinvalidheader (const char * file)
 	PLUGIN_CLOSE ();
 }
 
+static void testwriteInvalidMetaMustFail (const char * file)
+{
+	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
+	KeySet * conf = ksNew (20, keyNew ("system:/delimiter", KEY_VALUE, ";", KEY_END),
+			       keyNew ("system:/header", KEY_VALUE, "colname", KEY_END), KS_END);
+	KeySet * ks = ksNew (1, keyNew ("user:/tests/csvstorage", KEY_VALUE, "asdf", KEY_META, "asdf", "asdf", KEY_END), KS_END);
+	PLUGIN_OPEN ("csvstorage");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+		    "kdbSet did not error on invalid meta key insertion");
+	ksDel (conf);
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 static void testwritevalidemptycol (const char * file)
 {
 	Key * parentKey = keyNew ("user:/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
@@ -224,6 +239,7 @@ int main (int argc, char ** argv)
 	testreadunescapedDQuote ("csvstorage/unescapedQuote.csv");
 	testexportmissing ("csvstorage/exporttest.csv");
 	testKeyMetaKeyIsSet ("csvstorage/metakey.csv");
+	testwriteInvalidMetaMustFail ("csvstorage/invalid_meta_key.csv");
 	print_result ("testmod_csvstorage");
 
 	return nbError;
