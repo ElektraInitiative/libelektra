@@ -317,9 +317,37 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return parseFile (returned, parentKey);
 }
 
+
+static bool elektraCheckForInvalidMetaKey (Key * parentKey, KeySet * ks)
+{
+	Key * cur = 0;
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+	{
+		cur = ksAtCursor (ks, it);
+		const KeySet * metaKeys = keyMeta (cur);
+		for (elektraCursor jt = 0; jt < ksGetSize (metaKeys); ++jt)
+		{
+			// We reach her iff we try to set a metakey. Therefore we should t
+			const Key * meta = ksAtCursor (metaKeys, jt);
+			const char * pos = (const char *) keyName (meta);
+			if (elektraStrNCmp (pos, "meta:/internal/mini", 19) != 0 && elektraStrCmp (pos, "meta:/origname") && elektraStrNCmp (pos, "meta:/rename", 12) != 0 && elektraStrCmp (pos, "meta:/binary") != 0)
+			{
+				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "The mini storage Plugin doesn't support the met key %s", pos);
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 /** @see elektraDocSet */
 int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
+	if (!elektraCheckForInvalidMetaKey (parentKey, returned))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
 	ELEKTRA_LOG ("Write configuration data");
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");

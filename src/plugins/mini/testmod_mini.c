@@ -113,6 +113,21 @@ static void test_set (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_setMetaMustFail (void)
+{
+	char const * const prefix = "user:/mini/tests/writeMeta";
+
+	Key * parentKey = keyNew (prefix, KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (1, keyNew ("user:/mini/tests/writeMeta", KEY_VALUE, "asdf", KEY_META, "asdf", "asdf", KEY_END), KS_END);
+
+	PLUGIN_OPEN ("mini");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "Attempting to write a Meta Key did not fail");
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 /* -- Main ------------------------------------------------------------------------------------------------------------------------------ */
 
 int main (int argc, char ** argv)
@@ -125,6 +140,7 @@ int main (int argc, char ** argv)
 	test_basics ();
 	test_get ();
 	test_set ();
+	test_setMetaMustFail ();
 
 	print_result ("testmod_mini");
 

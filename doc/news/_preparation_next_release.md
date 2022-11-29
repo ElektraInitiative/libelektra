@@ -170,6 +170,12 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Add encoding test for blockresolver read _(@dtdirect)_
 - Refactor and restructure blockresolver _(@dtdirect)_
 
+### mini
+
+- Fix a bug where writing meta keys will fail silently _(Juri Schreib @Bujuhu)_
+- <<TODO>>
+- <<TODO>>
+
 ### mmapstorage
 
 - Remove code duplication in the data block calculation _(Richard Stöckl @Eiskasten)_
