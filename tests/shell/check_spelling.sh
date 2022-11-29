@@ -18,7 +18,7 @@ git diff --exit-code
 
 succeed_if 'Please commit the spelling fixes before pushing.
 Use scripts/dev/fix-spelling to make the changes, or apply the patch shown above.
-If one of the spelling fixes was incorrect, then please update `/scripts/sed` accordingly.'
+If one of the spelling fixes was incorrect, then please update `/scripts/spelling.sed` accordingly.'
 printf '\n'
 
 end_script
