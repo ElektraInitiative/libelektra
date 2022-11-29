@@ -330,7 +330,8 @@ static bool elektraCheckForInvalidMetaKey (Key * parentKey, KeySet * ks)
 			// We reach her iff we try to set a metakey. Therefore we should t
 			const Key * meta = ksAtCursor (metaKeys, jt);
 			const char * pos = (const char *) keyName (meta);
-			if (elektraStrNCmp (pos, "meta:/internal/mini", 19) != 0 && elektraStrCmp (pos, "meta:/origname") && elektraStrNCmp (pos, "meta:/rename", 12) != 0 && elektraStrCmp (pos, "meta:/binary") != 0)
+			if (elektraStrNCmp (pos, "meta:/internal/mini", 19) != 0 && elektraStrCmp (pos, "meta:/origname") &&
+			    elektraStrNCmp (pos, "meta:/rename", 12) != 0 && elektraStrCmp (pos, "meta:/binary") != 0)
 			{
 				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "The mini storage Plugin doesn't support the met key %s", pos);
 				return false;
