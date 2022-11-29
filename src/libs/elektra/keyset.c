@@ -2456,13 +2456,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 	return ret;
 }
 
-static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elektraLookupFlags options)
-{
-	Key * ret = keyDup (key, KEY_CP_ALL);
-	ksAppendKey (ks, ret);
-	return ret;
-}
-
 
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
@@ -2556,7 +2549,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	if (!name) return 0;
 
 	Key * ret = 0;
-	const int mask = ~KDB_O_DEL & ~KDB_O_CREATE;
+	const int mask = ~KDB_O_DEL;
 
 	if (options & KDB_O_SPEC)
 	{
@@ -2584,8 +2577,6 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	{
 		ret = elektraLookupSearch (ks, key, options & mask);
 	}
-
-	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey (ks, key, options & mask);
 
 	if (options & KDB_O_DEL) keyDel (key);
 

@@ -84,12 +84,12 @@ static void test_creatingLookup (void)
 	KeySet * ks = ksNew (10, KS_END);
 
 	Key * searchKey = keyNew ("user:/something", KEY_VALUE, "a value", KEY_END);
-	Key * k0 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	Key * k0 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k0, "no key was created");
 	succeed_if_same_string (keyName (k0), keyName (searchKey));
 	succeed_if_same_string (keyString (k0), keyString (searchKey));
 
-	Key * k1 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	Key * k1 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k1, "no key was returned");
 	succeed_if (k0 == k1, "not the same key");
 
@@ -100,12 +100,12 @@ static void test_creatingLookup (void)
 	ks = ksNew (10, KS_END);
 
 	searchKey = keyNew ("dir:/something", KEY_VALUE, "a value", KEY_END);
-	k0 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	k0 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k0, "no key was created");
 	succeed_if_same_string (keyName (k0), keyName (searchKey));
 	succeed_if_same_string (keyString (k0), keyString (searchKey));
 
-	k1 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	k1 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k1, "no key was returned");
 	succeed_if (k0 == k1, "not the same key");
 
@@ -123,12 +123,12 @@ static void test_creatingLookup (void)
 	succeed_if_same_string (keyString (dupKey), keyString (searchKey));
 	ksAppendKey (ks, dupKey);
 
-	k0 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	k0 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k0, "no key was created");
 	succeed_if_same_string (keyName (k0), keyName (searchKey));
 	succeed_if_same_string (keyString (k0), keyString (searchKey));
 
-	k1 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	k1 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k1, "no key was returned");
 	succeed_if (k0 == k1, "not the same key");
 
@@ -139,12 +139,12 @@ static void test_creatingLookup (void)
 	ks = ksNew (10, KS_END);
 
 	searchKey = keyNew ("proc:/something", KEY_VALUE, "a value", KEY_END);
-	k0 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	k0 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k0, "no key was created");
 	succeed_if_same_string (keyName (k0), keyName (searchKey));
 	succeed_if_same_string (keyString (k0), keyString (searchKey));
 
-	k1 = ksLookup (ks, searchKey, KDB_O_CREATE);
+	k1 = ksLookup (ks, searchKey, 0);
 	exit_if_fail (k1, "no key was returned");
 	succeed_if (k0 == k1, "not the same key");
 

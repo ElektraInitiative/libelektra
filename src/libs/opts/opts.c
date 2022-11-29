@@ -566,7 +566,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 			}
 		}
 
-		keyCopyAllMeta (command, ksLookup (spec->commands, command, KDB_O_CREATE));
+		keyCopyAllMeta (command, ksLookup (spec->commands, command, 0));
 
 		// step 1c.)
 		if (!processOptions (spec, command, cur, &keyWithOpt, errorKey))
@@ -605,7 +605,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 			return false;
 		}
 
-		keyCopyAllMeta (ksLookup (spec->commands, command, KDB_O_CREATE), command);
+		keyCopyAllMeta (ksLookup (spec->commands, command, 0), command);
 
 		keyDel (command);
 
@@ -1160,7 +1160,7 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 		keySetMeta (*keyWithOpt, "args", "indexed");
 		keySetMeta (*keyWithOpt, "args/index", keyString (argsIndex));
 
-		Key * indexKey = ksLookup (argIndices, keyNew (keyName (command), KEY_END), KDB_O_DEL | KDB_O_CREATE);
+		Key * indexKey = ksLookup (argIndices, keyNew (keyName (command), KEY_END), KDB_O_DEL);
 		keySetMeta (indexKey, "key", keyString (command));
 
 		char indexMetaName[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("index/")];

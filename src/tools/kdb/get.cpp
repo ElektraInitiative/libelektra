@@ -32,7 +32,6 @@ void printOptions (elektraLookupFlags options)
 {
 	// :'<,'>s/\(.*\)/^Iif(options \& \1) std::cout << "\1 ";
 	if (options & ckdb::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
-	if (options & ckdb::KDB_O_CREATE) std::cout << "KDB_O_CREATE ";
 	if (options & ckdb::KDB_O_NOCASCADING) std::cout << "KDB_O_NOCASCADING ";
 	if (options & ckdb::KDB_O_NOSPEC) std::cout << "KDB_O_NOSPEC ";
 	if (options & ckdb::KDB_O_NODEFAULT) std::cout << "KDB_O_NODEFAULT ";

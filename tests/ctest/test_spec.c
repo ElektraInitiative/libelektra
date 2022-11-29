@@ -157,7 +157,7 @@ static void test_lookupNoOverride (void)
 	succeed_if (ksLookup (ks, dup, KDB_O_SPEC) == k1, "found wrong key");
 	keySetName (dup, "/test/lift/limit");
 	succeed_if (ksLookup (ks, dup, KDB_O_SPEC) == k1, "found wrong key");
-	succeed_if (ksLookup (ks, dup, KDB_O_SPEC | KDB_O_CREATE) == k1, "found wrong key");
+	succeed_if (ksLookup (ks, dup, KDB_O_SPEC) == k1, "found wrong key");
 
 	keyDel (specKey);
 	ksDel (ks);

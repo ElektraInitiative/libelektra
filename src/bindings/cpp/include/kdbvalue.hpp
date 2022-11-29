@@ -262,7 +262,7 @@ class DefaultGetPolicy
 public:
 	static Key get (KeySet & ks, Key const & spec)
 	{
-		return ks.lookup (spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE);
+		return ks.lookup (spec, ckdb::KDB_O_SPEC);
 	}
 };
 
