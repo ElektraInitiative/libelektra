@@ -81,6 +81,14 @@ Take a look at the [new docs](../dev/mountpoints.md), if you need to know detail
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### yajl
+
+- <<TODO>>
+- <<TODO>>
+- Fix an issue where trying to set invalid meta-keys won't show an error _(Juri Schreib @Bujuhu)_
+- <<TODO>>
+- <<TODO>>
+
 ### list
 
 - Removed the `list` plugin. _(Maximilian Irlinger @atmaxinger)_
