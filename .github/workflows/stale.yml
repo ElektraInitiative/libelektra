@@ -30,6 +30,7 @@ jobs:
             it or create a new issue with the remainder of this issue.
             
             Thank you for your contributions :sparkling_heart:
+          close-issue-reason: not_planned
           days-before-pr-stale: 365
           days-before-pr-close: 14
           stale-pr-label: "stale"
