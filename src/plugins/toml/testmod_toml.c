@@ -460,10 +460,10 @@ static void testWriteReadNull (void)
 	TEST_WR_FOOT;
 }
 
-static void testWriteReadBogusMetaMustError (void) 
+static void testWriteReadBogusMetaMustError (void)
 {
 	TEST_WR_HEAD;
-	
+
 	char * fileName = "test_write_read.toml";
 	WRITE_KEY ("asdf");
 	SET_META ("asdf", "asdf");
