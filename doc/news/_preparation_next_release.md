@@ -159,7 +159,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Mentioned memory access bug in readBlock functionality _(@dtdirect)_
 - Add test for memory access beyond allocated memory _(@dtdirect)_
-- <<TODO>>
+- Refactor and restructure testmod_blockresolver.c _(@dtdirect)_
 
 ### mmapstorage
 
