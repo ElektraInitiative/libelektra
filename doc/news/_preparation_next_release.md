@@ -252,7 +252,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Scripts
 
-- Added [automatic spelling corrections](https://master.libelektra.org/scripts/sed) for changeset. _(Maximilian Irlinger @atmaxinger)_
+- Added [automatic spelling corrections](https://master.libelektra.org/scripts/spelling.sed) for changeset. _(Maximilian Irlinger @atmaxinger)_
 - Introduce shebang-conventions _(@0x6178656c)_
 - Apply auto-fixes from shellcheck _(@0x6178656c)_
 - <<TODO>>
@@ -420,7 +420,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ## Tests
 
 - Fix an Issue where scripts/dev/fix-spelling does not work, if a resolved path contains whitespaces _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- <<TODO>>
+- Rename scripts/sed to [scripts/spelling.sed](https://master.libelektra.org/scripts/spelling.sed) _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
