@@ -16,9 +16,9 @@
 
 #include <tests_plugin.h>
 
-static void test_BlockresolverRead (char * fileName)
+static void test_BlockresolverRead (char * fileName, char * keyName, char * expectedKeyValue)
 {
-	Key * parentKey = keyNew ("system:/test/blockresolver-read", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	Key * parentKey = keyNew (keyName, KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("system:/path", KEY_VALUE, srcdir_file (fileName), KEY_END),
 			       keyNew ("system:/identifier", KEY_VALUE, "### block config", KEY_END), KS_END);
 	KeySet * modules = ksNew (0, KS_END);
@@ -30,7 +30,10 @@ static void test_BlockresolverRead (char * fileName)
 	output_error (parentKey);
 	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
 	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "system:/test/blockresolver-read/key", 0)), "inside block"),
+	char keySuffix[strlen(keyName) + 5];
+	strcpy(keySuffix, keyName);
+	strcat (keySuffix, "/key");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, keySuffix, 0)), expectedKeyValue),
 		    "blockresolver failed to resolve requested block");
 	elektraPluginClose (storage, 0);
 	elektraPluginClose (resolver, 0);
@@ -87,8 +90,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_BlockresolverRead ("blockresolver/test.block");
-	test_BlockresolverRead ("blockresolver/memorytest.block");
+	test_BlockresolverRead ("blockresolver/test.block", "system:/test/blockresolver-read", "inside block");
+	test_BlockresolverRead ("blockresolver/memorytest.block", "system:/test/blockresolver-read-memorytest", "some text");
 	test_BlockresolverWrite ("blockresolver/test.block", "blockresolver/compare.block");
 
 	print_result ("testmod_blockresolver");
