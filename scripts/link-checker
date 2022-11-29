@@ -49,6 +49,7 @@ TRIES=5
 
 check() {
 	link=$(echo "$1" | grep -oE "(https|http|ftp):[^|]*")
+	secure_link=$(echo "$1" | grep -oE "(https|ftp):[^|]*")
 	files=$(echo "$1" | grep -oE "\|.*" | sed 's/|/ /g')
 
 	if echo "$link" | grep -Eqf "$WHITELIST"; then
@@ -58,6 +59,10 @@ check() {
 	fi
 	if [ -z "$link" ]; then
 		echo "check the link format of $1"
+		return
+	fi
+	if [ -z "$secure_link" ]; then
+		echo "link $1 is an http link but not whitelisted"
 		return
 	fi
 	wget --spider --quiet --timeout=$TIMEOUT --tries=$TRIES "$link"
