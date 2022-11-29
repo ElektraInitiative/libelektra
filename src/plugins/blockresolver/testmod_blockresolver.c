@@ -7,9 +7,9 @@
  *
  */
 
+#include <kdbinternal.h>
 #include <stdio.h>
 #include <string.h>
-#include <kdbinternal.h>
 #include <tests_plugin.h>
 
 static void test_BlockresolverRead (char const * fileName, char const * keyName, char const * expectedKeyValue)
@@ -21,17 +21,14 @@ static void test_BlockresolverRead (char const * fileName, char const * keyName,
 	KeySet * ks = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * resolver = elektraPluginOpen ("blockresolver", modules, ksDup (conf), 0);
-	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed")
-	output_warnings (parentKey);
+	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed") output_warnings (parentKey);
 	output_error (parentKey);
 	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
-	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed")
-	char keySuffix[strlen(keyName) + 5];
-	strcpy(keySuffix, keyName);
+	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed") char keySuffix[strlen (keyName) + 5];
+	strcpy (keySuffix, keyName);
 	strcat (keySuffix, "/key");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, keySuffix, 0)), expectedKeyValue),
-		    "blockresolver failed to resolve requested block")
-	elektraPluginClose (storage, 0);
+		    "blockresolver failed to resolve requested block") elektraPluginClose (storage, 0);
 	elektraPluginClose (resolver, 0);
 	ksDel (conf);
 	ksDel (ks);
@@ -60,17 +57,17 @@ static void test_BlockresolverWrite (char const * fileName, char const * compare
 	KeySet * ks = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * resolver = elektraPluginOpen ("blockresolver", modules, ksDup (conf), 0);
-	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed")
-	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
+	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed") Plugin * storage =
+		elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
 	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed")
-	keySetString (ksLookupByName (ks, "system:/test/blockresolver-write/key", 0), "only the inside has changed");
+		keySetString (ksLookupByName (ks, "system:/test/blockresolver-write/key", 0), "only the inside has changed");
 	succeed_if (storage->kdbSet (storage, ks, parentKey) >= 0, "storage->kdbSet failed")
-	succeed_if (resolver->kdbSet (resolver, ks, parentKey) >= 0, "blockresolver->kdbSet failed")
-	succeed_if (resolver->kdbSet (resolver, ks, parentKey) >= 0, "blockresolver->kdbSet failed")
+		succeed_if (resolver->kdbSet (resolver, ks, parentKey) >= 0, "blockresolver->kdbSet failed")
+			succeed_if (resolver->kdbSet (resolver, ks, parentKey) >= 0, "blockresolver->kdbSet failed")
 
-	succeed_if (compare_line_files (srcdir_file (compareName), foutname), "files do not match as expected")
+				succeed_if (compare_line_files (srcdir_file (compareName), foutname), "files do not match as expected")
 
-	elektraPluginClose (storage, 0);
+					elektraPluginClose (storage, 0);
 	elektraPluginClose (resolver, 0);
 	ksDel (conf);
 	ksDel (ks);
@@ -92,5 +89,5 @@ int main (int argc, char ** argv)
 
 	print_result ("testmod_blockresolver")
 
-	return nbError;
+		return nbError;
 }
