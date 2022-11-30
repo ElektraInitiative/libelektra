@@ -9,9 +9,10 @@ Therefore, we need a different concept for errors, when an `errorKey` cannot be 
 
 ## Constraints
 
-- Using special return values as errors may be limited.
+- Using special return values as errors sometimes is limited.
   For example, only `NULL` is an invalid pointer and sometimes even that is a legitimate non-error result.
-- It should be easy to detect error cases and distinguish between errors, once an error is detected.
+- It should be easy to detect error cases.
+- It must be possible to distinguish between errors, once an error is detected.
 - It should be hard to miss the fact that errors are possible.
   Note, however, this does not mean checking for an error should be enforced.
   There are many cases, where the caller knows an error is impossible, because of the previous code path.
