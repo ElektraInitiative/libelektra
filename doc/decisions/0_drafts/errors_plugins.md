@@ -54,6 +54,13 @@ The basic guidelines will be (but may be extended):
 
    For very common mistakes which are still technically valid configuration, both emitting an error and emitting a warning are valid options.
    But in both cases, there should be a way to suppress or avoid the error/warning.
+   This suppression could for example be triggered by additional metadata.
+   The need for a suppression should be rare, and as such it should be intentionally verbose to suppress errors/warnings.
+
+   An example, of a suppressible warning exists in the `backend` plugin.
+   Normally, you get a warning, when you configure a resolver with an absolute path.
+   This is based on the assumption that the resolver is there to find the absolute path based on a given relative path.
+   However, because sometimes setting an absolute path is necessary, the warning can be suppressed by setting an additional key in the mountpoint configuration.
 
 3. Don't stop after the first error:
    Additional errors, are automatically converted into warnings.
