@@ -9,7 +9,7 @@ This folder contains the use cases for `libelektra-core`.
     1. values: an arbitrary byte sequence
     2. metadata: another ordered, hierarchical associative array, which only associates keys with values
 3.  orders keys first by namespace then lexicographically with respect to hierarchy
-4.  supports the operations: insert, remove, lookup, prefix/hierarchy lookup and access by index (which enables iteration)
+4.  supports the operations: insert, remove, lookup, hierarchy lookup (a form of prefix lookup) and access by index (which enables iteration)
 
 Additionally, `libelektra-core` provides a data structure, called `Key`, that represents a single key-value pair in the associative array, but can also be used standalone.
 
