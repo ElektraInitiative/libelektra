@@ -84,7 +84,7 @@ defmodule Elektra.KeySet do
         fn {ks_resource, i, len} ->
           if i < len do
             key_resource = Elektra.System.ks_at_cursor(ks_resource, i)
-            {:ok, key} = Elektra.Key.from_reference(key_resource)
+            {:ok, key} = Elektra.Key.from_resource(key_resource)
             {[key], {ks_resource, i + 1, len}}
           else
             {:halt, ks_resource}

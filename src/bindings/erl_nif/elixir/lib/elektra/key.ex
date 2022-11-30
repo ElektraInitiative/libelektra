@@ -12,6 +12,8 @@ defmodule Elektra.Key do
     binary: false
   ]
 
+  @type opts() :: Keyword.t()
+
   @opaque t() :: pid
 
   @type kdb() :: Elektra.Kdb.t()
@@ -50,9 +52,9 @@ defmodule Elektra.Key do
   @doc """
   Create a key from `ref`.
   """
-  @spec from_reference(reference()) :: key()
-  def from_reference(ref) when is_reference(ref) do
-    GenServer.start_link(__MODULE__, ref)
+  @spec from_resource(reference()) :: key()
+  def from_resource(key_resource) when is_reference(key_resource) do
+    GenServer.start_link(__MODULE__, key_resource)
   end
 
   @doc """
@@ -104,7 +106,7 @@ defmodule Elektra.Key do
   @doc """
   Get a map corresponding to the name and value of the key `key`.
   """
-  @spec to_map(key()) :: %{name: String.t(), value: binary(), meta: meta_list()}
+  @spec to_map(key(), opts()) :: %{name: String.t(), value: binary(), meta: meta_list()}
   def to_map(key, opts \\ []) do
     opts = Keyword.merge(@default_opts, opts)
     name = Elektra.Key.name(key)
