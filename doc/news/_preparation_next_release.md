@@ -261,7 +261,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Link Checker: Add documentation for the usage and how it behaves _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - Sed: Add spelling correction for "key-value storage" _(@Bujuhu)_
