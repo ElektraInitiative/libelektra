@@ -10,7 +10,7 @@ The website is developed as a single-page application (SPA) in [AngularJS (v1.5)
 All dependencies are either already contained in the application project or (preferred) resolved through
 the dependency manager [npm](https://www.npmjs.com/) during installation (requires active internet connection).
 Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight
-webserver are handled by the nodeJS based task runner [grunt](http://gruntjs.com/) (installed by npm).
+webserver are handled by the nodeJS based task runner [grunt](https://gruntjs.com/) (installed by npm).
 
 ## Run and Configure
 
@@ -168,7 +168,7 @@ This field type supports following attributes:
 
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
-  e.g. `http://example.com/docs` for the subsequent example)
+  e.g. `https://example.com/docs` for the subsequent example)
 - `children` (array) holding other structure elements, but none of type `submenu`
 
 Example:
@@ -192,7 +192,7 @@ This field type support following attributes:
 
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
-  e.g. `http://example.com/plugins` for the subsequent example)
+  e.g. `https://example.com/plugins` for the subsequent example)
 - `options` (object) with further options:
   - `path` (string) containing the path from the repository root to the text file to parse
   - `target_file` (array[string]) containing some filenames that should be
@@ -245,7 +245,7 @@ This field type supports following attributes:
 
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
-  e.g. `http://example.com/tools` for the subsequent example)
+  e.g. `https://example.com/tools` for the subsequent example)
 - `options` (object) with further options:
   - `path` (string) containing the path from the repository root to the directory to enumerate
   - `target_file` (array[string]) containing some filenames that should be targeted within the sub-directories
@@ -275,7 +275,7 @@ This field type supports following attributes:
 
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
-  e.g. `http://example.com/man-pages` for the subsequent example)
+  e.g. `https://example.com/man-pages` for the subsequent example)
 - `options` (object) with further options:
   - `path` (string) containing the path from the repository root to the directory to enumerate
   - `blacklist` (array[string]) containing some filenames that should
@@ -305,7 +305,7 @@ This field type supports following attributes:
 
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
-  e.g. `http://example.com/getstarted` for the subsequent example)
+  e.g. `https://example.com/getstarted` for the subsequent example)
 - `children` (array) holding static structure elements like `staticref`, `staticfile` and `link`
 
 Example:

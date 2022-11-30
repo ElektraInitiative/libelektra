@@ -11,7 +11,7 @@ This folder contains documentation for “Elektra – the configuration framewor
 - [Security](SECURITY.md): This guideline shows how Elektra handles security concerns.
 - [Tutorials](tutorials): The tutorials folder provides various **user related tutorials**. If you are interested in **developer related tutorials** instead, then please take a look at the folder [dev](dev).
 - [News](news): The news folder contains release notes and other recent information about Elektra.
-- [Paper](paper): This directory contains a research paper about Elektra, also available in [PDF](http://joss.theoj.org/papers/10.21105/joss.00044) format.
+- [Paper](paper): This directory contains a research paper about Elektra, also available in [PDF](https://joss.theoj.org/papers/10.21105/joss.00044) format.
 
 ## Using Elektra
 
@@ -39,7 +39,7 @@ This folder contains documentation for “Elektra – the configuration framewor
 
 - [Coding](CODING.md): The coding guidelines describe the basic rules you should keep in mind when you want to contribute code to Elektra.
 - [Git](Git.md): This document describes how we use the version control system [Git](https://git-scm.com) to develop Elektra.
-- [Ideas](IDEAS.md): If you want to contribute to Elektra and do not know what, you can either take a look here or at our [issue tracker](http://libelektra.org/issues).
+- [Ideas](IDEAS.md): If you want to contribute to Elektra and do not know what, you can either take a look here or at our [issue tracker](https://libelektra.org/issues).
 - [ToDo](todo): This folder contains various ToDo items for future releases of Elektra.
 - [Authors](AUTHORS.md): This file lists information about Elektra’s authors.
 

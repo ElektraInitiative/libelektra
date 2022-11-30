@@ -60,7 +60,7 @@ Your programming language of choice must provide a way to call into C code (like
 
 In general we prefer (in this order):
 
-1. Automatically and statically generated bindings (like [swig](http://www.swig.org/)).
+1. Automatically and statically generated bindings (like [swig](https://www.swig.org/)).
 2. Manually written bindings that directly call to library without any statically build part (like JNI and GI). They are a bit slower but can directly access libelektra.so.
 3. Manually written bindings that are built statically.
 

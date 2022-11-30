@@ -19,7 +19,7 @@ clang are also supported but not described here). Those can be installed as foll
   sudo yum install -y cmake git gcc-c++ make
   ```
 
-- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get CMake and Git in order to complete the basic requirements:
+- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](https://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake and git in order to complete the basic requirements:
 
   ```sh
   brew install cmake git
@@ -425,7 +425,7 @@ For a list of available bindings see
 
 `Debug`, `Release` or `RelWithDebInfo`
 See help bar at bottom of `ccmake` for that option or:
-http://www.cmake.org/Wiki/CMake_Useful_Variables
+https://www.cmake.org/Wiki/CMake_Useful_Variables
 
 #### `BUILD_SHARED`, `BUILD_FULL` and `BUILD_STATIC`
 
@@ -686,7 +686,7 @@ Please enable EPEL https://fedoraproject.org/wiki/EPEL
 ```sh
 # Install EPEL for RHEL 7
 curl -o epel-release-7-8.noarch.rpm \
-  http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+  https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
 sudo rpm -ivh epel-release-7-8.noarch.rpm
 sudo yum update
 ```

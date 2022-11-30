@@ -123,8 +123,8 @@ For example, in `1.0` there is a deprecated method `ksNext` (not
 available in `kdb.h`). Thus in `2.0` it is subject to be removed.
 
 References:
-http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
-http://packages.debian.org/de/sid/icheck
+https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
+https://packages.debian.org/de/sid/icheck
 
 ## Bindings
 

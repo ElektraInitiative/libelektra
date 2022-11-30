@@ -16,10 +16,10 @@ The idea is to use a Pub/Sub concept to synchronize actions which describe chang
 
 ## Considered Alternatives
 
-- [ZeroMQ](http://zeromq.org/): small and popular library for pub/sub
-- [nanomsg](http://nanomsg.org/): from the same author as ZeroMQ, even smaller - http://nanomsg.org/documentation-zeromq.html
+- [ZeroMQ](https://zeromq.org/): small and popular library for pub/sub
+- [nanomsg](https://nanomsg.org/): from the same author as ZeroMQ, even smaller - https://nanomsg.org/documentation-zeromq.html
 - [redis](https://redis.io/docs/manual/pubsub/): requires a running redis server
-- [kafka](http://kafka.apache.org/): seems too big for Elektra
+- [kafka](https://kafka.apache.org/): seems too big for Elektra
 - ZeroMQ with [JSMQ](https://github.com/zeromq/JSMQ).
 
 ## Decision
