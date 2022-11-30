@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** Insert `Key` into `KeySet`
 - **Scope:** `libelektra-core`
 - **Level:** Developer Goal
 - **Actors:** Core, Caller

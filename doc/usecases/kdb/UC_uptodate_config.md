@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** Keeping Configuration Up-to-date
 - **Scope:** `libelektra-kdb`
 - **Level:** Developer Goal
 - **Actors:** Application, Elektra

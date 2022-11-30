@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** Delete `Key` from `KeySet`
 - **Scope:** `libelektra-core`
 - **Level:** Developer Goal
 - **Actors:** Core, Caller

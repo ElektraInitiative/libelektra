@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** Modifying application configuration
 - **Scope:** `libelektra-kdb`
 - **Level:** Developer Goal
 - **Actors:** Application, Elektra

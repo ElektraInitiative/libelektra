@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** Loading application configuration
 - **Scope:** `libelektra-kdb`
 - **Level:** Developer Goal
 - **Actors:** Application, Elektra

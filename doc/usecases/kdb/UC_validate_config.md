@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** Validating Configuration with Specification
 - **Scope:** `libelektra-kdb`, `spec`
 - **Level:** Developer Goal, User Goal
 - **Actors:** Elektra, Application, User

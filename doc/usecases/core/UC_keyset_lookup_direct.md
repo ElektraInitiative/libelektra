@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** Direct lookup in `KeySet`
 - **Scope:** `libelektra-core`
 - **Level:** Developer Goal
 - **Actors:** Core, Caller
