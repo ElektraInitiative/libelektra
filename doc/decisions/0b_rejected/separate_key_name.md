@@ -34,7 +34,7 @@ Continue keeping 3 classes: `Key`, `KeySet` and `KDB`.
 ## Related Decisions
 
 - [Null](../5_implemented/null.md)
-- [Store the escaped and/or unescaped key name](../2_in_progress/store_name.md)
+- [Namespace and Name of Keys](../3_decided/keyname.md)
 
 ## Notes
 

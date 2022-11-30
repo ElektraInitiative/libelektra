@@ -469,7 +469,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
-- Revive [keyname decision](../decisions/0_drafts/keyname.md) _(@kodebach)_
+- Revive [keyname decision](../decisions/3_decided/keyname.md) _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - Add decision for [copy-on-write](../decisions/2_in_progress/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
