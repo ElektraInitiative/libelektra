@@ -35,8 +35,9 @@ Plugins that do not adhere to the guidelines can be marked down via `infos/statu
 The basic guidelines will be (but may be extended):
 
 1. During `kdbGet` only emit warnings, unless the error is entirely unrecoverable:
-   Whatever other guidelines say, during `kdbGet` we plugins shall only emit warnings to allow the caller to fix issues via `kdbSet`.
-   Only if errors are entirely unrecoverable, should an error be emitted.
+   Whatever other guidelines say, during `kdbGet` plugins shall only emit warnings to allow the caller to fix issues via `kdbSet`.
+   If possible, the emitted warnings should be identical to the errors set in `kdbSet()`.
+   Only if errors are entirely unrecoverable, an error should be emitted.
    Some examples for either case:
 
    1. File-based backend cannot parse local file:
@@ -49,7 +50,7 @@ The basic guidelines will be (but may be extended):
 
 2. Prefer errors to warnings in `kdbSet`:
    Most validation detect either valid or invalid values.
-   Only in the rare case, where something is valid, but might not be correct should a warning be used.
+   Only in the rare case, where something is valid, but might not be correct a warning should be used.
 
    For very common mistakes which are still technically valid configuration, both emitting an error and emitting a warning are valid options.
    But in both cases, there should be a way to suppress or avoid the error/warning.
@@ -63,7 +64,7 @@ The basic guidelines will be (but may be extended):
    Plugins should not ignore unknown values or values they don't understand.
 
 5. Reject unknowns:
-   To be on the safe side, always reject any unknowns that are direct at the plugin.
+   To be on the safe side, always reject any unknowns that are directed at the plugin.
    Unknown specification should always result in errors.
    Unknown config data may result in warnings instead, unless it is known to be invalid.
    This mostly applies to storage plugins.
@@ -75,7 +76,7 @@ The basic guidelines will be (but may be extended):
 6. The `storage` phase should handle everything during `kdbSet`:
    A plugin executed in the `storage` phase of `kdbSet` should store the entire `KeySet` they receive, such that in a future `kdbGet` they will load an equal `KeySet`.
    If such a plugin cannot handle the entire `KeySet` semantics (e.g., no metadata), the unsupported data should be removed in an earlier phase.
-   Either by the plugin itself, or by another plugin.
+   Either by the plugin itself, or by another plugin that is required by said plugin.
 
    If a plugin does encounter unsupported data during the `storage` phase, it should emit a warning and drop the unsupported data.
 
