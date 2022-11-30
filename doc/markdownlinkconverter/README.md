@@ -54,6 +54,13 @@ html build process (`make clean` could be needed) to get a list without duplicat
 In the script folder is a script named `link-checker`. This script can be used to validate the links.
 Broken links will be printed. False positive not excluded (very rare).
 
+This link-checker reads the links from an input file (the synopsis is `link-checker <file>`) and prints the broken ones to the `stderr`.
+`wget` is used for the check so this program is required to be installed on your system.
+
+The link-checker includes the ability to list links on a [whitelist](../../tests/linkchecker.whitelist) which will not be checked and so on not printed to `stderr` in any case.
+Furthermore, this is the only way to let `http` links pass as they should be prevented by default.
+However, this does not mean that the `http` links are reachable as due to the lack of encryption, availability tests are not sensible in this case.
+
 ## Further Improvements (Which Will be Introduced in a Later Version):
 
 - optimize pdf output (also UTF-8 encoding)
