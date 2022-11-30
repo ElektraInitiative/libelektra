@@ -92,13 +92,22 @@ Redesign the API, so that every API function only has maximal one error case nex
 - `keyNew(name_object)` won't have error cases anymore
 - `keySetName(name_object)` only has the error case of read-only names
 
-### Require users to check preconditions
+This can be very limiting and in some cases makes it very hard to find out what the exact problem was.
+Reducing a function to a single error value, makes sense if the errors are easy to distinguish.
+But for more complex preconditions, this can be annoying and inefficient to use.
+While the above example can be solved, by simple checking with `keyIsLocked`, there could less straightforward cases.
+For example, a function `foo` that takes two keynames, both of which must be valid.
+To find out which of the names was invalid, the caller would have to call something like `elektraCheckName(name)` on at least one name.
+That's a non-trivial check that is not cheap in terms of runtime.
+More importantly, it is a check that `foo` already did, and the result could just be propagated to the caller.
 
-If users are interested in the specific errors, they need to split checks, e.g.:
+### Require caller to check preconditions
 
-- before calling `keySetName`, they call `elektraCheckName(name)` or `keyIsLocked`
+If caller are interested in the specific errors, they need to do extra checks, e.g., before calling `keySetName`, they call `elektraCheckName(name)` or `keyIsLocked`.
 
 This is not so intuitive and is against our principle to make it hard to use the API wrong.
+
+It's also unclear, what the function would do, if the caller did not check the preconditions.
 
 ### Pragmatic solution
 
