@@ -37,7 +37,8 @@ void test_desktop (void)
 	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "could not call kdbGet");
 
 	printf ("test if desktop key exists\n");
-	succeed_if (ksGetSize (keys) == 1, "size not correct") Key const * result = ksLookupByName (keys, "user:/tests/desktop", 0);
+	succeed_if (ksGetSize (keys) == 1, "size not correct");
+	Key const * result = ksLookupByName (keys, "user:/tests/desktop", 0);
 	succeed_if (result, "desktop key not found");
 
 	printf ("test if desktop environment is the one from the ENV\n");
@@ -49,6 +50,13 @@ void test_desktop (void)
 		ksLookupByName (keys, "user:/tests/desktop", 0);
 	succeed_if (result, "desktop key not found");
 	succeed_if (strcmp (keyString (result), TEST_DE) == 0, "kdb set overwrote the desktop environment");
+
+	printf ("clear all variables to test \"no desktop\"\n");
+	clearenv ();
+	keys = ksNew (0, KS_END);
+	plugin->kdbGet (plugin, keys, parentKey);
+	Key const * emptyResult = ksLookupByName (keys, "user:/tests/desktop", 0);
+	succeed_if (!emptyResult, "a desktop key was found");
 
 	ksDel (keys);
 	keyDel (parentKey);
