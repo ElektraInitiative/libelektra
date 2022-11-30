@@ -35,7 +35,7 @@
         "bootstrap": "^3.4.1",
         "connect-modrewrite": "^0.10.2",
         "docsearch.js": "^2.6.3",
-        "fs-extra": "^0.30.0",
+        "fs-extra": "^11.1.0",
         "grunt": "^1.3.0",
         "grunt-browserify": "^6.0.0",
         "grunt-cli": "latest",
