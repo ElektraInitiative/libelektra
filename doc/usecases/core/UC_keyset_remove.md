@@ -1,4 +1,4 @@
-# Use Case: Delete `Key` from `KeySet`
+# Use Case: Remove `Key` from `KeySet`
 
 ## Summary
 
@@ -22,6 +22,6 @@
   - Core removes given index range from `KeySet`
 - **Error scenario:** -
 - **Postcondition:**
-  - The deleted `Key`(s) MUST NOT be part of `KeySet` anymore.
+  - The removed `Key`(s) MUST NOT be part of `KeySet` anymore.
     A lookup for that/those `Key`s MUST NOT return any results.
 - **Non-functional Constraints:** -

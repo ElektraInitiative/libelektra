@@ -30,5 +30,5 @@
     No valid index is returned, because `Key`s with cascading names cannot be inserted.
 - **Error scenario:** -
 - **Postcondition:**
-  - The returned index value MUST be valid and correct until new `Key`(s) are inserted into or deleted from the `KeySet`.
+  - The returned index value MUST be valid and correct until new `Key`(s) are inserted into or removed from the `KeySet`.
 - **Non-functional Constraints:** -
