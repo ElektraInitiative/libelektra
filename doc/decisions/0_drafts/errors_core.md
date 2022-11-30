@@ -5,7 +5,12 @@
 We often use a `Key * errorKey` argument to return error information via metadata (see related decisions).
 In `libelektra-core`, however, that would be inappropriate and sometimes even impossible (e.g., `keyNew`).
 
-Therefore, we need a different concept for errors, when an `errorKey` cannot be used.
+Not using a `Key * errorKey` argument can be limiting, however.
+Depending on the solution, there can be limited error values, i.e., it may not be possible to use a different error value for every possible error case.
+A prime example of this, a function that returns a pointer and wants to indicate an error via that pointer, only has to option to return `NULL`.
+So if there is more than one possible error, the error cases have to be distinguished another way.
+
+Therefore, we need a general concept for errors, which we use when an `errorKey` cannot be used.
 
 ## Constraints
 
@@ -23,13 +28,41 @@ Therefore, we need a different concept for errors, when an `errorKey` cannot be 
 ## Assumptions
 
 - In many cases, it is possible to avoid error cases through the preceding code path.
-- When an error occurred, the kind error can be distinguished after the fact in many cases.
+  For example, a very common case is that functions return an error, if they receive a `NULL` pointer.
+  Often this case can be excluded by static analysis, i.e., because of the preceding code it is impossible that the pointer is `NULL`.
+
+  ```c
+  int foo (KeySet * ks, Key * key) {
+    if (key == NULL) {
+      return -1;
+    }
+
+    // [...] could lots of code, as long as the Key * key doesn't change
+
+    const Key * found1 = ksLookupByName (ks, "/foo", 0);
+    if (found1 != NULL) {
+      // no need to worry about key == NULL, because we checked earlier
+      // also no need to worry about ks == NULL, because the ksLookupByName would have returned NULL
+      const Key * found2 = ksLookup (ks, key, 0);
+    }
+  }
+  ```
+
+- It is not always necessary to report separate error codes, for _every_ error case.
+  In many cases, the caller can distinguish after the fact, e.g., `keySetName` fails when the given name is invalid and when the given `Key` has a read-only name.
+  This can be distinguished after the fact, by checking whether the `Key` has a read-only name with `keyIsLocked`.
+
 - Callers normally don't care about the exact error, unless they can do something about it.
   This could be:
+
   - reporting the error to a user
   - switching to a different code path
   - (during debugging) changing the code
+
 - Functions can be written in a such a way that they detect and report all errors without permanent effects.
+
+- The functions that cannot use a `Key * errorKey`, are side-effect-free.
+  Therefore, the only possible cause of errors are invalid arguments.
 
 ## Considered Alternatives
 
@@ -69,33 +102,40 @@ This is not so intuitive and is against our principle to make it hard to use the
 
 ### Pragmatic solution
 
-The pragmatic solution here is to simply assume "everything will be fine".
+We assume the functions in question are side-effect-free and the only possible cause of errors are invalid arguments.
+We also assume that functions _can_ always be written such that they fail before any permanent changes to the arguments are made.
 
-Many functions only return errors for simple precondition violations, like passing a `NULL` pointer or otherwise invalid argument.
-Especially for `libelektra-core` (the only place where `Key * errorKey` truly cannot be used), all functions must be side effect free.
-Therefore, the only possible cause of errors are invalid arguments.
+If we assume that _all_ functions are indeed written that way, then we can conclude, that in theory a single error indicating return value is always enough.
+The reason is simply, that under the previous assumptions the caller can always make further checks on the arguments to find the exact cause of the error.
 
-If we now assume the function is written such that it fails before it changes any argument's data, then we can infer that only a single error indicating return value is needed.
-Because the arguments are unchanged and the only possible cause of errors, we can distinguish between errors after the fact.
+However, because sometimes checking arguments can be complicated and expensive (in terms of runtime), we _do not_ reduce all functions to a single error indicating value.
+Instead, we take pragmatic approach and try to give more detailed errors, when appropriate and while maintaining a sensible API design.
 
-As stated, many functions' only error cases are precondition violations.
+Below we explore a few different types of functions (in terms of their possible errors) and explore, how they can report errors.
+
+#### Simple preconditions
+
+Many functions' only error cases are precondition violations.
 If the preconditions are simple enough, they can be checked beforehand if it is not clear whether the precondition holds.
 
-Take for example some hypothetical `keyValue` function, in a world where we have a `key->value` container for COW that should always be present.
-Looking just at the error checks, without even considering the function signature:
+Take for example the `keyValue` function (after PR #4691).
+Looking just at some of the error checks, it looks a bit like this:
 
 ```c
 if (key == NULL) {
 // error 1: precondition violation
 }
 
-if (key->value == NULL) {
+if (key->keyData == NULL) {
 // error 2: invalid Key, COW container missing
 }
 
 // success: return value
-return key->value->data;
+return key->keyData->data.v;
 ```
+
+> **Note:** The above doesn't exactly match the real world.
+> It is a hypothetical example, and we assume that `key->keyData` should always be set by `keyNew` and when changing the value.
 
 If we want separate error indications for both error cases and a nice API we immediately hit a problem.
 The obvious return type is `const void *`, because that's the type of the key value (and we want it const).
@@ -111,12 +151,12 @@ const void * keyValue (Key * key) {
     return NULL;
   }
 
-  assert(key->value != NULL);
-  if (key->value == NULL) {
+  assert(key->keyData != NULL);
+  if (key->keyData == NULL) {
     return NULL;
   }
 
-  return key->value->data;
+  return key->keyData->data.v;
 }
 ```
 
@@ -133,9 +173,11 @@ It is an internal issue the caller can do nothing about, `key->value` should alw
 That's why we add an `assert` before the check.
 This will trigger in a debug build, where the internal error can be fixed.
 For release builds, the `assert` won't be there.
-Instead, we return `NULL`, so the caller can do something and doesn't have to deal with the internal bug.
+Instead, we return `NULL`, so we aren't forced to `abort()` the whole process and the caller may even be able to gracefully recover from the internal bug.
 
-This overlapping of error and success values has especially positive effects, when we talk about boolean functions:
+#### Boolean functions
+
+The overlapping of error and success values has especially positive effects, when we talk about boolean functions:
 
 ```c
 // returns 1 if key is "foo", 0 if key is not "foo", and -1 if key == NULL
@@ -178,6 +220,8 @@ if (keyIsFooInt (key))
 if (!keyIsFooInt (key))
 // Equivalent: if (keyIsFooInt (key) == 0)
 ```
+
+#### Complex preconditions
 
 The above cases assume very simple preconditions.
 But sometimes the precondition checks are non-trivial.
@@ -228,7 +272,7 @@ Every other solution borders on over-engineering.
 
 ## Implications
 
-- Some functions (e.g., `keyIsBelow`) should have simplified return values
+- We will need to examine the current API and decide which functions need to be redesigned.
 
 ## Related Decisions
 
