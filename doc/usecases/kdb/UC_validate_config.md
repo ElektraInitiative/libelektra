@@ -1,8 +1,8 @@
-# Use Case: Ensuring valid configuration
+# Use Case: Validating Configuration with Specification
 
 ## Summary
 
-- **Title:** Ensuring valid configuration
+- **Title:** Validating Configuration with Specification
 - **Scope:** `libelektra-kdb`, `spec`
 - **Level:** Developer Goal, User Goal
 - **Actors:** Elektra, Application, User
