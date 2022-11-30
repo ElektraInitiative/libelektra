@@ -134,3 +134,17 @@ This saves some amount of memory and allocations, but makes internal code more d
 ## Related Decisions
 
 ## Notes
+
+### Printing unescaped name in GDB
+
+In GDB (and probably others) the unescaped name of a `Key * key` can be printed with (assuming the name is in `key->ukey` and its size in `key->keyUSize`):
+
+```
+p *key->ukey@key->keyUSize
+```
+
+This prints `key->ukey` as a fixed-length string of length `key->keyUSize`, e.g., for `user:/abc` it prints:
+
+```
+$1 = "\006\000abc"
+```
