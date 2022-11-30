@@ -8,6 +8,10 @@ defmodule Elektra.Key do
     {:meta, []}
   ]
 
+  @default_opts [
+    binary: false
+  ]
+
   @opaque t() :: pid
 
   @type kdb() :: Elektra.Kdb.t()
@@ -90,13 +94,35 @@ defmodule Elektra.Key do
   end
 
   @doc """
+  Get a key set of the meta keys of the key `key`.
+  """
+  @spec meta(key()) :: key_set()
+  def meta(key) do
+    GenServer.call(key, :meta)
+  end
+
+  @doc """
   Get a map corresponding to the name and value of the key `key`.
   """
-  @spec to_map(key()) :: %{name: String.t(), value: binary()}
-  def to_map(key) do
+  @spec to_map(key()) :: %{name: String.t(), value: binary(), meta: meta_list()}
+  def to_map(key, opts \\ []) do
+    opts = Keyword.merge(@default_opts, opts)
     name = Elektra.Key.name(key)
-    value = Elektra.Key.value(key)
-    %{name: name, value: value}
+
+    value =
+      if opts[:binary] do
+        Elektra.Key.value(key)
+      else
+        Elektra.Key.string(key)
+      end
+
+    meta =
+      Elektra.Key.meta(key)
+      |> Elektra.KeySet.stream()
+      |> Stream.map(&Elektra.Key.to_map/1)
+      |> Enum.map(fn %{name: name, value: value} -> {name, value} end)
+
+    %{name: name, value: value, meta: meta}
   end
 
   # Server API
@@ -143,6 +169,13 @@ defmodule Elektra.Key do
   def handle_call(:value, _from, key_resource) do
     value = Elektra.System.key_value(key_resource)
     {:reply, value, key_resource}
+  end
+
+  @impl true
+  def handle_call(:meta, _from, key_resource) do
+    ks_resource = Elektra.System.key_meta(key_resource)
+    {:ok, ks} = Elektra.KeySet.from_resource(ks_resource)
+    {:reply, ks, key_resource}
   end
 
   @impl true

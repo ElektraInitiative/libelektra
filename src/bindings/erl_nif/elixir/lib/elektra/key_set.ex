@@ -18,6 +18,14 @@ defmodule Elektra.KeySet do
   end
 
   @doc """
+  Create a key set from the NIF resource `ks_resource`.
+  """
+  @spec from_resource(reference()) :: key_set()
+  def from_resource(ks_resource) do
+    GenServer.start_link(__MODULE__, ks_resource)
+  end
+
+  @doc """
   Create a stream of keys from `ks`.
   """
   @spec stream(key_set()) :: Enumerable.t()
@@ -52,8 +60,13 @@ defmodule Elektra.KeySet do
   # Server API
 
   @impl true
-  def init(size) do
+  def init(size) when is_integer(size) do
     ks_resource = Elektra.System.ks_new(size)
+    {:ok, ks_resource}
+  end
+
+  @impl true
+  def init(ks_resource) when is_reference(ks_resource) do
     {:ok, ks_resource}
   end
 
