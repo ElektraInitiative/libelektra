@@ -62,6 +62,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 	p->dirmode = KDB_FILE_MODE | KDB_DIR_MODE;
 	p->removalNeeded = 0;
 	p->isMissing = 0;
+	p->hasExisted = 0;
 	p->timeFix = 1;
 
 	p->filename = 0;
@@ -549,6 +550,13 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	/* Start file IO with stat() */
 	if (stat (pk->filename, &buf) == -1)
 	{
+		if (pk->hasExisted)
+		{
+			pk->hasExisted = 0;
+			// was not missing before
+			return /* new return value required */
+		}
+
 		// no file, so storage has no job
 		errno = errnoSave;
 		pk->isMissing = 1;
@@ -565,6 +573,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		pk->gid = buf.st_gid;
 		pk->uid = buf.st_uid;
 		pk->isMissing = 0;
+		pk->hasExisted = 1;
 	}
 
 	/* Check if update needed */

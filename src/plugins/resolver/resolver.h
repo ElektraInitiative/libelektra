@@ -32,6 +32,7 @@ struct _resolverHandle
 	mode_t dirmode;			///< The mode to set for new directories
 	unsigned int removalNeeded : 1; ///< Error on freshly created files need removal
 	unsigned int isMissing : 1;	///< when doing kdbGet(), no file was there
+	unsigned int hasExisted : 1; 	///< when doing kdbSet(), file existed before
 	int timeFix;			///< time increment to use for fixing the time
 
 	char * dirname;	 ///< directory where real+temp file is
