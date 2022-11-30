@@ -9,7 +9,8 @@ defmodule Elektra.Key do
   ]
 
   @default_opts [
-    binary: false
+    binary: false,
+    strip_meta_namespace: true
   ]
 
   @type opts() :: Keyword.t()
@@ -122,7 +123,16 @@ defmodule Elektra.Key do
       Elektra.Key.meta(key)
       |> Elektra.KeySet.stream()
       |> Stream.map(&Elektra.Key.to_map/1)
-      |> Enum.map(fn %{name: name, value: value} -> {name, value} end)
+      |> Enum.map(fn %{name: name, value: value} ->
+        name =
+          if opts[:strip_meta_namespace] do
+            String.replace(name, ~r/^meta:\//, "")
+          else
+            name
+          end
+
+        {name, value}
+      end)
 
     %{name: name, value: value, meta: meta}
   end
