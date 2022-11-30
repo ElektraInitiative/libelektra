@@ -51,6 +51,22 @@ TLS was only standardized in C11, while Elektra currently only requires C99.
 
 This has all the same issues as `errno`: needs to be cleared to detect errors, can only store one error (per thread), etc.
 
+### Redesign API
+
+Redesign the API, so that every API function only has maximal one error case next to memory errors.
+
+- `nameNew(name) -> name_object` only has the error case of invalid name
+- `keyNew(name_object)` won't have error cases anymore
+- `keySetName(name_object)` only has the error case of read-only names
+
+### Require users to check preconditions
+
+If users are interested in the specific errors, they need to split checks, e.g.:
+
+- before calling `keySetName`, they call `elektraCheckName(name)` or `keyIsLocked`
+
+This is not so intuitive and is against our principle to make it hard to use the API wrong.
+
 ### Pragmatic solution
 
 The pragmatic solution here is to simply assume "everything will be fine".
