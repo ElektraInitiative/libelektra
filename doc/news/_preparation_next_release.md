@@ -73,12 +73,31 @@ Take a look at the [new docs](../dev/mountpoints.md), if you need to know detail
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 - New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
 
-### Copy-on-write of `libelektra-core`
+### Copy-on-Write within `libelektra-core`
 
 Thanks to _(Maximilian Irlinger @atmaxinger)_ our `Key` and `KeySet` datastructures are now fully copy-on-write!
 This means noticeably reduced memory usage for cases where keys and keysets are copied and/or duplicated!
 
-<!-- TODO: add some benchmarks -->
+We run some very promising benchmarks, each were performed with 400,000 keys. 
+All benchmarks were executed using `valgrind --tool=massif --time-unit=B --max-snapshots=200 --threshold=0.1`.
+
+| Benchmark      | Current Implementation | Copy-on-Write | Size Reduction | Remarks                    |
+|:---------------|-----------------------:|--------------:|---------------:|:---------------------------|
+ | `createkeys.c` |                5.3 MiB |       6.5 MiB |          -22 % |                            |
+| `deepdup.c`    |               10.5 MiB |       8.2 MiB |           22 % |                            |
+| `large.c`      |               18.9 MiB |      15.3 MiB |           19 % |                            |
+| `kdb.c`        |               23.5 MiB |      17.8 MiB |           24 % |                            |
+| `kdbget.c`     |               11.0 MiB |       8.8 MiB |           20 % |                            |
+| `kdbmodify.c`  |               11.0 MiB |       8.8 MiB |           20 % | Same results as `kdbget.c` |
+
+First, it should be noted that a single key, without counting payload, is about 50% larger with the copy-on-write implementation.
+This explains why the `createkeys.c` benchmark yields a negative reduction result.
+This benchmark only allocates keys, so not much improvement can be expected there.
+Still, as other stuff also uses heap memory, the overall memory consumption only increased by 22%, which is far less than 50%.
+
+All other benchmarks saw meaningful reductions of heap memory used.
+One interesting observation is that `kdbget.c` and `kdbmodify.c` used exactly the same memory.
+This can most likely be explained by internal caching within the memory allocator of `glibc`.
 
 ### <<HIGHLIGHT>>
 
