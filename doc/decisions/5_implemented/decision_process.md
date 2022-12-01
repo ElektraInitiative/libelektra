@@ -14,7 +14,7 @@ Substantial decisions, however, must be made in a transparent and participative 
 - `Decision`:
   A text file which contains the content as [explained here](../EXPLANATIONS.md).
 - `Decision PR`:
-  A pull request that contains changes for decisions.
+  A pull request that contains substantial changes for a decision.
 - `Decision author`:
   Is the person who creates the decision PR.
 - `Decision reviewers`:
@@ -105,11 +105,13 @@ Decisions need to:
 We use the template [TEMPLATE.md](../TEMPLATE.md).
 Explanations of the template are in [EXPLANATIONS.md](../EXPLANATIONS.md).
 
-Steps are described in [STEPS.md](../STEPS.md).
-Each mandatory step requires two reviews and the merging of the decision PR.
+Steps are described in [STEPS.md](../STEPS.md):
 
-In each step we directly update the decision text with the different opinions.
-Discussions should focus on the decision text so that the text evolves and improves.
+- Decision authors are the main force to improve the text to get a decision forward.
+- Decision authors and decision reviewers together decide about which step a decision currently has.
+- Each mandatory step requires two reviews and the merging of the decision PR.
+- In each step we directly update the decision text with the different opinions.
+  Discussions should focus on the decision text so that the text evolves and improves.
 
 ## Rationale
 

@@ -48,7 +48,7 @@ Assumptions are what we believe to be true but do not or cannot really know, e.g
 
 ## Considered Alternatives
 
-This is a list of all solutions and a rationale why the solution was not taken, e.g. because:
+This is a list of all alternative solutions and a rationale why the alternatives were not taken, e.g. because:
 
 - the solution does not solve the whole problem
 - some constraints or assumptions are violated

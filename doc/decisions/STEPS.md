@@ -4,34 +4,36 @@ This document describes all steps a decision can run through.
 
 ```mermaid
 flowchart LR
-  s((Start)) --> Drafts --> In_Discussion --> In_Progress -- merge --> Decided
+  s((Start)) --> Drafts --> Problem_Clear --> Alternatives_Clear --> In Review -- merge --> Decided
     -- merge --> Partially_Implemented --> Implemented
 
   %% Shortcuts:
   s --> Decided
   Drafts -- merge --> Decided
-  In_Discussion -- merge --> Decided
+  Problem_Clear -- merge --> Decided
+  Alternatives_Clear -- merge --> Decided
   Decided -- merge --> Implemented
 ```
 
-Additionally, decision that are not yet "Decided" can be become "Rejected" or "Delayed" at any point.
+Additionally, decision that are not yet "Decided" can be become "Drafts", "Rejected" or "Postponed" at any point, e.g., if the decision author stops working on the decision.
 
-The label `merge` on the edges mean that a decision PR must be merged before it can target the next step.
+The label `merge` on the edges means that a decision PR must be merged before it can target the next step.
 
 > The first PR for a decision usually creates the decision in the "Drafts" state.
-> If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "In Discussion" or "In Progress" before the merge.
+> If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "Problem Clear", "Alternatives Clear" or even "In Review" before the merge.
 
 Short summary:
 
-1. The first PR for a decision can be created as "Drafts", "In Discussion", "In Progress" or "Decided".
+1. The first PR for a decision is created as "Drafts" (recommended!), "Problem Clear", "Alternatives Clear" or "Decided".
 2. A decision PR that wants to merge a decision as "Decided" must:
-   1. Already start with the decision as "Decided".
-   2. Already have all the considered alternatives fully explored.
-   3. Only contain discussions/reviews about deciding between one of the considered alternatives.
-   4. If there is any significant change in the PR (i.e. information changes, not just typos) then the PR cannot be merged as "Decided". The decision must be moved back to "In Progress".
+   1. Only contain changes to one decision.
+   2. Already start with the decision as "Decided".
+   3. Already have a clearly stated problem and all the considered alternatives fully explored.
+   4. Only contain discussions/reviews about deciding between one of the considered alternatives or details thereof.
+   5. If there is any change in the direction of the decision then the PR cannot be merged as "Decided". The decision must at least be moved back to "In Review".
 3. After a decision is merged as "Decided", it can be moved to "Partially Implemented" or "Implemented" by any PR.
 
-The rest of the document describes the steps in more details.
+The rest of the document describes the steps in full details.
 
 ## Drafts
 
@@ -40,23 +42,28 @@ The rest of the document describes the steps in more details.
 The first step is to create a PR with:
 
 - **one** decision, where at least the "Problem" is filled out and "Decision", "Rationale" and "Implications" are **not** yet filled out.
-- a link from [README.md](../README.md) from the "Drafts" section to this decision.
 - optional backlinks from related decisions.
+
+This step is brainstorming for completely new ideas.
+
+> No agreement about anything is needed to merge decisions in this stage.
+
+## Problem Clear
 
 This step is very important:
 
-- it is brainstorming for completely new ideas.
+- it clarifies the importance of the problem, answering:
+  Why should we put our time and energy in this problem and not in another problem.
 - it clarifies the scope of the decision.
 - it clarifies relation to other problems.
 
 Decisions will have much smoother further steps if this step is done carefully without prejudice.
 It is especially important that one shouldn't have a fixed mind-set about a preferred solution from the beginning.
 
-> Everyone must agree that the problem exists so that a decision PR in "Drafts" step can be merged.
-> At least the problem must be clear to everyone involved before the decision can leave the "Drafts" step.
-> It must be so clear that everyone would be able to describe a test case that shows if a solution fixes the problem.
+> Everyone must agree that the problem exists and is worth solving so that a decision PR in "Problem Clear" step can be merged.
+> It must be so clear that everyone would be able to describe an experiment or test case that shows if a solution fixes the problem.
 
-## In Discussion
+## Alternatives Clear
 
 > This step is recommended if it is not yet clear to the core developers which solution is the best.
 
@@ -71,12 +78,12 @@ Here you must ensure:
 Here the decision should not only have one decision but should describe several solutions.
 For each solution a proposal, rationale and optionally implications should be given.
 
-## In Progress
+## In Review
 
 - You must include all further alternative proposals made in the "Considered Alternatives" section.
 - Now it is allowed to have the decision from the previous round in the "Decision" section.
 
-> For decisions "In Progress" the solution space is clear.
+> For decisions "In Review" the solution space is clear.
 > I.e. the trade-offs, combinations and pros/cons of the considered alternatives are explored.
 > Decision author and reviewers are satisfied that every useful considered alternative is present in the decision.
 > Without merges in between, this is the last step reachable for a decision PR that started in "Drafts".
@@ -84,7 +91,7 @@ For each solution a proposal, rationale and optionally implications should be gi
 ## Decided
 
 > This step is mandatory.
-> I.e., there must be a decision PR that puts the decision into "Decided".
+> I.e., there must be a dedicated decision PR that puts the decision into "Decided".
 
 - "Decision", "Rationale" and "Implications" are now filled out and fixed according to the reviews
 - decisions of this step usually already have an implementation PR
@@ -96,7 +103,9 @@ Decisions that need an update, e.g. because assumptions changed, usually directl
 
 ## Partially Implemented
 
-This can be useful for decisions that need to be done for every module like plugin or library.
+We want to avoid this step, ideally PRs fully implement decisions.
+
+Nevertheless, this can be useful for decisions that need to be done for every module like plugin or library.
 It is for decisions where only a few not-so-important modules are missing and/or issues exist for the remaining pieces.
 
 The "Implication" must clearly say how much of the decision is already implemented.
@@ -111,9 +120,20 @@ The "Implication" must clearly say how much of the decision is already implement
 - The decision links to the new documentation.
 
 > In this step, decision PRs only modify a _single_ decision.
-> Here more exceptions are allowed, in particular documentation updates concerning the decision.
+> Here more exceptions are allowed, in particular documentation updates are okay.
+
+## Postponed
+
+This step is:
+
+- for decisions that are useful contributions but currently there is simply no urgency or immanent need for the proposal.
+- a graveyard for neglected decisions, e.g., where the decision authors focus on something more important instead.
+
+> The purpose of this step is to have a clean "Drafts" folder.
 
 ## Rejected
 
-Alternatively, decisions might be rejected (i.e. status quo wins).
-These decision PRs are also merged for documentation purposes.
+Alternatively, decisions might be rejected (e.g. status quo wins).
+This step is for decisions that are agreed to not fit well to Elektra and never should be accepted.
+
+> The purpose of this final step is to have a clean "Drafts" folder.
