@@ -21,6 +21,9 @@ static void benchmarkDel (void)
 
 int main (void)
 {
+	fprintf (stdout, "%s;%s;%s\n", "plugin", "operation", "microseconds");
+	timeInit ();
+
 	Key * parentKey = keyNew ("user:/benchmark", KEY_END);
 	KDB * handle = kdbOpen (NULL, parentKey);
 	fprintf (stdout, CSV_STR_FMT, "core", "kdbOpen", timeGetDiffMicroseconds ());
