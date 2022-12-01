@@ -25,6 +25,7 @@ do_benchmark (large)
 do_benchmark (cmp)
 do_benchmark (createkeys)
 do_benchmark (memoryleak)
+do_benchmark (deepdup)
 
 # exclude storage and KDB benchmark from mingw
 if (NOT WIN32)
@@ -32,6 +33,8 @@ if (NOT WIN32)
 	set (ADDITIONAL_SOURCES $<TARGET_OBJECTS:cframework>)
 	do_benchmark (storage)
 	do_benchmark (kdb)
+	do_benchmark (kdbget)
+	do_benchmark (kdbmodify)
 endif (NOT WIN32)
 
 # exclude the OPMPHM benchmarks from mingw
