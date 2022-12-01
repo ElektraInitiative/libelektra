@@ -73,8 +73,9 @@ Substantial decisions, however, must be made in a transparent and participative 
 - All decision reviewers want to help the decision authors to write a good decision.
 - Decision authors are the main force behind a decision and possibly also of specific solutions.
   Nevertheless they don't want to avoid other solutions, are open to arguments/facts/etc. and incorporate all input of decision PR fairly.
-- We will always be able to reach an consensus even if it requires that the core or plugins get multiple implementations.
-  We don't need a vote (besides the approved review) or a benevolent dictatorship.
+- For important decisions, we will able to reach an consensus even if it requires that the core or plugins get multiple implementations.
+  We accept indefinite postponement of lesser important decisions, where there is strong disagreement about the problem or the best solution.
+  Thus we don't need a vote (besides the approved review) or a benevolent dictatorship.
 - Different to initiatives like Rust, most contributors in Elektra are not experts in configuration management or programming languages.
   So we do not expect that a clear problem or solution is in the decision writer's mind beforehand.
   Instead the decision process is a supported learning process.
