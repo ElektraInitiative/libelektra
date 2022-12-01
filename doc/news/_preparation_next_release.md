@@ -78,12 +78,12 @@ Take a look at the [new docs](../dev/mountpoints.md), if you need to know detail
 Thanks to _(Maximilian Irlinger @atmaxinger)_ our `Key` and `KeySet` datastructures are now fully copy-on-write!
 This means noticeably reduced memory usage for cases where keys and keysets are copied and/or duplicated!
 
-We run some very promising benchmarks, each were performed with 400,000 keys. 
+We run some very promising benchmarks, each were performed with 400,000 keys.
 All benchmarks were executed using `valgrind --tool=massif --time-unit=B --max-snapshots=200 --threshold=0.1`.
 
 | Benchmark      | Current Implementation | Copy-on-Write | Size Reduction | Remarks                    |
-|:---------------|-----------------------:|--------------:|---------------:|:---------------------------|
- | `createkeys.c` |                5.3 MiB |       6.5 MiB |          -22 % |                            |
+| :------------- | ---------------------: | ------------: | -------------: | :------------------------- |
+| `createkeys.c` |                5.3 MiB |       6.5 MiB |          -22 % |                            |
 | `deepdup.c`    |               10.5 MiB |       8.2 MiB |           22 % |                            |
 | `large.c`      |               18.9 MiB |      15.3 MiB |           19 % |                            |
 | `kdb.c`        |               23.5 MiB |      17.8 MiB |           24 % |                            |
