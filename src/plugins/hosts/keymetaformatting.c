@@ -39,7 +39,11 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 		return -1;
 	}
 
-	return keySetRaw (key, p, elektraStrLen (p));
+	ssize_t ret = keySetRaw (key, p, elektraStrLen (p));
+
+	elektraFree (p);
+
+	return ret;
 }
 
 static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t spaces, const char * commentStart, const char * comment)
