@@ -382,7 +382,7 @@ branch you've referenced for this pull request, they will be added
 automatically to it. In any case check the output of the automated tests!
 
 If you want to use CLion for creating Pull Request, please check out
-[this](https://www.jetbrains.com/help/clion/contribute-to-projects.html#create-pull-request)
+[this](https://www.jetbrains.com/help/clion/work-with-github-pull-requests.html)
 link for further information.
 
 ## Troubleshooting
