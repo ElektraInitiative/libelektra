@@ -515,11 +515,13 @@ Implement the full-blown COW approach.
 
 ## Rationale
 
+- It is the most versatile option.
+- No restrictions on the lifetime of `Key` and `KeySet` objects.
+- Completely transparent to developers using Elektra's public API.
+
 ## Implications
 
--
--
--
+- The `mmapstorage` plugins needs to be updated
 
 ## Related Decisions
 
