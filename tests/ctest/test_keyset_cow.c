@@ -755,6 +755,7 @@ static void ksRename_should_replace_data_when_references (void)
 	keyDel (root);
 	keyDel (newRoot);
 	ksDel (ks);
+	ksDel (dup);
 }
 
 static void ksPop_with_null_data_should_return_null (void)
@@ -936,7 +937,7 @@ static void ksLookup_modifying_flags_should_not_replace_data_when_no_references 
 		}
 
 		// Act
-		ksLookup (ks, lookupKey, flag);
+		Key * returned = ksLookup (ks, lookupKey, flag);
 
 		// Assert
 		printf ("  - testing flag %zu\n", i);
@@ -944,6 +945,11 @@ static void ksLookup_modifying_flags_should_not_replace_data_when_no_references 
 
 		ksDel (ks);
 		keyDel (lookupKey);
+
+		if (flag == KDB_O_POP)
+		{
+			keyDel (returned);
+		}
 	}
 }
 
