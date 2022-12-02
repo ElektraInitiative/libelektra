@@ -101,21 +101,20 @@ This can most likely be explained by internal caching within the memory allocato
 
 We also performed runtime tests on the same benchmarks using `perf stat --repeat 13` to ensure no major performance regressions occur.
 
-| Benchmark       | Old Implementation | Deviation | Copy-on-Write | Deviation | Runtime Increase |
-| :-------------- | -----------------: | --------: | ------------: | --------: | ---------------: |
-| `createkeys.c`  |         0.209572 s |    0.36 % |     0.21987 s |    0.77 % |            4.9 % |
-| `deepdup.c`     |          0.23025 s |    0.47 % |    0.231804 s |    0.32 % |            0.6 % |
-| `large.c`       |          1.14038 s |    0.21 % |     1.14837 s |    0.21 % |            0.7 % |
-| `kdb.c`         |           1.9270 s |    2.63 % |     1.93354 s |    0.17 % |            0.3 % |
-| `kdbget.c`      |         0.145663 s |    0.17 % |     0.15763 s |    0.70 % |            8.2 % |
-| `kdbmodify.c`   |         0.146506 s |    0.19 % |    0.156347 s |    0.15 % |            6.7 % |
+| Benchmark      | Old Implementation | Deviation | Copy-on-Write | Deviation | Runtime Increase |
+| :------------- | -----------------: | --------: | ------------: | --------: | ---------------: |
+| `createkeys.c` |         0.209572 s |    0.36 % |     0.21987 s |    0.77 % |            4.9 % |
+| `deepdup.c`    |          0.23025 s |    0.47 % |    0.231804 s |    0.32 % |            0.6 % |
+| `large.c`      |          1.14038 s |    0.21 % |     1.14837 s |    0.21 % |            0.7 % |
+| `kdb.c`        |           1.9270 s |    2.63 % |     1.93354 s |    0.17 % |            0.3 % |
+| `kdbget.c`     |         0.145663 s |    0.17 % |     0.15763 s |    0.70 % |            8.2 % |
+| `kdbmodify.c`  |         0.146506 s |    0.19 % |    0.156347 s |    0.15 % |            6.7 % |
 
 Overall, the runtime performance hit is less than 10%.
 The more a program does, the less the additional overhead of the copy-on-write algorithms matter.
 One interesting detail is that `keyCopy` and `keyDup` have become quite a bit faster.
 This can be seen by comparing the differences between `createkeys.c` and `deepdup.c`.
 The differences are 21 ms for the old implementation and 12 ms for the copy-on-write implementation.
-
 
 ### <<HIGHLIGHT>>
 
