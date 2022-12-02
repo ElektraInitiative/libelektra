@@ -678,13 +678,13 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM]
   )
 
-  tasks << buildAndTestAsan(
-    "debian-bullseye-full-mmap-asan",
-    DOCKER_IMAGES.bullseye,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_MMAP
-  )
+  //   tasks << buildAndTestAsan(
+  //     "debian-bullseye-full-mmap-asan",
+  //     DOCKER_IMAGES.bullseye,
+  //     CMAKE_FLAGS_BUILD_ALL +
+  //       CMAKE_FLAGS_DEBUG +
+  //       CMAKE_FLAGS_MMAP
+  //   )
 
   // Build Elektra with xdg resolver to see if we are compliant
   def xdgResolver = 'resolver_mf_xp_x'

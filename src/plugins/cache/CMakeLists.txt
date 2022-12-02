@@ -1,3 +1,4 @@
+#[[
 include (LibAddPlugin)
 include (SafeCheckSymbolExists)
 
@@ -35,3 +36,4 @@ if (CACHE_DEPENDENCIES_OK AND BUILD_SHARED)
 endif ()
 
 unset (CACHE_DEPENDENCIES_OK)
+]]
