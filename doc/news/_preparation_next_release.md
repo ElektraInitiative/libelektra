@@ -81,14 +81,14 @@ This means noticeably reduced memory usage for cases where keys and keysets are 
 We run some very promising benchmarks, each were performed with 400,000 keys.
 All benchmarks were executed using `valgrind --tool=massif --time-unit=B --max-snapshots=200 --threshold=0.1`.
 
-| Benchmark      | Current Implementation | Copy-on-Write | Size Reduction | Remarks                    |
-| :------------- | ---------------------: | ------------: | -------------: | :------------------------- |
-| `createkeys.c` |                5.3 MiB |       6.5 MiB |          -22 % |                            |
-| `deepdup.c`    |               10.5 MiB |       8.2 MiB |           22 % |                            |
-| `large.c`      |               18.9 MiB |      15.3 MiB |           19 % |                            |
-| `kdb.c`        |               23.5 MiB |      17.8 MiB |           24 % |                            |
-| `kdbget.c`     |               11.0 MiB |       8.8 MiB |           20 % |                            |
-| `kdbmodify.c`  |               11.0 MiB |       8.8 MiB |           20 % | Same results as `kdbget.c` |
+| Benchmark      | Old Implementation | Copy-on-Write | Size Reduction | Remarks                    |
+| :------------- | -----------------: | ------------: | -------------: | :------------------------- |
+| `createkeys.c` |            5.3 MiB |       6.5 MiB |          -22 % |                            |
+| `deepdup.c`    |           10.5 MiB |       8.2 MiB |           22 % |                            |
+| `large.c`      |           18.9 MiB |      15.3 MiB |           19 % |                            |
+| `kdb.c`        |           23.5 MiB |      17.8 MiB |           24 % |                            |
+| `kdbget.c`     |           11.0 MiB |       8.8 MiB |           20 % |                            |
+| `kdbmodify.c`  |           11.0 MiB |       8.8 MiB |           20 % | Same results as `kdbget.c` |
 
 First, it should be noted that a single key, without counting payload, is about 50% larger with the copy-on-write implementation.
 This explains why the `createkeys.c` benchmark yields a negative reduction result.
@@ -99,19 +99,23 @@ All other benchmarks saw meaningful reductions of heap memory used.
 One interesting observation is that `kdbget.c` and `kdbmodify.c` used exactly the same memory.
 This can most likely be explained by internal caching within the memory allocator of `glibc`.
 
-We also performed runtime tests on the same benchmarks using `perf stat --repeat 13`.
+We also performed runtime tests on the same benchmarks using `perf stat --repeat 13` to ensure no major performance regressions occur.
 
-| Benchmark       | Current Implementation | Deviation | Copy-on-Write | Deviation | Runtime Increase |
-| :-------------- | ---------------------: | --------: | ------------: | --------: | ---------------: |
-| `createkeys.c`  |             0.209572 s |    0.36 % |     0.21987 s |    0.77 % |            4.9 % |
-| `deepdup.c`     |              0.23025 s |    0.47 % |    0.231804 s |    0.32 % |            0.6 % |
-| `large.c`       |              1.14038 s |    0.21 % |     1.14837 s |    0.21 % |            0.7 % |
-| `kdb.c`         |               1.9270 s |    2.63 % |     1.93354 s |    0.17 % |            0.3 % |
-| `kdbget.c`      |             0.145663 s |    0.17 % |     0.15763 s |    0.70 % |            8.2 % |
-| `kdbmodify.c`   |             0.146506 s |    0.19 % |    0.156347 s |    0.15 % |            6.7 % |
+| Benchmark       | Old Implementation | Deviation | Copy-on-Write | Deviation | Runtime Increase |
+| :-------------- | -----------------: | --------: | ------------: | --------: | ---------------: |
+| `createkeys.c`  |         0.209572 s |    0.36 % |     0.21987 s |    0.77 % |            4.9 % |
+| `deepdup.c`     |          0.23025 s |    0.47 % |    0.231804 s |    0.32 % |            0.6 % |
+| `large.c`       |          1.14038 s |    0.21 % |     1.14837 s |    0.21 % |            0.7 % |
+| `kdb.c`         |           1.9270 s |    2.63 % |     1.93354 s |    0.17 % |            0.3 % |
+| `kdbget.c`      |         0.145663 s |    0.17 % |     0.15763 s |    0.70 % |            8.2 % |
+| `kdbmodify.c`   |         0.146506 s |    0.19 % |    0.156347 s |    0.15 % |            6.7 % |
 
 Overall, the runtime performance hit is less than 10%.
 The more a program does, the less the additional overhead of the copy-on-write algorithms matter.
+One interesting detail is that `keyCopy` and `keyDup` have become quite a bit faster.
+This can be seen by comparing the differences between `createkeys.c` and `deepdup.c`.
+The differences are 21 ms for the old implementation and 12 ms for the copy-on-write implementation.
+
 
 ### <<HIGHLIGHT>>
 
