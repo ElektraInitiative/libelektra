@@ -1204,6 +1204,7 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	if (ksAtCursor (ks, start) == root)
 	{
 		root = keyDup (root, KEY_CP_NAME);
+		dupedRoot = true;
 	}
 
 	size_t newStart = ksFindHierarchy (ks, newRoot, NULL);
