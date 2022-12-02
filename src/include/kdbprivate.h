@@ -268,7 +268,7 @@ struct _Key
 	uint16_t refs;
 
 	/**
-	 * Is this structure and its data stored in an mmap()ed memory area?
+	 * Is this structure stored in an mmap()ed memory area?
 	 */
 	bool isInMmap : 1;
 
@@ -394,7 +394,7 @@ struct _KeySet
 	uint16_t refs; /**< Reference counter */
 
 	/**
-	 * Is this structure and its data stored in an mmap()ed memory area?
+	 * Is this structure stored in an mmap()ed memory area?
 	 */
 	bool isInMmap : 1;
 
