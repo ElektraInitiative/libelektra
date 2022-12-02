@@ -10,7 +10,7 @@ BASE_DIR="$(pwd)"
 BUILD_DIR="$BASE_DIR/build"
 ICHECK_DIR="$BASE_DIR/icheck"
 
-CMPVERSION="0.9.7"
+CMPVERSION="0.9.11"
 # XXX: updates here require update in doc/VERSION.md
 FILES="src/include/kdbmeta.h src/include/kdbease.h src/include/kdbmerge.h src/include/kdbmodule.h src/include/kdbnotification.h src/include/kdbplugin.h src/plugins/doc/doc.h src/include/kdbopts.h"
 
