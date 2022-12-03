@@ -14,8 +14,9 @@
 - **Main success scenario:**
   - Caller asks Core to look up `Key` by non-cascading name in `KeySet`
   - Core searches for `Key` with same name in `KeySet`
-  - If found, Core returns index
-  - Otherwise, Core returns a value indicating both "Not found" and the index, where a `Key` with the given name would be inserted.
+  - If a matching `Key` is found, Core returns a `Key *` to it.
+    The name of the `Key` will be read-only, otherwise it is modifiable.
+  - Otherwise, Core returns `NULL`
 - **Alternative scenario:** -
 - **Error scenario:** -
 - **Postcondition:**

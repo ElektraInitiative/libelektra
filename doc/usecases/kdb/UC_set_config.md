@@ -1,4 +1,4 @@
-# Use Case: Storing application configuration
+# Use Case: Set configuration
 
 ## Summary
 

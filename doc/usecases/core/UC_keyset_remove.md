@@ -11,15 +11,13 @@
 
 - **Precondition:**
   - [`KeySet` has been created](UC_keyset_create.md)
-  - [`Key` has been inserted into `KeySet`](UC_keyset_insert.md)
 - **Main success scenario:**
-  - Caller [looks up `Key` in `KeySet`](UC_keyset_lookup_basic.md) to get index
-  - Caller requests to remove `Key` by index from `KeySet`
-  - Core removes given `Key` at index from `KeySet`
-- **Alternative scenario:**
-  - Caller [looks up hierarchy in `KeySet`](UC_keyset_lookup_prefix.md) to get index range
-  - Caller requests to remove `Key`s by index range from `KeySet`
-  - Core removes given index range from `KeySet`
+  - Caller requests to remove `Key` by name from `KeySet`
+  - Core searches for `Key` with same name in `KeySet`
+  - If a matching `Key` is found, Core removes it from `KeySet` returns a `Key *` to it.
+    The name of the `Key` will be read-only, otherwise it is modifiable.
+  - Otherwise, Core returns `NULL`
+- **Alternative scenario:** -
 - **Error scenario:** -
 - **Postcondition:**
   - The removed `Key`(s) MUST NOT be part of `KeySet` anymore.

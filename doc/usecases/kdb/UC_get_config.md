@@ -1,4 +1,4 @@
-# Use Case: Loading application configuration
+# Use Case: Get configuration
 
 ## Summary
 

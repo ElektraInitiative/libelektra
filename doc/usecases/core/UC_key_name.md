@@ -5,7 +5,7 @@
 - **Scope:** `libelektra-core`
 - **Level:** Developer Goal
 - **Actors:** Core, Caller
-- **Brief:** Access to and manipulation `Key`'s name
+- **Brief:** Access to and manipulation of `Key`'s name
 
 ## Scenarios
 
