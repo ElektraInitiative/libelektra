@@ -85,27 +85,33 @@ TLS was only standardized in C11, while Elektra currently only requires C99.
 
 This has all the same issues as `errno`: needs to be cleared to detect errors, can only store one error (per thread), etc.
 
+### Limit to single error value
+
+Always limiting a function to a single error code can be very limiting and in some cases and makes it very hard to find out what the exact problem was.
+Reducing a function to a single error value, makes sense if the errors are easy to distinguish.
+But for more complex preconditions, this can be annoying and inefficient to use.
+For example, a function `foo` that takes two keynames, both of which must be valid.
+To find out which of the names was invalid, the caller would have to call something like `elektraCheckName(name)` on at least one name.
+That's a non-trivial check that is not cheap in terms of runtime.
+More importantly, it is a check that `foo` already did, and the result could just be propagated to the caller.
+
 ### Redesign API
 
-Redesign the API, so that every API function only has maximal one error case next to memory errors.
+Similar to the option above, we limit all functions to a single error value.
+But we also redesign the API, so that every API function only has maximal one error case (apart from failed allocation and `NULL` pointers as arguments).
 
 - `nameNew(name) -> name_object` only has the error case of invalid name
 - `keyNew(name_object)` won't have error cases anymore
 - `keySetName(name_object)` only has the error case of read-only names
 
-The advantage is that it is hard to be used wrongly.
-Users can only call keySetName if they have a valid key name.
-If keySetName fails nevertheless, we know that it must be because the name was read-only.
-No further debugging would be needed.
+The advantage is that an API like this is hard to be used incorrectly.
+You can only call `keySetName` when you already have a valid key name, so there is only a single error case for `keySetName`.
+If `keySetName` fails, we always know exactly what was wrong; the name was read-only.
 
-This can be very limiting and in some cases makes it very hard to find out what the exact problem was.
-Reducing a function to a single error value, makes sense if the errors are easy to distinguish.
-But for more complex preconditions, this can be annoying and inefficient to use.
-While the above example can be solved, by simple checking with `keyIsLocked`, there could less straightforward cases.
-For example, a function `foo` that takes two keynames, both of which must be valid.
-To find out which of the names was invalid, the caller would have to call something like `elektraCheckName(name)` on at least one name.
-That's a non-trivial check that is not cheap in terms of runtime.
-More importantly, it is a check that `foo` already did, and the result could just be propagated to the caller.
+However, always partitioning an API like this could create very annoying to use APIs.
+It could also have a negative impact on memory use.
+To make an API like this work properly, all the intermediate objects that allow us to have functions with a single error case, must be opaque structs.
+That means they must be heap-allocated as separate objects.
 
 ### Require caller to check preconditions
 
@@ -127,6 +133,9 @@ However, because sometimes checking arguments can be complicated and expensive (
 Instead, we take pragmatic approach and try to give more detailed errors, when appropriate and while maintaining a sensible API design.
 
 Below we explore a few different types of functions (in terms of their possible errors) and explore, how they can report errors.
+In addition to these examples, some of the other options could be combined with this one.
+Where appropriate, the API can be redesigned and partitioned into functions with a single error case.
+In other cases, using an extra argument for errors, or using an output pointer argument, might be an option.
 
 #### Simple preconditions
 
@@ -278,12 +287,77 @@ if (found == NULL)
 
 ## Decision
 
-**Suggestion:** Go with "Pragmatic solution"
+Go with "Pragmatic solution".
+We don't define any strict rules for the entire API.
+Instead, we define a few basic guidelines.
+
+### Guidelines
+
+These guidelines shall be applied to each function of the public API separately to decide how the function treats errors.
+
+#### Boolean functions
+
+If a function is conceptually boolean, it should return a `bool`.
+This means choosing `true` or `false` as the fallback value used in case of errors.
+
+If choosing `true` or `false` is not feasible, redesigning the function may be necessary.
+The function may be doing to many checks in one go and splitting it into multiple functions could make sense.
+
+If splitting is also not possible, an `int` or `enum` should be returned.
+The name of such a function must make clear that it is not actually boolean (avoid `is` and `has`, prefer `check`) to avoid accidental use in an `if`.
+
+#### Check preconditions
+
+Functions must check all preconditions.
+A (bug-free) function should never segfault, abort the process or otherwise cause unexpected behavior on the caller side.
+All conditions that could cause such behavior must be listed as preconditions and checked by the function as a safety measure.
+
+#### `NULL` arguments
+
+A `NULL` pointer argument should never be treated as a separate error case (unless it is the only error case).
+If a `NULL` pointer constitutes an invalid argument, the function should return an existing error (might be used for other precondition checks) or a default fallback value.
+
+#### Simple preconditions
+
+Simple preconditions are those that can be checked easily by the caller and which are not computationally expensive to check.
+All such preconditions should use the same error code, which may even be shared with other error cases.
+
+#### Complex preconditions
+
+Complex preconditions which
+
+- cannot (easily) be checked by the caller (e.g., because there is no public API for it) OR
+- are computationally expensive to check (i.e., duplicating the check would be bad)
+
+should always use separate error codes for each error case.
+The error code may not be shared with other complex preconditions, but can be shared with simple preconditions or `NULL` arguments, since those are easy to distinguish for the caller.
+
+#### Restructure API
+
+To avoid complex preconditions and the need for multiple error codes, the API can be restructured.
+This should, however, be done with caution.
+The API should still remain ergonomic to use and there should not be extra memory allocations creating opaque objects just to guard against possible errors.
+
+#### Error arguments
+
+If a function needs multiple error codes, return them as an `int` or enum value.
+Do not use an error argument (like `Key * error`).
+Instead, use an output pointer argument (e.g., `Foo * output`) for the data produced by the function.
+This makes it much more obvious to the caller that errors can occur.
+
+An exception is e.g., the high-level API, which maps the error concept of a `Key * error` onto a custom `ElektraError` type.
+This is allowed, because it has the same expressiveness and use case as a `Key * error`.
+
+#### Internal errors
+
+Internal errors that are never the fault of the caller and always caused by a bug in Elektra, should be prevented with an `assert`.
 
 ## Rationale
 
-Under the current assumptions this is the obvious solution.
-Every other solution borders on over-engineering.
+- Under the current assumptions this is the obvious solution.
+  Almost every other solution borders on over-engineering.
+- Defining strict rules for error handling, could in future leave us cornered and forced to create bad API or introduce exceptions to the rules.
+- Every function has its own use case, so it makes sense that errors are also treated differently on a case by case basis.
 
 ## Implications
 
