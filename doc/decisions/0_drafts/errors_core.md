@@ -352,6 +352,37 @@ This is allowed, because it has the same expressiveness and use case as a `Key *
 
 Internal errors that are never the fault of the caller and always caused by a bug in Elektra, should be prevented with an `assert`.
 
+#### Secondary return values
+
+In the success case, only return data the caller explicitly asked for by calling the function.
+Do not use secondary information as the return value.
+If there is secondary information, the caller may care about, use an (optional) output pointer argument.
+
+For example, `ksAppendKey` should not return the new size of the `KeySet`.
+The caller did not ask for the size, they asked for a key to be inserted.
+Apart from potential errors, the possible results the caller cares about are only:
+
+- success: key newly added
+- success: key existed, now replaced
+
+Therefore, the return value should only encode this information, e.g., via an `int`.
+
+Another example, could be a hypothetical `elektraEscapedNameIsValid` function.
+Here the caller wants to know whether the given string is a valid escaped name.
+They may still care about the canonical size of the escaped name or the offset of the first invalid character.
+For those things, optional output pointer arguments should be used.
+The function signature could look like this:
+
+```c
+/**
+ * @param outSize If not `NULL` and @p name is valid, `*outSize` will be set to the canonical size of @p name
+ * @param outErrorIndex If not `NULL` and @p name is not valid, `*outErrorIndex` will be set to the index of the first invalid character in @p name
+ *
+ * @returns `true` if @p name is valid escaped name and `false` otherwise (including `name == NULL`)
+ */
+bool elektraEscapedNameIsValid (const char * name, size_t * outSize, size_t * outErrorIndex);
+```
+
 ## Rationale
 
 - Under the current assumptions this is the obvious solution.
