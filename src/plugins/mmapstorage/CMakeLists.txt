@@ -1,3 +1,4 @@
+#[[
 include (LibAddPlugin)
 
 if (DEPENDENCY_PHASE)
@@ -24,3 +25,4 @@ add_plugin (
 	SOURCES ${MMAPSTORAGE_SOURCES}
 	LINK_ELEKTRA elektra-core
 	ADD_TEST TEST_README COMPONENT libelektra${SO_VERSION})
+]]

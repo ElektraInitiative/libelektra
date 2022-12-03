@@ -20,8 +20,8 @@ void test_keyNotFound (void)
 	Key * found = ksLookupByName (ks, "/nothere", KDB_O_OPMPHM);
 	succeed_if (!found, "key found");
 
-	exit_if_fail (ks->opmphm, "build opmphm");
-	succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+	exit_if_fail (ks->data->opmphm, "build opmphm");
+	succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 	ksDel (ks);
 }
@@ -38,15 +38,15 @@ void test_Copy (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		KeySet * copy = ksDup (ks);
 		succeed_if (copy, "copy");
 
 		// opmphm should be build
-		exit_if_fail (copy->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (copy->opmphm), "build opmphm");
+		exit_if_fail (copy->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (copy->data->opmphm), "build opmphm");
 
 		// test opmphm
 		Key * iter;
@@ -71,15 +71,15 @@ void test_Copy (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		KeySet * copy = ksDeepDup (ks);
 		succeed_if (copy, "copy");
 
 		// opmphm should be build
-		exit_if_fail (copy->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (copy->opmphm), "build opmphm");
+		exit_if_fail (copy->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (copy->data->opmphm), "build opmphm");
 
 		// test opmphm
 		Key * iter;
@@ -104,15 +104,15 @@ void test_Copy (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		KeySet * copy = ksNew (0, KS_END);
 		succeed_if (ksCopy (copy, ks) == 1, "copy");
 
 		// opmphm should be build
-		exit_if_fail (copy->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (copy->opmphm), "build opmphm");
+		exit_if_fail (copy->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (copy->data->opmphm), "build opmphm");
 
 		// test opmphm
 		Key * iter;
@@ -137,7 +137,7 @@ void test_Copy (void)
 		succeed_if (copy, "copy");
 
 		// opmphm should not be build
-		succeed_if (!copy->opmphm, "not build opmphm");
+		succeed_if (!copy->data->opmphm, "not build opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -157,13 +157,14 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		succeed_if (ksClose (ks) == 0, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		// TODO (atmaxinger): ksClose removes and deletes opmphm, we can't check it here - maybe somewhere else?
+		// exit_if_fail (ks->data->opmphm, "build opmphm");
+		// succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -178,13 +179,14 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		succeed_if (ksClear (ks) == 0, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		// TODO (atmaxinger): ksClear removes and deletes opmphm, we can't check it here - maybe somewhere else?
+		// exit_if_fail (ks->data->opmphm, "build opmphm");
+		// succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -199,20 +201,20 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		// insert existing one
 		succeed_if (ksAppendKey (ks, keyNew ("/a", KEY_END)) > 0, "not invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		// insert new one
 		succeed_if (ksAppendKey (ks, keyNew ("/k", KEY_END)) > 0, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -236,18 +238,18 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		succeed_if (ksAppend (ks, appendSub) > 0, "non invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		succeed_if (ksAppend (ks, appendSuper) > 0, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -264,13 +266,13 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		succeed_if (ksCopyInternal (ks, 2, 2) > 0, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -285,15 +287,15 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		Key * cutPoint = keyNew ("/b", KEY_END);
 		KeySet * cut = ksCut (ks, cutPoint);
 		succeed_if (cut, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -310,14 +312,14 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		Key * popKey = ksPop (ks);
 		succeed_if (popKey, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);
@@ -333,14 +335,14 @@ void test_Invalidate (void)
 		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->data->opmphm), "build opmphm");
 
 		Key * popKey = elektraKsPopAtCursor (ks, 1);
 		succeed_if (popKey, "invalidate");
 
-		exit_if_fail (ks->opmphm, "build opmphm");
-		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+		exit_if_fail (ks->data->opmphm, "build opmphm");
+		succeed_if (!opmphmIsBuild (ks->data->opmphm), "empty opmphm");
 
 		// cleanup
 		ksDel (ks);

@@ -52,17 +52,14 @@
  * Clear sync flag of a key.
  *
  * @param key the key object to work with
- * @retval -1 on null key
- * @return new flags for that key otherwise
  * @ingroup keytest
  *
  */
-int keyClearSync (Key * key)
+void keyClearSync (Key * key)
 {
-	if (!key) return -1;
+	if (!key) return;
 
-	key->flags &= ~(keyflag_t) KEY_FLAG_SYNC;
-	return key->flags;
+	key->needsSync = false;
 }
 
 
@@ -100,7 +97,7 @@ int keyNeedSync (const Key * key)
 {
 	if (!key) return -1;
 
-	return (key->flags & KEY_FLAG_SYNC) == KEY_FLAG_SYNC;
+	return key->needsSync ? 1 : 0;
 }
 
 

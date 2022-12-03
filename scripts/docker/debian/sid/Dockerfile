@@ -137,5 +137,5 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # Ronn-NG
-ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.0.0/bin"
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.1.0/bin"
 RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version

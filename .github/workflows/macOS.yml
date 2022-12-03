@@ -47,12 +47,12 @@ jobs:
            TOOLS: kdb
            PLUGINS: ALL
            BINDINGS: ALL;-rust
-         - name: MMap
-           KDB_DEFAULT_STORAGE: mmapstorage
-           KDB_DB_FILE: default.mmap
-           KDB_DB_INIT: elektra.mmap
-           PLUGINS: ALL
-           BINDINGS: ALL;-rust
+         #- name: MMap
+         #  KDB_DEFAULT_STORAGE: mmapstorage
+         #  KDB_DB_FILE: default.mmap
+         #  KDB_DB_INIT: elektra.mmap
+         #  PLUGINS: ALL
+         #  BINDINGS: ALL;-rust
     env:
       CC: ${{ matrix.CC }}
       CXX: ${{ matrix.CXX }}

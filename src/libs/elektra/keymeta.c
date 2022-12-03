@@ -231,7 +231,7 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO_META) return -1;
+	if (dest->hasReadOnlyMeta) return -1;
 
 	ret = (Key *) keyGetMeta (source, metaName);
 
@@ -325,7 +325,7 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 {
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO_META) return -1;
+	if (dest->hasReadOnlyMeta) return -1;
 
 	if (ksGetSize (source->meta) > 0)
 	{
@@ -442,12 +442,11 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString)
 {
 	Key * toSet;
-	char * metaStringDup;
 	ssize_t metaNameSize;
 	ssize_t metaStringSize = 0;
 
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO_META) return -1;
+	if (key->hasReadOnlyMeta) return -1;
 	if (!metaName) return -1;
 	metaNameSize = elektraStrLen (metaName);
 	if (metaNameSize == -1) return -1;
@@ -476,26 +475,14 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 		{
 			/*It was already there, so lets drop that one*/
 			keyDel (ret);
-			key->flags |= KEY_FLAG_SYNC;
+			key->needsSync = true;
 		}
 	}
 
 	if (newMetaString != NULL)
 	{
 		/*Add the meta information to the key*/
-		metaStringDup = elektraMemDup (newMetaString, metaStringSize);
-		if (metaStringDup == NULL)
-		{
-			// TODO: actually we might already have changed
-			// the key
-			keyDel (toSet);
-			return -1;
-		}
-
-		if (toSet->data.v && !test_bit (toSet->flags, KEY_FLAG_MMAP_DATA)) elektraFree (toSet->data.v);
-		clear_bit (toSet->flags, (keyflag_t) KEY_FLAG_MMAP_DATA);
-		toSet->data.c = metaStringDup;
-		toSet->dataSize = metaStringSize;
+		keySetRaw (toSet, newMetaString, metaStringSize);
 	}
 	else
 	{
@@ -516,12 +503,12 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 		}
 	}
 
-	set_bit (toSet->flags, KEY_FLAG_RO_NAME);
-	set_bit (toSet->flags, KEY_FLAG_RO_VALUE);
-	set_bit (toSet->flags, KEY_FLAG_RO_META);
+	toSet->hasReadOnlyName = true;
+	toSet->hasReadOnlyValue = true;
+	toSet->hasReadOnlyMeta = true;
 
 	ksAppendKey (key->meta, toSet);
-	key->flags |= KEY_FLAG_SYNC;
+	key->needsSync = true;
 	return metaStringSize;
 }
 

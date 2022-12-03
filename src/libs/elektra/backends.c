@@ -95,8 +95,7 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 			Key * d = keyDup (k, KEY_CP_ALL);
 
 			// set the value of the sync flag to the same value as the original key
-			clear_bit (d->flags, KEY_FLAG_SYNC);
-			d->flags |= k->flags & KEY_FLAG_SYNC;
+			d->needsSync = k->needsSync;
 
 			ksAppendKey (defaultBackendData->keys, d);
 		}
@@ -114,8 +113,7 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 			Key * d = keyDup (k, KEY_CP_ALL);
 
 			// set the value of the sync flag to the same value as the original key
-			clear_bit (d->flags, KEY_FLAG_SYNC);
-			d->flags |= k->flags & KEY_FLAG_SYNC;
+			d->needsSync = k->needsSync;
 
 			ksAppendKey (backendData->keys, d);
 		}
