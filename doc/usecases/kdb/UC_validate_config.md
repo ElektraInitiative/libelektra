@@ -10,7 +10,7 @@
 ## Scenarios
 
 - **Precondition:**
-  - A specification defining what a valid configuration for Application looks like exists.
+  - A specification, defining how a valid configuration for Application looks like, exists.
 - **Main success scenario:**
   - [Application loads configuration](UC_load_config.md)
     During this process Elektra checks the configuration against the specification.

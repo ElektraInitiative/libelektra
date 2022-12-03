@@ -14,7 +14,7 @@
   - Caller requests to create a new `Key` with a given name
   - Core instantiates a `Key` with the given name, no value and no metadata and returns it
 - **Alternative scenario:**
-  - Caller requests to create a new `Key`, with given name, and optionally value and metadata
+  - Caller requests to create a new `Key`, with given name with value and/or metadata
   - Core instantiates a `Key`, with the given name, value, and metadata and returns it
 - **Error scenario:** -
 - **Postcondition:**

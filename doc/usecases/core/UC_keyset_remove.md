@@ -15,7 +15,7 @@
 - **Main success scenario:**
   - Caller [looks up `Key` in `KeySet`](UC_keyset_lookup_basic.md) to get index
   - Caller requests to remove `Key` by index from `KeySet`
-  - Core removes given index from `KeySet`
+  - Core removes given `Key` at index from `KeySet`
 - **Alternative scenario:**
   - Caller [looks up hierarchy in `KeySet`](UC_keyset_lookup_prefix.md) to get index range
   - Caller requests to remove `Key`s by index range from `KeySet`

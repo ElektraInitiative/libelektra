@@ -19,4 +19,4 @@
   - `KeySet` exists and is usable by Caller
 - **Non-functional Constraints:**
   - `KeySet` MUST be resizable after creation
-  - `KeySet` SHOULD be efficient for small and larger sizes
+  - `KeySet` SHOULD be efficient for small (~10) to larger (~100.000) sizes

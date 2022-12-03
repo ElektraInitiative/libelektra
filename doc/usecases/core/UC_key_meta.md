@@ -13,7 +13,7 @@
   - [`Key` has been created](UC_key_create.md)
 - **Main success scenario:**
   - Caller requests metadata of `Key`
-  - Core returns metadata of `Key` as `KeySet`
+  - Core returns metadata of `Key` as modifiable `KeySet`
 - **Alternative scenario:** -
 - **Error scenario:** -
 - **Postcondition:** -

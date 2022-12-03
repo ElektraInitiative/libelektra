@@ -12,7 +12,7 @@
 - **Precondition:** -
 - **Main success scenario:**
   - Application asks to store new configuration into KDB
-  - Elektra stores in backends
+  - Elektra stores configuration in backends
 - **Alternative scenario:** -
 - **Error scenario:**
   - Application asks to store new configuration into KDB
