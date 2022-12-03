@@ -8,6 +8,8 @@ We need to find minimal requirements to implement a sane spec plugin.
 
 ## Constraints
 
+TODO
+
 ## Assumptions
 
 ## Considered Alternatives
