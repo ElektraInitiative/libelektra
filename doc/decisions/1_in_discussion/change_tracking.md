@@ -13,7 +13,7 @@ These competing change tracking implementations create multiple problems:
 1. pointless waste of resources, as data is duplicated in each plugin,
 2. multiplication of code, generating a maintenance burden.
 3. various subtle differences in change tracking behavior, e.g., `kdbSet` might write a config file but notification is not sent out
-4. the current approach to change tracking in plugins is fragile, which is outlined in [a separate decision about valid kdbGet/kdbSet sequences](operation_sequences.md).
+4. the current approach to change tracking in plugins is fragile, which is outlined in [a separate decision about valid kdbGet/kdbSet sequences](../0_drafts/operation_sequences.md).
 
 For `KeySet` we need to track which of the keys:
 
@@ -41,7 +41,7 @@ Change tracking must:
 - if overhead is not negligible: only do tracking as required, i.e., a plugin specifically requests it
 - have negligible overhead if disabled
 - not duplicate data for each plugin that wants change tracking
-- work with all allowed sequences of `kdbGet` and `kdbSet` as [per this decision](operation_sequences.md)
+- work with all allowed sequences of `kdbGet` and `kdbSet` as [per this decision](../0_drafts/operation_sequences.md)
 
 We only want to track changes that are done by the user, not changes that are done by plugins.
 I.e. the scope of change tracking is on what happens _outside_ of `kdbGet` and `kdbSet`.
@@ -160,7 +160,7 @@ Another problem with this approach is that the internally stored keys are recrea
 
 ## Related Decisions
 
-- [Valid kdbGet/kdbSet sequences](operation_sequences.md) from [#4574](https://github.com/ElektraInitiative/libelektra/pull/4574).
+- [Valid kdbGet/kdbSet sequences](../0_drafts/operation_sequences.md) from [#4574](https://github.com/ElektraInitiative/libelektra/pull/4574).
 - [Copy On Write](../2_in_progress/copy_on_write.md)
 
 ## Notes
