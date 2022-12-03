@@ -2,7 +2,7 @@
 
 ## Problem
 
-We often use a `Key * errorKey` argument to return error information via metadata (see related decisions).
+We often use a `Key * errorKey` argument to return error information via metadata.
 In `libelektra-core`, however, that would be inappropriate and sometimes even impossible (e.g., `keyNew`).
 
 Not using a `Key * errorKey` argument can be limiting, however.
@@ -24,11 +24,12 @@ Therefore, we need a general concept for errors, which we use when an `errorKey`
   The requirement is analogous to the `Key * errorKey` argument.
   The presence of the argument makes it obvious that errors _can_ happen, but you can easily omit the error check when you want to.
 - Adding error indications should not make the API less convenient to use.
+- It should be [hard to use the API the wrong way](doc/DESIGN.md).
 
 ## Assumptions
 
 - In many cases, it is possible to avoid error cases through the preceding code path.
-  For example, a very common case is that functions return an error, if they receive a `NULL` pointer.
+  For example, a ubiquitous case is that functions return an error, if they receive a `NULL` pointer.
   Often this case can be excluded by static analysis, i.e., because of the preceding code it is impossible that the pointer is `NULL`.
 
   ```c
@@ -37,7 +38,7 @@ Therefore, we need a general concept for errors, which we use when an `errorKey`
       return -1;
     }
 
-    // [...] could lots of code, as long as the Key * key doesn't change
+    // [...] could be lots of code, but the code doesn't change `Key * key`
 
     const Key * found1 = ksLookupByName (ks, "/foo", 0);
     if (found1 != NULL) {
@@ -91,6 +92,11 @@ Redesign the API, so that every API function only has maximal one error case nex
 - `nameNew(name) -> name_object` only has the error case of invalid name
 - `keyNew(name_object)` won't have error cases anymore
 - `keySetName(name_object)` only has the error case of read-only names
+
+The advantage is that it is hard to be used wrongly.
+Users can only call keySetName if they have a valid key name.
+If keySetName fails nevertheless, we know that it must be because the name was read-only.
+No further debugging would be needed.
 
 This can be very limiting and in some cases makes it very hard to find out what the exact problem was.
 Reducing a function to a single error value, makes sense if the errors are easy to distinguish.
