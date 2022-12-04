@@ -275,7 +275,7 @@ This field type supports following attributes:
 
 - `name` (string) for the visible name of the menu point (i.e. button text)
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL,
-  e.g. `http://example.com/manpages` for the subsequent example)
+  e.g. `http://example.com/man-pages` for the subsequent example)
 - `options` (object) with further options:
   - `path` (string) containing the path from the repository root to the directory to enumerate
   - `blacklist` (array[string]) containing some filenames that should
@@ -285,9 +285,9 @@ Example:
 
 ```json
 {
-  "name": "Manpages",
+  "name": "Man pages",
   "type": "listfiles",
-  "ref": "manpages",
+  "ref": "man-pages",
   "options": {
     "path": "doc/help",
     "blacklist": ["CMakeLists.txt"]

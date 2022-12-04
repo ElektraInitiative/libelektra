@@ -3,7 +3,7 @@ directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 @from support.gen import *
-.\" Template for manpages
+.\" Template for man pages
 .TH man 3 "08.02.2013" "1.0" "template man page"
 .SH NAME
 template - modify this text for man page

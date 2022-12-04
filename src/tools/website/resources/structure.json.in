@@ -187,9 +187,9 @@
                 "dev-comment": "This could be changed to the more powerful 'parsereadme' type in future."
             },
             {
-                "name": "Manpages",
+                "name": "Man pages",
                 "type": "listfiles",
-                "ref": "manpages",
+                "ref": "man-pages",
                 "options": {
                     "path": "doc/help",
                     "blacklist": ["CMakeLists.txt"]

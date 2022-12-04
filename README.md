@@ -104,7 +104,7 @@ In the GitHub repository the full documentation is available, including:
 
 You can read the documentation for the kdb tool, either
 
-- [on the Website](https://www.libelektra.org/manpages/kdb)
+- [on the Website](https://www.libelektra.org/man-pages/kdb)
 - [in the API documentation](https://doc.libelektra.org/api/master/html/doc_help_kdb_md.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`

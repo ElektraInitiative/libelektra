@@ -204,7 +204,7 @@ This field type supports following attributes:
 .IP "\(bu" 4
 \fBname\fR (string) for the visible name of the menu point (i\.e\. button text)
 .IP "\(bu" 4
-\fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/manpages\fR for the subsequent example)
+\fBref\fR (string) for the dynamic URL part (i\.e\. a resource of the URL, e\.g\. \fBhttp://example\.com/man\-pages\fR for the subsequent example)
 .IP "\(bu" 4
 \fBoptions\fR (object) with further options:
 .IP "\(bu" 4
@@ -219,9 +219,9 @@ Example:
 .IP "" 4
 .nf
 {
-  "name": "Manpages",
+  "name": "Man pages",
   "type": "listfiles",
-  "ref": "manpages",
+  "ref": "man\-pages",
   "options": {
     "path": "doc/help",
     "blacklist": ["CMakeLists\.txt"]

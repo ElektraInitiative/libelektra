@@ -46,7 +46,7 @@ if (PYTHON2INTERP_FOUND)
 
 	endfunction (pythongen_util)
 
-	generate_manpage (kdb-gen FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+	generate_man_page (kdb-gen FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 
 	# add_subdirectory(util)
 

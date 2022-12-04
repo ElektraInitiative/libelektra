@@ -79,4 +79,4 @@ But creating separate JAR files for each plugin, keeps down the size of the bina
 
 ### Usage of Plugin
 
-See [manpage of `kdb-mount-java(1)`](../help/kdb-mount-java.md).
+See [man page of `kdb-mount-java(1)`](../help/kdb-mount-java.md).

@@ -45,9 +45,9 @@ else ()
 	install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
 	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad" DESTINATION "${install_directory}")
 
-	# generate manpages
-	generate_manpage (kdb-run-elektrad FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
-			  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+	# generate man pages
+	generate_man_page (kdb-run-elektrad FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
+			   "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 	# test apis
 	find_program (DREDD_EXECUTABLE "dredd")

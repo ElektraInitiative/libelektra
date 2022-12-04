@@ -38,7 +38,7 @@ def _get_kdb_instance():
     db = kdb.KDB(contract)
 
     #monkey patch db.get as
-        #- proc:/ keys are only available through a cascading lookup (See manpage elektra-namespaces: "Keys in the namespace proc ... are ignored by kdbGet ... ")
+        #- proc:/ keys are only available through a cascading lookup (See man page elektra-namespaces: "Keys in the namespace proc ... are ignored by kdbGet ... ")
         #- we don't want spec: keys to appear in the cascading namespace 
     orig_get = db.get
     def patched_get(ks, orig_root):

@@ -141,7 +141,7 @@ kdb file dir:/tests/sw/org/app/#0/current
 > **_Note_**: The files only exist, when configuration values are stored there,
 > i.e. they are created on the first `kdb set` and removed with the last `kdb rm`.
 
-For more information about namespaces in Elektra please see [here](https://www.libelektra.org/manpages/elektra-namespaces),
+For more information about namespaces in Elektra please see [here](https://www.libelektra.org/man-pages/elektra-namespaces),
 a tutorial about the topic is available [here](https://www.libelektra.org/tutorials/namespaces).
 
 ## Adding your first key to the specification
@@ -670,7 +670,7 @@ sudo kdb umount spec:/tests/sw/org/app/#0/current
 ```
 
 In case something went wrong and you want to reset the whole content of your kdb,
-please refer to [the manpage of kdb reset](https://www.libelektra.org/manpages/kdb-reset).
+please refer to [the man page of kdb reset](https://www.libelektra.org/man-pages/kdb-reset).
 
 ## Summary
 

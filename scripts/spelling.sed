@@ -56,6 +56,9 @@ s/\<([Mm])eta[- ][Nn]ame\>/\1etaname/g
 s/\<([Mm])eta[- ][Vv]alue\>/\1etavalue/g
 s/\<([Mm])eta[- ][Dd]ata\>/\1etadata/g
 
+s/([Mm])anpage/\1an page/g
+s/MANPAGE/MAN_PAGE/g
+
 s/\<([Nn])ame [Ss]pace\>/\1amespace/g
 s/\<([Pp])lug-[Ii]n(s)?\>/\1lugin\2/g
 

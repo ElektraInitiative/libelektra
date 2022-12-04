@@ -108,6 +108,6 @@ else ()
 		RENAME elektra-symbolic.svg
 		COMPONENT elektra-qt-gui)
 
-	generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md COMPONENT elektra-qt-gui)
+	generate_man_page (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md COMPONENT elektra-qt-gui)
 
 endif ()
