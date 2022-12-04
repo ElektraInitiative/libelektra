@@ -101,9 +101,6 @@ if (DOXYGEN_FOUND)
 		add_dependencies (latex man3 html)
 		list (APPEND outputs ${OUTPUT_DIRECTORY}/latex/refman.tex)
 
-		file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
-		      DESTINATION "${OUTPUT_DIRECTORY}/latex/")
-
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex

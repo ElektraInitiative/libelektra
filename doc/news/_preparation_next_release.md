@@ -521,6 +521,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### CMake
 
 - Fix warning for CMP0115 _(0x6178656c)_
+- Change Doxygen configuration for LaTeX _(0x6178656c)_
 - <<TODO>>
 - Fix developer warning for package DISCOUNT _(Dennis Toth @dtdirect)_
 - Pass `--stacktrace` to gradle for the JNA builds. _(Maximilian Irlinger @atmaxinger)_
