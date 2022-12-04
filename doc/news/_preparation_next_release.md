@@ -540,6 +540,17 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add links and formatting to documents affected by PR#4492 (Document Guidelines) and rephrase some parts. _(Florian Lindner @flo91)_
 - Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
 - Apply fix spelling to more files. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Rewrite decisions about key values into [`Key` value types](../decisions/3_decided/key_value_types.md) and [`Key` value API](../decisions/0_drafts/key_value.md). _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### Tutorials
 
