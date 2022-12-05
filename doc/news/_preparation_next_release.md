@@ -140,6 +140,12 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Fix redirect logic to not cause loops _(@stefnotch)_
 - <<TODO>>
 
+### toml
+
+- Fix bug, where meta-keys that cannot be inserted don't report an error _(@Bujuhu)_
+- <<TODO>>
+- <<TODO>>
+
 ### uname
 
 - Add error handling if uname call fails _(Richard Stöckl @Eiskasten)_
