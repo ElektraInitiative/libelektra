@@ -393,8 +393,8 @@ following section show how the most common ones can be used with `libelektra`.
 file by calling it with `cppcheck --enable=all <sourcefile>`. This way it might miss some header
 files though and thus doesn't detect all possible issues, but still gives useful hints in general.
 
-To analyze the whole project, use it in conjunction with `CMake` by calling `cmake` with the parameter
-`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way `CMake` creates a file called `compile_commands.json` in
+To analyze the whole project, use it in conjunction with CMake by calling `cmake` with the parameter
+`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way CMake creates a file called `compile_commands.json` in
 the build directory. Afterwards, call `cppcheck` with the CMake settings and store the output as xml:
 
 ```sh
