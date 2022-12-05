@@ -24,7 +24,7 @@ Add this new function to a separate library (name TBD):
  *
  * @pre @p currentPart, must be `NULL` or point anywhere into the unescaped name of @p key
  *
- * This function defins the "next part" after @p currentPart as:
+ * This function defines the "next part" after @p currentPart as:
  * - the first part of @p key (after namespace), if `currentPart == NULL`
  * - `NULL`, if @p currentPart is the last part of @p key, i.e. `currentPart == keyBaseName (key)`
  * - the next part within @p key after the location @p currentPart points to

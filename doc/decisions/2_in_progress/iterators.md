@@ -43,7 +43,7 @@ iterators for 1.0 and only the external instead.
 - The documentation (not just for the above function, but all over the `ks*`
   functions) also contains lots of warnings (use only cursor from same keyset,
   may be invalid, may become invalid, etc.) that make it seem like there is
-  something special about these cursors, when in fact they are simply indicies.
+  something special about these cursors, when in fact they are simply indices.
   There is no information (at least that I could find), how cursors can be
   modified. Most of the time it even seems like modifying cursors would be a bad
   idea.
