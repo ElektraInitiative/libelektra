@@ -266,10 +266,10 @@
                         }
                     },
                     {
-                        "name": "GIT",
+                        "name": "Git",
                         "type": "staticfile",
                         "options": {
-                            "path": "doc/GIT.md"
+                            "path": "doc/Git.md"
                         }
                     },
                     {
