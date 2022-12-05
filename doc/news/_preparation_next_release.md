@@ -380,8 +380,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Use cases for KDB _(@kodebach)_
+- Use cases for `libelektra-core` _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
