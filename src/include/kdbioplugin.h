@@ -9,8 +9,8 @@
 #ifndef KDB_IO_PLUGIN_H_
 #define KDB_IO_PLUGIN_H_
 
-#include "elektra/kdbio.h"
-#include "elektra/kdbplugin.h"
+#include <elektra/kdbio.h>
+#include <elektra/kdbplugin.h>
 
 #ifdef __cplusplus
 namespace ckdb

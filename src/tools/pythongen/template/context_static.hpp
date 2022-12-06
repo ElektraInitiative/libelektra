@@ -16,7 +16,7 @@ cheetahVarStartToken = $
 @set support = ContextSupport()
 $util.header($args.output)
 #include "kdbcontext.hpp"
-#include "elektra/kdbtypes.h"
+#include <elektra/kdbtypes.h>
 
 #include <string>
 

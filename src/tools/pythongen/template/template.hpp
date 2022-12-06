@@ -16,7 +16,7 @@ cheetahVarStartToken = $
 @set support = CppSupport()
 $util.header($args.output)
 #include "kdb.hpp"
-#include "elektra/kdbtypes.h"
+#include <elektra/kdbtypes.h>
 
 #include <string>
 

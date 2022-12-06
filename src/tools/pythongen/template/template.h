@@ -14,8 +14,8 @@ cheetahVarStartToken = $
 @from support.c import *
 @set support = CSupport()
 $util.header($args.output)
-#include "elektra/kdb.h"
-#include "elektra/kdbtypes.h"
+#include <elektra/kdb.h>
+#include <elektra/kdbtypes.h>
 
 #include <stdlib.h>
 #include <stdint.h>

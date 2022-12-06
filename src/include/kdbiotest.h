@@ -9,7 +9,7 @@
 #ifndef KDB_IO_TEST_H_
 #define KDB_IO_TEST_H_
 
-#include "elektra/kdbio.h"
+#include <elektra/kdbio.h>
 
 /**
  * Create and initialize I/O binding.
