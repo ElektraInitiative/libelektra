@@ -200,8 +200,8 @@ install (
 	DESTINATION include/${TARGET_INCLUDE_FOLDER}
 	COMPONENT libelektra-dev)
 
-add_custom_target (elektra_config_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
-						      ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
+add_custom_target (elektra_config_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/elektra/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
+						      ${CMAKE_CURRENT_BINARY_DIR}/elektra/kdbversion.h)
 
 add_subdirectory (kdbio)
 add_subdirectory (elektra)
