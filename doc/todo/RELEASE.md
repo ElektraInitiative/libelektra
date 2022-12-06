@@ -36,6 +36,7 @@ If no release critical problems are found during testing, continue.
 ### Check
 
 - https://build.libelektra.org/job/libelektra/job/master/ must pass
+- Run [audit-dependencies](/scripts/dev/audit-dependencies) to make sure no known vulnerabilities exist in project dependencies
 
 ## When Source Code is considered ready
 
