@@ -10,8 +10,8 @@
 #include "elektra/conversion.h"
 #include "elektra/error.h"
 #include "kdberrors.h"
-#include "kdbhelper.h"
-#include "kdbprivate.h"
+#include "elektra/kdbhelper.h"
+#include "elektra/kdbprivate.h"
 #include <string.h>
 
 #ifdef __cplusplus

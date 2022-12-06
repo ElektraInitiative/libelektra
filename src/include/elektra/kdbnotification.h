@@ -12,8 +12,8 @@
 #ifndef KDB_NOTIFICATION_H_
 #define KDB_NOTIFICATION_H_
 
-#include "kdb.h"
-#include "kdbtypes.h"
+#include "elektra/kdb.h"
+#include "elektra/kdbtypes.h"
 
 /**
  * @defgroup kdbnotification Notification

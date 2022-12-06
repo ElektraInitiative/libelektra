@@ -23,9 +23,9 @@
 #endif
 
 
-#include "kdb.h"
-#include "kdbprivate.h"
-#include "kdbtypes.h"
+#include "elektra/kdb.h"
+#include "elektra/kdbprivate.h"
+#include "elektra/kdbtypes.h"
 
 /**
  * @internal

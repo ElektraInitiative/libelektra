@@ -1,10 +1,10 @@
 
-#include "kdbmerge.h"
-#include "kdb.h"
+#include "elektra/kdbmerge.h"
+#include "elektra/kdb.h"
 #include "kdbassert.h"
 #include "kdberrors.h"
 #include "kdblogger.h"
-#include "kdbprivate.h"
+#include "elektra/kdbprivate.h"
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>

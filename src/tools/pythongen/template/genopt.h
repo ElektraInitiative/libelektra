@@ -13,7 +13,7 @@ cheetahVarStartToken = $
 @from support.genopt import *
 @from util import util
 $util.header($args.output)
-#include "kdb.h"
+#include "elektra/kdb.h"
 
 
 #ifdef __cplusplus

@@ -48,7 +48,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "kdbpluginprocess.h"
+#include "elektra/kdbpluginprocess.h"
 #include <kdberrors.h>
 #include <elektra/kdbinvoke.h>
 #include <kdblogger.h>

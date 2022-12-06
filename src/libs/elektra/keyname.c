@@ -140,7 +140,7 @@
  */
 
 
-#include "kdbprivate.h"
+#include "elektra/kdbprivate.h"
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -161,8 +161,8 @@
 
 #include <ctype.h>
 
-#include "kdb.h"
-#include "kdbhelper.h"
+#include "elektra/kdb.h"
+#include "elektra/kdbhelper.h"
 #include "kdbinternal.h"
 
 /**

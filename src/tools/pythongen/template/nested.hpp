@@ -17,7 +17,7 @@ useAutocalling = false
 @set support = NestedSupport()
 $util.header($args.output)
 #include "kdb.hpp"
-#include "kdbtypes.h"
+#include "elektra/kdbtypes.h"
 
 #include <string>
 

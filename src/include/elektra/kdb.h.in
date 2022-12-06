@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-#include "kdbos.h"
+#include "elektra/kdbos.h"
 #include <stdint.h>
 
 #ifdef __cplusplus

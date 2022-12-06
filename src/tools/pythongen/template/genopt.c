@@ -21,8 +21,8 @@ $util.header($args.output)
 #include "genopt.h"
 #endif
 
-#include "kdb.h"
-#include "kdbtypes.h"
+#include "elektra/kdb.h"
+#include "elektra/kdbtypes.h"
 
 #include <unistd.h>
 

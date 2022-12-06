@@ -23,9 +23,9 @@
 #include <stdlib.h>
 #endif
 
-#include "kdb.h"
+#include "elektra/kdb.h"
 #include "kdbinternal.h"
-#include "kdbprivate.h"
+#include "elektra/kdbprivate.h"
 
 
 /**
