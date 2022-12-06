@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbmerge.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbmerge.h>
 
 #include <stdio.h>
 #include <stdlib.h>

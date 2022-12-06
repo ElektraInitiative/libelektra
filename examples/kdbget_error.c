@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbmacros.h> // Declares `ELEKTRA_STRINGIFY`
+#include <elektra/kdb.h>
+#include <elektra/kdbmacros.h> // Declares `ELEKTRA_STRINGIFY`
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
