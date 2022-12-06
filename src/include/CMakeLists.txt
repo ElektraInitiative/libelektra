@@ -114,7 +114,7 @@ else ()
 	set (KDB_OPMPHM_MAX_N "795364313") # bound by opmphm->size max value
 endif ()
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbtypes.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h")
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/kdbtypes.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/kdbtypes.h")
 
 unset (INT32_T)
 unset (UINT32_T)
@@ -164,11 +164,13 @@ endif (ENABLE_OPTIMIZATIONS)
 
 test_big_endian (ELEKTRA_BIG_ENDIAN)
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdb.h")
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/kdb.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/kdb.h")
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h")
 
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h")
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra/kdbversion.h.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra/kdbversion.h")
+
+set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/elektra)
 
 # DO NOT install kdbconfig.h it may cause conflicts with applications own config.h files
 install (
