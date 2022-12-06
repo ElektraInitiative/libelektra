@@ -7,10 +7,10 @@
  */
 
 #include <kdbassert.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbopmphmpredictor.h>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 #include <stdlib.h>
 #include <string.h>
 

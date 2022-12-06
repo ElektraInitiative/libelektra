@@ -9,7 +9,7 @@
 
 #include "template.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 
 int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)

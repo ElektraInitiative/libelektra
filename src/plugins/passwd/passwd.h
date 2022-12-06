@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_PASSWD_H
 #define ELEKTRA_PLUGIN_PASSWD_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraPasswdGet (Plugin * handle, KeySet * ks, Key * parentKey);

@@ -48,7 +48,7 @@
  *
  * To use them:
  * @code
-#include <kdb.h>
+#include <elektra/kdb.h>
  * @endcode
  *
  *

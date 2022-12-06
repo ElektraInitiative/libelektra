@@ -15,7 +15,7 @@
 
 #include "zeromqsend.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
 
 #include <errno.h>  // errno

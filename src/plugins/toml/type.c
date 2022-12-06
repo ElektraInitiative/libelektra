@@ -11,7 +11,7 @@
 #include "type.h"
 
 #include <kdbassert.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>

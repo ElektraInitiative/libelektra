@@ -10,7 +10,7 @@
 #define ELEKTRA_PLUGIN_ICONV_CONV_H
 
 #include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <iconv.h>
 #include <langinfo.h>

@@ -15,7 +15,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 extern char ** environ;
 

@@ -8,8 +8,8 @@
  */
 
 #include "dpkg.h"
-#include <kdb.h>
-#include <kdbhelper.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

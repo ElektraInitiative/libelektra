@@ -9,11 +9,11 @@
 
 #include <stdio.h>
 
-#include <kdbpluginprocess.h>
+#include <elektra/kdbpluginprocess.h>
 
-#include <kdb.h>
-#include <kdbplugin.h>
-#include <kdbprivate.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbprivate.h>
 #include <stdlib.h>
 
 #include <tests.h>

@@ -18,11 +18,11 @@
 
 #include <kdbconfig.h>
 #include <kdbgetenv.h>
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #include <kdbcontext.hpp>
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 #include <dlfcn.h>
 #include <libgen.h>

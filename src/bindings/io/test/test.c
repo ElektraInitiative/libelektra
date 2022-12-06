@@ -14,7 +14,7 @@
 #include <tests.h>
 
 #include "test.h"
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 #include <kdbioprivate.h>
 #include <kdbiotest.h>
 

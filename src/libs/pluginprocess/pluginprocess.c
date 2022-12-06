@@ -50,9 +50,9 @@
 
 #include "kdbpluginprocess.h"
 #include <kdberrors.h>
-#include <kdbinvoke.h>
+#include <elektra/kdbinvoke.h>
 #include <kdblogger.h>
-#include <kdbprivate.h> // To access the plugin function pointers
+#include <elektra/kdbprivate.h> // To access the plugin function pointers
 
 #include <errno.h>
 #include <limits.h>

@@ -25,10 +25,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdberrors.h>
-#include <kdbmacros.h>
-#include <kdbtypes.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbtypes.h>
 
 /**
  * @brief Defines the plugin state during the <code>kdb get</code> phase.

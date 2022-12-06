@@ -8,7 +8,7 @@
 
 #include "table_array.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <stdio.h>
 #include <string.h>
 

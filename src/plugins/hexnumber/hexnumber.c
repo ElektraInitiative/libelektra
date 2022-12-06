@@ -9,9 +9,9 @@
 
 #include "hexnumber.h"
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

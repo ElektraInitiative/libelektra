@@ -10,7 +10,7 @@
 #include <numeric>
 
 #include <kdbassert.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
 

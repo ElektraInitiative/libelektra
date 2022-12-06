@@ -10,7 +10,7 @@
 #define ELEKTRA_PLUGIN_NETWORK_H
 
 #include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <arpa/inet.h>
 #include <netdb.h>

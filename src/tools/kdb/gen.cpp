@@ -13,8 +13,8 @@
 #include <kdb.hpp>
 
 #include <fstream>
-#include <kdbease.h>
-#include <kdbplugin.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbplugin.h>
 #include <modules.hpp>
 
 using namespace kdb;

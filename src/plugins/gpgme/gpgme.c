@@ -13,9 +13,9 @@
 #include "gpgme.h"
 #include "keylist.h"
 #include <gpgme.h>
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdberrors.h>
-#include <kdbtypes.h>
+#include <elektra/kdbtypes.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>

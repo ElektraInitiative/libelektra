@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_KCONFIG_HPP
 #define ELEKTRA_PLUGIN_KCONFIG_HPP
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 using ckdb::Key;
 using ckdb::KeySet;

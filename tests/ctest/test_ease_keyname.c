@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 
 #include "tests.h"
 

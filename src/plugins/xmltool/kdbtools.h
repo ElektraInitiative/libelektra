@@ -10,7 +10,7 @@
 #define KDBTOOLS_H
 
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 #include <stdio.h>
 

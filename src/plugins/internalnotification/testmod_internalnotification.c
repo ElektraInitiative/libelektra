@@ -12,9 +12,9 @@
 #include <string.h>
 
 #include <kdbconfig.h>
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 #include <kdbnotificationinternal.h>
-#include <kdbtypes.h>
+#include <elektra/kdbtypes.h>
 
 #include <tests.h>
 #include <tests_plugin.h>

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <tests_internal.h>
 
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);

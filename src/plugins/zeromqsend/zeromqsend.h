@@ -11,7 +11,7 @@
 #define ELEKTRA_PLUGIN_ZEROMQSEND_H
 
 #include <kdbassert.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <time.h> // struct timespec
 

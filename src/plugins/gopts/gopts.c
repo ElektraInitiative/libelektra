@@ -10,11 +10,11 @@
 #include "gopts.h"
 
 #include <kdbassert.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbmacros.h>
-#include <kdbopts.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbopts.h>
 
 static int loadArgs (char *** argvp);
 static char ** loadEnvp (void);

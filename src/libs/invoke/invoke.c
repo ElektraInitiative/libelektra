@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 #include <kdbassert.h>
-#include <kdbinvoke.h>
-#include <kdbmodule.h>
-#include <kdbprivate.h> // for elektraPluginOpen/Close
+#include <elektra/kdbinvoke.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbprivate.h> // for elektraPluginOpen/Close
 
 #include <stdio.h>
 
@@ -51,7 +51,7 @@ struct _ElektraDeferredCallList
  * To use this library, you need to include:
  *
  * @code
- * #include <kdbinvoke.h>`
+ * #include <elektra/kdbinvoke.h>`
  * @endcode
  *
  * and link against `libelektra-invoke`.

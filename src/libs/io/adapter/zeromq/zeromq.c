@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 #include <kdbassert.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdbio/adapters/zeromq.h>
 #include <kdblogger.h>
 

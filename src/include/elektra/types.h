@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_TYPES_H
 #define ELEKTRA_TYPES_H
 
-#include <kdbtypes.h>
+#include <elektra/kdbtypes.h>
 
 #ifdef __cplusplus
 extern "C" {

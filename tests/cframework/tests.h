@@ -25,9 +25,9 @@
 #include <string.h>
 #endif
 
-#include <kdb.h>
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmacros.h>
 
 #define BUFFER_LENGTH 4096
 #define ELEKTRA_TEST_ROOT "/tests/ckdb/"

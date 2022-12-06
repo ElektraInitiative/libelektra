@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-#include <kdbmodule.h>
+#include <elektra/kdbmodule.h>
 
 using namespace std;
 using namespace kdb;

@@ -12,8 +12,8 @@
 #include <assert.h>
 #include <ctype.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbprivate.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbprivate.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>

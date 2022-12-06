@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_DATE_H
 #define ELEKTRA_PLUGIN_DATE_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraDateGet (Plugin * handle, KeySet * ks, Key * parentKey);

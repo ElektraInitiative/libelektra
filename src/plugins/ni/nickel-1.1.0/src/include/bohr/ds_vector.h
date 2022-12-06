@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 
 // Controls inlining of this library's functions.

@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_H
 #define ELEKTRA_PLUGIN_CRYPTO_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 #include <stdio.h>
 
 /**

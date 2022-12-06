@@ -5,7 +5,7 @@
 
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
 {

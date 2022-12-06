@@ -12,7 +12,7 @@
 
 #include <kdbassert.h>
 #include <kdbioplugin.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <dbus/dbus.h>
 #include <string.h>

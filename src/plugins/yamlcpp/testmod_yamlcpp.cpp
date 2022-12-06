@@ -11,8 +11,8 @@
 
 #include "yamlcpp.hpp"
 
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbprivate.h>
 
 using ckdb::Key;
 using ckdb::KeySet;

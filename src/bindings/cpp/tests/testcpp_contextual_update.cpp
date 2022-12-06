@@ -8,7 +8,7 @@
 
 #include <kdbthread.hpp>
 
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 #include <gtest/gtest.h>
 

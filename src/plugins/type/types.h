@@ -12,9 +12,9 @@
 
 #include <stdbool.h>
 
-#include <kdb.h>
-#include <kdbplugin.h>
-#include <kdbtypes.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbtypes.h>
 
 bool elektraTypeCheckAny (const Key * key);
 bool elektraTypeCheckEmpty (const Key * key);

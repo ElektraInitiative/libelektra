@@ -9,7 +9,7 @@
 
 #include "iterate.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 
 int elektraIterateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)

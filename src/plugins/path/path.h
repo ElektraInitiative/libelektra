@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 #include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <errno.h>
 #include <stdlib.h>

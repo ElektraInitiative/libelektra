@@ -32,10 +32,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbhelper.h>
-#include <kdbinvoke.h>
-#include <kdbopts.h>
-#include <kdbgopts.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbinvoke.h>
+#include <elektra/kdbopts.h>
+#include <elektra/kdbgopts.h>
 
 #include <elektra/conversion.h>
 

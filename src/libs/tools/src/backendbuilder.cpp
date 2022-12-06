@@ -17,9 +17,9 @@
 
 
 #include <helper/keyhelper.hpp>
-#include <kdbmodule.h>
-#include <kdbplugin.h>
-#include <kdbprivate.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbprivate.h>
 
 #include <algorithm>
 #include <functional>
@@ -28,7 +28,7 @@
 
 #include <cassert>
 #include <kdb.hpp>
-#include <kdbmeta.h>
+#include <elektra/kdbmeta.h>
 
 
 using namespace std;

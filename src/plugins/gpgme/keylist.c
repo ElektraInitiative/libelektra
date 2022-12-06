@@ -8,7 +8,7 @@
  */
 
 #include "keylist.h"
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 /**
  * @brief initializes the internal key list

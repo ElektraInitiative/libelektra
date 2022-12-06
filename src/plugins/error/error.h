@@ -7,7 +7,7 @@
  */
 
 #include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraErrorGet (Plugin * handle, KeySet * ks, Key * parentKey);

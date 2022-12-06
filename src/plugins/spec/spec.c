@@ -10,13 +10,13 @@
 #include "spec.h"
 
 #include <kdbassert.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
-#include <kdbglobbing.h>
-#include <kdbhelper.h>
+#include <elektra/kdbglobbing.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbmeta.h>
-#include <kdbtypes.h>
+#include <elektra/kdbmeta.h>
+#include <elektra/kdbtypes.h>
 
 #ifndef __MINGW32__
 #include <fnmatch.h>

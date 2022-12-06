@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_DUMP_TESTDATA
 #define ELEKTRA_DUMP_TESTDATA
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 static inline KeySet * testdata_oneValue (void)
 {

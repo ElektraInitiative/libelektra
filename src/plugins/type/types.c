@@ -15,9 +15,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \

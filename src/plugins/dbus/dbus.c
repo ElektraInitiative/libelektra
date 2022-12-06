@@ -13,7 +13,7 @@
 
 #include "dbus.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {

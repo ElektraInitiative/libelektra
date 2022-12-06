@@ -21,7 +21,7 @@
 #include <unistd.h>    // ftruncate(), pipe(), fork()
 
 #include <kdbconfig.h>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 #include <tests_plugin.h>
 

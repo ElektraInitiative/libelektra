@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_C_H
 #define ELEKTRA_PLUGIN_C_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraCOpen (Plugin * handle, Key * errorKey);

@@ -10,7 +10,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include <kdb.hpp>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdblogger.h>
 
 #include <fstream>

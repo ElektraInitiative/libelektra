@@ -7,12 +7,12 @@
  */
 
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbassert.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbmeta.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmeta.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>

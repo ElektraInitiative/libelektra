@@ -16,7 +16,7 @@
 #include <errno.h>
 #include <iconv.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

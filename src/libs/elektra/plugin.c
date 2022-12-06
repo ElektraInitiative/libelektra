@@ -33,7 +33,7 @@
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
-#include <kdbversion.h>
+#include <elektra/kdbversion.h>
 
 /**
  * Opens a plugin.

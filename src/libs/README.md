@@ -51,8 +51,8 @@ loader functionality as used by `libelektra-kdb`.
 
 ```
 libelektra-core.so
-<kdbhelper.h>
-<kdb.h> (key* and ks*)
+<elektra/kdbhelper.h>
+<elektra/kdb.h> (key* and ks*)
 ```
 
 Contains the fundamental data-structures every participant of Elektra needs

@@ -7,10 +7,10 @@
  *
  */
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbassert.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 #include <tests.h>
 #include <tests_plugin.h>
 

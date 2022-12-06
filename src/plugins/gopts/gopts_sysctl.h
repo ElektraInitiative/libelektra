@@ -16,7 +16,7 @@
 #include <sys/sysctl.h>
 #include <unistd.h>
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 extern char ** environ;
 

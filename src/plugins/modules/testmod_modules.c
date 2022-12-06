@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 #include <kdbconfig.h>
 

@@ -8,7 +8,7 @@
  */
 
 #include <kdbconfig.h>
-#include <kdbtypes.h>
+#include <elektra/kdbtypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

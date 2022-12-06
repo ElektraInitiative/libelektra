@@ -9,7 +9,7 @@
 #include "crypto.h"
 #include "gpg.h"
 #include "helper.h"
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbinternal.h>
 #include <stdio.h>
 #include <stdlib.h>

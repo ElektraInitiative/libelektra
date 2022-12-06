@@ -8,7 +8,7 @@
 
 #include "zeromqrecv.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
 
 static int setupNotificationCallback (Plugin * handle)

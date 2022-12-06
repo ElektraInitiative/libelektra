@@ -9,11 +9,11 @@
 
 #include <kdbassert.h>
 #include <kdbconfig.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 #include <kdbopmphm.h>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 #include <kdbrand.h>
 
 #include <string.h>

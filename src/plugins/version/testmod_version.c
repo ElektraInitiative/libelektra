@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include <kdbconfig.h>
-#include <kdbversion.h>
+#include <elektra/kdbversion.h>
 
 #include <tests_plugin.h>
 

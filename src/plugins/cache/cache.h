@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CACHE_H
 #define ELEKTRA_PLUGIN_CACHE_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraCacheOpen (Plugin * handle, Key * errorKey);

@@ -16,12 +16,12 @@
 #ifndef HAVE_KDBCONFIG
 #include <kdbconfig.h>
 #endif
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include SWIG_RUNTIME
 #include "python.hpp"
 
 #include <config.h>
-#include <kdbpluginprocess.h>
+#include <elektra/kdbpluginprocess.h>
 #include <key.hpp>
 #include <keyset.hpp>
 #include <libgen.h>

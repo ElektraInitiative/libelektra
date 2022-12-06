@@ -8,7 +8,7 @@
 #ifndef KDB_IOWRAPPER_TESTSUITE_H_
 #define KDB_IOWRAPPER_TESTSUITE_H_
 
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 #include <kdbiotest.h>
 #include <time.h>
 

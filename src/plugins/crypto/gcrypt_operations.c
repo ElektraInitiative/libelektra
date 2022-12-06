@@ -17,7 +17,7 @@
 #include <gcrypt.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
-#include <kdbtypes.h>
+#include <elektra/kdbtypes.h>
 #include <pthread.h>
 #include <stdlib.h>
 

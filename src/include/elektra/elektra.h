@@ -11,9 +11,9 @@
 
 #include <elektra/error.h>
 #include <elektra/types.h>
-#include <kdb.h>
-#include <kdbmacros.h>
-#include <kdbtypes.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbtypes.h>
 
 // region Helpers for Code Generation
 #define ELEKTRA_GET(typeName) ELEKTRA_CONCAT (elektraGet, typeName)

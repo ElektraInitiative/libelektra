@@ -13,7 +13,7 @@
 #include <string.h>
 #include <windows.h>
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 static int loadArgs (char *** argvp)
 {

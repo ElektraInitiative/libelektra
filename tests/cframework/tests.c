@@ -30,7 +30,7 @@
 #include <regex.h>
 
 #include <kdbinternal.h>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 #ifdef __cplusplus
 extern "C" {

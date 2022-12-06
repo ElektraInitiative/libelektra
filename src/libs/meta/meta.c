@@ -6,12 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbconfig.h>
-#include <kdbease.h>
-#include <kdbmeta.h>
-#include <kdbprivate.h>
-#include <kdbtypes.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbmeta.h>
+#include <elektra/kdbprivate.h>
+#include <elektra/kdbtypes.h>
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif

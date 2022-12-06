@@ -13,8 +13,8 @@
 
 #include <stdbool.h>
 
-#include <kdbplugin.h>
-#include <kdbtypes.h>
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbtypes.h>
 
 #ifdef __cplusplus
 extern "C" {

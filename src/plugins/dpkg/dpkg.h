@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_DPKG_H
 #define ELEKTRA_PLUGIN_DPKG_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraDpkgGet (Plugin * handle, KeySet * ks, Key * parentKey);

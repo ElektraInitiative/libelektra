@@ -10,7 +10,7 @@
 #include "c.h"
 
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 #include <ctype.h>
 #include <stdio.h>

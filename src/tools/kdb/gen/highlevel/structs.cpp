@@ -10,8 +10,8 @@
 #include "common.hpp"
 #include "enums.hpp"
 #include <command.hpp>
-#include <kdbease.h>
-#include <kdbhelper.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbhelper.h>
 
 bool StructFieldsProcessor::shouldGenerateUnion (const kdb::Key & key)
 {

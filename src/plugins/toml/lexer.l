@@ -8,7 +8,7 @@
  */
 
 #include <kdbassert.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>

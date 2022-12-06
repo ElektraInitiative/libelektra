@@ -11,8 +11,8 @@
 #include "node.h"
 #include "utility.h"
 #include <kdbassert.h>
-#include <kdbhelper.h>
-#include <kdbmeta.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmeta.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

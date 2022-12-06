@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -27,7 +27,7 @@
 #include <unistd.h>
 
 #include "../resolver/shared.h"
-#include <kdbinvoke.h>
+#include <elektra/kdbinvoke.h>
 
 #define TMP_NAME "/tmp/elektraCurlTempXXXXXX"
 

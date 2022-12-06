@@ -7,7 +7,7 @@
  */
 
 #include "kdbprivate.h"
-#include <kdb.h>
+#include <elektra/kdb.h>
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -26,7 +26,7 @@
 #include <string.h>
 #endif
 
-#include <kdbtypes.h>
+#include <elektra/kdbtypes.h>
 
 #include "kdbinternal.h"
 #include <kdbassert.h>

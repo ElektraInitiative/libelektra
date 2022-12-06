@@ -13,7 +13,7 @@
 
 #include <kdberrors.h>
 #include <kdbextension.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 int elektraKeyToMetaGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraKeyToMetaSet (Plugin * handle, KeySet * ks, Key * parentKey);

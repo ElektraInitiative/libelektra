@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 #include <keysetio.hpp>
 #include <merging/threewaymerge.hpp>
 

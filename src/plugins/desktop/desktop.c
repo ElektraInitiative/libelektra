@@ -14,9 +14,9 @@
 #include <strings.h> // for strcasecmp
 
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 
 int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

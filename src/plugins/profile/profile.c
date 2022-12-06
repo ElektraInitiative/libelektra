@@ -9,11 +9,11 @@
 
 #include "profile.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
-#include <kdb.h>     //actual namespaces
-#include <kdbease.h> //elektraKeyGetRelativeName
-#include <kdbos.h>   //elektraNamespace
+#include <elektra/kdb.h>     //actual namespaces
+#include <elektra/kdbease.h> //elektraKeyGetRelativeName
+#include <elektra/kdbos.h>   //elektraNamespace
 #include <stdio.h>
 #include <string.h>
 

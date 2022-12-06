@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_H
 #define ELEKTRA_PLUGIN_MMAPSTORAGE_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey);
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey);

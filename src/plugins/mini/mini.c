@@ -12,10 +12,10 @@
 #include "mini.h"
 
 #include <kdbassert.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <kdbutility.h>
+#include <elektra/kdbutility.h>
 // The definition `_WITH_GETLINE` is required for FreeBSD
 #define _WITH_GETLINE
 #include <stdio.h>

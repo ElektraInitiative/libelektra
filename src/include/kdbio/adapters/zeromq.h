@@ -12,7 +12,7 @@
 #include <string.h>
 #include <zmq.h>
 
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 
 
 /** callback types  */

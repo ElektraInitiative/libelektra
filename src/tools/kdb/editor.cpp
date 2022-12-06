@@ -11,7 +11,7 @@
 #include <modules.hpp>
 #include <plugindatabase.hpp>
 
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #include <export.hpp>
 #include <import.hpp>

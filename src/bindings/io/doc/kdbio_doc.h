@@ -8,7 +8,7 @@
 #ifndef KDB_IOWRAPPER_UV_H_
 #define KDB_IOWRAPPER_UV_H_
 
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 
 /**
  * Create and initialize a new doc I/O binding

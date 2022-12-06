@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>

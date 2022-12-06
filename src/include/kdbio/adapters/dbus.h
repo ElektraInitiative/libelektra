@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 
 /**
  * D-Bus Adapter Handle.

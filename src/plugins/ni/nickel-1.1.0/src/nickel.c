@@ -10,7 +10,7 @@
 #include <bohr/ds_hash.h>
 #include <bohr/ni.h>
 
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #include <assert.h>
 #include <ctype.h>

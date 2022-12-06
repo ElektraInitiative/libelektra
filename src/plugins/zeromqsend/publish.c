@@ -8,7 +8,7 @@
 
 #include "zeromqsend.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
 
 #include <time.h>   // clock_gettime()

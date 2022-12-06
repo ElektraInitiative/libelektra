@@ -9,13 +9,13 @@
 #ifndef KDBINTERNAL_H
 #define KDBINTERNAL_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbextension.h>
 #include <kdblogger.h>
-#include <kdbmodule.h>
-#include <kdbplugin.h>
-#include <kdbprivate.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbprivate.h>
 
 #endif

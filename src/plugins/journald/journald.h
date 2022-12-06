@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_JOURNALD_H
 #define ELEKTRA_PLUGIN_JOURNALD_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 int elektraJournaldGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraJournaldCommit (Plugin * handle, KeySet * ks, Key * parentKey);

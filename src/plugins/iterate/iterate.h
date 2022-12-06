@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_ITERATE_H
 #define ELEKTRA_PLUGIN_ITERATE_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraIterateOpen (Plugin * handle, Key * errorKey);

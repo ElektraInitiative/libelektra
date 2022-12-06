@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_GLOB_H
 #define ELEKTRA_PLUGIN_GLOB_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <stdlib.h>
 #include <string.h>

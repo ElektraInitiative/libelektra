@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdbglobbing.h>
-#include <kdbhelper.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbglobbing.h>
+#include <elektra/kdbhelper.h>
 
 #include <ctype.h>
 #include <fnmatch.h>

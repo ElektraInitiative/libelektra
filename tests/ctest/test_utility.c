@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbutility.h>
+#include <elektra/kdbutility.h>
 
 #include "tests.h"
 

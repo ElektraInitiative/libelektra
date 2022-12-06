@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbmerge.h>
+#include <elektra/kdbmerge.h>
 #include <tests_internal.h>
 
 static void test_new_keys_in_both (void)

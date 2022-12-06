@@ -6,14 +6,14 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbopts.h>
+#include <elektra/kdbopts.h>
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbmeta.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmeta.h>
 
 #include <kdbassert.h>
 #include <kdberrors.h>

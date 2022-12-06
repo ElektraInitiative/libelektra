@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include <kdbassert.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
 
 /**

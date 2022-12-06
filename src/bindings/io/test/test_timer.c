@@ -11,11 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <tests.h>
 
 #include "test.h"
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 #include <kdbiotest.h>
 
 #define TIMER_TEST_INTERVAL 250

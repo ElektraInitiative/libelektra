@@ -9,7 +9,7 @@
 #define KDB_IOWRAPPER_GLIB_H_
 
 #include <glib.h>
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 
 /**
  * Create and initialize a new I/O binding.

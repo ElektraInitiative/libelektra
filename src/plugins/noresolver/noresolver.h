@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_NORESOLVER_H
 #define ELEKTRA_PLUGIN_NORESOLVER_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #define ELEKTRA_PLUGIN_NAME "noresolver"
 

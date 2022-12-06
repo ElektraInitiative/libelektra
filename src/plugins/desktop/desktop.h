@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_DESKTOP_H
 #define ELEKTRA_PLUGIN_DESKTOP_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraDesktopGet (Plugin * handle, KeySet * ks, Key * parentKey);

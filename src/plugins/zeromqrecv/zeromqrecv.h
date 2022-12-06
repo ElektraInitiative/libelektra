@@ -13,7 +13,7 @@
 #include <kdbassert.h>
 #include <kdbioplugin.h>
 #include <kdbnotificationinternal.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <zmq.h>
 

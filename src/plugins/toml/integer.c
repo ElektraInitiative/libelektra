@@ -1,5 +1,5 @@
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <limits.h>
 
 #include "integer.h"

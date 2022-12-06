@@ -11,7 +11,7 @@
 #include "type.h"
 #include "types.h"
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
 
 struct _Type

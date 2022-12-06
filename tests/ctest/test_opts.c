@@ -7,7 +7,7 @@
  */
 
 #include <kdberrors.h>
-#include <kdbopts.h>
+#include <elektra/kdbopts.h>
 
 #include "tests.h"
 

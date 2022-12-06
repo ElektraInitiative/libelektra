@@ -16,9 +16,9 @@
 
 #include <kdbassert.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"

@@ -13,7 +13,7 @@
 #define ELEKTRA_WRONG // make swig happy
 #endif
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <key.hpp>
 #include <string>
 

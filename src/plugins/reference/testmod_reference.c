@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #include <tests_plugin.h>
 

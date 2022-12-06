@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include <elektra.h>
+#include <elektra/elektra.h>
 
 int commandKdb (Elektra * elektra, kdb_boolean_t terminal, void * userData);
 int commandKdbGet (Elektra * elektra, kdb_boolean_t terminal, void * userData);

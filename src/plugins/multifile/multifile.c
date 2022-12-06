@@ -14,11 +14,11 @@
 #include <fnmatch.h>
 #include <glob.h>
 #include <kdbconfig.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdbinternal.h>
-#include <kdbmacros.h>
-#include <kdbmodule.h>
-#include <kdbplugin.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbplugin.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +27,7 @@
 #include <unistd.h>
 
 #include "../resolver/shared.h"
-#include <kdbinvoke.h>
+#include <elektra/kdbinvoke.h>
 
 #define DEFAULT_RESOLVER "resolver"
 #define DEFAULT_PATTERN "*"

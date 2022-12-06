@@ -9,7 +9,7 @@
 #ifndef KDBEXTENSION_H
 #define KDBEXTENSION_H
 
-#include <kdbease.h>
-#include <kdbmeta.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbmeta.h>
 
 #endif

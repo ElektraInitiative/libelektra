@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_BACKENDPRIVATE_H
 #define ELEKTRA_BACKENDPRIVATE_H
 
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 typedef struct _PluginList
 {

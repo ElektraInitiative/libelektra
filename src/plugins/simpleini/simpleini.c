@@ -15,10 +15,10 @@
 #include <errno.h>
 
 #include <kdbassert.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <kdbutility.h>
+#include <elektra/kdbutility.h>
 
 #include <stdio.h>
 #include <stdlib.h>

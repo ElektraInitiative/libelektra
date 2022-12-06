@@ -15,10 +15,10 @@
 #include "csvstorage.h"
 #include <errno.h>
 #include <kdbassert.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbprivate.h> // for ksRenameKeys
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbprivate.h> // for ksRenameKeys
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

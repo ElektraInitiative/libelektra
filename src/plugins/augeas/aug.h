@@ -11,7 +11,7 @@
 
 #include <kdberrors.h>
 #include <kdbextension.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #include <augeas.h>
 #include <errno.h>

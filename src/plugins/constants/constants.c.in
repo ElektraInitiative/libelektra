@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbconfig.h>
-#include <kdbmacros.h>
-#include <kdbplugin.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbplugin.h>
 
 #include <string.h>
 

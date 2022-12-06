@@ -35,7 +35,7 @@
 #include <stdio.h>
 #endif
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 #include <stdarg.h>
 #include <stdlib.h>

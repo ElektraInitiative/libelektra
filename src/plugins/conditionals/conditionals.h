@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_CONDITIONALS_H
 #define ELEKTRA_PLUGIN_CONDITIONALS_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraConditionalsGet (Plugin * handle, KeySet * ks, Key * parentKey);

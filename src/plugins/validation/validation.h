@@ -13,7 +13,7 @@
 #include <sys/types.h>
 
 #include <kdberrors.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 int elektraValidationOpen (Plugin * handle, Key * errorKey);
 int elektraValidationClose (Plugin * handle, Key * errorKey);

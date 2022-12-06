@@ -10,9 +10,9 @@
 #ifndef ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 #define ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 
-#include <kdbnotification.h>
+#include <elektra/kdbnotification.h>
 #include <kdbnotificationinternal.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 int elektraInternalnotificationGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraInternalnotificationCommit (Plugin * handle, KeySet * ks, Key * parentKey);

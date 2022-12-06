@@ -16,7 +16,7 @@
 #include <tests.h>
 
 #include "test.h"
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 #include <kdbiotest.h>
 
 #define MIX_TIMER_INTERVAL 100

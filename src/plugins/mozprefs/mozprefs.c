@@ -9,8 +9,8 @@
 
 #include "mozprefs.h"
 
-#include <kdbhelper.h>
-#include <kdbutility.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbutility.h>
 
 #include <ctype.h>
 #include <stdio.h>

@@ -9,8 +9,8 @@
 
 #include "version.h"
 
-#include <kdbprivate.h> // for keyReplacePrefix
-#include <kdbversion.h>
+#include <elektra/kdbprivate.h> // for keyReplacePrefix
+#include <elektra/kdbversion.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle ELEKTRA_UNUSED, KeySet * definition ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {

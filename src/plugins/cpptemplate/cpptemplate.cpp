@@ -11,7 +11,7 @@
 #include "cpptemplate_delegate.hpp"
 
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 using ckdb::keyNew;
 using std::exception;

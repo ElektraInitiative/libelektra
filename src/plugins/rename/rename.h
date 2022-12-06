@@ -13,7 +13,7 @@
 
 #include <kdberrors.h>
 #include <kdbextension.h>
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 

@@ -14,9 +14,9 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
-#include <kdbmeta.h>
+#include <elektra/kdbmeta.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>

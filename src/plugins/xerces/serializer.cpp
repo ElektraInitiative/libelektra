@@ -14,7 +14,7 @@
 
 #include <map>
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdblogger.h>
 #include <key.hpp>
 

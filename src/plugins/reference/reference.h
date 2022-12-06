@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_REFERENCE_H
 #define ELEKTRA_PLUGIN_REFERENCE_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 #define CHECK_REFERENCE_KEYNAME ("check/reference")
 #define CHECK_REFERENCE_RESTRICT_KEYNAME ("check/reference/restrict")

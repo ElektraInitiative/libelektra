@@ -10,7 +10,7 @@
 #include "passwd.h"
 
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 #include <pwd.h>
 #include <stdio.h>

@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_QUICKDUMP_H
 #define ELEKTRA_PLUGIN_QUICKDUMP_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraQuickdumpGet (Plugin * handle, KeySet * ks, Key * parentKey);

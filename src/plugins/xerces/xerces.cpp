@@ -17,7 +17,7 @@
 
 
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 using namespace ckdb;
 using namespace xerces;

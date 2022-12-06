@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbio.h>
-#include <kdbnotification.h>
+#include <elektra/kdbio.h>
+#include <elektra/kdbnotification.h>
 #include <tests.h>
 
 int callback_called;

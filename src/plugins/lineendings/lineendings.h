@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_LINEENDINGS_H
 #define ELEKTRA_PLUGIN_LINEENDINGS_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraLineendingsGet (Plugin * handle, KeySet * ks, Key * parentKey);

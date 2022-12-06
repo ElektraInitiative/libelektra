@@ -10,8 +10,8 @@
 #include "keymetaformatting.h"
 
 #include <ctype.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbhelper.h>
 #include <kdbinternal.h>
 #include <string.h>
 

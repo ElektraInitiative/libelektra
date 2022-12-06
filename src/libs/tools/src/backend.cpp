@@ -13,11 +13,11 @@
 
 
 #include <helper/keyhelper.hpp>
-#include <kdbmodule.h>
-#include <kdbplugin.h>
-#include <kdbprivate.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbprivate.h>
 
-#include <kdbease.h> // for ckdb::elektraArrayIncName
+#include <elektra/kdbease.h> // for ckdb::elektraArrayIncName
 
 #include <algorithm>
 

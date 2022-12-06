@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include <kdbconfig.h>
-#include <kdbtypes.h>
+#include <elektra/kdbtypes.h>
 
 #include <tests_plugin.h>
 

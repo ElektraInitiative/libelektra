@@ -9,8 +9,8 @@
 
 #include "rgbcolor.h"
 #include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbtypes.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbtypes.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>

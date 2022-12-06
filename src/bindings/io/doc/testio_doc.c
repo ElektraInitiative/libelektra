@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbio.h>
+#include <elektra/kdbio.h>
 #include <kdbiotest.h>
 #include <uv.h>
 

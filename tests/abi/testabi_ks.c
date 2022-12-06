@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbprivate.h> // for ksBelow
+#include <elektra/kdbprivate.h> // for ksBelow
 #include <tests.h>
 
 #define NUMBER_OF_NAMESPACES 5

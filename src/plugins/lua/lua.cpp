@@ -12,8 +12,8 @@
 #endif
 
 #include "lua.hpp"
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmacros.h>
 
 #include <key.hpp>
 #include <keyset.hpp>

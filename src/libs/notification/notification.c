@@ -9,15 +9,15 @@
  */
 
 #include <kdbassert.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbinvoke.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbinvoke.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
-#include <kdbnotification.h>
+#include <elektra/kdbnotification.h>
 #include <kdbnotificationinternal.h>
-#include <kdbplugin.h>
-#include <kdbprivate.h> // for elektraGetPluginFunction, elektraPluginFindGlobal, kdb->globalPlugins and plugin->config
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbprivate.h> // for elektraGetPluginFunction, elektraPluginFindGlobal, kdb->globalPlugins and plugin->config
 
 #include <stdio.h>
 

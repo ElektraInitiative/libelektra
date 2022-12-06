@@ -12,7 +12,7 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 #include <stdlib.h>
 #include <string.h>

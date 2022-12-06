@@ -8,7 +8,7 @@
  */
 
 #include <helper/keyhelper.hpp>
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 using namespace std;
 

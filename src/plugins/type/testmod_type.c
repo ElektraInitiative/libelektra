@@ -10,8 +10,8 @@
 
 #include "type.h"
 
-#include <kdbmodule.h>
-#include <kdbplugin.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbplugin.h>
 #include <tests_plugin.h>
 
 static bool checkType (const Key * key)

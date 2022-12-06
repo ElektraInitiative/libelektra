@@ -11,7 +11,7 @@
 #include "prepare.h"
 #include "utility.h"
 #include <kdbassert.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 

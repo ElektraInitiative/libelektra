@@ -24,8 +24,8 @@
 #include <unistd.h> // file descriptor numbers (STDIN_FILENO)
 
 #include <kdbassert.h> // assertions (ELEKTRA_NOT_NULL)
-#include <kdbhelper.h> // malloc & free
-#include <kdbio.h>     // I/O binding functions (elektraIo*)
+#include <elektra/kdbhelper.h> // malloc & free
+#include <elektra/kdbio.h>     // I/O binding functions (elektraIo*)
 #include <kdbio/ev.h>  // I/O binding constructor for ev (elektraIoEvNew)
 
 #include <ev.h> // ev functions

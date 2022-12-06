@@ -16,10 +16,10 @@
 
 #include <kdbassert.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbprivate.h>
 
 #include <fcntl.h>     // access()
 #include <ftw.h>       // nftw()

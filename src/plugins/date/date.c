@@ -11,7 +11,7 @@
 #include "date.h"
 #include <ctype.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <langinfo.h>
 #include <locale.h>
 #include <stdio.h>

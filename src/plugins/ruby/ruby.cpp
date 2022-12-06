@@ -17,7 +17,7 @@
 #include <kdbconfig.h>
 #endif
 
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #include SWIG_RUNTIME
 #include "ruby.hpp"

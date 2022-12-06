@@ -10,8 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_SPEC_H
 #define ELEKTRA_PLUGIN_SPEC_H
 
-#include <kdbplugin.h>
-#include <kdbtypes.h> /* for bool */
+#include <elektra/kdbplugin.h>
+#include <elektra/kdbtypes.h> /* for bool */
 
 int elektraSpecGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSpecCopy (Plugin * handle, KeySet * returned, Key * parentKey, bool isKdbGet);

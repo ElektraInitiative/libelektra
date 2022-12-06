@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_BLOCKRESOLVER_H
 #define ELEKTRA_PLUGIN_BLOCKRESOLVER_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraBlockresolverClose (Plugin * handle, Key * errorKey);

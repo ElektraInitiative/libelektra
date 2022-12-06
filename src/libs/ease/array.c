@@ -8,11 +8,11 @@
 
 #define __STDC_FORMAT_MACROS
 
-#include <kdb.h>
-#include <kdbease.h>
-#include <kdbhelper.h>
-#include <kdbprivate.h> // for elektraIsArrayPart
-#include <kdbtypes.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbprivate.h> // for elektraIsArrayPart
+#include <elektra/kdbtypes.h>
 
 #include <ctype.h>
 #include <errno.h>

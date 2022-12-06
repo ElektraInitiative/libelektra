@@ -16,12 +16,12 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbprivate.h> // for access to sync bit (keyClearSync)
+#include <elektra/kdbprivate.h> // for access to sync bit (keyClearSync)
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)

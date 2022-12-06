@@ -11,8 +11,8 @@
 #include <glib.h>
 
 #include <kdbassert.h>
-#include <kdbhelper.h>
-#include <kdbio.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbio.h>
 #include <kdblogger.h>
 
 typedef struct _GlibBindingData GlibBindingData;

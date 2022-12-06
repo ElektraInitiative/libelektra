@@ -19,7 +19,7 @@
 #include <string.h>
 #endif
 
-#include <kdbprivate.h>
+#include <elektra/kdbprivate.h>
 
 #include <tests_plugin.h>
 

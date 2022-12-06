@@ -8,7 +8,7 @@
 #ifndef ELEKTRA_PLUGIN_SYSLOG_H
 #define ELEKTRA_PLUGIN_SYSLOG_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 #include <syslog.h>
 
 int elektraSyslogOpen (Plugin * handle, Key * parentKey);

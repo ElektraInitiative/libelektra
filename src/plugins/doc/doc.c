@@ -9,7 +9,7 @@
 #include "doc.h"
 
 //! [plugin include]
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 //! [plugin include]
 //
 //! [plugin errors include]

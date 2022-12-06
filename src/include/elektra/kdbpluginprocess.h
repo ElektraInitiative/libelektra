@@ -1,8 +1,8 @@
 #ifndef KDBPLUGINPROCESS_H
 #define KDBPLUGINPROCESS_H
 
-#include <kdb.h>
-#include <kdbplugin.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbplugin.h>
 
 #ifdef __cplusplus
 namespace ckdb

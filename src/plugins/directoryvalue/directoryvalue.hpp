@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_DIRECTORY_VALUE_HPP
 #define ELEKTRA_PLUGIN_DIRECTORY_VALUE_HPP
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 extern "C" {
 

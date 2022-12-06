@@ -10,7 +10,7 @@
 
 #include <backends.hpp>
 #include <kdbconfig.h> // for DEBUG and VERBOSE
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>

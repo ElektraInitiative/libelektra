@@ -9,10 +9,10 @@
 #ifndef KDBERRORS_H
 #define KDBERRORS_H
 
-#include <kdb.h>
-#include <kdbhelper.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #ifdef __cplusplus
 extern "C" {

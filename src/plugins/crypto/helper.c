@@ -12,7 +12,7 @@
 #include "gpg.h"
 #include <kdbassert.h>
 #include <kdberrors.h>
-#include <kdbinvoke.h>
+#include <elektra/kdbinvoke.h>
 #include <stdlib.h>
 
 /**

@@ -14,7 +14,7 @@ The API supports all CORBA Basic Data Types, except for `wchar`, as well as the 
 ## Setup
 
 First you have to add `elektra-highlevel`, `elektra-kdb` and `elektra-ease` to the linked libraries of your application. To be able to
-use it in your source file, just include the main header with `#include <elektra.h>` at the top of your file.
+use it in your source file, just include the main header with `#include <elektra/elektra.h>` at the top of your file.
 
 ## Quickstart
 
@@ -351,7 +351,7 @@ The high-level API does not support binary key values at this time.
 
 ```c
 #include <stdio.h>
-#include <elektra.h>
+#include <elektra/elektra.h>
 
 int main ()
 {

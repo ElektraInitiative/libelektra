@@ -23,12 +23,12 @@
   */
 
 #include <kdbconfig.h>
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #include <dlfcn.h>
 
 #include <kdberrors.h>
-#include <kdbmodule.h>
+#include <elektra/kdbmodule.h>
 
 #include <stdlib.h>
 #include <string.h>

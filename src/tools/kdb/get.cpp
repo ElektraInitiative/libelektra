@@ -11,12 +11,12 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
-#include <kdbhelper.h>
-#include <kdbmacros.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmacros.h>
 
 #include <iostream>
 
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 using namespace std;
 using namespace kdb;

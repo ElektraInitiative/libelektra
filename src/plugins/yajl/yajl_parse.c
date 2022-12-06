@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 #include <yajl/yajl_parse.h>
 
 

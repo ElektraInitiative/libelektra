@@ -14,7 +14,7 @@
 #endif
 
 #include <fnmatch.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
 struct GlobFlagMap
 {

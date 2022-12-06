@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_MATHCHECK_H
 #define ELEKTRA_PLUGIN_MATHCHECK_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraMathcheckGet (Plugin * handle, KeySet * ks, Key * parentKey);

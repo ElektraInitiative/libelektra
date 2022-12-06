@@ -7,8 +7,8 @@
  *
  */
 
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbprivate.h>
 
 #include <tests.hpp>
 

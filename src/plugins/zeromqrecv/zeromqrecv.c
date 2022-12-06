@@ -13,7 +13,7 @@
 
 #include "zeromqrecv.h"
 
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
 
 #include <stdio.h>

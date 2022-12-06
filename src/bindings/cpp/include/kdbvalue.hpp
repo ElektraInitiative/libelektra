@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDBVALUE_HPP
 #define ELEKTRA_KDBVALUE_HPP
 
-#include <kdbmacros.h>
+#include <elektra/kdbmacros.h>
 
 #ifdef HAVE_KDBCONFIG_H
 #include <kdbconfig.h>
@@ -23,7 +23,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
-#include <kdbmeta.h>
+#include <elektra/kdbmeta.h>
 #include <map>
 #include <memory>
 #include <set>
@@ -32,10 +32,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include <kdbhelper.h> // for elektraLookupOptions
+#include <elektra/kdbhelper.h> // for elektraLookupOptions
 #include <keyset.hpp>
 
-// #include <kdbprivate.h> // for debugging (to see values of internal structures)
+// #include <elektra/kdbprivate.h> // for debugging (to see values of internal structures)
 
 namespace kdb
 {

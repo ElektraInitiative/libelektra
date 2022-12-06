@@ -12,7 +12,7 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbease.h>
+#include <elektra/kdbease.h>
 #include <kdberrors.h>
 
 #include <errno.h>

@@ -9,8 +9,8 @@
 
 #include "quickdump.h"
 
-#include <kdbendian.h>
-#include <kdbhelper.h>
+#include <elektra/kdbendian.h>
+#include <elektra/kdbhelper.h>
 
 #include <kdberrors.h>
 #include <stdio.h>

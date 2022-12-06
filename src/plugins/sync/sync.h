@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_PLUGIN_SYNC_H
 #define ELEKTRA_PLUGIN_SYNC_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 
 int elektraSyncGet (Plugin * handle, KeySet * ks, Key * parentKey);

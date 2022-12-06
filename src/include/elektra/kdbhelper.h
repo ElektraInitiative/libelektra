@@ -12,8 +12,8 @@
 #ifndef KDB_HELPER
 #define KDB_HELPER
 
-#include <kdbmacros.h>
-#include <kdbtypes.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbtypes.h>
 
 #include <stdarg.h>
 #include <stddef.h>

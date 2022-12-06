@@ -10,11 +10,11 @@
 #include "specload.h"
 
 #include <kdberrors.h>
-#include <kdbhelper.h>
+#include <elektra/kdbhelper.h>
 
-#include <kdbease.h>
-#include <kdbinvoke.h>
-#include <kdbmodule.h>
+#include <elektra/kdbease.h>
+#include <elektra/kdbinvoke.h>
+#include <elektra/kdbmodule.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

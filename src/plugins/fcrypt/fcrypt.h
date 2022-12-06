@@ -10,7 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_FCRYPT_H
 #define ELEKTRA_PLUGIN_FCRYPT_H
 
-#include <kdbplugin.h>
+#include <elektra/kdbplugin.h>
 
 // kdb functions
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, KeySet * ks, Key * parentKey);
