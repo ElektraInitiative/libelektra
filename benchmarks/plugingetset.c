@@ -9,10 +9,10 @@
 
 #include <stdio.h>
 
-#include <kdb.h>
-#include <kdbhelper.h>
-#include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <elektra/kdb.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbprivate.h>
 
 int main (int argc, char ** argv)
 {
