@@ -10,8 +10,13 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ## Prerequisites
 
-- Docker for Linux containers has to be pre-installed. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows. Alternatively, you can use podman, a different container engine which is compatible with Docker. See https://podman.io/ for more details and an installation guide.
+- Docker for Linux containers has to be pre-installed. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows. 
 - Basic knowledge of Docker (not mandatory)
+
+## Podman support
+
+Alternatively, you can use podman, a different container engine which is compatible with Docker. See https://podman.io/ for more details and an installation guide. If you are using podman, and want to follow this tutorial, just replace the docker command with podman.
+
 
 ## What to Begin With?
 
@@ -20,27 +25,18 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 To build your own Docker image, run the following command from the source root directory:
 
 ```sh
-docker build -t buildelektra-sid \
-	--build-arg JENKINS_USERID=$(id -u) \
-	--build-arg JENKINS_GROUPID=$(id -g) \
-	-f scripts/docker/debian/sid/Dockerfile \
-	scripts/docker/debian/sid/
-```
-
-Alternatively, you can use podman:
-
-```sh
-podman build -t buildelektra-sid \
-	--build-arg JENKINS_USERID=$(id -u) \
-	--build-arg JENKINS_GROUPID=$(id -g) \
-	-f scripts/docker/debian/sid/Dockerfile \
-	scripts/docker/debian/sid/
+docker build -t buildelektra-bullseye \
+--build-arg JENKINS_USERID=$(id -u) \
+--build-arg JENKINS_GROUPID=$(id -g) \
+-f scripts/docker/debian/bullseye/Dockerfile \
+scripts/docker/debian/bullseye/
+# RET: 0
 ```
 
 The build process depends on your Internet connection speed and the overall performance of your hardware. Most likely, it will take at least
 5 minutes. Please be patient. Once you have built the image, you can reuse it multiple times.
 
-The image tag `buildelektra-sid` we suggested can be replaced by a name of your own choosing.
+The image tag `buildelektra-bullseye` we suggested can be replaced by a name of your own choosing.
 
 Another alternative but not recommended(!) option would be to pick one of the publicly available Docker images of Elektra. If you do not know the difference, just pick this one --> "build-elektra-debian-stretch".
 Unfortunately, it will take some time to download it, since it is pretty big, but you can be sure you'll have all the needed dependencies.
@@ -48,14 +44,8 @@ You can choose a light-weight Alpine image which won't take long to download, ho
 
 If you want to view all the available images, execute this command:
 
-```sh
+```shell
 docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org
-```
-
-Or with podman:
-
-```sh
-podman run --rm anoxis/registry-cli -r https://hub-public.libelektra.org
 ```
 
 You will see something like this:
@@ -77,26 +67,14 @@ Image: build-elektra-debian-stretch
 
 Afterwards pull your desired image as you would do from any public registry:
 
-```sh
+```shell
 docker pull hub-public.libelektra.org/<image_name>:<tag_name>
-```
-
-Or with podman:
-
-```sh
-podman pull hub-public.libelektra.org/<image_name>:<tag_name>
 ```
 
 Example:
 
-```sh
+```shell
 docker pull hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
-```
-
-Or with podman:
-
-```sh
-podman pull hub-public.libelektra.org/build-elektra-debian-stretch:202108-1c5cb52603c30b89b7c3b26234cb7094f03f180ea5378b8e349b2feee9a9d724
 ```
 
 ### 2. Run the Docker Container
@@ -109,7 +87,7 @@ So from your root source folder run the following:
 docker run -it --rm \
 -v "$PWD:/home/jenkins/workspace" \
 -w /home/jenkins/workspace \
-buildelektra-sid
+buildelektra-bullseye
 ```
 
 #### 2.a Run the Docker Container with podman
@@ -153,10 +131,10 @@ changes the _host_ filesystem. You can read more about this [here](https://docs.
 
 Finally, you can run the container with:
 
-```sh
+```shell
 podman run --user 1000 -it --rm \
 -v "$PWD:/home/jenkins/workspace:Z" \
--w /home/jenkins/workspace buildelektra-sid
+-w /home/jenkins/workspace buildelektra-bullseye
 ```
 
 Do not forget the `:Z` label. You can read more about the labels in the podman [documentation](https://docs.podman.io/en/latest/markdown/podman-run.1.html#volume-v-source-volume-host-dir-containe).
@@ -167,14 +145,14 @@ After starting the container, you should be automatically inside it in the worki
 
 Create a folder where Elektra will be installed, create another folder for building the source and `cd` to it and like this:
 
-```sh
+```shell
 mkdir elektra-install && mkdir elektra-build-docker && cd elektra-build-docker
 ```
 
 Build it with
 
 ```sh
- cmake /home/jenkins/workspace \
+cmake /home/jenkins/workspace \
 -DBINDINGS="ALL;-DEPRECATED" \
 -DPLUGINS="ALL;-DEPRECATED" \
 -DTOOLS="ALL" \
@@ -190,7 +168,7 @@ Build it with
 
 and then with
 
-```sh
+```shell
 make -j 10
 ```
 
