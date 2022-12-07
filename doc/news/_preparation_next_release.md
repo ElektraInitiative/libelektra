@@ -138,7 +138,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Fix broken /pythongen link on homepage _(@stefnotch)_
 - Fix redirect logic to not cause loops _(@stefnotch)_
-- <<TODO>>
+- Remove duplicated link to `TESTING.md` file _(@stefnotch)_, _(@janldeboer)_
 
 ### toml
 
