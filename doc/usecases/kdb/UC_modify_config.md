@@ -11,9 +11,9 @@
 
 - **Precondition:** -
 - **Main success scenario:**
-  - [Application loads configuration](UC_load_config.md)
+  - [Application loads configuration](UC_get_config.md)
   - Application modifies configuration in memory
-  - [Application stores configuration](UC_store_config.md)
+  - [Application stores configuration](UC_set_config.md)
 - **Alternative scenario:** -
 - **Error scenario:** -
   > **Note**: The error scenarios from the references use cases still apply.
