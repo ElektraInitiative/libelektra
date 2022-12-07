@@ -382,7 +382,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Use cases for KDB _(@kodebach)_
 - Use cases for `libelektra-core` _(@kodebach)_
-- <<TODO>>
+- Fix broken links in use cases for KDB after files were renamed. _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
