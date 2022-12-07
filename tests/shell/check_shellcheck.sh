@@ -15,7 +15,8 @@ cd "@CMAKE_SOURCE_DIR@" || exit
 
 # shellcheck disable=SC2046
 set $(
-	. "scripts/dev/list-shell-scripts" && list_shell_scripts
+	{ . "scripts/dev/list-shell-scripts" && list_shell_scripts; } |
+		grep -v -f "tests/shell/check_shellcheck_ignorelist.txt"
 )
 printf 'Checking Scripts\n'
 printf '————————————————\n\n'
