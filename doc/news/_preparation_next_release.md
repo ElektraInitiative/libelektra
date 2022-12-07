@@ -506,7 +506,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Add Markdown shell recorder validation to install.webui.md _(@deoknats861)_
 - <<TODO>>
-- <<TODO>>
+- Fix the outdated array tutorial _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 - Reinstate mounting tutorial _(@Bujuhu)_

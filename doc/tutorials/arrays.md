@@ -43,7 +43,7 @@ kdb get user:/tests/parent/daughter
 
 ## Array Keys
 
-Since Elektra sorts keys alphabetically we can use the key-value pair structure described above to store sequences of values (aka. arrays).
+Since Elektra keys sorts keys alphabetically, we can use the key-value pair structure described above to store sequences of values (aka. arrays).
 
 ### Empty Arrays
 
@@ -72,14 +72,12 @@ kdb set user:/tests/sequence/#3 'Fourth Element'
 
 . As you can see above arrays can contain “empty fields”: The key `user:/tests/sequence/#2` is missing.
 
-For array elements with an index larger than `9` we must add **underscores** (`_`) to the basename, so we do not destroy the alphabetic order of the array. For example, to add an eleventh element to our array we use the following command:
+As Elektra keys are sorted alphabetically, it will automatically prepend with as many `_` characters as needed to keep the natural ordering of the array and the alphabetical order identical:
 
 ```sh
-kdb set user:/tests/sequence/#_10 'Eleventh Element'
+kdb set user:/tests/sequence/#10 'Eleventh Element'
 #> Create a new key user:/tests/sequence/#_10 with string "Eleventh Element"
 ```
-
-. The order of the array sequence is still correct afterwards, as the following command shows:
 
 ```sh
 # List all array elements
@@ -90,25 +88,12 @@ kdb ls user:/tests/sequence/
 #> user:/tests/sequence/#_10
 ```
 
-. For larger indices we add **one underscore less, than the number of digits** of the index. For example, to add an element with index `1337` (`4` digits) we use the basename `#___1337`. We can also generate the basename programmatically:
-
-```bash
-ruby -e 'print("#", "_" * (ARGV[0].length - 1), ARGV[0])' 12345
-#> #____12345
-
-ruby -e 'print("#", "_" * (ARGV[0].length - 1), ARGV[0])' 0
-#> #0
-
-ruby -e 'print("#", "_" * (ARGV[0].length - 1), ARGV[0])' 42
-#> #_42
-```
-
 .
 
 ### Metadata
 
 Elektra’s arrays **require** that you always add the metakey `array` to the array parent.
-Otherwise the values below the parent will not be interpreted as array elements, but rather as normal key-value pairs.
+Otherwise, the values below the parent will not be interpreted as array elements, but rather as normal key-value pairs.
 To make the `array` metakey more useful [storage plugins](plugins.md) should save the [basename of the last key in the array parent](../decisions/4_partially_implemented/array.md).
 This of course works only, if the plugins already stores this information in the config file, either
 
@@ -123,11 +108,11 @@ kdb set user:/tests/favorites/superheros/#0 'One-Punch Man'
 #> Create a new key user:/tests/favorites/superheros/#0 with string "One-Punch Man"
 kdb set user:/tests/favorites/superheros/#1 'Mermaid Man and Barnacle Boy'
 #> Create a new key user:/tests/favorites/superheros/#1 with string "Mermaid Man and Barnacle Boy"
-kdb set user:/tests/favorites/superheros/#____99999 'The guy with the bow and arrow'
+kdb set user:/tests/favorites/superheros/#99999 'The guy with the bow and arrow'
 #> Create a new key user:/tests/favorites/superheros/#____99999 with string "The guy with the bow and arrow"
 
 # The metakey `array` should save the basename of the last element.
-kdb meta-set user:/tests/favorites/superheros array '#____99999'
+kdb meta-set user:/tests/favorites/superheros array '#99999'
 ```
 
 . This way you can always retrieve the last element of an array easily:
