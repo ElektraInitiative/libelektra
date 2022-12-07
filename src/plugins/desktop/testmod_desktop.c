@@ -23,6 +23,7 @@
 const char DE_ENV[] = "XDG_CURRENT_DESKTOP";
 const char TEST_DE[] = "this_is_a_test_de";
 const char NEW_DE[] = "this_is_another_test_de";
+extern char ** environ;
 
 void test_desktop (void)
 {
@@ -52,7 +53,9 @@ void test_desktop (void)
 	succeed_if (strcmp (keyString (result), TEST_DE) == 0, "kdb set overwrote the desktop environment");
 
 	printf ("clear all variables to test \"no desktop\"\n");
-	clearenv ();
+
+	environ = NULL;
+
 	ksDel (keys);
 	keys = ksNew (0, KS_END);
 	plugin->kdbGet (plugin, keys, parentKey);
