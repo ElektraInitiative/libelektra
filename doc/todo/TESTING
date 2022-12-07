@@ -36,6 +36,12 @@ We also disabled `testmod_zeromqsend` from `kdb run_all` in `tests/shell/run_all
 
 We disabled `testmod_crypto` on `debian-unstable-full-clang` due to memory leaks.
 
+### Shellcheck
+
+Several files have been excluded from checking with shellcheck (`tests/shell/check_shellcheck.sh`).
+
+The list of excluded files is `tests/shell/shellcheck/check_shellcheck_ignorelist.txt`.
+
 ## error
 
 test that error codes are set correctly
