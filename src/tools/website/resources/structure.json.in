@@ -54,13 +54,6 @@
                         }
                     },
                     {
-                        "name": "Meta-Specification",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/METADATA.ini"
-                        }
-                    },
-                    {
                         "name": "FAQ",
                         "type": "staticfile",
                         "options": {
@@ -83,18 +76,19 @@
 				}]
 			},
 			{
-				"name": "Keynames",
-				"type": "staticlist",
-				"ref": "keynames",
-				"dev-comment": "",
+                "name": "Installation",
+                "type": "staticlist",
+                "ref": "installation",
 				"children": [{
-					"name": "keynames",
+					"name": "Installation",
 					"type": "staticfile",
 					"options": {
-					"path": "doc/KEYNAMES.md"
+					"path": "doc/INSTALL.md"
 				  }
-				}]
-			},
+
+                }],
+                "dev-comment": ""
+            },
 			{
                 "name": "Compiling",
                 "type": "staticlist",
@@ -303,15 +297,25 @@
                         "options": {
                             "path": "doc/VERSION.md"
                         }
-                    },
-                    {
-                        "name": "Tutorials",
-                        "type": "staticref",
-                        "options": {
-                            "path": "tutorials"
-                        }
                     }
                 ]
+            },
+            {
+                "name": "Tutorials",
+                "type": "parsereadme",
+                "ref": "tutorials",
+                "options": {
+                    "path": "doc/tutorials/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "Names are already pretty in the linked readme, we do not have to change them."
             },
             {
                 "name": "Examples",
