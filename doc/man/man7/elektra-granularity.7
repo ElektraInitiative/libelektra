@@ -1,14 +1,14 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-GRANULARITY" "7" "November 2020" ""
+.TH "ELEKTRA\-GRANULARITY" "7" "November 2022" ""
 .SH "NAME"
 \fBelektra\-granularity\fR \- relation of keys to files
 .P
-Keys of a backend can only be retrieved as a full key set\. Currently it is not possible to fetch a part of the keys of a backend\. So the user needs to cut out the interesting keys with \fBksCut()\fR afterwards\. If the keys should be committed again, the whole key set must be preserved\. Otherwise, the clipped keys will be removed permanently\.
+Keys of a backend can only be retrieved as a full key set\. Currently, it is not possible to fetch a part of the keys of a backend\. So the user needs to cut out the interesting keys with \fBksCut()\fR afterwards\. If the keys should be committed again, the whole key set must be preserved\. Otherwise, the clipped keys will be removed permanently\.
 .P
 This restriction simplifies storage plugins while it does not limit the user\. Other plugins would not be able to fulfil their purpose without the full \fBKeySet\fR\. For example, a plugin that checks the availability and structure of all keys cannot work with a partial key set\.
 .P
-It is problematic to have too many keys in one backend\. The applications would need memory for unnecessary configuration data\. Instead we recommend introducing several mount points to split up the keys into different backends\. Splitting up key sets makes sense if any application requests only a part of the configuration\. No benefits arise if every application requests all keys anyway\.
+It is problematic to have too many keys in one backend\. The applications would need memory for unnecessary configuration data\. Instead, we recommend introducing several mount points to split up the keys into different backends\. Splitting up key sets makes sense if any application requests only a part of the configuration\. No benefits arise if every application requests all keys anyway\.
 .P
 Let us assume that many keys reside in \fBuser:/sw\fR and an application only needs the keys in \fBuser:/sw/org/app\fR\. To save memory and get better startup\-times for the application, a new backend can be mounted at \fBuser:/sw/org/app\fR\. On the other hand, every mounted backend causes a small run\-time overhead in the overall configuration system\.
 .P

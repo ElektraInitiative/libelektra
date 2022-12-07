@@ -318,7 +318,7 @@ static void benchmarkMapping (char * name)
 					// OPMPHM
 					OpmphmInit init;
 					init.getName = getString;
-					init.data = (void **) (ks->array);
+					init.data = (void **) (ks->data->array);
 // OPMPHM
 #ifdef USE_OPENMP
 					threadI = omp_get_thread_num ();
@@ -604,7 +604,7 @@ static void benchmarkMappingOpt (char * name)
 				// OPMPHM
 				OpmphmInit init;
 				init.getName = getString;
-				init.data = (void **) (ks->array);
+				init.data = (void **) (ks->data->array);
 // OPMPHM
 #ifdef USE_OPENMP
 				threadI = omp_get_thread_num ();
@@ -867,7 +867,7 @@ static void benchmarkMappingAllSeeds (char * name)
 			// OPMPHM
 			OpmphmInit init;
 			init.getName = getString;
-			init.data = (void **) (ks->array);
+			init.data = (void **) (ks->data->array);
 			// OPMPHM
 
 #ifdef USE_OPENMP
@@ -1026,13 +1026,13 @@ static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, si
 		// preparation for measurement
 		struct timeval start;
 		struct timeval end;
-		Key * keySearchFor = ks->array[0]; // just some key
+		Key * keySearchFor = ks->data->array[0]; // just some key
 		Key * keyFound;
 		// fresh OPMPHM
-		if (ks->opmphm)
+		if (ks->data->opmphm)
 		{
-			opmphmDel (ks->opmphm);
-			ks->opmphm = NULL;
+			opmphmDel (ks->data->opmphm);
+			ks->data->opmphm = NULL;
 		}
 
 		// START MEASUREMENT
@@ -1051,7 +1051,7 @@ static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, si
 		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 
 		// sanity check
-		if (!opmphmIsBuild (ks->opmphm))
+		if (!opmphmIsBuild (ks->data->opmphm))
 		{
 			printExit ("Sanity Check Failed: OPMPHM not used");
 		}
@@ -1255,12 +1255,12 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 	if (option & KDB_O_OPMPHM)
 	{
 		// trigger OPMPHM build if not build
-		if (!opmphmIsBuild (ks->opmphm))
+		if (!opmphmIsBuild (ks->data->opmphm))
 		{
 			// set seed to return by elektraRandGetInitSeed () in the lookup
 			elektraRandBenchmarkInitSeed = searchSeed;
-			(void) ksLookup (ks, ks->array[0], KDB_O_OPMPHM | KDB_O_NOCASCADING);
-			if (!opmphmIsBuild (ks->opmphm))
+			(void) ksLookup (ks, ks->data->array[0], KDB_O_OPMPHM | KDB_O_NOCASCADING);
+			if (!opmphmIsBuild (ks->data->opmphm))
 			{
 				printExit ("trigger OPMPHM build");
 			}
@@ -1271,14 +1271,14 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		// sanity checks
 		if (option & KDB_O_OPMPHM)
 		{
-			if (!opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->data->opmphm))
 			{
 				printExit ("Sanity Check Failed: OPMPHM not here");
 			}
 		}
 		else
 		{
-			if (ks->opmphm)
+			if (ks->data->opmphm)
 			{
 				printExit ("Sanity Check Failed: OPMPHM here");
 			}
@@ -1297,8 +1297,8 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 
 		for (size_t s = 1; s <= searches; ++s)
 		{
-			keyFound = ksLookup (ks, ks->array[actualSearchSeed % ks->size], option);
-			if (!keyFound || keyFound != ks->array[actualSearchSeed % ks->size])
+			keyFound = ksLookup (ks, ks->data->array[actualSearchSeed % ks->data->size], option);
+			if (!keyFound || keyFound != ks->data->array[actualSearchSeed % ks->data->size])
 			{
 				printExit ("Sanity Check Failed: found wrong Key");
 			}
@@ -1313,14 +1313,14 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		// sanity checks
 		if (option & KDB_O_OPMPHM)
 		{
-			if (!opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->data->opmphm))
 			{
 				printExit ("Sanity Check Failed: OPMPHM not here");
 			}
 		}
 		else
 		{
-			if (ks->opmphm)
+			if (ks->data->opmphm)
 			{
 				printExit ("Sanity Check Failed: OPMPHM here");
 			}
@@ -1958,20 +1958,21 @@ static void benchmarkPredictionTime (char * name)
 					// do the lookups
 					for (size_t lookups = 0; lookups < pattern[s]; ++lookups)
 					{
-						keyFound = ksLookup (ks, ks->array[searchHashSeed % ks->size], KDB_O_NOCASCADING);
-						if (!keyFound || keyFound != ks->array[searchHashSeed % ks->size])
+						keyFound =
+							ksLookup (ks, ks->data->array[searchHashSeed % ks->data->size], KDB_O_NOCASCADING);
+						if (!keyFound || keyFound != ks->data->array[searchHashSeed % ks->data->size])
 						{
 							printExit ("Sanity Check Failed: found wrong Key");
 						}
 						elektraRand (&searchHashSeed);
 					}
-					if (!ks->opmphmPredictor)
+					if (!ks->data->opmphmPredictor)
 					{
 						printExit ("Sanity Check Failed: no predictor used");
 					}
 					// simulate data change
-					ks->flags |= KS_FLAG_NAME_CHANGE;
-					if (ks->opmphm) opmphmClear (ks->opmphm);
+					ks->data->isOpmphmInvalid = true;
+					if (ks->data->opmphm) opmphmClear (ks->data->opmphm);
 				}
 
 				__asm__("");
@@ -2010,9 +2011,9 @@ static void benchmarkPredictionTime (char * name)
 					// do the lookups
 					for (size_t lookups = 0; lookups < pattern[s]; ++lookups)
 					{
-						keyFound = ksLookup (ks, ks->array[searchHashSeed % ks->size],
+						keyFound = ksLookup (ks, ks->data->array[searchHashSeed % ks->data->size],
 								     KDB_O_NOCASCADING | KDB_O_BINSEARCH);
-						if (!keyFound || keyFound != ks->array[searchHashSeed % ks->size])
+						if (!keyFound || keyFound != ks->data->array[searchHashSeed % ks->data->size])
 						{
 							printExit ("Sanity Check Failed: found wrong Key");
 						}

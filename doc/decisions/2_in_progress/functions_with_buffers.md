@@ -1,11 +1,9 @@
-# Functions copying into buffers
+# Functions with buffers
 
 ## Problem
 
-Currently the way functions like keyGetName() work is by passing a buffer with
-a maxSize and if the buffer is large enough, the value gets copied into the
-buffer. This leads to the user having to write a lot of surrounding boilerplate
-code, checking for the size of every value / name they want to copy into a buffer.
+Currently the way functions like `keyGetName()` work is by passing a buffer with a `maxSize` and if the buffer is large enough, the value gets copied into the buffer.
+This leads to the user having to write a lot of surrounding boilerplate code, checking for the size of every value / name they want to copy into a buffer.
 
 ## Constraints
 
@@ -21,7 +19,7 @@ code, checking for the size of every value / name they want to copy into a buffe
   - keyGetBaseName()
   - keyGetString()
   - keyGetBinary()
-- add documentation in API docu about life-time and add in release notes that you should use strncpy() / memcpy() instead:
+- add documentation in API documentation about life-time and add in release notes that you should use strncpy() / memcpy() instead:
 
 ```c
 // str values

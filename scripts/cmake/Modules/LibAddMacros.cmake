@@ -611,7 +611,7 @@ macro (removal ELEMENTS TO_REMOVE_ELEMENTS)
 	endif ()
 endmacro ()
 
-function (generate_manpage NAME)
+function (generate_man_page NAME)
 	if (BUILD_DOCUMENTATION)
 		cmake_parse_arguments (
 			ARG
@@ -657,7 +657,7 @@ function (generate_manpage NAME)
 				DEPENDS ${MDFILE}
 				COMMAND
 					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D GIT_COMMAND=${GIT_EXECUTABLE} -D
-					MDFILE=${MDFILE} -D SOURCE_FILE=${SOURCE_FILE} -D MANPAGE=${OUTFILE} -P
+					MDFILE=${MDFILE} -D SOURCE_FILE=${SOURCE_FILE} -D MAN_PAGE=${OUTFILE} -P
 					${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake
 				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})

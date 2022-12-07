@@ -27,6 +27,11 @@ This plugin defines following keynames below its mount point:
 - version
 - machine
 
+## Errors
+
+The only documented error in `uname(2)` is when an invalid buffer is passed to it.
+As this is an implementation error only, this plugin should not run into errors.
+
 ## Restrictions
 
 This plugin is read-only.

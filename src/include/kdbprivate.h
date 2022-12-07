@@ -60,6 +60,23 @@
 namespace ckdb
 {
 extern "C" {
+
+/** Test a bit. @see set_bit(), clear_bit() */
+#define test_bit(var, bit) ((static_cast<unsigned long long> (var)) & (static_cast<unsigned long long> (bit)))
+/** Set a bit. @see clear_bit() */
+#define set_bit(var, bit) ((var) |= (static_cast<unsigned long long> (bit)))
+/** Clear a bit. @see set_bit() */
+#define clear_bit(var, bit) ((var) &= ~(static_cast<unsigned long long> (bit)))
+
+#else
+
+/** Test a bit. @see set_bit(), clear_bit() */
+#define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
+/** Set a bit. @see clear_bit() */
+#define set_bit(var, bit) ((var) |= ((unsigned long long) (bit)))
+/** Clear a bit. @see set_bit() */
+#define clear_bit(var, bit) ((var) &= ~((unsigned long long) (bit)))
+
 #endif
 
 
@@ -84,114 +101,14 @@ typedef int (*kdbHookSendNotificationSetPtr) (Plugin * handle, KeySet * returned
 typedef Plugin * (*OpenMapper) (const char *, const char *, KeySet *);
 typedef int (*CloseMapper) (Plugin *);
 
-
-/*****************
- * Key Flags
- *****************/
-
-enum
-{
-	KEY_EMPTY_NAME = 1 << 22
-};
-
-// clang-format off
-
 /**
- * Key Flags.
- *
- * Store a synchronizer state so that the Elektra knows if something
- * has changed or not.
- *
- * @ingroup backend
- */
-typedef enum {
-	KEY_FLAG_SYNC = 1,	  /*!<
-			Key need sync.
-			If name, value or metadata
-			are changed this flag will be set, so that the backend will sync
-			the key to database.*/
-	KEY_FLAG_RO_NAME = 1 << 1,	/*!<
-			 Read only flag for name.
-			 Key name is read only and not allowed
-			 to be changed. All attempts to change the name
-			 will lead to an error.
-			 Needed for metakeys and keys that are in a data
-			 structure that depends on name ordering.*/
-	KEY_FLAG_RO_VALUE = 1 << 2, /*!<
-			 Read only flag for value.
-			 Key value is read only and not allowed
-			 to be changed. All attempts to change the value
-			 will lead to an error.
-			 Needed for metakeys*/
-	KEY_FLAG_RO_META = 1 << 3,	/*!<
-			 Read only flag for meta.
-			 Key meta is read only and not allowed
-			 to be changed. All attempts to change the value
-			 will lead to an error.
-			 Needed for metakeys.*/
-	KEY_FLAG_MMAP_STRUCT = 1 << 4,	/*!<
-			 Key struct lies inside a mmap region.
-			 This flag is set for Keys inside a mapped region.
-			 It prevents erroneous free() calls on these keys. */
-	KEY_FLAG_MMAP_KEY = 1 << 5,	/*!<
-			 Key name lies inside a mmap region.
-			 This flag is set once a Key name has been moved to a mapped region,
-			 and is removed if the name moves out of the mapped region.
-			 It prevents erroneous free() calls on these keys. */
-	KEY_FLAG_MMAP_DATA = 1 << 6	/*!<
-			 Key value lies inside a mmap region.
-			 This flag is set once a Key value has been moved to a mapped region,
-			 and is removed if the value moves out of the mapped region.
-			 It prevents erroneous free() calls on these keys. */
-} keyflag_t;
-
-
-/**
- * Advanced KS Flags.
- *
- * Store a synchronizer state so that the Elektra knows if something
- * has changed or not.
- *
- * @ingroup backend
- */
-typedef enum {
-	KS_FLAG_SYNC = 1 /*!<
-		 KeySet need sync.
-		 If keys were popped from the Keyset
-		 this flag will be set, so that the backend will sync
-		 the keys to database.*/
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	,KS_FLAG_NAME_CHANGE = 1 << 1 /*!<
-		 The OPMPHM needs to be rebuild.
-		 Every Key add, Key removal or Key name change operation
-		 sets this flag.*/
-#endif
-	,KS_FLAG_MMAP_STRUCT = 1 << 2	/*!<
-		 KeySet struct lies inside a mmap region.
-		 This flag is set for KeySets inside a mapped region.
-		 It prevents erroneous free() calls on these KeySets. */
-	,KS_FLAG_MMAP_ARRAY = 1 << 3	/*!<
-		 Array of the KeySet lies inside a mmap region.
-		 This flag is set for KeySets where the array is in a mapped region,
-		 and is removed if the array is moved out from the mapped region.
-		 It prevents erroneous free() calls on these arrays. */
-} ksflag_t;
-
-
-/**
- * The private Key struct.
+ * The private copy-on-write key data structure.
  *
  * Its internal private attributes should not be accessed directly by regular
- * programs. Use the @ref key "Key access methods" instead.
- * Only a backend writer needs to have access to the private attributes of the
- * Key object which is defined as:
- * @code
-typedef struct _Key Key;
- * @endcode
+ * programs.
  *
- * @ingroup backend
  */
-struct _Key
+struct _KeyData
 {
 	/**
 	 * The value, which is a NULL terminated string or binary.
@@ -199,7 +116,8 @@ struct _Key
 	 * @see keyGetString(), keyGetBinary(),
 	 * @see keySetString(), keySetBinary()
 	 */
-	union {
+	union
+	{
 		char * c;
 		void * v;
 	} data;
@@ -210,6 +128,32 @@ struct _Key
 	 */
 	size_t dataSize;
 
+	/**
+	 * Reference counter
+	 */
+	uint16_t refs;
+
+	/**
+	 * Is this structure and its data stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 15;
+};
+
+/**
+ * The private copy-on-write keyname structure.
+ *
+ * Its internal private attributes should not be accessed directly by regular
+ * programs.
+ *
+ */
+struct _KeyName
+{
 	/**
 	 * The canonical (escaped) name of the key.
 	 * @see keyGetName(), keySetName()
@@ -236,14 +180,87 @@ struct _Key
 	size_t keyUSize;
 
 	/**
+	 * Reference counter
+	 */
+	uint16_t refs;
+
+	/**
+	 * Is this structure and its data stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 15;
+};
+
+// private methods for COW keys
+struct _KeyName * keyNameNew (void);
+struct _KeyName * keyNameCopy (struct _KeyName * source);
+uint16_t keyNameRefInc (struct _KeyName * keyname);
+uint16_t keyNameRefDec (struct _KeyName * keyname);
+uint16_t keyNameRefDecAndDel (struct _KeyName * keyname);
+void keyNameDel (struct _KeyName * keyname);
+
+void keyDetachKeyName (Key * key);
+
+struct _KeyData * keyDataNew (void);
+uint16_t keyDataRefInc (struct _KeyData * keydata);
+uint16_t keyDataRefDec (struct _KeyData * keydata);
+uint16_t keyDataRefDecAndDel (struct _KeyData * keydata);
+void keyDataDel (struct _KeyData * keydata);
+
+static inline bool isKeyNameInMmap (const struct _KeyName * keyname)
+{
+	return keyname->isInMmap;
+}
+
+static inline void setKeyNameIsInMmap (struct _KeyName * keyname, bool isInMmap)
+{
+	keyname->isInMmap = isInMmap;
+}
+
+static inline bool isKeyDataInMmap (const struct _KeyData * keydata)
+{
+	return keydata->isInMmap;
+}
+
+static inline void setKeyDataIsInMmap (struct _KeyData * keydata, bool isInMmap)
+{
+	keydata->isInMmap = isInMmap;
+}
+
+/**
+ * The private Key struct.
+ *
+ * Its internal private attributes should not be accessed directly by regular
+ * programs. Use the @ref key "Key access methods" instead.
+ * Only a backend writer needs to have access to the private attributes of the
+ * Key object which is defined as:
+ * @code
+typedef struct _Key Key;
+ * @endcode
+ *
+ * @ingroup backend
+ */
+struct _Key
+{
+	/**
+	 * Copy-on-write structure for the key data
+	 */
+	struct _KeyData * keyData;
+
+	/**
+	 * Copy-on-write structure for the key name
+	 */
+	struct _KeyName * keyName;
+
+	/**
 	 * All the key's meta information.
 	 */
 	KeySet * meta;
-
-	/**
-	 * Some control and internal flags.
-	 */
-	keyflag_t flags;
 
 	/**
 	 * Reference counter
@@ -251,10 +268,104 @@ struct _Key
 	uint16_t refs;
 
 	/**
-	 * Reserved for future use
+	 * Is this structure stored in an mmap()ed memory area?
 	 */
-	uint16_t reserved;
+	bool isInMmap : 1;
+
+	/**
+	 * Key need sync.
+	 * If name, value or metadata are changed this flag will be set,
+	 * so that the backend will sync the key to database.
+	 */
+	bool needsSync : 1;
+
+	/**
+	 * Read only flag for name.
+	 * Key name is read only and not allowed to be changed.
+	 * All attempts to change the name will lead to an error.
+	 * Needed for metakeys and keys that are in a data structure that depends on name ordering.
+	 */
+	bool hasReadOnlyName : 1;
+
+	/**
+	 * Read only flag for value.
+	 * Key value is read only and not allowed  to be changed.
+	 * All attempts to change the value will lead to an error.
+	 * Needed for metakeys
+	 */
+	bool hasReadOnlyValue : 1;
+
+	/**
+	 * Read only flag for meta.
+	 * Key meta is read only and not allowed to be changed.
+	 * All attempts to change the value will lead to an error.
+	 * Needed for metakeys.
+	 */
+	bool hasReadOnlyMeta : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 11;
 };
+
+struct _KeySetData
+{
+	struct _Key ** array; /**<Array which holds the keys */
+
+	size_t size;  /**< Number of keys contained in the KeySet */
+	size_t alloc; /**< Allocated size of array */
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map.
+	 */
+	Opmphm * opmphm;
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map Predictor.
+	 */
+	OpmphmPredictor * opmphmPredictor;
+#endif
+
+	uint16_t refs; /**< Reference counter */
+
+	/**
+	 * Is this structure and its data stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
+
+	/**
+	 * Whether opmphm needs to be rebuilt
+	 */
+	bool isOpmphmInvalid : 1;
+
+	/**
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
+	 */
+	int : 14;
+};
+
+// COW methods for keyset
+
+struct _KeySetData * keySetDataNew (void);
+uint16_t keySetDataRefInc (struct _KeySetData * keysetdata);
+uint16_t keySetDataRefDec (struct _KeySetData * keysetdata);
+uint16_t keySetDataRefDecAndDel (struct _KeySetData * keysetdata);
+void keySetDataDel (struct _KeySetData * keysetdata);
+
+void keySetDetachData (KeySet * keyset);
+
+static inline bool isKeySetDataInMmap (const struct _KeySetData * keysetdata)
+{
+	return keysetdata->isInMmap;
+}
+
+static inline void setKeySetDataIsInMmap (struct _KeySetData * keysetdata, bool isInMmap)
+{
+	keysetdata->isInMmap = isInMmap;
+}
 
 
 /**
@@ -272,33 +383,33 @@ typedef struct _KeySet KeySet;
  */
 struct _KeySet
 {
-	struct _Key ** array; /**<Array which holds the keys */
-
-	size_t size;  /**< Number of keys contained in the KeySet */
-	size_t alloc; /**< Allocated size of array */
+	/**
+	 * Copy-on-write data
+	 */
+	struct _KeySetData * data;
 
 	struct _Key * cursor; /**< Internal cursor */
-	size_t current;		  /**< Current position of cursor */
-
-	/**
-	 * Some control and internal flags.
-	 */
-	ksflag_t flags;
+	size_t current;	      /**< Current position of cursor */
 
 	uint16_t refs; /**< Reference counter */
 
-	uint16_t reserved; /**< Reserved for future use */
+	/**
+	 * Is this structure stored in an mmap()ed memory area?
+	 */
+	bool isInMmap : 1;
 
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
-	 * The Order Preserving Minimal Perfect Hash Map.
+	 * KeySet need sync.
+	 * If keys were popped from the Keyset this flag will be set,
+	 * so that the backend will sync the keys to database.
 	 */
-	Opmphm * opmphm;
+	bool needsSync : 1;
+
 	/**
-	 * The Order Preserving Minimal Perfect Hash Map Predictor.
+	 * Bitfield reserved for future use.
+	 * Decrease size when adding new flags.
 	 */
-	OpmphmPredictor * opmphmPredictor;
-#endif
+	int : 14;
 };
 
 typedef struct _SendNotificationHook
@@ -388,10 +499,10 @@ struct _Plugin
 	kdbOpenPtr kdbOpen;   /*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose; /*!< The pointer to kdbClose_template() of the backend. */
 
-	kdbInitPtr kdbInit;	  /*!< The pointer to kdbInit_template() of the backend. */
-	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
-	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
-	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
+	kdbInitPtr kdbInit;	/*!< The pointer to kdbInit_template() of the backend. */
+	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
+	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
+	kdbErrorPtr kdbError;	/*!< The pointer to kdbError_template() of the backend. */
 	kdbCommitPtr kdbCommit; /*!< The pointer to kdbCommit_template() of the backend. */
 
 	const char * name; /*!< The name of the module responsible for that plugin. */
@@ -411,25 +522,25 @@ struct _Plugin
 
 /**
  * Holds all data for one backend.
- * 
+ *
  * This struct is used for the key values in @ref _KDB.backends
- * 
+ *
  * @ingroup backend
  */
 typedef struct _BackendData
 {
-	struct _Plugin * backend; /*!< the backend plugin for this backend */
-	struct _KeySet * keys; /*!< holds the keys for this backend, assigned by backendsDivide() */
-	struct _KeySet * plugins; /*!< Holds all the plugins of this backend.
-	 The key names are all `system:/<ref>` where `<ref>` is the same as in
-	 `system:/elektra/mountpoints/<mp>/plugins/<ref>` */
+	struct _Plugin * backend;    /*!< the backend plugin for this backend */
+	struct _KeySet * keys;	     /*!< holds the keys for this backend, assigned by backendsDivide() */
+	struct _KeySet * plugins;    /*!< Holds all the plugins of this backend.
+	    The key names are all `system:/<ref>` where `<ref>` is the same as in
+	    `system:/elektra/mountpoints/<mp>/plugins/<ref>` */
 	struct _KeySet * definition; /*!< Holds all the mountpoint definition of this backend.
 	 This is a copy of `system:/elektra/mountpoints/<mp>/defintion` moved to `system:/` */
-	size_t getSize; /*!< the size of @ref _BackendData.keys at the end of kdbGet()
-	 More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
-	bool initialized; /*!< whether or not the init function of this backend has been called */
-	bool keyNeedsSync; /*!< whether or not any key in this backend needs a sync (keyNeedSync())
-	 More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
+	size_t getSize;		     /*!< the size of @ref _BackendData.keys at the end of kdbGet()
+		      More precisely this is set by backendsMerge() to the size of @ref _BackendData.keys */
+	bool initialized;	     /*!< whether or not the init function of this backend has been called */
+	bool keyNeedsSync;	     /*!< whether or not any key in this backend needs a sync (keyNeedSync())
+		   More precisely this is set by backendsDivide() to indicate whether it encountered a key that needs sync */
 } BackendData;
 
 // clang-format on
@@ -464,7 +575,7 @@ Plugin * elektraFindInternalNotificationPlugin (KDB * kdb);
 /*Private helper for key*/
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 void keyInit (Key * key);
-int keyClearSync (Key * key);
+void keyClearSync (Key * key);
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
 /*Private helper for keyset*/
@@ -509,12 +620,6 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
 
-/** Test a bit. @see set_bit(), clear_bit() */
-#define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
-/** Set a bit. @see clear_bit() */
-#define set_bit(var, bit) ((var) |= ((unsigned long long) (bit)))
-/** Clear a bit. @see set_bit() */
-#define clear_bit(var, bit) ((var) &= ~((unsigned long long) (bit)))
 
 #ifdef __cplusplus
 }

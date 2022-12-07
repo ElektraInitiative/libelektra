@@ -57,6 +57,14 @@ static void ensureBufferSize (struct stringbuffer * buffer, size_t minSize);
 
 #include "varint.c"
 
+static inline void closeFile (FILE * file)
+{
+	if (file != stdout)
+	{
+		fclose (file);
+	}
+}
+
 static inline bool writeData (FILE * file, const char * data, kdb_unsigned_long_long_t size, Key * errorKey)
 {
 	if (!varintWrite (file, size))
@@ -394,7 +402,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	kdb_unsigned_long_long_t magic = htobe64 (MAGIC_NUMBER_V3);
 	if (fwrite (&magic, sizeof (kdb_unsigned_long_long_t), 1, file) < 1)
 	{
-		fclose (file);
+		closeFile (file);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -420,14 +428,14 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		size_t fullNameSize = keyGetNameSize (cur);
 		if (fullNameSize < parentOffset)
 		{
-			fclose (file);
+			closeFile (file);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		kdb_unsigned_long_long_t nameSize = fullNameSize == parentOffset ? 0 : fullNameSize - 1 - parentOffset;
 		if (!writeData (file, keyName (cur) + parentOffset, nameSize, parentKey))
 		{
-			fclose (file);
+			closeFile (file);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -435,7 +443,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			if (fputc ('b', file) == EOF)
 			{
-				fclose (file);
+				closeFile (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
@@ -447,7 +455,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				value = elektraMalloc (valueSize);
 				if (keyGetBinary (cur, value, valueSize) == -1)
 				{
-					fclose (file);
+					closeFile (file);
 					elektraFree (value);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
@@ -455,7 +463,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 			if (!writeData (file, value, valueSize, parentKey))
 			{
-				fclose (file);
+				closeFile (file);
 				elektraFree (value);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
@@ -465,14 +473,14 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			if (fputc ('s', file) == EOF)
 			{
-				fclose (file);
+				closeFile (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
 			kdb_unsigned_long_long_t valueSize = keyGetValueSize (cur) - 1;
 			if (!writeData (file, keyString (cur), valueSize, parentKey))
 			{
-				fclose (file);
+				closeFile (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
@@ -487,7 +495,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			{
 				if (fputc ('m', file) == EOF)
 				{
-					fclose (file);
+					closeFile (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
@@ -495,14 +503,14 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
 				if (!writeData (file, keyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
 				{
-					fclose (file);
+					closeFile (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
 				kdb_unsigned_long_long_t metaValueSize = keyGetValueSize (meta) - 1;
 				if (!writeData (file, keyString (meta), metaValueSize, parentKey))
 				{
-					fclose (file);
+					closeFile (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
@@ -512,14 +520,14 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			{
 				if (fputc ('c', file) == EOF)
 				{
-					fclose (file);
+					closeFile (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
 				kdb_unsigned_long_long_t keyNameSize = metaKeys.array[result]->keyNameSize;
 				if (!writeData (file, metaKeys.array[result]->keyName, keyNameSize, parentKey))
 				{
-					fclose (file);
+					closeFile (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
@@ -527,7 +535,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1 - (sizeof ("meta:/") - 1);
 				if (!writeData (file, keyName (meta) + sizeof ("meta:/") - 1, metaNameSize, parentKey))
 				{
-					fclose (file);
+					closeFile (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 			}
@@ -535,7 +543,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (fputc (0, file) == EOF)
 		{
-			fclose (file);
+			closeFile (file);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -546,7 +554,7 @@ int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	elektraFree (metaKeys.array);
 
-	fclose (file);
+	closeFile (file);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

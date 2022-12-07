@@ -40,5 +40,5 @@ CLASSPATH="${BINDINGS}:${RANDOOP}"
 # The non-public members are not intended for users of the bindings. Those are
 # native function calls to the elektra library and calling them randomly like
 # randoop would do may result in jvm segmentation faults.
-java -ea -classpath ${CLASSPATH} randoop.main.Main gentests \
+java -ea -classpath "${CLASSPATH}" randoop.main.Main gentests \
 	--classlist=randoopClasses.txt --timelimit=120 --only-test-public-members=true

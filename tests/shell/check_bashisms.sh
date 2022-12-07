@@ -11,7 +11,7 @@ command -v checkbashisms > /dev/null 2>&1 || {
 	exit 0
 }
 
-cd "@CMAKE_SOURCE_DIR@"
+cd "@CMAKE_SOURCE_DIR@" || exit
 
 # Use (non-emacs) extended regex for GNU find or BSD find
 find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egrep' || FIND='find -E scripts'

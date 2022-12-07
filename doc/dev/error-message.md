@@ -1,7 +1,7 @@
 # Error Message
 
-Elektra has a lot of developers and hence the error messages vary in how they are written.
-This guideline should unify the message format so that users will get consistent error messages.
+Elektra has a lot of developers which leads to error messages written in various ways.
+This guideline aims to unify the format of messages so that users see consistent error messages.
 
 - All error messages start with a capital letter. Reword sentences that theoretically require a lowercase first letter such as
   regex patterns, method names or variable strings ("%s"-strings) to have a normal word at the start of the sentence. Also surround method names with single quotes.

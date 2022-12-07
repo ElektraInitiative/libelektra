@@ -34,7 +34,7 @@ push_changes_to_git() {
 		;;
 	esac
 
-	git commit -m "auto-commit: $ELEKTRA_REST_AUTHOR $action entry $ELEKTRA_REST_KEY" -m "$(printf "Title: %s\nPlugin: %s\n" $ELEKTRA_REST_TITLE $ELEKTRA_REST_PLUGIN)"
+	git commit -m "auto-commit: $ELEKTRA_REST_AUTHOR $action entry $ELEKTRA_REST_KEY" -m "$(printf "Title: %s\nPlugin: %s\n" "$ELEKTRA_REST_TITLE" "$ELEKTRA_REST_PLUGIN")"
 	git push
 }
 

@@ -1,8 +1,8 @@
 #!/bin/sh
-cd @CMAKE_INSTALL_PREFIX@/@install_directory@
+cd @CMAKE_INSTALL_PREFIX@/@install_directory@ || exit
 
-cd ../webui
+cd ../webui || exit
 npm install
 npm run build
 
-cd ../webd
+cd ../webd || exit

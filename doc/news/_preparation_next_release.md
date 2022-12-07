@@ -50,8 +50,71 @@ docker run -it elektra/elektra
 
 ### New Backend
 
+The entire logic for backends has been rewritten.
+Instead of calling most plugin directly, `libelektra-kdb` now only calls so-called backend plugins and special hook plugins.
+There is a [contract](../dev/backend-plugins.md) between `libelektra-kdb` and the backend plugins.
+All backend plugins must adhere to this contract.
+To achieve this goal, most backend plugins will call other plugins (like `libelektra-kdb` did previously).
+
+The logic previously implemented in `libelektra-kdb` was moved to the new default backend plugin `backend`.
+It works like the old system, but now also allows an unlimited number of plugins in positions where that makes sense.
+For example, you can have unlimited `postgetstorage` plugins, but only a single `getresolver`.
+
+There have also been slight changes to `kdbGet` and `kdbSet`.
+Please read their API docs to find out, if you rely on any behavior that has been altered.
+You can also read the [new low-level docs](../dev/kdb-operations.md) to find out all the intricate details.
+
+The structure of `system:/elektra/mountpoints` changed as well.
+Take a look at the [new docs](../dev/mountpoints.md), if you need to know details.
+
+<!-- TODO [new_backend]: finish release notes, explain new mount stuff -->
+
 - Implement [hooks](../decisions/4_partially_implemented/hooks.md). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
+- New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
+
+### Copy-on-Write within `libelektra-core`
+
+Thanks to _(Maximilian Irlinger @atmaxinger)_ our `Key` and `KeySet` datastructures are now fully copy-on-write!
+This means noticeably reduced memory usage for cases where keys and keysets are copied and/or duplicated!
+
+We run some very promising benchmarks, each were performed with 400,000 keys.
+All benchmarks were executed using `valgrind --tool=massif --time-unit=B --max-snapshots=200 --threshold=0.1`.
+
+| Benchmark      | Old Implementation | Copy-on-Write | Size Reduction | Remarks                    |
+| :------------- | -----------------: | ------------: | -------------: | :------------------------- |
+| `createkeys.c` |            5.3 MiB |       6.5 MiB |          -22 % |                            |
+| `deepdup.c`    |           10.5 MiB |       8.2 MiB |           22 % |                            |
+| `large.c`      |           18.9 MiB |      15.3 MiB |           19 % |                            |
+| `kdb.c`        |           23.5 MiB |      17.8 MiB |           24 % |                            |
+| `kdbget.c`     |           11.0 MiB |       8.8 MiB |           20 % |                            |
+| `kdbmodify.c`  |           11.0 MiB |       8.8 MiB |           20 % | Same results as `kdbget.c` |
+
+First, it should be noted that a single key, without counting payload, is about 50% larger with the copy-on-write implementation.
+This explains why the `createkeys.c` benchmark yields a negative reduction result.
+This benchmark only allocates keys, so not much improvement can be expected there.
+Still, as other stuff also uses heap memory, the overall memory consumption only increased by 22%, which is far less than 50%.
+
+All other benchmarks saw meaningful reductions of heap memory used.
+One interesting observation is that `kdbget.c` and `kdbmodify.c` used exactly the same memory.
+This can most likely be explained by internal caching within the memory allocator of `glibc`.
+
+We also performed runtime tests on the same benchmarks using `perf stat --repeat 13` to ensure no major performance regressions occur.
+
+| Benchmark      | Old Implementation | Deviation | Copy-on-Write | Deviation | Runtime Increase |
+| :------------- | -----------------: | --------: | ------------: | --------: | ---------------: |
+| `createkeys.c` |         0.209572 s |    0.36 % |     0.21987 s |    0.77 % |            4.9 % |
+| `deepdup.c`    |          0.23025 s |    0.47 % |    0.231804 s |    0.32 % |            0.6 % |
+| `large.c`      |          1.14038 s |    0.21 % |     1.14837 s |    0.21 % |            0.7 % |
+| `kdb.c`        |           1.9270 s |    2.63 % |     1.93354 s |    0.17 % |            0.3 % |
+| `kdbget.c`     |         0.145663 s |    0.17 % |     0.15763 s |    0.70 % |            8.2 % |
+| `kdbmodify.c`  |         0.146506 s |    0.19 % |    0.156347 s |    0.15 % |            6.7 % |
+
+Overall, the runtime performance hit is less than 10%.
+The more a program does, the less the additional overhead of the copy-on-write algorithms matter.
+One interesting detail is that `keyCopy` and `keyDup` have become quite a bit faster.
+This can be seen by comparing the differences between `createkeys.c` and `deepdup.c`.
+The differences are 21 ms for the old implementation and 12 ms for the copy-on-write implementation.
 
 ### <<HIGHLIGHT>>
 
@@ -71,27 +134,36 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
+### website
+
+- Fix broken /pythongen link on homepage _(@stefnotch)_
+- Fix redirect logic to not cause loops _(@stefnotch)_
+- <<TODO>>
+
+### toml
+
+- Fix bug, where meta-keys that cannot be inserted don't report an error _(@Bujuhu)_
+- <<TODO>>
+- <<TODO>>
+
+### uname
+
+- Add error handling if uname call fails _(Richard Stöckl @Eiskasten)_
+- <<TODO>>
+
+### quickdump
+
+- elektraQuickdumpSet: don't fclose if stdout _(@hannes99)_
+
 ### <<Plugin>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### mmapstorage
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
+- Remove code duplication in the data block calculation _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
@@ -120,18 +192,18 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Core
 
 - <<TODO>>
+- The Key and KeySet datastructures are now fully copy-on-write. _(Maximilian Irlinger @atmaxinger)_
+- `keyCopy` now only allocates additional memory if `KEY_CP_META` or `KEY_CP_ALL` is used. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Check for circular links (overrides) _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### io
 
-- <<TODO>>
+- Check file flags for elektraIoFdSetFlags: file flags must be exactly one of: read only, write only or read write _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
@@ -177,9 +249,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### jna
 
-- <<TODO>>
+- Documentation: Improved build instructions _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 
@@ -229,25 +301,28 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Scripts
 
-- Added [automatic spelling corrections](https://master.libelektra.org/scripts/sed) for changeset. _(Maximilian Irlinger @atmaxinger)_
+- Added [automatic spelling corrections](https://master.libelektra.org/scripts/spelling.sed) for changeset. _(Maximilian Irlinger @atmaxinger)_
 - Introduce shebang-conventions _(@0x6178656c)_
+- Apply auto-fixes from shellcheck _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Link Checker: Add documentation for the usage and how it behaves _(Richard Stöckl @Eiskasten)_
+- <<TODO>>
+- <<TODO>>
+- Sed: Add spelling correction for "key-value storage" _(@Bujuhu)_
+- <<TODO>>
+- Fix/extends some shell recorder tests _(@Joni1993)_
+- <<TODO>>
+- <<TODO>>
+- Fix warning parsing in shell recorder _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add audit-dependencies script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 
@@ -255,11 +330,14 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Improve page on compilation _(@0x6178656c)_
 - Improve page for bindings _(@0x6178656c)_
+- Improve page for getting started _(@stefnotch)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix grammar for `elektra-granularity.md` _(@dtdirect)_
+- Rephrase sections in doc/dev/error-\* _(@dtdirect)_
+- Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -269,18 +347,42 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update AUR Link from `elektra` to `libelektra` package _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
+- Update example ansible playbook in VISION.md _(@Bujuhu)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Denoted pacakage names & global variable names in [INSTALL.md](../INSTALL.md) as `Code` _(@janldeboer)_
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Improve readability of doc/tutorials/highlevel.md _(@deoknats861)_
 - Improve reference to Podman documentation _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
+- Unify spelling of documentation _(@Joni1993)_
+- <<TODO>>
+- Fix typo in dev/hooks.md _(@dtdirect)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Fixed Coverage Badge Link _(@janldeboer)_
+- <<TODO>>
+- Update Doxyfile with Doxygen 1.9.4 _(@0x6178656c)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Move note in GETSTARTED.md _(@Joni1993)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Use cases for KDB _(@kodebach)_
+- Use cases for `libelektra-core` _(@kodebach)_
+- Fix broken links in use cases for KDB after files were renamed. _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
@@ -295,6 +397,19 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- Add decisions about [location of headers](../decisions/3_decided/header_file_structure.md) and [use of `#include`](../decisions/3_decided/header_include.md) in the repo _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
+- <<TODO>>
+- Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Add decision for [copy-on-write](../decisions/2_in_progress/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -302,14 +417,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Update [internal cache](../decisions/0_drafts/internal_cache.md) _(Markus Raab)_
-- Move [internal cache](../decisions/0_drafts/internal_cache.md) back to draft _(@kodebach)_
+- Update [internal cache](../decisions/3_decided/internal_cache.md) _(Markus Raab)_
+- Move [internal cache](../decisions/3_decided/internal_cache.md) back to draft _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -336,7 +445,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Reinstate mounting tutorial _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -355,12 +464,13 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Added links to the website & webui after further reading. _(Philipp Nirnberger @nirnberger)_
 - <<TODO>>
 
 ## Tests
 
-- <<TODO>>
-- <<TODO>>
+- Fix an Issue where scripts/dev/fix-spelling does not work, if a resolved path contains whitespaces _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Rename scripts/sed to [scripts/spelling.sed](https://master.libelektra.org/scripts/spelling.sed) _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -418,10 +528,13 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### CMake
 
 - Fix warning for CMP0115 _(0x6178656c)_
+- Change Doxygen configuration for LaTeX _(0x6178656c)_
 - <<TODO>>
-- <<TODO>>
+- Fix developer warning for package DISCOUNT _(Dennis Toth @dtdirect)_
 - Pass `--stacktrace` to gradle for the JNA builds. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- <<TODO>>
+- Adapt npm build flags to remove reproducability issues _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 
 ### Docker
@@ -429,9 +542,15 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update packagename `libpcrec++-dev` to `libpcrecpp0v5` in Debian Sid. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add shellcheck to Debian containers. _(@0x6178656c)_
 - Use `openjdk-17-jdk` in Debian Sid. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
+- Update Alpine Linux to 3.16.3. _(Mihael Pranjić @mpranj)_
+- Add Fedora 37 images. _(Mihael Pranjić @mpranj)_
+
+## Gradle
+
+- Use Gradle 7.5.1. _(Mihael Pranjić @mpranj)_
 
 ## Infrastructure
 
@@ -441,7 +560,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add Fedora 37 builds, drop Fedora 35 builds. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - Run more tests also on Master. _(Markus Raab)_
@@ -456,7 +575,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Cirrus
 
-- <<TODO>>
+- Use Fedora 37. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -469,7 +588,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Change stale issue/PR checking to GitHub action. _(@0x6178656c)_
 - <<TODO>>
 
 ## Website
@@ -479,7 +598,7 @@ The website is generated from the repository, so all information about plugins, 
 - <<TODO>>
 - <<TODO>>
 - Update npm packages. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
+- Change URLs to say man-page with a dash _(@stefnotch)_ _(@janldeboer)_
 - <<TODO>>
 - <<TODO>>
 
@@ -526,7 +645,7 @@ The release tarball is also available signed using GnuPG from
 
 The following GPG Key was used to sign this release: 12CC44541E1B8AD9B66AFAD55262E7353324914A
 
-Already built API-Docu can be found
+Already built API documentation can be found
 
 - [here](https://doc.libelektra.org/api/0.9.<<VERSION>>/html/) or
 - [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.9.<<VERSION>>).

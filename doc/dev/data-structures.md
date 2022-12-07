@@ -42,6 +42,13 @@ only using the public header file `<kdb.h>`. The functions `keyDel()`,
 `ksDel()` and `kdbClose()` free the resources after use. Using the C++
 binding deallocation is done automatically.
 
+### Copy-on-Write
+
+The two basic Elektra datastructures `Key` and `KeySet` implement full copy-on-write (COW) functionality.
+If a key or a keyset gets copied, only a shallow copy with references to the original data (name, value, contained keys, etc.) is created.
+When this shared data is modified, new memory is allocated to keep the shared version in tact.
+As a consequence, duplicated keys or keysets only require a fraction of the memory compared to their source counterparts.
+
 ## Metadata
 
 Read [here](metadata.md).

@@ -1,6 +1,6 @@
 # High-level API (with code-generation)
 
-Most applications don't need the flexibility of the low-level API (with `kdbGet`, `kdbSet`, etc.). In most cases an easy way and safe way to
+Most applications don't need the flexibility of the low-level API (with `kdbGet`, `kdbSet`, etc.). In most cases an easy and safe way to
 access the configuration values is preferred. This is why we created the high-level API.
 
 There are two different ways of using the high-level API:
@@ -45,7 +45,7 @@ In Elektra a specification is defined through the metadata of keys in the `spec`
 The `mountpoint` metadata on the parent key sets the name of our application's config file (the location is defined by Elektra), it should
 be unique.
 
-The `type` metadata specifies the type of a key. The available types can be found in the high-level API
+The `type` metadata specifies the type of key. The available types can be found in the high-level API
 [Readme](/src/libs/highlevel/README.md) under "Data Types". It is important to set the `type`, because the code-generator will ignore all
 keys that don't have a `type`.
 
@@ -251,7 +251,7 @@ kdb_float_t myfloat0 = ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (elektra, 0);
 float myfloat1 = ELEKTRA_GET (ELEKTRA_TAG_MYFLOATARRAY) (elektra, 1);
 ```
 
-Of course we also need to know, how big the `myfloatarray/#` array actually is. To that end we can use `ELEKTRA_SIZE` or `elektraSize`:
+Of course, we also need to know how big the `myfloatarray/#` array actually is. To that end we can use `ELEKTRA_SIZE` or `elektraSize`:
 
 ```c
 kdb_long_long_t myfloat_size = elektraSize (elektra, ELEKTRA_TAG_MYFLOATARRAY);
@@ -261,8 +261,8 @@ kdb_long_long_t myfloat_size = ELEKTRA_SIZE (ELEKTRA_TAG_MYFLOATARRAY) (elektra)
 
 `ELEKTRA_SIZE` functions like their `ELEKTRA_GET` counterparts are designed to not fail.
 
-Please note that, while it shouldn't happen, if you setup everything correctly, calling a getter on a non-existent, wrongly typed or otherwise
-inconvertible key is a fatal error. All fatal errors result in a call to the fatal error handler and therefore exit the application.
+Please note that even if you set up everything correctly, calling a getter on a non-existent, wrongly typed or otherwise inconvertible key
+is a fatal error. All fatal errors result in a call to the fatal error handler and therefore will exit the application.
 
 ### Writing config values
 
@@ -281,7 +281,7 @@ As you can see the complexity stems from the necessary error handling. Because s
 setter calls cannot be designed to not fail. This is why they accept an additional `ElektraError **` argument. It is important to call
 `elektraErrorReset`, if an error was set. Calling a setter with a non-null `ElektraError **` parameter is a fatal error.
 
-Of course you can also use `elektraSet` (error handling omitted):
+Of course, you can also use `elektraSet` (error handling omitted):
 
 ```c
 elektraSet (elektra, ELEKTRA_TAG_MYDOUBLE, 3.141593, &error);
@@ -350,11 +350,11 @@ The command above assumes that you also used the `kdb gen` command from [above](
 is located in `$PWD`.
 
 > **Note:** Because of a limitation in `specload`, we have to use the `noresolver` resolver. This also means that the path to the config
-> file (here `/etc/myapp_spec.eqd`) has to be absolute. Otherwise it will always be relative to the current working directory in which `kdb`
+> file (here `/etc/myapp_spec.eqd`) has to be absolute. Otherwise, it will always be relative to the current working directory in which `kdb`
 > or your application was executed. The file _should not_ exist when calling `kdb mount`. `specload` works different to other plugins. The
 > given config file is only used, if the user makes changes to the specification via `kdb set`.
 
-Now that Elektra knows about your specification, calling your application might work better, since metadata should now be copied, when you
+Now that Elektra knows about your specification, calling your application might work better since metadata should now be copied when you
 set a config value via `kdb set`. However, there won't be any type checking. For that we need to enable the `type` plugin. While this could
 be done manually, we can just let Elektra figure out which plugins we need and activate all of them.
 

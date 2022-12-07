@@ -11,7 +11,7 @@ command -v shfmt > /dev/null 2>&1 || {
 	exit 0
 }
 
-cd "@CMAKE_SOURCE_DIR@"
+cd "@CMAKE_SOURCE_DIR@" || exit
 
 for file in $(shfmt -f scripts tests/shell); do
 	head -n 10 "$file" | grep -qe '#!.*bash' && continue

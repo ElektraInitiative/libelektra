@@ -2,8 +2,7 @@
 
 ## Problem
 
-According to src/libs/elektra/symbols.map the public core API has 124 symbols¹, which
-is arguable too much for a key-value API which has as highest goal simplicity.
+According to [symbols.map](/src/libs/elektra/symbols.map) the public core API has 124 symbols¹, which is arguable too much for a key-value API which has as highest goal simplicity.
 
 In particular following areas have many functions and are not simple:
 
@@ -12,18 +11,15 @@ In particular following areas have many functions and are not simple:
 - comparison functions
 - error/warnings
 
-The urgency of this decision is that API can be easily introduced later but we cannot
-get rid of it after 1.0.
+The urgency of this decision is that API can be easily introduced later but we cannot get rid of it after 1.0.
 
 ## Constraints
 
-To not disturb main features such as:
-
--
+- To not disturb main features as described in use cases.
 
 ## Assumptions
 
-Binary data is not a core feature, if needed the plugin system can also work without (properly tagged) binary data in key sets.
+- Binary data is not a core feature, if needed the plugin system can also work without (properly tagged) binary data in key sets.
 
 ## Considered Alternatives
 

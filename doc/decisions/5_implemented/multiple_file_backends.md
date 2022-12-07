@@ -1,6 +1,6 @@
 # Multiple File Backends
 
-Usually, a backend refers to exactly one file per namespace.
+A file backend refers to exactly one file per namespace.
 This file can be returned using `kdb file`.
 
 ## Problem
@@ -19,12 +19,10 @@ In some situations a single mountpoint refers to more than one file per namespac
 
 ## Decision
 
-Multiple File Backends are not supported for now in the case of writing files.
+Multiple File Backends are not supported in the case of writing files.
 
-Multiple sources in one namespace only work, if the fallback KeySet is
-part of the mountpoint config. That way any change to the fallback
-KeySet would essentially make the whole thing a different mountpoint
-and thereby invalidate all guarantees.
+Multiple sources in one namespace only work, if the fallback KeySet is part of the mountpoint config.
+That way any change to the fallback KeySet would essentially make the whole thing a different mountpoint and thereby invalidate all guarantees.
 
 ## Rationale
 
@@ -35,6 +33,8 @@ Writeable multiple file backends would:
 - do not work together with mmap (as it only checks one file for cache misses)
 
 ## Implications
+
+See Rationale.
 
 ## Related Decisions
 

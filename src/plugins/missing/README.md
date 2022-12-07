@@ -9,16 +9,8 @@
 - infos/metadata =
 - infos/description = A plugin which informs the user about a missing backend.
 
-## Introduction
+<!-- TODO [new_backend]: Use this to let kdbOpen run when a plugin is missing -->
 
 ## Usage
 
-## Dependencies
-
-None.
-
-## Examples
-
-## Limitations
-
-None.
+Internal plugin, do not use directly.

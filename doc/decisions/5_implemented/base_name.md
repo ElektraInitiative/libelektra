@@ -22,10 +22,10 @@ For example:
 
 ## Considered Alternatives
 
-- restrict what `keyAddBaseName/keySetBaseName` can accept: has the downside that
-  applications would suddenly fail when trying to set some key base names
-- have additional `keySetBaseName*` functions that make strings safe to be accepted
-  in `keyAddBaseName/keySetBaseName`: seems to be a too big change in the storage plugins
+- restrict what `keyAddBaseName/keySetBaseName` can accept:
+  has the downside that applications would suddenly fail when trying to set some key base names
+- have additional `keySetBaseName*` functions that make strings safe to be accepted in `keyAddBaseName/keySetBaseName`:
+  seems to be a too big change in the storage plugins
 
 ## Decision
 
@@ -37,7 +37,8 @@ See [array](../4_partially_implemented/array.md).
 
 ## Rationale
 
-- hard to use it wrong API: having only the functions `keyAddBaseName/keySetBaseName`, without any size argument
+- hard to use it wrong API:
+  having only the functions `keyAddBaseName/keySetBaseName`, without any size argument.
 - applications and storage plugins can pass any C string to `keyAddBaseName/keySetBaseName` without any further consideration
 
 ## Implications

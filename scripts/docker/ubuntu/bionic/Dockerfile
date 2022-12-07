@@ -98,7 +98,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.5.1-bin.zip && unzip gradle-7.5.1-bin.zip && rm gradle-7.5.1-bin.zip && mv gradle-7.5.1 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}

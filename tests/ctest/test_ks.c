@@ -66,6 +66,17 @@ static void test_cascadingLookup (void)
 	ksDel (ks);
 }
 
+static void test_circularLinkLookup (void)
+{
+	printf ("Test circular link lookup\n");
+	KeySet * ks = ksNew (10, keyNew ("spec:/circular", KEY_META, "override/#0", "/circular", KEY_END), KS_END);
+	Key * search = keyNew ("/circular", KEY_END);
+	Key * found = ksLookup (ks, search, 0);
+	succeed_if (found == NULL, "found nonexistent key");
+	keyDel (search);
+	ksDel (ks);
+}
+
 static void test_creatingLookup (void)
 {
 	printf ("Test creating lookup\n");
@@ -178,17 +189,15 @@ static void test_ksNoAlloc (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (ks->alloc == 0, "alloc is not 0");
-	succeed_if (ks->size == 0, "size is not 0");
-	succeed_if (ks->array == NULL, "array is not NULL");
+	succeed_if (ks->data == NULL, "should not allocate data");
 
 	ksDel (ks);
 
 	ks = ksNew (1, KS_END);
 
-	succeed_if (ks->alloc != 0, "alloc is 0");
-	succeed_if (ks->size == 0, "size is not 0");
-	succeed_if (ks->array != NULL, "array is NULL");
+	succeed_if (ks->data->alloc != 0, "alloc is 0");
+	succeed_if (ks->data->size == 0, "size is not 0");
+	succeed_if (ks->data->array != NULL, "array is NULL");
 
 	ksDel (ks);
 }
@@ -564,6 +573,7 @@ int main (int argc, char ** argv)
 	test_ksToArray ();
 	test_ksRenameKeys ();
 	test_cascadingLookup ();
+	test_circularLinkLookup ();
 	test_creatingLookup ();
 	test_ksNoAlloc ();
 	test_ksRename ();

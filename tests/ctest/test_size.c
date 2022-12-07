@@ -97,7 +97,8 @@ static void test_ksResize (void)
 
 	ksCopy (copy, ks);
 	succeed_if (ksGetSize (copy) == 102, "Problem copy keyset with 102 keys");
-	succeed_if (ksGetAlloc (copy) == 127, "alloc of copy size wrong");
+	// COW - copy does not allocate anything
+	succeed_if (ksGetAlloc (copy) == 102, "alloc of copy size wrong");
 
 	compare_keyset (copy, ks);
 
@@ -105,7 +106,8 @@ static void test_ksResize (void)
 	ksCopy (copy, ks);
 
 	succeed_if (ksGetSize (copy) == 102, "Problem copy keyset with 102 keys");
-	succeed_if (ksGetAlloc (copy) == 127, "alloc of copy size wrong");
+	// COW - copy does not allocate anything
+	succeed_if (ksGetAlloc (copy) == 102, "alloc of copy size wrong");
 	compare_keyset (copy, ks);
 
 	ksDel (copy);

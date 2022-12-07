@@ -20,7 +20,7 @@
 #include <kdberrors.h>
 #include <kdbmacros.h>
 
-static void elektraAddUname (KeySet * returned, Key * parentKey)
+static int elektraAddUname (KeySet * returned, Key * parentKey)
 {
 	Key * dir;
 	Key * key = keyDup (parentKey, KEY_CP_ALL);
@@ -28,7 +28,11 @@ static void elektraAddUname (KeySet * returned, Key * parentKey)
 
 	struct utsname buf;
 
-	uname (&buf); // TODO: handle error
+	if (uname (&buf) < 0)
+	{
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Cannot retrieve uname info: %s", strerror (errno));
+		return -1;
+	}
 
 	dir = keyDup (parentKey, KEY_CP_ALL);
 	keyAddBaseName (dir, "sysname");
@@ -54,11 +58,11 @@ static void elektraAddUname (KeySet * returned, Key * parentKey)
 	keyAddBaseName (dir, "machine");
 	keySetString (dir, buf.machine);
 	ksAppendKey (returned, dir);
+	return 0;
 }
 
 int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	int errnosave = errno;
 	ELEKTRA_LOG ("get uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/uname"))
@@ -72,13 +76,15 @@ int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			       keyNew ("system:/elektra/modules/uname/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
-		return 1;
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	elektraAddUname (returned, parentKey);
+	if (elektraAddUname (returned, parentKey) < 0)
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
-	errno = errnosave;
-	return 1;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraUnameSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
@@ -86,9 +92,12 @@ int elektraUnameSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	ELEKTRA_LOG ("set uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
 	KeySet * info = ksNew (0, KS_END);
-	elektraAddUname (info, parentKey);
+	if (elektraAddUname (info, parentKey) < 0)
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
-	return 0;
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT

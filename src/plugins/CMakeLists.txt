@@ -18,7 +18,7 @@ if (ADDTESTING_PHASE)
 	return ()
 endif ()
 
-generate_manpage (
+generate_man_page (
 	elektra-plugins
 	FILENAME
 	${CMAKE_CURRENT_SOURCE_DIR}/README.md

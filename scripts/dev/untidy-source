@@ -8,6 +8,6 @@ if [ -z "${CLANG_TIDY}" ]; then
 	CLANG_TIDY=$(which clang-tidy)
 fi
 
-cd "$SOURCE"
+cd "$SOURCE" || exit
 
 $($CLANG_TIDY -fix-errors -checks="readability-braces-around-statements" $(find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^(./src/tools/gen)"))

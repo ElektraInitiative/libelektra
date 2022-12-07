@@ -64,5 +64,6 @@ else
 	-DCMAKE_SHARED_LINKER_FLAGS=$LDFLAGS"
 fi
 
+# shellcheck disable=SC2086
 cmake $CMAKE_ARGS_BASE $CMAKE_ARGS_SPECIFIC ..
 LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package

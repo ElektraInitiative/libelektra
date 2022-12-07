@@ -1,4 +1,4 @@
 #!/bin/sh
 
 set -ex
-ionice -c 3 nice $*
+ionice -c 3 nice "$@"

@@ -82,11 +82,15 @@ module.exports = [
 
               $timeout(function () {
                 if ($stateParams.file === null) {
-                  $state.go("main.news", {
-                    file: files.filter(function (elem) {
-                      return elem.type === "file";
-                    })[0].slug,
-                  });
+                  $state.go(
+                    "main.news",
+                    {
+                      file: files.filter(function (elem) {
+                        return elem.type === "file";
+                      })[0].slug,
+                    },
+                    { location: "replace" }
+                  );
                   deferred.reject();
                 } else {
                   var filtered = files.filter(function (elem) {
@@ -95,7 +99,11 @@ module.exports = [
                     );
                   });
                   if (filtered.length === 0) {
-                    $state.go("main.news", { file: files[0].slug });
+                    $state.go(
+                      "main.news",
+                      { file: files[0].slug },
+                      { location: "replace" }
+                    );
                     deferred.reject();
                   } else {
                     WebsiteService.loadFile(filtered[0].file).then(function (
@@ -171,11 +179,15 @@ module.exports = [
 
                   $timeout(function () {
                     if ($stateParams.file === null) {
-                      $state.go("main.dyn." + entry.ref, {
-                        file: files.filter(function (elem) {
-                          return elem.type === "file";
-                        })[0].slug,
-                      });
+                      $state.go(
+                        "main.dyn." + entry.ref,
+                        {
+                          file: files.filter(function (elem) {
+                            return elem.type === "file";
+                          })[0].slug,
+                        },
+                        { location: "replace" }
+                      );
                       deferred.reject();
                     } else {
                       var filtered = files.filter(function (elem) {
@@ -185,11 +197,15 @@ module.exports = [
                         );
                       });
                       if (filtered.length === 0) {
-                        $state.go("main.dyn." + entry.ref, {
-                          file: files.filter(function (elem) {
-                            return elem.type === "file";
-                          })[0].slug,
-                        });
+                        $state.go(
+                          "main.dyn." + entry.ref,
+                          {
+                            file: files.filter(function (elem) {
+                              return elem.type === "file";
+                            })[0].slug,
+                          },
+                          { location: "replace" }
+                        );
                         deferred.reject();
                       } else {
                         WebsiteService.loadFile(filtered[0].options.path).then(

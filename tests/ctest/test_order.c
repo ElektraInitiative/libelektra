@@ -136,14 +136,14 @@ static void test_append (void)
 
 	succeed_if (ksAppendKey (ks, key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, n = keyNew ("system:/sw/new", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if (ks->array[0] == n, "n not on position 0");
-	succeed_if (ks->array[0] != key, "key is on position 0");
-	succeed_if (ks->array[1] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == n, "n not on position 0");
+	succeed_if (ks->data->array[0] != key, "key is on position 0");
+	succeed_if (ks->data->array[1] == 0, "array not null terminated");
 
 	ksDel (ks);
 
@@ -152,14 +152,14 @@ static void test_append (void)
 
 	succeed_if (ksAppendKey (ks, key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, n = keyNew ("system:/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 2, "could not append key");
 	succeed_if (ksGetSize (ks) == 2, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == n, "new key not on position 1");
-	succeed_if (ks->array[2] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == n, "new key not on position 1");
+	succeed_if (ks->data->array[2] == 0, "array not null terminated");
 
 	ksDel (ks);
 
@@ -168,14 +168,14 @@ static void test_append (void)
 
 	succeed_if (ksAppendKey (ks, n = keyNew ("system:/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if (ks->array[0] == n, "key not on position 0");
-	succeed_if (ks->array[1] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == n, "key not on position 0");
+	succeed_if (ks->data->array[1] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END)) == 2, "could not append key");
 	succeed_if (ksGetSize (ks) == 2, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == n, "key not on position 1");
-	succeed_if (ks->array[2] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == n, "key not on position 1");
+	succeed_if (ks->data->array[2] == 0, "array not null terminated");
 
 	ksDel (ks);
 
@@ -209,7 +209,7 @@ static void test_append (void)
 		}
 		// printf ("\nsolution is:\n");
 
-		succeed_if (!memcmp (ks->array, solution, size), "solution is not correct");
+		succeed_if (!memcmp (ks->data->array, solution, size), "solution is not correct");
 
 		ksDel (ks);
 	}
@@ -219,31 +219,31 @@ static void test_append (void)
 
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, s1) == 2, "could not append key");
 	succeed_if (ksGetSize (ks) == 2, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == s1, "key not on position 1");
+	succeed_if (ks->data->array[2] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, s2) == 3, "could not append key");
 	succeed_if (ksGetSize (ks) == 3, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == s2, "key not on position 2");
-	succeed_if (ks->array[3] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == s1, "key not on position 1");
+	succeed_if (ks->data->array[2] == s2, "key not on position 2");
+	succeed_if (ks->data->array[3] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, s3) == 4, "could not append key");
 	succeed_if (ksGetSize (ks) == 4, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == s2, "key not on position 2");
-	succeed_if (ks->array[3] == s3, "key not on position 3");
-	succeed_if (ks->array[4] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == s1, "key not on position 1");
+	succeed_if (ks->data->array[2] == s2, "key not on position 2");
+	succeed_if (ks->data->array[3] == s3, "key not on position 3");
+	succeed_if (ks->data->array[4] == 0, "array not null terminated");
 
-	succeed_if (!memcmp (ks->array, solution, size), "solution is not correct");
+	succeed_if (!memcmp (ks->data->array, solution, size), "solution is not correct");
 
 	ksDel (ks);
 
@@ -252,31 +252,31 @@ static void test_append (void)
 
 	succeed_if (ksAppendKey (ks, s3) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if (ks->array[0] == s3, "key not on position 0");
-	succeed_if (ks->array[1] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == s3, "key not on position 0");
+	succeed_if (ks->data->array[1] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, key) == 2, "could not append key");
 	succeed_if (ksGetSize (ks) == 2, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s3, "key not on position 1");
-	succeed_if (ks->array[2] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == s3, "key not on position 1");
+	succeed_if (ks->data->array[2] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, s1) == 3, "could not append key");
 	succeed_if (ksGetSize (ks) == 3, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == s3, "key not on position 2");
-	succeed_if (ks->array[3] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == s1, "key not on position 1");
+	succeed_if (ks->data->array[2] == s3, "key not on position 2");
+	succeed_if (ks->data->array[3] == 0, "array not null terminated");
 
 	succeed_if (ksAppendKey (ks, s2) == 4, "could not append key");
 	succeed_if (ksGetSize (ks) == 4, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == s2, "key not on position 2");
-	succeed_if (ks->array[3] == s3, "key not on position 3");
-	succeed_if (ks->array[4] == 0, "array not null terminated");
+	succeed_if (ks->data->array[0] == key, "key not on position 0");
+	succeed_if (ks->data->array[1] == s1, "key not on position 1");
+	succeed_if (ks->data->array[2] == s2, "key not on position 2");
+	succeed_if (ks->data->array[3] == s3, "key not on position 3");
+	succeed_if (ks->data->array[4] == 0, "array not null terminated");
 
-	succeed_if (!memcmp (ks->array, solution, size), "solution is not correct");
+	succeed_if (!memcmp (ks->data->array, solution, size), "solution is not correct");
 
 	ksDel (ks);
 	keyDecRef (key);

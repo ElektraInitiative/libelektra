@@ -20,7 +20,7 @@ What is its responsibility?
 
 Explain which [classes](/doc/help/elektra-glossary.md) the library contains.
 The method names are `elektraClass*`.
-Add a link to the API docu.
+Add a link to the API documentation.
 
 ## Dependencies
 

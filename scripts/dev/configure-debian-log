@@ -8,11 +8,11 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-cd $BUILD
+cd "$BUILD" || exit
 cmake -DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL;-ruby" \
 	-DENABLE_DEBUG="OFF" \
 	-DENABLE_LOGGER="ON" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	$*
+	"$@"

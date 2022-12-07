@@ -410,14 +410,14 @@ static void test_keySetName (void)
 
 	keySetName (key, "meta:/");
 	succeed_if_same_string (keyName (key), "meta:/");
-	succeed_if (key->key != 0, "null pointer?");
+	succeed_if (key->keyName->key != 0, "null pointer?");
 	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/");
 	keyDel (dup);
 
 	keySetName (key, "meta:/other");
 	succeed_if_same_string (keyName (key), "meta:/other");
-	succeed_if (key->key != 0, "null pointer?");
+	succeed_if (key->keyName->key != 0, "null pointer?");
 	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/other");
 	keyDel (dup);
@@ -667,36 +667,36 @@ static void test_keyNeedSync (void)
 	Key * k = keyNew ("/", KEY_END);
 	succeed_if (keyNeedSync (k), "fresh key should need sync");
 
-	set_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = true;
 	succeed_if (keyNeedSync (k), "sync bit was set");
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	succeed_if (!keyNeedSync (k), "sync bit was cleared");
 
 	keySetName (k, "/");
 	succeed_if (keyNeedSync (k), "nothing done, but synced (impl-dep, could be optimized)");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	keySetName (k, "user:/abc");
 	succeed_if (keyNeedSync (k), "new name, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	keySetString (k, "a str");
 	succeed_if (keyNeedSync (k), "new string, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	keySetBinary (k, "a str", 4);
 	succeed_if (keyNeedSync (k), "new binary, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	keySetMeta (k, "metakey", "metaval");
 	succeed_if (keyNeedSync (k), "new meta, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	Key * d = keyDup (k, KEY_CP_ALL);
 	succeed_if (keyNeedSync (d), "dup key, should definitely need sync");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
-	clear_bit (d->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
+	d->needsSync = false;
 	succeed_if (keyCopy (d, k, 0) != NULL, "copy not successful");
 	succeed_if (keyNeedSync (d), "copy key, should definitely need sync");
 	succeed_if (!keyNeedSync (k), "sources sync flag should not be affected");
@@ -709,7 +709,7 @@ static void test_keyNeedSync (void)
 
 
 	keySetName (k, "");
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 
 	succeed_if (keySetBaseName (k, "") != -1, "could not set base name");
 	succeed_if (keyNeedSync (k), "name set, sync should be there");
@@ -717,15 +717,15 @@ static void test_keyNeedSync (void)
 	keySetName (k, "user:/abc");
 	succeed_if (keyNeedSync (k), "name set, sync should be there");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	succeed_if (keySetBaseName (k, "xynz") != -1, "could not set base name");
 	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	succeed_if (keyAddBaseName (k, "foo") != -1, "could not add base name");
 	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
+	k->needsSync = false;
 	succeed_if (keyAddName (k, "bar") != -1, "could not add name");
 	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
 
@@ -931,9 +931,9 @@ static void test_keyReplacePrefix (void)
 	succeed_if (keyReplacePrefix (key, NULL, newPrefix) == -1, "should not accept NULL argument");
 	succeed_if (keyReplacePrefix (key, oldPrefix, NULL) == -1, "should not accept NULL argument");
 
-	set_bit (key->flags, KEY_FLAG_RO_NAME);
+	key->hasReadOnlyName = true;
 	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == -1, "should not accept read-only key");
-	clear_bit (key->flags, KEY_FLAG_RO_NAME);
+	key->hasReadOnlyName = false;
 
 	keySetName (oldPrefix, "user:/foo");
 	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 0, "shouldn't touch keys not below oldPrefix");

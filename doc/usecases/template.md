@@ -2,7 +2,6 @@
 
 ## Summary
 
-- **Title:** <Title, e.g. Authenticate>
 - **Scope:** <Scope, e.g. Authentication>
 - **Level:** <Level, e.g. User Goal>
 - **Actors:** <Actors, e.g. Anonymous User>

@@ -34,7 +34,7 @@ else ()
 	# build elektra-web
 	install (CODE "message (\"-- Installing: elektra-web > webd\")")
 	install (
-		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
+		CODE "execute_process (COMMAND npm install --no-audit --no-save --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
 	)
 	install (
 		CODE "execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
@@ -43,8 +43,8 @@ else ()
 		CODE "execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
 	)
 
-	# generate manpages
-	generate_manpage (kdb-run-webd FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
-			  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+	# generate man pages
+	generate_man_page (kdb-run-webd FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
+			   "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 endif ()

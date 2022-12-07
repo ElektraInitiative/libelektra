@@ -55,6 +55,7 @@ RUN apt-get update && apt-get -y install \
         python3-pip \
         ruby \
         ruby-dev \
+        shellcheck \
         sloccount \
         swig4.0 \
         systemd \
@@ -119,7 +120,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.4-bin.zip && unzip gradle-7.4-bin.zip && rm gradle-7.4-bin.zip && mv gradle-7.4 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.5.1-bin.zip && unzip gradle-7.5.1-bin.zip && rm gradle-7.5.1-bin.zip && mv gradle-7.5.1 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
@@ -136,5 +137,5 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # Ronn-NG
-ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.0.0/bin"
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.1.0/bin"
 RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version

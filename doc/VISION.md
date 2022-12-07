@@ -96,11 +96,15 @@ Key-value access in Ansible:
 - name: setup samba workgroup
   connection: local
   hosts: localhost
+  collections:
+    - elektra_initiative.libelektra
   tasks:
     - name: set workgroup
       elektra:
-        key: "system:/sw/samba/#0/current/global/workgroup"
-        value: "MYGROUP"
+        mountpoint: system:/sw/samba/#0/current/global
+        keys:
+          workgroup:
+            value: MYGROUP
 ```
 
 In all these examples, we have set

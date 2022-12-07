@@ -72,7 +72,7 @@ DIR="${DIR:-"libelektra-${TAG}"}"
 
 # download Elektra
 if [ ! -d "${DIR}" ]; then
-	curl --fail --silent --show-error ${SOURCE} | tar xz --transform "s/libelektra-${TAG}/${DIR}/"
+	curl --fail --silent --show-error "${SOURCE}" | tar xz --transform "s/libelektra-${TAG}/${DIR}/"
 fi
 
 # set compiler
@@ -86,7 +86,7 @@ if [ ! -d "${DIR}/build" ]; then
 	mkdir "${DIR}/build"
 fi
 cd "${DIR}/build"
-cmake -DCMAKE_INSTALL_PREFIX=/usr ${CMAKE_PARAMS} .. && make -j ${JOBS}
+cmake -DCMAKE_INSTALL_PREFIX=/usr "${CMAKE_PARAMS}" .. && make -j "${JOBS}"
 
 if [ -z "${NAME}" ]; then
 	# install elektra ..

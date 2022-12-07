@@ -26,12 +26,14 @@ Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos)
 	if (pos < 0) return 0;
 	if (pos > SSIZE_MAX) return 0;
 
-	size_t c = pos;
-	if (c >= ks->size) return 0;
+	keySetDetachData (ks);
 
-	if (c != ks->size - 1)
+	size_t c = pos;
+	if (c >= ks->data->size) return 0;
+
+	if (c != ks->data->size - 1)
 	{
-		Key ** found = ks->array + c;
+		Key ** found = ks->data->array + c;
 		Key * k = *found;
 		/* Move the array over the place where key was found
 		 *
@@ -44,8 +46,8 @@ Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos)
 		 * |--|--|--|--|--|
 		 *
 		 * */
-		memmove (found, found + 1, (ks->size - c - 1) * sizeof (Key *));
-		*(ks->array + ks->size - 1) = k; // prepare last element to pop
+		memmove (found, found + 1, (ks->data->size - c - 1) * sizeof (Key *));
+		*(ks->data->array + ks->data->size - 1) = k; // prepare last element to pop
 	}
 	else
 	{

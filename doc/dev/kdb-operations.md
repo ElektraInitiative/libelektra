@@ -3,13 +3,6 @@
 There are four main _operations_ in `libelektra-kdb`: `open`, `get`, `set` and `close`.
 For each of these there is a `kdb*` function the user calls to trigger the operation and plugins export a function for each of the operations they support (at least `get`).
 
-<!-- TODO [new_backend]: Decide whether the extra commit/error functions make sense.
-      Possible options are:
-      1. keep the separate functions
-      2. merge them into set, and let backend plugins dispatch based on elektraPluginGetPhase
-      3. in addition to merging into set, add an extra `ElektraGetPhase phase`/`ElektraSetPhase phase` argument to get/set so it is clear that the phase must be taken into account
- -->
-
 Additionally, plugins may implement `commit` and `error`.
 These are part of the `set` operation and there is no corresponding `kdbCommit` or `kdbError` function available in `libelektra-kdb`.
 
@@ -131,7 +124,7 @@ Influence of namespaces:
 - `default:/` backends only go through the `poststorage` phase.
   This is because `default:/` keys are generated from the specification (stored as `spec:/` keys).
   Therefore, no `default:/` keys can exist before the specification is processed by the `spec/copy` hook.
-- keys with other namespaces are always illegal in `ks` (should be enforced via different `KeySet` types)
+- keys with other namespaces are always illegal in `ks`
 
 ## `set` Operation
 
@@ -182,7 +175,7 @@ Influence of namespaces:
 
 - `default:/` and `proc:/` keys are completely ignored by `kdbSet()`
 - `spec:/`, `dir:/`, `user:/` and `system:/` go through all phases as described above.
-- keys with other namespaces are always illegal in `ks` (should be enforced via different KeySet types)
+- keys with other namespaces are always illegal in `ks`
 
 ## `close` Operation
 

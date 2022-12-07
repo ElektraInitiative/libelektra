@@ -1,16 +1,16 @@
 #!/bin/sh
 
 echo -n "- name: "
-basename $*
+basename "$1"
 
 echo -n "- size: "
-ls -l $* | cut -f 5 -d " "
+ls -l "$1" | cut -f 5 -d " "
 
 echo -n "- md5sum: "
-md5sum $* | cut -f 1 -d " "
+md5sum "$1" | cut -f 1 -d " "
 
 echo -n "- sha1: "
-sha1sum $* | cut -f 1 -d " "
+sha1sum "$1" | cut -f 1 -d " "
 
 echo -n "- sha256: "
-sha256sum $* | cut -f 1 -d " " | head -c -1
+sha256sum "$1" | cut -f 1 -d " " | head -c -1

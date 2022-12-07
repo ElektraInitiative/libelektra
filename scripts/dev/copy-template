@@ -35,8 +35,8 @@ fi
 
 PLUGIN=$1
 
-if echo $PLUGIN | egrep -q '^[a-z]+$'; then
-	if [ -d $PLUGIN ]; then
+if echo "$PLUGIN" | egrep -q '^[a-z]+$'; then
+	if [ -d "$PLUGIN" ]; then
 		echo "Plugin $PLUGIN already exists"
 		exit 1
 	else
@@ -47,27 +47,27 @@ else
 	exit 1
 fi
 
-First=$(echo $PLUGIN | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
-ALL=$(echo $PLUGIN | awk '{print toupper($0)}')
+First=$(echo "$PLUGIN" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
+ALL=$(echo "$PLUGIN" | awk '{print toupper($0)}')
 
 move_files_c_template() {
-	cp -r template $PLUGIN
-	cd $PLUGIN
-	mv template.c $PLUGIN.c
-	mv template.h $PLUGIN.h
-	mv testmod_template.c testmod_$PLUGIN.c
+	cp -r template "$PLUGIN"
+	cd "$PLUGIN"
+	mv template.c "$PLUGIN".c
+	mv template.h "$PLUGIN".h
+	mv testmod_template.c testmod_"$PLUGIN".c
 }
 
 move_files_cpp_template() {
-	cp -r cpptemplate $PLUGIN
+	cp -r cpptemplate "$PLUGIN"
 	# We always use the ReadMe from `template`
-	cp template/README.md $PLUGIN
-	cd $PLUGIN
-	mv cpptemplate.cpp $PLUGIN.cpp
-	mv cpptemplate.hpp $PLUGIN.hpp
-	mv cpptemplate_delegate.hpp ${PLUGIN}_delegate.hpp
-	mv cpptemplate_delegate.cpp ${PLUGIN}_delegate.cpp
-	mv testmod_cpptemplate.cpp testmod_$PLUGIN.cpp
+	cp template/README.md "$PLUGIN"
+	cd "$PLUGIN"
+	mv cpptemplate.cpp "$PLUGIN".cpp
+	mv cpptemplate.hpp "$PLUGIN".hpp
+	mv cpptemplate_delegate.hpp "${PLUGIN}"_delegate.hpp
+	mv cpptemplate_delegate.cpp "${PLUGIN}"_delegate.cpp
+	mv testmod_cpptemplate.cpp testmod_"$PLUGIN".cpp
 }
 
 do_replacements() {
@@ -75,16 +75,16 @@ do_replacements() {
 	# BSD version of `sed`. Only GNU `sed` supports the switch `--version`.
 	sed --version &> /dev/null && args=(-i) || args=(-i '')
 
-	sed -E "${args[@]}" "s/(CPP)?TEMPLATE/$ALL/g" $*
-	sed -E "${args[@]}" "s/(Cpp)?Template/$First/g" $*
-	sed -E "${args[@]}" "s/(cpp)?template/$PLUGIN/g" $*
-	if [ $CPP ]; then sed -E "${args[@]}" 's/(written in )C/\1C++/g' $*; fi
+	sed -E "${args[@]}" "s/(CPP)?TEMPLATE/$ALL/g" "$@"
+	sed -E "${args[@]}" "s/(Cpp)?Template/$First/g" "$@"
+	sed -E "${args[@]}" "s/(cpp)?template/$PLUGIN/g" "$@"
+	if [ $CPP ]; then sed -E "${args[@]}" 's/(written in )C/\1C++/g' "$@"; fi
 }
 
 if [ $CPP ]; then
 	move_files_cpp_template
-	do_replacements testmod_$1.cpp $1.cpp $1.hpp $1_delegate.hpp $1_delegate.cpp CMakeLists.txt README.md
+	do_replacements testmod_"$1".cpp "$1".cpp "$1".hpp "$1"_delegate.hpp "$1"_delegate.cpp CMakeLists.txt README.md
 else
 	move_files_c_template
-	do_replacements testmod_$1.c $1.c $1.h CMakeLists.txt README.md
+	do_replacements testmod_"$1".c "$1".c "$1".h CMakeLists.txt README.md
 fi

@@ -111,7 +111,7 @@ STDOUT: 5
 < kdb set $Mountpoint/check/k 7.6
 < kdb meta-set $Mountpoint/check/k check/math "== + ../a ../b"
 
-ERROR: 123
+ERROR: C03200
 < kdb set $Mountpoint/check/k 7.7
 
 RET: 0

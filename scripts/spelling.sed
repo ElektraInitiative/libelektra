@@ -56,6 +56,9 @@ s/\<([Mm])eta[- ][Nn]ame\>/\1etaname/g
 s/\<([Mm])eta[- ][Vv]alue\>/\1etavalue/g
 s/\<([Mm])eta[- ][Dd]ata\>/\1etadata/g
 
+s/([Mm])anpage/\1an page/g
+s/MANPAGE/MAN_PAGE/g
+
 s/\<([Nn])ame [Ss]pace\>/\1amespace/g
 s/\<([Pp])lug-[Ii]n(s)?\>/\1lugin\2/g
 
@@ -65,6 +68,8 @@ s/\<([Cc])hange[- ]([Tt])racking\>/\1hange \2racking/g
 # key-value pair
 s:\<key/value:key-value:g
 s:\<Key/value:Key-value:g
+
+s/([Kk])ey[ -](value[ -])?storage/\1ey-value storage/g
 
 s/[^#"]\<data-?type/data type/g
 
@@ -87,6 +92,9 @@ s/\<[Cc][- ]([Aa]rray|[Cc]ode|[Nn]ame|[Ss]tring)/C \1/g
 s/\<([Ww])orstcase/\1orst-case/g
 
 s/\<([Cc])olon[- ]?[Ss]eparated/\1olon-separated/g
+
+s/([Dd])(ocu)(\W)/\1\2mentation\3/g
+s/API-[dD]ocumentation/API documentation/g
 
 # get- and setmethods -> getter and setter methods
 s/\<([Hh])ard-?[Cc]od/\1ard cod/g

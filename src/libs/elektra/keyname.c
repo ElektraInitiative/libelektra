@@ -166,6 +166,182 @@
 #include "kdbinternal.h"
 
 /**
+ * @internal
+ *
+ * @brief Helper method: creates a deep copy of a keyname. Does not copy the reference counter.
+ *        The escaped and unescaped name have the provided sizes.
+ *        If the size is less then the sizes of @p source, not everything will be copied!
+
+ * @param source the keyname to copy
+ * @param escapedSize size of the escaped name
+ * @param unescapedSize size of the unescaped name
+ * @return
+ */
+static struct _KeyName * keyNameCopyWithSize (struct _KeyName * source, size_t escapedSize, size_t unescapedSize)
+{
+	struct _KeyName * dest = keyNameNew ();
+	dest->key = elektraMalloc (escapedSize);
+	dest->keySize = escapedSize;
+
+	size_t copySize = source->keySize;
+	if (copySize > escapedSize)
+	{
+		copySize = escapedSize;
+	}
+
+	memcpy (dest->key, source->key, copySize);
+	dest->key[copySize - 1] = 0;
+
+	dest->ukey = elektraMalloc (unescapedSize);
+	dest->keyUSize = unescapedSize;
+
+	copySize = source->keyUSize;
+	if (copySize > unescapedSize)
+	{
+		copySize = unescapedSize;
+	}
+
+	memcpy (dest->ukey, source->ukey, copySize);
+
+	return dest;
+}
+
+/**
+ * @internal
+ *
+ * @brief Helper method: creates a deep copy of a keyname. Does not copy the reference counter.
+ *
+ * @param source the keyname to copy
+ *
+ * @return copied keyname
+ */
+struct _KeyName * keyNameCopy (struct _KeyName * source)
+{
+	return keyNameCopyWithSize (source, source->keySize, source->keyUSize);
+}
+
+/**
+ * @internal
+ *
+ * @brief Helper method: Ensures, that the supplied key has its own KeyName instance
+ *
+ * @post @p key's keyName field != NULL
+ *
+ * @param key the key to ensure it has its own KeyName instance
+ */
+void keyDetachKeyName (Key * key)
+{
+	if (!key)
+	{
+		return;
+	}
+
+	if (key->keyName == NULL)
+	{
+		key->keyName = keyNameNew ();
+		keyNameRefInc (key->keyName);
+	}
+	else if (key->keyName->refs > 1 || isKeyNameInMmap (key->keyName))
+	{
+		struct _KeyName * copiedKeyName = keyNameCopy (key->keyName);
+		keyNameRefDecAndDel (key->keyName);
+		key->keyName = copiedKeyName;
+		keyNameRefInc (key->keyName);
+	}
+}
+
+/**
+ * @internal
+ *
+ * @brief Helper method: Ensures, that the supplied key has its own KeyName instance.
+ *        Also ensures, that the key and unescaped key have the specified size.
+ *
+ * @post @p key's keyName field != NULL
+ * @post @p key's escaped name has @p escapeSize size
+ * @post @p key's unescaped name has @p unescapedSize size
+ *
+ * @param key the key to ensure it has its own KeyName instance
+ * @param escapedSize the new size of the escaped name
+ * @param unescapedSize the new size of the unescaped name
+ */
+static void keyDetachKeyNameAndRealloc (Key * key, size_t escapedSize, size_t unescapedSize)
+{
+	if (!key)
+	{
+		return;
+	}
+
+	if (key->keyName == NULL)
+	{
+		key->keyName = keyNameNew ();
+		keyNameRefInc (key->keyName);
+	}
+	else if (key->keyName->refs > 1 || isKeyNameInMmap (key->keyName))
+	{
+		struct _KeyName * copiedKeyName = keyNameCopyWithSize (key->keyName, escapedSize, unescapedSize);
+		keyNameRefDecAndDel (key->keyName);
+		key->keyName = copiedKeyName;
+		keyNameRefInc (key->keyName);
+
+		return;
+	}
+
+	if (key->keyName->keySize != escapedSize)
+	{
+		elektraRealloc ((void **) &key->keyName->key, escapedSize * sizeof (char));
+
+		if (key->keyName->keySize > escapedSize)
+		{
+			key->keyName->key[escapedSize - 1] = 0;
+		}
+
+		key->keyName->keySize = escapedSize;
+	}
+
+	if (key->keyName->keyUSize != unescapedSize)
+	{
+		elektraRealloc ((void **) &key->keyName->ukey, unescapedSize * sizeof (char));
+
+		if (key->keyName->keyUSize > unescapedSize)
+		{
+			key->keyName->ukey[unescapedSize - 1] = 0;
+		}
+
+		key->keyName->keyUSize = unescapedSize;
+	}
+}
+
+/**
+ * @internal
+ *
+ * @brief Helper method: Ensures, that the supplied key has its own KeyName instance.
+ *        If the name is shared with other keys, the key gets an empty KeyName instance.
+ *
+ * @post @p key's keyName field != NULL
+ *
+ * @param key the key to ensure it has its own KeyName instance
+ */
+static inline void keyDetachKeyNameWithoutCopy (Key * key)
+{
+	if (!key)
+	{
+		return;
+	}
+
+	if (key->keyName == NULL)
+	{
+		key->keyName = keyNameNew ();
+		keyNameRefInc (key->keyName);
+	}
+	else if (key->keyName->refs > 1 || isKeyNameInMmap (key->keyName))
+	{
+		keyNameRefDecAndDel (key->keyName);
+		key->keyName = keyNameNew ();
+		keyNameRefInc (key->keyName);
+	}
+}
+
+/**
  * Helper method: returns a pointer to the start of the last part of the given key name
  *
  * @param name a canonical key name
@@ -257,8 +433,10 @@ const char * keyName (const Key * key)
 {
 	if (!key) return 0;
 
-	ELEKTRA_ASSERT (key->key != NULL, "invalid name");
-	return key->key;
+	if (!key->keyName) return "";
+
+	ELEKTRA_ASSERT (key->keyName->key != NULL, "invalid name");
+	return key->keyName->key;
 }
 
 /**
@@ -282,8 +460,9 @@ const char * keyName (const Key * key)
 ssize_t keyGetNameSize (const Key * key)
 {
 	if (!key) return -1;
+	if (!key->keyName || !key->keyName->key) return 1;
 
-	return key->keySize;
+	return key->keyName->keySize;
 }
 
 
@@ -313,8 +492,11 @@ ssize_t keyGetNameSize (const Key * key)
 const void * keyUnescapedName (const Key * key)
 {
 	if (!key) return 0;
-	ELEKTRA_ASSERT (key->ukey != NULL, "invalid name");
-	return key->ukey;
+
+	if (!key->keyName) return "";
+
+	ELEKTRA_ASSERT (key->keyName->ukey != NULL, "invalid name");
+	return key->keyName->ukey;
 }
 
 
@@ -338,7 +520,9 @@ ssize_t keyGetUnescapedNameSize (const Key * key)
 {
 	if (!key) return -1;
 
-	return key->keyUSize;
+	if (!key->keyName) return 0;
+
+	return key->keyName->keyUSize;
 }
 
 
@@ -388,20 +572,20 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 
 	if (maxSize > SSIZE_MAX) return -1;
 
-	if (!key->key)
+	if (!key->keyName || !key->keyName->key)
 	{
 		returnedName[0] = 0;
 		return 1;
 	}
 
-	if (key->keySize > maxSize)
+	if (key->keyName->keySize > maxSize)
 	{
 		return -1;
 	}
 
-	memcpy (returnedName, key->key, key->keySize);
+	memcpy (returnedName, key->keyName->key, key->keyName->keySize);
 
-	return key->keySize;
+	return key->keyName->keySize;
 }
 
 /**
@@ -437,20 +621,20 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
 	if (!key) return -1;
 	if (!returnedName) return -1;
 
-	if (!key->ukey)
+	if (!key->keyName || !key->keyName->ukey)
 	{
 		returnedName[0] = 0;
 		return 1;
 	}
 
-	if (key->keyUSize > maxSize)
+	if (key->keyName->keyUSize > maxSize)
 	{
 		return -2;
 	}
 
-	memcpy (returnedName, key->ukey, maxSize);
+	memcpy (returnedName, key->keyName->ukey, maxSize);
 
-	return key->keyUSize;
+	return key->keyName->keyUSize;
 }
 
 /**
@@ -497,7 +681,7 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
 ssize_t keySetName (Key * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
 
 	if (!elektraKeyNameValidate (newName, true))
@@ -508,25 +692,17 @@ ssize_t keySetName (Key * key, const char * newName)
 
 	// from now on this function CANNOT fail -> we may modify the key
 
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
-	{
-		// key was in mmap region, clear flag and set NULL to allow realloc
-		key->key = NULL;
-		key->keySize = 0;
-		key->ukey = NULL;
-		key->keyUSize = 0;
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	}
+	keyDetachKeyNameWithoutCopy (key);
 
-	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, 0, &key->keyUSize);
+	elektraKeyNameCanonicalize (newName, &key->keyName->key, &key->keyName->keySize, 0, &key->keyName->keyUSize);
 
-	elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	elektraRealloc ((void **) &key->keyName->ukey, key->keyName->keyUSize);
 
-	elektraKeyNameUnescape (key->key, key->ukey);
+	elektraKeyNameUnescape (key->keyName->key, key->keyName->ukey);
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
+	key->needsSync = true;
 
-	return key->keySize;
+	return key->keyName->keySize;
 }
 
 /**
@@ -568,7 +744,7 @@ ssize_t keySetName (Key * key, const char * newName)
 ssize_t keyAddName (Key * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 	if (!newName) return -1;
 
 	while (*newName == '/')
@@ -582,7 +758,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 		}
 	}
 
-	if (strlen (newName) == 0) return key->keySize;
+	if (strlen (newName) == 0) return key->keyName->keySize;
 
 	if (!elektraKeyNameValidate (newName, false))
 	{
@@ -592,28 +768,16 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	// from now on this function CANNOT fail -> we may modify the key
 
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
-	{
-		// key was in mmap region, clear flag and copy to malloced buffer
-		char * tmp = elektraMalloc (key->keySize);
-		memcpy (tmp, key->key, key->keySize);
-		key->key = tmp;
+	keyDetachKeyName (key);
 
-		tmp = elektraMalloc (key->keyUSize);
-		memcpy (tmp, key->ukey, key->keyUSize);
-		key->ukey = tmp;
+	elektraKeyNameCanonicalize (newName, &key->keyName->key, &key->keyName->keySize, key->keyName->keySize, &key->keyName->keyUSize);
 
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	}
+	elektraRealloc ((void **) &key->keyName->ukey, key->keyName->keyUSize);
 
-	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, key->keySize, &key->keyUSize);
+	elektraKeyNameUnescape (key->keyName->key, key->keyName->ukey);
 
-	elektraRealloc ((void **) &key->ukey, key->keyUSize);
-
-	elektraKeyNameUnescape (key->key, key->ukey);
-
-	set_bit (key->flags, KEY_FLAG_SYNC);
-	return key->keySize;
+	key->needsSync = true;
+	return key->keyName->keySize;
 }
 
 static size_t replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, const char * newPrefix, size_t newPrefixSize)
@@ -679,7 +843,7 @@ static size_t replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, 
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 {
 	if (key == NULL || oldPrefix == NULL || newPrefix == NULL) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (key->hasReadOnlyName) return -1;
 
 	// check namespace manually, because keyIsBelowOrSame has special handling for cascading keys
 	if (keyGetNamespace (key) != keyGetNamespace (oldPrefix)) return 0;
@@ -688,55 +852,43 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 	// same prefix -> nothing to do
 	if (keyCmp (oldPrefix, newPrefix) == 0) return 1;
 
-	if (key->keyUSize == oldPrefix->keyUSize)
+	if (key->keyName->keyUSize == oldPrefix->keyName->keyUSize)
 	{
 		// key is same as oldPrefix -> just copy name
 		keyCopy (key, newPrefix, KEY_CP_NAME);
 		return 1;
 	}
 
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
-	{
-		// key was in mmap region, clear flag and copy to malloced buffer
-		char * tmp = elektraMalloc (key->keySize);
-		memcpy (tmp, key->key, key->keySize);
-		key->key = tmp;
-
-		tmp = elektraMalloc (key->keyUSize);
-		memcpy (tmp, key->ukey, key->keyUSize);
-		key->ukey = tmp;
-
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	}
+	keyDetachKeyName (key);
 
 	size_t oldSize, oldUSize;
-	if (oldPrefix->keyUSize == 3)
+	if (oldPrefix->keyName->keyUSize == 3)
 	{
 		// oldPrefix is root key -> needs special handling
-		oldSize = oldPrefix->keySize - 2;
+		oldSize = oldPrefix->keyName->keySize - 2;
 		oldUSize = 2;
 	}
 	else
 	{
-		oldSize = oldPrefix->keySize - 1;
-		oldUSize = oldPrefix->keyUSize;
+		oldSize = oldPrefix->keyName->keySize - 1;
+		oldUSize = oldPrefix->keyName->keyUSize;
 	}
 
 	size_t newSize, newUSize;
-	if (newPrefix->keyUSize == 3)
+	if (newPrefix->keyName->keyUSize == 3)
 	{
 		// newPrefix is root key -> needs special handling
-		newSize = newPrefix->keySize - 2;
+		newSize = newPrefix->keyName->keySize - 2;
 		newUSize = 2;
 	}
 	else
 	{
-		newSize = newPrefix->keySize - 1;
-		newUSize = newPrefix->keyUSize;
+		newSize = newPrefix->keyName->keySize - 1;
+		newUSize = newPrefix->keyName->keyUSize;
 	}
 
-	key->keySize = replacePrefix (&key->key, key->keySize, oldSize, newPrefix->key, newSize);
-	key->keyUSize = replacePrefix (&key->ukey, key->keyUSize, oldUSize, newPrefix->ukey, newUSize);
+	key->keyName->keySize = replacePrefix (&key->keyName->key, key->keyName->keySize, oldSize, newPrefix->keyName->key, newSize);
+	key->keyName->keyUSize = replacePrefix (&key->keyName->ukey, key->keyName->keyUSize, oldUSize, newPrefix->keyName->ukey, newUSize);
 
 	return 1;
 }
@@ -1248,9 +1400,9 @@ void elektraKeyNameUnescape (const char * canonicalName, char * unescapedName)
 const char * keyBaseName (const Key * key)
 {
 	if (!key) return 0;
-	if (!key->key) return "";
+	if (!key->keyName || !key->keyName->key) return "";
 
-	const char * baseName = key->ukey + key->keyUSize - 2;
+	const char * baseName = key->keyName->ukey + key->keyName->keyUSize - 2;
 	while (*baseName != '\0')
 	{
 		--baseName;
@@ -1325,7 +1477,7 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
 	if (key == NULL || returned == NULL) return -1;
 	if (maxSize == 0 || maxSize > SSIZE_MAX) return -1;
 
-	if (key->key == NULL)
+	if (key->keyName == NULL || key->keyName->key == NULL)
 	{
 		*returned = '\0';
 		return 1;
@@ -1459,7 +1611,7 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 	size_t unescapedSize;
 	size_t escapedSize;
 	char * escaped = NULL;
-	int hasPath = key->keyUSize > 3;
+	int hasPath = key->keyName->keyUSize > 3;
 
 	if (baseName == NULL)
 	{
@@ -1485,71 +1637,56 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 		}
 	}
 
-	size_t newKeySize = key->keySize + escapedSize;
-	size_t newKeyUSize = key->keyUSize + unescapedSize;
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
-	{
-		// key was in mmap region, clear flag and copy to malloced buffer
-		char * tmp = elektraMalloc (newKeySize);
-		memcpy (tmp, key->key, key->keySize);
-		key->key = tmp;
+	size_t newKeySize = key->keyName->keySize + escapedSize;
+	size_t newKeyUSize = key->keyName->keyUSize + unescapedSize;
 
-		tmp = elektraMalloc (newKeyUSize);
-		memcpy (tmp, key->ukey, key->keyUSize);
-		key->ukey = tmp;
+	size_t oldKeySize = key->keyName->keySize;
+	size_t oldKeyUSize = key->keyName->keyUSize;
 
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	}
-	else
-	{
-		elektraRealloc ((void **) &key->key, newKeySize);
-		elektraRealloc ((void **) &key->ukey, newKeyUSize);
-	}
+	keyDetachKeyNameAndRealloc (key, newKeySize, newKeyUSize);
 
 	if (baseName == NULL)
 	{
 		// for keySetBaseName
-		key->key[key->keySize - 1] = '\0';
-		key->ukey[key->keyUSize - 1] = '\0';
+		key->keyName->key[key->keyName->keySize - 1] = '\0';
+		key->keyName->ukey[key->keyName->keyUSize - 1] = '\0';
 
-		return key->keySize;
+		return key->keyName->keySize;
 	}
 
 	// add escaped name
 	if (hasPath)
 	{
 		// more than just namespace -> must add separator
-		key->key[key->keySize - 1] = '/';
-		memcpy (&key->key[key->keySize], escaped, escapedSize);
+		key->keyName->key[oldKeySize - 1] = '/';
+		memcpy (&key->keyName->key[oldKeySize], escaped, escapedSize);
 	}
 	else
 	{
-		memcpy (&key->key[key->keySize - 1], escaped, escapedSize);
+		memcpy (&key->keyName->key[oldKeySize - 1], escaped, escapedSize);
 	}
 	elektraFree (escaped);
 
-	// set keySize and terminate escaped name
-	key->keySize += escapedSize;
-	key->key[key->keySize - 1] = '\0';
+	// terminate escaped name
+	key->keyName->key[key->keyName->keySize - 1] = '\0';
 
 	// add unescaped name
 	if (hasPath)
 	{
 		// more than just namespace -> must add separator
-		key->ukey[key->keyUSize - 1] = '\0';
-		memcpy (&key->ukey[key->keyUSize], baseName, unescapedSize);
+		key->keyName->ukey[oldKeyUSize - 1] = '\0';
+		memcpy (&key->keyName->ukey[oldKeyUSize], baseName, unescapedSize);
 	}
 	else
 	{
-		memcpy (&key->ukey[key->keyUSize - 1], baseName, unescapedSize);
+		memcpy (&key->keyName->ukey[oldKeyUSize - 1], baseName, unescapedSize);
 	}
 
-	// set keyUSize and terminate escaped name
-	key->keyUSize += unescapedSize;
-	key->ukey[key->keyUSize - 1] = '\0';
+	// terminate unescaped name
+	key->keyName->ukey[key->keyName->keyUSize - 1] = '\0';
 
-	set_bit (key->flags, KEY_FLAG_SYNC);
-	return key->keySize;
+	key->needsSync = true;
+	return key->keyName->keySize;
 }
 
 /**
@@ -1595,8 +1732,8 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
 	if (!baseName) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
-	if (!key->key) return -1;
+	if (key->hasReadOnlyName) return -1;
+	if (!key->keyName || !key->keyName->key) return -1;
 
 	return keyAddBaseNameInternal (key, baseName);
 }
@@ -1652,29 +1789,31 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 ssize_t keySetBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
-	if (!key->key) return -1;
+	if (key->hasReadOnlyName) return -1;
+	if (!key->keyName || !key->keyName->key) return -1;
+
+	keyDetachKeyName (key);
 
 	// adjust sizes to exclude base name
-	const char * baseNamePtr = findStartOfLastPart (key->key, key->keySize);
+	const char * baseNamePtr = findStartOfLastPart (key->keyName->key, key->keyName->keySize);
 	if (baseNamePtr == NULL)
 	{
 		return -1;
 	}
-	key->keySize = baseNamePtr - key->key + 1;
+	key->keyName->keySize = baseNamePtr - key->keyName->key + 1;
 
-	const char * ubaseNamePtr = key->ukey + key->keyUSize - 2;
+	const char * ubaseNamePtr = key->keyName->ukey + key->keyName->keyUSize - 2;
 	while (*ubaseNamePtr != '\0')
 	{
 		--ubaseNamePtr;
 	}
-	key->keyUSize = ubaseNamePtr - key->ukey + 1;
+	key->keyName->keyUSize = ubaseNamePtr - key->keyName->ukey + 1;
 
-	if (key->keyUSize == 2)
+	if (key->keyName->keyUSize == 2)
 	{
 		// happens if we only have one part after namespace
-		++key->keySize;
-		++key->keyUSize;
+		++key->keyName->keySize;
+		++key->keyName->keyUSize;
 	}
 
 	// add new base name, only resizes buffer when baseName == NULL
@@ -1708,7 +1847,7 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 elektraNamespace keyGetNamespace (const Key * key)
 {
 	if (!key) return KEY_NS_NONE;
-	return (elektraNamespace) key->ukey[0];
+	return (elektraNamespace) key->keyName->ukey[0];
 }
 
 /**
@@ -1734,10 +1873,12 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	if (!key) return -1;
 	if (ns == KEY_NS_NONE) return -1;
 
-	if (ns == key->ukey[0]) return key->keySize;
+	if (ns == key->keyName->ukey[0]) return key->keyName->keySize;
+
+	keyDetachKeyName (key);
 
 	size_t oldNamespaceLen;
-	switch (key->ukey[0])
+	switch (key->keyName->ukey[0])
 	{
 	case KEY_NS_USER:
 		oldNamespaceLen = sizeof ("user:") - 1;
@@ -1803,25 +1944,25 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	if (newNamespaceLen > oldNamespaceLen)
 	{
 		// buffer growing -> realloc first
-		elektraRealloc ((void **) &key->key, key->keySize - oldNamespaceLen + newNamespaceLen);
+		elektraRealloc ((void **) &key->keyName->key, key->keyName->keySize - oldNamespaceLen + newNamespaceLen);
 	}
 
-	memmove (key->key + newNamespaceLen, key->key + oldNamespaceLen, key->keySize - oldNamespaceLen);
+	memmove (key->keyName->key + newNamespaceLen, key->keyName->key + oldNamespaceLen, key->keyName->keySize - oldNamespaceLen);
 
 	if (newNamespaceLen < oldNamespaceLen)
 	{
 		// buffer growing -> realloc after
-		elektraRealloc ((void **) &key->key, key->keySize - oldNamespaceLen + newNamespaceLen);
+		elektraRealloc ((void **) &key->keyName->key, key->keyName->keySize - oldNamespaceLen + newNamespaceLen);
 	}
 
-	memcpy (key->key, newNamespace, newNamespaceLen);
-	key->keySize += newNamespaceLen;
-	key->keySize -= oldNamespaceLen;
-	key->key[key->keySize - 1] = '\0';
+	memcpy (key->keyName->key, newNamespace, newNamespaceLen);
+	key->keyName->keySize += newNamespaceLen;
+	key->keyName->keySize -= oldNamespaceLen;
+	key->keyName->key[key->keyName->keySize - 1] = '\0';
 
-	key->ukey[0] = ns;
+	key->keyName->ukey[0] = ns;
 
-	return key->keySize;
+	return key->keyName->keySize;
 }
 
 /**

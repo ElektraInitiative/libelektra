@@ -1,13 +1,11 @@
 # Mounting
 
-<!-- TODO [new_backend]: Outdated, only kept as reference until an updated version is written
-Elektra provides a global key database, that can integrate configuration in various formats.
+In this tutorial we will go over mounting configuration files to enable non-elektrified applications to be configured through Elektra.
 
-Conversely configuration managed by Elektra can be integrated into applications.
 The best way of integrating Elektra into applications is to [elektrify](/doc/help/elektra-glossary.md) them.
 
-A simpler form of integration is to let Elektra directly use configuration files as they are present on the system.
-Thus applications can read the configuration files and changes in the key database will be picked up by applications.
+To use Elektra with non-elektrified applications we can also let Elektra sync configuration files on the file system and Elektra's key-value storage.
+Applications can then read and write the configuration files and changes in the key database will be picked up by applications and vice-versa.
 
 The heart of the approach is the so-called _mounting_ of configuration files into the key database.
 
@@ -55,7 +53,7 @@ Applications will now pick up these changes:
 
 ```sh
 ping -c 1 mylocalhost
-# RET:2
+# RET:0
 ```
 
 We are also safe against wrong changes:
@@ -63,10 +61,10 @@ We are also safe against wrong changes:
 ```sh
 sudo kdb set system:/hosts/ipv4/mylocalhost ::1
 # RET:5
-# ERROR:51
+# ERROR:C03200
 sudo kdb set system:/hosts/ipv4/mylocalhost 300.0.0.1
 # RET:5
-# ERROR:51
+# ERROR:C03200
 ```
 
 We can undo these changes with:
@@ -229,4 +227,3 @@ Furthermore, one cannot simply change the configuration file format, because it 
 
 These limitations are the reasons why [elektrifing](/doc/help/elektra-glossary.md) applications provides even better integration.
 Go on reading [how to elektrify your application](application-integration.md).
--->

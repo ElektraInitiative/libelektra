@@ -3,8 +3,8 @@
 # @tags release
 
 echo -n "Number commits: "
-git log $1..$2 | grep "^commit" | wc -l
+git log "$1".."$2" | grep "^commit" | wc -l
 
-git log $1..$2 | grep "^Author: " | sort | uniq -c | sort -n | sed 's/é/é/'
+git log "$1".."$2" | grep "^Author: " | sort | uniq -c | sort -n | sed 's/é/é/'
 
-git diff $1..$2 --stat | tail -1
+git diff "$1".."$2" --stat | tail -1

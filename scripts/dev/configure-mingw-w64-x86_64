@@ -16,7 +16,7 @@ fi
 
 # BUILD_SHARED and BUILD_TESTING is currently broken
 
-cd $BUILD
+cd "$BUILD" || exit
 cmake -DENABLE_TESTING=OFF \
 	-DBUILD_TESTING=OFF \
 	-DBUILD_STATIC=ON \
@@ -28,6 +28,6 @@ cmake -DENABLE_TESTING=OFF \
 	-DKDB_DB_SYSTEM=kdb -DKDB_DB_SPEC=spec \
 	-DBUILD_DOCUMENTATION=OFF \
 	-DCMAKE_PIC_FLAGS="" \
-	-DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
+	-DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
-	$*
+	"$@"

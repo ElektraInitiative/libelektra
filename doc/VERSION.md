@@ -69,7 +69,7 @@ In `1.0.*` the API and ABI must be always forward-compatible
 and backwards-compatible.
 That means that Elektra's libraries and plugins may be
 upgraded and downgraded without any effect on applications,
-only bug or docu fixes are allowed.
+only bug or documentation fixes are allowed.
 
 In minor or patch version updates the API and ABI must be always forward-compatible,
 but not backwards-compatible.

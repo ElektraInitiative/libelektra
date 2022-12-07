@@ -11,9 +11,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
-#endif
 
 #include <kdbassert.h>
 
@@ -189,9 +187,7 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 	Key * cur;
 	ssize_t rootSize = 0;
 
-	ksRewind (config);
-
-	root = ksNext (config);
+	root = ksAtCursor (config, 0);
 	rootSize = keyGetNameSize (root);
 
 	keyDel (ksLookup (config, root, KDB_O_POP));
@@ -642,7 +638,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 			goto error;
 		}
 
-		// adDupMounptoints duplicates everthing, including reopening the plugins
+		// addDupMounptoint duplicates everything, including reopening the plugins
 		// so we have to close the originals
 		for (elektraCursor it = 0; it < ksGetSize (plugins); it++)
 		{
@@ -929,7 +925,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 {
 	if (!errorKey)
 	{
-		ELEKTRA_LOG ("no error key passed");
+		ELEKTRA_LOG_WARNING ("no error key passed");
 		return 0;
 	}
 
@@ -1353,12 +1349,12 @@ static bool initBackends (KeySet * backends, Key * parentKey)
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = true;
 
 		int ret = initFn (backendData->backend, backendData->definition, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = false;
 
 		// check return code
 		switch (ret)
@@ -1436,12 +1432,12 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = true;
 
 		int ret = getFn (backendData->backend, backendData->keys, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = false;
 
 		// check return code
 		switch (ret)
@@ -1544,14 +1540,15 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
 		// set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
 
 		// START fcrypt workaround
-		clear_bit (parentKey->flags, KEY_FLAG_RO_VALUE);
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyValue = false;
+		parentKey->hasReadOnlyName = true;
 		// END fcrypt workaround
 
 		int ret = getFn (backendData->backend, backendData->keys, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 
 		// check return code
 		switch (ret)
@@ -1597,34 +1594,32 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * Retrieve Keys from the Key database in an atomic and universal way.
  *
  * @pre The @p handle must be a valid KDB handle as returned from kdbOpen().
- * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
- *     with ksNew().
- * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
- *     keyNew().
+ * @pre The KeySet @p returned must be a valid KeySet, i.e., constructed with ksNew().
+ * @pre The KeySet @p returned must contain keys only from the `spec:/`, `dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
+ * @pre The Key @p parentKey must be a valid Key, i.e., constructed with keyNew().
+ * @pre The Key @p parentKey must not have read-only name, value or metadata.
+ * @pre The Key @p parentKey must use the `spec:/`, `dir:/`, `user:/`, `system:/`,
+ * 	`default:/`, `proc:/` or cascading namespace.
  *
  * If you pass `NULL` or a key with read-only metadata as @p parentKey,
  * kdbGet() will fail immediately without doing anything.
  * If you pass another invalid @p parentKey, or `NULL` as @p ks or @p handle,
  * kdbGet() will set an error on @p parentKey and then return immediately.
  *
- * **Attention**: If you pass a non-NULL @p parentKey with writable metadata, kdbGet() will **always** remove
- *                any existing errors and warnings from @p parentKey.
+ * @note If you pass a non-NULL @p parentKey with writable metadata, kdbGet() will **always** remove
+ *       any existing errors and warnings from @p parentKey.
  *
- * **Important**: The KDB @p handle DOES NOT store a copy of the retrieved @p ks internally.
- *                This means if you later call kdbSet() with the same @p handle you must make sure to
- *                pass all keys from @p ks, which you do not want to remove.
+ * @warning If you later call kdbSet() with the same @p handle you must make sure to
+ *          pass all keys from @p ks, which you do not want to remove.
  *
  * @par Loadable Namespaces
  *
  * Not all namespace can be loaded.
- * `spec:/`, `dir:/`, `user:/` and `system:/` are loadable.
- * `proc:/` keys can be loaded but will never be persisted or cached.
- * `default:/` keys can be returned by kdbGet() but they will always stem from a specification in `spec:/` keys
- * If @p ks contains a key with any other namespace, an error will be returned.
  *
- * If @p parentKey is in any other namespace, an eror will be returned.
- *
- * **Note**: In general it is recommended to use a @p parentKey in the cascading namespace.
+ * - `spec:/`, `dir:/`, `user:/` and `system:/` can be loaded via kdbGet().
+ * - `proc:/` keys can be loaded via kdbGet(), but are not persisted or cached.
+ * - `default:/` keys can be inserted by kdbGet() but they will always stem from a specification in `spec:/` keys.
+ * - If @p ks contains a key with any other namespace, an error will be returned.
  *
  * @par Parent Key
  *
@@ -1632,17 +1627,17 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, uint16_t phase)
  * Everything that is at or below @p parentKey wil be loaded together with any key
  * that shares a backend with such a key. Backends are always loaded as an atomic unit.
  *
- * **Note**: If @p parentKey is in the cascading namespace, keys of all loadable
- *           namspaces (see above) will be loaded.
+ * @note If @p parentKey is in the cascading namespace, keys of all loadable namespaces (see above) will be loaded.
+ *       This is generally the recommended approach.
  *
  * Upon sucessfully returning kdbGet() also sets the value of @p parentKey to the storage identifier used
  * by the backend that contains (or would contain) @p parentKey. For file-based backends this is the absolute
  * path of the underlying file. Other backends may use different identifiers, but it always uniquely identifies
  * the underlying storage unit.
  *
- * **Note**: If @p parentKey is in the cascading, `default:/` or `proc:/ namespace, the value of @p parentKey
- *           will be set to an empty string. This is done, because those namespaces are not persistable (see kdbSet())
- *           and therfore have no storage identifier.
+ * @note If @p parentKey is in the cascading, `default:/` or `proc:/ namespace, the value of @p parentKey
+ *       will be set to an empty string. This is done, because those namespaces are not persistable (see kdbSet())
+ *       and therfore have no storage identifier.
  *
  * @par KeySet Modifications
  *
@@ -1709,26 +1704,26 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 0: check preconditions
 	if (parentKey == NULL)
 	{
-		ELEKTRA_LOG ("parentKey == NULL");
+		ELEKTRA_LOG_WARNING ("parentKey == NULL");
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
+	if (parentKey->hasReadOnlyMeta)
 	{
-		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_META");
+		ELEKTRA_LOG_WARNING ("parentKey KEY_FLAG_RO_META");
 		return -1;
 	}
 
 	clearErrorAndWarnings (parentKey);
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	if (parentKey->hasReadOnlyName)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	if (parentKey->hasReadOnlyValue)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");
@@ -1781,7 +1776,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		errno = errnosave;
 		return -1;
 	}
-	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+
+	parentKey->hasReadOnlyName = false;
+	parentKey->hasReadOnlyValue = false;
 
 	// Step 4: run resolver phase
 	if (!resolveBackendsForGet (backends, parentKey))
@@ -1880,26 +1877,32 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyCopy (parentKey, initialParent, KEY_CP_NAME);
 	keySetNamespace (parentKey, KEY_NS_CASCADING);
 
-	set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = true;
+	parentKey->hasReadOnlyValue = true;
 	if (goptsActive && !handle->hooks.gopts.get (handle->hooks.gopts.plugin, dataKs, parentKey))
 	{
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 		ksDel (dataKs);
 		goto error;
 	}
-	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = false;
+	parentKey->hasReadOnlyValue = false;
 
 	keySetNamespace (parentKey, keyGetNamespace (initialParent));
 
 	// Step 14: run spec plugin
-	set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = true;
+	parentKey->hasReadOnlyValue = true;
 	if (handle->hooks.spec.plugin && handle->hooks.spec.copy (handle->hooks.spec.plugin, dataKs, parentKey, true) == -1)
 	{
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 		ksDel (dataKs);
 		goto error;
 	}
-	clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+	parentKey->hasReadOnlyName = false;
+	parentKey->hasReadOnlyValue = false;
 
 	// TODO (atmaxinger): should we have a default:/ backend?
 	Key * defaultCutpoint = keyNew ("default:/", KEY_END);
@@ -2006,12 +2009,12 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = true;
 
 		int ret = setFn (backendData->backend, backendData->keys, parentKey);
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		parentKey->hasReadOnlyName = false;
 
 		// check return code
 		switch (ret)
@@ -2118,7 +2121,8 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
 		ksAppendKey (backendData->backend->global,
 			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
 				     &backendData->plugins, KEY_END));
-		set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = true;
+		parentKey->hasReadOnlyValue = true;
 
 		int ret;
 		switch (function)
@@ -2135,7 +2139,8 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
 		}
 
 		// restore parentKey
-		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+		parentKey->hasReadOnlyName = false;
+		parentKey->hasReadOnlyValue = false;
 
 		// check return code
 		switch (ret)
@@ -2192,32 +2197,33 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  * Set Keys to the Key database in an atomic and universal way.
  *
  * @pre kdbGet() must be called before kdbSet():
- *    - initially (after kdbOpen())
- *    - after conflict errors in kdbSet().
- * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
- *     with ksNew().
- * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
- *     keyNew(). It must not have read-only name, value or metadata.
- *     The @p parentKey also must not be in the `meta:/` namespace.
+ *   	 - initially (after kdbOpen())
+ *   	 - after conflict errors in kdbSet().
+ * @pre The KeySet @p returned must be a valid KeySet, i.e., constructed with ksNew().
+ * @pre The KeySet @p returend must only contain only keys in the `spec:/`,
+ * 	`dir:/`, `user:/`, `system:/`, `default:/` or `proc:/` namespaces.
+ * @pre The Key @p parentKey must be a valid Key, e.g. constructed with keyNew().
+ * @pre The Key @p parentKey must not have read-only name, value or metadata.
+ * @pre The Key @p parentKey must use the `spec:/`, `dir:/`, `user:/`, `system:/`,
+ * 	`default:/`, `proc:/` or cascading namespace.
  *
  * If you pass `NULL` or a key with read-only metadata as @p parentKey,
  * kdbSet() will fail immediately without doing anything.
  * If you pass another invalid @p parentKey, or `NULL` as @p ks or @p handle,
  * kdbSet() will set an error on @p parentKey and then return immediately.
  *
- * **Attention**: If you pass a non-NULL @p parentKey with writable metadata, kdbSet() will **always** remove
- *                any existing errors and warnings from @p parentKey.
+ * @note If you pass a non-NULL @p parentKey with writable metadata, kdbSet() will **always** remove
+ *       any existing errors and warnings from @p parentKey.
  *
  * @par Persistable Namespaces
  *
  * Not all namespace can be persisted.
- * `default:/` and `proc:/` keys are ignored by kdbSet().
- * `spec:/`, `dir:/`, `user:/` and `system:/` are persistable.
- * If @p ks contains a key with any other namespace, an error will be returned.
  *
- * If @p parentKey is in any other namesapce, an eror will be returned.
+ * - `spec:/`, `dir:/`, `user:/` and `system:/` will be persisted by kdbSet().
+ * - `default:/` and `proc:/` keys are ignored by kdbSet().
+ * - If @p ks contains a key with any other namespace, an error will be returned.
  *
- * **Note**: In general it is recommended to use a @p parentKey in the cascading namespace.
+ * In general it is recommended to use a @p parentKey in the cascading namespace to cover all namespaces at once.
  *
  * @par Parent Key
  *
@@ -2225,8 +2231,8 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, ElektraKdbPhase pha
  * Everything that is at or below @p parentKey wil be persisted together with any key
  * that shares a backend with such a key. Backends are always stored as an atomic unit.
  *
- * **Note**: If @p parentKey is in the cascading namespace, keys of all persistable
- *           namspaces (see above) will be stored.
+ * @note If @p parentKey is in the cascading namespace, keys of all persistable
+ *       namspaces (see above) will be stored. This is generally the recommended approach.
  *
  * @par KeySet modifications
  *
@@ -2293,26 +2299,26 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 0: check preconditions
 	if (parentKey == NULL)
 	{
-		ELEKTRA_LOG ("parentKey == NULL");
+		ELEKTRA_LOG_WARNING ("parentKey == NULL");
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
+	if (parentKey->hasReadOnlyMeta)
 	{
-		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_META");
+		ELEKTRA_LOG_WARNING ("parentKey KEY_FLAG_RO_META");
 		return -1;
 	}
 
 	clearErrorAndWarnings (parentKey);
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	if (parentKey->hasReadOnlyName)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	if (parentKey->hasReadOnlyValue)
 	{
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");

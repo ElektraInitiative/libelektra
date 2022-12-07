@@ -25,8 +25,10 @@ else
 	YINC="-I /user/include/yajl -I $BDIR/src/plugins/yajl"
 fi
 
-cd $EDIR/src/plugins/yajl
+cd "$EDIR"/src/plugins/yajl
+# shellcheck disable=SC2086
 cbmc --function elektraYajlSet $ARG $YINC $EINC yajl_gen.c
 
-cd $EDIR/src/libs/elektra
+cd "$EDIR"/src/libs/elektra
+# shellcheck disable=SC2086
 cbmc -D HAVE_KDBCONFIG_H --function kdbSet $ARG $EINC kdb.c

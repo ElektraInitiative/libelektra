@@ -4,7 +4,7 @@
 [![Jenkins Build Status](https://img.shields.io/jenkins/t/https/build.libelektra.org/job/libelektra/job/master.svg)](https://build.libelektra.org/job/libelektra/job/master/lastBuild)
 [![macOS Build Status](https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml/badge.svg)](https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml)
 [![Cirrus Build Status](https://api.cirrus-ci.com/github/ElektraInitiative/libelektra.svg)](https://cirrus-ci.com/github/ElektraInitiative/libelektra)
-[![Coverage Status](https://img.shields.io/coveralls/github/ElektraInitiative/libelektra.svg)](https://coveralls.io/github/ElektraInitiative/libelektra)
+[![Coverage Status](https://coveralls.io/repos/github/ElektraInitiative/libelektra/badge.svg?branch=master)](https://coveralls.io/github/ElektraInitiative/libelektra?branch=master)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/ElektraInitiative/libelektra.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ElektraInitiative/libelektra/alerts)
 
 _Elektra serves as a universal and secure framework to access configuration
@@ -104,8 +104,8 @@ In the GitHub repository the full documentation is available, including:
 
 You can read the documentation for the kdb tool, either
 
-- [on the Website](https://www.libelektra.org/manpages/kdb)
-- [in the API docu](https://doc.libelektra.org/api/master/html/doc_help_kdb_md.html)
+- [on the Website](https://www.libelektra.org/man-pages/kdb)
+- [in the API documentation](https://doc.libelektra.org/api/master/html/doc_help_kdb_md.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`
 - [on GitHub](https://master.libelektra.org/doc/help/kdb.md)

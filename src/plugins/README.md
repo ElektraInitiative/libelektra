@@ -254,7 +254,7 @@ binding during run-time:
 - [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
 - [process](process/) proxy plugin that uses separate executables as plugin implementations
-- [backend](backend/) is the default plugin implementing backend functionality
+- [backend](backend/) is the default plugin implementing backend functionality for configuration files
 
 ### Plugins for Development
 

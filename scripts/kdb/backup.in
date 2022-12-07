@@ -20,9 +20,9 @@ TMPDIR="/var/tmp/elektra_backup/${TS}"
 mkdir -p "$TMPDIR"
 touch "${TMPDIR}/info"
 
-cp -a "$KDBSYSTEM" "${TMPDIR}/system_$(basename $KDBSYSTEM)" 2> /dev/null && echo "${KDBSYSTEM}=system_$(basename $KDBSYSTEM)" >> "${TMPDIR}/info"
-cp -a "$KDBUSER" "${TMPDIR}/user_$(basename $KDBUSER)" 2> /dev/null && echo "${KDBUSER}=user_$(basename $KDBUSER)" >> "${TMPDIR}/info"
-cp -a "$KDBSPEC" "${TMPDIR}/spec_$(basename $KDBSPEC)" 2> /dev/null && echo "${KDBSPEC}=spec_$(basename $KDBSPEC)" >> "${TMPDIR}/info"
+cp -a "$KDBSYSTEM" "${TMPDIR}/system_$(basename "$KDBSYSTEM")" 2> /dev/null && echo "${KDBSYSTEM}=system_$(basename "$KDBSYSTEM")" >> "${TMPDIR}/info"
+cp -a "$KDBUSER" "${TMPDIR}/user_$(basename "$KDBUSER")" 2> /dev/null && echo "${KDBUSER}=user_$(basename "$KDBUSER")" >> "${TMPDIR}/info"
+cp -a "$KDBSPEC" "${TMPDIR}/spec_$(basename "$KDBSPEC")" 2> /dev/null && echo "${KDBSPEC}=spec_$(basename "$KDBSPEC")" >> "${TMPDIR}/info"
 cp -a "$KDBINIT" "${TMPDIR}/@KDB_DB_INIT@" 2> /dev/null && echo "${KDBINIT}=@KDB_DB_INIT@" >> "${TMPDIR}/info"
 
 echo "kdb restore $TS"

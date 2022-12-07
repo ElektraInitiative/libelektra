@@ -152,11 +152,11 @@ check_version() {
 }
 
 check_remaining_files() {
-	USER_REMAINING="$(find "$USER_FOLDER" -maxdepth 1 -name $1'*' -print -quit)"
+	USER_REMAINING="$(find "$USER_FOLDER" -maxdepth 1 -name "$1"'*' -print -quit)"
 	test -z "$USER_REMAINING"
 	exit_if_fail "files $USER_REMAINING in $USER_FOLDER would be removed during tests, so test is aborted"
 
-	SYSTEM_REMAINING="$(find "$SYSTEM_FOLDER" -maxdepth 1 -name $1'*' -print -quit)"
+	SYSTEM_REMAINING="$(find "$SYSTEM_FOLDER" -maxdepth 1 -name "$1"'*' -print -quit)"
 	test -z "$SYSTEM_REMAINING"
 	exit_if_fail "files $SYSTEM_REMAINING in $SYSTEM_FOLDER would be removed during tests, so test is aborted"
 }
@@ -171,7 +171,7 @@ check_set_rm() {
 	"$KDB" rm "$1" 1> /dev/null
 	succeed_if "could not rm $1 (having value $2)"
 
-	[ "x$("$KDB" sget $1 defvalue 2> /dev/null)" = "xdefvalue" ]
+	[ "x$("$KDB" sget "$1" defvalue 2> /dev/null)" = "xdefvalue" ]
 	succeed_if "Value still there after remove"
 }
 
@@ -185,7 +185,7 @@ check_set_mv_rm() {
 	"$KDB" mv "$1" "$2" 1> /dev/null
 	succeed_if "could not mv $1 to $2"
 
-	[ "x$("$KDB" sget $1 defvalue 2> /dev/null)" = "xdefvalue" ]
+	[ "x$("$KDB" sget "$1" defvalue 2> /dev/null)" = "xdefvalue" ]
 	succeed_if "Value still there after move"
 
 	[ "x$("$KDB" get "$2" 2> /dev/null)" = "x$3" ]
@@ -194,7 +194,7 @@ check_set_mv_rm() {
 	"$KDB" rm "$2" 1> /dev/null
 	succeed_if "could not rm $2 (having value $3)"
 
-	[ "x$("$KDB" sget $2 defvalue 2> /dev/null)" = "xdefvalue" ]
+	[ "x$("$KDB" sget "$2" defvalue 2> /dev/null)" = "xdefvalue" ]
 	succeed_if "Value still there after remove"
 }
 
@@ -203,7 +203,7 @@ check_set_mv_rm() {
 #
 
 is_not_rw_storage() {
-	echo $("$KDB" plugin-info $PLUGIN provides 2> /dev/null) | fgrep -qw "storage"
+	echo $("$KDB" plugin-info "$PLUGIN" provides 2> /dev/null) | fgrep -qw "storage"
 	if [ $? != 0 ]; then
 		return 0
 	fi

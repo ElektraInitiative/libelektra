@@ -153,21 +153,21 @@ void test_internal_change_whitebox (void)
 void test_ks_flag (void)
 {
 	KeySet * ks = ksNew (10, KS_END);
-	succeed_if (ks->flags & KS_FLAG_NAME_CHANGE, "flag not set at fresh ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at fresh ks");
 
 	KeySet * copy = ksDup (ks);
 	exit_if_fail (copy, "copy");
-	succeed_if (copy->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at copy ks");
 	ksDel (copy);
 
 	copy = ksDeepDup (ks);
 	exit_if_fail (copy, "copy");
-	succeed_if (copy->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at copy ks");
 	ksDel (copy);
 
 	copy = ksNew (0, KS_END);
 	succeed_if (ksCopy (copy, ks) == 1, "copy");
-	succeed_if (copy->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	succeed_if (ks->data->isOpmphmInvalid, "flag not set at copy ks");
 	ksDel (copy);
 
 	ksDel (ks);
@@ -190,7 +190,7 @@ void test_ks (void)
 	// predictor under limit
 	found = ksLookupByName (ks, "/test0", KDB_O_NONE);
 	succeed_if (found, "key found");
-	exit_if_fail (!ks->opmphmPredictor, "predictor here");
+	exit_if_fail (!ks->data->opmphmPredictor, "predictor here");
 
 	// append to be over opmphmPredictorActionLimit
 	snprintf (name, 11, "/test%zu", opmphmPredictorActionLimit);
@@ -199,47 +199,47 @@ void test_ks (void)
 	// predictor over limit
 	found = ksLookupByName (ks, "/test0", KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
-	exit_if_fail (ks->opmphmPredictor, "predictor not here");
+	exit_if_fail (ks->data->opmphmPredictor, "predictor not here");
 
 	// overrule with binary search
 	found = ksLookupByName (ks, "/test0", KDB_O_BINSEARCH | KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
 
-	succeed_if (ks->opmphmPredictor->lookupCount == 1, "predictor touched");
-	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
+	succeed_if (ks->data->opmphmPredictor->lookupCount == 1, "predictor touched");
+	succeed_if (ks->data->opmphmPredictor->history == 0, "predictor touched");
 
 	// overrule with OPMPHM
 	found = ksLookupByName (ks, "/test0", KDB_O_OPMPHM);
 	succeed_if (found, "key found");
 
-	succeed_if (ks->opmphmPredictor->lookupCount == 1, "predictor touched");
-	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
+	succeed_if (ks->data->opmphmPredictor->lookupCount == 1, "predictor touched");
+	succeed_if (ks->data->opmphmPredictor->history == 0, "predictor touched");
 
 	// use predictor again
 	found = ksLookupByName (ks, "/test0", KDB_O_NONE | KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
-	succeed_if (ks->opmphmPredictor->lookupCount == 2, "predictor not touched");
+	succeed_if (ks->data->opmphmPredictor->lookupCount == 2, "predictor not touched");
 
 	// copy
 	KeySet * copy = ksDup (ks);
 	exit_if_fail (copy, "copy");
-	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
-	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
-	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
+	succeed_if (copy->data->opmphmPredictor->lookupCount == ks->data->opmphmPredictor->lookupCount, "copy predictor lookupCount");
+	succeed_if (copy->data->opmphmPredictor->history == ks->data->opmphmPredictor->history, "copy predictor history");
+	succeed_if (copy->data->opmphmPredictor->ksSize == ks->data->opmphmPredictor->ksSize, "copy predictor ksSize");
 	ksDel (copy);
 
 	copy = ksDeepDup (ks);
 	exit_if_fail (copy, "copy");
-	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
-	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
-	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
+	succeed_if (copy->data->opmphmPredictor->lookupCount == ks->data->opmphmPredictor->lookupCount, "copy predictor lookupCount");
+	succeed_if (copy->data->opmphmPredictor->history == ks->data->opmphmPredictor->history, "copy predictor history");
+	succeed_if (copy->data->opmphmPredictor->ksSize == ks->data->opmphmPredictor->ksSize, "copy predictor ksSize");
 	ksDel (copy);
 
 	copy = ksNew (0, KS_END);
 	succeed_if (ksCopy (copy, ks) == 1, "copy");
-	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
-	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
-	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
+	succeed_if (copy->data->opmphmPredictor->lookupCount == ks->data->opmphmPredictor->lookupCount, "copy predictor lookupCount");
+	succeed_if (copy->data->opmphmPredictor->history == ks->data->opmphmPredictor->history, "copy predictor history");
+	succeed_if (copy->data->opmphmPredictor->ksSize == ks->data->opmphmPredictor->ksSize, "copy predictor ksSize");
 	ksDel (copy);
 
 	ksDel (ks);

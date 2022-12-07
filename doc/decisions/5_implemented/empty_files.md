@@ -2,8 +2,8 @@
 
 ## Problem
 
-An empty KeySet is passed to kdbSet(). What is the correct persistent
-representation?
+An empty KeySet is passed to kdbSet().
+What is the correct persistent representation?
 
 ## Constraints
 
@@ -18,8 +18,7 @@ representation?
 - keep directories, remove configuration file
 - plugins write minimal, syntactical-valid configuration file
 - plugins do whatever they think is correct
-- remember initial situation at mounting time and restore it when empty
-  key is passed (seems inefficient and complicated?)
+- remember initial situation at mounting time and restore it when empty key is passed (seems inefficient and complicated?)
 
 ## Decision
 

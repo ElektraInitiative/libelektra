@@ -16,7 +16,7 @@ find_package (
 	Qt5
 	OPTIONAL_COMPONENTS DBus
 	QUIET)
-find_package (Discount)
+find_package (DISCOUNT)
 
 if (NOT Qt5_FOUND)
 	remove_tool (qt-gui "qt5 (Components: ${QCOMPONENTS}) not found")
@@ -108,6 +108,6 @@ else ()
 		RENAME elektra-symbolic.svg
 		COMPONENT elektra-qt-gui)
 
-	generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md COMPONENT elektra-qt-gui)
+	generate_man_page (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md COMPONENT elektra-qt-gui)
 
 endif ()

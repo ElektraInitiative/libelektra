@@ -2,9 +2,9 @@
 
 ## Problem
 
-Too verbose error message
-Currently for every error, 9 lines are shown in which most of them are not relevant to end users/administrators. One goal
-is to reduce the verbosity of such messages and let users/administrators see only information they need.
+Too verbose error message.
+Currently for every error, 9 lines are shown in which most of them are not relevant to end users/administrators.
+One goal is to reduce the verbosity of such messages and let users/administrators see only information they need.
 
 ## Constraints
 
@@ -16,9 +16,7 @@ is to reduce the verbosity of such messages and let users/administrators see onl
 
 ## Considered Alternatives
 
-Possible variations on what message should be displayed,
-e.g., to keep the mountpoint information or on how wordings should be (with or without
-"Sorry, ...", coloring of certain parts of a message, etc.)
+Possible variations on what message should be displayed, e.g., to keep the mountpoint information or on how wordings should be (with or without "Sorry, ...", coloring of certain parts of a message, etc.)
 
 Examples would be to
 
@@ -57,8 +55,7 @@ Sorry, module `MODULE` issued [error|warning] `NR`:
 `ERROR_CODE_DESCRIPTION`: Validation of key "<key>" with string "<value>" failed.
 ```
 
-The `NR` will be the color red in case of an error or yellow in case of a warning
-while `MODULE` will be the color blue.
+The `NR` will be the color red in case of an error or yellow in case of a warning while `MODULE` will be the color blue.
 
 Optionally a third line indicating a solution can be added. Eg. for a permission related error there would be a third line:
 

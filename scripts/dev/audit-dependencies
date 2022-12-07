@@ -1,0 +1,12 @@
+#!/bin/sh
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+cd "$SOURCE/src/tools/webd" || exit 1
+npm audit --audit-level="low"
+
+cd "$SOURCE/src/tools/webui" || exit 1
+npm audit --audit-level="low"
+
+exit 0

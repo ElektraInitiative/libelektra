@@ -200,7 +200,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 				{
 					/* found a sub <key> */
 					/* prepare the context (parent) */
-					consumeKeyNode (ks, newKey->key, reader);
+					consumeKeyNode (ks, keyName (newKey), reader);
 				}
 			}
 
