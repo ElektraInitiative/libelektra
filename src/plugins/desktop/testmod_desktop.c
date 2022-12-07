@@ -53,6 +53,7 @@ void test_desktop (void)
 
 	printf ("clear all variables to test \"no desktop\"\n");
 	clearenv ();
+	ksDel (keys);
 	keys = ksNew (0, KS_END);
 	plugin->kdbGet (plugin, keys, parentKey);
 	Key const * emptyResult = ksLookupByName (keys, "user:/tests/desktop", 0);
