@@ -197,7 +197,7 @@ install (
 	      kdbmacros.h
 	      kdbmerge.h
 	      kdbgopts.h
-	DESTINATION include/${TARGET_INCLUDE_FOLDER}
+	DESTINATION include/elektra/${TARGET_INCLUDE_FOLDER}
 	COMPONENT libelektra-dev)
 
 add_custom_target (elektra_config_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/elektra/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
