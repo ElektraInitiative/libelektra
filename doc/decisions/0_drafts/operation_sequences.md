@@ -55,7 +55,7 @@ dbus-monitor --session type='signal',interface='org.libelektra'
 Finally, execute the following program:
 
 ```c
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <stdio.h>
 
 int main (void)

@@ -38,7 +38,7 @@ recompilation of applications and plugins using Elektra. The functions
 `keyNew()`, `ksNew()` and `kdbOpen()` allocate the data structures for the
 applications. The user only gets pointers to them. It is not possible
 for the user to allocate or access these data structures directly when
-only using the public header file `<kdb.h>`. The functions `keyDel()`,
+only using the public header file `<elektra/kdb.h>`. The functions `keyDel()`,
 `ksDel()` and `kdbClose()` free the resources after use. Using the C++
 binding deallocation is done automatically.
 

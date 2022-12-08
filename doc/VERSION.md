@@ -23,18 +23,18 @@ or plugin-specific version information exists.
 The version applies to following parts of Elektra:
 
 - the API for programs using Elektra. Its interface
-  is declared in [src/include/kdb.h](/src/include/kdb.h.in).
+  is declared in [src/include/elektra/kdb.h](/src/include/elektra/kdb.h.in).
   Both applications and plugins use this API.
 - the high-level API as declared in
-  [src/include/elektra.h](/src/include/elektra.h).
+  [src/include/elektra/elektra.h](/src/include/elektra/elektra.h).
 - the API to plugins as declared in
   [src/plugins/doc/doc.h](/src/plugins/doc/doc.h).
-- the API to [libease](/src/include/kdbease.h)
-- the API to [libmeta](/src/include/kdbmeta.h)
-- the API to [libmerge](/src/include/kdbmerge.h)
-- the API to [module loading](/src/include/kdbmodule.h)
-- the API to [libnotification](/src/include/kdbnotification.h)
-- the API to [libopts](/src/include/kdbopts.h)
+- the API to [libease](/src/include/elektra/kdbease.h)
+- the API to [libmeta](/src/include/elektra/kdbmeta.h)
+- the API to [libmerge](/src/include/elektra/kdbmerge.h)
+- the API to [module loading](/src/include/elektra/kdbmodule.h)
+- the API to [libnotification](/src/include/elektra/kdbnotification.h)
+- the API to [libopts](/src/include/elektra/kdbopts.h)
 - plugins that have `infos/status` of `compatible`.
 - the CLI tool `kdb` with its command-line
   arguments, KDB access and its return values.

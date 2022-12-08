@@ -44,7 +44,7 @@ Or using some compiled language like C
 with neither code generation nor error handling):
 
 ```c
-#include <elektra.h>
+#include <elektra/elektra.h>
 
 int main ()
 {
@@ -120,7 +120,7 @@ with code like ([low-level C code](https://doc.libelektra.org/api/latest/html/gr
 no error-handling and no cleanup):
 
 ```c
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <stdio.h>
 
 int main (void)
