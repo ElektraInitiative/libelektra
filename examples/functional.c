@@ -9,7 +9,7 @@
 #include <elektra/kdb.h>
 
 // for keySetComment
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 
 #include <stdlib.h>
 

@@ -7,7 +7,7 @@
  */
 
 #include <elektra/kdb.h>
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 #include <stdio.h>
 
 /*

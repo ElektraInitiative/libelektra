@@ -12,7 +12,7 @@
 #define ELEKTRA_PLUGIN_RENAME_H
 
 #include <kdberrors.h>
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 #include <elektra/kdbplugin.h>
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"

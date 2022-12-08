@@ -10,7 +10,7 @@
 #define ELEKTRA_PLUGIN_augeas_H
 
 #include <kdberrors.h>
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 #include <elektra/kdbplugin.h>
 
 #include <augeas.h>

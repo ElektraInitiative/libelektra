@@ -12,7 +12,7 @@
 #include <elektra/kdb.h>
 #include <kdbconfig.h>
 #include <kdberrors.h>
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 #include <kdblogger.h>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbplugin.h>

@@ -9,7 +9,7 @@
 #ifndef UNAME_H
 #define UNAME_H
 
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 #include <elektra/kdbplugin.h>
 
 int elektraUnameGet (Plugin * handle, KeySet * returned, Key * parentKey);

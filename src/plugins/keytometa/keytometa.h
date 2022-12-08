@@ -12,7 +12,7 @@
 #define ELEKTRA_PLUGIN_KEYTOMETA_H
 
 #include <kdberrors.h>
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 #include <elektra/kdbplugin.h>
 
 int elektraKeyToMetaGet (Plugin * handle, KeySet * ks, Key * parentKey);

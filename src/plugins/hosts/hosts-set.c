@@ -13,7 +13,7 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {

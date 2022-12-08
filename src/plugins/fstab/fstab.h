@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 #include <kdberrors.h>
-#include <kdbextension.h>
+#include <elektra/kdbextension.h>
 #include <elektra/kdbplugin.h>
 
 
