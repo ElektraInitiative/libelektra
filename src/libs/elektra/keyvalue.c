@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #endif
 
-#include "elektra/kdbprivate.h"
+#include <elektra/kdbprivate.h>
 
 
 /**

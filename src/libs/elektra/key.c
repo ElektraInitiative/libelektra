@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #endif
 
-#include "elektra/kdb.h"
-#include "elektra/kdbprivate.h"
+#include <elektra/kdb.h>
+#include <elektra/kdbprivate.h>
 #include <kdbassert.h>
 
 /**

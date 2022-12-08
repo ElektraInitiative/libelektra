@@ -25,7 +25,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "elektra/kdbmacros.h"
+#include <elektra/kdbmacros.h>
 #include <stdexcept>
 
 class UserException : public std::exception

@@ -7,8 +7,8 @@
  */
 
 #include "cmerge.hpp"
-#include "elektra/kdbmacros.h"
-#include "elektra/kdbmerge.h"
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbmerge.h>
 #include "keyset.hpp"
 #include <cmdline.hpp>
 #include <iostream>

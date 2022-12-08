@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "elektra/kdbease.h"
+#include <elektra/kdbease.h>
 
-#include "elektra/kdbhelper.h"
+#include <elektra/kdbhelper.h>
 
 #include <string.h>
 

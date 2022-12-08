@@ -14,7 +14,7 @@
 %{
   extern "C" {
     #include "kdbconfig.h"
-    #include "elektra/kdb.h"
+    #include <elektra/kdb.h>
   }
 
   #include "keyexcept.hpp"
@@ -48,7 +48,7 @@
 %constant const short VERSION_PATCH = KDB_VERSION_PATCH;
 // we only care about the enums. ignore the c functions
 %ignore ckdb;
-%include "elektra/kdb.h"
+%include <elektra/kdb.h>
 
 
 /* handle exceptions */

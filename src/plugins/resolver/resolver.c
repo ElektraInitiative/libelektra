@@ -13,7 +13,7 @@
 #include <elektra/kdbhelper.h>	// elektraStrDup
 #include <elektra/kdbprivate.h> // KDB_CACHE_PREFIX
 
-#include "elektra/kdbos.h"
+#include <elektra/kdbos.h>
 
 #include <stdlib.h>
 

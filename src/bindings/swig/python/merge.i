@@ -9,7 +9,7 @@
 %import "kdb.i"
 
 %{
-#include "elektra/kdbmerge.h"
+#include <elektra/kdbmerge.h>
 %}
 
 
