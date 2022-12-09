@@ -13,6 +13,7 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 - Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet.
   Your host OS should better be Linux, because we are going to use your current Linux user ID for building the image.
+  Alternatively, you can use the Podman container engine, see [Using Podman instead of Docker](doc/tutorials/using_podman_instead_of_docker.md).
 - Basic knowledge of Docker (not mandatory)
 
 ## What to Begin With?
