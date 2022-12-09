@@ -526,6 +526,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Make namespaces tutorial verifiable _(@0x6178656c)_
+- Move Podman-related information to a dedicated page. _(@0x6178656c)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
