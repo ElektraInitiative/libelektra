@@ -347,7 +347,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update AUR Link from `elektra` to `libelektra` package _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
-- Update example ansible playbook in VISION.md _(@Bujuhu)_
+- Update example Ansible playbook in VISION.md _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -355,7 +355,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Denoted pacakage names & global variable names in [INSTALL.md](../INSTALL.md) as `Code` _(@janldeboer)_
+- Denoted package names & global variable names in [INSTALL.md](../INSTALL.md) as `Code` _(@janldeboer)_
 - <<TODO>>
 - Improve readability of doc/tutorials/highlevel.md _(@deoknats861)_
 - Improve reference to Podman documentation _(@0x6178656c)_
@@ -380,9 +380,51 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Use cases for KDB _(@kodebach)_
-- Use cases for `libelektra-core` _(@kodebach)_
 - Fix broken links in use cases for KDB after files were renamed. _(Florian Lindner @flo91)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Use Cases
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Improve Use Cases [Template](/doc/usecases/template.md) _(@kodebach and Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Use cases for [KDB](/doc/usecases/kdb) _(@kodebach)_
+- Use cases for `libelektra-core` _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
