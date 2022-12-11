@@ -14,7 +14,7 @@ flowchart LR
   Decided -- merge --> Implemented
 ```
 
-Additionally, decision that are not yet "Decided" can be become "Drafts", "Rejected" or "Postponed" at any point, e.g., if the decision author stops working on the decision.
+Additionally, decision that are not yet "Decided" may be become "Drafts", "Rejected" or "Postponed" at any point, e.g., if the decision author stops working on the decision.
 
 The label `merge` on the edges means that a decision PR must be merged before it can target the next step.
 
