@@ -95,7 +95,7 @@ For each solution a proposal, rationale and optionally implications should be gi
 - "Decision", "Rationale" and "Implications" are now filled out and fixed according to the reviews
 - decisions of this step usually already have an implementation PR
 
-Decisions that need an update, e.g. because assumptions changed, usually directly start with the step "Decided".
+Decisions that need an update, e.g. because assumptions changed, sometimes directly start with the step "Decided".
 
 > In this step, decision PRs only modify a _single_ decision.
 > Only exceptions like backlinks from other decisions are allowed.
