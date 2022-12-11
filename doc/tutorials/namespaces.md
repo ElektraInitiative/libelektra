@@ -19,7 +19,7 @@ kdb set user:/tests/b/c 'Value 2'
 #> Create a new key user:/tests/b/c with string "Value 2"
 ```
 
-Here you see the internal structure of the database after adding the keys **user:/tests/a** and **user:/tests/b/c**.
+The database has an hierarchical structure.
 For instance the key **user:/tests/b/c** has the path **user:/** -> **user:/tests** -> **user:/tests/b** -> **user:/tests/b/c**.
 
 Note how the name of the key determines the path to its value.
