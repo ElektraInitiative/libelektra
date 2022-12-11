@@ -23,6 +23,7 @@ Substantial decisions, however, must be made in a transparent and participative 
 ### Main Purpose
 
 The main purpose of decisions is
+
 - to have clear descriptions of technical problems and solutions.
 - to get a common understanding of the problems and the impacts of possible solutions.
 
