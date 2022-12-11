@@ -199,7 +199,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
+- Improved description of [compatibility guidelines](doc/todo/API.md).
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

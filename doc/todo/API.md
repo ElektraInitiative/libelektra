@@ -1,0 +1,13 @@
+On potential changes (including extensions) of the API/ABI please check following list:
+
+- [ ] [use case](/doc/usecases) for API exists
+- [ ] [decision](/doc/decision) for API is in step `implemented`
+- [ ] API design is [reviewed](/doc/api_review/)
+- [ ] full Doxygen docu (all parameters, full design-by-contract, brief, long, examples, etc.)
+- [ ] full Testcoverage
+- [ ] still ABI/API forward-compatible
+      (It is okay to break backward-compatible to add new symbols)
+- [ ] all Bindings written & tested
+      (only if bindings exist for the module)
+- [ ] change is mentioned in the release notes, section `Compatibility`
+- [ ] symbol versioning done correctly (./doc/dev/symbol-versioning.md)
