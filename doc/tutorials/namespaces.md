@@ -73,7 +73,7 @@ Another question you may ask yourself now is, what happens if we look up a key w
 
 ```sh
 kdb get -v /tests/b/c
-# STDOUT-REGEX got \d keys⏎searching spec:/tests/b/c, found: <nothing>, options: KDB_O_CALLBACK⏎    searching proc:/tests/b/c, found: <nothing>⏎    searching dir:/tests/b/c, found: <nothing>⏎    searching user:/tests/b/c, found: user:/tests/b/c⏎The resulting keyname is user:/tests/b/c⏎The resulting value size is 8⏎Value 2
+# STDOUT-REGEX: got [[:digit:]]+ keys⏎searching spec:/tests/b/c, found: <nothing>, options: KDB_O_CALLBACK⏎    searching proc:/tests/b/c, found: <nothing>⏎    searching dir:/tests/b/c, found: <nothing>⏎    searching user:/tests/b/c, found: user:/tests/b/c⏎The resulting keyname is user:/tests/b/c⏎The resulting value size is 8⏎Value 2
 ```
 
 Here you see how Elektra searches all namespaces for matching keys in this order:
@@ -114,10 +114,17 @@ kdb set "dir:/sw/elektra/kdb/#0/%/verbose" 1
 
 If we now search for some key, `kdb` will behave just as if we have called it with the `-v` option.
 
-```sh
+```shell
 kdb get /some/key
-# RET: 11
-# STDOUT-REGEX got \d keys⏎searching spec:/some/key, found: <nothing>, options: KDB_O_CALLBACK⏎    searching proc:/some/key, found: <nothing>⏎    searching dir:/some/key, found: <nothing>⏎    searching user:/some/key, found: <nothing>⏎    searching system:/some/key, found: <nothing>⏎    searching default:/some/key, found: <nothing>⏎    searching default of spec/some/key, found: <nothing>, options: KDB_O_NOCASCADING
+# RET: 10
+#> got 4 keys
+#> searching spec:/some/key, found: <nothing>, options: KDB_O_CALLBACK
+#>     searching proc:/some/key, found: <nothing>
+#>     searching dir:/some/key, found: <nothing>
+#>     searching user:/some/key, found: <nothing>
+#>     searching system:/some/key, found: <nothing>
+#>     searching default:/some/key, found: <nothing>
+#>     searching default of spec/some/key, found: <nothing>, options: KDB_O_NOCASCADING
 # STDERR: Did not find key '/some/key'
 ```
 
