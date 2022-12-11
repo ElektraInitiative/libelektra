@@ -4,25 +4,26 @@
 
 [Please open an issue](https://git.libelektra.org/issues).
 You can simply remove all template text and it is enough if the issue only contains your question.
-If you want you can [label it as question](https://git.libelektra.org/issues/labels/question), but we
-can also categorize it for you.
+If you are unsure, [label it as question](https://git.libelektra.org/issues/labels/question).
 
-Please do not waste too much time to find something out yourself. Information where people get
-stuck is valuable to improve Elektra and its documentation. Even if you find out directly after
-you posted the question: the pointer can be helpful for other people having the same problem.
+Please do not waste too much time to find something out yourself.
+Information where people get stuck is valuable to improve Elektra and its documentation.
+Even if you find out directly after you posted the question:
+the pointer can be helpful for other people having the same problem.
 
 ## Isn't it Easier to Implement a new Parser Than to use Elektra?
 
-No, it is not. And even if it were, the story does not end with implementing
-a configuration file parser but, at least, you also need:
+No, it is not.
+And the story does not end with implementing a configuration file parser.
+You also need:
 
 - operating-system-specific code to locate configuration files
 - tools to change the configuration files
 - validation to make such changes user-friendly
 
 Every successful project has implemented many features Elektra has.
-But Elektra has the distinctive advantage that you can pick the features
-as you need them. Not used plugins do not cause any overhead or dependency.
+But Elektra has the distinctive advantage that you can pick the features as you need them.
+Not used plugins do not cause any overhead or dependency.
 If you need new plugins or bindings, there is a community which can help you.
 Furthermore, Elektra has a defined API and you can swap implementations as needed.
 
@@ -40,20 +41,29 @@ to see how useful it can be.
 
 Longer answer:
 
-Elektra abstracts [configuration settings](elektra-glossary.md), something
-desperately needed within configuration management. Instead of rewriting
-complete configuration files, which might create security problems,
-Elektra operates precisely on the configuration setting you want to
-change: leaving others as chosen by the application or distribution.
-Furthermore, Elektra also allows us to _specify_ configuration settings,
-which again brings benefits for configuration management tools.
+Elektra abstracts [configuration settings](elektra-glossary.md), something desperately needed within configuration management.
+Instead of rewriting complete configuration files, which might create security problems due to ignoring distributions configuration files;
+Elektra operates precisely on the configuration setting you want to change:
+leaving others as chosen by the application or distribution.
+Furthermore, Elektra also allows us to _specify_ configuration settings, which again brings benefits for configuration management tools.
 
 Elektra is a radical step needed towards better configuration management:
-Let us fix how applications access configuration settings, so that we
-can properly access them, for example, from configuration management tools.
+Let us fix how applications access configuration settings, so that we can properly access them, for example, from configuration management tools.
 
-As an intermediate step, we can [mount](elektra-mounting.md)
-existing configuration files and operate on them.
+See [our vision](/doc/VISION.md) for an example.
+
+## If Elektra Already Exists so Long, why isn't it more Widespread?
+
+There are two main reasons:
+
+1. Research:
+   First we needed to [explore the design space](/doc/dev/history.md).
+   At that time, Elektra provided little benefit, except for niche applications.
+   Then it was challenging to actually implement the [vision](/doc/VISION.md).
+2. Bootstrapping:
+   Developers would like to have everything smooth and shiny, like packages available as are part of their distributions.
+   But Elektra only gets packaged if there are already application using Elektra.
+   We solved this problem in [many intermediate steps](/doc/dev/history.md), e.g., allow [mounting](elektra-mounting.md) legacy configuration files.
 
 ## Do We Retain the Old Way of Configuring Things, i.e. Manually Editing an INI File in /etc?
 
