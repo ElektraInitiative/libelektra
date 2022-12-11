@@ -60,7 +60,7 @@ Decisions will have much smoother further steps if this step is done carefully w
 It is especially important that one shouldn't have a fixed mind-set about a preferred solution from the beginning.
 
 > Everyone must agree that the problem exists and is worth solving so that a decision PR in "Problem Clear" step can be merged.
-> It must be so clear that everyone would be able to describe an experiment or test case that shows if a solution fixes the problem.
+> A problem is clear if everyone would be able to describe an experiment or test case that shows if a solution fixes the problem.
 
 ## Alternatives Clear
 
@@ -76,6 +76,8 @@ Here you must ensure:
 
 Here the decision should not only have one decision but should describe several solutions.
 For each solution a proposal, rationale and optionally implications should be given.
+
+> The alternatives are clear if all reviewers understand the given alternatives and no reviewers can come up with new alternatives.
 
 ## In Review
 
