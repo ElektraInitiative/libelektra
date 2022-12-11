@@ -93,7 +93,6 @@ static void testwriteInvalidMetaMustFail (const char * file)
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
 		    "kdbSet did not error on invalid meta key insertion");
-	ksDel (conf);
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
