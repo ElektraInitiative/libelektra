@@ -18,12 +18,13 @@ Substantial decisions, however, must be made in a transparent and participative 
 - `Decision author`:
   Is the person who creates the decision PR.
 - `Decision reviewers`:
-  Are the persons who review the decision PR.
+  Are the people who review the decision PR.
 
 ### Main Purpose
 
-- Of decisions is to have clear descriptions of technical problems and solutions.
-- Of the decision process is to get a common understanding of the problems and the impacts of possible solutions.
+The main purpose of decisions is
+- to have clear descriptions of technical problems and solutions.
+- to get a common understanding of the problems and the impacts of possible solutions.
 
 ## Constraints
 
@@ -61,7 +62,7 @@ Substantial decisions, however, must be made in a transparent and participative 
   This ensures that there aren't any unintentional shared assumptions between discussion participants.
 - Reviews focus on the "Problem" section first, and only when that is agreed upon focus in the other parts.
 - The decision author invites several decision reviewers.
-  As for help in the decision if you do not know whom to invite.
+  Ask for help in the decision PR if you do not know whom to invite.
 
 ## Assumptions
 

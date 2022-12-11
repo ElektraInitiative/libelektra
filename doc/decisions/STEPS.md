@@ -4,14 +4,13 @@ This document describes all steps a decision can run through.
 
 ```mermaid
 flowchart LR
-  s((Start)) --> Drafts --> Problem_Clear --> Alternatives_Clear --> In Review -- merge --> Decided
-    -- merge --> Partially_Implemented --> Implemented
-
+  s((Start)) --> Drafts --> prob(Problem Clear) --> alt(Alternatives Clear) --> review(In Review) -- merge --> Decided
+    -- merge --> part(Partially Implemented) --> Implemented
   %% Shortcuts:
   s --> Decided
   Drafts -- merge --> Decided
-  Problem_Clear -- merge --> Decided
-  Alternatives_Clear -- merge --> Decided
+  prob -- merge --> Decided
+  alt -- merge --> Decided
   Decided -- merge --> Implemented
 ```
 
@@ -126,7 +125,7 @@ The "Implication" must clearly say how much of the decision is already implement
 
 This step is:
 
-- for decisions that are useful contributions but currently there is simply no urgency or immanent need for the proposal.
+- for decisions that would be useful contributions but there is currently nobody with the time to focus on the problem.
 - a graveyard for neglected decisions, e.g., where the decision authors focus on something more important instead.
 
 > The purpose of this step is to have a clean "Drafts" folder.
@@ -134,6 +133,7 @@ This step is:
 ## Rejected
 
 Alternatively, decisions might be rejected (e.g. status quo wins).
-This step is for decisions that are agreed to not fit well to Elektra and never should be accepted.
+This step is for decisions for which a consensus exists that the decision should not be taken right now.
+If circumstances change, the decision may be revisited.
 
 > The purpose of this final step is to have a clean "Drafts" folder.
