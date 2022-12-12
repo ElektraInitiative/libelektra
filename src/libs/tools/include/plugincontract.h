@@ -9,7 +9,7 @@
 {"documented",    1000}, //< all features are described in documentation (README.md)
 {"configurable",     0}, //< plugin configuration available to modify behavior
 {"hook",           0}, //< suitable as hook plugin
-{"private",       -250}, //< uses private header files from Elektra
+{"internal",       -250}, //< uses internal header files from Elektra
 {"memleak",       -250}, //< memleak in plugin or one of the libraries the plugin uses
 {"experimental", -4000}, //< plugin is in early stage, disabled in CMake by default
 {"difficult",    -8000}, //< the plugin is (unnecessarily) difficult to use
