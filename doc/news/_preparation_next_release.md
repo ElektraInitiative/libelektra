@@ -184,6 +184,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Fix an Issue with validationg RFC 822 date-times _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - Improve Code Coverage _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+
 ### csvstorage
 
 - Fix a bug where writing unkown meta keys will fail silently _(Juri Schreib @Bujuhu)_
