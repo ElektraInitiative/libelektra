@@ -180,6 +180,12 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
+### date
+
+- Fix an Issue with validationg RFC 822 date-times _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Improve Code Coverage _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- <<TODO>>
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
