@@ -122,7 +122,6 @@ The differences are 21 ms for the old implementation and 12 ms for the copy-on-w
 
 ## Plugins
 
-The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### Contract
@@ -141,7 +140,7 @@ It is used for automatic selection of the best plugin during mounting.
   - src/libs/tools/include/plugincontract.h
   - src/libs/tools/include/pluginfeatures.h
 
-Done in collaboration with _(Markus Raab, Klemens Böswirth, René Schwaiger, <add name>)_.
+Done in collaboration with _(Markus Raab, Klemens Böswirth, René Schwaiger, Jan de Boer)_.
 
 ### yajl
 
