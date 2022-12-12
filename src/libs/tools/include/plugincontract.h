@@ -8,7 +8,7 @@
 {"tested/fuzz",   1000}, //< tested using a fuzzer tool like AFL
 {"documented",    1000}, //< all features are described in documentation (README.md)
 {"configurable",     0}, //< plugin configuration available to modify behavior
-{"global",           0}, //< suitable as global plugin
+{"hook",           0}, //< suitable as hook plugin
 {"private",       -250}, //< uses private header files from Elektra
 {"memleak",       -250}, //< memleak in plugin or one of the libraries the plugin uses
 {"experimental", -4000}, //< plugin is in early stage, disabled in CMake by default
