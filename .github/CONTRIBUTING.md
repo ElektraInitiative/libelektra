@@ -1,7 +1,7 @@
 # Contributing
 
 We use [GitHub](https://github.com/ElektraInitiative/libelektra/) to maintain this initiative.
-First of all you will need a GitHub account and [Git](https://www.git-scm.com/).
+First you will need a GitHub account and [Git](https://www.git-scm.com/).
 If you are interested to use an IDE, there are IDEs which Elektra developers currently use, e.g.:
 
 - [CLion](https://www.jetbrains.com/clion/) with a [tutorial](/doc/tutorials/contributing-clion.md)
@@ -15,6 +15,8 @@ $ git config --global user.email "your_email@example.com"
 ```
 
 When you connect to a GitHub repository from Git, you have to set up the [authentication](https://help.github.com/en/articles/set-up-git#next-steps-authenticating-with-github-from-git) settings.
+
+Check out our guide on [Git](/doc/GIT.md) for more details
 
 ## Fork & Sync
 
@@ -30,7 +32,13 @@ $ git push origin master --force
 
 ## Issues
 
-Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to start with. You can also visit the [issue-tracker](https://github.com/ElektraInitiative/libelektra/issues) and filter the list by pre-defined labels like [good first issue](https://github.com/ElektraInitiative/libelektra/labels/good%20first%20issue).Do not hesitate to open a new issue if you want to ask a question, report or fix a bug or approach new topics.
+Check the [Ideas](/doc/IDEAS.md) page if you are searching for a good topic to start with. You can also visit the [issue-tracker](https://github.com/ElektraInitiative/libelektra/issues) and filter the list by pre-defined labels like [good first issue](https://github.com/ElektraInitiative/libelektra/labels/good%20first%20issue). Do not hesitate to open a new issue if you want to ask a question, report or fix a bug or approach new topics.
+
+## Ways to Contribute
+
+- If you want to contribute on existing [plugins](/src/plugins/README.md), or create new ones, like validators, check out the tutorial on [how to write plugins](/doc/tutorials/plugins.md). [You can also write plugins in java](/doc/tutorials/java-plugins.md).
+- Check out how you can contribute to make Elektra work in your favorite language: [Language Bindings](src/bindings/README.md), [Tutorial on Language Bindings](/doc/tutorials/language-bindings.md).
+- Improve the reliability of Elektra, by creating new, and improve existing [tests](/doc/TESTING.md). [Check out the Code Coverage Report](https://doc.libelektra.org/coverage/master/debian-bullseye-full/). [You can also create tests for tutorials](https://github.com/ElektraInitiative/libelektra/tree/master/tests/shell/shell_recorder/tutorial_wrapper)
 
 ## Creating a Pull-Request
 
@@ -47,7 +55,7 @@ If you want to publish your local changes to this project you have to create a n
 ## Code-Review
 
 After opening the pull-request, your code will be reviewed and if your pull-request passes the review and build server steps, your changes will be merged to master.
-Get rejected? Don't worry... there are many reasons why the build server could fail. Open your created pull-request in github and scroll to the bottom of the site, there should be a list of all checks - by clicking on the _Details_, you get more infomation about the checks. However, there are also cases where the websites are down, build server stucks or times-out etc., please get also an overview of the [build server](/doc/BUILDSERVER.md) to avoid frustration and long review times.
+Get rejected? Don't worry... there are many reasons why the build server could fail. Open your created pull-request in GitHub and scroll to the bottom of the site, there should be a list of all checks - by clicking on the _Details_, you get more information about the checks. However, there are also cases where the websites are down, build server gets stuck or times-out etc., please get also an overview of the [build server](/doc/BUILDSERVER.md) to avoid frustration and long review times.
 
 # General
 
@@ -55,7 +63,7 @@ We recommend that you read:
 
 - [The big picture what Elektra is](/doc/BIGPICTURE.md)
 - [The tutorials to get some practice](/doc/tutorials/)
-- [The step by step guide of how to contribute](/doc/tutorials/contributing-clion.md)
+- [The step-by-step guide of how to contribute](/doc/tutorials/contributing-clion.md)
 
 # Code
 
