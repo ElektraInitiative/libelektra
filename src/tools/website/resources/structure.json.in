@@ -303,13 +303,6 @@
                         "options": {
                             "path": "doc/VERSION.md"
                         }
-                    },
-                    {
-                        "name": "Tutorials",
-                        "type": "staticref",
-                        "options": {
-                            "path": "tutorials"
-                        }
                     }
                 ]
             },
