@@ -180,7 +180,7 @@ def main():
 		if not os.path.isfile (pluginReadmePath):
 			exitError ( "Plugin '" + pluginPath + "' has no README.md")
 
-		#~ get tags from pugin
+		#~ get tags from plugin
 		pluginReadmeFile = open (pluginReadmePath, 'r')
 		pluginTags = []
 		infoFound = False
