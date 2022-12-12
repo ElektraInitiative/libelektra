@@ -16,12 +16,19 @@
 
 static void test_basics (void)
 {
-	printf ("test basics\n");
 
 	Key * parentKey = keyNew ("user:/tests/xfconf", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xfconf");
 
+	if (plugin->kdbOpen (plugin, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		printf ("WARNING: cannot open the xfconf plugin for testing. Is dbus running?\n");
+		PLUGIN_CLOSE ();
+		return;
+	}
+
+	printf ("test basics\n");
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
