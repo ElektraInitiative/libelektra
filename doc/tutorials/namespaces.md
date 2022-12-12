@@ -6,25 +6,21 @@ The _key database_ of Elektra is _hierarchically structured_. This means that ke
 
 Let us add some keys to the database. To add a key we can use `kdb`, the _key database access tool_:
 
-```sh
+```shell
 kdb set <key> <value>
 ```
 
-Now add the key **/a** with the Value **Value 1** and the key **/b/c** with the Value **Value 2**:
+Now add the key **user:/tests/a** with the Value **Value 1** and the key **user:/tests/b/c** with the Value **Value 2**
 
 ```sh
-kdb set /a 'Value 1'
-#> Using name user:/a
-#> Create a new key user:/a with string "Value 1"
-kdb set /b/c 'Value 2'
-#> Using name user:/b/c
-#> Create a new key user:/b/c with string "Value 2"
+kdb set user:/tests/a 'Value 1'
+#> Create a new key user:/tests/a with string "Value 1"
+kdb set user:/tests/b/c 'Value 2'
+#> Create a new key user:/tests/b/c with string "Value 2"
 ```
 
-<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/tutorial_namespaces_hierarchy.svg" alt="Hierarchical structure of key database" />
-
-Here you see the internal structure of the database after adding the keys **/a** and **/b/c**.
-For instance the key **/b/c** has the path **/** -> **b** -> **c**.
+The database has an hierarchical structure.
+For instance the key **user:/tests/b/c** has the path **user:/** -> **user:/tests** -> **user:/tests/b** -> **user:/tests/b/c**.
 
 Note how the name of the key determines the path to its value.
 
@@ -39,11 +35,14 @@ You can use the file system analogy as a mnemonic to remember these commands (li
 - `kdb get <key>`
   gets the value of _key_
 
-For example `kdb get /b/c` should return `Value 2` now, if you set the values before.
+For example `kdb get user:/tests/b/c` should return `Value 2` now, if you set the values before.
 
 ## Namespaces
 
 Now we abandon the file system analogy and introduce the concept of _namespaces_.
+
+Above all of the keys have been prefixed with `user:/`.
+The user namespace is one of several in Elektra.
 
 Every key in Elektra belongs to one of these namespaces:
 
@@ -60,13 +59,10 @@ So I hear you asking, "if every key has to belong to a namespace, where are the 
 They are in the _user_ namespace, as you can verify with:
 
 ```sh
-kdb ls user:/ | grep -E '(/a|/b/c)'
-#> user:/a
-#> user:/b/c
+kdb ls user:/ | grep -E '(tests/a|tests/b/c)'
+#> user:/tests/a
+#> user:/tests/b/c
 ```
-
-When we don't provide a namespace Elektra assumes a default namespace, which should be **user** for non-root users.
-So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous to `kdb set user:/b/c 'Value 2'`.
 
 At this point the key database should have this structure:
 <img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/tutorial_namespaces_namespaces.svg" alt="Elektra’s namespaces" />
@@ -76,14 +72,8 @@ At this point the key database should have this structure:
 Another question you may ask yourself now is, what happens if we look up a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
 
 ```sh
-kdb get -v /b/c
-# STDOUT-REGEX: got \d+ keys
-#>  searching spec:/b/c, found: <nothing>, options: KDB_O_CALLBACK
-#>  searching proc:/b/c, found: <nothing>, options:
-#>  searching dir:/b/c, found: <nothing>, options:
-#>  searching user:/b/c, found: user:/b/c, options:
-#> The resulting key name is user:/b/c
-#> Value 2
+kdb get -v /tests/b/c
+# STDOUT-REGEX: got [[:digit:]]+ keys⏎searching spec:/tests/b/c, found: <nothing>, options: KDB_O_CALLBACK⏎    searching proc:/tests/b/c, found: <nothing>⏎    searching dir:/tests/b/c, found: <nothing>⏎    searching user:/tests/b/c, found: user:/tests/b/c⏎The resulting keyname is user:/tests/b/c⏎The resulting value size is 8⏎Value 2
 ```
 
 Here you see how Elektra searches all namespaces for matching keys in this order:
@@ -111,7 +101,7 @@ Our exemplary application will be the key database access tool `kdb` as this sho
 
 Say we want to set `kdb` to be more verbose when it is used in the current directory. In this case we have to set _verbose_ to 1 in the _dir_ namespace of the current directory.
 
-```sh
+```shell
 kdb set "dir:/sw/elektra/kdb/#0/%/verbose" 1
 #> Create a new key dir:/sw/elektra/kdb/#0/%/verbose with string "1"
 ```
@@ -124,23 +114,25 @@ kdb set "dir:/sw/elektra/kdb/#0/%/verbose" 1
 
 If we now search for some key, `kdb` will behave just as if we have called it with the `-v` option.
 
-```sh
+```shell
 kdb get /some/key
-# STDOUT-REGEX: got \d+ keys
+# RET: 10
+#> got 4 keys
 #> searching spec:/some/key, found: <nothing>, options: KDB_O_CALLBACK
-#>     searching proc:/some/key, found: <nothing>, options:
-#>     searching dir:/some/key, found: <nothing>, options:
-#>     searching user:/some/key, found: <nothing>, options:
-#>     searching system:/some/key, found: <nothing>, options:
-#>     searching default of spec:/some/key, found: <nothing>, options: KDB_O_NOCASCADING
-#> Did not find key
+#>     searching proc:/some/key, found: <nothing>
+#>     searching dir:/some/key, found: <nothing>
+#>     searching user:/some/key, found: <nothing>
+#>     searching system:/some/key, found: <nothing>
+#>     searching default:/some/key, found: <nothing>
+#>     searching default of spec/some/key, found: <nothing>, options: KDB_O_NOCASCADING
+# STDERR: Did not find key '/some/key'
 ```
 
 Verbosity is not always useful because it distracts from the essential.
 So we may decide that we want `kdb` to be only verbose if we are debugging it.
 So let us move the default configuration to another profile:
 
-```sh
+```shell
 kdb mv -r "dir:/sw/elektra/kdb/#0/%" "dir:/sw/elektra/kdb/#0/debug"
 #> using common basename: dir:/sw/elektra/kdb/#0
 #> key: dir:/sw/elektra/kdb/#0/%/verbose will be renamed to: dir:/sw/elektra/kdb/#0/debug/verbose
@@ -152,7 +144,7 @@ If we now call `kdb get /some/key` it will behave non-verbose, but if we call it
 
 We configured kdb only for the current directory. If we like this configuration we could move it to the system namespace, so that every user can enjoy a preconfigured _debug_ profile.
 
-```sh
+```shell
 sudo kdb mv -r "dir:/sw/elektra/kdb" "system:/sw/elektra/kdb"
 #> using common basename: /sw/elektra/kdb
 #> key: dir:/sw/elektra/kdb/#0/%/verbose will be renamed to: system:/sw/elektra/kdb/#0/%/verbose
@@ -160,14 +152,14 @@ sudo kdb mv -r "dir:/sw/elektra/kdb" "system:/sw/elektra/kdb"
 #> system:/sw/elektra/kdb/#0/%/verbose
 ```
 
-Now every user can use the _debug_ profile with kdb.
+Now every user could use the _debug_ profile with kdb.
 
 _Cascading keys_ are keys that start with **/** and are a way of making key lookups much easier.
 Let's say you want to see the configuration from the example above.
 You do not need to search every namespace by yourself.
 Just make a lookup for **/sw/elektra/kdb/#0/debug/verbose**, like this:
 
-```sh
+```shell
 kdb get "/sw/elektra/kdb/#0/debug/verbose"
 #> 1
 ```
@@ -175,16 +167,18 @@ kdb get "/sw/elektra/kdb/#0/debug/verbose"
 When using cascading key the best key will be searched at run-time.
 If you are only interested in the system key, you would use:
 
-```sh
+```shell
 kdb get "system:/sw/elektra/kdb/#0/debug/verbose"
-#> 1
+#> 0
 ```
 
-Because of _cascading keys_ a user can override the behavior of the _debug_ profile by setting the corresponding keys in his _user_ namespace
+Because of _cascading keys_ a user can override the behavior of the _debug_ profile by setting the corresponding keys in their _user_ namespace
 (as we discussed [before](#cascading-keys)).
-If a user sets _verbose_ in his user namespace to 0 she overrides the default behavior from the _system_ namespace.
+If a user sets _verbose_ in their user namespace to 0 they override the default behavior from the _system_ namespace.
 
-```sh
+Assuming that **sytem:/sw/elektra/kdb/#0/debug/verbose** is set to **1**, a user could override this by setting
+
+```shell
 kdb set "user:/sw/elektra/kdb/#0/debug/verbose" 0
 #> Create a new key user:/sw/elektra/kdb/#0/debug/verbose with string "0"
 kdb get "/sw/elektra/kdb/#0/debug/verbose"
