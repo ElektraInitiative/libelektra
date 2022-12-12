@@ -8,9 +8,9 @@
 
 #include "resolver.h"
 
-#include <errno.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbtypes.h>
+#include <errno.h>
 #include <libgen.h>
 #include <pwd.h>
 #include <stdbool.h>

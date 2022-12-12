@@ -8,10 +8,10 @@
 
 #include "resolver.h"
 
-#include <kdbassert.h>
-#include <kdbconfig.h>
 #include <elektra/kdbhelper.h>	// elektraStrDup
 #include <elektra/kdbprivate.h> // KDB_CACHE_PREFIX
+#include <kdbassert.h>
+#include <kdbconfig.h>
 
 #include <elektra/kdbos.h>
 
@@ -32,9 +32,9 @@
 
 #include <dirent.h>
 
+#include <elektra/kdbmacros.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <elektra/kdbmacros.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>

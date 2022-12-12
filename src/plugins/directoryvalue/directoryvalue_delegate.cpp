@@ -9,8 +9,8 @@
 
 #include <numeric>
 
-#include <kdbassert.h>
 #include <elektra/kdbease.h>
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
 

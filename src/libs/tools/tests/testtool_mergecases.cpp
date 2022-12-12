@@ -8,9 +8,9 @@
  */
 
 #include "mergetestutils.cpp"
+#include <elektra/kdbprivate.h>
 #include <gtest/gtest.h>
 #include <iostream>
-#include <elektra/kdbprivate.h>
 
 using namespace kdb;
 using namespace kdb::tools::merging;

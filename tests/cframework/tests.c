@@ -29,8 +29,8 @@
 
 #include <regex.h>
 
-#include <kdbinternal.h>
 #include <elektra/kdbprivate.h>
+#include <kdbinternal.h>
 
 #ifdef __cplusplus
 extern "C" {

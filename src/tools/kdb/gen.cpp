@@ -12,9 +12,9 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
-#include <fstream>
 #include <elektra/kdbease.h>
 #include <elektra/kdbplugin.h>
+#include <fstream>
 #include <modules.hpp>
 
 using namespace kdb;

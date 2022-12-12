@@ -8,9 +8,9 @@
 
 #include "utility.h"
 
-#include <kdbassert.h>
 #include <elektra/kdbease.h>
 #include <elektra/kdbhelper.h>
+#include <kdbassert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

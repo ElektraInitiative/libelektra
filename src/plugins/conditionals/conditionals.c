@@ -13,10 +13,10 @@
 #endif
 
 #include <ctype.h>
-#include <errno.h>
 #include <elektra/kdbease.h>
-#include <kdberrors.h>
 #include <elektra/kdbmeta.h>
+#include <errno.h>
+#include <kdberrors.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>

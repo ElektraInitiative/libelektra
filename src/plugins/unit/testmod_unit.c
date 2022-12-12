@@ -5,8 +5,8 @@
  *
  */
 
-#include <kdbconfig.h>
 #include <elektra/kdbtypes.h>
+#include <kdbconfig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <tests_plugin.h>

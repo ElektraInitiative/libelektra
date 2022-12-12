@@ -12,10 +12,10 @@
 #endif
 #include "gpgme.h"
 #include "keylist.h"
-#include <gpgme.h>
 #include <elektra/kdb.h>
-#include <kdberrors.h>
 #include <elektra/kdbtypes.h>
+#include <gpgme.h>
+#include <kdberrors.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>

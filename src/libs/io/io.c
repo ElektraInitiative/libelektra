@@ -10,10 +10,10 @@
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbinvoke.h>
 #include <elektra/kdbio.h>
+#include <elektra/kdbprivate.h>
 #include <kdbioplugin.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
-#include <elektra/kdbprivate.h>
 
 #include <fcntl.h>
 #include <stdio.h>

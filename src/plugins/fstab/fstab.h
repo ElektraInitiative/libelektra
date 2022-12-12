@@ -22,9 +22,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <kdberrors.h>
 #include <elektra/kdbextension.h>
 #include <elektra/kdbplugin.h>
+#include <kdberrors.h>
 
 
 int elektraFstabGet (Plugin * handle, KeySet * returned, Key * parentKey);

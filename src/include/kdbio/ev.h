@@ -8,8 +8,8 @@
 #ifndef KDB_IOWRAPPER_EV_H_
 #define KDB_IOWRAPPER_EV_H_
 
-#include <ev.h>
 #include <elektra/kdbio.h>
+#include <ev.h>
 
 /**
  * Create and initialize a new I/O binding.

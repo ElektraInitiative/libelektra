@@ -10,8 +10,8 @@
 #include "hexnumber.h"
 
 #include <elektra/kdbease.h>
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
+#include <kdberrors.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

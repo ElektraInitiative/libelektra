@@ -10,9 +10,9 @@
 
 #include <glib.h>
 
-#include <kdbassert.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbio.h>
+#include <kdbassert.h>
 #include <kdblogger.h>
 
 typedef struct _GlibBindingData GlibBindingData;

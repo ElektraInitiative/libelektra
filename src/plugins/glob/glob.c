@@ -13,8 +13,8 @@
 #include "kdbconfig.h"
 #endif
 
-#include <fnmatch.h>
 #include <elektra/kdbhelper.h>
+#include <fnmatch.h>
 
 struct GlobFlagMap
 {

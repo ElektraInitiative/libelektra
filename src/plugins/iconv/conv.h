@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_PLUGIN_ICONV_CONV_H
 #define ELEKTRA_PLUGIN_ICONV_CONV_H
 
-#include <kdberrors.h>
 #include <elektra/kdbplugin.h>
+#include <kdberrors.h>
 
 #include <iconv.h>
 #include <langinfo.h>

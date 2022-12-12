@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_KDBASSERT_H
 #define ELEKTRA_KDBASSERT_H
 
-#include <kdbconfig.h>
 #include <elektra/kdbmacros.h>
+#include <kdbconfig.h>
 
 #ifdef __cplusplus
 extern "C" {

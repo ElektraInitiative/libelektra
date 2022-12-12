@@ -26,9 +26,9 @@
 #include <unistd.h>
 
 #include <elektra/kdb.h>
-#include <kdberrors.h>
 #include <elektra/kdbmacros.h>
 #include <elektra/kdbtypes.h>
+#include <kdberrors.h>
 
 /**
  * @brief Defines the plugin state during the <code>kdb get</code> phase.

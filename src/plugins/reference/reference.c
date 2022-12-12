@@ -11,9 +11,9 @@
 #include "referencegraph.h"
 
 #include <elektra/kdbease.h>
-#include <kdberrors.h>
 #include <elektra/kdbglobbing.h>
 #include <elektra/kdbhelper.h>
+#include <kdberrors.h>
 #include <stdbool.h>
 
 int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)

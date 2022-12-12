@@ -16,8 +16,8 @@
 #include "gpg.h"
 #include "helper.h"
 #include <elektra/kdb.h>
-#include <kdberrors.h>
 #include <elektra/kdbtypes.h>
+#include <kdberrors.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>

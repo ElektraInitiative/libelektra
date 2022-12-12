@@ -8,11 +8,11 @@
 
 
 #include <elektra/kdb.h>
-#include <kdbassert.h>
 #include <elektra/kdbease.h>
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbmeta.h>
+#include <kdbassert.h>
+#include <kdberrors.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>

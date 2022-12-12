@@ -9,8 +9,8 @@
 
 #include "blockresolver.h"
 
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
+#include <kdberrors.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -20,8 +20,8 @@
 #include <sys/wait.h>  // waitpit()
 #include <unistd.h>    // ftruncate(), pipe(), fork()
 
-#include <kdbconfig.h>
 #include <elektra/kdbprivate.h>
+#include <kdbconfig.h>
 
 #include <tests_plugin.h>
 

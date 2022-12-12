@@ -14,12 +14,12 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbassert.h>
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
-#include <kdblogger.h>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbprivate.h>
+#include <kdbassert.h>
+#include <kdberrors.h>
+#include <kdblogger.h>
 
 #include <fcntl.h>     // access()
 #include <ftw.h>       // nftw()

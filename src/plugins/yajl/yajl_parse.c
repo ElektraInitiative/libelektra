@@ -13,8 +13,8 @@
 #include <string.h>
 
 #include <elektra/kdbease.h>
-#include <kdberrors.h>
 #include <elektra/kdbmacros.h>
+#include <kdberrors.h>
 #include <yajl/yajl_parse.h>
 
 

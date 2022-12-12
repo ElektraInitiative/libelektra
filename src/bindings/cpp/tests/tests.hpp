@@ -9,8 +9,8 @@
 #ifndef KDB_TESTS_HPP
 #define KDB_TESTS_HPP
 
-#include <kdb.hpp>
 #include <elektra/kdbmacros.h>
+#include <kdb.hpp>
 #include <key.hpp>
 #include <keyset.hpp>
 

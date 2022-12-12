@@ -10,8 +10,8 @@
 #include "comment_list.h"
 
 #include <elektra/kdb.h>
-#include <kdbassert.h>
 #include <elektra/kdbhelper.h>
+#include <kdbassert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

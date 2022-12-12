@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdberrors.h>
 #include <elektra/kdbplugin.h>
+#include <kdberrors.h>
 
 
 int elektraErrorGet (Plugin * handle, KeySet * ks, Key * parentKey);

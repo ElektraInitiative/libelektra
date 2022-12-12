@@ -1,7 +1,7 @@
 
 #include "errors/baseNotification.hpp"
-#include <iostream>
 #include <elektra/kdbprivate.h>
+#include <iostream>
 #include <utility>
 
 namespace kdb

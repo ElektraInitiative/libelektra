@@ -16,9 +16,9 @@
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbio.h>
 #include <elektra/kdbmacros.h>
-#include <kdbnotificationinternal.h>
 #include <elektra/kdbplugin.h>
 #include <elektra/kdbtypes.h>
+#include <kdbnotificationinternal.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
 #include <kdbopmphmpredictor.h>

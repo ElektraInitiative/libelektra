@@ -219,9 +219,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbassert.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbio.h>
+#include <kdbassert.h>
 #include <kdblogger.h>
 
 /**

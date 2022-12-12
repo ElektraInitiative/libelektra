@@ -10,8 +10,8 @@
 #include "cpptemplate.hpp"
 #include "cpptemplate_delegate.hpp"
 
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
+#include <kdberrors.h>
 
 using ckdb::keyNew;
 using std::exception;

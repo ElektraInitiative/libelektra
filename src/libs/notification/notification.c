@@ -8,16 +8,16 @@
  *
  */
 
-#include <kdbassert.h>
 #include <elektra/kdbease.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbinvoke.h>
-#include <kdbioprivate.h>
-#include <kdblogger.h>
 #include <elektra/kdbnotification.h>
-#include <kdbnotificationinternal.h>
 #include <elektra/kdbplugin.h>
 #include <elektra/kdbprivate.h> // for elektraGetPluginFunction, elektraPluginFindGlobal, kdb->globalPlugins and plugin->config
+#include <kdbassert.h>
+#include <kdbioprivate.h>
+#include <kdblogger.h>
+#include <kdbnotificationinternal.h>
 
 #include <stdio.h>
 

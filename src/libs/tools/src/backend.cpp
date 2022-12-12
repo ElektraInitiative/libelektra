@@ -12,10 +12,10 @@
 #include <backends.hpp>
 
 
-#include <helper/keyhelper.hpp>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbplugin.h>
 #include <elektra/kdbprivate.h>
+#include <helper/keyhelper.hpp>
 
 #include <elektra/kdbease.h> // for ckdb::elektraArrayIncName
 

@@ -16,8 +16,8 @@
 #include <xercesc/util/PlatformUtils.hpp>
 
 
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
+#include <kdberrors.h>
 
 using namespace ckdb;
 using namespace xerces;

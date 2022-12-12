@@ -20,10 +20,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <elektra/kdbmeta.h>
 #include <fstream>
 #include <functional>
 #include <iostream>
-#include <elektra/kdbmeta.h>
 #include <map>
 #include <memory>
 #include <set>

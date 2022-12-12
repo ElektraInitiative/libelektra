@@ -8,9 +8,9 @@
  */
 
 #include <elektra/kdb.h>
+#include <elektra/kdbprivate.h>
 #include <kdbassert.h>
 #include <kdblogger.h>
-#include <elektra/kdbprivate.h>
 #include <tests.h>
 #include <tests_plugin.h>
 

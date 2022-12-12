@@ -10,10 +10,10 @@
 #ifndef ELEKTRA_PLUGIN_DBUS_H
 #define ELEKTRA_PLUGIN_DBUS_H
 
+#include <elektra/kdbplugin.h>
 #include <kdbassert.h>
 #include <kdbioplugin.h>
 #include <kdbnotificationinternal.h>
-#include <elektra/kdbplugin.h>
 
 #include <dbus/dbus.h>
 #include <string.h>

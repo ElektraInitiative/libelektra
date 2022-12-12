@@ -10,8 +10,8 @@
 
 #include "type.h"
 
-#include <kdbassert.h>
 #include <elektra/kdbhelper.h>
+#include <kdbassert.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>

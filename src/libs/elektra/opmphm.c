@@ -7,13 +7,13 @@
  */
 
 
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbprivate.h>
 #include <kdbassert.h>
 #include <kdbconfig.h>
-#include <elektra/kdbhelper.h>
 #include <kdblogger.h>
-#include <elektra/kdbmacros.h>
 #include <kdbopmphm.h>
-#include <elektra/kdbprivate.h>
 #include <kdbrand.h>
 
 #include <string.h>

@@ -15,8 +15,8 @@
 
 
 #include <ctype.h>
-#include <errno.h>
 #include <elektra/kdbhelper.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

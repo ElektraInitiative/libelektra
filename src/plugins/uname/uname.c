@@ -17,8 +17,8 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdberrors.h>
 #include <elektra/kdbmacros.h>
+#include <kdberrors.h>
 
 static int elektraAddUname (KeySet * returned, Key * parentKey)
 {

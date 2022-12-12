@@ -10,12 +10,12 @@
 #define KDBINTERNAL_H
 
 #include <elektra/kdb.h>
-#include <kdbconfig.h>
-#include <kdberrors.h>
 #include <elektra/kdbextension.h>
-#include <kdblogger.h>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbplugin.h>
 #include <elektra/kdbprivate.h>
+#include <kdbconfig.h>
+#include <kdberrors.h>
+#include <kdblogger.h>
 
 #endif

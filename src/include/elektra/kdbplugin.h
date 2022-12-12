@@ -11,8 +11,8 @@
 
 #include <elektra/kdb.h>
 
-#include <errno.h>
 #include <elektra/kdbmacros.h>
+#include <errno.h>
 #include <string.h>
 
 #ifdef ELEKTRA_STATIC

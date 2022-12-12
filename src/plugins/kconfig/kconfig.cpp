@@ -11,9 +11,9 @@
 #include "kconfig_delegate.hpp"
 #include "kconfig_serializer.hpp"
 
+#include <elektra/kdbhelper.h>
 #include <fstream>
 #include <kdberrors.h>
-#include <elektra/kdbhelper.h>
 
 using ckdb::keyNew;
 using std::exception;

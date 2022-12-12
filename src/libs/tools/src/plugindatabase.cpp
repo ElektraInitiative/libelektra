@@ -14,10 +14,10 @@
 #include <set>
 
 #include <algorithm>
+#include <elektra/kdbmacros.h>
 #include <helper/keyhelper.hpp>
 #include <kdbconfig.h>
 #include <kdblogger.h>
-#include <elektra/kdbmacros.h>
 
 #ifdef HAVE_GLOB
 #include <glob.h>

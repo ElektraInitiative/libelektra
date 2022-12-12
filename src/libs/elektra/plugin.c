@@ -30,10 +30,10 @@
 #include <string.h>
 #endif
 
+#include <elektra/kdbversion.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
-#include <elektra/kdbversion.h>
 
 /**
  * Opens a plugin.

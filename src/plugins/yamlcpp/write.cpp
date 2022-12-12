@@ -9,8 +9,8 @@
 #include "write.hpp"
 #include "yaml-cpp/yaml.h"
 
-#include <kdb.hpp>
 #include <elektra/kdbease.h>
+#include <kdb.hpp>
 #include <kdblogger.h>
 
 #include <fstream>

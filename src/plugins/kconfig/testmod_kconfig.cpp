@@ -9,9 +9,9 @@
 
 #include "kconfig.hpp"
 
-#include <fstream>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbprivate.h>
+#include <fstream>
 
 #include <tests.h>
 #include <tests.hpp>

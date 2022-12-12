@@ -9,9 +9,9 @@
 
 
 #include <elektra/kdb.h>
+#include <elektra/kdbmacros.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <elektra/kdbmacros.h>
 
 #include "driver.h"
 #include "toml.h"

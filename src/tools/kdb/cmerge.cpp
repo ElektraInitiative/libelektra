@@ -7,10 +7,10 @@
  */
 
 #include "cmerge.hpp"
-#include <elektra/kdbmacros.h>
-#include <elektra/kdbmerge.h>
 #include "keyset.hpp"
 #include <cmdline.hpp>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbmerge.h>
 #include <iostream>
 #include <keysetio.hpp>
 #include <string>

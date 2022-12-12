@@ -100,8 +100,8 @@
 
 
 #include <elektra/kdb.h>
-#include <kdbconfig.h>
 #include <elektra/kdbprivate.h>
+#include <kdbconfig.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>

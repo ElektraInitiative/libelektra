@@ -14,11 +14,11 @@
 #include "simpleini.h"
 #include <errno.h>
 
-#include <kdbassert.h>
 #include <elektra/kdbease.h>
+#include <elektra/kdbutility.h>
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <elektra/kdbutility.h>
 
 #include <stdio.h>
 #include <stdlib.h>

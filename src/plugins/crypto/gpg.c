@@ -9,9 +9,9 @@
 
 #include "gpg.h"
 #include <assert.h>
+#include <elektra/kdbhelper.h>
 #include <errno.h>
 #include <kdberrors.h>
-#include <elektra/kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

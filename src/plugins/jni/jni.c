@@ -16,8 +16,8 @@
 #include <stdlib.h>
 
 
-#include <kdberrors.h>
 #include <elektra/kdbplugin.h>
+#include <kdberrors.h>
 
 // forward declarations
 int elektraJniOpen (Plugin * handle, Key * errorKey);

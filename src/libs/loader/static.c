@@ -13,9 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <elektra/kdbmodule.h>
 #include <exported_symbols.h>
 #include <kdberrors.h>
-#include <elektra/kdbmodule.h>
 
 
 int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)

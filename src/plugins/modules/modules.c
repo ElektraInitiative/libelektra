@@ -9,9 +9,9 @@
 
 #include "modules.h"
 
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbprivate.h> // for struct _Plugin internals
+#include <kdberrors.h>
 
 /**
  * The modules backend is automatically configured by libelektra-kdb.

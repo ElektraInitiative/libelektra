@@ -17,8 +17,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <kdb.hpp>
 #include <elektra/kdbmacros.h>
+#include <kdb.hpp>
 
 class EmptyGenTemplate;
 

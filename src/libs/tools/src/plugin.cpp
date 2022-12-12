@@ -10,11 +10,11 @@
 
 #include <kdb.hpp>
 
-#include <helper/keyhelper.hpp>
 #include <elektra/kdb.h>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbplugin.h>
 #include <elektra/kdbprivate.h> // currently needed for plugin handling (struct _Plugin)
+#include <helper/keyhelper.hpp>
 #include <plugindatabase.hpp>
 
 #include <algorithm>

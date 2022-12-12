@@ -9,10 +9,10 @@
 
 #include "process.h"
 
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbinvoke.h>
 #include <elektra/kdbprivate.h>
+#include <kdberrors.h>
 
 #include <signal.h>
 #include <stdio.h>

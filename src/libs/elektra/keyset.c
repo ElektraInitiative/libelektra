@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/kdbprivate.h>
 #include <elektra/kdb.h>
+#include <elektra/kdbprivate.h>
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif

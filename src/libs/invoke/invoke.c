@@ -5,10 +5,10 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#include <kdbassert.h>
 #include <elektra/kdbinvoke.h>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbprivate.h> // for elektraPluginOpen/Close
+#include <kdbassert.h>
 
 #include <stdio.h>
 

@@ -10,8 +10,8 @@
 
 #include "prepare.h"
 #include "utility.h"
-#include <kdbassert.h>
 #include <elektra/kdbhelper.h>
+#include <kdbassert.h>
 #include <stdio.h>
 #include <stdlib.h>
 

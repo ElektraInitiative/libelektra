@@ -16,9 +16,9 @@
 #define _GNU_SOURCE // for RTLD_NEXT (except BSDI)
 #endif
 
+#include <elektra/kdbmacros.h>
 #include <kdbconfig.h>
 #include <kdbgetenv.h>
-#include <elektra/kdbmacros.h>
 
 #include <kdbcontext.hpp>
 

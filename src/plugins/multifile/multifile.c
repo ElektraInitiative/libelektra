@@ -10,15 +10,15 @@
 #include "multifile.h"
 
 #include <dirent.h>
+#include <elektra/kdbhelper.h>
+#include <elektra/kdbmacros.h>
+#include <elektra/kdbmodule.h>
+#include <elektra/kdbplugin.h>
 #include <errno.h>
 #include <fnmatch.h>
 #include <glob.h>
 #include <kdbconfig.h>
-#include <elektra/kdbhelper.h>
 #include <kdbinternal.h>
-#include <elektra/kdbmacros.h>
-#include <elektra/kdbmodule.h>
-#include <elektra/kdbplugin.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

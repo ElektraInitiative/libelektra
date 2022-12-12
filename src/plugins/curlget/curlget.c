@@ -11,10 +11,10 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <elektra/kdbhelper.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <kdberrors.h>
-#include <elektra/kdbhelper.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>

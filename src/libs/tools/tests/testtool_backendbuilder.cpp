@@ -20,10 +20,10 @@
 #include <string>
 #include <unordered_map>
 
+#include <elektra/kdbhelper.h>
 #include <gtest/gtest.h>
 #include <kdb.hpp>
 #include <kdbconfig.h>
-#include <elektra/kdbhelper.h>
 
 // We disable certain tests on ASAN enabled builds: https://travis-ci.org/sanssecours/elektra/jobs/418573941
 #ifdef ENABLE_ASAN

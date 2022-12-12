@@ -7,11 +7,11 @@
  */
 
 #include <elektra/kdb.h>
-#include <kdbconfig.h>
 #include <elektra/kdbease.h>
 #include <elektra/kdbmeta.h>
 #include <elektra/kdbprivate.h>
 #include <elektra/kdbtypes.h>
+#include <kdbconfig.h>
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif

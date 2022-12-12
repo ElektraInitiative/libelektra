@@ -8,8 +8,8 @@
 
 #include <elektra/kdb.h>
 #include <elektra/kdbease.h>
-#include <kdberrors.h>
 #include <elektra/kdbtypes.h>
+#include <kdberrors.h>
 
 #include <stdio.h>
 #include <string.h>

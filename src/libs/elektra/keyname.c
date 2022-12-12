@@ -161,9 +161,9 @@
 
 #include <ctype.h>
 
+#include "kdbinternal.h"
 #include <elektra/kdb.h>
 #include <elektra/kdbhelper.h>
-#include "kdbinternal.h"
 
 /**
  * @internal

@@ -15,8 +15,8 @@
 
 #include <sys/stat.h>
 
-#include <kdberrors.h>
 #include <elektra/kdbplugin.h>
+#include <kdberrors.h>
 #include <sys/types.h>
 #include <unistd.h>
 

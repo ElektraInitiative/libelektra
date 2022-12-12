@@ -8,9 +8,9 @@
  */
 
 #include "file.h"
+#include <elektra/kdbhelper.h>
 #include <fcntl.h>
 #include <kdberrors.h>
-#include <elektra/kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

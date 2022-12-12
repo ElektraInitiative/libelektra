@@ -8,10 +8,10 @@
  */
 
 
+#include <elektra/kdbhelper.h>
 #include <fcntl.h>
 #include <git2.h>
 #include <kdberrors.h>
-#include <elektra/kdbhelper.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>

@@ -16,10 +16,10 @@
 #include <pluginspec.hpp>
 
 
-#include <helper/keyhelper.hpp>
 #include <elektra/kdbmodule.h>
 #include <elektra/kdbplugin.h>
 #include <elektra/kdbprivate.h>
+#include <helper/keyhelper.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -27,8 +27,8 @@
 #include <unordered_set>
 
 #include <cassert>
-#include <kdb.hpp>
 #include <elektra/kdbmeta.h>
+#include <kdb.hpp>
 
 
 using namespace std;

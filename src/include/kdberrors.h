@@ -11,8 +11,8 @@
 
 #include <elektra/kdb.h>
 #include <elektra/kdbhelper.h>
-#include <kdblogger.h>
 #include <elektra/kdbmacros.h>
+#include <kdblogger.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -14,8 +14,8 @@
 #include <string.h>
 
 #include <elektra/kdb.h>
-#include <kdberrors.h>
 #include <elektra/kdbplugin.h>
+#include <kdberrors.h>
 
 #include <stdlib.h>
 

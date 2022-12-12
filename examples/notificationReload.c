@@ -21,8 +21,8 @@
 #include <elektra/kdb.h>
 #include <elektra/kdbhelper.h>	     // elektraFree
 #include <elektra/kdbio.h>	     // I/O binding functions (elektraIo*)
-#include <kdbio/glib.h>	     // I/O binding constructor for glib (elektraIoGlibNew)
 #include <elektra/kdbnotification.h> // notification functions
+#include <kdbio/glib.h>		     // I/O binding constructor for glib (elektraIoGlibNew)
 
 #include <glib-unix.h> // g_unix_signal_add()
 #include <glib.h>      // glib functions

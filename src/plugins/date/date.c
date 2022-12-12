@@ -10,8 +10,8 @@
 #define _XOPEN_SOURCE
 #include "date.h"
 #include <ctype.h>
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
+#include <kdberrors.h>
 #include <langinfo.h>
 #include <locale.h>
 #include <stdio.h>

@@ -9,8 +9,8 @@
 
 #include "specload.h"
 
-#include <kdberrors.h>
 #include <elektra/kdbhelper.h>
+#include <kdberrors.h>
 
 #include <elektra/kdbease.h>
 #include <elektra/kdbinvoke.h>

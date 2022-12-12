@@ -10,8 +10,8 @@
 #include "internalnotification.h"
 
 #include <elektra/kdb.h>
-#include <kdbassert.h>
 #include <elektra/kdbhelper.h>
+#include <kdbassert.h>
 #include <kdblogger.h>
 #include <kdbnotificationinternal.h>
 

@@ -10,9 +10,9 @@
 
 #include "node.h"
 #include "utility.h"
-#include <kdbassert.h>
 #include <elektra/kdbhelper.h>
 #include <elektra/kdbmeta.h>
+#include <kdbassert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
