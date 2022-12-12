@@ -203,7 +203,7 @@ check_set_mv_rm() {
 #
 
 is_not_rw_storage() {
-	echo $("$KDB" plugin-info "$PLUGIN" provides 2> /dev/null) | fgrep -qw "storage"
+	echo $("$KDB" plugin-info "$PLUGIN" provides 2> /dev/null) | grep -f -qw "storage"
 	if [ $? != 0 ]; then
 		return 0
 	fi
