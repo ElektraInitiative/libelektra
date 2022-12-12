@@ -211,7 +211,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - Check for circular links (overrides) _(@0x6178656c)_
 - <<TODO>>
-- <<TODO>>
+- Change structure of includes. Installed header files moved to `include/elektra` directory. _(@janldeboer)_
 - <<TODO>>
 
 ### io
