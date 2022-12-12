@@ -318,12 +318,12 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 }
 
 
-static bool elektraCheckForInvalidMetaKey (Key * parentKey, KeySet * ks)
+static bool elektraCheckForInvalidMetaKey (Key * parentKey, KeySet * keySet)
 {
 	Key * cur = 0;
-	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+	for (elektraCursor it = 0; it < ksGetSize (keySet); ++it)
 	{
-		cur = ksAtCursor (ks, it);
+		cur = ksAtCursor (keySet, it);
 		const KeySet * metaKeys = keyMeta (cur);
 		for (elektraCursor jt = 0; jt < ksGetSize (metaKeys); ++jt)
 		{
