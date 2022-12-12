@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ ! -d ".git" ] && echo "Please run this script from the root directory of the Project"
+
+ln -s ../../scripts/dev/pre-commit-check-formatting .git/hooks/pre-commit

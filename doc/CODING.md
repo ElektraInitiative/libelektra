@@ -119,6 +119,7 @@ but it is obviously not capable of ensuring everything (e.g. naming
 conventions). So do not give this responsibility out of hands entirely. You
 can [use docker](/doc/tutorials/run_reformatting_script_with_docker.md) to
 ensure that you have the correct version of all our reformatting tools at hand.
+You can also enable that formatting runs automatically before commiting using `scripts/dev/enable-pre-commit-hook` and disable it again using `scripts/dev/disable-pre-commit-hook`
 
 ### C Guidelines
 

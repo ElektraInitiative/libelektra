@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ ! -d ".git" ] && echo "Please run this script from the root directory of the Project"
+
+rm .git/hooks/pre-commit
