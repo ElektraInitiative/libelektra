@@ -7,7 +7,7 @@ Alternatively, you can directly fix it with your next PR.
 
 > **Note:**
 > It is always allowed to improve the documentation, in every PR, even if the documentation fix is completely unrelated.
-> However, separate PRs are prefered and potentially can get merged sooner.
+> However, separate PRs are preferred and can potentially get merged sooner.
 
 ## Target Groups
 

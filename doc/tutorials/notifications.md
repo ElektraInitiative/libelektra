@@ -28,7 +28,7 @@ event loop API.
 Applications typically use one I/O binding but can also use none or multiple
 I/O bindings.
 For more on I/O bindings see the
-[API documenation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
+[API documentation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
 
 Transport plugins exchange notifications via different protocols like D-Bus or
 ZeroMQ.

@@ -365,7 +365,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update packaging instructions for Fedora _(@0x6178656c)_
 - <<TODO>>
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
-- <<TODO>>
+- fix various spelling errors _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - Denoted package names & global variable names in [INSTALL.md](../INSTALL.md) as `Code` _(@janldeboer)_

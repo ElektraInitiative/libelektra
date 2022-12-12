@@ -22,7 +22,7 @@ const Key *keyCurrentMeta (const Key *key);
 
 # The Architecture
 
-Every occurence of using the internal iterator has to be replaced with the external iterator (see #4281).
+Every occurrence of using the internal iterator has to be replaced with the external iterator (see #4281).
 The functions of the internal iterator are listed in #3171.
 There are also some uses of the internal iterator found in the SWIG bindings (Lua, Ruby, Python) that also need removal (see #4279).
 
@@ -63,7 +63,7 @@ for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
 ```
 
 For such scenarios, it is also important that you recalculate the size with `ksGetSize ()`
-within the loop-header or explicitely after changing the `KeySet`, e.g. by deleting a `Key`.
+within the loop-header or explicitly after changing the `KeySet`, e.g. by deleting a `Key`.
 
 That should be all you need for iterating over keys.
 For future releases, the function `ksAtCursor` will be renamed to `ksAt`. (see issue #3976)

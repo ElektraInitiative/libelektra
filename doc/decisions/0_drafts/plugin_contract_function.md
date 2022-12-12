@@ -69,7 +69,7 @@ The function pointers are all listed in `system:/elektra/modules/<plugin>/export
         elektraPluginExportFn exportFn;
         // [...] find exportFn for plugin
 
-        exportFn (modules); // inserts the contrat with all the exported functions
+        exportFn (modules); // inserts the contract with all the exported functions
 
         if (ksLookup (modules, moduleKey, 0) == NULL)
    {

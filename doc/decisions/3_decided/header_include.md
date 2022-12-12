@@ -51,7 +51,7 @@ In the C standard, section 6.10.2, paragraphs 2 to 4 state:
 > - h-char: any member of the source character set except the new-line character and `>`
 > - q-char: any member of the source character set except the new-line character and `"`
 
-In short, the whole search process of the `#include` mechansim is implementation-defined.
+In short, the whole search process of the `#include` mechanism is implementation-defined.
 However, because `#include` works (mostly) like a literal copy-paste, deciding between `""` and `<>` within a public header file can affect user code.
 
 ## Assumptions
