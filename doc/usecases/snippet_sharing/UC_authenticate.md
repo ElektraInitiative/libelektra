@@ -12,7 +12,7 @@
 
 - **Precondition:** Website opened
 - **Main success scenario:** User successfully authenticates against the server. The websites changes its state to authenticated, which enables more features (e.g. creation of snippets).
-- **Alternative scenario:** The authentication was not successful (e.g. wrong credentials). The user is prompted to check his credentials and retry.
+- **Alternative scenario:** The authentication was not successful (e.g. wrong credentials). The user is prompted to check their credentials and retry.
 - **Error scenario:** Technical problems prevent the authentication from succeeding (e.g. connection issues). The user is informed about the issue.
 - **Postcondition:** Website is in authenticated state, meaning that all subsequent requests will use the authentication token to identify to the server.
 - **Non-functional Constraints:**

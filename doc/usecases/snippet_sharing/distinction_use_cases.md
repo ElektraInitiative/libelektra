@@ -14,4 +14,4 @@ A feature to convert snippets in between formats will be implemented, although i
 
 ## Invalidation of Sessions / Logout
 
-It is not possible to invalidate sessions. This means that although the logout on the frontend is possible, the underlying session would still be active. A stateless server may not store any state information, therefore the session token has to be stored client side. The server has to accept all tokens he gave out for a certain period of time. This is also a known MITM vulnerability that is impossible to fix.
+It is not possible to invalidate sessions. This means that although the logout on the frontend is possible, the underlying session would still be active. A stateless server may not store any state information, therefore the session token has to be stored client side. The server has to accept all tokens it gave out for a certain period of time. This is also a known MITM vulnerability that is impossible to fix.
