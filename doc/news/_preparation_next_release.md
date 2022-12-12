@@ -351,7 +351,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Improve page for getting started _(@stefnotch)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Remove version number from docker README and replace it with latest _(@Joni1993)_
 - <<TODO>>
 - Fix grammar for `elektra-granularity.md` _(@dtdirect)_
 - Rephrase sections in doc/dev/error-\* _(@dtdirect)_
