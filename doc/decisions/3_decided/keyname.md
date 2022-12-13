@@ -24,15 +24,19 @@ The question now is, which representations should be used by `libelektra-core` a
 
 ## Constraints
 
-- Because `KeySet` is ordered by name and stores `Key`, the order comparison between the name of two `Key`s must be fast.
+- Because `KeySet` is ordered by name and stores `Key`, the order comparison between the name of two `Key`s must be "fast enough".
+  (see assumption below)
 - We need a single pointer to a single buffer that contains the entire name of a `Key`.
   While there are other options, some of which could even save memory (e.g., split into parts and deduplicate), much of the `KeySet` internals rely on the fact that the name is a single buffer.
   Changing this would require major redesigns.
 
 ## Assumptions
 
-- In most cases the escaped name is used for developer convenience and not because of actual requirements.
-- The most common requirement for using the escaped name is UI: reading names from or displaying them in a user interface (e.g., `kdb` CLI)
+- In most cases the escaped name is used for convenience and not because of actual requirements.
+- The most common case for using the escaped name is UI: reading names from or displaying them in a user interface (e.g., `kdb` CLI)
+- In the constraint about order comparisons above, we assume that "fast enough" means "comparable to a single `memcmp`".
+  This is an assumption, because we do not have data showing this is a necessary requirement.
+  It may be possible to find a slower solution that is still "fast enough".
 
 ## Considered Alternatives
 
@@ -48,6 +52,7 @@ However, in the API the name could always be a single `char *`, making for a ver
 
 The biggest problem with this approach is that comparing two escaped names is not trivial.
 The comparison needs to account for namespaces, parts and escaping.
+Previous benchmarks showed that it is very hard or even impossible to make the comparison of escaped names fast enough for our use cases.
 
 Similarly, iterating over the individual parts of a name (and/or manipulating them) is non-trivial, because it requires logic to handle escape sequences.
 
@@ -72,14 +77,23 @@ As such, there would only be a single pointer and a size in an API that needs a 
 This can be inconvenient, because it makes using the `KEY_NS_*` constants more difficult.
 
 This solution enhances the above, by considering the namespace a separate thing.
+Above the namespace is intrinsically part of the name.
+It is essentially just a restriction on the first part of the name and sometimes the namespace must be considered specially.
+In this solution, we consider the namespace a separate entity from the start.
+A key does not have a name, which starts with a namespace.
+Instead, a key has a namespace _and_ a name.
+
+This is mostly a theoretical distinction, but it makes it easier to argue in favor of APIs that use separate arguments for the namespace.
+It also makes it more obvious that sometimes the namespace on its own can have an influence on the behavior of a function.
+
 In the API the name could now be given as separated into namespace and the rest of the name.
 Instead of taking a single pointer and size, which receive values like `"\1\0foo\0bar"` and `10`, the API would take a namespace, a pointer, and a size, with values like `KEY_NS_CASCADING`, `"foo\0bar"` and `8`.
 
-Internally, we don't necessarily need to store this a separate fields.
+Internally, we don't necessarily need to store this as separate fields.
 The namespace could be combined into one buffer with the rest of the name, and stored as a single pointer and size.
 However, depending on the API there can also be benefits to keeping the namespace as a separate field.
 
-Even with a separate namespace field, the most benefits of "Only unescaped name" are retained.
+Even with a separate namespace field, most benefits of "Only unescaped name" are retained.
 The memory consumption is near minimal (alignment padding can cause a difference).
 Comparisons are exactly the same, just with an additional namespace byte comparison beforehand.
 
@@ -138,7 +152,7 @@ Go with "Only unescaped name, with separate namespace" from above:
 - Largest memory savings among the proposed options
 - Option to use separate namespace argument leads to more convenient API (`KEY_NS_*` constants).
 - Simple internal code
-- Escaped name requirements can easily be solved by additional library (e.g., `libelektra-ease`), because not every caller will need those.
+- Escaped name requirements can easily be solved by an additional library (e.g., `libelektra-ease`, `libelektra-extra` or new standalone library for names), because not every caller will need those functions.
 - Full API and internal struct layout aren't designed yet, so deciding how to store namespace is difficult.
 
 ## Implications
