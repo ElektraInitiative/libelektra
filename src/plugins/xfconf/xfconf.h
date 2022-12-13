@@ -12,7 +12,7 @@
 
 #include <kdbplugin.h>
 
-
+int elektraXfconfInit (Key * errorKey, int xfconfCode, int xfconfShutdown);
 int elektraXfconfOpen (Plugin * handle, Key * errorKey);
 int elektraXfconfClose (Plugin * handle, Key * errorKey);
 int elektraXfconfGet (Plugin * handle, KeySet * ks, Key * parentKey);

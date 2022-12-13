@@ -7,29 +7,32 @@
  *
  */
 
+#include "xfconf.h"
 #include <stdlib.h>
-#include <string.h>
-
-#include <kdbconfig.h>
 
 #include <tests_plugin.h>
 
 static void test_basics (void)
 {
-
 	Key * parentKey = keyNew ("user:/tests/xfconf", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("xfconf");
-
-	if (plugin->kdbOpen (plugin, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	int statusCode = elektraXfconfInit (parentKey, 1, 1);
+	printf ("xfconf dry open returned: %d\n", statusCode);
+	if (!statusCode)
 	{
-		printf ("WARNING: cannot open the xfconf plugin for testing. Is dbus running?\n");
-		PLUGIN_CLOSE ();
+		printf ("WARNING: dry open xfconf failed, is dbus running? skipping tests\n");
 		return;
 	}
 
 	printf ("test basics\n");
+	printf ("open plugin...\n");
+	PLUGIN_OPEN ("xfconf");
+
 	KeySet * ks = ksNew (0, KS_END);
+
+	printf ("begin with tests...\n");
+
+	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 

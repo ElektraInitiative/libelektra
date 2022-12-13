@@ -16,22 +16,40 @@
 #include <kdblogger.h>
 #include <xfconf/xfconf.h>
 
-int elektraXfconfOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraXfconfInit (Key * errorKey, int xfconfCode, int xfconfShutdown)
 {
 	ELEKTRA_LOG ("try to initialize xfconf\n");
 	GError * err = NULL;
 	if (xfconf_init (&err))
 	{
-		ELEKTRA_LOG_DEBUG ("succeed initielize xfconf\n");
+		ELEKTRA_LOG_DEBUG ("succeed initialize xfconf\n");
+		if (xfconfShutdown)
+		{
+			xfconf_shutdown ();
+		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else
 	{
 		ELEKTRA_LOG ("unable to initialize xfconf(%d): %s\n", err->code, err->message);
+		int status = ELEKTRA_PLUGIN_STATUS_ERROR;
 		ELEKTRA_SET_INTERFACE_ERROR (errorKey, err->message);
+		if (xfconfCode)
+		{
+			status = err->code;
+		}
 		g_error_free (err);
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		if (xfconfShutdown)
+		{
+			xfconf_shutdown ();
+		}
+		return status;
 	}
+}
+
+int elektraXfconfOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+{
+	return elektraXfconfInit (errorKey, 0, 0);
 }
 
 int elektraXfconfClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
