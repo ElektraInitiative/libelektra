@@ -390,8 +390,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Update Doxyfile with Doxygen 1.9.4 _(@0x6178656c)_
 - Add project logo to Doxygen in Doxyfile _(@dtdirect)_
-- <<TODO>>
-- <<TODO>>
+- Add mermaid.js to the project using doxygen-mermaid _(@dtdirect)_
+- Create diagrams in mermaid.js to use in doxygen _(@dtdirect)_ 
 - <<TODO>>
 - <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
