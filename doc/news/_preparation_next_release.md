@@ -406,7 +406,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add use cases for using the bindings. _(Richard Stöckl @Eiskasten)_ 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
