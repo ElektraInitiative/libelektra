@@ -64,6 +64,21 @@ static void test_writePref (char * fileName)
 	PLUGIN_CLOSE ();
 }
 
+static void test_setMetaMustFail (void)
+{
+	char const * const prefix = "user:/mozprefs/tests/writeMeta";
+
+	Key * parentKey = keyNew (prefix, KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (1, keyNew ("user:/mozprefs/tests/writeMeta", KEY_VALUE, "abcd", KEY_META, "abcd", "abcd", KEY_END), KS_END);
+
+	PLUGIN_OPEN ("mozprefs");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "Attempting to write a Meta Key did not fail");
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("PREFS     TESTS\n");
@@ -74,7 +89,7 @@ int main (int argc, char ** argv)
 
 	test_readPref ("mozprefs/prefs.js");
 	test_writePref ("mozprefs/prefs.js");
-
+	test_setMetaMustFail()
 	print_result ("testmod_mozprefs");
 
 	return nbError;

@@ -235,12 +235,36 @@ write_cleanup:
 	if (realPrefName) elektraFree (realPrefName);
 	if (argString) elektraFree (argString);
 }
-
+static bool elektraCheckForInvalidMetaKey (Key * parentKey, KeySet * keySet)
+{
+	Key * cur = 0;
+	for (elektraCursor it = 0; it < ksGetSize (keySet); ++it)
+	{
+		cur = ksAtCursor (keySet, it);
+		const KeySet * metaKeys = keyMeta (cur);
+		for (elektraCursor jt = 0; jt < ksGetSize (metaKeys); ++jt)
+		{
+			const Key * meta = ksAtCursor (metaKeys, jt);
+			const char * pos = (const char *) keyName (meta);
+			if (elektraStrNCmp (pos, "meta:/internal/mozprefs", 19) != 0 && elektraStrCmp (pos, "meta:/origname") && elektraStrNCmp (pos, "meta:/rename", 12) != 0 && elektraStrCmp (pos, "meta:/binary") != 0)
+			{
+				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "The mozprefs storage Plugin doesn't support the meta key %s", pos);
+				return false;
+			}
+		}
+	}
+	return true;
+}
 int elektraMozprefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// get all keys
 	// this function is optional
 
+	if (!elektraCheckForInvalidMetaKey (parentKey, returned))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	
 	FILE * fp = fopen (keyString (parentKey), "w");
 	if (!fp) return -1;
 

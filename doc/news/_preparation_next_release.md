@@ -187,9 +187,13 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### csvstorage
 
-- Fix a bug where writing unkown meta keys will fail silently _(Juri Schreib @Bujuhu)_
+- Fix a bug where writing unknown meta keys will fail silently _(Juri Schreib @Bujuhu)_
 - <<TODO>>
 - <<TODO>>
+
+### mozprefs
+
+-Fixed bug when inserting Metakeys it would fail silently _(Nikola Prvulovic @Dynamichost96)_
 
 ## Libraries
 
