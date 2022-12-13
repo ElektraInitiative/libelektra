@@ -33,10 +33,11 @@ is split into following libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
 
-/**
- * @mermaid{state}
- */
- 
+/\*\*
+
+- @mermaid{state}
+  \*/
+
 ### Libkdb
 
 ```
