@@ -383,7 +383,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Unify spelling of documentation _(@Joni1993)_
 - <<TODO>>
 - Fix typo in dev/hooks.md _(@dtdirect)_
-- <<TODO>>
+- Remove unused images from doc/images _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - Fixed Coverage Badge Link _(@janldeboer)_
