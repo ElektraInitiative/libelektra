@@ -35,7 +35,7 @@ fi
 
 PLUGIN=$1
 
-if echo "$PLUGIN" | egrep -q '^[a-z]+$'; then
+if echo "$PLUGIN" | grep -E -q '^[a-z]+$'; then
 	if [ -d "$PLUGIN" ]; then
 		echo "Plugin $PLUGIN already exists"
 		exit 1

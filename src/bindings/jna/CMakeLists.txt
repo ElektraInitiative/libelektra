@@ -43,7 +43,7 @@ if (Java_JAVAC_EXECUTABLE)
 		if (GRADLE_EXECUTABLE) # set by find_program
 			# check Gradle version
 			execute_process (
-				COMMAND bash "-c" "${GRADLE_EXECUTABLE} -v | grep 'Gradle *' | egrep -o '[0-9]+\.[0-9]+(\.[0-9]+)?'"
+				COMMAND bash "-c" "${GRADLE_EXECUTABLE} -v | grep 'Gradle *' | grep -E -o '[0-9]+\.[0-9]+(\.[0-9]+)?'"
 				OUTPUT_VARIABLE GRADLE_VERSION
 				OUTPUT_STRIP_TRAILING_WHITESPACE)
 

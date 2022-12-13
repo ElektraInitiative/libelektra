@@ -338,6 +338,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fix warning parsing in shell recorder _(@Joni1993)_
 - <<TODO>>
+- Replaced `egrep` by `grep -E` _(@0x6178656c and @janldeboer)_
 - <<TODO>>
 - <<TODO>>
 - Add audit-dependencies script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
