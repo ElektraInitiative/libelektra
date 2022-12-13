@@ -73,7 +73,7 @@ For garbage collected (GC) languages freeing memory by hand is not something you
 - Forcing the user to call the appropriate functions like `keyDel()` themselves, which is very developer unfriendly and error-prone or
 - Using language features like Java / C++ Destructors or Go's `runtime.SetFinalizer()` function to automatically and reliably release the memory as soon as the native objects are garbage collected.
 
-If you decide on mapping the functionality of [kdb.h](../../src/include/kdb.h.in) 1:1 it is pretty straightforward - whereas if you want to adapt or enhance some API's to leverage language features like iterators or operator overloading feel free to do so. The less “alien” the binding feels to its users the better.
+If you decide on mapping the functionality of [kdb.h](../../src/include/kdb.h.in) 1:1 it is pretty straightforward - whereas if you want to adapt or enhance some APIs to leverage language features like iterators or operator overloading feel free to do so. The less “alien” the binding feels to its users the better.
 
 Remember that Elektra has internal iterators (for metadata+keysets) but in general we prefer external iterators by either copying the KeySet per iterator or using `ksAtCursor`.
 

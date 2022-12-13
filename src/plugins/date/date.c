@@ -387,7 +387,7 @@ static int rfc822StringValidation (const char * date)
 {
 	struct tm tm;
 	memset (&tm, 0, sizeof (struct tm));
-	for (int i = 0; rfc2822strings[i] != NULL; ++i)
+	for (int i = 0; rfc822strings[i] != NULL; ++i)
 	{
 		char * ptr = strptime (date, rfc822strings[i], &tm);
 		if (ptr)

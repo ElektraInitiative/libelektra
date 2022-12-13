@@ -127,12 +127,12 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
  * @param parentKey needed for adding warnings/errors
  * @param cur the key to generate the value from
  */
-static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
+static bool elektraGenValue (yajl_gen g, Key * parentKey, Key * cur)
 {
 	if (strcmp (keyName (parentKey), keyName (cur)) && !elektraGenOpenValue (g, cur))
 	{
 		ELEKTRA_LOG_DEBUG ("Do not yield value");
-		return;
+		return true;
 	}
 
 	ELEKTRA_LOG_DEBUG ("GEN value %s for %s", keyString (cur), keyName (cur));
@@ -172,6 +172,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "The key %s has unknown type: %s", keyName (cur), keyString (type));
 		yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 	}
+	return true;
 }
 
 int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
@@ -267,6 +268,28 @@ static void elektraCheckForEmptyArray (KeySet * ks)
 	}
 }
 
+static bool elektraCheckForInvalidMetaKey (Key * parentKey, KeySet * ks)
+{
+	Key * cur = 0;
+	for (elektraCursor it = 0; it < ksGetSize (ks); ++it)
+	{
+		cur = ksAtCursor (ks, it);
+		const KeySet * metaKeys = keyMeta (cur);
+		for (elektraCursor jt = 0; jt < ksGetSize (metaKeys); ++jt)
+		{
+			const Key * meta = ksAtCursor (metaKeys, jt);
+			const char * pos = (const char *) keyName (meta);
+			if (elektraStrCmp (pos, "meta:/type") != 0 && elektraStrCmp (pos, "meta:/array") != 0 &&
+			    elektraStrCmp (pos, "meta:/binary") != 0)
+			{
+				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "The Metakey %s is not supported by yajl", keyName (meta));
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 #if YAJL_MAJOR == 1
@@ -277,12 +300,21 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	yajl_gen_config (g, yajl_gen_beautify, 1);
 #endif
 
+	if (!elektraCheckForInvalidMetaKey (parentKey, returned))
+	{
+		yajl_gen_free (g);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
 	elektraCheckForEmptyArray (returned);
 
 	if (ksGetSize (returned) == 1 && !strcmp (keyName (parentKey), keyName (ksAtCursor (returned, 0))) &&
 	    keyGetValueSize (ksAtCursor (returned, 0)) > 1)
 	{
-		elektraGenValue (g, parentKey, ksAtCursor (returned, 0));
+		if (!elektraGenValue (g, parentKey, ksAtCursor (returned, 0)))
+		{
+			return -1;
+		}
 		int ret = elektraGenWriteFile (g, parentKey);
 		yajl_gen_free (g);
 		return ret;

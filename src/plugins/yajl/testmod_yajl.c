@@ -488,6 +488,27 @@ void test_readWrite (const char * fileName, KeySet * conf)
 	elektraPluginClose (plugin, 0);
 }
 
+void test_writeMetaMustFail (const char * fileName, KeySet * conf)
+{
+	printf ("Test write unknown meta keys must fail with %s\n", srcdir_file (fileName));
+
+	Plugin * plugin = elektraPluginOpen ("yajl", modules, conf, 0);
+	exit_if_fail (plugin != 0, "could not open plugin");
+	// printf ("Test with %s\n", srcdir_file(fileName));
+
+	Key * parentKey = keyNew ("user:/tests/yajl", KEY_VALUE, "asdf", KEY_META, "asdf", "asdf", KEY_END);
+	KeySet * keys = ksNew (1, keyNew ("user:/tests/yajl/asdf", KEY_VALUE, "asdf", KEY_META, "asdf", "asdf", KEY_END), KS_END);
+	succeed_if (plugin->kdbSet (plugin, keys, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+		    "kdbSet did not error on bogus meta key insertion");
+
+	elektraUnlink (keyString (parentKey));
+
+	keyDel (parentKey);
+	ksDel (keys);
+
+	elektraPluginClose (plugin, 0);
+}
+
 // TODO: make nicer and put to test framework
 #define succeed_if_equal(x, y) succeed_if (!strcmp (x, y), x)
 
@@ -730,6 +751,8 @@ int main (int argc, char ** argv)
 	test_readWrite ("yajl/testdata_empty_in_array1.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/testdata_empty_in_map2.json", ksNew (0, KS_END));
 	test_readWrite ("yajl/testdata_empty_in_map1.json", ksNew (0, KS_END));
+
+	test_writeMetaMustFail ("yajl/testdata_write_meta.json", ksNew (0, KS_END));
 
 	elektraModulesClose (modules, 0);
 	ksDel (modules);

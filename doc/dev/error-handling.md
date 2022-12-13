@@ -159,7 +159,7 @@ on a specific error key, warnings can be up to 100 entries (#0 - #\_99):
 
 Additional metakeys yield all the details. The warnings are stored in a special array format
 which range from 0 to \_99. E.g., the first warning number can be accessed by getting the key `warnings/#0/number`.
-The following metadatas are available and have the same semantics as the error metadata:
+The following metadata is available and have the same semantics as the error metadata:
 `[warnings/<number>/number]`, `[warnings/<number>/description]`,
 `[warnings/<number>/reason]`, `[warnings/<number>/module]`,
 `[warnings/<number>/file]`, `[warnings/<number>/line]`

@@ -53,7 +53,7 @@ The library `libelektra-core` must be kept minimal.
 
 ## Considered Alternatives
 
-### Alternative 1 - Per-parent key tracking withn `libelektra-kdb`
+### Alternative 1 - Per-parent key tracking within `libelektra-kdb`
 
 Do the per-parent-key tracking within `libelektra-kdb`, within the `kdbGet` and `kdbSet` operations.
 

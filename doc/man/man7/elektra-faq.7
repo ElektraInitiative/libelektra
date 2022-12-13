@@ -1,12 +1,12 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-FAQ" "" "March 2022" ""
+.TH "ELEKTRA\-FAQ" "" "October 2022" ""
 .SH "I Am Stuck\. Where Can I Get Help?"
-Please open an issue \fIhttps://git\.libelektra\.org/issues\fR\. You can simply remove all template text and it is enough if the issue only contains your question\. If you want you can label it as question \fIhttps://git\.libelektra\.org/issues/labels/question\fR, but we can also categorize it for you\.
+Please open an issue \fIhttps://git\.libelektra\.org/issues\fR\. You can simply remove all template text and it is enough if the issue only contains your question\. If you are unsure, label it as question \fIhttps://git\.libelektra\.org/issues/labels/question\fR\.
 .P
 Please do not waste too much time to find something out yourself\. Information where people get stuck is valuable to improve Elektra and its documentation\. Even if you find out directly after you posted the question: the pointer can be helpful for other people having the same problem\.
 .SH "Isn't it Easier to Implement a new Parser Than to use Elektra?"
-No, it is not\. And even if it were, the story does not end with implementing a configuration file parser but, at least, you also need:
+No, it is not\. And the story does not end with implementing a configuration file parser\. You also need:
 .IP "\(bu" 4
 operating\-system\-specific code to locate configuration files
 .IP "\(bu" 4
@@ -32,11 +32,18 @@ to see how useful it can be\.
 .P
 Longer answer:
 .P
-Elektra abstracts configuration settings \fIelektra\-glossary\.md\fR, something desperately needed within configuration management\. Instead of rewriting complete configuration files, which might create security problems, Elektra operates precisely on the configuration setting you want to change: leaving others as chosen by the application or distribution\. Furthermore, Elektra also allows us to \fIspecify\fR configuration settings, which again brings benefits for configuration management tools\.
+Elektra abstracts configuration settings \fIelektra\-glossary\.md\fR, something desperately needed within configuration management\. Instead of rewriting complete configuration files, which might create security problems due to ignoring distributions configuration files; Elektra operates precisely on the configuration setting you want to change: leaving others as chosen by the application or distribution\. Furthermore, Elektra also allows us to \fIspecify\fR configuration settings, which again brings benefits for configuration management tools\.
 .P
 Elektra is a radical step needed towards better configuration management: Let us fix how applications access configuration settings, so that we can properly access them, for example, from configuration management tools\.
 .P
-As an intermediate step, we can mount \fIelektra\-mounting\.md\fR existing configuration files and operate on them\.
+See our vision \fI/doc/VISION\.md\fR for an example\.
+.SH "If Elektra Already Exists so Long, why isn't it more Widespread?"
+There are two main reasons:
+.IP "1." 4
+Research: First we needed to explore the design space \fI/doc/dev/history\.md\fR\. At that time, Elektra provided little benefit, except for niche applications\. Then it was challenging to actually implement the vision \fI/doc/VISION\.md\fR\.
+.IP "2." 4
+Bootstrapping: Developers would like to have everything smooth and shiny, like packages available as are part of their distributions\. But Elektra only gets packaged if there are already application using Elektra\. We solved this problem in many intermediate steps \fI/doc/dev/history\.md\fR, e\.g\., allow mounting \fIelektra\-mounting\.md\fR legacy configuration files\.
+.IP "" 0
 .SH "Do We Retain the Old Way of Configuring Things, i\.e\. Manually Editing an INI File in /etc?"
 Absolutely, you can think of libelektra as a small library in C that reads a configuration file and returns a data structure if you do not use any of its advanced features\.
 .P
