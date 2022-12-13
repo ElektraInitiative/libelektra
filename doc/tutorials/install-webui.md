@@ -143,6 +143,7 @@ Now, the command
 
 ```sh
 curl http://localhost:33333/kdb/user/test
+#> {"exists":true,"name":"test","path":"user/test","ls":["user/test"],"value":"5","meta":""}
 ```
 
 will return us the value of the specified key `user:/test`, which is stored in the database right now
