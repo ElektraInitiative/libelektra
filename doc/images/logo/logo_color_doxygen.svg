@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   viewBox="336 80 56.957928 55"
+   width="56.957928pt"
+   height="55pt"
+   id="svg20"
+   sodipodi:docname="logo_color_doxygen.svg"
+   inkscape:export-filename="logo_color_doxygen.png"
+   inkscape:export-xdpi="12.815534"
+   inkscape:export-ydpi="12.815534"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview22"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt"
+     showgrid="false"
+     inkscape:zoom="8.1262136"
+     inkscape:cx="24.119474"
+     inkscape:cy="42.578256"
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg20" />
+  <metadata
+     id="metadata2"> Produced by OmniGraffle 7.5 
+    <dc:date>2017-12-29 11:18:11 +0000</dc:date>
+</metadata>
+  <defs
+     id="defs4" />
+  <g
+     stroke="none"
+     stroke-opacity="1"
+     stroke-dasharray="none"
+     fill="none"
+     fill-opacity="1"
+     id="g18"
+     transform="matrix(0.14620488,0,0,0.14620488,291.9524,73.221335)">
+    <title
+       id="title6">Canvas 1</title>
+    <g
+       id="g16">
+      <title
+         id="title8">Layer 1</title>
+      <path
+         d="M 372.45,230.89 C 392.0401,168.08195 455.3905,129.74225 520.12,141.52 474.25367,120.82614 420.5698,128.40492 382.2247,160.98726 343.87958,193.5696 327.7339,245.3259 340.75206,293.93128 353.7702,342.53667 393.62295,379.2947 443.12,388.35 383.1825,361.2382 352.86677,293.69167 372.45,230.89 Z"
+         fill="#2f418f"
+         id="path10" />
+      <path
+         d="M 547.22,353.82 C 483.0371,368.2626 418.16135,332.57275 396,270.63 c 5.0365,50.0519 38.4495,92.72733 85.8313,109.6247 47.38186,16.89735 100.25856,4.99464 135.82976,-30.5757 35.57119,-35.57034 47.47514,-88.44676 30.57894,-135.829 6.5057,65.4729 -36.8312,125.51916 -101.02,139.97 z"
+         fill="#409030"
+         id="path12" />
+      <path
+         d="m 565.48,144.06 c 44.6031,48.36475 46.1389,122.39706 3.58,172.57 4.3017,-3.09945 8.41247,-6.45554 12.31,-10.05 35.6227,-32.8283 50.08186,-82.71517 37.53556,-129.50473 C 606.35926,130.28572 568.8808,94.32557 521.61266,83.72388 474.3445,73.12219 425.0979,89.63091 393.77,126.58 447.2074,88.2055 520.8717,95.70449 565.48,144.06 Z"
+         fill="#dfa809"
+         id="path14" />
+    </g>
+  </g>
+</svg>
