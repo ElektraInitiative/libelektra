@@ -66,8 +66,8 @@ If this configuration option is set, elektra-web will load the configuration
 page for that instance instead of the main overview page.
 
 If you want to host elektra-web with the client and elektrad on the same
-instance, after starting elektrad via `kdb run-elektrad`, you can run start the
-client as follows:
+instance, you must first start elektrad via `kdb run-elektrad`. Afterwards, you can run the
+client with:
 
 ```sh
 INSTANCE="http://localhost:33333" kdb run-webd
@@ -105,48 +105,52 @@ Elektra web consists of multiple components:
 
 ## Test REST API on localhost
 
-In order to test API on localhost, you have to start elektrad instance. You can do it in two ways:
+In order to test the API on localhost, you have to start an elektrad instance. This is possible in two ways:
 
-- run manually (if you would like to start it manually, or you don't have eletrad-web tool installed)
+- manually (recommended if you would like to control elektrad manually or the eletrad-web tool is not installed)
 
-  - `cd libelektra/src/tools/web`
-  - `cd elektrad`
-  - `go build`
-  - `./elektrad`
+```sh
+cd libelektra/src/tools/web
+cd elektrad
+go build
+./elektrad
+```
 
-- by installing elektrad tool together with Elektra and run it
-  - please see the section `Building with elektra-web Tool`
+- by installing elektrad tool together with Elektra (see section [Building with elektra-web Tool](#building-with-elektra-web-tool))
 
-Now the server is running on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows sending REST API requests.
+Now the server is running on [http://localhost:33333](http://localhost:33333). After that you can test the API with help of Postman or
+similar tools that allow sending REST API requests.
 
-Additional note. It is recommended to install the elektrad tool than starting the server manually.
+**Additional note**: It is recommended to install the elektrad tool rather than starting the server manually.
 When Elektra is installed, the `kdb` command together with its tools is installed globally.
-For instance, whenever you would like to write any shell script, which has to start a REST API server, you can just add the following line `kdb run-elektrad` inside your file and save it.
-After that, the created shell script can be executed from any directory.
+For instance, whenever you would like to write a shell script which has to start a REST API server, you can just add
+`kdb run-elektrad` and execute it locally.
 
 Examples:
 
-let's create the new key-value pair `user:/test` and set its value to 5. You can do it next way:
+First create a new key-value pair `user:/test` and set its value to 5. This can be done
 
-- through the command terminal
+- using the command line
   ```sh
   kdb set user:/test 5
   ```
-- through the rest api using curl
+- through the rest API using curl
   ```sh
   curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
   ```
 
-The output of the commandline tool will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user:/test with string "5"`. Elektrad will respond with code `200`.
+The output of the commandline tool will be `Set string to "5"` if the key did not exist before.
+If the specified key didn't exist before, then the output will be `Create a new key user:/test with string "5"`.
+Elektrad will respond with code `200`.
 
-Now, the command
+The command
 
 ```sh
 curl http://localhost:33333/kdb/user/test
 #> {"exists":true,"name":"test","path":"user/test","ls":["user/test"],"value":"5","meta":""}
 ```
 
-will return us the value of the specified key `user:/test`, which is stored in the database right now
+will now return the value of the specified key `user:/test`, which is stored in the database.
 
 <!-- prettier-ignore-start -->
 
