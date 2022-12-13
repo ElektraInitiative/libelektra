@@ -384,7 +384,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fix typo in dev/hooks.md _(@dtdirect)_
 - <<TODO>>
-- <<TODO>>
+- Fixed typos in [INSTALL.md](../INSTALL.md) (@janldeboer)
 - <<TODO>>
 - Fixed Coverage Badge Link _(@janldeboer)_
 - <<TODO>>
