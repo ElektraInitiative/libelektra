@@ -91,8 +91,6 @@ This alternative conflicts with the constraint of minimal API.
 
 ## Implications
 
-- Some code needs to be updated from using cascading keys for general data to the new `KEY_NS_DATA`
-
 ## Related Decisions
 
 ## Notes
