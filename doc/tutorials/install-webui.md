@@ -33,7 +33,7 @@ To build Elektra with the elektra-web tool:
 
 - Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
 - You can now access the client on: [http://localhost:33334](http://localhost:33334)
-- You can also build it yourself in `scripts/docker/web/` (see [Building Docker Image](#building-docker-image))
+- You can also build it yourself in `scripts/docker/webui/` (see [Building Docker Image](#building-docker-image))
 
 ## Running from source
 
