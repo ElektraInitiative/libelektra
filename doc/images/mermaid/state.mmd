@@ -1,0 +1,24 @@
+stateDiagram-v2
+    direction LR
+
+    op1: opened
+    op2: opened
+    cl1: closed
+    cl2: closed
+    r: ready
+
+    state fork_state <<fork>> 
+     [*] --> fork_state
+     fork_state --> op1: kdbOpen()
+     fork_state --> op2: kdbOpen()
+     op1 --> r: kdbGet()
+     r --> op1: kdbSet() [conflict]
+     r --> r: kdbSet() [successful]
+     r --> r: kdbGet()
+     r --> cl1: kdbClose()
+     op2 --> cl2: kdbClose()
+
+    state join_state <<join>>
+     cl1 --> join_state    
+     cl2 --> join_state
+     join_state --> [*]
