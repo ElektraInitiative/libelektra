@@ -9,4 +9,12 @@ fi
 
 ARGS="-j@PROCESSOR_COUNT@ -LE kdbtests --force-new-ctest-process --output-on-failure --build-config $1"
 # shellcheck disable=SC2086
-ctest $ARGS || ctest $ARGS --rerun-failed
+if ! ctest $ARGS && [ "$ELEKTRA_AUTO_RERUN" = "1" ]; then
+	echo ""
+	echo "----------------------------------------"
+	echo "| Automatically rerunning failed tests |"
+	echo "----------------------------------------"
+	echo ""
+
+	ctest $ARGS --rerun-failed
+fi

@@ -572,6 +572,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add test using shellcheck _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
+- Only use `--rerun-failed` in `run_*` scripts, if `$ELEKTRA_AUTO_RERUN = 1`. _(@kodebach)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
