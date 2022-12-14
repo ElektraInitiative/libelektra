@@ -46,6 +46,10 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		# output on open/close
 		continue
 		;;
+	"xfconf")
+		# dbus is not enable on internal checks
+		continue
+		;;
 	"spec")
 		# hook - no placement
 		continue
