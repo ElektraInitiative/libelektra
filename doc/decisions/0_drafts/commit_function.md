@@ -17,8 +17,14 @@ This partial use of separate functions can be weird and unintuitive.
 ## Constraints
 
 - Plugins should not have internal state that tracks how often a function has been called to determine what the function should do next.
+- A plugin must always know which its current responsibilities and tasks are (i.e. in which phase it is).
+- Plugins inside a backend must be able to support different phases where they do different tasks.
+- The [contract](../../dev/backend-plugins.md) must be fulfilled.
 
 ## Assumptions
+
+- Reuseability is a good property for plugins.
+- We want to be able to combine different plugins so that they can work together to get tasks done.
 
 ## Considered Alternatives
 
