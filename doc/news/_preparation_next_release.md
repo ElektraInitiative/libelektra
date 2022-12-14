@@ -390,7 +390,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Add tutorial for manual installation from the AUR on Arch Linux _(@Bujuhu)_
 - <<TODO>>
-- Add markdown shell recorder validation to install.webui.md _(@deoknats861)_
+- Add Markdown shell recorder validation to install.webui.md _(@deoknats861)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
