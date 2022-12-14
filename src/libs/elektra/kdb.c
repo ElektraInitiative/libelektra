@@ -100,7 +100,7 @@ static void clearAllSync (KeySet * ks)
  * - a conflict detection (error C02000) and
  * - optimizations that avoid redoing already done operations.
  *
- * @image html state.png "State"
+ * @mermaid{state}
  * @image latex state.png "State"
  *
  * As we see in the figure, kdbOpen() can be called arbitrarily often in any
