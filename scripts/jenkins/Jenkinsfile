@@ -1431,7 +1431,7 @@ def ctest(target = "Test") {
   */
   sh """export \$(dbus-launch); ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
-          -E 'testmod_(dbus(recv)?|zeromqsend)' || ctest --rerun-failed"""
+          -E 'testmod_(dbus(recv)?|zeromqsend)'"""
 }
 
 /* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
@@ -1440,7 +1440,7 @@ def ctest(target = "Test") {
 def ctestcryptoplugins(target = "MemCheck") {
   sh """ctest --force-new-ctest-process \
         --output-on-failure --no-compress-output -T ${target} \
-        -R 'testmod_(crypto|fcrypt|gpgme)' || ctest --rerun-failed"""
+        -R 'testmod_(crypto|fcrypt|gpgme)'"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
