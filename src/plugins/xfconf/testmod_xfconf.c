@@ -18,7 +18,7 @@ static void test_basics (void)
 	KeySet * conf = ksNew (0, KS_END);
 	int statusCode = elektraXfconfInit (parentKey, 1, 1);
 	printf ("xfconf dry open returned: %d\n", statusCode);
-	if (!statusCode)
+	if (statusCode != 0)
 	{
 		printf ("WARNING: dry open xfconf failed, is dbus running? skipping tests\n");
 		return;
