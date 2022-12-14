@@ -49,7 +49,7 @@ TRIES=5
 
 check() {
 	link=$(echo "$1" | grep -oE "(https|http|ftp):[^|]*")
-	secure_link=$(echo "$1" | grep -oE "(https|ftp):[^|]*")
+	http_link=$(echo "$1" | grep -oE "http:[^|]*")
 	files=$(echo "$1" | grep -oE "\|.*" | sed 's/|/ /g')
 
 	if echo "$link" | grep -Eqf "$WHITELIST"; then
@@ -61,7 +61,7 @@ check() {
 		echo "check the link format of $1"
 		return
 	fi
-	if [ -z "$secure_link" ]; then
+	if [ -n "$http_link" ]; then
 		echo "link $1 is an http link but not whitelisted"
 		return
 	fi
