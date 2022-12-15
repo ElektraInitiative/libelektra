@@ -6,7 +6,7 @@ A `Key` in Elektra is identified by its name, which consists of a namespace and 
 There are two common representations for the name: escaped and unescaped.
 
 The unescaped form is essentially a single namespace byte plus and arbitrary-length sequence of arbitrary bytes, in which a `\0` byte separates parts.
-The escaped name is a more complicated representation as a `\0`-terminated string that maps 1:1 onto unescaped names.
+The escaped name is a `\0`-terminated string that maps 1:1 onto unescaped names.
 More details can be found in [the relevant docs](/doc/KEYNAMES.md).
 
 There is a conflict between these two forms in terms of API convenience and efficient execution.
@@ -17,8 +17,8 @@ Additionally, using the unescaped name often results in more performant code as 
 A particularly common example that highlights the difficulties in handling escaped names is splitting the name into parts.
 In the escaped name, this task requires correct handling of escape sequences, whereas in the unescaped name parts are always delimited by a `\0` byte.
 
-Of course a naive way to solve this dilemma is to say "why not both" and store both versions.
-However, this can result in a lot of memory use, so it is not immediately the best option.
+Before this decision, we stored both versions in every `Key`.
+However, this resulted in too much memory use, so we need to find another solution.
 
 The question now is, which representations should be used by `libelektra-core` and how.
 
@@ -35,8 +35,8 @@ The question now is, which representations should be used by `libelektra-core` a
 - In most cases the escaped name is used for convenience and not because of actual requirements.
 - The most common case for using the escaped name is UI: reading names from or displaying them in a user interface (e.g., `kdb` CLI)
 - In the constraint about order comparisons above, we assume that "fast enough" means "comparable to a single `memcmp`".
-  This is an assumption, because we do not have data showing this is a necessary requirement.
-  It may be possible to find a slower solution that is still "fast enough".
+  Profiling for previous implementations, not based on a single `memcmp` of unescaped names, showed the comparison as a bottleneck, while the current single-`memcmp` implementation does not show the bottleneck.
+  That said, it may be possible to find a solution slower than the current one that is still fast enough to avoid the previous bottleneck.
 
 ## Considered Alternatives
 
@@ -141,7 +141,7 @@ This saves some amount of memory and allocations, but makes internal code more d
 
 Go with "Only unescaped name, with separate namespace" from above:
 
-- Store only unescaped name inside `struct _Key`
+- Store only unescaped name with size inside `struct _Key`
 - API of `libelektra-core` will use unescaped name exclusively
 - Convenience functions using escaped names, will be provided via other libraries
 - Where appropriate the API will take the namespace as a separate argument to allow using `KEY_NS_*` constants.
