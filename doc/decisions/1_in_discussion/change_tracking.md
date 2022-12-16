@@ -63,7 +63,7 @@ The library `libelektra-core` must be kept minimal.
     - plugin changes value from `false` to `0`
     - consumers of the changetracking API will now get a false positive if they query whether `system:/background` has been changed
 
-- False negatives are not okay
+- False negatives (missed changes) are not okay
 
 ## Considered Alternatives
 
