@@ -27,7 +27,7 @@ Also allocating entirely new `Key`s just to change values, could lead to unneces
 The next simplest way to define the API, is to give the caller full direct access.
 
 The caller creates a `Key` with a `void *` and a `size_t`.
-Afterwards the caller an access and change them at any time in any way they want to.
+Afterwards, the caller can access and change them at any time in any way they want to.
 
 Basically, a `Key` would not have ownership of its value.
 It would just have a reference to it.
@@ -42,7 +42,7 @@ To fix the lifetime problems from above, a `Key` should own its value.
 That means when a `Key` is created with a `void *` and a `size_t`, `libelektra-core` does a `memcpy` to create a copy of the data.
 Changing the value works the same way.
 
-When the caller wants access to that the value again, they must provide a suitably sized buffer as a `void *` and `libelektra-core` will do a `memcpy` to give a copy of the value to the caller.
+When the caller wants access to the value again, they must provide a suitably sized buffer as a `void *` and `libelektra-core` will do a `memcpy` to give a copy of the value to the caller.
 
 This solves all lifetime problems, because `Key` fully owns its value and never even shares a reference with anyone.
 However, the `memcpy` on access is totally unnecessary when we just want to read the value.
@@ -83,7 +83,7 @@ int main (void) {
 ```
 
 This may become a problem, when values are shared between `Key`s via [Copy on Write](../2_in_progress/copy_on_write.md) copies.
-The only solution here is to clearly document, that value returned from a `Key` must not be modified in any way.
+The only solution here is to clearly document, that values returned from a `Key` must not be modified in any way.
 Modifications must only happen through the public `libelektra-core` API, or it is known that the value is not shared with another key.
 
 ### COW access
