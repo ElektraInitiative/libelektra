@@ -5,9 +5,17 @@
 A `Key` has a value, that much is clear.
 From the ["`Key` value types" decision](../3_decided/key_value_types.md) we know that all values are opaque byte-sequences of a known length.
 
-But how should the API for accessing and modifying the value of a `Key` look?
+The current API (at the time of writing), does not match the ["`Key` value types" decision](../3_decided/key_value_types.md) and needs to be redesigned.
+The aim of this decision is not to solve a specific problem with the current API, but instead to answer the general question:
+How should the API for accessing and modifying the value of a `Key` look?
+
+A simple solution to make the API match the ["`Key` value types" decision](../3_decided/key_value_types.md) would be to just remove the parts that are string-typed and keep the binary parts.
+While that is simple, it is in no way clear that this would be a good solution.
+Therefore, we need to explore and compare our options.
 
 ## Constraints
+
+- All values are opaque byte-sequences because of the ["`Key` value types" decision](../3_decided/key_value_types.md)
 
 ## Assumptions
 
@@ -33,13 +41,15 @@ Basically, a `Key` would not have ownership of its value.
 It would just have a reference to it.
 
 This solution could easily lead to various lifetime problems.
-By not owning the value, the `Key` cannot be reponsible for freeing it.
+By not owning the value, the `Key` cannot be responsible for freeing it.
+
+This option would also break the current COW implementation and might make COW entirely impossible.
 
 ### Buffers provided by caller
 
 To fix the lifetime problems from above, a `Key` should own its value.
 
-That means when a `Key` is created with a `void *` and a `size_t`, `libelektra-core` does a `memcpy` to create a copy of the data.
+That means when a `Key` is created with a `void *` and a `size_t`, `libelektra-core` does a `memcpy` (or similar) to create a copy of the data.
 Changing the value works the same way.
 
 When the caller wants access to the value again, they must provide a suitably sized buffer as a `void *` and `libelektra-core` will do a `memcpy` to give a copy of the value to the caller.
@@ -61,22 +71,32 @@ However, by omitting the `memcpy` for reading values, the value inside a `Key` i
 Take this example:
 
 ```c
+void keySetValue (Key * key, const void * value, size_t size)
+{
+    // NOT REAL CODE, but contains something similar to:
+    memcpy(key->value, value, size);
+}
+
+const void * keyGetValue (const Key * key)
+{
+    return key->value;
+}
+
 typedef struct {
     int a;
     char * b;
-} foo;
+} data;
 
-int main (void) {
+void foo (Key * key) {
     char arr[] = "test";
-    foo f = {.a = 1, .b = arr };
+    data f = {.a = 1, .b = arr };
 
-    foo g;
-    memcpy(&g, &f, sizeof(foo));
+    keySetValue (key, &f, sizeof(f));
 
-    const foo * h = &g;
+    const data * fPtr = keyGetValue (key);
 
-    // h->a = 7;   // ERROR: assignment of member 'a' in read-only object
-    h->b[0] = 'b'; // works fine, b is not const and C doesn't propagte the const from h to members
+    // fPtr->a = 7;   // ERROR: assignment of member 'a' in read-only object
+    fPtr->b[0] = 'b'; // works fine, b is not const and C doesn't propagte the const from fPtr to members
 
     return 0;
 }
@@ -84,7 +104,10 @@ int main (void) {
 
 This may become a problem, when values are shared between `Key`s via [Copy on Write](../2_in_progress/copy_on_write.md) copies.
 The only solution here is to clearly document, that values returned from a `Key` must not be modified in any way.
-Modifications must only happen through the public `libelektra-core` API, or it is known that the value is not shared with another key.
+Modifications must only happen through the public `libelektra-core` API, or it is known that the modification is guaranteed to be safe.
+
+> **Note**: It is likely the best option, to _not_ document any modifications as safe.
+> This way no modification is guaranteed to be safe, and any direct modification would be a mistake by the developer using `libelektra-core`.
 
 ### COW access
 
