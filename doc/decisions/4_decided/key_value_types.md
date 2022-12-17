@@ -10,9 +10,6 @@ But should we differentiate between different types of values?
 
 ## Assumptions
 
-- `libelektra-core` treats every type of value the same.
-  Everything is stored as an allocated buffer of a known-length containing an arbitrary byte-sequence.
-
 ## Considered Alternatives
 
 ### No types
@@ -59,6 +56,9 @@ Storing integers directly instead of boxing them in a buffer, may allow memory s
 
 Go with "No types" in `libelektra-core`, but provide functions for handling types in an extra library.
 
+> **Note**: This also means that `libelektra-core` does not handle things like `meta:/binary`.
+> This should instead be handled via the extra library, the `type` plugin, or replaced entirely with a new solution (e.g., assume binary unless `meta:/type = string`).
+
 ## Rationale
 
 From `libelektra-core`'s perspective there is no need to complicate things with different types of values.
@@ -72,7 +72,9 @@ By not caring about any types, we also don't need flags or knowledge about speci
 
 ## Implications
 
-- This decision affects the [`Key` value API](../0_drafts/key_value.md) decision.
+This decision has no direct implications on API.
+However, it affects the [`Key` value API](../0_drafts/key_value.md) decision, in that is limits the API to use type-less, opaque byte-sequences.
+Any implications on the API itself, will be decided and recorded in ["`Key` value API"](../0_drafts/key_value.md).
 
 ## Related Decisions
 
