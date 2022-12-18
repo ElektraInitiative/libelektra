@@ -1,3 +1,5 @@
+cargo-features = ["resolver"]
+
 [package]
 name = "elektra-sys"
 version = "@KDB_VERSION@"
@@ -9,8 +11,10 @@ license = "BSD-3-Clause"
 homepage = "https://www.libelektra.org/"
 repository = "https://master.libelektra.org/src/bindings/rust"
 documentation = "https://docs.rs/elektra-sys"
+resolver = "2"
 
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.50.0"
+bindgen = "= 0.50.0"
+object = "< 0.30.0"

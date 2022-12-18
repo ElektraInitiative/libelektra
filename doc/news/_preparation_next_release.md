@@ -273,9 +273,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### rust
 
-- <<TODO>>
+- fix "feature `resolver` is required" error _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
