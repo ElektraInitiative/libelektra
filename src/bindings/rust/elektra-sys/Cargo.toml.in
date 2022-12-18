@@ -17,3 +17,4 @@ resolver = "2"
 
 [build-dependencies]
 bindgen = "= 0.50.0"
+object = "< 0.30.0"
