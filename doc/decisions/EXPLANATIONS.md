@@ -69,9 +69,9 @@ It should make clear how the implementation should be done.
 
 Give all details why the solution:
 
-  - solves the problem best
-  - is best in line with our goals
-  - fulfills all constraints and assumptions
+- solves the problem best
+- is best in line with our goals
+- fulfills all constraints and assumptions
 
 Also describe all drawbacks the solution has.
 
