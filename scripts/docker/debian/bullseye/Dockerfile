@@ -70,7 +70,6 @@ RUN apt-get update && apt-get -y install \
         reprepro \
         ruby \
         ruby-dev \
-        rustc \
         shellcheck \
         swig4.0 \
         systemd \
@@ -153,3 +152,6 @@ RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
     && pip3 install cpp-coveralls \
     && deactivate
 ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"
+
+# rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -y
