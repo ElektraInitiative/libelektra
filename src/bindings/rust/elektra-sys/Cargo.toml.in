@@ -17,3 +17,4 @@ resolver = "2"
 
 [build-dependencies]
 bindgen = "0.50.0"
+backtrace = "0.3.66" # to fix problem with object-0.30.0 not working on bullseye's rustc
