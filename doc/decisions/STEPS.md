@@ -27,8 +27,8 @@ Short summary:
 2. A decision PR that wants to merge a decision as "Decided" must:
    1. Only contain changes to one decision.
    2. Already start with the decision as "Decided".
-   3. Already have a clearly stated problem and all the considered alternatives fully explored.
-   4. Only contain discussions/reviews about deciding between one of the considered alternatives or details thereof.
+   3. Already have a clearly stated problem and all the solutions fully explored.
+   4. Only contain discussions/reviews about deciding between one of the solutions or details thereof.
    5. If there is any change in the direction of the decision then the PR cannot be merged as "Decided". The decision must at least be moved back to "In Review".
 3. After a decision is merged as "Decided", it can be moved to "Partially Implemented" or "Implemented" by any PR.
 
@@ -70,7 +70,7 @@ Here you must ensure:
 
 - problem, constraint and assumptions are well-explained and sound
 - links from/to related decisions are created
-- there are several considered alternatives, each with rationale and implication
+- there are several solutions described, each with rationale and implication
 - "Decision", "Rationale" and "Implications" are **not** yet filled out if there are people arguing for different options
 
 Here the decision should not only have one decision but should describe several solutions.
@@ -78,8 +78,8 @@ For each solution a proposal, rationale and optionally implications should be gi
 
 > The alternatives are clear if all reviewers understand the given alternatives and no reviewer can come up with better alternatives.
 > The solution space is clear.
-> I.e. the trade-offs, combinations and pros/cons of the considered alternatives are explored.
-> Decision author and reviewers are satisfied that every useful considered alternative is present in the decision.
+> I.e. the trade-offs, combinations and pros/cons of the solutions are explored.
+> Decision author and reviewers are satisfied that every useful solution is present in the decision.
 
 ## In Review
 

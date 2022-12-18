@@ -30,7 +30,7 @@ List all constraints given by:
 - the scope (i.e. describe what shouldn't change)
 
 > Note:
-> The decision (but not necessarily the considered alternatives) must fulfill all constraints.
+> The decision (but not necessarily the solutions) must fulfill all constraints.
 
 ## Assumptions
 
@@ -44,9 +44,9 @@ Assumptions are what we believe to be true but do not or cannot really know, e.g
 - problems/risks that might turn up
 
 > Note:
-> The decision (but not necessarily the considered alternatives) must not break any assumptions.
+> The decision (but not necessarily the solutions) must not break any assumptions.
 
-## Considered Alternatives
+## Solutions
 
 This is a list of all alternative solutions and a rationale why the alternatives were not taken, e.g. because:
 
@@ -61,18 +61,18 @@ This is a list of all alternative solutions and a rationale why the alternatives
 ## Decision
 
 Here should be a detailed description of the best solution, i.e., the decision.
-It should:
+It should make clear how the implementation should be done.
 
-- give all details why the solution:
-  - solves the problem best
-  - is best in line with our goals
-  - fulfills all constraints and assumptions
-- describe what needs to be changed
-- make clear how the implementation should be done
+> Referring back to the solutions written above is allowed.
 
 ## Rationale
 
-Here is the description why the decision is the best solution.
+Give all details why the solution:
+
+  - solves the problem best
+  - is best in line with our goals
+  - fulfills all constraints and assumptions
+
 Also describe all drawbacks the solution has.
 
 ## Implications
