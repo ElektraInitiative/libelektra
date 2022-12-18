@@ -69,7 +69,6 @@ It is especially important that one shouldn't have a fixed mind-set about a pref
 Here you must ensure:
 
 - problem, constraint and assumptions are well-explained and sound
-- consistency with other decisions
 - links from/to related decisions are created
 - there are several considered alternatives, each with rationale and implication
 - "Decision", "Rationale" and "Implications" are **not** yet filled out if there are people arguing for different options
@@ -78,15 +77,19 @@ Here the decision should not only have one decision but should describe several 
 For each solution a proposal, rationale and optionally implications should be given.
 
 > The alternatives are clear if all reviewers understand the given alternatives and no reviewer can come up with better alternatives.
+> The solution space is clear.
+> I.e. the trade-offs, combinations and pros/cons of the considered alternatives are explored.
+> Decision author and reviewers are satisfied that every useful considered alternative is present in the decision.
 
 ## In Review
 
-- You must include all further alternative proposals made in the "Considered Alternatives" section.
-- Now it is allowed to have the decision from the previous round in the "Decision" section.
+Now it is allowed to have the decision from the previous round in the "Decision" section.
+In this step, the last details of the chosen decision get polished:
 
-> For decisions "In Review" the solution space is clear.
-> I.e. the trade-offs, combinations and pros/cons of the considered alternatives are explored.
-> Decision author and reviewers are satisfied that every useful considered alternative is present in the decision.
+- consistency with other decisions
+- links from/to related decisions checked
+- "Decision", "Rationale" and "Implications" are fully filled out
+
 > Without merges in between, this is the last step reachable for a decision PR that started in "Drafts".
 
 ## Decided
