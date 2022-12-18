@@ -77,7 +77,7 @@ Here you must ensure:
 Here the decision should not only have one decision but should describe several solutions.
 For each solution a proposal, rationale and optionally implications should be given.
 
-> The alternatives are clear if all reviewers understand the given alternatives and no reviewers can come up with new alternatives.
+> The alternatives are clear if all reviewers understand the given alternatives and no reviewer can come up with better alternatives.
 
 ## In Review
 
