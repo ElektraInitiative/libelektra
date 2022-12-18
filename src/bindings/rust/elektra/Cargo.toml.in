@@ -14,4 +14,4 @@ resolver = "2"
 
 [dependencies]
 elektra-sys = { version = "@KDB_VERSION@", path = "../elektra-sys" }
-bitflags = "1.1.0"
+bitflags = "= 1.1.0"
