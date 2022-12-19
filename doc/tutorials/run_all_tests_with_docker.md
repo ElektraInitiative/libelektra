@@ -10,7 +10,7 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ## Prerequisites
 
-- Docker for Linux containers has to be pre-installed. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows. Alternatively, you can use the Podman container engine, see [Using Podman instead of Docker](doc/tutorials/using_podman_instead_of_docker.md).
+- Docker for Linux containers has to be pre-installed. Please refer to [https://docs.docker.com/install/](https://docs.docker.com/install/) if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows. Alternatively, you can use the Podman container engine, see [Using Podman instead of Docker](doc/tutorials/using_podman_instead_of_docker.md).
 - Basic knowledge of Docker (not mandatory)
 
 ## Podman support
