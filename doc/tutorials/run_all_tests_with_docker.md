@@ -73,7 +73,7 @@ docker pull hub-public.libelektra.org/<image_name>:<tag_name>
 Example:
 
 ```shell
-docker pull hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
+docker pull hub-public.libelektra.org/build-elektra-debian-bullseye:202212-96dfa4c7e15462369375db000361ff9bf71076c7bfe27464eef18d03b2d84344
 ```
 
 ### 2. Run the Docker Container
