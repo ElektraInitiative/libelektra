@@ -61,6 +61,7 @@ Elektra:
 - [Contributing with Visual Studio (Windows)](contributing-windows.md)
 - [Run all Tests with Docker](run_all_tests_with_docker.md)
 - [Run Reformatting with Docker](run_reformatting_script_with_docker.md)
+- [Using Podman instead of Docker](using_podman_instead_of_docker.md)
 - [Language Bindings](language-bindings.md)
 - [Code Generator](code-generator.md)
 - [Benchmarking](benchmarking.md)
