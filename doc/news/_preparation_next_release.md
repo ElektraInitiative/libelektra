@@ -411,6 +411,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Use `code` blocks to prevent Markdown from falsy rendering LaTeX _(@stefnotch)_, _(@janldeboer)_
+- Add description how to use restyled when pushed incorrect formatted code _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - Fix broken links in use cases for KDB after files were renamed. _(Florian Lindner @flo91)_
 - <<TODO>>
