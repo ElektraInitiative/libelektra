@@ -69,3 +69,13 @@ scripts/dev/fix-spelling
 ```
 
 All your spelling errors should be fixed afterwards.
+
+### 4. Publish the Changes
+
+After the work, reformat and the spelling fixes are done, the changes should be committed and pushed via Git.
+Afterwards it is possible that restyled fails within the CI and reports a failed pipeline to GitHub.
+This can happen if you have changed something between reformatting and the commit.
+However, in this case you do not have to reformat locally again.
+In most cases it is sufficient to click on the restyled link in the "Checks" section of the pull request.
+The link will contain a `curl` command which can be copy-pasted in your shell to fix the issue.
+After pushing again, restyled should be fine.
