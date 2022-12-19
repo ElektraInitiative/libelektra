@@ -269,8 +269,10 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### jna
 
-- Documentation: Improved build instructions _(@Bujuhu)_
 - <<TODO>>
+- <<TODO>>
+- Documentation: Improved build instructions _(@Bujuhu)_
+- Add validation on get for whitelist plugin _(@Bujuhu)_
 - <<TODO>>
 
 ### rust
