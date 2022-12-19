@@ -27,7 +27,7 @@ The urgency of this decision is that API can be easily introduced later but we c
 
 ## Decision
 
-The exact API changes are not listed here, because it would just a long list that could just as easily be found in the git history.
+The exact API changes are not listed here, because it would just a long list that could just as easily be found in the Git history.
 
 However, the API changes follow these rules:
 

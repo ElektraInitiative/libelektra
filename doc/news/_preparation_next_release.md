@@ -368,6 +368,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Update example Ansible playbook in VISION.md _(@Bujuhu)_
 - <<TODO>>
+- Harmonize spelling of Git _(@Joni1993)_
 - Update packaging instructions for Fedora _(@0x6178656c)_
 - <<TODO>>
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_

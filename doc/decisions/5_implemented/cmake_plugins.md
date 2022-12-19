@@ -20,7 +20,7 @@
 ## Considered Alternatives
 
 - have one more mapping that describes folder <-> plugins (bad coherence)
-- directly use README.md to also describe cmake deps (too limited in expression)
+- directly use README.md to also describe CMake deps (too limited in expression)
 - split up AddPlugin.cmake and CMakeLists.txt (does not work well with variants)
 - simply adding all directories in src/plugins and decide within the `add_plugin`
   if we should drop the plugin (see below in Rationale)
@@ -69,7 +69,7 @@ Maintaining additional mappings is very time-consuming.
 Simply adding all plugins directories is problematic.
 It would:
 
-- clutter the cmake output (especially in the case of errors)
+- clutter the CMake output (especially in the case of errors)
 - introduce more variables into the CMakeCache which are irrelevant for the user
 - maybe even find libraries in wrong versions which are incompatible to what other plugins need
 

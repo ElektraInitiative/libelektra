@@ -120,7 +120,7 @@ instead of `ini`).
 `Conflicting State Errors` are errors where the current state is incompatible
 with the attempted operation. These kind of errors are usually in resolver
 plugins when the state of the file has changed without the system knowing. An
-example would be to try to push your changes into a git repository where the
+example would be to try to push your changes into a Git repository where the
 remote branch has already changed. Try to synchronize your internal state and
 retry to get rid of this error. Examples are the need for calling `kdbGet`
 before `kdbSet`.

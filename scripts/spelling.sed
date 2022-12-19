@@ -40,6 +40,7 @@ s/\<[CcFf]engine/CFEngine/g
 
 # Only fix spelling of GitHub outside of URLs:
 s/([^.`\/-])[Gg]it[hH]ub([^.][^\w])/\1GitHub\2/g
+s/\b([G][iI][tT]|([g]((iT)|(It))))\b/Git/g
 
 s/\<[Ll]ibre[ ]?[Oo]ffice/LibreOffice/g
 s/([^./[-])\<mark[Dd]own\>/\1Markdown/g

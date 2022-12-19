@@ -74,7 +74,7 @@ Furthermore, there are following experimental resolvers:
 
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
 - [curlget](curlget/) fetches configuration file from a remote host
-- [gitresolver](gitresolver/) checks out and commits files to a local git repository
+- [gitresolver](gitresolver/) checks out and commits files to a local Git repository
 - [multifile](multifile/)
 
 ### Storage

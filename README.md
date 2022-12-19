@@ -141,7 +141,7 @@ Go to the [website](https://www.libelektra.org), see the [news](doc/news/), and 
 
 ## Download
 
-Elektra uses a [git repository at GitHub](https://github.com/ElektraInitiative/libelektra).
+Elektra uses a [Git repository at GitHub](https://github.com/ElektraInitiative/libelektra).
 
 You can clone the latest version of Elektra by running:
 

@@ -239,7 +239,7 @@ We use a similar style for CMake as we do for other code:
 - Add a space character before round parenthesis ( `(` ).
 - Use lower case for command names (e.g. `set` instead of `SET`)
 
-#### cmake format
+#### CMake format
 
 We use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
 `cmake-format` currently does not support tabs, we use the standard command `unexpand` to fix this issue. For example, to reformat the
@@ -259,7 +259,7 @@ Since `cmake-format` is written in [Python](https://www.python.org) you usually 
 pip install cmakelang[yaml]==0.6.13
 ```
 
-Please make sure, that you install the correct version (`0.6.13`) of cmake format:
+Please make sure, that you install the correct version (`0.6.13`) of cmake-format:
 
 ```sh
 cmake-format --version
@@ -297,11 +297,11 @@ scripts/dev/reformat-cmake cmake/CMakeLists.txt
 
 ##### Tool Integration
 
-If you work on CMake code quite often you probably want to integrate cmake format into your development workflow. The homepage of [cmake format](https://github.com/cheshirekow/cmake_format#integrations) list some integration options.
+If you work on CMake code quite often you probably want to integrate cmake-format into your development workflow. The homepage of [cmake-format](https://github.com/cheshirekow/cmake_format#integrations) list some integration options.
 
 ###### TextMate
 
-While TextMate does not support cmake format directly, you can quickly create a command that applies `cmake-format` every time you save a CMake file yourself. The steps below show one option to do that.
+While TextMate does not support cmake-format directly, you can quickly create a command that applies `cmake-format` every time you save a CMake file yourself. The steps below show one option to do that.
 
 1. Open the “Bundle Editor”: Press <kbd>^</kbd> + <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>B</kbd>
 2. Create a new command:
@@ -588,7 +588,7 @@ Links between Markdown files will be converted with the
 provide a proper encoding!**
 
 - use `@` to start Doxygen tags
-- Do not duplicate information available in git in Doxygen comments.
+- Do not duplicate information available in Git in Doxygen comments.
 - Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file headers).
 
 ### File Headers
@@ -612,7 +612,7 @@ Note:
   so that your file gets listed at https://doc.libelektra.org/api/master/html/files.html
 
 The duplication of the filename, author and date is not needed, because
-this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.
+this information is tracked using Git and [doc/AUTHORS.md](AUTHORS.md) already.
 
 ## Further Readings
 
