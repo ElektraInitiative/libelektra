@@ -566,7 +566,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Shell Recorder
 
 - <<TODO>>
-- <<TODO>>
+- Add check if file exists. _(@0x6178656c)_
 - <<TODO>>
 
 ### C++
@@ -597,6 +597,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Adapt npm build flags to remove reproducability issues _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
+- Fix creation of shell recorder tests. _(@0x6178656c)_
 
 ### Docker
 
