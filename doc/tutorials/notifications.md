@@ -54,8 +54,7 @@ the system operator.
 System operators can mount the desired transport plugins and configure them
 (e.g. set channel, host, port and credentials) globally.
 
-They need to mount both sending and receiving plugins in order to use a
-transport.
+They need to mount both sending and receiving plugins in order to use transport.
 
 ```sh
 kdb global-mount dbus announce=once dbusrecv
@@ -68,7 +67,7 @@ Plugins usable as transport plugin are marked with `notification` on the
 
 Developers do not need to change their programs in order to start sending
 notifications.
-However without the integration of an I/O binding notifications _may_ be sent
+However, without the integration of an I/O binding notifications _may_ be sent
 synchronously which would block normal program execution.
 For programs without time constraints (e.g. CLI programs) this may not be
 important, but for GUIs or network services this will have negative impact.
@@ -119,7 +118,7 @@ Make sure to compile/link with `pkg-config --libs --cflags elektra-io-uv`.
 
 ## How to receive notifications
 
-Since many different I/O management libraries exist (e.g. libuv, glib or libev)
+Since there are many different I/O management libraries (e.g. libuv, glib or libev),
 the transport plugins use the I/O interface for their I/O operations.
 Each I/O management library needs its own I/O binding.
 Developers can also create their own I/O binding for the I/O management library
@@ -282,7 +281,7 @@ keyDel (elektraKey);
 
 Since our application needs to repeatedly initialize KDB on
 configuration changes we need to create a function which cleans
-up and reinitializes KDB.
+up and re-initializes KDB.
 
 ```C
 void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
@@ -318,7 +317,7 @@ The last step is to connect the registration for changes to the
 Directly calling the function is discouraged due to tight coupling (see
 guidelines in the next section) and also results in an application crash since
 the notification API is closed while processing notification callbacks.
-Therefore we suggest to add a timer operation with a sufficiently small interval
+Therefore, we suggest to add a timer operation with a sufficiently small interval
 which is enabled only on configuration changes.
 This timer will then call the initialization function.
 
@@ -346,7 +345,7 @@ void elektraChangedCallback (Key * changedKey, void * context)
 }
 ```
 
-Finally we disable the timer in the initialization function:
+Finally, we disable the timer in the initialization function:
 
 ```C
 void initKdb (void)
@@ -386,7 +385,7 @@ For example, take the following sequence of events:
 1. application `A` changes its configuration
 2. application `B` receives a notification about the change from `A` and updates its configuration
 
-Given these two steps the sequence could be a case of _wanted_ emergent behavior:
+Given these two steps, the sequence could be a case of _wanted_ emergent behavior:
 Maybe application `B` keeps track of the number of global configuration
 changes.
 Now consider adding the following events to the sequence:
@@ -405,15 +404,15 @@ the components.
 This system behavior is called _emergent behavior_ if it cannot be explained
 from its components but only from analysis of the whole system.
 
-Emergent behavior can be beneficial for a system, for example, useful cooperation
-in an ant colony but it also has disadvantages.
+Emergent behavior can be beneficial for a system. An example from nature is
+useful cooperation in an ant colony. Nevertheless, it also has disadvantages.
 Systems that bear _unwanted_ emergent behavior are difficult to manage and
 experience failures in the worst case.
 This kind of unwanted emergent behavior is called
 [_emergent misbehavior_](https://dl.acm.org/doi/10.1145/1217935.1217964).
-Examples of emergent misbehavior are traffic jams or the
-[Millenium Footbridge](https://researchcourse.pbworks.com/f/structural+engineering.pdf)
-[incident in London](https://www.sciencedaily.com/releases/2005/11/051103080801.htm).
+Examples of emergent misbehavior are traffic jams or the Millennium Footbridge incident in London
+(see [scientific paper](https://researchcourse.pbworks.com/f/structural+engineering.pdf)
+or [news article](https://www.sciencedaily.com/releases/2005/11/051103080801.htm)).
 
 An evaluation of Elektra's notification feature shows that it can exhibit the
 following symptoms:
@@ -519,7 +518,11 @@ uses more resources than other operations like `kdbGet()` or `kdbSet()`.
 ## Logging
 
 In order to analyze application behavior the [logging plugins](https://www.libelektra.org/plugins/readme#notification-and-logging)
-can be used with the `get=on` option when mounting:
+([syslog](https://www.libelektra.org/plugins/syslog),
+[journald](https://www.libelektra.org/plugins/journald) or
+[logchange](https://www.libelektra.org/plugins/logchange)) can be used.
+In order to log not only `kdbSet()` but also `kdbGet()`, the option `get=on`
+should be used when mounting these plugins.
 
 ```sh
 kdb global-mount syslog get=on
@@ -538,18 +541,3 @@ Existing I/O bindings provide a good inspiration on how to implement a custom
 binding.
 Since a binding is generic and not application specific it is much appreciated
 if you contribute your I/O binding back to the Elektra Initiative.
-
-## Logging
-
-In order to log and analyze application behavior the logging plugins
-["syslog"](https://www.libelektra.org/plugins/syslog),
-["journald"](https://www.libelektra.org/plugins/journald) or
-["logchange"](https://www.libelektra.org/plugins/logchange) can be used.
-In order to log not only `kdbSet()` but also `kdbGet()` the option `log/get=1`
-should be used when mounting these plugins.
-
-For example:
-
-```
-$ kdb global-mount syslog log/get=1
-```

@@ -407,7 +407,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Enhance notifications.md in doc/tutorial _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
