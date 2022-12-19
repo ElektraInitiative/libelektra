@@ -124,6 +124,14 @@ The differences are 21 ms for the old implementation and 12 ms for the copy-on-w
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### yajl
+
+- <<TODO>>
+- <<TODO>>
+- Fix an issue where trying to set invalid meta-keys won't show an error _(Juri Schreib @Bujuhu)_
+- <<TODO>>
+- <<TODO>>
+
 ### list
 
 - Removed the `list` plugin. _(Maximilian Irlinger @atmaxinger)_
@@ -138,7 +146,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Fix broken /pythongen link on homepage _(@stefnotch)_
 - Fix redirect logic to not cause loops _(@stefnotch)_
-- <<TODO>>
+- Remove duplicated link to `TESTING.md` file _(@stefnotch)_, _(@janldeboer)_
 
 ### toml
 
@@ -155,11 +163,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - elektraQuickdumpSet: don't fclose if stdout _(@hannes99)_
 
-### <<Plugin>>
+### blockresolver
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add encoding test for blockresolver read _(@dtdirect)_
+- Refactor and restructure blockresolver _(@dtdirect)_
 
 ### mmapstorage
 
@@ -170,6 +177,17 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### <<Plugin>>
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### date
+
+- Fix an Issue with validationg RFC 822 date-times _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Improve Code Coverage _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+
+### csvstorage
+
+- Fix a bug where writing unkown meta keys will fail silently _(Juri Schreib @Bujuhu)_
 - <<TODO>>
 - <<TODO>>
 
@@ -255,9 +273,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### rust
 
-- <<TODO>>
+- fix "feature `resolver` is required" error _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
@@ -320,6 +338,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fix warning parsing in shell recorder _(@Joni1993)_
 - <<TODO>>
+- Replaced `egrep` by `grep -E` _(@0x6178656c and @janldeboer)_
 - <<TODO>>
 - <<TODO>>
 - Add audit-dependencies script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
@@ -347,16 +366,16 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Update AUR Link from `elektra` to `libelektra` package _(@Bujuhu)_
 - <<TODO>>
 - <<TODO>>
-- Update example ansible playbook in VISION.md _(@Bujuhu)_
-- <<TODO>>
+- Update example Ansible playbook in VISION.md _(@Bujuhu)_
 - <<TODO>>
 - Harmonize spelling of Git _(@Joni1993)_
+- Update packaging instructions for Fedora _(@0x6178656c)_
 - <<TODO>>
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
+- fix various spelling errors _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- Denoted pacakage names & global variable names in [INSTALL.md](../INSTALL.md) as `Code` _(@janldeboer)_
+- Denoted package names & global variable names in [INSTALL.md](../INSTALL.md) as `Code` _(@janldeboer)_
 - <<TODO>>
 - Improve readability of doc/tutorials/highlevel.md _(@deoknats861)_
 - Improve reference to Podman documentation _(@0x6178656c)_
@@ -377,6 +396,48 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Fix broken links in use cases for KDB after files were renamed. _(Florian Lindner @flo91)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Write about [history](/doc/dev/history.md) to make plans of Elektra's adoption more clear. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Use Cases
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Improve Use Cases [Template](/doc/usecases/template.md) _(@kodebach and Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Use cases for [KDB](/doc/usecases/kdb) _(@kodebach)_
+- Use cases for `libelektra-core` _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -451,7 +512,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Make namespaces tutorial verifiable _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 

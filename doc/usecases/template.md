@@ -2,11 +2,11 @@
 
 ## Summary
 
-- **Title:** <Title, e.g. Authenticate>
-- **Scope:** <Scope, e.g. Authentication>
-- **Level:** <Level, e.g. User Goal>
-- **Actors:** <Actors, e.g. Anonymous User>
+- **Scope:** <e.g. Authentication>
+- **Level:** <Cloud | Kite | Sea | Underwater | Clam>
+- **Actors:** <e.g. API User, Administrator>
 - **Brief:** <Short explanation, e.g. User authenticates against the service to gain more privileges>
+- **Status:** <Draft | Decided | Implemented>
 
 ## Scenarios
 

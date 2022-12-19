@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git diff origin/master -- doc/news/_preparation_next_release.md | egrep "^\+.+_\(.+\)_"
+git diff origin/master -- doc/news/_preparation_next_release.md | grep -E "^\+.+_\(.+\)_"
 if [ $? != "0" ]; then
 	linesChanged=$(git diff --numstat origin/master -- doc/news/_preparation_next_release.md | cut -f1)
 	if [ -n "$linesChanged" ] && [ "$linesChanged" -ge "5" ]; then

@@ -428,7 +428,7 @@ More specifically, certain key name parts will be interpreted as array indices u
 
 <!-- TODO: link to detailed array documentation -->
 
-We already mentioned above, that array parts have canonical and non-canoncial forms.
+We already mentioned above, that array parts have canonical and non-canonical forms.
 
 A canonical array part is a hash-sign `#` followed by `n` underscores (`_`) followed by `n+1` digits.
 Additionally, the digits must form a number greater than or equal to `0` and less than or equal to 9223372036854775807 (= `2^63 - 1`).

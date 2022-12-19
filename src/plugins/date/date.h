@@ -25,19 +25,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT;
  *
  */
 
-const char * rfc822strings[] = { "%a, %d %b %y %T",
-				 "%d %b %y %T",
-				 "%a, %d %b %y %H:%M",
-				 "%d %b %y %H:%M",
-				 "%a, %d %b %y %T %z",
-				 "%d %b %y %T %z",
-				 "%a, %d %b %y %H:%M %z",
-				 "%d %b %y %H:%M %z",
-				 "%a, %d %b %y %T %Z",
-				 "%d %b %y %T %Z",
-				 "%a, %d %b %y %H:%M %Z",
-				 "%d %b %y %H:%M %Z",
-				 NULL };
+const char * rfc822strings[] = { "%a, %d %b %y %T %z", "%d %b %y %T %z", "%a, %d %b %y %H:%M %z", "%d %b %y %H:%M %z", NULL };
 
 
 /*

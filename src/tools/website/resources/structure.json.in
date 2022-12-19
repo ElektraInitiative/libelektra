@@ -123,23 +123,6 @@
                 }],
                 "dev-comment": ""
             },
-			{
-                "name": "Testing",
-                "type": "parsereadme",
-                "ref": "testing",
-                "options": {
-                    "path": "doc/TESTING.md",
-                    "target_file": [],
-                    "parsing": {
-                        "section_regex": "## ([^#]+)",
-                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-                    },
-                    "name": {
-                        "make_pretty": false
-                    }
-                },
-                "dev-comment": ""
-            },
             {
                 "name": "Tutorials",
                 "type": "parsereadme",

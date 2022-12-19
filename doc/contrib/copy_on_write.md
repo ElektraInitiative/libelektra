@@ -8,7 +8,7 @@ As a consequence, duplicated keys or keysets only require a fraction of the memo
 
 ## Working principle
 
-The main principle for the copy-on-write approach is simple: seperate the data from the identity of a `Key` or `KeySet`.
+The main principle for the copy-on-write approach is simple: separate the data from the identity of a `Key` or `KeySet`.
 Developers using Elektra only get references to `Key` and `KeySet` objects.
 Those objects themselves do not hold any data.
 They only contain references to other entities holding the data.
@@ -73,7 +73,7 @@ All entities are reference counted.
 The reference count is stored in each entity in an unsigned 16-bit integer variable `refs`.
 The special value `UINT16_MAX` is reserved as an error indicator, so the maximum number of references for each entity is `UINT16_MAX - 1` or 65534.
 
-The reference counting mechanismns for `Key` and `KeySet` are part of the public API.
+The reference counting mechanisms for `Key` and `KeySet` are part of the public API.
 
 A reference count of 0 for `KeyName`, `KeyData` and `KeySetData` is illegal outside the public API function calls that cause the creation/deletion these structures.
 

@@ -7,18 +7,14 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <kdbconfig.h>
 #include <kdbinternal.h>
-
+#include <stdio.h>
+#include <string.h>
 #include <tests_plugin.h>
 
-static void test_BlockresolverRead (char * fileName)
+static void test_BlockresolverRead (char const * fileName, char const * keyName, char const * expectedKeyValue)
 {
-	Key * parentKey = keyNew ("system:/test/blockresolver-read", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	Key * parentKey = keyNew (keyName, KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("system:/path", KEY_VALUE, srcdir_file (fileName), KEY_END),
 			       keyNew ("system:/identifier", KEY_VALUE, "### block config", KEY_END), KS_END);
 	KeySet * modules = ksNew (0, KS_END);
@@ -30,7 +26,10 @@ static void test_BlockresolverRead (char * fileName)
 	output_error (parentKey);
 	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
 	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed");
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "system:/test/blockresolver-read/key", 0)), "inside block"),
+	char keySuffix[strlen (keyName) + 5];
+	strcpy (keySuffix, keyName);
+	strcat (keySuffix, "/key");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, keySuffix, 0)), expectedKeyValue),
 		    "blockresolver failed to resolve requested block");
 	elektraPluginClose (storage, 0);
 	elektraPluginClose (resolver, 0);
@@ -41,7 +40,7 @@ static void test_BlockresolverRead (char * fileName)
 	keyDel (parentKey);
 }
 
-static void test_BlockresolverWrite (char * fileName, char * compareName)
+static void test_BlockresolverWrite (char const * fileName, char const * compareName)
 {
 	FILE * fin = fopen (srcdir_file (fileName), "r");
 	char buffer[1024];
@@ -87,7 +86,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_BlockresolverRead ("blockresolver/test.block");
+	test_BlockresolverRead ("blockresolver/test.block", "system:/test/blockresolver-read", "inside block");
+	test_BlockresolverRead ("blockresolver/encoding.block", "system:/test/blockresolver-encoding", "¢£¶¾Æ×Ýç÷þµª®±³");
 	test_BlockresolverWrite ("blockresolver/test.block", "blockresolver/compare.block");
 
 	print_result ("testmod_blockresolver");

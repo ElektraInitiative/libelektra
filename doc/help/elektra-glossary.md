@@ -111,12 +111,12 @@
   The absence of a value, i.e. `keyValue (key) == NULL`.
 
 - **pop**:
-  used in `ksPop()` and @ref KDB_O_POP means to remove
-  a key from a keyset.
+  Used in `ksPop()` and `KDB_O_POP` means to remove a key from a keyset.
 
 - **delete**:
-  or abbr. del, used in `keyDel()`, `ksDel()` and @ref KDB_O_DEL means to free a key or keyset. The memory
+  or abbr. del, used in `keyDel()`, `ksDel()` and `KDB_O_DEL` means to free a key or keyset. The memory
   can be used for something else afterwards.
 
 - **remove**:
-  means that the key-value information in the physical database will be removed permanently.
+  Means that the key-value information in the physical database will be removed permanently.
+  Also used to describe removing a particular key from a keyset.

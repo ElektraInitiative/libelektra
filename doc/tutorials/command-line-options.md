@@ -314,10 +314,10 @@ If it does, the auto-generated help message is stored in the key `proc:/elektra/
 ```c
 int main (int argc, char ** argv)
 {
-  // setup ommitted for brevity
+  // setup omitted for brevity
   KeySet * ks = ksNew (0, KS_END);
 
-  // error handling ommitted for brevity
+  // error handling omitted for brevity
   kdbGet (kdb, ks, parentKey);
 
   Key * help = ksLookupByName (ks, "proc:/elektra/gopts/help");
