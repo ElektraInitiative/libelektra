@@ -383,15 +383,15 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Unify spelling of documentation _(@Joni1993)_
 - <<TODO>>
 - Fix typo in dev/hooks.md _(@dtdirect)_
-- <<TODO>>
+- Remove unused images from doc/images _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - Fixed Coverage Badge Link _(@janldeboer)_
 - <<TODO>>
 - Update Doxyfile with Doxygen 1.9.4 _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add project logo to Doxygen in Doxyfile _(@dtdirect)_
+- Add mermaid.js to the project using doxygen-mermaid _(@dtdirect)_
+- Create diagrams in mermaid.js to use in doxygen _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
