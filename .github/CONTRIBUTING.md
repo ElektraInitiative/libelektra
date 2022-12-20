@@ -54,7 +54,7 @@ If you want to publish your local changes to this project you have to create a n
 
 ## Code-Review
 
-After opening the pull-request, your code will be reviewed and if your pull-request passes the review and build server steps, your changes will be merged to master.
+After creating the pull-request, your code will be reviewed by other developers. If your pull-request passes the review and the build server accepts your changes, they will be merged into the master branch.
 Get rejected? Don't worry... there are many reasons why the build server could fail. Open your created pull-request in GitHub and scroll to the bottom of the site, there should be a list of all checks - by clicking on the _Details_, you get more information about the checks. However, there are also cases where the websites are down, build server gets stuck or times-out etc., please get also an overview of the [build server](/doc/BUILDSERVER.md) to avoid frustration and long review times.
 
 # General
