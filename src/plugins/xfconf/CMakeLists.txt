@@ -12,9 +12,9 @@ add_plugin (
 	INCLUDE_DIRECTORIES "${XFCONF_INCLUDE_DIRS}" "${CMAKE_CURRENT_BINARY_DIR}"
 	LINK_ELEKTRA elektra-ease
 	LINK_LIBRARIES "${XFCONF_LIBRARIES}"
-	INSTALL_TEST_DATA TEST_README COMPONENT libelektra${SO_VERSION}-experimental)
+	TEST_README COMPONENT libelektra${SO_VERSION}-experimental)
 
 if (ADDTESTING_PHASE)
 	include (LibAddTest)
-	add_plugintest (xfconf MEMLEAK INSTALL_TEST_DATA)
+	add_plugintest (xfconf MEMLEAK)
 endif (ADDTESTING_PHASE)
