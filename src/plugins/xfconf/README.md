@@ -5,7 +5,7 @@
 - infos/provides = storage/xfconf
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained libc configurable experimental unfinished concept limited
+- infos/status = maintained libc configurable experimental unfinished concept limited memleak
 - infos/metadata =
 - infos/description = storage plugin for xfconf
 
@@ -48,3 +48,4 @@ kdb set /test/xfwm/general/button_layout "$OLD_LAYOUT" 2&>/dev/null
 - usage of a dummy file such as `/dev/null`
 - xfconf locks can only be read but not set as this is not possible in xfconf
 - comments and sorting are not implemented due the lack of both in xfconf
+- due to memory leaks in xfconf upstream, valgrind reports errors when running the tests
