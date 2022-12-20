@@ -525,7 +525,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Update manpage (patch) as suggested by the CI to fix CI error on master. _(Florian Lindner @flo91)_
+- Update man page (patch) as suggested by the CI to fix CI error on master. _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - Added links to the website & webui after further reading. _(Philipp Nirnberger @nirnberger)_
