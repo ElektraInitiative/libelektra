@@ -424,3 +424,61 @@
    fun:test_childDies
    fun:main
 }
+{
+   xfconf
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:malloc
+   fun:resize_scopes
+   fun:dl_open_worker_begin
+   fun:_dl_catch_exception
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen_implementation
+   fun:dlopen@@GLIBC_2.34
+   fun:elektraModulesLoad
+}
+{
+   xfconf init
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_2.34
+   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
+   fun:g_thread_new
+   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
+   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   fun:g_task_get_type
+   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   fun:g_bus_get_sync
+   fun:xfconf_init
+}
+{
+   xfconf glib
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_2.34
+   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
+   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
+   fun:g_thread_pool_push
+   fun:g_task_run_in_thread
+   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   fun:g_output_stream_flush_async
+   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   fun:g_main_context_dispatch
+}
