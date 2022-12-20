@@ -13,3 +13,7 @@ add_plugin (
 	LINK_ELEKTRA elektra-ease
 	LINK_LIBRARIES "${XFCONF_LIBRARIES}"
 	ADD_TEST TEST_README COMPONENT libelektra${SO_VERSION}-experimental)
+
+if (ADD_TESTINGPHASE)
+	set_property (TEST "testmod_xfconf" PROPERTY LABELS memleak)
+endif ()
