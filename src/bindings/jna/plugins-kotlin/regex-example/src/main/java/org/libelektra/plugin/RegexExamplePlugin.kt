@@ -52,7 +52,7 @@ class RegexExamplePlugin : Plugin {
         invalidRegexKeys.forEach {
             parentKey.setError(
                 ErrorCode.VALIDATION_SYNTACTIC,
-                "Found key with regex set which does not match it ${it.name}: ${it.string}"
+                "Found key with regex set which does not match ${it.name}: ${it.string}"
             )
         }
         return if (invalidRegexKeys.isEmpty()) Plugin.STATUS_SUCCESS else Plugin.STATUS_ERROR
