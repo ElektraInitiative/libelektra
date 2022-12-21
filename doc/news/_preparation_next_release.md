@@ -273,7 +273,10 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Documentation: Improved build instructions _(@Bujuhu)_
 - Add validation on get for whitelist plugin _(@Bujuhu)_
-- <<TODO>>
+- Add plugins-kotlin folder for all plugins written in Kotlin
+- Implement regex-example Kotlin plugin _(@Eiskasten)_
+- Implement regex-example test cases _(@Eiskasten)_
+- Implement regex-example README file _(@deoknats861)_
 
 ### rust
 
