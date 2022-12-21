@@ -26,7 +26,7 @@ class RegexExamplePlugin : Plugin {
             )
             keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/provides", "check"))
             keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/placements", "presetstorage"))
-            keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/author", "@Eiskaten, @deoknats861"))
+            keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/author", "@Eiskasten, @deoknats861"))
             keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/metadata", "check/ktex-regex"))
             keySet.append(
                 Key.create(
