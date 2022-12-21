@@ -1,8 +1,10 @@
 dependencies {
     api project(':libelektra')
     api project(':process')
+//    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
-	// test dependencies
+
+    // test dependencies
 	testImplementation "junit:junit:$junitVersion"
 	testImplementation "org.mockito:mockito-core:$mockitoVersion"
 }
