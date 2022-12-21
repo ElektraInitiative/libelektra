@@ -395,7 +395,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add project logo to Doxygen in Doxyfile _(@dtdirect)_
 - Add mermaid.js to the project using doxygen-mermaid _(@dtdirect)_
 - Create diagrams in mermaid.js to use in doxygen _(@dtdirect)_
-- <<TODO>>
+- Create README for Doxygen and Mermaid JS _(@dtdirect)_
 - <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
 - <<TODO>>
