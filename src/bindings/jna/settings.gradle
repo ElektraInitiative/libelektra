@@ -13,3 +13,5 @@ include 'plugins:whitelist'
 include 'plugins:linkchecker'
 include 'plugins:sorted'
 
+// include all kotlin plugins
+include 'plugins-kotlin:regex-example'
