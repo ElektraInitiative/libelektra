@@ -51,7 +51,7 @@ The command can be used inside the API documentation as follows:
 In Markdown files there is currently no support for including Mermaid files within them easily.
 One solution is to write Mermaid code within Markdown:
 
-~~~markdown
+````markdown
 ```mermaid
   graph TD;
       A-->B;
@@ -59,7 +59,7 @@ One solution is to write Mermaid code within Markdown:
       B-->D;
       C-->D;
 ```
-~~~
+````
 
 The other solution would be to convert the Mermaid files to SVGs and including them automatically.
 For this task, [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli) could be used.
@@ -98,9 +98,9 @@ The [Doxywizard](https://www.doxygen.nl/manual/doxywizard_usage.html) is a GUI t
 The benefit of using the GUI is that each possible command is explained and invalid values for commands are highlighted
 red. This helps to find those values that lead to exceptions.
 
-___
+---
+
 **NOTE**: The local Doxyfile should never be integrated in the version control system. Each change made to the local
 Doxyfile needs to be integrated to the actual Doxyfile by **using the CMake variables** of the project.
-___
 
-
+---
