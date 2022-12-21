@@ -7,7 +7,7 @@
 	"preserves/indentation",   //< Preserves indentation around key and values (see indentation in doc/METADATA.ini)
 	"limited", //< Only specific structures of KeySets can be stored. This is for special purpose formats like hosts, fstab or passwd.
 	"arbitrary/keyset", //< Storage plugins should be able to read any (valid) config file and produce a KeySet. The few plugins marked
-			    //with this tag, find also a config file for any KeySet.
+			    // with this tag, find also a config file for any KeySet.
 	"arbitrary/metadata", //< Also supports any other metadata (not listed in infos/metadata)
 	"directory/value",    //< Supports non-leaf keys with value
 	"directory/holes",    //< Support for holes within the hierarchy (not every directory needs to be present)
