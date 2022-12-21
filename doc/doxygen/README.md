@@ -15,7 +15,7 @@ When referencing Markdown files, the links between them will be resolved with th
 
 ## Usage
 
-To invoke the generation with Doxygen, the so called Doxyfile is needed:
+To invoke the generation with Doxygen, the so-called Doxyfile is needed:
 
 ```sh
 doxygen Doxyfile
@@ -51,7 +51,7 @@ The command can be used inside the API documentation as follows:
 In Markdown files there is currently no support for including Mermaid files within them easily.
 One solution is to write Mermaid code within Markdown:
 
-````markdown
+````Markdown
 ```mermaid
   graph TD;
       A-->B;
