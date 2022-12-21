@@ -90,6 +90,9 @@ defmodule Elektra.Key do
 
   @doc """
   Get the value of the key `key`.
+
+  This is primarily useful when working with binary values. When storing
+  strings use `string/1`.
   """
   @spec value(key()) :: binary()
   def value(key) do
