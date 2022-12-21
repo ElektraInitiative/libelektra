@@ -67,18 +67,21 @@ defmodule Main do
   use Elektra
 
   def main do
-    config = Elektra.System.ks_new()
-    root = Elektra.System.key_new('user:/test')
+    error_key = Elektra.System.key_new("user:/error/key")
+
+    config = Elektra.System.ks_new(0)
+    root = Elektra.System.key_new("user:/test")
 
     IO.puts("Open key database")
-    handle = Elektra.System.kdb_open()
+    handle = Elektra.System.kdb_open(:null, error_key)
 
     IO.puts("Retrieve key set")
     Elektra.System.kdb_get(handle, config, root)
 
     IO.puts("Number of key-value pairs: #{Elektra.System.ks_get_size(config)}")
 
-    key = Eletkra.System.key_new('user:/test/hello', 'elektra')
+    key = Elektra.System.key_new("user:/test/hello")
+    Elektra.System.key_set_string(key, "elektra")
     IO.puts("Add key #{Elektra.System.key_base_name(key)}")
     Elektra.System.ks_append_key(config, key)
     IO.puts("Number of key-value pairs: #{Elektra.System.ks_get_size(config)}")
@@ -86,12 +89,14 @@ defmodule Main do
 
     # If you want to store the key database on disk, then please uncomment the following two lines
     # IO.puts("Write key set to disk")
-    # :ok = Elektra.System.kdb_set(handle, config, root)
+    # Elektra.System.kdb_set(handle, config, root)
 
     IO.puts("Delete key-value pairs inside memory")
     Elektra.System.ks_del(config)
     IO.puts("Close key database")
-    Elektra.System.kdb_close(handle)
+    Elektra.System.kdb_close(handle, error_key)
+
+    Elektra.System.key_del(error_key)
   end
 end
 
