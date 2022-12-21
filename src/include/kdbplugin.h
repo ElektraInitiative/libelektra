@@ -91,6 +91,9 @@ typedef enum
 /** Everything went fine and we have a cache hit */
 #define ELEKTRA_PLUGIN_STATUS_CACHE_HIT 2
 
+/** The file was removed */
+#define ELEKTRA_PLUGIN_STATUS_FILE_REMOVED 3
+
 #ifdef __cplusplus
 namespace ckdb
 {
