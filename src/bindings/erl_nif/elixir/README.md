@@ -109,7 +109,7 @@ defmodule Main do
     {:ok, root} = Elektra.Key.new(%{name: "user:/test"})
 
     IO.puts("Open key database")
-    {:ok, handle} = Elektra.Kdb.open(nil, nil)
+    {:ok, handle} = Elektra.Kdb.open()
 
     IO.puts("Retrieve key set")
     Elektra.Kdb.get(handle, config, root)

@@ -14,11 +14,11 @@ defmodule Elektra.Kdb do
 
   ## Examples
 
-      iex> {:ok, open} = Elektra.Kdb.open(nil, nil)
+      iex> {:ok, open} = Elektra.Kdb.open()
   """
-  @spec open(key_set(), key()) :: GenServer.on_start()
-  def open(contract, parent_key) do
-    GenServer.start_link(__MODULE__, {contract, parent_key})
+  @spec open() :: GenServer.on_start()
+  def open() do
+    GenServer.start_link(__MODULE__, nil)
   end
 
   @doc """
@@ -49,11 +49,14 @@ defmodule Elektra.Kdb do
   # Server API
 
   @impl true
-  def init({contract, parent_key}) do
-    contract_resource = NifUtil.unwrap(contract)
-    parent_key_resource = NifUtil.unwrap(parent_key)
+  def init(nil) do
+    contract_resource = :null
+    error_key_resource = Elektra.System.key_new("user:/error/key")
 
-    kdb_resource = Elektra.System.kdb_open(contract_resource, parent_key_resource)
+    kdb_resource = Elektra.System.kdb_open(contract_resource, error_key_resource)
+
+    Elektra.System.key_del(error_key_resource)
+
     {:ok, kdb_resource}
   end
 
