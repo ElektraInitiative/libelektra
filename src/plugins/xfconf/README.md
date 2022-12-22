@@ -39,7 +39,12 @@ As of now, locks cannot be set or unset in xfconf which makes locked properties 
 
 ## Dependencies
 
-xfconf from the XFCE project
+The xfconf library from the XFCE project is the main dependency of this plugin.
+Usually, this library is called something such as `xfconf` (Arch, Fedora, `xfconf-devel` for compiling), `libxfconf-0` (Debian, `libxfconf-0-dev` for compmiling) or `xfce4-conf` (FreeBSD) in the package manager.
+As xfconf itself depends on dbus and glib, these are dependecies too but should be installed with the package manager automatically.
+This plugin is tested with the xfconf versions `4.16` and above.
+
+Note that this plugin does not support macOS since Xfce is not commonly used there, Mac Ports only provides a very old version (`4.12`) and Brew does not provide Xfce at all.
 
 ## Usage
 
