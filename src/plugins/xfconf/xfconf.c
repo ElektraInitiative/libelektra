@@ -58,6 +58,38 @@ int elektraXfconfClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_U
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+static void appendChannelList (KeySet * keySet)
+{
+	const char * absoluteKeyName = "system:/elektra/modules/xfconf/channels";
+	Key * channelArrayKey = keyNew (absoluteKeyName, KEY_END);
+	gchar ** channels = xfconf_list_channels ();
+	if (channels == NULL)
+	{
+		return;
+	}
+	keySetMeta (channelArrayKey, "array", "");
+	long channelIndex;
+	for (channelIndex = 0; channels[channelIndex] != NULL; channelIndex++)
+	{
+		char * channelKeyName = elektraMalloc ((elektraStrLen (absoluteKeyName) + ELEKTRA_MAX_ARRAY_SIZE + 2) * sizeof (char));
+		channelKeyName[0] = '\0';
+		strcat (channelKeyName, absoluteKeyName);
+		channelKeyName[elektraStrLen (absoluteKeyName) - 1] = '/';
+		elektraWriteArrayNumber (&channelKeyName[elektraStrLen (absoluteKeyName)], channelIndex);
+		Key * currentChannelKey = keyNew (channelKeyName, KEY_VALUE, channels[channelIndex], KEY_END);
+		ksAppendKey (keySet, currentChannelKey);
+	}
+	if (channelIndex > 0)
+	{
+		char * arrayValue = elektraMalloc (ELEKTRA_MAX_ARRAY_SIZE * sizeof (char));
+		elektraWriteArrayNumber (arrayValue, channelIndex - 1);
+		keySetMeta (channelArrayKey, "array", arrayValue);
+	}
+	ksAppendKey (keySet, channelArrayKey);
+
+	g_strfreev (channels);
+}
+
 int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	ELEKTRA_LOG ("issued get\n");
@@ -74,6 +106,7 @@ int elektraXfconfGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 #include ELEKTRA_README
 			       keyNew ("system:/elektra/modules/xfconf/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
+		appendChannelList (returned);
 		ksDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
