@@ -15,6 +15,18 @@ This is a storage plugin to mount the xfconf configuration settings.
 
 ## Xfconf Terminology
 
+### Property
+
+A property in xfconf is the same as a key in libelektra i.e. it has a name and can hold one or more values.
+
+### Channel
+
+A channel is a type of namespace used in the xfconf library.
+Usually, it is used to separate the properties of different applications which is helpful if different applications rely on a property with the same name but require them to hold different values.
+For example Thunar uses a channel named `thunar`, Xfwm uses a channel named `xfwm4` and so on.
+Keep in mind that channels are only used to separate the properties such as namespaces.
+They are not a security feature i.e. every application has read/write access to every channel.
+
 ### Locks
 
 Xfconf uses so-called locks to prevent users or applications to set properties to a new value.
