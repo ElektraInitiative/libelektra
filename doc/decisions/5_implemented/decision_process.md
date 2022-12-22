@@ -123,6 +123,7 @@ Steps are described in [STEPS.md](../STEPS.md):
 - PRs allow to better support the constraint that everything must be within Elektra's repository (also rejected decisions).
 - "Decision", "Rationale" and "Implications" are filled out later to keep the discussion unbiased
 - PRs allow to suggest changes and review individual sentences of the decision.
+- As "Decided"/"Implemented" decisions need a special decision PR, we cannot merge an "Decided"/"Implemented" decision PR by accident.
 - Several "Related Decisions" are very important even if everyone agrees on one solution.
   They allow reviewers and future readers of the decision to understand which options were considered and why they were rejected.
 - The decision process is focused around the decision text (and not forum-like discussions), so that:
