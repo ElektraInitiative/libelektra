@@ -13,6 +13,14 @@
 
 This is a storage plugin to mount the xfconf configuration settings.
 
+## Xfconf Terminology
+
+### Locks
+
+Xfconf uses so-called locks to prevent users or applications to set properties to a new value.
+They can be referred as a type of constant.
+As of now, locks cannot be set or unset in xfconf which makes locked properties read-only forever.
+
 ## Dependencies
 
 xfconf from the XFCE project
