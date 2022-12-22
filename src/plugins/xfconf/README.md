@@ -27,6 +27,10 @@ For example Thunar uses a channel named `thunar`, Xfwm uses a channel named `xfw
 Keep in mind that channels are only used to separate the properties such as namespaces.
 They are not a security feature i.e. every application has read/write access to every channel.
 
+The list of all channels is stored in the `system:/elektra/modules/xfconf/channels` which is an array of all channel names.
+Channel cannot be explicitly created or removed.
+They only exist in an implicit manner when you pass the `channel=...` argument.
+
 ### Locks
 
 Xfconf uses so-called locks to prevent users or applications to set properties to a new value.
