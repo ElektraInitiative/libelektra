@@ -25,7 +25,6 @@ static void test_basics (void)
 	}
 
 	printf ("test basics\n");
-	printf ("open plugin...\n");
 	PLUGIN_OPEN ("xfconf");
 
 	KeySet * ks = ksNew (0, KS_END);
