@@ -4,7 +4,7 @@ This document describes all steps a decision can run through.
 
 ```mermaid
 flowchart LR
-  s((Start)) --> Drafts --> prob(Problem Clear) --> alt(Alternatives Clear) --> review(In Review) -- merge --> Decided
+  s((Start)) --> Drafts --> prob(Problem Clear) --> alt(Solutions Clear) --> review(In Review) -- merge --> Decided
     -- merge --> part(Partially Implemented) --> Implemented
   %% Shortcuts:
   s --> Decided
@@ -19,11 +19,11 @@ Additionally, decision that are not yet "Decided" may be become "Drafts", "Rejec
 The label `merge` on the edges means that a decision PR must be merged before it can target the next step.
 
 > The first PR for a decision usually creates the decision in the "Drafts" state.
-> If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "Problem Clear", "Alternatives Clear" or even "In Review" before the merge.
+> If during the reviews of this PR it becomes clear that the decision is further along, can be moved to "Problem Clear", "Solutions Clear" or even "In Review" before the merge.
 
 Short summary:
 
-1. The first PR for a decision is created as "Drafts" (recommended!), "Problem Clear", "Alternatives Clear" or "Decided".
+1. The first PR for a decision is created as "Drafts" (recommended!), "Problem Clear", "Solutions Clear" or "Decided".
 2. A decision PR that wants to merge a decision as "Decided" must:
    1. Only contain changes to one decision.
    2. Already start with the decision as "Decided".
@@ -62,7 +62,7 @@ It is especially important that one shouldn't have a fixed mind-set about a pref
 > Everyone must agree that the problem exists and is worth solving so that a decision PR in "Problem Clear" step can be merged.
 > A problem is clear if everyone would be able to describe an experiment or test case that shows if a solution fixes the problem.
 
-## Alternatives Clear
+## Solutions Clear
 
 > This step is recommended if it is not yet clear to the core developers which solution is the best.
 
@@ -76,7 +76,7 @@ Here you must ensure:
 Here the decision should not only have one decision but should describe several solutions.
 For each solution a proposal, rationale and optionally implications should be given.
 
-> The alternatives are clear if all reviewers understand the given alternatives and no reviewer can come up with better alternatives.
+> The solutions are clear if all reviewers understand the given solutions and no reviewer can come up with better solutions.
 > The solution space is clear.
 > I.e. the trade-offs, combinations and pros/cons of the solutions are explored.
 > Decision author and reviewers are satisfied that every useful solution is present in the decision.

@@ -86,19 +86,19 @@ The main purpose of decisions is
   They take extra effort on them to be clear about the problem and find the best solution.
 - The decision process itself isn't a barrier for people to write their first decision.
 
-## Considered Alternatives
+## Solutions
 
-- Issues like https://issues.libelektra.org/4521
-- GitHub discussions
-- Votings
-- maintainer decides
-- PEPs: https://peps.python.org
-- RFCs: https://www.ietf.org/standards/rfcs/
-- Change requests: https://en.wikipedia.org/wiki/Change_request
+- Create a decision process tailored to Elektra
+- Issues like https://issues.libelektra.org/4521 (often did not result to a PR that documented the outcome)
+- GitHub discussions (-||-)
+- Votings (low participation and people often didn't inform themselves what the choices are)
+- maintainer decides (was the situation before)
+- PEPs: https://peps.python.org (tailored for programming language specifications, not ideal for architectural decisions)
+- Rust RFCs: https://www.ietf.org/standards/rfcs/ (-||-, see also https://forge.rust-lang.org/compiler/mcp.html)
 
 ## Decision
 
-Decisions need to:
+We use a decision process tailored to Elektra, in which decisions need to:
 
 - be implementable within the next major release
 - be according to [Elektra's goals](/doc/GOALS.md)
@@ -162,6 +162,7 @@ This is the only non-technical decision, so no issues are related.
   To not waste time, it is recommended to start with the decision process as described here asap.
 - Make sure that moving between the stages is detected by git.
   E.g. rename in a commit that doesn't rewrite too much of the decision.
+- See also change requests: https://en.wikipedia.org/wiki/Change_request
 
 Written by Markus Raab.
 

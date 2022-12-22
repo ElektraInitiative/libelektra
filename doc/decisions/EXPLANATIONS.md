@@ -48,7 +48,7 @@ Assumptions are what we believe to be true but do not or cannot really know, e.g
 
 ## Solutions
 
-This is a list of all alternative solutions and a rationale why the alternatives were not taken, e.g. because:
+This is a list of all solutions and a rationale why not-chosen solutions were not taken, e.g. because:
 
 - the solution does not solve the whole problem
 - some constraints or assumptions are violated
@@ -110,6 +110,6 @@ If particular information is important and not present in any sections above, pl
 
 Any incomplete and unexplored idea/opinion, which is not complete enough to be in "Considered Alternatives", can be written here.
 For example, if it is obvious that the idea does not even solve the problem.
-Unlike the main decisions and considered alternatives, text in the notes does not need rationale.
+Unlike the main decision and solutions, text in the notes does not need rationale.
 
 Furthermore, the author, acknowledgements, dates etc. can be written here.
