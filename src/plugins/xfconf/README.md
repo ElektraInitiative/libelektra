@@ -51,20 +51,23 @@ The usage is identical to most storage plugins except that the channel option du
 # Backup-and-Restore: user:/tests/xfconf
 
 # mount the xfwm channel
-kdb mount /dev/null /test/xfwm xfconf "channel=xfwm4" 2&>/dev/null
+kdb mount /dev/null /test/xfwm xfconf "channel=xfwm4"
 
 # store old button layout
-set "OLD_LAYOUT=$(kdb get /test/xfwm/general/button_layout 2&>/dev/null)"
+set "OLD_LAYOUT=$(kdb get /test/xfwm/general/button_layout)"
 
 # set only a close button
-kdb set system:/test/xfwm/general/button_layout "C|" 2&>/dev/null
+kdb set system:/test/xfwm/general/button_layout "C|"
 
 # read the new layout
-kdb get /test/xfwm/general/button_layout 2&>/dev/null
+kdb get /test/xfwm/general/button_layout
 #> C|
 
 # restore old layout
-kdb set /test/xfwm/general/button_layout "$OLD_LAYOUT" 2&>/dev/null
+kdb set /test/xfwm/general/button_layout "$OLD_LAYOUT"
+
+# umount the channel
+kdb umount /test/xfwm
 ```
 
 ## Limitations
