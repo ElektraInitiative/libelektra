@@ -47,7 +47,7 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		continue
 		;;
 	"xfconf")
-		# dbus is not enable on internal checks
+		# dbus is not enabled on internal checks
 		continue
 		;;
 	"spec")
