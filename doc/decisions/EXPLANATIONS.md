@@ -112,4 +112,4 @@ Any incomplete and unexplored idea/opinion, which is not complete enough to be i
 For example, if it is obvious that the idea does not even solve the problem.
 Unlike the main decision and solutions, text in the notes does not need rationale.
 
-Furthermore, the author, acknowledgements, dates etc. can be written here.
+Furthermore, the author, acknowledgments, dates etc. can be written here.
