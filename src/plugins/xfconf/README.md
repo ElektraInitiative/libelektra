@@ -46,6 +46,10 @@ Usually, this library is called something such as `xfconf` (Arch, Fedora, `xfcon
 As xfconf itself depends on dbus and glib, these are dependecies too but should be installed with the package manager automatically.
 This plugin is tested with the xfconf versions `4.16` and above.
 
+Before you can start working with the plugin, you have to make sure dbus is running.
+If you use a common desktop environment this should already be fulfilled.
+Otherwise, `export $(dbus-launch)` can be used to start it.
+
 Note that this plugin does not support macOS since Xfce is not commonly used there, Mac Ports only provides a very old version (`4.12`) and Brew does not provide Xfce at all.
 
 ## Usage
