@@ -11,7 +11,11 @@
 
 ## Introduction
 
-This is a storage plugin to mount the xfconf configuration settings.
+The xfconf plugin is a storage plugin to mount the xfconf configuration settings.
+This allows to operate on the XFCE configuration with libelektra.
+As usual, this allows the plugin to read and write to the XFCE configuration.
+
+You can refer to the [official XFCE documentation of xfconf](https://docs.xfce.org/xfce/xfconf/start) to learn more about it.
 
 ## Xfconf Terminology
 
