@@ -150,9 +150,6 @@ task:
       # launchctl setenv DBUS_LAUNCHD_SESSION_BUS_SOCKET $DBUS_LAUNCHD_SESSION_BUS_SOCKET
       echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
       launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
-    - | # Install Python
-      brew install python@3.9 || brew upgrade python@3.9
-      export PATH="/usr/local/opt/python@3.9/bin:$PATH"
     - | # Install Python packages
       pip3 install cmakelang[yaml]==0.6.13
     - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn-ng` fails with the macOs version of Ruby.)
