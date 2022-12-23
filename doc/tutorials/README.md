@@ -31,6 +31,7 @@ provides.
 - [Java Bindings](java-kdb.md)
 - [Java Plugins](java-plugins.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
+- [High Level API Bindings](highlevel-bindings.md)
 - [Notifications](notifications.md)
 
 ## System Administrators
@@ -47,6 +48,7 @@ already somehow integrated with Elektra.
 - [Merge Configuration](merge.md) (deprecated)
 - [Validate Configuration](validation.md)
 - [Encrypt Configuration](crypto.md)
+- [Install Configuration Files](install-config-files.md)
 
 ## Elektra Developers
 
