@@ -17,7 +17,9 @@ This is a storage plugin to mount the xfconf configuration settings.
 
 ### Property
 
-A property in xfconf is the same as a key in libelektra i.e. it has a name and can hold one or more values.
+A property in xfconf is the same as a key in libelektra i.e. it has a name and can hold a value.
+In contrast to libelektra, the value can be more complex i.e. it can be an array.
+In this case, the value of the property is mapped as multiple keys in libelektra using the array structure.
 
 ### Channel
 
