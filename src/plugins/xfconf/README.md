@@ -30,8 +30,8 @@ Keep in mind that channels are only used to separate the properties such as name
 They are not a security feature i.e. every application has read/write access to every channel.
 
 The list of all channels is stored in the `system:/elektra/modules/xfconf/channels` which is an array of all channel names.
-Channel cannot be explicitly created or removed.
-They only exist in an implicit manner when you pass the `channel=...` argument.
+Channels cannot be created manually with libelektra.
+Instead, when mounting a channel (see [Plugin Configuration](#plugin-configuration) how to specify a channel) and setting a key value below the mount, it will be automatically created.
 
 ### Locks
 
@@ -55,6 +55,10 @@ Note that this plugin does not support macOS since Xfce is not commonly used the
 ## Usage
 
 The usage is identical to most storage plugins except that the channel option during mount must be defined in order to tell xfconf which channel to mount.
+
+## Plugin Configuration
+
+The required `channel` configuration option is used to tell xfconf which channel to mount.
 
 ## Examples
 
