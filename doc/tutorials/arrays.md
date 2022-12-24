@@ -72,7 +72,7 @@ kdb set user:/tests/sequence/#3 'Fourth Element'
 
 . As you can see above arrays can contain “empty fields”: The key `user:/tests/sequence/#2` is missing.
 
-As Elektra keys are sorted alphabetically, it will automatically prepend with as many `_` characters as needed to keep the natural ordering of the array and the alphabetical order identical:
+As Elektra keys are sorted alphabetically, it will automatically prepend with as many `_` characters as needed to keep the numerical ordering of the array and the alphabetical order identical:
 
 ```sh
 kdb set user:/tests/sequence/#10 'Eleventh Element'
