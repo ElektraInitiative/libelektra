@@ -87,7 +87,7 @@ Now it is allowed to have the decision from the previous round in the "Decision"
 In this step, the last details of the chosen decision get polished:
 
 - consistency with other decisions
-- links from/to related decisions checked
+- links from/to related decisions have been checked
 - "Decision", "Rationale" and "Implications" are fully filled out
 
 > Without merges in between, this is the last step reachable for a decision PR that started in "Drafts".
