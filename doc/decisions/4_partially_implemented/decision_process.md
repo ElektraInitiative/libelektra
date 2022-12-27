@@ -142,6 +142,11 @@ Steps are described in [STEPS.md](../STEPS.md):
 - Decisions encourage to write documentation before actually writing code.
 - The proposal encourages healthier discussions despite cognitive biases we all have, see in Notes below.
 
+Partially implemented because of open tasks:
+
+- rename Considered Alternatives to Solutions
+- rename Steps
+
 ## Related Decisions
 
 This is the only non-technical decision, so no issues are related.
