@@ -71,7 +71,7 @@ Here you must ensure:
 - problem, constraint and assumptions are well-explained and sound
 - links from/to related decisions are created
 - there are several solutions described, each with rationale and implication
-- "Decision", "Rationale" and "Implications" are **not** yet filled out if there are people arguing for different options
+- "Decision", "Rationale" and "Implications" are **not** yet filled out
 
 Here the decision should not only have one decision but should describe several solutions.
 For each solution a proposal, rationale and optionally implications should be given.
