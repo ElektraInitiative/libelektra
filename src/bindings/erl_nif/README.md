@@ -2,6 +2,10 @@
 
 This binding provides the possibility to access Elektra from Erlang.
 
+## Dependencies
+
+In order to compile the NIF you need to have Erlang installed.
+
 ## Module name
 
 The module name of the NIF module is `Elixir.Elektra.System`.
