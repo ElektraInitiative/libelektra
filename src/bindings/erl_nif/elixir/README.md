@@ -140,3 +140,28 @@ end
 
 Main.main()
 ```
+
+## Installation
+
+To have access to the Elixir module you need to compile Elektra with `elixir` added to the CMake option `BINDINGS`.
+For instance, the configuration inside a build directory might be (assuming the build directory is itself in the root directory of Elektra)
+
+```sh
+cmake -DBINDINGS=elixir ..
+```
+
+The Elixir module is then available in `libelektra/build/src/bindings/erl_nif/elixir`.
+You can copy the module directory to any convenient location.
+
+When using Mix the dependency can be specified as follows in `mix.exs`
+
+```elixir
+defp deps do
+  [
+    {:elektra, path: "/path/to/the/elixir/module"}
+  ]
+end
+```
+
+
+Note that the Elixir module has Elektra as a dependency and the Elektra libraries need to be installed.
