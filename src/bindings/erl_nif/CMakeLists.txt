@@ -18,4 +18,4 @@ else ()
 
 	target_link_libraries (nif_kdb elektra-core elektra-kdb)
 	target_link_libraries (nif_kdb erlang)
-endif()
+endif ()
