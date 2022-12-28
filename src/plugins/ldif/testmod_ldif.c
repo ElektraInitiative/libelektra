@@ -86,23 +86,20 @@ static void test_writeOnlyKey (void)
 {
 	printf ("test write\n");
 
-	char const * const file = "ldif/write.ldif";
-
 	Key * parentKey = keyNew ("user:/tests/ldif", KEY_VALUE, elektraFilename (), KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ldif");
 
-	KeySet * ks = ksNew (10,
-			     keyNew ("user:/tests/ldif/dc=org/dc=libelektra/ou=developer/uid=test/dn", KEY_VALUE,
-				     "uid=test,ou=developer,dc=libelektra,dc=org", KEY_END),
-			     KS_END);
+	Key * devKey = keyNew ("user:/tests/ldif/dc=org/dc=libelektra/ou=developer/uid=test/dn", KEY_VALUE,
+			       "uid=test,ou=developer,dc=libelektra,dc=org", KEY_END);
+	KeySet * ks = ksNew (10, devKey, KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
-
 	keyDel (parentKey);
+	keyDel (devKey);
 	ksDel (ks);
+	ksDel (conf);
 	PLUGIN_CLOSE ();
 }
 
