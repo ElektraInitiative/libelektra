@@ -163,5 +163,4 @@ defp deps do
 end
 ```
 
-
 Note that the Elixir module has Elektra as a dependency and the Elektra libraries need to be installed.
