@@ -2,8 +2,7 @@ defmodule Elektra.System do
   @on_load :load_nifs
 
   def load_nifs do
-    # TODO: Configure this path with CMake
-    :erlang.load_nif('../build/libnif_kdb', 0)
+    :erlang.load_nif(Path.join(:code.priv_dir(:elektra), "libnif_kdb"), 0)
   end
 
   # KDB

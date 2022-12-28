@@ -1,15 +1,21 @@
-cmake_minimum_required (VERSION 3.0)
+find_package (Erlang)
 
-project (libelektra-elixir)
+if (NOT ERLANG_FOUND)
+	exclude_binding (elixir "Erlang not found.")
+elseif (NOT BUILD_SHARED)
+	exclude_binding (elixir "it can only be built if `BUILD_SHARED` is enabled")
+else ()
+	add_binding (elixir)
 
-list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+	# Set the output directory of the Erlang NIF library.
+	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/elixir/priv")
 
-find_package (Erlang REQUIRED)
-find_package (Elektra REQUIRED)
+	file (GLOB ERL_NIF_SRC_FILES lib/*.c)
+	add_headers (ELEKTRA_HEADERS)
+	set (SOURCES ${ERL_NIF_SRC_FILES} ${ELEKTRA_HEADERS})
 
-include_directories (${ELEKTRA_INCLUDE_DIR})
+	add_library (nif_kdb SHARED ${SOURCES})
 
-add_library (nif_kdb SHARED ${PROJECT_SOURCE_DIR}/lib/nif_kdb.c)
-
-target_link_libraries (nif_kdb ${ELEKTRA_LIBRARIES})
-target_link_libraries (nif_kdb erlang)
+	target_link_libraries (nif_kdb elektra-core elektra-kdb)
+	target_link_libraries (nif_kdb erlang)
+endif()
