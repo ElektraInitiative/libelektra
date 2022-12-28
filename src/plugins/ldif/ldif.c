@@ -239,6 +239,10 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 						return ELEKTRA_PLUGIN_STATUS_ERROR;
 					}
 
+					if (last_dn != NULL)
+					{
+						elektraFree (last_dn);
+					}
 					last_dn = strdup (domainpart);
 
 					if (keyAddName (key, domainpart) == -1)
@@ -254,6 +258,10 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 					elektraFree (domainpart);
 				}
 
+				for (int i = 0; i < size; i++)
+				{
+					elektraFree (tokens[i]);
+				}
 				elektraFree (tokens);
 			}
 			else
@@ -268,13 +276,13 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 			keySetString (attribute_key, value);
 			size_t order_length = snprintf (NULL, 0, "%lu", ldif_order);
-			char * order_str = malloc (order_length + 1);
+			char * order_str = elektraMalloc (order_length + 1);
 			snprintf (order_str, order_length + 1, "%lu", ldif_order);
 			keySetMeta (attribute_key, "order", order_str);
 			ksAppendKey (returned, attribute_key);
 
 			elektraFree (attribute_key_name);
-
+			elektraFree (order_str);
 			elektraFree (type);
 			elektraFree (value);
 
@@ -387,6 +395,7 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Could not write to position %ld in file %s",
 									 ftell (lfp->fp), filename);
 				ber_memfree (data);
+				elektraFree (keyArray);
 				ldif_close (lfp);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
@@ -400,6 +409,7 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		}
 	}
 
+	elektraFree (keyArray);
 	ldif_close (lfp);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
