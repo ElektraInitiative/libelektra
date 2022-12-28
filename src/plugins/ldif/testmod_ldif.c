@@ -99,7 +99,6 @@ static void test_writeOnlyKey (void)
 	keyDel (parentKey);
 	keyDel (devKey);
 	ksDel (ks);
-	ksDel (conf);
 	PLUGIN_CLOSE ();
 }
 
