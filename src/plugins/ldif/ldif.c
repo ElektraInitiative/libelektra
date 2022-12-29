@@ -113,7 +113,7 @@ char * makeKey (const char ** in, int len)
 	// trim extra sep len
 	size -= 1;
 
-	char * out = elektraMalloc (size + 1);
+	char * out = calloc (size + 1 + ELEKTRA_MAX_ARRAY_SIZE + 1, sizeof (char)); // leave room for potential array index
 	if (out == NULL)
 	{
 		return NULL;
@@ -139,6 +139,64 @@ char * makeKey (const char ** in, int len)
 	return out;
 }
 
+/**
+ * Write the array syntax to the given key name.
+ *
+ * The function will lookup the key name in the key set.
+ * If the key set does not already include such a key name, both the key name and the key set remain untouched.
+ *
+ * If the key set already includes the key name, it will prepare the key set such that a key with the given key name can be appended to it
+ * afterwards. This involves creating a new meta-key for arrays, incrementing its value and so on. This will also change the key name, i.e.
+ * it appends the correct array index.
+ *
+ * The caller is responsible that the key name has enough space for the array index.
+ * @param key_set the key set where the (potential) array is located at
+ * @param key_name the key name to write to
+ */
+void writeArrayKeyName (KeySet * key_set, char * key_name)
+{
+	Key * existing_key = ksLookupByName (key_set, key_name, KDB_O_POP);
+	if (existing_key)
+	{
+		size_t key_length = elektraStrLen (key_name);
+		key_name[key_length - 1] = '/';
+		char * key_name_array_index = &key_name[key_length];
+		ELEKTRA_LOG_DEBUG ("key[%ld] %s already exists in the key set", key_length, key_name);
+		const Key * array_meta = keyGetMeta (existing_key, "array");
+		if (array_meta != 0)
+		{
+			ELEKTRA_LOG_DEBUG ("just appending to the existing array with %s items",
+					   keyString (keyGetMeta (existing_key, "array")));
+			const char * array_index = keyString (array_meta);
+
+			// retrieve index from array meta key and increment
+			elektraWriteArrayNumber (key_name_array_index, elektraArrayValidateBaseNameString (array_index) + 1);
+			ELEKTRA_LOG_DEBUG ("calculated array index is: %s", key_name_array_index);
+			keySetMeta (existing_key, "array", key_name_array_index);
+			ksAppendKey (key_set, existing_key);
+		}
+		else
+		{
+			ELEKTRA_LOG_DEBUG ("only single value exists, creating a new array");
+			char first_element_suffix[ELEKTRA_MAX_ARRAY_SIZE] = { '\0' };
+			elektraWriteArrayNumber (first_element_suffix, 0);
+			ELEKTRA_LOG_DEBUG ("try to add name: %s", first_element_suffix);
+
+			// duplicate existing key and move it into the array
+			Key * existing_duplicate = keyDup (existing_key, KEY_CP_ALL);
+			keyAddName (existing_duplicate, first_element_suffix);
+			ksAppendKey (key_set, existing_duplicate);
+
+			elektraWriteArrayNumber (key_name_array_index, 1);
+
+			// create array key and set array meta to new index #1
+			Key * array_key = keyNew (keyName (existing_key), KEY_END);
+			keySetMeta (array_key, "array", key_name_array_index);
+			ksAppendKey (key_set, array_key);
+			ksAppendKey (key_set, array_key);
+		}
+	}
+}
 int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/ldif"))
@@ -271,9 +329,11 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 			const char * attribute_key_parts[] = { type, last_dn, keyName (parentKey) };
 			char * attribute_key_name = makeKey (attribute_key_parts, 3);
+
+			writeArrayKeyName (returned, attribute_key_name);
+
 			Key * attribute_key = keyNew (attribute_key_name, KEY_END);
 			ELEKTRA_LOG_DEBUG ("storing value %s at key %s\n", value, keyName (attribute_key));
-
 			keySetString (attribute_key, value);
 			size_t order_length = snprintf (NULL, 0, "%lu", ldif_order);
 			char * order_str = elektraMalloc (order_length + 1);
@@ -287,6 +347,7 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			elektraFree (value);
 
 			ldif_order++;
+			ELEKTRA_LOG_DEBUG ("\n\n");
 		}
 
 		if (last_dn != NULL)
