@@ -197,6 +197,32 @@ void writeArrayKeyName (KeySet * key_set, char * key_name)
 		}
 	}
 }
+
+/**
+ * Append a new key to a key set.
+ *
+ * A new key will be constructed out of the key_name and the key_value.
+ * This function also sets the order meta key to the new key.
+ * After construction, the new key will be appended to the key_set.
+ *
+ * @param key_name the name for the new key
+ * @param key_value the value of the new key
+ * @param key_set the set where to append the new key
+ * @param order the order of the new key
+ */
+void appendKeyToSet (const char * key_name, const char * key_value, KeySet * key_set, unsigned long order)
+{
+	Key * attribute_key = keyNew (key_name, KEY_END);
+	ELEKTRA_LOG_DEBUG ("storing value %s at key %s\n", key_value, keyName (attribute_key));
+	keySetString (attribute_key, key_value);
+	size_t order_length = snprintf (NULL, 0, "%lu", order);
+	char * order_str = elektraMalloc (order_length + 1);
+	snprintf (order_str, order_length + 1, "%lu", order);
+	keySetMeta (attribute_key, "order", order_str);
+	ksAppendKey (key_set, attribute_key);
+	elektraFree (order_str);
+}
+
 int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/ldif"))
@@ -332,22 +358,14 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 			writeArrayKeyName (returned, attribute_key_name);
 
-			Key * attribute_key = keyNew (attribute_key_name, KEY_END);
-			ELEKTRA_LOG_DEBUG ("storing value %s at key %s\n", value, keyName (attribute_key));
-			keySetString (attribute_key, value);
-			size_t order_length = snprintf (NULL, 0, "%lu", ldif_order);
-			char * order_str = elektraMalloc (order_length + 1);
-			snprintf (order_str, order_length + 1, "%lu", ldif_order);
-			keySetMeta (attribute_key, "order", order_str);
-			ksAppendKey (returned, attribute_key);
+			appendKeyToSet (attribute_key_name, value, returned, ldif_order);
 
 			elektraFree (attribute_key_name);
-			elektraFree (order_str);
 			elektraFree (type);
 			elektraFree (value);
 
 			ldif_order++;
-			ELEKTRA_LOG_DEBUG ("\n\n");
+			ELEKTRA_LOG_DEBUG ("\n");
 		}
 
 		if (last_dn != NULL)
