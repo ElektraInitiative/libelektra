@@ -155,7 +155,7 @@ char * makeKey (const char ** in, int len)
  */
 void writeArrayKeyName (KeySet * key_set, char * key_name)
 {
-	Key * existing_key = ksLookupByName (key_set, key_name, KDB_O_POP);
+	Key const * existing_key = ksLookupByName (key_set, key_name, KDB_O_POP);
 	if (existing_key)
 	{
 		size_t key_length = elektraStrLen (key_name);
@@ -167,13 +167,23 @@ void writeArrayKeyName (KeySet * key_set, char * key_name)
 		{
 			ELEKTRA_LOG_DEBUG ("just appending to the existing array with %s items",
 					   keyString (keyGetMeta (existing_key, "array")));
-			const char * array_index = keyString (array_meta);
+
+			// replace array index of key_name with the one of the array meta,
+			// create a new key with the name which can then be abused to increment the array index and
+			// copy this index to the key_name
+			strcpy (key_name_array_index, keyString (array_meta));
+			Key * index_key = keyNew (key_name, KEY_END);
+			elektraArrayIncName (index_key);
+			char const * index_key_name = keyName (index_key);
+			ELEKTRA_LOG_DEBUG ("abuse keyname is: %s", index_key_name);
+			strcpy (key_name_array_index, &index_key_name[key_length]);
+			keyDel (index_key);
 
 			// retrieve index from array meta key and increment
-			elektraWriteArrayNumber (key_name_array_index, elektraArrayValidateBaseNameString (array_index) + 1);
 			ELEKTRA_LOG_DEBUG ("calculated array index is: %s", key_name_array_index);
-			keySetMeta (existing_key, "array", key_name_array_index);
-			ksAppendKey (key_set, existing_key);
+			Key * existing_duplicate = keyDup (existing_key, KEY_CP_ALL);
+			keySetMeta (existing_duplicate, "array", key_name_array_index);
+			ksAppendKey (key_set, existing_duplicate);
 		}
 		else
 		{
