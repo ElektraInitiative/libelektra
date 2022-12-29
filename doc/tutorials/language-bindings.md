@@ -46,7 +46,7 @@ else ()
 endif ()
 ```
 
-Elektra uses out-of-source builds, so we have to copy all the needed files over to the build directory. The ${CMAKE_CURRENT_SOURCE_DIR} variable refers to the source directory, while ${CMAKE_CURRENT_BINARY_DIR} refers to the build directory. The copy is as simple as
+Elektra uses out-of-source builds, so we have to copy all the needed files over to the build directory. The `${CMAKE_CURRENT_SOURCE_DIR}` variable refers to the source directory, while `${CMAKE_CURRENT_BINARY_DIR}` refers to the build directory. The copy is as simple as
 
 ```cmake
 # Inside the previous if block

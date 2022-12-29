@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "README" "" "November 2022" ""
+.TH "README" "" "December 2022" ""
 .SH "Introduction"
 This document aims to provide information about how to build Elektra’s Website\.
 .SH "Design and Structure"
@@ -24,7 +24,7 @@ Use an own webserver to distribute the application\. In order to do so, only \fB
 In order to not receive any 404 errors by the webserver, it should serve the \fBindex\.html\fR for all requests that do not have a static file as target\. The \fBindex\.html\fR will then try to serve the (dynamic) URL itself\.
 .SS "Configuration Options"
 .P
-Using /sw/elektra/website/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\.pid
+Using \fB/sw/elektra/website/#0/current/daemon/lock\fR (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\.pid
 .P
 The configuration file allows to change GitHub settings in the \fBgithub\fR section\.
 .P
