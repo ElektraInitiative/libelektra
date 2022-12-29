@@ -223,6 +223,74 @@ void appendKeyToSet (const char * key_name, const char * key_value, KeySet * key
 	elektraFree (order_str);
 }
 
+/**
+ * Append the dn key to the key_set and store it in the last_dn pointer.
+ * A precondition is that record_line_value is a valid value of a dn key.
+ *
+ * @param key_set the key_set to store the dn
+ * @param error_key the key to store warnings and errors
+ * @param last_dn the pointer to the last_dn pointer to store the new dn string at
+ * @param record_line_value the value of a dn key
+ * @return 0 on success, 1 when the record_line_value cannot be parsed, 2 when the record_line_value contains no daomin part
+ */
+int handleDn (KeySet * key_set, Key * error_key, char ** last_dn, const char * record_line_value)
+{
+	char ** tokens = parseToken (record_line_value);
+
+	if (tokens == NULL)
+	{
+		return 1;
+	}
+
+	int size = 0;
+
+	while (tokens[size] != NULL)
+	{
+		size++;
+	}
+
+	for (int i = 0; i < size; ++i)
+	{
+
+		Key * key = keyNew (keyName (error_key), KEY_END);
+		char * domainpart = makeKey ((const char **) tokens, i + 1);
+
+		ELEKTRA_LOG_DEBUG ("saving key: %s\n", domainpart);
+
+		if (domainpart == NULL)
+		{
+			elektraFree (domainpart);
+			elektraFree (tokens);
+			return 2;
+		}
+
+		if (*last_dn != NULL)
+		{
+			elektraFree (*last_dn);
+		}
+		*last_dn = strdup (domainpart);
+
+		if (keyAddName (key, domainpart) == -1)
+		{
+			ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (error_key, "Key name '%s' is not valid, discarding key",
+								   record_line_value);
+			elektraFree (domainpart);
+			keyDel (key);
+			break;
+		}
+
+		ksAppendKey (key_set, key);
+		elektraFree (domainpart);
+	}
+
+	for (int i = 0; i < size; i++)
+	{
+		elektraFree (tokens[i]);
+	}
+	elektraFree (tokens);
+	return 0;
+}
+
 int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/ldif"))
@@ -261,8 +329,8 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	while (ldif_read_record (lfp, &lineno, &buff, &buflen))
 	{
-		char * line;
 		char * next = buff;
+		char * line;
 		char * last_dn = NULL;
 
 		while ((line = ldif_getline (&next)) != NULL)
@@ -282,10 +350,8 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			if (elektraStrCmp (type, "dn") == 0)
 			{
 				ELEKTRA_LOG_DEBUG ("found key: %s\n", value);
-
-				char ** tokens = parseToken (value);
-
-				if (tokens == NULL)
+				int status_code = handleDn (returned, parentKey, &last_dn, value);
+				if (status_code == 1)
 				{
 					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
 						parentKey, "Failed to parse tokens from file %s at position %ld from %s", filename,
@@ -295,58 +361,15 @@ int elektraLdifGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 					ldif_close (lfp);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
-
-				int size = 0;
-
-				while (tokens[size] != NULL)
+				if (status_code == 2)
 				{
-					size++;
+					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+						parentKey, "Failed to extract key from file %s at position %ld with key %s", filename,
+						ftell (lfp->fp), value);
+					elektraFree (buff);
+					ldif_close (lfp);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
-
-				for (int i = 0; i < size; ++i)
-				{
-
-					Key * key = keyNew (keyName (parentKey), KEY_END);
-					char * domainpart = makeKey ((const char **) tokens, i + 1);
-
-					ELEKTRA_LOG_DEBUG ("saving key: %s\n", domainpart);
-
-					if (domainpart == NULL)
-					{
-						ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-							parentKey, "Failed to extract key from file %s at position %ld with key %s",
-							filename, ftell (lfp->fp), value);
-						elektraFree (domainpart);
-						elektraFree (tokens);
-						elektraFree (buff);
-						ldif_close (lfp);
-						return ELEKTRA_PLUGIN_STATUS_ERROR;
-					}
-
-					if (last_dn != NULL)
-					{
-						elektraFree (last_dn);
-					}
-					last_dn = strdup (domainpart);
-
-					if (keyAddName (key, domainpart) == -1)
-					{
-						ELEKTRA_ADD_VALIDATION_SYNTACTIC_WARNINGF (
-							parentKey, "Key name '%s' is not valid, discarding key", value);
-						elektraFree (domainpart);
-						keyDel (key);
-						break;
-					}
-
-					ksAppendKey (returned, key);
-					elektraFree (domainpart);
-				}
-
-				for (int i = 0; i < size; i++)
-				{
-					elektraFree (tokens[i]);
-				}
-				elektraFree (tokens);
 			}
 			else
 			{
