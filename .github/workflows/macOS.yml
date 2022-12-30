@@ -68,14 +68,7 @@ jobs:
       KDB_DB_INIT: ${{ matrix.KDB_DB_INIT }}
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 2.7 # Not needed with a .ruby-version file
+    - uses: actions/checkout@v3
 
     - name: Install Dependencies
       run: |
@@ -106,7 +99,9 @@ jobs:
           npm \
           openssl \
           pkg-config \
+          python@3.11 \
           qt \
+          ruby@3.0 \
           shfmt \
           swig \
           tree \
@@ -124,9 +119,11 @@ jobs:
     - name: Setup Build Environment
       run: |
         # Install Ruby gems
+        export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
         gem install ronn-ng -v 0.10.1.pre1
         gem install test-unit --no-document
         # Install Python packages
+        export PATH="/usr/local/opt/python@3.11/bin:$PATH"
         pip2 install cheetah # Required by kdb-gen
         pip3 install cmakelang[yaml]==0.6.13
         # Install JavaScript packages
