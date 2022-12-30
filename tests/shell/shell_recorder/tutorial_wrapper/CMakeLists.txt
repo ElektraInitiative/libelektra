@@ -34,6 +34,9 @@ add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storag
 add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line PROPERTY LABELS memleak)
 add_msr_test (tutorial_namespaces "${CMAKE_SOURCE_DIR}/doc/tutorials/namespaces.md")
 
+# This is test is time and resource intensive and needs docekr to be present in the environment. Please run this run this test manually:
+# add_msr_test (tutorial_merge "${CMAKE_SOURCE_DIR}/doc/tutorials/run_all_tests_with_docker.md")
+
 if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder tests for `validation` and 'spec', as they fail with ASAN enabled")
 else (ENABLE_ASAN)

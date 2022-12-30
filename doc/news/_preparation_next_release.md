@@ -399,6 +399,10 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Create diagrams in mermaid.js to use in doxygen _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- tutorial: Add automatic validation to Docker tutorial _(Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
