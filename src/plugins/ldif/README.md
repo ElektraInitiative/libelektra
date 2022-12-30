@@ -25,7 +25,8 @@ The package is called `libelektra5-experimental`.
 
 ## Dependencies
 
-OpenLDAP
+This plugin relies on the OpenLDAP library.
+This package is called `libldap` on Arch, `libldap2-dev` on Debian and `openldap-devel` on Fedora.
 
 ## Examples
 
