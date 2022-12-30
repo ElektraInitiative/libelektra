@@ -5,7 +5,7 @@
 - infos/provides = storage/ldif
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = libc configurable limited experimental
+- infos/status = libc configurable experimental
 - infos/metadata =
 - infos/description = deserialize LDIF files
 
@@ -45,30 +45,4 @@ kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=heidi/uid
 
 kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=heidi/cn
 #> Heidi Redlbacher
-```
-
-## Limitations
-
-The plugin supports neither getting nor setting multi-valued LDIF attributes.
-In particular, on reading the LDIF file, only the last entry will be used.
-
-Consider this LDIF file:
-
-```ldif
-dn: uid=willi,ou=dep,dc=example,dc=org
-uid: willi
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-structuralObjectClass: inetOrgPerson
-```
-
-mounted on `system:/ldif/example`
-
-then
-
-```sh
-kdb get system:/tests/people/dc=org/dc=libelektra/ou=developer/uid=hans/objectClass
-#> top
 ```
