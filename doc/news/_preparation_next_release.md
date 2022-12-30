@@ -199,7 +199,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- Improved description of [compatibility guidelines](doc/todo/API.md) _(Markus Raab)_.
+- Improved description of [api review guidelines](doc/contrib/api_review.md) _(Markus Raab)_.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
