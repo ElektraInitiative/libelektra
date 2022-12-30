@@ -6,7 +6,7 @@ The functions of the underlying C API are exposed by the modules in `Elektra.Sys
 
 However, see [`src/bindings/erl_nif/README.md`](../README.md) for an overview of the differences to the C API and the limitations.
 
-Each of the Elektra classes is also available as a Elixir modules which implement a `GenServer` behaviour:
+Each of the Elektra classes is also available as a Elixir modules which implement a `GenServer` behavior[^1]:
 
 - `Elektra.Kdb`
 - `Elektra.Key`
@@ -164,3 +164,7 @@ end
 ```
 
 Note that the Elixir module has Elektra as a dependency and the Elektra libraries need to be installed.
+
+[^1]:
+    We adopt the American spelling due to technical limitations of the spell checking script.
+    The correct spelling in the context of Erlang/OTP is the British spelling.
