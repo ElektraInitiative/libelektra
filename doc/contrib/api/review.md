@@ -5,7 +5,7 @@ On potential changes (including extensions) of the API/ABI please check followin
 - [ ] **Before** starting to implement the change: [decisions](/doc/decisions) for API is in step `decided`
 - [ ] **After** implementing the change: [decisions](/doc/decisions) for API is in step `implemented`
 - [ ] API design is [reviewed](reviews/) by someone else, too
-- [ ] full Doxygen docu (all parameters, full design-by-contract, brief, long, examples, etc.)
+- [ ] full Doxygen documentation (all parameters, full design-by-contract, brief, long, examples, etc.)
 - [ ] full Testcoverage
 - [ ] still ABI/API forward-compatible
       (It is okay to break backward-compatible to add new symbols)
