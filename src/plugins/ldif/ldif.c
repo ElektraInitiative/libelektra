@@ -484,8 +484,33 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	int first_line = 1;
 	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
 	{
-		Key * cur = keyArray[it];
-		const char * type = keyBaseName (cur);
+		const Key * cur = keyArray[it];
+		ELEKTRA_LOG_DEBUG ("processing key: %s", keyName (cur));
+		if (keyGetMeta (cur, "array"))
+		{
+			ELEKTRA_LOG_DEBUG ("detected an array, skipping\n");
+			continue;
+		}
+		char * keyNameCopy = elektraCalloc (sizeof (char) * (keyGetNameSize (cur) + 1));
+		strcpy (keyNameCopy, keyName (cur));
+		int nameValidation = elektraArrayValidateName (cur);
+		if (nameValidation == 1)
+		{
+			*strrchr (keyNameCopy, '/') = '\0';
+			ELEKTRA_LOG_DEBUG ("key is an array element, trimmed to: %s", keyNameCopy);
+		}
+
+		const char * type = strrchr (keyNameCopy, '/');
+		if (type == NULL)
+		{
+			ELEKTRA_LOG_DEBUG ("key was a top-level key");
+			type = keyNameCopy;
+		}
+		else
+		{
+			type++; // skip leading '/'
+		}
+		ELEKTRA_LOG_DEBUG ("using ldif type: %s", type);
 		if (strchr (type, '=') == NULL)
 		{
 			ELEKTRA_LOG_DEBUG ("%s is a valid ldif type, proceeding writing\n", type);
@@ -508,6 +533,7 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 									 ftell (lfp->fp), filename);
 				ber_memfree (data);
 				elektraFree (keyArray);
+				elektraFree (keyNameCopy);
 				ldif_close (lfp);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
@@ -519,6 +545,8 @@ int elektraLdifSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			ELEKTRA_LOG_WARNING ("skipping: '%s', curr: '%s':'%s' because '=' are not allowed in ldif attributes\n",
 					     elektraKeyGetRelativeName (cur, parentKey), keyString (cur), keyBaseName (cur));
 		}
+		elektraFree (keyNameCopy);
+		ELEKTRA_LOG_DEBUG ("\n");
 	}
 
 	elektraFree (keyArray);
