@@ -54,6 +54,13 @@
                         }
                     },
                     {
+                        "name": "Meta-Specification",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/METADATA.ini"
+                        }
+                    },
+                    {
                         "name": "FAQ",
                         "type": "staticfile",
                         "options": {
@@ -62,49 +69,44 @@
                     }
                 ]
             },
-            {
-                "name": "Get Started",
-                "type": "staticlist",
-                "ref": "getstarted",
-                "dev-comment": "",
-                "children": [
-                    {
-                        "name": "guide",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/GETSTARTED.md"
-                        }
-                    }
-                ]
-            },
-            {
-                "name": "Installation",
-                "type": "staticlist",
-                "ref": "installation",
-                "children": [
-                    {
-                        "name": "Installation",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/INSTALL.md"
-                        }
-                    }
-                ],
-                "dev-comment": ""
-            },
-            {
+			{
+				"name": "Get Started",
+				"type": "staticlist",
+				"ref": "getstarted",
+				"dev-comment": "",
+				"children": [{
+					"name": "guide",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/GETSTARTED.md"
+				  }
+				}]
+			},
+			{
+				"name": "Keynames",
+				"type": "staticlist",
+				"ref": "keynames",
+				"dev-comment": "",
+				"children": [{
+					"name": "keynames",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/KEYNAMES.md"
+				  }
+				}]
+			},
+			{
                 "name": "Compiling",
                 "type": "staticlist",
                 "ref": "compiling",
-                "children": [
-                    {
-                        "name": "compile",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/COMPILE.md"
-                        }
-                    }
-                ],
+				"children": [{
+					"name": "compile",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/COMPILE.md"
+				  }
+				 }],
+
                 "dev-comment": ""
             },
 			{
@@ -144,12 +146,7 @@
                 "ref": "plugins",
                 "options": {
                     "path": "src/plugins/README.md",
-                    "target_file": [
-                        "README.md",
-                        "README",
-                        "readme.md",
-                        "readme"
-                    ],
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
                     "parsing": {
                         "start_regex": "## Plugins",
                         "stop_regex": "####### UNUSED",
@@ -168,12 +165,7 @@
                 "ref": "tools",
                 "options": {
                     "path": "src/tools",
-                    "target_file": [
-                        "README.md",
-                        "README",
-                        "readme.md",
-                        "readme"
-                    ]
+                    "target_file": ["README.md", "README", "readme.md", "readme"]
                 },
                 "dev-comment": "This could be changed to the more powerful 'parsereadme' type in future."
             },
@@ -183,27 +175,23 @@
                 "ref": "man-pages",
                 "options": {
                     "path": "doc/help",
-                    "blacklist": [
-                        "CMakeLists.txt"
-                    ]
+                    "blacklist": ["CMakeLists.txt"]
                 },
                 "dev-comment": "We don't want the CMakeLists.txt to be in the output."
             },
             {
-                "name": "Citations",
-                "type": "staticlist",
-                "ref": "citations",
-                "dev-comment": "",
-                "children": [
-                    {
-                        "name": "citations",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/paper/README.md"
-                        }
-                    }
-                ]
-            }
+				"name": "Citations",
+				"type": "staticlist",
+				"ref": "citations",
+				"dev-comment": "",
+				"children": [{
+					"name": "citations",
+					"type": "staticfile",
+					"options": {
+					    "path": "doc/paper/README.md"
+				    }
+				}]
+			}
         ]
     },
     {
@@ -315,25 +303,15 @@
                         "options": {
                             "path": "doc/VERSION.md"
                         }
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "staticref",
+                        "options": {
+                            "path": "tutorials"
+                        }
                     }
                 ]
-            },
-            {
-                "name": "Tutorials",
-                "type": "parsereadme",
-                "ref": "tutorials",
-                "options": {
-                    "path": "doc/tutorials/README.md",
-                    "target_file": [],
-                    "parsing": {
-                        "section_regex": "## ([^#]+)",
-                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-                    },
-                    "name": {
-                        "make_pretty": false
-                    }
-                },
-                "dev-comment": "Names are already pretty in the linked readme, we do not have to change them."
             },
             {
                 "name": "Examples",
@@ -341,9 +319,7 @@
                 "ref": "examples",
                 "options": {
                     "path": "examples",
-                    "blacklist": [
-                        "CMakeLists.txt"
-                    ]
+                    "blacklist": ["CMakeLists.txt"]
                 },
                 "dev-comment": "We don't want the CMakeLists.txt to be part of the output."
             },
@@ -353,12 +329,7 @@
                 "ref": "bindings",
                 "options": {
                     "path": "src/bindings/README.md",
-                    "target_file": [
-                        "README.md",
-                        "README",
-                        "readme.md",
-                        "readme"
-                    ],
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
                     "parsing": {
                         "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
                     },
@@ -374,12 +345,7 @@
                 "ref": "libraries",
                 "options": {
                     "path": "src/libs/README.md",
-                    "target_file": [
-                        "README.md",
-                        "README",
-                        "readme.md",
-                        "readme"
-                    ],
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
                     "parsing": {
                         "entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
                     },
