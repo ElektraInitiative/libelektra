@@ -421,7 +421,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add tutorial how to suppress memleaks in plugins from dependencies. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - Write about [history](/doc/dev/history.md) to make plans of Elektra's adoption more clear. _(Markus Raab)_
 - <<TODO>>
