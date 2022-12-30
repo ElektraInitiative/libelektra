@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Before you write your first decision, read about the [decision process](5_implemented/decision_process.md) and [steps](STEPS.md).
+Before you write your first decision, read about the [decision process](4_partially_implemented/decision_process.md) and [steps](STEPS.md).
 
 ## Meta-Information
 
