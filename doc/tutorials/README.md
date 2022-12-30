@@ -8,6 +8,7 @@ be read by whom.
 Read this first to get the basic concepts of Elektra.
 
 - [Namespaces](namespaces.md)
+- [Key names](/doc/KEYNAMES.md)
 - [Cascading](cascading.md)
 - [Arrays](arrays.md)
 - [Mount Configuration Files](mount.md)
@@ -22,6 +23,7 @@ provides.
 - [Hello, Elektra in C](hello-elektra.md)
 - [Integration of your C Application](application-integration.md)
 - [Writing a specification for your configuration](specification.md)
+- [Meta specification language](/doc/METADATA.ini)
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
