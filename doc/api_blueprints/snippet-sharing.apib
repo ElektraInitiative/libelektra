@@ -130,7 +130,7 @@ Retrieves a list of users. The result can be adjusted by additional, but optiona
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
-            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to their rank) to perform this action
     
 
 ## Retrieve user details [GET /{name}{?current}]
@@ -163,7 +163,7 @@ Retrieves the details of the specified user. If the parameter `current` is speci
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
-            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to their rank) to perform this action
 
 + Response 404 (application/json)
     + Attributes (Error Response)
@@ -290,7 +290,7 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
-            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to their rank) to perform this action
 
 + Response 404 (application/json)
     + Attributes (Error Response)
@@ -333,7 +333,7 @@ This method can be used to delete a user. If no `name` is supplied, the currentl
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
-            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to their rank) to perform this action
 
 + Response 404 (application/json)
     + Attributes (Error Response)

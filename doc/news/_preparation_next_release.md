@@ -373,6 +373,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Harmonize spelling of Git _(@Joni1993)_
 - Update packaging instructions for Fedora _(@0x6178656c)_
 - <<TODO>>
+- <<TODO>>
+- Improve use of gender _(@0x6178656c)_
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
 - fix various spelling errors _(@Joni1993)_
 - <<TODO>>
