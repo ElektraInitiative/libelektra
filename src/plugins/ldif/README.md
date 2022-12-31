@@ -33,7 +33,7 @@ This package is called `libldap` on Arch, `libldap2-dev` on Debian and `openldap
 ```sh
 # Backup-and-Restore: user:/tests/ldif
 
-echo "$PWD/src/plugins/ldif/ldif/simple-people.ldif"
+test -f "$PWD/src/plugins/ldif/ldif/simple-people.ldif"
 # Mount the provided example: simple-people.ldif
 
 kdb mount "$PWD/src/plugins/ldif/ldif/simple-people.ldif" /tests/people ldif
