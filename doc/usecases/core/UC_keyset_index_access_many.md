@@ -11,15 +11,16 @@
 
 - **Precondition:**
   - [`KeySet` has been created](UC_keyset_create.md).
-  - [`Key` has been inserted into `KeySet`](UC_keyset_insert.md).
+  - [`Key`(s) have been inserted into `KeySet`](UC_keyset_insert.md).
 - **Main success scenario:**
-  - Caller requests `Key` at valid index (`0 <= i < size`) from `KeySet`
-  - Core returns `Key *` for `Key` at index
+  - Caller requests `Key`s in valid index range (`[f, l)` with `0 <= f < size && f <= l <= size`) from `KeySet` KS
+  - Core creates new `KeySet` KS1
+  - Core adds all `Key`s in KS with index `i >= f && i < l` to KS1.
+  - Core returns KS1
 - **Alternative scenario:** -
 - **Error scenario:**
-  - Caller requests `Key` at invalid index (`i < 0 || i >= size`) from `KeySet`
+  - Caller requests `Key` at invalid index range (`f < 0 || f >= size || l < f || l > size`) from `KeySet`
   - Core returns `NULL`
 - **Postcondition:**
   - The initial `KeySet` KS MUST be unmodified.
-  - The returned `Key *` MUST be valid until the `Key` is removed from the `KeySet`.
 - **Non-functional Constraints:** -

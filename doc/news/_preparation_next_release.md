@@ -480,7 +480,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Convert `libelektra-core` use cases to be index-based _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
