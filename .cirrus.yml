@@ -53,11 +53,15 @@ task:
       pkg install -y
       bison
       cmake
+      dbus
       flex
+      gcc12
       git
       libgit2
       llvm12
       ninja
+      pkgconf
+      xfce4-conf
       yajl
       yaml-cpp
 
@@ -82,6 +86,7 @@ task:
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
+    - export $(dbus-launch) # Some libraries such as xfconf require a running dbus instance
     - *run_tests
 
 task:
@@ -97,7 +102,7 @@ task:
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-xfconf # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382 xfce4 is uncommon on macOS
 
   install_script:
     - | # Install Homebrew formulas
@@ -239,6 +244,7 @@ task:
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$CIRRUS_WORKING_DIR/install/lib"
+    - export $(dbus-launch) # Some libraries such as xfconf require a running dbus instance
     - *run_tests
 
 task:

@@ -33,6 +33,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     --mount=type=tmpfs,target=/etc/kdb \
     --mount=type=tmpfs,target=/root/.cache/elektra \
     --mount=type=tmpfs,target=/root/.config \
+    export $(dbus-launch); \
     kdb run_all
 
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers

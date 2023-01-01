@@ -7,6 +7,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
+    	dbus-x11 \
         diffutils \
         file \
         findutils \
@@ -43,6 +44,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         wget \
         which \
         xerces-c-devel \
+        xfconf-devel \
         yajl-devel \
         yaml-cpp-devel \
         zlib-devel \

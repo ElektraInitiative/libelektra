@@ -13,6 +13,7 @@ RUN apt-get update && apt-get -y install \
         clang-11 \
         cmake \
         curl \
+    	dbus-x11 \
         debsigs \
         default-jdk \
         devscripts \
@@ -52,6 +53,7 @@ RUN apt-get update && apt-get -y install \
         libsystemd-dev \
         libuv1-dev \
         libxerces-c-dev \
+        libxfconf-0-dev \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \

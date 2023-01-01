@@ -7,6 +7,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
+    	dbus-x11 \
         devscripts \
         diffutils \
         discount \
@@ -55,6 +56,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         wget \
         which \
         xerces-c-devel \
+        xfconf-devel \
         yajl-devel \
         yaml-cpp-devel \
         zeromq-devel \

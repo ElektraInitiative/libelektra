@@ -1042,6 +1042,7 @@ export LD_LIBRARY_PATH=${WORKSPACE}/system/lib:$LD_LIBRARY_PATH
 export PATH=${WORKSPACE}/system/bin:$PATH
 export DBUS_SESSION_BUS_ADDRESS=`dbus-daemon --session --fork --print-address`
 export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
+export $(dbus-launch)
 
 env
 
@@ -1428,7 +1429,7 @@ def ctest(target = "Test") {
      , since they are known to fail in scenarios with high load.
      See also: https://issues.libelektra.org/2439
   */
-  sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
+  sh """export \$(dbus-launch); ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
           -E 'testmod_(dbus(recv)?|zeromqsend)' || ctest --rerun-failed"""
 }

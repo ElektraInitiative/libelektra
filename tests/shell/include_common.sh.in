@@ -231,7 +231,8 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xmini" \
 		-o "x$PLUGIN" = "xyamlcpp" \
 		-o "x$PLUGIN" = "xkconfig" \
-		-o "x$PLUGIN" = "xtoml"
+		-o "x$PLUGIN" = "xtoml" \
+		-o "x$PLUGIN" = "xxfconf"
 }
 
 is_plugin_available() {
@@ -387,7 +388,6 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
-#
 #
 #
 #
