@@ -107,37 +107,6 @@
                 ],
                 "dev-comment": ""
             },
-			{
-                "name": "Installation",
-                "type": "staticlist",
-                "ref": "installation",
-				"children": [{
-					"name": "Installation",
-					"type": "staticfile",
-					"options": {
-					"path": "doc/INSTALL.md"
-				  }
-
-                }],
-                "dev-comment": ""
-            },
-            {
-                "name": "Tutorials",
-                "type": "parsereadme",
-                "ref": "tutorials",
-                "options": {
-                    "path": "doc/tutorials/README.md",
-                    "target_file": [],
-                    "parsing": {
-                        "section_regex": "## ([^#]+)",
-                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-                    },
-                    "name": {
-                        "make_pretty": false
-                    }
-                },
-                "dev-comment": "Names are already pretty in the linked readme, we do not have to change them."
-            },
             {
                 "name": "Plugins",
                 "type": "parsereadme",
