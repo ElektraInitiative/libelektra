@@ -2,21 +2,22 @@
 
 ## Summary
 
-- **Title:** Specification for REST application communicating with multiple services
 - **Scope:** Configuration
 - **Level:** Developer Goal
-- **Actors:** User (usually a application developer)
-- **Brief:** User configures specifcation for configuration of REST application.
+- **Actors:** Application developer
+- **Brief:** The user wants to specify the port and url for an unknown number of servers.
 
 ## Scenarios
 
 - **Precondition:** kdb is installed.
-- **Main success scenario:** Specification is written and stored system wide or user specifc. All services which are added in the configuration need to adhere to this configuration specification.
-- **Alternative scenario:** User is limited to only using one service if globbing is not used. 
-- **Error scenario:** Technical problems while writing the specification.
-  The user is informed about the problem.
+- **Main success scenario:** Specification is written and stored system wide or user specifc. 
+All services which are added in the configuration need to adhere to this configuration specification.
+- **Alternative scenario:** None.
+- **Error scenario:** In case services have overlapping configuration an error is yielded.
+A sample for such overlapping would be `service/#/port` and `service/_/port`.
+The user is informed about the problem / error.
 - **Postcondition:** The specification allows configuration for multiple services.
-- **Non-functional Constraints:** -
+- **Non-functional Constraints:** None.
 
 ## Example
 
