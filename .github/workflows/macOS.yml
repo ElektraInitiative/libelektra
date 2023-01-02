@@ -76,8 +76,8 @@ jobs:
         brew config
         # Unlink parallel package, because of conflict with moreutils
         brew unlink parallel || >&2 printf 'Unlinking parallel failed.`\n'
-        # Uninstall old Python versions due to file conflicts
-        brew remove python@3.10 || >&2 printf 'Uninstalling old python versions failed.`\n'
+        # Uninstall old Python versions and azure-cli due to file conflicts
+        brew remove azure-cli python@3.10 || >&2 printf 'Uninstalling old python versions and azure-cli failed.`\n'
         brew install augeas \
           antlr \
           antlr4-cpp-runtime \
