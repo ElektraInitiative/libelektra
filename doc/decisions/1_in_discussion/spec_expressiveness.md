@@ -2,14 +2,14 @@
 
 ## Problem
 
-The current implementation of the spec plugin is copying metadata from the specification
-(`spec` namespace) to all other namespaces. By providing certain metadata e.g. 
-`type` or `description`, it can be assured that keys adhere to a given specification. 
+The current implementation of the spec plugin is copying metadata to all other namespaces.
+Metadata e.g. `type` or `description` describes a certain key.
 
-For some applications there are keys we don't want to define for every application explicitly.
-This is when `globbing` expressions in key names comes into place. By providing certain wildcard
-characters e.g. `_` or `#` one can match and specify a number of keys at once without the need
-to explicitly state the key in every specification.
+Sometimes there are keys with similar or identical specifications.
+We want to define those in a single place and not have to manually copy metadata.
+`Globbing` expressions in key names comes into place at that time. 
+By providing certain wildcard characters e.g. `_` or `#` one can match multiple keys.
+This removes the need to explicitly define specification for keys.
 
 To describe the use case where `globbing` expressions make sense, we will use a REST application.
 This REST application uses multiple services which the user is not aware of at time of configuration.
