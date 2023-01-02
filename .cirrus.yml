@@ -111,7 +111,6 @@ task:
       brew install openjdk \
         antlr \
         antlr4-cpp-runtime \
-        augeas \
         bison \
         clang-format \
         dbus \
@@ -142,7 +141,6 @@ task:
         yajl \
         yaml-cpp \
         zeromq
-      brew install --cask oclint
 
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
