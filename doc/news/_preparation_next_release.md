@@ -441,7 +441,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Improve Use Cases [Template](/doc/usecases/template.md) _(@kodebach and Markus Raab)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Use cases for [CLI](/doc/usecases/cli) (@hannes99)
 - <<TODO>>
 - Use cases for [KDB](/doc/usecases/kdb) _(@kodebach)_
 - Use cases for `libelektra-core` _(@kodebach)_
