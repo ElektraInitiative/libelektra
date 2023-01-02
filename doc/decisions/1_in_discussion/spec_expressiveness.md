@@ -11,28 +11,49 @@ This is when `globbing` expressions in key names comes into place. By providing 
 characters e.g. `_` or `#` one can match and specify a number of keys at once without the need
 to explicitly state the key in every specification.
 
-To describe the use case where `globbing` expressions make sense, we will use an application
-based on microservice architecture as sample.
+To describe the use case where `globbing` expressions make sense, we will use a REST application.
+This REST application uses multiple services which the user is not aware of at time of configuration.
+It could use a database, message broker, etc. but this is not yet known.
+A solution to this is `globbing` i.o. using wildcards in key names.
+The thing to be aware of is to define configuration keys which are necessary for every service.
+In this example we use `port` and `url`.
 
-Imagine we have microservices and each of them communicates to a database to persist data. We
-will need some configuration so the applications can connect to the database e.g. `port`. Lets
-say we are specifying our configuration by `database/<DIALECT>/...`, where `...` is any name
-for a key. If we have multiple dialects e.g. a microservice uses more than one database e.g. `mysql`, `mssql`, etc. it is inconvenient to copy and paste the configuration for every 
-dialect we use.
+The key starts with `/sw/org/app-name/#0/development`.
+`sw` defines that this is a configuration for a software.
+`org` is the organization name.
+`app-name` is the application name we are writing the specification for.
+`#0` is the configuration version.
+`development` is the profile (it could also be `production`) 
 
-By using `globbing` expression we can overcome this problem.
-
-The key starts with `/sw/org/app-name`.
 ```ni
-[database/_/port]
+[service/_/port]
 meta:/require = true
-meta:/description = "The database port."
+meta:/default = 8080
+meta:/description = "The port of the service."
+
+[service/_/url]
+meta:/require = true
+meta:/description = "The url of the service."
 ```
-The `_` would match every `dialect` we are using in our application e.g. `postgresql`, `mssql`, etc.
+The `_` would match every `service` we are using in our application e.g. `database`, `message broker`, etc.
+
+### Problem 1
+
+This specification uses `_` but we also have `#` as wildcard in `globbing`. 
+The problem we face here is overlapping specifications.
+A example for this is if we used `[service/#/port]` and `[service/_/port]` in the same specification.
+This is currently undefined behaivour in the spec plugin.
+
+### Problem 2
+
+Errors and warnings are strictly defined in elektra.
+The spec plugin is currently not 
+
+### Problem 3
+
+Default values on wildcard globbing is undefined.
 
 ## Constraints
-
-TODO
 
 ## Assumptions
 
@@ -40,10 +61,10 @@ TODO
 
 ## Decision
 
-- no defaults for `sw/_/key` specifications (default will not work for `ksLookup(/sw/sthg/key)`)
-- plugins are not allowed to create keys (may change in future; depends on plugin positions)
-
-The spec plugin should yield errors when it detects such situations.
+- no defaults for keys ending with globbing keys `sw/_` (**Problem 3**)
+- no defaults for `sw/_/keys` (default will not work for `ksLookup(/sw/sthg/key)`)
+- The spec plugin should yield should yield errors to user on overlapping keys (**Problem 1**)
+- The spec plugin should yield errors and warnings when it detects such situations (**Problem 2**)
 
 ## Rationale
 
