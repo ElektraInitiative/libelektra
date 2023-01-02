@@ -17,7 +17,7 @@
 
 - **Main success scenario:**
 
-  - The administrators query a value from the mounted database by giving the unique keyname. (see [Use Case: Read a configuration value from a file](./UC_read_rdb.md))
+  - The administrators query a value from the mounted database by giving the unique keyname. (see [Use Case: Read a configuration value from a relational database](./UC_read_rdb.md))
   - Elektra reads the current (old) value from the mounted database and returns it to the administrators.
   - The administrators use Elektra to change the value of the given key, by giving the unique keyname and the new value.
   - Elektra updates the affected tuple in the database.
@@ -28,7 +28,7 @@
 - **Alternative scenario:**
 
   - The requested key is not found in the database.
-    - Elektra reports the error to the administrators.
+    - Elektra creates a new tuple with the given key and value and writes it to the database.
 
 - **Error scenario:**
 

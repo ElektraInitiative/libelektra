@@ -6,7 +6,7 @@
 - **Level:** Kite
 - **Actors:** Administrators
 - **Brief:** The administrators can query the current mountpoints.
-- **Status:** Implemented (currently only file-based data sources can be mounted)
+- **Status:** Draft (currently only file-based data sources can be listed)
 
 ## Scenarios
 
@@ -32,10 +32,6 @@
 
 - **Error scenario:**
 
-  - An error occurred while mounting the data source. (see [Use Case: Mount a data source](./UC_mount.md))
-    - Elektra reports the error to the administrators.
-  - An error occurred while unmounting the data source. (see [Use Case: Unmount a data source](./UC_unmount.md))
-    - Elektra reports the error to the administrators.
 
 - **Postconditions:**
 

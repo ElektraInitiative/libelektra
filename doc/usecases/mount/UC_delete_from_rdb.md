@@ -17,7 +17,7 @@
 
 - **Main success scenario:**
 
-  - The administrators query a value from the mounted database by giving the unique keyname. (see [Use Case: Read a configuration value from a file](./UC_read_rdb.md))
+  - The administrators query a value from the mounted database by giving the unique keyname. (see [Use Case: Read a configuration value from a relational database](./UC_read_rdb.md))
   - Elektra returns the current value of the given key to the administrators.
   - The administrators command Elektra to remove the key and its associated value by giving the unique keyname.
   - Elektra removes the affected tuple from the database.

@@ -22,8 +22,8 @@
 
 - **Alternative scenario:**
 
-  - The given data source is not found. (e.g. wrong filename)
-    - Elektra reports the error to the administrators.
+  - The desired mountpoint already exists with a different configuration.
+    - Elektra reports the error to the administrators, unless `--strategy` is used, then keys are merged as requested.
   - The given data source is not supported by Elektra. (e.g. wrong file format, syntax errors)
     - Elektra reports the error to the administrators.
 
@@ -39,5 +39,5 @@
 
 - **Non-functional Constraints:**
 
-  - The mounting of new data sources should not take longer than 5 seconds (reference system has to be defined).
+  - Mounting should be reasonable fast for interactive use.
     - Delays caused by slow storages or network connections are not a part of that constraint, because Elektra is not responsible for that areas.

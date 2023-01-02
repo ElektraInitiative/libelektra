@@ -1,7 +1,7 @@
 # Use cases for mounting
 
-This folder contains the use cases for mounting, which means accessing configuration data sources (e.g. files, databases)
-through Elektra.
+This folder contains the use cases for mounting, which means accessing configuration data sources through Elektra.
+The use cases here cover configuration files and databases.
 
 The goal is to have a common key-value based view of configuration data that is stored in different data sources.
 
