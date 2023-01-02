@@ -69,6 +69,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
     - name: Install Dependencies
       run: |
@@ -77,7 +80,7 @@ jobs:
         # Unlink parallel package, because of conflict with moreutils
         brew unlink parallel || >&2 printf 'Unlinking parallel failed.`\n'
         # Uninstall old Python versions and azure-cli due to file conflicts
-        brew remove azure-cli python@3.10 || >&2 printf 'Uninstalling old python versions and azure-cli failed.`\n'
+        brew remove azure-cli python@3.10 python@3.11|| >&2 printf 'Uninstalling old python versions and azure-cli failed.`\n'
         brew install augeas \
           antlr \
           antlr4-cpp-runtime \
@@ -101,7 +104,6 @@ jobs:
           npm \
           openssl \
           pkg-config \
-          python@3.11 \
           qt \
           ruby@3.0 \
           shfmt \
@@ -125,7 +127,6 @@ jobs:
         gem install ronn-ng -v 0.10.1.pre1
         gem install test-unit --no-document
         # Install Python packages
-        export PATH="/usr/local/opt/python@3.11/bin:$PATH"
         pip2 install cheetah # Required by kdb-gen
         pip3 install cmakelang[yaml]==0.6.13
         # Install JavaScript packages
