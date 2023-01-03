@@ -17,7 +17,7 @@ But should we differentiate between different types of values?
 The simplest option: `libelektra-core` will not support any types.
 Values are completely opaque and can only be correctly interpreted by the caller with the correct external knowledge.
 
-### C-String vs. binary
+### C String vs. binary
 
 Because string values are very common and, especially when `Key`s come from configuration files, most `Key`s will have string values, we differentiate between strings and anything else.
 Specifically, we define a string as a byte-sequence that does not contain `\0` bytes, except a single one as the last character to mark the end of the string.
