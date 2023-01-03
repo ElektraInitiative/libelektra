@@ -109,7 +109,7 @@ The `spec` plugin should check if it is a valid array, i.e.:
 - [Base Names](../6_implemented/base_name.md)
 - [Metadata in Spec Namespace](../1_problem_clear/spec_metadata.md)
 - [Spec Expressiveness](../1_problem_clear/spec_expressiveness.md)
-- [Binary](../2_solutions_clear/binary.md).
+- [Binary](../4_decided/key_value_types.md).
 
 ## Notes
 

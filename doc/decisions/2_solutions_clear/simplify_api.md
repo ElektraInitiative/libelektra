@@ -50,7 +50,7 @@ However, the API changes follow these rules:
 
 ## Related Decisions
 
-- [Binary](binary.md)
+- [Binary](../4_decided/key_value_types.md)
 - [Elektra Prefix](../4_decided/elektra_prefix.md)
 
 ## Notes
