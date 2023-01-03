@@ -67,7 +67,7 @@ defmodule Main do
   use Elektra
 
   def main do
-    error_key = Elektra.System.key_new("user:/error/key")
+    error_key = Elektra.System.key_new("/")
 
     config = Elektra.System.ks_new(0)
     root = Elektra.System.key_new("user:/test")
