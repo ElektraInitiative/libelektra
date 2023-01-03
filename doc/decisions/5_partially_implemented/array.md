@@ -87,7 +87,7 @@ The `spec` plugin should check if it is a valid array, i.e.:
 
 ## Rationale
 
-- Is very similar to `binary` metadata but without its [problems](../2_solutions_clear/binary.md).
+- Is very similar to `binary` metadata but without its [problems](../4_decided/key_value_types.md).
 - The key alone suffices to know if it is an array.
 - One can distinguish an array with keys that are called by chance e.g. `#0`.
 

@@ -33,7 +33,7 @@ However, the API changes follow these rules:
 
 - _Remove_ all functions related to key metadata, except those listed below
 - _Remove_ all functions related to keyset cursors, as well as `ksHead` and `ksTail`
-- _Remove_/_Change_ all functions related to (binary) key values as described in ([Binary](binary.md))
+- _Remove_/_Change_ all functions related to (binary) key values as described in ([`Key` value types](../3_decided/key_value_types.md))
 - _Remove_ all functions that use a user-provided buffer to return keyname/value/etc.
 - _Change_/_Add_ `keyMeta`/`keySetMeta` to directly read/write the metadata KeySet of a Key
 - _Rename_ `keyGet*Size` to `key*Size`
