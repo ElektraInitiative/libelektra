@@ -56,12 +56,7 @@ The validation part of the `spec` plugin can be kept as it is now (`required key
 
 ## Considered Alternatives
 
-## Decision
-
-- no defaults for keys ending with globbing keys `sw/_` (**Problem 3**)
-- no defaults for `sw/_/keys` (default will not work for `ksLookup(/sw/sthg/key)`)
-- The spec plugin should yield should yield errors to user on overlapping keys (**Problem 1**)
-- The spec plugin should yield errors and warnings when it detects such situations (**Problem 2**)
+## Decision 
 
 ## Rationale
 
