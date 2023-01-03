@@ -489,7 +489,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add decision in discussion for [spec expressiveness](../decisions/1_in_discussion/spec_expressiveness.md) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 - Update [internal cache](../decisions/3_decided/internal_cache.md) _(Markus Raab)_
