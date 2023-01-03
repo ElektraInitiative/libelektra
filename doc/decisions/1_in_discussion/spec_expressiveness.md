@@ -14,7 +14,7 @@ This removes the need to explicitly define specification for keys.
 To describe the use case where `globbing` expressions make sense, we will use a REST application.
 This REST application uses multiple services which the user is not aware of at time of configuration.
 It could use a database, message broker, etc. but this is not yet known.
-A solution to this is `globbing` i.o. using wildcards in key names.
+A solution to this is `globbing` i.e. using wildcards in key names.
 The thing to be aware of is to define configuration keys which are necessary for every service.
 In this example we use `port` and `url`.
 
