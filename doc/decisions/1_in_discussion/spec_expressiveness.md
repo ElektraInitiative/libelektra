@@ -32,20 +32,23 @@ meta:/description = "The url of the service."
 ```
 The `_` would match every `service` we are using in our application e.g. `database`, `message broker`, etc.
 
-### Problem 1
+But the current implementation has some undefined behaivour when using `globbing`.
 
 This specification uses `_` but we also have `#` as wildcard in `globbing`. 
 The problem we face here is overlapping specifications.
 A example for this is if we used `[service/#/port]` and `[service/shtg/port]` or `[service/_/port]` in the same specification.
-This is currently undefined behaivour in the spec plugin.
+We don't know what metadata should be copied to other namespaces in this case.
+Both `[service/#/port]` and `[service/_/port]` existing produces conflicting specification.
 
-### Problem 2
+For example `[service/#/port]` having as type `meta:/type = string`.
+`[service/shtg/port]` having `meta:/type = unsigned_short`.
+The spec plugin can not know which of those specification to use.
 
-Errors and warnings are strictly defined in Elektra.
-
-### Problem 3
-
-Default values on wildcard globbing is undefined.
+Besides this problem the `spec` plugin also creates default values.
+A plugin responsible for copying metadata to other namespaces should not create new keys.
+In this case it creates cascading keys which are then found by `ksLookup`.
+In my opinion a separate plugin for handling `default values` should exist.
+The validation part of the `spec` plugin can be kept as it is now (`required keys` and `array size validation`).
 
 ## Constraints
 
