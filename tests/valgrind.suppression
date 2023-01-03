@@ -454,12 +454,12 @@
    fun:_dl_allocate_tls
    fun:allocate_stack
    fun:pthread_create@@GLIBC_2.34
-   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
+   obj:*/libglib-2.0.so.*
    fun:g_thread_new
-   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
-   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   obj:*/libglib-2.0.so.*
+   obj:*/libgio-2.0.so.*
    fun:g_task_get_type
-   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   obj:*/libgio-2.0.so.*
    fun:g_bus_get_sync
    fun:xfconf_init
 }
@@ -473,12 +473,12 @@
    fun:_dl_allocate_tls
    fun:allocate_stack
    fun:pthread_create@@GLIBC_2.34
-   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
-   obj:/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.2
+   obj:*/libglib-2.0.so.*
+   obj:*/libglib-2.0.so.*
    fun:g_thread_pool_push
    fun:g_task_run_in_thread
-   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   obj:*/libgio-2.0.so.*
    fun:g_output_stream_flush_async
-   obj:/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.7400.2
+   obj:*/libgio-2.0.so.*
    fun:g_main_context_dispatch
 }

@@ -181,6 +181,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Add xfconf storage plugin with the ability to read and write to xfconf channels _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
+- Make xfconf valgrind suppressions more flexible to lib updates. _(Mihael Pranjić @mpranj)_
 
 ### date
 
