@@ -21,16 +21,48 @@ Here one can see `default` and `description` used as metadata.
 The current implementation of the spec plugin is copying this metadata to all other namespaces.
 It also assures that if keys do not exist and have `default` metadata, it creates a cascading key.
 
-Sometimes there are keys with similar or identical specifications.
-We want to define those in a single place and not have to manually copy metadata.
-`Globbing` expressions in key names comes into place at that time. 
-By providing certain wildcard characters e.g. `_` or `#` one can match multiple keys.
-This removes the need to explicitly define specification for keys.
+Assume we have a REST application we want to write a specification for.
+This REST application has to use multiple services.
 
-To describe the use case where `globbing` expressions make sense, we will use a REST application.
-This REST application uses multiple services which the user is not aware of at time of configuration.
-It could use a database, message broker, etc. but this is not yet known.
-A solution to this is `globbing` i.e. using wildcards in key names.
+If we have `database`, `broker` and `mailer` services we could use the specification:
+
+```ni
+[service/database/port]
+meta:/require = true
+meta:/default = 8080
+meta:/description = "The port of the database service."
+
+[service/database/url]
+meta:/require = true
+meta:/description = "The url of the database service."
+
+[service/broker/port]
+meta:/require = true
+meta:/default = 8080
+meta:/description = "The port of the broker service."
+
+[service/broker/url]
+meta:/require = true
+meta:/description = "The url of the broker service."
+
+[service/mailer/port]
+meta:/require = true
+meta:/default = 8080
+meta:/description = "The port of the mailer service."
+
+[service/mailer/url]
+meta:/require = true
+meta:/description = "The url of the mailer service."
+```
+
+This is already very repetitive and error prone. 
+But writing the specification becomes completely impossible when the set of services is not known in advance. 
+To solve this we need some way to allow for dynamic/unknown parts in the keyname.
+
+`Globbing` expressions is the solution to this problem. 
+By providing certain wildcard characters e.g. `_` or `#` one can match multiple keys.
+This removes the need to explicitly define specification for keys in our example for every service. 
+
 The thing to be aware of is to define configuration keys which are necessary for every service.
 In this example we use `port` and `url`.
 
@@ -50,8 +82,15 @@ The `_` would match every `service` we are using in our application e.g. `databa
 
 But the current implementation has some undefined behaivour when using `globbing`.
 
-This specification uses `_` but we also have `#` as wildcard in `globbing`. 
-The problem we face here is overlapping specifications.
+This specification uses `_` as wildcard character.
+Unfortunately `_` has a shortcoming, as we do not know the key names in advance.
+This prevents us from creating those keys in namespace they do not exist or copying metadata in advance.
+
+But besides `_` we also have `#` as wildcard character.
+This wildcard character is used with arrays.
+A fixed array size can be defined in the specification, which overcomes the shortcoming of `_`.
+
+The problem we face with those wildcard characters is overlapping specifications.
 A example for this is if we used `[service/#/port]` and `[service/shtg/port]` or `[service/_/port]` in the same specification.
 We don't know what metadata should be copied to other namespaces in this case.
 Both `[service/#/port]` and `[service/_/port]` existing produces conflicting specification.
@@ -59,6 +98,45 @@ Both `[service/#/port]` and `[service/_/port]` existing produces conflicting spe
 For example `[service/#/port]` having as type `meta:/type = string`.
 `[service/shtg/port]` having `meta:/type = unsigned_short`.
 The spec plugin can not know which of those specification to use.
+
+To address `#` again, it has a shortcoming when compared to `_`.
+
+Lets take a look at this example:
+
+```ni
+[service/#/port]
+meta:/require = true
+meta:/default = 8080
+meta:/description = "The port of the service."
+
+[service/#/url]
+meta:/require = true
+meta:/description = "The url of the service."
+```
+
+We completely loose the possibility to have a meaningful name for our key here.
+`service/database/port` is more expressive to a user than `service/#0/port`.
+
+We can overcome this problem by having a specification like this:
+
+```ni
+[service/#/port]
+meta:/require = true
+meta:/default = 8080
+meta:/description = "The port of the service."
+
+[service/#/url]
+meta:/require = true
+meta:/description = "The url of the service."
+
+[service/#/name]
+meta:/default = ""
+meta:/description = "The name of the service."
+```
+
+But this adds another key to give us a meaningful name for a given service.
+
+This is why we want to have the wildcard character `_` working correctly.
 
 Besides this problem the `spec` plugin also creates default values.
 A plugin responsible for copying metadata to other namespaces should not create new keys.
