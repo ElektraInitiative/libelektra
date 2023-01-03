@@ -1,10 +1,10 @@
 # Elixir bindings
 
-The functions of the underlying C API are exposed by the modules in `Elektra.System`
+The functions of the underlying C API are exposed by the modules in `Elektra.System`.
 
 - `Elektra.System`
 
-However, see [`src/bindings/erl_nif/README.md`](../README.md) for an overview of the differences to the C API and the limitations.
+See [`src/bindings/erl_nif/README.md`](../README.md) for an overview of the differences to the C API and the limitations.
 
 Each of the Elektra classes is also available as a Elixir modules which implement a `GenServer` behavior[^1]:
 
@@ -60,7 +60,7 @@ end)
 
 ### Hello Elektra with `Elektra.System`
 
-The analogue of the [`helloElektra.c`](../../../../examples/helloElektra.c) example is given by the following snippet
+The analogue of the [`helloElektra.c`](/examples/helloElektra.c) example is given by the following snippet
 
 ```elixir
 defmodule Main do
