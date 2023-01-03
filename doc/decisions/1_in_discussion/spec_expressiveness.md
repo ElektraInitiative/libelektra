@@ -18,12 +18,7 @@ A solution to this is `globbing` i.o. using wildcards in key names.
 The thing to be aware of is to define configuration keys which are necessary for every service.
 In this example we use `port` and `url`.
 
-The key starts with `/sw/org/app-name/#0/development`.
-`sw` defines that this is a configuration for a software.
-`org` is the organization name.
-`app-name` is the application name we are writing the specification for.
-`#0` is the configuration version.
-`development` is the profile (it could also be `production`) 
+The parent key for our specification is `/sw/org/app-name/#0/development`.
 
 ```ni
 [service/_/port]
