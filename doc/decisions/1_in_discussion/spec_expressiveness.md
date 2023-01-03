@@ -36,7 +36,7 @@ The `_` would match every `service` we are using in our application e.g. `databa
 
 This specification uses `_` but we also have `#` as wildcard in `globbing`. 
 The problem we face here is overlapping specifications.
-A example for this is if we used `[service/#/port]` and `[service/_/port]` in the same specification.
+A example for this is if we used `[service/#/port]` and `[service/shtg/port]` or `[service/_/port]` in the same specification.
 This is currently undefined behaivour in the spec plugin.
 
 ### Problem 2
