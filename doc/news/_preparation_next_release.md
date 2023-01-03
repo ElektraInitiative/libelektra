@@ -447,7 +447,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Use cases for [KDB](/doc/usecases/kdb) _(@kodebach)_
 - Use cases for `libelektra-core` _(@kodebach)_
-- <<TODO>>
+- Use case for `Globbing`(/doc/usecases/plugins/spec_globbing) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
