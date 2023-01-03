@@ -2,8 +2,24 @@
 
 ## Problem
 
-The current implementation of the spec plugin is copying metadata to all other namespaces.
-Metadata e.g. `type` or `description` describes a certain key.
+Specifications can help users define certain details about keys and make sure only valid keys are used.
+
+One example of such as specification can be found below:
+
+```ni
+[public/ip]
+meta:/default = 127.0.0.1
+meta:/description = "The IP via which this application is accessible."
+
+[public/port]
+meta:/default = 8080
+meta:/description = "The port on which this application is accessible."
+```
+
+Here one can see `default` and `description` used as metadata. 
+
+The current implementation of the spec plugin is copying this metadata to all other namespaces.
+It also assures that if keys do not exist and have `default` metadata, it creates a cascading key.
 
 Sometimes there are keys with similar or identical specifications.
 We want to define those in a single place and not have to manually copy metadata.
