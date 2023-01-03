@@ -18,4 +18,10 @@ else ()
 
 	target_link_libraries (nif_kdb elektra-core elektra-kdb)
 	target_link_libraries (nif_kdb erlang)
+
+	add_custom_command (
+		TARGET nif_kdb
+		PRE_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/elixir ${CMAKE_CURRENT_BINARY_DIR}/elixir)
+
 endif ()
