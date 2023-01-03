@@ -12,7 +12,7 @@
 - **Precondition:**
   - [`KeySet` has been created](UC_keyset_create.md)
 - **Main success scenario:**
-  - Caller asks Core to cut a `Key` hierarchy descendant from a given `Key` R from a `KeySet` KS.
+  - Caller asks Core to lookup a `Key` hierarchy descendant from a given `Key` R from a `KeySet` KS.
   - Core searches for the first `Key` in KS that is part of the desired hierarchy, i.e., the first `Key` F in KS that is a descendant of R according to [`Key` hierarchy comparison](UC_keyname_hierarchy.md).
   - If not found, Core returns an out-of-range index range.
   - If found, Core searches for the first `Key` L that is not part of the desired hierarchy.
