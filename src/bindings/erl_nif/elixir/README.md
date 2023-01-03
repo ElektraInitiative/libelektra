@@ -144,6 +144,7 @@ Main.main()
 ## Installation
 
 To have access to the Elixir module you need to compile Elektra with `elixir` added to the CMake option `BINDINGS`.
+Note that the Elixir binding is marked as experimental and therefore also included if you specify `EXPERIMENTAL` in the `BINDINGS` CMake option.
 For instance, the configuration inside a build directory might be (assuming the build directory is itself in the root directory of Elektra)
 
 ```sh
