@@ -475,7 +475,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add decision draft about [ci restructure](../decisions/0_drafts/continuous_integration_restructure.md) _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
 - <<TODO>>
