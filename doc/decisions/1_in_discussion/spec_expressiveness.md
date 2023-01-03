@@ -41,8 +41,7 @@ This is currently undefined behaivour in the spec plugin.
 
 ### Problem 2
 
-Errors and warnings are strictly defined in elektra.
-The spec plugin is currently not 
+Errors and warnings are strictly defined in Elektra.
 
 ### Problem 3
 
