@@ -75,7 +75,6 @@ int main (int argc, char ** argv)
 		KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 		ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 		int result = elektraInvoke2Args (specload, "sendspec", options, parentKey);
-
 		elektraInvokeClose (specload, parentKey);
 		keyDel (parentKey);
 		ksDel (specloadConf);
@@ -96,12 +95,11 @@ int main (int argc, char ** argv)
 	ksDel (contract);
 
 	int result = kdbGet (kdb, options, parentKey);
-
-	const char * subcommand = keyString (ksLookupByName (options, CLI_BASE_KEY, 0));
-	if (elektraStrCmp (subcommand, "") == 0)
+	
+	if (result == -1 || HAS_ERR (parentKey))
 	{
-		printf ("kdb is a program to manage Elektra's key database. For more information use --help.\n\n");
-		result = EXIT_SUCCESS;
+		fprintf (stderr, "ERROR: %s\n", GET_ERR (parentKey));
+		result = EXIT_FAILURE;
 		goto cleanup;
 	}
 
@@ -114,12 +112,20 @@ int main (int argc, char ** argv)
 		goto cleanup;
 	}
 
-	if (result == -1 || HAS_ERR (parentKey))
+	Key * subcommandKey = ksLookupByName (options, CLI_BASE_KEY, 0);
+	const char * subcommand;
+	if (subcommandKey)
+		subcommand = keyString (subcommandKey);
+	else
+		subcommand = "";
+
+	if (elektraStrCmp (subcommand, "") == 0)
 	{
-		fprintf (stderr, "ERROR: %s\n", GET_ERR (parentKey));
-		result = EXIT_FAILURE;
+		printf ("kdb is a program to manage Elektra's key database. For more information use --help.\n\n");
+		result = EXIT_SUCCESS;
 		goto cleanup;
 	}
+
 
 	for (unsigned long i = 0; i < sizeof (subcommands) / sizeof (subcommands[0]); ++i)
 	{
