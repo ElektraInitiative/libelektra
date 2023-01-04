@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_KDB_COMMAND_H
 #define ELEKTRA_KDB_COMMAND_H
 
-#include <kdb.h>
 #include <colors.h>
+#include <kdb.h>
 #include <stdbool.h>
 #include <unistd.h>
 

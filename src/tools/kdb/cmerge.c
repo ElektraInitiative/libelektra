@@ -9,6 +9,7 @@
 #include <cmerge.h>
 #include <command.h>
 
+#include <colors.h>
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbease.h>
@@ -16,7 +17,6 @@
 #include <kdbmerge.h>
 #include <stdio.h>
 #include <string.h>
-#include <colors.h>
 
 #define COMMAND_NAME "cmerge"
 
