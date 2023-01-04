@@ -5,7 +5,7 @@ defmodule Elektra.MixProject do
     [
       app: :elektra,
       version: "0.1.0",
-      elixir: "~> 1.13",
+      elixir: ">= 1.10.0",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
