@@ -382,7 +382,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add glossaries for [developers](/doc/dev/dev-glossary.md) and [contributors](/doc/contrib/contrib-glossary.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
