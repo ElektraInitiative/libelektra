@@ -1,9 +1,9 @@
 /**
-* @file
-*
-* @brief Header for mount command
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ * @file
+ *
+ * @brief Header for mount command
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KDB_MOUNTPOINT_H
@@ -33,6 +33,6 @@ void addMountpointSpec (KeySet * spec);
 int execMountpoint (KeySet * options, Key * errorKey);
 
 // helper functions
-KeySet * getMountConfig(KDB * handle, Key * );
+KeySet * getMountConfig (KDB * handle, Key *);
 
 #endif // ELEKTRA_KDB_MOUNTPOINT_H

@@ -80,7 +80,7 @@
 			colorMode = CLI_COLOR_ALWAYS;                                                                                      \
 		}                                                                                                                          \
 	}                                                                                                                                  \
-	char * fmtBuffer = NULL;                                                                                                              \
+	char * fmtBuffer = NULL;                                                                                                           \
 	if (!isatty (STDOUT_FILENO))                                                                                                       \
 	{                                                                                                                                  \
 		colorMode = CLI_COLOR_NEVER;                                                                                               \
