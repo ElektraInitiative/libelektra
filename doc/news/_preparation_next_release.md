@@ -323,6 +323,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Removed `global-mount` and `global-umount` commands. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - Fixed SIGSEGV when using find without argument _(Christian Jonak-Moechel @joni1993)_
+- Re-implement the kdb-tool in C (the original tool was written in C++) _(Hannes Laimer @hannes99)_ _(Florian Lindner @flo91)_
 
 ### elektrad
 
