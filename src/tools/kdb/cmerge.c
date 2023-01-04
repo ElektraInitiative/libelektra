@@ -9,6 +9,7 @@
 #include <cmerge.h>
 #include <command.h>
 
+#include <colors.h>
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbease.h>
