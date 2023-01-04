@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <command.h>
 #include <cmerge.h>
-#include <mountpoint.h>
+#include <command.h>
 #include <mountpoint-mount.h>
+#include <mountpoint.h>
 
 #include <kdb.h>
 #include <kdbassert.h>

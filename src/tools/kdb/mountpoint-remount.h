@@ -1,10 +1,10 @@
 /**
-* @file
-*
-* @brief Header for remount command
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief Header for remount command
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #ifndef ELEKTRA_KDB_REMOUNT_H
 #define ELEKTRA_KDB_REMOUNT_H

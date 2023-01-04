@@ -24,14 +24,15 @@
 
 void addRemountSpec (KeySet * spec)
 {
-	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME), KEY_META, "description", "Remount an existing backend with a different filename.", KEY_META,
-				   "command", "remount", KEY_END));
+	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME), KEY_META, "description",
+				   "Remount an existing backend with a different filename.", KEY_META, "command", "remount", KEY_END));
 	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/filename", KEY_META, "description", "The new filename.", KEY_META,
 				   "args", "indexed", KEY_META, "args/index", "0", KEY_END));
-	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/path", KEY_META, "description", "The new path.", KEY_META,
-				   "args", "indexed", KEY_META, "args/index", "1", KEY_END));
-	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/mountpoint", KEY_META, "description", "The mountpoint that should be remounted", KEY_META,
-				   "args", "indexed", KEY_META, "args/index", "2", KEY_END));
+	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/path", KEY_META, "description", "The new path.", KEY_META, "args",
+				   "indexed", KEY_META, "args/index", "1", KEY_END));
+	ksAppendKey (spec,
+		     keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/mountpoint", KEY_META, "description",
+			     "The mountpoint that should be remounted", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END));
 
 
 	ADD_BASIC_OPTIONS (spec, COMMAND_SPEC_KEY (COMMAND_NAME))
