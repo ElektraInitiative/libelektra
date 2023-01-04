@@ -9,11 +9,11 @@
 #include <basename.h>
 #include <command.h>
 
+#include <colors.h>
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
-#include <stdio.h>
 #include <string.h>
 
 #define COMMAND_NAME "basename"

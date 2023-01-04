@@ -106,7 +106,7 @@ int main (int argc, char ** argv)
 	ksDel (contract);
 
 	int result = kdbGet (kdb, options, parentKey);
-	
+
 	if (result == -1 || HAS_ERR (parentKey))
 	{
 		fprintf (stderr, "ERROR: %s\n", GET_ERR (parentKey));
