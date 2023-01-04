@@ -138,11 +138,7 @@ But this adds another key to give us a meaningful name for a given service.
 
 This is why we want to have the wildcard character `_` working correctly.
 
-Besides this problem the `spec` plugin also creates default values.
-A plugin responsible for copying metadata to other namespaces should not create new keys.
-In this case it creates cascading keys which are then found by `ksLookup`.
-In my opinion a separate plugin for handling `default values` should exist.
-The validation part of the `spec` plugin can be kept as it is now (`required keys` and `array size validation`).
+Besides this problem the `spec` plugin also creates default values if the keys do not exist, which is not what someone would expect from this plugin.
 
 ## Constraints
 
