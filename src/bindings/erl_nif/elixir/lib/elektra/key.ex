@@ -74,6 +74,12 @@ defmodule Elektra.Key do
 
   @doc """
   Get the base name of the key `key`.
+
+  ## Examples
+
+      iex> {:ok, key} = Elektra.Key.new(%{name: "user:/test"})
+      iex> Elektra.Key.base_name(key)
+      "test"
   """
   @spec base_name(key()) :: String.t()
   def base_name(key) do
@@ -82,6 +88,13 @@ defmodule Elektra.Key do
 
   @doc """
   Get the string value of the key `key`.
+
+
+  ## Examples
+
+      iex> {:ok, key} = Elektra.Key.new(%{name: "user:/test", value: "the value"})
+      iex> Elektra.Key.string(key)
+      "the value"
   """
   @spec string(key()) :: String.t()
   def string(key) do

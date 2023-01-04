@@ -6,7 +6,8 @@ defmodule Elektra.System do
   end
 
   def error_message(function) do
-    function <> " not implemented." <>
+    function <>
+      " not implemented." <>
       " This error means that the function defined in the Elixir module does" <>
       " not match the definition specified in the NIF."
   end

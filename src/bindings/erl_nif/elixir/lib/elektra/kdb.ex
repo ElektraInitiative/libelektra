@@ -14,7 +14,7 @@ defmodule Elektra.Kdb do
 
   ## Examples
 
-      iex> {:ok, open} = Elektra.Kdb.open()
+      iex> {:ok, _handle} = Elektra.Kdb.open()
   """
   @spec open() :: GenServer.on_start()
   def open() do
@@ -30,7 +30,7 @@ defmodule Elektra.Kdb do
   end
 
   @doc """
-  Append to `ks` the values stored in at the key `parent_key` in `handle`.
+  Append to `ks` the values stored in the key `parent_key` in `handle`.
   """
   @spec get(kdb(), key_set(), key()) :: integer
   def get(handle, ks, parent_key) do

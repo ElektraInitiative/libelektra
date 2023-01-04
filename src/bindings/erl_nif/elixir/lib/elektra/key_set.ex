@@ -11,6 +11,10 @@ defmodule Elektra.KeySet do
 
   @doc """
   Create a new key set with pre-allocated memory of size `size`.
+
+  ## Examples
+
+      iex> {:ok, _ks} = Elektra.KeySet.new(42)
   """
   @spec new(non_neg_integer()) :: key_set()
   def new(size \\ 0) do
