@@ -141,6 +141,42 @@ end
 Main.main()
 ```
 
+## Testing
+
+Testing is done via [ExUnit](https://hexdocs.pm/ex_unit/).
+
+To run all tests run
+
+```sh
+mix test
+```
+
+Note that running the tests requires the compiled NIF library.
+
+It might be convenient to copy the NIF library `libnif_kdb.so` from the build directory to the source directory, so that the tests can be run without building the project.
+To ensure that simply copy the `priv` directory from the build directory to the development directory,
+
+```sh
+cp -r build/src/bindings/erl_nif/elixir/priv src/bindings/erl_nif/elixir
+```
+
+### Creating tests
+
+Tests can be added by adding or changing the appropriate files in `test` or writing [doctests](https://hexdocs.pm/ex_unit/ExUnit.DocTest.html) in the inline documentation.
+
+If you have a module `MyModule` located at `path/to/my_module.ex` then you would create a file `test/path/to/my_module_test.exs` with the content
+
+```elixir
+defmodule MyModuleTest do
+  use ExUnit.Case
+  doctest MyModule
+
+  test "always pass" do
+    assert true
+  end
+end
+```
+
 ## Installation
 
 To have access to the Elixir module you need to compile Elektra with `elixir` added to the CMake option `BINDINGS`.
