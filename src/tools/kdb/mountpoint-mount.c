@@ -81,21 +81,15 @@ int execMount (KeySet * options, Key * errorKey)
 	Key * arrayParent = GET_OPTION_KEY (options, "plugins");
 	KeySet * plugins = elektraArrayGet (arrayParent, options);
 
-	ksRewind (plugins);
-	Key * cur = NULL;
-	while ((cur = ksNext (plugins)) != NULL)
+	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
 	{
-		printf ("PLUGIN ->  %s\n", keyString (cur));
+		printf ("PLUGIN ->  %s\n", keyString (ksAtCursor (plugins, i)));
 	}
 	printf ("\n");
 
 	KDB * handle = kdbOpen (NULL, errorKey);
-
 	KeySet * currentMountConfig = getMountConfig (handle, errorKey);
-
 	Key * mountpointKey = keyNew (mountpoint, KEY_END);
-
 	printKsNames (currentMountConfig);
-
 	printf ("MOUNT");
 }
