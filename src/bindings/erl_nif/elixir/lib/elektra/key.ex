@@ -30,10 +30,10 @@ defmodule Elektra.Key do
 
   ## Examples
 
-      iex> {:ok, key} = Elektra.Key.new(%{name: "user:/test"})
+      iex> {:ok, _key} = Elektra.Key.new(%{name: "user:/test"})
 
       iex> key_map = %{name: "user:/test", value: "thevalue"}
-      iex> {:ok, key} = Elektra.Key.new(key_map)
+      iex> {:ok, _key} = Elektra.Key.new(key_map)
 
       iex> key_map = %{
       ...>   name: "user:/test",
@@ -43,7 +43,7 @@ defmodule Elektra.Key do
       ...>     {"metaname2", "metavalue2"},
       ...>   ],
       ...> }
-      iex> {:ok, key} = Elektra.Key.new(key_map)
+      iex> {:ok, _key} = Elektra.Key.new(key_map)
   """
   @spec new(%{name: String.t(), value: String.t(), meta: meta_list()}) :: key()
   def new(map = %{name: _name}) do
