@@ -42,8 +42,9 @@ void addLsSpec (KeySet * spec)
 
 int execLs (KeySet * options, Key * errorKey)
 {
+	GET_BASIC_OPTIONS
 
-	Key * tmp = GET_OPTION_KEY (options, "mindepth");
+	tmp = GET_OPTION_KEY (options, "mindepth");
 	kdb_long_t minDepth = 0;
 	if (tmp != NULL)
 	{
@@ -56,7 +57,6 @@ int execLs (KeySet * options, Key * errorKey)
 	{
 		elektraKeyToLong (tmp, &maxDepth);
 	}
-
 
 	if (maxDepth != -1 && maxDepth <= minDepth)
 	{
@@ -72,14 +72,6 @@ int execLs (KeySet * options, Key * errorKey)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (errorKey, "the minimum depth has to be a positive number");
 		return -1;
-	}
-
-
-	bool verbose = false;
-	tmp = GET_OPTION_KEY (options, "verbose");
-	if (tmp != NULL)
-	{
-		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);
 	}
 
 	bool nullTerm = false;
@@ -108,16 +100,11 @@ int execLs (KeySet * options, Key * errorKey)
 		return -1;
 	}
 	kdbClose (handle, errorKey);
-	if (verbose)
-	{
-		printf ("size of all keys: %zd\n", ksGetSize (searchIn));
-	}
+
+	CLI_PRINT (CLI_LOG_VERBOSE, "size of all keys: %zd\n", ksGetSize (searchIn));
 	KeySet * part = ksCut (searchIn, whereToLook);
 	keyDel (whereToLook);
-	if (verbose)
-	{
-		printf ("size of requested keys: %zd\n", ksGetSize (part));
-	}
+	CLI_PRINT (CLI_LOG_VERBOSE, "size of requested keys: %zd\n", ksGetSize (part));
 
 	Key * cur = NULL;
 	for (elektraCursor it = 0; it < ksGetSize (part); ++it)
@@ -126,7 +113,7 @@ int execLs (KeySet * options, Key * errorKey)
 		int currentDepth = getKeyNameDepth (keyName (cur));
 		if ((maxDepth == -1 || currentDepth < rootDepth + maxDepth) && currentDepth >= rootDepth + minDepth)
 		{
-			printf ("%s%c", keyName (cur), nullTerm ? '\0' : '\n');
+			CLI_PRINT (CLI_LOG_NONE, "%s%c", keyName (cur), nullTerm ? '\0' : '\n');
 		}
 	}
 

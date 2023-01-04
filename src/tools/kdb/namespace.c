@@ -33,12 +33,7 @@ void addNamespaceSpec (KeySet * spec)
 
 int execNamespace (KeySet * options, Key * errorKey)
 {
-	bool verbose = false;
-	Key * tmp = GET_OPTION_KEY (options, "verbose");
-	if (tmp != NULL)
-	{
-		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);
-	}
+	GET_BASIC_OPTIONS
 
 	const char * name = getKeyNameFromOptions (options, GET_OPTION (options, "name"), errorKey, verbose);
 	if (name == NULL) return 1;
@@ -55,7 +50,7 @@ int execNamespace (KeySet * options, Key * errorKey)
 	if (ns != KEY_NS_NONE && ns != KEY_NS_CASCADING)
 	{
 		int pos = (int) (strchr (name, '/') - name);
-		printf ("%*.*s", pos, pos, name);
+		CLI_PRINT (CLI_LOG_NONE, "%*.*s", pos, pos, BOLD (name));
 	}
 
 	elektraFree ((void *) name);

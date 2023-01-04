@@ -76,14 +76,7 @@ int getKeySet (Key * where, KeySet ** ks, char * verboseName, Key * errorKey)
 
 int execCmerge (KeySet * options, Key * errorKey)
 {
-
-	// optional args
-	bool verbose = false;
-	Key * tmp = GET_OPTION_KEY (options, "verbose");
-	if (tmp != NULL)
-	{
-		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);
-	}
+	GET_BASIC_OPTIONS
 
 	bool force = false;
 	tmp = GET_OPTION_KEY (options, "force");
@@ -118,7 +111,8 @@ int execCmerge (KeySet * options, Key * errorKey)
 	if (ourpath == NULL) return 1;
 
 	const char * theirpath = getKeyNameFromOptions (options, GET_OPTION (options, "theirpath"), errorKey, verbose);
-	if (theirpath == NULL) {
+	if (theirpath == NULL)
+	{
 		elektraFree ((void *) ourpath);
 		return 1;
 	}
@@ -165,9 +159,9 @@ int execCmerge (KeySet * options, Key * errorKey)
 		ret = 1;
 		goto cleanup;
 	}
-	else if (ksGetSize (discard) != 0 && verbose)
+	else if (ksGetSize (discard) != 0)
 	{
-		printf ("will remove %ld keys, because -f was set", ksGetSize (discard));
+		CLI_PRINT (CLI_LOG_VERBOSE, "will remove %ld keys, because %s was set", ksGetSize (discard), BOLD ("-f"));
 	}
 
 	if (getKeySet (oursRoot, &ours, verbose ? "our" : NULL, errorKey) < 0)
@@ -192,7 +186,7 @@ int execCmerge (KeySet * options, Key * errorKey)
 	Key * mergeInfo = keyNew ("/", KEY_END);
 	KeySet * mergeResult = elektraMerge (ours, oursRoot, theirs, theirsRoot, base, baseRoot, resultRoot, strategy, mergeInfo);
 
-	int nrConflicts = elektraMergeGetConflicts(mergeInfo);
+	int nrConflicts = elektraMergeGetConflicts (mergeInfo);
 	keyDel (mergeInfo);
 	if (mergeResult == NULL)
 	{

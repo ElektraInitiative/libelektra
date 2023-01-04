@@ -33,12 +33,7 @@ void addDirnameSpec (KeySet * spec)
 
 int execDirname (KeySet * options, Key * errorKey)
 {
-	bool verbose = false;
-	Key * tmp = GET_OPTION_KEY (options, "verbose");
-	if (tmp != NULL)
-	{
-		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);
-	}
+	GET_BASIC_OPTIONS
 
 	const char * name = getKeyNameFromOptions (options, GET_OPTION (options, "name"), errorKey, verbose);
 	if (name == NULL) return 1;
@@ -64,7 +59,7 @@ int execDirname (KeySet * options, Key * errorKey)
 	{
 		dirnameLen = 1;
 	}
-	printf ("%*.*s", dirnameLen, dirnameLen, name);
+	CLI_PRINT (CLI_LOG_NONE, "%*.*s", dirnameLen, dirnameLen, BOLD (name));
 
 	elektraFree ((void *) name);
 	keyDel (key);

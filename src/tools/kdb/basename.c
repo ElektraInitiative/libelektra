@@ -33,12 +33,7 @@ void addBasenameSpec (KeySet * spec)
 
 int execBasename (KeySet * options, Key * errorKey)
 {
-	bool verbose = false;
-	Key * tmp = GET_OPTION_KEY (options, "verbose");
-	if (tmp != NULL)
-	{
-		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);
-	}
+	GET_BASIC_OPTIONS
 
 	const char * name = getKeyNameFromOptions (options, GET_OPTION (options, "name"), errorKey, verbose);
 	if (name == NULL) return 1;
@@ -50,7 +45,7 @@ int execBasename (KeySet * options, Key * errorKey)
 		elektraFree ((void *) name);
 		return 1;
 	}
-	printf ("%s", keyBaseName (key));
+	CLI_PRINT (CLI_LOG_NONE, "%s", BOLD (keyBaseName (key)));
 
 	elektraFree ((void *) name);
 	keyDel (key);

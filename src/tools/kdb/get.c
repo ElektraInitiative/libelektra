@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <colors.h>
 #include <command.h>
 #include <get.h>
 #include <kdbassert.h>
@@ -35,12 +36,7 @@ void addGetSpec (KeySet * spec)
 int execGet (KeySet * options, Key * errorKey)
 {
 	int ret = 0;
-	bool verbose = false;
-	Key * tmp = GET_OPTION_KEY (options, "verbose");
-	if (tmp != NULL)
-	{
-		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);
-	}
+	GET_BASIC_OPTIONS
 
 	bool all = false;
 	tmp = GET_OPTION_KEY (options, "all");
@@ -85,7 +81,7 @@ int execGet (KeySet * options, Key * errorKey)
 	setCallback (toLookUp, warnOnMeta);
 	if (verbose)
 	{
-		printf ("got %ld keys\n", ksGetSize (searchIn));
+		CLI_PRINT (CLI_LOG_VERBOSE, "got %ld keys\n", ksGetSize (searchIn));
 		setCallback (toLookUp, printTrace);
 	}
 
@@ -101,40 +97,38 @@ int execGet (KeySet * options, Key * errorKey)
 
 	if (found == NULL)
 	{
-		printf ("Did not find key '%s'", name);
+		CLI_PRINT (CLI_LOG_NONE, "Did not find key '%s'", RED (name));
 		ret = -1;
 		goto cleanup;
 	}
 
-	if (verbose)
+	if (keyGetNamespace (found) == KEY_NS_DEFAULT)
 	{
-		if (keyGetNamespace (found) == KEY_NS_DEFAULT)
-		{
-			printf ("The key was not found in any other namespace, taking the default\n");
-		}
-		printf ("The resulting keyname is %s\n", keyName (found));
-		printf ("The resulting value size is %ld\n", keyGetValueSize (found));
+		CLI_PRINT (CLI_LOG_VERBOSE, "The key was not found in any other namespace, taking the %s\n", BOLD ("default"));
 	}
+	CLI_PRINT (CLI_LOG_VERBOSE, "The resulting keyname is %s\n", keyName (found));
+	CLI_PRINT (CLI_LOG_VERBOSE, "The resulting value size is %ld\n", keyGetValueSize (found));
+
 	if (keyIsBinary (found))
 	{
 		ssize_t binSize = keyGetValueSize (found);
-		if (verbose)
-		{
-			printf ("The key is %s.\n", binSize == 0 ? "null" : "binary");
-		}
+		CLI_PRINT (CLI_LOG_VERBOSE, "The key is %s.\n", BOLD (binSize == 0 ? "null" : "binary"));
 		const char * buffer = keyValue (found);
 		for (ssize_t pos = 0; pos < binSize; pos++)
 		{
-			printf ("%x", buffer[pos]);
+			CLI_PRINT (CLI_LOG_NONE, "%x", buffer[pos]);
 		}
 	}
 	else
 	{
-		printf ("%s", keyString (found));
+		CLI_PRINT (CLI_LOG_NONE, "%s", keyString (found));
 	}
 
 cleanup:
-	printf ("\n");
+	if (!noNewLine)
+	{
+		printf ("\n");
+	}
 	ksDel (searchIn);
 	keyDel (toLookUp);
 	return ret;

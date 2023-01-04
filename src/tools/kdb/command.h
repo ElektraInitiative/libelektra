@@ -9,8 +9,11 @@
 #ifndef ELEKTRA_KDB_COMMAND_H
 #define ELEKTRA_KDB_COMMAND_H
 
+#include <colors.h>
+
 #include <kdb.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #define CLI_BASE_KEY "/sw/elektra/kdb/#0/current"
 
@@ -26,7 +29,7 @@
 				       KEY_META, "opt", "p", KEY_META, "opt/arg/help", "NAME", KEY_META, "opt/long", "profile", KEY_META,  \
 				       "opt/arg", "required", KEY_END));                                                                   \
 	ksAppendKey (baseSpec, keyNew (baseKeyName "/color", KEY_META, "description", "Print never/auto(default)/always colored output.",  \
-				       KEY_META, "opt", "c", KEY_META, "opt/arg/help", "WHEN", KEY_META, "opt/long", "color", KEY_META,    \
+				       KEY_META, "opt", "C", KEY_META, "opt/arg/help", "WHEN", KEY_META, "opt/long", "color", KEY_META,    \
 				       "opt/arg", "required", KEY_END));                                                                   \
 	ksAppendKey (baseSpec,                                                                                                             \
 		     keyNew (baseKeyName "/nonewline", KEY_META, "description", "Suppress the newline at the end of the output.",          \
@@ -42,6 +45,49 @@
 #define GET_ERR(errorKey) keyString (keyGetMeta (errorKey, "error/reason"))
 #define COMMAND_BASE_KEY(name) CLI_BASE_KEY "/" name
 #define COMMAND_SPEC_KEY(name) "spec:" COMMAND_BASE_KEY (name)
+
+// only use in the context of a command/sub-command (options variable and GET_OPTION_KEY macro have to be in scope)
+#define GET_BASIC_OPTIONS                                                                                                                  \
+	bool debug = false;                                                                                                                \
+	Key * tmp = GET_OPTION_KEY (options, "debug");                                                                                     \
+	if (tmp != NULL)                                                                                                                   \
+	{                                                                                                                                  \
+		elektraKeyToBoolean (GET_OPTION_KEY (options, "debug"), &debug);                                                           \
+	}                                                                                                                                  \
+	/* debug -> verbose, so logLevel = debug+verbose  */                                                                               \
+	bool verbose = debug;                                                                                                              \
+	tmp = GET_OPTION_KEY (options, "verbose");                                                                                         \
+	if (tmp != NULL)                                                                                                                   \
+	{                                                                                                                                  \
+		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);                                                       \
+	}                                                                                                                                  \
+	bool noNewLine = false;                                                                                                            \
+	tmp = GET_OPTION_KEY (options, "nonewline");                                                                                       \
+	if (tmp != NULL)                                                                                                                   \
+	{                                                                                                                                  \
+		elektraKeyToBoolean (GET_OPTION_KEY (options, "nonewline"), &noNewLine);                                                   \
+	}                                                                                                                                  \
+	int colorMode = CLI_COLOR_AUTO;                                                                                                    \
+	tmp = GET_OPTION_KEY (options, "color");                                                                                           \
+	if (tmp != NULL)                                                                                                                   \
+	{                                                                                                                                  \
+		if (elektraStrCmp ("never", keyString (tmp)) == 0)                                                                         \
+		{                                                                                                                          \
+			colorMode = CLI_COLOR_NEVER;                                                                                       \
+		}                                                                                                                          \
+		if (elektraStrCmp ("always", keyString (tmp)) == 0)                                                                        \
+		{                                                                                                                          \
+			colorMode = CLI_COLOR_ALWAYS;                                                                                      \
+		}                                                                                                                          \
+	}                                                                                                                                  \
+	char * fmtBuffer = NULL;                                                                                                              \
+	if (!isatty (STDOUT_FILENO))                                                                                                       \
+	{                                                                                                                                  \
+		colorMode = CLI_COLOR_NEVER;                                                                                               \
+	}                                                                                                                                  \
+                                                                                                                                           \
+	int logLevel = verbose + debug;                                                                                                    \
+	keyDel (tmp);
 
 #define EXEC_EXT(prog, argv, status)                                                                                                       \
 	pid_t extPid;                                                                                                                      \
@@ -64,15 +110,18 @@
 		sleep (1);                                                                                                                 \
 	}
 
-/**
- * Expands a keyname if it contains a bookmark. If @name does not contain a bookmark ref a copy of @name is returned.
- *
- * @param name the keyname that might contain a bookmark, and where the expanded name should be saved
- * @param ks keyset that contains information about the bookmarks
- * @param resolved will be set to true iff a bookmark was resolved successfully
- *
- * @return NULL if the bookmark could not be resolved, NULL was passed as @ks or @name
- * @return string of the full key otherwise, has to be freed after usage
+// only print if we are at least as 'verbose' as minLogLevel
+#define CLI_PRINT(minLogLevel, fmt, ...) cliPrint (fmtBuffer, logLevel, minLogLevel, fmt, __VA_ARGS__)
+
+/**                                                                                                                                        \
+ * Expands a keyname if it contains a bookmark. If @name does not contain a bookmark ref a copy of @name is returned.                      \
+ *                                                                                                                                         \
+ * @param name the keyname that might contain a bookmark, and where the expanded name should be saved                                      \
+ * @param ks keyset that contains information about the bookmarks                                                                          \
+ * @param resolved will be set to true iff a bookmark was resolved successfully                                                            \
+ *                                                                                                                                         \
+ * @return NULL if the bookmark could not be resolved, NULL was passed as @ks or @name                                                     \
+ * @return string of the full key otherwise, has to be freed after usage                                                                   \
  */
 const char * expandKeyName (KeySet * ks, const char * name, bool * resolved);
 
@@ -87,6 +136,17 @@ const char * expandKeyName (KeySet * ks, const char * name, bool * resolved);
  */
 const char * getKeyNameFromOptions (KeySet * options, const char * rawName, Key * errorKey, bool verbose);
 
+/**
+ * Helper for printing, handles log levels
+ *
+ * @param fmtBuffer buffer used for format string, will be freed after printing
+ * @param logLevel the log level set by the user
+ * @param minLogLevel minimum log level so the message is printed (NONE -> always print, VERBOSE -> printf if VERBOSE or DEBUG, ...)
+ * @param fmt format string for printing
+ * @param ...
+ */
+void cliPrint (char * fmtBuffer, int logLevel, int minLogLevel, const char * fmt, ...);
+
 typedef struct command
 {
 	const char * name;
@@ -94,5 +154,11 @@ typedef struct command
 	int (*exec) (KeySet * options, Key * errorKey);
 } command;
 
+enum LOG_LEVEL
+{
+	CLI_LOG_NONE = 0,
+	CLI_LOG_VERBOSE,
+	CLI_LOG_DEBUG
+};
 
 #endif // ELEKTRA_KDB_COMMAND_H
