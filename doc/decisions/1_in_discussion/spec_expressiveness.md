@@ -19,7 +19,7 @@ meta:/description = "The port on which this application is accessible."
 Here one can see `default` and `description` used as metadata. 
 
 The current implementation of the spec plugin is copying this metadata to all other namespaces.
-It also assures that if keys do not exist and have `default` metadata, it creates a cascading key.
+It also assures that if keys do not exist and have `default` metadata, it creates a key in the default namespace.
 
 Assume we have a REST application we want to write a specification for.
 This REST application has to use multiple services.
@@ -80,7 +80,7 @@ meta:/description = "The url of the service."
 ```
 The `_` would match every `service` we are using in our application e.g. `database`, `message broker`, etc.
 
-But the current implementation has some undefined behaivour when using `globbing`.
+A naive implementation has some undefined behaivor when using `globbing`.
 
 This specification uses `_` as wildcard character.
 Unfortunately `_` has a shortcoming, as we do not know the key names in advance.
@@ -93,7 +93,7 @@ A fixed array size can be defined in the specification, which overcomes the shor
 The problem we face with those wildcard characters is overlapping specifications.
 A example for this is if we used `[service/#/port]` and `[service/shtg/port]` or `[service/_/port]` in the same specification.
 We don't know what metadata should be copied to other namespaces in this case.
-Both `[service/#/port]` and `[service/_/port]` existing produces conflicting specification.
+Defining, both `[service/#/port]` and `[service/_/port]` produces conflicting specification.
 
 For example `[service/#/port]` having as type `meta:/type = string`.
 `[service/shtg/port]` having `meta:/type = unsigned_short`.
