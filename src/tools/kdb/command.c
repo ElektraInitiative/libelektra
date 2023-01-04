@@ -74,3 +74,16 @@ const char * getKeyNameFromOptions (KeySet * options, const char * rawName, Key 
 	keyDel (key);
 	return result;
 }
+
+void cliPrint (int logLevel, int minLogLevel, const char * fmt, ...)
+{
+	if (logLevel < minLogLevel)
+	{
+		return;
+	}
+
+	va_list args;
+	va_start (args, fmt);
+	vprintf (fmt, args);
+	va_end (args);
+}
