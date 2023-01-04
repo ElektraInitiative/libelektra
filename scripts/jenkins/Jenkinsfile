@@ -1452,6 +1452,11 @@ def cmemcheck(kdbtests=true) {
   } else {
     ctest("MemCheck -LE memleak||kdbtests")
   }
+  sh """cut -d: -f1 Testing/Temporary/LastTestsFailed_*.log | \
+        xargs -i sh -c '\
+          echo Testing/Temporary/MemoryChecker.{}.log; \
+          cat Testing/Temporary/MemoryChecker.{}.log; \
+          echo'"""
 }
 
 /* Helper for ctest to run tests without tests tagged as kdbtests.
