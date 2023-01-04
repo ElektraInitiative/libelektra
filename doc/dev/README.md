@@ -6,6 +6,7 @@ It complements the man pages found [here](/doc/help).
 - [Architecture](architecture.md)
 - [Classes](classes.md)
 - [Data structures](data-structures.md)
+- [Developers's Glossary](dev-glossary.md)
 - [Plugins Framework](plugins-framework.md)
 - [History](history.md)
 
