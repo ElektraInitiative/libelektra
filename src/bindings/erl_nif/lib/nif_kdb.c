@@ -27,6 +27,17 @@ ErlNifResourceType * KDB_RESOURCE_TYPE;
 ErlNifResourceType * KEY_RESOURCE_TYPE;
 ErlNifResourceType * KEY_SET_RESOURCE_TYPE;
 
+/**
+ * @brief Converts arbitrary data to a NIF binary.
+ *
+ * Arbitrary data is given in binary and copied to a binary NIF term. In
+ * Erlang this is then a binary.
+ *
+ * @param env The NIF environment.
+ * @param binary The binary data.
+ * @param binary_size The size (in bytes) of the binary data.
+ * @return The NIF term holding the binary data.
+ */
 ERL_NIF_TERM convert_binary_to_nif_binary (ErlNifEnv * env, const void * binary, size_t binary_size)
 {
 	ErlNifBinary * bin = malloc (sizeof (ErlNifBinary));
@@ -43,6 +54,17 @@ ERL_NIF_TERM convert_binary_to_nif_binary (ErlNifEnv * env, const void * binary,
 	return term;
 }
 
+/**
+ * @brief Converts a NIF binary to a binary.
+ *
+ * Copies the data stored in a NIF binary into a binary.
+ *
+ * @param env The NIF environment.
+ * @param term The NIF term storing the binary.
+ * @param binary The binary where the data should be copied to.
+ * @param binary_size The size (in bytes) of the allocated space for binary.
+ * @return 1 on success, 0 on failure.
+ */
 int convert_nif_binary_to_binary (ErlNifEnv * env, ERL_NIF_TERM term, void * binary, size_t binary_size)
 {
 	ErlNifBinary * bin = malloc (sizeof (ErlNifBinary));
@@ -61,12 +83,32 @@ int convert_nif_binary_to_binary (ErlNifEnv * env, ERL_NIF_TERM term, void * bin
 	return 1;
 }
 
+/**
+ * @brief Converts a string to a NIF binary.
+ *
+ * Copies a string to a NIF binary without the null terminator.
+ *
+ * @param env The NIF environment.
+ * @param string The string to copy.
+ * @return The NIF term storing the string.
+ */
 ERL_NIF_TERM convert_string_to_nif_binary (ErlNifEnv * env, const char * string)
 {
 	// Null byte terminator is not copied.
 	return convert_binary_to_nif_binary (env, string, strlen (string));
 }
 
+/**
+ * @brief Converts a NIF binary to a string.
+ *
+ * Copies a string to a NIF binary without the null terminator.
+ *
+ * @param env The NIF environment.
+ * @param term The NIF term holding the string data.
+ * @param string The string where to copy to.
+ * @param len The length of string.
+ * @return 0 on failure, 1 on success
+ */
 int convert_nif_binary_to_string (ErlNifEnv * env, ERL_NIF_TERM term, char * string, size_t len)
 {
 	ErlNifBinary * bin = malloc (sizeof (ErlNifBinary));
@@ -86,6 +128,14 @@ int convert_nif_binary_to_string (ErlNifEnv * env, ERL_NIF_TERM term, char * str
 	return 1;
 }
 
+/**
+ * @brief Check whether a NIF term is an atom with a specific value.
+ *
+ * @param env The NIF environment.
+ * @param arg The NIF term to inspect.
+ * @parm value The value which to compare the atom to.
+ * @return 1 if term is an atom with value value, 0 otherwise
+ */
 int is_atom_with_value (ErlNifEnv * env, const ERL_NIF_TERM arg, char * value)
 {
 	char value_from_atom[_ERL_MAX_ATOM_LENGTH];
@@ -100,6 +150,16 @@ int is_atom_with_value (ErlNifEnv * env, const ERL_NIF_TERM arg, char * value)
 	return strncmp (value, value_from_atom, _ERL_MAX_ATOM_LENGTH) == 0;
 }
 
+/**
+ * @brief Check whether a NIF term is the "null" atom.
+ *
+ * The atom "null" is used when one wishes to pass "NULL" as an argument to a
+ * function.
+ *
+ * @param env The NIF environment.
+ * @param arg The NIF term to inspect.
+ * @return 1 if term is the "null" atom, 0 otherwise
+ */
 int is_null_atom (ErlNifEnv * env, const ERL_NIF_TERM arg)
 {
 	return is_atom_with_value (env, arg, "null");
