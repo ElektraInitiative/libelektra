@@ -16,6 +16,7 @@
 #include <kdbmerge.h>
 #include <stdio.h>
 #include <string.h>
+#include <colors.h>
 
 #define COMMAND_NAME "cmerge"
 

@@ -13,7 +13,7 @@
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
-#include <stdio.h>
+#include <colors.h>
 #include <string.h>
 
 #define COMMAND_NAME "dirname"
