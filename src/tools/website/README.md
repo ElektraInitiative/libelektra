@@ -54,7 +54,7 @@ The `index.html` will then try to serve the (dynamic) URL itself.
 
 #### PID file
 
-Using ${config_root}${config_default_profile}/daemon/lock (i.e., `daemon.lock` in JSON) you can specify which PID file should be used.
+Using `${config_root}${config_default_profile}/daemon/lock` (i.e., `daemon.lock` in JSON) you can specify which PID file should be used.
 Default: /run/elektra-@tool@.pid
 
 #### APIs (GitHub)

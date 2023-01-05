@@ -74,7 +74,7 @@ Furthermore, there are following experimental resolvers:
 
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
 - [curlget](curlget/) fetches configuration file from a remote host
-- [gitresolver](gitresolver/) checks out and commits files to a local git repository
+- [gitresolver](gitresolver/) checks out and commits files to a local Git repository
 - [multifile](multifile/)
 
 ### Storage
@@ -96,6 +96,7 @@ Read (and write) standard config files:
 - [line](line/) reads/writes any file line by line
 - [yajl](yajl/) reads/writes JSON.
 - [augeas](augeas/) reads/writes many different configuration files using the Augeas library
+- [xfconf](xfconf/) reads/writes to arbitrary xfconf channels
 
 Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for metadata):

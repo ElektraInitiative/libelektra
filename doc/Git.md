@@ -1,6 +1,6 @@
-# GIT
+# Git
 
-## Basic GIT Commands
+## Basic Git Commands
 
 ```sh
 git add readme.md   # adds the changes of the file `readme.md` to the staging area

@@ -53,11 +53,15 @@ task:
       pkg install -y
       bison
       cmake
+      dbus
       flex
+      gcc12
       git
       libgit2
       llvm12
       ninja
+      pkgconf
+      xfce4-conf
       yajl
       yaml-cpp
 
@@ -82,6 +86,7 @@ task:
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
+    - export $(dbus-launch) # Some libraries such as xfconf require a running dbus instance
     - *run_tests
 
 task:
@@ -92,12 +97,12 @@ task:
   matrix:
 
     - name: 🍎 FULL
-      osx_instance:
-        image: monterey-base
+      macos_instance:
+        image: ghcr.io/cirruslabs/macos-ventura-base:latest
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-xfconf # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382 xfce4 is uncommon on macOS
 
   install_script:
     - | # Install Homebrew formulas
@@ -106,7 +111,6 @@ task:
       brew install openjdk \
         antlr \
         antlr4-cpp-runtime \
-        augeas \
         bison \
         clang-format \
         dbus \
@@ -137,7 +141,6 @@ task:
         yajl \
         yaml-cpp \
         zeromq
-      brew install --cask oclint
 
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
@@ -151,12 +154,12 @@ task:
       echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
       launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
     - | # Install Python
-      brew install python@3.9 || brew upgrade python@3.9
-      export PATH="/usr/local/opt/python@3.9/bin:$PATH"
+      brew install python@3.11 || brew upgrade python@3.11
+      export PATH="/usr/local/opt/python@3.11/bin:$PATH"
     - | # Install Python packages
       pip3 install cmakelang[yaml]==0.6.13
     - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn-ng` fails with the macOs version of Ruby.)
-      brew install ruby
+      brew install ruby@3.0
       export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
     - | # Install Ruby gems
       sudo gem install ronn-ng -v 0.10.1.pre1
@@ -239,6 +242,7 @@ task:
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$CIRRUS_WORKING_DIR/install/lib"
+    - export $(dbus-launch) # Some libraries such as xfconf require a running dbus instance
     - *run_tests
 
 task:

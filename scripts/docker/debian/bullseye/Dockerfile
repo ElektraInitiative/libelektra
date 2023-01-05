@@ -13,6 +13,7 @@ RUN apt-get update && apt-get -y install \
         clang-11 \
         cmake \
         curl \
+    	dbus-x11 \
         debsigs \
         default-jdk \
         devscripts \
@@ -52,6 +53,7 @@ RUN apt-get update && apt-get -y install \
         libsystemd-dev \
         libuv1-dev \
         libxerces-c-dev \
+        libxfconf-0-dev \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \
@@ -70,7 +72,6 @@ RUN apt-get update && apt-get -y install \
         reprepro \
         ruby \
         ruby-dev \
-        rustc \
         shellcheck \
         swig4.0 \
         systemd \
@@ -153,3 +154,6 @@ RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
     && pip3 install cpp-coveralls \
     && deactivate
 ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"
+
+# rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y -q

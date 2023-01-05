@@ -6,13 +6,18 @@ echo
 echo ELEKTRA CHECK EXTERNAL EXAMPLE
 echo
 
-if command -v pkg-config; then
-	if ! pkg-config elektra; then
-		echo "Elektra not installed, will skip"
+if command -v realpath; then
+	if command -v pkg-config; then
+		if ! pkg-config elektra; then
+			echo "Elektra not installed, will skip"
+			exit 0
+		fi
+	else
+		echo "pkg-config not installed, will skip"
 		exit 0
 	fi
 else
-	echo "pkg-config not installed, will skip"
+	echo "realpath is not installed, will skip"
 	exit 0
 fi
 

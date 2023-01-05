@@ -31,7 +31,7 @@ to allow an alternative implementation of the API.
 The latest released version (for stable releases) of this document can be found at
 https://doc.libelektra.org/api/latest/html
 
-The git master version of this document can be found at
+The Git master version of this document can be found at
 https://doc.libelektra.org/api/master/html
 
 **Important:** On GitHub links to API functions are broken, so it is recommended that you continue

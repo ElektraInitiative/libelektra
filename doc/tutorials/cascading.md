@@ -58,7 +58,7 @@ Note that configuration in the **user** namespace only affects _this_ user. Othe
 ### Add a Key to the dir Namespace
 
 The **dir** namespace is associated with a directory. The configuration in the **dir** namespace applies to the **current working directory** and all its subdirectories.
-This is useful if you have project specific settings (e.g. your git configuration or a .htaccess file).
+This is useful if you have project specific settings (e.g. your Git configuration or a .htaccess file).
 
 As **dir** precedes the **user** namespace, configuration in **dir** can overwrite user configuration:
 

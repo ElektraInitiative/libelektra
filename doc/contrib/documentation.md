@@ -116,7 +116,7 @@ Generously use links but be very careful to create a coherent documentation (Ger
 - Only use `*.libelektra.org/*` links, avoid `github.com/ElektraInitiative/*` links.
   Create an issue if redirects are missing.
   Rationale:
-  Then we can more easily move to other git hosting platforms.
+  Then we can more easily move to other Git hosting platforms.
   Redirects created for this purpose:
   - [issues.libelektra.org](https://issues.libelektra.org) for the issue tracker
   - [pulls.libelektra.org](https://pulls.libelektra.org) for pull requests

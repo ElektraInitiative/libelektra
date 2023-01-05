@@ -36,6 +36,7 @@ RUN zypper update -y && zypper install -y \
         libqt5-qtsvg-devel \
         libuv-devel \
         libxerces-c-devel \
+        libxfconf-devel \
         libxml2-devel \
         llvm \
         lua-devel \

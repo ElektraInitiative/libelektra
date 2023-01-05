@@ -8,6 +8,7 @@ be read by whom.
 Read this first to get the basic concepts of Elektra.
 
 - [Namespaces](namespaces.md)
+- [Key names](/doc/KEYNAMES.md)
 - [Cascading](cascading.md)
 - [Arrays](arrays.md)
 - [Mount Configuration Files](mount.md)
@@ -22,6 +23,7 @@ provides.
 - [Hello, Elektra in C](hello-elektra.md)
 - [Integration of your C Application](application-integration.md)
 - [Writing a specification for your configuration](specification.md)
+- [Meta specification language](/doc/METADATA.ini)
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
@@ -31,6 +33,7 @@ provides.
 - [Java Bindings](java-kdb.md)
 - [Java Plugins](java-plugins.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
+- [High Level API Bindings](highlevel-bindings.md)
 - [Notifications](notifications.md)
 
 ## System Administrators
@@ -47,6 +50,7 @@ already somehow integrated with Elektra.
 - [Merge Configuration](merge.md) (deprecated)
 - [Validate Configuration](validation.md)
 - [Encrypt Configuration](crypto.md)
+- [Install Configuration Files](install-config-files.md)
 
 ## Elektra Developers
 

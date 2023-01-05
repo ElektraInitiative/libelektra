@@ -97,7 +97,7 @@ You have some options to avoid running them as root:
    After that all test cases should run successfully as described above.
 
 3. Compile Elektra so that system paths are not actual system paths, e.g. to write everything into
-   the home directory (`~`) use cmake options:
+   the home directory (`~`) use CMake options:
    `-DKDB_DB_SYSTEM="~/.config/kdb/system" -DKDB_DB_SPEC="~/.config/kdb/spec"`
    (for an example of a full CMake invocation see `scripts/configure-home`)
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
@@ -335,7 +335,7 @@ watch kdb export user:/tests
 
 ### ASAN
 
-To enable sanitize checks use `ENABLE_ASAN` via cmake.
+To enable sanitize checks use `ENABLE_ASAN` via CMake.
 
 Then, to use ASAN, run `run_asan` in the build directory, which simply does:
 
@@ -393,9 +393,9 @@ following section show how the most common ones can be used with `libelektra`.
 file by calling it with `cppcheck --enable=all <sourcefile>`. This way it might miss some header
 files though and thus doesn't detect all possible issues, but still gives useful hints in general.
 
-To analyze the whole project, use it in conjunction with `cmake` by calling `cmake` with the parameter
-`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way `cmake` creates a file called `compile_commands.json` in
-the build directory. Afterwards, call `cppcheck` with the cmake settings and store the output as xml:
+To analyze the whole project, use it in conjunction with CMake by calling `cmake` with the parameter
+`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way CMake creates a file called `compile_commands.json` in
+the build directory. Afterwards, call `cppcheck` with the CMake settings and store the output as xml:
 
 ```sh
 cppcheck --project=compile_commands.json --enable=all -j 8 --xml-version=2 2> cppcheck_result.xml

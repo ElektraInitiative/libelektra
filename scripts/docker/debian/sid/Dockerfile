@@ -15,6 +15,7 @@ RUN apt-get update && apt-get -y install \
         clang-format-13 \
         cmake \
         curl \
+    	dbus-x11 \
         dh-lua \
         ed \
         flex \
@@ -42,6 +43,7 @@ RUN apt-get update && apt-get -y install \
         libsystemd-dev \
         libuv1-dev \
         libxerces-c-dev \
+        libxfconf-0-dev \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \

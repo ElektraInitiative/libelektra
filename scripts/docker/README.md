@@ -34,7 +34,7 @@ We generally have three types of docker images:
 
 We provide Docker images containing an installed version of Elektra with multiple base images.
 You can view all available images Docker images on [DockerHub](https://hub.docker.com/r/elektra/elektra).
-To start for example a Ubuntu Focal based Elektra container with the Elektra version `0.9.5`, run `docker run -it elektra/elektra:0.9.5-1-focal`
+To start the latest release of Elektra (based on Alpine Linux) you can simply run `docker run -it elektra/elektra:latest`
 
 ## Downloading Prebuilt Images
 

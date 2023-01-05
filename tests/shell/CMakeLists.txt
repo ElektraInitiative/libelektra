@@ -57,6 +57,7 @@ function (add_scripttest testname)
 				set (
 					excluded_tests
 					check_bashisms
+					check_doc
 					check_posix
 					check_formatting
 					check_gen

@@ -9,11 +9,10 @@
 # If this is the only pre-commit hook you want to use,
 # you can simply use a symlink:
 #
-# ln -s ../../scripts/pre-commit-check-formatting .git/hooks/pre-commit
+# ln -s ../../scripts/dev/pre-commit-check-formatting .git/hooks/pre-commit
 #
 # If you want to use multiple pre-commit hooks, you have
 # to use a script, that calls all of your hooks, including this one.
-
 DATE=$(date +%s)
 SRC_ROOT=$(git rev-parse --show-toplevel)
 

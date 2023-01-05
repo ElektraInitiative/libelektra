@@ -478,6 +478,58 @@ A `KeySet` is a data structure over which functions can iterate. If you want to 
 you have to explicitly call `rewind()` to set the internal pointer to the start.
 Any plugin expects the passed `KeySet` to be **rewinded**.
 
+## Memory Leaks
+
+If you experience memory leaks you may use `valgrind` in order to locate them.
+If you have analyzed your code, and you know that your code does not contain memory leaks continue reading:
+
+It is possible, that a library the plugin depends on contains some memory leaks which cannot be fixed by you.
+In such a case you may want to suppress them in order the CI does not fail.
+In order to suppress them, a few measurements have to be taken:
+
+- Update the plugin contract within the plugins `README.md` by appending `memleak` to `info/status` if not already done
+- If the `CMakeLists.txt` does not add the `MEMLEAK` label anywhere (just search for it in the file), append
+  ```cmake
+  if (ADDTESTING_PHASE)
+    include (LibAddTest)
+    add_plugintest (replace_with_the_actual_plugin_name MEMLEAK)
+  endif (ADDTESTING_PHASE)
+  ```
+  to the end of the file and remove the `INSTALL_TEST_DATA` label from the `add_plugin(...)` function.
+- Add the memleak rules to the `tests/valgrind.suppression` file.
+
+The rules can be obtained through the jenkins pipeline (click on "details" next to the "continuous-integration/jenkins/pr-merge" GitHub check) within the "Tests" tab at the top.
+There will be expandable items highlighted red.
+After expanding, they show a verbose output.
+Just look for the blocks in the following form:
+
+```
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:malloc
+   fun:resize_scopes
+   fun:dl_open_worker_begin
+   fun:_dl_catch_exception
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen_implementation
+   fun:dlopen@@GLIBC_2.34
+   fun:elektraModulesLoad
+}
+```
+
+and append them to the bottom of the `tests/valgrind.suppression` file and do not forget to give them a clear name.
+
+After committing and pushing, the CI memleak errors should be suppressed.
+
 ## Further Readings
 
 Read more about:

@@ -20,7 +20,7 @@ Please make sure to set `TARGET_LUA_CMOD_FOLDER` and `TARGET_LUA_LMOD_FOLDER` if
 
 ## Building
 
-Note that cmake does _not_ automatically rebuild SWIG bindings
+Note that CMake does _not_ automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory
 in that case.
 

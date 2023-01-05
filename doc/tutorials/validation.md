@@ -172,7 +172,7 @@ itself, we can still do better.
 The reason for that is that one of the aims of Elektra is to remove the trouble
 of validation and finding the files that hold your configuration from the users.
 At the moment a user still has to know which files should hold the configuration
-and which plugins must be loaded when he mounts configuration files.
+and which plugins must be loaded when they mount configuration files.
 
 This problem can be addressed by recognizing that the location of the
 configuration files and the plugins that must be loaded is part of the

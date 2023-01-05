@@ -156,7 +156,7 @@ ssize_t keyGetCommentSize (const Key * key)
  * to that key.
  *
  * Don't depend on a comment in your program. A user is
- * always allowed to remove or change it in any way he wants to. But you are
+ * always allowed to remove or change it in any way they want to. But you are
  * allowed or even encouraged to always show the content of the comment
  * to the user and allow him to change it.
  *

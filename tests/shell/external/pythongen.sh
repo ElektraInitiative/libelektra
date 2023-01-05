@@ -9,6 +9,11 @@ echo
 echo "Deprecated and will be removed soon"
 exit
 
+if ! command -v realpath; then
+	echo "realpath is not installed, will skip"
+	exit 0
+fi
+
 if pkg-config elektra; then
 	echo "Installed Elektra will be used"
 else

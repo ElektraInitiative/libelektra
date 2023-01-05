@@ -1,10 +1,11 @@
+cargo-features = ["resolver"]
+
 [package]
-name = "rust_bindings_example"
+name = "rust-bindings-example"
 version = "0.1.0"
 authors = ["PhilippGackstatter <philipp.gackstatter@student.tuwien.ac.at>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+resolver = "2"
 
 [dependencies]
 elektra = { version = "@KDB_VERSION@", path = "../elektra" }

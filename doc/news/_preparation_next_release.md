@@ -147,6 +147,8 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Fix broken /pythongen link on homepage _(@stefnotch)_
 - Fix redirect logic to not cause loops _(@stefnotch)_
 - Remove duplicated link to `TESTING.md` file _(@stefnotch)_, _(@janldeboer)_
+- <<TODO>>
+- Restructure parts of the links on the website _(@stefnotch)_, _(@janldeboer)_
 
 ### toml
 
@@ -174,11 +176,12 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### xfconf
 
+- Add xfconf storage plugin with the ability to read and write to xfconf channels _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Make xfconf valgrind suppressions more flexible to lib updates. _(Mihael Pranjić @mpranj)_
 
 ### date
 
@@ -269,13 +272,15 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### jna
 
+- <<TODO>>
+- <<TODO>>
 - Documentation: Improved build instructions _(@Bujuhu)_
-- <<TODO>>
+- Add validation on get for whitelist plugin _(@Bujuhu)_
 - <<TODO>>
 
-### <<Binding>>
+### rust
 
-- <<TODO>>
+- fix "feature `resolver` is required" error _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
@@ -325,7 +330,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add scripts to enable and disable pre-commit hooks _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 - Link Checker: Add documentation for the usage and how it behaves _(Richard Stöckl @Eiskasten)_
@@ -352,12 +357,12 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Improve page for getting started _(@stefnotch)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Remove version number from docker README and replace it with latest _(@Joni1993)_
 - <<TODO>>
 - Fix grammar for `elektra-granularity.md` _(@dtdirect)_
 - Rephrase sections in doc/dev/error-\* _(@dtdirect)_
 - Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
-- <<TODO>>
+- Extend consistency check `check_doc.sh` to work for [contrib](/doc/contrib), [dev](/doc/dev) and [tutorials](/doc/tutorials) _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
 - Fix internal links _(@0x6178656c)_
@@ -368,8 +373,11 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Update example Ansible playbook in VISION.md _(@Bujuhu)_
 - <<TODO>>
+- Harmonize spelling of Git _(@Joni1993)_
 - Update packaging instructions for Fedora _(@0x6178656c)_
 - <<TODO>>
+- <<TODO>>
+- Improve use of gender _(@0x6178656c)_
 - documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
 - fix various spelling errors _(@Joni1993)_
 - <<TODO>>
@@ -383,21 +391,27 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Unify spelling of documentation _(@Joni1993)_
 - <<TODO>>
 - Fix typo in dev/hooks.md _(@dtdirect)_
-- <<TODO>>
+- Remove unused images from doc/images _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - Fixed Coverage Badge Link _(@janldeboer)_
 - <<TODO>>
+- Improve CONTRIBUTING doc _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- <<TODO>>
 - Update Doxyfile with Doxygen 1.9.4 _(@0x6178656c)_
+- Add project logo to Doxygen in Doxyfile _(@dtdirect)_
+- Add mermaid.js to the project using doxygen-mermaid _(@dtdirect)_
+- Create diagrams in mermaid.js to use in doxygen _(@dtdirect)_
+- Create README for Doxygen and Mermaid JS _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- tutorial: Add automatic validation to Docker tutorial _(Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Use `code` blocks to prevent Markdown from falsy rendering LaTeX _(@stefnotch)_, _(@janldeboer)_
 - <<TODO>>
 - Fix broken links in use cases for KDB after files were renamed. _(Florian Lindner @flo91)_
 - <<TODO>>
@@ -407,12 +421,12 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Enhance notifications.md in doc/tutorial _(@dtdirect)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add tutorial how to suppress memleaks in plugins from dependencies. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - Write about [history](/doc/dev/history.md) to make plans of Elektra's adoption more clear. _(Markus Raab)_
 - <<TODO>>
@@ -501,9 +515,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Add tutorial for manual installation from the AUR on Arch Linux _(@Bujuhu)_
 - <<TODO>>
+- Add Markdown shell recorder validation to install.webui.md _(@deoknats861)_
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Fix the outdated array tutorial _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 - Reinstate mounting tutorial _(@Bujuhu)_
@@ -522,7 +536,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Update man page (patch) as suggested by the CI to fix CI error on master. _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - Added links to the website & webui after further reading. _(Philipp Nirnberger @nirnberger)_
@@ -566,7 +580,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Shell Recorder
 
 - <<TODO>>
-- <<TODO>>
+- Add check if file exists. _(@0x6178656c)_
 - <<TODO>>
 
 ### C++
@@ -597,6 +611,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Adapt npm build flags to remove reproducability issues _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
+- Fix creation of shell recorder tests. _(@0x6178656c)_
 
 ### Docker
 
@@ -637,7 +652,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Cirrus
 
 - Use Fedora 37. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
+- Fix `macos_instance` reference, upgrade to macOS Ventura (by default), use Python 3.11 and Ruby 3.x. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -651,6 +666,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Change stale issue/PR checking to GitHub action. _(@0x6178656c)_
 - <<TODO>>
+- Upgrade actions to recent versions and remove deprecated ruby-setup action. _(Mihael Pranjić @mpranj)_
 
 ## Website
 
