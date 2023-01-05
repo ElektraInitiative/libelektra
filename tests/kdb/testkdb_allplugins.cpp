@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 #include <kdb.hpp>
 #include <kdbconfig.h>
+#include <valgrind/valgrind.h>
 
 #ifdef ENABLE_ASAN
 #include <sanitizer/lsan_interface.h>
@@ -36,38 +37,51 @@ std::vector<std::string> getAllPlugins ()
 	// The JNI and Ruby plugins cause segmentation faults
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "jni"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "ruby"), plugins.end ());
+	bool removePluginsWithMemoryLeaks = false;
 
 #ifdef ENABLE_ASAN
 	// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "augeas"), plugins.end ());
-
-	std::vector<std::string> pluginsWithMemoryLeaks;
-
-	for (auto plugin : plugins)
+	removePluginsWithMemoryLeaks = true;
+#endif
+	if (RUNNING_ON_VALGRIND != 0)
 	{
-		try
-		{
-#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
-			__lsan_disable ();
-#endif
-			auto status = mpd.lookupInfo (PluginSpec (plugin), "status");
-#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
-			__lsan_enable ();
-#endif
-			if (status.find ("memleak")) pluginsWithMemoryLeaks.push_back (plugin);
-		}
-		catch (std::exception const & error)
-		{
-			std::cerr << "Unable to determine status of plugin “" << plugin << "”: " << error.what () << std::endl;
-		}
+		removePluginsWithMemoryLeaks = true;
 	}
 
-	for (auto plugin : pluginsWithMemoryLeaks)
+	if (removePluginsWithMemoryLeaks)
 	{
-		plugins.erase (std::remove (plugins.begin (), plugins.end (), plugin), plugins.end ());
-	}
-#endif
 
+		std::vector<std::string> pluginsWithMemoryLeaks;
+
+		for (auto plugin : plugins)
+		{
+			try
+			{
+#ifdef ENABLE_ASAN
+#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
+				__lsan_disable ();
+#endif
+#endif
+				auto status = mpd.lookupInfo (PluginSpec (plugin), "status");
+#ifdef ENABLE_ASAN
+#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
+				__lsan_enable ();
+#endif
+#endif
+				if (status.find ("memleak")) pluginsWithMemoryLeaks.push_back (plugin);
+			}
+			catch (std::exception const & error)
+			{
+				std::cerr << "Unable to determine status of plugin “" << plugin << "”: " << error.what () << std::endl;
+			}
+		}
+
+		for (auto plugin : pluginsWithMemoryLeaks)
+		{
+			plugins.erase (std::remove (plugins.begin (), plugins.end (), plugin), plugins.end ());
+		}
+	}
 	return plugins;
 }
 
