@@ -5,18 +5,18 @@
 - **Scope:** `spec`
 - **Level:** Developer Goal
 - **Actors:** Application, User
-- **Brief:** 
-    - Creating a specification for a REST application which needs communication to multiple services.
+- **Brief:**
+  - Creating a specification for a REST application which needs communication to multiple services.
 
 ## Scenarios
 
 - **Precondition:** kdb is installed.
-- **Main success scenario:** 
-    - Specification is written user or system wide.
-    - REST application can use any number of services.
+- **Main success scenario:**
+  - Specification is written user or system-wide.
+  - REST application can use any number of services.
 - **Alternative scenario:** None.
 - **Error scenario:**
-   - Wrong metakeys are used (yielded as error to the user)
+  - Wrong metakeys are used (yielded as error to the user)
 - **Postcondition:** None.
 - **Non-functional Constraints:** None.
 
@@ -65,6 +65,7 @@ meta:/description = "The url for the service."
 ```
 
 Now we can define our keys for our two services as:
+
 ```ni
 service/mailserver/port = 587
 service/mailserver/url = tcp://localhost
