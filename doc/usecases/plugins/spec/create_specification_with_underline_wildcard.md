@@ -76,4 +76,4 @@ service/messagebroker/url = tcp://localhost
 
 We can see that this kind of specification is much better when it commes to having many services and similar configuration for the keys.
 
-To see another solution take a look at [create_array_specification](create_array_specification.md).
+To see another solution take a look at the `create array specification` use case.
