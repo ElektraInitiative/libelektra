@@ -81,7 +81,7 @@ We can no longer no what this services are i.e. if its a `mail server` or `messa
 We have two solutions to this problem:
 
 1. Introducing another key `name` which identifies the service.
-2. Use another wildcard character `_` (see [create_specification_with_underline_wildcard](create_specification_with_underline_wildcard.md))
+2. Use another wildcard character `_` (see `create_specification_with_underline_wildcard`)
 
 The shortcoming with solution 1 is that we need to introduce a new key for just identifying the service.
 
