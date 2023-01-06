@@ -361,7 +361,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fix grammar for `elektra-granularity.md` _(@dtdirect)_
 - Rephrase sections in doc/dev/error-\* _(@dtdirect)_
-- Improve GIT.md _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Improve Git.md _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
 - Extend consistency check `check_doc.sh` to work for [contrib](/doc/contrib), [dev](/doc/dev) and [tutorials](/doc/tutorials) _(@Joni1993)_
 - <<TODO>>

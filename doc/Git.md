@@ -1,6 +1,6 @@
 # Git
 
-## Cheat Sheet: Basic GIT Commands
+## Cheat Sheet: Basic Git Commands
 
 ```sh
 git add readme.md   # adds the changes of the file `readme.md` to the staging area
@@ -18,7 +18,7 @@ git push            # Push changes to the current remote branch
 - [macOS](https://git-scm.com/download/mac)
 - [Linux](https://git-scm.com/download/linux)
 
-If you are uncomfortable, with command line interfaces, there are also [plenty of GUI options available as well](https://git-scm.com/downloads/guis)
+If you are uncomfortable with command line interfaces, there are also [plenty of GUI options available](https://git-scm.com/downloads/guis).
 
 ## Basic Configuration
 
@@ -29,7 +29,7 @@ git config --global merge.ff false
 git config merge.ff false
 ```
 
-This ensures that git will always create a merge commit, when you are trying to merge
+This ensures that Git will always create a merge commit, when you are trying to merge.
 
 Also ensure that you have your username and e-mail configured, so your work can be attributed to you:
 
@@ -40,7 +40,7 @@ git config --global user.email "yourname@yourdomain.com"
 
 ### Adding/creating an SSH Key
 
-GitHub supports both HTTP and SSH for git operations. Using SSH, you can remove the annoyance of having to enter your password every time. To learn how to add an SSH-Key follow [this Guide provided by GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+GitHub supports both HTTP and SSH for Git operations. Using SSH, you can remove the annoyance of having to enter your password every time. To learn how to add an SSH-Key follow [this guide provided by GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
 ## The Commit Message
 
@@ -147,10 +147,10 @@ When you work on a local feature branch, it might happen that a change occurs wi
 
 To achieve this, make sure you have your master branch synced up. Then switch to the feature branch you want to update using `git checkout <feature-branch-name>` and then type `git rebase master`. Sometimes, this will result in a merge conflict.
 
-If you already have pushed changes from your feature branch to a remote branch, you'll need to either overwrite it using `git push --force` or push to a new remote branch
+If you already have pushed changes from your feature branch to a remote branch, you'll need to either overwrite it using `git push --force` or push to a new remote branch.
 
 ### Resolving merge conflicts
 
-To resolve these edit the files that need to be merged manually. You can check which files need to be merged using `git status`. After you are done merging a file manually, you can use `git add <path-to-file>` and when you have merged all files, continue with `git rebase --continue`.
+To resolve merge conflicts, edit the files that need to be merged manually. You can check which files need to be merged using `git status`. After you are done merging a file manually, you can use `git add <path-to-file>` and when you have merged all files, continue with `git rebase --continue`.
 
-> **Note**: Keep in mind that doing manual merges within a rebase are destructive. If you accidentally remove changes you've done in your feature branch, they will be gone forever. If you're new to manually merging files in git, it's a good idea to create a new branch from your feature branch using `git checkout -b <new-branch-name>`. When you're stuck on a manual merge, you can also always abort the rebase using `git rebase --abort`
+> **Note**: Keep in mind that manual merges within a rebase are destructive. If you accidentally remove changes you've done in your feature branch, they will be gone forever. If you're new to manually merging files in Git, it's a good idea to create a new branch from your feature branch using `git checkout -b <new-branch-name>`. When you're stuck on a manual merge, you can also always abort the rebase using `git rebase --abort`
