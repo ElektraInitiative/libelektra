@@ -10,6 +10,8 @@ git commit -a       # executes a commit that automatically stages all changed an
 git checkout -b     # Create a new local branch based on the current branch
 git pull            # Pull changes from the current remote branch
 git push            # Push changes to the current remote branch
+git stash           # Puts all changes in an dirty wirkling directory aside
+git stash apply     # Reapplies stashed changes on the current branch
 ```
 
 ## Installation
@@ -22,14 +24,13 @@ If you are uncomfortable with command line interfaces, there are also [plenty of
 
 ## Basic Configuration
 
-make sure to do:
+To configure git, you can use the `git config` command. You can configure each project individually, just by running `git config <setting> <value>` anywhere within a checked out repository, or for all projects for a user on the local machine using `git config --global <setting> <value>`.
+We recommend you set the following configuration options, when using git:
 
 ```sh
-git config --global merge.ff false
-git config merge.ff false
+git config merge.ff false # Git will always create a commit, when trying to merge
+git config pull.rebase true # Automatically rebase when pulling
 ```
-
-This ensures that Git will always create a merge commit, when you are trying to merge.
 
 Also ensure that you have your username and e-mail configured, so your work can be attributed to you:
 
@@ -37,10 +38,6 @@ Also ensure that you have your username and e-mail configured, so your work can 
 git config --global user.name "Your Name"
 git config --global user.email "yourname@yourdomain.com"
 ```
-
-### Adding/creating an SSH Key
-
-GitHub supports both HTTP and SSH for Git operations. Using SSH, you can remove the annoyance of having to enter your password every time. To learn how to add an SSH-Key follow [this guide provided by GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
 ## The Commit Message
 
@@ -56,9 +53,11 @@ message should fulfill the following:
 - separate subject from body with a blank line
 - in the body describe in detail what you did, and possibly why
 - metadata like "Fixes #123" should be kept at the bottom of the commit message and definitely not in the title
-- If multiple people worked on a commit, you can contribute them by leaving two blank lines at the end and then add a single line of `Co-authored-by: NAME <NAME@EXAMPLE.COM>` for every other person that worked on it. [More Details here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors)
 
 Most commits should have a longer description in the body.
+
+### GitHub: Attributing Co-Authors
+ If multiple people worked on a commit, GitHub, supports a nice way to represent this. You can attribute them by leaving two blank lines at the end and then add a single line of `Co-authored-by: NAME <NAME@EXAMPLE.COM>` for every other person that worked on it. [More Details here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors)
 
 ## Remote Branches
 
@@ -87,6 +86,14 @@ merges from features branches. Commits on
 master should always compile, and all test
 cases should pass successfully.
 (see config option above)
+
+### Communication Methods
+
+To communicate with remote branches, Git supports the file protocol (acessible through the local file system), http and ssh. We generally recommend ssh, as it is encrypted and authentication with ssh-keys is simple and secure.
+
+#### GitHub: Adding/creating an SSH Key
+
+GitHub supports both HTTP and SSH for communication. Using SSH, you can remove the annoyance of having to enter your password every time. To learn how to add an SSH-Key follow [this guide provided by GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
 ## Local Branches
 
@@ -153,4 +160,9 @@ If you already have pushed changes from your feature branch to a remote branch, 
 
 To resolve merge conflicts, edit the files that need to be merged manually. You can check which files need to be merged using `git status`. After you are done merging a file manually, you can use `git add <path-to-file>` and when you have merged all files, continue with `git rebase --continue`.
 
-> **Note**: Keep in mind that manual merges within a rebase are destructive. If you accidentally remove changes you've done in your feature branch, they will be gone forever. If you're new to manually merging files in Git, it's a good idea to create a new branch from your feature branch using `git checkout -b <new-branch-name>`. When you're stuck on a manual merge, you can also always abort the rebase using `git rebase --abort`
+> **Note**: Keep in mind that manual merges within a rebase are potentially destructive. If you accidentally remove changes you've done in your feature branch, you might be able to recover them using [git-reflog](https://git-scm.com/docs/git-reflog/2.39.0), but they could also be deleted by the [git-gc](https://git-scm.com/docs/git-gc). If you're new to manually merging files, consider creating a new branch from your feature branch using `git checkout -b <new-branch-name>` on which you can perform the merge without risk. When you're stuck on a manual merge, you can also always abort the rebase using `git rebase --abort`
+
+## Further resources
+
+- [GIT Book](https://git-scm.com/book/en/v2)
+- [GitHub Docs](https://docs.github.com/en)
