@@ -5,30 +5,31 @@
 - **Scope:** `spec`
 - **Level:** Developer Goal
 - **Actors:** Application, User
-- **Brief:** 
-    - Creating a specification for a mail client application which needs communication to a mail server.
+- **Brief:**
+  - Creating a specification for a mail client application which needs communication to a mail server.
 
 ## Scenarios
 
 - **Precondition:** kdb is installed.
-- **Main success scenario:** 
-    - Specification for mail server application is available.
-    - Specification is written user or system wide.
-    - Mail client uses configuration for only one mail server.
+- **Main success scenario:**
+  - Specification for mail server application is available.
+  - Specification is written user or system-wide.
+  - Mail client uses configuration for only one mail server.
 - **Alternative scenario:** None.
 - **Error scenario:**
-    - User is informed about problem / error when kdb tool is used wrongly.
+  - User is informed about problem / error when kdb tool is used wrongly.
 - **Postcondition:** None.
 - **Non-functional Constraints:** None.
 
 ## Example
 
 This use case describes the main purpose of the specification language.
-It is is to write a specification for an application.
+It is about how to write a specification for an application.
 
 In this example we will be using a simple specification for an email client application.
 The REST application uses only one service (`mail server`).
 The configuration requirements for this REST application are:
+
 - mail server port
 - mail server hostname
 - mail server protocol
