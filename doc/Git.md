@@ -165,5 +165,5 @@ To resolve merge conflicts, edit the files that need to be merged manually. You 
 
 ## Further resources
 
-- [GIT Book](https://git-scm.com/book/en/v2)
+- [Git Book](https://git-scm.com/book/en/v2)
 - [GitHub Docs](https://docs.github.com/en)
