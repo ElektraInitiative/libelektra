@@ -57,7 +57,8 @@ message should fulfill the following:
 Most commits should have a longer description in the body.
 
 ### GitHub: Attributing Co-Authors
- If multiple people worked on a commit, GitHub, supports a nice way to represent this. You can attribute them by leaving two blank lines at the end and then add a single line of `Co-authored-by: NAME <NAME@EXAMPLE.COM>` for every other person that worked on it. [More Details here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors)
+
+If multiple people worked on a commit, GitHub, supports a nice way to represent this. You can attribute them by leaving two blank lines at the end and then add a single line of `Co-authored-by: NAME <NAME@EXAMPLE.COM>` for every other person that worked on it. [More Details here](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors)
 
 ## Remote Branches
 
