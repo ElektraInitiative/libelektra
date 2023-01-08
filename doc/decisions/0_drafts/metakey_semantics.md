@@ -14,9 +14,14 @@ These extra requirements are:
 3. Changing the value of a copied metakey must not affect the original `spec:/` key (and its metadata).
 
 Unrelated to the specification use case, metakeys must also be prevented from having metadata of their own.
+As `keyMeta` now "leaks" (compared with the previous API) the `KeySet` of metadata is unprotected and the requirements above are not fulfilled anymore.
+For example, changes of metadata values could confuse the spec plugin and lead to invalid configuration passed to applications.
 
 ## Constraints
-
+- The API should be hard to misuse.
+- Elektra should protect against incorrect operations, that would lead to undefined behavior.
+- As a specialized hook plugin `spec` could make use of specialized APIs.
+  However, the need for such internal APIs should be limited as much as possible.
 ## Assumptions
 
 - Not allowing metadata on metakeys, can also be ignored here, because it can be dealt with in `keyNew()` and `keyMeta()`.
@@ -24,7 +29,7 @@ Unrelated to the specification use case, metakeys must also be prevented from ha
 
 ## Considered Alternatives
 
-### Completely read-only
+### Completely Read-only
 
 One option to enforce all requirements is to just make any `Key` that is created with the `KEY_NS_META` namespace entirely read-only after `keyNew()`.
 
@@ -108,7 +113,7 @@ else
 
 However, that still has some issue:
 
-- It needs a hypothetical public API to check whether a metakey is used by some metadata `KeySet`.
+- It needs a public API to check whether a metakey is used by some metadata `KeySet`.
 - We still need to take the metakey out of the metadata `KeySet` and reinsert it.
   That means shuffling around the array in the `KeySet`, which may be worse than the duplicate memory for the new metakey.
 
