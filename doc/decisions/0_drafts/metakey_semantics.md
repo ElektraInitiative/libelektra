@@ -91,12 +91,45 @@ Since the `Key`s are still read-only as long as `source` uses them, we again can
 
 ### Utilize COW implementation
 
+#### Issues with Read-only Solutions
+
 An issue with the solutions above is that you always have to create a new `Key` to change metadata.
 This means we need to allocate all the memory for a new metakey.
 This new metakey will replace the existing one in `keyMeta(key)`.
 But that means, if the existing metakey was not shared with other keys, it will be deleted, when we could have just reused that memory.
 
-One option to solve that issue, in "Read-only while in `KeySet`" is something like this:
+Some of that problem is mitigated by `keyDup` using copy-on-write (COW).
+However, let's look at what is needed to change the value of `meta:/type` with a read-only solution.
+
+The straightforward option doesn't work, because of the read-only nature of metakeys:
+
+```c
+// FAILS, metakey is read-only
+keySetString (ksLookupByName (keyMeta (key), "meta:/type", 0), "string");
+```
+
+To make proper use of COW you need to write something like this to change the value of `meta:/type`:
+
+```c
+// Note: snippet could be even more complex, if you want to avoid the `keyDup`, in case meta is not in another KeySet
+Key * meta = ksLookupByName (keyMeta (key), "meta:/type", 0);
+meta = meta == NULL ? keyNew ("meta:/type", KEY_END) : keyDup (meta, KEY_CP_NAME);
+keySetString (meta, "long");
+ksAppendKey (keyMeta (key), meta);
+```
+
+However, most people would probably opt for the much simpler:
+
+```c
+ksAppendKey (keyMeta (key), keyNew ("meta:/type", KEY_VALUE, "long", KEY_END));
+```
+
+For a one-time operation the difference might not be big, but if a metakey (probably not `meta:/type`), changes many times it will become significant.
+Every time the simpler solution is used, an entirely new `Key` is created instead of utilizing the COW approach.
+
+#### Possible Fix
+
+One option to solve that read-only problems, in "Read-only while in `KeySet`" is something like this:
 
 ```c
 Key * metaKey = ksLookupByName (keyMeta (key), "meta:/type", KDB_O_POP);
