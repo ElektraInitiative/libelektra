@@ -218,7 +218,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - Check for circular links (overrides) _(@0x6178656c)_
-- <<TODO>>
+- Removed elektraCopyCallbackMeta-Function from keyset.c as it was not properly tested and had Errors _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 

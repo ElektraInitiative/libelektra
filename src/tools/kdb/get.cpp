@@ -69,40 +69,6 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 	Key k (key);
 	Key f (found);
 
-	std::string lastKeyName = k.getMeta<std::string> ("callback/print_trace/last_key_name");
-	int depth = k.getMeta<int> ("callback/print_trace/depth");
-
-	for (int i = 0; i < depth; ++i)
-		std::cout << " ";
-
-	std::cout << "searching " << (k.getName ()[0] == '/' ? "default of spec" : "") << k.getName ()
-		  << ", found: " << (found ? f.getName () : "<nothing>");
-
-	if (options)
-	{
-		std::cout << ", options: ";
-		printOptions (options);
-	}
-	std::cout << std::endl;
-
-	if (k.getName ().substr (0, 6) == "spec:/" && (options & ckdb::KDB_O_CALLBACK))
-	{
-		depth += 4;
-		k.setMeta<int> ("callback/print_trace/depth", depth);
-	}
-	else
-	{
-		if (getCascadingName (lastKeyName) != getCascadingName (k.getName ()))
-		{
-			if (depth != 0)
-			{
-				depth -= 2;
-			}
-			k.setMeta<int> ("callback/print_trace/depth", depth);
-		}
-	}
-	k.setMeta<string> ("callback/print_trace/last_key_name", k.getName ());
-
 	f.release ();
 	k.release ();
 	return found;
@@ -127,11 +93,11 @@ int GetCommand::execute (Cmdline const & cl)
 	// do a lookup without tracer to warm up default cache
 	conf.lookup (root);
 
-	root.setCallback (warnOnMeta);
+
 	if (cl.verbose)
 	{
 		cout << "got " << conf.size () << " keys" << std::endl;
-		root.setCallback (printTrace);
+		
 	}
 	Key k = conf.lookup (root);
 

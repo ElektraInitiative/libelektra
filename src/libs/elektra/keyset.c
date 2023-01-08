@@ -2038,40 +2038,6 @@ int ksSetCursor (KeySet * ks, elektraCursor cursor)
 	return 1;
 }
 
-
-/*******************************************
- *    Looking up Keys inside KeySets       *
- *******************************************/
-
-static void elektraCopyCallbackMeta (Key * dest, Key * source)
-{
-	// possible optimization: only copy when callback is present (keyIsBinary && keyGetValueSize == sizeof(void(int))
-	const Key * m = 0;
-
-	KeySet * metaKeys = keyMeta (dest);
-	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
-	{
-		m = ksAtCursor (metaKeys, it);
-		const char * metaname = keyName (m);
-		if (!strncmp (metaname, "callback/", sizeof ("callback")))
-		{
-			keySetMeta (dest, metaname, 0);
-			it--;
-		}
-	}
-
-	metaKeys = keyMeta (source);
-	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
-	{
-		m = ksAtCursor (metaKeys, it);
-		const char * metaname = keyName (m);
-		if (!strncmp (metaname, "callback/", sizeof ("callback")))
-		{
-			keyCopyMeta (dest, source, metaname);
-		}
-	}
-}
-
 /**
  * @internal
  * @brief Writes a elektra array name
@@ -2133,7 +2099,6 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 		{
 			k = keyNew (keyString (m), KEY_END);
 			keySetBinary (k, keyValue (specKey), keyGetValueSize (specKey));
-			elektraCopyCallbackMeta (k, specKey);
 		}
 		else
 			keySetName (k, keyString (m));
@@ -2150,7 +2115,6 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 
 	if (k)
 	{
-		elektraCopyCallbackMeta (specKey, k);
 		keyDel (k);
 	}
 	return ret;
@@ -2293,9 +2257,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, elektraLookupFlag
 		// we found a spec key, so we know what to do
 		specKey = keyDup (specKey, KEY_CP_ALL);
 		keySetBinary (specKey, keyValue (key), keyGetValueSize (key));
-		elektraCopyCallbackMeta (specKey, key);
 		found = elektraLookupBySpec (ks, specKey, options);
-		elektraCopyCallbackMeta (key, specKey);
 		keyDel (specKey);
 		return found;
 	}
@@ -2427,21 +2389,6 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	init.getName = elektraOpmphmGetString;
 	init.data = (void **) ks->data->array;
 	init.initSeed = elektraRandGetInitSeed ();
-
-	// mapping
-	size_t mappings = 0; // counts mapping invocations
-	int ret;
-	do
-	{
-		ret = opmphmMapping (ks->data->opmphm, graph, &init, ks->data->size);
-		++mappings;
-	} while (ret && mappings < 10);
-	if (ret && mappings == 10)
-	{
-		opmphmGraphDel (graph);
-		return -1;
-	}
-
 	// assign
 	if (opmphmAssignment (ks->data->opmphm, graph, ks->data->size, 1))
 	{
@@ -2732,7 +2679,6 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 		ret = elektraLookupBySpec (ks, lookupKey, options & mask);
 		if (key->hasReadOnlyName)
 		{
-			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);
 		}
 	}
@@ -2743,7 +2689,6 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 		ret = elektraLookupByCascading (ks, lookupKey, options & mask);
 		if (key->hasReadOnlyName)
 		{
-			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);
 		}
 	}

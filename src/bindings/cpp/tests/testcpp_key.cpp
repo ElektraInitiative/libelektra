@@ -722,7 +722,6 @@ TEST (key, cErrorsNull)
 
 	EXPECT_THROW (x.set (""), KeyException);
 	EXPECT_THROW (x.copy (nullptr), KeyException);
-	EXPECT_THROW (x.setCallback (nullptr), KeyException);
 	EXPECT_THROW (x.setString (nullptr), KeyException);
 	EXPECT_THROW (x.getString (), KeyException);
 	EXPECT_THROW (x.getReferenceCounter (), KeyException);
@@ -764,7 +763,6 @@ TEST (key, cErrorsParameters)
 	EXPECT_NO_THROW (k.copy (k1));
 	EXPECT_EQ (k, k1);
 
-	EXPECT_NO_THROW (k.setCallback (nullptr));
 	EXPECT_NO_THROW (k.setString ("\\"));
 	EXPECT_EQ (k.getString (), "\\");
 	EXPECT_EQ (k.getReferenceCounter (), 1);

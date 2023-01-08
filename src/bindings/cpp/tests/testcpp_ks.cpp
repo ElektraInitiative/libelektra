@@ -740,7 +740,6 @@ TEST (ks, cErrosKeySet)
 	EXPECT_NO_THROW (k1.copy (k));
 	EXPECT_EQ (k1, k);
 
-	EXPECT_NO_THROW (k.setCallback (nullptr));
 	EXPECT_NO_THROW (k.setString ("newValue"));
 	EXPECT_EQ (k.getString (), "newValue");
 

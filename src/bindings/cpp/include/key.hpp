@@ -208,7 +208,6 @@ public:
 	inline func_t getFunc () const;
 
 	typedef ckdb::Key * (*callback_t) (ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, elektraLookupFlags flags);
-	inline void setCallback (callback_t fct);
 
 	inline const void * getValue () const;
 	inline std::string getBinary () const;
@@ -1190,28 +1189,6 @@ inline Key::func_t Key::getFunc () const
 
 	return conversation.f;
 }
-
-
-inline void Key::setCallback (callback_t fct)
-{
-	union
-	{
-		callback_t f;
-		void * v;
-	} conversation;
-	static_assert (sizeof (conversation) == sizeof (callback_t), "union does not have size of function pointer");
-
-	conversation.f = fct;
-	if (ckdb::keySetBinary (getKey (), &conversation.v, sizeof (conversation)) == -1)
-	{
-		throw KeyException ();
-	}
-	if (ckdb::keySetMeta (getKey (), "callback", "") == -1)
-	{
-		throw KeyException ();
-	}
-}
-
 
 /**
  * @copydoc keySetString

@@ -231,7 +231,6 @@ TEST (meta, cErrorsMetaKeys)
 	EXPECT_NO_THROW (k.copy (m));
 	EXPECT_EQ (k, m);
 
-	EXPECT_THROW (m.setCallback (nullptr), KeyException);
 	EXPECT_THROW (m.setString ("changedMetaValue"), KeyException);
 	EXPECT_EQ (m.getString (), "metaValue");
 	EXPECT_EQ (m.getReferenceCounter (), 1);
