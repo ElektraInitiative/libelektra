@@ -13,15 +13,17 @@ These extra requirements are:
    Additionally, it must be possible to detect if the value of a copied metakey has changed.
 3. Changing the value of a copied metakey must not affect the original `spec:/` key (and its metadata).
 
-Unrelated to the specification use case, metakeys must also be prevented from having metadata of their own.
+Unrelated to the specification use case (see also ["Validating Configuration with Specification"](../../usecases/kdb/UC_validate_config.md)), metakeys must also be prevented from having metadata of their own.
 As `keyMeta` now "leaks" (compared with the previous API) the `KeySet` of metadata is unprotected and the requirements above are not fulfilled anymore.
 For example, changes of metadata values could confuse the spec plugin and lead to invalid configuration passed to applications.
 
 ## Constraints
+
 - The API should be hard to misuse.
 - Elektra should protect against incorrect operations, that would lead to undefined behavior.
 - As a specialized hook plugin `spec` could make use of specialized APIs.
   However, the need for such internal APIs should be limited as much as possible.
+
 ## Assumptions
 
 - Not allowing metadata on metakeys, can also be ignored here, because it can be dealt with in `keyNew()` and `keyMeta()`.
@@ -111,21 +113,30 @@ else
 }
 ```
 
-However, that still has some issue:
+> **Note**: Where the code above would live doesn't matter.
+> It may be part of some Elektra library, or it may be user code.
+> The code is clearly not ideal and that's why the solution here actually is to avoid the need for a `isInKeySet` function entirely.
 
-- It needs a public API to check whether a metakey is used by some metadata `KeySet`.
+However, that still has some obvious issues:
+
+- It needs a public API `isInKeySet` to check whether a metakey is used by some metadata `KeySet`.
 - We still need to take the metakey out of the metadata `KeySet` and reinsert it.
   That means shuffling around the array in the `KeySet`, which may be worse than the duplicate memory for the new metakey.
 
-The good thing is we can solve all this, because of the [COW implementation](../1_in_discussion/copy_on_write.md).
+Clearly this is **not** a viable solution to the problem.
+But the good thing is we can solve these issues, because of the [COW implementation](../1_in_discussion/copy_on_write.md).
 
-First, instead of copying metadata with
+To solve the issues mentioned above, `spec` needs to do a few things differently:
+
+#### Copying Metakeys in `spec`
+
+Instead of copying metadata with
 
 ```c
 ksAppend (keyMeta (dest), keyMeta (source))
 ```
 
-we need to make copy of all metakeys
+we need to make a copy of all metakeys
 
 ```c
 KeySet * sourceMeta = keyMeta (source);
@@ -137,18 +148,36 @@ for (elektraCursor i = 0; i < ksGetSize (sourceMeta); i++)
 }
 ```
 
-But because of the COW implementation this not as bad as it looks.
+This seems like a bad change, but because of the COW implementation it's not as bad as it looks.
 Only the `struct Key` will be duplicated, both the name and value data of the metakeys will still be shared between `source` and `dest`.
+Still worse than reusing everything and just adding a few new pointers, but not too bad.
 
-This now means that changing metadata in `dest` cannot possibly affect `source`, because they do not share any `Key *`s.
-Therefore, we don't need to make the value read-only and this just works:
+This change means that modifying metadata in `dest` cannot possibly affect `source`, because they do not share any `Key *`s.
+At first, they do share all the name and value data, but through COW that stops as soon as either `Key` is modified.
+Therefore, we don't need to make the value read-only and anybody (including user code) can just do:
 
 ```c
 keySetString (ksLookupByName (keyMeta (key), "meta:/type", 0), "string");
 ```
 
-However, the issue with not sharing `Key *`s of course is that a pointer comparison will no longer detect copied metakeys.
-Instead, we would have to do:
+#### Detecting & Removing Copied Metakeys in `spec`
+
+The issue with not sharing `Key *`s of course is that a pointer comparison will no longer detect copied metakeys.
+That means we need a new way of detecting what `spec` needs to remove.
+
+First we'd add a new `keyGetCOWValue` function:
+
+```c
+KeyData * keyGetCOWValue (Key * key)
+{
+   return key->keyData;
+}
+```
+
+> **Note**: This function wouldn't be part of `libelektra-core`.
+> It would be in `libelektra-extra` or some other library on which `spec` would depend.
+
+With this function, the check to detect copied metakeys becomes this straightforward snippet:
 
 ```c
 KeySet * specMeta = keyMeta (specKey);
@@ -157,31 +186,29 @@ KeySet * otherMeta = keyMeta (otherMeta);
 for (elektraCursor it = 0; it < ksGetSize (otherMeta); it++)
 {
    Key * otherMetaKey = ksAtCursor (otherMeta, it);
-   if (keyHasSameCOWValue (otherMetaKey, ksLookup (specMeta, metaKey, 0)))
+   if (keyGetCOWValue (otherMetaKey) == keyGetCOWValue(ksLookup (specMeta, metaKey, 0)))
    {
       // copied from spec
    }
 }
 ```
 
-With `keyHasSameCOWValue` being:
-
-```c
-bool keyHasSameCOWValue (Key * key, Key * other)
-{
-   if (key == NULL && other == NULL) return true;
-   if (key == NULL || other == NULL) return false;
-   return key->keyData == other->keyData;
-}
-```
-
-The function `keyHasSameCOWValue` does not exist right now.
-It is needed, because there is also no public API to access `key->keyData`.
-Creating a function that returns `key->keyData` may break some guarantees related to COW, so creating just a comparison function may be preferable.
-Neither function would have to be part of the `libelektra-core` API, since they are only needed for special use cases like the `spec` plugin.
-
 The check above works, because changing the value of a `Key` will allocate a new `key->keyData`, if it is shared with another key.
-Therefore, the `keyData` pointers will only be the same if the value was not modified and was originally copied from the `spec:/` key.
+Therefore, the `keyData` pointers will only be the same if the value was not modified and was copied from the `spec:/` key.
+
+> **Note**: Adding `keyGetCOWValue` (anywhere) might cause problem with some of the current guarantees related to COW.
+> A quick solution for this would be to instead only provide `keyHasSameCOWValue`:
+>
+> ```c
+> bool keyHasSameCOWValue (Key * key, Key * other)
+> {
+>   if (key == NULL && other == NULL) return true;
+>   if (key == NULL || other == NULL) return false;
+>   return key->keyData == other->keyData;
+> }
+> ```
+>
+> This would still allow making the comparison needed by `spec`, but doesn't actually provide any access to `key->keyData`, so nothing no guarantees can be broken.
 
 ## Decision
 
