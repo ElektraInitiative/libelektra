@@ -97,7 +97,6 @@ int GetCommand::execute (Cmdline const & cl)
 	if (cl.verbose)
 	{
 		cout << "got " << conf.size () << " keys" << std::endl;
-		
 	}
 	Key k = conf.lookup (root);
 
