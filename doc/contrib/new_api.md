@@ -10,7 +10,7 @@ The current API uses these names for those concepts:
 
 - Collection: `KeySet`
 - Element: `Key`
-- Name of element: —
+- Name of element: `char *`
 - Value of element: —
 
 The API proposed below uses (to keep as much as possible from above):
@@ -62,7 +62,6 @@ typedef struct ElektraKeyset ElektraKeyset;
 // 0 always indicates success, other values depend on function
 typedef int ElektraErrorCode;
 
-// Note: breaking change compared to current values
 typedef enum {
     ELEKTRA_KEY_CP_NAME   = 1<<0,
     ELEKTRA_KEY_CP_VALUE  = 1<<1,
