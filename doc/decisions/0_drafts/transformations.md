@@ -17,7 +17,7 @@ More specifically, problems have been observed in conjunction with the following
 
 The problem, in general, can be described as: Which phase of the KDB should be used for notifications/change tracking?
 
-We differntiate between three types:
+We differentiate between three types:
 
 - *stored* name/value/metadata: How it is actually stored, i.e. the state returned by and passed to the `storage` plugins.
 - *runtime* name/value/metadata: How it is at runtime, i.e. what is returned by `kdbGet` and passed to `kdbSet`.
@@ -99,9 +99,10 @@ In theory the same issue with the 'key needs sync' flag based change tracking ap
 
 ## Related Decisions
 
-- [Hooks](hooks.md)
-- [Change Tracking](https://github.com/ElektraInitiative/libelektra/pull/4554)
-- [Internal Cache](internal_cache.md)
+- [Hooks](../4_partially_implemented/hooks.md)
+- [Change Tracking](../0_drafts/change_tracking.md)
+- [Operation Sequences](../0_drafts/operation_sequences.md)
+- [Internal Cache](../3_decided/internal_cache.md)
 
 ## Notes
 
