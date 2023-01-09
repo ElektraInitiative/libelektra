@@ -59,6 +59,10 @@
   A library may implement several classes.
   E.g., `KDB`, `Key` and `KeySet` are the most important classes.
 
+- **Hooks**:
+  Central points in the KDB lifecycle, where specialized plugins are called.
+  Can be used for notification and other purposes.
+
 ## Technical Concepts
 
 - [Backends](elektra-backends.md):
