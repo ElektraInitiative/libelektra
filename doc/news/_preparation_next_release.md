@@ -457,7 +457,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Use case for [Creating specification with underline wildcard](/doc/usecases/plugins/spec/create_specification_with_underline_wildcard.md) _(Tomislav Makar @tmakar)_
+- Use case for [Creating specification with underline wildcard](/doc/usecases/spec/create_specification_with_underline_wildcard.md) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
