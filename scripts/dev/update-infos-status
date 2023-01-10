@@ -148,7 +148,6 @@ def main():
 	tags = parseContract ()
 
 	checkTags (args.add,tags)
-	checkTags (args.delete,tags)
 	checkTags (args.set,tags)
 
 	pluginsBase = os.path.join('src', 'plugins')
