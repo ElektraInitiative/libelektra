@@ -6,7 +6,7 @@
 - **Level:** User Goal
 - **Actors:** User
 - **Brief:**
-  - This use case shows a sample for writing a specification. 
+  - This use case shows a sample for writing a specification.
   - It focuses on the specification language rather than on `kdb commands`.
 
 ## Scenarios
@@ -35,18 +35,21 @@ The configuration requirements for this REST application are:
 - mail server hostname
 - mail server protocol
 
+> NOTE: All keys are created with a prepended namespace `spec:/`.
+> Keys prepended with `meta:/` are metadata.
+
 A specification for this requirements can be like this (ni format is used here):
 
 ```ni
-[service/mailserver/port]
+[mailserver/port]
 meta:/type = unsigned_short
 meta:/description = "The port of the mail server."
 
-[service/mailserver/hostname]
+[mailserver/hostname]
 meta:/type = string
 meta:/description = "The hostname of the mail server."
 
-[service/mailserver/protocol]
+[mailserver/protocol]
 meta:/type = string
 meta:/description = "The protocol the mail server uses."
 ```
