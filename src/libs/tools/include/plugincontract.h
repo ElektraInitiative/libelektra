@@ -7,6 +7,7 @@
 	{ "tested/shell", 1000 },  //< substantial shell-recorder tests (README.md)
 	{ "tested/fuzz", 1000 },   //< tested using a fuzzer tool like AFL
 	{ "documented", 1000 },	   //< all features are described in documentation (README.md)
+ 	{ "nodep", 250 },          //< no external library dependencies, except the languages core deps, e.g. libstdc++ and other plugins in `needs`
 	{ "configurable", 0 },	   //< plugin configuration available to modify behavior
 	{ "hook", 0 },		   //< suitable as hook plugin
 	{ "internal", -250 },	   //< uses internal header files from Elektra
