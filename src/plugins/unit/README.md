@@ -5,7 +5,8 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
-- infos/status = maintained reviewed conformant compatible coverage specific unittest tested libc final
+- infos/status = maintained reviewed conformant compatible coverage unittest tested libc final
+- infos/features/storage = limited
 - infos/metadata = check/unit
 - infos/description = validates units of memory and normalizes to bytes
 

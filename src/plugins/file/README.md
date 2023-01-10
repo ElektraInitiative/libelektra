@@ -5,7 +5,8 @@
 - infos/provides = storage/file
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = specific unittest tested nodep libc configurable preview experimental
+- infos/status = unittest tested nodep libc configurable preview experimental
+- infos/features/storage = limited
 - infos/metadata =
 - infos/description = reads complete file into a key
 

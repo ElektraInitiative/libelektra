@@ -1,0 +1,88 @@
+import re
+import os
+
+def exitError (mess):
+	print ("Error: " + mess)
+	exit (1)
+
+def main():
+	if not os.path.isfile (os.path.join('doc', 'CONTRACT.ini')) or not os.path.isdir (os.path.join('src', 'plugins')):
+		exitError ("You are not in an electra src dir!")
+
+	pluginsBase = os.path.join('src', 'plugins')
+	plugins = os.listdir(pluginsBase)
+
+	p_infostatus = re.compile ("infos/status")
+	p_infosfeatures = re.compile ("infos/features/storage")
+	p_digit = re.compile ("-?[0-9]+")
+
+	tags_to_features = {
+		"writeonly": "write",
+		"readonly": "read",
+		"limited": "limited",
+		"specific": "limited"
+	}
+
+	for plugin in plugins:
+		print("Processing plugin " + plugin)
+		pluginPath = os.path.join (pluginsBase, plugin)
+		if not os.path.isdir (pluginPath):
+			continue
+		pluginReadmePath = os.path.join (pluginPath, 'README.md')
+		if not os.path.isfile (pluginReadmePath):
+			exitError ( "Plugin '" + pluginPath + "' has no README.md")
+
+		#~ get tags from plugin
+		pluginReadmeFile = open (pluginReadmePath, 'r')
+		pluginTags = []
+		statusFound = False
+		for line in pluginReadmeFile:
+			if p_infostatus.search (line):
+				statusFound = True
+				pluginTags = line.split("=")[1].strip().split()
+				break
+
+		pluginFeatures = []
+		featuresFound = False
+		for line in pluginReadmeFile:
+			if p_infosfeatures.search(line):
+				featuresFound = True
+				pluginFeatures = line.split("=")[1].strip().split()
+				
+
+		pluginReadmeFile.close()
+		if not statusFound:
+			print("No status found, skipping")
+			continue
+
+		pluginTagsNumbers = [x for x in pluginTags if p_digit.match(x)]
+		pluginTags = [x for x in pluginTags if not p_digit.match(x)]
+
+		#~ remove tags from plugin
+		for tag in tags_to_features.keys():
+			print("Processing tag " + tag)
+			if tag in pluginTags:
+				pluginTags.remove(tag)
+				pluginFeatures.append(tags_to_features[tag])
+
+		#~ write out tags and features from plugin
+		pluginReadmeFile = open (pluginReadmePath, 'r')
+		content = pluginReadmeFile.readlines()
+		pluginReadmeFile.close()
+
+		newPluginReadmeFile = open (pluginReadmePath, 'w')
+		for line in content:
+			if p_infostatus.search (line):
+				pluginTags.extend(pluginTagsNumbers)
+				newPluginReadmeFile.write ("- infos/status = "+" ".join (pluginTags)+"\n")
+				if not featuresFound and len(pluginFeatures) > 0:
+					newPluginReadmeFile.write ("- infos/features/storage = " + " ".join(pluginFeatures) + "\n")
+			elif p_infosfeatures.search(line):
+				newPluginReadmeFile.write ("- infos/features/storage = " + " ".join(pluginFeatures) + "\n")
+			else:
+				newPluginReadmeFile.write (line)
+
+		newPluginReadmeFile.close()
+
+if __name__ == "__main__":
+	main()

@@ -5,7 +5,8 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = getresolver setresolver commit rollback
-- infos/status = configurable readonly preview unfinished nodoc
+- infos/status = configurable preview unfinished nodoc
+- infos/features/storage = read
 - infos/metadata =
 - infos/description = mount remote config files via curl
 

@@ -5,7 +5,8 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
-- infos/status = maintained conformant compatible coverage specific unittest tested libc preview unfinished
+- infos/status = maintained conformant compatible coverage unittest tested libc preview unfinished
+- infos/features/storage = limited
 - infos/metadata = check/range check/type type
 - infos/description = tests if a value is within a given range
 

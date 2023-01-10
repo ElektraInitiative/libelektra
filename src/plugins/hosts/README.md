@@ -5,7 +5,8 @@
 - infos/needs =
 - infos/recommends = glob error network
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc limited
+- infos/status = maintained unittest nodep libc
+- infos/features/storage = limited
 - infos/metadata = order comment/# comment/#/start comment/#/space
 - infos/description = This plugin reads and writes /etc/hosts files.
 

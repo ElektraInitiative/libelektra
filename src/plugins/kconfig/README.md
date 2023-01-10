@@ -5,7 +5,8 @@
 - infos/provides = storage/kconfig
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = recommended maintained compatible specific experimental unfinished nodoc concept
+- infos/status = recommended maintained compatible experimental unfinished nodoc concept
+- infos/features/storage = limited
 - infos/metadata =
 - infos/description = Reads and writes the KConfig INI format
 
