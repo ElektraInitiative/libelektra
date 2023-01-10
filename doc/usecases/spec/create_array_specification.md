@@ -9,10 +9,10 @@
 
 ## Scenarios
 
-- **Precondition:** kdb is installed.
+- **Precondition:** None.
 - **Main success scenario:**
   - The developer wants to extend their application from ["Writing specification for an application"](/doc/usecases/plugins/spec/create_specification.md) to support multiple mail accounts.
-  - Instead of using e.g. `mailserver/hostname` one hostname, it requires to use `mailserver/#/hostname` which uses array specification.
+  - The configuration uses `mailserver/#/port`, `mailserver/#0/hostname` and `mailserver/#0/protocol`.
 - **Alternative scenario:** None.
 - **Error scenario:**
   - Wrong metakeys are used (yielded as error to the user)
