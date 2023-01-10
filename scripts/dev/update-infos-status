@@ -107,17 +107,9 @@ def hookConfigurable (pluginName, pluginDir, tags):
 
 # parse CONTRACT.ini and return as dict tag:order
 def parseContract ():
-	contract = open (os.path.join('doc', 'CONTRACT.ini'), 'r')
-	start = re.compile ("\s*\[infos/status\]\s*")
-	end = re.compile ("\s*\[\S*\]\s*")
+	contract = open (os.path.join('src', 'libs', 'tools', 'include', 'plugincontract.h'), 'r')
 	info = []
-	inInfo = False
 	for line in contract:
-		if end.search(line):
-			inInfo = False
-		if start.search(line):
-			inInfo = True
-		if inInfo:
 			info.append (line)
 	enum = dict ()
 	p1 = re.compile ("\".*\"")
