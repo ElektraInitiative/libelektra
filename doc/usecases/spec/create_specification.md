@@ -3,18 +3,19 @@
 ## Summary
 
 - **Scope:** `spec`
-- **Level:** Developer Goal
-- **Actors:** Application, User
+- **Level:** User Goal
+- **Actors:** User
 - **Brief:**
-  - Creating a specification for a mail client application which needs communication to a mail server.
+  - This use case shows a sample for writing a specification. 
+  - It focuses on the specification language rather than on `kdb commands`.
 
 ## Scenarios
 
-- **Precondition:** kdb is installed.
+- **Precondition:** None.
 - **Main success scenario:**
-  - Specification for mail server application is available.
-  - Specification is written user or system-wide.
-  - Mail client uses configuration for only one mail server.
+  - The application is an email client.
+  - It needs to know about the hostname, protocol and port of the user's email account.
+  - The application uses the config keys `mailserver/hostname`, `mailserver/protocol` and `mailserver/port`, to let the user configure it's account.
 - **Alternative scenario:** None.
 - **Error scenario:**
   - User is informed about problem / error when kdb tool is used wrongly.
