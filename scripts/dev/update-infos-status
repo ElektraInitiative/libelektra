@@ -140,6 +140,7 @@ def main():
 
 	parser.add_argument ("--add", dest="add", nargs="+", help="Adds Tags to the Plugins")
 	parser.add_argument ("--del", dest="delete", nargs="+", help="Deletes Tags from the Plugins")
+	parser.add_argument ("--replace", dest="replace", nargs="+", help="Replaces Tags from the Plugins")
 	parser.add_argument ("--set", dest="set", nargs="+", help="Sets all Tags at the Plugins")
 	parser.add_argument ("--plugins", dest="plugins", nargs='+', help="List of plugins")
 	parser.add_argument ("--auto", dest="auto",action='store_true', help="Enable the auto heuristic")
@@ -203,6 +204,20 @@ def main():
 					pluginTags.remove (r)
 				except ValueError:
 					print ("Warning: '"+ r +"' not in "+ plugin +"s Tags")
+		if args.replace:
+			oldTags = args.replace[::2]
+			newTags = args.replace[1::2]
+			if len(oldTags) != len(newTags):
+				print("Warning: No replacement for '"+ oldTags[-1] +"' in "+ plugin +"s Tags")
+			for i in range (len(newTags)):
+				if oldTags[i] in pluginTags:
+					pluginTags.remove (oldTags[i])
+					if not newTags[i] in pluginTags:
+						pluginTags.append (newTags[i])
+					print("Replaced '"+ oldTags[i] +"' with '"+ newTags[i] +"' in "+ plugin +"s Tags")
+				else:
+					print ("Warning: '"+ oldTags[i] +"' not in "+ plugin +"s Tags")
+
 		if args.set:
 			pluginTags = args.set
 			pluginTagsNumbers = []
@@ -223,6 +238,7 @@ def main():
 		pluginReadmeFile = open (pluginReadmePath, 'r')
 		content = pluginReadmeFile.readlines()
 		pluginReadmeFile.close()
+
 		newPluginReadmeFile = open (pluginReadmePath, 'w')
 		for line in content:
 			if p_infostatus.search (line):
