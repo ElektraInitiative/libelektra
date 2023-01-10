@@ -138,10 +138,9 @@ def main():
 							If no PLUGINS are specified it will do the action for all. If no action is given it\
 							will sort the Tags, for the specified plugins or all if no PLUGINS are specified")
 
-	command = parser.add_mutually_exclusive_group()
-	command.add_argument ("--add", dest="add", nargs="+", help="Adds Tags to the Plugins")
-	command.add_argument ("--del", dest="delete", nargs="+", help="Deletes Tags from the Plugins")
-	command.add_argument ("--set", dest="set", nargs="+", help="Sets all Tags at the Plugins")
+	parser.add_argument ("--add", dest="add", nargs="+", help="Adds Tags to the Plugins")
+	parser.add_argument ("--del", dest="delete", nargs="+", help="Deletes Tags from the Plugins")
+	parser.add_argument ("--set", dest="set", nargs="+", help="Sets all Tags at the Plugins")
 	parser.add_argument ("--plugins", dest="plugins", nargs='+', help="List of plugins")
 	parser.add_argument ("--auto", dest="auto",action='store_true', help="Enable the auto heuristic")
 
