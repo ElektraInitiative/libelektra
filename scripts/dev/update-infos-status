@@ -197,13 +197,13 @@ def main():
 			for r in args.add:
 				if r not in pluginTags:
 					pluginTags.append (r)
-		elif args.delete:
+		if args.delete:
 			for r in args.delete:
 				try:
 					pluginTags.remove (r)
 				except ValueError:
 					print ("Warning: '"+ r +"' not in "+ plugin +"s Tags")
-		elif args.set:
+		if args.set:
 			pluginTags = args.set
 			pluginTagsNumbers = []
 
