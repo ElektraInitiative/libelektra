@@ -207,11 +207,17 @@ def main():
 			pluginTags = args.set
 			pluginTagsNumbers = []
 
+		#~ check if tags are valid
+		unavailableTags = [x for x in pluginTags if not x in tags]
+		if unavailableTags != []:
+			print("Tags: " + str(pluginTags))
+			exitError (str(unavailableTags) + " used by " + plugin + " not in doc/CONTRACT.ini")
+
 		#~ sort tags from plugin
 		try:
 			pluginTags = sorted (pluginTags, key=lambda k : tags[k], reverse=True)
 		except KeyError:
-			exitError (str(pluginTags) + "not in doc/CONTRACT.ini")
+			exitError ("Error while sorting Tags of " + plugin)
 
 		#~ write out tags from plugin
 		pluginReadmeFile = open (pluginReadmePath, 'r')
