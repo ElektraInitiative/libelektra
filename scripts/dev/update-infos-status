@@ -147,10 +147,7 @@ def main():
 
 	args = parser.parse_args ()
 	tags = parseContract ()
-
-	checkTags (args.add,tags)
-	checkTags (args.set,tags)
-
+	
 	pluginsBase = os.path.join('src', 'plugins')
 
 	if (args.plugins):
@@ -195,6 +192,7 @@ def main():
 
 		#~ modify tags from plugin
 		if args.add:
+			checkTags (args.add,tags)
 			for r in args.add:
 				if r not in pluginTags:
 					pluginTags.append (r)
@@ -207,6 +205,7 @@ def main():
 		if args.replace:
 			oldTags = args.replace[::2]
 			newTags = args.replace[1::2]
+			checkTags(newTags,tags)
 			if len(oldTags) != len(newTags):
 				print("Warning: No replacement for '"+ oldTags[-1] +"' in "+ plugin +"s Tags")
 			for i in range (len(newTags)):
@@ -219,6 +218,7 @@ def main():
 					print ("Warning: '"+ oldTags[i] +"' not in "+ plugin +"s Tags")
 
 		if args.set:
+			checkTags (args.set,tags)
 			pluginTags = args.set
 			pluginTagsNumbers = []
 
