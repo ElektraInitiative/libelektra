@@ -464,7 +464,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Decisions
 
-- Documented [decision process](../decisions/3_decided/decision_process.md) _(Markus Raab)_
+- Decide and implement [decision process](../decisions/4_partially_implemented/decision_process.md) _(Markus Raab)_
 - Decided future [library split](../decisions/3_decided/library_split.md) _(@kodebach)_
 - decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
 - draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_

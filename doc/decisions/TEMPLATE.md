@@ -14,7 +14,7 @@
 2.
 3.
 
-## Considered Alternatives
+## Solutions
 
 ### Alternative A
 
