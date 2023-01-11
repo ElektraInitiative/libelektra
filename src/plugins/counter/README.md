@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = pregetstorage
-- infos/status = maintained nodep configurable final global nodoc
+- infos/status = productive maintained nodep configurable hook
 - infos/metadata =
 - infos/description = counts and prints usage statistics
 

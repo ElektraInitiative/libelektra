@@ -4,7 +4,7 @@
 - infos/provides = storage/properties
 - infos/needs = code binary
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep concept obsolete 3000
+- infos/status = maintained tested/unit nodep concept obsolete 3000
 - infos/description = Very simple storage plugin which stores data in a basic properties file format
 
 ## Introduction

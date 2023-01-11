@@ -4,7 +4,7 @@
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver commit
-- infos/status = productive maintained unittest tested libc nodep configurable
+- infos/status = productive maintained tested/unit nodep configurable
 - infos/features/storage = limited
 - infos/description = system independent resolver
 

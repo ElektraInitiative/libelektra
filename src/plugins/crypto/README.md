@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = unittest configurable memleak unfinished discouraged
+- infos/status = tested/unit configurable memleak experimental discouraged
 - infos/metadata = crypto/encrypt
 - infos/description = Cryptographic operations
 

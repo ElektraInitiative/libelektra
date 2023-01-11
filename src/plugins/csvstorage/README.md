@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = unittest nodep libc configurable
+- infos/status = tested/unit nodep configurable
 - infos/features/storage = limited
 - infos/description = parses CSV files
 

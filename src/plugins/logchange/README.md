@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = tracing
 - infos/placements = pregetstorage postgetstorage postcommit
-- infos/status = maintained nodep global nodoc
+- infos/status = maintained nodep hook
 - infos/description = demonstrates notification of key changes
 
 ## Purpose

@@ -4,7 +4,7 @@
 - infos/licence = BSD
 - infos/needs = binary
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc final
+- infos/status = productive maintained tested/unit nodep
 - infos/features/storage = limited
 - infos/description = storage plugin which stores each line from a file
 

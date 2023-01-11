@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest nodep libc nodoc
+- infos/status = maintained tested/unit nodep
 - infos/metadata = check/ipaddr check/port check/port/listen
 - infos/description = Checks keys if they contain a valid ip address
 

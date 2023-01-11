@@ -4,7 +4,7 @@
 - infos/provides = conv
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
-- infos/status = unittest tested nodep libc configurable discouraged
+- infos/status = tested/unit nodep configurable discouraged
 - infos/metadata =
 - infos/description = conversion of keys to metakeys and vice versa
 

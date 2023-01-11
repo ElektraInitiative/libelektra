@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = procgetstorage
-- infos/status = recommended productive maintained nodep libc
+- infos/status = recommended productive maintained nodep
 - infos/metadata = args args/index command opt opt/long opt/arg opt/flagvalue opt/help opt/hidden opt/# opt/#/long opt/#/arg opt/#/flagvalue opt/#/hidden env env/#
 - infos/description = Parses command-line options using elektra-opts
 

@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage
-- infos/status = maintained unittest libc global experimental
+- infos/status = maintained tested/unit hook experimental
 - infos/description = Receives notifications via D-Bus
 
 ## Introduction

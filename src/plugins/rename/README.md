@@ -4,7 +4,7 @@
 - infos/provides = filter
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
-- infos/status = maintained unittest nodep libc configurable
+- infos/status = maintained tested/unit nodep configurable
 - infos/metadata = rename/to rename/toupper rename/tolower rename/cut origname
 - infos/description = renaming of keys
 

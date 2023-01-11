@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage unittest tested libc final
+- infos/status = recommended productive maintained compatible tested/unit
 - infos/features/storage = limited
 - infos/metadata = check/date check/date/format
 - infos/description = validates date and time strings

@@ -5,7 +5,7 @@
 - infos/needs = directoryvalue type
 - infos/recommends = rebase comment
 - infos/placements = getstorage setstorage
-- infos/status = maintained coverage unittest
+- infos/status = maintained tested/unit
 - infos/description = JSON using YAJL
 
 ## Introduction

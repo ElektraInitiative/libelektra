@@ -5,7 +5,7 @@
 - infos/provides = storage/info
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = recommended maintained nodep libc unfinished concept
+- infos/status = recommended maintained nodep experimental concept
 - infos/features/storage = read limited limited
 - infos/metadata =
 - infos/description = reads desktop information

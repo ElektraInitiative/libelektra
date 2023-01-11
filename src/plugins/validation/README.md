@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest nodep libc
+- infos/status = maintained tested/unit nodep
 - infos/metadata = check/validation check/validation/message check/validation/ignorecase check/validation/match check/validation/invert check/validation/type
 - infos/description = Validates key values using regular expressions
 

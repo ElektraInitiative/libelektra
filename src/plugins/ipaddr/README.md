@@ -5,7 +5,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = presetstorage
-- infos/status = maintained unittest nodep
+- infos/status = maintained tested/unit nodep
 - infos/metadata = check/ipaddr
 - infos/description = Validation for IP addresses
 

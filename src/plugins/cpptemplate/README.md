@@ -5,7 +5,7 @@
 - infos/provides = storage/info
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep experimental nodoc concept
+- infos/status = maintained tested/unit nodep experimental concept
 - infos/metadata =
 - infos/description = A template for C++ based plugins
 

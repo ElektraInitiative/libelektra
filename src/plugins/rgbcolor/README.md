@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/ordering = type
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep
+- infos/status = maintained tested/unit nodep
 - infos/metadata = check/rgbcolor
 - infos/description = Validation and normalization of rgbcolors
 

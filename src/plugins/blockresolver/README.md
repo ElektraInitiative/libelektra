@@ -5,7 +5,7 @@
 - infos/provides = resolver
 - infos/recommends =
 - infos/placements = rollback getresolver setresolver commit
-- infos/status = unittest nodep libc configurable preview experimental difficult unfinished concept
+- infos/status = tested/unit nodep configurable experimental concept
 - infos/metadata =
 - infos/description = resolver for parts in a file configuration file
 

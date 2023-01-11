@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage procgetstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
-- infos/status = recommended productive maintained reviewed conformant compatible coverage unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
+- infos/status = recommended productive maintained compatible tested/unit tested/shell nodep configurable memleak experimental concept obsolete discouraged -1000000
 - infos/features/storage = limited
 - infos/metadata =
 - infos/description = one-line description of template

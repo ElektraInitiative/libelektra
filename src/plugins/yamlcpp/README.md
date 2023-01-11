@@ -5,7 +5,7 @@
 - infos/provides = storage/yaml
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = unittest preview unfinished concept discouraged
+- infos/status = tested/unit experimental concept discouraged
 - infos/metadata =
 - infos/description = This storage plugin reads and writes data in the YAML format
 

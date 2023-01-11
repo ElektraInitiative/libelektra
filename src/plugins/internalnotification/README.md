@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
-- infos/status = unittest libc nodep global experimental unfinished concept
+- infos/status = tested/unit nodep hook experimental concept
 - infos/metadata =
 - infos/description = Plugin for internal notification
 

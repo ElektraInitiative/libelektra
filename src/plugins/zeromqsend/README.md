@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
-- infos/status = maintained unittest libc global experimental
+- infos/status = maintained tested/unit hook experimental
 - infos/description = Sends notifications over ZeroMq publish sockets when a key is changed
 
 ## Introduction

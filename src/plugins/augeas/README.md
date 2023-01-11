@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends = glob keytometa
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest libc configurable
+- infos/status = maintained tested/unit configurable
 - infos/metadata = order
 - infos/description = reading and writing configurations via libaugeas
 

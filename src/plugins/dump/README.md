@@ -5,7 +5,7 @@
 - infos/provides = storage/dump
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = productive maintained conformant unittest tested nodep -1000
+- infos/status = productive maintained tested/unit nodep -1000
 - infos/metadata =
 - infos/description = Dumps into a format tailored for complete KeySet semantics
 

@@ -4,7 +4,7 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = unittest final memleak unfinished old nodoc discouraged
+- infos/status = productive tested/unit memleak experimental obsolete discouraged
 - infos/description = Storage using legacy XML format.
 
 ## Introduction

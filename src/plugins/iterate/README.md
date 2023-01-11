@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
-- infos/status = unittest nodep libc experimental unfinished nodoc concept
+- infos/status = tested/unit nodep experimental concept
 - infos/description = conditionally calls exported functions
 
 ## Installation

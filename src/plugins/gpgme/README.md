@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = unittest configurable memleak experimental unfinished
+- infos/status = tested/unit configurable memleak experimental
 - infos/metadata = crypto/encrypt gpg/binary
 - infos/description = Cryptographic operations wit GnuPG Made Easy (GPGME)
 

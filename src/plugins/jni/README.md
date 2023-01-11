@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest configurable global memleak experimental
+- infos/status = maintained tested/unit configurable hook memleak experimental
 - infos/description = generic Java plugin
 
 ## Introduction

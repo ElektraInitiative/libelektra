@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = pregetstorage postgetstorage precommit
 - infos/ordering = sync
-- infos/status = unittest nodep configurable
+- infos/status = tested/unit nodep configurable
 - infos/metadata =
 - infos/description = File Encryption
 

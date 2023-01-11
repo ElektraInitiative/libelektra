@@ -4,7 +4,7 @@
 - infos/provides = logging
 - infos/needs =
 - infos/placements = pregetstorage postcommit postrollback
-- infos/status = maintained tested nodep global nodoc
+- infos/status = maintained nodep hook
 - infos/description = Logs set and error calls to syslog.
 
 ## Introduction

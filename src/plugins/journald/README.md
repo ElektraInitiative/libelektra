@@ -4,7 +4,7 @@
 - infos/provides = logging
 - infos/needs =
 - infos/placements = pregetstorage postcommit postrollback
-- infos/status = maintained libc global nodoc
+- infos/status = maintained hook
 - infos/description = logging of committed and rolled back keys via systemd-journal
 
 ## Introduction

@@ -5,7 +5,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = presetstorage
-- infos/status = maintained unittest nodep experimental
+- infos/status = maintained tested/unit nodep experimental
 - infos/metadata = check/email
 - infos/description = Validation for email addresses
 

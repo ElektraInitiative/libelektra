@@ -5,7 +5,7 @@
 - infos/provides = storage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained reviewed conformant compatible coverage unittest tested nodep libc preview experimental difficult unfinished concept
+- infos/status = maintained compatible tested/unit nodep experimental concept
 - infos/features/storage = limited limited
 - infos/metadata =
 - infos/description = storage plugin for mozilla preferences

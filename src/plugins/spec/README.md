@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = check apply
-- infos/status = recommended productive nodep configurable global unfinished
+- infos/status = recommended productive nodep configurable hook experimental
 - infos/description = allows to give specifications for keys
 
 ## Introduction

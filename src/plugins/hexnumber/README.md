@@ -5,7 +5,7 @@
 - infos/provides = conv check
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep configurable
+- infos/status = maintained tested/unit nodep configurable
 - infos/metadata = unit/base
 - infos/ordering = type
 - infos/description = converts hexadecimal values into decimal and back

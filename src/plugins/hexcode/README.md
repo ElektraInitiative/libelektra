@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep libc configurable
+- infos/status = maintained tested/unit nodep configurable
 - infos/description = Decoding/Encoding engine which escapes unwanted characters.
 
 ## Introduction

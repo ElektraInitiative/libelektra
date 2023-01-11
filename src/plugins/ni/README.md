@@ -4,7 +4,7 @@
 - infos/provides = storage/ini
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest libc nodep
+- infos/status = maintained tested/unit nodep
 - infos/metadata =
 - infos/description = Reads and writes the nickel ini format
 

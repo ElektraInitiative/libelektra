@@ -4,7 +4,7 @@
 - infos/provides = sync
 - infos/needs =
 - infos/placements = precommit
-- infos/status = recommended productive maintained tested nodep libc final
+- infos/status = recommended productive maintained nodep
 - infos/description = Makes sure that config file is written to disc
 
 ## Introduction

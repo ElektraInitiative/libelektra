@@ -5,7 +5,7 @@
 - infos/provides = storage/properties
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = shelltest unittest nodep
+- infos/status = tested/unit tested/shell nodep
 - infos/features/storage = limited
 - infos/metadata =
 - infos/description = A minimal plugin for properties files

@@ -5,7 +5,7 @@
 - infos/provides = storage/passwd
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained reviewed conformant compatible coverage unittest tested nodep libc configurable experimental
+- infos/status = maintained compatible tested/unit nodep configurable experimental
 - infos/features/storage = limited limited
 - infos/metadata =
 - infos/description = storage plugin for passwd files

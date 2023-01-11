@@ -5,7 +5,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep
+- infos/status = maintained tested/unit nodep
 - infos/metadata = check/blacklist/#
 - infos/description = blacklisting key values
 

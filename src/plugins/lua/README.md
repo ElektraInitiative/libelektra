@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = unittest configurable global memleak
+- infos/status = tested/unit configurable hook memleak
 - infos/description = proxy that calls other plugins (scripts) written in lua
 
 ## Introduction

@@ -7,7 +7,7 @@
 - infos/ordering = check keytometa
 - infos/stacking = no
 - infos/placements = presetstorage postgetstorage
-- infos/status = unittest nodep libc configurable difficult
+- infos/status = tested/unit nodep configurable experimental
 - infos/description = copies metadata to keys with the help of globbing
 
 ## Introduction

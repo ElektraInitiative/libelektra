@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest shelltest nodep discouraged
+- infos/status = maintained tested/unit tested/shell nodep discouraged
 - infos/metadata = check/math
 - infos/description = validates a set of keys through a mathematical expression
 
