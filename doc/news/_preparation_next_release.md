@@ -200,7 +200,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
+- Restructured [contrib/api](/doc/contrib/api) _(Markus Raab)_.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
