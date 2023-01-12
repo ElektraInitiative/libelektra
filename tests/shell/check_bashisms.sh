@@ -34,6 +34,7 @@ set $(
 		-path '*run_env' -or \
 		-path '*sed' -or \
 		-path '*update-infos-status' -or \
+		-path '*migrate-status-to-features' -or \
 		-path '*zsh' -or \
 		-regex '.+(Docker|Jenkins|Vagrant)file.*' -or \
 		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|rb)$' \
