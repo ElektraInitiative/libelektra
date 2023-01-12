@@ -73,7 +73,7 @@ static void test_success (void)
 		keyNew ("system:/elektra/modules/testapp/infos/placements", KEY_VALUE, "getstorage setstorage", KEY_END),
 		keyNew ("system:/elektra/modules/testapp/infos/provides", KEY_VALUE, "", KEY_END),
 		keyNew ("system:/elektra/modules/testapp/infos/recommends", KEY_VALUE, "", KEY_END),
-		keyNew ("system:/elektra/modules/testapp/infos/status", KEY_VALUE, "maintained unittest shelltest experimental", KEY_END),
+		keyNew ("system:/elektra/modules/testapp/infos/status", KEY_VALUE, "maintained tested/unit tested/shell experimental", KEY_END),
 		KS_END);
 
 	ksClear (ks);

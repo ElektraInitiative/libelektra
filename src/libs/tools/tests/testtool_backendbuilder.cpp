@@ -341,7 +341,7 @@ TEST (BackendBuilder, metadataTwo)
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
 	mpd->data[PluginSpec ("r1")]["metadata"] = "rename/toupper";
-	mpd->data[PluginSpec ("r1")]["status"] = "unittest";
+	mpd->data[PluginSpec ("r1")]["status"] = "tested/unit";
 	mpd->data[PluginSpec ("r2")]["metadata"] = "rename/toupper rename/tolower";
 	mpd->data[PluginSpec ("r2")]["status"] = "memleak";
 	BackendBuilderInit bbi (mpd);
@@ -359,7 +359,7 @@ TEST (BackendBuilder, metadataTwoRev)
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
 	mpd->data[PluginSpec ("r1")]["metadata"] = "rename/tolower"; // relevant
-	mpd->data[PluginSpec ("r1")]["status"] = "unittest";
+	mpd->data[PluginSpec ("r1")]["status"] = "tested/unit";
 	mpd->data[PluginSpec ("r2")]["metadata"] = "rename/toupper rename/tolower";
 	mpd->data[PluginSpec ("r2")]["status"] = "memleak";
 	BackendBuilderInit bbi (mpd);

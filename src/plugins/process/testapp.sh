@@ -74,7 +74,7 @@ system:/elektra/modules/process/infos/recommends
 
 $key string 44 42
 system:/elektra/modules/process/infos/status
-maintained unittest shelltest experimental
+maintained tested/unit tested/shell experimental
 $end
 '
 
