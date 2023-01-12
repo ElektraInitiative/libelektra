@@ -302,9 +302,9 @@ TEST (SpecReader, withMetadataPreference)
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
 	mpd->data[PluginSpec ("mathcheck")]["metadata"] = "check/math";
-	mpd->data[PluginSpec ("mathcheck")]["status"] = "concept unfinished";
+	mpd->data[PluginSpec ("mathcheck")]["status"] = "concept experimental";
 	mpd->data[PluginSpec ("fastcheck")]["metadata"] = "check/math";
-	mpd->data[PluginSpec ("fastcheck")]["status"] = "recommended preview";
+	mpd->data[PluginSpec ("fastcheck")]["status"] = "recommended experimental";
 	mpd->data[PluginSpec ("bestcheck")]["metadata"] = "check/math";
 	mpd->data[PluginSpec ("bestcheck")]["status"] = "recommended";
 	BackendBuilderInit mpi (mpd);
