@@ -129,7 +129,7 @@ TEST (SpecReader, withNeedsResolvedPreferences)
 	mpd->data[PluginSpec ("b")]["status"] = "productive memleak";
 
 	mpd->data[PluginSpec ("c")]["provides"] = "storage";
-	mpd->data[PluginSpec ("c")]["status"] = "productive tested";
+	mpd->data[PluginSpec ("c")]["status"] = "productive tested/unit";
 
 	mpd->data[PluginSpec ("r")]["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
@@ -166,7 +166,7 @@ TEST (SpecReader, withNeedsResolvedPreferencesPlugins)
 	mpd->data[PluginSpec ("b")]["status"] = "productive memleak";
 
 	mpd->data[PluginSpec ("c")]["provides"] = "storage";
-	mpd->data[PluginSpec ("c")]["status"] = "productive tested";
+	mpd->data[PluginSpec ("c")]["status"] = "productive tested/unit";
 
 	mpd->data[PluginSpec ("r")]["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
@@ -206,7 +206,7 @@ TEST (SpecReader, withNeedsResolvedNumerical)
 	mpd->data[PluginSpec ("b")]["status"] = "productive memleak 501";
 
 	mpd->data[PluginSpec ("c")]["provides"] = "storage";
-	mpd->data[PluginSpec ("c")]["status"] = "productive tested";
+	mpd->data[PluginSpec ("c")]["status"] = "productive tested/unit";
 
 	mpd->data[PluginSpec ("r")]["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
@@ -238,7 +238,7 @@ TEST (SpecReader, withNeedsResolvedPreferencesIgnored)
 	mpd->data[PluginSpec ("b")]["status"] = "productive memleak";
 
 	mpd->data[PluginSpec ("c")]["provides"] = "storage";
-	mpd->data[PluginSpec ("c")]["status"] = "productive tested";
+	mpd->data[PluginSpec ("c")]["status"] = "productive tested/unit";
 
 	mpd->data[PluginSpec ("r")]["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
