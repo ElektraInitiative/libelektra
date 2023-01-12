@@ -768,9 +768,11 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 				"keyNew(\"system:/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1\", KEY_END)," contents
 				"${contents}")
 	endif ()
-	string (REGEX
+	string (
+		REGEX
 		REPLACE "\"- +infos/features/storage *= *([a-zA-Z0-9/ ]*)\\\\n\""
-			"keyNew(\"system:/elektra/modules/${p}/infos/features/storage\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+			"keyNew(\"system:/elektra/modules/${p}/infos/features/storage\",\nKEY_VALUE, \"\\1\", KEY_END)," contents
+			"${contents}")
 	string (REGEX
 		REPLACE "\"- +infos/metadata *= *([/#a-zA-Z0-9 ]*)\\\\n\""
 			"keyNew(\"system:/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
