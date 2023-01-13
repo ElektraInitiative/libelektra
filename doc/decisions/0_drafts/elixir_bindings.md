@@ -21,7 +21,7 @@ The question is how this NIF interface should be implemented.
 
 Implement the NIFs by hand.
 That is, every function of the Elektra C API which one wishes to expose to the Elixir binding has to be explicitly implemented as a NIF.
-The big disadvantage is, of course, that this process is error prone.
+The big disadvantage is, of course, that this process is error-prone.
 Furthermore, any change in the C API has to be manually carried over to the NIF.
 
 ### Alternative B
