@@ -1418,7 +1418,7 @@ def trackCoverage(doTrack, cl) {
 /* Run ctest with appropriate env variables
  * @param target What target to pass to ctest
  */
-def ctest(target = "Test") {
+def ctest(target = "Test", printFailedLogs = false) {
   /*
      We disable the tests:
 
@@ -1429,9 +1429,31 @@ def ctest(target = "Test") {
      , since they are known to fail in scenarios with high load.
      See also: https://issues.libelektra.org/2439
   */
-  sh """export \$(dbus-launch); ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
-          --output-on-failure --no-compress-output -T ${target} \
-          -E 'testmod_(dbus(recv)?|zeromqsend)'"""
+  def script = """
+      export \$(dbus-launch)
+
+      ctest -j \${env.CTEST_PARALLEL_LEVEL} \
+            --force-new-ctest-process \
+            --output-on-failure \
+            --no-compress-output \
+            -T \${target} \
+            -E 'testmod_(dbus(recv)?|zeromqsend)'
+      """
+
+
+  if (printFailedLogs) {
+    script += '''
+      RESULT=$?
+      if [ $RESULT -ne 0 ]; then
+        cut -d: -f1 "$(ls Testing/Temporary/LastTestsFailed_*.log | head -n1)" | \
+          xargs -i sh -c 'echo Testing/Temporary/MemoryChecker.{}.log; cat Testing/Temporary/MemoryChecker.{}.log; echo'
+        
+        exit $RESULT
+      fi
+      '''
+  }
+
+  sh script
 }
 
 /* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
@@ -1448,15 +1470,10 @@ def ctestcryptoplugins(target = "MemCheck") {
  */
 def cmemcheck(kdbtests=true) {
   if(kdbtests) {
-    ctest("MemCheck -LE memleak")
+    ctest("MemCheck -LE memleak", printFailedLogs=true)
   } else {
-    ctest("MemCheck -LE memleak||kdbtests")
+    ctest("MemCheck -LE memleak||kdbtests", printFailedLogs=true)
   }
-  sh """cut -d: -f1 Testing/Temporary/LastTestsFailed_*.log | \
-        xargs -i sh -c '\
-          echo Testing/Temporary/MemoryChecker.{}.log; \
-          cat Testing/Temporary/MemoryChecker.{}.log; \
-          echo'"""
 }
 
 /* Helper for ctest to run tests without tests tagged as kdbtests.
