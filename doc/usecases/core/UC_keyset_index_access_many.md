@@ -23,4 +23,6 @@
   - Core returns `NULL`
 - **Postcondition:**
   - The initial `KeySet` KS MUST be unmodified.
-- **Non-functional Constraints:** -
+- **Non-functional Constraints:**
+  - Worst case runtime should be `O(m)` where `m = l - f`, the number of keys being copied into the new `KeySet` KS1.
+    (Note: assumes copying a single key is `O(1)`)
