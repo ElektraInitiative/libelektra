@@ -26,7 +26,9 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
-static bool isRunningWithValgrind (void)
+#include <kdbmacros.h>
+
+ELEKTRA_UNUSED static bool isRunningWithValgrind (void)
 {
 	char * p = getenv ("LD_PRELOAD");
 	if (p == nullptr) return 0;
