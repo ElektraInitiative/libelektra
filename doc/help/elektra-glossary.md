@@ -111,6 +111,30 @@
 - **intermediate name/value/metadata**:
   Any state inbetween the two.
 
+- **Namespace Root Key**:
+  A namespace root key, is the root key of a namespace.
+  It consists only of a namespace, but no other parts.
+  e.g.: `system:/`, `user:/`, `/`
+
+- **Child** (of key K):
+  A key whose name starts the same as that of K, but has exactly one extra part.
+
+- **Parent** (of key K):
+  A key P where K is a child of P.
+  A namespace root key has no parent, every other key has exactly one parent.
+
+- **Descendant** (of key K):
+  A key whose name starts the same as that of K, with some extra parts.
+  In other words: A child of K, or a child of a child of K, etc.
+
+- **Ancestor** (of key K):
+  A key X where K is a descendant of X.
+  In other words: The parent of K, or the parent of the parent of K, etc.
+
+- **Key Hierarchy**:
+  A key hierarchy is a collection of keys, which are all descendants of a single key R.
+  This key R is called the _root key_ of the hierarchy.
+
 ## Details
 
 - [Sync Flag](elektra-sync-flag.md):
