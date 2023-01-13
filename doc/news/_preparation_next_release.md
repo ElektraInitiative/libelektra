@@ -346,7 +346,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Replaced `egrep` by `grep -E` _(@0x6178656c and @janldeboer)_
 - <<TODO>>
 - <<TODO>>
-- Add audit-dependencies script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Add [audit-dependencies](/scripts/dev/audit-dependencies) script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 
@@ -408,6 +408,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - tutorial: Add automatic validation to Docker tutorial _(Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Add mention of audit-dependencies script in doc/todo/RELEASE.md _(@Bujuhu)_
+- <<TODO>>
 - <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
 - <<TODO>>
