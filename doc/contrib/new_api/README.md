@@ -17,23 +17,16 @@ The current API uses these names for those concepts:
 - Name of element: `char *`
 - Value of element: —
 
-The API proposed below uses (to keep as much as possible from above):
+The API proposed here uses:
 
-- Collection: `ElektraKeyset`
-- Element: `ElektraKey`
-- Name of element: `ElektraKeyname`
-- Value of element: `ElektraKeyvalue`
-
-Another (maybe less confusing) option would be:
-
-- Collection: `ElektraSet` or `ElektraMap`
+- Collection: `ElektraSet`
 - Element: `ElektraEntry`
-- Name of element: `ElektraKey` or `ElektraName`
+- Name of element: `ElektraName`
 - Value of element: `ElektraValue`
 
 ### Note on public structs
 
-The public structs `ElektraKeyname` and `ElektraKeyvalue` defined below are not problematic or limiting in terms of forward compatibility.
+The public structs `ElektraName` and `ElektraValue` defined here are not problematic or limiting in terms of forward compatibility.
 This is because, they essentially define what a "keyname" and a "key value" are for Elektra.
 That is why they are used both as part of the public API **and** in the definitions of the `*Cow` structs, which define how stuff is actually stored.
 Any change to these structs would mean changing that definition and therefore would be major breaking change, even if the structs where not public.
@@ -58,30 +51,30 @@ An "illegal" operation, immediately break something and will cause wrong results
 An "unsafe" operation, does not immediately break anything, but it is still an incorrect use of the API and often creates new "unsafe" or even "illegal" operations for the future.
 
 ```c
-ElektraKey * k1 = elektraKeyNew (&(ElektraKeyname){
+ElektraEntry * k1 = ElektraEntryNew (&(ElektraName){
     .ns = ELEKTRA_NS_SYSTEM,
     .name = "foo\0bar\0baz",
     .size = 14
 });
-ElektraKeyset * ks1 = elektraKeysetNew (8);
-elektraKeyInsertAndRelease (ks1, k1);
+ElektraSet * ks1 = ElektraSetNew (8);
+ElektraEntryInsertAndRelease (ks1, k1);
 
-ElektraKey * i1 = elektraKeysetGet (ks1, 0);
+ElektraEntry * i1 = ElektraSetGet (ks1, 0);
 
 // WARNING USAFE OPERATIONS
-elektraKeyUnlockName (i1); // name can now be modified even though k1 is still part of ks1
+ElektraEntryUnlockName (i1); // name can now be modified even though k1 is still part of ks1
 
 // WARNING ILLEGAL OPERATIONS
 
-// because of the elektraKeyUnlockName, this is now an ILLEGAL operation, we are changing the name of a key that is part of a keyset
-// without elektraKeyUnlockName it would be safe, and elektraKeySetName would return an error
-elektraKeySetName (i1, name2);
+// because of the ElektraEntryUnlockName, this is now an ILLEGAL operation, we are changing the name of a key that is part of a keyset
+// without ElektraEntryUnlockName it would be safe, and ElektraSetName would return an error
+ElektraSetName (i1, name2);
 
 
-// having too many elektraKeyRelease is also an IILEGAL operation
-// here we've already given up our references to these keys, so calling elektraKeyRelease again means we're releasing somebody else's reference
+// having too many ElektraEntryRelease is also an IILEGAL operation
+// here we've already given up our references to these keys, so calling ElektraEntryRelease again means we're releasing somebody else's reference
 // in this case this will even lead to the memory of k1 being freed and ks1 containing invalid pointers, because we're releasing the reference to k1 that is held by ks1
-elektraKeyRelease (k1);
+ElektraEntryRelease (k1);
 ```
 
 ## API outside `libelektra-core`

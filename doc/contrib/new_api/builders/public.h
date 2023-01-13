@@ -8,21 +8,21 @@
 #include <string.h>
 
 #define ELEKTRA_KEYSET(...)                                                                                                                \
-	(elektraKeysetBuild ((ElektraKey *[]){ __VA_ARGS__ }, sizeof ((ElektraKey *[]){ __VA_ARGS__ }) / sizeof (ElektraKey *)))
+	(ElektraSetBuild ((ElektraEntry *[]){ __VA_ARGS__ }, sizeof ((ElektraEntry *[]){ __VA_ARGS__ }) / sizeof (ElektraEntry *)))
 
 #define ELEKTRA_KEYNAME(ns_, name_)                                                                                                        \
-	(ElektraKeyname)                                                                                                                   \
+	(ElektraName)                                                                                                                      \
 	{                                                                                                                                  \
 		.ns = (ns_), .name = (name_), .size = sizeof (name_)                                                                       \
 	}
 #define ELEKTRA_METANAME(name) ELEKTRA_KEYNAME (ELEKTRA_NS_META, (name))
 #define ELEKTRA_KEYVALUE_STRING(s)                                                                                                         \
-	(ElektraKeyvalue)                                                                                                                  \
+	(ElektraValue)                                                                                                                     \
 	{                                                                                                                                  \
 		.value = (s), .size = strlen ((s))                                                                                         \
 	}
 #define ELEKTRA_KEYVALUE_PTR(v)                                                                                                            \
-	(ElektraKeyvalue)                                                                                                                  \
+	(ElektraValue)                                                                                                                     \
 	{                                                                                                                                  \
 		.value = &(v), .size = sizeof ((v))                                                                                        \
 	}
@@ -30,38 +30,38 @@
 /**
  * CAUTION releases reference to @p meta
  */
-ElektraKey * elektraKeyBuild (const ElektraKeyname * name, const ElektraKeyvalue * value, ElektraKeyset * meta)
+ElektraEntry * ElektraEntryBuild (const ElektraName * name, const ElektraValue * value, ElektraSet * meta)
 {
-	ElektraKey * key = elektraKeyNew (name);
-	elektraKeySetValue (key, value);
-	elektraKeysetInsertAll ((ElektraKeyset *) elektraKeyGetMeta (key), meta);
-	elektraKeysetRelease (meta);
+	ElektraEntry * key = ElektraEntryNew (name);
+	ElektraSetValue (key, value);
+	ElektraSetInsertAll ((ElektraSet *) ElektraEntryGetMeta (key), meta);
+	ElektraSetRelease (meta);
 	return key;
 }
 
-ElektraKey * elektraKeyBuildMeta (const ElektraKeyname * name, const ElektraKeyvalue * value)
+ElektraEntry * ElektraEntryBuildMeta (const ElektraName * name, const ElektraValue * value)
 {
 	if (name->ns != ELEKTRA_NS_META)
 	{
 		return NULL;
 	}
-	return elektraKeyBuild (name, value, NULL);
+	return ElektraEntryBuild (name, value, NULL);
 }
 
 /**
  * DOES NOT retain new references to @p keys, instead moves existing reference into returned keyset
  */
-ElektraKeyset * elektraKeysetBuild (ElektraKey ** keys, size_t size)
+ElektraSet * ElektraSetBuild (ElektraEntry ** keys, size_t size)
 {
-	ElektraKeyset * ks = elektraKeysetNew (size);
+	ElektraSet * ks = ElektraSetNew (size);
 
-	// build fake ElektraKeyset with everything that elektraKeysetInsertAll needs
-	// depending on elektraKeysetInsertAll this may require copying/sorting keys
-	ElektraKeyset fake = { .data = &(struct ElektraKeysetDataCow){
-				       .array = keys,
-				       .size = size,
-			       } };
-	elektraKeysetInsertAll (ks, &fake);
+	// build fake ElektraSet with everything that ElektraSetInsertAll needs
+	// depending on ElektraSetInsertAll this may require copying/sorting keys
+	ElektraSet fake = { .data = &(struct ElektraSetDataCow){
+				    .array = keys,
+				    .size = size,
+			    } };
+	ElektraSetInsertAll (ks, &fake);
 
 	return ks;
 }

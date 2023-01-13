@@ -3,9 +3,9 @@
 
 #include "public.h"
 
-struct ElektraKeynameCow
+struct ElektraNameCow
 {
-	ElektraKeyname name;
+	ElektraName name;
 
 	uint16_t refs;
 
@@ -13,9 +13,9 @@ struct ElektraKeynameCow
 	int : 15; // reserved
 };
 
-struct ElektraKeyvalueCow
+struct ElektraValueCow
 {
-	ElektraKeyvalue value;
+	ElektraValue value;
 
 	uint16_t refs;
 
@@ -23,13 +23,13 @@ struct ElektraKeyvalueCow
 	int : 15;	     // reserved
 };
 
-struct ElektraKeyset;
+struct ElektraSet;
 
-struct ElektraKey
+struct ElektraEntry
 {
-	struct ElektraKeynameCow * name;
-	struct ElektraKeyvalueCow * value;
-	struct ElektraKeyset * meta;
+	struct ElektraNameCow * name;
+	struct ElektraValueCow * value;
+	struct ElektraSet * meta;
 
 	uint16_t refs;
 	uint16_t nameLock;
@@ -39,9 +39,9 @@ struct ElektraKey
 	int : 14; // reserved
 };
 
-struct ElektraKeysetDataCow
+struct ElektraSetDataCow
 {
-	struct ElektraKey ** array;
+	struct ElektraEntry ** array;
 
 	size_t size;
 	size_t alloc;
@@ -54,9 +54,9 @@ struct ElektraKeysetDataCow
 	int : 15;	     // reserved
 };
 
-struct ElektraKeyset
+struct ElektraSet
 {
-	struct ElektraKeysetDataCow * data;
+	struct ElektraSetDataCow * data;
 
 	uint16_t refs;
 

@@ -8,7 +8,7 @@ int main (void)
 {
 	// just check if valid, and print error
 	const char * errorLoc;
-	ElektraReturnCode error1 = elektraKeynameProcessEscaped (NULL, "system:foo", NULL, NULL, &errorLoc);
+	ElektraReturnCode error1 = ElektraNameProcessEscaped (NULL, "system:foo", NULL, NULL, &errorLoc);
 	if (error1 != 0)
 	{
 		// prints e.g.:
@@ -19,7 +19,7 @@ int main (void)
 	// find canonical form and size
 	char * canonical;
 	size_t csize;
-	ElektraReturnCode error2 = elektraKeynameProcessEscaped (NULL, "system://foo/#123", &canonical, &csize, NULL);
+	ElektraReturnCode error2 = ElektraNameProcessEscaped (NULL, "system://foo/#123", &canonical, &csize, NULL);
 	if (error2 == 0)
 	{
 		// prints:
@@ -34,17 +34,17 @@ int main (void)
 	}
 
 	// produce unescaped form and create key
-	ElektraKeyname name;
-	ElektraReturnCode error3 = elektraKeynameProcessEscaped (&name, "system://foo/#123", NULL, NULL, NULL);
+	ElektraName name;
+	ElektraReturnCode error3 = ElektraNameProcessEscaped (&name, "system://foo/#123", NULL, NULL, NULL);
 	if (error3 != 0)
 	{
 		printf ("error: %d\n", error3);
 		exit (1);
 	}
 
-	ElektraKey * key = elektraKeyNew (&name);
-	elektraKeynameFree (&name);
+	ElektraEntry * key = ElektraEntryNew (&name);
+	ElektraNameFree (&name);
 
-	elektraKeyRelease (key);
+	ElektraEntryRelease (key);
 	return 0;
 }
