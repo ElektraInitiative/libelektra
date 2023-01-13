@@ -35,8 +35,8 @@ char * elektraKeynameEscape (const ElektraKeyname * name);
  *
  * @returns 0 if @p escaped is a valid escaped name (other values for different kinds of errors)
  */
-ElektraErrorCode elektraKeynameProcessEscaped (ElektraKeyname * dest, const char * escaped, char ** canonical, size_t * canonicalSize,
-					       const char ** errorPtr);
+ElektraReturnCode elektraKeynameProcessEscaped (ElektraKeyname * dest, const char * escaped, char ** canonical, size_t * canonicalSize,
+						const char ** errorPtr);
 
 /**
  * frees a name created by e.g. elektraKeynameProcessEscaped()

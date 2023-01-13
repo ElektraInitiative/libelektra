@@ -42,7 +42,7 @@ typedef struct ElektraKey ElektraKey;
 typedef struct ElektraKeyset ElektraKeyset;
 
 // 0 always indicates success, other values depend on function
-typedef int ElektraErrorCode;
+typedef int ElektraReturnCode;
 
 typedef enum
 {
@@ -61,7 +61,7 @@ void elektraKeyRelease (const ElektraKey * key);
 
 const ElektraKeyname * elektraKeyGetName (const ElektraKey * key);
 // Note: creates copy of name
-ElektraErrorCode elektraKeySetName (ElektraKey * key, const ElektraKeyname * name);
+ElektraReturnCode elektraKeySetName (ElektraKey * key, const ElektraKeyname * name);
 // increments nameLock
 void elektraKeyLockName (ElektraKey * key);
 // decrements nameLock
@@ -70,15 +70,15 @@ bool elektraKeyIsNameLocked (const ElektraKey * key);
 
 const ElektraKeyvalue * elektraKeyGetValue (const ElektraKey * key);
 // Note: creates copy of value
-ElektraErrorCode elektraKeySetValue (ElektraKey * key, const ElektraKeyvalue * value);
+ElektraReturnCode elektraKeySetValue (ElektraKey * key, const ElektraKeyvalue * value);
 
 /**
  * @returns a `const ElektraKeyset *` that can safely be cast to `ElektraKeyset *`, iff a non-const `ElektraKey *` was passed as @p key
  */
 ELEKTRA_CONST ElektraKeyset * elektraKeyGetMeta (const ElektraKey * key);
 
-ElektraErrorCode elektraKeyIsBelow (const ElektraKey * first, const ElektraKey * second);
-ElektraErrorCode elektraKeyCompare (const ElektraKey * first, const ElektraKey * second);
+ElektraReturnCode elektraKeyIsBelow (const ElektraKey * first, const ElektraKey * second);
+ElektraReturnCode elektraKeyCompare (const ElektraKey * first, const ElektraKey * second);
 
 ElektraKey * elektraKeyCopy (ElektraKey * dest, const ElektraKey * src, ElektraKeyCopyFlag flags);
 static inline ElektraKey * elektraKeyDup (ElektraKey * key, ElektraKeyCopyFlag flags)
@@ -96,11 +96,11 @@ void elektraKeysetRelease (const ElektraKeyset * ks);
 
 size_t elektraKeysetSize (ElektraKeyset * ks);
 
-ElektraErrorCode elektraKeysetInsert (ElektraKeyset * ks, ElektraKey * key);
-ElektraErrorCode elektraKeysetInsertAll (ElektraKeyset * ks, ElektraKeyset * other);
-static inline ElektraErrorCode elektraKeysetInsertAndRelease (ElektraKeyset * ks, ElektraKey * key)
+ElektraReturnCode elektraKeysetInsert (ElektraKeyset * ks, ElektraKey * key);
+ElektraReturnCode elektraKeysetInsertAll (ElektraKeyset * ks, ElektraKeyset * other);
+static inline ElektraReturnCode elektraKeysetInsertAndRelease (ElektraKeyset * ks, ElektraKey * key)
 {
-	ElektraErrorCode error = elektraKeysetInsert (ks, key);
+	ElektraReturnCode error = elektraKeysetInsert (ks, key);
 	elektraKeyRelease (key);
 	return error;
 }
