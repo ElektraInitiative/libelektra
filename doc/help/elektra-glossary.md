@@ -135,6 +135,10 @@
   A key hierarchy is a collection of keys, which are all descendants of a single key R.
   This key R is called the _root key_ of the hierarchy.
 
+- **Lookup** (look up key in keyset) vs **Find**:
+  A lookup is a very specific operation, where a key is searched in a keyset.
+  Find is used for other kinds of search operations, e.g., "find key hierarchy with root R".
+
 ## Details
 
 - [Sync Flag](elektra-sync-flag.md):
