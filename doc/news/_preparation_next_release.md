@@ -670,6 +670,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Change stale issue/PR checking to GitHub action. _(@0x6178656c)_
+- Update configuration of stale issue/PR action. _(@0x6178656c)_
 - <<TODO>>
 - Upgrade actions to recent versions and remove deprecated ruby-setup action. _(Mihael Pranjić @mpranj)_
 
