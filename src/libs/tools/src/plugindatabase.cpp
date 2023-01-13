@@ -231,7 +231,9 @@ PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) c
 
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
-	PluginPtr plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+	KeySet conf = spec.getConfig ();
+	conf.append (Key ("system:/module", KEY_VALUE, "this plugin was loaded for the status", KEY_END));
+	PluginPtr plugin = impl->modules.load (spec.getName (), conf);
 	return plugin->lookupInfo (which);
 }
 
