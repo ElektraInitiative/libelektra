@@ -545,3 +545,11 @@
    fun:UnknownInlinedFun
    fun:g_main_context_dispatch
 }
+{
+   testkdb_allplugins isMemleak
+   Memcheck:Leak
+   match-leak-kinds:all
+   ...
+   fun:testkdb_allplugins_isMemleak
+   ...
+}

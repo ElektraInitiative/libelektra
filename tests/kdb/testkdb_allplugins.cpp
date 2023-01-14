@@ -35,7 +35,9 @@ ELEKTRA_UNUSED static bool isRunningWithValgrind (void)
 	return (strstr (p, "/valgrind/") != nullptr || strstr (p, "/vgpreload") != nullptr);
 }
 
-static bool isMemleak (const kdb::tools::ModulesPluginDatabase & mpd, const std::string & plugin)
+// use extern "C" and non-static function to avoid name mangling
+// we need a non-mangled name to use in the valgrind.supression file
+extern "C" bool testkdb_allplugins_isMemleak (const kdb::tools::ModulesPluginDatabase & mpd, const std::string & plugin)
 {
 	try
 	{
@@ -83,7 +85,7 @@ std::vector<std::string> getAllPlugins ()
 
 		std::vector<std::string> filtered;
 		std::copy_if (plugins.begin (), plugins.end (), std::back_inserter (filtered),
-			      [&] (const std::string & plugin) { return !isMemleak (mpd, plugin); });
+			      [&] (const std::string & plugin) { return !testkdb_allplugins_isMemleak (mpd, plugin); });
 
 		std::cout << "found " << plugins.size () << " plugins " << filtered.size () << " without memleak" << std::endl;
 		return filtered;
