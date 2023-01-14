@@ -175,8 +175,7 @@ if (Java_JAVAC_EXECUTABLE)
 					 OR (NOT BUILD_TESTING)))
 					add_test (
 						NAME testjna_gradle
-						COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain libelektra:test process:test
-							plugins:test
+						COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain test
 						WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra")
 
 					set_property (TEST testjna_gradle PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
@@ -184,8 +183,7 @@ if (Java_JAVAC_EXECUTABLE)
 
 					add_test (
 						NAME testjna_kotlin_gradle
-						COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain libelektra-kotlin:test
-							plugins-kotlin:test hello-kotlin:test
+						COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain test
 						WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra-kotlin")
 
 					set_property (TEST testjna_kotlin_gradle PROPERTY ENVIRONMENT
