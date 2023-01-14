@@ -1,6 +1,6 @@
 # Regex-Example Kotlin Plugin
 
-This plugin can be used to validate the values of keys via the `check/ktex-regex` metakey.
+This plugin can be used to validate the values of keys via the `check/validation` metakey.
 
 It uses the value of the metakey as regex expression to check if newly added values match
 with the stored regex. If not, the plugin raises the `VALIDATION_SYNTACTIC` error code.
