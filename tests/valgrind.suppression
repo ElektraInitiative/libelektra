@@ -561,3 +561,19 @@
    fun:xfconf_init
    ...
 }
+{
+   libgobject possible
+   Memcheck:Leak
+   match-leak-kinds:possible
+   ...
+   obj:*libgobject-2.0*
+   ...
+}
+{
+   liblglib possible
+   Memcheck:Leak
+   match-leak-kinds:possible
+   ...
+   obj:*libglib-2.0*
+   ...
+}
