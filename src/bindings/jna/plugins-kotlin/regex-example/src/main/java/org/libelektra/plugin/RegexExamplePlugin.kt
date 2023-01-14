@@ -27,7 +27,7 @@ class RegexExamplePlugin : Plugin {
             keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/provides", "check"))
             keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/placements", "presetstorage"))
             keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/author", "@Eiskasten, @deoknats861"))
-            keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/metadata", "check/ktex-regex"))
+            keySet.append(Key.create(Plugin.PROCESS_CONTRACT_ROOT + "/infos/metadata", "check/validation"))
             keySet.append(
                 Key.create(
                     Plugin.PROCESS_CONTRACT_ROOT + "/infos/description",
@@ -42,7 +42,7 @@ class RegexExamplePlugin : Plugin {
     }
 
     private fun invalidRegex(key: Key): Boolean {
-        return key.getMeta("check/ktex-regex").map {
+        return key.getMeta("check/validation").map {
             !key.string.matches(it.string.toRegex())
         }.orElse(false)
     }

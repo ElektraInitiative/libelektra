@@ -10,7 +10,7 @@ with the stored regex. If not, the plugin raises the `VALIDATION_SYNTACTIC` erro
 Ensure that newly set values for keys only contain small case letters from the English alphabet:
 
 ```sh
-kdb meta-set spec:/sw/app/current/\#0/server/name check/ktex-regex "[a-z]*"
+kdb meta-set spec:/sw/app/current/\#0/server/name check/validation "[a-z]*"
 ```
 
 If now a new value is set that fulfills the regex check, no error should be raised:

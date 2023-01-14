@@ -103,7 +103,7 @@ class RegexExamplePluginTest {
 fun singleKeySet(regex: String?, value: String): KeySet {
     val key = Key.create(KEY_NAME, value)
     if (regex != null) {
-        key.setMeta("check/ktex-regex", regex)
+        key.setMeta("check/validation", regex)
     }
     return KeySet.create(1, key)
 }
