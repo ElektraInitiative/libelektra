@@ -553,3 +553,11 @@
    fun:testkdb_allplugins_isMemleak
    ...
 }
+{
+   xfconf_init all
+   Memcheck:Leak
+   match-leak-kinds:all
+   ...
+   fun:xfconf_init
+   ...
+}
