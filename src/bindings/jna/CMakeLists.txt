@@ -89,6 +89,13 @@ if (Java_JAVAC_EXECUTABLE)
 				string (REPLACE "-SNAPSHOT.jar" "-${KDB_VERSION}.jar" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
 				string (REPLACE "\n" ";" PLUGIN_JAR_PATHS "${PLUGIN_JAR_PATHS}")
 
+				execute_process (
+					COMMAND "${CMAKE_CURRENT_BINARY_DIR}/gradlew" "-q" ":plugins-kotlin:printJarPaths"
+					OUTPUT_VARIABLE PLUGIN_KOTLIN_JAR_PATHS
+					WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+				string (REPLACE "-SNAPSHOT.jar" "-${KDB_VERSION}.jar" PLUGIN_KOTLIN_JAR_PATHS "${PLUGIN_KOTLIN_JAR_PATHS}")
+				string (REPLACE "\n" ";" PLUGIN_KOTLIN_JAR_PATHS "${PLUGIN_KOTLIN_JAR_PATHS}")
+
 				set (
 					EXTRA_JNA_BINDING_SOURCE_FILES
 					${JNA_BINDING_PREFIX}/build.gradle
@@ -114,6 +121,7 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
 						"${CMAKE_CURRENT_BINARY_DIR}/process/build/libs/process-${KDB_VERSION}.jar"
 						${PLUGIN_JAR_PATHS}
+						${PLUGIN_KOTLIN_JAR_PATHS}
 					COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}"
 						"${CMAKE_CURRENT_BINARY_DIR}"
 					COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain clean assemble
@@ -149,6 +157,14 @@ if (Java_JAVAC_EXECUTABLE)
 						COMPONENT java-elektra)
 				endforeach (PLUGIN_JAR ${PLUGIN_JAR_PATHS})
 
+				foreach (PLUGIN_JAR ${PLUGIN_KOTLIN_JAR_PATHS})
+					message (STATUS "Adding Kotlin plugin: " "${PLUGIN_JAR}")
+					install (
+						FILES "${CMAKE_CURRENT_BINARY_DIR}/${PLUGIN_JAR}"
+						DESTINATION "share/java/plugins"
+						COMPONENT java-elektra)
+				endforeach (PLUGIN_JAR ${PLUGIN_KOTLIN_JAR_PATHS})
+
 				# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
 				# the system
 				if (BUILD_TESTING
@@ -159,11 +175,22 @@ if (Java_JAVAC_EXECUTABLE)
 					 OR (NOT BUILD_TESTING)))
 					add_test (
 						NAME testjna_gradle
-						COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain test
+						COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain libelektra:test process:test
+							plugins:test
 						WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra")
 
 					set_property (TEST testjna_gradle PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 					set_property (TEST testjna_gradle PROPERTY LABELS kdbtests bindings memleak)
+
+					add_test (
+						NAME testjna_kotlin_gradle
+						COMMAND ${GRADLE_EXECUTABLE} --stacktrace -q --console=plain libelektra-kotlin:test
+							plugins-kotlin:test hello-kotlin:test
+						WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra-kotlin")
+
+					set_property (TEST testjna_kotlin_gradle PROPERTY ENVIRONMENT
+											  "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+					set_property (TEST testjna_kotlin_gradle PROPERTY LABELS kdbtests bindings memleak)
 				endif ()
 			else ()
 				exclude_binding (
