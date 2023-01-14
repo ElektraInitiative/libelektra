@@ -1,4 +1,6 @@
 import kotlinx.serialization.Serializable
+import org.libelektra.Key
+import org.libelektra.ReadableKey
 import org.libelektra.dsl.keyOf
 import org.libelektra.dsl.keySetOf
 import org.libelektra.kdbExt.withKDB
@@ -118,6 +120,42 @@ fun main() {
     }
     println()
 
+    // Example 9: adding basename for Key
+    println("Example 9")
+    val subKey = Key.create("user:/hello_world", "This is a sub-key's value")
+    subKey.addBaseName("sub_key")
+    println(subKey.name)
+    println(subKey.string)
+    println()
+
+    // Example 10: separate key sets into alphanumeric and numeric values
+    println("Example 10")
+
+    ks = givenAServerConfigKeySet()
+
+    val listPair = ks.partition { k -> k.string.matches("-?[0-9]+(\\.[0-9]+)?".toRegex()) }
+
+    println("numeric: ")
+    listPair.first.forEach {
+        println("${it.name} = ${it.string}")
+    }
+    println("alphanumeric: ")
+    listPair.second.forEach {
+        println("${it.name} = ${it.string}")
+    }
+    println()
+
+    // Example 11: update metadata of a key
+    println("Example 11")
+    key = Key.create("user:/key/with/meta")
+    key.setMeta("exampleKey", "useless meta value info")
+    key.getMeta("exampleKey")
+        .ifPresent { rk: ReadableKey -> println("This is " + rk.string) }
+    key.setMeta("exampleKey", "very helpful data")
+    key.getMeta("exampleKey")
+        .ifPresent { rk: ReadableKey -> println("This is " + rk.string) }
+    println()
+
 }
 
 fun givenAServerConfigKeySet() = keySetOf(
@@ -141,3 +179,5 @@ fun givenAKeySetWithUnknownKeys() = keySetOf(
         keyOf("user:/dos", 2),
         keyOf("user:/tres", 3.0),
 )
+
+
