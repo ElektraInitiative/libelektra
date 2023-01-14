@@ -6,6 +6,16 @@ It uses the value of the metakey as regex expression to check if newly added val
 
 If not, the plugin raises the `VALIDATION_SYNTACTIC` error code.
 
+#### Mounting the plugin
+
+To mount the plugin, use the following command:
+
+```sh
+kdb mount-java config.ni user:/test/process kdb:ni java:org.libelektra.plugin.RegexExamplePlugin
+```
+
+This will mount the file `config.ni` on mountpoint _user:/test/process_ with the KDB plugin _ni_ and the Java plugin _RegexExamplePlugin_.
+
 #### Example usage
 
 Ensure that newly set values for keys only contain small case letters from the English alphabet:
