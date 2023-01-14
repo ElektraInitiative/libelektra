@@ -50,9 +50,10 @@ class RegexExamplePlugin : Plugin {
     override fun set(keySet: KeySet, parentKey: Key): Int {
         val invalidRegexKeys = keySet.filter(this::invalidRegex)
         invalidRegexKeys.forEach {
+            val reason = it.getMeta("check/validation/message").map { k -> " Reason: $k" }.orElse("")
             parentKey.setError(
                 ErrorCode.VALIDATION_SYNTACTIC,
-                "Found key with regex set which does not match ${it.name}: ${it.string}"
+                "The key '${it.name}' with value '${it.string}' does not confirm to its regular expression.$reason"
             )
         }
         return if (invalidRegexKeys.isEmpty()) Plugin.STATUS_SUCCESS else Plugin.STATUS_ERROR
