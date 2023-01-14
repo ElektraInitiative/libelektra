@@ -1432,6 +1432,7 @@ def ctest(target = "Test", printFailedLogs = false) {
   def script = """
       export \$(dbus-launch)
 
+      ${printFailedLogs ? "set +e" : ""}
       ctest -j ${env.CTEST_PARALLEL_LEVEL} \
             --force-new-ctest-process \
             --output-on-failure \
@@ -1443,6 +1444,8 @@ def ctest(target = "Test", printFailedLogs = false) {
 
   if (printFailedLogs) {
     script += '''
+      set -e
+
       RESULT=$?
       if [ $RESULT -ne 0 ]; then
         cut -d: -f1 "$(ls Testing/Temporary/LastTestsFailed_*.log | head -n1)" | \
