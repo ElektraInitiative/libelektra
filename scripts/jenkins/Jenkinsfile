@@ -1432,11 +1432,11 @@ def ctest(target = "Test", printFailedLogs = false) {
   def script = """
       export \$(dbus-launch)
 
-      ctest -j \${env.CTEST_PARALLEL_LEVEL} \
+      ctest -j ${env.CTEST_PARALLEL_LEVEL} \
             --force-new-ctest-process \
             --output-on-failure \
             --no-compress-output \
-            -T \${target} \
+            -T ${target} \
             -E 'testmod_(dbus(recv)?|zeromqsend)'
       """
 
