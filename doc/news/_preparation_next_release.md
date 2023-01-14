@@ -419,7 +419,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Replace http links with https. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - Enhance notifications.md in doc/tutorial _(@dtdirect)_
