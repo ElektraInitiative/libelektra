@@ -7,7 +7,7 @@ with the stored regex. If not, the plugin raises the `VALIDATION_SYNTACTIC` erro
 
 #### Example usage
 
-Ensure that newly set values for keys only contain small case letters from the english alphabet:
+Ensure that newly set values for keys only contain small case letters from the English alphabet:
 
 ```sh
 kdb meta-set spec:/sw/app/current/\#0/server/name check/ktex-regex "[a-z]*"
