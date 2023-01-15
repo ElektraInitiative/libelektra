@@ -72,7 +72,7 @@ system:/elektra/modules/process/infos/provides
 $key string 48 0
 system:/elektra/modules/process/infos/recommends
 
-$key string 44 42
+$key string 44 48
 system:/elektra/modules/process/infos/status
 maintained tested/unit tested/shell experimental
 $end
