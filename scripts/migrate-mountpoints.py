@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import sys
@@ -171,7 +171,7 @@ def convert_mp(data: KeySet, base: str) -> KeySet:
 
     mountpoint = data[f"{base}/mountpoint"].value
 
-    def build_key(relative: str, value: Optional[str | bytes] = None) -> Key:
+    def build_key(relative: str, value: Optional[Union[str, bytes]] = None) -> Key:
         k = Key(PARENT)
         k.addBaseName("mountpoints")
         k.addBaseName(mountpoint)
