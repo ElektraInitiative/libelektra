@@ -5,7 +5,7 @@
 - infos/provides = storage/c
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained nodep experimental
+- infos/status = maintained nodep
 - infos/features/storage = write
 - infos/metadata =
 - infos/description = C-struct exports for Elektra
