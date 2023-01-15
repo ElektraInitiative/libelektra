@@ -12,12 +12,4 @@ fi
 
 ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure -E testscr_check --build-config $1"
 # shellcheck disable=SC2086
-if ! ctest $ARGS && [ "$ELEKTRA_AUTO_RERUN" = "1" ]; then
-	echo ""
-	echo "----------------------------------------"
-	echo "| Automatically rerunning failed tests |"
-	echo "----------------------------------------"
-	echo ""
-
-	ctest $ARGS --rerun-failed
-fi
+ctest $ARGS
