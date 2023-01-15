@@ -1,4 +1,4 @@
-# Namespace for generic data
+# Namespace for miscellaneous data
 
 ## Problem
 
@@ -26,26 +26,26 @@ This may be confusing to users of the APIs.
 The purpose of `KEY_NS_CASCADING` becomes muddied.
 It is no longer just for lookup, but would now have a secondary purpose.
 
-### Introduce separate `KEY_NS_DATA` namespace
+### Introduce separate `KEY_NS_MISC` namespace
 
-We introduce a new `KEY_NS_DATA`, which is used exclusively for generic data.
+We introduce a new `KEY_NS_MISC`, which is used exclusively for generic and miscellaneous data.
 It implies a separate [type of `KeySet`](../2_in_progress/keyset_types.md).
 
 This leaves `KEY_NS_CASCADING` for its original purpose, while still solving the issue with generic data.
 
 ## Decision
 
-Introduce separate `KEY_NS_DATA` namespace.
+Introduce separate `KEY_NS_MISC` namespace.
 
 In the unescaped form this will be `\x09` (byte with decimal value `9`).
 In the escaped form it will be `data:/`.
 
-`KEY_NS_DATA` has a separate [type of `KeySet`](../2_in_progress/keyset_types.md).
-Such a `KeySet` can only contain `KEY_NS_DATA` keys.
+`KEY_NS_MISC` has a separate [type of `KeySet`](../2_in_progress/keyset_types.md).
+Such a `KeySet` can only contain `KEY_NS_MISC` keys.
 It may not be used for metadata or with `kdbGet`/`kdbSet`.
 
 A cascading lookup is still allowed for such `KeySet`s.
-However, the `KEY_NS_CASCADING` will simply be replaced with `KEY_NS_DATA` and then an exact name lookup is performed, as if the `KEY_NS_DATA` namespace was given directly.
+However, the `KEY_NS_CASCADING` will simply be replaced with `KEY_NS_MISC` and then an exact name lookup is performed, as if the `KEY_NS_MISC` namespace was given directly.
 
 ## Rationale
 
@@ -55,8 +55,8 @@ It fits better with the separate [types of `KeySet`s](../2_in_progress/keyset_ty
 ## Implications
 
 - Some code already uses cascading keys for general data.
-  It must be updated to the new `KEY_NS_DATA`.
-- The cascading logic for `ksLookup` needs to adapted for `KEY_NS_DATA`.
+  It must be updated to the new `KEY_NS_MISC`.
+- The cascading logic for `ksLookup` needs to adapted for `KEY_NS_MISC`.
 
 ## Related Decisions
 

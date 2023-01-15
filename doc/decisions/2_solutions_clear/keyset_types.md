@@ -49,13 +49,13 @@ The different types of `KeySet` will be:
 1. Metadata:
    Can only contain `Key`s with namespace `KEY_NS_META`.
 2. General data:
-   Can only contain `Key`s with namespace `KEY_NS_DATA`.
+   Can only contain `Key`s with namespace `KEY_NS_MISC`.
 3. Config data:
    Can only contain a mix of `Key`s with namespace `KEY_NS_SPEC`, `KEY_NS_PROC`, `KEY_NS_DIR`, `KEY_NS_USER`, `KEY_NS_SYSTEM` and `KEY_NS_DEFAULT`.
 
 Importantly, `Key`s with namespace `KEY_NS_CASCADING` can never be inserted into a `KeySet`.
 This is a restriction that simplifies the logic for cascading lookups.
-Instead, the `KEY_NS_DATA` namespace should be used.
+Instead, the `KEY_NS_MISC` namespace should be used.
 
 Cascading lookups always try the namespaces allowed in the type of `KeySet` in order, but never try `KEY_NS_SPEC`.
 This means cascading lookups work for all types of `KeySet` the way a user would expect.
@@ -92,5 +92,7 @@ This alternative conflicts with the constraint of minimal API.
 ## Implications
 
 ## Related Decisions
+
+- [Namespace for miscellaneous data](../3_decided/misc_namespace.md)
 
 ## Notes
