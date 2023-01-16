@@ -40,7 +40,7 @@ if (GELEKTRA_LIBRARY)
 		install (TARGETS xfconfbindings LIBRARY DESTINATION)
 	endif ()
 else ()
-	remove_binding (xfconf "elektra glib bindings required for xfconf backend")
+	exclude_binding (xfconf "elektra glib bindings required for xfconf backend")
 endif ()
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
