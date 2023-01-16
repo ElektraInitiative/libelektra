@@ -44,6 +44,7 @@ https://gcc.gnu.org/onlinedocs/cpp/header-files/search-path.html
 
 # Certificate issues
 https://debian-stretch-repo.libelektra.org
+http://lcdproc.omnipotent.net
 
 
 # Broken links to MinGW builds for Windows (see issue #4624), temporary fix to get PRs merged!

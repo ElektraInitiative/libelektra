@@ -25,7 +25,7 @@ The [python bindings package](https://pkgs.alpinelinux.org/packages?name=py3-ele
 
 ```sh
 docker run -it alpine:edge /bin/sh
-echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 # Install elektra and the python bindings
 apk update && apk add elektra elektra-python py3-elektra
 ```
@@ -33,8 +33,8 @@ apk update && apk add elektra elektra-python py3-elektra
 Under regular alpine, you have to install python3 from the edge repository. If you do not want to add the edge repositories permanently like above, you can do
 
 ```sh
-apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/main" python3
-apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra elektra-python py3-elektra
+apk add --repository "https://dl-cdn.alpinelinux.org/alpine/edge/main" python3
+apk add --repository "https://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra elektra-python py3-elektra
 ```
 
 ### Debian

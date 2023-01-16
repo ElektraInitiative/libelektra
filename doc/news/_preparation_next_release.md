@@ -150,6 +150,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - Restructure parts of the links on the website _(@stefnotch)_, _(@janldeboer)_
 - Remove duplicated links to `TESTING.md` and `TUTORIALS.md` files _(@stefnotch)_, _(@janldeboer)_
+- Removed broken links to packages for Linux distributions. _(@Dynamichost96)_
 
 ### toml
 
@@ -171,9 +172,22 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Add encoding test for blockresolver read _(@dtdirect)_
 - Refactor and restructure blockresolver _(@dtdirect)_
 
+### mini
+
+- Fix a bug where writing meta keys will fail silently _(Juri Schreib @Bujuhu)_
+- <<TODO>>
+- <<TODO>>
+
 ### mmapstorage
 
 - Remove code duplication in the data block calculation _(Richard Stöckl @Eiskasten)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### network
+
+- Add the retry mechanism _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
@@ -285,9 +299,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### elixir
 
-- <<TODO>>
+- Add Elixir binding _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 
@@ -332,6 +346,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Add scripts to enable and disable pre-commit hooks _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Only let http links pass the check if whitelisted _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - Link Checker: Add documentation for the usage and how it behaves _(Richard Stöckl @Eiskasten)_
@@ -422,7 +437,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Replace http links with https. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - Enhance notifications.md in doc/tutorial _(@dtdirect)_

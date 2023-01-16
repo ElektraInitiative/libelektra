@@ -28,6 +28,7 @@ Experimental bindings (included in `cmake -DBINDINGS=EXPERIMENTAL`):
 - [io_uv](io/uv/) I/O binding for uv (experimental)
 - [io_ev](io/ev/) I/O binding for ev (experimental)
 - [io_glib](io/glib/) I/O binding for glib (experimental)
+- [erl_nif_elixir](erl_nif/elixir) Elixir bindings (experimental)
 
 External bindings (in a separate repo):
 

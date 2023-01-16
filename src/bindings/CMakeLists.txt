@@ -33,3 +33,8 @@ endif ()
 add_subdirectory (intercept)
 
 add_subdirectory (io)
+
+check_binding_included ("elixir" IS_INCLUDED)
+if (IS_INCLUDED)
+	add_subdirectory (erl_nif)
+endif ()

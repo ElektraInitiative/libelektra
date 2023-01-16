@@ -23,9 +23,9 @@ A standard way of describing REST APIs offered by tools and plugins for Elektra 
 
 ## Considered Alternatives
 
-- [Swagger](http://swagger.io/)
+- [Swagger](https://swagger.io/)
 - [apiary](https://apiary.io/) with [API blueprints](https://apiblueprint.org/)
-- [RAML](http://raml.org/)
+- [RAML](https://raml.org/)
 
 ## Decision
 

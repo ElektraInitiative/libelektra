@@ -205,7 +205,7 @@ llvm-xray account "$LOGFILE" -top=10 -sort=sum -sortorder=dsc -instr_map "$BUILD
 #> …
 ```
 
-. We can also use the log file to create a [Flame Graph](http://www.brendangregg.com/flamegraphs.html). To do that we use the `llvm-xray stack` to create an input file for the tool [`flamegraph.pl`][flamegraph]
+. We can also use the log file to create a [Flame Graph](https://www.brendangregg.com/flamegraphs.html). To do that we use the `llvm-xray stack` to create an input file for the tool [`flamegraph.pl`][flamegraph]
 
 ```sh
 llvm-xray stack "$LOGFILE" -stack-format=flame -aggregation-type=time -all-stacks \

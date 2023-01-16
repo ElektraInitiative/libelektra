@@ -97,5 +97,5 @@ many globbing statements
 == DATA STRUCTURES ==
 
 improve memory footprint C structures:
-	http://www.catb.org/esr/structure-packing/?src=yc
+	https://www.catb.org/esr/structure-packing/?src=yc
 
