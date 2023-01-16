@@ -16,6 +16,8 @@
   - The application is an email client.
   - It needs to know about the hostname, protocol and port of the user's email account.
   - The application uses the config keys `mailserver/hostname`, `mailserver/protocol` and `mailserver/port`, to let the user configure it's account.
+  - Config is written to the `spec` namespace.
+  - The parent key for this config keys is `/sw/organization/mailclient/#0/production`.
 - **Alternative scenario:** None.
 - **Error scenario:**
   - User is informed about problem / error when kdb tool is used wrongly.
