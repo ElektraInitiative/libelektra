@@ -1,4 +1,4 @@
-- infos = 
+- infos =
 - infos/author = Richard Stöckl <e11908080@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/status = experimental maintained
