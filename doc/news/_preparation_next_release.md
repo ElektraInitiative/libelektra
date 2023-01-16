@@ -187,9 +187,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
-### <<Binding>>
+### xfconf
 
-- <<TODO>>
+- Add xfconf binding. _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
