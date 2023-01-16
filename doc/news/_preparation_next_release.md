@@ -338,6 +338,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Add scripts to enable and disable pre-commit hooks _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Only let http links pass the check if whitelisted _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 - Link Checker: Add documentation for the usage and how it behaves _(Richard Stöckl @Eiskasten)_
