@@ -5,25 +5,18 @@ project (
 	VERSION 0.0.1
 	LANGUAGES C)
 
-find_package (PkgConfig QUIET)
-
-if (NOT PKG_CONFIG_FOUND)
-	exclude_binding (xfconf "Need PkgConfig needed to find dependencies for xfconf backend")
-	return ()
-endif ()
-
-pkg_check_modules (XFCONF REQUIRED libxfconf-0>=4.16)
+include (FindXfconf)
 
 if (NOT XFCONF_FOUND)
-	exclude_binding (xfconf "xfconf >= 4.16 needed for xfconf backend")
+	exclude_binding (xfconf "xfconf >= 4.16 required for xfconf backend")
 	return ()
 endif ()
-
 
 add_binding (xfconf)
 
 include_directories (${XFCONF_INCLUDE_DIRS})
-add_library (xfconfbinding SHARED elektra-xfconf.c elektra-xfconf-channel.c elektra-xfconf-binding.c elektra-xfconf-errors.c elektra-xfconf-types.c ${ELEKTRA_HEADERS})
+add_library (xfconfbinding SHARED elektra-xfconf.c elektra-xfconf-channel.c elektra-xfconf-binding.c elektra-xfconf-errors.c
+				  elektra-xfconf-types.c ${ELEKTRA_HEADERS})
 target_compile_definitions (xfconfbinding PRIVATE)
 
 if (GELEKTRA_LIBRARY)
@@ -39,25 +32,28 @@ if (GELEKTRA_LIBRARY)
 	endforeach ()
 	include_directories (${CMAKE_BINARY_DIR}/include/)
 	include_directories (${CMAKE_BINARY_DIR}/src/include/)
-	target_link_libraries (xfconfbinding INTERFACE ${XFCONF_LIBRARIES} PUBLIC ${GELEKTRA_LIBRARY})
+	target_link_libraries (
+		xfconfbinding
+		INTERFACE ${XFCONF_LIBRARIES}
+		PUBLIC ${GELEKTRA_LIBRARY})
 	if (INSTALL_SYSTEM_FILES)
 		install (TARGETS xfconfbindings LIBRARY DESTINATION)
 	endif ()
 else ()
-#	remove_binding (xfconf "elektra glib bindings needed for xfconf backend")
+	# remove_binding (xfconf "elektra glib bindings needed for xfconf backend")
 endif ()
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	if (NOT FORCE_IN_SOURCE_BUILD)
 		message (
 			FATAL_ERROR
-			"In-source builds are not permitted.\n"
-			"Make a separate folder for building:\n"
-			"    mkdir build && cd build && cmake ..\n"
-			"Before that, remove the files already created:\n"
-			"    rm -rf CMakeCache.txt CMakeFiles\n"
-			"If you really know what you are doing\n"
-			"(will overwrite original files!) use:\n"
-			"    cmake -DFORCE_IN_SOURCE_BUILD=ON\n")
+				"In-source builds are not permitted.\n"
+				"Make a separate folder for building:\n"
+				"    mkdir build && cd build && cmake ..\n"
+				"Before that, remove the files already created:\n"
+				"    rm -rf CMakeCache.txt CMakeFiles\n"
+				"If you really know what you are doing\n"
+				"(will overwrite original files!) use:\n"
+				"    cmake -DFORCE_IN_SOURCE_BUILD=ON\n")
 	endif (NOT FORCE_IN_SOURCE_BUILD)
 endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
