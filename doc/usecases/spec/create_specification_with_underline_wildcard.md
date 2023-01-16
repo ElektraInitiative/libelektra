@@ -13,6 +13,8 @@
 - **Main success scenario:**
   - Using `_` wildcard to give `mail server` a name instead of [Array specification](/doc/usecases/spec/create_array_specification.md).
   - Using `mailserver/_/port`, `mailserver/_/hostname` and `mailserver/_/protocol`.
+  - All keys are stored for the `spec` namespace.
+  - `type` and `description` meta-keys are used to describe keys.
 - **Alternative scenario:**
   - Using [Array specification](/doc/usecases/spec/create_array_specification.md) and introducing another key `mailserver/#/name`.
 - **Error scenario:**
