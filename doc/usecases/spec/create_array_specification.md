@@ -13,6 +13,8 @@
 - **Main success scenario:**
   - The developer wants to extend their application from ["Writing specification for an application"](/doc/usecases/plugins/spec/create_specification.md) to support multiple mail accounts.
   - The configuration uses `mailserver/#/port`, `mailserver/#0/hostname` and `mailserver/#0/protocol`.
+  - The array is defined by the wildcard character `#`.
+  - The keys are all stored for the `spec` namespace.
 - **Alternative scenario:** None.
 - **Error scenario:**
   - Wrong metakeys are used (yielded as error to the user)
