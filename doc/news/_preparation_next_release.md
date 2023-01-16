@@ -491,7 +491,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Add decision for [Elixir bindings](../decisions/0_drafts/elixir_bindings.md). _(@0x6178656c)_
+- Add decision for [Elixir bindings](../decisions/3_decided/elixir_bindings.md). _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
