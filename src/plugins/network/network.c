@@ -51,7 +51,7 @@ int elektraNetworkAddrInfo (Key * toCheck)
 }
 
 #define NETWORK_ATTEMPTS 3
-#define NETWORK_SECONDS_BETWEEN_ATTEMPTS 5
+#define NETWORK_SECONDS_BETWEEN_ATTEMPTS 1
 
 int elektraPortInfo (Key * toCheck, Key * parentKey)
 {
