@@ -149,6 +149,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - Remove duplicated link to `TESTING.md` file _(@stefnotch)_, _(@janldeboer)_
 - <<TODO>>
 - Restructure parts of the links on the website _(@stefnotch)_, _(@janldeboer)_
+- Removed broken links to packages for Linux distributions. _(@Dynamichost96)_
 
 ### toml
 
