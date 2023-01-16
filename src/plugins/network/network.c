@@ -50,6 +50,9 @@ int elektraNetworkAddrInfo (Key * toCheck)
 	return 0;
 }
 
+#define NETWORK_ATTEMPTS 3
+#define NETWORK_SECONDS_BETWEEN_ATTEMPTS 1
+
 int elektraPortInfo (Key * toCheck, Key * parentKey)
 {
 	const Key * meta = keyGetMeta (toCheck, "check/port");
@@ -97,23 +100,36 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open a socket. Reason: %s", strerror (errno));
 	}
 
-	server = gethostbyname (hostname);
-	if (server == NULL)
+	for (unsigned int attempt = 1, seconds = NETWORK_SECONDS_BETWEEN_ATTEMPTS; attempt <= NETWORK_ATTEMPTS;
+	     attempt++, seconds *= NETWORK_SECONDS_BETWEEN_ATTEMPTS)
 	{
-		if (errno == HOST_NOT_FOUND)
+		server = gethostbyname (hostname);
+		if (server == NULL)
 		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not connect to %s: No such host", hostname);
-			return -1;
+			if (errno == HOST_NOT_FOUND)
+			{
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Could not connect to %s: No such host", hostname);
+				return -1;
+			}
+			else
+			{
+				if (errno == TRY_AGAIN && attempt < NETWORK_ATTEMPTS)
+				{
+					ELEKTRA_LOG_DEBUG ("Could not connect, %d retries left, wait for next attempt...",
+							   NETWORK_ATTEMPTS - attempt);
+					sleep (seconds);
+					ELEKTRA_LOG_DEBUG ("Done with waiting, continue");
+				}
+				else
+				{
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						parentKey, "There was an error trying to connect to host '%s'. Reason: %s", hostname,
+						strerror (errno));
+					return -1;
+				}
+			}
 		}
-		else
-		{
-			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "There was an error trying to connect to host '%s'. Reason: %s",
-								hostname, strerror (errno));
-			return -1;
-		}
-		// TODO: Maybe consider errno == TRY_AGAIN separately and try to reconnect
 	}
-
 
 	bzero ((char *) &serv_addr, sizeof (serv_addr));
 	serv_addr.sin_family = AF_INET;
