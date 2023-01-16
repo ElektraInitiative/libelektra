@@ -5,10 +5,10 @@ configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in" "${CMAKE_CURRENT_BINARY_D
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h")
 
 install (
-	FILES error.h 
-				conversion.h 
-				types.h
-				kdbextension.h
+	FILES error.h
+	      conversion.h
+	      types.h
+	      kdbextension.h
 	      kdbmeta.h
 	      kdbease.h
 	      "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h"
@@ -34,5 +34,4 @@ install (
 	DESTINATION include/${TARGET_INCLUDE_FOLDER}/elektra
 	COMPONENT libelektra-dev)
 
-add_custom_target (elektra_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h 
-									${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
+add_custom_target (elektra_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
