@@ -283,9 +283,9 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 	endif ()
 
 	file (READ ${CMAKE_CURRENT_SOURCE_DIR}/README.md contents)
-	string (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
-	string (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
-	string (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+	string (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9/ ]*)" CATEGORIES "${contents}")
+	string (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9/ ]*)" "\\1" CATEGORIES "${CATEGORIES}")
+	string (REGEX REPLACE "[/ ]" ";" CATEGORIES "${CATEGORIES}")
 
 	string (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
 	string (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
