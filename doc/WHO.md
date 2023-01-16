@@ -11,7 +11,7 @@ configuration values can be shared (integrated).
 Known users:
 
 - [Oyranos](https://oyranos.org)
-- [LCDproc](https://lcdproc.omnipotent.net/) (in progress)
+- [LCDproc](http://lcdproc.omnipotent.net/) (in progress)
 - [KDE](https://kde.org) (in progress)
 - [OpenHAB](https://www.openhab.org/) (in progress)
 
