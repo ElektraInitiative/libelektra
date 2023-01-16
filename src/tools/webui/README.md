@@ -1,7 +1,7 @@
 # elektra-web/client
 
 The client for elektra-web, built using
-[React](https://facebook.github.io/react/) and [Redux](http://redux.js.org/). It
+[React](https://facebook.github.io/react/) and [Redux](https://redux.js.org/). It
 accesses the API that [`webd`](../webd/) provides.
 
 ## Installation and Usage

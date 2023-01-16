@@ -389,7 +389,7 @@ following section show how the most common ones can be used with `libelektra`.
 
 #### Cppcheck
 
-[Cppcheck](http://cppcheck.sourceforge.net/) can be used directly on a C or C++ source
+[Cppcheck](https://cppcheck.sourceforge.net/) can be used directly on a C or C++ source
 file by calling it with `cppcheck --enable=all <sourcefile>`. This way it might miss some header
 files though and thus doesn't detect all possible issues, but still gives useful hints in general.
 
@@ -413,7 +413,7 @@ of the issues found in the whole project.
 
 #### OCLint
 
-[OCLint](http://oclint.org/) is a static code analyzer for C, C++ and Objective C. To use this tool enable the CMake option `CMAKE_EXPORT_COMPILE_COMMANDS`. The steps below show a step-by-step guide on how to analyze files with OCLint.
+[OCLint](https://oclint.org/) is a static code analyzer for C, C++ and Objective C. To use this tool enable the CMake option `CMAKE_EXPORT_COMPILE_COMMANDS`. The steps below show a step-by-step guide on how to analyze files with OCLint.
 
 1. Create a build directory if you have not done so already and change the working path to this directory:
 
@@ -443,7 +443,7 @@ of the issues found in the whole project.
 
 #### scan-build
 
-[scan-build](http://clang-analyzer.llvm.org/scan-build.html) is a tool that is usually bundled along
+[scan-build](https://clang-analyzer.llvm.org/scan-build.html) is a tool that is usually bundled along
 with LLVM/Clang and is also primarily intended for C and C++ code. On macOS you have to install the
 package `llvm` with homebrew, then you'll find the tool in the folder `/usr/local/opt/llvm/bin/`.
 
@@ -472,7 +472,7 @@ the report is enriched with further information.
 
 #### SonarLint
 
-[SonarLint](http://www.sonarlint.org/) is a static code checker primarily intended for Java. It is
+[SonarLint](https://www.sonarlint.org/) is a static code checker primarily intended for Java. It is
 usually used by installing the corresponding plugin for the used IDE, then there is no further
 configuration required.
 

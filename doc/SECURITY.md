@@ -37,7 +37,7 @@ be a security risk.
 Can be changed using standard CMake ways.
 Some hints:
 
-http://wiki.debian.org/Hardening
+https://wiki.debian.org/Hardening
 
 ## Memory Leaks
 

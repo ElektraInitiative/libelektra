@@ -92,7 +92,7 @@ fi
 
 # We stash working directory and staged changes. This operation should only remove formatting modifications, since we already checked for a
 # clean state at the beginning of this script. We stash all file changes, since otherwise the test will always succeed on the second
-# invocation. See also: http://issues.libelektra.org/3281
+# invocation. See also: https://issues.libelektra.org/3281
 git stash push -m 'Formatting Updates'
 
 end_script

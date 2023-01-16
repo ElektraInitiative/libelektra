@@ -20,7 +20,7 @@ You can find more information about the structure in the `README.md`.
 - Make sure that the codestyle of contributions complies with the already established codestyle of this project, except if this document
   says otherwise: then please open an issue for offending code.
 - We use Unix line endings
-- Large files should be in http://blobs.libelektra.org/ or https://rawdata.libelektra.org
+- Large files should be in https://blobs.libelektra.org/ or https://rawdata.libelektra.org
 - `find . -not -regex '[/.a-zA-Z0-9_-]*'` should not find your file names
 
 ## Source Code
@@ -158,7 +158,7 @@ On macOS you can install `clang-format` using [Homebrew][] either directly:
 brew install clang-format
 ```
 
-or by installing the whole [LLVM](http://llvm.org) infrastructure:
+or by installing the whole [LLVM](https://llvm.org) infrastructure:
 
 ```sh
 brew install llvm

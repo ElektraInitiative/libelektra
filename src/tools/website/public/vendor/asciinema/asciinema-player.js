@@ -30,11 +30,11 @@
 /**
  * @license
  * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
- * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
- * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
- * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * This code may only be used under the BSD style license found at https://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at https://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at https://polymer.github.io/CONTRIBUTORS.txt
  * Code distributed by Google as part of the polymer project is also
- * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ * subject to an additional IP rights grant found at https://polymer.github.io/PATENTS.txt
  */
 // @version 0.7.22
 "undefined" == typeof WeakMap &&
@@ -1819,7 +1819,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 n =
                   "Minified React error #" +
                   t +
-                  "; visit http://facebook.github.io/react/docs/error-decoder.html?invariant=" +
+                  "; visit https://facebook.github.io/react/docs/error-decoder.html?invariant=" +
                   t,
                 r = 0;
               r < e;
@@ -2070,7 +2070,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   if (e)
                     o(
                       !1,
-                      "Calling PropTypes validators directly is not supported by the `prop-types` package. Use `PropTypes.checkPropTypes()` to call them. Read more at http://fb.me/use-check-prop-types"
+                      "Calling PropTypes validators directly is not supported by the `prop-types` package. Use `PropTypes.checkPropTypes()` to call them. Read more at https://fb.me/use-check-prop-types"
                     );
                   else;
                 return null == r[u]
@@ -10221,7 +10221,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     n =
                       "Minified React error #" +
                       e +
-                      "; visit http://facebook.github.io/react/docs/error-decoder.html?invariant=" +
+                      "; visit https://facebook.github.io/react/docs/error-decoder.html?invariant=" +
                       e,
                     r = 0;
                   r < t;
@@ -10993,7 +10993,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       if (t)
                         o(
                           !1,
-                          "Calling PropTypes validators directly is not supported by the `prop-types` package. Use `PropTypes.checkPropTypes()` to call them. Read more at http://fb.me/use-check-prop-types"
+                          "Calling PropTypes validators directly is not supported by the `prop-types` package. Use `PropTypes.checkPropTypes()` to call them. Read more at https://fb.me/use-check-prop-types"
                         );
                       else;
                     return null == r[a]
@@ -11326,7 +11326,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
     })();
   })();
 });
-/*! http://mths.be/fromcodepoint v0.1.0 by @mathias */
+/*! https://mths.be/fromcodepoint v0.1.0 by @mathias */
 if (!String.fromCodePoint) {
   (function () {
     var defineProperty = (function () {
@@ -11366,7 +11366,7 @@ if (!String.fromCodePoint) {
           codeUnits.push(codePoint);
         } else {
           // Astral code point; split in surrogate halves
-          // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+          // https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
           codePoint -= 0x10000;
           highSurrogate = (codePoint >> 10) + 0xd800;
           lowSurrogate = (codePoint % 0x400) + 0xdc00;
@@ -11391,7 +11391,7 @@ if (!String.fromCodePoint) {
   })();
 }
 
-/*! http://mths.be/codepointat v0.1.0 by @mathias */
+/*! https://mths.be/codepointat v0.1.0 by @mathias */
 if (!String.prototype.codePointAt) {
   (function () {
     "use strict"; // needed to support `apply`/`call` with `undefined`/`null`
@@ -11423,7 +11423,7 @@ if (!String.prototype.codePointAt) {
         second = string.charCodeAt(index + 1);
         if (second >= 0xdc00 && second <= 0xdfff) {
           // low surrogate
-          // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+          // https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
           return (first - 0xd800) * 0x400 + second - 0xdc00 + 0x10000;
         }
       }

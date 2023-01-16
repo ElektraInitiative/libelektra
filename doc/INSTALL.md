@@ -181,13 +181,13 @@ make package # See CPack below
 
 ## macOS
 
-You can install Elektra using [Homebrew](http://brew.sh) via the shell command:
+You can install Elektra using [Homebrew](https://brew.sh) via the shell command:
 
 ```sh
 brew install elektra
 ```
 
-. We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
+. We also provide a tap containing a more elaborate formula [here](https://github.com/ElektraInitiative/homebrew-elektra).
 
 ## Windows
 
