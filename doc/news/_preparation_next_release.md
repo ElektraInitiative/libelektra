@@ -200,7 +200,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
+- Restructured [contrib/api](/doc/contrib/api) _(Markus Raab)_.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -346,7 +346,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Replaced `egrep` by `grep -E` _(@0x6178656c and @janldeboer)_
 - <<TODO>>
 - <<TODO>>
-- Add audit-dependencies script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Add [audit-dependencies](/scripts/dev/audit-dependencies) script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - <<TODO>>
 
@@ -361,6 +361,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fix grammar for `elektra-granularity.md` _(@dtdirect)_
 - Rephrase sections in doc/dev/error-\* _(@dtdirect)_
+- Improve Git.md _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
 - Extend consistency check `check_doc.sh` to work for [contrib](/doc/contrib), [dev](/doc/dev) and [tutorials](/doc/tutorials) _(@Joni1993)_
 - <<TODO>>
@@ -407,6 +408,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - tutorial: Add automatic validation to Docker tutorial _(Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Add mention of audit-dependencies script in doc/todo/RELEASE.md _(@Bujuhu)_
+- <<TODO>>
 - <<TODO>>
 - Move note in GETSTARTED.md _(@Joni1993)_
 - <<TODO>>
@@ -463,7 +466,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Decisions
 
-- Documented [decision process](../decisions/3_decided/decision_process.md) _(Markus Raab)_
+- Decide and implement [decision process](../decisions/4_partially_implemented/decision_process.md) _(Markus Raab)_
 - Decided future [library split](../decisions/3_decided/library_split.md) _(@kodebach)_
 - decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
 - draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
@@ -528,6 +531,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Make namespaces tutorial verifiable _(@0x6178656c)_
+- Move Podman-related information to a dedicated page. _(@0x6178656c)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
@@ -564,7 +569,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add test using shellcheck _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -667,6 +672,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Change stale issue/PR checking to GitHub action. _(@0x6178656c)_
+- Update configuration of stale issue/PR action. _(@0x6178656c)_
 - <<TODO>>
 - Upgrade actions to recent versions and remove deprecated ruby-setup action. _(Mihael Pranjić @mpranj)_
 

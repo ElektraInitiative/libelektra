@@ -10,7 +10,7 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/stale@v5
+      - uses: actions/stale@v6.0.1
 
         with:
           days-before-issue-stale: 365
@@ -30,6 +30,7 @@ jobs:
             it or create a new issue with the remainder of this issue.
             
             Thank you for your contributions :sparkling_heart:
+          close-issue-reason: not_planned
           days-before-pr-stale: 365
           days-before-pr-close: 14
           stale-pr-label: "stale"

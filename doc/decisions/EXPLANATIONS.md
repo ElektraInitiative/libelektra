@@ -1,5 +1,14 @@
 # EXPLANATIONS
 
+We base our decision process and template on:
+
+- [''using patterns to capture architectural decisions''](http://eprints.cs.univie.ac.at/2345/1/02_Using_Patterns_to_Capture.pdf),
+- [arc42 decisions](http://docs.arc42.org/section-9/),
+- [ADR](https://adr.github.io/), and
+- [RFCs in rust-lang](https://github.com/rust-lang/rfcs).
+
+This document describes every section of our [TEMPLATE.md](TEMPLATE.md).
+
 ## Problem
 
 Clearly define:
@@ -21,7 +30,7 @@ List all constraints given by:
 - the scope (i.e. describe what shouldn't change)
 
 > Note:
-> The decision (but not necessarily the considered alternatives) must fulfill all constraints.
+> The decision (but not necessarily the solutions) must fulfill all constraints.
 
 ## Assumptions
 
@@ -35,11 +44,11 @@ Assumptions are what we believe to be true but do not or cannot really know, e.g
 - problems/risks that might turn up
 
 > Note:
-> The decision (but not necessarily the considered alternatives) must not break any assumptions.
+> The decision (but not necessarily the solutions) must not break any assumptions.
 
-## Considered Alternatives
+## Solutions
 
-This is a list of all solutions and a rationale why the solution was not taken, e.g. because:
+This is a list of all solutions and a rationale why not-chosen solutions were not taken, e.g. because:
 
 - the solution does not solve the whole problem
 - some constraints or assumptions are violated
@@ -52,18 +61,18 @@ This is a list of all solutions and a rationale why the solution was not taken, 
 ## Decision
 
 Here should be a detailed description of the best solution, i.e., the decision.
-It should:
+It should make clear how the implementation should be done.
 
-- give all details why the solution:
-  - solves the problem best
-  - is best in line with our goals
-  - fulfills all constraints and assumptions
-- describe what needs to be changed
-- make clear how the implementation should be done
+> Referring back to the solutions written above is allowed.
 
 ## Rationale
 
-Here is the description why the decision is the best solution.
+Give all details why the solution:
+
+- solves the problem best
+- is best in line with our goals
+- fulfills all constraints and assumptions
+
 Also describe all drawbacks the solution has.
 
 ## Implications
@@ -84,6 +93,11 @@ This section has links to other decisions with description what the relation is.
 One-side relations are allowed, not every decision must link back.
 Decisions that give constraints must be listed in "Constraints" above.
 
+> Guideline:
+> Links to decisions should be in the form `../step of decision/name of decision.md`.
+> In particular, they should always contain the step of the decision, even if they are in the same directory.
+> This makes renaming issues easier.
+
 > Note:
 > Sometimes the best solution is only understood if the relation between decisions becomes clear.
 > Make sure that everything that requires updates to a decision, is listed as "Constraints" or "Assumptions".
@@ -94,8 +108,8 @@ Here is a full list of off-line discussions, issue trackers, PRs etc. related to
 Preferable it is linked, but if it is not possible, it can also be in full-text here.
 If particular information is important and not present in any sections above, please quote it here.
 
-Any incomplete and unexplored idea/opinion, which is not complete enough to be in "Considered Alternatives", can be written here.
+Any incomplete and unexplored idea/opinion, which is not complete enough to be in "Solutions", can be written here.
 For example, if it is obvious that the idea does not even solve the problem.
-Unlike the main decisions and considered alternatives, text in the notes does not need rationale.
+Unlike the main decision and solutions, text in the notes does not need rationale.
 
-Furthermore, the author, acknowledgements, dates etc. can be written here.
+Furthermore, the author, acknowledgments, dates etc. can be written here.
