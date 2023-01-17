@@ -1,20 +1,18 @@
 #include "elektra-xfconf.h"
 #include "elektra-xfconf-util.h"
 
-#include <gelektra-key.h>
-
 GList * channel_list = NULL;
-GElektraKdb * gElektraKdb = NULL;
+KDB * elektraKdb = NULL;
 
 gboolean xfconf_init (GError ** error)
 {
 	trace ();
-	GElektraKey * elektra_error = gelektra_key_new ("/elektra_error", KEY_END);
-	gElektraKdb = gelektra_kdb_open (NULL, elektra_error);
-	if (gElektraKdb == NULL)
+	Key * elektraError = keyNew ("/elektra_error", KEY_END);
+	elektraKdb = kdbOpen (NULL, elektraError);
+	if (elektraKdb == NULL)
 	{
-		g_debug ("unable to open gelektraKdb");
-		*error = g_error_new (0, 1, "unable to open kdb: %s", gelektra_key_string (elektra_error));
+		g_debug ("unable to open elektraKdb");
+		*error = g_error_new (0, 1, "unable to open kdb: %s", keyString (elektraError));
 		return FALSE;
 	}
 	return TRUE;

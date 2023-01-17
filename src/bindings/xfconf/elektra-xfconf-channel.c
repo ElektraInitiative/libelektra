@@ -2,8 +2,6 @@
 #include "elektra-xfconf-util.h"
 #include "elektra-xfconf.h"
 
-#include <gelektra-key.h>
-
 typedef struct XfconfCache XfconfCache;
 struct _XfconfChannel
 {
@@ -170,7 +168,7 @@ static ChannelKeySetPair * find_or_create_channel_pair (const gchar * channel_na
 	g_debug ("ChannelKeySetPair for channel %s does not exist, creating it", channel_name);
 	ChannelKeySetPair * channel_pair = malloc (sizeof (ChannelKeySetPair));
 	channel_pair->channel = xfconf_channel_new (channel_name);
-	channel_pair->keySet = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+	channel_pair->keySet = ksNew (0, KS_END);
 	channel_list = g_list_insert_sorted (channel_list, channel_pair, &compare_pairs);
 	return channel_pair;
 }
@@ -193,15 +191,15 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
 	unimplemented ();
 }
 
-static GElektraKeySet * keySet_from_channel (const gchar * channel_name)
+static KeySet * keySet_from_channel (const gchar * channel_name)
 {
 	trace ();
-	gchar * key_name = malloc ((strlen (channel_name) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
-	sprintf (key_name, "%s/%s", XFCONF_ROOT, channel_name);
-	ChannelKeySetPair * channel_pair = find_or_create_channel_pair (channel_name);
-	GElektraKey * parent_key = gelektra_key_new (key_name, GELEKTRA_KEY_END);
-	g_debug ("Fetch keys from parent: %s", key_name);
-	switch (gelektra_kdb_get (gElektraKdb, channel_pair->keySet, parent_key))
+	gchar * keyName = malloc ((strlen (channel_name) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
+	sprintf (keyName, "%s/%s", XFCONF_ROOT, channel_name);
+	ChannelKeySetPair * channelPair = find_or_create_channel_pair (channel_name);
+	Key * parentKey = keyNew (keyName, KEY_END);
+	g_debug ("Fetch keys from parent: %s", keyName);
+	switch (kdbGet (elektraKdb, channelPair->keySet, parentKey))
 	{
 	case -1:
 		g_warning ("There was a failure fetching the keys");
@@ -215,49 +213,49 @@ static GElektraKeySet * keySet_from_channel (const gchar * channel_name)
 	default:
 		g_error ("An unknown error occurred during keyset fetch");
 	}
-	GElektraKey * cur;
-	gssize key_set_size = gelektra_keyset_len (channel_pair->keySet);
-	g_debug ("KeySet has %ld keys", key_set_size);
-	for (gssize i = 0; i < key_set_size; i++)
-	{
-		cur = gelektra_keyset_at (channel_pair->keySet, i);
-		g_debug ("Found key: %s", gelektra_key_name (cur));
-	}
-	free (key_name);
-	return channel_pair->keySet;
+	//	Key * cur;
+	//	gssize key_set_size = channel_pair->keySet->ks;
+	//	g_debug ("KeySet has %ld keys", key_set_size);
+	//	for (gssize i = 0; i < key_set_size; i++)
+	//	{
+	//		cur = gelektra_keyset_at (channel_pair->keySet, i);
+	//		g_debug ("Found key: %s", gelektra_key_name (cur));
+	//	}
+	//	free (key_name);
+	return channelPair->keySet;
 }
 
 static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * property, GValue * g_value)
 {
 	trace ();
-	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
-	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
-	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
+	KeySet * keySet = keySet_from_channel (channel->channel_name);
+	gchar * propertyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
+	sprintf (propertyName, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
 	g_debug ("request key %s with type %s, on channel: %s which has %zd keys", property, G_VALUE_TYPE_NAME (g_value),
-		 channel->channel_name, gelektra_keyset_len (key_set));
-	GElektraKey * key = gelektra_keyset_lookup_byname (key_set, property_name, GELEKTRA_KDB_O_NONE);
+		 channel->channel_name, ksGetSize (keySet));
+	Key * key = ksLookupByName (keySet, propertyName, KDB_O_NONE);
 	if (key == NULL)
 	{
-		g_debug ("got null from keyset by looking up %s", property_name);
+		g_debug ("got null from keyset by looking up %s", propertyName);
 		return FALSE;
 	}
-	const gchar * key_value = gelektra_key_string (key);
-	g_debug ("Found value %s to key %s", key_value, property_name);
+	const char * keyValue = keyString (key);
+	g_debug ("Found value %s to key %s", keyValue, propertyName);
 	if (!G_IS_VALUE (g_value))
 	{
 		g_debug ("read gtype from key database");
 		GType g_type = G_TYPE_STRING;
-		if (gelektra_key_hasmeta (key, XFCONF_GTYPE_META_NAME))
+		if (keyGetMeta (key, XFCONF_GTYPE_META_NAME))
 		{
-			GElektraKeySet * meta_set = gelektra_key_meta (key);
-			g_debug ("the meta key set has %ld keys", gelektra_keyset_len (meta_set));
-			GElektraKey * gtype_meta_key = gelektra_keyset_lookup_byname (meta_set, XFCONF_GTYPE_META_NAME,
-										      GELEKTRA_KDB_O_NONE); // todo: lookup returns no keys
-			if (gtype_meta_key)
+			KeySet * metaSet = keyMeta (key);
+			g_debug ("the meta key set has %ld keys", ksGetSize (metaSet));
+			const Key * gtypeMetaKey = ksLookupByName (metaSet, XFCONF_GTYPE_META_NAME,
+								   KDB_O_NONE); // todo: lookup returns no keys
+			if (gtypeMetaKey)
 			{
-				const gchar * g_type_name = gelektra_key_string (gtype_meta_key);
-				g_debug ("set gtype to %s", g_type_name);
-				g_type = g_type_from_name (g_type_name);
+				const char * gtypeName = keyString (gtypeMetaKey);
+				g_debug ("set gtype to %s", gtypeName);
+				g_type = g_type_from_name (gtypeName);
 			}
 			else
 			{
@@ -272,9 +270,9 @@ static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gch
 	}
 	GValue g_key_value = G_VALUE_INIT;
 	g_value_init (&g_key_value, G_TYPE_STRING);
-	g_value_set_string (&g_key_value, key_value);
+	g_value_set_string (&g_key_value, keyValue);
 	g_value_transform (&g_key_value, g_value);
-	free (property_name);
+	free (propertyName);
 	return TRUE;
 }
 
@@ -299,33 +297,33 @@ static gboolean xfconf_channel_set_formatted (XfconfChannel * channel, const gch
 		g_debug ("cannot proceed with null property");
 		return FALSE;
 	}
-	gchar * property_name =
+	char * propertyName =
 		malloc ((strlen (XFCONF_NAMESPACE) + strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) *
 			sizeof (char));
-	sprintf (property_name, "%s%s/%s%s", XFCONF_NAMESPACE, XFCONF_ROOT, channel->channel_name, property);
-	GElektraKey * key = gelektra_key_new (property_name, GELEKTRA_KEY_END);
-	g_debug ("set %s to %s (type %lu) on channel: %s", property_name, value, g_type, channel->channel_name);
-	gelektra_key_setstring (key, value);
-	gelektra_key_setmeta (key, XFCONF_GTYPE_META_NAME, g_type_name (g_type));
-	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
-	gelektra_keyset_append (key_set, key);
-	gchar * parent_key_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
-	sprintf (parent_key_name, "%s/%s", XFCONF_ROOT, channel->channel_name);
-	GElektraKey * parent_key = gelektra_key_new (parent_key_name, GELEKTRA_KEY_END);
-	gint result_code = gelektra_kdb_set (gElektraKdb, key_set, parent_key);
-	g_debug ("storing key set for parent key %s returned %d", parent_key_name, result_code);
-	return result_code >= 0;
+	sprintf (propertyName, "%s%s/%s%s", XFCONF_NAMESPACE, XFCONF_ROOT, channel->channel_name, property);
+	Key * key = keyNew (propertyName, KEY_END);
+	g_debug ("set %s to %s (type %lu) on channel: %s", propertyName, value, g_type, channel->channel_name);
+	keySetString (key, value);
+	keySetMeta (key, XFCONF_GTYPE_META_NAME, g_type_name (g_type));
+	KeySet * keySet = keySet_from_channel (channel->channel_name);
+	ksAppendKey (keySet, key);
+	char * parentKeyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	sprintf (parentKeyName, "%s/%s", XFCONF_ROOT, channel->channel_name);
+	Key * parentKey = keyNew (parentKeyName, KEY_END);
+	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
+	g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
+	return resultCode >= 0;
 }
 
 gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * property)
 {
 	trace ();
-	GElektraKeySet * key_set = keySet_from_channel (channel->channel_name);
-	gchar * property_name = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
-	sprintf (property_name, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
-	g_debug ("request key %s on channel: %s which has %zd keys", property, channel->channel_name, gelektra_keyset_len (key_set));
-	GElektraKey * key = gelektra_keyset_lookup_byname (key_set, property_name, GELEKTRA_KDB_O_NONE);
-	g_debug ("channel %s has key %s: %d", channel->channel_name, property_name, key != NULL);
+	KeySet * keySet = keySet_from_channel (channel->channel_name);
+	char * propertyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) * sizeof (char));
+	sprintf (propertyName, "%s/%s%s", XFCONF_ROOT, channel->channel_name, property);
+	g_debug ("request key %s on channel: %s which has %zd keys", property, channel->channel_name, ksGetSize (keySet));
+	const Key * key = ksLookupByName (keySet, propertyName, KDB_O_NONE);
+	g_debug ("channel %s has key %s: %d", channel->channel_name, propertyName, key != NULL);
 	return key != NULL;
 }
 
