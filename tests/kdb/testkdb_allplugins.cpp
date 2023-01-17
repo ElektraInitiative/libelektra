@@ -26,6 +26,38 @@
 #include <sanitizer/lsan_interface.h>
 #endif
 
+#include <kdbmacros.h>
+
+ELEKTRA_UNUSED static bool isRunningWithValgrind (void)
+{
+	char * p = getenv ("LD_PRELOAD");
+	if (p == nullptr) return 0;
+	return (strstr (p, "/valgrind/") != nullptr || strstr (p, "/vgpreload") != nullptr);
+}
+
+// use extern "C" and non-static function to avoid name mangling
+// we need a non-mangled name to use in the valgrind.supression file
+extern "C" bool testkdb_allplugins_isMemleak (const kdb::tools::ModulesPluginDatabase & mpd, const std::string & plugin)
+{
+	try
+	{
+#if defined(ENABLE_ASAN) && !defined(ASAN_NO_LEAK_SANITIZER_SUPPORT)
+		__lsan_disable ();
+#endif
+		auto status = mpd.lookupInfo (kdb::tools::PluginSpec (plugin), "status");
+#if defined(ENABLE_ASAN) && !defined(ASAN_NO_LEAK_SANITIZER_SUPPORT)
+		__lsan_enable ();
+#endif
+		bool memleak = status.find ("memleak") != std::string::npos;
+		return memleak;
+	}
+	catch (std::exception const & error)
+	{
+		std::cerr << "Unable to determine status of plugin “" << plugin << "” will assume memleak: " << error.what () << std::endl;
+		return true;
+	}
+}
+
 std::vector<std::string> getAllPlugins ()
 {
 	using namespace kdb;
@@ -38,37 +70,31 @@ std::vector<std::string> getAllPlugins ()
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "ruby"), plugins.end ());
 
 #ifdef ENABLE_ASAN
-	// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "augeas"), plugins.end ());
+	bool memcheck = true;
+#else
+	bool memcheck = isRunningWithValgrind ();
+#endif
 
-	std::vector<std::string> pluginsWithMemoryLeaks;
-
-	for (auto plugin : plugins)
+	if (memcheck)
 	{
-		try
-		{
-#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
-			__lsan_disable ();
+		std::cout << "running memcheck" << std::endl;
+#if defined(__APPLE__)
+		// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
+		plugins.erase (std::remove (plugins.begin (), plugins.end (), "augeas"), plugins.end ());
 #endif
-			auto status = mpd.lookupInfo (PluginSpec (plugin), "status");
-#ifndef ASAN_NO_LEAK_SANITIZER_SUPPORT
-			__lsan_enable ();
-#endif
-			if (status.find ("memleak")) pluginsWithMemoryLeaks.push_back (plugin);
-		}
-		catch (std::exception const & error)
-		{
-			std::cerr << "Unable to determine status of plugin “" << plugin << "”: " << error.what () << std::endl;
-		}
-	}
 
-	for (auto plugin : pluginsWithMemoryLeaks)
+		std::vector<std::string> filtered;
+		std::copy_if (plugins.begin (), plugins.end (), std::back_inserter (filtered),
+			      [&] (const std::string & plugin) { return !testkdb_allplugins_isMemleak (mpd, plugin); });
+
+		std::cout << "found " << plugins.size () << " plugins " << filtered.size () << " without memleak" << std::endl;
+		return filtered;
+	}
+	else
 	{
-		plugins.erase (std::remove (plugins.begin (), plugins.end (), plugin), plugins.end ());
+		std::cout << "found " << plugins.size () << " plugins" << std::endl;
+		return plugins;
 	}
-#endif
-
-	return plugins;
 }
 
 class AllPlugins : public ::testing::TestWithParam<std::string>

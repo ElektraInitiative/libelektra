@@ -593,6 +593,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add test using shellcheck _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
+- Remove `--rerun-failed` from `run_*` scripts. _(@kodebach)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -674,7 +676,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Upgrade Jenkins node container to Debian bullseye _(@0x6178656c)_
 - <<TODO>>
-- <<TODO>>
+- Undo previous change that added automatic `ctest --rerun-failed` to Jenkins CI _(@kodebach)_
 - <<TODO>>
 
 ### Cirrus

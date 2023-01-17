@@ -9,4 +9,4 @@ fi
 
 ARGS="-j@PROCESSOR_COUNT@ -LE kdbtests --force-new-ctest-process --output-on-failure --build-config $1"
 # shellcheck disable=SC2086
-ctest $ARGS || ctest $ARGS --rerun-failed
+ctest $ARGS

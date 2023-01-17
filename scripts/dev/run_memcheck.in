@@ -7,4 +7,4 @@ fi
 
 ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process -T memcheck --build-config $1 --output-on-failure -LE memleak"
 # shellcheck disable=SC2086
-ctest $ARGS || ctest $ARGS --rerun-failed
+ctest $ARGS
