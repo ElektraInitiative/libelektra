@@ -80,7 +80,11 @@ This is a bit of a mixture between changing key names and changing values.
 
 1. We want to enable some kind of transformations
 2.
-3.
+3. There is no reason to modify or delete existing `meta:/` keys.
+4. Newly generated `meta:/...` keys can
+    - either stay and get permanently stored during `kdbSet`
+    - or be written as `meta:/generated/...`.
+    The `meta:/generated/...` metakeys are never stored and are automatically removed during `kdbSet` before `storage` is called.
 
 ## Considered Alternatives
 
