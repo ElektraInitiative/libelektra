@@ -7,7 +7,7 @@ Those transformations include, but are not limited to:
 
 - Changing the names of the keys inbetween `kdbGet` and `kdbSet` operations
 - Changing values back and forth for normalization, e.g. `true` -> `1`, `1` -> `true`
-- Adding and removing metadata (e.g. the `spec` plugin)
+- Adding and removing metadata
 
 While these features are useful, they do create feature-interaction problems.
 More specifically, problems have been observed in conjunction with the following (overlapping) types of plugins:
@@ -92,6 +92,7 @@ This is a bit of a mixture between changing key names and changing values.
 
 Require plugins that rename keys to remove the `keyNeedsSync` flag.
 This would require making the 'key sync' APIs public.
+Letting user code modify these internal flags may lead to serious bugs.
 This does not solve the problem of changing values.
 
 ### Use change tracking to replace the `keyNeedsSync` flag
