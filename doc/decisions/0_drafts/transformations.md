@@ -19,9 +19,9 @@ The problem, in general, can be described as: Which phase of the KDB should be u
 
 We differentiate between three types:
 
-- *stored* name/value/metadata: How it is actually stored, i.e. the state returned by and passed to the `storage` plugins.
-- *runtime* name/value/metadata: How it is at runtime, i.e. what is returned by `kdbGet` and passed to `kdbSet`.
-- *intermediate* name/value/metadata: Any state inbetween the two.
+- _stored_ name/value/metadata: How it is actually stored, i.e. the state returned by and passed to the `storage` plugins.
+- _runtime_ name/value/metadata: How it is at runtime, i.e. what is returned by `kdbGet` and passed to `kdbSet`.
+- _intermediate_ name/value/metadata: Any state inbetween the two.
 
 ### Observed problems with changing key names
 
@@ -34,16 +34,16 @@ For example, here is a configuration file with a hypothetical format:
 
 ```
 /DISPLAY/BRIGHTNESS = 100
-``` 
+```
 
 As can be seen, the keys are in UPPERCASE within the configuration file.
-In Elektra keys are case-sensitive. 
-As operations on keysets such as `ksLookup` operate with *runtime* data after the post-storage phase, `kdb get /DISPLAY/BRIGHTNESS` will fail.
+In Elektra keys are case-sensitive.
+As operations on keysets such as `ksLookup` operate with _runtime_ data after the post-storage phase, `kdb get /DISPLAY/BRIGHTNESS` will fail.
 For Elektra, the key `/DISPLAY/BRIGHTNESS` does not exist, as the `rename` plugin transformed this into the lowercase `/display/brightness`.
 
 This leads to problems with the notification plugins.
 As notification plugins are executed after the post-storage phase of the `set` operation, they will receive a keyset with the already transformed keys.
-In this example, the notification plugins will receive all-UPPERCASE keys, and send out notifications with those all-UPPERCASE keys. 
+In this example, the notification plugins will receive all-UPPERCASE keys, and send out notifications with those all-UPPERCASE keys.
 An application listening to those notifications will not be able to query Elektra for those keys, as for Elektra those UPPERCASE keys do not exist.
 
 Apart from the problems with notifications, the way key name changing plugins work also breaks change tracking in plugins like `dbus`.
@@ -82,9 +82,9 @@ This is a bit of a mixture between changing key names and changing values.
 2. False positives for change tracking algorithms are only a minor problem.
 3. There is no reason to modify or delete existing `meta:/` keys.
 4. Newly generated `meta:/...` keys can
-    - either stay and get permanently stored during `kdbSet`
-    - or be written as `meta:/generated/...`.
-    The `meta:/generated/...` metakeys are never stored and are automatically removed during `kdbSet` before `storage` is called.
+   - either stay and get permanently stored during `kdbSet`
+   - or be written as `meta:/generated/...`.
+     The `meta:/generated/...` metakeys are never stored and are automatically removed during `kdbSet` before `storage` is called.
 
 ## Considered Alternatives
 
@@ -123,7 +123,6 @@ May be as `meta:/` or something else entireley.
 
 Something similar could be done for the value of a key as well.
 
-
 ### Introduce a new phase for transformations
 
 We could also introduce a new phase between before/after storage exclusively for transformations.
@@ -149,5 +148,5 @@ Then we can just do a "fake" call to that phase to get back the runtime names fo
 ## Notes
 
 - [Issue #404](https://issues.libelektra.org/404) - dbus and rename plugin do not work together
-- [Issue #955](https://issues.libelektra.org/955) - dbus: non-UTF8 key names 
+- [Issue #955](https://issues.libelektra.org/955) - dbus: non-UTF8 key names
 - [Issue #3626](https://issues.libelektra.org/3626) - origvalue
