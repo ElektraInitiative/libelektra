@@ -108,6 +108,26 @@ This allows notification and change tracking functionality to work determine and
 
 A similiar thing was already attempted for values, i.e. `meta:/origvalue`.
 
+### Create an API for transformations
+
+Plugins must use a special function to transform key names, e.g.:
+
+```c
+typedef const char * (*ElektraNameTransform)(const Key *);
+
+int elektraApplyNameTransform (KeySet * ks, ElektraNameTransform transform);
+```
+
+How the `elektraApplyNameTransform` function marks the original name is an internal implementation detail.
+May be as `meta:/` or something else entireley.
+
+Something similar could be done for the value of a key as well.
+
+
+### Introduce a new phase for transformations
+
+We could also introduce a new phase between before/after storage exclusively for transformations.
+Then we can just do a "fake" call to that phase to get back the runtime names for change tracking.
 
 ## Decision
 
