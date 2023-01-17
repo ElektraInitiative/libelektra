@@ -79,7 +79,7 @@ This is a bit of a mixture between changing key names and changing values.
 ## Assumptions
 
 1. We want to enable some kind of transformations
-2.
+2. False positives for change tracking algorithms are only a minor problem.
 3. There is no reason to modify or delete existing `meta:/` keys.
 4. Newly generated `meta:/...` keys can
     - either stay and get permanently stored during `kdbSet`
