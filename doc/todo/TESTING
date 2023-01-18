@@ -254,3 +254,6 @@ kdb test cases:
 
 ABI unit tests: (manually)
 	install old unit tests with new elektra for ABI tests
+
+intercept binding test:
+  fix memleak in test_genenv (src/bindings/intercept/env/tests/test_getenv.cpp)

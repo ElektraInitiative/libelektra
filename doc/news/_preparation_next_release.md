@@ -308,7 +308,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Add Elixir binding _(@0x6178656c)_
 - <<TODO>>
-- <<TODO>>
+- Mark tests as `memleak` _(@0x6178656c)_
 
 ### <<Binding>>
 
@@ -587,7 +587,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add `memleak` label to `test_getenv`. _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
 - Add test using shellcheck _(@0x6178656c)_
