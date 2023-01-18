@@ -44,9 +44,9 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
+- New Backend
+- Copy-on-Write
+- FLOSS
 
 ### New Backend
 
@@ -69,11 +69,11 @@ Take a look at the [new docs](../dev/mountpoints.md), if you need to know detail
 
 <!-- TODO [new_backend]: finish release notes, explain new mount stuff -->
 
-- Implement [hooks](../decisions/4_partially_implemented/hooks.md). _(Maximilian Irlinger @atmaxinger)_
+- Implement [hooks](https://www.libelektra.org/decisions/hooks-in-kdb). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 - New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
 
-### Copy-on-Write within `libelektra-core`
+### Copy-on-Write
 
 Thanks to _(Maximilian Irlinger @atmaxinger)_ our `Key` and `KeySet` datastructures are now fully copy-on-write!
 This means noticeably reduced memory usage for cases where keys and keysets are copied and/or duplicated!
@@ -116,9 +116,13 @@ One interesting detail is that `keyCopy` and `keyDup` have become quite a bit fa
 This can be seen by comparing the differences between `createkeys.c` and `deepdup.c`.
 The differences are 21 ms for the old implementation and 12 ms for the copy-on-write implementation.
 
-### <<HIGHLIGHT>>
+### FLOSS
 
-### <<HIGHLIGHT>>
+A Free/Libre and Open Source Software (FLOSS) Initiative couldn't survive with many small contributions fixing annoying problems.
+This release also contains all contributions done via one term of the [FLOSS course](https://tiss.tuwien.ac.at/course/courseDetails.xhtml?courseNr=194114&semester=2022W).
+The success was tremendous, as shown in the rest of the release notes.
+
+A big thanks to the students for their contributions!
 
 ## Plugins
 
@@ -134,33 +138,28 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### list
 
-- Removed the `list` plugin. _(Maximilian Irlinger @atmaxinger)_
+- Removed the outdated `list` plugin. _(Maximilian Irlinger @atmaxinger)_
+  (Was only needed for global plugins, which are now replaced by [hooks](https://www.libelektra.org/decisions/hooks-in-kdb).)
 
 ### logchange
 
 - Made logchange a notification-send hook plugin _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
 
 ### website
 
-- Fix broken /pythongen link on homepage _(@stefnotch)_
+- Fix broken `/pythongen` link on homepage _(@stefnotch)_
 - Fix redirect logic to not cause loops _(@stefnotch)_
 - Remove duplicated link to `TESTING.md` file _(@stefnotch)_, _(@janldeboer)_
-- <<TODO>>
 - Restructure parts of the links on the website _(@stefnotch)_, _(@janldeboer)_
 - Removed broken links to packages for Linux distributions. _(@Dynamichost96)_
 
 ### toml
 
 - Fix bug, where meta-keys that cannot be inserted don't report an error _(@Bujuhu)_
-- <<TODO>>
-- <<TODO>>
 
 ### uname
 
 - Add error handling if uname call fails _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
 
 ### quickdump
 
@@ -173,7 +172,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### desktop
 
-- Provide unit tests _(Richard Stöckl @Eiskasten)_
+- Add a unit test _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
@@ -220,8 +219,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- Restructured [contrib/api](/doc/contrib/api) _(Markus Raab)_.
-- <<TODO>>
+- Global plugins do not work anymore, use [hooks](https://www.libelektra.org/decisions/hooks-in-kdb) instead.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -232,7 +230,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
 - The Key and KeySet datastructures are now fully copy-on-write. _(Maximilian Irlinger @atmaxinger)_
 - `keyCopy` now only allocates additional memory if `KEY_CP_META` or `KEY_CP_ALL` is used. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
@@ -244,7 +241,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### io
 
-- Check file flags for elektraIoFdSetFlags: file flags must be exactly one of: read only, write only or read write _(Richard Stöckl @Eiskasten)_
+- Check file flags for `elektraIoFdSetFlags`: file flags must be exactly one of: read only, write only or read write _(Richard Stöckl @Eiskasten)_
 - <<TODO>>
 - <<TODO>>
 
@@ -306,7 +303,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### elixir
 
-- Add Elixir binding _(@0x6178656c)_
+- Initial release of the Elixir binding _(@0x6178656c)_
 - <<TODO>>
 - Mark tests as `memleak` _(@0x6178656c)_
 
@@ -322,7 +319,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Removed `global-mount` and `global-umount` commands. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
-- Fixed SIGSEGV when using find without argument _(Christian Jonak-Moechel @joni1993)_
+- Fixed SIGSEGV when using `kdb find` without argument _(Christian Jonak-Moechel @joni1993)_
 
 ### elektrad
 
@@ -373,6 +370,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Documentation
 
+- Restructured [contrib/api](/doc/contrib/api) _(Markus Raab)_.
 - Improve page on compilation _(@0x6178656c)_
 - Improve page for bindings _(@0x6178656c)_
 - Improve page for getting started _(@stefnotch)_
@@ -381,7 +379,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Remove version number from docker README and replace it with latest _(@Joni1993)_
 - <<TODO>>
 - Fix grammar for `elektra-granularity.md` _(@dtdirect)_
-- Rephrase sections in doc/dev/error-\* _(@dtdirect)_
+- Rephrase sections in `doc/dev/error-\*` _(@dtdirect)_
 - Improve Git.md _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
 - Extend consistency check `check_doc.sh` to work for [contrib](/doc/contrib), [dev](/doc/dev) and [tutorials](/doc/tutorials) _(@Joni1993)_
@@ -400,7 +398,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Improve use of gender _(@0x6178656c)_
-- documentation: fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
+- fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
 - fix various spelling errors _(@Joni1993)_
 - <<TODO>>
 - <<TODO>>
@@ -410,7 +408,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Improve reference to Podman documentation _(@0x6178656c)_
 - <<TODO>>
 - <<TODO>>
-- Unify spelling of documentation _(@Joni1993)_
+- Unify spelling _(@Joni1993)_
 - <<TODO>>
 - Fix typo in dev/hooks.md _(@dtdirect)_
 - Remove unused images from doc/images _(@dtdirect)_
@@ -418,7 +416,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Fixed Coverage Badge Link _(@janldeboer)_
 - <<TODO>>
-- Improve CONTRIBUTING doc _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Improve CONTRIBUTING doc _(Juri Schreib @Bujuhu)_ and _(Nikola Prvulovic @Dynamichost96)_
 - <<TODO>>
 - Update Doxyfile with Doxygen 1.9.4 _(@0x6178656c)_
 - Add project logo to Doxygen in Doxyfile _(@dtdirect)_
@@ -463,7 +461,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Improve Use Cases [Template](/doc/usecases/template.md) _(@kodebach and Markus Raab)_
+- Improve use cases [Template](/doc/usecases/template.md) _(@kodebach and Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -489,8 +487,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Decide and implement [decision process](../decisions/4_partially_implemented/decision_process.md) _(Markus Raab)_
 - Decided future [library split](../decisions/3_decided/library_split.md) _(@kodebach)_
-- decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
-- draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
+- Decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
+- Draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
 - <<TODO>>
 - Add decision for [change tracking](../decisions/0_drafts/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
