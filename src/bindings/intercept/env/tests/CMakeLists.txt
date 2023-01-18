@@ -11,4 +11,6 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 # TODO: Fix memleak (cf. #4830)
-set_property (TEST "test_getenv" PROPERTY LABELS memleak)
+if (test_getenv)
+	set_property (TEST "test_getenv" PROPERTY LABELS memleak)
+endif ()
