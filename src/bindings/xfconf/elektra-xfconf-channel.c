@@ -194,11 +194,11 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
 static KeySet * keySet_from_channel (const gchar * channel_name)
 {
 	trace ();
-	gchar * keyName = malloc ((strlen (channel_name) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
-	sprintf (keyName, "%s/%s", XFCONF_ROOT, channel_name);
+	char * kdbKeyName = malloc ((strlen (channel_name) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
+	sprintf (kdbKeyName, "%s/%s", XFCONF_ROOT, channel_name);
 	ChannelKeySetPair * channelPair = find_or_create_channel_pair (channel_name);
-	Key * parentKey = keyNew (keyName, KEY_END);
-	g_debug ("Fetch keys from parent: %s", keyName);
+	Key * parentKey = keyNew (kdbKeyName, KEY_END);
+	g_debug ("Fetch keys from parent: %s", kdbKeyName);
 	int getStatusCode = kdbGet (elektraKdb, channelPair->keySet, parentKey);
 	switch (getStatusCode)
 	{
@@ -217,15 +217,15 @@ static KeySet * keySet_from_channel (const gchar * channel_name)
 	default:
 		g_warning ("An unknown status code(%d) occurred during keyset fetch", getStatusCode);
 	}
-	//	Key * cur;
-	//	gssize key_set_size = channel_pair->keySet->ks;
-	//	g_debug ("KeySet has %ld keys", key_set_size);
-	//	for (gssize i = 0; i < key_set_size; i++)
-	//	{
-	//		cur = gelektra_keyset_at (channel_pair->keySet, i);
-	//		g_debug ("Found key: %s", gelektra_key_name (cur));
-	//	}
-	//	free (key_name);
+	Key * cur;
+	ssize_t keySetSize = ksGetSize (channelPair->keySet);
+	g_debug ("KeySet has %ld keys", keySetSize);
+	for (elektraCursor i = 0; i < keySetSize; i++)
+	{
+		cur = ksAtCursor (channelPair->keySet, i);
+		g_debug ("Found key: %s", keyName (cur));
+	}
+	free (kdbKeyName);
 	return channelPair->keySet;
 }
 
