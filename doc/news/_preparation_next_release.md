@@ -308,7 +308,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Add Elixir binding _(@0x6178656c)_
 - <<TODO>>
-- <<TODO>>
+- Mark tests as `memleak` _(@0x6178656c)_
 
 ### <<Binding>>
 
