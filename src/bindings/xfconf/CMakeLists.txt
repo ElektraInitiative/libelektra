@@ -1,5 +1,3 @@
-cmake_minimum_required (VERSION 3.22)
-
 include (FindXfconf)
 
 if (NOT XFCONF_FOUND)
