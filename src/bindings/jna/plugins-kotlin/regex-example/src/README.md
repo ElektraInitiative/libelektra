@@ -12,7 +12,7 @@ To mount the plugin, use the following command:
 kdb mount-java config.ni user:/test/process kdb:ni java:org.libelektra.plugin.RegexExamplePlugin
 ```
 
-This will mount the file `config.ni` on mountpoint _user:/test/process_ with the KDB plugin _ni_ and the Java plugin _RegexExamplePlugin_.
+This will mount the file `config.ni` on mountpoint _user:/test/process_ with the KDB plugin _ni_ and the Kotlin plugin _RegexExamplePlugin_.
 
 #### Example usage
 
