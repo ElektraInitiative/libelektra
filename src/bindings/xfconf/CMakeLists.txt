@@ -1,10 +1,5 @@
 cmake_minimum_required (VERSION 3.22)
 
-project (
-	xfconfbinding
-	VERSION 0.0.1
-	LANGUAGES C)
-
 include (FindXfconf)
 
 if (NOT XFCONF_FOUND)
@@ -18,8 +13,12 @@ add_headers (ELEKTRA_HEADERS)
 
 include_directories (${GLIB_INCLUDE_DIRS})
 include_directories (${XFCONF_INCLUDE_DIRS})
-add_library (xfconfbinding SHARED elektra-xfconf.c elektra-xfconf-channel.c elektra-xfconf-binding.c elektra-xfconf-errors.c
-				  elektra-xfconf-types.c ${ELEKTRA_HEADERS})
+
+file (GLOB XFCONF_BINDING_HEADERS *.h)
+file (GLOB XFCONF_BINDING_SOURCES *.c)
+
+set (SOURCES ${XFCONF_BINDING_HEADERS} ${XFCONF_BINDING_SOURCES} ${ELEKTRA_HEADERS})
+add_library (xfconfbinding SHARED ${SOURCES})
 target_compile_definitions (xfconfbinding PRIVATE)
 target_link_libraries (xfconfbinding PUBLIC elektra-core elektra-kdb)
 
