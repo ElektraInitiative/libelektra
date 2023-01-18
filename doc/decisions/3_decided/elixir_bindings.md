@@ -9,7 +9,7 @@ The question is how this NIF interface should be implemented.
 ## Constraints
 
 1. Elektra's C API is given.
-2. The implementation should be completed in a given time frame.
+2. The implementation should be completed in a given time frame of around 20 to 40 person-hours.
 
 ## Assumptions
 
