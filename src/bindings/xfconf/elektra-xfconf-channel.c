@@ -199,7 +199,8 @@ static KeySet * keySet_from_channel (const gchar * channel_name)
 	ChannelKeySetPair * channelPair = find_or_create_channel_pair (channel_name);
 	Key * parentKey = keyNew (keyName, KEY_END);
 	g_debug ("Fetch keys from parent: %s", keyName);
-	switch (kdbGet (elektraKdb, channelPair->keySet, parentKey))
+	int getStatusCode = kdbGet (elektraKdb, channelPair->keySet, parentKey);
+	switch (getStatusCode)
 	{
 	case -1:
 		g_warning ("There was a failure fetching the keys");
@@ -210,8 +211,11 @@ static KeySet * keySet_from_channel (const gchar * channel_name)
 	case 1:
 		g_debug ("Retrieved the keyset");
 		break;
+	case 2:
+		g_debug ("No data was loaded from storage");
+		break;
 	default:
-		g_error ("An unknown error occurred during keyset fetch");
+		g_warning ("An unknown status code(%d) occurred during keyset fetch", getStatusCode);
 	}
 	//	Key * cur;
 	//	gssize key_set_size = channel_pair->keySet->ks;
