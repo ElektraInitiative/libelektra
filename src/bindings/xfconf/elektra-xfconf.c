@@ -36,4 +36,5 @@ void xfconf_array_free (GPtrArray * arr)
 gchar ** xfconf_list_channels (void)
 {
 	unimplemented ();
+	return NULL;
 }

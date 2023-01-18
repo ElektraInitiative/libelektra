@@ -5,18 +5,21 @@ gulong xfconf_g_property_bind (XfconfChannel * channel, const gchar * xfconf_pro
 			       const gchar * object_property)
 {
 	unimplemented ();
+	return 0;
 }
 
 gulong xfconf_g_property_bind_gdkcolor (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
 					const gchar * object_property)
 {
 	unimplemented ();
+	return 0;
 }
 
 gulong xfconf_g_property_bind_gdkrgba (XfconfChannel * channel, const gchar * xfconf_property, gpointer object,
 				       const gchar * object_property)
 {
 	unimplemented ();
+	return 0;
 }
 
 void xfconf_g_property_unbind (gulong id)

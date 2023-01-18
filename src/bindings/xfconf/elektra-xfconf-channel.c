@@ -334,6 +334,7 @@ gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * pro
 gboolean xfconf_channel_is_property_locked (XfconfChannel * channel, const gchar * property)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 void xfconf_channel_reset_property (XfconfChannel * channel, const gchar * property_base, gboolean recursive)
@@ -344,6 +345,7 @@ void xfconf_channel_reset_property (XfconfChannel * channel, const gchar * prope
 GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar * property_base)
 {
 	unimplemented ();
+	return NULL;
 }
 
 static const gchar * g_value_to_string (GValue * g_value)
@@ -364,6 +366,7 @@ static GValue * g_value_from_string (const gchar * str)
 gchar * xfconf_channel_get_string (XfconfChannel * channel, const gchar * property, const gchar * default_value)
 {
 	unimplemented ();
+	return "";
 }
 gboolean xfconf_channel_set_string (XfconfChannel * channel, const gchar * property, const gchar * value)
 {
@@ -374,73 +377,89 @@ gboolean xfconf_channel_set_string (XfconfChannel * channel, const gchar * prope
 gint32 xfconf_channel_get_int (XfconfChannel * channel, const gchar * property, gint32 default_value)
 {
 	unimplemented ();
+	return 0;
 }
 gboolean xfconf_channel_set_int (XfconfChannel * channel, const gchar * property, gint32 value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 static gint64 xfconf_channel_get_int64 (XfconfChannel * channel, const gchar * property, gint64 default_value)
 {
 	unimplemented ();
+	return 0;
 }
 static gboolean xfconf_channel_set_int64 (XfconfChannel * channel, const gchar * property, gint64 value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 guint32 xfconf_channel_get_uint (XfconfChannel * channel, const gchar * property, guint32 default_value)
 {
 	unimplemented ();
+	return 0;
 }
 gboolean xfconf_channel_set_uint (XfconfChannel * channel, const gchar * property, guint32 value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 guint64 xfconf_channel_get_uint64 (XfconfChannel * channel, const gchar * property, guint64 default_value)
 {
 	unimplemented ();
+	return 0;
 }
 gboolean xfconf_channel_set_uint64 (XfconfChannel * channel, const gchar * property, guint64 value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 static glong xfconf_channel_get_long (XfconfChannel * channel, const gchar * property, glong default_value)
 {
 	unimplemented ();
+	return 0;
 }
 static gboolean xfconf_channel_set_long (XfconfChannel * channel, const gchar * property, glong value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 static gulong xfconf_channel_get_ulong (XfconfChannel * channel, const gchar * property, gulong default_value)
 {
 	unimplemented ();
+	return 0;
 }
 static gboolean xfconf_channel_set_ulong (XfconfChannel * channel, const gchar * property, gulong value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 static gfloat xfconf_channel_get_float (XfconfChannel * channel, const gchar * property, gfloat default_value)
 {
 	unimplemented ();
+	return 0;
 }
 static gboolean xfconf_channel_set_float (XfconfChannel * channel, const gchar * property, gfloat value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 gdouble xfconf_channel_get_double (XfconfChannel * channel, const gchar * property, gdouble default_value)
 {
 	unimplemented ();
+	return 0;
 }
 gboolean xfconf_channel_set_double (XfconfChannel * channel, const gchar * property, gdouble value)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 gboolean xfconf_channel_get_bool (XfconfChannel * channel, const gchar * property, gboolean default_value)
@@ -469,10 +488,12 @@ gboolean xfconf_channel_set_bool (XfconfChannel * channel, const gchar * propert
 gchar ** xfconf_channel_get_string_list (XfconfChannel * channel, const gchar * property)
 {
 	unimplemented ();
+	return NULL;
 }
 gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * property, const gchar * const * values)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 /* really generic API - can set some value types that aren't
@@ -528,27 +549,33 @@ gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * pro
 gboolean xfconf_channel_get_array (XfconfChannel * channel, const gchar * property, GType first_value_type, ...)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_get_array_valist (XfconfChannel * channel, const gchar * property, GType first_value_type, va_list var_args)
 {
 	unimplemented ();
+	return FALSE;
 }
 GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * property)
 {
 	unimplemented ();
+	return NULL;
 }
 
 gboolean xfconf_channel_set_array (XfconfChannel * channel, const gchar * property, GType first_value_type, ...)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_set_array_valist (XfconfChannel * channel, const gchar * property, GType first_value_type, va_list var_args)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * property, GPtrArray * values)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 /* struct types */
@@ -556,39 +583,47 @@ gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * prope
 gboolean xfconf_channel_get_named_struct (XfconfChannel * channel, const gchar * property, const gchar * struct_name, gpointer value_struct)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_set_named_struct (XfconfChannel * channel, const gchar * property, const gchar * struct_name, gpointer value_struct)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 gboolean xfconf_channel_get_struct (XfconfChannel * channel, const gchar * property, gpointer value_struct, GType first_member_type, ...)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_get_struct_valist (XfconfChannel * channel, const gchar * property, gpointer value_struct, GType first_member_type,
 					   va_list var_args)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_get_structv (XfconfChannel * channel, const gchar * property, gpointer value_struct, guint n_members,
 				     GType * member_types)
 {
 	unimplemented ();
+	return FALSE;
 }
 
 gboolean xfconf_channel_set_struct (XfconfChannel * channel, const gchar * property, const gpointer value_struct, GType first_member_type,
 				    ...)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_set_struct_valist (XfconfChannel * channel, const gchar * property, const gpointer value_struct,
 					   GType first_member_type, va_list var_args)
 {
 	unimplemented ();
+	return FALSE;
 }
 gboolean xfconf_channel_set_structv (XfconfChannel * channel, const gchar * property, const gpointer value_struct, guint n_members,
 				     GType * member_types)
 {
 	unimplemented ();
+	return FALSE;
 }
