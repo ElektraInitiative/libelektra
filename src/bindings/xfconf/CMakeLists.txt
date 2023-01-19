@@ -17,7 +17,7 @@ file (GLOB XFCONF_BINDING_SOURCES *.c)
 
 set (SOURCES ${XFCONF_BINDING_HEADERS} ${XFCONF_BINDING_SOURCES} ${ELEKTRA_HEADERS})
 add_library (xfconfbinding SHARED ${SOURCES})
-target_compile_definitions (xfconfbinding PRIVATE)
+target_compile_options (xfconfbinding PUBLIC "-Wno-unused-function" "-Wno-unused-parameter")
 target_link_libraries (xfconfbinding PUBLIC elektra-core elektra-kdb)
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
