@@ -154,10 +154,10 @@ jobs:
       run: |
         if [ "$CC" = 'clang' ]; then
           # Use latest version of LLVM to translate Elektra
-          export CC="$(brew --prefix llvm@14)/bin/clang" CXX="$(brew --prefix llvm@14)/bin/clang++"
-          export LDFLAGS="-L$(brew --prefix llvm@14)/lib"
-          export CPPFLAGS="-I$(brew --prefix llvm@14)/include"
-          export PATH="$(brew --prefix llvm@14)/bin:$PATH"
+          export CC="$(brew --prefix llvm@15)/bin/clang" CXX="$(brew --prefix llvm@15)/bin/clang++"
+          export LDFLAGS="-L$(brew --prefix llvm@15)/lib"
+          export CPPFLAGS="-I$(brew --prefix llvm@15)/include"
+          export PATH="$(brew --prefix llvm@15)/bin:$PATH"
         fi
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
