@@ -9,4 +9,7 @@ npm audit --audit-level="low"
 cd "$SOURCE/src/tools/webui" || exit 1
 npm audit --audit-level="low"
 
+cd "$SOURCE/src/tools/website" || exit 1
+npm audit --audit-level="low"
+
 exit 0
