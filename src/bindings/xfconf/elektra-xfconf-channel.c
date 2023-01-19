@@ -189,6 +189,7 @@ XfconfChannel * xfconf_channel_new (const gchar * channel_name)
 XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_name, const gchar * property_base)
 {
 	unimplemented ();
+	return NULL;
 }
 
 static KeySet * keySet_from_channel (const gchar * channel_name)
@@ -357,9 +358,6 @@ static const gchar * g_value_to_string (GValue * g_value)
 	return g_value_get_string (&str);
 }
 
-static GValue * g_value_from_string (const gchar * str)
-{
-}
 
 /* basic types */
 
