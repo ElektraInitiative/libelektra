@@ -594,6 +594,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - Remove `--rerun-failed` from `run_*` scripts. _(@kodebach)_
+- Fix paths for icheck test. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
