@@ -11,8 +11,6 @@
 
 #include <kdb.h>
 
-#define MOUNTPOINTS_PATH "system:/elektra/mountpoints"
-
 /**
  * Adds options specification of mountpoint command to @spec
  *

@@ -10,6 +10,7 @@
 #include <mountpoint-mount.h>
 #include <mountpoint-remount.h>
 #include <mountpoint-umount.h>
+#include <mountpoint-list.h>
 #include <mountpoint.h>
 
 #include <kdb.h>
@@ -17,6 +18,7 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbmerge.h>
+#include <kdbmount.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -29,6 +31,7 @@ command mountSubcommands[] = {
 	{ "mount", addMountSpec, execMount },
 	{ "remount", addRemountSpec, execRemount },
 	{ "umount", addUmountSpec, execUmount },
+	{ "list", addMountpointListSpec, execMountpointList }
 };
 
 void addMountpointSpec (KeySet * spec)
@@ -57,7 +60,7 @@ int execMountpoint (KeySet * options, Key * errorKey)
 
 KeySet * getMountConfig (KDB * handle, Key * errorKey)
 {
-	Key * parent = keyNew (MOUNTPOINTS_PATH, KEY_END);
+	Key * parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
 	KeySet * mountInfo = ksNew (0, KS_END);
 	kdbGet (handle, mountInfo, parent);
 

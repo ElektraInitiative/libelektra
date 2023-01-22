@@ -61,7 +61,7 @@ if (BUILD_SHARED)
 		GLOB
 		KDB_FILES
 		kdb.c
-		mount.c
+		cmount.c
 		hooks.c
 		backends.c
 		plugin.c

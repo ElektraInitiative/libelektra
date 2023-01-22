@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+
 #define CLI_BASE_KEY "/sw/elektra/kdb/#0/current"
 
 #define ADD_BASIC_OPTIONS(baseSpec, baseKeyName)                                                                                           \
@@ -34,12 +35,14 @@
 		     keyNew (baseKeyName "/nonewline", KEY_META, "description", "Suppress the newline at the end of the output.",          \
 			     KEY_META, "opt", "n", KEY_META, "opt/long", "no-newline", KEY_META, "opt/arg", "none", KEY_END));
 
+
 #define GET_OPT_KEY(options, key) ksLookupByName (options, key, 0)
 #define GET_OPT(options, key) keyString (GET_OPT_KEY (options, key))
 
 #define OR(value, def)                                                                                                                     \
 	void * tmp = value;                                                                                                                \
 	tmp == NULL ? (def) : tmp
+
 #define HAS_ERR(errorKey) keyGetMeta (errorKey, "error/reason") != NULL
 #define GET_ERR(errorKey) keyString (keyGetMeta (errorKey, "error/reason"))
 #define COMMAND_BASE_KEY(name) CLI_BASE_KEY "/" name

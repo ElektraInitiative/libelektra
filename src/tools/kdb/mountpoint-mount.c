@@ -16,6 +16,7 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbmerge.h>
+#include <kdbmount.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -45,51 +46,147 @@ void addMountSpec (KeySet * spec)
 	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/resolver", KEY_META, "description",
 				   "Specify the resolver plugin to use.", KEY_META, "opt", "R", KEY_META, "opt/arg/help", "NAME", KEY_META,
 				   "opt/long", "resolver", KEY_META, "opt/arg", "required", KEY_END));
-
 	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/force", KEY_META, "description", "Force the action to be done.",
 				   KEY_META, "opt", "f", KEY_META, "opt/long", "force", KEY_META, "opt/arg", "none", KEY_END));
 	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/addrecommended", KEY_META, "description", "Add recommended plugins.",
 				   KEY_META, "opt", "W", KEY_META, "opt/long", "with-recommends", KEY_META, "opt/arg", "none", KEY_END));
-	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/nullterm", KEY_META, "description", "Use binary 0 termination.",
-				   KEY_META, "opt", "0", KEY_META, "opt/long", "null", KEY_META, "opt/arg", "none", KEY_END));
 
-	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/supfirst", KEY_META, "description", "Suppress the first column.",
-				   KEY_META, "opt", "1", KEY_META, "opt/long", "first", KEY_META, "opt/arg", "none", KEY_END));
-	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/supsecond", KEY_META, "description", "Suppress the second column.",
-				   KEY_META, "opt", "2", KEY_META, "opt/long", "second", KEY_META, "opt/arg", "none", KEY_END));
-	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME) "/supthird", KEY_META, "description", "Suppress the third column.",
-				   KEY_META, "opt", "3", KEY_META, "opt/long", "third", KEY_META, "opt/arg", "none", KEY_END));
-
-	ADD_BASIC_OPTIONS (spec, COMMAND_SPEC_KEY (COMMAND_NAME))
+	ADD_BASIC_OPTIONS (spec, COMMAND_SPEC_KEY (COMMAND_NAME));
 }
 
 int execMount (KeySet * options, Key * errorKey)
 {
-	int ret = 0;
-	bool verbose = false;
-	Key * tmp = GET_OPTION_KEY (options, "verbose");
-	if (tmp != NULL)
+	/* Options that can be set via command line arguments */
+	/* 1. Standard options */
+	/* TODO: Discuss the evaluation of global option (not specific to command) */
+	bool optDebug = false;
+	bool optVerbose = false;
+	bool optVersion = false;
+	bool optSuppressNewline = false;
+	/* TODO: Implement option */
+	const char * optProfile = NULL;
+	/* TODO: Implement option */
+	const char * optColor = NULL;
+
+	/* 2. Command-specific options */
+	bool optForce = false;
+	bool optQuiet = false;
+	bool optInteractive = false;
+	/* TODO: Decide where to put code for evaluation of option (currently also in cmerge.c) */
+	const char * optStrategy = NULL;
+	/* TODO: Implement option */
+	const char * optResolver = NULL;
+	int mergeStrategy = MERGE_STRATEGY_ABORT;
+
+	/* 3. Command arguments ("[path mountpoint] [plugin [config] [..]]" */
+	/* current simplified parameters: "kdb mount [options] [path mountpoint] [plugin]" */
+	const char * argPath = NULL;
+	const char * argMountpoint = NULL;
+	/* TODO: Support multiple plugins and arguments to plugins */
+	const char * argPlugin = NULL;
+	/* "With no arguments and not in interactive mode, the current mountpoints will be listed
+	 * Then the options -012 take effect (otherwise these options can be used to suppress warnings)
+	 * 1 and 2 will suppress the output of the respective column." (taken from legacy cpp-version of the mount-command) */
+	bool listMode = false;
+
+
+	const Key * tmp;
+	if ((tmp = GET_OPTION_KEY (options, "debug")))
+		elektraKeyToBoolean (tmp, &optDebug);
+	if ((tmp = GET_OPTION_KEY (options, "verbose")))
+		elektraKeyToBoolean (tmp, &optVerbose);
+	if ((tmp = GET_OPTION_KEY (options, "version")))
+		elektraKeyToBoolean (tmp, &optVersion);
+	if ((tmp = GET_OPTION_KEY (options, "nonewline")))
+		elektraKeyToBoolean (tmp, &optSuppressNewline);
+
+	/* command-specific options */
+	if ((tmp = GET_OPTION_KEY (options, "force")))
+		elektraKeyToBoolean (tmp, &optForce);
+	if ((tmp = GET_OPTION_KEY (options, "quiet")))
+		elektraKeyToBoolean (tmp, &optQuiet);
+	if ((tmp = GET_OPTION_KEY (options, "interactive")))
+		elektraKeyToBoolean (tmp, &optInteractive);
+
+	/* TODO: Remove code duplication (code for processing strategy-parameter is also present in cmerge.c */
+	if ((tmp = GET_OPTION_KEY (options, "strategy")))
 	{
-		elektraKeyToBoolean (GET_OPTION_KEY (options, "verbose"), &verbose);
+		elektraKeyToString (tmp, &optStrategy);
+		if (elektraStrCmp (optStrategy, "our") == 0)
+		{
+			mergeStrategy = MERGE_STRATEGY_OUR;
+		}
+		else if (elektraStrCmp (optStrategy, "their") == 0)
+		{
+			mergeStrategy = MERGE_STRATEGY_THEIR;
+		}
+		else if (elektraStrCmp (optStrategy, "abort") != 0)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "'%s' is not a valid strategy.", optStrategy);
+			return 1;
+		}
 	}
 
-	const char * path = GET_OPTION (options, "path");
-
-	const char * mountpoint = getKeyNameFromOptions (options, GET_OPTION (options, "mountpoint"), errorKey, verbose);
-	if (mountpoint == NULL) return 1;
-
-	Key * arrayParent = GET_OPTION_KEY (options, "plugins");
-	KeySet * plugins = elektraArrayGet (arrayParent, options);
-
-	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
+	/* Command arguments */
+	if ((argPath = getKeyNameFromOptions (options, GET_OPTION(options, "path"), errorKey, optVerbose)) == NULL)
 	{
-		printf ("PLUGIN ->  %s\n", keyString (ksAtCursor (plugins, i)));
+		// no path specified, just list the current mountpoints
+		listMode = true;
 	}
-	printf ("\n");
+	if ((argMountpoint = getKeyNameFromOptions (options, GET_OPTION(options, "mountpoint"), errorKey, optVerbose)) == NULL)
+	{
+		elektraFree ((void *) argPath);
+		return 1;
+	}
+	if ((argPlugin = getKeyNameFromOptions (options, GET_OPTION(options, "plugin"), errorKey, optVerbose)) == NULL)
+	{
+		elektraFree ((void *) argMountpoint);
+		elektraFree ((void *) argPath);
+		return 1;
+	}
 
-	KDB * handle = kdbOpen (NULL, errorKey);
-	KeySet * currentMountConfig = getMountConfig (handle, errorKey);
-	Key * mountpointKey = keyNew (mountpoint, KEY_END);
-	printKsNames (currentMountConfig);
-	printf ("MOUNT");
+
+	/* Actual business logic of the command */
+	/* TODO: Refactor the reduce number of arguments! */
+	cReadMountConf (false, false, false, false, optVerbose, optDebug);
+
+	KDB * const kdbHandle = kdbOpen (0, errorKey);
+	KeySet * mountConf = ksNew (0, KS_END);
+	Key * const parentKey = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+	if (!kdbHandle || !mountConf || !parentKey)
+	{
+		elektraFree ((void *) argMountpoint);
+		elektraFree ((void *) argPath);
+		elektraFree ((void *) argPlugin);
+
+		if (parentKey)
+			keyDel (parentKey);
+		if (mountConf)
+			ksDel (mountConf);
+		if (kdbHandle)
+			kdbClose (kdbHandle, errorKey);
+
+		return 1;
+	}
+
+	/* TODO: Add error handling (see file mountbase.cpp) */
+	kdbSet (kdbHandle, mountConf, parentKey);
+
+	/* TODO: Check 2nd argument (numArgs) */
+	cProcessArguments (optInteractive, (int) ksGetSize(options));
+	cGetMountpoint (mountConf, optInteractive);
+	/* TODO: give full pugins config */
+	cBuildBackend (mountConf, argMountpoint, optForce, mergeStrategy, optInteractive, argPlugin);
+
+	/* TODO: Not yet implemented function calls in CPP:
+	 * askForConfirmation (cl);
+	 * doIt ();
+	 */
+
+	/* cleanup */
+	elektraFree ((void *) argMountpoint);
+	elektraFree ((void *) argPath);
+	elektraFree ((void *) argPlugin);
+
+	return 0;
 }
