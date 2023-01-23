@@ -65,59 +65,37 @@ The library `libelektra-core` must be kept minimal.
 
 - False negatives (missed changes) are not okay
 
-## Considered Alternatives
+## Solutions - Storage
 
-### Alternative 1 - Tracking within `libelektra-kdb`
+### Utilize already existing `backendData->keys`
 
-Do the tracking within `libelektra-kdb`, within the `kdbGet` and `kdbSet` operations.
+We already store which keys have been returned by `kdbGet` for each backend within KDB.
+Currently, those are shallow copies.
+To be useful for changetracking, we need to perform deep copies instead.
+As keys and keysets are already utilizing copy-on-write, this would not add too much memory overhead.
 
-Essentially, we'd have an internal cache for all keys that were used returned by a `kdbGet` operation in the lifetime of the `kdb` instance.
-We also need to update it on `kdbSet` so that a future `kdbSet` operation without a `kdbGet` will also work.
+A problem with this approach is that the internally stored keys are recreated as new instances every time `kdbGet` is called.
 
-This approach does not limit which sequences of `kdbGet` and `kdbSet` calls are valid.
+### Combine with internal cache
 
-With Elektra's global copy-on-write approach, the memory overhead of this approach shouldn't be too concerning.
+We already decided that we want to have an internal deep-duped keysets of all the keys we returned.
+See [internal cache decision](../3_decided/internal_cache.md).
 
-### Alternative 2 - Tracking with meta keys
+The difference to `backendData->keys` is that this cache is not recreated each time `kdbGet` is called.
 
-Do the tracking within `libelektra-kdb`, but with meta keys.
+### Have a seperate storage for changetracking
 
-Essentially the same approach as above, but instead of deep-duping, we add the original value
-as a metakey to every key. Not yet clear how we handle changes to metadata then.
+Have a global keyset with deep-duped keys that is purely used for changetracking and nothing else.
 
-### Alternative 3 - Change tracking within a separate plugin
+### Store changes as meta keys
 
-Outsource the change tracking into a separate plugin.
+When something changes for the first time, store the original value as a metakey to every key. 
+Not yet clear how we handle changes to metadata then.
+Also not really possible for keysets.
 
-Essentially the same as (1), just that it is implemented within a plugin and not `libelektra-kdb`.
-This will be a hook plugin, and will be called within `kdbGet` and `kdbSet` accordingly.
-It will also need to export a hook-method to get the changeset.
-
-The following hooks will be needed:
-
-- `tracking/get`: wil be called at the end of `kdbGet`, directly before the result is returned.
-- `tracking/set/preliminary`: will be called at the beginning of `kdbSet` and after every step/phase in `kdbSet`.
-  We need this to have change tracking information as soon as possible, so that plugins in any step of the process can use this information.  
-   Also, plugins in every step of the process might change data, so it is important to call it after every step.
-- `tracking/set/final`: will be called in the `post-commit` phase, after all changes have been written to disk, but before the `notification/send` hook.
-  Represents the final, real changes to the KDB.
-- `tracking/changeset`: compute the changeset for the requested parent key and return it.
-
-### Alternative 4 - Copy-on-write change tracking within `libelektra-core`
+### Implement changetracking as a mechanismn on the `Key` and `KeySet` datastructures
 
 The idea here is that we extend the `KeySet` and `Key` structs with additional fields.
-
-We need to extend `KeySet` with the following info:
-
-- What keys have been removed
-- What keys have been added
-- Whether tracking is enabled for this KeySet
-
-We need to extend `Key` with the following info:
-
-- Original value of the key
-- Size of the original value (for binary keys)
-- Whether tracking is enabled for this key
 
 The tracking itself would be done within the `ks*` and `key*` methods, after checking if it is enabled.
 It would also transparently work for metadata, as metadata itself is implemented as a keyset with keys.
@@ -135,18 +113,51 @@ Downsides of this approach:
 - Another downside here is that it is not so easy to determine what the "original" value is.
   Some part of `libelektra-kdb` would need to mark the keys as original (after transformations etc.)
 
-### Alternative 5 - Use `backendData->keys` for change tracking
+## Solutions - Implementation
 
-Use the `backendData->keys` for change tracking
+### Implement directly within `libelektra-kdb`
 
-We already store which keys have been returned by `kdbGet` for each backend within KDB.
-Currently, however, this is not a deep copy, as we are returning the internally stored `Key` instances directly.
-This means we can not detect changes to the values or metadata of keys right now.
-We can, however, rely on this for detecting removed and added keys in its current form.
+Implement all the logic for changetracking directly within `libelektra-kdb`.
 
-As we now implement copy-on-write for all keys and keysets within Elektra, we can deep copy what we return in `kdbGet`.
+### Implement as a seperate plugin
 
-Another problem with this approach is that the internally stored keys are recreated as new instances every time `kdbGet` is called.
+Implement changetracking as a hooks plugin that will be called within `kdbGet` and `kdbSet` accordingly.
+
+The following hooks will be needed:
+
+- `tracking/get`: will be called at the end of `kdbGet`, directly before the result is returned.
+- `tracking/set/preliminary`: will be called at the beginning of `kdbSet` and after every step/phase in `kdbSet`.
+  We need this to have change tracking information as soon as possible, so that plugins in any step of the process can use this information.  
+   Also, plugins in every step of the process might change data, so it is important to call it after every step.
+- `tracking/set/final`: will be called in the `post-commit` phase, after all changes have been written to disk, but before the `notification/send` hook.
+  Represents the final, real changes to the KDB.
+- `tracking/changeset`: compute the changeset for the requested parent key and return it.
+
+## Solutions - Query
+
+### Provide an API within `libelektra-kdb`
+
+The API should be useable both by plugins and applications utilizing ELektra.
+The API may look something like this:
+
+```c
+bool elektraChangeTrackingIsEnabled (KDB * kdb);
+ChangeTrackingContext * elektraChangeTrackingGetContext (KDB * kdb, Key * parentKey);
+
+KeySet * elektraChangeTrackingGetAddedKeys (ChangeTrackingContext * context);
+KeySet * elektraChangeTrackingGetRemovedKeys (ChangeTrackingContext * context);
+KeySet * elektraChangeTrackingGetModifiedKeys (ChangeTrackingContext * context);
+
+bool elektraChangeTrackingValueChanged (ChangeTrackingContext * context, Key * key);
+bool elektraChangeTrackingMetaChanged (ChangeTrackingContext * context, Key * key);
+
+KeySet * elektraChangeTrackingGetAddedMetaKeys (ChangeTrackingContext * context, Key * key);
+KeySet * elektraChangeTrackingGetRemovedMetaKeys (ChangeTrackingContext * context, Key * key);
+KeySet * elektraChangeTrackingGetModifiedMetaKeys (ChangeTrackingContext * context, Key * key);
+
+Key * elektraChangeTrackingGetOriginalKey (ChangeTrackingContext * context, Key * key);
+const Key * elektraChangeTrackingGetOriginalMetaKey (ChangeTrackingContext * context, Key * key, const char * metaName);
+```
 
 ## Decision
 
