@@ -15,7 +15,7 @@ More specifically, problems have been observed in conjunction with the following
 - notification plugins
 - plugins that do change tracking
 
-The problem, in general, can be described as: Which phase of the KDB should be used for notifications/change tracking?
+The problem, in general, can be described as: Which representation of the KDB should be used for notifications/change tracking?
 
 We differentiate between:
 
