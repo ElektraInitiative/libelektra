@@ -77,6 +77,8 @@ const char * getKeyNameFromOptions (KeySet * options, const char * rawName, Key 
 	return result;
 }
 
+
+
 void cliPrint (char * fmtBuffer, int logLevel, int minLogLevel, const char * fmt, ...)
 {
 	if (logLevel < minLogLevel)
