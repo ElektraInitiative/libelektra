@@ -113,7 +113,7 @@ int execMount (KeySet * options, Key * errorKey)
 		else if (elektraStrCmp (optStrategy, "abort") != 0)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "'%s' is not a valid strategy.", optStrategy);
-			return 1;
+			return -1;
 		}
 	}
 
@@ -122,12 +122,23 @@ int execMount (KeySet * options, Key * errorKey)
 	{
 		/* no path specified */
 		/* TODO: Decide if list mountpoints instead of returning error code */
-		return 1;
+		return -1;
 	}
+
 	if ((argMountpoint = getKeyNameFromOptions (options, GET_OPTION(options, "mountpoint"), errorKey, optVerbose)) == NULL)
 	{
-		//elektraFree ((void *) argPath);
-		return 1;
+		//TODO: Error handling (mountpoint is not a valid keyname)
+		return -1;
+	}
+
+	Key * keyMp = keyNew (argMountpoint, KEY_END);
+	elektraNamespace keyMpNs = keyGetNamespace (keyMp);
+	if (!optQuiet && *argPath == '/' && keyMpNs != KEY_NS_SYSTEM && keyMpNs != KEY_NS_SPEC && keyMpNs != KEY_NS_CASCADING)
+	{
+		printf("Note that absolute paths are still relative to their namespace (see `kdb plugin-info resolver`).\n");
+		printf("Only system+spec mountpoints are actually absolute.\n");
+		printf("Use `kdb file %s` to determine where the file(s) are.\n", argMountpoint);
+		printf("Use `-q` or use `kdb set %s/quiet 1` to suppress infos.\n", CLI_BASE_KEY);
 	}
 
 	Key * pluginsArrayParent = GET_OPTION_KEY (options, "plugins");
@@ -136,8 +147,7 @@ int execMount (KeySet * options, Key * errorKey)
 	if (!plugins)
 	{
 		elektraFree ((void *) argMountpoint);
-		//elektraFree ((void *) argPath);
-		return 1;
+		return -1;
 	}
 
 	for (elektraCursor it = 0; optVerbose && it < ksGetSize (plugins); ++it)
@@ -162,14 +172,10 @@ int execMount (KeySet * options, Key * errorKey)
 		if (kdbHandle)
 			kdbClose (kdbHandle, errorKey);
 
-		return 1;
+		return -1;
 	}
 
-	/* TODO: Check 2nd argument (numArgs), maybe remove interactive mounting*/
-	//cProcessArguments (optInteractive, (int) ksGetSize(options));
-
-	cGetMountpoint (mountConf, optInteractive);
-	/* TODO: give full pugins config */
+	/* TODO: give full plugins config */
 	cBuildBackend (mountConf, argMountpoint, optForce, mergeStrategy, optInteractive, NULL);
 
 	/* TODO: Not yet implemented function calls in CPP:
@@ -177,8 +183,36 @@ int execMount (KeySet * options, Key * errorKey)
 	 * doIt ();
 	 */
 
-	/* cleanup */
+
 	elektraFree ((void *) argMountpoint);
+
+
+	if (optDebug)
+	{
+		printf("The configuration which will be set is:\n");
+		for (elektraCursor it = 0; it < ksGetSize (mountConf); ++it)
+		{
+			Key * cur = ksAtCursor (mountConf, it);
+			printf ("%s %s\n", keyName (cur), keyString(cur));
+		}
+		printf("Now writing the mountpoint configuration.");
+	}
+
+	/* Finally really write out the mountpoint config */
+	Key * parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+
+	if (kdbSet (kdbHandle, mountConf, parent) < 0)
+	{
+		fprintf (stderr, "IMPORTANT: Sorry, I am unable to write your requested mountpoint to system:/elektra/mountpoints.\n");
+		fprintf (stderr, "           You can get the problematic file name by reading the elektra system file (kdb file %s).\n", DEFAULT_MOUNTPOINTS_PATH);
+		fprintf (stderr, "           Usually you need to be root for this operation (try `sudo !!`).\n");
+
+		ksDel (mountConf);
+		kdbClose (kdbHandle, errorKey);
+		return -1;
+	}
+
+	/* cleanup */
 	ksDel (mountConf);
 	kdbClose (kdbHandle, errorKey);
 
