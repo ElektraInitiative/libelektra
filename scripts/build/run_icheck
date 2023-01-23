@@ -5,7 +5,7 @@
 # ===========
 
 SCRIPTS_DIR=$(dirname "$0")
-cd "$SCRIPTS_DIR/.." || exit
+cd "$SCRIPTS_DIR/../.." || exit
 BASE_DIR="$(pwd)"
 BUILD_DIR="$BASE_DIR/build"
 ICHECK_DIR="$BASE_DIR/icheck"
