@@ -7,7 +7,6 @@
 
 
 
-
 /* Read mount configuration from the KDB
  * Make sure to ksDel(...) the returned KeySet */
 KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath)
@@ -32,94 +31,43 @@ KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountp
 }
 
 
-void cOutputMtab (const KeySet * const mountConf, bool clFirst, bool clSecond, bool clNull)
+void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull)
 {
 	// in c++: Vector with BackendInfo-structs
-	struct cListBackendInfo * const mtab = cGetBackendInfo (mountConf);
+	KeySet * mtab = getBackendInfo (mountConf);
 	char delim = clNull ? '\0' : '\n';
 
-	for (const struct cListBackendInfo * it = mtab; it; it = mtab->next)
+	for (elektraCursor it = 0; it < ksGetSize (mtab); ++it)
 	{
+		Key * cur = ksAtCursor (mtab, it);
 		if (!clFirst)
 		{
-			printf ("%s", it->backendInfo.path);
+			printf ("%s", keyString (cur));
 			if (!clSecond)
 			{
 				printf (" on ");
 			}
 			else
 			{
-				printf("%s%c", it->backendInfo.mountpoint, delim);
+				printf("%s%c", keyName (cur), delim);
 			}
 		}
 
 		if (!clSecond)
 		{
-			printf ("%s%c", it->backendInfo.mountpoint, delim);
+			printf ("%s%c", keyName (cur), delim);
 		}
 	}
 
-	freeListBackendInfo (mtab);
+	ksDel (mtab);
 }
 
 
-void cProcessArguments (bool clInteractive, int numArgs)
+
+void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, bool clForce, bool clDebug, int mergeStrategy, const char * const resolverName)
 {
-	if (!clInteractive && numArgs == 1)
-	{
-		/* TODO: Implement error handling */
-		fprintf(stderr, "Wrong number of arguments, 0 or more than 1 needed!");
-	}
-
-	if (clInteractive)
-	{
-		puts ("Welcome to interactive mounting");
-		puts ("Note that nothing will be made persistent");
-		puts("until you say y at the very end of the mounting process\n");
-	}
-}
-
-
-const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive)
-{
-	const Key * keyCur;
-
-	if (clInteractive)
-	{
-		puts ("Already used are: ");
-
-		for (elektraCursor it = 0; it < ksGetSize (mountconf); it++)
-		{
-			keyCur = ksAtCursor (mountconf, it);
-			if (!strcmp (keyBaseName (keyCur), "mountpoint"))
-			{
-				printf ("%s ", keyString (keyCur));
-			}
-		}
-
-		puts ("\nPlease start with / for a cascading backend");
-		puts ("Enter the mountpoint: ");
-		/* TODO: read user input
-		 * C++:  cin >> mp; */
-	}
-	else
-	{
-		/* TODO: use GET_OPTION_KEY from PR #4438
-		 * C++: mp = cl.createKey (1).getName (); */
-	}
-
-	/* TODO: return mp (string) */
-	return NULL;
-}
-
-
-void cBuildBackend (KeySet * const mountconf, const char * const mountpoint, bool clForce, int mergeStrategy, bool clInteractive, const char * const pluginsconfig)
-{
-	const Key * const keyMountpoint = keyNew (mountpoint, KEY_END);
-
-	/* TODO: implement Backend-related code (C++ classes) in C
-	 * MountBackendBuilder backend; */
-
+	//TODO: Maybe directly require a key as parameter (instead of the keyname)
+	Key * const keyMountpoint = keyNew (mountPoint, KEY_END);
 	if (!keyMountpoint)
 	{
 		/* TODO: Implement error handling
@@ -127,23 +75,331 @@ void cBuildBackend (KeySet * const mountconf, const char * const mountpoint, boo
 		return;
 	}
 
-	const KeySet * const ksDupMountConf = ksDup (mountconf);
+	KeySet * const ksDupMountConf = ksDup (mountConf);
 
-	/* TODO: Strategy was "preserve" in cpp-code, check merging for mounting */
-	if (clForce || mergeStrategy == MERGE_STRATEGY_ABORT)
+	/* TODO: Strategy was "!=preserve" in cpp-code, check merging for mounting */
+	if (clForce || mergeStrategy != MERGE_STRATEGY_ABORT)
 	{
-		/* TODO: 1st parameter is mountpointsPath (taken src/libs/tools/src/backends.cpp)
-	 * --> define constant at better place! */
-		Key * const cutKey = keyNew ("system:/elektra/mountpoints", KEY_END);
-		keyAddBaseName (cutKey, mountpoint);
-		KeySet * ksCutted = ksCut (mountconf, cutKey);
+		Key * const cutKey = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+		keyAddBaseName (cutKey, mountPoint);
+		KeySet * ksCutted = ksCut (mountConf, cutKey);
 		/* We don't need the cut-out KeySet, but only the changed mountconf KeySet */
 		ksDel (ksCutted);
+		keyDel (cutKey);
 	}
 
-	/* C++: backend.setMountpoint (mpk, mountConf);
-	 * backend.setBackendConfig (cl.getPluginsConfig ("system:/"));*/
+	if(!isValidMountPoint (keyMountpoint, mountConf))
+	{
+		/* TODO: error handling */
+		return;
+	}
 
+	if (clDebug)
+	{
+		printf ("Trying to load the resolver plugin %s\n", resolverName);
+	}
+
+
+	if (clDebug)
+	{
+		printf ("Trying to add default plugins\n");
+	}
+
+
+	keyDel (keyMountpoint);
+	ksDel (ksDupMountConf);
+
+
+
+
+}
+
+
+bool isValidMountPoint (Key * mountPoint, KeySet * mountConf)
+{
+	KeySet * backendInfos = getBackendInfo (mountConf);
+	KeySet * alreadyUsedMountpoints = ksNew (0, KS_END);
+
+	/* handle cascading mountpoints (multiple namespaces) */
+	for (elektraCursor it = 0; it < ksGetSize (backendInfos); ++it)
+	{
+		Key * cur = ksAtCursor (backendInfos, it);
+		if (cur)
+		{
+			const char * curKeyName = keyName (cur);
+			if (keyGetNameSize (cur) == 2 && *curKeyName == '/')
+			{
+				Key * curNamespaceKey = keyNew ("spec:/", KEY_END);
+				ksAppendKey (alreadyUsedMountpoints, curNamespaceKey);
+
+				curNamespaceKey = keyNew ("dir:/", KEY_END);
+				ksAppendKey (alreadyUsedMountpoints, curNamespaceKey);
+
+				curNamespaceKey = keyNew ("user:/", KEY_END);
+				ksAppendKey (alreadyUsedMountpoints, curNamespaceKey);
+
+				curNamespaceKey = keyNew ("system:/", KEY_END);
+				ksAppendKey (alreadyUsedMountpoints, curNamespaceKey);
+			}
+			else if (keyGetNameSize (cur) > 1 && *curKeyName == '/')
+			{
+				char * tmpStr = elektraMalloc (strlen("system:") + keyGetNameSize(cur)); /* includes \0 */
+
+				strcpy(tmpStr, "dir:");
+				strcat (tmpStr, curKeyName);
+				Key * curNamespaceKey = keyNew (tmpStr, KEY_END);
+				ksAppendKey (alreadyUsedMountpoints, curNamespaceKey);
+
+				strcpy(tmpStr, "user:");
+				strcat (tmpStr, curKeyName);
+				curNamespaceKey = keyNew (tmpStr, KEY_END);
+				ksAppendKey (alreadyUsedMountpoints, curNamespaceKey);
+
+				strcpy(tmpStr, "system:");
+				strcat (tmpStr, curKeyName);
+				curNamespaceKey = keyNew (tmpStr, KEY_END);
+				ksAppendKey (alreadyUsedMountpoints, curNamespaceKey);
+
+				elektraFree (tmpStr);
+			}
+
+			/* always add current key itself, too */
+			ksAppendKey (alreadyUsedMountpoints, cur);
+		}
+		else
+		{
+			/* TODO: handle error */
+		}
+	}
+
+	/* STEP 0: CHeck for null key */
+	if (!mountPoint)
+	{
+		// TODO: set error key (was exception in c++ code)
+		fprintf (stderr, "Null mountpoint not allowed!\n");
+		ksDel (backendInfos);
+		ksDel (alreadyUsedMountpoints);
+		return false;
+	}
+
+	/* STEP 1: Check for empty name */
+	if (keyGetNameSize (mountPoint) < 2) /* \0 is counted --> len >= 2 for non-empty string */
+	{
+		// TODO: set error key (was exception in c++ code)
+		fprintf (stderr, "Empty mountpoint not allowed!\n");
+		ksDel (backendInfos);
+		ksDel (alreadyUsedMountpoints);
+		return false;
+	}
+
+	/* STEP 2: Check for wrong namespace (proc) */
+	if (keyGetNamespace (mountPoint) == KEY_NS_PROC)
+	{
+		// TODO: set error key (was exception in c++ code)
+		fprintf (stderr, "proc:/ mountpoint not allowed!\n");
+		ksDel (backendInfos);
+		ksDel (alreadyUsedMountpoints);
+		return false;
+	}
+
+	/* STEP 3: Check for name match */
+	const char * mpName = keyName (mountPoint);
+	if (keyGetNameSize (mountPoint) == 2 && *mpName == '/')
+	{
+
+		if (ksLookupByName (alreadyUsedMountpoints, "/", KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Root mountpoint not possible, because the root mountpoint already exists!\n");
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		if (ksLookupByName (alreadyUsedMountpoints, "spec:/", KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Root mountpoint not possible, because spec mountpoint already exists!\n");
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		if (ksLookupByName (alreadyUsedMountpoints, "dir:/", KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Root mountpoint not possible, because dir mountpoint already exists!\n");
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		if (ksLookupByName (alreadyUsedMountpoints, "user:/", KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Root mountpoint not possible, because user mountpoint already exists!\n");
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		if (ksLookupByName (alreadyUsedMountpoints, "system:/", KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Root mountpoint not possible, because system mountpoint already exists!\n");
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+	}
+	else if (keyGetNameSize (mountPoint) > 2 && *mpName == '/')
+	{
+		if (ksLookupByName (alreadyUsedMountpoints, mpName, KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Cascading mountpoint %s not possible, because cascading mountpoint %s already exists.\n", mpName, mpName);ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		char * tmpStr = elektraMalloc (keyGetNameSize (mountPoint) + strlen ("system:"));
+
+		strcpy (tmpStr, "dir:");
+		strcat (tmpStr, mpName);
+		if (ksLookupByName (alreadyUsedMountpoints, tmpStr, KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Cascading mountpoint %s not possible, because dir mountpoint already exists.\n", mpName);
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		strcpy (tmpStr, "user:");
+		strcat (tmpStr, mpName);
+		if (ksLookupByName (alreadyUsedMountpoints, tmpStr, KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Cascading mountpoint %s not possible, because user mountpoint already exists.\n", mpName);
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		strcpy (tmpStr, "system:");
+		strcat (tmpStr, mpName);
+		if (ksLookupByName (alreadyUsedMountpoints, tmpStr, KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			fprintf (stderr, "Cascading mountpoint %s not possible, because system mountpoint already exists.\n", mpName);
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+
+		elektraFree (tmpStr);
+	}
+	else
+	{
+		if (ksLookupByName (alreadyUsedMountpoints, mpName, KDB_O_NONE))
+		{
+			// TODO: set error key (was exception in c++ code)
+			// TODO: list used names in error message (see /src/libs/tools/src/backend.cpp:213)
+			fprintf (stderr, "Mountpoint %s is one of the already used names!\n", mpName);
+			ksDel (backendInfos);
+			ksDel (alreadyUsedMountpoints);
+			return false;
+		}
+	}
+
+	ksDel (alreadyUsedMountpoints);
+	ksDel (backendInfos);
+
+	/* TODO: STEP 4: Check if mounted below system:/elektra */
+	Key * elektraCheck = keyDup (mountPoint, KEY_CP_NAME);
+
+	/* Remove namespace */
+	for (int i = 0; i < keyGetNameSize (elektraCheck); ++i)
+	{
+		if (*(mpName + i) == ':')
+		{
+			keySetName (elektraCheck, mpName + i + 1);
+		}
+	}
+
+	Key * elektraKey = keyNew ("/elektra", KEY_END);
+	if (keyIsBelowOrSame (elektraKey, elektraCheck))
+	{
+		// TODO: set error key (was exception in c++ code)
+		fprintf (stderr, "Mountpoint %s is below the reserved names /elektra because it would cause inconsistencies in this or future versions.\n", mpName);
+	}
+
+	keyDel (elektraKey);
+	keyDel (elektraCheck);
+
+
+	/* Everything worked */
+	return true;
+}
+
+/**
+ * @brief give info about current mounted backends
+ *
+ * @param mountConf a keyset that contains everything below
+ * DEFAULT_MOUNTPOINTS_PATH
+ *
+ * @return an Keyset with Keys that contain information about mounted backends
+ * the keyname is the mountpoint, the value of the key is the path
+ */
+KeySet * getBackendInfo (KeySet * mountConf)
+{
+	if (!mountConf || ksGetSize (mountConf) <= 0)
+	{
+		return NULL;
+	}
+
+	Key * rootKey = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+	KeySet * result = ksNew (0, KS_END);
+
+	if (!rootKey || !result)
+	{
+		/* TODO: error handling */
+	}
+
+	for (elektraCursor it = 0; it < ksGetSize (mountConf); ++it)
+	{
+		Key * cur = ksAtCursor (mountConf, it);
+		if (keyIsDirectlyBelow(rootKey, cur))
+		{
+			size_t lenLookup = keyGetNameSize (cur); /* includes \0 */
+			if (lenLookup > 1)
+			{
+				lenLookup += strlen ("/definition/path");
+				char * strLookup = elektraMalloc (lenLookup);
+				strcpy (strLookup, keyName (cur));
+				strcat (strLookup, "/definition/path");
+				Key * path = ksLookupByName (mountConf, strLookup, KDB_O_NONE);
+				elektraFree (strLookup);
+
+				/* keyname = mountpoint */
+				Key * curBackendInfo = keyNew (keyBaseName (cur), KEY_END);
+				if (path)
+				{
+					/* value of key = path */
+					keySetString (curBackendInfo, keyString (path));
+				}
+				ksAppendKey (result, curBackendInfo);
+			}
+			else
+			{
+				/* TODO: handle error */
+			}
+		}
+	}
+
+	keyDel (rootKey);
+	return result;
 }
 
 
