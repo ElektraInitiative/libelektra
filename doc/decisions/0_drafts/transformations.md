@@ -2,10 +2,10 @@
 
 ## Problem
 
-Certain plugins, e.g. `rename`, perform extensive transformations on keys and keysets within Elektra.
+Certain plugins, e.g. `rename`, perform transformations on keys and keysets within Elektra.
 Those transformations include, but are not limited to:
 
-- Changing the names of the keys inbetween `kdbGet` and `kdbSet` operations
+- Changing the names of the keys back and forth
 - Changing values back and forth for normalization, e.g. `true` -> `1`, `1` -> `true`
 - Adding and removing metadata
 
@@ -17,10 +17,10 @@ More specifically, problems have been observed in conjunction with the following
 
 The problem, in general, can be described as: Which phase of the KDB should be used for notifications/change tracking?
 
-We differentiate between three types:
+We differentiate between:
 
-- _stored_ name/value/metadata: How it is actually stored, i.e. the state returned by and passed to the `storage` plugins.
-- _runtime_ name/value/metadata: How it is at runtime, i.e. what is returned by `kdbGet` and passed to `kdbSet`.
+- _persistent_ name/value/metadata: How it is actually stored, i.e. the state returned by and passed to the `storage` plugins.
+- _transient_ name/value/metadata: How it is at runtime, i.e. what is returned by `kdbGet` and passed to `kdbSet`.
 - _intermediate_ name/value/metadata: Any state inbetween the two.
 
 ### Observed problems with changing key names
@@ -62,7 +62,7 @@ user:/limits/openfiles = 1
 ```
 
 If the user changes the value, e.g. using `kdb set user:/limits/openfiles 23`, plugins will observe the new value `23`.
-However, the value-changing plugin will reset that value back to `1`.
+The value-changing plugin, however, will reset that value back to `1`.
 So in practice, the configuration has not been changed.
 Plugins relying on change tracking plugins (e.g. notification plugins) will however think that it has.
 
@@ -126,7 +126,7 @@ Something similar could be done for the value of a key as well.
 ### Introduce a new phase for transformations
 
 We could also introduce a new phase between before/after storage exclusively for transformations.
-Then we can just do a "fake" call to that phase to get back the runtime names for change tracking.
+Then we can just do a "fake" call to that phase to get back the transient names for change tracking.
 
 ## Decision
 

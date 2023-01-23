@@ -102,10 +102,10 @@
 - [Metadata](elektra-metadata.md):
   Allows us to describe configuration settings.
 
-- **stored name/value/metadata**:
+- **persistent name/value/metadata**:
   How it is actually stored, i.e. the state returned by and passed to the `storage` plugins.
 
-- **runtime name/value/metadata**:
+- **transient name/value/metadata**:
   How it is at runtime, i.e. what is returned by `kdbGet` and passed to `kdbSet`.
 
 - **intermediate name/value/metadata**:
