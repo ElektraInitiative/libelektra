@@ -31,11 +31,11 @@ struct cListBackendInfo {
 /* Actual mounting functionality */
 
 /* TODO: from mountbase.cpp */
-const KeySet * cReadMountConf (bool clNull, bool clFirst, bool clSecond, bool clThird, bool clVerbose, bool clDebug);
+KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath);
 const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive);
 
 /* TODO: from mount.cpp */
-void cOutputMtab (KeySet * const mountConf, bool clFirst, bool clSecond, bool clNull);
+void cOutputMtab (const KeySet * const mountConf, bool clFirst, bool clSecond, bool clNull);
 void cProcessArguments (bool clInteractive, int numArgs);
 void cBuildBackend (KeySet * const mountconf, const char * const mountpoint, bool clForce, int mergeStrategy, bool clInteractive, const char * const pluginsconfig);
 

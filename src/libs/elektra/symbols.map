@@ -14,7 +14,7 @@ libelektra_0.8 {
 	cGetMountpoint;
 	cBuildBackend;
 	cOutputMtab;
-	cReadMountConf;
+	getMountConfig;
 
 	# kdbhelper.h
 	elektraCalloc;

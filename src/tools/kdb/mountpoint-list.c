@@ -6,18 +6,11 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <cmerge.h>
 #include <command.h>
 #include <mountpoint-list.h>
-#include <mountpoint.h>
-
 #include <kdb.h>
-#include <kdbassert.h>
 #include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbmerge.h>
 #include <kdbmount.h>
-#include <stdio.h>
 #include <string.h>
 
 #define COMMAND_NAME "mountpoint/list"
@@ -86,7 +79,7 @@ int execMountpointList (KeySet * options, Key * errorKey)
 	KDB * const kdbHandle = kdbOpen (0, errorKey);
 	if(kdbHandle)
 	{
-		KeySet * mountConf = getMountConfig (kdbHandle, errorKey);
+		const KeySet * const mountConf = getMountConfig (kdbHandle, errorKey, NULL);
 		if (mountConf)
 		{
 			cOutputMtab (mountConf, optSuppressFirstColumn, optSuppressSecondColumn, optUseBinaryNullTermination);

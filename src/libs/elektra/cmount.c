@@ -10,35 +10,29 @@
 
 /* Read mount configuration from the KDB
  * Make sure to ksDel(...) the returned KeySet */
-const KeySet * cReadMountConf (const bool clNull, const bool clFirst, const bool clSecond, const bool clThird, const bool clVerbose, const bool clDebug)
+KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath)
 {
-	Key * const errorKey = keyNew ("system:/elektra/mountpoints/error", KEY_END);
-	KDB * const kdbHandle = kdbOpen (0, errorKey);
+	Key * parent = NULL;
 
-	/* TODO: 1st parameter is mountpointsPath (taken src/libs/tools/src/backends.cpp)
-	 * --> define constant at better place! */
-	Key * const parentKey = keyNew ("system:/elektra/mountpoints", KEY_END);
-	KeySet * const mountConf = ksNew (0, KS_END); /* was a class variable in c++, now changed to return type */
-	const int ret = kdbGet (kdbHandle, mountConf, parentKey);
+	if (!mountpointsPath || !*mountpointsPath)
+		parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+	else
+		parent = keyNew (mountpointsPath, KEY_END);
 
-	kdbClose (kdbHandle, errorKey);
-	keyDel (errorKey);
-
-	if (ret == -1)
+	KeySet * mountInfo = ksNew (0, KS_END);
+	if (kdbGet (handle, mountInfo, parent) == -1)
 	{
 		/* TODO: Implement error handling */
 	}
 
-	if (!clNull && clFirst && clSecond && clThird)
-		cPrintWarnings (parentKey, clVerbose, clDebug);
+	/* TODO: maybe print warnings(or add them to error key) */
 
-	keyDel (parentKey);
-
-	return mountConf;
+	keyDel (parent);
+	return mountInfo;
 }
 
 
-void cOutputMtab (KeySet * const mountConf, bool clFirst, bool clSecond, bool clNull)
+void cOutputMtab (const KeySet * const mountConf, bool clFirst, bool clSecond, bool clNull)
 {
 	// in c++: Vector with BackendInfo-structs
 	struct cListBackendInfo * const mtab = cGetBackendInfo (mountConf);
@@ -115,6 +109,7 @@ const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive)
 	}
 
 	/* TODO: return mp (string) */
+	return NULL;
 }
 
 

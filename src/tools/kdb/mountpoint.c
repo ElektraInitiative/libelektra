@@ -57,15 +57,3 @@ int execMountpoint (KeySet * options, Key * errorKey)
 		}
 	}
 }
-
-KeySet * getMountConfig (KDB * handle, Key * errorKey)
-{
-	Key * parent = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
-	KeySet * mountInfo = ksNew (0, KS_END);
-	kdbGet (handle, mountInfo, parent);
-
-	// TODO: maybe print warnings(or add them to error key)
-
-	keyDel (parent);
-	return mountInfo;
-}

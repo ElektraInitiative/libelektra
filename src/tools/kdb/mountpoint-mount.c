@@ -6,11 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <cmerge.h>
 #include <command.h>
 #include <mountpoint-mount.h>
-#include <mountpoint.h>
-
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbease.h>
@@ -82,13 +79,6 @@ int execMount (KeySet * options, Key * errorKey)
 	/* current simplified parameters: "kdb mount [options] [path mountpoint] [plugin]" */
 	const char * argPath = NULL;
 	const char * argMountpoint = NULL;
-	/* TODO: Support multiple plugins and arguments to plugins */
-	const char * argPlugin = NULL;
-	/* "With no arguments and not in interactive mode, the current mountpoints will be listed
-	 * Then the options -012 take effect (otherwise these options can be used to suppress warnings)
-	 * 1 and 2 will suppress the output of the respective column." (taken from legacy cpp-version of the mount-command) */
-	bool listMode = false;
-
 
 	const Key * tmp;
 	if ((tmp = GET_OPTION_KEY (options, "debug")))
@@ -128,39 +118,45 @@ int execMount (KeySet * options, Key * errorKey)
 	}
 
 	/* Command arguments */
-	if ((argPath = getKeyNameFromOptions (options, GET_OPTION(options, "path"), errorKey, optVerbose)) == NULL)
+	if ((argPath = GET_OPTION(options, "path")) == NULL)
 	{
-		// no path specified, just list the current mountpoints
-		listMode = true;
+		/* no path specified */
+		/* TODO: Decide if list mountpoints instead of returning error code */
+		return 1;
 	}
 	if ((argMountpoint = getKeyNameFromOptions (options, GET_OPTION(options, "mountpoint"), errorKey, optVerbose)) == NULL)
 	{
-		elektraFree ((void *) argPath);
+		//elektraFree ((void *) argPath);
 		return 1;
 	}
-	if ((argPlugin = getKeyNameFromOptions (options, GET_OPTION(options, "plugin"), errorKey, optVerbose)) == NULL)
+
+	Key * pluginsArrayParent = GET_OPTION_KEY (options, "plugins");
+	KeySet * plugins = elektraArrayGet (pluginsArrayParent, options);
+
+	if (!plugins)
 	{
 		elektraFree ((void *) argMountpoint);
-		elektraFree ((void *) argPath);
+		//elektraFree ((void *) argPath);
 		return 1;
 	}
 
+	for (elektraCursor it = 0; optVerbose && it < ksGetSize (plugins); ++it)
+	{
+		printf ("PLUGIN ->  %s\n", keyString (ksAtCursor (plugins, it)));
+	}
+	ksDel (plugins);
+	keyDel (pluginsArrayParent);
 
-	/* Actual business logic of the command */
-	/* TODO: Refactor the reduce number of arguments! */
-	cReadMountConf (false, false, false, false, optVerbose, optDebug);
+
 
 	KDB * const kdbHandle = kdbOpen (0, errorKey);
-	KeySet * mountConf = ksNew (0, KS_END);
-	Key * const parentKey = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
-	if (!kdbHandle || !mountConf || !parentKey)
+	KeySet * const mountConf = getMountConfig (kdbHandle, errorKey, NULL);
+
+	if (!kdbHandle || !mountConf)
 	{
 		elektraFree ((void *) argMountpoint);
-		elektraFree ((void *) argPath);
-		elektraFree ((void *) argPlugin);
+		/* argPath must not be freed! (directly taken from Keyset, not dupped) */
 
-		if (parentKey)
-			keyDel (parentKey);
 		if (mountConf)
 			ksDel (mountConf);
 		if (kdbHandle)
@@ -169,14 +165,12 @@ int execMount (KeySet * options, Key * errorKey)
 		return 1;
 	}
 
-	/* TODO: Add error handling (see file mountbase.cpp) */
-	kdbSet (kdbHandle, mountConf, parentKey);
+	/* TODO: Check 2nd argument (numArgs), maybe remove interactive mounting*/
+	//cProcessArguments (optInteractive, (int) ksGetSize(options));
 
-	/* TODO: Check 2nd argument (numArgs) */
-	cProcessArguments (optInteractive, (int) ksGetSize(options));
 	cGetMountpoint (mountConf, optInteractive);
 	/* TODO: give full pugins config */
-	cBuildBackend (mountConf, argMountpoint, optForce, mergeStrategy, optInteractive, argPlugin);
+	cBuildBackend (mountConf, argMountpoint, optForce, mergeStrategy, optInteractive, NULL);
 
 	/* TODO: Not yet implemented function calls in CPP:
 	 * askForConfirmation (cl);
@@ -185,8 +179,8 @@ int execMount (KeySet * options, Key * errorKey)
 
 	/* cleanup */
 	elektraFree ((void *) argMountpoint);
-	elektraFree ((void *) argPath);
-	elektraFree ((void *) argPlugin);
+	ksDel (mountConf);
+	kdbClose (kdbHandle, errorKey);
 
 	return 0;
 }
