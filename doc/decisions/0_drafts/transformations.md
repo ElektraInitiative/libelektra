@@ -163,6 +163,8 @@ We also need to provide a simple API to plugins to register such callbacks for a
 
 As the transformations for existing keys will be applied before `kdbSet`, this will elimate false positives in changetracking.
 
+A drawback to this solution is that it adds some complexity to `libelektra-core`.
+
 ## Decision
 
 ## Rationale
