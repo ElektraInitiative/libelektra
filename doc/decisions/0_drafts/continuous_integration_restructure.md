@@ -9,7 +9,7 @@ Some stages such as the spell-checker run quite late which is not required.
 This can lead into the circumstance, that a commit will be fully built by the CI only to fail at the end because of some misspellings.
 
 Sometimes, changes occur completely independent of the libelektra repository and let the CI fail without any changes.
-A recent example for this is the modification of the macOS base image which introduced an incompatible version of python.
+A recent example for this is the modification of the macOS base image which introduced an incompatible version of Python.
 
 Another regularly occurring error is a failure during fetching the docker images which lets also fail the CI.
 Although the result is the same, this can have multiple causes such as the `no space left on device` message or a network problem during pulling the images.
