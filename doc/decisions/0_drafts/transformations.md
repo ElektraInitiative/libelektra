@@ -7,7 +7,6 @@ Those transformations include, but are not limited to:
 
 - Changing the names of the keys back and forth
 - Changing values back and forth for normalization, e.g. `true` -> `1`, `1` -> `true`
-- Adding and removing metadata
 
 While these features are useful, they do create feature-interaction problems.
 More specifically, problems have been observed in conjunction with the following (overlapping) types of plugins:
@@ -65,10 +64,6 @@ If the user changes the value, e.g. using `kdb set user:/limits/openfiles 23`, p
 The value-changing plugin, however, will reset that value back to `1`.
 So in practice, the configuration has not been changed.
 Plugins relying on change tracking plugins (e.g. notification plugins) will however think that it has.
-
-### Observed problems with adding and removing metadata
-
-This is a bit of a mixture between changing key names and changing values.
 
 ## Constraints
 
