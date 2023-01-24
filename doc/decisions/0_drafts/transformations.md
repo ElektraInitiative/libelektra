@@ -73,10 +73,9 @@ Plugins relying on change tracking plugins (e.g. notification plugins) will howe
 
 ## Assumptions
 
-1. 
-2. False positives for change tracking algorithms are only a minor problem.
-3. There is no reason to modify or delete existing `meta:/` keys.
-4. Newly generated `meta:/...` keys can
+1. False positives for change tracking algorithms are only a minor problem.
+2. There is no reason to modify or delete existing `meta:/` keys.
+3. Newly generated `meta:/...` keys can
    - either stay and get permanently stored during `kdbSet`
    - or be written as `meta:/generated/...`.
      The `meta:/generated/...` metakeys are never stored and are automatically removed during `kdbSet` before `storage` is called.
@@ -122,6 +121,16 @@ Something similar could be done for the value of a key as well.
 
 We could also introduce a new phase between before/after storage exclusively for transformations.
 Then we can just do a "fake" call to that phase to get back the transient names for change tracking.
+
+### Call value transformation plugin(s) when `keySetValue` / `keySetString` is called
+
+After a value has been set by the user, call the transformation plugin.
+We could store those callbacks as metakeys, i.e. `meta:/generated/transformation/value/callback/#1`.
+
+In `keySetRaw` we then call all those callbacks.
+We also need to provide a simple API to plugins to register such callbacks for a key.
+
+As the transformations will be applied before `kdbSet`, this will elimate lots of possible false positives in changetracking.
 
 ## Decision
 
