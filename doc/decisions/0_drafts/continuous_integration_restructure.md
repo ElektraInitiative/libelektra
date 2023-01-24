@@ -44,7 +44,7 @@ There exists a [Pull-Request](https://github.com/ElektraInitiative/libelektra/is
 ### Introducing a Spelling Threshold
 
 Introducing a spelling threshold can be useful to not let the CI always fail on a single spelling error.
-The idea behind this is to fix a certain threshold which let the CI fail if too much spelling errors occur in the repositry.
+The idea behind this is to fix a certain threshold which let the CI fail if too much spelling errors occur in the repository.
 A badge within the [readme](../../../README.md) can be used to display the current state of that.
 
 ## Decision
