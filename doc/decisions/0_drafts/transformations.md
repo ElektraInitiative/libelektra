@@ -74,6 +74,7 @@ Plugins relying on change tracking plugins (e.g. notification plugins) will howe
 ## Assumptions
 
 1. False positives for change tracking algorithms are only a minor problem.
+   False positives are that changes are detected, even though nothing changed.
 2. There is no reason to modify or delete existing `meta:/` keys.
 3. Newly generated `meta:/...` keys can
    - either stay and get permanently stored during `kdbSet`
