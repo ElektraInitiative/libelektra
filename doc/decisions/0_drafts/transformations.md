@@ -127,11 +127,41 @@ Then we can just do a "fake" call to that phase to get back the transient names 
 
 After a value has been set by the user, call the transformation plugin.
 We could store those callbacks as metakeys, i.e. `meta:/generated/transformation/value/callback/#1`.
+Alternatively, we could implement a linked list or other data structure for the callbacks.
 
-In `keySetRaw` we then call all those callbacks.
+```c
+struct callback {
+    callback_fn function;
+    struct callback * next;
+}
+```
+
+There will be 3 possibilities where transformations take place:
+
+1. For keys with a registered callback: 
+   - Within `keySetValue` / `keySetString` the callbacks are called.
+2. For new keys, i.e. keys without a callback: 
+   - Within `kdbSet`, as it is now.
+3. For new keys that override keys with an intact callback:
+   - Within `ksAppend` and/or `ksAppendKey` the callbacks are copied from the original key and then executed on the new key.
+
+
+```c
+kdbGet (kdb, ks, parent);
+// ks contains two keys: 
+//  - user:/limits/openfiles
+//  - user:/background/color
+
+Key * background = ksLookupByName(ks, "user:/background/color", 0);
+keySetString(background, "#ff00ff"); // (1) -> callbacks are called.
+ksAppendKey (ks, keyNew ("user:/my/key", KEY_VALUE, "1234", KEY_END); // (2) -> transformation will happen inside kdbSet
+ksAppendKey (ks, keyNew ("user:/limits/openfiles", KEY_VALUE, "23", KEY_END); // (3) -> replaces existing key, callbacks of existing key are copied and then executed
+kdbSet (kdb, ks, parent);
+```
+
 We also need to provide a simple API to plugins to register such callbacks for a key.
 
-As the transformations will be applied before `kdbSet`, this will elimate lots of possible false positives in changetracking.
+As the transformations for existing keys will be applied before `kdbSet`, this will elimate false positives in changetracking.
 
 ## Decision
 
