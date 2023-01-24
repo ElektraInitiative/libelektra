@@ -67,13 +67,13 @@ Plugins relying on change tracking plugins (e.g. notification plugins) will howe
 
 ## Constraints
 
-1.
-2.
+1. We want to enable some kind of transformations
+2. Renaming keys should be possible, at least in storage plugins
 3.
 
 ## Assumptions
 
-1. We want to enable some kind of transformations
+1. 
 2. False positives for change tracking algorithms are only a minor problem.
 3. There is no reason to modify or delete existing `meta:/` keys.
 4. Newly generated `meta:/...` keys can
