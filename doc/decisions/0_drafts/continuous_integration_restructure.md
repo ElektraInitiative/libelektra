@@ -24,7 +24,7 @@ Although the result is the same, this can have multiple causes such as the `no s
 ## Available Options
 
 As this topic is quite complex, the considered options are not mutually exclusive, but are intended to be combined instead.
-For this reason, some of them are already mention within this draft.
+For this reason, some of them are already mentioned within this draft.
 
 ### Reducing The Stages
 
