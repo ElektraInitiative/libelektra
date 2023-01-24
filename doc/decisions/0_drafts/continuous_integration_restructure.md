@@ -21,7 +21,7 @@ Although the result is the same, this can have multiple causes such as the `no s
 
 ## Assumptions
 
-## Available Options
+## Solutions
 
 As this topic is quite complex, the considered options are not mutually exclusive, but are intended to be combined instead.
 For this reason, some of them are already mentioned within this draft.
@@ -46,8 +46,6 @@ There exists a [Pull-Request](https://github.com/ElektraInitiative/libelektra/is
 Introducing a spelling threshold can be useful to not let the CI always fail on a single spelling error.
 The idea behind this is to fix a certain threshold which let the CI fail if too much spelling errors occur in the repositry.
 A badge within the [readme](../../../README.md) can be used to display the current state of that.
-
-## Considered Alternatives
 
 ## Decision
 
