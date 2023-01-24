@@ -454,6 +454,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Improved description on how to conduct API reviews _(@lawli3t)_
 
 ### Use Cases
 
