@@ -54,7 +54,7 @@ The library `libelektra-core` must be kept minimal.
 - It is possible to design a single change tracking API that is useful for all existing and future plugins
 - False positivies are okay
 
-  - this may happend when some keys may have been changed by the user, but have subsequentially been "unchanged" by a transformation plugin
+  - this may happend when some keys have been changed by the user, but have subsequentially been "unchanged" by a transformation plugin
     Scenario: plugin that converts `false`<->`0` and `true`<->`1`
     - `system:/background` is stored with value `false`
     - user gets key `system:/background` with value `0` (after conversion by plugin)
@@ -62,6 +62,8 @@ The library `libelektra-core` must be kept minimal.
     - changetracking detects that value has been changed, because `false` != `0`
     - plugin changes value from `false` to `0`
     - consumers of the changetracking API will now get a false positive if they query whether `system:/background` has been changed
+    - We assume consumers of the changetracking API have access to both the previous and the new value of a changed key.
+      Therefore, they could detect these false positive cases, if the need to.
 
 - False negatives (missed changes) are not okay
 
