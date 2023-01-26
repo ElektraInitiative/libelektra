@@ -3,13 +3,10 @@
 import argparse
 import sys
 from io import FileIO
-from typing import Dict, List, Callable, Optional, Set, Tuple
+from typing import Dict, Optional, Set, Tuple, Union
 
-from attr import dataclass
+from dataclasses import dataclass
 
-from pprint import pprint
-
-from kdb import kdb
 from kdb.kdb import Key, KeySet
 
 PARENT = "system:/elektra"
@@ -21,7 +18,7 @@ def parse_dump(file: FileIO) -> KeySet:
 
     keys = KeySet()
     lastKey: Key
-    while (line := file.readline()) != "":
+    for line in file:
         if line.startswith(b"$key"):
             [_, type, nsizestr, vsizestr] = line.split(b" ")
             nsize = int(nsizestr)
