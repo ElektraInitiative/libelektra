@@ -3,19 +3,19 @@
 ## Problem
 
 A `Key` has a value, that much is clear.
-From the ["`Key` value types" decision](../3_decided/key_value_types.md) we know that all values are opaque byte-sequences of a known length.
+From the ["`Key` value types" decision](../0_drafts/key_value_types.md) we know that all values are opaque byte-sequences of a known length.
 
-The current API (at the time of writing), does not match the ["`Key` value types" decision](../3_decided/key_value_types.md) and needs to be redesigned.
+The current API (at the time of writing), does not match the ["`Key` value types" decision](../0_drafts/key_value_types.md) and needs to be redesigned.
 The aim of this decision is not to solve a specific problem with the current API, but instead to answer the general question:
 How should the API for accessing and modifying the value of a `Key` look?
 
-A simple solution to make the API match the ["`Key` value types" decision](../3_decided/key_value_types.md) would be to just remove the parts that are string-typed and keep the binary parts.
+A simple solution to make the API match the ["`Key` value types" decision](../0_drafts/key_value_types.md) would be to just remove the parts that are string-typed and keep the binary parts.
 While that is simple, it is in no way clear that this would be a good solution.
 Therefore, we need to explore and compare our options.
 
 ## Constraints
 
-- All values are opaque byte-sequences because of the ["`Key` value types" decision](../3_decided/key_value_types.md)
+- All values are opaque byte-sequences because of the ["`Key` value types" decision](../0_drafts/key_value_types.md)
 
 ## Assumptions
 

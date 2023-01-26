@@ -545,7 +545,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Rewrite decisions about key values into [`Key` value types](../decisions/3_decided/key_value_types.md) and [`Key` value API](../decisions/0_drafts/key_value.md). _(@kodebach)_
+- Rewrite decisions about key values into [`Key` value types](../decisions/0_drafts/key_value_types.md) and [`Key` value API](../decisions/0_drafts/key_value.md). _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
