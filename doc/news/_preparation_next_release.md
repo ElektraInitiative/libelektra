@@ -490,7 +490,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add decisions for [constructor functions](../decisions/0_drafts/constructor_functions.md) and [builder functions](../decisions/0_drafts/builder_functions.md). _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
