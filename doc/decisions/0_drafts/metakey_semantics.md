@@ -157,7 +157,7 @@ However, that still has some obvious issues:
   That means shuffling around the array in the `KeySet`, which may be worse than the duplicate memory for the new metakey.
 
 Clearly this is **not** a viable solution to the problem.
-But the good thing is we can solve these issues, because of the [COW implementation](../1_in_discussion/copy_on_write.md).
+But the good thing is we can solve these issues, because of the [COW implementation](../2_in_progress/copy_on_write.md).
 
 To solve the issues mentioned above, `spec` needs to do a few things differently:
 
@@ -251,6 +251,6 @@ Therefore, the `keyData` pointers will only be the same if the value was not mod
 
 ## Related Decisions
 
-- [Copy On Write](../1_in_discussion/copy_on_write.md)
+- [Copy On Write](../2_in_progress/copy_on_write.md)
 
 ## Notes
