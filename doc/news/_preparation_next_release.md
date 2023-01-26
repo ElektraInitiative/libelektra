@@ -497,7 +497,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add decisions about [location of headers](../decisions/3_decided/header_file_structure.md) and [use of `#include`](../decisions/3_decided/header_include.md) in the repo _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add decision about [metadata semantics](../decisions/0_drafts/metakey_semantics.md) _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
