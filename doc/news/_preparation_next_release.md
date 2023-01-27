@@ -242,6 +242,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### io
 
 - Check file flags for `elektraIoFdSetFlags`: file flags must be exactly one of: read only, write only or read write _(Richard Stöckl @Eiskasten)_
+
 ### Merge
 
 - Add methods `elektraMergeGetConflictingKeys` and `elektraMergeIsKeyConflicting` to check which keys were causing a merge conflict _(Maximilian Irlinger @atmaxinger)_.
