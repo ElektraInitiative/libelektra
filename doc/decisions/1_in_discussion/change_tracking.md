@@ -91,7 +91,7 @@ Have a global keyset with deep-duped keys that is purely used for changetracking
 
 ### Store changes as meta keys
 
-When something changes for the first time, store the original value as a metakey to every key. 
+When something changes for the first time, store the original value as a metakey to every key.
 Not yet clear how we handle changes to metadata then.
 Also not really possible for keysets.
 
