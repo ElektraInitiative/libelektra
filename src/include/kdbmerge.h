@@ -25,7 +25,7 @@ enum MergeStrategy
 {
 	MERGE_STRATEGY_ABORT = 1, /*!< Abort merging if a conflict occurs */
 	// MERGE_STRATEGY_INTERACTIVE = 2, /*!< Perform an interactive conflict resolution. Currently not implemented */
-	MERGE_STRATEGY_OUR = 3, /*!< Prefer our keys in case of conflict */
+	MERGE_STRATEGY_OUR = 3,	  /*!< Prefer our keys in case of conflict */
 	MERGE_STRATEGY_THEIR = 4, /*!< Prefer their keys in case of conflict */
 };
 

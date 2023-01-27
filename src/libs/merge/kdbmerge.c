@@ -1,9 +1,9 @@
 #include "kdbmerge.h"
 #include "kdb.h"
 #include "kdbassert.h"
+#include "kdbease.h"
 #include "kdberrors.h"
 #include "kdblogger.h"
-#include "kdbease.h"
 #include "kdbprivate.h" // for ksFindHierarchy
 
 #include <stdbool.h>
@@ -32,7 +32,7 @@ static Key * removeRootFromKey (const Key * currentKey, const Key * root, Key * 
  */
 enum BaseIndicator
 {
-	BASE_CHECKED_SET = 0,     /*!< base Key(Set) is the checked Key(Set) */
+	BASE_CHECKED_SET = 0,	  /*!< base Key(Set) is the checked Key(Set) */
 	BASE_FIRST_COMPARED = 1,  /*!< base Key(Set) is the first compared Key(Set) */
 	BASE_SECOND_COMPARED = 2, /*!< base Key(Set) is the second compared Key(Set) */
 };
@@ -1040,7 +1040,8 @@ static int numberOfConflictMarkers (const char * text)
  * @retval 0 on success
  * @retval -1 on error
  */
-static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey, enum MergeStrategy strategy)
+static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, KeySet * resultSet, Key * informationKey,
+			 enum MergeStrategy strategy)
 {
 	ELEKTRA_LOG ("cmerge now handles arrays");
 	KeySet * toAppend = NULL;
