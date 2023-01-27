@@ -345,13 +345,6 @@ KeySet * elektraMergeGetConflictingKeys (Key * informationKey, Key * root)
 	return conflictingKeys;
 }
 
-int ELEKTRA_SYMVER (getConflicts, v1) (Key * informationKey)
-{
-	return elektraMergeGetConflicts (informationKey);
-}
-
-ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", getConflicts, v1)
-
 /**
  * This function returns the number of conflicts that is store in the key
  *
