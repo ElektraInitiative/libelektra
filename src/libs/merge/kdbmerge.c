@@ -279,7 +279,8 @@ static bool isSpecifiedRootPartOfMerge (Key * informationKey, const char * root)
  * @param informationKey The information key of the merge session
  * @param root The root key (either for base, theirs, ours or result) that was used in the merge session
  * @param key That key that should be checked. Must be located under the specified root key
- * @return true if the key was part of a conflict, false if the key was not part of a conflict or the given root was not part of the merge
+ * @retval 1 if the key was part of a conflict
+ * @retval 0 if the key was not part of a conflict or the given root was not part of the merge
  */
 bool elektraMergeIsKeyConflicting (Key * informationKey, Key * root, Key * key)
 {
