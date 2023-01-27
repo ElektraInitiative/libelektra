@@ -128,12 +128,11 @@ Implement changetracking as a hooks plugin that will be called within `kdbGet` a
 The following hooks will be needed:
 
 - `tracking/get`: will be called at the end of `kdbGet`, directly before the result is returned.
-- `tracking/set/preliminary`: will be called at the beginning of `kdbSet` and after every step/phase in `kdbSet`.
-  We need this to have change tracking information as soon as possible, so that plugins in any step of the process can use this information.  
-   Also, plugins in every step of the process might change data, so it is important to call it after every step.
-- `tracking/set/final`: will be called in the `post-commit` phase, after all changes have been written to disk, but before the `notification/send` hook.
-  Represents the final, real changes to the KDB.
+- `tracking/set`: will be called at the beginning of `kdbSet`.
 - `tracking/changeset`: compute the changeset for the requested parent key and return it.
+
+As every hook plugin can define its own contract, in theory all storage forms mentioned in the previous chapter should be possible to implement.
+We could just point the plugin to `backendsData->keys` or the internal cache if we go down that route.
 
 ## Solutions - Query
 
