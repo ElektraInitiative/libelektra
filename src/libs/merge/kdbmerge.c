@@ -3,8 +3,9 @@
 #include "kdbassert.h"
 #include "kdberrors.h"
 #include "kdblogger.h"
-#include "kdbprivate.h"
-#include <ctype.h>
+#include "kdbease.h"
+#include "kdbprivate.h" // for ksFindHierarchy
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
