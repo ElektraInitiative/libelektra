@@ -14,7 +14,7 @@
 
 
 ckdb::KeySet * elektraMerge (ckdb::KeySet * our, ckdb::Key * ourRoot, ckdb::KeySet * their, ckdb::Key * theirRoot, ckdb::KeySet * base, ckdb::Key * baseRoot, ckdb::Key * resultKey,
-		       int strategy, ckdb::Key * informationKey);
+		      ckdb::MergeStrategy strategy, ckdb::Key * informationKey);
 int elektraMergeGetConflicts (ckdb::Key * informationKey);
 
 %pythoncode {
