@@ -275,6 +275,7 @@ static bool isSpecifiedRootPartOfMerge (Key * informationKey, const char * root)
 
 /**
  * Check whether the given key was part of a conflict.
+ *
  * NOTE: Even if the conflict was resolved via the provided conflict strategy, the key will still be marked as being part of a conflict.
  *
  * @param informationKey The information key of the merge session
