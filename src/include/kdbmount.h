@@ -14,23 +14,7 @@ extern "C" {
 
 #define DEFAULT_MOUNTPOINTS_PATH "system:/elektra/mountpoints"
 
-//TODO: Replace with keyset (keyname = mountpoint, value = path)
-struct cBackendInfo {
-	/* where the backend is mounted */
-	const char * mountpoint;
-	/* The configuration file path to this backend */
-	const char * path;
-};
-
-/* Linked List for BackendInfo structs */
-struct cListBackendInfo {
-	struct cBackendInfo backendInfo;
-	struct cListBackendInfo * next;
-};
-
-
 /* Actual mounting functionality */
-
 /* TODO: from mountbase.cpp */
 KeySet * getMountConfig (KDB * handle, Key * errorKey, const char * const mountpointsPath);
 const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive);
@@ -38,14 +22,13 @@ const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive)
 /* TODO: from mount.cpp */
 void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull);
 void cProcessArguments (bool clInteractive, int numArgs);
-void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, bool clForce, bool clDebug, int mergeStrategy, const char * const resolverName);
+void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, bool clForce, bool clDebug, int mergeStrategy, char * const resolverName);
 
 
 
 /* Backend related stuff */
 bool isValidMountPoint (Key * mountPoint, KeySet * mountConf);
 KeySet * getBackendInfo (KeySet * mountConf);
-
 
 /* TODO: from backendparser.cpp */
 const KeySet * cParsePluginArguments (char * const pluginArguments, const char * const basepath);
