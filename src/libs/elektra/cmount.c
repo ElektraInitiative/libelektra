@@ -5,6 +5,21 @@
 #include <string.h>
 #include <kdbmerge.h>
 
+struct PluginSpec{
+	char * name;
+	char * refname;
+	KeySet * config;
+};
+
+enum PluginStatus
+{
+	/* works not directly, but can be loaded via provides */
+	provides,
+	/* exists and working as given */
+	real,
+	/* does not exist or cannot be loaded */
+	missing
+};
 
 
 /* Read mount configuration from the KDB
@@ -60,58 +75,6 @@ void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull)
 	}
 
 	ksDel (mtab);
-}
-
-
-
-void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, bool clForce, bool clDebug, int mergeStrategy, const char * const resolverName)
-{
-	//TODO: Maybe directly require a key as parameter (instead of the keyname)
-	Key * const keyMountpoint = keyNew (mountPoint, KEY_END);
-	if (!keyMountpoint)
-	{
-		/* TODO: Implement error handling
-		 * throw invalid_argument (mp + " is not a valid mountpoint"); */
-		return;
-	}
-
-	KeySet * const ksDupMountConf = ksDup (mountConf);
-
-	/* TODO: Strategy was "!=preserve" in cpp-code, check merging for mounting */
-	if (clForce || mergeStrategy != MERGE_STRATEGY_ABORT)
-	{
-		Key * const cutKey = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
-		keyAddBaseName (cutKey, mountPoint);
-		KeySet * ksCutted = ksCut (mountConf, cutKey);
-		/* We don't need the cut-out KeySet, but only the changed mountconf KeySet */
-		ksDel (ksCutted);
-		keyDel (cutKey);
-	}
-
-	if(!isValidMountPoint (keyMountpoint, mountConf))
-	{
-		/* TODO: error handling */
-		return;
-	}
-
-	if (clDebug)
-	{
-		printf ("Trying to load the resolver plugin %s\n", resolverName);
-	}
-
-
-	if (clDebug)
-	{
-		printf ("Trying to add default plugins\n");
-	}
-
-
-	keyDel (keyMountpoint);
-	ksDel (ksDupMountConf);
-
-
-
-
 }
 
 
@@ -349,8 +312,9 @@ bool isValidMountPoint (Key * mountPoint, KeySet * mountConf)
  * @param mountConf a keyset that contains everything below
  * DEFAULT_MOUNTPOINTS_PATH
  *
- * @return an Keyset with Keys that contain information about mounted backends
- * the keyname is the mountpoint, the value of the key is the path
+ * @return A KeySet with Keys that contain information about mounted backends.
+ * The keyname is the mountpoint, the value of the key is the path.
+ * The returned KeySet has to be freed (ksDel()) by the caller.
  */
 KeySet * getBackendInfo (KeySet * mountConf)
 {
@@ -404,10 +368,79 @@ KeySet * getBackendInfo (KeySet * mountConf)
 
 
 
-/* Backend related stuff */
+
+
+/* Plugin related stuff */
+
+/**
+ * @brief Check if str starts with a-z and then only has chars a-z, 0-9 or underscore (_)
+ *
+ * @param str the string to check
+ *
+ * @return true if the provided str is a valid plugin-name, false otherwise
+ */
+bool validatePluginName (const char * str)
+{
+	/* must not be null or empty */
+	if (!str || !*str)
+	{
+		return false;
+	}
+
+	/* must start with a-z */
+	if (*str < 'a' || *str > 'z')
+	{
+		return false;
+	}
+
+	while (*++str)0
+	{
+		if ((*str < 'a' || *str > 'z') && (*str < '0' || *str > '9') && *str != '_')
+			return false;
+	}
+
+	return true;
+}
+
+/**
+ * @brief Set the full name (name + refname) with # or only the name
+ *
+ * @param ps the PluginSpec for which the name(s) should be set
+ * @param str the name to set
+ *
+ * @return true if the str was valid, false otherwise
+ */
+bool setPluginFullName (struct PluginSpec * ps, char * const str)
+{
+	if (validatePluginName (str))
+	{
+		char *it = str;
+		while (*it++)
+		{
+			if (*it == '#')
+			{
+				/* split the string */
+				*it = '\0';
+				it++;
+				ps->name = str;
+				ps->refname = it;
+				return true;
+			}
+		}
+
+		/* no '#' found --> treat as name without refname */
+		ps->name = str;
+		return true;
+	}
+
+	return false;
+}
+
+
+
 
 /** @brief Parse a string containing information to create a KeySet
- * @param pluginArguments comma (,) to separate key=value, contains no whitespaces
+ *  @param pluginArguments comma (,) to separate key=value, contains no whitespaces
  */
 const KeySet * cParsePluginArguments (char * const pluginArguments, const char * const basepath)
 {
@@ -416,7 +449,7 @@ const KeySet * cParsePluginArguments (char * const pluginArguments, const char *
 	/* Read until the next '=', this should be the key name */
 	size_t posEqual = strcspn (pluginArguments, "=");
 
-	/* temporarly replace '=' with '\0' to use the current substring as parameter for a keyname */
+	/* Temporary replace '=' with '\0' to use the current substring as parameter for a keyname */
 	pluginArguments[posEqual] = 0;
 
 	//const Key * const keyToAppend = keyNew ()
@@ -425,80 +458,105 @@ const KeySet * cParsePluginArguments (char * const pluginArguments, const char *
 }
 
 
-/* Give info about current mounted backends */
-/* Make sure to free the returned list! */
-/* The strings in the returned list are only valid as long as the given KeySet mountconf if valid! */
-struct cListBackendInfo * cGetBackendInfo (KeySet * const mountConf)
+
+
+void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, bool clForce, bool clDebug, int mergeStrategy, char * const resolverName)
 {
-	/* TODO: 1st parameter is mountpointsPath (taken from src/libs/tools/src/backends.cpp)
-	 * --> define constant at better place! */
-	struct cListBackendInfo * biFirst = NULL, * biCurrent = NULL;
-	const Key * const keyRoot = keyNew ("system:/elektra/mountpoints", KEY_END);
-
-	for (elektraCursor it = 0; it < ksGetSize (mountConf); it++)
+	//TODO: Maybe directly require a key as parameter (instead of the keyname)
+	Key * const keyMountpoint = keyNew (mountPoint, KEY_END);
+	if (!keyMountpoint)
 	{
-		const Key * const keyCur = ksAtCursor (mountConf, it);
-
-		if (keyIsDirectlyBelow (keyRoot, keyCur) == 1)
-		{
-			/* keyCur is directly below keyRoot */
-			struct cBackendInfo bi;
-
-			/* -1 because '\0' is counted for both strings */
-			size_t lenStrPath = elektraStrLen (keyName (keyCur)) + elektraStrLen ("/definition/path") - 1;
-			char * const strPath = elektraMalloc (lenStrPath);
-			if (strPath)
-			{
-				strcpy (strPath, keyName (keyCur));
-				strcat (strPath, "/definition/path");
-				const Key * const keyPath = ksLookupByName (mountConf, strPath, KDB_O_NONE);
-				if (keyPath)
-				{
-					bi.path = keyString (keyPath);
-				}
-				bi.mountpoint = keyBaseName (keyCur);
-				if (biCurrent)
-				{
-					/* TODO: assert biCurrent->next is NULL */
-					biCurrent->next = elektraMalloc (sizeof (struct  cListBackendInfo));
-					biCurrent = biCurrent->next;
-					biCurrent->next = NULL;
-					biCurrent->backendInfo = bi;
-				}
-				else
-				{
-					biFirst = elektraMalloc (sizeof (struct cListBackendInfo));
-					if (biFirst)
-					{
-						biFirst->backendInfo = bi;
-						biFirst->next = NULL;
-						biCurrent = biFirst;
-					}
-					else
-					{
-						/* TODO: Implement error handling */
-						return NULL;
-					}
-				}
-
-			}
-		}
+		/* TODO: Implement error handling
+		 * throw invalid_argument (mp + " is not a valid mountpoint"); */
+		return;
 	}
 
-	return biFirst;
-}
+	KeySet * const ksDupMountConf = ksDup (mountConf);
 
-void freeListBackendInfo (struct cListBackendInfo * const first)
-{
-	struct cListBackendInfo * prev;
-	struct cListBackendInfo * cur;
-
-	for (prev = first; prev; prev = cur)
+	/* TODO: Strategy was "!=preserve" in cpp-code, check merging for mounting */
+	if (clForce || mergeStrategy != MERGE_STRATEGY_ABORT)
 	{
-		cur = prev->next;
-		free (prev);
+		Key * const cutKey = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+		keyAddBaseName (cutKey, mountPoint);
+		KeySet * ksCutted = ksCut (mountConf, cutKey);
+		/* We don't need the cut-out KeySet, but only the changed mountconf KeySet */
+		ksDel (ksCutted);
+		keyDel (cutKey);
 	}
+
+	if(!isValidMountPoint (keyMountpoint, mountConf))
+	{
+		/* TODO: error handling */
+		return;
+	}
+
+	struct PluginSpec resolver;
+
+	if (!setPluginFullName (&resolver, resolverName))
+	{
+		/* TODO: error handling */
+		fprintf (stderr, "Could not set full plugin name for resolver plugin!\n");
+		return;
+	}
+
+	KeySet * pluginsToAdd = ksNew (0, KS_END);
+	Key * resolverPluginKey = keyNew (resolver.name, KEY_END);
+	keySetBinary (resolverPluginKey, &resolver, sizeof(resolver));
+	ksAppendKey (pluginsToAdd, resolverPluginKey);
+
+
+	if (clDebug)
+	{
+		printf ("Trying to load the resolver plugin %s\n", resolverName);
+	}
+
+
+	if (clDebug)
+	{
+		printf ("Trying to add default plugins\n");
+	}
+
+
+	keyDel (keyMountpoint);
+	ksDel (ksDupMountConf);
 }
+
+
+
+
+
+
+
+
+
+
+
+void lookupProvides (const char * const pluginName)
+{
+	/* Check if plugin with provider name exists */
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
