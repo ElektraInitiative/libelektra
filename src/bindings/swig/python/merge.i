@@ -12,17 +12,23 @@
 #include "kdbmerge.h"
 %}
 
-
 ckdb::KeySet * elektraMerge (ckdb::KeySet * our, ckdb::Key * ourRoot, ckdb::KeySet * their, ckdb::Key * theirRoot, ckdb::KeySet * base, ckdb::Key * baseRoot, ckdb::Key * resultKey,
 		      ckdb::MergeStrategy strategy, ckdb::Key * informationKey);
 int elektraMergeGetConflicts (ckdb::Key * informationKey);
+
+%inline %{
+ 	// we wrap the elektraMerge function, because I haven't found a way to correctly wrap the enum ...
+	ckdb::KeySet * elektraMergeWrap (ckdb::KeySet * our, ckdb::Key * ourRoot, ckdb::KeySet * their, ckdb::Key * theirRoot, ckdb::KeySet * base, ckdb::Key * baseRoot, ckdb::Key * resultKey,
+		     int strategy, ckdb::Key * informationKey) {
+	       return elektraMerge (our, ourRoot, their, theirRoot, base, baseRoot, resultKey, (ckdb::MergeStrategy) strategy, informationKey);
+       }
+%}
 
 %pythoncode {
 from enum import Enum
 
 class ConflictStrategy(Enum):
   ABORT = 1
-  INTERACTIVE = 2
   OUR = 3
   THEIR = 4
 
@@ -46,6 +52,6 @@ class MergeResult:
 class Merger:
   def merge(self, base, ours, theirs, root, conflictStrategy):
     informationKey = kdb.Key()
-    res = elektraMerge(ours.keys.getKeySet(), ours.root.getKey(), theirs.keys.getKeySet(), theirs.root.getKey(), base.keys.getKeySet(), base.root.getKey(), root.getKey(), conflictStrategy.value, informationKey.getKey())
+    res = elektraMergeWrap(ours.keys.getKeySet(), ours.root.getKey(), theirs.keys.getKeySet(), theirs.root.getKey(), base.keys.getKeySet(), base.root.getKey(), root.getKey(), conflictStrategy.value, informationKey.getKey())
     return MergeResult(res, informationKey)
 };
