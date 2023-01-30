@@ -454,6 +454,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Add use cases for libelektra-core _(@lawli3t)_
 
 ### Use Cases
 
