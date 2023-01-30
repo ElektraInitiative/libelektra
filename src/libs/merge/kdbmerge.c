@@ -278,8 +278,8 @@ static bool isSpecifiedRootPartOfMerge (Key * informationKey, const char * root)
  *
  * NOTE: Even if the conflict was resolved via the provided conflict strategy, the key will still be marked as being part of a conflict.
  *
- * @param informationKey The information key of the merge session
- * @param root The root key (either for base, theirs, ours or result) that was used in the merge session
+ * @param informationKey stores errors as well as statistics
+ * @param root The root key (either for base, theirs, ours or result) that was used in the merge
  * @param key That key that should be checked. Must be located under the specified root key
  * @retval 1 if the key was part of a conflict
  * @retval 0 if the key was not part of a conflict or the given root was not part of the merge
@@ -307,10 +307,10 @@ bool elektraMergeIsKeyConflicting (Key * informationKey, Key * root, Key * key)
 
 /**
  * Returns a keyset with all conflicting keys under the specified root
- * @param informationKey The information key of the merge session
- * @param root The root key (either for base, theirs, ours or result) that was used in the merge session
+ * @param informationKey stores errors as well as statistics
+ * @param root The root key (either for base, theirs, ours or result) that was used in the merge
  * @return KeySet containing all keys that are part of a merge conflict.
- *         Will be empty im the specified root key was not part of the merge session.
+ *         Will be empty if the specified root key was not part of the merge.
  */
 KeySet * elektraMergeGetConflictingKeys (Key * informationKey, Key * root)
 {
