@@ -1101,6 +1101,8 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			case MERGE_STRATEGY_THEIR:
 				options.favor = GIT_MERGE_FILE_FAVOR_THEIRS;
 				break;
+			case MERGE_STRATEGY_ABORT:
+				break;
 			}
 			int ret = git_merge_file (&out, &libgit_base, &libgit_our, &libgit_their, &options);
 			if (ret == 0)
