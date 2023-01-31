@@ -23,6 +23,7 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 target_link_elektra (cascading elektra-kdb)
+target_link_elektra (cmerge elektra-merge)
 target_link_elektra (ksCut elektra-kdb)
 target_link_elektra (kdbget elektra-kdb)
 target_link_elektra (kdbget_error elektra-kdb)

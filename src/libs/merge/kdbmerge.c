@@ -307,6 +307,9 @@ bool elektraMergeIsKeyConflicting (Key * informationKey, Key * root, Key * key)
 
 /**
  * Returns a keyset with all conflicting keys under the specified root
+ *
+ * @include cmerge.c
+ *
  * @param informationKey stores errors as well as statistics
  * @param root The root key (either for base, theirs, ours or result) that was used in the merge
  * @return KeySet containing all keys that are part of a merge conflict.
@@ -1156,6 +1159,8 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
  *
  * This function can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set.
  * This lets you merge the sets of changes represented by the two newer key sets. This is called a three-way merge between key sets.
+ *
+ * @include cmerge.c
  *
  * @brief Join three key sets together
  * @param our our key set
