@@ -143,7 +143,7 @@ int execMount (KeySet * options, Key * errorKey)
 
 	Key * pluginsArrayParent = GET_OPTION_KEY (options, "plugins");
 	KeySet * plugins = elektraArrayGet (pluginsArrayParent, options);
-
+	keyDel (pluginsArrayParent);
 	if (!plugins)
 	{
 		elektraFree ((void *) argMountpoint);
@@ -154,8 +154,8 @@ int execMount (KeySet * options, Key * errorKey)
 	{
 		printf ("PLUGIN ->  %s\n", keyString (ksAtCursor (plugins, it)));
 	}
-	ksDel (plugins);
-	keyDel (pluginsArrayParent);
+
+
 
 
 
@@ -176,7 +176,8 @@ int execMount (KeySet * options, Key * errorKey)
 	}
 
 	/* TODO: give full plugins config */
-	cBuildBackend (mountConf, argMountpoint, optForce, mergeStrategy, optInteractive, NULL);
+	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL);
+	ksDel (plugins);
 
 	/* TODO: Not yet implemented function calls in CPP:
 	 * askForConfirmation (cl);
