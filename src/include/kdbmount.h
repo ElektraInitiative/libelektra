@@ -22,7 +22,7 @@ const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive)
 /* TODO: from mount.cpp */
 void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull);
 void cProcessArguments (bool clInteractive, int numArgs);
-void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, bool clForce, bool clDebug, int mergeStrategy, char * const resolverName);
+void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug, int mergeStrategy, char * const resolverName);
 
 
 
