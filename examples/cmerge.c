@@ -1,22 +1,22 @@
 /**
-* @file
-*
-* @brief
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*/
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 
 #include <kdb.h>
 #include <kdbmerge.h>
 #include <stdio.h>
 
-static void print_results(KeySet * result, Key * resultRoot, Key * informationKey)
+static void print_results (KeySet * result, Key * resultRoot, Key * informationKey)
 {
 	KeySet * conflictingKeys = elektraMergeGetConflictingKeys (informationKey, resultRoot);
 
 	for (elektraCursor i = 0; i < ksGetSize (conflictingKeys); i++)
 	{
-		printf("Conflict in key %s\n", keyName (ksAtCursor (conflictingKeys, i)));
+		printf ("Conflict in key %s\n", keyName (ksAtCursor (conflictingKeys, i)));
 	}
 
 	printf ("Result:\n");
@@ -24,7 +24,7 @@ static void print_results(KeySet * result, Key * resultRoot, Key * informationKe
 	for (elektraCursor i = 0; i < ksGetSize (result); i++)
 	{
 		Key * k = ksAtCursor (result, i);
-		printf("%s = %s\n", keyName (k), keyString (k));
+		printf ("%s = %s\n", keyName (k), keyString (k));
 	}
 
 	if (result == NULL)
@@ -38,23 +38,15 @@ static void print_results(KeySet * result, Key * resultRoot, Key * informationKe
 int main (void)
 {
 	Key * baseRoot = keyNew ("user:/screen", KEY_END);
-	KeySet * base = ksNew (1,
-			       keyNew ("user:/screen/background", KEY_VALUE, "blue", KEY_END),
-			       KS_END);
+	KeySet * base = ksNew (1, keyNew ("user:/screen/background", KEY_VALUE, "blue", KEY_END), KS_END);
 
 	Key * theirRoot = keyDup (baseRoot, KEY_CP_ALL);
-	KeySet * their = ksNew (2,
-				keyNew ("user:/screen/background", KEY_VALUE, "red", KEY_END),
-				keyNew ("user:/screen/brightness", KEY_VALUE, "100", KEY_END),
-				KS_END
-				);
+	KeySet * their = ksNew (2, keyNew ("user:/screen/background", KEY_VALUE, "red", KEY_END),
+				keyNew ("user:/screen/brightness", KEY_VALUE, "100", KEY_END), KS_END);
 
 	Key * ourRoot = keyDup (baseRoot, KEY_CP_ALL);
-	KeySet * our = ksNew (2,
-				keyNew ("user:/screen/background", KEY_VALUE, "purple", KEY_END),
-				keyNew ("user:/screen/standby", KEY_VALUE, "on", KEY_END),
-				KS_END
-	);
+	KeySet * our = ksNew (2, keyNew ("user:/screen/background", KEY_VALUE, "purple", KEY_END),
+			      keyNew ("user:/screen/standby", KEY_VALUE, "on", KEY_END), KS_END);
 
 	Key * resultRoot = keyDup (baseRoot, KEY_CP_ALL);
 	Key * informationKey = keyDup (baseRoot, KEY_CP_ALL);
