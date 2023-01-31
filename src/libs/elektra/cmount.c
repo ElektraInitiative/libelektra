@@ -393,7 +393,7 @@ bool validatePluginName (const char * str)
 		return false;
 	}
 
-	while (*++str)0
+	while (*++str)
 	{
 		if ((*str < 'a' || *str > 'z') && (*str < '0' || *str > '9') && *str != '_')
 			return false;
@@ -406,7 +406,7 @@ bool validatePluginName (const char * str)
  * @brief Set the full name (name + refname) with # or only the name
  *
  * @param ps the PluginSpec for which the name(s) should be set
- * @param str the name to set
+ * @param str the name to set, must be valid as long as `ps` is in use (caller is responsible for freeing)
  *
  * @return true if the str was valid, false otherwise
  */
@@ -432,27 +432,76 @@ bool setPluginFullName (struct PluginSpec * ps, char * const str)
 		ps->name = str;
 		return true;
 	}
-
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
+/** Get the full name of the plugin from the PluginSpec
+ * @param ps The PluginSpec to get the name from
+ * @returns The full name of the plugin, make sure to free the returned string!
+ */
+char * getPluginFullName (struct PluginSpec ps)
+{
+	char * result = NULL;
+
+	if (ps.refname && *(ps.refname))
+	{
+		/* count \0 for both strings, use one byte for the "#" char */
+		result = elektraMalloc (elektraStrLen (ps.name) + elektraStrLen (ps.refname));
+		strcpy (result, ps.name);
+		strcat (result, "#");
+		strcat (result, ps.refname);
+
+	}
+	else
+	{
+		result = elektraMalloc (elektraStrLen (ps.name));
+		strcpy (result, ps.name);
+	}
+
+	return result;
+}
 
 
 
 /** @brief Parse a string containing information to create a KeySet
  *  @param pluginArguments comma (,) to separate key=value, contains no whitespaces
+ *  @return newly created keyset with the information found in the string, make sure to ksDel() the returned KeySet.
+ *  @return NULL if no '=' was found in pluginArguments
  */
-const KeySet * cParsePluginArguments (char * const pluginArguments, const char * const basepath)
+const KeySet * cParsePluginArguments (char * pluginArguments, const char * const basepath)
 {
-	const KeySet * const ks = ksNew (0, KS_END);
+	KeySet * ks = NULL;
 
 	/* Read until the next '=', this should be the key name */
-	size_t posEqual = strcspn (pluginArguments, "=");
+	for (size_t posEqual, posComma; (posEqual = strcspn (pluginArguments, "=")) > 0; pluginArguments = pluginArguments + posComma + 1)
+	{
+		/* Replace '=' with '\0' to use the current substring as parameter for a keyname */
+		pluginArguments[posEqual] = 0;
+		/* TODO: Handle error ('=' not found) */
 
-	/* Temporary replace '=' with '\0' to use the current substring as parameter for a keyname */
-	pluginArguments[posEqual] = 0;
+		posComma = strcspn (pluginArguments + posEqual + 1, ",");
+		pluginArguments[posComma] = 0;
 
-	//const Key * const keyToAppend = keyNew ()
+		/* elektraStrLen includes '\0', so we counted it two times, but one byte for the '/' character, so that's ok */
+		char * pluginKeyName = elektraMalloc (elektraStrLen (pluginArguments) + elektraStrLen (basepath));
+		strcpy (pluginKeyName, basepath);
+		strcat (pluginKeyName, "/");
+		strcat (pluginKeyName, pluginArguments);
+
+		Key * const keyToAppend = keyNew (pluginKeyName, KEY_VALUE, pluginArguments + posEqual + 1, KEY_END);
+
+		/* The string gets copied by keyNew(), so we have to free the memory here. */
+		elektraFree (pluginKeyName);
+
+		if (!ks)
+		{
+			ks = ksNew (0, KS_END);
+		}
+		ksAppendKey (ks, keyToAppend);
+	}
 
 	return ks;
 }
@@ -460,7 +509,85 @@ const KeySet * cParsePluginArguments (char * const pluginArguments, const char *
 
 
 
-void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, bool clForce, bool clDebug, int mergeStrategy, char * const resolverName)
+
+
+
+
+struct PluginSpec lookupProvides (const char * const pluginName)
+{
+	/* Check if plugin with provider name exists */
+
+}
+
+
+enum PluginStatus getPluginStatus (struct PluginSpec const spec)
+{
+	Key * toAppend = keyNew ("system:/module", KEY_VALUE, "this plugin was loaded for the status", KEY_END);
+	ksAppendKey (spec.config, toAppend);
+}
+
+
+void pluginLoadInfo (struct PluginSpec const spec)
+{
+	Key * infoKey = keyNew ("system:/elektra/modules", KEY_END);
+	keyAddBaseName (infoKey, spec.name);
+
+
+}
+
+bool addPlugin (KeySet * const ks, struct PluginSpec ps)
+{
+	char * pluginFullName = getPluginFullName (ps);
+
+	if (!pluginFullName)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < ksGetSize (ks); i++)
+	{
+		Key * curKey = ksAtCursor (ks, i);
+		struct PluginSpec * curPs = (struct PluginSpec *) keyValue (curKey);
+		if (curPs)
+		{
+			char * curFullName = getPluginFullName (*curPs);
+			if (strcmp (curFullName, pluginFullName) == 0)
+			{
+				/* TODO: Handle error */
+				/* in C++: throw PluginAlreadyInserted (plugin.getFullName ()); */
+				elektraFree (curFullName);
+				elektraFree (pluginFullName);
+				return false;
+			}
+			elektraFree (curFullName);
+		}
+	}
+
+	elektraFree (pluginFullName);
+
+	/* TODO: Refactor - put check for already inserted plugins in own function */
+
+	/* If the plugin is actually a provider use it (otherwise we will get our name back) */
+	struct PluginSpec newPlugin = ps;
+	struct PluginSpec provides = lookupProvides (ps.name);
+
+	if (strcmp (provides.name, newPlugin.name) != 0)
+	{
+		/* Keep our config and refname */
+		newPlugin.name = provides.name;
+		ksAppend (newPlugin.config, provides.config);
+	}
+
+
+	return true;
+}
+
+
+
+
+
+
+void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug, int mergeStrategy, char * const resolverName)
 {
 	//TODO: Maybe directly require a key as parameter (instead of the keyname)
 	Key * const keyMountpoint = keyNew (mountPoint, KEY_END);
@@ -484,14 +611,26 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, boo
 		keyDel (cutKey);
 	}
 
+	/* in C++: backend.setMountpoint (mpk, mountConf); */
 	if(!isValidMountPoint (keyMountpoint, mountConf))
 	{
 		/* TODO: error handling */
 		return;
 	}
 
-	struct PluginSpec resolver;
 
+
+	/* TODO: Check if basepath should be with or without '/' */
+	/* in C++: backend.setBackendConfig (cl.getPluginsConfig ("system:/")); */
+	const KeySet * ksBackendConfig = cParsePluginArguments (pluginsConfig, "system:/");
+
+	if (clDebug)
+	{
+		printf ("Trying to load the resolver plugin %s\n", resolverName);
+	}
+
+	/* in C++: PluginSpec resolver (cl.resolver); (Constructor calls setFullName) */
+	struct PluginSpec resolver;
 	if (!setPluginFullName (&resolver, resolverName))
 	{
 		/* TODO: error handling */
@@ -499,16 +638,21 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, boo
 		return;
 	}
 
+	/* in C++: backend.addPlugin (PluginSpec (resolver)); */
+
+
+	//struct PluginSpec provides = lookupProvides (resolver.name);
+
 	KeySet * pluginsToAdd = ksNew (0, KS_END);
+	addPlugin (pluginsToAdd, resolver);
+
 	Key * resolverPluginKey = keyNew (resolver.name, KEY_END);
 	keySetBinary (resolverPluginKey, &resolver, sizeof(resolver));
 	ksAppendKey (pluginsToAdd, resolverPluginKey);
 
 
-	if (clDebug)
-	{
-		printf ("Trying to load the resolver plugin %s\n", resolverName);
-	}
+
+
 
 
 	if (clDebug)
@@ -520,29 +664,6 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, boo
 	keyDel (keyMountpoint);
 	ksDel (ksDupMountConf);
 }
-
-
-
-
-
-
-
-
-
-
-
-void lookupProvides (const char * const pluginName)
-{
-	/* Check if plugin with provider name exists */
-
-}
-
-
-
-
-
-
-
 
 
 
