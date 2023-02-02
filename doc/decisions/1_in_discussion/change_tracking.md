@@ -139,6 +139,7 @@ We could just point the plugin to `backendsData->keys` or the internal cache if 
 ### Provide an API within `libelektra-kdb`
 
 The API should be useable both by plugins and applications utilizing ELektra.
+It does not matter whether the changetracking is implemented as part of `libelektra-kdb` or as a seperate plugin.
 The API may look something like this:
 
 ```c
@@ -147,18 +148,29 @@ ChangeTrackingContext * elektraChangeTrackingGetContext (KDB * kdb, Key * parent
 
 KeySet * elektraChangeTrackingGetAddedKeys (ChangeTrackingContext * context);
 KeySet * elektraChangeTrackingGetRemovedKeys (ChangeTrackingContext * context);
-KeySet * elektraChangeTrackingGetModifiedKeys (ChangeTrackingContext * context);
+KeySet * elektraChangeTrackingGetModifiedKeys (ChangeTrackingContext * context); // Returns old keys (pre-modification)
 
 bool elektraChangeTrackingValueChanged (ChangeTrackingContext * context, Key * key);
 bool elektraChangeTrackingMetaChanged (ChangeTrackingContext * context, Key * key);
 
 KeySet * elektraChangeTrackingGetAddedMetaKeys (ChangeTrackingContext * context, Key * key);
 KeySet * elektraChangeTrackingGetRemovedMetaKeys (ChangeTrackingContext * context, Key * key);
-KeySet * elektraChangeTrackingGetModifiedMetaKeys (ChangeTrackingContext * context, Key * key);
-
-Key * elektraChangeTrackingGetOriginalKey (ChangeTrackingContext * context, Key * key);
-const Key * elektraChangeTrackingGetOriginalMetaKey (ChangeTrackingContext * context, Key * key, const char * metaName);
+KeySet * elektraChangeTrackingGetModifiedMetaKeys (ChangeTrackingContext * context, Key * key); // Returns old meta keys (pre-modification)
 ```
+
+### Provide query methods as part of a seperat plugin
+
+This solution only makes sense if changetrackig is implemented as part of a seperate plugin.
+It will be a bit challenging to use for applications, as it would require that applications have access to the plugin contracts.
+
+The changetracking plugin needs to export at least functions for the following things in its contract:
+
+- Get added keys
+- Get removed keys
+- Get modified keys
+- Get added meta keys for a key
+- Get removed meta keys for a key
+- Get modified meta keys for a key
 
 ## Decision
 
