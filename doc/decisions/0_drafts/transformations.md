@@ -138,17 +138,16 @@ struct callback {
 
 There will be 3 possibilities where transformations take place:
 
-1. For keys with a registered callback: 
+1. For keys with a registered callback:
    - Within `keySetValue` / `keySetString` the callbacks are called.
-2. For new keys, i.e. keys without a callback: 
+2. For new keys, i.e. keys without a callback:
    - Within `kdbSet`, as it is now.
 3. For new keys that override keys with an intact callback:
    - Within `ksAppend` and/or `ksAppendKey` the callbacks are copied from the original key and then executed on the new key.
 
-
 ```c
 kdbGet (kdb, ks, parent);
-// ks contains two keys: 
+// ks contains two keys:
 //  - user:/limits/openfiles
 //  - user:/background/color
 
