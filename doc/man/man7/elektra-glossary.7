@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-GLOSSARY" "7" "December 2022" ""
+.TH "ELEKTRA\-GLOSSARY" "7" "January 2023" ""
 .SH "NAME"
 \fBelektra\-glossary\fR \- glossary of Elektra
 .IP "\(bu" 4
@@ -75,6 +75,15 @@ The unit of implementation for a feature\.
 .TP
 Metadata \fIelektra\-metadata\.md\fR
 Allows us to describe configuration settings\.
+.TP
+\fBpersistent name/value/metadata\fR
+How it is actually stored, i\.e\. the state returned by and passed to the \fBstorage\fR plugins\.
+.TP
+\fBtransient name/value/metadata\fR
+How it is at runtime, i\.e\. what is returned by \fBkdbGet\fR and passed to \fBkdbSet\fR\.
+.TP
+\fBintermediate name/value/metadata\fR
+Any state inbetween the two\.
 .SH "Details"
 .TP
 Sync Flag \fIelektra\-sync\-flag\.md\fR
