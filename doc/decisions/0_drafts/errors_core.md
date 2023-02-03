@@ -24,7 +24,7 @@ Therefore, we need a general concept for errors, which we use when an `errorKey`
   The requirement is analogous to the `Key * errorKey` argument.
   The presence of the argument makes it obvious that errors _can_ happen, but you can easily omit the error check when you want to.
 - Adding error indications should not make the API less convenient to use.
-- It should be [hard to use the API the wrong way](doc/DESIGN.md).
+- It should be [hard to use the API the wrong way](/doc/DESIGN.md).
 
 ## Assumptions
 

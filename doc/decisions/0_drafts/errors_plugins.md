@@ -102,7 +102,7 @@ The basic guidelines will be (but may be extended):
 
 ## Related Decisions
 
-- [Metadata in Spec Namespace](spec_metadata.md)
+- [Metadata in Spec Namespace](../1_in_discussion/spec_metadata.md)
 - [Capabilities](../3_decided/capabilities.md)
 - [Boolean](../4_partially_implemented/boolean.md)
 
