@@ -18,7 +18,7 @@ While we have a classification of errors and warnings, it remains unclear when p
 
 Every plugin author decides for themselves.
 
-Leads to inconsistent behaviour and hard to diagnose interaction issues.
+Leads to inconsistent behavior and hard to diagnose interaction issues.
 
 ### Detailed ruleset with conformance tests
 

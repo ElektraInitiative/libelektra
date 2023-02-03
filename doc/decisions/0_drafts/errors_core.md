@@ -270,7 +270,7 @@ Validating escaped names means checking a lot of rules.
 
 However, there is once again a very simple pragmatic solution ("everything is fine").
 We simply provide a public API function that allows checking, whether a `const char *` is a valid escaped name.
-Then the caller can just check after the error occured:
+Then the caller can just check after the error occurred:
 
 ```c
 // assume we already know ks != NULL && escapedName != NULL
