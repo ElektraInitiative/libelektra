@@ -35,7 +35,7 @@ int CMergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	kdb::Key theirsRoot = cl.createKey (1);
 	kdb::Key baseRoot = cl.createKey (2);
 	kdb::Key resultRoot = cl.createKey (3);
-	int strategy = ckdb::MERGE_STRATEGY_ABORT;
+	ckdb::MergeStrategy strategy = ckdb::MERGE_STRATEGY_ABORT;
 	if (cl.strategy == "preserve")
 	{
 		/** This is here for compatibility. The old merge has preserve as default as defined in cmdline.cpp.

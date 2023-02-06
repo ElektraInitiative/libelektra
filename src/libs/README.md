@@ -87,6 +87,14 @@ libelektra-meta.so
 **[libmeta](meta/meta.c)** contains metadata operations as described in **[METADATA.ini](/doc/METADATA.ini)**.
 Currently mainly contains legacy code and some generic metadata operations.
 
+### Libmerge
+
+```
+libelektra-merge.so
+```
+
+**[libmerge](merge/)** provides functionality for 3-way merges of keysets.
+
 ### Libelektra
 
 Is a legacy library that provides the same functionality as `libelektra-kdb` and `libelektra-core`.
