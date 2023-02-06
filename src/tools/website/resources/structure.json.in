@@ -377,18 +377,23 @@
                             "title_level": 2
                         },
                         {
-                            "path": "3_decided",
+                            "path": "4_decided",
                             "title": "Decided",
                             "title_level": 2
                         },
+						{
+							"path": "3_in_review",
+							"title": "In Review",
+							"title_level": 2
+						},
                         {
-                            "path": "2_in_progress",
-                            "title": "In Progress",
+                            "path": "2_solutions_clear",
+                            "title": "Solutions",
                             "title_level": 2
                         },
                         {
-                            "path": "1_in_discussion",
-                            "title": "In Discussion",
+                            "path": "1_problem_clear",
+                            "title": "Problem Clear",
                             "title_level": 2
                         },
                         {
@@ -397,8 +402,8 @@
                             "title_level": 2
                         },
                         {
-                            "path": "0a_delayed",
-                            "title": "Delayed",
+                            "path": "0a_postponed",
+                            "title": "Postponed",
                             "title_level": 2
                         },
                         {
