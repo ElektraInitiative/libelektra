@@ -198,7 +198,7 @@ sudo kdb umount user:/tests/yamlcpp
 
 ### Sparse Arrays
 
-Since Elektra allows [“holes”](/doc/decisions/5_implemented/holes.md) in a key set, YAML CPP has to support small key sets that describe relatively complex data.
+Since Elektra allows [“holes”](/doc/decisions/6_implemented/holes.md) in a key set, YAML CPP has to support small key sets that describe relatively complex data.
 
 ```sh
 # Mount yamlcpp plugin
@@ -360,7 +360,7 @@ sudo kdb umount user:/tests/yamlcpp
 
 ## Binary Values
 
-Elektra [saves binary data as either `0` or `1`](/doc/decisions/4_partially_implemented/boolean.md). The YAML CPP plugin supports this design decision by converting between YAML’s and Elektra’s boolean type.
+Elektra [saves binary data as either `0` or `1`](/doc/decisions/5_partially_implemented/boolean.md). The YAML CPP plugin supports this design decision by converting between YAML’s and Elektra’s boolean type.
 
 ```sh
 # Mount YAML CPP plugin at `user:/tests/yamlcpp`

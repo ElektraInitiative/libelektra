@@ -367,12 +367,12 @@
                     "base_toc": "README.md",
                     "folders": [
                         {
-                            "path": "5_implemented",
+                            "path": "6_implemented",
                             "title": "Implemented",
                             "title_level": 2
                         },
                         {
-                            "path": "4_partially_implemented",
+                            "path": "5_partially_implemented",
                             "title": "Partially Implemented",
                             "title_level": 2
                         },
