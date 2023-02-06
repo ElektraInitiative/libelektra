@@ -106,7 +106,7 @@ The `spec` plugin should check if it is a valid array, i.e.:
 
 - [Hooks](../5_partially_implemented/hooks.md)
 - [Global Validation](../0a_delayed/global_validation.md)
-- [Base Names](../5_implemented/base_name.md)
+- [Base Names](../6_implemented/base_name.md)
 - [Metadata in Spec Namespace](../1_problem_clear/spec_metadata.md)
 - [Spec Expressiveness](../1_problem_clear/spec_expressiveness.md)
 - [Binary](../2_solutions_clear/binary.md).
