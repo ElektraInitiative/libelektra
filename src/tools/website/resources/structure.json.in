@@ -381,11 +381,11 @@
                             "title": "Decided",
                             "title_level": 2
                         },
-						{
-							"path": "3_in_review",
-							"title": "In Review",
-							"title_level": 2
-						},
+                        {
+                            "path": "3_in_review",
+                            "title": "In Review",
+                            "title_level": 2
+                        },
                         {
                             "path": "2_solutions_clear",
                             "title": "Solutions",
