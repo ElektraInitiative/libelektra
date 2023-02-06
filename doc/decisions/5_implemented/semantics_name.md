@@ -44,7 +44,7 @@ The `spec` plugin guards these rules.
 
 ## Related Decisions
 
-- [Arrays](../4_partially_implemented/array.md)
+- [Arrays](../5_partially_implemented/array.md)
 - [Base Names](../5_implemented/base_name.md)
 
 ## Notes

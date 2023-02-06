@@ -2,7 +2,7 @@
 
 ## Problem
 
-On structures like maps or [arrays](../4_partially_implemented/array.md) there are different possibilities which keys are looked up in the KeySet and which are simply iterated.
+On structures like maps or [arrays](../5_partially_implemented/array.md) there are different possibilities which keys are looked up in the KeySet and which are simply iterated.
 
 Without any guidelines, applications would provide arbitrary inconsistent behavior.
 
@@ -33,6 +33,6 @@ Needs some helper functions or support in bindings as it is a bit tricky to impl
 
 ## Related Decisions
 
-- [Arrays](../4_partially_implemented/array.md)
+- [Arrays](../5_partially_implemented/array.md)
 
 ## Notes

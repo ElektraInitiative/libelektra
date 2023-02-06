@@ -134,7 +134,7 @@ This idea was implemented and later on [discarded: a3d95f](https://github.com/El
 The main problems are:
 
 - very high memory consumption (duplication of KeySets)
-- problems specific to [hooks](../4_partially_implemented/hooks.md), see [#1072](https://issues.libelektra.org/1072)
+- problems specific to [hooks](../5_partially_implemented/hooks.md), see [#1072](https://issues.libelektra.org/1072)
 
 ### MMAP Cache with parent key
 
