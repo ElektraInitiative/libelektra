@@ -79,7 +79,7 @@ It would:
 
 ## Related Decisions
 
-- [Plugin Variants](../0a_delayed/plugin_variants.md)
+- [Plugin Variants](../0a_postponed/plugin_variants.md)
 
 ## Notes
 

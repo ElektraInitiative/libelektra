@@ -235,7 +235,7 @@ The copy-on-write solution also does not require any changes or restrictions to 
 
 ## Related Decisions
 
-- [Global Validation](../0a_delayed/global_validation.md)
+- [Global Validation](../0a_postponed/global_validation.md)
 - [Copy On Write](../2_solutions_clear/copy_on_write.md)
 
 ## Notes
