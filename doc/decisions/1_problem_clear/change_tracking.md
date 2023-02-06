@@ -185,7 +185,7 @@ The changetracking plugin needs to export at least functions for the following t
 ## Related Decisions
 
 - [Valid kdbGet/kdbSet sequences](../0_drafts/operation_sequences.md) from [#4574](https://github.com/ElektraInitiative/libelektra/pull/4574).
-- [Copy On Write](../2_in_progress/copy_on_write.md)
+- [Copy On Write](../2_solutions_clear/copy_on_write.md)
 
 ## Notes
 

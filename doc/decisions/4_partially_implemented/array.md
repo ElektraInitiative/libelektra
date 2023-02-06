@@ -87,7 +87,7 @@ The `spec` plugin should check if it is a valid array, i.e.:
 
 ## Rationale
 
-- Is very similar to `binary` metadata but without its [problems](../2_in_progress/binary.md).
+- Is very similar to `binary` metadata but without its [problems](../2_solutions_clear/binary.md).
 - The key alone suffices to know if it is an array.
 - One can distinguish an array with keys that are called by chance e.g. `#0`.
 
@@ -109,7 +109,7 @@ The `spec` plugin should check if it is a valid array, i.e.:
 - [Base Names](../5_implemented/base_name.md)
 - [Metadata in Spec Namespace](../1_problem_clear/spec_metadata.md)
 - [Spec Expressiveness](../1_problem_clear/spec_expressiveness.md)
-- [Binary](../2_in_progress/binary.md).
+- [Binary](../2_solutions_clear/binary.md).
 
 ## Notes
 
