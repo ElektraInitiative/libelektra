@@ -278,14 +278,14 @@ Use the CMake macro `add_plugintest` for adding these tests.
 ### C++ Unit Tests
 
 C++ Unit tests are done using the Google Test framework.
-See [architectural decision](/doc/decisions/5_implemented/unit_testing.md).
+See [architectural decision](/doc/decisions/6_implemented/unit_testing.md).
 
 Use the CMake macro `add_gtest` for adding these tests.
 
 ### Script Tests
 
 Tests which need scripts are done using shell recorder or directly with POSIX shell commands.
-See [architectural decision](/doc/decisions/5_implemented/script_testing.md).
+See [architectural decision](/doc/decisions/6_implemented/script_testing.md).
 
 The script tests have different purposes:
 
