@@ -38,7 +38,7 @@ For now, the specification can only refer to what applications request by `kdbGe
 
 ## Related Decisions
 
-- [Internal Cache](../3_decided/internal_cache.md)
+- [Internal Cache](../4_decided/internal_cache.md)
 
 ## Notes
 

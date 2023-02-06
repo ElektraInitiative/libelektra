@@ -46,7 +46,7 @@ And it is much easier for overall Elektra if there is more consistency.
 ## Related Decisions
 
 - [Metadata in Spec Namespace](spec_metadata.md)
-- [Capabilities](../3_decided/capabilities.md)
+- [Capabilities](../4_decided/capabilities.md)
 - [Boolean](../4_partially_implemented/boolean.md)
 
 ## Notes

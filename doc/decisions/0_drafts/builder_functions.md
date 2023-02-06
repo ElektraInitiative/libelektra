@@ -13,7 +13,7 @@ We call these functions "builder functions" compared to the ["constructor functi
 ## Constraints
 
 - If the builder functions are in a non-language specific library, they must be directly callable from all languages for which Elektra provides bindings.
-- In accordance with the ["Namespace and Name of Keys" decision](../3_decided/keyname.md), the builder functions must not use the escaped name.
+- In accordance with the ["Namespace and Name of Keys" decision](../4_decided/keyname.md), the builder functions must not use the escaped name.
   Only the unescaped name may be used, but the namespace may be passed as a separate parameter, if this has benefits.
   Additionally, it might make sense to take the parts of a keyname as separate arguments.
 

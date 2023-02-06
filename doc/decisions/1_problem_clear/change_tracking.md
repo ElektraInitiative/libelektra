@@ -81,7 +81,7 @@ A problem with this approach is that the internally stored keys are recreated as
 ### Combine with internal cache
 
 We already decided that we want to have an internal deep-duped keysets of all the keys we returned.
-See [internal cache decision](../3_decided/internal_cache.md).
+See [internal cache decision](../4_decided/internal_cache.md).
 
 The difference to `backendData->keys` is that this cache is not recreated each time `kdbGet` is called.
 
