@@ -53,7 +53,7 @@ As new keys by design have the 'key needs sync' flag set, the plugins that imple
 
 ### Observed problems with changing values (normalization)
 
-Suppose we have a plugin that changes the value of a key to the hard-coded value `1` during the storage phase of the `set` operation.
+Suppose we have a plugin that changes the value of a key to the hard coded value `1` during the storage phase of the `set` operation.
 If a plugin does change tracking, this will lead to false positives.
 
 ```
