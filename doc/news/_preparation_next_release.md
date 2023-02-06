@@ -531,7 +531,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Restructured decisions directories based on new agreed-upon [steps](../decisions/STEPS.md) _(Maximilian Irlinger @atmaxinger)_ 
+- Restructured decisions directories based on new agreed-upon [steps](../decisions/STEPS.md) _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
