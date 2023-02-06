@@ -201,7 +201,7 @@ I.e. the original keyset is not changed.
 The name is not relevant.
 It is always read-only, because the key is in at least one keyset (the internal one).
 
-Possible copy-on-write implementations are described in [another decision](../2_solutions_clear/copy_on_write.md).
+Possible copy-on-write implementations are described in [another decision](../6_implemented/copy_on_write.md).
 
 ## Decision
 
@@ -214,7 +214,7 @@ If the user tries to change the value or metadata of these keys, the data gets d
 I.e. the data of the original keys is not changed.
 The name is not relevant.
 It is always read-only, because the key is in at least one keyset (the internal one).
-Possible copy-on-write implementations are described in [another decision](../2_solutions_clear/copy_on_write.md).
+Possible copy-on-write implementations are described in [another decision](../6_implemented/copy_on_write.md).
 
 In `kdbSet` we use the user-provided `KeySet` for all backends strictly below `parentKey` as before.
 For the backend that contains `parentKey`, we start with the internally cached data.
@@ -229,14 +229,14 @@ The copy-on-write solution also does not require any changes or restrictions to 
 
 ## Implications
 
-- Before we can implement this decision, we need to implement the [copy-on-write decision](../2_solutions_clear/copy_on_write.md).
+- Before we can implement this decision, we need to implement the [copy-on-write decision](../6_implemented/copy_on_write.md).
 - `kdbGet` will only return copy-on-write copies of keys below `parentKey` from the internal cache.
 - `kdbSet` will use the keys within the internal cache to supplement all the keys above `parentKey` so that backends can write the correct data.
 
 ## Related Decisions
 
 - [Global Validation](../0a_postponed/global_validation.md)
-- [Copy On Write](../2_solutions_clear/copy_on_write.md)
+- [Copy On Write](../6_implemented/copy_on_write.md)
 
 ## Notes
 
