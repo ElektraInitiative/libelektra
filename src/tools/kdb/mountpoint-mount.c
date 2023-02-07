@@ -176,7 +176,7 @@ int execMount (KeySet * options, Key * errorKey)
 	}
 
 	/* TODO: give full plugins config */
-	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL);
+	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL, argPath);
 	ksDel (plugins);
 
 	/* TODO: Not yet implemented function calls in CPP:
