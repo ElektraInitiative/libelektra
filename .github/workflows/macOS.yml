@@ -203,4 +203,4 @@ jobs:
         else
           KDB=kdb
         fi
-        env BUILD_DIR="$PWD" AUTO_RERUN_TESTS="testmod_dbus" KDB="$KDB" sh scripts/dev/ci_run_tests.sh
+        env BUILD_DIR="$PWD" AUTO_RERUN_TESTS="testmod_dbus" KDB="$KDB" sh "$GITHUB_WORKSPACE/scripts/dev/ci_run_tests.sh"

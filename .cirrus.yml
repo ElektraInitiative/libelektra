@@ -20,7 +20,9 @@ commands:
       AUTO_RERUN_TESTS=""
     fi
 
-    if [ "$BUILD_FULL" = 'ON' ]; then
+    if [ "$ENABLE_ASAN" = 'ON' ]; then
+      KDB=""
+    elif [ "$BUILD_FULL" = 'ON' ]; then
       KDB=kdb-full
     else
       KDB=kdb
