@@ -42,7 +42,7 @@ However, the API changes follow these rules:
 - _Remove from public API_ `ksCut`, `ksDeepDup`, `ksCopyInternal` and other functions that should never have been public
 
 - _Remove_ all functions that can be replaced by others (e.g. `ksPop`)
-- _Rename_ all functions to start with `elektra` as described in [Elektra Prefix](../3_decided/elektra_prefix.md), and use `KeySet` instead of `ks` (also applies to names above)
+- _Rename_ all functions to start with `elektra` as described in [Elektra Prefix](../4_decided/elektra_prefix.md), and use `KeySet` instead of `ks` (also applies to names above)
 
 ## Rationale
 
@@ -51,7 +51,7 @@ However, the API changes follow these rules:
 ## Related Decisions
 
 - [Binary](binary.md)
-- [Elektra Prefix](../3_decided/elektra_prefix.md)
+- [Elektra Prefix](../4_decided/elektra_prefix.md)
 
 ## Notes
 

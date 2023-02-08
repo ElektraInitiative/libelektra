@@ -76,6 +76,6 @@ The `kdb mount` tool will add the `meta` plugin configuration when mounting a st
 ## Related Decisions
 
 - [Spec Expressiveness](spec_expressiveness.md)
-- [Arrays](../4_partially_implemented/array.md)
+- [Arrays](../5_partially_implemented/array.md)
 
 ## Notes

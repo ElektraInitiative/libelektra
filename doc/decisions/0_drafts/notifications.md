@@ -31,7 +31,7 @@ Within one Elektra setup, they cannot be intermixed (unlike config file formats,
 
 ## Related Decisions
 
-- [hooks](../4_partially_implemented/hooks.md)
-- [Ensure](../5_implemented/ensure.md)
+- [hooks](../5_partially_implemented/hooks.md)
+- [Ensure](../6_implemented/ensure.md)
 
 ## Notes

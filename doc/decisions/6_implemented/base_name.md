@@ -33,7 +33,7 @@ For example:
 The argument goes unmodified to the unescaped key name.
 
 For arrays there is no escaping needed because an array is only an array if the metadata `array` is appended to the direct parent key.
-See [array](../4_partially_implemented/array.md).
+See [array](../5_partially_implemented/array.md).
 
 ## Rationale
 
@@ -45,6 +45,6 @@ See [array](../4_partially_implemented/array.md).
 
 ## Related Decisions
 
-- [Array](../4_partially_implemented/array.md)
+- [Array](../5_partially_implemented/array.md)
 
 ## Notes

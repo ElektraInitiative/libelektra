@@ -14,7 +14,7 @@ However, since both `Key` and `KeySet` are rather complex structures consisting 
   In particular, that means the constructors must not use macros.
 - Constructor functions should use as little resources as feasible.
   `malloc` and `memcpy` calls should be kept to a minimum and temporary allocations should be avoided.
-- In accordance with the ["Namespace and Name of Keys" decision](../3_decided/keyname.md), the constructor functions must not use the escaped name.
+- In accordance with the ["Namespace and Name of Keys" decision](../4_decided/keyname.md), the constructor functions must not use the escaped name.
   Only the unescaped name may be used, but the namespace may be passed as a separate parameter, if this has benefits.
 
 ## Assumptions
@@ -215,7 +215,7 @@ keyNew (
 
 ## Related Decisions
 
-- [Namespace and Name of Keys](../3_decided/keyname.md)
+- [Namespace and Name of Keys](../4_decided/keyname.md)
 - [Builder Functions for `Key` and `KeySet`](../0_drafts/builder_functions.md)
 
 ## Notes

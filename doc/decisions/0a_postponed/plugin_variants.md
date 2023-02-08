@@ -168,7 +168,7 @@ gets ignored.
 
 ## Related Decisions
 
-- [CMake Plugins](../5_implemented/cmake_plugins.md)
+- [CMake Plugins](../6_implemented/cmake_plugins.md)
 
 ## Notes
 

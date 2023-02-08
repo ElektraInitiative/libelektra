@@ -116,7 +116,7 @@ user:/array/#3         = Third Value
 #### Remarks
 
 - The plugin only converts array parents that store **string values**
-- The [array metakey](/doc/decisions/4_partially_implemented/array.md) of the array parent (increased by one) will still be stored in the original parent key after conversion. This is important, since otherwise the storage plugin would lose information about which key represents an array.
+- The [array metakey](/doc/decisions/5_partially_implemented/array.md) of the array parent (increased by one) will still be stored in the original parent key after conversion. This is important, since otherwise the storage plugin would lose information about which key represents an array.
 
 ## Usage
 

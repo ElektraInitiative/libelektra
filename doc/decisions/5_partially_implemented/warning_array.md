@@ -3,7 +3,7 @@
 ## Problem
 
 Currently multiple warnings are saved in an elektra non-conforming array notation which is limited to 100 entries.
-The notation of `#00` is against the design [decision made](../4_partially_implemented/array.md).
+The notation of `#00` is against the design [decision made](../5_partially_implemented/array.md).
 
 ## Constraints
 
@@ -24,6 +24,6 @@ To keep the ordering we add an underscore `_` once we go to beyond 10 warnings (
 
 ## Related Decisions
 
-- [Array](../4_partially_implemented/array.md)
+- [Array](../5_partially_implemented/array.md)
 
 ## Notes

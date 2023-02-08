@@ -80,7 +80,7 @@ Therefore, normal `KeySet`s should not interfere.
 
 ## Related Decisions
 
-- [Hooks](../4_partially_implemented/hooks.md)
+- [Hooks](../5_partially_implemented/hooks.md)
 - [Notifications](../0_drafts/notifications.md)
 
 ## Notes

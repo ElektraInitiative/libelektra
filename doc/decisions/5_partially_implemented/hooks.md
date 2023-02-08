@@ -68,6 +68,6 @@ For changing those plugins symlinks will have to be used.
 ## Related Decisions
 
 - [Array](array.md)
-- [Ensure](../5_implemented/ensure.md)
+- [Ensure](../6_implemented/ensure.md)
 
 ## Notes

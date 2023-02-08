@@ -33,8 +33,8 @@ Continue keeping 3 classes: `Key`, `KeySet` and `KDB`.
 
 ## Related Decisions
 
-- [Null](../5_implemented/null.md)
-- [Namespace and Name of Keys](../3_decided/keyname.md)
+- [Null](../6_implemented/null.md)
+- [Namespace and Name of Keys](../4_decided/keyname.md)
 
 ## Notes
 
