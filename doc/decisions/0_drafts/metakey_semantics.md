@@ -252,6 +252,6 @@ Therefore, the `keyData` pointers will only be the same if the value was not mod
 ## Related Decisions
 
 - [Copy On Write](../6_implemented/copy_on_write.md)
-- [Types of `KeySet`s](../0_drafts/keyset_types.md)
+- [Types of `KeySet`s](../2_solutions_clear/keyset_types.md)
 
 ## Notes

@@ -38,7 +38,7 @@ This leaves `KEY_NS_CASCADING` for its original purpose, while still solving the
 Introduce separate `KEY_NS_MISC` namespace.
 
 In the unescaped form this will be `\x09` (byte with decimal value `9`).
-In the escaped form it will be `data:/`.
+In the escaped form it will be `misc:/`.
 
 `KEY_NS_MISC` has a separate [type of `KeySet`](../2_in_progress/keyset_types.md).
 Such a `KeySet` can only contain `KEY_NS_MISC` keys.
