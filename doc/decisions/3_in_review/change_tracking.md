@@ -184,7 +184,7 @@ We provide an API for developers with `libelektra-kdb`.
 This decision meets all the constraints.
 
 We are not altering the behaviour of already existing functions, so everything is transparent for applications using the public Elektra API.
-As changetracking is an opt-in feature, it will create zero overhead in usecases where it is not needed.
+As changetracking is an opt-in feature, it will create zero runtime overhead and negligible memory overhead in usecases where it is not needed.
 There is only a single implementation and storage, so no duplication for each plugin that wants change tracking.
 As we are storing our own tracking data, all sequences of `kdbGet` and `kdbSet` should work.
 
