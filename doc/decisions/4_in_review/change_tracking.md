@@ -194,6 +194,7 @@ As we are storing our own tracking data, all sequences of `kdbGet` and `kdbSet` 
 - `struct _KDB` needs to be extended to contain the keyset for changetracking
 - Replace all custom changetracking code within Elektra with this unified implementation.
   This should also include the `keyNeedsSync` flag.
+  It also includes switching all notification plugins to use the new API.
 
 ## Related Decisions
 
