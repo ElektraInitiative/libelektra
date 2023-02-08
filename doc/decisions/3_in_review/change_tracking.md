@@ -174,7 +174,7 @@ The changetracking plugin needs to export at least functions for the following t
 
 ## Decision
 
-Plugins and application developer can enable changetracking via a contract.
+Plugins and application developer can declare that changetracking is required via a contract.
 Store deep-duped copy-on-write returned keys in a separate keyset, which we might also use as [internal cache](../4_decided/internal_cache.md).
 The whole changetracking logic lives within `libelektra-kdb`.
 We provide an API for developers with `libelektra-kdb`.
