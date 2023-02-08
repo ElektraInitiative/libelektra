@@ -69,6 +69,7 @@ int execMount (KeySet * options, Key * errorKey)
 	bool optForce = false;
 	bool optQuiet = false;
 	bool optInteractive = false;
+	bool optWithRecommends = false;
 	/* TODO: Decide where to put code for evaluation of option (currently also in cmerge.c) */
 	const char * optStrategy = NULL;
 	/* TODO: Implement option */
@@ -97,6 +98,8 @@ int execMount (KeySet * options, Key * errorKey)
 		elektraKeyToBoolean (tmp, &optQuiet);
 	if ((tmp = GET_OPTION_KEY (options, "interactive")))
 		elektraKeyToBoolean (tmp, &optInteractive);
+	if ((tmp = GET_OPTION_KEY (options, "with-recommends")))
+		elektraKeyToBoolean (tmp, &optWithRecommends);
 
 	/* TODO: Remove code duplication (code for processing strategy-parameter is also present in cmerge.c */
 	if ((tmp = GET_OPTION_KEY (options, "strategy")))
@@ -176,8 +179,17 @@ int execMount (KeySet * options, Key * errorKey)
 	}
 
 	/* TODO: give full plugins config */
-	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL, argPath);
+	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL, argPath, plugins, optWithRecommends);
 	ksDel (plugins);
+
+
+
+
+
+
+
+
+
 
 	/* TODO: Not yet implemented function calls in CPP:
 	 * askForConfirmation (cl);
