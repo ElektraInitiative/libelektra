@@ -14,14 +14,19 @@ commands:
   - &build cmake --build "$BUILD_DIR"
   - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
   - &run_tests | # Run tests
-    if [ "$ENABLE_ASAN" = 'ON' ]; then
-      cmake --build "$BUILD_DIR" --target run_nocheckshell
+    if [ "$CIRRUS_OS" = "darwin" ]; then
+      AUTO_RERUN_TESTS="testmod_dbus"
     else
-      [ "$BUILD_FULL" = 'ON' ] && KDB=kdb-full || KDB=kdb
-      # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
-      # if we do not add the alternative `false`.
-      cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
+      AUTO_RERUN_TESTS=""
     fi
+
+    if [ "$BUILD_FULL" = 'ON' ]; then
+      KDB=kdb-full
+    else
+      KDB=kdb
+    fi
+
+    env AUTO_RERUN_TESTS="$AUTO_RERUN_TESTS" KDB="$KDB" sh scripts/dev/ci_run_tests.sh
 
 task:
   matrix:

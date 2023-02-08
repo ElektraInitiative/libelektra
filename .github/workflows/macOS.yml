@@ -198,9 +198,9 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        if [ "$ENABLE_ASAN" = 'ON' ]; then
-          cmake --build . --target run_nocheckshell
+        if [ "$BUILD_FULL" = 'ON' ]; then
+          KDB=kdb-full
         else
-          cmake --build . --target run_all
-          kdb run_all
+          KDB=kdb
         fi
+        env BUILD_DIR="$PWD" AUTO_RERUN_TESTS="testmod_dbus" KDB="$KDB" sh scripts/dev/ci_run_tests.sh
