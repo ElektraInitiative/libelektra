@@ -93,6 +93,6 @@ This alternative conflicts with the constraint of minimal API.
 
 ## Related Decisions
 
-- [Namespace for miscellaneous data](../3_decided/misc_namespace.md)
+- [Namespace for miscellaneous data](../4_decided/misc_namespace.md)
 
 ## Notes

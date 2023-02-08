@@ -10,11 +10,11 @@ However, because a `Key` cannot exist without a namespace, we need to choose a n
 
 ## Constraints
 
-- The outcome must be compatible with the ["Types of `KeySet`s" decision](../2_in_progress/keyset_types.md).
+- The outcome must be compatible with the ["Types of `KeySet`s" decision](../2_solutions_clear/keyset_types.md).
 
 ## Assumptions
 
-- The ["Types of `KeySet`s" decision](../2_in_progress/keyset_types.md) leads to separate types of `KeySet`s that are restricted w.r.t. the namespaces they may contain.
+- The ["Types of `KeySet`s" decision](../2_solutions_clear/keyset_types.md) leads to separate types of `KeySet`s that are restricted w.r.t. the namespaces they may contain.
 
 ## Considered Alternatives
 
@@ -29,7 +29,7 @@ It is no longer just for lookup, but would now have a secondary purpose.
 ### Introduce separate `KEY_NS_MISC` namespace
 
 We introduce a new `KEY_NS_MISC`, which is used exclusively for generic and miscellaneous data.
-It implies a separate [type of `KeySet`](../2_in_progress/keyset_types.md).
+It implies a separate [type of `KeySet`](../2_solutions_clear/keyset_types.md).
 
 This leaves `KEY_NS_CASCADING` for its original purpose, while still solving the issue with generic data.
 
@@ -40,7 +40,7 @@ Introduce separate `KEY_NS_MISC` namespace.
 In the unescaped form this will be `\x09` (byte with decimal value `9`).
 In the escaped form it will be `misc:/`.
 
-`KEY_NS_MISC` has a separate [type of `KeySet`](../2_in_progress/keyset_types.md).
+`KEY_NS_MISC` has a separate [type of `KeySet`](../2_solutions_clear/keyset_types.md).
 Such a `KeySet` can only contain `KEY_NS_MISC` keys.
 It may not be used for metadata or with `kdbGet`/`kdbSet`.
 
@@ -50,7 +50,7 @@ However, the `KEY_NS_CASCADING` will simply be replaced with `KEY_NS_MISC` and t
 ## Rationale
 
 Introducing a new namespace is much cleaner than reusing one of the existing ones.
-It fits better with the separate [types of `KeySet`s](../2_in_progress/keyset_types.md).
+It fits better with the separate [types of `KeySet`s](../2_solutions_clear/keyset_types.md).
 
 ## Implications
 
@@ -60,6 +60,6 @@ It fits better with the separate [types of `KeySet`s](../2_in_progress/keyset_ty
 
 ## Related Decisions
 
-- ["Types of `KeySet`s"](../2_in_progress/keyset_types.md).
+- ["Types of `KeySet`s"](../2_solutions_clear/keyset_types.md).
 
 ## Notes
