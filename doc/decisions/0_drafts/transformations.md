@@ -176,10 +176,10 @@ A drawback to this solution is that it adds some complexity to `libelektra-core`
 
 ## Related Decisions
 
-- [Hooks](../4_partially_implemented/hooks.md)
-- [Change Tracking](../1_in_discussion/change_tracking.md)
+- [Hooks](../5_partially_implemented/hooks.md)
+- [Change Tracking](../1_problem_clear/change_tracking.md)
 - [Operation Sequences](../0_drafts/operation_sequences.md)
-- [Internal Cache](../3_decided/internal_cache.md)
+- [Internal Cache](../4_decided/internal_cache.md)
 
 ## Notes
 
