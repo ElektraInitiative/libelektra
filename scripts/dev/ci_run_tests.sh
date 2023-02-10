@@ -26,7 +26,7 @@ fi
 	ctest -j --force-new-ctest-process --output-on-failure -E "$EXCLUDED_TESTS"
 	ctest -j --force-new-ctest-process --output-on-failure --repeat "until-pass:5" -R "$AUTO_RERUN_TESTS"
 	set +e
-)
+) || exit 1
 
 if [ -n "$KDB" ]; then
 	"$KDB" run_all
