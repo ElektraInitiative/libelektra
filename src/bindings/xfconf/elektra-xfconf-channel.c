@@ -1,6 +1,7 @@
 #include "elektra-xfconf-channel.h"
 #include "elektra-xfconf-util.h"
 #include "elektra-xfconf.h"
+#include <kdbhelper.h>
 
 typedef struct XfconfCache XfconfCache;
 struct _XfconfChannel
@@ -45,6 +46,7 @@ static guint signals[N_SIGS] = {
 G_DEFINE_TYPE (XfconfChannel, xfconf_channel, G_TYPE_OBJECT)
 
 
+static char * propertyWithChannelPrefix (const XfconfChannel * channel, const gchar * property);
 static void xfconf_channel_class_init (XfconfChannelClass * klass)
 {
 	trace ();
@@ -302,10 +304,7 @@ static gboolean xfconf_channel_set_formatted (XfconfChannel * channel, const gch
 		g_debug ("cannot proceed with null property");
 		return FALSE;
 	}
-	char * propertyName =
-		malloc ((strlen (XFCONF_NAMESPACE) + strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) *
-			sizeof (char));
-	sprintf (propertyName, "%s%s/%s%s", XFCONF_NAMESPACE, XFCONF_ROOT, channel->channel_name, property);
+	char * propertyName = propertyWithChannelPrefix (channel, property);
 	Key * key = keyNew (propertyName, KEY_END);
 	g_debug ("set %s to %s (type %lu) on channel: %s", propertyName, value, g_type, channel->channel_name);
 	keySetString (key, value);
@@ -318,6 +317,28 @@ static gboolean xfconf_channel_set_formatted (XfconfChannel * channel, const gch
 	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
 	g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
 	return resultCode >= 0;
+}
+
+/**
+ * propertyWithChannelPrefix - Constructs a full property name for the specified channel and property.
+ *
+ * This function takes a pointer to an XfconfChannel struct and a string pointer to a property name and returns a
+ * dynamically allocated string containing the full property name, including the XFCONF_NAMESPACE, XFCONF_ROOT, and
+ * channel name.
+ *
+ * @param channel Pointer to an XfconfChannel struct representing the channel containing the property.
+ * @param property Pointer to a string containing the name of the property.
+ *
+ * @return A dynamically allocated string containing the full property name including the XFCONF_NAMESPACE, XFCONF_ROOT,
+ * and channel name. The caller is responsible for freeing this memory using `free`.
+ */
+static char * propertyWithChannelPrefix (const XfconfChannel * channel, const gchar * property)
+{
+	char * propertyName =
+		malloc ((strlen (XFCONF_NAMESPACE) + strlen (XFCONF_ROOT) + strlen (channel->channel_name) + strlen (property) + 2) *
+			sizeof (char));
+	sprintf (propertyName, "%s%s/%s%s", XFCONF_NAMESPACE, XFCONF_ROOT, channel->channel_name, property);
+	return propertyName;
 }
 
 gboolean xfconf_channel_has_property (XfconfChannel * channel, const gchar * property)
@@ -588,8 +609,24 @@ gboolean xfconf_channel_set_array_valist (XfconfChannel * channel, const gchar *
 }
 gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * property, GPtrArray * values)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	GValue * currentValue;
+	gboolean result = TRUE;
+	for (guint i = 0; i < values->len; i++)
+	{
+		currentValue = g_ptr_array_steal_index (values, i);
+		char * propertyNameWithIndex = calloc (strlen (property) + ELEKTRA_MAX_ARRAY_SIZE + 2, sizeof (char));
+		strcpy (propertyNameWithIndex, property);
+		propertyNameWithIndex[strlen (propertyNameWithIndex)] = '/';
+		elektraWriteArrayNumber (&propertyNameWithIndex[strlen (propertyNameWithIndex)], i);
+		result &= xfconf_channel_set_property (channel, propertyNameWithIndex, currentValue);
+	}
+	Key * arrayKey = keyNew (propertyWithChannelPrefix (channel, property), KEY_END);
+	char * lastElementIndex = calloc (ELEKTRA_MAX_ARRAY_SIZE + 1, sizeof (char));
+	elektraWriteArrayNumber (lastElementIndex, values->len - 1);
+	keySetMeta (arrayKey, "array", lastElementIndex);
+	ksAppendKey (keySet_from_channel (channel->channel_name), arrayKey);
+	return result;
 }
 
 /* struct types */
