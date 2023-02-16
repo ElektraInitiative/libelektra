@@ -52,71 +52,71 @@ typedef enum
 	ELEKTRA_KEY_CP_ALL = ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE | ELEKTRA_KEY_CP_META,
 } ElektraEntryCopyFlag;
 
-void ElektraNamePushPart (ElektraName * name, const char * part);
-void ElektraNamePopPart (ElektraName * name);
+void elektraNamePushPart (ElektraName * name, const char * part);
+void elektraNamePopPart (ElektraName * name);
 
-ElektraEntry * ElektraEntryNew (const ElektraName * name);
-ElektraEntry * ElektraEntryRetain (const ElektraEntry * key);
-void ElektraEntryRelease (const ElektraEntry * key);
+ElektraEntry * elektraEntryNew (const ElektraName * name);
+ElektraEntry * elektraEntryRetain (const ElektraEntry * key);
+void elektraEntryRelease (const ElektraEntry * key);
 
-const ElektraName * ElektraEntryGetName (const ElektraEntry * key);
+const ElektraName * elektraEntryGetName (const ElektraEntry * key);
 // Note: creates copy of name
-ElektraReturnCode ElektraSetName (ElektraEntry * key, const ElektraName * name);
+ElektraReturnCode elektraSetName (ElektraEntry * key, const ElektraName * name);
 // increments nameLock
-void ElektraEntryLockName (ElektraEntry * key);
+void elektraEntryLockName (ElektraEntry * key);
 // decrements nameLock
-void ElektraEntryUnlockName (ElektraEntry * key);
-bool ElektraEntryIsNameLocked (const ElektraEntry * key);
+void elektraEntryUnlockName (ElektraEntry * key);
+bool elektraEntryIsNameLocked (const ElektraEntry * key);
 
-const ElektraValue * ElektraEntryGetValue (const ElektraEntry * key);
+const ElektraValue * elektraEntryGetValue (const ElektraEntry * key);
 // Note: creates copy of value
-ElektraReturnCode ElektraSetValue (ElektraEntry * key, const ElektraValue * value);
+ElektraReturnCode elektraSetValue (ElektraEntry * key, const ElektraValue * value);
 
 /**
  * @returns a `const ElektraSet *` that can safely be cast to `ElektraSet *`, iff a non-const `ElektraEntry *` was passed as @p key
  */
-ELEKTRA_CONST ElektraSet * ElektraEntryGetMeta (const ElektraEntry * key);
+ELEKTRA_CONST ElektraSet * elektraEntryGetMeta (const ElektraEntry * key);
 
-ElektraReturnCode ElektraEntryIsBelow (const ElektraEntry * first, const ElektraEntry * second);
-ElektraReturnCode ElektraEntryCompare (const ElektraEntry * first, const ElektraEntry * second);
+ElektraReturnCode elektraEntryIsBelow (const ElektraEntry * first, const ElektraEntry * second);
+ElektraReturnCode elektraEntryCompare (const ElektraEntry * first, const ElektraEntry * second);
 
-ElektraEntry * ElektraEntryCopy (ElektraEntry * dest, const ElektraEntry * src, ElektraEntryCopyFlag flags);
-static inline ElektraEntry * ElektraEntryDup (ElektraEntry * key, ElektraEntryCopyFlag flags)
+ElektraEntry * elektraEntryCopy (ElektraEntry * dest, const ElektraEntry * src, ElektraEntryCopyFlag flags);
+static inline ElektraEntry * elektraEntryDup (ElektraEntry * key, ElektraEntryCopyFlag flags)
 {
 	ElektraEntry * dest = flags & ELEKTRA_KEY_CP_NAME ?
-				      ElektraEntryNew (ElektraEntryGetName (key)) :
-					    ElektraEntryNew (&(ElektraName){ .ns = ELEKTRA_NS_CASCADING, .name = "", .size = 0 });
-	return ElektraEntryCopy (dest, key, (ElektraEntryCopyFlag) (flags & ~ELEKTRA_KEY_CP_NAME));
+				      elektraEntryNew (elektraEntryGetName (key)) :
+					    elektraEntryNew (&(ElektraName){ .ns = ELEKTRA_NS_CASCADING, .name = "", .size = 0 });
+	return elektraEntryCopy (dest, key, (ElektraEntryCopyFlag) (flags & ~ELEKTRA_KEY_CP_NAME));
 }
 
 
-ElektraSet * ElektraSetNew (size_t prealloc);
-ElektraSet * ElektraSetRetain (const ElektraSet * ks);
-void ElektraSetRelease (const ElektraSet * ks);
+ElektraSet * elektraSetNew (size_t prealloc);
+ElektraSet * elektraSetRetain (const ElektraSet * ks);
+void elektraSetRelease (const ElektraSet * ks);
 
-size_t ElektraSetSize (ElektraSet * ks);
+size_t elektraSetSize (ElektraSet * ks);
 
-ElektraReturnCode ElektraSetInsert (ElektraSet * ks, ElektraEntry * key);
-ElektraReturnCode ElektraSetInsertAll (ElektraSet * ks, ElektraSet * other);
-static inline ElektraReturnCode ElektraSetInsertAndRelease (ElektraSet * ks, ElektraEntry * key)
+ElektraReturnCode elektraSetInsert (ElektraSet * ks, ElektraEntry * key);
+ElektraReturnCode elektraSetInsertAll (ElektraSet * ks, ElektraSet * other);
+static inline ElektraReturnCode elektraSetInsertAndRelease (ElektraSet * ks, ElektraEntry * key)
 {
-	ElektraReturnCode error = ElektraSetInsert (ks, key);
-	ElektraEntryRelease (key);
+	ElektraReturnCode error = elektraSetInsert (ks, key);
+	elektraEntryRelease (key);
 	return error;
 }
 
-ElektraEntry * ElektraSetGet (ElektraSet * ks, size_t index);
-ElektraSet * ElektraSetGetRange (ElektraSet * ks, size_t start, size_t end);
+ElektraEntry * elektraSetGet (ElektraSet * ks, size_t index);
+ElektraSet * elektraSetGetRange (ElektraSet * ks, size_t start, size_t end);
 
-void ElektraSetRemove (ElektraSet * ks, size_t index);
-void ElektraSetRemoveRange (ElektraSet * ks, size_t start, size_t end);
-static inline void ElektraSetClear (ElektraSet * ks)
+void elektraSetRemove (ElektraSet * ks, size_t index);
+void elektraSetRemoveRange (ElektraSet * ks, size_t start, size_t end);
+static inline void elektraSetClear (ElektraSet * ks)
 {
-	ElektraSetRemoveRange (ks, 0, ElektraSetSize (ks));
+	elektraSetRemoveRange (ks, 0, elektraSetSize (ks));
 }
 
-size_t ElektraSetLookup (ElektraSet * ks, const ElektraName * name);
+size_t elektraSetLookup (ElektraSet * ks, const ElektraName * name);
 
-size_t ElektraSetFindHierarchy (ElektraSet * ks, const ElektraName * root, size_t * end);
+size_t elektraSetFindHierarchy (ElektraSet * ks, const ElektraName * root, size_t * end);
 
 #endif // ELEKTRA_CORE_PUBLIC_H

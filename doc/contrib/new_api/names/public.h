@@ -5,19 +5,19 @@
 
 #include <stdlib.h>
 
-void ElektraNameAppend (ElektraName * name, const char * suffix, size_t size);
+void elektraNameAppend (ElektraName * name, const char * suffix, size_t size);
 
 // constness of return value follows constness of name
-ELEKTRA_CONST char * ElektraNameLastPart (const ElektraName * name, size_t * outSize);
-void ElektraNameReplaceLastPart (ElektraName * name, const char * newPart);
+ELEKTRA_CONST char * elektraNameLastPart (const ElektraName * name, size_t * outSize);
+void elektraNameReplaceLastPart (ElektraName * name, const char * newPart);
 
 // constness of return value follows constness of name
-ELEKTRA_CONST char * ElektraNameNextPart (const ElektraName * name, const char * currentPart);
+ELEKTRA_CONST char * elektraNameNextPart (const ElektraName * name, const char * currentPart);
 
 /**
  * allocates a new string with the escaped form of @p name
  */
-char * ElektraNameEscape (const ElektraName * name);
+char * elektraNameEscape (const ElektraName * name);
 
 /**
  * Verifies that @p escaped is a valid escaped name, and optionally produces
@@ -35,12 +35,12 @@ char * ElektraNameEscape (const ElektraName * name);
  *
  * @returns 0 if @p escaped is a valid escaped name (other values for different kinds of errors)
  */
-ElektraReturnCode ElektraNameProcessEscaped (ElektraName * dest, const char * escaped, char ** canonical, size_t * canonicalSize,
+ElektraReturnCode elektraNameProcessEscaped (ElektraName * dest, const char * escaped, char ** canonical, size_t * canonicalSize,
 					     const char ** errorPtr);
 
 /**
  * frees a name created by e.g. ElektraNameProcessEscaped()
  */
-void ElektraNameFree (ElektraName * name);
+void elektraNameFree (ElektraName * name);
 
 #endif // ELEKTRA_NAMES_PUBLIC_H

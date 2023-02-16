@@ -51,30 +51,30 @@ An "illegal" operation, immediately break something and will cause wrong results
 An "unsafe" operation, does not immediately break anything, but it is still an incorrect use of the API and often creates new "unsafe" or even "illegal" operations for the future.
 
 ```c
-ElektraEntry * k1 = ElektraEntryNew (&(ElektraName){
+ElektraEntry * k1 = elektraEntryNew (&(ElektraName){
     .ns = ELEKTRA_NS_SYSTEM,
     .name = "foo\0bar\0baz",
     .size = 14
 });
-ElektraSet * ks1 = ElektraSetNew (8);
+ElektraSet * ks1 = elektraSetNew (8);
 ElektraEntryInsertAndRelease (ks1, k1);
 
-ElektraEntry * i1 = ElektraSetGet (ks1, 0);
+ElektraEntry * i1 = elektraSetGet (ks1, 0);
 
 // WARNING USAFE OPERATIONS
-ElektraEntryUnlockName (i1); // name can now be modified even though k1 is still part of ks1
+elektraEntryUnlockName (i1); // name can now be modified even though k1 is still part of ks1
 
 // WARNING ILLEGAL OPERATIONS
 
 // because of the ElektraEntryUnlockName, this is now an ILLEGAL operation, we are changing the name of a key that is part of a keyset
 // without ElektraEntryUnlockName it would be safe, and ElektraSetName would return an error
-ElektraSetName (i1, name2);
+elektraSetName (i1, name2);
 
 
 // having too many ElektraEntryRelease is also an IILEGAL operation
 // here we've already given up our references to these keys, so calling ElektraEntryRelease again means we're releasing somebody else's reference
 // in this case this will even lead to the memory of k1 being freed and ks1 containing invalid pointers, because we're releasing the reference to k1 that is held by ks1
-ElektraEntryRelease (k1);
+elektraEntryRelease (k1);
 ```
 
 ## API outside `libelektra-core`
