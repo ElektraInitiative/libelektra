@@ -9,6 +9,8 @@
 #define XFCONF_ROOT "/sw/xfce4"
 #define XFCONF_GTYPE_META_NAME "gtype"
 
+#define XFCONF_NUM_BUF_SIZE 64
+
 extern GList * channel_list;
 extern KDB * elektraKdb;
 

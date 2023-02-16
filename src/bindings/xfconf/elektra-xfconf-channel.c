@@ -379,8 +379,10 @@ gint32 xfconf_channel_get_int (XfconfChannel * channel, const gchar * property, 
 }
 gboolean xfconf_channel_set_int (XfconfChannel * channel, const gchar * property, gint32 value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%d", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_INT);
 }
 
 static gint64 xfconf_channel_get_int64 (XfconfChannel * channel, const gchar * property, gint64 default_value)
@@ -390,8 +392,10 @@ static gint64 xfconf_channel_get_int64 (XfconfChannel * channel, const gchar * p
 }
 static gboolean xfconf_channel_set_int64 (XfconfChannel * channel, const gchar * property, gint64 value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%ld", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_INT64);
 }
 
 guint32 xfconf_channel_get_uint (XfconfChannel * channel, const gchar * property, guint32 default_value)
@@ -401,8 +405,10 @@ guint32 xfconf_channel_get_uint (XfconfChannel * channel, const gchar * property
 }
 gboolean xfconf_channel_set_uint (XfconfChannel * channel, const gchar * property, guint32 value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%u", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_UINT);
 }
 
 guint64 xfconf_channel_get_uint64 (XfconfChannel * channel, const gchar * property, guint64 default_value)
@@ -412,8 +418,10 @@ guint64 xfconf_channel_get_uint64 (XfconfChannel * channel, const gchar * proper
 }
 gboolean xfconf_channel_set_uint64 (XfconfChannel * channel, const gchar * property, guint64 value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%lu", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_UINT64);
 }
 
 static glong xfconf_channel_get_long (XfconfChannel * channel, const gchar * property, glong default_value)
@@ -423,8 +431,10 @@ static glong xfconf_channel_get_long (XfconfChannel * channel, const gchar * pro
 }
 static gboolean xfconf_channel_set_long (XfconfChannel * channel, const gchar * property, glong value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%ld", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_LONG);
 }
 
 static gulong xfconf_channel_get_ulong (XfconfChannel * channel, const gchar * property, gulong default_value)
@@ -434,8 +444,10 @@ static gulong xfconf_channel_get_ulong (XfconfChannel * channel, const gchar * p
 }
 static gboolean xfconf_channel_set_ulong (XfconfChannel * channel, const gchar * property, gulong value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%lu", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_ULONG);
 }
 
 static gfloat xfconf_channel_get_float (XfconfChannel * channel, const gchar * property, gfloat default_value)
@@ -445,8 +457,10 @@ static gfloat xfconf_channel_get_float (XfconfChannel * channel, const gchar * p
 }
 static gboolean xfconf_channel_set_float (XfconfChannel * channel, const gchar * property, gfloat value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%f", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_FLOAT);
 }
 
 gdouble xfconf_channel_get_double (XfconfChannel * channel, const gchar * property, gdouble default_value)
@@ -456,8 +470,10 @@ gdouble xfconf_channel_get_double (XfconfChannel * channel, const gchar * proper
 }
 gboolean xfconf_channel_set_double (XfconfChannel * channel, const gchar * property, gdouble value)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	char stringValue[XFCONF_NUM_BUF_SIZE] = { 0 };
+	snprintf (stringValue, XFCONF_NUM_BUF_SIZE, "%f", value);
+	return xfconf_channel_set_formatted (channel, property, stringValue, G_TYPE_DOUBLE);
 }
 
 gboolean xfconf_channel_get_bool (XfconfChannel * channel, const gchar * property, gboolean default_value)
