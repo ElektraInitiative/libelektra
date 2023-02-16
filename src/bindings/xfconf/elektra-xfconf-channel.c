@@ -527,8 +527,17 @@ gchar ** xfconf_channel_get_string_list (XfconfChannel * channel, const gchar * 
 }
 gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * property, const gchar * const * values)
 {
-	unimplemented ();
-	return FALSE;
+	trace ();
+	const gchar * currentElement;
+	GPtrArray * array = g_ptr_array_new ();
+	for (int i = 0; (currentElement = values[i]); i++)
+	{
+		GValue g_key_value = G_VALUE_INIT;
+		g_value_init (&g_key_value, G_TYPE_STRING);
+		g_value_set_string (&g_key_value, currentElement);
+		g_ptr_array_add (array, &g_key_value);
+	}
+	return xfconf_channel_set_arrayv (channel, property, array);
 }
 
 /* really generic API - can set some value types that aren't
