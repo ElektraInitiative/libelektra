@@ -544,8 +544,21 @@ gboolean xfconf_channel_set_bool (XfconfChannel * channel, const gchar * propert
  * all the values are G_TYPE_STRING */
 gchar ** xfconf_channel_get_string_list (XfconfChannel * channel, const gchar * property)
 {
-	unimplemented ();
-	return NULL;
+	trace ();
+	GPtrArray * array = xfconf_channel_get_arrayv (channel, property);
+	if (!array)
+	{
+		g_debug ("found no array named %s in channel %s", property, channel->channel_name);
+		return NULL;
+	}
+	gchar ** stringArray = calloc (array->len + 1, sizeof (gchar *));
+	stringArray[array->len] = NULL;
+	for (guint i = 0; i < array->len; i++)
+	{
+		GValue * g_value = g_ptr_array_steal_index (array, i);
+		stringArray[i] = strdup (g_value_to_string (g_value));
+	}
+	return stringArray;
 }
 gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * property, const gchar * const * values)
 {
