@@ -28,14 +28,14 @@
 	}
 
 /**
- * CAUTION releases reference to @p meta
+ * CAUTION calls `elektraSetDel(meta)`, i.e., destroys @p meta, if there are no external references
  */
 ElektraEntry * elektraEntryBuild (const ElektraName * name, const ElektraValue * value, ElektraSet * meta)
 {
 	ElektraEntry * key = elektraEntryNew (name);
 	elektraSetValue (key, value);
 	elektraSetInsertAll ((ElektraSet *) elektraEntryGetMeta (key), meta);
-	elektraSetRelease (meta);
+	elektraSetDel (meta);
 	return key;
 }
 

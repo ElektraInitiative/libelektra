@@ -56,8 +56,15 @@ void elektraNamePushPart (ElektraName * name, const char * part);
 void elektraNamePopPart (ElektraName * name);
 
 ElektraEntry * elektraEntryNew (const ElektraName * name);
-ElektraEntry * elektraEntryRetain (const ElektraEntry * key);
-void elektraEntryRelease (const ElektraEntry * key);
+/**
+ * @returns @p key, constness follows argument
+ */
+ELEKTRA_CONST ElektraEntry * elektraEntryIncRefCount (const ElektraEntry * key);
+/**
+ * @returns @p key, constness follows argument
+ */
+ELEKTRA_CONST ElektraEntry * elektraEntryDecRefCount (const ElektraEntry * key);
+void elektraEntryDel (const ElektraEntry * key);
 
 const ElektraName * elektraEntryGetName (const ElektraEntry * key);
 // Note: creates copy of name
@@ -91,19 +98,20 @@ static inline ElektraEntry * elektraEntryDup (ElektraEntry * key, ElektraEntryCo
 
 
 ElektraSet * elektraSetNew (size_t prealloc);
-ElektraSet * elektraSetRetain (const ElektraSet * ks);
-void elektraSetRelease (const ElektraSet * ks);
+/**
+ * @returns @p ks, constness follows argument
+ */
+ELEKTRA_CONST ElektraSet * elektraSetIncRefCount (const ElektraSet * ks);
+/**
+ * @returns @p ks, constness follows argument
+ */
+ELEKTRA_CONST ElektraSet * elektraSetDecRefCount (const ElektraSet * ks);
+void elektraSetDel (const ElektraSet * ks);
 
 size_t elektraSetSize (ElektraSet * ks);
 
 ElektraReturnCode elektraSetInsert (ElektraSet * ks, ElektraEntry * key);
 ElektraReturnCode elektraSetInsertAll (ElektraSet * ks, ElektraSet * other);
-static inline ElektraReturnCode elektraSetInsertAndRelease (ElektraSet * ks, ElektraEntry * key)
-{
-	ElektraReturnCode error = elektraSetInsert (ks, key);
-	elektraEntryRelease (key);
-	return error;
-}
 
 ElektraEntry * elektraSetGet (ElektraSet * ks, size_t index);
 ElektraSet * elektraSetGetRange (ElektraSet * ks, size_t start, size_t end);

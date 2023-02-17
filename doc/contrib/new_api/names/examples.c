@@ -45,6 +45,6 @@ int main (void)
 	ElektraEntry * key = elektraEntryNew (&name);
 	elektraNameFree (&name);
 
-	elektraEntryRelease (key);
+	elektraEntryDel (key);
 	return 0;
 }
