@@ -659,11 +659,14 @@ GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * pr
 	}
 	const char * lastArrayNumber = keyString (arrayMetaKey);
 	size_t prefixOffset = 0;
+	g_debug ("last array number string is %s", lastArrayNumber);
 	// search for the first number, assuming the strings length is at least 1 including null-termination
-	while (lastArrayNumber[prefixOffset] != '\0' || lastArrayNumber[prefixOffset] < '0' || lastArrayNumber[prefixOffset] > '9')
+	while (lastArrayNumber[prefixOffset] != '\0' && (lastArrayNumber[prefixOffset] < '0' || lastArrayNumber[prefixOffset] > '9'))
 	{
+		g_debug ("last offset character is %c", lastArrayNumber[prefixOffset]);
 		prefixOffset++;
 	}
+	g_debug ("try to parse array number: %s", &lastArrayNumber[prefixOffset]);
 	char * invalidPointer = NULL;
 	size_t arrayLength = strtoul (&lastArrayNumber[prefixOffset], &invalidPointer, 10) + 1;
 	if (*invalidPointer != '\0')
@@ -675,7 +678,7 @@ GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * pr
 	GPtrArray * array = g_ptr_array_new ();
 	for (size_t i = 0; i < arrayLength; i++)
 	{
-		const char * elementName = duplicateWithArrayNumber (property, arrayLength);
+		const char * elementName = duplicateWithArrayNumber (property, i);
 		g_debug ("looking up %s", elementName);
 		GValue g_value = G_VALUE_INIT;
 		if (xfconf_channel_get_formatted (channel, elementName, &g_value))
@@ -703,6 +706,10 @@ gboolean xfconf_channel_set_array_valist (XfconfChannel * channel, const gchar *
 gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * property, GPtrArray * values)
 {
 	trace ();
+	if (values->len <= 0)
+	{
+		return TRUE;
+	}
 	GValue * currentValue;
 	gboolean result = TRUE;
 	for (guint i = 0; i < values->len; i++)
