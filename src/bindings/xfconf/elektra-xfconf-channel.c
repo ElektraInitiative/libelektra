@@ -320,6 +320,28 @@ static gboolean xfconf_channel_set_formatted (XfconfChannel * channel, const gch
 }
 
 /**
+ * duplicateWithArrayNumber - Creates a new string with an array index appended to the original string.
+ *
+ * This function takes a string pointer to a property name and an unsigned integer index, and returns a newly allocated
+ * string with the index appended to the original property name. The appended index is written in a format compatible
+ * with Elektra's array syntax.
+ *
+ * @param property Pointer to a string containing the name of the property to be duplicated.
+ * @param index An unsigned integer representing the index of the array element.
+ *
+ * @return A dynamically allocated string containing the original property name with the array index appended. The caller
+ * is responsible for freeing this memory using `free`.
+ */
+static char * duplicateWithArrayNumber (const gchar * property, guint index)
+{
+	char * propertyNameWithIndex = calloc (strlen (property) + ELEKTRA_MAX_ARRAY_SIZE + 2, sizeof (char));
+	strcpy (propertyNameWithIndex, property);
+	propertyNameWithIndex[strlen (propertyNameWithIndex)] = '/';
+	elektraWriteArrayNumber (&propertyNameWithIndex[strlen (propertyNameWithIndex)], index);
+	return propertyNameWithIndex;
+}
+
+/**
  * propertyWithChannelPrefix - Constructs a full property name for the specified channel and property.
  *
  * This function takes a pointer to an XfconfChannel struct and a string pointer to a property name and returns a
@@ -602,8 +624,57 @@ gboolean xfconf_channel_get_array_valist (XfconfChannel * channel, const gchar *
 }
 GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * property)
 {
-	unimplemented ();
-	return NULL;
+	trace ();
+	KeySet * keySet = keySet_from_channel (channel->channel_name);
+	if (!keySet)
+	{
+		g_debug ("no keyset to channel %s was found", channel->channel_name);
+		return NULL;
+	}
+	const char * propertyPath = propertyWithChannelPrefix (channel, property);
+	const Key * arrayKey = ksLookupByName (keySet, propertyPath, KDB_O_NONE);
+	if (!arrayKey)
+	{
+		g_debug ("no array key found");
+		return NULL;
+	}
+	const Key * arrayMetaKey = keyGetMeta (arrayKey, "array");
+	if (!arrayMetaKey)
+	{
+		g_debug ("no array meta key found");
+		return NULL;
+	}
+	const char * lastArrayNumber = keyString (arrayMetaKey);
+	size_t prefixOffset = 0;
+	// search for the first number, assuming the strings length is at least 1 including null-termination
+	while (lastArrayNumber[prefixOffset] != '\0' || lastArrayNumber[prefixOffset] < '0' || lastArrayNumber[prefixOffset] > '9')
+	{
+		prefixOffset++;
+	}
+	char * invalidPointer = NULL;
+	size_t arrayLength = strtoul (&lastArrayNumber[prefixOffset], &invalidPointer, 10) + 1;
+	if (*invalidPointer != '\0')
+	{
+		g_warning ("there are invalid characters in the array number");
+		arrayLength = 0;
+	}
+	g_debug ("array length is %lu", arrayLength);
+	GPtrArray * array = g_ptr_array_new ();
+	for (size_t i = 0; i < arrayLength; i++)
+	{
+		const char * elementName = duplicateWithArrayNumber (property, arrayLength);
+		g_debug ("looking up %s", elementName);
+		GValue g_value = G_VALUE_INIT;
+		if (xfconf_channel_get_formatted (channel, elementName, &g_value))
+		{
+			g_ptr_array_add (array, &g_value);
+		}
+		else
+		{
+			g_warning ("unable to read array element with index %lu and name %s", i, elementName);
+		}
+	}
+	return array;
 }
 
 gboolean xfconf_channel_set_array (XfconfChannel * channel, const gchar * property, GType first_value_type, ...)
@@ -624,10 +695,7 @@ gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * prope
 	for (guint i = 0; i < values->len; i++)
 	{
 		currentValue = g_ptr_array_steal_index (values, i);
-		char * propertyNameWithIndex = calloc (strlen (property) + ELEKTRA_MAX_ARRAY_SIZE + 2, sizeof (char));
-		strcpy (propertyNameWithIndex, property);
-		propertyNameWithIndex[strlen (propertyNameWithIndex)] = '/';
-		elektraWriteArrayNumber (&propertyNameWithIndex[strlen (propertyNameWithIndex)], i);
+		char * propertyNameWithIndex = duplicateWithArrayNumber (property, i);
 		result &= xfconf_channel_set_property (channel, propertyNameWithIndex, currentValue);
 	}
 	Key * arrayKey = keyNew (propertyWithChannelPrefix (channel, property), KEY_END);
