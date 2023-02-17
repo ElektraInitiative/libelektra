@@ -597,6 +597,10 @@ gboolean xfconf_channel_set_property (XfconfChannel * channel, const gchar * pro
 		return FALSE;
 	}
 	g_debug ("Seems working");
+	if (G_VALUE_TYPE (value) == G_TYPE_PTR_ARRAY)
+	{
+		return xfconf_channel_set_arrayv (channel, property, value->data->v_pointer);
+	}
 	switch (G_VALUE_TYPE (value))
 	{
 	case G_TYPE_STRING:
