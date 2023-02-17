@@ -284,6 +284,33 @@ static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gch
 }
 
 /**
+ * appendKeyToChannel - Appends a Key to an XfconfChannel and stores the resulting KeySet in the Key Database.
+ *
+ * This function takes a pointer to an XfconfChannel struct and a pointer to a Key struct and appends the Key to the
+ * channel's KeySet. The resulting KeySet is then stored in the Key Database using the parent key constructed from the
+ * XFCONF_ROOT and channel name. This function returns an integer value indicating the success or failure of the database
+ * operation.
+ *
+ * @param channel Pointer to an XfconfChannel struct representing the channel to which the key should be appended.
+ * @param key Pointer to a Key struct representing the key to be appended to the channel.
+ *
+ * @return An integer value representing the success or failure of the database operation. A value of 0 indicates success,
+ * while a negative value indicates an error.
+ */
+static int appendKeyToChannel (const XfconfChannel * channel, Key * key)
+{
+	trace ();
+	KeySet * keySet = keySet_from_channel (channel->channel_name);
+	ksAppendKey (keySet, key);
+	char * parentKeyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
+	sprintf (parentKeyName, "%s/%s", XFCONF_ROOT, channel->channel_name);
+	Key * parentKey = keyNew (parentKeyName, KEY_END);
+	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
+	g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
+	return resultCode;
+}
+
+/**
  * Sets a value which is already formatted as a string.
  * @param channel the channel to store the value in
  * @param property the name of the key which should be set
@@ -309,13 +336,7 @@ static gboolean xfconf_channel_set_formatted (XfconfChannel * channel, const gch
 	g_debug ("set %s to %s (type %lu) on channel: %s", propertyName, value, g_type, channel->channel_name);
 	keySetString (key, value);
 	keySetMeta (key, XFCONF_GTYPE_META_NAME, g_type_name (g_type));
-	KeySet * keySet = keySet_from_channel (channel->channel_name);
-	ksAppendKey (keySet, key);
-	char * parentKeyName = malloc ((strlen (XFCONF_ROOT) + strlen (channel->channel_name) + 2) * sizeof (char));
-	sprintf (parentKeyName, "%s/%s", XFCONF_ROOT, channel->channel_name);
-	Key * parentKey = keyNew (parentKeyName, KEY_END);
-	int resultCode = kdbSet (elektraKdb, keySet, parentKey);
-	g_debug ("storing key set for parent key %s returned %d", parentKeyName, resultCode);
+	int resultCode = appendKeyToChannel (channel, key);
 	return resultCode >= 0;
 }
 
@@ -724,11 +745,13 @@ gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * prope
 		char * propertyNameWithIndex = duplicateWithArrayNumber (property, i);
 		result &= xfconf_channel_set_property (channel, propertyNameWithIndex, currentValue);
 	}
-	Key * arrayKey = keyNew (propertyWithChannelPrefix (channel, property), KEY_END);
+	const char * arrayKeyName = propertyWithChannelPrefix (channel, property);
+	Key * arrayKey = keyNew (arrayKeyName, KEY_END);
 	char * lastElementIndex = calloc (ELEKTRA_MAX_ARRAY_SIZE + 1, sizeof (char));
-	elektraWriteArrayNumber (lastElementIndex, values->len - 1);
+	elektraWriteArrayNumber (lastElementIndex, length - 1);
 	keySetMeta (arrayKey, "array", lastElementIndex);
-	ksAppendKey (keySet_from_channel (channel->channel_name), arrayKey);
+	g_debug ("appending array meta key %s -> %s", keyName (arrayKey), lastElementIndex);
+	appendKeyToChannel (channel, arrayKey);
 	return result;
 }
 
