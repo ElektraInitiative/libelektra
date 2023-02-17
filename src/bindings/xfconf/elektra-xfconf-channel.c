@@ -551,11 +551,12 @@ gchar ** xfconf_channel_get_string_list (XfconfChannel * channel, const gchar * 
 		g_debug ("found no array named %s in channel %s", property, channel->channel_name);
 		return NULL;
 	}
-	gchar ** stringArray = calloc (array->len + 1, sizeof (gchar *));
-	stringArray[array->len] = NULL;
-	for (guint i = 0; i < array->len; i++)
+	guint length = array->len;
+	gchar ** stringArray = calloc (length + 1, sizeof (gchar *));
+	stringArray[length] = NULL;
+	for (guint i = 0; i < length; i++)
 	{
-		GValue * g_value = g_ptr_array_steal_index (array, i);
+		GValue * g_value = g_ptr_array_steal_index (array, 0);
 		stringArray[i] = strdup (g_value_to_string (g_value));
 	}
 	return stringArray;
@@ -716,9 +717,10 @@ gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * prope
 	}
 	GValue * currentValue;
 	gboolean result = TRUE;
-	for (guint i = 0; i < values->len; i++)
+	guint length = values->len;
+	for (guint i = 0; i < length; i++)
 	{
-		currentValue = g_ptr_array_steal_index (values, i);
+		currentValue = g_ptr_array_steal_index (values, 0);
 		char * propertyNameWithIndex = duplicateWithArrayNumber (property, i);
 		result &= xfconf_channel_set_property (channel, propertyNameWithIndex, currentValue);
 	}
