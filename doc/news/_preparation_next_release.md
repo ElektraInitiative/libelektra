@@ -688,7 +688,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - Use Fedora 37. _(Mihael Pranjić @mpranj)_
 - Fix `macos_instance` reference, upgrade to macOS Ventura (by default), use Python 3.11 and Ruby 3.x. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
+- Automatically rerun `testmod_dbus*` tests on macOS. _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -696,7 +696,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### GitHub Actions
 
 - Add auto-cancellation-running action. _(Tomislav Makar @tmakar)_
-- <<TODO>>
+- Automatically rerun `testmod_dbus*` tests on macOS. _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - Change stale issue/PR checking to GitHub action. _(@0x6178656c)_
