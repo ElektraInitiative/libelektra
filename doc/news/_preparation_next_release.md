@@ -75,9 +75,8 @@ Take a look at the [new docs](../dev/mountpoints.md), if you need to know detail
 
 To update your existing `system:/elektra/mountpoints` data you can use the [migration script](/scripts/migrate-mountpoints.py).
 
-> **Note**: To run the script you must have Elektra and Python the Python binding installed.
-> The minimum Python version with which the script works is 3.7.
-> The script uses the Python binding to manipulate `Key`s and `KeySet`s, but it does not the `kdb` CLI tool, or the `KDB` API.
+> **Note**: To run the script you must have Elektra, Python (>= 3.7) and the Python binding installed.
+> The script uses the Python binding to manipulate `Key`s and `KeySet`s, but it does not use the `kdb` CLI tool, or the `KDB` API.
 > It is safe to run this script before, or after you update your Elektra installation.
 
 By default, the script loads the file `/etc/kdb/elektra.ecf`.
