@@ -248,37 +248,47 @@ static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gch
 	}
 	const char * keyValue = keyString (key);
 	g_debug ("Found value %s to key %s", keyValue, propertyName);
+	GType g_type = G_TYPE_STRING;
+	const char * gtypeName = "";
 	if (!G_IS_VALUE (g_value))
 	{
 		g_debug ("read gtype from key database");
-		GType g_type = G_TYPE_STRING;
-		if (keyGetMeta (key, XFCONF_GTYPE_META_NAME))
+		const Key * gtypeMetaKey = keyGetMeta (key, XFCONF_GTYPE_META_NAME);
+		if (gtypeMetaKey)
 		{
-			KeySet * metaSet = keyMeta (key);
-			g_debug ("the meta key set has %ld keys", ksGetSize (metaSet));
-			const Key * gtypeMetaKey = ksLookupByName (metaSet, XFCONF_GTYPE_META_NAME,
-								   KDB_O_NONE); // todo: lookup returns no keys
-			if (gtypeMetaKey)
-			{
-				const char * gtypeName = keyString (gtypeMetaKey);
-				g_debug ("set gtype to %s", gtypeName);
-				g_type = g_type_from_name (gtypeName);
-			}
-			else
-			{
-				g_debug ("type meta key was null");
-			}
+			gtypeName = keyString (gtypeMetaKey);
+			g_debug ("set gtype to %s", gtypeName);
+			g_type = g_type_from_name (gtypeName);
 		}
 		else
 		{
 			g_debug ("key has no gtype meta - assuming string");
 		}
-		g_value_init (g_value, g_type);
+		g_value_init (g_value, g_type ? g_type : G_TYPE_STRING); // fallback to string when the g_type has an invalid id
 	}
-	GValue g_key_value = G_VALUE_INIT;
-	g_value_init (&g_key_value, G_TYPE_STRING);
-	g_value_set_string (&g_key_value, keyValue);
-	g_value_transform (&g_key_value, g_value);
+	if (strcmp (gtypeName, g_type_name (G_TYPE_PTR_ARRAY)) == 0)
+	{ // for whatever reason, glib is unable to return the id to G_TYPE_PTR_ARRAY, thus we have to compare the names
+		g_debug ("found array gtype");
+		g_value_unset (g_value);
+		g_value_init (g_value, G_TYPE_PTR_ARRAY);
+		g_value_take_boxed (g_value, xfconf_channel_get_arrayv (channel, property));
+	}
+	else
+	{
+		if (G_VALUE_TYPE (g_value) == G_TYPE_STRING)
+		{
+			g_debug ("since a string is requested, no transformation is required");
+			g_value_set_string (g_value, keyValue);
+		}
+		else
+		{
+			g_debug ("perform transformation of the g_type");
+			GValue g_key_value = G_VALUE_INIT;
+			g_value_init (&g_key_value, G_TYPE_STRING);
+			g_value_set_string (&g_key_value, keyValue);
+			g_value_transform (&g_key_value, g_value);
+		}
+	}
 	free (propertyName);
 	return TRUE;
 }
@@ -750,6 +760,7 @@ gboolean xfconf_channel_set_arrayv (XfconfChannel * channel, const gchar * prope
 	char * lastElementIndex = calloc (ELEKTRA_MAX_ARRAY_SIZE + 1, sizeof (char));
 	elektraWriteArrayNumber (lastElementIndex, length - 1);
 	keySetMeta (arrayKey, "array", lastElementIndex);
+	keySetMeta (arrayKey, XFCONF_GTYPE_META_NAME, g_type_name (G_TYPE_PTR_ARRAY));
 	g_debug ("appending array meta key %s -> %s", keyName (arrayKey), lastElementIndex);
 	appendKeyToChannel (channel, arrayKey);
 	return result;
