@@ -671,27 +671,39 @@ gboolean xfconf_channel_get_array_valist (XfconfChannel * channel, const gchar *
 	unimplemented ();
 	return FALSE;
 }
-GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * property)
+
+/**
+ * elektraArrayLength - Calculate the length of an array stored in elektra.
+ *
+ * This function calculates the length of the array which is stored at the given property in the given channel.
+ *
+ *
+ * @param channel Pointer to the Xfconf channel where the property is stored at.
+ * @param property An string array which contains the name of the property in the Xfconf format.
+ * @param out The pointer where the length should be stored at. The caller is responsible that it is a valid address.
+ *
+ * @return `TRUE` if the provided property is an array and `FALSE` otherwise
+ */
+static gboolean elektraArrayLength (XfconfChannel * channel, const gchar * property, guint * out)
 {
-	trace ();
 	KeySet * keySet = keySet_from_channel (channel->channel_name);
 	if (!keySet)
 	{
 		g_debug ("no keyset to channel %s was found", channel->channel_name);
-		return NULL;
+		return FALSE;
 	}
 	const char * propertyPath = propertyWithChannelPrefix (channel, property);
 	const Key * arrayKey = ksLookupByName (keySet, propertyPath, KDB_O_NONE);
 	if (!arrayKey)
 	{
 		g_debug ("no array key found");
-		return NULL;
+		return FALSE;
 	}
 	const Key * arrayMetaKey = keyGetMeta (arrayKey, "array");
 	if (!arrayMetaKey)
 	{
 		g_debug ("no array meta key found");
-		return NULL;
+		return FALSE;
 	}
 	const char * lastArrayNumber = keyString (arrayMetaKey);
 	size_t prefixOffset = 0;
@@ -704,13 +716,25 @@ GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * pr
 	}
 	g_debug ("try to parse array number: %s", &lastArrayNumber[prefixOffset]);
 	char * invalidPointer = NULL;
-	size_t arrayLength = strtoul (&lastArrayNumber[prefixOffset], &invalidPointer, 10) + 1;
+	*out = strtoul (&lastArrayNumber[prefixOffset], &invalidPointer, 10) + 1;
 	if (*invalidPointer != '\0')
 	{
 		g_warning ("there are invalid characters in the array number");
-		arrayLength = 0;
+		*out = 0;
 	}
-	g_debug ("array length is %lu", arrayLength);
+	return TRUE;
+}
+
+GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * property)
+{
+	trace ();
+	guint arrayLength = 0;
+	if (!elektraArrayLength (channel, property, &arrayLength))
+	{
+		g_debug ("%s was not a valid array", property);
+		return NULL;
+	}
+	g_debug ("array length is %u", arrayLength);
 	GPtrArray * array = g_ptr_array_new ();
 	for (size_t i = 0; i < arrayLength; i++)
 	{
