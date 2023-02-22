@@ -14,6 +14,7 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbnotificationinternal.h>
+#include <kdbchangetracking.h>
 
 #include <ctype.h>  // isspace()
 #include <errno.h>  // errno
@@ -26,7 +27,7 @@
 struct _KeyRegistration
 {
 	char * name;
-	char * lastValue;
+	//char * lastValue;
 	int sameOrBelow;
 	int freeContext;
 	ElektraNotificationChangeCallback callback;
@@ -195,7 +196,8 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 		return NULL;
 	}
 	item->next = NULL;
-	item->lastValue = NULL;
+	// TODO (atmaxinger): remove ->lastavlue references
+	// item->lastValue = NULL;
 	item->name = elektraStrDup (keyName (key));
 	item->callback = callback;
 	item->context = context;
@@ -241,6 +243,70 @@ static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
 	return 0;
 }
 
+void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const KeySetDiff * diff)
+{
+	PluginState * pluginState = elektraPluginGetData (plugin);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
+	KeySet * modifiedKeys = elektraChangeTrackingGetModifiedKeys (diff);
+	// TODO: do we also consider added and removed keys as modified here?
+	KeySet * addedKeys = elektraChangeTrackingGetAddedKeys (diff);
+	KeySet * removedKeys = elektraChangeTrackingGetRemovedKeys (diff);
+
+	ksAppend (modifiedKeys, addedKeys);
+	ksAppend (modifiedKeys, removedKeys);
+
+	KeyRegistration * registeredKey = pluginState->head;
+
+	while (registeredKey != NULL)
+	{
+		int changed = 0;
+		Key * key;
+		if (registeredKey->sameOrBelow)
+		{
+			Key * checkKey = keyNew (registeredKey->name, KEY_END);
+			if (keySetContainsSameOrBelow (checkKey, modifiedKeys))
+			{
+				changed = 1;
+				key = checkKey;
+			}
+			else
+			{
+				keyDel (checkKey);
+			}
+		}
+		else
+		{
+			key = ksLookupByName (modifiedKeys, registeredKey->name, 0);
+			if (key != NULL)
+			{
+				changed = 1;
+			}
+		}
+
+		if (changed)
+		{
+			ELEKTRA_LOG_DEBUG ("found changed registeredKey=%s with string value \"%s\". using context or variable=%p",
+					   registeredKey->name, keyString (key), registeredKey->context);
+
+			// Invoke callback
+			ElektraNotificationChangeCallback callback = *(ElektraNotificationChangeCallback) registeredKey->callback;
+			callback (key, registeredKey->context);
+			if (registeredKey->sameOrBelow)
+			{
+				keyDel (key);
+			}
+		}
+
+		// proceed with next registered key
+		registeredKey = registeredKey->next;
+	}
+
+	ksDel (modifiedKeys);
+	ksDel (addedKeys);
+	ksDel (removedKeys);
+}
+
 /**
  * Updates all KeyRegistrations according to data from the given KeySet
  * @internal
@@ -250,7 +316,7 @@ static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
  *                  e.g. elektraInternalnotificationGet or elektraInternalnotificationCommit)
  *
  */
-void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet)
+/*void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet)
 {
 	PluginState * pluginState = elektraPluginGetData (plugin);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
@@ -324,7 +390,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 		// proceed with next registered key
 		registeredKey = registeredKey->next;
 	}
-}
+}*/
 
 // Generate register and conversion functions
 // for built-in C types
@@ -566,7 +632,17 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 		return 1;
 	}
 
-	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
+	KDB * kdb = elektraPluginGetKdb (handle);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+
+	// As this plugin is a hooks plugin, it will get called before the internal cache for changetracking is updated on kdbGet
+	// Thus we receive the new keys in "returned" and have the old keys still in "context" and can therefore successfully
+	// detect changes that have been made externally on disk
+	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext(returned, context, parentKey);
+
+	elektraInternalnotificationNotifyChangedKeys (handle, diff);
+
+	elektraChangeTrackingKeySetDiffDel (diff);
 
 	return 1;
 }
@@ -582,9 +658,15 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraInternalnotificationCommit (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraInternalnotificationCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
+	KDB * kdb = elektraPluginGetKdb (handle);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);
+
+	elektraInternalnotificationNotifyChangedKeys (handle, diff);
+
+	elektraChangeTrackingKeySetDiffDel (diff);
 
 	return 1;
 }
@@ -660,10 +742,11 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		{
 			next = current->next;
 			elektraFree (current->name);
-			if (current->lastValue != NULL)
+			// TODO (atmaxinger): remove ->lastavlue references
+			/*if (current->lastValue != NULL)
 			{
 				elektraFree (current->lastValue);
-			}
+			}*/
 			if (current->freeContext)
 			{
 				elektraFree (current->context);

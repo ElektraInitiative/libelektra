@@ -13,6 +13,7 @@
 #include <kdbnotification.h>
 #include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
+#include <kdbchangetracking.h>
 
 int elektraInternalnotificationGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraInternalnotificationCommit (Plugin * handle, KeySet * ks, Key * parentKey);
@@ -22,7 +23,8 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * errorKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 // Not exported by plugin; used for testing
-void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet);
+//void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet);
+void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const KeySetDiff * diff);
 void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context);
 
 #define INTERNALNOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraInternalnotificationRegister##TYPE_NAME
