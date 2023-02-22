@@ -2,6 +2,7 @@
 #include "elektra-xfconf-util.h"
 #include "elektra-xfconf.h"
 #include <kdbhelper.h>
+#include <sys/mman.h>
 
 typedef struct XfconfCache XfconfCache;
 struct _XfconfChannel
@@ -278,7 +279,7 @@ static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gch
 		if (G_VALUE_TYPE (g_value) == G_TYPE_STRING)
 		{
 			g_debug ("since a string is requested, no transformation is required");
-			g_value_set_string (g_value, keyValue);
+			g_value_set_string (g_value, strdup (keyValue));
 		}
 		else
 		{
@@ -740,10 +741,10 @@ GPtrArray * xfconf_channel_get_arrayv (XfconfChannel * channel, const gchar * pr
 	{
 		const char * elementName = duplicateWithArrayNumber (property, i);
 		g_debug ("looking up %s", elementName);
-		GValue g_value = G_VALUE_INIT;
-		if (xfconf_channel_get_formatted (channel, elementName, &g_value))
+		GValue * g_value = calloc (1, sizeof (GValue));
+		if (xfconf_channel_get_formatted (channel, elementName, g_value))
 		{
-			g_ptr_array_add (array, &g_value);
+			g_ptr_array_add (array, g_value);
 		}
 		else
 		{
