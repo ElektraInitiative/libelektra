@@ -144,6 +144,31 @@ libelektra_1.0 {
 	ksIncRef;
 	ksDecRef;
 	ksGetRef;
+
+	# kdbchangetracking.h
+	elektraChangeTrackingGetContextFromKdb;
+	elektraChangeTrackingContextDel;
+	elektraChangeTrackingCalculateFromContext;
+	elektraChangeTrackingCalculateFromKeySets;
+
+	elektraChangeTrackingKeySetDiffGetParentKey;
+	elektraChangeTrackingCreateKeySetDiff;
+
+	elektraChangeTrackingKeySetDiffDel;
+
+	elektraChangeTrackingKeySetDiffIncRef;
+    elektraChangeTrackingKeySetDiffDecRef;
+
+	elektraChangeTrackingGetAddedKeys;
+	elektraChangeTrackingGetRemovedKeys;
+	elektraChangeTrackingGetModifiedKeys;
+	elektraChangeTrackingValueChanged;
+	elektraChangeTrackingMetaChanged;
+	elektraChangeTrackingGetAddedMetaKeys;
+	elektraChangeTrackingGetRemovedMetaKeys;
+	elektraChangeTrackingGetModifiedMetaKeys;
+
+	elektraChangeTrackingCreateContextForTesting;
 };
 
 libelektraprivate_1.0 {

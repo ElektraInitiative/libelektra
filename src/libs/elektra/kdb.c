@@ -44,6 +44,7 @@
 #endif
 
 #include <kdbinternal.h>
+#include <kdbchangetracking.h>
 
 
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
@@ -58,6 +59,19 @@ static void clearAllSync (KeySet * ks)
 	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
 		keyClearSync (ksAtCursor (ks, i));
+	}
+}
+
+static void ksAppendDeepDup (KeySet * ks, const KeySet * toAppend)
+{
+	if (ks == NULL || toAppend == NULL)
+	{
+		return;
+	}
+
+	for (elektraCursor i = 0; i < ksGetSize (toAppend); i++)
+	{
+		ksAppendKey (ks, keyDup (ksAtCursor (toAppend, i), KEY_CP_ALL));
 	}
 }
 
@@ -999,6 +1013,10 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	keyDel (initialParent);
 	errno = errnosave;
 
+	handle->allKeys = ksNew (0, KS_END);
+	ksIncRef (handle->allKeys);
+	handle->changeTrackingContext.oldKeys = handle->allKeys;
+
 	return handle;
 
 error:
@@ -1051,6 +1069,13 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 	int errnosave = errno;
+
+	if (handle->allKeys)
+	{
+		ksDecRef (handle->allKeys);
+		ksDel (handle->allKeys);
+		handle->allKeys = NULL;
+	}
 
 	if (handle->backends)
 	{
@@ -1963,6 +1988,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	ksDel (allBackends);
 	ksDel (dataKs);
 
+	if (handle->allKeys != NULL)
+	{
+		ksAppendDeepDup (handle->allKeys, ks);
+	}
+
 	errno = errnosave;
 	return procOnly ? 2 : 1;
 
@@ -2524,6 +2554,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	ksDel (setKs);
 	ksDel (backends);
+
+	if (handle->allKeys != NULL)
+	{
+		ksAppendDeepDup (handle->allKeys, ks);
+	}
 
 	errno = errnosave;
 

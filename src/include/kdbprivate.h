@@ -428,6 +428,24 @@ typedef struct _SendNotificationHook
 	kdbHookSendNotificationSetPtr set;
 } SendNotificationHook;
 
+struct _KeySetDiff
+{
+	Key * parentKey;
+	KeySet * addedKeys;
+	/**
+	 * stores the old versions of modified keys
+	 */
+	KeySet * modifiedKeys;
+	KeySet * removedKeys;
+
+	uint16_t refs;
+};
+
+struct _ChangeTrackingContext
+{
+	KeySet * oldKeys;
+};
+
 /**
  * The access point to the key database.
  *
@@ -473,6 +491,10 @@ struct _KDB
 
 		struct _SendNotificationHook * sendNotification;
 	} hooks;
+
+	KeySet * allKeys;
+
+	struct _ChangeTrackingContext changeTrackingContext;
 };
 
 /**
@@ -619,7 +641,6 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 
 // TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
-
 
 #ifdef __cplusplus
 }

@@ -153,6 +153,32 @@ void * elektraPluginGetData (Plugin * plugin)
 }
 
 /**
+ * @brief get the KDB instance this plugin is loaded into
+ *
+ * @param plugin a pointer to the plugin
+ * @return KDB
+ */
+KDB * elektraPluginGetKdb (Plugin * plugin)
+{
+	if (plugin->global == NULL)
+	{
+		return NULL;
+	}
+
+	Key * kdbKey = ksLookupByName (plugin->global, "system:/elektra/kdb", 0);
+	if (kdbKey == NULL)
+	{
+		return NULL;
+	}
+
+	const void * kdbPtr = keyValue (kdbKey);
+	KDB * kdb = kdbPtr == NULL ? NULL : *(KDB **) keyValue (kdbKey);
+
+	return kdb;
+}
+
+
+/**
  * @brief Get a pointer to the global keyset.
  *
  * Initialized for all plugins by the KDB, except for manually
