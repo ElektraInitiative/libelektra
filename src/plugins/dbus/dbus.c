@@ -13,8 +13,8 @@
 
 #include "dbus.h"
 
-#include <kdbhelper.h>
 #include <kdbchangetracking.h>
+#include <kdbhelper.h>
 
 int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -86,7 +86,7 @@ int elektraDbusCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
 
 	// we do a fresh calculation here, because we want the most current diff to avoid false positives as much as possible
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext(returned, context, parentKey);
+	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);
 
 	KeySet * addedKeys = elektraChangeTrackingGetAddedKeys (diff);
 	KeySet * changedKeys = elektraChangeTrackingGetModifiedKeys (diff);

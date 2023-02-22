@@ -37,8 +37,8 @@ static void test_shouldFindAddedKeys (void)
 	kdbGet (kdb, ks, parentKey);
 	ksAppendKey (ks, keyNew ("user:/test/add/123", KEY_VALUE, "xyz", KEY_END));
 
-	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb(kdb);
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext(ks, context, parentKey);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (ks, context, parentKey);
 
 	KeySet * addedKeys = elektraChangeTrackingGetAddedKeys (diff);
 	KeySet * removedKeys = elektraChangeTrackingGetRemovedKeys (diff);
@@ -96,8 +96,8 @@ static void test_shouldFindKeysWithModifiedStringValue (void)
 
 	keySetString (key, "some other value");
 
-	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb(kdb);
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext(ks, context, parentKey);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (ks, context, parentKey);
 
 	KeySet * addedKeys = elektraChangeTrackingGetAddedKeys (diff);
 	KeySet * removedKeys = elektraChangeTrackingGetRemovedKeys (diff);
@@ -154,8 +154,8 @@ static void test_shouldFindRemoved (void)
 
 	keySetString (key, "some other value");
 
-	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb(kdb);
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext(ks, context, parentKey);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (ks, context, parentKey);
 
 	KeySet * addedKeys = elektraChangeTrackingGetAddedKeys (diff);
 	KeySet * removedKeys = elektraChangeTrackingGetRemovedKeys (diff);

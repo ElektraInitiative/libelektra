@@ -257,7 +257,7 @@ static void test_keyChanged (void)
 
 	// initial get to save current state
 	plugin->kdbGet (plugin, ks, parentKey);
-	ksAppendKey(oldKeys, keyDup (toChange, KEY_CP_ALL));
+	ksAppendKey (oldKeys, keyDup (toChange, KEY_CP_ALL));
 
 	// change key in keyset
 	keySetString (toChange, "new value");

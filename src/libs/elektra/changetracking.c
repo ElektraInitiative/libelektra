@@ -1,5 +1,5 @@
-#include <kdbprivate.h>
 #include <kdbchangetracking.h>
+#include <kdbprivate.h>
 
 /**
  * Returns the changetracking context of the given KDB instance
@@ -116,11 +116,12 @@ static bool keyValueDifferent (Key * new, Key * old)
  * @param modifiedKeys adds keys present in both @p new and @p old, but with changes in value or in the meta keys
  * @param parentKey parent key - if this parameter is not NULL, only keys below or same are processed.
  */
-static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys, const Key * parentKey)
+static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
+			     const Key * parentKey)
 {
 	KeySet * metaAdded = ksNew (0, KS_END);
-	KeySet * metaRemoved = ksNew(0, KS_END);
-	KeySet * metaModified = ksNew(0, KS_END);
+	KeySet * metaRemoved = ksNew (0, KS_END);
+	KeySet * metaModified = ksNew (0, KS_END);
 
 	for (elektraCursor itOld = 0; itOld < ksGetSize (old); itOld++)
 	{
@@ -133,7 +134,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 
 		Key * found = ksLookup (new, needle, 0);
 
-		if(found == NULL)
+		if (found == NULL)
 		{
 			// key is present in old key set, but not in new --> removed
 			ksAppendKey (removedKeys, needle);
@@ -180,7 +181,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 
 		Key * found = ksLookup (old, needle, 0);
 
-		if(found == NULL)
+		if (found == NULL)
 		{
 			// Key is present in the new keyset but not in the old --> added
 			ksAppendKey (addedKeys, needle);
@@ -327,7 +328,7 @@ KeySet * elektraChangeTrackingGetAddedKeys (const KeySetDiff * ksd)
 		return NULL;
 	}
 
-	return ksDup(ksd->addedKeys);
+	return ksDup (ksd->addedKeys);
 }
 
 /**
@@ -343,7 +344,7 @@ KeySet * elektraChangeTrackingGetRemovedKeys (const KeySetDiff * ksd)
 		return NULL;
 	}
 
-	return ksDup(ksd->removedKeys);
+	return ksDup (ksd->removedKeys);
 }
 
 /**
@@ -360,7 +361,7 @@ KeySet * elektraChangeTrackingGetModifiedKeys (const KeySetDiff * ksd)
 		return NULL;
 	}
 
-	return ksDup(ksd->modifiedKeys);
+	return ksDup (ksd->modifiedKeys);
 }
 
 /**

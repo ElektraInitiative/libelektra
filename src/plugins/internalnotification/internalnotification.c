@@ -11,10 +11,10 @@
 
 #include <kdb.h>
 #include <kdbassert.h>
+#include <kdbchangetracking.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbnotificationinternal.h>
-#include <kdbchangetracking.h>
 
 #include <ctype.h>  // isspace()
 #include <errno.h>  // errno
@@ -27,7 +27,7 @@
 struct _KeyRegistration
 {
 	char * name;
-	//char * lastValue;
+	// char * lastValue;
 	int sameOrBelow;
 	int freeContext;
 	ElektraNotificationChangeCallback callback;
@@ -638,7 +638,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 	// As this plugin is a hooks plugin, it will get called before the internal cache for changetracking is updated on kdbGet
 	// Thus we receive the new keys in "returned" and have the old keys still in "context" and can therefore successfully
 	// detect changes that have been made externally on disk
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext(returned, context, parentKey);
+	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);
 
 	elektraInternalnotificationNotifyChangedKeys (handle, diff);
 

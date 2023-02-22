@@ -43,8 +43,8 @@
 #include <errno.h>
 #endif
 
-#include <kdbinternal.h>
 #include <kdbchangetracking.h>
+#include <kdbinternal.h>
 
 
 #define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")

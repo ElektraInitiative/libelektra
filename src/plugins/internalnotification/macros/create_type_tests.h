@@ -63,12 +63,12 @@ TEST_CASE_UPDATE_SIGNATURE (TYPE_NAME)
 	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
-	KeySetDiff * diff = elektraChangeTrackingCreateKeySetDiff(NULL, NULL, ks, NULL);
+	KeySetDiff * diff = elektraChangeTrackingCreateKeySetDiff (NULL, NULL, ks, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraChangeTrackingKeySetDiffDel (diff);
 
-	//elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 	succeed_if (CHECK_VALUE, "registered value was not updated");
 	free (valueStr);
@@ -90,12 +90,12 @@ TEST_CASE_NO_UPDATE_SIGNATURE (TYPE_NAME)
 	succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, valueKey, &value) == 1, "registration was not successful");
 	keySetString (valueKey, INVALID_VALUE);
 
-	KeySetDiff * diff = elektraChangeTrackingCreateKeySetDiff(NULL, NULL, ks, NULL);
+	KeySetDiff * diff = elektraChangeTrackingCreateKeySetDiff (NULL, NULL, ks, NULL);
 	ksIncRef (ks);
 	elektraInternalnotificationNotifyChangedKeys (plugin, diff);
 	elektraChangeTrackingKeySetDiffDel (diff);
 
-	//elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	// elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
 
 	succeed_if (CHECK_INVALID, "registered value was updated");
