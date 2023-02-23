@@ -146,16 +146,16 @@ The API may look something like this:
 bool elektraChangeTrackingIsEnabled (KDB * kdb);
 ChangeTrackingContext * elektraChangeTrackingGetContext (KDB * kdb, Key * parentKey);
 
-KeySet * elektraChangeTrackingGetAddedKeys (ChangeTrackingContext * context);
-KeySet * elektraChangeTrackingGetRemovedKeys (ChangeTrackingContext * context);
-KeySet * elektraChangeTrackingGetModifiedKeys (ChangeTrackingContext * context); // Returns old keys (pre-modification)
+KeySet * elektraDiffGetAddedKeys (ChangeTrackingContext * context);
+KeySet * elektraDiffGetRemovedKeys (ChangeTrackingContext * context);
+KeySet * elektraDiffGetModifiedKeys (ChangeTrackingContext * context); // Returns old keys (pre-modification)
 
-bool elektraChangeTrackingValueChanged (ChangeTrackingContext * context, Key * key);
-bool elektraChangeTrackingMetaChanged (ChangeTrackingContext * context, Key * key);
+bool elektraDiffKeyValueChanged (ChangeTrackingContext * context, Key * key);
+bool elektraDiffKeyMetaChanged (ChangeTrackingContext * context, Key * key);
 
-KeySet * elektraChangeTrackingGetAddedMetaKeys (ChangeTrackingContext * context, Key * key);
-KeySet * elektraChangeTrackingGetRemovedMetaKeys (ChangeTrackingContext * context, Key * key);
-KeySet * elektraChangeTrackingGetModifiedMetaKeys (ChangeTrackingContext * context, Key * key); // Returns old meta keys (pre-modification)
+KeySet * elektraDiffGetAddedMetaKeys (ChangeTrackingContext * context, Key * key);
+KeySet * elektraDiffGetRemovedMetaKeys (ChangeTrackingContext * context, Key * key);
+KeySet * elektraDiffGetModifiedMetaKeys (ChangeTrackingContext * context, Key * key); // Returns old meta keys (pre-modification)
 ```
 
 ### Provide query methods as part of a separate plugin

@@ -149,25 +149,25 @@ libelektra_1.0 {
 	elektraChangeTrackingGetContextFromKdb;
 	elektraChangeTrackingGetContextFromPlugin;
 	elektraChangeTrackingContextDel;
-	elektraChangeTrackingCalculateFromContext;
-	elektraChangeTrackingCalculateFromKeySets;
+	elektraChangeTrackingCalculateDiff;
+	elektraDiffCalculate;
 
-	elektraChangeTrackingKeySetDiffGetParentKey;
-	elektraChangeTrackingCreateKeySetDiff;
+	elektraDiffGetParentKey;
+	elektraDiffNew;
 
-	elektraChangeTrackingKeySetDiffDel;
+	elektraDiffDel;
 
-	elektraChangeTrackingKeySetDiffIncRef;
-    elektraChangeTrackingKeySetDiffDecRef;
+	elektraDiffIncRef;
+    elektraDiffDecRef;
 
-	elektraChangeTrackingGetAddedKeys;
-	elektraChangeTrackingGetRemovedKeys;
-	elektraChangeTrackingGetModifiedKeys;
-	elektraChangeTrackingValueChanged;
-	elektraChangeTrackingMetaChanged;
-	elektraChangeTrackingGetAddedMetaKeys;
-	elektraChangeTrackingGetRemovedMetaKeys;
-	elektraChangeTrackingGetModifiedMetaKeys;
+	elektraDiffGetAddedKeys;
+	elektraDiffGetRemovedKeys;
+	elektraDiffGetModifiedKeys;
+	elektraDiffKeyValueChanged;
+	elektraDiffKeyMetaChanged;
+	elektraDiffGetAddedMetaKeys;
+	elektraDiffGetRemovedMetaKeys;
+	elektraDiffGetModifiedMetaKeys;
 
 	elektraChangeTrackingCreateContextForTesting;
 };

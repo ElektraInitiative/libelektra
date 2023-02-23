@@ -226,14 +226,14 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
  * @param parentKey if not @p NULL, only keys below or same of this key are considered
  * @return the changes between @p newKeys and @p context OR @p NULL if either one of them is @p NULL
  */
-KeySetDiff * elektraChangeTrackingCalculateFromContext (KeySet * newKeys, const ChangeTrackingContext * context, Key * parentKey)
+ElektraDiff * elektraChangeTrackingCalculateDiff (KeySet * newKeys, const ChangeTrackingContext * context, Key * parentKey)
 {
 	if (newKeys == NULL || context == NULL)
 	{
 		return NULL;
 	}
 
-	return elektraChangeTrackingCalculateFromKeySets (newKeys, context->oldKeys, parentKey);
+	return elektraDiffCalculate (newKeys, context->oldKeys, parentKey);
 }
 
 /**
@@ -244,14 +244,14 @@ KeySetDiff * elektraChangeTrackingCalculateFromContext (KeySet * newKeys, const 
  * @param parentKey if not @p NULL, only keys below or same of this key are considered
  * @return the changes between @p newKeys and @p oldKeys OR @p NULL if either one of them is @p NULL
  */
-KeySetDiff * elektraChangeTrackingCalculateFromKeySets (KeySet * newKeys, KeySet * oldKeys, Key * parentKey)
+ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * parentKey)
 {
 	if (newKeys == NULL || oldKeys == NULL)
 	{
 		return NULL;
 	}
 
-	KeySetDiff * ksd = elektraCalloc (sizeof (KeySetDiff));
+	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
 	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
 	ksd->addedKeys = ksNew (0, KS_END);
@@ -267,19 +267,19 @@ KeySetDiff * elektraChangeTrackingCalculateFromKeySets (KeySet * newKeys, KeySet
 }
 
 /**
- * Mostly for testing purposes: Create a KeySetDiff.
- * The returned KeySetDiff contains the same KeySets that are passed in, so be sure
- * to @p ksIncRef them if you plan to use them after deleting the KeySetDiff.
+ * Mostly for testing purposes: Create a ElektraDiff.
+ * The returned ElektraDiff contains the same KeySets that are passed in, so be sure
+ * to @p ksIncRef them if you plan to use them after deleting the ElektraDiff.
  *
  * @param addedKeys the added keys
  * @param removedKeys the removed keys
  * @param modifiedKey the modified keys
  * @param parentKey the parent key
- * @return KeySetDiff with the provided parameters
+ * @return ElektraDiff with the provided parameters
  */
-KeySetDiff * elektraChangeTrackingCreateKeySetDiff (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey)
+ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey)
 {
-	KeySetDiff * ksd = elektraCalloc (sizeof (KeySetDiff));
+	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
 	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
 
@@ -296,10 +296,10 @@ KeySetDiff * elektraChangeTrackingCreateKeySetDiff (KeySet * addedKeys, KeySet *
 }
 
 /**
- * Delete a KeySetDiff
- * @param ksd the KeySetDiff to delete
+ * Delete a ElektraDiff
+ * @param ksd the ElektraDiff to delete
  */
-void elektraChangeTrackingKeySetDiffDel (KeySetDiff * ksd)
+void elektraDiffDel (ElektraDiff * ksd)
 {
 	if (ksd == NULL)
 	{
@@ -326,11 +326,11 @@ void elektraChangeTrackingKeySetDiffDel (KeySetDiff * ksd)
 }
 
 /**
- * Get the parent key of the given KeySetDiff
- * @param ksd the KeySetDiff
+ * Get the parent key of the given ElektraDiff
+ * @param ksd the ElektraDiff
  * @return the parent key (which may be NULL) OR NULL if @p ksd is @p NULL
  */
-const Key * elektraChangeTrackingKeySetDiffGetParentKey (const KeySetDiff * ksd)
+const Key * elektraDiffGetParentKey (const ElektraDiff * ksd)
 {
 	if (ksd == NULL)
 	{
@@ -343,10 +343,10 @@ const Key * elektraChangeTrackingKeySetDiffGetParentKey (const KeySetDiff * ksd)
 /**
  * Get the added keys
  *
- * @param ksd the KeySetDiff
+ * @param ksd the ElektraDiff
  * @return a new KeySet containing the added keys OR @p NULL if @p ksd is @p NULL
  */
-KeySet * elektraChangeTrackingGetAddedKeys (const KeySetDiff * ksd)
+KeySet * elektraDiffGetAddedKeys (const ElektraDiff * ksd)
 {
 	if (ksd == NULL)
 	{
@@ -359,10 +359,10 @@ KeySet * elektraChangeTrackingGetAddedKeys (const KeySetDiff * ksd)
 /**
  * Get the removed keys
  *
- * @param ksd the KeySetDiff
+ * @param ksd the ElektraDiff
  * @return a new KeySet containing the removed keys OR @p NULL if @p ksd is @p NULL
  */
-KeySet * elektraChangeTrackingGetRemovedKeys (const KeySetDiff * ksd)
+KeySet * elektraDiffGetRemovedKeys (const ElektraDiff * ksd)
 {
 	if (ksd == NULL)
 	{
@@ -376,10 +376,10 @@ KeySet * elektraChangeTrackingGetRemovedKeys (const KeySetDiff * ksd)
  * Get the modified keys.
  * This will return the old keys.
  *
- * @param ksd the KeySetDiff
+ * @param ksd the ElektraDiff
  * @return a new KeySet containing the modified keys OR @p NULL if @p ksd is @p NULL
  */
-KeySet * elektraChangeTrackingGetModifiedKeys (const KeySetDiff * ksd)
+KeySet * elektraDiffGetModifiedKeys (const ElektraDiff * ksd)
 {
 	if (ksd == NULL)
 	{
@@ -401,7 +401,7 @@ KeySet * elektraChangeTrackingGetModifiedKeys (const KeySetDiff * ksd)
  *         @p key is NULL OR
  *         @p key is not contained in @p ksd
  */
-bool elektraChangeTrackingValueChanged (const KeySetDiff * ksd, Key * key)
+bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key)
 {
 	if (ksd == NULL || key == NULL)
 	{
@@ -424,7 +424,7 @@ bool elektraChangeTrackingValueChanged (const KeySetDiff * ksd, Key * key)
  *         @p key is NULL OR
  *         @p key is not contained in @p ksd
  */
-bool elektraChangeTrackingMetaChanged (const KeySetDiff * ksd, Key * key)
+bool elektraDiffKeyMetaChanged (const ElektraDiff * ksd, Key * key)
 {
 	if (ksd == NULL || key == NULL)
 	{
@@ -440,12 +440,12 @@ bool elektraChangeTrackingMetaChanged (const KeySetDiff * ksd, Key * key)
 /**
  * Get metakeys added to the specific keys.
  *
- * @param ksd the KeySetDiff
+ * @param ksd the ElektraDiff
  * @param key the key of which you want to get added metadata
  * @return a new KeySet that contains metadata added to the key OR
  *         @p NULL if @p ksd is NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
  */
-KeySet * elektraChangeTrackingGetAddedMetaKeys (const KeySetDiff * ksd, Key * key)
+KeySet * elektraDiffGetAddedMetaKeys (const ElektraDiff * ksd, Key * key)
 {
 	if (ksd == NULL || key == NULL)
 	{
@@ -474,12 +474,12 @@ KeySet * elektraChangeTrackingGetAddedMetaKeys (const KeySetDiff * ksd, Key * ke
 /**
  * Get metakeys removed from the specific keys.
  *
- * @param ksd the KeySetDiff
+ * @param ksd the ElektraDiff
  * @param key the key of which you want to get removed metadata
  * @return a new KeySet that contains metadata removed from the key OR
  *         @p NULL if @p ksd is NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
  */
-KeySet * elektraChangeTrackingGetRemovedMetaKeys (const KeySetDiff * ksd, Key * key)
+KeySet * elektraDiffGetRemovedMetaKeys (const ElektraDiff * ksd, Key * key)
 {
 	if (ksd == NULL || key == NULL)
 	{
@@ -508,12 +508,12 @@ KeySet * elektraChangeTrackingGetRemovedMetaKeys (const KeySetDiff * ksd, Key * 
 /**
  * Get modified metakeys of the specific keys.
  *
- * @param ksd the KeySetDiff
+ * @param ksd the ElektraDiff
  * @param key the key of which you want to get modified metadata
  * @return a new KeySet that contains modified metadata of the key OR
  *         @p NULL if @p ksd is NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
  */
-KeySet * elektraChangeTrackingGetModifiedMetaKeys (const KeySetDiff * ksd, Key * key)
+KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key)
 {
 	if (ksd == NULL || key == NULL)
 	{
@@ -540,7 +540,7 @@ KeySet * elektraChangeTrackingGetModifiedMetaKeys (const KeySetDiff * ksd, Key *
 }
 
 /**
- * @brief Increment the reference counter of a KeySetDiff object
+ * @brief Increment the reference counter of a ElektraDiff object
  *
  * @note The reference counter can never exceed `UINT16_MAX - 1`. `UINT16_MAX` is
  * reserved as an error code.
@@ -548,14 +548,14 @@ KeySet * elektraChangeTrackingGetModifiedMetaKeys (const KeySetDiff * ksd, Key *
  * @post @p ksd's reference counter is > 0
  * @post @p ksd's reference counter is <= UINT16_MAX - 1
  *
- * @param ksd the KeySetDiff object whose reference counter should be increased
+ * @param ksd the ElektraDiff object whose reference counter should be increased
  *
  * @return the updated value of the reference counter
  * @retval UINT16_MAX on NULL pointer
  * @retval UINT16_MAX when the reference counter already was the maximum value `UINT16_MAX - 1`,
  *         the reference counter will not be modified in this case
  */
-uint16_t elektraChangeTrackingKeySetDiffIncRef (KeySetDiff * ksd)
+uint16_t elektraDiffIncRef (ElektraDiff * ksd)
 {
 	if (!ksd)
 	{
@@ -572,19 +572,19 @@ uint16_t elektraChangeTrackingKeySetDiffIncRef (KeySetDiff * ksd)
 }
 
 /**
- * @brief Decrement the reference counter of a KeySetDiff object
+ * @brief Decrement the reference counter of a ElektraDiff object
  *
  * @post @p ksd's reference counter is >= 0
  * @post @p ksd's reference counter is < SSIZE_MAX
  *
- * @param ksd the KeySetDiff object whose reference counter should get decreased
+ * @param ksd the ElektraDiff object whose reference counter should get decreased
  *
  * @return the updated value of the reference counter
  * @retval UINT16_MAX on NULL pointer
  * @retval 0 when the reference counter already was the minimum value 0,
  *         the reference counter will not be modified in this case
  */
-uint16_t elektraChangeTrackingKeySetDiffDecRef (KeySetDiff * ksd)
+uint16_t elektraDiffDecRef (ElektraDiff * ksd)
 {
 	if (!ksd)
 	{

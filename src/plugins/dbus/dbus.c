@@ -85,11 +85,11 @@ int elektraDbusCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
 
 	// we do a fresh calculation here, because we want the most current diff to avoid false positives as much as possible
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 
-	KeySet * addedKeys = elektraChangeTrackingGetAddedKeys (diff);
-	KeySet * changedKeys = elektraChangeTrackingGetModifiedKeys (diff);
-	KeySet * removedKeys = elektraChangeTrackingGetRemovedKeys (diff);
+	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
+	KeySet * changedKeys = elektraDiffGetModifiedKeys (diff);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
 
 	Key * resolvedParentKey = parentKey;
 	// Resolve cascaded parent key to get its namespace
@@ -131,7 +131,7 @@ int elektraDbusCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (changedKeys);
 	ksDel (removedKeys);
 
-	elektraChangeTrackingKeySetDiffDel (diff);
+	elektraDiffDel (diff);
 
 	return 1; /* success */
 }

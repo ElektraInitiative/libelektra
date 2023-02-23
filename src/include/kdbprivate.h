@@ -428,7 +428,7 @@ typedef struct _SendNotificationHook
 	kdbHookSendNotificationSetPtr set;
 } SendNotificationHook;
 
-struct _KeySetDiff
+struct _ElektraDiff
 {
 	Key * parentKey;
 	KeySet * addedKeys;

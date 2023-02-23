@@ -243,15 +243,15 @@ static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
 	return 0;
 }
 
-void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const KeySetDiff * diff)
+void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const ElektraDiff * diff)
 {
 	PluginState * pluginState = elektraPluginGetData (plugin);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
 
-	KeySet * modifiedKeys = elektraChangeTrackingGetModifiedKeys (diff);
+	KeySet * modifiedKeys = elektraDiffGetModifiedKeys (diff);
 	// TODO: do we also consider added and removed keys as modified here?
-	KeySet * addedKeys = elektraChangeTrackingGetAddedKeys (diff);
-	KeySet * removedKeys = elektraChangeTrackingGetRemovedKeys (diff);
+	KeySet * addedKeys = elektraDiffGetAddedKeys (diff);
+	KeySet * removedKeys = elektraDiffGetRemovedKeys (diff);
 
 	ksAppend (modifiedKeys, addedKeys);
 	ksAppend (modifiedKeys, removedKeys);
@@ -637,11 +637,11 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 	// As this plugin is a hooks plugin, it will get called before the internal cache for changetracking is updated on kdbGet
 	// Thus we receive the new keys in "returned" and have the old keys still in "context" and can therefore successfully
 	// detect changes that have been made externally on disk
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 
 	elektraInternalnotificationNotifyChangedKeys (handle, diff);
 
-	elektraChangeTrackingKeySetDiffDel (diff);
+	elektraDiffDel (diff);
 
 	return 1;
 }
@@ -660,11 +660,11 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 int elektraInternalnotificationCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
-	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);
+	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 
 	elektraInternalnotificationNotifyChangedKeys (handle, diff);
 
-	elektraChangeTrackingKeySetDiffDel (diff);
+	elektraDiffDel (diff);
 
 	return 1;
 }

@@ -12,30 +12,32 @@ extern "C" {
 #endif
 
 typedef struct _ChangeTrackingContext ChangeTrackingContext;
-typedef struct _KeySetDiff KeySetDiff;
+typedef struct _ElektraDiff ElektraDiff;
 
 const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb);
 const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (Plugin * plugin);
 
-KeySetDiff * elektraChangeTrackingCalculateFromContext (KeySet * newKeys, const ChangeTrackingContext * context, Key * parentKey);
-KeySetDiff * elektraChangeTrackingCalculateFromKeySets (KeySet * newKeys, KeySet * oldKeys, Key * parentKey);
+ElektraDiff * elektraChangeTrackingCalculateDiff (KeySet * newKeys, const ChangeTrackingContext * context, Key * parentKey);
 
-void elektraChangeTrackingKeySetDiffDel (KeySetDiff * ksd);
-const Key * elektraChangeTrackingKeySetDiffGetParentKey (const KeySetDiff * ksd);
-KeySetDiff * elektraChangeTrackingCreateKeySetDiff (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
-uint16_t elektraChangeTrackingKeySetDiffIncRef (KeySetDiff * ksd);
-uint16_t elektraChangeTrackingKeySetDiffDecRef (KeySetDiff * ksd);
+ElektraDiff * elektraDiffCalculate (KeySet * newKeys, KeySet * oldKeys, Key * parentKey);
 
-KeySet * elektraChangeTrackingGetAddedKeys (const KeySetDiff * ksd);
-KeySet * elektraChangeTrackingGetRemovedKeys (const KeySetDiff * ksd);
-KeySet * elektraChangeTrackingGetModifiedKeys (const KeySetDiff * ksd); // Returns old keys (pre-modification)
+void elektraDiffDel (ElektraDiff * ksd);
+ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKey, Key * parentKey);
+uint16_t elektraDiffIncRef (ElektraDiff * ksd);
+uint16_t elektraDiffDecRef (ElektraDiff * ksd);
 
-bool elektraChangeTrackingValueChanged (const KeySetDiff * ksd, Key * key);
-bool elektraChangeTrackingMetaChanged (const KeySetDiff * ksd, Key * key);
+const Key * elektraDiffGetParentKey (const ElektraDiff * ksd);
 
-KeySet * elektraChangeTrackingGetAddedMetaKeys (const KeySetDiff * ksd, Key * key);
-KeySet * elektraChangeTrackingGetRemovedMetaKeys (const KeySetDiff * ksd, Key * key);
-KeySet * elektraChangeTrackingGetModifiedMetaKeys (const KeySetDiff * ksd, Key * key); // Returns old meta keys (pre-modification)
+KeySet * elektraDiffGetAddedKeys (const ElektraDiff * ksd);
+KeySet * elektraDiffGetRemovedKeys (const ElektraDiff * ksd);
+KeySet * elektraDiffGetModifiedKeys (const ElektraDiff * ksd); // Returns old keys (pre-modification)
+
+bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key);
+bool elektraDiffKeyMetaChanged (const ElektraDiff * ksd, Key * key);
+
+KeySet * elektraDiffGetAddedMetaKeys (const ElektraDiff * ksd, Key * key);
+KeySet * elektraDiffGetRemovedMetaKeys (const ElektraDiff * ksd, Key * key);
+KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key); // Returns old meta keys (pre-modification)
 
 // For Testing
 ChangeTrackingContext * elektraChangeTrackingCreateContextForTesting (KeySet * oldKeys);
