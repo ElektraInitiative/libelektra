@@ -35,6 +35,39 @@ void xfconf_array_free (GPtrArray * arr)
 
 gchar ** xfconf_list_channels (void)
 {
-	unimplemented ();
-	return NULL;
+	trace ();
+	Key * parentKey = keyNew (XFCONF_ROOT, KEY_END);
+	KeySet * channelKeySet = ksNew (0, KS_END);
+	kdbGet (elektraKdb, channelKeySet, parentKey);
+	ssize_t keySetLength = ksGetSize (channelKeySet);
+	gchar ** channelNames = calloc (keySetLength + 1, sizeof (gchar *));
+	const Key * currentKey;
+	const char * currentKeyName;
+	const char * currentChannelNameWithSuffix;
+	const char * currentChannelNameEnd;
+	for (elektraCursor i = 0, nameIndex = 0; i < keySetLength; i++)
+	{
+		currentKey = ksAtCursor (channelKeySet, i);
+		currentKeyName = keyName (currentKey);
+		currentChannelNameWithSuffix = &currentKeyName[strlen (XFCONF_NAMESPACE) + strlen (XFCONF_ROOT) + 1];
+		currentChannelNameEnd = strchr (currentChannelNameWithSuffix, '/');
+		if (!currentChannelNameEnd)
+		{
+			currentChannelNameEnd = &currentChannelNameWithSuffix[strlen (currentChannelNameWithSuffix)];
+		}
+		gchar * firstLevelName = strndup (currentChannelNameWithSuffix, currentChannelNameEnd - currentChannelNameWithSuffix);
+		g_debug ("found channel name %s", firstLevelName);
+		if (i == 0 || strcmp (firstLevelName, channelNames[nameIndex - 1]) != 0)
+		{
+			g_debug ("appending %s", firstLevelName);
+			channelNames[nameIndex] = firstLevelName;
+			nameIndex++;
+		}
+		else
+		{
+			free (firstLevelName);
+		}
+	}
+
+	return channelNames;
 }
