@@ -4,6 +4,18 @@
 #include <kdbhelper.h>
 #include <sys/mman.h>
 
+#define XFCONF_GET_TYPED(TYP, FUNC)                                                                                                        \
+	GValue val = G_VALUE_INIT;                                                                                                         \
+	g_value_init (&val, TYP);                                                                                                          \
+	if (xfconf_channel_get_formatted (channel, property, &val))                                                                        \
+	{                                                                                                                                  \
+		return FUNC (&val);                                                                                                        \
+	}                                                                                                                                  \
+	else                                                                                                                               \
+	{                                                                                                                                  \
+		return default_value;                                                                                                      \
+	}
+
 typedef struct XfconfCache XfconfCache;
 struct _XfconfChannel
 {
@@ -450,8 +462,17 @@ static const gchar * g_value_to_string (GValue * g_value)
 
 gchar * xfconf_channel_get_string (XfconfChannel * channel, const gchar * property, const gchar * default_value)
 {
-	unimplemented ();
-	return "";
+	trace ();
+	GValue val = G_VALUE_INIT;
+	g_value_init (&val, G_TYPE_STRING);
+	if (xfconf_channel_get_formatted (channel, property, &val))
+	{
+		return strdup (g_value_get_string (&val));
+	}
+	else
+	{
+		return strdup (default_value);
+	}
 }
 gboolean xfconf_channel_set_string (XfconfChannel * channel, const gchar * property, const gchar * value)
 {
@@ -461,8 +482,8 @@ gboolean xfconf_channel_set_string (XfconfChannel * channel, const gchar * prope
 
 gint32 xfconf_channel_get_int (XfconfChannel * channel, const gchar * property, gint32 default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_INT, g_value_get_int)
 }
 gboolean xfconf_channel_set_int (XfconfChannel * channel, const gchar * property, gint32 value)
 {
@@ -474,8 +495,8 @@ gboolean xfconf_channel_set_int (XfconfChannel * channel, const gchar * property
 
 static gint64 xfconf_channel_get_int64 (XfconfChannel * channel, const gchar * property, gint64 default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_INT64, g_value_get_int64)
 }
 static gboolean xfconf_channel_set_int64 (XfconfChannel * channel, const gchar * property, gint64 value)
 {
@@ -487,8 +508,8 @@ static gboolean xfconf_channel_set_int64 (XfconfChannel * channel, const gchar *
 
 guint32 xfconf_channel_get_uint (XfconfChannel * channel, const gchar * property, guint32 default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_UINT, g_value_get_uint)
 }
 gboolean xfconf_channel_set_uint (XfconfChannel * channel, const gchar * property, guint32 value)
 {
@@ -500,8 +521,8 @@ gboolean xfconf_channel_set_uint (XfconfChannel * channel, const gchar * propert
 
 guint64 xfconf_channel_get_uint64 (XfconfChannel * channel, const gchar * property, guint64 default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_UINT64, g_value_get_uint64)
 }
 gboolean xfconf_channel_set_uint64 (XfconfChannel * channel, const gchar * property, guint64 value)
 {
@@ -513,8 +534,8 @@ gboolean xfconf_channel_set_uint64 (XfconfChannel * channel, const gchar * prope
 
 static glong xfconf_channel_get_long (XfconfChannel * channel, const gchar * property, glong default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_LONG, g_value_get_long)
 }
 static gboolean xfconf_channel_set_long (XfconfChannel * channel, const gchar * property, glong value)
 {
@@ -526,8 +547,8 @@ static gboolean xfconf_channel_set_long (XfconfChannel * channel, const gchar * 
 
 static gulong xfconf_channel_get_ulong (XfconfChannel * channel, const gchar * property, gulong default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_ULONG, g_value_get_ulong)
 }
 static gboolean xfconf_channel_set_ulong (XfconfChannel * channel, const gchar * property, gulong value)
 {
@@ -539,8 +560,8 @@ static gboolean xfconf_channel_set_ulong (XfconfChannel * channel, const gchar *
 
 static gfloat xfconf_channel_get_float (XfconfChannel * channel, const gchar * property, gfloat default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_FLOAT, g_value_get_float)
 }
 static gboolean xfconf_channel_set_float (XfconfChannel * channel, const gchar * property, gfloat value)
 {
@@ -552,8 +573,8 @@ static gboolean xfconf_channel_set_float (XfconfChannel * channel, const gchar *
 
 gdouble xfconf_channel_get_double (XfconfChannel * channel, const gchar * property, gdouble default_value)
 {
-	unimplemented ();
-	return 0;
+	trace ();
+	XFCONF_GET_TYPED (G_TYPE_DOUBLE, g_value_get_double)
 }
 gboolean xfconf_channel_set_double (XfconfChannel * channel, const gchar * property, gdouble value)
 {
