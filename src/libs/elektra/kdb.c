@@ -62,7 +62,15 @@ static void clearAllSync (KeySet * ks)
 	}
 }
 
-static void ksAppendDeepDup (KeySet * ks, const KeySet * toAppend)
+/**
+ * @internal
+ *
+ * @brief appends duplicated keys from @p toAppend to @p ks
+ *
+ * @param ks the KeySet that will receive the Keys
+ * @param toAppend the KeySet that provides the Keys that will be duplicated
+ */
+static void ksAppendDup (KeySet * ks, const KeySet * toAppend)
 {
 	if (ks == NULL || toAppend == NULL)
 	{
@@ -1990,7 +1998,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->allKeys != NULL)
 	{
-		ksAppendDeepDup (handle->allKeys, ks);
+		ksAppendDup (handle->allKeys, ks);
 	}
 
 	errno = errnosave;
@@ -2557,7 +2565,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->allKeys != NULL)
 	{
-		ksAppendDeepDup (handle->allKeys, ks);
+		ksAppendDup (handle->allKeys, ks);
 	}
 
 	errno = errnosave;
