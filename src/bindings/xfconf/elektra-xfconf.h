@@ -11,6 +11,8 @@
 
 #define XFCONF_NUM_BUF_SIZE 64
 
+#define XFCONF_PERSIST_DEFAULT 1
+
 extern GList * channel_list;
 extern KDB * elektraKdb;
 
