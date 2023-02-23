@@ -147,6 +147,7 @@ libelektra_1.0 {
 
 	# kdbchangetracking.h
 	elektraChangeTrackingGetContextFromKdb;
+	elektraChangeTrackingGetContextFromPlugin;
 	elektraChangeTrackingContextDel;
 	elektraChangeTrackingCalculateFromContext;
 	elektraChangeTrackingCalculateFromKeySets;

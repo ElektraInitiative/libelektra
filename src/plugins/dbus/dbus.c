@@ -82,8 +82,7 @@ int elektraDbusCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	KDB * kdb = elektraPluginGetKdb (handle);
-	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
 
 	// we do a fresh calculation here, because we want the most current diff to avoid false positives as much as possible
 	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);

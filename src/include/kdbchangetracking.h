@@ -3,6 +3,7 @@
 
 #include <kdb.h>
 #include <kdbtypes.h>
+#include <kdbplugin.h>
 
 #ifdef __cplusplus
 namespace ckdb
@@ -14,6 +15,7 @@ typedef struct _ChangeTrackingContext ChangeTrackingContext;
 typedef struct _KeySetDiff KeySetDiff;
 
 const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb);
+const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (Plugin * plugin);
 
 KeySetDiff * elektraChangeTrackingCalculateFromContext (KeySet * newKeys, const ChangeTrackingContext * context, Key * parentKey);
 KeySetDiff * elektraChangeTrackingCalculateFromKeySets (KeySet * newKeys, KeySet * oldKeys, Key * parentKey);

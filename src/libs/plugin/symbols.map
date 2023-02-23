@@ -10,5 +10,4 @@ libelektra_0.8 {
 libelektra_1.0 {
 	elektraPluginGetPhase;
 	elektraPluginFromMountpoint;
-	elektraPluginGetKdb;
 };

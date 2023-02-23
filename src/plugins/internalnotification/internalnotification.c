@@ -632,8 +632,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 		return 1;
 	}
 
-	KDB * kdb = elektraPluginGetKdb (handle);
-	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
 
 	// As this plugin is a hooks plugin, it will get called before the internal cache for changetracking is updated on kdbGet
 	// Thus we receive the new keys in "returned" and have the old keys still in "context" and can therefore successfully
@@ -660,8 +659,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
  */
 int elektraInternalnotificationCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	KDB * kdb = elektraPluginGetKdb (handle);
-	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromKdb (kdb);
+	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
 	KeySetDiff * diff = elektraChangeTrackingCalculateFromContext (returned, context, parentKey);
 
 	elektraInternalnotificationNotifyChangedKeys (handle, diff);

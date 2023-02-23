@@ -5,7 +5,7 @@
  * Returns the changetracking context of the given KDB instance
  *
  * @param kdb the KDB instance
- * @return the changetracking context or @p NULL if @p kdb is NULL
+ * @return ChangeTrackingContext or @p NULL if @p kdb is NULL
  */
 const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb)
 {
@@ -15,6 +15,31 @@ const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb)
 	}
 
 	return &kdb->changeTrackingContext;
+}
+
+/**
+ * Returns the changetracking context for the KDB instance associated with the specified plugin
+ *
+ * @param plugin the plugin
+ * @return ChangeTrackingContext or @p NULL if @p plugin is NULL or does not have a @p KDB instance associated with it
+ */
+const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (Plugin * plugin)
+{
+	if (plugin->global == NULL)
+	{
+		return NULL;
+	}
+
+	Key * kdbKey = ksLookupByName (plugin->global, "system:/elektra/kdb", 0);
+	if (kdbKey == NULL)
+	{
+		return NULL;
+	}
+
+	const void * kdbPtr = keyValue (kdbKey);
+	KDB * kdb = kdbPtr == NULL ? NULL : *(KDB **) keyValue (kdbKey);
+
+	return elektraChangeTrackingGetContextFromKdb (kdb);
 }
 
 /**

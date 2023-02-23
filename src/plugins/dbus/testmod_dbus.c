@@ -37,7 +37,7 @@ char * testKeyNamespace;
 KeySet * oldKeys = NULL;
 ChangeTrackingContext * changeTrackingContext = NULL;
 
-const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (ELEKTRA_UNUSED KDB * kdb)
+const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (ELEKTRA_UNUSED Plugin * plugin)
 {
 	if (changeTrackingContext != NULL)
 	{
