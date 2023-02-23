@@ -195,11 +195,23 @@ XfconfChannel * xfconf_channel_new_with_property_base (const gchar * channel_nam
 	return NULL;
 }
 
+/**
+ * Channel name to key name - construct the absolute elektra key name from an Xconf channel name.
+ *
+ * @param channelName the channel name to convert to, must be a valid pointer
+ * @return a new pointer to a string with the elektra key name, must be freed by the caller
+ */
+static char * channelNameToKeyName (const char * channelName)
+{
+	char * kdbKeyName = malloc ((strlen (channelName) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
+	sprintf (kdbKeyName, "%s/%s", XFCONF_ROOT, channelName);
+	return kdbKeyName;
+}
+
 static KeySet * keySet_from_channel (const gchar * channel_name)
 {
 	trace ();
-	char * kdbKeyName = malloc ((strlen (channel_name) + strlen (XFCONF_ROOT) + 2) * sizeof (char));
-	sprintf (kdbKeyName, "%s/%s", XFCONF_ROOT, channel_name);
+	char * kdbKeyName = channelNameToKeyName (channel_name);
 	ChannelKeySetPair * channelPair = find_or_create_channel_pair (channel_name);
 	Key * parentKey = keyNew (kdbKeyName, KEY_END);
 	g_debug ("Fetch keys from parent: %s", kdbKeyName);
