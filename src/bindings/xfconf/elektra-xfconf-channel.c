@@ -269,6 +269,60 @@ static KeySet * keySet_from_channel (const gchar * channel_name)
 	return channelPair->keySet;
 }
 
+/**
+ * Convert a string to a GValue - This function tries to parse the content of `new_value` and stores it in the `g_value` pointer.
+ * If that is not possible, e.g. the `g_value` has an unknown type, this function does nothing.
+ * The desired type is taken from the `g_value`.
+ * @param g_value the value to parse the string to - not null
+ * @param new_value the string of the new value - not null
+ * @return 0 on success and 1 otherwise
+ */
+static int g_value_convert_string (GValue * g_value, const char * new_value)
+{
+	trace ();
+	switch (g_value->g_type)
+	{
+	case G_TYPE_INT:
+		g_value_set_int (g_value, (int) strtol (new_value, NULL, 10));
+		break;
+	case G_TYPE_INT64:
+		g_value_set_int64 (g_value, strtol (new_value, NULL, 10));
+		break;
+	case G_TYPE_UINT:
+		g_value_set_uint (g_value, (uint) strtoull (new_value, NULL, 10));
+		break;
+	case G_TYPE_UINT64:
+		g_value_set_uint64 (g_value, strtoull (new_value, NULL, 10));
+		break;
+	case G_TYPE_LONG:
+		g_value_set_long (g_value, strtoll (new_value, NULL, 10));
+		break;
+	case G_TYPE_ULONG:
+		g_value_set_ulong (g_value, strtoull (new_value, NULL, 10));
+		break;
+	case G_TYPE_FLOAT:
+		g_value_set_float (g_value, strtof (new_value, NULL));
+		break;
+	case G_TYPE_DOUBLE:
+		g_value_set_double (g_value, strtod (new_value, NULL));
+		break;
+	case G_TYPE_BOOLEAN:
+		if (strcmp (new_value, "TRUE") == 0 || strcmp (new_value, "true") == 0 || strcmp (new_value, "True") == 0)
+		{
+			g_value_set_boolean (g_value, TRUE);
+		}
+		else
+		{
+			g_value_set_boolean (g_value, FALSE);
+		}
+		break;
+	default:
+		g_warning ("Cannot convert to type %s(%lu)", G_VALUE_TYPE_NAME (g_value), g_value->g_type);
+		return 1;
+	}
+	return 0;
+}
+
 static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gchar * property, GValue * g_value)
 {
 	trace ();
@@ -321,10 +375,11 @@ static gboolean xfconf_channel_get_formatted (XfconfChannel * channel, const gch
 		else
 		{
 			g_debug ("perform transformation of the g_type");
-			GValue g_key_value = G_VALUE_INIT;
-			g_value_init (&g_key_value, G_TYPE_STRING);
-			g_value_set_string (&g_key_value, keyValue);
-			g_value_transform (&g_key_value, g_value);
+			//			GValue g_key_value = G_VALUE_INIT;
+			//			g_value_init (&g_key_value, G_TYPE_STRING);
+			//			g_value_set_string (&g_key_value, keyValue);
+			//			g_value_transform (&g_key_value, g_value);
+			g_value_convert_string (g_value, keyValue);
 		}
 	}
 	free (propertyName);
