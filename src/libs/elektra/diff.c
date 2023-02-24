@@ -8,8 +8,18 @@
  * @param old old key
  * @return true if @p new and @p old have a different value
  */
-static bool keyValueDifferent (Key * new, Key * old)
+static inline bool keyValueDifferent (Key * new, Key * old)
 {
+	if (new == old)
+	{
+		return false;
+	}
+
+	if (new == NULL || old == NULL)
+	{
+		return true;
+	}
+
 	if (new->keyData == old->keyData)
 	{
 		return false;
@@ -102,16 +112,27 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 				KeySet * oldMeta = keyMeta (needle);
 				KeySet * newMeta = keyMeta (found);
 
-				ksClear (metaAdded);
-				ksClear (metaRemoved);
-				ksClear (metaModified);
+				ssize_t oldMetaSize = ksGetSize (oldMeta);
+				ssize_t newMetaSize = ksGetSize (newMeta);
 
-				findDifferences (newMeta, oldMeta, metaAdded, metaRemoved, metaModified, NULL);
-
-				if (ksGetSize (addedKeys) > 0 || ksGetSize (removedKeys) > 0 || ksGetSize (modifiedKeys) > 0)
+				if (oldMetaSize != newMetaSize)
 				{
 					// there was a change in the meta keys --> modified
 					ksAppendKey (modifiedKeys, needle);
+				}
+				else if (oldMetaSize > 0 || newMetaSize > 0)
+				{
+					ksClear (metaAdded);
+					ksClear (metaRemoved);
+					ksClear (metaModified);
+
+					findDifferences (newMeta, oldMeta, metaAdded, metaRemoved, metaModified, NULL);
+
+					if (ksGetSize (metaAdded) > 0 || ksGetSize (metaRemoved) > 0 || ksGetSize (metaModified) > 0)
+					{
+						// there was a change in the meta keys --> modified
+						ksAppendKey (modifiedKeys, needle);
+					}
 				}
 			}
 		}

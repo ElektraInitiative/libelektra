@@ -194,7 +194,7 @@ int main (int argc, char ** argv)
 	test_shouldFindKeysWithModifiedStringValue ();
 	test_shouldFindRemoved ();
 
-	printf ("\ntest_backends RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_changetracking RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

@@ -37,7 +37,9 @@ target_link_elektra (test_cmerge elektra-merge)
 
 target_link_elektra (test_sha-256 elektra-ease)
 
-target_link_libraries(test_changetracking elektra-kdb)
+target_link_libraries (test_changetracking elektra-kdb)
+
+target_link_libraries (test_diffprivate elektra-kdb)
 
 if (TARGET elektra-notification
     AND TARGET elektra-dbus
