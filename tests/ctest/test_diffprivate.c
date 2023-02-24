@@ -1,5 +1,5 @@
-#include <tests_internal.h>
 #include "../../src/libs/elektra/diff.c"
+#include <tests_internal.h>
 
 static void test_keyValueDifferent_bothNull_shouldReturnFalse (void)
 {
@@ -189,8 +189,6 @@ void test_keyValueDifferent_sameName_differentValueTypes_shouldReturnTrue (void)
 }
 
 
-
-
 static void test_findDifferences_NULL_shouldReturnEmptyKeySets (void)
 {
 	printf ("Test %s\n", __func__);
@@ -244,10 +242,7 @@ static void test_findDifferences_fullAndEmptyKeySet_shouldReturnAddedKeys (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/hello", KEY_END),
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END),
-			      KS_END);
+	KeySet * new = ksNew (1, keyNew ("system:/test/hello", KEY_END), keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END), KS_END);
 
 	KeySet * old = ksNew (0, KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
@@ -275,10 +270,7 @@ static void test_findDifferences_emptyAndFullKeySet_shouldReturnRemovedKeys (voi
 
 	// Arrange
 	KeySet * new = ksNew (0, KS_END);
-	KeySet * old = ksNew (1,
-				      keyNew ("system:/test/hello", KEY_END),
-				      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END),
-				      KS_END);
+	KeySet * old = ksNew (1, keyNew ("system:/test/hello", KEY_END), keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END), KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
@@ -303,14 +295,10 @@ static void test_findDifferences_modifiedValue_shouldReturnModifiedKeys (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/hello", KEY_END),
-			      keyNew ("system:/test/name", KEY_VALUE, "franz1", KEY_END),
-			      KS_END);
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/hello", KEY_END),
-			      keyNew ("system:/test/name", KEY_VALUE, "franz2", KEY_END),
-			      KS_END);
+	KeySet * new =
+		ksNew (1, keyNew ("system:/test/hello", KEY_END), keyNew ("system:/test/name", KEY_VALUE, "franz1", KEY_END), KS_END);
+	KeySet * old =
+		ksNew (1, keyNew ("system:/test/hello", KEY_END), keyNew ("system:/test/name", KEY_VALUE, "franz2", KEY_END), KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
@@ -335,12 +323,8 @@ static void test_findDifferences_addedMeta_shouldReturnModifiedKeys (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END),
-			      KS_END);
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END),
-			      KS_END);
+	KeySet * new = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END), KS_END);
+	KeySet * old = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END), KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
@@ -365,12 +349,8 @@ static void test_findDifferences_removedMeta_shouldReturnModifiedKeys (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END),
-			      KS_END);
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "franz", KEY_END),
-			      KS_END);
+	KeySet * new = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END), KS_END);
+	KeySet * old = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "franz", KEY_END), KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
@@ -395,12 +375,8 @@ static void test_findDifferences_modifiedMeta_shouldReturnModifiedKeys (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END),
-			      KS_END);
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "franz", KEY_END),
-			      KS_END);
+	KeySet * new = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END), KS_END);
+	KeySet * old = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "franz", KEY_END), KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
@@ -425,12 +401,8 @@ static void test_findDifferences_sameMeta_shouldReturnEmptyKeySets (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END),
-			      KS_END);
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END),
-			      KS_END);
+	KeySet * new = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END), KS_END);
+	KeySet * old = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_META, "meta:/hello", "world", KEY_END), KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
@@ -455,12 +427,8 @@ static void test_findDifferences_modifiedShouldContainOldKeys (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END),
-			      KS_END);
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/name", KEY_VALUE, "hans", KEY_END),
-			      KS_END);
+	KeySet * new = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "franz", KEY_END), KS_END);
+	KeySet * old = ksNew (1, keyNew ("system:/test/name", KEY_VALUE, "hans", KEY_END), KS_END);
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
@@ -471,7 +439,7 @@ static void test_findDifferences_modifiedShouldContainOldKeys (void)
 	// Assert
 	Key * modifiedKey = ksLookupByName (modifiedKeys, "system:/test/name", KDB_O_NONE);
 	succeed_if (modifiedKey != NULL, "system:/test/name should be modified!");
-	succeed_if_fmt(strcmp ("hans", keyString (modifiedKey)) == 0, "should have old value (hans), was %s", keyString (modifiedKey));
+	succeed_if_fmt (strcmp ("hans", keyString (modifiedKey)) == 0, "should have old value (hans), was %s", keyString (modifiedKey));
 
 	ksDel (addedKeys);
 	ksDel (removedKeys);
@@ -487,8 +455,7 @@ static void test_findDifferences_realWorld_withParentKey (void)
 	// Arrange
 	Key * parentKey = keyNew ("system:/test", KEY_END);
 
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-01", KEY_END),
+	KeySet * new = ksNew (1, keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-01", KEY_END),
 			      keyNew ("system:/test/display/background", KEY_VALUE, "blue", KEY_END),
 			      keyNew ("system:/test/display/brightness", KEY_VALUE, "85", KEY_END),
 			      keyNew ("system:/test/display/colorspace", KEY_VALUE, "sRGB", KEY_END),
@@ -499,8 +466,7 @@ static void test_findDifferences_realWorld_withParentKey (void)
 
 			      KS_END);
 
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-02", KEY_END),
+	KeySet * old = ksNew (1, keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-02", KEY_END),
 			      keyNew ("system:/test/display/background", KEY_VALUE, "red", KEY_END),
 			      keyNew ("system:/test/display/model", KEY_VALUE, "Generic Display", KEY_END),
 			      keyNew ("system:/test/display/colorspace", KEY_VALUE, "sRGB", KEY_END),
@@ -509,8 +475,7 @@ static void test_findDifferences_realWorld_withParentKey (void)
 			      keyNew ("system:/test/display/primary", KEY_VALUE, "yes", KEY_END),
 			      keyNew ("system:/test/display/extended", KEY_VALUE, "no", KEY_END),
 			      keyNew ("system:/untouched/modified", KEY_VALUE, "456", KEY_END),
-			      keyNew ("system:/untouched/removed", KEY_VALUE, "789", KEY_END),
-			      KS_END);
+			      keyNew ("system:/untouched/removed", KEY_VALUE, "789", KEY_END), KS_END);
 
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
@@ -524,21 +489,32 @@ static void test_findDifferences_realWorld_withParentKey (void)
 	succeed_if_fmt (ksGetSize (removedKeys) == 4, "should find 4 removed keys (was %zd)", ksGetSize (removedKeys));
 	succeed_if_fmt (ksGetSize (modifiedKeys) == 3, "should find 3 modified keys (was %zd)", ksGetSize (modifiedKeys));
 
-	succeed_if (ksLookupByName (modifiedKeys, "system:/untouched/modified", KDB_O_NONE) == NULL, "should not find modified keys outside of parent key");
-	succeed_if (ksLookupByName (addedKeys, "system:/untouched/added", KDB_O_NONE) == NULL, "should not find modified keys outside of parent key");
-	succeed_if (ksLookupByName (removedKeys, "system:/untouched/removed", KDB_O_NONE) == NULL, "should not find modified keys outside of parent key");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/untouched/modified", KDB_O_NONE) == NULL,
+		    "should not find modified keys outside of parent key");
+	succeed_if (ksLookupByName (addedKeys, "system:/untouched/added", KDB_O_NONE) == NULL,
+		    "should not find modified keys outside of parent key");
+	succeed_if (ksLookupByName (removedKeys, "system:/untouched/removed", KDB_O_NONE) == NULL,
+		    "should not find modified keys outside of parent key");
 
 	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display", KDB_O_NONE) != NULL, "system:/test/display should be modified");
-	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/background", KDB_O_NONE) != NULL, "system:/test/display/background should be modified");
-	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/zulu", KDB_O_NONE) != NULL, "system:/test/display/zulu should be modified");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/background", KDB_O_NONE) != NULL,
+		    "system:/test/display/background should be modified");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/zulu", KDB_O_NONE) != NULL,
+		    "system:/test/display/zulu should be modified");
 
-	succeed_if (ksLookupByName (addedKeys, "system:/test/display/brightness", KDB_O_NONE) != NULL, "system:/test/display/brightness should be added");
-	succeed_if (ksLookupByName (addedKeys, "system:/test/display/hdrCapable", KDB_O_NONE) != NULL, "system:/test/display/hdrCapable should be added");
+	succeed_if (ksLookupByName (addedKeys, "system:/test/display/brightness", KDB_O_NONE) != NULL,
+		    "system:/test/display/brightness should be added");
+	succeed_if (ksLookupByName (addedKeys, "system:/test/display/hdrCapable", KDB_O_NONE) != NULL,
+		    "system:/test/display/hdrCapable should be added");
 
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/model", KDB_O_NONE) != NULL, "system:/test/display/model should be removed");
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/builtinSpeakerVolume", KDB_O_NONE) != NULL, "system:/test/display/builtinSpeakerVolume should be removed");
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/primary", KDB_O_NONE) != NULL, "system:/test/display/primary should be removed");
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/extended", KDB_O_NONE) != NULL, "system:/test/display/extended should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/model", KDB_O_NONE) != NULL,
+		    "system:/test/display/model should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/builtinSpeakerVolume", KDB_O_NONE) != NULL,
+		    "system:/test/display/builtinSpeakerVolume should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/primary", KDB_O_NONE) != NULL,
+		    "system:/test/display/primary should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/extended", KDB_O_NONE) != NULL,
+		    "system:/test/display/extended should be removed");
 
 	ksDel (addedKeys);
 	ksDel (removedKeys);
@@ -554,8 +530,7 @@ static void test_findDifferences_realWorld_withoutParentKey (void)
 	printf ("Test %s\n", __func__);
 
 	// Arrange
-	KeySet * new = ksNew (1,
-			      keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-01", KEY_END),
+	KeySet * new = ksNew (1, keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-01", KEY_END),
 			      keyNew ("system:/test/display/background", KEY_VALUE, "blue", KEY_END),
 			      keyNew ("system:/test/display/brightness", KEY_VALUE, "85", KEY_END),
 			      keyNew ("system:/test/display/colorspace", KEY_VALUE, "sRGB", KEY_END),
@@ -566,8 +541,7 @@ static void test_findDifferences_realWorld_withoutParentKey (void)
 
 			      KS_END);
 
-	KeySet * old = ksNew (1,
-			      keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-02", KEY_END),
+	KeySet * old = ksNew (1, keyNew ("system:/test/display", KEY_VALUE, "screen1", KEY_META, "meta:/connected", "2022-01-02", KEY_END),
 			      keyNew ("system:/test/display/background", KEY_VALUE, "red", KEY_END),
 			      keyNew ("system:/test/display/model", KEY_VALUE, "Generic Display", KEY_END),
 			      keyNew ("system:/test/display/colorspace", KEY_VALUE, "sRGB", KEY_END),
@@ -576,8 +550,7 @@ static void test_findDifferences_realWorld_withoutParentKey (void)
 			      keyNew ("system:/test/display/primary", KEY_VALUE, "yes", KEY_END),
 			      keyNew ("system:/test/display/extended", KEY_VALUE, "no", KEY_END),
 			      keyNew ("system:/untouched/modified", KEY_VALUE, "456", KEY_END),
-			      keyNew ("system:/untouched/removed", KEY_VALUE, "789", KEY_END),
-			      KS_END);
+			      keyNew ("system:/untouched/removed", KEY_VALUE, "789", KEY_END), KS_END);
 
 	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
@@ -591,21 +564,30 @@ static void test_findDifferences_realWorld_withoutParentKey (void)
 	succeed_if_fmt (ksGetSize (removedKeys) == 5, "should find 5 removed keys (was %zd)", ksGetSize (removedKeys));
 	succeed_if_fmt (ksGetSize (modifiedKeys) == 4, "should find 4 modified keys (was %zd)", ksGetSize (modifiedKeys));
 
-	succeed_if (ksLookupByName (modifiedKeys, "system:/untouched/modified", KDB_O_NONE) != NULL, "should find system:/untouched/modified");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/untouched/modified", KDB_O_NONE) != NULL,
+		    "should find system:/untouched/modified");
 	succeed_if (ksLookupByName (addedKeys, "system:/untouched/added", KDB_O_NONE) != NULL, "should find system:/untouched/added");
 	succeed_if (ksLookupByName (removedKeys, "system:/untouched/removed", KDB_O_NONE) != NULL, "should find system:/untouched/removed");
 
 	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display", KDB_O_NONE) != NULL, "system:/test/display should be modified");
-	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/background", KDB_O_NONE) != NULL, "system:/test/display/background should be modified");
-	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/zulu", KDB_O_NONE) != NULL, "system:/test/display/zulu should be modified");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/background", KDB_O_NONE) != NULL,
+		    "system:/test/display/background should be modified");
+	succeed_if (ksLookupByName (modifiedKeys, "system:/test/display/zulu", KDB_O_NONE) != NULL,
+		    "system:/test/display/zulu should be modified");
 
-	succeed_if (ksLookupByName (addedKeys, "system:/test/display/brightness", KDB_O_NONE) != NULL, "system:/test/display/brightness should be added");
-	succeed_if (ksLookupByName (addedKeys, "system:/test/display/hdrCapable", KDB_O_NONE) != NULL, "system:/test/display/hdrCapable should be added");
+	succeed_if (ksLookupByName (addedKeys, "system:/test/display/brightness", KDB_O_NONE) != NULL,
+		    "system:/test/display/brightness should be added");
+	succeed_if (ksLookupByName (addedKeys, "system:/test/display/hdrCapable", KDB_O_NONE) != NULL,
+		    "system:/test/display/hdrCapable should be added");
 
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/model", KDB_O_NONE) != NULL, "system:/test/display/model should be removed");
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/builtinSpeakerVolume", KDB_O_NONE) != NULL, "system:/test/display/builtinSpeakerVolume should be removed");
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/primary", KDB_O_NONE) != NULL, "system:/test/display/primary should be removed");
-	succeed_if (ksLookupByName (removedKeys, "system:/test/display/extended", KDB_O_NONE) != NULL, "system:/test/display/extended should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/model", KDB_O_NONE) != NULL,
+		    "system:/test/display/model should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/builtinSpeakerVolume", KDB_O_NONE) != NULL,
+		    "system:/test/display/builtinSpeakerVolume should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/primary", KDB_O_NONE) != NULL,
+		    "system:/test/display/primary should be removed");
+	succeed_if (ksLookupByName (removedKeys, "system:/test/display/extended", KDB_O_NONE) != NULL,
+		    "system:/test/display/extended should be removed");
 
 	ksDel (addedKeys);
 	ksDel (removedKeys);
@@ -613,7 +595,6 @@ static void test_findDifferences_realWorld_withoutParentKey (void)
 	ksDel (new);
 	ksDel (old);
 }
-
 
 
 int main (int argc, char ** argv)

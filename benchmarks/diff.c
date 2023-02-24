@@ -15,7 +15,7 @@ int main (void)
 
 	for (int i = 0; i < numKeys; i++)
 	{
-		snprintf (nameBuffer, 99, "system:/a/%d", i*2);
+		snprintf (nameBuffer, 99, "system:/a/%d", i * 2);
 		snprintf (valueBuffer, 49, "%d", i);
 
 		Key * k = keyNew (nameBuffer, KEY_VALUE, valueBuffer, KEY_END);
@@ -26,7 +26,7 @@ int main (void)
 
 	for (int i = 0; i < numKeys; i++)
 	{
-		snprintf (nameBuffer, 99, "system:/a/%d", i*2+1);
+		snprintf (nameBuffer, 99, "system:/a/%d", i * 2 + 1);
 
 		snprintf (valueBuffer, 49, "%d", i);
 		ksAppendKey (new, keyNew (nameBuffer, KEY_VALUE, valueBuffer, KEY_END));
@@ -37,7 +37,7 @@ int main (void)
 
 	for (int i = 0; i < numKeys; i++)
 	{
-		snprintf (nameBuffer, 99, "system:/b/%d", i*2);
+		snprintf (nameBuffer, 99, "system:/b/%d", i * 2);
 		snprintf (valueBuffer, 49, "%d", i);
 
 		Key * k = keyNew (nameBuffer, KEY_VALUE, valueBuffer, KEY_END);
@@ -47,7 +47,7 @@ int main (void)
 
 	for (int i = 0; i < numKeys; i++)
 	{
-		snprintf (nameBuffer, 99, "system:/c/%d", i*2);
+		snprintf (nameBuffer, 99, "system:/c/%d", i * 2);
 		snprintf (valueBuffer, 49, "%d", i);
 
 		Key * k = keyNew (nameBuffer, KEY_VALUE, valueBuffer, KEY_END);
@@ -59,11 +59,11 @@ int main (void)
 
 	for (int i = 0; i < runs; i++)
 	{
-		timeInit();
+		timeInit ();
 
 		ElektraDiff * diff = elektraDiffCalculate (new, old, NULL);
 
-		int us = timeGetDiffMicroseconds();
+		int us = timeGetDiffMicroseconds ();
 		sum += us;
 
 		printf ("%d us\n", us);
@@ -71,7 +71,7 @@ int main (void)
 		elektraDiffDel (diff);
 	}
 
-	printf("Average: %.2f", (double)sum/runs);
+	printf ("Average: %.2f", (double) sum / runs);
 
 	ksDel (new);
 	ksDel (old);

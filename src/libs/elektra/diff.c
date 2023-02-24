@@ -1,5 +1,5 @@
-#include <kdbprivate.h>
 #include <kdbdiff.h>
+#include <kdbprivate.h>
 
 /**
  * Determines whether two keys have different value
