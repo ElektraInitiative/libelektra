@@ -1275,14 +1275,13 @@ enum PluginStatus getPluginStatus (struct PluginSpec spec, KeySet * modules, Key
 		}
 		else
 		{
-			KeySet * ksInfoTmp = NULL;
-			if (!ksInfo) ksInfo = &ksInfoTmp;
+			/* TODO: Handle error if ksInfo is null */
 			*ksInfo = ksNew (0, KS_END);
 			plugin->kdbGet (plugin, *ksInfo, infoKey);
 
 			/* parse () */
-			Key * k = ksLookup (*ksInfo, infoKey, KDB_O_NONE);
-			if (!k)
+			Key * keyInfo = ksLookup (*ksInfo, infoKey, KDB_O_NONE);
+			if (!keyInfo)
 			{
 				//throw PluginNoContract ();
 			}
@@ -1292,14 +1291,12 @@ enum PluginStatus getPluginStatus (struct PluginSpec spec, KeySet * modules, Key
 			ssize_t it = ksSearch (*ksInfo, infoKey) + 1;
 			if (it > 0)
 			{
-				KeySet * ksSymbolsTmp = NULL;
-				if (!ksSymbols)
-					ksSymbols = &ksSymbolsTmp;
+				/* TODO: Handle error if ksSymbols is null */
 
 				for (; it < ksGetSize (*ksInfo); ++it)
 				{
-					k = ksAtCursor (*ksInfo, it);
-					if (keyIsBelow (infoKey, k) != 1) break;
+					keyInfo = ksAtCursor (*ksInfo, it);
+					if (keyIsBelow (infoKey, keyInfo) != 1) break;
 
 					// C++: symbols[k.getName ().substr (root.getName ().length () + 1)] = (*k.getFunc ());
 					if (!(*ksSymbols))
@@ -1311,14 +1308,14 @@ enum PluginStatus getPluginStatus (struct PluginSpec spec, KeySet * modules, Key
 					{
 						size_t subStrStartPos = elektraStrLen (keyName (infoKey));
 
-						if (subStrStartPos < elektraStrLen (keyName (k)))
+						if (subStrStartPos < elektraStrLen (keyName (keyInfo)))
 						{
-							size_t symbolKeyNameStrLen = elektraStrLen (keyName (k) + subStrStartPos);
+							size_t symbolKeyNameStrLen = elektraStrLen (keyName (keyInfo) + subStrStartPos);
 							char * symbolKeyName = elektraMalloc (symbolKeyNameStrLen);
-							strcpy (symbolKeyName, keyName (k) + subStrStartPos);
+							strcpy (symbolKeyName, keyName (keyInfo) + subStrStartPos);
 
 							/* name = name of symbol, value = function pointer */
-							Key * keySymbol = keyNew (symbolKeyName, KEY_VALUE, getFuncFromKey (k), KEY_END);
+							Key * keySymbol = keyNew (symbolKeyName, KEY_VALUE, getFuncFromKey (keyInfo), KEY_END);
 							elektraFree (symbolKeyName);
 							ksAppendKey (*ksSymbols, keySymbol);
 						}
@@ -1340,21 +1337,21 @@ enum PluginStatus getPluginStatus (struct PluginSpec spec, KeySet * modules, Key
 				KeySet * ksInfos = ksNew (0, KS_END);
 				for (; it < ksGetSize (*ksInfo); ++it)
 				{
-					k = ksAtCursor (*ksInfo, it);
-					if (keyIsBelow (infoKey, k) != 1) break;
+					keyInfo = ksAtCursor (*ksInfo, it);
+					if (keyIsBelow (infoKey, keyInfo) != 1) break;
 					// C++: infos[k.getName ().substr (root.getName ().length () + 1)] = k.getString ();
 					size_t subStrStartPos = elektraStrLen (keyName (infoKey));
 
-					if (subStrStartPos < elektraStrLen (keyName (k)))
+					if (subStrStartPos < elektraStrLen (keyName (keyInfo)))
 					{
-						size_t infoKeyNameStrLen = elektraStrLen (keyName (k) + subStrStartPos);
+						size_t infoKeyNameStrLen = elektraStrLen (keyName (keyInfo) + subStrStartPos);
 						char * infoKeyName = elektraMalloc (infoKeyNameStrLen);
-						strcpy (infoKeyName, keyName (k) + subStrStartPos);
+						strcpy (infoKeyName, keyName (keyInfo) + subStrStartPos);
 
 						/* name = name of info, value = content (text) of info */
-						Key * keyInfo = keyNew (infoKeyName, KEY_VALUE, keyString (k), KEY_END);
+						Key * keyNewInfo = keyNew (infoKeyName, KEY_VALUE, keyString (keyInfo), KEY_END);
 						elektraFree (infoKeyName);
-						ksAppendKey (ksInfos, keyInfo);
+						ksAppendKey (ksInfos, keyNewInfo);
 					}
 					else
 					{
@@ -1434,7 +1431,7 @@ void pluginLoadInfo (struct PluginSpec const spec)
 }
 
 // C++: backendbuilder.cpp[424-489]
-struct PluginSpec backendBuilderaddPlugin (const KeySet * const ks, struct PluginSpec ps, KeySet * ksModules)
+struct PluginSpec backendBuilderAddPlugin (const KeySet * const ks, struct PluginSpec ps, KeySet * ksModules)
 {
 	char * pluginFullName = getPluginFullName (ps);
 
@@ -1722,9 +1719,6 @@ void sortPluginSpecArray (struct PluginSpec * pluginSpecsToAdd, size_t n, KeySet
 void mountBackendBuilderUseConfigFile (const char * file, struct PluginSpec *psToAdd, size_t numPs, KeySet * ksInfo)
 {
 	// C++: MountBackendInterfacePtr b = getBackendFactory ().create ();
-	return;
-
-
 
 	bool checkPossible = false;
 	for (size_t i = 0; i < numPs; i++)
@@ -1738,21 +1732,50 @@ void mountBackendBuilderUseConfigFile (const char * file, struct PluginSpec *psT
 	if (checkPossible)
 	{
 		// C++: fullPlugins (*b)
+		// C++: b->useConfigFile (configfile);
 	}
 }
 
 
 /**@pre: resolver needs to be loaded first
  * Will check the filename and use it as configFile for this backend. */
-// C++: backend.cpp[246-274]
-void backendUseConfigFile (const char * file, struct PluginSpecNode * plugins, KeySet * ksSymbols)
+// C++: backend.cpp[246-274], void Backend::useConfigFile (std::string file)
+bool backendCheckConfigFile (const char * file, struct PluginSpecNode * plugins, KeySet * ksSymbols)
 {
 	int (*checkFileFunction) (const char *) = NULL;
 
 	for (; plugins; plugins = plugins->next)
 	{
-
+		/* TODO: one symbol ks by plugin, not only one globally */
+		Key * funcKey = ksLookupByName(ksSymbols, "checkfile", KDB_O_NONE);
+		if (funcKey)
+		{
+			// C++: checkFileFunction = reinterpret_cast<checkFilePtr> (elem->getSymbol ("checkfile"));
+			checkFileFunction = (int (*) (const char *)) getFuncFromKey (funcKey);
+		}
+		else
+		{
+			/* TODO: Handle error */
+		}
 	}
+
+	if (!checkFileFunction)
+	{
+		// C++: throw MissingSymbol ("No resolver with checkfile found", "");
+		fprintf (stderr, "No resolver with checkfile found.\n");
+		return false;
+	}
+
+	int res = checkFileFunction (file);
+
+	if (res == -1)
+	{
+		// C++: throw FileNotValidException ();
+		fprintf (stderr, "FileNotValidException\n");
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -1889,7 +1912,7 @@ KeySet * resolveNeeds (bool addRecommends, KeySet * ksToAdd, KeySet * ksMetadata
 			Key * curKey = ksAtCursor (ksPlugins, j);
 			struct PluginSpec * curPs = (struct PluginSpec *) keyValue (curKey);
 			/* TODO: Handle return value or change function */
-			backendBuilderaddPlugin (ksToAdd, *curPs, ksModules);
+			backendBuilderAddPlugin (ksToAdd, *curPs, ksModules);
 		}
 	}
 
@@ -1931,7 +1954,7 @@ KeySet * resolveNeeds (bool addRecommends, KeySet * ksToAdd, KeySet * ksMetadata
 			setPluginFullName (&ps, pluginFullName);
 
 			/* TODO: Handle return value or rewrite function */
-			backendBuilderaddPlugin (ksToAdd, ps, ksModules);
+			backendBuilderAddPlugin (ksToAdd, ps, ksModules);
 
 			ksDel (ksNeededPlugins);
 		}
@@ -1951,7 +1974,7 @@ KeySet * resolveNeeds (bool addRecommends, KeySet * ksToAdd, KeySet * ksMetadata
 			if (getPluginStatus (ps, ksModules, NULL, NULL) == missing)
 			{
 				/* TODO: Handle return value or rewrite function */
-				backendBuilderaddPlugin (ksToAdd, ps, ksModules);
+				backendBuilderAddPlugin (ksToAdd, ps, ksModules);
 			}
 			else
 			{
@@ -2706,7 +2729,7 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 
 	/* in C++: backend.addPlugin (PluginSpec (resolver));
 	 * -> moved to own function */
-	struct PluginSpec pluginToAdd = backendBuilderaddPlugin (ksBackendConfig, psResolver, ksModules);
+	struct PluginSpec pluginToAdd = backendBuilderAddPlugin (ksBackendConfig, psResolver, ksModules);
 	/* C++ end of backend.addPlugin */
 
 	/* C++: backend.useConfigFile (path) */
@@ -2728,7 +2751,7 @@ void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, cha
 		struct PluginSpec * psArgument = (struct PluginSpec *) keyValue (keyArgument);
 
 		/* TODO: Save return value */
-		backendBuilderaddPlugin (ksBackendConfig, *psArgument, ksModules);
+		backendBuilderAddPlugin (ksBackendConfig, *psArgument, ksModules);
 	}
 
 	/* TODO: Check if needed anymore (new handling of command arguments with gopts) */
