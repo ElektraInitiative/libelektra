@@ -80,37 +80,69 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 	KeySet * metaRemoved = ksNew (0, KS_END);
 	KeySet * metaModified = ksNew (0, KS_END);
 
-	for (elektraCursor itOld = 0; itOld < ksGetSize (old); itOld++)
-	{
-		Key * needle = ksAtCursor (old, itOld);
+	ssize_t oldSize = ksGetSize (old);
+	ssize_t newSize = ksGetSize (new);
 
-		if (parentKey != NULL && !keyIsBelowOrSame (parentKey, needle))
+	elektraCursor iOld = 0;
+	elektraCursor iNew = 0;
+
+	for (ssize_t i = 0; i < oldSize + newSize; i++)
+	{
+		Key * oldKey = ksAtCursor (old, iOld);
+		Key * newKey = ksAtCursor (new, iNew);
+
+		if (newKey == NULL)
 		{
+			// No more keys in new --> must have been removed
+
+			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, oldKey)))
+			{
+				ksAppendKey (removedKeys, oldKey);
+			}
+
+			iOld++;
+			iNew++;
 			continue;
 		}
 
-		Key * found = ksLookup (new, needle, 0);
-
-		if (found == NULL)
+		if (oldKey == NULL)
 		{
-			// key is present in old key set, but not in new --> removed
-			ksAppendKey (removedKeys, needle);
+			// No more keys in old --> must have been added
+
+			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, newKey)))
+			{
+				ksAppendKey (addedKeys, newKey);
+			}
+
+			iOld++;
+			iNew++;
+			continue;
 		}
-		else
-		{
-			// key is present in both new and old key sets --> check for modifications
 
-			if (keyValueDifferent (found, needle))
+		int cmpRes = keyCmp (oldKey, newKey);
+
+		if (cmpRes == 0)
+		{
+			// keys have the same name --> check if modified
+
+			if (parentKey != NULL && !keyIsBelowOrSame (parentKey, newKey))
+			{
+				iOld++;
+				iNew++;
+				continue;
+			}
+
+			if (keyValueDifferent (newKey, oldKey))
 			{
 				// The value of the key changed --> modified
-				ksAppendKey (modifiedKeys, needle);
+				ksAppendKey (modifiedKeys, oldKey);
 			}
-			else if (keyGetNamespace (found) != KEY_NS_META)
+			else if (keyGetNamespace (oldKey) != KEY_NS_META)
 			{
 				// Check whether something in the meta keys has changed
 
-				KeySet * oldMeta = keyMeta (needle);
-				KeySet * newMeta = keyMeta (found);
+				KeySet * oldMeta = keyMeta (oldKey);
+				KeySet * newMeta = keyMeta (newKey);
 
 				ssize_t oldMetaSize = ksGetSize (oldMeta);
 				ssize_t newMetaSize = ksGetSize (newMeta);
@@ -118,7 +150,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 				if (oldMetaSize != newMetaSize)
 				{
 					// there was a change in the meta keys --> modified
-					ksAppendKey (modifiedKeys, needle);
+					ksAppendKey (modifiedKeys, oldKey);
 				}
 				else if (oldMetaSize > 0 || newMetaSize > 0)
 				{
@@ -131,28 +163,33 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 					if (ksGetSize (metaAdded) > 0 || ksGetSize (metaRemoved) > 0 || ksGetSize (metaModified) > 0)
 					{
 						// there was a change in the meta keys --> modified
-						ksAppendKey (modifiedKeys, needle);
+						ksAppendKey (modifiedKeys, oldKey);
 					}
 				}
 			}
+
+			iOld++;
+			iNew++;
 		}
-	}
-
-	for (elektraCursor itNew = 0; itNew < ksGetSize (new); itNew++)
-	{
-		Key * needle = ksAtCursor (new, itNew);
-
-		if (parentKey != NULL && !keyIsBelowOrSame (parentKey, needle))
+		else if (cmpRes < 0)
 		{
-			continue;
+			// key is present in old but not in new
+			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, oldKey)))
+			{
+				ksAppendKey (removedKeys, oldKey);
+			}
+
+			iOld++;
 		}
-
-		Key * found = ksLookup (old, needle, 0);
-
-		if (found == NULL)
+		else
 		{
-			// Key is present in the new keyset but not in the old --> added
-			ksAppendKey (addedKeys, needle);
+			// key is present in new but not in old
+			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, newKey)))
+			{
+				ksAppendKey (addedKeys, newKey);
+			}
+
+			iNew++;
 		}
 	}
 

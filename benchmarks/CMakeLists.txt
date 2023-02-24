@@ -26,6 +26,7 @@ do_benchmark (cmp)
 do_benchmark (createkeys)
 do_benchmark (memoryleak)
 do_benchmark (deepdup)
+do_benchmark (diff)
 
 # exclude storage and KDB benchmark from mingw
 if (NOT WIN32)
