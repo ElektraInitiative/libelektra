@@ -3,8 +3,8 @@
 #ifndef KDB_MOUNT_H
 #define KDB_MOUNT_H
 
-#include <stdbool.h>
 #include <kdb.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 namespace ckdb
@@ -22,8 +22,8 @@ const char * cGetMountpoint (const KeySet * const mountconf, bool clInteractive)
 /* TODO: from mount.cpp */
 void cOutputMtab (KeySet * mountConf, bool clFirst, bool clSecond, bool clNull);
 void cProcessArguments (bool clInteractive, int numArgs);
-void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug, int mergeStrategy, const char * resolverName, const char * path, const KeySet * plugins, bool withRecommends);
-
+void cBuildBackend (KeySet * const mountConf, const char * const mountPoint, char * pluginsConfig, bool clForce, bool clDebug,
+		    int mergeStrategy, const char * resolverName, const char * path, const KeySet * plugins, bool withRecommends);
 
 
 /* Backend related stuff */
@@ -32,7 +32,6 @@ KeySet * getBackendInfo (KeySet * mountConf);
 
 /* TODO: from backendparser.cpp */
 const KeySet * cParsePluginArguments (char * const pluginArguments, const char * const basepath);
-
 
 
 /* Helper functions, TODO: refactor */
