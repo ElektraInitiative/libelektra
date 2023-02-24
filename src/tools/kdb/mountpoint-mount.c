@@ -7,13 +7,13 @@
  */
 
 #include <command.h>
-#include <mountpoint-mount.h>
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbmerge.h>
 #include <kdbmount.h>
+#include <mountpoint-mount.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -82,24 +82,16 @@ int execMount (KeySet * options, Key * errorKey)
 	const char * argMountpoint = NULL;
 
 	const Key * tmp;
-	if ((tmp = GET_OPTION_KEY (options, "debug")))
-		elektraKeyToBoolean (tmp, &optDebug);
-	if ((tmp = GET_OPTION_KEY (options, "verbose")))
-		elektraKeyToBoolean (tmp, &optVerbose);
-	if ((tmp = GET_OPTION_KEY (options, "version")))
-		elektraKeyToBoolean (tmp, &optVersion);
-	if ((tmp = GET_OPTION_KEY (options, "nonewline")))
-		elektraKeyToBoolean (tmp, &optSuppressNewline);
+	if ((tmp = GET_OPTION_KEY (options, "debug"))) elektraKeyToBoolean (tmp, &optDebug);
+	if ((tmp = GET_OPTION_KEY (options, "verbose"))) elektraKeyToBoolean (tmp, &optVerbose);
+	if ((tmp = GET_OPTION_KEY (options, "version"))) elektraKeyToBoolean (tmp, &optVersion);
+	if ((tmp = GET_OPTION_KEY (options, "nonewline"))) elektraKeyToBoolean (tmp, &optSuppressNewline);
 
 	/* command-specific options */
-	if ((tmp = GET_OPTION_KEY (options, "force")))
-		elektraKeyToBoolean (tmp, &optForce);
-	if ((tmp = GET_OPTION_KEY (options, "quiet")))
-		elektraKeyToBoolean (tmp, &optQuiet);
-	if ((tmp = GET_OPTION_KEY (options, "interactive")))
-		elektraKeyToBoolean (tmp, &optInteractive);
-	if ((tmp = GET_OPTION_KEY (options, "with-recommends")))
-		elektraKeyToBoolean (tmp, &optWithRecommends);
+	if ((tmp = GET_OPTION_KEY (options, "force"))) elektraKeyToBoolean (tmp, &optForce);
+	if ((tmp = GET_OPTION_KEY (options, "quiet"))) elektraKeyToBoolean (tmp, &optQuiet);
+	if ((tmp = GET_OPTION_KEY (options, "interactive"))) elektraKeyToBoolean (tmp, &optInteractive);
+	if ((tmp = GET_OPTION_KEY (options, "with-recommends"))) elektraKeyToBoolean (tmp, &optWithRecommends);
 
 	/* TODO: Remove code duplication (code for processing strategy-parameter is also present in cmerge.c */
 	if ((tmp = GET_OPTION_KEY (options, "strategy")))
@@ -121,16 +113,16 @@ int execMount (KeySet * options, Key * errorKey)
 	}
 
 	/* Command arguments */
-	if ((argPath = GET_OPTION(options, "path")) == NULL)
+	if ((argPath = GET_OPTION (options, "path")) == NULL)
 	{
 		/* no path specified */
 		/* TODO: Decide if list mountpoints instead of returning error code */
 		return -1;
 	}
 
-	if ((argMountpoint = getKeyNameFromOptions (options, GET_OPTION(options, "mountpoint"), errorKey, optVerbose)) == NULL)
+	if ((argMountpoint = getKeyNameFromOptions (options, GET_OPTION (options, "mountpoint"), errorKey, optVerbose)) == NULL)
 	{
-		//TODO: Error handling (mountpoint is not a valid keyname)
+		// TODO: Error handling (mountpoint is not a valid keyname)
 		return -1;
 	}
 
@@ -138,10 +130,10 @@ int execMount (KeySet * options, Key * errorKey)
 	elektraNamespace keyMpNs = keyGetNamespace (keyMp);
 	if (!optQuiet && *argPath == '/' && keyMpNs != KEY_NS_SYSTEM && keyMpNs != KEY_NS_SPEC && keyMpNs != KEY_NS_CASCADING)
 	{
-		printf("Note that absolute paths are still relative to their namespace (see `kdb plugin-info resolver`).\n");
-		printf("Only system+spec mountpoints are actually absolute.\n");
-		printf("Use `kdb file %s` to determine where the file(s) are.\n", argMountpoint);
-		printf("Use `-q` or use `kdb set %s/quiet 1` to suppress infos.\n", CLI_BASE_KEY);
+		printf ("Note that absolute paths are still relative to their namespace (see `kdb plugin-info resolver`).\n");
+		printf ("Only system+spec mountpoints are actually absolute.\n");
+		printf ("Use `kdb file %s` to determine where the file(s) are.\n", argMountpoint);
+		printf ("Use `-q` or use `kdb set %s/quiet 1` to suppress infos.\n", CLI_BASE_KEY);
 	}
 
 	Key * pluginsArrayParent = GET_OPTION_KEY (options, "plugins");
@@ -159,9 +151,6 @@ int execMount (KeySet * options, Key * errorKey)
 	}
 
 
-
-
-
 	KDB * const kdbHandle = kdbOpen (0, errorKey);
 	KeySet * const mountConf = getMountConfig (kdbHandle, errorKey, NULL);
 
@@ -170,10 +159,8 @@ int execMount (KeySet * options, Key * errorKey)
 		elektraFree ((void *) argMountpoint);
 		/* argPath must not be freed! (directly taken from Keyset, not dupped) */
 
-		if (mountConf)
-			ksDel (mountConf);
-		if (kdbHandle)
-			kdbClose (kdbHandle, errorKey);
+		if (mountConf) ksDel (mountConf);
+		if (kdbHandle) kdbClose (kdbHandle, errorKey);
 
 		return -1;
 	}
@@ -181,14 +168,6 @@ int execMount (KeySet * options, Key * errorKey)
 	/* TODO: give full plugins config */
 	cBuildBackend (mountConf, argMountpoint, 0, optForce, mergeStrategy, optInteractive, NULL, argPath, plugins, optWithRecommends);
 	ksDel (plugins);
-
-
-
-
-
-
-
-
 
 
 	/* TODO: Not yet implemented function calls in CPP:
@@ -202,13 +181,13 @@ int execMount (KeySet * options, Key * errorKey)
 
 	if (optDebug)
 	{
-		printf("The configuration which will be set is:\n");
+		printf ("The configuration which will be set is:\n");
 		for (elektraCursor it = 0; it < ksGetSize (mountConf); ++it)
 		{
 			Key * cur = ksAtCursor (mountConf, it);
-			printf ("%s %s\n", keyName (cur), keyString(cur));
+			printf ("%s %s\n", keyName (cur), keyString (cur));
 		}
-		printf("Now writing the mountpoint configuration.");
+		printf ("Now writing the mountpoint configuration.");
 	}
 
 	/* Finally really write out the mountpoint config */
@@ -217,7 +196,8 @@ int execMount (KeySet * options, Key * errorKey)
 	if (kdbSet (kdbHandle, mountConf, parent) < 0)
 	{
 		fprintf (stderr, "IMPORTANT: Sorry, I am unable to write your requested mountpoint to system:/elektra/mountpoints.\n");
-		fprintf (stderr, "           You can get the problematic file name by reading the elektra system file (kdb file %s).\n", DEFAULT_MOUNTPOINTS_PATH);
+		fprintf (stderr, "           You can get the problematic file name by reading the elektra system file (kdb file %s).\n",
+			 DEFAULT_MOUNTPOINTS_PATH);
 		fprintf (stderr, "           Usually you need to be root for this operation (try `sudo !!`).\n");
 
 		ksDel (mountConf);

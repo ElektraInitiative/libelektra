@@ -7,10 +7,10 @@
  */
 
 #include <command.h>
+#include <mountpoint-list.h>
 #include <mountpoint-mount.h>
 #include <mountpoint-remount.h>
 #include <mountpoint-umount.h>
-#include <mountpoint-list.h>
 #include <mountpoint.h>
 
 #include <kdb.h>
@@ -27,12 +27,10 @@
 #define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 #define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
-command mountSubcommands[] = {
-	{ "mount", addMountSpec, execMount },
-	{ "remount", addRemountSpec, execRemount },
-	{ "umount", addUmountSpec, execUmount },
-	{ "list", addMountpointListSpec, execMountpointList }
-};
+command mountSubcommands[] = { { "mount", addMountSpec, execMount },
+			       { "remount", addRemountSpec, execRemount },
+			       { "umount", addUmountSpec, execUmount },
+			       { "list", addMountpointListSpec, execMountpointList } };
 
 void addMountpointSpec (KeySet * spec)
 {

@@ -7,10 +7,10 @@
  */
 
 #include <command.h>
-#include <mountpoint-list.h>
 #include <kdb.h>
 #include <kdbease.h>
 #include <kdbmount.h>
+#include <mountpoint-list.h>
 #include <string.h>
 
 #define COMMAND_NAME "mountpoint/list"
@@ -56,28 +56,20 @@ int execMountpointList (KeySet * options, Key * errorKey)
 
 
 	const Key * tmp;
-	if ((tmp = GET_OPTION_KEY (options, "debug")))
-		elektraKeyToBoolean (tmp, &optDebug);
-	if ((tmp = GET_OPTION_KEY (options, "verbose")))
-		elektraKeyToBoolean (tmp, &optVerbose);
-	if ((tmp = GET_OPTION_KEY (options, "version")))
-		elektraKeyToBoolean (tmp, &optVersion);
-	if ((tmp = GET_OPTION_KEY (options, "nonewline")))
-		elektraKeyToBoolean (tmp, &optSuppressNewline);
+	if ((tmp = GET_OPTION_KEY (options, "debug"))) elektraKeyToBoolean (tmp, &optDebug);
+	if ((tmp = GET_OPTION_KEY (options, "verbose"))) elektraKeyToBoolean (tmp, &optVerbose);
+	if ((tmp = GET_OPTION_KEY (options, "version"))) elektraKeyToBoolean (tmp, &optVersion);
+	if ((tmp = GET_OPTION_KEY (options, "nonewline"))) elektraKeyToBoolean (tmp, &optSuppressNewline);
 
 	/* command-specific options */
-	if ((tmp = GET_OPTION_KEY (options, "nullterm")))
-		elektraKeyToBoolean (tmp, &optUseBinaryNullTermination);
-	if ((tmp = GET_OPTION_KEY (options, "first")))
-		elektraKeyToBoolean (tmp, &optSuppressFirstColumn);
-	if ((tmp = GET_OPTION_KEY (options, "second")))
-		elektraKeyToBoolean (tmp, &optSuppressSecondColumn);
-	if ((tmp = GET_OPTION_KEY (options, "third")))
-		elektraKeyToBoolean (tmp, &optSuppressThirdColumn);
+	if ((tmp = GET_OPTION_KEY (options, "nullterm"))) elektraKeyToBoolean (tmp, &optUseBinaryNullTermination);
+	if ((tmp = GET_OPTION_KEY (options, "first"))) elektraKeyToBoolean (tmp, &optSuppressFirstColumn);
+	if ((tmp = GET_OPTION_KEY (options, "second"))) elektraKeyToBoolean (tmp, &optSuppressSecondColumn);
+	if ((tmp = GET_OPTION_KEY (options, "third"))) elektraKeyToBoolean (tmp, &optSuppressThirdColumn);
 
 
 	KDB * const kdbHandle = kdbOpen (0, errorKey);
-	if(kdbHandle)
+	if (kdbHandle)
 	{
 		const KeySet * const mountConf = getMountConfig (kdbHandle, errorKey, NULL);
 		if (mountConf)
