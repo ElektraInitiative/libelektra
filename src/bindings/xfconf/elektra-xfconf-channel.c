@@ -710,10 +710,10 @@ gboolean xfconf_channel_set_string_list (XfconfChannel * channel, const gchar * 
 	GPtrArray * array = g_ptr_array_new ();
 	for (int i = 0; (currentElement = values[i]); i++)
 	{
-		GValue g_key_value = G_VALUE_INIT;
-		g_value_init (&g_key_value, G_TYPE_STRING);
-		g_value_set_string (&g_key_value, currentElement);
-		g_ptr_array_add (array, &g_key_value);
+		GValue * g_key_value = calloc (1, sizeof (GValue));
+		g_value_init (g_key_value, G_TYPE_STRING);
+		g_value_set_string (g_key_value, strdup (currentElement));
+		g_ptr_array_add (array, g_key_value);
 	}
 	return xfconf_channel_set_arrayv (channel, property, array);
 }
