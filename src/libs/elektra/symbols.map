@@ -158,13 +158,14 @@ libelektra_1.0 {
 	elektraDiffDel;
 
 	elektraDiffIncRef;
-    elektraDiffDecRef;
+	elektraDiffDecRef;
+	elektraDiffGetRef;
 
 	elektraDiffGetAddedKeys;
 	elektraDiffGetRemovedKeys;
 	elektraDiffGetModifiedKeys;
 	elektraDiffKeyValueChanged;
-	elektraDiffKeyMetaChanged;
+	elektraDiffKeyOnlyMetaChanged;
 	elektraDiffGetAddedMetaKeys;
 	elektraDiffGetRemovedMetaKeys;
 	elektraDiffGetModifiedMetaKeys;

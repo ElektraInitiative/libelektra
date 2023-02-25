@@ -243,7 +243,10 @@ ElektraDiff * elektraDiffNew (KeySet * addedKeys, KeySet * removedKeys, KeySet *
 {
 	ElektraDiff * ksd = elektraCalloc (sizeof (ElektraDiff));
 
-	ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
+	if (parentKey != NULL)
+	{
+		ksd->parentKey = keyDup (parentKey, KEY_CP_ALL);
+	}
 
 	ksIncRef (addedKeys);
 	ksd->addedKeys = addedKeys;
@@ -371,6 +374,11 @@ bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key)
 	}
 
 	Key * old = ksLookup (ksd->modifiedKeys, key, 0);
+	if (old == NULL)
+	{
+		return false;
+	}
+
 	return keyValueDifferent (key, old);
 }
 
@@ -386,7 +394,7 @@ bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key)
  *         @p key is NULL OR
  *         @p key is not contained in @p ksd
  */
-bool elektraDiffKeyMetaChanged (const ElektraDiff * ksd, Key * key)
+bool elektraDiffKeyOnlyMetaChanged (const ElektraDiff * ksd, Key * key)
 {
 	if (ksd == NULL || key == NULL)
 	{
@@ -394,6 +402,10 @@ bool elektraDiffKeyMetaChanged (const ElektraDiff * ksd, Key * key)
 	}
 
 	Key * old = ksLookup (ksd->modifiedKeys, key, 0);
+	if (old == NULL)
+	{
+		return false;
+	}
 
 	// if the value is not different -> meta is different
 	return !keyValueDifferent (key, old);
@@ -559,5 +571,23 @@ uint16_t elektraDiffDecRef (ElektraDiff * ksd)
 	}
 
 	ksd->refs--;
+	return ksd->refs;
+}
+
+/**
+ * @brief Returns the reference counter of a ElektraDiff object
+
+ * @param ksd the ElektraDiff object whose reference counter should get returned
+ *
+ * @return the value of the reference counter
+ * @retval UINT16_MAX on NULL pointer
+ */
+uint16_t elektraDiffGetRef (ElektraDiff * ksd)
+{
+	if (!ksd)
+	{
+		return UINT16_MAX;
+	}
+
 	return ksd->refs;
 }

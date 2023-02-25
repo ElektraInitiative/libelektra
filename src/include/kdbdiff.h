@@ -19,6 +19,7 @@ void elektraDiffDel (ElektraDiff * ksd);
 
 uint16_t elektraDiffIncRef (ElektraDiff * ksd);
 uint16_t elektraDiffDecRef (ElektraDiff * ksd);
+uint16_t elektraDiffGetRef (ElektraDiff * ksd);
 
 const Key * elektraDiffGetParentKey (const ElektraDiff * ksd);
 
@@ -27,7 +28,7 @@ KeySet * elektraDiffGetRemovedKeys (const ElektraDiff * ksd);
 KeySet * elektraDiffGetModifiedKeys (const ElektraDiff * ksd); // Returns old keys (pre-modification)
 
 bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key);
-bool elektraDiffKeyMetaChanged (const ElektraDiff * ksd, Key * key);
+bool elektraDiffKeyOnlyMetaChanged (const ElektraDiff * ksd, Key * key);
 
 KeySet * elektraDiffGetAddedMetaKeys (const ElektraDiff * ksd, Key * key);
 KeySet * elektraDiffGetRemovedMetaKeys (const ElektraDiff * ksd, Key * key);
