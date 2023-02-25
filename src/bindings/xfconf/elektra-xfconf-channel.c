@@ -513,10 +513,62 @@ void xfconf_channel_reset_property (XfconfChannel * channel, const gchar * prope
 	unimplemented ();
 }
 
+static guint g_value_hash (gconstpointer g_value)
+{
+	if (g_value == NULL)
+	{
+		return 0;
+	}
+	return g_str_hash (g_value_to_string (((GValue *) g_value)));
+}
+
+static gboolean g_value_equal (gconstpointer g0, gconstpointer g1)
+{
+	if (g0 == g1)
+	{
+		return TRUE;
+	}
+	if (g0 == NULL || g1 == NULL)
+	{
+		return FALSE;
+	}
+	GValue * g_val0 = (GValue *) g0;
+	GValue * g_val1 = (GValue *) g1;
+	if (g_val0->g_type != g_val1->g_type)
+	{
+		return FALSE;
+	}
+	return strcmp (g_value_to_string (g_val0), g_value_to_string (g_val1)) == 0;
+}
+
 GHashTable * xfconf_channel_get_properties (XfconfChannel * channel, const gchar * property_base)
 {
-	unimplemented ();
-	return NULL;
+	trace ();
+	g_debug ("Fetch properties of channel %s with base %s", channel->channel_name, property_base);
+	GHashTable * properties = g_hash_table_new (g_value_hash, g_value_equal);
+	const KeySet * ks = keySet_from_channel (
+		channel->channel_name); // todo: wrong key set seems to be returned, it contains keys from other channels
+	const Key * key;
+	unsigned long propertyBaseLength = strlen (property_base);
+	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
+	{
+		key = ksAtCursor (ks, i);
+		const char * keyNameWithoutPrefix =
+			&keyName (key)[strlen (XFCONF_ROOT) + strlen (XFCONF_NAMESPACE) + strlen (channel->channel_name) + 1];
+		if (strncmp (property_base, keyNameWithoutPrefix, propertyBaseLength) == 0)
+		{
+			g_debug ("key %s starts with property base %s", keyNameWithoutPrefix, property_base);
+			GValue * g_value = calloc (1, sizeof (GValue));
+			g_value_init (g_value, G_TYPE_STRING);
+			xfconf_channel_get_formatted (channel, keyNameWithoutPrefix, g_value);
+			g_hash_table_add (properties, g_value);
+		}
+		else
+		{
+			g_debug ("key %s does NOT start with property base %s", keyNameWithoutPrefix, property_base);
+		}
+	}
+	return properties;
 }
 
 /* basic types */
