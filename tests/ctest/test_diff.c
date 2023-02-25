@@ -1,5 +1,5 @@
-#include <tests_internal.h>
 #include <kdbdiff.h>
+#include <tests_internal.h>
 
 ElektraDiff * demoDiff = NULL;
 
@@ -7,19 +7,16 @@ static void initializeDemoDiff (void)
 {
 	Key * demoParent = keyNew ("system:/test", KEY_END);
 
-	KeySet * addedKeys = ksNew (1,
-				    keyNew ("system:/test/added/1", KEY_VALUE, "first added key", KEY_END),
-				    KS_END);
+	KeySet * addedKeys = ksNew (1, keyNew ("system:/test/added/1", KEY_VALUE, "first added key", KEY_END), KS_END);
 
-	KeySet * removedKeys = ksNew (1,
-				      keyNew ("system:/test/removed/1", KEY_VALUE, "first removed key", KEY_END),
-				      KS_END);
+	KeySet * removedKeys = ksNew (1, keyNew ("system:/test/removed/1", KEY_VALUE, "first removed key", KEY_END), KS_END);
 
-	KeySet * modifiedKeys = ksNew (1,
-				       keyNew ("system:/test/modified/value", KEY_VALUE, "modified value", KEY_END),
-				       keyNew ("system:/test/modified/meta", KEY_VALUE, "modified meta", KEY_META, "meta:/something", "test", KEY_END),
-				       keyNew ("system:/test/modified/metaAndValue", KEY_VALUE, "modified meta and value", KEY_META, "meta:/something", "test", KEY_END),
-				       KS_END);
+	KeySet * modifiedKeys =
+		ksNew (1, keyNew ("system:/test/modified/value", KEY_VALUE, "modified value", KEY_END),
+		       keyNew ("system:/test/modified/meta", KEY_VALUE, "modified meta", KEY_META, "meta:/something", "test", KEY_END),
+		       keyNew ("system:/test/modified/metaAndValue", KEY_VALUE, "modified meta and value", KEY_META, "meta:/something",
+			       "test", KEY_END),
+		       KS_END);
 
 	demoDiff = elektraDiffNew (addedKeys, removedKeys, modifiedKeys, demoParent);
 
@@ -136,7 +133,8 @@ static void test_elektraDiffGetModifiedKeys_shouldReturnModifiedKeys (void)
 	succeed_if (ksGetSize (modified) == 3, "should have 3 entries");
 	succeed_if (ksLookupByName (modified, "system:/test/modified/value", 0) != 0, "should contain key system:/test/modified/value");
 	succeed_if (ksLookupByName (modified, "system:/test/modified/meta", 0) != 0, "should contain key system:/test/modified/meta");
-	succeed_if (ksLookupByName (modified, "system:/test/modified/metaAndValue", 0) != 0, "should contain key system:/test/modified/metaAndValue");
+	succeed_if (ksLookupByName (modified, "system:/test/modified/metaAndValue", 0) != 0,
+		    "should contain key system:/test/modified/metaAndValue");
 
 	ksDel (modified);
 }
@@ -412,16 +410,16 @@ static void test_refCounting (void)
 
 	ElektraDiff * diff = elektraDiffNew (ksNew (0, KS_END), ksNew (0, KS_END), ksNew (0, KS_END), NULL);
 
-	succeed_if (elektraDiffGetRef(diff) == 0, "refcounter should be 0");
+	succeed_if (elektraDiffGetRef (diff) == 0, "refcounter should be 0");
 
 	elektraDiffIncRef (diff);
-	succeed_if (elektraDiffGetRef(diff) == 1, "refcounter should be 1");
+	succeed_if (elektraDiffGetRef (diff) == 1, "refcounter should be 1");
 
 	elektraDiffDecRef (diff);
-	succeed_if (elektraDiffGetRef(diff) == 0, "refcounter should be 0");
+	succeed_if (elektraDiffGetRef (diff) == 0, "refcounter should be 0");
 
 	elektraDiffDecRef (diff);
-	succeed_if (elektraDiffGetRef(diff) == 0, "refcounter should stay 0");
+	succeed_if (elektraDiffGetRef (diff) == 0, "refcounter should stay 0");
 
 	elektraDiffDel (diff);
 }
