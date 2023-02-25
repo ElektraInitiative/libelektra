@@ -108,6 +108,14 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
 
+### dbus
+
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+
+### internalnotifications
+
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -148,9 +156,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### kdb
 
-- <<TODO>>
+- Add new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -506,6 +514,7 @@ The website is generated from the repository, so all information about plugins, 
 We are currently working on following topics:
 
 - <<TODO>>
+- Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
