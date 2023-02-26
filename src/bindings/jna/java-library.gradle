@@ -7,7 +7,8 @@ apply from: "$rootProject.projectDir/java-shared.gradle"
 // add task to generate fat jar (includes all runtime dependencies)
 // (primarily intended for using JNA binding for testing JNI plugin interface)
 task fatJar(type: Jar) {
-    classifier = 'all'
+    dependsOn ':libelektra:jar'
+    archiveClassifier = 'all'
     from {
     	configurations.runtimeClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
     }
