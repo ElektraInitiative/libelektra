@@ -357,7 +357,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### Tutorials
 
 - <<TODO>>
-- <<TODO>>
+- Add basic tutorial about changetracking _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
