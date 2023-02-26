@@ -10,7 +10,6 @@ Those declare the `elektraChangeTracking*` and `elektraDiff*` methods.
 
 The two main data structures you will encounter are `ChangeTrackingContext` and `ElektraDiff`.
 
-
 ## Getting the difference between KeySets
 
 If all you want to do is get the difference between two in-memory `KeySet` objects, use the function `elektraDiffCalculate`.
@@ -38,10 +37,10 @@ int myPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ChangeTrackingContext * ctx = elektraChangeTrackingGetContextFromPlugin (handle);
 	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, ctx, parentKey);
-	
+
 	// Extract useful information, see section 'Working with the diff'
-	
-	elektraDiffDel (diff);	
+
+	elektraDiffDel (diff);
 	return 1;
 }
 ```
@@ -59,7 +58,7 @@ ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, ctx, parentKe
 
 // Extract useful information, see section 'Working with the diff'
 
-elektraDiffDel (diff);	
+elektraDiffDel (diff);
 ```
 
 ## Working with the diff
