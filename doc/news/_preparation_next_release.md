@@ -662,6 +662,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ## Gradle
 
 - Use Gradle 7.5.1. _(Mihael Pranjić @mpranj)_
+- Update `java-library.gradle` to use `archiveClassifier` _(Maximilian Irlinger @atmaxinger)_
 
 ## Infrastructure
 
