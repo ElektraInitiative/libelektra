@@ -14,6 +14,7 @@ RUN apt-get update && apt-get -y install \
         clang-13 \
         clang-format-13 \
         cmake \
+        cmake-format \
         curl \
     	dbus-x11 \
         dh-lua \
@@ -54,7 +55,7 @@ RUN apt-get update && apt-get -y install \
         openjdk-17-jdk \
         pkg-config \
         python3-dev \
-        python3-pip \
+        python3-wheel \
         ruby \
         ruby-dev \
         shellcheck \
@@ -72,11 +73,6 @@ ENV PATH="/usr/lib/llvm-13/bin:$PATH"
 
 # Update cache for shared libraries
 RUN ldconfig
-
-# Build dependency for libelektra-fuse
-RUN pip3 install wheel
-
-RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
