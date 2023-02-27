@@ -348,6 +348,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Documentation: Improved build instructions _(@Bujuhu)_
 - Add validation on get for whitelist plugin _(@Bujuhu)_
 - <<TODO>>
+- Upgrade Gradle to 8.0.1. _(Mihael Pranjić @mpranj)_
 
 ### rust
 
