@@ -625,6 +625,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Added links to the website & webui after further reading. _(Philipp Nirnberger @nirnberger)_
 - <<TODO>>
+- Upgrade `ronn-ng` to 0.10.1.pre3. _(Mihael Pranjić @mpranj)_
 
 ## Tests
 

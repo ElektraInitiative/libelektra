@@ -32,4 +32,4 @@ USER ${ELEKTRA_USER}
 
 # Ronn-NG
 ENV PATH="$PATH:/home/${ELEKTRA_USER}/.local/share/gem/ruby/3.0.0/bin"
-RUN gem install ronn-ng -v 0.10.1.pre1 && ronn --version
+RUN gem install ronn-ng -v 0.10.1.pre3 && ronn --version
