@@ -691,7 +691,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Fix `macos_instance` reference, upgrade to macOS Ventura (by default), use Python 3.11 and Ruby 3.x. _(Mihael Pranjić @mpranj)_
 - Automatically rerun `testmod_dbus*` tests on macOS. _(@kodebach)_
 - <<TODO>>
-- <<TODO>>
+- Fix dbus not starting on macOS _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### GitHub Actions
