@@ -699,6 +699,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add auto-cancellation-running action. _(Tomislav Makar @tmakar)_
 - Automatically rerun `testmod_dbus*` tests on macOS. _(@kodebach)_
 - <<TODO>>
+- Fix dbus not starting on macOS _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - Change stale issue/PR checking to GitHub action. _(@0x6178656c)_
 - Update configuration of stale issue/PR action. _(@0x6178656c)_
