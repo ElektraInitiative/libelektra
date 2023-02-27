@@ -124,7 +124,7 @@ jobs:
       run: |
         # Install Ruby gems
         export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
-        gem install ronn-ng -v 0.10.1.pre1
+        gem install ronn-ng -v 0.10.1.pre3
         gem install test-unit --no-document
         # Install Python packages
         pip2 install cheetah # Required by kdb-gen
