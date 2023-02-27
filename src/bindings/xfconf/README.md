@@ -50,6 +50,45 @@ Assuming that the library directory is `/usr/local/lib`, this can be achieved as
 4. symlink `/usr/local/lib/libxfconf-0.so.3.0.0` to `/usr/local/lib/libxfconfbinding.so.0.0.1`
 5. take the symlinks `/usr/local/lib/libxfconf-0.so.3` and `/usr/local/lib/libxfconf-.so` which point to `/usr/local/lib/libxfconf-0.so` from the upstream xfconf library and place them into you system
 
+## Using the binding as a replacement in Xfce
+
+It is currently possible to use this binding instead of Xfconf in order to start and use Xfce.
+
+**Caution:** Although it is in general possible to use this binding as a replacement it is not recommended at all.
+Currently, it shows an unpredictable behavior for an unknown reason.
+A few of the undesired effects are:
+
+- Inconsistent layout of the taskbar every session restart
+- Missing symbols in menus despite being configured to appear
+- Weird animations during the session startup
+  One guess is, this is the result of race-conditions since Xfce consists of multiple components which concurrently read and write configuration.
+
+Use with caution and on non-production systems such as virtual machines only.
+
+The following instructions only have an effect on the current user which allows a quick revert through a different user.
+
+Build elektra as instructed in the [COMPILE](../../../doc/COMPILE.md#developer-options) and do not forget to include the `xfconfbinding` and set the `KDB_DB_SYSTEM` and `CMAKE_INSTALL_PREFIX` paths properly.
+In this example, it is assumed, that the cmake build directory is `$HOME/build` and stored in the environment variable `CMAKE_BUILD_XFCONFBINDING` and `KDB_DB_SYSTEM=$CMAKE_BUILD_XFCONFBINDING/system` and `CMAKE_INSTALL_PREFIX=$CMAKE_BUILD_XFCONFBINDING/install`.
+
+After building, a file at `~/.xprofile` with following content must be created:
+
+```shell
+export CMAKE_BUILD_XFCONFBINDING=$HOME/build
+export LD_LIBRARY_PATH=$CMAKE_BUILD_XFCONFBINDING/lib
+export LD_PRELOAD=$CMAKE_BUILD_XFCONFBINDING/lib/libxfconfbinding.so
+```
+
+Also make sure to use these variables in your shell.
+A possible solution is to copy this file to `.bash_profile`/`~/.zshenv` when using bash/zsh.
+
+Then, re-login into a text session, a graphical session with Xfce will fail at this point.
+Xfce needs to be populated with some configuration settings.
+This can be archived using the [provided script](scripts/populate-xfconf.sh).
+
+When done, the graphical session can bes started and will now use elektra for the Xfce configuration.
+
+To restore the usage of the systems Xfconf, it is enough to restore the content of the variable files created previously.
+
 ## Quality
 
 More information than `infos/status` including Performance Characteristics.
