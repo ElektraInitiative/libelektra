@@ -709,6 +709,7 @@ Irlinger @atmaxinger)_
 - <<TODO>>
 - Update Alpine Linux to 3.16.3. _(Mihael Pranjić @mpranj)_
 - Add Fedora 37 images. _(Mihael Pranjić @mpranj)_
+- Update Debian Sid image to use repository Python modules instead of installing with `pip3` due to upstream debian changes. _(Mihael Pranjić @mpranj)_
 
 ## Gradle
 
@@ -723,7 +724,6 @@ Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Add Fedora 37 builds, drop Fedora 35 builds. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - Run more tests also on Master. _(Markus Raab)_
