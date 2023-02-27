@@ -135,7 +135,7 @@ jobs:
         brew tap homebrew/services
         brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
         brew postinstall dbus
-        brew services stop dbus; brew services start dbus
+        brew services stop d-bus; brew services start d-bus
         echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
         launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
         cmake -E make_directory ${{runner.workspace}}/libelektra/build
