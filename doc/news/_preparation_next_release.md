@@ -67,11 +67,61 @@ You can also read the [new low-level docs](../dev/kdb-operations.md) to find out
 The structure of `system:/elektra/mountpoints` changed as well.
 Take a look at the [new docs](../dev/mountpoints.md), if you need to know details.
 
+#### Updating config
+
+> **Warning**: BACK UP YOUR CONFIG FILES BEFORE UPDATING!
+> We recommend making a backup of the file printed by `kdb file system:/elektra/mountpoints` before updating your installation.
+> In the unlikely case that the migration script fails, you can still use the information from the backup to manually recreate your mountpoints.
+
+To update your existing `system:/elektra/mountpoints` data you can use the [migration script](/scripts/migrate-mountpoints.py).
+
+> **Note**: To run the script you must have Elektra, Python (>= 3.7) and the Python binding installed.
+> The script uses the Python binding to manipulate `Key`s and `KeySet`s, but it does not use the `kdb` CLI tool, or the `KDB` API.
+> It is safe to run this script before, or after you update your Elektra installation.
+
+By default, the script loads the file `/etc/kdb/elektra.ecf`.
+If you changed where `system:/elektra/mountpoints` is stored, you can provide an alternative path:
+
+```
+./migrate-mountpoint.py /path/to/your/mountpoints/config.file
+```
+
+> **Note**: Because the script does not use the `KDB` API it only works, if the mountpoints config file uses the default `dump` format.
+>
+> If your mountpoints config file is not using the `dump` format, you may still be able to use the migration script.
+> However, in that case, you will have to use the script **before** updating your Elektra installation:
+>
+> 1. Run `kdb export system:/elektra/mountpoints dump` to get a copy of your mountpoints config in `dump` format
+> 2. Write this data to a file and run the migration script on the file.
+> 3. To get the data back in your original format you can use
+>
+> ```sh
+> ./migrate-mountpoint.py /path/to/file/from/step2 | kdb convert dump your-format > /path/to/converted/file
+> ```
+>
+> 4. Run `kdb file system:/elektra/mountpoints` to find out where your mountpoint config is stored.
+>    Make sure to back up this file, before upgrading your installation.
+> 5. Now upgrade your Elektra installation.
+> 6. Copy the file `/path/to/converted/file` from step 3 to the location you got in step 4.
+
+The script will read the old mountpoint configuration from the given file.
+It will convert the configuration and print the new version to `stdout`.
+
+You can inspect the output to make sure, everything is in order.
+When you are ready to commit the changes, you can manually edit the config file, or use:
+
+```
+./migrate-mountpoint.py --output=/etc/kdb/elektra.ecf /etc/kdb/elektra.ecf
+```
+
+#### Individual changes
+
 <!-- TODO [new_backend]: finish release notes, explain new mount stuff -->
 
 - Implement [hooks](https://www.libelektra.org/decisions/hooks-in-kdb). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
 - New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
+- Add script to migrate `system:/elektra/mountpoints` to new format. _(@kodebach)_
 
 ### Copy-on-Write
 
