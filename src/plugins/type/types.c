@@ -322,7 +322,7 @@ static char * calculateStringValue (KeySet * validValues, char delimiter, kdb_un
 			else if (*val != 0 && (*val & value) == *val)
 			{
 				char * tmp = stringValue[0] == '\0' ? elektraFormat ("%s", name) :
-									    elektraFormat ("%s%c%s", stringValue, delimiter, name);
+								      elektraFormat ("%s%c%s", stringValue, delimiter, name);
 				elektraFree (stringValue);
 				stringValue = tmp;
 

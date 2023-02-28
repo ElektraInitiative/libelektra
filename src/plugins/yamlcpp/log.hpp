@@ -38,7 +38,7 @@ void logKeySet (kdb::KeySet const & keys)
 		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”%s", key.getName ().c_str (),
 				   key.getBinarySize () == 0 ? "NULL" :
 				   key.isBinary ()	     ? "binary value!" :
-								     key.getString ().c_str (),
+							       key.getString ().c_str (),
 				   metadata.c_str ());
 	}
 }

@@ -53,7 +53,7 @@ public:
 	virtual const char * what () const throw () override
 	{
 		return !m_msg.empty () ? m_msg.c_str () :
-					       "A situation had occurred where the command had to abort, but no message is available.";
+					 "A situation had occurred where the command had to abort, but no message is available.";
 	}
 
 	virtual int errorCode () const throw () override

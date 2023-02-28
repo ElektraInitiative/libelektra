@@ -914,7 +914,7 @@ private:
 			const bool tag_is_unescaped_var{ current_delimiter_is_brace && tag_location_start != (input_size - 2) &&
 							 input.at (tag_contents_location) == ctx.delim_set.begin.at (0) };
 			const string_type & current_tag_delimiter_end{ tag_is_unescaped_var ? brace_delimiter_end_unescaped :
-												    ctx.delim_set.end };
+											      ctx.delim_set.end };
 			const auto current_tag_delimiter_end_size = current_tag_delimiter_end.size ();
 			if (tag_is_unescaped_var)
 			{

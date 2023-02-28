@@ -349,7 +349,7 @@ void Plugin::check (vector<string> & warnings)
 	}
 }
 
-ckdb::Plugin * Plugin::operator-> ()
+ckdb::Plugin * Plugin::operator->()
 {
 	return plugin;
 }

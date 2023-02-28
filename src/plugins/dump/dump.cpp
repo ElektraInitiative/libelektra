@@ -516,7 +516,7 @@ protected:
 			this->setg (&buf_, &buf_, &buf_ + 1);
 		}
 		return this->gptr () == this->egptr () ? std::char_traits<char>::eof () :
-							       std::char_traits<char>::to_int_type (*this->gptr ());
+							 std::char_traits<char>::to_int_type (*this->gptr ());
 	}
 
 private:
@@ -560,7 +560,7 @@ public:
 			this->setg (this->buffer_, this->buffer_, this->buffer_ + r);
 		}
 		return this->gptr () == this->egptr () ? std::char_traits<char>::eof () :
-							       std::char_traits<char>::to_int_type (*this->gptr ());
+							 std::char_traits<char>::to_int_type (*this->gptr ());
 	}
 };
 

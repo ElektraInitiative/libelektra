@@ -26,7 +26,7 @@
 
 // Controls export behavior.
 #ifdef _WIN32
-#define elektraNi_PUBLIC __declspec(dllexport)
+#define elektraNi_PUBLIC __declspec (dllexport)
 #define elektraNi_PRIVATE
 #else
 #define elektraNi_PUBLIC __attribute__ ((visibility ("default")))

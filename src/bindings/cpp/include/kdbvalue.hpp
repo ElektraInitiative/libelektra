@@ -158,7 +158,7 @@ public:
  *
  * @return Comparison result
  */
-inline bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
+inline bool operator<(ValueObserver const & lhs, ValueObserver const & rhs)
 {
 	return &lhs < &rhs;
 }
@@ -558,12 +558,12 @@ public:
 		return -m_cache;
 	}
 
-	type operator~ () const
+	type operator~() const
 	{
 		return ~m_cache;
 	}
 
-	type operator! () const
+	type operator!() const
 	{
 		return !m_cache;
 	}

@@ -174,7 +174,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 
 			// Generate fullDescription out of reason and description. Reason might be null.
 			char * fullDescription = reasonKey != NULL ? elektraFormat ("%s: %s", description, keyString (reasonKey)) :
-									   elektraStrDup (description);
+								     elektraStrDup (description);
 
 			// Code, module, file and lineNumber are compile-time constants, no need to strDup().
 			ElektraError * warning = elektraErrorCreate (code, fullDescription, module, file, lineNumber);

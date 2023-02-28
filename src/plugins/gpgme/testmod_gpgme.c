@@ -47,9 +47,9 @@ static void init_gpgme (void)
 	gpgme_check_version (NULL);
 	// NOTE the code below is recommended by the gpgme manual
 	//	gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
-	//#ifndef HAVE_W32_SYSTEM
+	// #ifndef HAVE_W32_SYSTEM
 	//	gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
-	//#endif
+	// #endif
 
 	err = gpgme_engine_check_version (GPGME_PROTOCOL_OpenPGP);
 	succeed_if (!err, "failed to initialize gpgme");

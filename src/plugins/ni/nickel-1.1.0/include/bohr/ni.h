@@ -268,7 +268,7 @@
 // Controls importing in Windows.
 #ifndef elektraNi_PUBLIC
 #if (defined(_WIN32))
-#define elektraNi_PUBLIC __declspec(dllimport)
+#define elektraNi_PUBLIC __declspec (dllimport)
 #else
 #define elektraNi_PUBLIC
 #endif

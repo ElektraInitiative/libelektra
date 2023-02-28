@@ -1,4 +1,4 @@
-__asm__(".symver xyz_1, xyz@test_1");
+__asm__ (".symver xyz_1, xyz@test_1");
 
 int xyz_1 (void)
 {

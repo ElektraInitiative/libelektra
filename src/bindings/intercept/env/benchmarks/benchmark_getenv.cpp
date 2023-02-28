@@ -65,7 +65,7 @@ __attribute__ ((noinline)) void benchmark_getenv ()
 	for (long long i = 0; i < iterations; ++i)
 	{
 		getenv ("HELLO");
-		__asm__("");
+		__asm__ ("");
 	}
 	t.stop ();
 	std::cout << t;
@@ -88,7 +88,7 @@ __attribute__ ((noinline)) void benchmark_dl_next_getenv ()
 	for (long long i = 0; i < iterations; ++i)
 	{
 		dl_libc_getenv ("HELLO");
-		__asm__("");
+		__asm__ ("");
 	}
 	t.stop ();
 	std::cout << t;
@@ -124,7 +124,7 @@ __attribute__ ((noinline)) void benchmark_libc_getenv ()
 	for (long long i = 0; i < iterations; ++i)
 	{
 		dl_libc_getenv ("HELLO");
-		__asm__("");
+		__asm__ ("");
 	}
 	t.stop ();
 	std::cout << t;
@@ -139,7 +139,7 @@ __attribute__ ((noinline)) void benchmark_bootstrap_getenv ()
 	for (long long i = 0; i < iterations; ++i)
 	{
 		ckdb::elektraBootstrapGetEnv ("HELLO");
-		__asm__("");
+		__asm__ ("");
 	}
 	t.stop ();
 	std::cout << t;
@@ -170,7 +170,7 @@ __attribute__ ((noinline)) void benchmark_kslookup ()
 	for (long long i = 0; i < iterations; ++i)
 	{
 		ks.lookup (lookupKey);
-		__asm__("");
+		__asm__ ("");
 	}
 	t.stop ();
 	std::cout << t;
