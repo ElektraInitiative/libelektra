@@ -2,8 +2,8 @@
 #define ELEKTRA_CORE_PUBLIC_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 // indicates special rules for constness, see comments at use-site for details
 #define ELEKTRA_CONST const
@@ -51,9 +51,6 @@ typedef enum
 	ELEKTRA_KEY_CP_META = 1 << 2,
 	ELEKTRA_KEY_CP_ALL = ELEKTRA_KEY_CP_NAME | ELEKTRA_KEY_CP_VALUE | ELEKTRA_KEY_CP_META,
 } ElektraEntryCopyFlag;
-
-void elektraNamePushPart (ElektraName * name, const char * part);
-void elektraNamePopPart (ElektraName * name);
 
 ElektraEntry * elektraEntryNew (const ElektraName * name);
 /**

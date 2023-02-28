@@ -9,7 +9,16 @@ void elektraNameAppend (ElektraName * name, const char * suffix, size_t size);
 
 // constness of return value follows constness of name
 ELEKTRA_CONST char * elektraNameLastPart (const ElektraName * name, size_t * outSize);
+
+void elektraNameAppendPart (ElektraName * name, const char * part);
+void elektraNameRemoveLastPart (ElektraName * name);
 void elektraNameReplaceLastPart (ElektraName * name, const char * newPart);
+
+/**
+ * frees a `ElektraName` built by the `elektraName*` functions
+ * will set `name.name = NULL`
+ */
+void elektraNameFree (ElektraName * name);
 
 // constness of return value follows constness of name
 ELEKTRA_CONST char * elektraNameNextPart (const ElektraName * name, const char * currentPart);

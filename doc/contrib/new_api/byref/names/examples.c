@@ -46,5 +46,19 @@ int main (void)
 	elektraNameFree (&name);
 
 	elektraEntryDel (key);
+
+	ElektraName name2 = { .ns = ELEKTRA_NS_USER, .name = NULL, .size = 0 };
+	elektraNameAppend (&name2, "foo\0bar", 9);
+	elektraNameAppendPart (&name2, "part1");
+	elektraNameAppendPart (&name2, "part2");
+	elektraNameAppendPart (&name2, "part3");
+	elektraNameRemoveLastPart (&name2);
+	elektraNameReplaceLastPart (&name2, "part11");
+
+	ElektraEntry * key2 = elektraEntryNew (&name2);
+	elektraNameFree (&name2);
+
+	elektraEntryDel (key2);
+
 	return 0;
 }

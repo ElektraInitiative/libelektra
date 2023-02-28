@@ -6,11 +6,11 @@
 struct ElektraNameCow
 {
 	ElektraName name;
-
+	// 1 byte alignment waste
 	uint16_t refs;
 
 	bool shouldFree : 1;
-	int : 15; // reserved
+	int : 31; // reserved
 };
 
 struct ElektraValueCow

@@ -8,9 +8,10 @@ struct ElektraNameCow
 	ElektraName name;
 
 	uint16_t refs;
+	ElektraNamespace ns;
 
 	bool shouldFree : 1;
-	int : 15; // reserved
+	long : 39; // reserved
 };
 
 struct ElektraValueCow

@@ -4,6 +4,21 @@
 >
 > **DO NOT LINK TO THESE FILES FROM THE OUTSIDE.**
 
+## Variants
+
+There are three different variants of the new API in the subfolders.
+The variants differ in how they handle names and values:
+
+1. [`byref`](./byref/README.md): Use non-opaque structs, which are passed by-reference (i.e., as pointers).
+2. [`byvalue`](./byvalue/README.md): Use non-opaque structs, but only pass them by-value.
+3. [`opaque`](./opaque/README.md): Use opaque structs.
+
+All three variants are structured in the same way and follow the same general design described below.
+
+## Implementations
+
+All implementations inside header files, which aren't marked `static inline` would actually reside in separate `.c` files.
+
 ## Core API
 
 ### Note on names
@@ -23,13 +38,6 @@ The API proposed here uses:
 - Element: `ElektraEntry`
 - Name of element: `ElektraName`
 - Value of element: `ElektraValue`
-
-### Note on public structs
-
-The public structs `ElektraName` and `ElektraValue` defined here are not problematic or limiting in terms of forward compatibility.
-This is because, they essentially define what a "keyname" and a "key value" are for Elektra.
-That is why they are used both as part of the public API **and** in the definitions of the `*Cow` structs, which define how stuff is actually stored.
-Any change to these structs would mean changing that definition and therefore would be major breaking change, even if the structs where not public.
 
 ### Public Headers
 
