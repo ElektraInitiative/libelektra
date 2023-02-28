@@ -627,7 +627,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 ## Packaging
 
 - <<TODO>>
-- <<TODO>>
+- Add missing new `backend` plugin to components of libelektra package. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
