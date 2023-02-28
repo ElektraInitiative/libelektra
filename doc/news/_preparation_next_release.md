@@ -767,7 +767,7 @@ The website is generated from the repository, so all information about plugins, 
 
 - <<TODO>>
 - <<TODO>>
-- Update npm packages. _(Mihael Pranjić @mpranj)_
+- Update npm packages _(Mihael Pranjić @mpranj)_
 - Change URLs to say man-page with a dash _(@stefnotch)_ _(@janldeboer)_
 - <<TODO>>
 - <<TODO>>
