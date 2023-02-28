@@ -9,7 +9,7 @@ SCRIPTS_DIR=$(dirname "$0")
 # shellcheck disable=SC1091 source=include-common
 . "${SCRIPTS_DIR}/include-common"
 
-REQUIRED_VERSION=13
+REQUIRED_VERSION=15
 CLANG_FORMAT=$(command -v clang-format-$REQUIRED_VERSION || command -v clang-format)
 
 if [ -n "$CLANG_FORMAT" ]; then

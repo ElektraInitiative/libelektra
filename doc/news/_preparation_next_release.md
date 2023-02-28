@@ -411,7 +411,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Sed: Add spelling correction for "key-value storage" _(@Bujuhu)_
 - <<TODO>>
 - Fix/extends some shell recorder tests _(@Joni1993)_
-- <<TODO>>
+- Use clang-format v15. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - Fix warning parsing in shell recorder _(@Joni1993)_
 - <<TODO>>
@@ -556,7 +556,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
 - <<TODO>>
-- Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian Irlinger @atmaxinger)_
+- Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian 
+Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - Revive [keyname decision](../decisions/4_decided/keyname.md) _(@kodebach)_

@@ -4,7 +4,7 @@ pull_requests: false
 restylers:
 
   - clang-format:
-      image: restyled/restyler-clang-format:13.0.1
+      image: restyled/restyler-clang-format:15.0.6
       include:
         - "**/*.c"
         - "**/*.cc"
