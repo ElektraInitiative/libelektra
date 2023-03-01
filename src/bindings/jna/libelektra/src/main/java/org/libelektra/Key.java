@@ -627,7 +627,9 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
     return this;
   }
 
-  /** @return {@link KeySetIterator} for the {@link ReadableKey meta data} of this {@link Key} */
+  /**
+   * @return {@link KeySetIterator} for the {@link ReadableKey meta data} of this {@link Key}
+   */
   @Override
   public Iterator<ReadableKey> iterator() {
     return Optional.ofNullable(Elektra.INSTANCE.keyMeta(getPointer()))

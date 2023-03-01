@@ -88,7 +88,9 @@ public abstract class KDBException extends Exception {
     return new InternalException(errorKey);
   }
 
-  /** @param errorKey Key containing {@code error/*} and {@code warnings/*} meta keys */
+  /**
+   * @param errorKey Key containing {@code error/*} and {@code warnings/*} meta keys
+   */
   protected KDBException(Key errorKey) {
     this.errorKey = errorKey;
     warnings = new ArrayList<>();
@@ -238,7 +240,9 @@ public abstract class KDBException extends Exception {
     return !warnings.isEmpty();
   }
 
-  /** @return Additional warnings emitted with the error */
+  /**
+   * @return Additional warnings emitted with the error
+   */
   @Nonnull
   public List<WarningEntry> getWarnings() {
     return warnings;
@@ -297,37 +301,49 @@ public abstract class KDBException extends Exception {
               .orElse(VALUE_META_KEY_NOT_FOUND);
     }
 
-    /** @return Warning number issued by Elektra */
+    /**
+     * @return Warning number issued by Elektra
+     */
     @Nonnull
     public String getWarningNumber() {
       return warningNumber;
     }
 
-    /** @return Warning reason text */
+    /**
+     * @return Warning reason text
+     */
     @Nonnull
     public String getReason() {
       return reason;
     }
 
-    /** @return Warning reason mount point */
+    /**
+     * @return Warning reason mount point
+     */
     @Nonnull
     public String getMountpoint() {
       return mountpoint;
     }
 
-    /** @return Warning module */
+    /**
+     * @return Warning module
+     */
     @Nonnull
     public String getModule() {
       return module;
     }
 
-    /** @return Warning reason configuration file */
+    /**
+     * @return Warning reason configuration file
+     */
     @Nonnull
     public String getConfigFile() {
       return configFile;
     }
 
-    /** @return Warning debug information in the form of {@code At: file:line} */
+    /**
+     * @return Warning debug information in the form of {@code At: file:line}
+     */
     @Nonnull
     public String getDebugInformation() {
       return debugInformation;

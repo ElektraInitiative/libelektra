@@ -117,7 +117,9 @@ public class ReadableKey implements Comparable<ReadableKey> {
     pointer = null;
   }
 
-  /** @return Key name in string format as returned by {@link #getName()} */
+  /**
+   * @return Key name in string format as returned by {@link #getName()}
+   */
   @Override
   public String toString() {
     return getName();

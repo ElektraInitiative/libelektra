@@ -33,7 +33,9 @@ public interface Plugin {
    */
   static final int STATUS_NO_UPDATE = 0;
 
-  /** @return Name of the plugin */
+  /**
+   * @return Name of the plugin
+   */
   @Nonnull
   String getName();
 

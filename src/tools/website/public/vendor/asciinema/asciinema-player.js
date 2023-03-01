@@ -5184,7 +5184,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   },
                 };
                 t.exports = u;
-              }.call(this, void 0));
+              }).call(this, void 0);
             },
             { 108: 108, 116: 116, 117: 117, 142: 142, 22: 22, 66: 66 },
           ],
@@ -9812,7 +9812,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 var i = (e(22), e(117));
                 e(142);
                 void 0 !== n && n.env, (t.exports = o);
-              }.call(this, void 0));
+              }).call(this, void 0);
             },
             { 117: 117, 142: 142, 22: 22 },
           ],

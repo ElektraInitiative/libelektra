@@ -20,7 +20,9 @@ class KeyNameIterator implements Iterator<String> {
     size = Elektra.INSTANCE.keyGetUnescapedNameSize(key.getPointer());
   }
 
-  /** @return True, if another value is available, false otherwise */
+  /**
+   * @return True, if another value is available, false otherwise
+   */
   @Override
   public boolean hasNext() {
     return position < size;
