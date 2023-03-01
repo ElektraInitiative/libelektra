@@ -3,7 +3,7 @@
 This tutorial will describe how to provide `kdb` with the specification of external programs.
 So `kdb` can parse and check the provided options and arguments according to the provided specification.
 This allows you to have, for example, a shell script but its args are checked by `kdb` before running it.
-It is possible to either mount(`kdb mount`) the specification, or set the keys manually using `kdb set` and `kdb meta-set`.
+It is possible to either mount(`kdb mount`) the specification, or set the keys manually using `kdb set` and `kdb meta set`.
 Both options will be described in the following.
 Here we'll define the specification for a simple script that removes files by moving them to a trash folder instead of directly deleting them.
 
@@ -94,19 +94,19 @@ This is the same as mounting the spec file.
 
 ```bash
 kdb set spec:/sw/elektra/kdb/#0/current/trash ""
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash external 1
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash bin "/path/to/trash.sh"
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash command "trash"
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash description "Move a file to trash"
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash external 1
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash bin "/path/to/trash.sh"
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash command "trash"
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash description "Move a file to trash"
 kdb set spec:/sw/elektra/kdb/#0/current/trash/file ""
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/file description "The file that should be moved to trash"
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/file args indexed
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/file args/index 0
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash/file description "The file that should be moved to trash"
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash/file args indexed
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash/file args/index 0
 kdb set spec:/sw/elektra/kdb/#0/current/trash/force ""
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force description "Delete the file directly"
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force opt f
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force opt/long force
-kdb meta-set spec:/sw/elektra/kdb/#0/current/trash/force opt/arg none
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force description "Delete the file directly"
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force opt f
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force opt/long force
+kdb meta set spec:/sw/elektra/kdb/#0/current/trash/force opt/arg none
 ```
 
 > **_NOTE:_** Extra arguments are directly passed on to the external command. So it is possible to provide the external program with more

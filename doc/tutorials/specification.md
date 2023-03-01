@@ -96,7 +96,7 @@ Next you can define, that this specification uses a specific mountpoint for a co
 So you can say the concrete configuration should be written to `app.ni`.
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current mountpoint app.ni
+kdb meta set spec:/tests/sw/org/app/\#0/current mountpoint app.ni
 ```
 
 Your `spec.ni` file should now look something like this:
@@ -152,7 +152,7 @@ The first key you will add to your specification is the port of the server.
 You add it by using the following command:
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/port type unsigned_short
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/port type unsigned_short
 ```
 
 What you also specified in the command above is the type of the configuration value. Elektra uses the [CORBA type system](https://www.libelektra.org/plugins/type)
@@ -184,9 +184,9 @@ What about a `default`, or what about an `example` for a usable port? Maybe a `d
 Let's add that next!
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/port default 8080
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/port example 8080
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/port description "port of the REST server that runs the application"
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/port default 8080
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/port example 8080
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/port description "port of the REST server that runs the application"
 ```
 
 Beautiful! Your specification is starting to look like something useful.
@@ -195,7 +195,7 @@ But wait! Shouldn't a port just use values between `1` and `65535`?
 Of course Elektra also has a plugin for that. You can just use the [network](https://www.libelektra.org/plugins/network) checker plugin.
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/port check/port ''
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/port check/port ''
 ```
 
 Now we define the plugins that we want to load.
@@ -203,7 +203,7 @@ In our example we need the `ni`-Plugin for reading and writing the configuration
 the `type`-plugin for validating data types and the `network`-plugin for validating port numbers.
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current infos/plugins "ni type network"
+kdb meta set spec:/tests/sw/org/app/\#0/current infos/plugins "ni type network"
 ```
 
 Nice!
@@ -270,10 +270,10 @@ Next up you will configure the `secure` property of our server. This boolean key
 So we will add the key and some metadata for it:
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/secure type boolean
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/secure default 1
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/secure example 0
-kdb meta-set spec:/tests/sw/org/app/\#0/current/server/secure description "true if the REST server uses SSL for communication"
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/secure type boolean
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/secure default 1
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/secure example 0
+kdb meta set spec:/tests/sw/org/app/\#0/current/server/secure description "true if the REST server uses SSL for communication"
 ```
 
 By default the `type` plugin will normalize boolean values when setting them, before storing them.
@@ -345,11 +345,11 @@ database/ip =
 Alternatively you can of course use `kdb` again to set the configuration values that way. Here are the commands to do that.
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/ip type string
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/ip default 127.0.0.1
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/ip example 127.0.0.1
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/ip description "ip address of the database server, that the application will connect to"
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/ip check/ipaddr ''
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/ip type string
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/ip default 127.0.0.1
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/ip example 127.0.0.1
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/ip description "ip address of the database server, that the application will connect to"
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/ip check/ipaddr ''
 ```
 
 ### Step 2: Adding the database dialect
@@ -361,24 +361,24 @@ This allows us to prohibit all other possible dialects that are not SQL.
 First you define the size of the `enum` type, and then you can add the different `enum` values.
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect type enum
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum "#4"
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#0 postgresql
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#1 mysql
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#2 mssql
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#3 mariadb
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#4 sqlite
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect type enum
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum "#4"
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#0 postgresql
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#1 mysql
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#2 mssql
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#3 mariadb
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect check/enum/\#4 sqlite
 ```
 
 Afterwards you define all the other parameters, just as before.
 
 ```sh
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect default sqlite
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect example mysql
-kdb meta-set spec:/tests/sw/org/app/\#0/current/database/dialect description "SQL dialect of the database server, that the application will connect to"
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect default sqlite
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect example mysql
+kdb meta set spec:/tests/sw/org/app/\#0/current/database/dialect description "SQL dialect of the database server, that the application will connect to"
 ```
 
-After this meta-setting bonanza your specification file should look something like this:
+After this meta setting bonanza your specification file should look something like this:
 
 ```sh
 cat $(kdb file spec:/tests/sw/org/app/\#0/current)
@@ -437,23 +437,23 @@ You also specify a `check/date/format`. You can find all possible date formats o
 For this you can use the following commands:
 
 ```
-kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date type string
-kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date check/date ISO8601
-kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date check/date/format "calendardate complete extended"
+kdb meta set spec:/tests/sw/org/app/\#0/current/backup/date type string
+kdb meta set spec:/tests/sw/org/app/\#0/current/backup/date check/date ISO8601
+kdb meta set spec:/tests/sw/org/app/\#0/current/backup/date check/date/format "calendardate complete extended"
 ```
 
 Then just add examples, defaults and description as always.
 
 ```
-kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date default 2021-11-01
-kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date example 2021-01-12
-kdb meta-set spec:/tests/sw/org/app/\#0/current/backup/date description "date of the annual server and database backup"
+kdb meta set spec:/tests/sw/org/app/\#0/current/backup/date default 2021-11-01
+kdb meta set spec:/tests/sw/org/app/\#0/current/backup/date example 2021-01-12
+kdb meta set spec:/tests/sw/org/app/\#0/current/backup/date description "date of the annual server and database backup"
 ```
 
 Now we add the validation plugin for dates and remount the specification:
 
 ```
-kdb meta-set spec:/tests/sw/org/app/\#0/current infos/plugins "ni type network date"
+kdb meta set spec:/tests/sw/org/app/\#0/current infos/plugins "ni type network date"
 sudo kdb spec-mount /tests/sw/org/app/\#0/current
 ```
 
@@ -675,7 +675,7 @@ please refer to [the man page of kdb reset](https://www.libelektra.org/man-pages
 ## Summary
 
 - You set up and mounted a specification using `kdb mount` and `kdb spec-mount`.
-- You added keys to the specification using `kdb meta-set`.
+- You added keys to the specification using `kdb meta set`.
 - You added different types of keys with `type string`, `type boolean` or `type unsigned_short`.
 - You added keys with `enum types`, to restrict specific configuration settings to a defined set of possible values.
 - You added default parameters, examples and descriptions with `example`, `default`, `description`.

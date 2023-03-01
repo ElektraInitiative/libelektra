@@ -24,7 +24,6 @@
 #include <merge.h>
 #include <meta-ls.h>
 #include <meta-rm.h>
-#include <meta-set.h>
 #include <meta-show.h>
 #include <meta.h>
 #include <mount.h>
@@ -82,7 +81,6 @@ cppCommand cppSubcommands[] = {
 	{ "merge", addMergeSpec, execCppMerge },
 	{ "meta-ls", addMetaLsSpec, execCppMetaLs },
 	{ "meta-rm", addMetaRmSpec, execCppMetaRm },
-	{ "meta-set", addMetaSetSpec, execCppMetaSet },
 	{ "meta-show", addMetaShowSpec, execCppMetaShow },
 	{ "mountOdbc", addMountOdbcSpec, execCppMountOdbc },
 	{ "mv", addMvSpec, execCppMv },

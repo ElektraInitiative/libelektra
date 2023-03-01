@@ -92,7 +92,7 @@ generic fstab:
 	allows kdb mset fstab <args> to be the same as kdb fstab
 
 kdb tool should work with arrays (add_entry, remove_entry)
-	or also kdb meta-set user:/abc check/enum -a "first enum" "second enum" "third enum"
+	or also kdb meta set user:/abc check/enum -a "first enum" "second enum" "third enum"
 	or also kdb set user:/abc -a "first array entry" "second" "third array entry"
 	allow key array increments with kdb tool
 

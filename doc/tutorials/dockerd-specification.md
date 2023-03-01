@@ -68,7 +68,7 @@ Next you can define, that this specification uses a specific mountpoint for a co
 So you can say the concrete configuration should be written to `dockerd.ini`.
 
 ```sh
-kdb meta-set spec:/sw/dockerd/dockerd/#0/current mountpoint /docker/daemon.json
+kdb meta set spec:/sw/dockerd/dockerd/#0/current mountpoint /docker/daemon.json
 # RET: 0
 ```
 
@@ -93,7 +93,7 @@ Next we will define that our configuration should be written `json`.
 We can do this by running:
 
 ```sh
-kdb meta-set spec:/sw/dockerd/dockerd/#0/current infos/plugin "yajl"
+kdb meta set spec:/sw/dockerd/dockerd/#0/current infos/plugin "yajl"
 # RET: 0
 ```
 
@@ -163,13 +163,13 @@ meta:/default = /var/lib/docker
 In order to get the above specification we will need the following commands:
 
 ```sh
-kdb meta-set spec:/sw/docker/dockerd/#0/current/data/root type "string"
+kdb meta set spec:/sw/docker/dockerd/#0/current/data/root type "string"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/data/root description "Root directory of persistent Docker state"
+kdb meta set spec:/sw/docker/dockerd/#0/current/data/root description "Root directory of persistent Docker state"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/data/root default "/var/lib/docker"
+kdb meta set spec:/sw/docker/dockerd/#0/current/data/root default "/var/lib/docker"
 # RET: 0
 ```
 
@@ -202,19 +202,19 @@ meta:/check/enum/#1 = private
 In order to get the above specification we will need the following commands:
 
 ```sh
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode description "Default mode for containers cgroup namespace"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode description "Default mode for containers cgroup namespace"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode default "private"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode default "private"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode check/enum "#1"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode check/enum "#1"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode check/enum/#0 "host"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode check/enum/#0 "host"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode check/enum/#1 "private"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/cgroupns/mode check/enum/#1 "private"
 # RET: 0
 ```
 
@@ -257,13 +257,13 @@ The name of the `ulimits` does not matter but all should have the same metakeys.
 In order to get the above specification we will need following commands:
 
 ```sh
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/ulimits/_ type "long"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/ulimits/_ type "long"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/ulimits/_ description "Default ulimits for containers"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/ulimits/_ description "Default ulimits for containers"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/ulimits/_ example "64000"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/ulimits/_ example "64000"
 # RET: 0
 ```
 
@@ -331,28 +331,28 @@ It will fail as `default/address/pools/#/size` is required to be of type `short`
 In order to get the above specification we will need following commands:
 
 ```sh
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools array/min "0"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools array/min "0"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools description "Default address pools for node specific local networks (list)"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools description "Default address pools for node specific local networks (list)"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/base type "string"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/base type "string"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/base description "Ip address (ipv4) + subnet"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/base description "Ip address (ipv4) + subnet"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/base example "172.30.0.0/16"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/base example "172.30.0.0/16"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/size type "short"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/size type "short"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/size description "Number of ip addresses in this pool with base"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/size description "Number of ip addresses in this pool with base"
 # RET: 0
 
-kdb meta-set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/size example "24"
+kdb meta set spec:/sw/docker/dockerd/#0/current/default/address/pools/#/size example "24"
 # RET: 0
 ```
 
@@ -386,8 +386,8 @@ Now we are going to add an example of [dockerd-full-spec](../../examples/spec/do
 Make sure you are in the root of the cloned `libelektra` repository:
 
 1. `sudo kdb mount "$PWD/dockerd/dockerd-daemon.ni" spec:/sw/docker/dockerd/#0/current ni`
-2. `kdb meta-set spec:/sw/dockerd/dockerd/#0/current mountpoint /dockerd/daemon.ni`
-3. `kdb meta-set spec:/sw/dockerd/dockerd/#0/current infos/plugin "yajl"`
+2. `kdb meta set spec:/sw/dockerd/dockerd/#0/current mountpoint /dockerd/daemon.ni`
+3. `kdb meta set spec:/sw/dockerd/dockerd/#0/current infos/plugin "yajl"`
 4. `sudo kdb spec-mount "/sw/docker/dockerd/#0/current"`
 5. `sudo kdb import spec:/sw/docker/dockerd/#0/current ni < ./examples/spec/dockerd.ini`
 

@@ -33,7 +33,7 @@ kdb set user:/tests/email/noaddr invalid..address@com
 # RET: 0
 
 # Check the validity of the email stored in `/tests/email/adr`
-kdb meta-set spec:/tests/email/adr check/email ""
+kdb meta set spec:/tests/email/adr check/email ""
 
 # Set a correct email address
 kdb set user:/tests/email/adr test+email@dev.libelektra.com

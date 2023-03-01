@@ -74,6 +74,7 @@ int execMetaGet (KeySet * options, Key * errorKey)
 	{
 		CLI_PRINT (CLI_LOG_NONE, "%s%s", keyString (metaKey), noNewLine ? "" : "\n");
 	}
+	keyDel (key);
 
 cleanup:
 	if (!noNewLine)
@@ -81,7 +82,6 @@ cleanup:
 		printf ("\n");
 	}
 	keyDel (cascadingParent);
-	keyDel (key);
 	keyDel (toLookUp);
 	ksDel (conf);
 	kdbClose (handle, errorKey);

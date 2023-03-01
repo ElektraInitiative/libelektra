@@ -4,7 +4,7 @@ import socket
 """
 Usage:
 > sudo kdb mount file.ini /python python script=/path/to/dns_plugin.py
-> kdb meta-set user:/python/my_hostname check/dns ''
+> kdb meta set user:/python/my_hostname check/dns ''
 > kdb set user:/python/my_hostname www.libelektra.org
 """
 

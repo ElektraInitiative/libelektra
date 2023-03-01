@@ -4,7 +4,7 @@
 .SH "NAME"
 \fBkdb\-meta\-set\fR \- Set the value of a metakey
 .SH "SYNOPSIS"
-\fBkdb meta\-set <key name> <metaname> [<metavalue>]\fR
+\fBkdb meta set <key name> <metaname> [<metavalue>]\fR
 .P
 Where \fBkey name\fR is the name of the key that the metakey is associated with, \fBmetaname\fR is the name of the metakey the user would like to set the value of (or create), and \fBmetavalue\fR is the value the user wishes to set the metakey to\. If no \fBmetavalue\fR is given, the metakey will be removed\.
 .SH "DESCRIPTION"
@@ -55,24 +55,24 @@ Same as \fB\-q\fR: Suppress default messages\.
 .SH "EXAMPLES"
 To set a metakey called \fBdescription\fR associated with the key \fBuser:/example/key\fR to the value \fBHello World!\fR:
 .br
-\fBkdb meta\-set spec:/example/key description "Hello World!"\fR
+\fBkdb meta set spec:/example/key description "Hello World!"\fR
 .P
 To create a new key \fBspec:/example/newkey\fR with a null value (if it did not exist before) and a metakey \fBnamespace/#0\fR associated with it to the value \fBsystem\fR:
 .br
-\fBkdb meta\-set /example/newkey "namespace/#0" system\fR
+\fBkdb meta set /example/newkey "namespace/#0" system\fR
 .P
 To create an override link for a \fB/test\fR key:
 .IP "" 4
 .nf
 kdb set /overrides/test "example override"
-sudo kdb meta\-set spec:/test override/#0 /overrides/test
+sudo kdb meta set spec:/test override/#0 /overrides/test
 .fi
 .IP "" 0
 .P
 To remove it:
 .IP "" 4
 .nf
-sudo kdb meta\-set spec:/test override/#0
+sudo kdb meta set spec:/test override/#0
 .fi
 .IP "" 0
 .SH "SEE ALSO"

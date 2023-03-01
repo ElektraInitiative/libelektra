@@ -79,7 +79,7 @@ Now you can specify a key `user:/t/a` and protect its content by using:
 
 ```sh
 kdb set user:/tests/t/a
-kdb meta-set user:/tests/t/a crypto/encrypt 1
+kdb meta set user:/tests/t/a crypto/encrypt 1
 kdb set user:/tests/t/a "secret"
 ```
 

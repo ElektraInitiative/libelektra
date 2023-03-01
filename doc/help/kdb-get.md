@@ -61,7 +61,7 @@ sudo kdb mount get.ecf spec:/tests/get/examples/kdb-get dump
 
 # Create the keys we use for the examples
 kdb set user:/tests/get/examples/kdb-get/key myKey
-kdb meta-set spec:/tests/get/examples/kdb-get/anotherKey default defaultValue
+kdb meta set spec:/tests/get/examples/kdb-get/anotherKey default defaultValue
 
 # To get the value of a key:
 kdb get user:/tests/get/examples/kdb-get/key

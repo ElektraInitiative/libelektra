@@ -51,7 +51,7 @@ For an **empty array** (`[]`) we just add the [metakey](../help/elektra-metadata
 
 ```sh
 # Create an empty array with the name `user:/tests/sequence`
-kdb meta-set user:/tests/sequence array ''
+kdb meta set user:/tests/sequence array ''
 ```
 
 .
@@ -100,7 +100,7 @@ This of course works only, if the plugins already stores this information in the
 - implicitly (e.g. the data below the array parent is stored as array/list/sequence in the config file), or
 - explicitly (e.g. the plugin stores the metakey `array` directly in the config file)
 
-. Either way, in some situations you might have to add this value manually via `kdb meta-set`:
+. Either way, in some situations you might have to add this value manually via `kdb meta set`:
 
 ```sh
 # Add array elements
@@ -112,7 +112,7 @@ kdb set user:/tests/favorites/superheros/#99999 'The guy with the bow and arrow'
 #> Create a new key user:/tests/favorites/superheros/#____99999 with string "The guy with the bow and arrow"
 
 # The metakey `array` should save the basename of the last element.
-kdb meta-set user:/tests/favorites/superheros array '#99999'
+kdb meta set user:/tests/favorites/superheros array '#99999'
 ```
 
 . This way you can always retrieve the last element of an array easily:

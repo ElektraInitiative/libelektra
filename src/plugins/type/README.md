@@ -186,7 +186,7 @@ sudo kdb mount typetest.dump user:/tests/type dump type
 kdb set user:/tests/type/key a
 
 #Only allow character values
-kdb meta-set user:/tests/type/key type char
+kdb meta set user:/tests/type/key type char
 kdb get user:/tests/type/key
 #> a
 
@@ -216,11 +216,11 @@ sudo kdb mount typeenum.ecf user:/tests/type dump type
 
 # valid initial value + setup valid enum list
 kdb set user:/tests/type/value middle
-kdb meta-set user:/tests/type/value check/enum '#2'
-kdb meta-set user:/tests/type/value 'check/enum/#0' 'low'
-kdb meta-set user:/tests/type/value 'check/enum/#1' 'middle'
-kdb meta-set user:/tests/type/value 'check/enum/#2' 'high'
-kdb meta-set user:/tests/type/value type enum
+kdb meta set user:/tests/type/value check/enum '#2'
+kdb meta set user:/tests/type/value 'check/enum/#0' 'low'
+kdb meta set user:/tests/type/value 'check/enum/#1' 'middle'
+kdb meta set user:/tests/type/value 'check/enum/#2' 'high'
+kdb meta set user:/tests/type/value type enum
 
 # should succeed
 kdb set user:/tests/type/value low
@@ -236,13 +236,13 @@ Or with multi-enums:
 ```sh
 # valid initial value + setup array with valid enums
 kdb set user:/tests/type/multivalue middle_small
-kdb meta-set user:/tests/type/multivalue check/enum/#0 small
-kdb meta-set user:/tests/type/multivalue check/enum/#1 middle
-kdb meta-set user:/tests/type/multivalue check/enum/#2 large
-kdb meta-set user:/tests/type/multivalue check/enum/#3 huge
-kdb meta-set user:/tests/type/multivalue check/enum/delimiter _
-kdb meta-set user:/tests/type/multivalue check/enum "#3"
-kdb meta-set user:/tests/type/multivalue type enum
+kdb meta set user:/tests/type/multivalue check/enum/#0 small
+kdb meta set user:/tests/type/multivalue check/enum/#1 middle
+kdb meta set user:/tests/type/multivalue check/enum/#2 large
+kdb meta set user:/tests/type/multivalue check/enum/#3 huge
+kdb meta set user:/tests/type/multivalue check/enum/delimiter _
+kdb meta set user:/tests/type/multivalue check/enum "#3"
+kdb meta set user:/tests/type/multivalue type enum
 
 # should succeed
 kdb set user:/tests/type/multivalue small_middle
@@ -265,7 +265,7 @@ sudo kdb mount config.ecf user:/tests/type dump type
 
 # By default the plugin uses `1` (true) and `0` (false) to represent boolean values
 kdb set user:/tests/type/truthiness false
-kdb meta-set user:/tests/type/truthiness type boolean
+kdb meta set user:/tests/type/truthiness type boolean
 kdb get user:/tests/type/truthiness
 #> 0
 
@@ -282,7 +282,7 @@ sudo kdb umount user:/tests/type
 ```sh
 sudo kdb mount config.ecf user:/tests/type dump type
 kdb set user:/tests/type/truthiness 0
-kdb meta-set user:/tests/type/truthiness type boolean
+kdb meta set user:/tests/type/truthiness type boolean
  kdb set user:/tests/type/truthiness yes
 # RET: 0
  # Undo changes

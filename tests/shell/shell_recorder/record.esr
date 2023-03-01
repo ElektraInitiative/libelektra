@@ -2,7 +2,7 @@ Mountpoint: user:/test
 
 < kdb set user:/test/greeting hello
 < kdb set user:/test/age 25
-< kdb meta-set user:/test/age meta:/visible false
+< kdb meta set user:/test/age meta:/visible false
 < kdb set user:/test/name Franz
 < kdb set user:/test/poweruser true
 
@@ -16,7 +16,7 @@ RET: 0
 < kdb rm user:/test/greeting
 < kdb set user:/test/name Hans
 < kdb set user:/test/gender male
-< kdb meta-set user:/test/age meta:/visible true
+< kdb meta set user:/test/age meta:/visible true
 
 RET: 0
 STDOUT: Recording is active for /⏎⏎Added 1 key(s)⏎Modified 2 key(s)⏎Removed 1 key(s)⏎⏎Added key user:/test/gender⏎Modified key user:/test/age⏎Modified key user:/test/name⏎Removed key user:/test/greeting

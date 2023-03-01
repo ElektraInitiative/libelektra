@@ -50,7 +50,7 @@ do_tests() {
 
 	"$KDB" ls "spec:/sw/example/econf/#0" | check_if_parent_exists
 
-	"$KDB" meta-set "$KEY/format" array "#2"
+	"$KDB" meta set "$KEY/format" array "#2"
 	"$KDB" ls "spec:/sw/example/econf/#0" | check_if_parent_exists
 
 	"$KDB" rm -r "$UKEY"

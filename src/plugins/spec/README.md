@@ -157,19 +157,19 @@ A specification could look like this (`yaml`):
 
 Below is an explanation of each command.
 
-### kdb meta-set spec:/tests/sw/org/webserver/name require true
+### kdb meta set spec:/tests/sw/org/webserver/name require true
 
 Adding a specification key with a require metakey.
-This `meta-set` command should throw error as no key with the name `/tests/sw/org/webserver/name` exists.
+This `meta set` command should throw error as no key with the name `/tests/sw/org/webserver/name` exists.
 
 ### kdb set user:/tests/sw/org/webserver/name web1
 
 Set the value for `user:/tests/sw/org/webserver/name` to `web1`.
 
-### kdb meta-set spec:/tests/sw/org/webserver/port default 5000
+### kdb meta set spec:/tests/sw/org/webserver/port default 5000
 
 Adding a specification key with a default metakey.
-After this `meta-set` command a `default:/tests/sw/org/webserver/port` with value `5000` should exist.
+After this `meta set` command a `default:/tests/sw/org/webserver/port` with value `5000` should exist.
 
 ### kdb set user:/tests/sw/org/webserver/alternative_ports/#0 5001
 
@@ -179,14 +179,14 @@ Adding an array key `user:/tests/sw/org/webserver/alternative_ports/#0` which va
 
 Adding an array key `user:/tests/sw/org/webserver/alternative_ports/#1` which value is set to `5002`.
 
-### kdb meta-set user:/tests/sw/org/webserver/alternative_ports array '2'
+### kdb meta set user:/tests/sw/org/webserver/alternative_ports array '2'
 
 Adding a metakey `array` with value `2` at `user:/tests/sw/org/webserver/alternative_ports`.
 
-### kdb meta-set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
+### kdb meta set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
 
 Adding a specification metakey `description`.
-After this `meta-set` the all the array entries (`#0` and `#1`) should contain the `description`.
+After this `meta set` the all the array entries (`#0` and `#1`) should contain the `description`.
 
 ### kdb meta get user:/tests/sw/org/webserver/alternative_ports/#0 description
 
@@ -197,13 +197,13 @@ Check if the `description` metakey was copied successfully.
 Check if the `description` metakey was copied successfully.
 
 ```sh
-kdb meta-set spec:/tests/sw/org/webserver/name require true
+kdb meta set spec:/tests/sw/org/webserver/name require true
 # RET: 5
 
 kdb set user:/tests/sw/org/webserver/name web1
 # RET: 0
 
-kdb meta-set spec:/tests/sw/org/webserver/port default 5000
+kdb meta set spec:/tests/sw/org/webserver/port default 5000
 # RET: 0
 
 kdb set user:/tests/sw/org/webserver/alternative_ports/#0 5001
@@ -212,10 +212,10 @@ kdb set user:/tests/sw/org/webserver/alternative_ports/#0 5001
 kdb set user:/tests/sw/org/webserver/alternative_ports/#1 5002
 #> Create a new key user:/tests/sw/org/webserver/alternative_ports/#1 with string "5002"
 
-kdb meta-set user:/tests/sw/org/webserver/alternative_ports array '2'
+kdb meta set user:/tests/sw/org/webserver/alternative_ports array '2'
 # RET: 0
 
-kdb meta-set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
+kdb meta set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
 # RET: 0
 
 kdb meta get user:/tests/sw/org/webserver/alternative_ports/#0 description

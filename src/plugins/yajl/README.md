@@ -169,7 +169,7 @@ kdb set user:/tests/yajl/now ', Now'
 # Elektra arrays require the metakey `array` to the parent.
 # Otherwise the keys below `user:/tests/yajl/now` would be
 # interpreted as normal key-value pairs.
-kdb meta-set user:/tests/yajl/now array ''
+kdb meta set user:/tests/yajl/now array ''
 kdb set user:/tests/yajl/now/#0 'Neighbors'
 kdb set user:/tests/yajl/now/#1 'Threads'
 
@@ -219,12 +219,12 @@ sudo kdb mount conf.json user:/tests/yajl yajl
 kdb set user:/tests/yajl 1
 kdb get user:/tests/yajl
 #> 1
-kdb meta-set user:/tests/yajl type boolean
+kdb meta set user:/tests/yajl type boolean
 kdb set user:/tests/yajl on
 kdb get user:/tests/yajl
 #> 1
 kdb set user:/tests/yajl/subkey disable
-kdb meta-set user:/tests/yajl/subkey type boolean
+kdb meta set user:/tests/yajl/subkey type boolean
 kdb get user:/tests/yajl/subkey
 #> 0
 

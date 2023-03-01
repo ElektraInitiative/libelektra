@@ -35,9 +35,9 @@ described in this tutorial, e.g.:
 The most direct way to validate keys is
 
 ```sh
-kdb meta-set user:/tests/together/test check/validation "[1-9][0-9]*"
-kdb meta-set user:/tests/together/test check/validation/match LINE
-kdb meta-set user:/tests/together/test check/validation/message "Not a number"
+kdb meta set user:/tests/together/test check/validation "[1-9][0-9]*"
+kdb meta set user:/tests/together/test check/validation/match LINE
+kdb meta set user:/tests/together/test check/validation/message "Not a number"
 kdb set user:/tests/together/test 123
 #> Set string to "123"
 
@@ -86,7 +86,7 @@ kdb export user:/ dump > $(kdb get system:/tests/userbackup)
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
 
 ```sh
-kdb meta-set spec:/tests/spec/test hello world
+kdb meta set spec:/tests/spec/test hello world
 kdb set user:/tests/spec/test value
 kdb meta-ls spec:/tests/spec/test | grep -v '^internal/ini'
 #> hello
@@ -99,7 +99,7 @@ kdb meta get /tests/spec/test hello
 But it also supports globbing (`_` for any key, `?` for any char, `[]` for character classes):
 
 ```sh
-kdb meta-set "spec:/tests/spec/_" new metaval
+kdb meta set "spec:/tests/spec/_" new metaval
 kdb set user:/tests/spec/test value
 kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
@@ -114,9 +114,9 @@ So let us combine this functionality with validation plugins.
 So we would specify:
 
 ```sh
-kdb meta-set spec:/tests/spec/test check/validation "[1-9][0-9]*"
-kdb meta-set spec:/tests/spec/test check/validation/match LINE
-kdb meta-set spec:/tests/spec/test check/validation/message "Not a number"
+kdb meta set spec:/tests/spec/test check/validation "[1-9][0-9]*"
+kdb meta set spec:/tests/spec/test check/validation/match LINE
+kdb meta set spec:/tests/spec/test check/validation/message "Not a number"
 ```
 
 If we now set a new key with
@@ -271,7 +271,7 @@ There are many ways to do so directly supported by [the spec plugin](/src/plugin
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
 ```sh
-kdb meta-set spec:/tests/tutorial/spec/should_not_be_here trigger/error C03200
+kdb meta set spec:/tests/tutorial/spec/should_not_be_here trigger/error C03200
 kdb spec-mount /tests/tutorial
 kdb set user:/tests/tutorial/spec/should_not_be_here abc
 # RET:    5
@@ -316,7 +316,7 @@ sudo kdb mount range.ecf /tests/range range dump
 kdb set user:/tests/range/value 5
 
 # add range check to all keys under /tests/range/
-kdb meta-set spec:/tests/range/_ check/range "1-10"
+kdb meta set spec:/tests/range/_ check/range "1-10"
 
 # check if validate passes
 kdb validate /tests/range

@@ -50,10 +50,10 @@ kdb set user:/tests/mac/mac4 17661175009296
 # RET: 0
 
 # Marking written keys as MAC addresses
-kdb meta-set user:/tests/mac/mac1 check/macaddr ""
-kdb meta-set user:/tests/mac/mac2 check/macaddr ""
-kdb meta-set user:/tests/mac/mac3 check/macaddr ""
-kdb meta-set user:/tests/mac/mac4 check/macaddr ""
+kdb meta set user:/tests/mac/mac1 check/macaddr ""
+kdb meta set user:/tests/mac/mac2 check/macaddr ""
+kdb meta set user:/tests/mac/mac3 check/macaddr ""
+kdb meta set user:/tests/mac/mac4 check/macaddr ""
 
 # Setting a MAC address using an invalid address
 kdb set user:/tests/mac/mac1 00:G1:C9:14:C8:29

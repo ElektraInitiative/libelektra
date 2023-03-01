@@ -55,14 +55,14 @@ So an error and warnings can be injected directly with the kdb tool.
 E.g. the warning number C01330:
 
 ```sh
-kdb meta-set system:/error/key trigger/warnings C01330
+kdb meta set system:/error/key trigger/warnings C01330
 ```
 
 or the error number C01200 (will not modify the KDB because `kdbSet()` will
 fail for the error plugin then):
 
 ```sh
-kdb meta-set user:/error/key trigger/error C01200
+kdb meta set user:/error/key trigger/error C01200
 # RET:5
 ```
 
