@@ -68,7 +68,7 @@ RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=v1.13.0
+ARG GTEST_VER=release-1.13.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \

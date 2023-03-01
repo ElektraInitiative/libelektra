@@ -31,7 +31,7 @@ jobs:
         run: |
           cd "$RUNNER_TEMP"
           mkdir -p "googletest"
-          curl -o gtest.tar.gz -L https://github.com/google/googletest/archive/v1.13.0.tar.gz
+          curl -o gtest.tar.gz -L https://github.com/google/googletest/archive/release-1.13.0.tar.gz
           tar -zxvf gtest.tar.gz --strip-components=1 -C googletest
           rm gtest.tar.gz
           export GTEST_ROOT="$RUNNER_TEMP/googletest" && echo "GTEST_ROOT=$GTEST_ROOT" >> $GITHUB_ENV
