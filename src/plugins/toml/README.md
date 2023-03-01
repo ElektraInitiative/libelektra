@@ -52,23 +52,23 @@ cat `kdb file user:/tests/storage/types`
 
 # Print types and values of the keys with `kdb`
 
-kdb meta-get 'user:/tests/storage/types/plain_decimal' 'type'
+kdb meta get 'user:/tests/storage/types/plain_decimal' 'type'
 # > long_long
 kdb get 'user:/tests/storage/types/plain_decimal'
 # > 1000
 
-kdb meta-get 'user:/tests/storage/types/file_permissions' 'type'
+kdb meta get 'user:/tests/storage/types/file_permissions' 'type'
 # > unsigned_long_long
 # The octal value will be converted to decimal
 kdb get 'user:/tests/storage/types/file_permissions'
 # > 511
 
-kdb meta-get 'user:/tests/storage/types/pi' 'type'
+kdb meta get 'user:/tests/storage/types/pi' 'type'
 # > double
 kdb get 'user:/tests/storage/types/pi'
 # > 3.1415
 
-kdb meta-get 'user:/tests/storage/types/division_gone_wrong' 'type'
+kdb meta get 'user:/tests/storage/types/division_gone_wrong' 'type'
 # > double
 kdb get 'user:/tests/storage/types/division_gone_wrong'
 # > -inf
@@ -99,7 +99,7 @@ sudo kdb mount test.toml user:/tests/storage/types toml type
 kdb set 'user:/tests/storage/types/value' '1'
 
 # The plugin infers `long_long` for this value
-kdb meta-get 'user:/tests/storage/types/value' 'type'
+kdb meta get 'user:/tests/storage/types/value' 'type'
 # > long_long
 
 # The value is written as an integer
@@ -147,11 +147,11 @@ kdb get 'user:/tests/storage/numbers/a'
 # > 511
 
 # Get the original octal value
-kdb meta-get 'user:/tests/storage/numbers/a' 'origvalue'
+kdb meta get 'user:/tests/storage/numbers/a' 'origvalue'
 # > 0o777
 
 # Get the type of the number; since it's originally octal, we get `unsigned_long_long`
-kdb meta-get 'user:/tests/storage/numbers/a' 'type'
+kdb meta get 'user:/tests/storage/numbers/a' 'type'
 # > unsigned_long_long
 
 # Change the value by changing the `origvalue` metakey
@@ -165,7 +165,7 @@ kdb get 'user:/tests/storage/numbers/a'
 kdb meta-set 'user:/tests/storage/numbers/a' 'origvalue' '0o888'
 
 # The key value is no longer considered a number
-kdb meta-get 'user:/tests/storage/numbers/a' 'type'
+kdb meta get 'user:/tests/storage/numbers/a' 'type'
 # > string
 
 # Cleanup
@@ -313,7 +313,7 @@ kdb set 'user:/tests/storage/tablearray/#1/a' '3'
 kdb set 'user:/tests/storage/tablearray/#1/b' '4'
 
 # Print the highest index of the table array
-kdb meta-get 'user:/tests/storage/tablearray' 'array'
+kdb meta get 'user:/tests/storage/tablearray' 'array'
 #> #1
 
 # Print the content of the resulting TOML file
@@ -369,7 +369,7 @@ kdb set 'user:/tests/storage/array/#1' '2'
 kdb set 'user:/tests/storage/array/#2' '3'
 
 # Print the highest index of the array
-kdb meta-get 'user:/tests/storage/array' 'array'
+kdb meta get 'user:/tests/storage/array' 'array'
 #> #2
 
 # Print the content of the resulting TOML file

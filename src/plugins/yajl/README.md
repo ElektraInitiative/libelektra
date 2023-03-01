@@ -107,7 +107,7 @@ kdb get user:/tests/yajl/number
 #> 1337
 
 # Determine the data type of the value
-kdb meta-get user:/tests/yajl/number type
+kdb meta get user:/tests/yajl/number type
 #> double
 
 # Add another key-value pair
@@ -194,7 +194,7 @@ kdb get user:/tests/yajl/roots/bloody/roots
 # Check array
 kdb get user:/tests/yajl/now
 #> , Now
-kdb meta-get user:/tests/yajl/now array
+kdb meta get user:/tests/yajl/now array
 #> #1
 kdb get user:/tests/yajl/now/#0
 #> Neighbors

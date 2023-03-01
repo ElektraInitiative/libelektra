@@ -98,7 +98,7 @@ kdb get user:/tests/yamlcpp/sunny/#1
 #> Dee
 
 # You can retrieve the last index of an array by reading the metakey `array`
-kdb meta-get user:/tests/yamlcpp/sunny array
+kdb meta get user:/tests/yamlcpp/sunny array
 # 1
 
 # Extend the array
@@ -108,13 +108,13 @@ kdb set user:/tests/yamlcpp/sunny/#4 Mac
 
 # The plugin supports empty array fields
 kdb set user:/tests/yamlcpp/sunny/#_10 'The Waitress'
-kdb meta-get user:/tests/yamlcpp/sunny array
+kdb meta get user:/tests/yamlcpp/sunny array
 #> #_10
 kdb get user:/tests/yamlcpp/sunny/#_9
 # RET: 11
 
 # Retrieve the last array entry
-kdb get user:/tests/yamlcpp/sunny/$(kdb meta-get user:/tests/yamlcpp/sunny array)
+kdb get user:/tests/yamlcpp/sunny/$(kdb meta get user:/tests/yamlcpp/sunny array)
 #> The Waitress
 
 # The plugin also supports empty arrays (arrays without any elements)
@@ -265,7 +265,7 @@ sudo kdb mount config.yaml user:/tests/yamlcpp yamlcpp
 echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file user:/tests/yamlcpp`
 kdb meta-ls user:/tests/yamlcpp/🔑
 #> comment
-kdb meta-get user:/tests/yamlcpp/🔑 comment
+kdb meta get user:/tests/yamlcpp/🔑 comment
 #> Unicorn
 
 # Add a new key and add some metadata to the new key
@@ -277,7 +277,7 @@ kdb meta-set user:/tests/yamlcpp/brand rationale "Because I Love It"
 kdb meta-ls user:/tests/yamlcpp/brand
 #> comment
 #> rationale
-kdb meta-get user:/tests/yamlcpp/brand rationale
+kdb meta get user:/tests/yamlcpp/brand rationale
 #> Because I Love It
 
 # Undo modifications to the key database
@@ -372,7 +372,7 @@ kdb get user:/tests/yamlcpp/truth
 #> 1
 
 # A boolean in Elektra has the type `boolean`
-kdb meta-get user:/tests/yamlcpp/truth type
+kdb meta get user:/tests/yamlcpp/truth type
 #> boolean
 
 # Add another boolean value
@@ -490,7 +490,7 @@ kdb ls user:/tests/yamlcpp/directory
 
 kdb get user:/tests/yamlcpp/directory
 #> Directory Data
-kdb meta-get user:/tests/yamlcpp/directory comment
+kdb meta get user:/tests/yamlcpp/directory comment
 #> Directory Metadata
 kdb get user:/tests/yamlcpp/directory/file
 #> Leaf Data

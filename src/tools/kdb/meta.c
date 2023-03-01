@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <meta-get.h>
 #include <meta.h>
 
 #include <command.h>
@@ -17,14 +18,16 @@
 #define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 #define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
-command metaSubcommands[] = {};
+command metaSubcommands[] = {
+	{ "get", addMetaGetSpec, execMetaGet },
+};
 
 void addMetaSpec (KeySet * spec)
 {
 	ksAppendKey (spec, keyNew (COMMAND_SPEC_KEY (COMMAND_NAME), KEY_META, "description", "Manage meta keys.", KEY_META, "command",
 				   COMMAND_NAME, KEY_END));
 
-	for (unsigned long i = 0; i < sizeof (metaSubcommands) / sizeof (metaSubcommands[0]); ++i)
+	for (unsigned long i = 0; i < sizeof (metaSubcommands) / sizeof (command); ++i)
 	{
 		metaSubcommands[i].addSpec (spec);
 	}
@@ -34,7 +37,7 @@ int execMeta (KeySet * options, Key * errorKey)
 {
 	const char * subcommand = keyString (ksLookupByName (options, CLI_BASE_KEY "/" COMMAND_NAME, 0));
 
-	for (unsigned long i = 0; i < sizeof (metaSubcommands) / sizeof (metaSubcommands[0]); ++i)
+	for (unsigned long i = 0; i < sizeof (metaSubcommands) / sizeof (command); ++i)
 	{
 		if (elektraStrCmp (subcommand, metaSubcommands[i].name) == 0)
 		{
@@ -43,5 +46,4 @@ int execMeta (KeySet * options, Key * errorKey)
 	}
 	// this cannot happen, since not valid sub-commands are already detected when parsing
 	return 1;
-
 }

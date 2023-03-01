@@ -118,7 +118,7 @@ kdb meta-set user:/tests/favorites/superheros array '#99999'
 . This way you can always retrieve the last element of an array easily:
 
 ```sh
-kdb get user:/tests/favorites/superheros/`kdb meta-get user:/tests/favorites/superheros array`
+kdb get user:/tests/favorites/superheros/`kdb meta get user:/tests/favorites/superheros array`
 #> The guy with the bow and arrow
 ```
 

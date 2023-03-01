@@ -33,6 +33,7 @@ if (ENABLE_KDB_TESTING)
 
 	add_shell_recorder_test (cli/cli_external_spec.esr)
 	add_shell_recorder_test (cli/cli_get.esr)
+	add_shell_recorder_test (cli/cli_meta_get.esr)
 	add_shell_recorder_test (cli/cli_set.esr)
 	add_shell_recorder_test (db_changes.esr)
 	add_shell_recorder_test (hosts.esr REQUIRED_PLUGINS hosts)

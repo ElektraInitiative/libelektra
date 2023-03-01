@@ -175,7 +175,7 @@ kdb get user:/tests/directoryvalue/patrick/#0
 
 # Retrieve index of last element in array.
 # This also works if the storage plugin does not store this index.
-kdb meta-get user:/tests/directoryvalue/patrick array
+kdb meta get user:/tests/directoryvalue/patrick array
 #> #0
 
 # Undo changes to the key database
