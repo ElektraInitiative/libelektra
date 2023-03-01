@@ -88,9 +88,9 @@ We write metadata to the namespace `spec` and the plugin `spec` applies it to ev
 ```sh
 kdb meta set spec:/tests/spec/test hello world
 kdb set user:/tests/spec/test value
-kdb meta-ls spec:/tests/spec/test | grep -v '^internal/ini'
+kdb meta ls spec:/tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
+kdb meta ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb meta get /tests/spec/test hello
 #> world
@@ -101,7 +101,7 @@ But it also supports globbing (`_` for any key, `?` for any char, `[]` for chara
 ```sh
 kdb meta set "spec:/tests/spec/_" new metaval
 kdb set user:/tests/spec/test value
-kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
+kdb meta ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
 
@@ -129,7 +129,7 @@ kdb set user:/tests/spec/test "not a number"
 this key has adopted all metadata from the spec namespace:
 
 ```sh
-kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
+kdb meta ls /tests/spec/test | grep -v '^internal/ini'
 #> check/validation
 #> check/validation/match
 #> check/validation/message
@@ -212,7 +212,7 @@ check/validation/match=LINE              \
 check/validation/message=not a valid URL \
 description=A link to some website       \
 HERE
-kdb meta-ls spec:/tests/tutorial
+kdb meta ls spec:/tests/tutorial
 #> infos/plugins
 #> mountpoint
 ```

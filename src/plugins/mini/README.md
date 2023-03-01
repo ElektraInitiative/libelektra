@@ -124,8 +124,8 @@ cat stderr.txt | grep -oE 'Line [[:digit:]]+.*' | sed 's/^[[:space:]]*//'
 kdb meta set user:/tests/mini foo bar
 # RET: 5
 
-kdb meta-ls user:/tests/mini
-# RET: 1
+kdb meta ls user:/tests/mini
+# RET: 11
 
 # The value of `key` also contains the double quote symbol, since mINI does
 # not assign special meaning to quote characters.
