@@ -27,6 +27,7 @@
 #include <meta-rm.h>
 #include <meta-set.h>
 #include <meta-show.h>
+#include <meta.h>
 #include <mount.h>
 #include <mountOdbc.h>
 #include <mv.h>
@@ -69,6 +70,7 @@ command subcommands[] = {
 	{ "get", addGetSpec, execGet },
 	{ "record-start", addRecordStartSpec, execRecordStart },
 	{ "record-undo", addRecordUndoSpec, execRecordUndo },
+	{ "meta", addMetaSpec, execMeta },
 	{ "set", addSetSpec, execSet },
 };
 
