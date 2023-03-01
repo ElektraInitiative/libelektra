@@ -33,6 +33,8 @@ This command will return the following values as an exit status:<br>
   No errors.
 - 11:
   Key not found. (Invalid `path`)
+- 12:
+  Metaname does not exist
 
 ## EXAMPLES
 
