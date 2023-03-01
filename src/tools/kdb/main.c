@@ -22,7 +22,6 @@
 #include <list-tools.h>
 #include <ls.h>
 #include <merge.h>
-#include <meta-rm.h>
 #include <meta.h>
 #include <mount.h>
 #include <mountOdbc.h>
@@ -77,7 +76,6 @@ cppCommand cppSubcommands[] = {
 	{ "find", addFindSpec, execCppFind },
 	{ "ls", addLsSpec, execCppLs },
 	{ "merge", addMergeSpec, execCppMerge },
-	{ "meta-rm", addMetaRmSpec, execCppMetaRm },
 	{ "mountOdbc", addMountOdbcSpec, execCppMountOdbc },
 	{ "mv", addMvSpec, execCppMv },
 	{ "namespace", addNamespaceSpec, execCppNamespace },

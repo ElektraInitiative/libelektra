@@ -6,11 +6,12 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <meta.h>
 #include <meta-get.h>
 #include <meta-ls.h>
+#include <meta-rm.h>
 #include <meta-set.h>
 #include <meta-show.h>
+#include <meta.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -22,10 +23,8 @@
 #define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
 command metaSubcommands[] = {
-	{ "get", addMetaGetSpec, execMetaGet },
-	{ "ls", addMetaLsSpec, execMetaLs },
-	{ "set", addMetaSetSpec, execMetaSet },
-	{ "show", addMetaShowSpec, execMetaShow },
+	{ "get", addMetaGetSpec, execMetaGet }, { "ls", addMetaLsSpec, execMetaLs },	   { "rm", addMetaRmSpec, execMetaRm },
+	{ "set", addMetaSetSpec, execMetaSet }, { "show", addMetaShowSpec, execMetaShow },
 };
 
 void addMetaSpec (KeySet * spec)

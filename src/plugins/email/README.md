@@ -28,7 +28,10 @@ kdb mount config.dump /tests/email dump email
 
 # Incorrect address is valid with incomplete configuration
 kdb set spec:/tests/email/noaddr ""
-kdb meta-rm spec:/tests/email/noaddr check/email
+kdb meta rm spec:/tests/email/noaddr check/email
+# STDERR: .*No metakey with name 'check/email' present*
+# RET: 12
+
 kdb set user:/tests/email/noaddr invalid..address@com
 # RET: 0
 

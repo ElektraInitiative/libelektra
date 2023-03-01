@@ -103,6 +103,15 @@ kdb set /tests/tutorial/cascading/key1 "hello world"
 kdb meta set /tests/tutorial/cascading/key1 meta1 hello
 # RET: 2
 # STDERR: .*key does not specify a namespace
+
+kdb meta set user:/tests/tutorial/cascading/key1 meta1 hello
+
+kdb meta rm /tests/tutorial/cascading/key1 meta1
+# RET: 2
+# STDERR: .*key does not specify a namespace
+
+# cleanup
+kdb rm user:/tests/tutorial/cascading/key1
 ```
 
 ## Override Links
