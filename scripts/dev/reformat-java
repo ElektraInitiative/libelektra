@@ -6,7 +6,8 @@
 # @tags reformat
 
 FORMATTER_JAR=/opt/google-java-format.jar
-FORMATTER_DOWNLOAD_URL=https://github.com/google/google-java-format/releases/download/v1.11.0/google-java-format-1.11.0-all-deps.jar
+GOOGLE_JAVA_FORMAT_VER=1.16.0
+FORMATTER_DOWNLOAD_URL=https://github.com/google/google-java-format/releases/download/v${GOOGLE_JAVA_FORMAT_VER}/google-java-format-${GOOGLE_JAVA_FORMAT_VER}-all-deps.jar
 if [ "$1" = "-d" ]; then
 	if [ -f $FORMATTER_JAR ]; then
 		echo "$FORMATTER_JAR already exists!"
