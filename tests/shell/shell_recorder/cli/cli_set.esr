@@ -1,0 +1,73 @@
+Mountpoint: user:/tests/cli/set
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/set/foo with string "bar"
+< kdb set $Mountpoint/foo bar
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/set/foo/two with string "bar2"
+< kdb set $Mountpoint/foo/two bar2
+
+RET: 0
+STDOUT: Create a new key user:/tests/cli/set/foo/three with string "bar3"
+< kdb set $Mountpoint/foo/three bar3
+
+RET: 0
+STDOUT-REGEX: got 3 keys⏎searching user:/tests/cli/set/foo, found: user:/tests/cli/set/foo, options: KDB_O_CALLBACK⏎The resulting keyname is user:/tests/cli/set/foo⏎The resulting value size is 4⏎bar
+< kdb get -v $Mountpoint/foo
+
+STDOUT: bar3
+< kdb get -a $Mountpoint/foo/three
+
+RET: 0
+STDOUT-REGEX: got [0-9]{2,3} keys⏎searching user:/tests/cli/set/foo/three, found: user:/tests/cli/set/foo/three, options: KDB_O_CALLBACK⏎The resulting keyname is user:/tests/cli/set/foo/three⏎The resulting value size is 5⏎bar3
+< kdb get -av $Mountpoint/foo/three
+
+RET: 0
+STDOUT-REGEX: got 3 keys⏎searching spec:/tests/cli/set/foo, found: <nothing>, options: KDB_O_CALLBACK⏎    searching proc:/tests/cli/set/foo, found: <nothing>, options: KDB_O_CALLBACK⏎    searching dir:/tests/cli/set/foo, found: <nothing>, options: KDB_O_CALLBACK⏎    searching user:/tests/cli/set/foo, found: user:/tests/cli/set/foo, options: KDB_O_CALLBACK⏎The resulting keyname is user:/tests/cli/set/foo⏎The resulting value size is 4⏎bar
+< kdb get -v /tests/cli/set/foo
+
+RET: 0
+STDOUT: bar3
+< kdb get -a /tests/cli/set/foo/three
+
+RET: 0
+STDOUT-REGEX: got [0-9]{2,3} keys⏎searching spec:/tests/cli/set/foo/three, found: <nothing>, options: KDB_O_CALLBACK⏎    searching proc:/tests/cli/set/foo/three, found: <nothing>, options: KDB_O_CALLBACK⏎    searching dir:/tests/cli/set/foo/three, found: <nothing>, options: KDB_O_CALLBACK⏎    searching user:/tests/cli/set/foo/three, found: user:/tests/cli/set/foo/three, options: KDB_O_CALLBACK⏎The resulting keyname is user:/tests/cli/set/foo/three⏎The resulting value size is 5⏎bar3
+< kdb get -av /tests/cli/set/foo/three
+
+RET: 0
+STDOUT: bar3
+< kdb get $Mountpoint/foo/three
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/set/foo/four'
+< kdb get $Mountpoint/foo/four
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/set/foo/four'
+< kdb get -a $Mountpoint/foo/four
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/set/foo/four'
+< kdb get -av $Mountpoint/foo/four
+
+RET: 11
+STDERR: Did not find key 'user:/tests/cli/set/foo/four'
+< kdb get -av $Mountpoint/foo/four
+
+RET: 0
+< kdb set user:/sw/elektra/kdb/#0/current/bookmarks/gettest user:/tests/cli/set
+
+RET: 0
+STDOUT: bar3
+< kdb get +gettest/foo/three
+
+RET: 2
+STDERR: .*'gettest/foo/three' is not valid key name.
+< kdb get gettest/foo/three
+
+RET: 0
+< kdb rm user:/sw/elektra/kdb/#0/current/bookmarks/gettest
+
+RET: 0
+< kdb rm -r $Mountpoint/

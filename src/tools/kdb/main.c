@@ -68,6 +68,7 @@ command subcommands[] = {
 	{ "get", addGetSpec, execGet },
 	{ "record-start", addRecordStartSpec, execRecordStart },
 	{ "record-undo", addRecordUndoSpec, execRecordUndo },
+	{ "set", addSetSpec, execSet },
 };
 
 cppCommand cppSubcommands[] = {
@@ -85,7 +86,6 @@ cppCommand cppSubcommands[] = {
 	{ "mv", addMvSpec, execCppMv },
 	{ "namespace", addNamespaceSpec, execCppNamespace },
 	{ "rm", addRmSpec, execCppRm },
-	{ "set", addSetSpec, execCppSet },
 	{ "sget", addSgetSpec, execCppSget },
 	{ "cache", addCacheSpec, execCppCache },
 	{ "complete", addCompleteSpec, execCppComplete },

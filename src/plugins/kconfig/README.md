@@ -75,7 +75,7 @@ kdb get /tests/kconfig/key
 #> Value
 
 # Set the value to Example
-kdb set /tests/kconfig/key Example
+kdb set user:/tests/kconfig/key Example
 
 # Verify that the value has changed in the file too
 cat `kdb file user:/tests/kconfig`
