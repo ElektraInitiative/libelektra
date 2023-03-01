@@ -297,7 +297,7 @@ cat << HERE | kdb import spec:/sw/org/myapp/#0/current ni  \
 fallback/#0=/sw/otherorg/otherapp/#0/current/section/subsection/key  \
 description = A description of the key     \
 HERE
-kdb meta-ls spec:/sw/org/myapp/#0/current # verify if specification is present now
+kdb meta ls spec:/sw/org/myapp/#0/current # verify if specification is present now
 #> infos/plugins
 #> mountpoint
 ```

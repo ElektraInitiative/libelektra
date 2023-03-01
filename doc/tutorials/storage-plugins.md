@@ -57,7 +57,7 @@ kdb set user:/tests/storage/empty ''
 #> Create a new key user:/tests/storage/empty with string ""
 kdb get user:/tests/storage/empty
 #>
-kdb meta-ls user:/tests/storage/empty
+kdb meta ls user:/tests/storage/empty
 #>
 
 # Undo modifications to the key database
@@ -229,7 +229,7 @@ echo '127.0.0.1    localhost # test comment' >  `kdb file user:/tests/hosts`
 kdb get user:/tests/hosts/ipv4/localhost
 #> 127.0.0.1
 
-kdb meta-ls user:/tests/hosts/ipv4/localhost
+kdb meta ls user:/tests/hosts/ipv4/localhost
 #> comment/#0
 #> comment/#0/space
 #> comment/#0/start
@@ -263,7 +263,7 @@ kdb ls user:/tests/hosts/ipv4
 #> user:/tests/hosts/ipv4/localhost.2
 
 # Checking the created Meta KeySet
-kdb meta-ls user:/tests/hosts/ipv4/localhost.1
+kdb meta ls user:/tests/hosts/ipv4/localhost.1
 #> comment/#0
 #> order
 

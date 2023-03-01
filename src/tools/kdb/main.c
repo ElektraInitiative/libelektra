@@ -22,7 +22,6 @@
 #include <list-tools.h>
 #include <ls.h>
 #include <merge.h>
-#include <meta-ls.h>
 #include <meta-rm.h>
 #include <meta-show.h>
 #include <meta.h>
@@ -79,7 +78,6 @@ cppCommand cppSubcommands[] = {
 	{ "find", addFindSpec, execCppFind },
 	{ "ls", addLsSpec, execCppLs },
 	{ "merge", addMergeSpec, execCppMerge },
-	{ "meta-ls", addMetaLsSpec, execCppMetaLs },
 	{ "meta-rm", addMetaRmSpec, execCppMetaRm },
 	{ "meta-show", addMetaShowSpec, execCppMetaShow },
 	{ "mountOdbc", addMountOdbcSpec, execCppMountOdbc },

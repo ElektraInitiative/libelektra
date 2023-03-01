@@ -56,7 +56,7 @@ kdb get system:/tests/file
 #> this is a single line testfile
 
 #  List available attributes of the mounted file
-kdb meta-ls system:/tests/file
+kdb meta ls system:/tests/file
 #> info/atime
 #> info/ctime
 #> info/gid

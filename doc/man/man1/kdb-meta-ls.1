@@ -4,7 +4,7 @@
 .SH "NAME"
 \fBkdb\-meta\-ls\fR \- Print metakeys associated with a key
 .SH "SYNOPSIS"
-\fBkdb meta\-ls <key name>\fR
+\fBkdb meta ls <key name>\fR
 .P
 Where \fBkey name\fR is the name of the key\.
 .SH "DESCRIPTION"
@@ -31,10 +31,22 @@ Explain what is happening\. Prints additional information in case of errors/warn
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
+.SH "RETURN VALUES"
+This command will return the following values as an exit status:
+.br
+.TP
+0
+No errors\.
+.TP
+2
+Not a valid keyname\.
+.TP
+11
+Key not found\.
 .SH "EXAMPLE"
 To see which metakeys are associated with a key:
 .br
-\fBkdb meta\-ls /example/key\fR
+\fBkdb meta ls /example/key\fR
 .SH "SEE ALSO"
 .IP "\(bu" 4
 elektra\-metadata(7) \fIelektra\-metadata\.md\fR for an explanation of the metadata concepts\.

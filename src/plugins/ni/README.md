@@ -77,7 +77,7 @@ kdb meta get spec:/tests/ni/key check/type
 #> char
 
 # Retrieve metadata
-kdb meta-ls spec:/tests/ni/key
+kdb meta ls spec:/tests/ni/key
 #> check/type
 #> metakey
 kdb meta get spec:/tests/ni/key metakey

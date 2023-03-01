@@ -95,7 +95,7 @@ This assumes you compiled the file [`testapp.c`](testapp.c) and it is available 
 ```
 sudo kdb mount -R noresolver specload.eqd spec:/tests/specload specload "app=$(pwd)/testapp"
 
-kdb meta-ls spec:/tests/specload/mykey
+kdb meta ls spec:/tests/specload/mykey
 #> default
 
 kdb get /tests/specload/mykey
@@ -111,7 +111,7 @@ Or in direct file mode:
 # This assumes that `$PWD` is the root of the Elektra source tree.
 sudo kdb mount -R noresolver specload.eqd spec:/tests/specload specload "file=$(pwd)/src/plugins/specload/specload/spec.quickdump"
 
-kdb meta-ls spec:/tests/specload/mykey
+kdb meta ls spec:/tests/specload/mykey
 #> default
 
 kdb get /tests/specload/mykey
