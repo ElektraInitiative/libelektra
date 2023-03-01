@@ -13,6 +13,7 @@
 #include <ls.h>
 #include <mountpoint.h>
 #include <namespace.h>
+#include <set.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -34,6 +35,7 @@ command subcommands[] = {
 	{ "ls", addLsSpec, execLs },
 	{ "mountpoint", addMountpointSpec, execMountpoint },
 	{ "namespace", addNamespaceSpec, execNamespace },
+	{ "set", addSetSpec, execSet },
 };
 
 void printWarnings (Key * errorKey)
