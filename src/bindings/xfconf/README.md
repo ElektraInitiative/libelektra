@@ -79,7 +79,12 @@ export LD_PRELOAD=$CMAKE_BUILD_XFCONFBINDING/lib/libxfconfbinding.so
 ```
 
 Also make sure to use these variables in your shell.
-A possible solution is to copy this file to `.bash_profile`/`~/.zshenv` when using bash/zsh.
+A possible solution is to copy this file to `~/.bash_profile`/`~/.zshenv` when using bash/zsh.
+
+For debugging purposes, it might be useful to output and log all debug messages from glib.
+This can be done by appending the `G_MESSAGES_DEBUG=all` environment variable to all the above-mentioned places.
+All components responsible for starting the Xfce session will log their output wherever the display-manager stores the log files.
+All applications started from the command line will put their debug log to the stderr.
 
 Then, re-login into a text session, a graphical session with Xfce will fail at this point.
 Xfce needs to be populated with some configuration settings.
