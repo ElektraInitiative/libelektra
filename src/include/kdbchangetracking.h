@@ -14,8 +14,8 @@ extern "C" {
 
 typedef struct _ChangeTrackingContext ChangeTrackingContext;
 
-const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb);
-const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (Plugin * plugin);
+const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb) ELEKTRA_WEAK;
+const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (Plugin * plugin) ELEKTRA_WEAK;
 
 ElektraDiff * elektraChangeTrackingCalculateDiff (KeySet * newKeys, const ChangeTrackingContext * context, Key * parentKey);
 
