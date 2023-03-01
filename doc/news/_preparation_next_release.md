@@ -712,6 +712,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Use GoogleTest v1.13.0. _(Mihael Pranjić @mpranj)_
 - Update Debian Sid image to use repository Python modules instead of installing with `pip3` due to upstream debian changes. _(Mihael Pranjić @mpranj)_
 - Debian Bullsye: use clang 13. _(Mihael Pranjić @mpranj)_
+- Update Alpine Linux to 3.17.2. _(Mihael Pranjić @mpranj)_
 
 ## Gradle
 

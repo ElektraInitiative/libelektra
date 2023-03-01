@@ -305,8 +305,8 @@ def dockerInit() {
      */
     DOCKER_IMAGES.alpine = dockerUtils.createDockerImageDesc(
       "alpine", dockerUtils.&idTesting,
-      "./scripts/docker/alpine/3.16",
-      "./scripts/docker/alpine/3.16/Dockerfile"
+      "./scripts/docker/alpine/3.17",
+      "./scripts/docker/alpine/3.17/Dockerfile"
     )
 
     DOCKER_IMAGES.bionic = dockerUtils.createDockerImageDesc(
