@@ -193,7 +193,7 @@ kdb set user:/tests/storage/array/#0 one
 kdb set user:/tests/storage/array/#1 two
 
 # The array parent key stores the basename of the last element
-kdb meta-get user:/tests/storage/array array
+kdb meta get user:/tests/storage/array array
 #> #1
 
 # If you do not add the metakey `array`, then keys
@@ -202,7 +202,7 @@ kdb meta-get user:/tests/storage/array array
 kdb set user:/tests/storage/map ""
 kdb set user:/tests/storage/map/#0 ""
 kdb set user:/tests/storage/map/#1 ""
-kdb meta-get user:/tests/storage/map array
+kdb meta get user:/tests/storage/map array
 # RET: 12
 
 # Undo modifications to the key database
@@ -235,7 +235,7 @@ kdb meta-ls user:/tests/hosts/ipv4/localhost
 #> comment/#0/start
 #> order
 
-kdb meta-get user:/tests/hosts/ipv4/localhost 'comment/#0'
+kdb meta get user:/tests/hosts/ipv4/localhost 'comment/#0'
 #>  test comment
 
 # Undo modifications to the key database
@@ -268,10 +268,10 @@ kdb meta-ls user:/tests/hosts/ipv4/localhost.1
 #> order
 
 # Getting the content of the order
-kdb meta-get user:/tests/hosts/ipv4/localhost.1 order
+kdb meta get user:/tests/hosts/ipv4/localhost.1 order
 #> 1
 
-kdb meta-get user:/tests/hosts/ipv4/localhost.2 order
+kdb meta get user:/tests/hosts/ipv4/localhost.2 order
 #> 2
 
 # adding some additional Keys out of order

@@ -32,7 +32,7 @@ During `spec-mount` the `spec` keys are searched for relevant metadata:
 For example:
 
 ```sh
-kdb meta-get spec:/example/mountpoint mountpoint  # verify that we have a mountpoint here
+kdb meta get spec:/example/mountpoint mountpoint  # verify that we have a mountpoint here
 sudo kdb spec-mount /example/mountpoint  # mounts /example/mountpoint according to
                                          # the specification as found at
                                          # spec:/example/mountpoint

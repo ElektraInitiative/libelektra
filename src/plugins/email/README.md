@@ -56,7 +56,8 @@ kdb set user:/tests/email/adr @
 # RET: 5
 
 # Undo modifications to the database
-kdb rm -rf /tests/email
+kdb rm -rf user:/tests/email
+kdb rm -rf spec:/tests/email
 kdb umount /tests/email
 ```
 

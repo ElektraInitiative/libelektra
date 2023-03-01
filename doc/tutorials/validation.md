@@ -92,7 +92,7 @@ kdb meta-ls spec:/tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb meta-get /tests/spec/test hello
+kdb meta get /tests/spec/test hello
 #> world
 ```
 

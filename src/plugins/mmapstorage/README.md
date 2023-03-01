@@ -80,7 +80,7 @@ kdb get user:/tests/mmapstorage/dir
 #> Directory within the hierarchy.
 kdb get user:/tests/mmapstorage/dir/leaf
 #> A leaf node holding some valuable data.
-kdb meta-get  user:/tests/mmapstorage/dir/leaf superMetaKey
+kdb meta get  user:/tests/mmapstorage/dir/leaf superMetaKey
 #> Metadata is supported too.
 
 # Undo modifications to the database

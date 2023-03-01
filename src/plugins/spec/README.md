@@ -188,11 +188,11 @@ Adding a metakey `array` with value `2` at `user:/tests/sw/org/webserver/alterna
 Adding a specification metakey `description`.
 After this `meta-set` the all the array entries (`#0` and `#1`) should contain the `description`.
 
-### kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#0 description
+### kdb meta get user:/tests/sw/org/webserver/alternative_ports/#0 description
 
 Check if the `description` metakey was copied successfully.
 
-### kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#1 description
+### kdb meta get user:/tests/sw/org/webserver/alternative_ports/#1 description
 
 Check if the `description` metakey was copied successfully.
 
@@ -218,10 +218,10 @@ kdb meta-set user:/tests/sw/org/webserver/alternative_ports array '2'
 kdb meta-set spec:/tests/sw/org/webserver/alternative_ports/# description 'This is an alternative port if any other is already bound'
 # RET: 0
 
-kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#0 description
+kdb meta get user:/tests/sw/org/webserver/alternative_ports/#0 description
 # STDOUT-REGEX: This is an alternative port if any other is already bound
 
-kdb meta-get user:/tests/sw/org/webserver/alternative_ports/#1 description
+kdb meta get user:/tests/sw/org/webserver/alternative_ports/#1 description
 # STDOUT-REGEX: This is an alternative port if any other is already bound
 ```
 
