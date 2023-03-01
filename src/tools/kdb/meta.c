@@ -9,6 +9,7 @@
 #include <meta.h>
 #include <meta-get.h>
 #include <meta-ls.h>
+#include <meta-rm.h>
 #include <meta-set.h>
 #include <meta-show.h>
 
@@ -24,6 +25,7 @@
 command metaSubcommands[] = {
 	{ "get", addMetaGetSpec, execMetaGet },
 	{ "ls", addMetaLsSpec, execMetaLs },
+	{ "rm", addMetaRmSpec, execMetaRm },
 	{ "set", addMetaSetSpec, execMetaSet },
 	{ "show", addMetaShowSpec, execMetaShow },
 };
