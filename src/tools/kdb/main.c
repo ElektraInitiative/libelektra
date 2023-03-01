@@ -12,6 +12,7 @@
 #include <ls.h>
 #include <merge.h>
 #include <namespace.h>
+#include <set.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -33,6 +34,7 @@ command subcommands[] = {
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
 	{ "namespace", addNamespaceSpec, execNamespace },
+	{ "set", addSetSpec, execSet },
 };
 
 void printError (Key * errorKey)

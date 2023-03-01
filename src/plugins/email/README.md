@@ -27,7 +27,7 @@ The package is called `libelektra5-experimental`.
 kdb mount config.dump /tests/email dump email
 
 # Incorrect address is valid with incomplete configuration
-kdb meta-set spec:/tests/email/noaddr check/email
+# kdb meta set spec:/tests/email/noaddr check/email
 kdb set user:/tests/email/noaddr invalid..address@com
 # RET: 0
 

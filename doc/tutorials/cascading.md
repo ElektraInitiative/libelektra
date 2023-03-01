@@ -91,39 +91,14 @@ The **proc** namespace is not accessible by the command line tool **kdb**, as it
 
 The **spec** namespace is used to store metadata about keys and therefore Elektra handles the **spec** namespace differently to other namespaces. The following part of the tutorial is dedicated to the impact of the **spec** namespace on cascading lookups.
 
-## Write Operations and the cascading Namespace
+## Cascading writes are not possible
 
 When performing writing operations, a namespace always has to be specified.
 
 ```sh
-kdb set /tests/tutorial/cascading/#0/current/cascading_write_test value
-# STDERR: Aborting: A cascading write to a non-existent key is ambiguous.
-# RET: 12
-
-kdb meta-set /tests/tutorial/cascading/#0/current/cascading_write_test metakey metavalue
-# STDERR: Aborting: A cascading write to a non-existent key is ambiguous.
-# RET: 12
-```
-
-will both fail, as no matching key exists.
-Since there are multiple hypothetical key names that would match the cascading name (keys of specific namespaces like user:, system:, ...) if they existed, it is not clear what the user intended and thus an error is produced.
-
-To make the previous two operations meaningful, a matching key in the user: namespace is created:
-
-```sh
-kdb set user:/tests/tutorial/cascading/#0/current/cascading_write_test value
-#> Create a new key user:/tests/tutorial/cascading/#0/current/cascading_write_test with string "value"
-```
-
-Now, the operations operate on a well-defined key and succeed this time:
-
-```sh
-kdb set /tests/tutorial/cascading/#0/current/cascading_write_test value
-#> Set string to "value"
-#> Using name user:/tests/tutorial/cascading/#0/current/cascading_write_test
-
-kdb meta-set /tests/tutorial/cascading/#0/current/cascading_write_test metakey metavalue
-#> Using name user:/tests/tutorial/cascading/#0/current/cascading_write_test
+kdb set /tests/tutorial/cascading/key1 "hello world"
+# RET: 2
+# STDERR: .*key does not specify a namespace
 ```
 
 ## Override Links
