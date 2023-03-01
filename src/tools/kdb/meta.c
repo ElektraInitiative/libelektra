@@ -7,6 +7,7 @@
  */
 
 #include <meta.h>
+#include <meta-get.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -17,7 +18,9 @@
 #define GET_OPTION_KEY(options, name) GET_OPT_KEY (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 #define GET_OPTION(options, name) GET_OPT (options, COMMAND_BASE_KEY (COMMAND_NAME) "/" name)
 
-command metaSubcommands[] = {};
+command metaSubcommands[] = {
+	{ "get", addMetaGetSpec, execMetaGet },
+};
 
 void addMetaSpec (KeySet * spec)
 {
