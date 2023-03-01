@@ -87,7 +87,7 @@ Vagrant.configure("2") do |config|
     mkdir -p /opt/gtest \
     && cd /tmp \
     && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/release-1.13.0.tar.gz \
+      -L https://github.com/google/googletest/archive/release-1.12.1.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C /opt/gtest \
     && rm gtest.tar.gz
 
