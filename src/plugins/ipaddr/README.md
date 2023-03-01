@@ -27,7 +27,7 @@ The package is called `libelektra5-experimental`.
 kdb mount config.dump /tests/ipaddr dump ipaddr
 
 # Check the validity of the IP stored in `system:/tests/ipaddr/ipv4`
-kdb meta-set spec:/tests/ipaddr/ipv4 check/ipaddr ipv4
+kdb meta set spec:/tests/ipaddr/ipv4 check/ipaddr ipv4
 
 # Try to set an incorrect IP address
 kdb set system:/tests/ipaddr/ipv4 127.0.0.1337
@@ -41,7 +41,7 @@ kdb get system:/tests/ipaddr/ipv4
 #> 127.0.0.1
 
 # By default the plugin allows both IPv4 and IPv6 addresses
-kdb meta-set spec:/tests/ipaddr/address check/ipaddr ""
+kdb meta set spec:/tests/ipaddr/address check/ipaddr ""
 
 # Set correct IP addresses
 kdb set system:/tests/ipaddr/address 1.2.3.4

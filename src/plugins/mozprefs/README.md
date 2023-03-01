@@ -53,11 +53,11 @@ will all result in `lockPref("a.lock.key", "lock");`
 
 sudo kdb mount prefs.js user:/tests/mozprefs mozprefs
 
-kdb meta-set user:/tests/mozprefs/lock/a/lock/key type boolean
+kdb meta set user:/tests/mozprefs/lock/a/lock/key type boolean
 kdb set user:/tests/mozprefs/lock/a/lock/key true
-kdb meta-set user:/tests/mozprefs/pref/a/default/key type string
+kdb meta set user:/tests/mozprefs/pref/a/default/key type string
 kdb set user:/tests/mozprefs/pref/a/default/key "i'm a default key"
-kdb meta-set user:/tests/mozprefs/user/a/user/key type integer
+kdb meta set user:/tests/mozprefs/user/a/user/key type integer
 kdb set user:/tests/mozprefs/user/a/user/key 123
 
 cat `kdb file user:/tests/mozprefs`

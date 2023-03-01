@@ -168,11 +168,11 @@ By entering `kdb plugin-info type` in the commandline, we can find out how to us
 It turns out that this plugin allows us to define a list of valid values for our keys via the metavalue `check/enum`.
 
 ```sh
-kdb meta-set user:/example/enumtest/fruit check/enum "#2"
-kdb meta-set user:/example/enumtest/fruit check/enum/#0 apple
-kdb meta-set user:/example/enumtest/fruit check/enum/#1 banana
-kdb meta-set user:/example/enumtest/fruit check/enum/#2 grape
-kdb meta-set user:/example/enumtest/fruit check/type enum
+kdb meta set user:/example/enumtest/fruit check/enum "#2"
+kdb meta set user:/example/enumtest/fruit check/enum/#0 apple
+kdb meta set user:/example/enumtest/fruit check/enum/#1 banana
+kdb meta set user:/example/enumtest/fruit check/enum/#2 grape
+kdb meta set user:/example/enumtest/fruit check/type enum
 kdb set user:/example/enumtest/fruit tomato
 # RET:5
 # this fails because tomato is not in the list of valid values

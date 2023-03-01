@@ -121,7 +121,7 @@ Note that the value is empty since we just want to specify the key.
 Now let's show the actual power of Elektra by setting metadata to our specification:
 
 ```sh
-sudo kdb meta-set "spec:/example/hello/what" default World
+sudo kdb meta set "spec:/example/hello/what" default World
 ```
 
 The metakey `default` (having the value `World`) is now associated with the key `spec:/example/hello/what`.
@@ -130,7 +130,7 @@ It should be noted that the previous setting of `what` is in this scenario redun
 Now let's mount our specification:
 
 ```sh
-sudo kdb meta-set "spec:/example/hello" mountpoint "hello.ni"
+sudo kdb meta set "spec:/example/hello" mountpoint "hello.ni"
 sudo kdb spec-mount "/example/hello" ni
 ```
 

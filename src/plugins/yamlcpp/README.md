@@ -118,7 +118,7 @@ kdb get user:/tests/yamlcpp/sunny/$(kdb meta get user:/tests/yamlcpp/sunny array
 #> The Waitress
 
 # The plugin also supports empty arrays (arrays without any elements)
-kdb meta-set user:/tests/yamlcpp/empty array ''
+kdb meta set user:/tests/yamlcpp/empty array ''
 kdb export user:/tests/yamlcpp/empty yamlcpp
 #> []
 
@@ -128,7 +128,7 @@ kdb set user:/tests/yamlcpp/movies ""
 kdb set user:/tests/yamlcpp/movies/#0 'A Silent Voice'
 kdb export user:/tests/yamlcpp/movies yamlcpp
 #> "#0": A Silent Voice
-kdb meta-set user:/tests/yamlcpp/movies array ''
+kdb meta set user:/tests/yamlcpp/movies array ''
 kdb export user:/tests/yamlcpp/movies yamlcpp
 #> - A Silent Voice
 
@@ -151,7 +151,7 @@ kdb set user:/tests/yamlcpp/array ""
 kdb set user:/tests/yamlcpp/array/#0 scalar
 kdb set user:/tests/yamlcpp/array/#1/key value
 kdb set user:/tests/yamlcpp/array/#1/🔑 🙈
-kdb meta-set user:/tests/yamlcpp/array array '#1'
+kdb meta set user:/tests/yamlcpp/array array '#1'
 
 kdb ls user:/tests/yamlcpp
 #> user:/tests/yamlcpp/array
@@ -206,11 +206,11 @@ sudo kdb mount config.yaml user:/tests/yamlcpp yamlcpp
 
 kdb set      user:/tests/yamlcpp/#0/map/#1/#0 value
 kdb set      user:/tests/yamlcpp ""
-kdb meta-set user:/tests/yamlcpp           array '#0'
+kdb meta set user:/tests/yamlcpp           array '#0'
 kdb set      user:/tests/yamlcpp/#0/map ""
-kdb meta-set user:/tests/yamlcpp/#0/map    array '#1'
+kdb meta set user:/tests/yamlcpp/#0/map    array '#1'
 kdb set      user:/tests/yamlcpp/#0/map/#1 ""
-kdb meta-set user:/tests/yamlcpp/#0/map/#1 array '#0'
+kdb meta set user:/tests/yamlcpp/#0/map/#1 array '#0'
 kdb file user:/tests/yamlcpp | xargs cat
 #> - "___dirdata: "
 #> - map:
@@ -270,8 +270,8 @@ kdb meta get user:/tests/yamlcpp/🔑 comment
 
 # Add a new key and add some metadata to the new key
 kdb set user:/tests/yamlcpp/brand new
-kdb meta-set user:/tests/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
-kdb meta-set user:/tests/yamlcpp/brand rationale "Because I Love It"
+kdb meta set user:/tests/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
+kdb meta set user:/tests/yamlcpp/brand rationale "Because I Love It"
 
 # Retrieve metadata
 kdb meta-ls user:/tests/yamlcpp/brand
@@ -290,7 +290,7 @@ We can also invoke additional plugins that use metadata like `type`.
 ```sh
 sudo kdb mount config.yaml user:/tests/yamlcpp yamlcpp type
 kdb set user:/tests/yamlcpp/typetest/number 21
-kdb meta-set user:/tests/yamlcpp/typetest/number check/type short
+kdb meta set user:/tests/yamlcpp/typetest/number check/type short
 
 kdb set user:/tests/yamlcpp/typetest/number "One"
 # RET: 5
@@ -377,7 +377,7 @@ kdb meta get user:/tests/yamlcpp/truth type
 
 # Add another boolean value
 kdb set user:/tests/yamlcpp/success 0
-kdb meta-set user:/tests/yamlcpp/success type boolean
+kdb meta set user:/tests/yamlcpp/success type boolean
 kdb get user:/tests/yamlcpp/success
 #> 0
 kdb export user:/tests/yamlcpp/success yamlcpp
@@ -481,7 +481,7 @@ directory:
 sudo kdb mount test.yaml user:/tests/yamlcpp yamlcpp
 
 kdb set user:/tests/yamlcpp/directory 'Directory Data'
-kdb meta-set user:/tests/yamlcpp/directory comment 'Directory Metadata'
+kdb meta set user:/tests/yamlcpp/directory comment 'Directory Metadata'
 kdb set user:/tests/yamlcpp/directory/file 'Leaf Data'
 
 kdb ls user:/tests/yamlcpp/directory

@@ -41,7 +41,7 @@ do_tests() {
 	succeed_if "application could not read default config (spec)"
 
 	"$KDB" set "$UKEY/root" "1"
-	"$KDB" meta-set "$UKEY/format" array "#2"
+	"$KDB" meta set "$UKEY/format" array "#2"
 
 	"$KDB" set "$UKEY/format/#0/pattern" "*.txt"
 	"$KDB" set "$UKEY/format/#0/indent/style" "tab"

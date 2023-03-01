@@ -37,7 +37,6 @@
 #include <memory>
 #include <metals.hpp>
 #include <metaremove.hpp>
-#include <metaset.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
 #include <plugincheck.hpp>
@@ -90,7 +89,6 @@ public:
 		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-show", std::make_shared<Cnstancer<ShowMetaCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-rm", std::make_shared<Cnstancer<MetaRemoveCommand>> ()));
-		m_factory.insert (std::make_pair ("meta-set", std::make_shared<Cnstancer<MetaSetCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-ls", std::make_shared<Cnstancer<MetaLsCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-info", std::make_shared<Cnstancer<PluginInfoCommand>> ()));
 		m_factory.insert (std::make_pair ("test", std::make_shared<Cnstancer<TestCommand>> ()));

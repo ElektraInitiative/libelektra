@@ -42,10 +42,10 @@ sudo kdb mount blacklist.ecf /tests/blacklist blacklist
 # valid initial value + setup valid blacklist list
 kdb set user:/tests/blacklist ""
 kdb set user:/tests/blacklist/value water
-kdb meta-set spec:/tests/blacklist/value check/blacklist '#2'
-kdb meta-set spec:/tests/blacklist/value check/blacklist/#0 fire
-kdb meta-set spec:/tests/blacklist/value check/blacklist/#1 air
-kdb meta-set spec:/tests/blacklist/value check/blacklist/#2 cold/water
+kdb meta set spec:/tests/blacklist/value check/blacklist '#2'
+kdb meta set spec:/tests/blacklist/value check/blacklist/#0 fire
+kdb meta set spec:/tests/blacklist/value check/blacklist/#1 air
+kdb meta set spec:/tests/blacklist/value check/blacklist/#2 cold/water
 
 # should succeed
 kdb set user:/tests/blacklist/value earth
@@ -70,8 +70,8 @@ It is also possible to blacklist empty values:
 
 ```sh
 kdb set user:/tests/blacklist/empty water
-kdb meta-set spec:/tests/blacklist/empty check/blacklist '#0'
-kdb meta-set spec:/tests/blacklist/empty check/blacklist/#0 ''
+kdb meta set spec:/tests/blacklist/empty check/blacklist '#0'
+kdb meta set spec:/tests/blacklist/empty check/blacklist/#0 ''
 
 # should succeed
 kdb set user:/tests/blacklist/empty earth
@@ -82,7 +82,7 @@ kdb set user:/tests/blacklist/empty ''
 # ERROR:C03200
 
 # Undo changes
-kdb rm -r spec:/tests/blacklist
+kdb rm -rf spec:/tests/blacklist
 kdb rm -r user:/tests/blacklist || kdb rm -r system:/tests/blacklist
 # sudo kdb umount spec:/tests/blacklist
 sudo kdb umount /tests/blacklist

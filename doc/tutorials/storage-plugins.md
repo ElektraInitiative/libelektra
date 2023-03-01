@@ -77,7 +77,7 @@ In the test we also use the [`type` plugin](../../src/plugins/type/README.md) to
 sudo kdb mount config.yaml user:/tests/storage yamlcpp type
 
 kdb set user:/tests/storage/bool/value true
-kdb meta-set user:/tests/storage/bool/value type boolean
+kdb meta set user:/tests/storage/bool/value type boolean
 kdb get user:/tests/storage/bool/value
 #> 1
 
@@ -188,7 +188,7 @@ are normal key-value pairs. The following example shows that the storage plugin 
 sudo kdb mount config.yaml user:/tests/storage yamlcpp
 
 # Create an array containing two elements
-kdb meta-set user:/tests/storage/array array ''
+kdb meta set user:/tests/storage/array array ''
 kdb set user:/tests/storage/array/#0 one
 kdb set user:/tests/storage/array/#1 two
 
@@ -286,8 +286,8 @@ cat `kdb file user:/tests/hosts`
 #> 127.0.0.1	localhost.2
 
 # setting the correct order
-kdb meta-set user:/tests/hosts/ipv4/localhost.4 order 4
-kdb meta-set user:/tests/hosts/ipv4/localhost.3 order 3
+kdb meta set user:/tests/hosts/ipv4/localhost.4 order 4
+kdb meta set user:/tests/hosts/ipv4/localhost.3 order 3
 
 # lines in hosts file are also in correct order afterwards
 cat `kdb file user:/tests/hosts`

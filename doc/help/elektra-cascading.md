@@ -35,7 +35,7 @@ They can be used like this:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb meta-set spec:/test override/#0 /overrides/test
+sudo kdb meta set spec:/test override/#0 /overrides/test
 ```
 
 ## CASCADING

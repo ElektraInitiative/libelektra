@@ -40,7 +40,7 @@ sudo kdb mount mathcheck.dump user:/tests/mathcheck mathcheck
 kdb set user:/tests/mathcheck/a 3.1
 kdb set user:/tests/mathcheck/b 4.5
 kdb set user:/tests/mathcheck/k 7.6
-kdb meta-set user:/tests/mathcheck/k check/math "== + ../a ../b"
+kdb meta set user:/tests/mathcheck/k check/math "== + ../a ../b"
 
 # should fail
 kdb set user:/tests/mathcheck/k 7.7
@@ -54,7 +54,7 @@ kdb set user:/tests/mathcheck/k 7.7
 To calculate values on-demand you can use:
 
 ```sh
-kdb meta-set user:/tests/mathcheck/k check/math ":= + @/a @/b"
+kdb meta set user:/tests/mathcheck/k check/math ":= + @/a @/b"
 kdb set user:/tests/mathcheck/a 8.0
 kdb set user:/tests/mathcheck/b 4.5
 
@@ -70,7 +70,7 @@ kdb get user:/tests/mathcheck/k
 It also works with constants:
 
 ```sh
-kdb meta-set user:/tests/mathcheck/k check/math ":= + ../a '5'"
+kdb meta set user:/tests/mathcheck/k check/math ":= + ../a '5'"
 kdb set user:/tests/mathcheck/a 5.5
 
 kdb get user:/tests/mathcheck/k

@@ -19,7 +19,7 @@ RET: 0
 STDOUT-REGEX: test.?ey
 < kdb ls $Mountpoint
 
-< kdb meta-set $Mountpoint/testkey metacomment "comment blaa"
+< kdb meta set $Mountpoint/testkey metacomment "comment blaa"
 
 < kdb get $Mountpoint/michgibtsgarnicht
 

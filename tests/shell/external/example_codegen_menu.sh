@@ -56,7 +56,7 @@ do_tests() {
 
 	EOF
 
-	"$KDB" meta-set -f "user:/sw/example/menu/#0/current/menu" "array" "#4"
+	"$KDB" meta set -f "user:/sw/example/menu/#0/current/menu" "array" "#4"
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#0/name" "Main Menu"
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#1/name" "Menu 1"
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#2/name" "Menu 2"
@@ -68,11 +68,11 @@ do_tests() {
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#3/command" 'echo "Hello from Menu 2.1"'
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#4/command" 'echo "Hello from Menu 2.2"'
 
-	"$KDB" meta-set -f "user:/sw/example/menu/#0/current/menu/#0/children" "array" "#1"
+	"$KDB" meta set -f "user:/sw/example/menu/#0/current/menu/#0/children" "array" "#1"
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#0/children/#0" "@/menu/#1"
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#0/children/#1" "@/menu/#2"
 
-	"$KDB" meta-set -f "user:/sw/example/menu/#0/current/menu/#2/children" "array" "#1"
+	"$KDB" meta set -f "user:/sw/example/menu/#0/current/menu/#2/children" "array" "#1"
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#2/children/#0" "@/menu/#3"
 	"$KDB" set -f "user:/sw/example/menu/#0/current/menu/#2/children/#1" "@/menu/#4"
 

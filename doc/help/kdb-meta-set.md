@@ -2,7 +2,7 @@
 
 ## SYNOPSIS
 
-`kdb meta-set <key name> <metaname> [<metavalue>]`
+`kdb meta set <key name> <metaname> [<metavalue>]`
 
 Where `key name` is the name of the key that the metakey is associated with,
 `metaname` is the name of the metakey the user would like to set the value of (or create),
@@ -58,23 +58,23 @@ This command will return the following values as an exit status:<br>
 ## EXAMPLES
 
 To set a metakey called `description` associated with the key `user:/example/key` to the value `Hello World!`:<br>
-`kdb meta-set spec:/example/key description "Hello World!"`
+`kdb meta set spec:/example/key description "Hello World!"`
 
 To create a new key `spec:/example/newkey` with a null value (if it did not exist before)
 and a metakey `namespace/#0` associated with it to the value `system`:<br>
-`kdb meta-set /example/newkey "namespace/#0" system`
+`kdb meta set /example/newkey "namespace/#0" system`
 
 To create an override link for a `/test` key:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb meta-set spec:/test override/#0 /overrides/test
+sudo kdb meta set spec:/test override/#0 /overrides/test
 ```
 
 To remove it:
 
 ```sh
-sudo kdb meta-set spec:/test override/#0
+sudo kdb meta set spec:/test override/#0
 ```
 
 ## SEE ALSO

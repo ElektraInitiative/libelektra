@@ -104,9 +104,9 @@ XSD transformations, schemas or DTDs are not supported yet.
 sudo kdb mount xerces.xml user:/tests/xercesfile xerces
 
 kdb set user:/tests/xercesfile foo
-kdb meta-set user:/tests/xercesfile xerces/rootname xerces
+kdb meta set user:/tests/xercesfile xerces/rootname xerces
 kdb set user:/tests/xercesfile/bar bar
-kdb meta-set user:/tests/xercesfile/bar meta "da_ta"
+kdb meta set user:/tests/xercesfile/bar meta "da_ta"
 
 kdb meta get user:/tests/xercesfile xerces/rootname
 #> xerces

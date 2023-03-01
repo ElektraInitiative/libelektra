@@ -41,7 +41,7 @@ if is_plugin_available dump && is_plugin_available list && is_plugin_available s
 	[ $? != 0 ]
 	succeed_if "getting cascading should fail if nothing is there"
 
-	"$KDB" meta-set spec:$ROOT_MOUNTPOINT/first default 20
+	"$KDB" meta set spec:$ROOT_MOUNTPOINT/first default 20
 	succeed_if "could not set meta"
 
 	[ "x$("$KDB" get $ROOT_MOUNTPOINT/first)" = "x20" ]

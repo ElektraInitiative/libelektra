@@ -41,7 +41,7 @@ if is_plugin_available dump && is_plugin_available list && is_plugin_available s
 	[ $? != 0 ]
 	succeed_if "getting cascading should fail if nothing is there"
 
-	"$KDB" meta-set spec:$ROOT_MOUNTPOINT/first type unsigned_short
+	"$KDB" meta set spec:$ROOT_MOUNTPOINT/first type unsigned_short
 	succeed_if "could not set meta"
 
 	"$KDB" set system:$ROOT_MOUNTPOINT/first abcd

@@ -131,9 +131,9 @@ setAutoPrefs() {
 		echo "Error, Mountpoint $PrefsSetupMountPoint already in use"
 		exit 1
 	fi
-	kdb meta-set "${PrefsSetupMountPoint}/user/elektra/config/file" type string &> /dev/null
+	kdb meta set "${PrefsSetupMountPoint}/user/elektra/config/file" type string &> /dev/null
 	kdb set "${PrefsSetupMountPoint}/user/elektra/config/file" "$Decoy" &> /dev/null
-	kdb meta-set "${PrefsSetupMountPoint}/user/elektra/config/reload_trigger_port" type string &> /dev/null
+	kdb meta set "${PrefsSetupMountPoint}/user/elektra/config/reload_trigger_port" type string &> /dev/null
 	kdb set "${PrefsSetupMountPoint}/user/elektra/config/reload_trigger_port" "$TriggerPort" &> /dev/null
 	errCount=$(testAutoPrefs)
 	kdb umount "$PrefsSetupMountPoint" &> /dev/null
@@ -176,17 +176,17 @@ setPreload() {
 
 setTestPrefs() {
 	kdb mount "$ConfigFile" "$MountPoint" mozprefs shell execute/set="echo -n \"reload\"|nc 127.0.0.1 $TriggerPort"
-	kdb meta-set "${MountPoint}/lock/a/lock/1" type string
+	kdb meta set "${MountPoint}/lock/a/lock/1" type string
 	kdb set "${MountPoint}/lock/a/lock/1" "lock1"
-	kdb meta-set "${MountPoint}/lock/a/lock/2" type string
+	kdb meta set "${MountPoint}/lock/a/lock/2" type string
 	kdb set "${MountPoint}/lock/a/lock/2" "lock2"
-	kdb meta-set "${MountPoint}/pref/a/default/1" type integer
+	kdb meta set "${MountPoint}/pref/a/default/1" type integer
 	kdb set "${MountPoint}/pref/a/default/1" 1
-	kdb meta-set "${MountPoint}/pref/a/default/2" type integer
+	kdb meta set "${MountPoint}/pref/a/default/2" type integer
 	kdb set "${MountPoint}/pref/a/default/2" 2
-	kdb meta-set "${MountPoint}/user/a/user/t" type boolean
+	kdb meta set "${MountPoint}/user/a/user/t" type boolean
 	kdb set "${MountPoint}/user/a/user/t" true
-	kdb meta-set "${MountPoint}/user/a/user/f" type boolean
+	kdb meta set "${MountPoint}/user/a/user/f" type boolean
 	kdb set "${MountPoint}/user/a/user/f" false
 
 }

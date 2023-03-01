@@ -76,19 +76,19 @@ do_tests() {
 	"$KDB" set -f "$UKEY/tree/leafB" ""
 	"$KDB" set -f "$UKEY/tree/leafB/text" "leafB"
 
-	"$KDB" meta-set -f "$UKEY/tree/root/children" "array" "#3"
+	"$KDB" meta set -f "$UKEY/tree/root/children" "array" "#3"
 	"$KDB" set -f "$UKEY/tree/root/children/#0" "../../../child1"
 	"$KDB" set -f "$UKEY/tree/root/children/#1" "../../../child2"
 	"$KDB" set -f "$UKEY/tree/root/children/#3" "../../../child4"
 
-	"$KDB" meta-set -f "$UKEY/tree/child4/children" "array" "#1"
+	"$KDB" meta set -f "$UKEY/tree/child4/children" "array" "#1"
 	"$KDB" set -f "$UKEY/tree/child4/children/#0" "../../../grandchildA"
 	"$KDB" set -f "$UKEY/tree/child4/children/#1" "../../../grandchildB"
 
-	"$KDB" meta-set -f "$UKEY/tree/grandchildA/children" "array" "#0"
+	"$KDB" meta set -f "$UKEY/tree/grandchildA/children" "array" "#0"
 	"$KDB" set -f "$UKEY/tree/grandchildA/children/#0" "../../../leafA"
 
-	"$KDB" meta-set -f "$UKEY/tree/grandchildB/children" "array" "#0"
+	"$KDB" meta set -f "$UKEY/tree/grandchildB/children" "array" "#0"
 	"$KDB" set -f "$UKEY/tree/grandchildB/children/#0" "../../../leafB"
 
 	"$KDB" set -f "$UKEY/root" "../tree/root"

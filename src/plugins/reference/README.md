@@ -111,7 +111,7 @@ and therefore cannot have a value (other than the empty string `""`).
 sudo kdb mount referencetest.dump user:/tests/reference dump reference
 
 # Mark a key as a single reference
-kdb meta-set user:/tests/reference/singleref check/reference single
+kdb meta set user:/tests/reference/singleref check/reference single
 
 # Try setting an invalid reference
 kdb set user:/tests/reference/singleref user:/tests/reference/referred1
