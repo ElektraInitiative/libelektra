@@ -11,9 +11,10 @@ RUN apt-get update && apt-get -y install \
         bison \
         build-essential \
         checkinstall \
-        clang-13 \
-        clang-format-13 \
+        clang-15 \
+        clang-format-15 \
         cmake \
+        cmake-format \
         curl \
     	dbus-x11 \
         dh-lua \
@@ -47,14 +48,14 @@ RUN apt-get update && apt-get -y install \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \
-        llvm-13 \
+        llvm-15 \
         moreutils \
         ninja-build \
         npm \
         openjdk-17-jdk \
         pkg-config \
         python3-dev \
-        python3-pip \
+        python3-wheel \
         ruby \
         ruby-dev \
         shellcheck \
@@ -67,16 +68,11 @@ RUN apt-get update && apt-get -y install \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Add Clang 13 to path
-ENV PATH="/usr/lib/llvm-13/bin:$PATH"
+# Add Clang 15 to path
+ENV PATH="/usr/lib/llvm-15/bin:$PATH"
 
 # Update cache for shared libraries
 RUN ldconfig
-
-# Build dependency for libelektra-fuse
-RUN pip3 install wheel
-
-RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

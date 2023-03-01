@@ -128,7 +128,7 @@ public:
 	inline void copy (const Key & other, elektraCopyFlags flags = KEY_CP_ALL);
 	inline void clear ();
 
-	inline Key * operator-> ();
+	inline Key * operator->();
 
 	inline ckdb::Key * getKey () const;
 	inline ckdb::Key * operator* () const;
@@ -180,7 +180,7 @@ public:
 
 	inline bool operator== (const Key & k) const;
 	inline bool operator!= (const Key & k) const;
-	inline bool operator< (const Key & other) const;
+	inline bool operator<(const Key & other) const;
 	inline bool operator<= (const Key & other) const;
 	inline bool operator> (const Key & other) const;
 	inline bool operator>= (const Key & other) const;
@@ -812,7 +812,7 @@ ckdb::Key * Key::operator* () const
  * Needed for KeySet iterators.
  * @see KeySetIterator
  */
-Key * Key::operator-> ()
+Key * Key::operator->()
 {
 	return this;
 }
@@ -986,7 +986,7 @@ inline bool Key::operator!= (const Key & k) const
  *
  * @retval true < 0
  */
-inline bool Key::operator< (const Key & other) const
+inline bool Key::operator<(const Key & other) const
 {
 	return ckdb::keyCmp (key, other.key) < 0;
 }

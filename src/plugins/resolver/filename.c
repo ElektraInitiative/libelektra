@@ -579,7 +579,7 @@ static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile t
 	{
 		// now put together the filename
 		filename = handle->relPath[0] == '/' ? elektraFormat ("%s%s", dn, handle->relPath) :
-							     elektraFormat ("%s/" KDB_DB_DIR "/%s", dn, handle->relPath);
+						       elektraFormat ("%s/" KDB_DB_DIR "/%s", dn, handle->relPath);
 
 		struct stat buf;
 		if (stat (filename, &buf) == 0)
@@ -603,7 +603,7 @@ static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile t
 		// nothing found, so we use most specific
 		elektraFree (filename);
 		filename = handle->relPath[0] == '/' ? elektraFormat ("%s%s", cwd, handle->relPath) :
-							     elektraFormat ("%s/" KDB_DB_DIR "/%s", cwd, handle->relPath);
+						       elektraFormat ("%s/" KDB_DB_DIR "/%s", cwd, handle->relPath);
 	}
 
 	elektraFree (cwd);

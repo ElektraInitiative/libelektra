@@ -100,21 +100,21 @@ static void benchmarkHashFunctionTime (char * name)
 
 				struct timeval start;
 				struct timeval end;
-				__asm__("");
+				__asm__ ("");
 				gettimeofday (&start, 0);
-				__asm__("");
+				__asm__ ("");
 				// measure
 				for (elektraCursor it = 0; it < ksSize; ++it)
 				{
 					key = ksAtCursor (ks, it);
-					__asm__("");
+					__asm__ ("");
 					opmphmHashfunction (keyName (key), strlen (keyName (key)), 1337);
-					__asm__("");
+					__asm__ ("");
 				}
 
-				__asm__("");
+				__asm__ ("");
 				gettimeofday (&end, 0);
-				__asm__("");
+				__asm__ ("");
 				results[i * (numberOfShapes * runs) + s * runs + r] =
 					(end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 			}
@@ -1036,15 +1036,15 @@ static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, si
 		}
 
 		// START MEASUREMENT
-		__asm__("");
+		__asm__ ("");
 		gettimeofday (&start, 0);
-		__asm__("");
+		__asm__ ("");
 
 		keyFound = ksLookup (ks, keySearchFor, KDB_O_OPMPHM | KDB_O_NOCASCADING);
 
-		__asm__("");
+		__asm__ ("");
 		gettimeofday (&end, 0);
-		__asm__("");
+		__asm__ ("");
 		// END MEASUREMENT
 
 		// save result
@@ -1291,9 +1291,9 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		int32_t actualSearchSeed = searchSeed;
 
 		// START MEASUREMENT
-		__asm__("");
+		__asm__ ("");
 		gettimeofday (&start, 0);
-		__asm__("");
+		__asm__ ("");
 
 		for (size_t s = 1; s <= searches; ++s)
 		{
@@ -1305,9 +1305,9 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 			elektraRand (&actualSearchSeed);
 		}
 
-		__asm__("");
+		__asm__ ("");
 		gettimeofday (&end, 0);
-		__asm__("");
+		__asm__ ("");
 		// END MEASUREMENT
 
 		// sanity checks
@@ -1583,9 +1583,9 @@ static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double l
 		}
 
 		// START MEASUREMENT
-		__asm__("");
+		__asm__ ("");
 		gettimeofday (&start, 0);
-		__asm__("");
+		__asm__ ("");
 
 		if (!hcreate_r (nI / load, htab))
 		{
@@ -1604,9 +1604,9 @@ static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double l
 			}
 		}
 
-		__asm__("");
+		__asm__ ("");
 		gettimeofday (&end, 0);
-		__asm__("");
+		__asm__ ("");
 		// END MEASUREMENT
 
 		// save result
@@ -1943,9 +1943,9 @@ static void benchmarkPredictionTime (char * name)
 				Key * keyFound;
 
 				// START MEASUREMENT
-				__asm__("");
+				__asm__ ("");
 				gettimeofday (&start, 0);
-				__asm__("");
+				__asm__ ("");
 
 				// for all sequences
 				for (size_t s = 0; s < numberOfSequences; ++s)
@@ -1975,9 +1975,9 @@ static void benchmarkPredictionTime (char * name)
 					if (ks->data->opmphm) opmphmClear (ks->data->opmphm);
 				}
 
-				__asm__("");
+				__asm__ ("");
 				gettimeofday (&end, 0);
-				__asm__("");
+				__asm__ ("");
 				// END MEASUREMENT
 
 				// save result
@@ -1998,9 +1998,9 @@ static void benchmarkPredictionTime (char * name)
 				Key * keyFound;
 
 				// START MEASUREMENT
-				__asm__("");
+				__asm__ ("");
 				gettimeofday (&start, 0);
-				__asm__("");
+				__asm__ ("");
 
 				// for all sequences
 				for (size_t s = 0; s < numberOfSequences; ++s)
@@ -2021,9 +2021,9 @@ static void benchmarkPredictionTime (char * name)
 					}
 				}
 
-				__asm__("");
+				__asm__ ("");
 				gettimeofday (&end, 0);
-				__asm__("");
+				__asm__ ("");
 				// END MEASUREMENT
 
 				// save result

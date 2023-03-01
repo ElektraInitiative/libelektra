@@ -103,7 +103,7 @@ public:
 	 */
 	void check (std::vector<std::string> & warnings);
 
-	ckdb::Plugin * operator-> ();
+	ckdb::Plugin * operator->();
 
 	/**
 	 * Gets the whole string of an information item.

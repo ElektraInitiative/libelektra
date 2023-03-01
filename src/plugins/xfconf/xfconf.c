@@ -211,9 +211,8 @@ int elektraXfconfSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 			KeySet * arrayKeySet = elektraArrayGet (cur, returned);
 			Key * arrayKey;
 			GPtrArray * xfconfArray = g_ptr_array_new ();
-			for (elektraCursor arrayIt = 0; it < ksGetSize (arrayKeySet); ++arrayIt)
+			while ((arrayKey = ksNext (arrayKeySet)) != NULL)
 			{
-				arrayKey = ksNext (arrayKeySet);
 				gchar * itemValue = elektraStrDup (keyString (arrayKey));
 				keyDel (arrayKey);
 				ELEKTRA_LOG_DEBUG ("found array value %s\n", itemValue);

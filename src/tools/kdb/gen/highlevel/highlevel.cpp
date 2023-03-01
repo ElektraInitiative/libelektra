@@ -73,7 +73,7 @@ static inline std::string getArgDescription (const kdb::Key & key, kdb_long_long
 	auto indexStr = std::to_string (index);
 	auto metaName = "gen/arg/description/#" + std::string (indexStr.length () - 1, '_') + indexStr;
 	return key.hasMeta (metaName) ? key.getMeta<std::string> (metaName) :
-					      "Replaces occurrence no. " + indexStr + " of " + kind + " in the keyname.";
+					"Replaces occurrence no. " + indexStr + " of " + kind + " in the keyname.";
 }
 
 static void getKeyArgs (const kdb::Key & key, const size_t parentKeyParts, kainjow::mustache::list & args, std::string & fmtString)

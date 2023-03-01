@@ -166,7 +166,7 @@ public:
 	{
 		return get ();
 	}
-	pointer operator-> () const
+	pointer operator->() const
 	{
 		return get ();
 	}
@@ -237,7 +237,7 @@ inline bool operator!= (const KeySetIterator & lhs, const KeySetIterator & rhs)
 }
 
 // Random access iterator requirements
-inline bool operator< (const KeySetIterator & lhs, const KeySetIterator & rhs)
+inline bool operator<(const KeySetIterator & lhs, const KeySetIterator & rhs)
 {
 	return lhs.base () < rhs.base ();
 }
@@ -307,7 +307,7 @@ public:
 	{
 		return get ();
 	}
-	pointer operator-> () const
+	pointer operator->() const
 	{
 		return get ();
 	}
@@ -378,7 +378,7 @@ inline bool operator!= (const KeySetReverseIterator & lhs, const KeySetReverseIt
 }
 
 // Random access iterator requirements
-inline bool operator< (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs)
+inline bool operator<(const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs)
 {
 	return lhs.base () < rhs.base ();
 }

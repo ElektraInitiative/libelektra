@@ -61,7 +61,7 @@ static void benchmarkIterate (KeySet * ks)
 	for (it = 0; it < ksSize; ++it)
 	{
 		ksAtCursor (ks, it);
-		__asm__("");
+		__asm__ ("");
 	}
 }
 

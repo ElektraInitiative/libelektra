@@ -21,7 +21,7 @@ bool StructFieldsProcessor::shouldGenerateUnion (const kdb::Key & key)
 std::string StructFieldsProcessor::discriminatorField (const kdb::Key & key, const std::string & refFieldName)
 {
 	auto result = key.hasMeta ("gen/reference/discriminator") ? key.getMeta<std::string> ("gen/reference/discriminator") :
-									  refFieldName + "Discriminator";
+								    refFieldName + "Discriminator";
 	escapeNonAlphaNum (result);
 	return result;
 }
@@ -29,7 +29,7 @@ std::string StructFieldsProcessor::discriminatorField (const kdb::Key & key, con
 std::string StructFieldsProcessor::arraySizeName (const kdb::Key & key, const std::string & arrayFieldName)
 {
 	auto result = key.hasMeta ("gen/struct/array/sizefield") ? key.getMeta<std::string> ("gen/struct/array/sizefield") :
-									 arrayFieldName + "Size";
+								   arrayFieldName + "Size";
 	escapeNonAlphaNum (result);
 	return result;
 }
@@ -44,7 +44,7 @@ std::string StructFieldsProcessor::getName (const kdb::Key & key, const std::str
 std::string StructFieldsProcessor::discriminatorKey (const kdb::Key & key)
 {
 	auto result = key.hasMeta ("gen/reference/discriminator/key") ? key.getMeta<std::string> ("gen/reference/discriminator/key") :
-									      "discriminator";
+									"discriminator";
 	escapeNonAlphaNum (result);
 	return result;
 }

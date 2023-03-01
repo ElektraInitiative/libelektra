@@ -259,7 +259,7 @@ __attribute__ ((noinline)) void benchmark_native_sum_asm ()
 	for (long long i = 0; i < iterations; ++i)
 	{
 		x += add_native (val, val);
-		__asm__("");
+		__asm__ ("");
 	}
 	//{end}
 	t.stop ();
@@ -293,7 +293,7 @@ __attribute__ ((noinline)) void benchmark_contextual_noif_sum_asm (kdb::Environm
 	for (long long i = 0; i < iterations; ++i)
 	{
 		x += add_contextual (s.nested, s.nested);
-		__asm__("");
+		__asm__ ("");
 	}
 	t.stop ();
 	std::cout << t;
