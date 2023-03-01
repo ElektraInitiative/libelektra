@@ -38,7 +38,6 @@
 #include <listcommands.hpp>
 #include <memory>
 #include <merge.hpp>
-#include <metaget.hpp>
 #include <metals.hpp>
 #include <metaremove.hpp>
 #include <metaset.hpp>
@@ -92,7 +91,6 @@ public:
 		m_factory.insert (std::make_pair ("remount", std::make_shared<Cnstancer<RemountCommand>> ()));
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
 		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
-		m_factory.insert (std::make_pair ("meta-get", std::make_shared<Cnstancer<MetaGetCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-show", std::make_shared<Cnstancer<ShowMetaCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-rm", std::make_shared<Cnstancer<MetaRemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-set", std::make_shared<Cnstancer<MetaSetCommand>> ()));
