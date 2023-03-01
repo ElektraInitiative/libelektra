@@ -11,6 +11,7 @@
 #include <dirname.h>
 #include <get.h>
 #include <ls.h>
+#include <meta.h>
 #include <mountpoint.h>
 #include <namespace.h>
 #include <set.h>
@@ -33,6 +34,7 @@ command subcommands[] = {
 	{ "dirname", addDirnameSpec, execDirname },
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
+	{ "meta", addMetaSpec, execMeta },
 	{ "mountpoint", addMountpointSpec, execMountpoint },
 	{ "namespace", addNamespaceSpec, execNamespace },
 	{ "set", addSetSpec, execSet },
