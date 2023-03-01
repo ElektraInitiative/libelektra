@@ -27,4 +27,4 @@ else
 	# The file `TooltipCreator.js` contains the text `.pragma library`, which is not valid JavaScript code.
 	javascript_files=$(git ls-files '*.js' '*.jsx' | grep -v 'src/tools/qt-gui/qml/TooltipCreator.js')
 fi
-printf "%s\n" "$javascript_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${NPX}" --quiet prettier@2.5.1 --write -- > /dev/null
+printf "%s\n" "$javascript_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${NPX}" --quiet prettier@2.8.4 --write -- > /dev/null

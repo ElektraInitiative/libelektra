@@ -131,7 +131,7 @@ jobs:
         pip3 install cmakelang[yaml]==0.6.13
         # Install JavaScript packages
         npm install dredd --global
-        npm install --global prettier@2.5.1
+        npm install --global prettier@2.8.4
         brew tap homebrew/services
         brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
         brew postinstall dbus

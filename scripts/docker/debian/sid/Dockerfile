@@ -85,7 +85,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # Prettier
-RUN npm install --global prettier@2.5.1
+RUN npm install --global prettier@2.8.4
 
 # Google Java formatter
 RUN cd /opt \

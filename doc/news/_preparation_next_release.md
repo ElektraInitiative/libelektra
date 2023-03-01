@@ -399,7 +399,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Introduce shebang-conventions _(@0x6178656c)_
 - Apply auto-fixes from shellcheck _(@0x6178656c)_
 - <<TODO>>
-- <<TODO>>
+- Use prettier 2.8.4. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - Add scripts to enable and disable pre-commit hooks _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - Only let http links pass the check if whitelisted _(Richard Stöckl @Eiskasten)_
