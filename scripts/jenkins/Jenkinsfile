@@ -1439,7 +1439,7 @@ def ctest(target = "Test", printFailedLogs = false) {
       export \$(dbus-launch)
 
       ${printFailedLogs ? "set +e" : ""}
-      ctest -j ${env.CTEST_PARALLEL_LEVEL} \
+      ctest -j 1 \
             --force-new-ctest-process \
             --output-on-failure \
             --no-compress-output \
