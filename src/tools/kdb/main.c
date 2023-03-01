@@ -59,6 +59,7 @@ extern char ** environ;
 
 command subcommands[] = {
 	{ "get", addGetSpec, execGet },
+	{ "set", addSetSpec, execSet },
 };
 
 cppCommand cppSubcommands[] = {
@@ -76,7 +77,6 @@ cppCommand cppSubcommands[] = {
 	{ "mv", addMvSpec, execCppMv },
 	{ "namespace", addNamespaceSpec, execCppNamespace },
 	{ "rm", addRmSpec, execCppRm },
-	{ "set", addSetSpec, execCppSet },
 	{ "sget", addSgetSpec, execCppSget },
 	{ "cache", addCacheSpec, execCppCache },
 	{ "complete", addCompleteSpec, execCppComplete },
