@@ -10,7 +10,7 @@ RUN apt-get update && apt-get -y install \
         autotools-dev \
         bison \
         build-essential \
-        clang-11 \
+        clang-13 \
         cmake \
         curl \
     	dbus-x11 \
@@ -60,7 +60,7 @@ RUN apt-get update && apt-get -y install \
         libyaml-cpp-dev \
         libzmq3-dev \
         lintian \
-        llvm \
+        llvm-13 \
         mingw-w64 \
         ninja-build \
         patch \
