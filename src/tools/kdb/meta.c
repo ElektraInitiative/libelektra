@@ -8,6 +8,7 @@
 
 #include <meta.h>
 #include <meta-get.h>
+#include <meta-ls.h>
 #include <meta-set.h>
 
 #include <command.h>
@@ -21,6 +22,7 @@
 
 command metaSubcommands[] = {
 	{ "get", addMetaGetSpec, execMetaGet },
+	{ "ls", addMetaLsSpec, execMetaLs },
 	{ "set", addMetaSetSpec, execMetaSet },
 };
 
