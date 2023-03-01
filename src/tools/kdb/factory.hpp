@@ -56,7 +56,6 @@
 #include <rm.hpp>
 #include <sget.hpp>
 #include <shell.hpp>
-#include <showmeta.hpp>
 #include <specmount.hpp>
 #include <test.hpp>
 #include <umount.hpp>
@@ -99,7 +98,6 @@ public:
 		m_factory.insert (std::make_pair ("mountOdbc", std::make_shared<Cnstancer<MountOdbcCommand>> ()));
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
 		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
-		m_factory.insert (std::make_pair ("meta-show", std::make_shared<Cnstancer<ShowMetaCommand>> ()));
 		m_factory.insert (std::make_pair ("meta-rm", std::make_shared<Cnstancer<MetaRemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-info", std::make_shared<Cnstancer<PluginInfoCommand>> ()));
 		m_factory.insert (std::make_pair ("test", std::make_shared<Cnstancer<TestCommand>> ()));

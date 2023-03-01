@@ -4,7 +4,7 @@
 .SH "NAME"
 \fBkdb\-meta\-show\fR \- Print all metakeys along with their value
 .SH "SYNOPSIS"
-\fBkdb meta\-show <key name>\fR
+\fBkdb meta show <key name>\fR
 .br
 .P
 Where \fBkey name\fR is the name of the key the user would like to access\.
@@ -45,7 +45,7 @@ This command will return the following values as an exit status:
 No errors\.
 .TP
 11
-Key not found\. (Invalid \fBpath\fR)
+Key not found\.
 .SH "EXAMPLES"
 .nf
 # Backup\-and\-Restore: user:/tests/examples
@@ -61,7 +61,7 @@ kdb meta set user:/tests/examples/kdb\-meta\-show meta3 val3
 kdb meta set user:/tests/examples/kdb\-meta\-show meta4 val4
 
 # list all meta keys for /tests/examples/kdb\-meta\-show
-kdb meta\-show /tests/examples/kdb\-meta\-show
+kdb meta show /tests/examples/kdb\-meta\-show
 #> meta1: val1
 #> meta2: val2
 #> meta3: val3

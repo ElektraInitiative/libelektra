@@ -23,7 +23,6 @@
 #include <ls.h>
 #include <merge.h>
 #include <meta-rm.h>
-#include <meta-show.h>
 #include <meta.h>
 #include <mount.h>
 #include <mountOdbc.h>
@@ -79,7 +78,6 @@ cppCommand cppSubcommands[] = {
 	{ "ls", addLsSpec, execCppLs },
 	{ "merge", addMergeSpec, execCppMerge },
 	{ "meta-rm", addMetaRmSpec, execCppMetaRm },
-	{ "meta-show", addMetaShowSpec, execCppMetaShow },
 	{ "mountOdbc", addMountOdbcSpec, execCppMountOdbc },
 	{ "mv", addMvSpec, execCppMv },
 	{ "namespace", addNamespaceSpec, execCppNamespace },

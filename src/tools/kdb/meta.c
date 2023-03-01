@@ -10,6 +10,7 @@
 #include <meta-get.h>
 #include <meta-ls.h>
 #include <meta-set.h>
+#include <meta-show.h>
 
 #include <command.h>
 #include <kdb.h>
@@ -24,6 +25,7 @@ command metaSubcommands[] = {
 	{ "get", addMetaGetSpec, execMetaGet },
 	{ "ls", addMetaLsSpec, execMetaLs },
 	{ "set", addMetaSetSpec, execMetaSet },
+	{ "show", addMetaShowSpec, execMetaShow },
 };
 
 void addMetaSpec (KeySet * spec)

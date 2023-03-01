@@ -25,9 +25,9 @@ void addMetaShowSpec (KeySet * spec);
  * @param errorKey key where errors and warnings should be saved
  *
  * @retval 0 show command ran without errors
- * @retval 1 errors occurred, keyGetMeta (errorKey, "error/reason") for info
+ * @retval >0 errors occurred, keyGetMeta (errorKey, "error/reason") for info
  *
  */
-int execCppMetaShow (int argc, char ** argv);
+int execMetaShow (KeySet * options, Key * errorKey);
 
 #endif // ELEKTRA_KDB_META_SHOW_H
