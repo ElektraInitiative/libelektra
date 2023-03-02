@@ -851,9 +851,7 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
       return fromInclusive ? lowerIndex : lowerIndex + 1;
     }
 
-    /**
-     * @return True, if this view has a lower bound, false otherwise
-     */
+    /** @return True, if this view has a lower bound, false otherwise */
     protected boolean hasLowerBound() {
       return oFromElement.isPresent();
     }
@@ -888,9 +886,7 @@ public class KeySet extends AbstractSet<Key> implements NavigableSet<Key> {
       return toInclusive ? upperIndex + 1 : upperIndex;
     }
 
-    /**
-     * @return True, if this view has an upper bound, false otherwise
-     */
+    /** @return True, if this view has an upper bound, false otherwise */
     protected boolean hasUpperBound() {
       return oToElement.isPresent();
     }
