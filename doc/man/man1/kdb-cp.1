@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
-.TH "KDB\-CP" "1" "November 2021" ""
+.TH "KDB\-CP" "1" "May 2023" ""
 .SH "NAME"
 \fBkdb\-cp\fR \- Copy keys within the key database
 .SH "SYNOPSIS"
@@ -22,6 +22,12 @@ standard exit codes, see kdb(1) \fIkdb\.md\fR
 .TP
 11
 No key to copy found\.
+.TP
+12
+Target key already has a value, won't overwrite unless \-f\.
+.TP
+13
+Can't copy parent key into sub\-key recursively\.\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR
@@ -73,7 +79,7 @@ kdb cp \-r user:/tests/cp/examples/kdb\-cp/key user:/tests/cp/examples/kdb\-cp/c
 
 # If the target\-key already exists and has a different value, cp fails:
 kdb cp \-r user:/tests/cp/examples/kdb\-cp/key user:/tests/cp/examples/kdb\-cp/cpkeyerror
-# RET: 11
+# RET: 12
 
 # If the target\-key already exists and has the same value as the source, everything is fine:
 kdb cp \-r user:/tests/cp/examples/kdb\-cp/key user:/tests/cp/examples/kdb\-cp/cpkey
@@ -91,7 +97,11 @@ kdb export user:/tests/cp/examples/kdb\-cp/cpkeyerror mini
 
 # To copy keys below an existing key:
 kdb cp \-r user:/tests/cp/examples/kdb\-cp/another user:/tests/cp/examples/kdb\-cp/another/key
-#>
+# RET: 13
+# STDERR: Can't copy parent key 'user:/tests/cp/examples/kdb\-cp/another' into sub\-key 'user:/tests/cp/examples/kdb\-cp/another/key' recursively\.
+
+kdb cp user:/tests/cp/examples/kdb\-cp/another user:/tests/cp/examples/kdb\-cp/another/key
+# RET: 0
 
 kdb rm \-r user:/tests/cp/examples/kdb\-cp/
 .fi

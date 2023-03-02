@@ -29,6 +29,10 @@ This command will return the following values as an exit status:
   standard exit codes, see [kdb(1)](kdb.md)
 - 11:
   No key to copy found.
+- 12:
+  Target key already has a value, won't overwrite unless -f.
+- 13:
+  Can't copy parent key into sub-key recursively..
 
 ## OPTIONS
 
@@ -76,7 +80,7 @@ kdb cp -r user:/tests/cp/examples/kdb-cp/key user:/tests/cp/examples/kdb-cp/copi
 
 # If the target-key already exists and has a different value, cp fails:
 kdb cp -r user:/tests/cp/examples/kdb-cp/key user:/tests/cp/examples/kdb-cp/cpkeyerror
-# RET: 11
+# RET: 12
 
 # If the target-key already exists and has the same value as the source, everything is fine:
 kdb cp -r user:/tests/cp/examples/kdb-cp/key user:/tests/cp/examples/kdb-cp/cpkey
@@ -94,7 +98,11 @@ kdb export user:/tests/cp/examples/kdb-cp/cpkeyerror mini
 
 # To copy keys below an existing key:
 kdb cp -r user:/tests/cp/examples/kdb-cp/another user:/tests/cp/examples/kdb-cp/another/key
-#>
+# RET: 13
+# STDERR: Can't copy parent key 'user:/tests/cp/examples/kdb-cp/another' into sub-key 'user:/tests/cp/examples/kdb-cp/another/key' recursively.
+
+kdb cp user:/tests/cp/examples/kdb-cp/another user:/tests/cp/examples/kdb-cp/another/key
+# RET: 0
 
 kdb rm -r user:/tests/cp/examples/kdb-cp/
 ```

@@ -26,7 +26,6 @@
 #include <cache.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
-#include <cp.hpp>
 #include <editor.hpp>
 #include <export.hpp>
 #include <file.hpp>
@@ -75,7 +74,6 @@ public:
 		// TODO: to add a new command, 2.) add a line here  -> and you are done
 		m_factory.insert (std::make_pair ("cache", std::make_shared<Cnstancer<CacheCommand>> ()));
 		m_factory.insert (std::make_pair ("complete", std::make_shared<Cnstancer<CompleteCommand>> ()));
-		m_factory.insert (std::make_pair ("cp", std::make_shared<Cnstancer<CpCommand>> ()));
 		m_factory.insert (std::make_pair ("mount", std::make_shared<Cnstancer<MountCommand>> ()));
 		m_factory.insert (std::make_pair ("remount", std::make_shared<Cnstancer<RemountCommand>> ()));
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
