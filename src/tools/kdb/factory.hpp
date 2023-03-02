@@ -39,7 +39,6 @@
 #include <memory>
 #include <merge.hpp>
 #include <mount.hpp>
-#include <mv.hpp>
 #include <plugincheck.hpp>
 #include <plugininfo.hpp>
 #include <pluginlist.hpp>
@@ -82,7 +81,6 @@ public:
 		m_factory.insert (std::make_pair ("cache", std::make_shared<Cnstancer<CacheCommand>> ()));
 		m_factory.insert (std::make_pair ("complete", std::make_shared<Cnstancer<CompleteCommand>> ()));
 		m_factory.insert (std::make_pair ("cp", std::make_shared<Cnstancer<CpCommand>> ()));
-		m_factory.insert (std::make_pair ("mv", std::make_shared<Cnstancer<MvCommand>> ()));
 		m_factory.insert (std::make_pair ("mount", std::make_shared<Cnstancer<MountCommand>> ()));
 		m_factory.insert (std::make_pair ("remount", std::make_shared<Cnstancer<RemountCommand>> ()));
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
