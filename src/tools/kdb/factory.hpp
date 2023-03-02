@@ -43,7 +43,6 @@
 #include <plugininfo.hpp>
 #include <pluginlist.hpp>
 #include <remount.hpp>
-#include <rm.hpp>
 #include <sget.hpp>
 #include <shell.hpp>
 #include <specmount.hpp>
@@ -77,7 +76,6 @@ public:
 	Factory () : m_factory ()
 	{
 		// TODO: to add a new command, 2.) add a line here  -> and you are done
-		m_factory.insert (std::make_pair ("rm", std::make_shared<Cnstancer<RemoveCommand>> ()));
 		m_factory.insert (std::make_pair ("cache", std::make_shared<Cnstancer<CacheCommand>> ()));
 		m_factory.insert (std::make_pair ("complete", std::make_shared<Cnstancer<CompleteCommand>> ()));
 		m_factory.insert (std::make_pair ("cp", std::make_shared<Cnstancer<CpCommand>> ()));
