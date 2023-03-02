@@ -1,5 +1,5 @@
 .\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre3
 .TH "README" "" "November 2022" ""
 .SH "Introduction"
 This document aims to provide information about how to build Elektra’s Website\.
@@ -23,14 +23,18 @@ Use an own webserver to distribute the application\. In order to do so, only \fB
 .P
 In order to not receive any 404 errors by the webserver, it should serve the \fBindex\.html\fR for all requests that do not have a static file as target\. The \fBindex\.html\fR will then try to serve the (dynamic) URL itself\.
 .SS "Configuration Options"
+.SS "PID file"
 .P
 Using \fB/sw/elektra/website/#0/current/daemon/lock\fR (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\.pid
+.SS "APIs (GitHub)"
 .P
 The configuration file allows to change GitHub settings in the \fBgithub\fR section\.
+.SS "Translations"
 .P
 The configuration file also allows to specify available translations in \fBtranslations\.enabled\fR\. To add a translation, copy an existing translation file in \fIpublic/assets/translations\fR, translate it and add the name of the new language to the list in \fBtranslations\.enabled\fR\. After that run \fBgrunt full\fR (or \fBkdb build\-website\fR) to re\-compile the application\.
 .P
 If necessary, mappings for dialects as well as a default language can be specified as well\.
+.SS "Logger"
 .P
 It is possible to enable the frontend logger by changing \fBlogger\.enabled\fR in the configuration file\.
 .SS "Directory Structure"
@@ -83,6 +87,7 @@ In the following, the different element types will be explained in detail\. The 
 .IP "" 0
 .P
 It is possible to add additional attributes not used by the system without breaking anything\. For example use \fBdev\-comment\fR to leave some development notes, e\.g\. decision information\.
+.SS "submenu"
 .P
 The \fBsubmenu\fR type can be used to create a menu point that has a (hoverable) submenu, but does itself not link to any page\. It can only be used in the top hierarchy of the structure file\.
 .P
@@ -106,6 +111,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "parsereadme"
 .P
 The \fBparsereadme\fR element type is the most powerful of all types\. It takes a text file as input (often README\.md) and creates with the help of some regex patterns a section of the website which contains parsed links of the input file\.
 .P
@@ -165,6 +171,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "listdirs"
 .P
 The \fBlistdirs\fR element type can be used to enumerate all sub\-directories of a specific directory\. It will try to find one of the target files (i\.e\. readme) within the sub\-directories and create a link to them\. All this is done in a newly created website section\.
 .P
@@ -197,6 +204,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "listfiles"
 .P
 The \fBlistfiles\fR element type is quite similar to the \fBlistdirs\fR type, but instead of sub\-directories it enumerates files within a directory\. It does also create a new website section\.
 .P
@@ -229,6 +237,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "staticlist"
 .P
 The \fBstaticlist\fR element type creates a new website section that is entirely customizable within the structure configuration file\. This type can be used instead of the \fBparsereadme\fR type if a mix of many types is required\.
 .P
@@ -252,6 +261,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "staticref"
 .P
 The \fBstaticref\fR element type can be used in a \fBstaticlist\fR to create a reference to another website part\.
 .P
@@ -278,6 +288,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "staticfile"
 .P
 The \fBstaticfile\fR element type can be used in a \fBstaticlist\fR to create a menu point for a file\. The file is then a page in the section created by the \fBstaticlist\fR\.
 .P
@@ -304,6 +315,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "link"
 .P
 The \fBlink\fR element type can be used to create a simple link to whatever is desired\. It is recommended to use it only for external links\.
 .P
@@ -333,6 +345,7 @@ Example:
 }
 .fi
 .IP "" 0
+.SS "parsefolders"
 .P
 The \fBparsefolders\fR element type looks at list of folders and creates table of contents (TOC) file for the contents\. For every folder a section is appended to the TOC file\. The section will contain a list linking to all the files in the folder\.
 .P
@@ -393,8 +406,10 @@ All \fBgrunt\fR tasks can be configured using the \fIGruntfile\.js\fR in the app
 .SS "Code Formatting"
 The task \fBgrunt jshint\fR can be used to check the code formatting of JS source files\.
 .SS "Noteworthy Information"
+.SS "HTML in i18n Keys"
 .P
 It is possible to use HTML in translation files (loca keys) if the place where the loca key is used adds the directive \fBtranslate\-compile\fR\. The loca key itself does also need to be placed in the \fBtranslate\fR directive instead of a dynamic Angular binding (i\.e\. use \fB<span translate="LOCA_KEY"></span>\fR in favor of \fB<span>{{ 'LOCA_KEY' | translate }}</span>\fR)\.
+.SS "Links"
 .P
 For external links, the normal HTML \fBa\fR\-tag has to be used (\fB<a href="\|\.\|\.\|\."></a>\fR)\. If the external link has the same base URL as the frontend (e\.g\. frontend is at \fBhttp://localhost/\fR and the link points to \fBhttp://localhost/news/feed\.rss\fR), the html tag \fBtarget\fR has to be added to the link with the desired value, e\.g\. \fB_self\fR to open the link in the same window/tab or \fB_blank\fR to use a new one\. An example would be \fB<a href="http://localhost/news/feed\.rss" target="_self">\|\.\|\.\|\.</a>\fR\.
 .P
