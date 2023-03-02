@@ -13,6 +13,7 @@
 #include <ls.h>
 #include <meta.h>
 #include <mountpoint.h>
+#include <mv.h>
 #include <namespace.h>
 #include <set.h>
 
@@ -36,6 +37,7 @@ command subcommands[] = {
 	{ "ls", addLsSpec, execLs },
 	{ "meta", addMetaSpec, execMeta },
 	{ "mountpoint", addMountpointSpec, execMountpoint },
+	{ "mv", addMvSpec, execMv },
 	{ "namespace", addNamespaceSpec, execNamespace },
 	{ "set", addSetSpec, execSet },
 };
