@@ -215,7 +215,8 @@ for test_folder in "@CMAKE_SOURCE_DIR@"/tests/shell/gen/*/; do
 			rm "$output_folder$test_name".actual*
 		fi
 
-		"$KDB" rm -r "$cascading_parent"
+		"$KDB" rm -r "$spec_parent"
+		"$KDB" rm -r "$user_parent"
 
 		rm -f "$("$KDB" file "$spec_parent")"
 		rm -f "$("$KDB" file "$user_parent")"

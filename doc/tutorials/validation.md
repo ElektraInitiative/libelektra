@@ -329,7 +329,8 @@ kdb validate /tests/range
 # RET:11
 
 # clean up
-kdb rm -r /tests/range/
 sudo kdb umount /tests/range
+kdb rm -r spec:/tests
+kdb rm -r user:/tests
 
 ```

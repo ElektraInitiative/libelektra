@@ -14,6 +14,7 @@
 #include <meta.h>
 #include <mv.h>
 #include <namespace.h>
+#include <rm.h>
 #include <set.h>
 
 #include <command.h>
@@ -38,6 +39,7 @@ command subcommands[] = {
 	{ "meta", addMetaSpec, execMeta },
 	{ "mv", addMvSpec, execMv },
 	{ "namespace", addNamespaceSpec, execNamespace },
+	{ "rm", addRmSpec, execRm },
 	{ "set", addSetSpec, execSet },
 };
 

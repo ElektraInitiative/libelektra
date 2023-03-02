@@ -110,6 +110,12 @@ kdb meta rm /tests/tutorial/cascading/key1 meta1
 # RET: 2
 # STDERR: .*key does not specify a namespace
 
+kdb set user:/tests/tutorial/cascading/key1 "hello world"
+
+kdb rm /tests/tutorial/cascading/key1
+# RET: 2
+# STDERR: .*key does not specify a namespace
+
 # cleanup
 kdb rm user:/tests/tutorial/cascading/key1
 ```
@@ -176,14 +182,13 @@ keys and more. For more information, read the [`elektra-spec` help page](/doc/he
 As last part in this tutorial we remove the modifications to the database we made previously.
 
 ```sh
-kdb rm -r user:/tests/tutorial/
-sudo kdb rm -r system:/tests/tutorial
-sudo kdb rm -r system:/tests/overrides
 kdb import system:/tests/overrides dump < $(kdb get user:/tests/overrides)
 rm $(kdb get user:/tests/overrides)
-kdb rm user:/tests/overrides
 
-sudo kdb rm -r spec:/tests/tutorial/
+kdb rm -r user:/tests
+sudo kdb rm -r dir:/tests
+sudo kdb rm -r system:/tests/tutorial
+sudo kdb rm -r spec:/tests
 
 rm -r kdbtutorial
 ```

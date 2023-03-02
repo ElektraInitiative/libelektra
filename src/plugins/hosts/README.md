@@ -106,7 +106,7 @@ kdb set user:/tests/hosts/ipv6/localhost 127.0.0.1
 # ERROR:C03200
 
 # cleanup
-kdb rm -r /tests/hosts
+kdb rm -r user:/tests/hosts
 sudo kdb umount /tests/hosts
 ```
 

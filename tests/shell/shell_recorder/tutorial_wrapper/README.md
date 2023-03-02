@@ -14,9 +14,9 @@ kdb set user:/tests/markdown/napalm death
 
 kdb rm user:/tests/markdown/napalm
 
-kdb rm /tests/markdown/babymetal
+kdb rm user:/tests/markdown/babymetal
 # RET: 11
-# STDERR: Did not find the key
+# STDERR: Did not find key 'user:/tests/markdown/babymetal'
 ```
 
 . The test above invokes three commands. The first command stores the value `death` in the key with the name

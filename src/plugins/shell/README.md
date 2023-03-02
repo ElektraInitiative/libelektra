@@ -49,5 +49,6 @@ cat $(kdb get system:/tests/tempfile)
 # Undo modifications
 rm $(kdb get system:/tests/tempfile)
 kdb rm -r system:/tests/shell
+kdb rm -f system:/tests/tempfile
 sudo kdb umount system:/tests/shell
 ```

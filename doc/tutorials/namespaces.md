@@ -75,6 +75,8 @@ Another question you may ask yourself now is, what happens if we look up a key w
 ```sh
 kdb get -v /tests/b/c
 # STDOUT-REGEX: got [[:digit:]]+ keys⏎searching spec:/tests/b/c, found: <nothing>, options: KDB_O_CALLBACK⏎    searching proc:/tests/b/c, found: <nothing>, options: KDB_O_CALLBACK⏎    searching dir:/tests/b/c, found: <nothing>, options: KDB_O_CALLBACK⏎    searching user:/tests/b/c, found: user:/tests/b/c, options: KDB_O_CALLBACK⏎The resulting keyname is user:/tests/b/c⏎The resulting value size is 8⏎Value 2
+
+kdb rm -r user:/tests
 ```
 
 Here you see how Elektra searches all namespaces for matching keys in this order:

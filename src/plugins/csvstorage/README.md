@@ -123,7 +123,7 @@ kdb file user:/tests/csv | xargs cat
 #> Everybody Down,Kate Tempest
 
 # Undo changes to the key database
-kdb rm -r user:/tests/csv
+kdb rm -rf user:/tests/csv
 sudo kdb umount user:/tests/csv
 ```
 

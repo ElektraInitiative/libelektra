@@ -41,7 +41,8 @@ kdb set user:/tests/length/text abc
 kdb get user:/tests/length/text
 
 # Undo modifications to the database
-kdb rm -rf /tests/length
+kdb rm -rf user:/tests/length
+kdb rm -rf spec:/tests/length
 kdb umount /tests/length
 ```
 

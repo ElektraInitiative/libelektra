@@ -223,6 +223,9 @@ kdb meta get user:/tests/sw/org/webserver/alternative_ports/#0 description
 
 kdb meta get user:/tests/sw/org/webserver/alternative_ports/#1 description
 # STDOUT-REGEX: This is an alternative port if any other is already bound
+
+kdb rm -r user:/tests/sw
+kdb rm -r spec:/tests/sw
 ```
 
 ### Known limitations
