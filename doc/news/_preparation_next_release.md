@@ -729,7 +729,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Run more tests also on Master. _(Markus Raab)_
 - Move doc to main build stage. _(Markus Raab)_
 - <<TODO>>
-- <<TODO>>
+- Disable parallel test runs _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - Upgrade Jenkins node container to Debian bullseye _(@0x6178656c)_
 - <<TODO>>
