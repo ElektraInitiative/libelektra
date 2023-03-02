@@ -88,7 +88,7 @@ RUN mkdir -p ${GTEST_ROOT} \
 RUN npm install --global prettier@2.8.4
 
 # Google Java formatter
-ARG GOOGLE_JAVA_FORMAT_VER=1.16.0
+ARG GOOGLE_JAVA_FORMAT_VER=1.15.0
 RUN cd /opt \
     && curl -o google-java-format.jar \
       -L https://github.com/google/google-java-format/releases/download/v${GOOGLE_JAVA_FORMAT_VER}/google-java-format-${GOOGLE_JAVA_FORMAT_VER}-all-deps.jar
