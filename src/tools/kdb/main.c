@@ -15,6 +15,7 @@
 #include <mountpoint.h>
 #include <mv.h>
 #include <namespace.h>
+#include <rm.h>
 #include <set.h>
 
 #include <command.h>
@@ -39,6 +40,7 @@ command subcommands[] = {
 	{ "mountpoint", addMountpointSpec, execMountpoint },
 	{ "mv", addMvSpec, execMv },
 	{ "namespace", addNamespaceSpec, execNamespace },
+	{ "rm", addRmSpec, execRm },
 	{ "set", addSetSpec, execSet },
 };
 
