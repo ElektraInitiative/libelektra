@@ -12,6 +12,7 @@
 #include <ls.h>
 #include <merge.h>
 #include <meta.h>
+#include <mv.h>
 #include <namespace.h>
 #include <set.h>
 
@@ -35,6 +36,7 @@ command subcommands[] = {
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
 	{ "meta", addMetaSpec, execMeta },
+	{ "mv", addMvSpec, execMv },
 	{ "namespace", addNamespaceSpec, execNamespace },
 	{ "set", addSetSpec, execSet },
 };
