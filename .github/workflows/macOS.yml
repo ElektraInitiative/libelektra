@@ -124,14 +124,14 @@ jobs:
       run: |
         # Install Ruby gems
         export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
-        gem install ronn-ng -v 0.10.1.pre1
+        gem install ronn-ng -v 0.10.1.pre3
         gem install test-unit --no-document
         # Install Python packages
         pip2 install cheetah # Required by kdb-gen
         pip3 install cmakelang[yaml]==0.6.13
         # Install JavaScript packages
         npm install dredd --global
-        npm install --global prettier@2.5.1
+        npm install --global prettier@2.8.4
         brew tap homebrew/services
         brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
         brew postinstall dbus

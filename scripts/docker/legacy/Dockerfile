@@ -33,7 +33,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	checkinstall \
 	valgrind \
 	python3-pip \
-&& gem install ronn-ng -v 0.10.1.pre1 \
+&& gem install ronn-ng -v 0.10.1.pre3 \
 && rm -rf /var/lib/apt/lists/*
 
 # Build dependency for libelektra-fuse

@@ -1,29 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please always update this file within **every PR**:
-
-1. write what changed
-2. use links pointing to your change (See [Documentation Guidelines](/doc/contrib/documentation.md))
-3. add your name at the end of the line **Syntax:** _(your name)_
-
-For example, Max would write:
-
-```
-- Added a new [doc plugin](https://www.libelektra.org/plugins/doc) _(Max)_
-```
-
-Pick a random line to write your changes to minimize the chances of conflicts in this file.
-
-For non-trivial changes, you can choose to be part of the highlighted changes.
-Please write a highlight section in this case.
-
-After the horizontal line the release notes for the next version starts.
-
----
-
-<<`scripts/generate-news-entry`>>
+- guid: F2193578-1773-43A9-85CA-79EA8CE48D7B
+- author: Mihael Pranjić
+- pubDate: Fri, 03 Mar 2023 08:07:28 +0100
+- shortDesc: New Backend Logic, Copy-on-Write, FLOSS Course
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -50,8 +30,8 @@ docker run -it elektra/elektra
 
 ### New Backend
 
-The entire logic for backends has been rewritten.
-Instead of calling most plugin directly, `libelektra-kdb` now only calls so-called backend plugins and special hook plugins.
+The entire logic for backends has been rewritten, to allow for more flexibility und an unlimited number of plugins.
+Instead of calling plugins directly, `libelektra-kdb` now only calls so-called backend plugins and special hook plugins.
 There is a [contract](../dev/backend-plugins.md) between `libelektra-kdb` and the backend plugins.
 All backend plugins must adhere to this contract.
 To achieve this goal, most backend plugins will call other plugins (like `libelektra-kdb` did previously).
@@ -69,6 +49,9 @@ Take a look at the [new docs](../dev/mountpoints.md), if you need to know detail
 
 #### Updating config
 
+The mountpoint configuration format contains **breaking changes** and a manual upgrade process is needed.
+Follow these steps to upgrade the old mountpoint configuration to the new format:
+
 > **Warning**: BACK UP YOUR CONFIG FILES BEFORE UPDATING!
 > We recommend making a backup of the file printed by `kdb file system:/elektra/mountpoints` before updating your installation.
 > In the unlikely case that the migration script fails, you can still use the information from the backup to manually recreate your mountpoints.
@@ -83,7 +66,7 @@ By default, the script loads the file `/etc/kdb/elektra.ecf`.
 If you changed where `system:/elektra/mountpoints` is stored, you can provide an alternative path:
 
 ```
-./migrate-mountpoint.py /path/to/your/mountpoints/config.file
+./migrate-mountpoints.py /path/to/your/mountpoints/config.file
 ```
 
 > **Note**: Because the script does not use the `KDB` API it only works, if the mountpoints config file uses the default `dump` format.
@@ -96,7 +79,7 @@ If you changed where `system:/elektra/mountpoints` is stored, you can provide an
 > 3. To get the data back in your original format you can use
 >
 > ```sh
-> ./migrate-mountpoint.py /path/to/file/from/step2 | kdb convert dump your-format > /path/to/converted/file
+> ./migrate-mountpoints.py /path/to/file/from/step2 | kdb convert dump your-format > /path/to/converted/file
 > ```
 >
 > 4. Run `kdb file system:/elektra/mountpoints` to find out where your mountpoint config is stored.
@@ -111,16 +94,14 @@ You can inspect the output to make sure, everything is in order.
 When you are ready to commit the changes, you can manually edit the config file, or use:
 
 ```
-./migrate-mountpoint.py --output=/etc/kdb/elektra.ecf /etc/kdb/elektra.ecf
+./migrate-mountpoints.py --output=/etc/kdb/elektra.ecf /etc/kdb/elektra.ecf
 ```
 
 #### Individual changes
 
-<!-- TODO [new_backend]: finish release notes, explain new mount stuff -->
-
 - Implement [hooks](https://www.libelektra.org/decisions/hooks-in-kdb). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
-- New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
+- New backend logic, based on PR #2969 by @vLesk. _(@kodebach)_
 - Add script to migrate `system:/elektra/mountpoints` to new format. _(@kodebach)_
 
 ### Copy-on-Write
@@ -128,7 +109,7 @@ When you are ready to commit the changes, you can manually edit the config file,
 Thanks to _(Maximilian Irlinger @atmaxinger)_ our `Key` and `KeySet` datastructures are now fully copy-on-write!
 This means noticeably reduced memory usage for cases where keys and keysets are copied and/or duplicated!
 
-We run some very promising benchmarks, each were performed with 400,000 keys.
+We ran some very promising benchmarks, each were performed with 400,000 keys.
 All benchmarks were executed using `valgrind --tool=massif --time-unit=B --max-snapshots=200 --threshold=0.1`.
 
 | Benchmark      | Old Implementation | Copy-on-Write | Size Reduction | Remarks                    |
@@ -180,11 +161,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### yajl
 
-- <<TODO>>
-- <<TODO>>
-- Fix an issue where trying to set invalid meta-keys won't show an error _(Juri Schreib @Bujuhu)_
-- <<TODO>>
-- <<TODO>>
+- Fix an issue where trying to set invalid meta-keys won't show an error. _(Juri Schreib @Bujuhu)_
 
 ### list
 
@@ -193,75 +170,54 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### logchange
 
-- Made logchange a notification-send hook plugin _(Maximilian Irlinger @atmaxinger)_
-
-### website
-
-- Fix broken `/pythongen` link on homepage _(@stefnotch)_
-- Fix redirect logic to not cause loops _(@stefnotch)_
-- Remove duplicated link to `TESTING.md` file _(@stefnotch)_, _(@janldeboer)_
-- Restructure parts of the links on the website _(@stefnotch)_, _(@janldeboer)_
-- Removed broken links to packages for Linux distributions. _(@Dynamichost96)_
+- Made logchange a notification-send hook plugin. _(Maximilian Irlinger @atmaxinger)_
 
 ### toml
 
-- Fix bug, where meta-keys that cannot be inserted don't report an error _(@Bujuhu)_
+- Fix bug, where meta-keys that cannot be inserted don't report an error. _(@Bujuhu)_
 
 ### uname
 
-- Add error handling if uname call fails _(Richard Stöckl @Eiskasten)_
+- Add error handling if uname call fails. _(Richard Stöckl @Eiskasten)_
 
 ### quickdump
 
-- elektraQuickdumpSet: don't fclose if stdout _(@hannes99)_
+- elektraQuickdumpSet: don't fclose if stdout. _(@hannes99)_
 
 ### blockresolver
 
-- Add encoding test for blockresolver read _(@dtdirect)_
-- Refactor and restructure blockresolver _(@dtdirect)_
+- Add encoding test for blockresolver read. _(@dtdirect)_
+- Refactor and restructure blockresolver. _(@dtdirect)_
 
 ### desktop
 
-- Add a unit test _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
+- Add a unit test. _(Richard Stöckl @Eiskasten)_
 
 ### mini
 
-- Fix a bug where writing meta keys will fail silently _(Juri Schreib @Bujuhu)_
-- <<TODO>>
-- <<TODO>>
+- Fix a bug where writing meta-keys will fail silently. _(Juri Schreib @Bujuhu)_
 
 ### mmapstorage
 
-- Remove code duplication in the data block calculation _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Remove code duplication in the data block calculation. _(Richard Stöckl @Eiskasten)_
 
 ### network
 
-- Add the retry mechanism _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
+- Add a retry mechanism. _(Richard Stöckl @Eiskasten)_
 
 ### xfconf
 
-- Add xfconf storage plugin with the ability to read and write to xfconf channels _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
+- Add xfconf storage plugin with the ability to read and write to xfconf channels. _(Richard Stöckl @Eiskasten)_
 - Make xfconf valgrind suppressions more flexible to lib updates. _(Mihael Pranjić @mpranj)_
 
 ### date
 
-- Fix an Issue with validationg RFC 822 date-times _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- Improve Code Coverage _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Fix an issue with validationg RFC 822 date-times. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Improve Code Coverage. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 
 ### csvstorage
 
-- Fix a bug where writing unkown meta keys will fail silently _(Juri Schreib @Bujuhu)_
-- <<TODO>>
-- <<TODO>>
+- Fix a bug where writing unkown meta-keys will fail silently. _(Juri Schreib @Bujuhu)_
 
 ## Libraries
 
@@ -270,58 +226,20 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Compatibility
 
 - Global plugins do not work anymore, use [hooks](https://www.libelektra.org/decisions/hooks-in-kdb) instead.
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Core
 
 - The Key and KeySet datastructures are now fully copy-on-write. _(Maximilian Irlinger @atmaxinger)_
 - `keyCopy` now only allocates additional memory if `KEY_CP_META` or `KEY_CP_ALL` is used. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- Check for circular links (overrides) _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Check for circular links (overrides). _(@0x6178656c)_
 
 ### io
 
-- Check file flags for `elektraIoFdSetFlags`: file flags must be exactly one of: read only, write only or read write _(Richard Stöckl @Eiskasten)_
+- Check file flags for `elektraIoFdSetFlags`: file flags must be exactly one of: read only, write only or read write. _(Richard Stöckl @Eiskasten)_
 
 ### Merge
 
-- Add methods `elektraMergeGetConflictingKeys` and `elektraMergeIsKeyConflicting` to check which keys were causing a merge conflict _(Maximilian Irlinger @atmaxinger)_.
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add methods `elektraMergeGetConflictingKeys` and `elektraMergeIsKeyConflicting` to check which keys were causing a merge conflict. _(Maximilian Irlinger @atmaxinger)_
 
 ## Bindings
 
@@ -331,384 +249,180 @@ This section keeps you up-to-date with the multi-language support provided by El
 ### intercept/env
 
 - Remove fallback code. _(Markus Raab)_
-- Command-line functionality broken due to new-backend differences.
-- <<TODO>>
-- <<TODO>>
+- Command-line functionality is broken due to new-backend differences.
 
 ### intercept/fs
 
 - Use `KDB_MAX_PATH_LENGTH` for better portability. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
 
 ### jna
 
-- <<TODO>>
-- <<TODO>>
-- Documentation: Improved build instructions _(@Bujuhu)_
-- Add validation on get for whitelist plugin _(@Bujuhu)_
-- <<TODO>>
+- Documentation: Improved build instructions. _(@Bujuhu)_
+- Add validation on get for whitelist plugin. _(@Bujuhu)_
+- Upgrade Gradle to 8.0.1. _(Mihael Pranjić @mpranj)_
 
 ### rust
 
-- fix "feature `resolver` is required" error _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
+- Fix "feature `resolver` is required" error. _(Markus Raab)_
 
 ### elixir
 
-- Initial release of the Elixir binding _(@0x6178656c)_
-- <<TODO>>
-- Mark tests as `memleak` _(@0x6178656c)_
-
-### <<Binding>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Initial release of the Elixir binding. _(@0x6178656c)_
+- Mark tests as `memleak`. _(@0x6178656c)_
 
 ## Tools
 
 ### kdb
 
 - Removed `global-mount` and `global-umount` commands. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- Fixed SIGSEGV when using `kdb find` without argument _(Christian Jonak-Moechel @joni1993)_
+- Fixed SIGSEGV when using `kdb find` without argument. _(Christian Jonak-Moechel @joni1993)_
 
 ### elektrad
 
-- Removed leftover package-lock.json file _(stefnotch)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Tool>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Removed leftover package-lock.json file. _(stefnotch)_
 
 ## Scripts
 
 - Added [automatic spelling corrections](https://master.libelektra.org/scripts/spelling.sed) for changeset. _(Maximilian Irlinger @atmaxinger)_
-- Introduce shebang-conventions _(@0x6178656c)_
-- Apply auto-fixes from shellcheck _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Add scripts to enable and disable pre-commit hooks _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- Only let http links pass the check if whitelisted _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
-- Link Checker: Add documentation for the usage and how it behaves _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
-- Sed: Add spelling correction for "key-value storage" _(@Bujuhu)_
-- <<TODO>>
-- Fix/extends some shell recorder tests _(@Joni1993)_
+- Introduce shebang-conventions. _(@0x6178656c)_
+- Apply auto-fixes from shellcheck. _(@0x6178656c)_
+- Use prettier 2.8.4. _(Mihael Pranjić @mpranj)_
+- Add scripts to enable and disable pre-commit hooks. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Only let http links pass the check if whitelisted. _(Richard Stöckl @Eiskasten)_
+- Link Checker: Add documentation for the usage and how it behaves. _(Richard Stöckl @Eiskasten)_
+- Sed: Add spelling correction for "key-value storage". _(@Bujuhu)_
+- Fix/extends some shell recorder tests. _(@Joni1993)_
 - Use clang-format v15. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- Fix warning parsing in shell recorder _(@Joni1993)_
-- <<TODO>>
-- Replaced `egrep` by `grep -E` _(@0x6178656c and @janldeboer)_
-- <<TODO>>
-- <<TODO>>
-- Add [audit-dependencies](/scripts/dev/audit-dependencies) script to check for vulnerabilities for npm depndencies _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- <<TODO>>
-- <<TODO>>
+- Fix warning parsing in shell recorder. _(@Joni1993)_
+- Replaced `egrep` by `grep -E`. _(@0x6178656c and @janldeboer)_
+- Add [audit-dependencies](/scripts/dev/audit-dependencies) script to check for vulnerabilities for npm depndencies. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 
 ## Documentation
 
-- Restructured [contrib/api](/doc/contrib/api) _(Markus Raab)_.
-- Improve page on compilation _(@0x6178656c)_
-- Improve page for bindings _(@0x6178656c)_
-- Improve page for getting started _(@stefnotch)_
-- <<TODO>>
-- <<TODO>>
-- Remove version number from docker README and replace it with latest _(@Joni1993)_
-- <<TODO>>
-- Fix grammar for `elektra-granularity.md` _(@dtdirect)_
-- Rephrase sections in `doc/dev/error-\*` _(@dtdirect)_
-- Improve Git.md _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- Unify spelling of man pages _(@stefnotch)_ _(@janldeboer)_
-- Extend consistency check `check_doc.sh` to work for [contrib](/doc/contrib), [dev](/doc/dev) and [tutorials](/doc/tutorials) _(@Joni1993)_
-- <<TODO>>
-- <<TODO>>
-- Fix internal links _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- Update AUR Link from `elektra` to `libelektra` package _(@Bujuhu)_
-- <<TODO>>
-- <<TODO>>
-- Update example Ansible playbook in VISION.md _(@Bujuhu)_
-- <<TODO>>
-- Harmonize spelling of Git _(@Joni1993)_
-- Update packaging instructions for Fedora _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- Improve use of gender _(@0x6178656c)_
-- fix some minor mistakes in CONTRIBUTING.md _(@Joni1993)_
-- fix various spelling errors _(@Joni1993)_
-- <<TODO>>
-- <<TODO>>
-- Denoted package names & global variable names in [INSTALL.md](../INSTALL.md) as `Code` _(@janldeboer)_
-- <<TODO>>
-- Improve readability of doc/tutorials/highlevel.md _(@deoknats861)_
-- Improve reference to Podman documentation _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- Unify spelling _(@Joni1993)_
-- <<TODO>>
-- Fix typo in dev/hooks.md _(@dtdirect)_
-- Remove unused images from doc/images _(@dtdirect)_
-- <<TODO>>
-- <<TODO>>
-- Fixed Coverage Badge Link _(@janldeboer)_
-- <<TODO>>
-- Improve CONTRIBUTING doc _(Juri Schreib @Bujuhu)_ and _(Nikola Prvulovic @Dynamichost96)_
-- <<TODO>>
-- Update Doxyfile with Doxygen 1.9.4 _(@0x6178656c)_
-- Add project logo to Doxygen in Doxyfile _(@dtdirect)_
-- Add mermaid.js to the project using doxygen-mermaid _(@dtdirect)_
-- Create diagrams in mermaid.js to use in doxygen _(@dtdirect)_
-- Create README for Doxygen and Mermaid JS _(@dtdirect)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- tutorial: Add automatic validation to Docker tutorial _(Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- Add mention of audit-dependencies script in doc/todo/RELEASE.md _(@Bujuhu)_
-- <<TODO>>
-- <<TODO>>
-- Move note in GETSTARTED.md _(@Joni1993)_
-- <<TODO>>
-- <<TODO>>
-- Use `code` blocks to prevent Markdown from falsy rendering LaTeX _(@stefnotch)_, _(@janldeboer)_
-- <<TODO>>
+- Restructured [contrib/api](/doc/contrib/api). _(Markus Raab)_.
+- Improve page on compilation. _(@0x6178656c)_
+- Improve page for bindings. _(@0x6178656c)_
+- Improve page for getting started. _(@stefnotch)_
+- Remove version number from docker README and replace it with latest. _(@Joni1993)_
+- Fix grammar for `elektra-granularity.md`. _(@dtdirect)_
+- Rephrase sections in `doc/dev/error-\*`. _(@dtdirect)_
+- Improve Git.md. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Unify spelling of man pages. _(@stefnotch)_ _(@janldeboer)_
+- Extend consistency check `check_doc.sh` to work for [contrib](/doc/contrib), [dev](/doc/dev) and [tutorials](/doc/tutorials). _(@Joni1993)_
+- Fix internal links. _(@0x6178656c)_
+- Update AUR Link from `elektra` to `libelektra` package. _(@Bujuhu)_
+- Update example Ansible playbook in VISION.md. _(@Bujuhu)_
+- Harmonize spelling of Git. _(@Joni1993)_
+- Update packaging instructions for Fedora. _(@0x6178656c)_
+- Improve use of gender. _(@0x6178656c)_
+- Fix some minor mistakes in CONTRIBUTING.md. _(@Joni1993)_
+- Fix various spelling errors. _(@Joni1993)_
+- Denoted package names & global variable names in [INSTALL.md](../INSTALL.md) as `Code`. _(@janldeboer)_
+- Improve readability of doc/tutorials/highlevel.md. _(@deoknats861)_
+- Improve reference to Podman documentation. _(@0x6178656c)_
+- Unify spelling. _(@Joni1993)_
+- Fix typo in dev/hooks.md. _(@dtdirect)_
+- Remove unused images from doc/images. _(@dtdirect)_
+- Fixed Coverage Badge Link. _(@janldeboer)_
+- Improve CONTRIBUTING doc. _(Juri Schreib @Bujuhu)_ and _(Nikola Prvulovic @Dynamichost96)_
+- Update Doxyfile with Doxygen 1.9.4. _(@0x6178656c)_
+- Add project logo to Doxygen in Doxyfile. _(@dtdirect)_
+- Add mermaid.js to the project using doxygen-mermaid. _(@dtdirect)_
+- Create diagrams in mermaid.js to use in doxygen. _(@dtdirect)_
+- Create README for Doxygen and Mermaid JS. _(@dtdirect)_
+- Tutorial: Add automatic validation to Docker tutorial _(Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Add mention of audit-dependencies script in doc/todo/RELEASE.md. _(@Bujuhu)_
+- Move note in GETSTARTED.md. _(@Joni1993)_
+- Use `code` blocks to prevent Markdown from falsy rendering LaTeX. _(@stefnotch)_, _(@janldeboer)_
 - Fix broken links in use cases for KDB after files were renamed. _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Replace http links with https. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
-- Enhance notifications.md in doc/tutorial _(@dtdirect)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Enhance notifications.md in doc/tutorial. _(@dtdirect)_
 - Add tutorial how to suppress memleaks in plugins from dependencies. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
 - Write about [history](/doc/dev/history.md) to make plans of Elektra's adoption more clear. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Use Cases
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Improve use cases [Template](/doc/usecases/template.md) _(@kodebach and Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Use cases for [KDB](/doc/usecases/kdb) _(@kodebach)_
-- Use cases for `libelektra-core` _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Improve use cases [Template](/doc/usecases/template.md). _(@kodebach and Markus Raab)_
+- Use cases for [KDB](/doc/usecases/kdb). _(@kodebach)_
+- Use cases for `libelektra-core`. _(@kodebach)_
 
 ### Decisions
 
-- Decide and implement [decision process](../decisions/5_partially_implemented/decision_process.md) _(Markus Raab)_
-- Decided future [library split](../decisions/4_decided/library_split.md) _(@kodebach)_
-- Decided [decision process](https://www.libelektra.org/decisions/decision-process) _(Markus Raab)_
-- Draft for [man pages](../decisions/0_drafts/man_pages.md) _(Markus Raab)_
-- <<TODO>>
-- Add decision for [change tracking](../decisions/1_problem_clear/change_tracking.md) _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- Add decisions about [location of headers](../decisions/4_decided/header_file_structure.md) and [use of `#include`](../decisions/4_decided/header_include.md) in the repo _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- Add decision about [metadata semantics](../decisions/0_drafts/metakey_semantics.md) _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
+- Decide and implement [decision process](../decisions/5_partially_implemented/decision_process.md). _(Markus Raab)_
+- Decided future [library split](../decisions/4_decided/library_split.md). _(@kodebach)_
+- Decided [decision process](https://www.libelektra.org/decisions/decision-process). _(Markus Raab)_
+- Draft for [man pages](../decisions/0_drafts/man_pages.md). _(Markus Raab)_
+- Add decision for [change tracking](../decisions/1_problem_clear/change_tracking.md). _(Maximilian Irlinger @atmaxinger)_
+- Create [decision](../decisions/0_drafts/operation_sequences.md) for allowed and prohibited operation seqences. _(Maximilian Irlinger @atmaxinger)_
+- Add decisions about [location of headers](../decisions/4_decided/header_file_structure.md) and [use of `#include`](../decisions/4_decided/header_include.md) in the repo. _(@kodebach)_
+- Add decision about [metadata semantics](../decisions/0_drafts/metakey_semantics.md). _(@kodebach)_
 - Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
-- <<TODO>>
-- Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md) _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- Revive [keyname decision](../decisions/4_decided/keyname.md) _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- Add decision for [copy-on-write](../decisions/6_implemented/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md). _(Maximilian Irlinger @atmaxinger)_
+- Revive [keyname decision](../decisions/4_decided/keyname.md). _(@kodebach)_
 - Add decisions for [constructor functions](../decisions/0_drafts/constructor_functions.md) and [builder functions](../decisions/0_drafts/builder_functions.md). _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Update [internal cache](../decisions/4_decided/internal_cache.md) _(Markus Raab)_
-- Move [internal cache](../decisions/4_decided/internal_cache.md) back to draft _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- Create [transformations](../decisions/0_drafts/transformations.md) _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- Replace TOC-style [README.md](../decisions/README.md) with folders and generate HTML for website _(@kodebach)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Restructured decisions directories based on new agreed-upon [steps](../decisions/STEPS.md) _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- Decision for [types of `KeySet`s](../decisions/2_solutions_clear/keyset_types.md) _(@kodebach)_
-- <<TODO>>
-- Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md) _(Markus Raab)_
+- Add decision for [copy-on-write](../decisions/6_implemented/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
+- Update [internal cache](../decisions/4_decided/internal_cache.md). _(Markus Raab)_ _(@kodebach)_
+- Create [transformations](../decisions/0_drafts/transformations.md). _(Maximilian Irlinger @atmaxinger)_
+- Replace TOC-style [README.md](../decisions/README.md) with folders and generate HTML for website. _(@kodebach)_
+- Restructured decisions directories based on new agreed-upon [steps](../decisions/STEPS.md). _(Maximilian Irlinger @atmaxinger)_
+- Decision for [types of `KeySet`s](../decisions/2_solutions_clear/keyset_types.md). _(@kodebach)_
+- Added [Documentation Guidelines](https://master.libelektra.org/doc/contrib/documentation.md). _(Markus Raab)_
 - Add links and formatting to documents affected by PR#4492 (Document Guidelines) and rephrase some parts. _(Florian Lindner @flo91)_
-- Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions _(@kodebach)_
+- Decisions for changes to `keyIsBelow` and new `keyGetNextPart` functions. _(@kodebach)_
 - Apply fix spelling to more files. _(Markus Raab)_
 
 ### Tutorials
 
-- Add tutorial for manual installation from the AUR on Arch Linux _(@Bujuhu)_
-- <<TODO>>
-- Add Markdown shell recorder validation to install.webui.md _(@deoknats861)_
-- <<TODO>>
-- Fix the outdated array tutorial _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- <<TODO>>
-- <<TODO>>
-- Reinstate mounting tutorial _(@Bujuhu)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Make namespaces tutorial verifiable _(@0x6178656c)_
+- Add tutorial for manual installation from the AUR on Arch Linux. _(@Bujuhu)_
+- Add Markdown shell recorder validation to install.webui.md. _(@deoknats861)_
+- Fix the outdated array tutorial. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Reinstate mounting tutorial. _(@Bujuhu)_
+- Make namespaces tutorial verifiable. _(@0x6178656c)_
 - Move Podman-related information to a dedicated page. _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Man Pages
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Update man page (patch) as suggested by the CI to fix CI error on master. _(Florian Lindner @flo91)_
-- <<TODO>>
-- <<TODO>>
 - Added links to the website & webui after further reading. _(Philipp Nirnberger @nirnberger)_
-- <<TODO>>
+- Upgrade `ronn-ng` to 0.10.1.pre3. _(Mihael Pranjić @mpranj)_
 
 ## Tests
 
-- Fix an Issue where scripts/dev/fix-spelling does not work, if a resolved path contains whitespaces _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- Rename scripts/sed to [scripts/spelling.sed](https://master.libelektra.org/scripts/spelling.sed) _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Fix an Issue where scripts/dev/fix-spelling does not work, if a resolved path contains whitespaces. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
+- Rename scripts/sed to [scripts/spelling.sed](https://master.libelektra.org/scripts/spelling.sed). _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - Add `memleak` label to `test_getenv`. _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
-- Add test using shellcheck _(@0x6178656c)_
-- <<TODO>>
-- <<TODO>>
+- Add test using shellcheck. _(@0x6178656c)_
 - Remove `--rerun-failed` from `run_*` scripts. _(@kodebach)_
 - Fix paths for icheck test. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### C
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Shell Recorder
 
-- <<TODO>>
 - Add check if file exists. _(@0x6178656c)_
-- <<TODO>>
-
-### C++
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Packaging
 
-- <<TODO>>
 - Add missing new `backend` plugin to components of libelektra package. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- Fix warning for CMP0115 _(0x6178656c)_
-- Change Doxygen configuration for LaTeX _(0x6178656c)_
-- <<TODO>>
-- Fix developer warning for package DISCOUNT _(Dennis Toth @dtdirect)_
+- Fix warning for CMP0115. _(0x6178656c)_
+- Change Doxygen configuration for LaTeX. _(0x6178656c)_
+- Fix developer warning for package DISCOUNT. _(Dennis Toth @dtdirect)_
 - Pass `--stacktrace` to gradle for the JNA builds. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
-- Adapt npm build flags to remove reproducability issues _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
-- <<TODO>>
+- Adapt npm build flags to remove reproducability issues. _(Juri Schreib @Bujuhu)_ _(Nikola Prvulovic @Dynamichost96)_
 - Fix creation of shell recorder tests. _(@0x6178656c)_
 
 ### Docker
 
 - Update packagename `libpcrec++-dev` to `libpcrecpp0v5` in Debian Sid. _(Richard Stöckl @Eiskasten)_
-- <<TODO>>
-- <<TODO>>
 - Add shellcheck to Debian containers. _(@0x6178656c)_
 - Use `openjdk-17-jdk` in Debian Sid. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- Update Alpine Linux to 3.16.3. _(Mihael Pranjić @mpranj)_
 - Add Fedora 37 images. _(Mihael Pranjić @mpranj)_
 - Update Debian Sid image to use repository Python modules instead of installing with `pip3` due to upstream debian changes. _(Mihael Pranjić @mpranj)_
+- Debian Bullsye: use clang 13. _(Mihael Pranjić @mpranj)_
+- Update Alpine Linux to 3.17.2. _(Mihael Pranjić @mpranj)_
 
 ## Gradle
 
@@ -719,67 +433,61 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ### Jenkins
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add Fedora 37 builds, drop Fedora 35 builds. _(Mihael Pranjić @mpranj)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Run more tests also on Master. _(Markus Raab)_
 - Move doc to main build stage. _(Markus Raab)_
-- <<TODO>>
-- Disable parallel test runs _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- Upgrade Jenkins node container to Debian bullseye _(@0x6178656c)_
-- <<TODO>>
-- Undo previous change that added automatic `ctest --rerun-failed` to Jenkins CI _(@kodebach)_
-- <<TODO>>
+- Disable parallel test runs. _(Maximilian Irlinger @atmaxinger)_
+- Upgrade Jenkins node container to Debian bullseye. _(@0x6178656c)_
+- Undo previous change that added automatic `ctest --rerun-failed` to Jenkins CI. _(@kodebach)_
 
 ### Cirrus
 
 - Use Fedora 37. _(Mihael Pranjić @mpranj)_
 - Fix `macos_instance` reference, upgrade to macOS Ventura (by default), use Python 3.11 and Ruby 3.x. _(Mihael Pranjić @mpranj)_
 - Automatically rerun `testmod_dbus*` tests on macOS. _(@kodebach)_
-- <<TODO>>
-- Fix dbus not starting on macOS _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
+- Fix dbus not starting on macOS. _(Maximilian Irlinger @atmaxinger)_
 
 ### GitHub Actions
 
 - Add auto-cancellation-running action. _(Tomislav Makar @tmakar)_
 - Automatically rerun `testmod_dbus*` tests on macOS. _(@kodebach)_
-- <<TODO>>
-- Fix dbus not starting on macOS _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
+- Fix dbus not starting on macOS. _(Maximilian Irlinger @atmaxinger)_
 - Change stale issue/PR checking to GitHub action. _(@0x6178656c)_
 - Update configuration of stale issue/PR action. _(@0x6178656c)_
-- <<TODO>>
 - Upgrade actions to recent versions and remove deprecated ruby-setup action. _(Mihael Pranjić @mpranj)_
 
 ## Website
 
 The website is generated from the repository, so all information about plugins, bindings and tools are always up-to-date. Furthermore, we changed:
 
-- <<TODO>>
-- <<TODO>>
+- Fix broken `/pythongen` link on homepage. _(@stefnotch)_
+- Fix redirect logic to not cause loops. _(@stefnotch)_
+- Remove duplicated link to `TESTING.md` file. _(@stefnotch)_, _(@janldeboer)_
+- Restructure parts of the links on the website. _(@stefnotch)_, _(@janldeboer)_
+- Removed broken links to packages for Linux distributions. _(@Dynamichost96)_
 - Update npm packages. _(Mihael Pranjić @mpranj)_
-- Change URLs to say man-page with a dash _(@stefnotch)_ _(@janldeboer)_
-- <<TODO>>
-- <<TODO>>
+- Change URLs to say man-page with a dash. _(@stefnotch)_ _(@janldeboer)_
 
 ## Outlook
 
 We are currently working on following topics:
 
+- 1.0 API _(Klemens Böswirth @kodebach)_ and _(Stefan Hanreich)_
 - Session recording and better Ansible integration _(Maximilian Irlinger @atmaxinger)_
-- Change tracking. _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- <<TODO>>
+- Change tracking _(Maximilian Irlinger @atmaxinger)_
+- Rewriting tools in C _(@hannes99)_
+- Elektrify KDE and GNOME _(Mihael Pranjić @mpranj)_
+- Elektrify XFCE _(Richard Stöckl @Eiskasten)_
+- Mounting SQL databases _(Florian Lindner @flo91)_
+- Recording Configuration _(Maximilian Irlinger)_
+- Ansible-Elektra _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Configure Olimex Base Images _(Maximilian Irlinger)_
+- Improving Build Server Infrastructure _(Lukas Hartl)_ and _(Maximilian Irlinger)_
+- Improve Java Development Experience _(Michael Tucek)_
 
 ## Statistics
 
-We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+We closed about [150 issues](https://github.com/ElektraInitiative/libelektra/milestone/33?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 

@@ -28,4 +28,4 @@ if [ $# -gt 0 ]; then
 else
 	markdown_files=$(git ls-files '*.md')
 fi
-printf "%s\n" "$markdown_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${NPX}" --quiet prettier@2.5.1 --write -- > /dev/null
+printf "%s\n" "$markdown_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${NPX}" --quiet prettier@2.8.4 --write -- > /dev/null

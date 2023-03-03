@@ -85,12 +85,13 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # Prettier
-RUN npm install --global prettier@2.5.1
+RUN npm install --global prettier@2.8.4
 
 # Google Java formatter
+ARG GOOGLE_JAVA_FORMAT_VER=1.11.0
 RUN cd /opt \
     && curl -o google-java-format.jar \
-      -L https://github.com/google/google-java-format/releases/download/v1.11.0/google-java-format-1.11.0-all-deps.jar
+      -L https://github.com/google/google-java-format/releases/download/v${GOOGLE_JAVA_FORMAT_VER}/google-java-format-${GOOGLE_JAVA_FORMAT_VER}-all-deps.jar
 
 # hyperfine
 ARG HYPERFINE_VERSION=1.5.0
@@ -118,7 +119,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.5.1-bin.zip && unzip gradle-7.5.1-bin.zip && rm gradle-7.5.1-bin.zip && mv gradle-7.5.1 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-8.0.1-bin.zip && unzip gradle-8.0.1-bin.zip && rm gradle-8.0.1-bin.zip && mv gradle-8.0.1 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
@@ -136,4 +137,4 @@ RUN mkdir -p "${SHFMT_PATH}" \
 
 # Ronn-NG
 ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.1.0/bin"
-RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version
+RUN gem install --user-install ronn-ng -v 0.10.1.pre3 && ronn --version

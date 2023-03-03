@@ -169,11 +169,11 @@ task:
       brew install ruby@3.0
       export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
     - | # Install Ruby gems
-      sudo gem install ronn-ng -v 0.10.1.pre1
+      sudo gem install ronn-ng -v 0.10.1.pre3
       sudo gem install test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
-      npm install --global prettier@2.5.1
+      npm install --global prettier@2.8.4
 
   script:
     - | # Use latest version of LLVM to translate Elektra

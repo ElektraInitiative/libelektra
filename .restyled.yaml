@@ -1,4 +1,4 @@
-restylers_version: stable
+restylers_version: v0.238.0
 auto: true
 pull_requests: false
 restylers:
@@ -26,9 +26,9 @@ restylers:
         - "-i"
         - "--style=file"
   - prettier:
-      image: restyled/restyler-prettier:v2.5.1
+      image: restyled/restyler-prettier:v2.8.4-1
   - prettier-markdown:
-      image: restyled/restyler-prettier:v2.5.1
+      image: restyled/restyler-prettier:v2.8.4-1
       arguments: []
   - shfmt:
       image: restyled/restyler-shfmt:v3.4.3

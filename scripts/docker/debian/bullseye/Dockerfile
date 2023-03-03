@@ -10,7 +10,7 @@ RUN apt-get update && apt-get -y install \
         autotools-dev \
         bison \
         build-essential \
-        clang-11 \
+        clang-13 \
         cmake \
         curl \
     	dbus-x11 \
@@ -60,7 +60,7 @@ RUN apt-get update && apt-get -y install \
         libyaml-cpp-dev \
         libzmq3-dev \
         lintian \
-        llvm \
+        llvm-13 \
         mingw-w64 \
         ninja-build \
         patch \
@@ -123,7 +123,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.5.1-bin.zip && unzip gradle-7.5.1-bin.zip && rm gradle-7.5.1-bin.zip && mv gradle-7.5.1 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-8.0.1-bin.zip && unzip gradle-8.0.1-bin.zip && rm gradle-8.0.1-bin.zip && mv gradle-8.0.1 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
