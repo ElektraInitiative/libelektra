@@ -66,7 +66,8 @@ int execMetaRm (KeySet * options, Key * errorKey)
 	if (keySetMeta (key, metaName, NULL) != 0 || kdbSet (handle, conf, parentKey) == -1)
 	{
 		ret = 1;
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "could not remove meta-key '%s' for '%s': %s", metaName, keyName, GET_ERR (parentKey));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "could not remove meta-key '%s' for '%s': %s", metaName, keyName,
+							GET_ERR (parentKey));
 	}
 
 	keyDel (key);
@@ -76,7 +77,7 @@ cleanup:
 	{
 		printf ("\n");
 	}
-	elektraFree ((void*) keyName);
+	elektraFree ((void *) keyName);
 	keyDel (parentKey);
 	ksDel (conf);
 	kdbClose (handle, errorKey);

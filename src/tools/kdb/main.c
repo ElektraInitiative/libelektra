@@ -10,6 +10,7 @@
 #include <cmerge.h>
 #include <cp.h>
 #include <dirname.h>
+#include <find.h>
 #include <get.h>
 #include <ls.h>
 #include <meta.h>
@@ -36,6 +37,7 @@ command subcommands[] = {
 	{ "cmerge", addCmergeSpec, execCmerge },
 	{ "cp", addCpSpec, execCp },
 	{ "dirname", addDirnameSpec, execDirname },
+	{ "find", addFindSpec, execFind },
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
 	{ "meta", addMetaSpec, execMeta },
