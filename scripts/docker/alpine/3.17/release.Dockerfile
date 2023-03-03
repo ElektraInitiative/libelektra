@@ -31,7 +31,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 ENV ELEKTRA_ROOT=/opt/elektra
-ENV ELEKTRA_RELEASE=0.9.11
+ENV ELEKTRA_RELEASE=0.9.12
 RUN mkdir -p ${ELEKTRA_ROOT} \
     && cd /tmp \
     && curl -o elektra.tar.gz \
