@@ -1,8 +1,8 @@
 # 0.9.<<VERSION>> Release
 
-- guid: 30C1B586-3840-4A98-80A7-1F731898C9DD
+- guid: F2193578-1773-43A9-85CA-79EA8CE48D7B
 - author: Mihael Pranjić
-- pubDate: Thu, 03 Mar 2023 03:03:23 +0100
+- pubDate: Fri, 03 Mar 2023 08:07:28 +0100
 - shortDesc: New Backend Logic, Copy-on-Write, FLOSS Course
 
 We are proud to release Elektra 0.9.<<VERSION>>.
@@ -101,7 +101,7 @@ When you are ready to commit the changes, you can manually edit the config file,
 
 - Implement [hooks](https://www.libelektra.org/decisions/hooks-in-kdb). _(Maximilian Irlinger @atmaxinger)_
 - Removed old global plugins code. _(Maximilian Irlinger @atmaxinger)_
-- New backend logic, based on PR #2969 by @vLesk _(@kodebach)_
+- New backend logic, based on PR #2969 by @vLesk. _(@kodebach)_
 - Add script to migrate `system:/elektra/mountpoints` to new format. _(@kodebach)_
 
 ### Copy-on-Write
@@ -359,10 +359,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Many small fixes to adapt to documentation guidelines and new decision process. _(Markus Raab)_
 - Add decision for [read-only keynames](../decisions/0_drafts/readonly_keynames.md). _(Maximilian Irlinger @atmaxinger)_
 - Revive [keyname decision](../decisions/4_decided/keyname.md). _(@kodebach)_
-- Add decision for [copy-on-write](../decisions/6_implemented/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
 - Add decisions for [constructor functions](../decisions/0_drafts/constructor_functions.md) and [builder functions](../decisions/0_drafts/builder_functions.md). _(@kodebach)_
-- Update [internal cache](../decisions/4_decided/internal_cache.md). _(Markus Raab)_
-- Move [internal cache](../decisions/4_decided/internal_cache.md) back to draft. _(@kodebach)_
+- Add decision for [copy-on-write](../decisions/6_implemented/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
+- Update [internal cache](../decisions/4_decided/internal_cache.md). _(Markus Raab)_ _(@kodebach)_
 - Create [transformations](../decisions/0_drafts/transformations.md). _(Maximilian Irlinger @atmaxinger)_
 - Replace TOC-style [README.md](../decisions/README.md) with folders and generate HTML for website. _(@kodebach)_
 - Restructured decisions directories based on new agreed-upon [steps](../decisions/STEPS.md). _(Maximilian Irlinger @atmaxinger)_
@@ -437,13 +436,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add Fedora 37 builds, drop Fedora 35 builds. _(Mihael Pranjić @mpranj)_
 - Run more tests also on Master. _(Markus Raab)_
 - Move doc to main build stage. _(Markus Raab)_
-- <<TODO>>
-- Disable parallel test runs _(Maximilian Irlinger @atmaxinger)_
-- <<TODO>>
-- Upgrade Jenkins node container to Debian bullseye _(@0x6178656c)_
-- <<TODO>>
-- Undo previous change that added automatic `ctest --rerun-failed` to Jenkins CI _(@kodebach)_
-- <<TODO>>
+- Disable parallel test runs. _(Maximilian Irlinger @atmaxinger)_
 - Upgrade Jenkins node container to Debian bullseye. _(@0x6178656c)_
 - Undo previous change that added automatic `ctest --rerun-failed` to Jenkins CI. _(@kodebach)_
 
@@ -472,8 +465,8 @@ The website is generated from the repository, so all information about plugins, 
 - Remove duplicated link to `TESTING.md` file. _(@stefnotch)_, _(@janldeboer)_
 - Restructure parts of the links on the website. _(@stefnotch)_, _(@janldeboer)_
 - Removed broken links to packages for Linux distributions. _(@Dynamichost96)_
-- Update npm packages _(Mihael Pranjić @mpranj)_
-- Change URLs to say man-page with a dash _(@stefnotch)_ _(@janldeboer)_
+- Update npm packages. _(Mihael Pranjić @mpranj)_
+- Change URLs to say man-page with a dash. _(@stefnotch)_ _(@janldeboer)_
 
 ## Outlook
 
