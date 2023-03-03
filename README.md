@@ -5,7 +5,6 @@
 [![macOS Build Status](https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml/badge.svg)](https://github.com/ElektraInitiative/libelektra/actions/workflows/macOS.yml)
 [![Cirrus Build Status](https://api.cirrus-ci.com/github/ElektraInitiative/libelektra.svg)](https://cirrus-ci.com/github/ElektraInitiative/libelektra)
 [![Coverage Status](https://coveralls.io/repos/github/ElektraInitiative/libelektra/badge.svg?branch=master)](https://coveralls.io/github/ElektraInitiative/libelektra?branch=master)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/ElektraInitiative/libelektra.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ElektraInitiative/libelektra/alerts)
 
 _Elektra serves as a universal and secure framework to access configuration
 settings in a global, hierarchical key database._
