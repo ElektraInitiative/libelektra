@@ -2,6 +2,8 @@ strict digraph G {
 	graph [splines=true];
 	storage	[shape=Mdiamond];
 	augeas -> storage;
+	backend	[shape=Mdiamond];
+	backend -> backend;
 	binary	[shape=Mdiamond];
 	base64 -> binary;
 	check	[shape=Mdiamond];
@@ -87,7 +89,6 @@ strict digraph G {
 	line -> storage;
 	line -> line;
 	lineendings	[shape=Mdiamond];
-	list	[shape=Mdiamond];
 	logchange -> tracing;
 	lua	[shape=Mdiamond];
 	macaddr -> check;
@@ -95,9 +96,12 @@ strict digraph G {
 	mini -> storage;
 	properties	[shape=Mdiamond];
 	mini -> properties;
+	missing	[shape=Mdiamond];
+	missing -> missing;
 	mmapstorage	[shape=Mdiamond];
 	mmapstorage -> storage;
 	mmapstorage -> mmapstorage;
+	modules	[shape=Mdiamond];
 	mozprefs -> storage;
 	multifile -> storage;
 	multifile -> resolver;
@@ -142,10 +146,15 @@ strict digraph G {
 	uname -> info;
 	unit	[shape=Mdiamond];
 	validation -> check;
+	version	[shape=Mdiamond];
+	version -> version;
 	wresolver -> resolver;
 	xerces -> storage;
 	xml	[shape=Mdiamond];
 	xerces -> xml;
+	xfconf	[shape=Mdiamond];
+	xfconf -> storage;
+	xfconf -> xfconf;
 	xmltool -> storage;
 	xmltool -> xml;
 	yajl -> storage;
