@@ -20,7 +20,6 @@ RUN useradd \
     --shell "/bin/bash" \
 	jenkins
 
-
 ENV ELEKTRA_ROOT=/opt/elektra/
 RUN mkdir -p ${ELEKTRA_ROOT}
 COPY ./*.deb ${ELEKTRA_ROOT}
