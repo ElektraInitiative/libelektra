@@ -9,6 +9,7 @@
 #include <basename.h>
 #include <cp.h>
 #include <dirname.h>
+#include <find.h>
 #include <get.h>
 #include <ls.h>
 #include <merge.h>
@@ -35,6 +36,7 @@ command subcommands[] = {
 	{ "basename", addBasenameSpec, execBasename },
 	{ "cp", addCpSpec, execCp },
 	{ "dirname", addDirnameSpec, execDirname },
+	{ "find", addFindSpec, execFind },
 	{ "get", addGetSpec, execGet },
 	{ "ls", addLsSpec, execLs },
 	{ "merge", addMergeSpec, execMerge },

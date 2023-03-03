@@ -62,7 +62,9 @@
 	}                                                                                                                                  \
 	/* debug -> verbose, so logLevel = debug+verbose  */                                                                               \
 	bool verbose = debug;                                                                                                              \
-        if (verbose) {}; /* disable unused variable warning  */                                                                            \
+	if (verbose)                                                                                                                       \
+	{                                                                                                                                  \
+	}; /* disable unused variable warning  */                                                                                          \
 	tmp = GET_OPTION_KEY (options, "verbose");                                                                                         \
 	if (tmp != NULL)                                                                                                                   \
 	{                                                                                                                                  \
@@ -85,7 +87,9 @@
 	}                                                                                                                                  \
                                                                                                                                            \
 	int colorMode = CLI_COLOR_AUTO;                                                                                                    \
-        if (colorMode) {}; /* disable unused variable warning  */                                                                          \
+	if (colorMode)                                                                                                                     \
+	{                                                                                                                                  \
+	}; /* disable unused variable warning  */                                                                                          \
 	tmp = GET_OPTION_KEY (options, "color");                                                                                           \
 	if (tmp != NULL)                                                                                                                   \
 	{                                                                                                                                  \

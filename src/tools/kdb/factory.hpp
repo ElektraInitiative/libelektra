@@ -29,7 +29,6 @@
 #include <editor.hpp>
 #include <export.hpp>
 #include <file.hpp>
-#include <find.hpp>
 #include <gen.hpp>
 #include <import.hpp>
 #include <listcommands.hpp>
@@ -77,7 +76,6 @@ public:
 		m_factory.insert (std::make_pair ("mount", std::make_shared<Cnstancer<MountCommand>> ()));
 		m_factory.insert (std::make_pair ("remount", std::make_shared<Cnstancer<RemountCommand>> ()));
 		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
-		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-info", std::make_shared<Cnstancer<PluginInfoCommand>> ()));
 		m_factory.insert (std::make_pair ("test", std::make_shared<Cnstancer<TestCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-check", std::make_shared<Cnstancer<PluginCheckCommand>> ()));

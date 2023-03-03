@@ -27,6 +27,13 @@ This command will list the name of all keys that contain `regex`.
 - `-0`, `--null`:
   Use binary 0 termination.
 
+- 0:
+  No errors.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md)
+- 11:
+  regex could not be compiled
+
 ## EXAMPLES
 
 ```sh

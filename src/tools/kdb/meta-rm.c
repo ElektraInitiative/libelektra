@@ -96,7 +96,7 @@ cleanup:
 	{
 		printf ("\n");
 	}
-	elektraFree ((void*) keyName);
+	elektraFree ((void *) keyName);
 	keyDel (parentKey);
 	ksDel (conf);
 	kdbClose (handle, errorKey);

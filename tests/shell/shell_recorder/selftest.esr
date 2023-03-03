@@ -43,7 +43,7 @@ WARNINGS: C03100,C03100
 RET: 0
 < kdb umount $Mountpoint
 
-STDERR: Regex error.*
+STDERR: .*could not compile regex pattern.*
 < kdb find "["
 
 

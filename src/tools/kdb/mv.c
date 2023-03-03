@@ -80,8 +80,8 @@ int execMv (KeySet * options, Key * errorKey)
 	if (keyGetNamespace (sourceKey) == KEY_NS_NONE || keyGetNamespace (sourceKey) == KEY_NS_CASCADING)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "source key does not specify a namespace");
-		elektraFree ((void*) sourceName);
-		elektraFree ((void*) destName);
+		elektraFree ((void *) sourceName);
+		elektraFree ((void *) destName);
 		keyDel (sourceKey);
 		keyDel (destKey);
 		RETURN (2)
@@ -89,8 +89,8 @@ int execMv (KeySet * options, Key * errorKey)
 	if (keyGetNamespace (destKey) == KEY_NS_NONE || keyGetNamespace (destKey) == KEY_NS_CASCADING)
 	{
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "destination key does not specify a namespace");
-		elektraFree ((void*) sourceName);
-		elektraFree ((void*) destName);
+		elektraFree ((void *) sourceName);
+		elektraFree ((void *) destName);
 		keyDel (sourceKey);
 		keyDel (destKey);
 		RETURN (2)
