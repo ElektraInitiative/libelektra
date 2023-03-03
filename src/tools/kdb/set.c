@@ -54,10 +54,11 @@ int execSet (KeySet * options, Key * errorKey)
 
 	Key * parentKey = keyNew (name, KEY_END);
 
-	if (keyGetNamespace (parentKey) == KEY_NS_NONE || keyGetNamespace (parentKey) == KEY_NS_CASCADING) {
+	if (keyGetNamespace (parentKey) == KEY_NS_NONE || keyGetNamespace (parentKey) == KEY_NS_CASCADING)
+	{
 		ret = 1;
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "key does not specify a namespace");
-		elektraFree ((void*) name);
+		elektraFree ((void *) name);
 		keyDel (parentKey);
 		return ret;
 	}
@@ -94,7 +95,7 @@ cleanup:
 	{
 		printf ("\n");
 	}
-	elektraFree ((void*) name);
+	elektraFree ((void *) name);
 	keyDel (parentKey);
 	ksDel (conf);
 	kdbClose (handle, errorKey);

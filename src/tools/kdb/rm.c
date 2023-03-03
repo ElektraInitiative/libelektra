@@ -87,7 +87,7 @@ int execRm (KeySet * options, Key * errorKey)
 		if ((recursive && startsWithSrc) || equalsSrc)
 		{
 			count++;
-			CLI_PRINT (CLI_LOG_VERBOSE, "removing '%s\n", BOLD(keyName (cur)));
+			CLI_PRINT (CLI_LOG_VERBOSE, "removing '%s\n", BOLD (keyName (cur)));
 			continue;
 		}
 		ksAppendKey (newConf, cur);

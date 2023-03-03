@@ -61,8 +61,7 @@ int execMetaShow (KeySet * options, Key * errorKey)
 	for (elektraCursor it = 0; it < ksGetSize (metaKeys); ++it)
 	{
 		cur = ksAtCursor (metaKeys, it);
-		CLI_PRINT (CLI_LOG_NONE, "%s -> %s%c", keyName (cur), BOLD(keyString (cur)), nullTerm ? '\0' : '\n');
-
+		CLI_PRINT (CLI_LOG_NONE, "%s -> %s%c", keyName (cur), BOLD (keyString (cur)), nullTerm ? '\0' : '\n');
 	}
 
 

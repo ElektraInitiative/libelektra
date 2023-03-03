@@ -60,20 +60,22 @@ int execCp (KeySet * options, Key * errorKey)
 	Key * sourceKey = keyNew (sourceName, KEY_END);
 	Key * destKey = keyNew (destName, KEY_END);
 
-	if (keyGetNamespace (sourceKey) == KEY_NS_NONE || keyGetNamespace (sourceKey) == KEY_NS_CASCADING) {
+	if (keyGetNamespace (sourceKey) == KEY_NS_NONE || keyGetNamespace (sourceKey) == KEY_NS_CASCADING)
+	{
 		ret = 1;
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "source key does not specify a namespace");
-		elektraFree ((void*) sourceName);
-		elektraFree ((void*) destName);
+		elektraFree ((void *) sourceName);
+		elektraFree ((void *) destName);
 		keyDel (sourceKey);
 		keyDel (destKey);
 		return ret;
 	}
-	if (keyGetNamespace (destKey) == KEY_NS_NONE || keyGetNamespace (destKey) == KEY_NS_CASCADING) {
+	if (keyGetNamespace (destKey) == KEY_NS_NONE || keyGetNamespace (destKey) == KEY_NS_CASCADING)
+	{
 		ret = 1;
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "destination key does not specify a namespace");
-		elektraFree ((void*) sourceName);
-		elektraFree ((void*) destName);
+		elektraFree ((void *) sourceName);
+		elektraFree ((void *) destName);
 		keyDel (sourceKey);
 		keyDel (destKey);
 		return ret;
@@ -116,7 +118,7 @@ int execCp (KeySet * options, Key * errorKey)
 				strcat (newName, "/");
 				strcat (newName, &keyName (cur)[sourceNameLen]);
 			}
-			CLI_PRINT (CLI_LOG_VERBOSE, "-> moving '%s' to '%s'\n", BOLD(keyName (cur)), BOLD(newName));
+			CLI_PRINT (CLI_LOG_VERBOSE, "-> moving '%s' to '%s'\n", BOLD (keyName (cur)), BOLD (newName));
 			Key * tmpKey = keyDup (cur, KEY_CP_ALL);
 			keySetName (tmpKey, newName);
 			ksAppendKey (newConf, tmpKey);

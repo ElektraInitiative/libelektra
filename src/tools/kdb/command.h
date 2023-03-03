@@ -56,7 +56,9 @@
 	}                                                                                                                                  \
 	/* debug -> verbose, so logLevel = debug+verbose  */                                                                               \
 	bool verbose = debug;                                                                                                              \
-        if (verbose) {}; /* disable unused variable warning  */                                                                            \
+	if (verbose)                                                                                                                       \
+	{                                                                                                                                  \
+	}; /* disable unused variable warning  */                                                                                          \
 	tmp = GET_OPTION_KEY (options, "verbose");                                                                                         \
 	if (tmp != NULL)                                                                                                                   \
 	{                                                                                                                                  \
@@ -69,7 +71,9 @@
 		elektraKeyToBoolean (GET_OPTION_KEY (options, "nonewline"), &noNewLine);                                                   \
 	}                                                                                                                                  \
 	int colorMode = CLI_COLOR_AUTO;                                                                                                    \
-        if (colorMode) {}; /* disable unused variable warning  */                                                                          \
+	if (colorMode)                                                                                                                     \
+	{                                                                                                                                  \
+	}; /* disable unused variable warning  */                                                                                          \
 	tmp = GET_OPTION_KEY (options, "color");                                                                                           \
 	if (tmp != NULL)                                                                                                                   \
 	{                                                                                                                                  \
@@ -83,14 +87,18 @@
 		}                                                                                                                          \
 	}                                                                                                                                  \
 	char * fmtBuffer = NULL;                                                                                                           \
-        if (fmtBuffer) {}; /* disable unused variable warning  */                                                                          \
+	if (fmtBuffer)                                                                                                                     \
+	{                                                                                                                                  \
+	}; /* disable unused variable warning  */                                                                                          \
 	if (!isatty (STDOUT_FILENO))                                                                                                       \
 	{                                                                                                                                  \
 		colorMode = CLI_COLOR_NEVER;                                                                                               \
 	}                                                                                                                                  \
                                                                                                                                            \
 	int logLevel = verbose + debug;                                                                                                    \
-        if (logLevel) {}; /* disable unused variable warning  */                                                                           \
+	if (logLevel)                                                                                                                      \
+	{                                                                                                                                  \
+	}; /* disable unused variable warning  */                                                                                          \
 	keyDel (tmp);
 
 #define EXEC_EXT(prog, argv, status)                                                                                                       \

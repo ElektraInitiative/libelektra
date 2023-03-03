@@ -56,10 +56,11 @@ int execMetaSet (KeySet * options, Key * errorKey)
 
 	Key * parentKey = keyNew (keyName, KEY_END);
 
-	if (keyGetNamespace (parentKey) == KEY_NS_NONE || keyGetNamespace (parentKey) == KEY_NS_CASCADING) {
+	if (keyGetNamespace (parentKey) == KEY_NS_NONE || keyGetNamespace (parentKey) == KEY_NS_CASCADING)
+	{
 		ret = 1;
 		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (errorKey, "key does not specify a namespace");
-		elektraFree ((void*) keyName);
+		elektraFree ((void *) keyName);
 		keyDel (parentKey);
 		return ret;
 	}
@@ -87,7 +88,8 @@ int execMetaSet (KeySet * options, Key * errorKey)
 	if (kdbSet (handle, conf, parentKey) == -1)
 	{
 		ret = 1;
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "could not set meta-value '%s' for '%s': %s", metaName, keyName, GET_ERR (parentKey));
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "could not set meta-value '%s' for '%s': %s", metaName, keyName,
+							GET_ERR (parentKey));
 	}
 
 	keyDel (key);
@@ -97,7 +99,7 @@ cleanup:
 	{
 		printf ("\n");
 	}
-	elektraFree ((void*) keyName);
+	elektraFree ((void *) keyName);
 	keyDel (parentKey);
 	ksDel (conf);
 	kdbClose (handle, errorKey);
