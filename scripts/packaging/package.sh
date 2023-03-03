@@ -7,7 +7,7 @@ ELEKTRA_TOOLS='ALL'
 ELEKTRA_BINDINGS='cpp;lua;python;ruby;jna;glib;IO;INTERCEPT'
 
 PACKAGE_REVISION=${1:-1}
-DIST_NAME=${2:-$(grep "^NAME=" /etc/os-release | awk -F= "{ print $2 }" | sed 's/\"//g')}
+DIST_NAME=${2:-$(grep "^NAME=" /etc/os-release | awk -F= {' print $2 '} | sed 's/\"//g')}
 
 ARCHITECTURE=$(uname -m)
 if [ "$ARCHITECTURE" = "x86_64" ]; then
