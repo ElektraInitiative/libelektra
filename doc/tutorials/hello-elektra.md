@@ -50,7 +50,7 @@ This basic tutorial shows you how to compile and run a very basic Elektra applic
    -- Detecting CXX compiler ABI info - done
    -- Detecting CXX compile features
    -- Detecting CXX compile features - done
-   -- Elektra 0.9.11 found
+   -- Elektra 0.9.12 found
    -- Configuring done
    -- Generating done
    -- Build files have been written to: Hello/build

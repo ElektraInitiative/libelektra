@@ -86,7 +86,7 @@ Simply add libelektra as dependency using:
     <dependency>
       <groupId>org.libelektra</groupId>
       <artifactId>libelektra</artifactId>
-      <version>0.9.11</version>
+      <version>0.9.12</version>
     </dependency>
 ```
 
@@ -103,7 +103,7 @@ repositories {
 }
 
 dependencies {
-    implementation "org.libelektra:libelektra:0.9.11"
+    implementation "org.libelektra:libelektra:0.9.12"
 }
 ```
 
