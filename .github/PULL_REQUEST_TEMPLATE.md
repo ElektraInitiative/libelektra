@@ -15,11 +15,11 @@ These points need to be fulfilled for every PR.
       (first line should have `module: short statement` syntax)
 - [ ] References to issues, e.g. `close #X`, are in the commit messages.
 - [ ] The buildservers are happy. If not, fix **in this order**:
-  - [ ] add a line in `doc/news/_preparation_next_release.md`
-  - [ ] reformat the code with `scripts/dev/reformat-all`
-  - [ ] make all unit tests pass
-  - [ ] fix all memleaks
-  - [ ] fix the CI itself (or rebase if already fixed)
+  - add a line in `doc/news/_preparation_next_release.md`
+  - reformat the code with `scripts/dev/reformat-all`
+  - make all unit tests pass
+  - fix all memleaks
+  - fix the CI itself (or rebase if already fixed)
 - [ ] The PR is rebased with current master.
 
 <!--

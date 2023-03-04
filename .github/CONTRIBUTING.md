@@ -47,6 +47,7 @@ Do not hesitate to open a new issue if you want to ask a question, report or fix
 ## Creating a Pull-Request
 
 If you want to publish your local changes to this project you have to create a new pull-request.
+(4, 5 and 7 is Elektra-specific)
 
 1. Open GitHub and navigate to _your_ libelektra-fork
 2. In the tab _Code_ press the _New Pull-Request_ button and choose a title and fill in the [pull-request template](/.github/PULL_REQUEST_TEMPLATE.md)
@@ -95,3 +96,4 @@ Before you start making fundamental changes:
 
 - If you do not want your PR to be merged, please label the PR with the label "work in progress".
 - If you included changes after a review and you think you are ready, please tag your PR with the label "ready to merge".
+  Note that you probably also need to (re-)requests review.
