@@ -30,7 +30,7 @@ We will help you, but we cannot accept PRs that do not fulfill the basics.
 ## Checklist
 
 <!--
-For docu fixes, spell checking, and similar none of these points below need to be checked.
+For documentation fixes, spell checking, and similar none of these points below need to be checked.
 -->
 
 - [ ] I added unit tests for my code
