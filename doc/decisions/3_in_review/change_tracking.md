@@ -54,7 +54,7 @@ The library `libelektra-core` must be kept minimal.
 - It is possible to design a single change tracking API that is useful for all existing and future plugins
 - False positives are okay
 
-  - this may happened when some keys have been changed by the user, but have subsequentially been "unchanged" by a transformation plugin
+  - this may happen when some keys have been changed by the user, but have subsequentially been "unchanged" by a transformation plugin
     Scenario: plugin that converts `false`<->`0` and `true`<->`1`
     - `system:/background` is stored with value `false`
     - user gets key `system:/background` with value `0` (after conversion by plugin)
@@ -63,7 +63,7 @@ The library `libelektra-core` must be kept minimal.
     - plugin changes value from `false` to `0`
     - consumers of the changetracking API will now get a false positive if they query whether `system:/background` has been changed
     - We assume consumers of the changetracking API have access to both the previous and the new value of a changed key.
-      Therefore, they could detect these false positive cases, if the need to.
+      Therefore, they could detect these false positive cases, if they need to.
 
 - False negatives (missed changes) are not okay
 
@@ -80,7 +80,7 @@ A problem with this approach is that the internally stored keys are recreated as
 
 ### Combine with internal cache
 
-We already decided that we want to have an internal deep-duped keysets of all the keys we returned.
+We already decided that we want to have an internal deep-duped keyset of all the keys we returned.
 See [internal cache decision](../4_decided/internal_cache.md).
 
 The difference to `backendData->keys` is that this cache is not recreated each time `kdbGet` is called.
@@ -138,7 +138,7 @@ We could just point the plugin to `backendsData->keys` or the internal cache if 
 
 ### Provide an API within `libelektra-kdb`
 
-The API should be useable both by plugins and applications utilizing ELektra.
+The API should be usable by plugins and by applications utilizing Elektra.
 It does not matter whether the changetracking is implemented as part of `libelektra-kdb` or as a separate plugin.
 The API may look something like this:
 
@@ -158,7 +158,7 @@ KeySet * elektraChangeTrackingGetRemovedMetaKeys (ChangeTrackingContext * contex
 KeySet * elektraChangeTrackingGetModifiedMetaKeys (ChangeTrackingContext * context, Key * key); // Returns old meta keys (pre-modification)
 ```
 
-### Provide query methods as part of a seperat plugin
+### Provide query methods as part of a separate plugin
 
 This solution only makes sense if changetrackig is implemented as part of a seperate plugin.
 It will be a bit challenging to use for applications, as it would require that applications have access to the plugin contracts.
@@ -174,7 +174,7 @@ The changetracking plugin needs to export at least functions for the following t
 
 ## Decision
 
-Plugins and application developer can declare that changetracking is required via a contract.
+Plugin and application developers can declare that changetracking is required via a contract.
 Store deep-duped copy-on-write returned keys in a separate keyset, which we might also use as [internal cache](../4_decided/internal_cache.md).
 The whole changetracking logic lives within `libelektra-kdb`.
 We provide an API for developers with `libelektra-kdb`.
