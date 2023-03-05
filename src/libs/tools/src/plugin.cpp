@@ -214,6 +214,7 @@ void Plugin::check (vector<string> & warnings)
 		else
 		{
 			std::vector<std::string> pp;
+			pp.push_back ("hook");
 			pp.push_back ("prerollback");
 			pp.push_back ("rollback");
 			pp.push_back ("postrollback");
