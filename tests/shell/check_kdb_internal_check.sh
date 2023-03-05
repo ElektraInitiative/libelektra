@@ -50,10 +50,6 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		# dbus is not enabled on internal checks
 		continue
 		;;
-	"spec")
-		# hook - no placement
-		continue
-		;;
 	"gopts")
 		# hook - no placement
 		continue
