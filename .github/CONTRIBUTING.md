@@ -53,11 +53,11 @@ If you want to publish your local changes to this project you have to create a n
 2. In the tab _Code_, click on _Contribute_ and press the _Open pull request_ button, then choose a title and fill in the [pull-request template](/.github/PULL_REQUEST_TEMPLATE.md)
 3. Now you should be able to set up the _Comparing changes_ settings.
    Choose the head repository and base repository.
-   E.g.: if you have some changes in the master branch of your forked repository, select *head repository: yournickname/libelektra* and *compare: master* and *base repository: ElektraInitiative/libelektra* and *base: master*
+   E.g.: if you have some changes in the master branch of your forked repository, select _head repository: yournickname/libelektra_ and _compare: master_ and _base repository: ElektraInitiative/libelektra_ and _base: master_
 4. Add some information about the changes in the release notes (path of the file: /libelektra/doc/news/\_preparation_next_release.md), skipping this step may cause a rejected pull-request
 5. Do not forget to format your code, otherwise the build server fails instantly. Take a look at the [coding guidelines](/doc/CODING.md) for more information.
-We provide scripts for automatically formatting various types of files.
-The easiest way is to run the scripts inside a [Docker container](/doc/tutorials/run_reformatting_script_with_docker.md).
+   We provide scripts for automatically formatting various types of files.
+   The easiest way is to run the scripts inside a [Docker container](/doc/tutorials/run_reformatting_script_with_docker.md).
 6. Commit and push your local changes in Git (keep in mind to sync your fork - fetch, rebase & push)
 7. Ask others to review (GitHub's auto-suggested reviewers often are a good start)
 
