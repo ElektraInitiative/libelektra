@@ -48,6 +48,7 @@ int main (void)
 	elektraEntryDel (key);
 
 	ElektraNameBuffer * buffer2 = elektraNameBufferNew ();
+	elektraNameBufferSetNamespace (buffer2, ELEKTRA_NS_USER);
 	elektraNameBufferAppend (buffer2, "foo\0bar", 9);
 	elektraNameBufferAppendPart (buffer2, "part1");
 	elektraNameBufferAppendPart (buffer2, "part2");
