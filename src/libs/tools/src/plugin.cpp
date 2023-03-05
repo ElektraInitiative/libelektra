@@ -206,7 +206,7 @@ void Plugin::check (vector<string> & warnings)
 			warnings.push_back ("placements are empty");
 		}
 
-		if (placements == "backend")
+		if (placements == "backend" || placements == "hook")
 		{
 			// accepted
 			// TODO (flo91): add checks in new mount tooling
