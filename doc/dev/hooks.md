@@ -67,3 +67,8 @@ The following functions **may** be exported (optional):
 1. Hooks are initialized within `kdbOpen` after the contract has been processed. This includes loading the plugins.
 2. The appropriate hooks are called within each `kdbGet` and `kdbSet` call.
 3. Hooks are deinitialized within `kdbClose`. This includes unloading the plugins.
+
+## Additional information
+
+To specify the place of a hook plugin add `infos/placements = hook` to your plugins
+`README.md`.
