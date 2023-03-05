@@ -42,7 +42,7 @@ int main (void)
 	ElektraSet * ks2;
 
 	elektraSetInsert (ks1, (ElektraEntry *) elektraEntryIncRefCount (k1)); // create new reference to keep k1 separate from ks1
-	elektraSetInsert (ks1, k2);					       // moves reference from k2 into ks1, k2 must no longer be
+	elektraSetInsert (ks1, k2);					       // moves reference from k2 into ks1, k2 must no longer be used
 
 	elektraSetInsert (ks1, k3);
 	elektraSetInsert (ks1, k4);

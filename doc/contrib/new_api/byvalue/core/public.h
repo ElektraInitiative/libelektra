@@ -74,7 +74,7 @@ void elektraEntrySetNamespace (const ElektraEntry * key, ElektraNamespace ns);
 
 ElektraName elektraEntryGetName (const ElektraEntry * key);
 // Note: creates copy of name
-ElektraReturnCode elektraSetName (ElektraEntry * key, ElektraName name);
+ElektraReturnCode elektraEntrySetName (ElektraEntry * key, ElektraName name);
 // increments nameLock
 void elektraEntryLockName (ElektraEntry * key);
 // decrements nameLock
@@ -83,7 +83,7 @@ bool elektraEntryIsNameLocked (const ElektraEntry * key);
 
 ElektraValue elektraEntryGetValue (const ElektraEntry * key);
 // Note: creates copy of value
-ElektraReturnCode elektraSetValue (ElektraEntry * key, ElektraValue value);
+ElektraReturnCode elektraEntrySetValue (ElektraEntry * key, ElektraValue value);
 
 /**
  * @returns a `const ElektraSet *` that can safely be cast to `ElektraSet *`, iff a non-const `ElektraEntry *` was passed as @p key

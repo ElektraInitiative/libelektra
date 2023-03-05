@@ -62,7 +62,7 @@ An "unsafe" operation, does not immediately break anything, but it is still an i
 ElektraEntry * k1 = elektraEntryNew (&(ElektraName){
     .ns = ELEKTRA_NS_SYSTEM,
     .name = "foo\0bar\0baz",
-    .size = 14
+    .size = 12
 });
 ElektraSet * ks1 = elektraSetNew (8);
 ElektraEntryInsertAndRelease (ks1, k1);

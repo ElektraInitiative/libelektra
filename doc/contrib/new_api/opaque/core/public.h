@@ -74,7 +74,7 @@ const ElektraName * elektraEntryGetName (const ElektraEntry * entry);
  *       or as `elektraSetName (entry, elektraNameNew (ns, name, size))`, but when you use
  *       `elektraSetName (entry, name)` you may need to `elektraNameIncRef (name)` & `elektraNameDecRef (name)`.
  */
-ElektraReturnCode elektraSetName (ElektraEntry * entry, const ElektraName * name);
+ElektraReturnCode elektraEntrySetName (ElektraEntry * entry, const ElektraName * name);
 // increments nameLock
 void elektraEntryLockName (ElektraEntry * entry);
 // decrements nameLock
@@ -87,7 +87,7 @@ bool elektraEntryIsNameLocked (const ElektraEntry * entry);
 const void * elektraEntryGetValue (const ElektraEntry * entry, size_t * sizePtr);
 
 // Note: creates copy of value
-ElektraReturnCode elektraSetValue (ElektraEntry * entry, const void * value, size_t size);
+ElektraReturnCode elektraEntrySetValue (ElektraEntry * entry, const void * value, size_t size);
 
 /**
  * @returns a `const ElektraSet *` that can safely be cast to `ElektraSet *`, iff a non-const `ElektraEntry *` was passed as @p entry
