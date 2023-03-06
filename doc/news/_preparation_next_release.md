@@ -195,11 +195,9 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tools
 
-### <<Tool>>
+### KDB
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- rewrite C++ cli to C _(@hannes99)_
 
 ### <<Tool>>
 
