@@ -324,6 +324,15 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 
+### KDB
+
+- Replace C++ of the CLI by a C version, C++ is fallback for not yet implemented commands _(@hannes99)_
+- Add general error/warning output and formatting for whole CLI
+- Add extra tests for CLI commands
+- Disable cascading writes as described in #3742
+- Fix inconsistent return values #1563
+- Update documentation, tutorials and examples where they would not match the new C version
+
 ### webd
 
 - Implemented new request to add multiple metakeys for one key _(Tomislav Makar @tmakar)_
