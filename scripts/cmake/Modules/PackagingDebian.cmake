@@ -216,8 +216,8 @@ set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_CONFLICTS "${CPACK_COMPONENT_ELEKTRA
 set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_DEBUGINFO_PACKAGE "OFF")
 
 set (CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_NAME "${CPACK_COMPONENT_ELEKTRA-QT-GUI_DISPLAY_NAME}")
-if ("${OS_DISTRIB}" MATCHES "Ubuntu20.04" OR ${OS_PRETTY_NAME} MATCHES ".*bullseye.*")
-	# qml-module-qtquick-controls-styles-breeze not available on ubuntu focal and debian bullseye
+if ("${OS_DISTRIB}" MATCHES "Ubuntu.*" OR ${OS_PRETTY_NAME} MATCHES ".*bullseye.*")
+	# qml-module-qtquick-controls-styles-breeze not available on Ubuntu and debian bullseye
 	message (
 		STATUS
 			"Exclude debian package dependency qml-module-qtquick-controls-styles-breeze from elektra-qt-gui package because it is not available."
