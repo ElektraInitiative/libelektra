@@ -58,15 +58,15 @@ docker run -it elektra/elektra
 
 The following text lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin>>
+### spec
 
-- <<TODO>>
+- Add hook placement to spec plugin in [README](../../src/plugins/spec/README.md) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### gopts
 
-- <<TODO>>
+- Add hook placement to gopts plugin in [README](../../src/plugins/gopts/README.md) _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
@@ -128,9 +128,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### tools
 
-- <<TODO>>
+- Check for hook placement on `plugin-check` _(Tomislav Makar @tmakar)_
 - <<TODO>>
 - <<TODO>>
 
@@ -245,6 +245,8 @@ This section keeps you up-to-date with the multi-language support provided by El
 ## Documentation
 
 - .github rework _(Markus Raab)_
+- Added `hook` to `placements` contract in [CONTRACT.ini](../CONTRACT.ini) _(Tomislav Makar @tmakar)_
+- Added `hook` information to [hooks.md](../dev/hooks.md)
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
