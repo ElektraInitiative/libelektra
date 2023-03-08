@@ -91,6 +91,15 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### c
 
 - Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
+- <<TODO>>
+- <<TODO>>
+- Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
+- Use new `elektraPluginGetPhase()` instead of counting executions _(@kodebach)_
+### syslog
+
+- Convert to hook plugin _(Maximilian Irlinger @atmaxinger)_
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
 
 ### lineendings
 
