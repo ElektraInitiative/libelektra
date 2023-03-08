@@ -10,8 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
-
 #include <tests_plugin.h>
 
 #include <kdbchangetracking.h>
@@ -34,12 +32,73 @@ static void setChangeTrackingContextForTest (ChangeTrackingContext * context)
 	changeTrackingContext = context;
 }
 
-static void test_all (void)
+static void test_logGetNotSet (void)
 {
 	printf ("Testing %s\n", __func__);
 
 	// Arrange
 	KeySet * conf = ksNew (0, KS_END);
+
+	PLUGIN_OPEN ("logchange");
+
+	Key * parentKey = keyNew ("system:/test", KEY_END);
+	KeySet * ksOriginal = ksNew (1,
+				     keyNew ("system:/test/modifyme", KEY_VALUE, "xyz", KEY_END),
+				     KS_END);
+
+	for (elektraCursor i = 0; i < ksGetSize (ksOriginal); i++)
+	{
+		keyClearSync (ksAtCursor (ksOriginal, i));
+	}
+
+	KeySet * ksModified = ksDeepDup (ksOriginal);
+	keySetString (ksLookupByName (ksModified, "system:/test/modifyme", 0), "modified");
+
+
+	const char * expectedOutput = "";
+
+	plugin->kdbGet (plugin, ksOriginal, parentKey);
+
+	ksIncRef (ksOriginal);
+	setChangeTrackingContextForTest (elektraChangeTrackingCreateContextForTesting (ksOriginal));
+
+	char * buffer;
+	size_t bufferSize = 0;
+	FILE * outstream = open_memstream (&buffer, &bufferSize);
+
+	FILE * stdoutold = stdout;
+	stdout = outstream;
+
+	// Act
+	plugin->kdbCommit (plugin, ksModified, parentKey);
+
+	fflush (outstream);
+	stdout = stdoutold;
+
+	// Assert
+	succeed_if_same_string (buffer, expectedOutput);
+
+	fclose (outstream);
+	free (buffer);
+
+	PLUGIN_CLOSE();
+
+	keyDel (parentKey);
+	ksDecRef (ksOriginal);
+	ksDel (ksOriginal);
+	ksDel (ksModified);
+}
+
+
+static void test_logGetSet (void)
+{
+	printf ("Testing %s\n", __func__);
+
+	// Arrange
+	KeySet * conf = ksNew (1,
+			       keyNew ("system:/log/get", KEY_VALUE, "1", KEY_END),
+			       KS_END);
+
 	PLUGIN_OPEN ("logchange");
 
 	Key * parentKey = keyNew ("system:/test", KEY_END);
@@ -108,8 +167,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_all ();
-
+	test_logGetNotSet ();
+	test_logGetSet ();
 
 	print_result ("testmod_logchange");
 

@@ -54,6 +54,11 @@ int elektraLogchangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 int elektraLogchangeCommit (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
+	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) != 0)
+	{
+		return 1;
+	}
+
 	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
 	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 
