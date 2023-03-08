@@ -55,3 +55,5 @@ endif (ENABLE_OPTIMIZATIONS AND NOT WIN32)
 
 add_executable (benchmark_plugingetset plugingetset.c)
 target_link_elektra (benchmark_plugingetset elektra-core elektra-kdb)
+
+target_link_elektra (benchmark_diff elektra-kdb)
