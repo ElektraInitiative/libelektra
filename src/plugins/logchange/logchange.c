@@ -49,16 +49,18 @@ int elektraLogchangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return 1; /* success */
 	}
 
+	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
+	{
+		KeySet * logset = ksNew (1, keyDup (parentKey, KEY_CP_ALL), KS_END);
+		logKeys (logset, "loading configuration");
+		ksDel (logset);
+	}
+
 	return 1; /* success */
 }
 
 int elektraLogchangeCommit (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) != 0)
-	{
-		return 1;
-	}
-
 	const ChangeTrackingContext * context = elektraChangeTrackingGetContextFromPlugin (handle);
 	ElektraDiff * diff = elektraChangeTrackingCalculateDiff (returned, context, parentKey);
 

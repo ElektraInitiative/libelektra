@@ -32,12 +32,12 @@ static void setChangeTrackingContextForTest (ChangeTrackingContext * context)
 	changeTrackingContext = context;
 }
 
-static void test_logGetNotSet (void)
+static void test_getWithLogGetSet (void)
 {
 	printf ("Testing %s\n", __func__);
 
 	// Arrange
-	KeySet * conf = ksNew (0, KS_END);
+	KeySet * conf = ksNew (1, keyNew ("system:/log/get", KEY_VALUE, "1", KEY_END), KS_END);
 
 	PLUGIN_OPEN ("logchange");
 
@@ -49,16 +49,7 @@ static void test_logGetNotSet (void)
 		keyClearSync (ksAtCursor (ksOriginal, i));
 	}
 
-	KeySet * ksModified = ksDeepDup (ksOriginal);
-	keySetString (ksLookupByName (ksModified, "system:/test/modifyme", 0), "modified");
-
-
-	const char * expectedOutput = "";
-
-	plugin->kdbGet (plugin, ksOriginal, parentKey);
-
-	ksIncRef (ksOriginal);
-	setChangeTrackingContextForTest (elektraChangeTrackingCreateContextForTesting (ksOriginal));
+	const char * expectedOutput = "loading configuration: system:/test\n";
 
 	char * buffer;
 	size_t bufferSize = 0;
@@ -68,7 +59,7 @@ static void test_logGetNotSet (void)
 	stdout = outstream;
 
 	// Act
-	plugin->kdbCommit (plugin, ksModified, parentKey);
+	plugin->kdbGet (plugin, ksOriginal, parentKey);
 
 	fflush (outstream);
 	stdout = stdoutold;
@@ -84,16 +75,15 @@ static void test_logGetNotSet (void)
 	keyDel (parentKey);
 	ksDecRef (ksOriginal);
 	ksDel (ksOriginal);
-	ksDel (ksModified);
 }
 
 
-static void test_logGetSet (void)
+static void test_changeTracking (void)
 {
 	printf ("Testing %s\n", __func__);
 
 	// Arrange
-	KeySet * conf = ksNew (1, keyNew ("system:/log/get", KEY_VALUE, "1", KEY_END), KS_END);
+	KeySet * conf = ksNew (0, KS_END);
 
 	PLUGIN_OPEN ("logchange");
 
@@ -161,8 +151,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_logGetNotSet ();
-	test_logGetSet ();
+	test_getWithLogGetSet ();
+	test_changeTracking ();
 
 	print_result ("testmod_logchange");
 
