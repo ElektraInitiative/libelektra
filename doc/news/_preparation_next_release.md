@@ -76,10 +76,10 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### logchange
 
 - <<TODO>>
-- <<TODO>>
+- Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Plugin>>
