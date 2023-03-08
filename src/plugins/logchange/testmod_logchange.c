@@ -1,19 +1,19 @@
 /**
-* @file
-*
-* @brief Tests for logchange plugin
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Tests for logchange plugin
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
 
 #include <stdlib.h>
 #include <string.h>
 
 #include <tests_plugin.h>
 
-#include <kdbchangetracking.h>
 #include "logchange.h"
+#include <kdbchangetracking.h>
 
 ChangeTrackingContext * changeTrackingContext = NULL;
 
@@ -42,9 +42,7 @@ static void test_logGetNotSet (void)
 	PLUGIN_OPEN ("logchange");
 
 	Key * parentKey = keyNew ("system:/test", KEY_END);
-	KeySet * ksOriginal = ksNew (1,
-				     keyNew ("system:/test/modifyme", KEY_VALUE, "xyz", KEY_END),
-				     KS_END);
+	KeySet * ksOriginal = ksNew (1, keyNew ("system:/test/modifyme", KEY_VALUE, "xyz", KEY_END), KS_END);
 
 	for (elektraCursor i = 0; i < ksGetSize (ksOriginal); i++)
 	{
@@ -81,7 +79,7 @@ static void test_logGetNotSet (void)
 	fclose (outstream);
 	free (buffer);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 
 	keyDel (parentKey);
 	ksDecRef (ksOriginal);
@@ -95,19 +93,15 @@ static void test_logGetSet (void)
 	printf ("Testing %s\n", __func__);
 
 	// Arrange
-	KeySet * conf = ksNew (1,
-			       keyNew ("system:/log/get", KEY_VALUE, "1", KEY_END),
-			       KS_END);
+	KeySet * conf = ksNew (1, keyNew ("system:/log/get", KEY_VALUE, "1", KEY_END), KS_END);
 
 	PLUGIN_OPEN ("logchange");
 
 	Key * parentKey = keyNew ("system:/test", KEY_END);
-	KeySet * ksOriginal = ksNew (1,
-				     keyNew ("system:/test/existing", KEY_VALUE, "abc", KEY_END),
+	KeySet * ksOriginal = ksNew (1, keyNew ("system:/test/existing", KEY_VALUE, "abc", KEY_END),
 				     keyNew ("system:/test/modifyme", KEY_VALUE, "xyz", KEY_END),
 				     keyNew ("system:/test/willbegone", KEY_VALUE, "123", KEY_END),
-				     keyNew ("system:/test/onlymeta", KEY_VALUE, "999", KEY_META, "meta:/test", "123", KEY_END),
-				     KS_END);
+				     keyNew ("system:/test/onlymeta", KEY_VALUE, "999", KEY_META, "meta:/test", "123", KEY_END), KS_END);
 
 	for (elektraCursor i = 0; i < ksGetSize (ksOriginal); i++)
 	{
@@ -151,7 +145,7 @@ static void test_logGetSet (void)
 	fclose (outstream);
 	free (buffer);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 
 	keyDel (parentKey);
 	ksDecRef (ksOriginal);

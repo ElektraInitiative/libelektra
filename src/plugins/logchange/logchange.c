@@ -12,9 +12,9 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdbchangetracking.h>
 #include <stdio.h>
 #include <string.h>
-#include <kdbchangetracking.h>
 
 #include "logchange.h"
 
