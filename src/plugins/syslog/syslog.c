@@ -52,10 +52,10 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				     keyNew ("system:/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/commit", KEY_FUNC, elektraSyslogCommit, KEY_END),
 				     keyNew ("system:/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/hook/notification/send/get", KEY_FUNC, elektraSyslogGet,
-					     KEY_END),
-				     keyNew ("system:/elektra/modules/syslog/exports/hook/notification/send/set", KEY_FUNC, elektraSyslogCommit,
-					     KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/hook/notification/send/get", KEY_FUNC,
+					     elektraSyslogGet, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/hook/notification/send/set", KEY_FUNC,
+					     elektraSyslogCommit, KEY_END),
 #include "readme_syslog.c"
 				     keyNew ("system:/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
@@ -90,7 +90,8 @@ int elektraSyslogCommit (Plugin * handle, KeySet * returned, Key * parentKey)
 		syslog (LOG_NOTICE, "change %s to %s", keyName (new), keyString (new));
 	}
 
-	syslog (LOG_NOTICE, "committed configuration %s with %zd keys (%zu changed)", keyName (parentKey), ksGetSize (returned), ksGetSize (changed));
+	syslog (LOG_NOTICE, "committed configuration %s with %zd keys (%zu changed)", keyName (parentKey), ksGetSize (returned),
+		ksGetSize (changed));
 
 	ksDel (modified);
 	ksDel (added);

@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief Tests for logchange plugin
-*
-* @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Tests for logchange plugin
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
