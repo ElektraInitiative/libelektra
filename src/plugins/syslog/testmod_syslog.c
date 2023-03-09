@@ -57,6 +57,7 @@ static void createSyslogBuffer (void)
 {
 	freeSyslogBuffer ();
 	syslogFile = open_memstream (&syslogBuffer, &syslogBufferSize);
+	exit_if_fail (syslogFile != NULL, "error creating syslog buffer");
 }
 
 void syslog (int pri ELEKTRA_UNUSED, const char * fmt, ...)
