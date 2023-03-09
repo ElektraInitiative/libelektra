@@ -196,8 +196,6 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 		return NULL;
 	}
 	item->next = NULL;
-	// TODO (atmaxinger): remove ->lastavlue references
-	// item->lastValue = NULL;
 	item->name = elektraStrDup (keyName (key));
 	item->callback = callback;
 	item->context = context;
@@ -306,91 +304,6 @@ void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const Elektr
 	ksDel (addedKeys);
 	ksDel (removedKeys);
 }
-
-/**
- * Updates all KeyRegistrations according to data from the given KeySet
- * @internal
- *
- * @param plugin    internal plugin handle
- * @param keySet    key set retrieved from hooks
- *                  e.g. elektraInternalnotificationGet or elektraInternalnotificationCommit)
- *
- */
-/*void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet)
-{
-	PluginState * pluginState = elektraPluginGetData (plugin);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	KeyRegistration * registeredKey = pluginState->head;
-	while (registeredKey != NULL)
-	{
-		int changed = 0;
-		Key * key;
-		if (registeredKey->sameOrBelow)
-		{
-			Key * checkKey = keyNew (registeredKey->name, KEY_END);
-			if (keySetContainsSameOrBelow (checkKey, keySet))
-			{
-				changed = 1;
-				key = checkKey;
-			}
-			else
-			{
-				keyDel (checkKey);
-			}
-		}
-		else
-		{
-			key = ksLookupByName (keySet, registeredKey->name, 0);
-			if (key != NULL)
-			{
-				// Detect changes for string keys
-				if (!keyIsString (key))
-				{
-					// always notify for binary keys
-					changed = 1;
-				}
-				else
-				{
-					const char * currentValue = keyString (key);
-					changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
-
-					if (changed)
-					{
-						// Save last value
-						char * buffer = elektraStrDup (currentValue);
-						if (buffer)
-						{
-							if (registeredKey->lastValue != NULL)
-							{
-								// Free previous value
-								elektraFree (registeredKey->lastValue);
-							}
-							registeredKey->lastValue = buffer;
-						}
-					}
-				}
-			}
-		}
-
-		if (changed)
-		{
-			ELEKTRA_LOG_DEBUG ("found changed registeredKey=%s with string value \"%s\". using context or variable=%p",
-					   registeredKey->name, keyString (key), registeredKey->context);
-
-			// Invoke callback
-			ElektraNotificationChangeCallback callback = *(ElektraNotificationChangeCallback) registeredKey->callback;
-			callback (key, registeredKey->context);
-			if (registeredKey->sameOrBelow)
-			{
-				keyDel (key);
-			}
-		}
-
-		// proceed with next registered key
-		registeredKey = registeredKey->next;
-	}
-}*/
 
 // Generate register and conversion functions
 // for built-in C types
@@ -740,11 +653,7 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		{
 			next = current->next;
 			elektraFree (current->name);
-			// TODO (atmaxinger): remove ->lastavlue references
-			/*if (current->lastValue != NULL)
-			{
-				elektraFree (current->lastValue);
-			}*/
+
 			if (current->freeContext)
 			{
 				elektraFree (current->context);
