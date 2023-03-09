@@ -5,7 +5,7 @@
  * Returns the changetracking context of the given KDB instance
  *
  * @param kdb the KDB instance
- * @return ChangeTrackingContext or @p NULL if @p kdb is NULL
+ * @return ChangeTrackingContext or @p NULL if @p kdb is @p NULL
  */
 const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb)
 {
@@ -21,7 +21,7 @@ const ChangeTrackingContext * elektraChangeTrackingGetContextFromKdb (KDB * kdb)
  * Returns the changetracking context for the KDB instance associated with the specified plugin
  *
  * @param plugin the plugin
- * @return ChangeTrackingContext or @p NULL if @p plugin is NULL or does not have a @p KDB instance associated with it
+ * @return ChangeTrackingContext or @p NULL if @p plugin is @p NULL or does not have a @p KDB instance associated with it
  */
 const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (Plugin * plugin)
 {

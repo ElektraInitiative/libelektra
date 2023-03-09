@@ -66,12 +66,12 @@ static inline bool keyValueDifferent (Key * new, Key * old)
 /**
  * Find the differences between two keysets
  *
- * @param new the new keyset
- * @param old the old keyset
- * @param addedKeys adds keys present in @p new but not in @p old
- * @param removedKeys adds keys present in @p old but not in @p new
- * @param modifiedKeys adds keys present in both @p new and @p old, but with changes in value or in the meta keys
- * @param parentKey parent key - if this parameter is not NULL, only keys below or same are processed.
+ * @param[in] new the new keyset
+ * @param[in] old the old keyset
+ * @param[out] addedKeys adds keys present in @p new but not in @p old
+ * @param[out] removedKeys adds keys present in @p old but not in @p new
+ * @param[out] modifiedKeys adds keys present in both @p new and @p old, but with changes in value or in the meta keys
+ * @param[in] parentKey parent key - if this parameter is not @p NULL, only keys below or same are processed.
  */
 static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, KeySet * removedKeys, KeySet * modifiedKeys,
 			     const Key * parentKey)
@@ -95,13 +95,12 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in new --> must have been removed
 
-			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, oldKey)))
+			if (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
 
 			iOld++;
-			iNew++;
 			continue;
 		}
 
@@ -109,12 +108,11 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in old --> must have been added
 
-			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, newKey)))
+			if (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}
 
-			iOld++;
 			iNew++;
 			continue;
 		}
@@ -174,7 +172,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		else if (cmpRes < 0)
 		{
 			// key is present in old but not in new
-			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, oldKey)))
+			if (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
@@ -184,7 +182,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		else
 		{
 			// key is present in new but not in old
-			if (parentKey == NULL || (parentKey != NULL && keyIsBelowOrSame (parentKey, newKey)))
+			if (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}
@@ -293,7 +291,7 @@ void elektraDiffDel (ElektraDiff * ksd)
 /**
  * Get the parent key of the given ElektraDiff
  * @param ksd the ElektraDiff
- * @return the parent key (which may be NULL) OR NULL if @p ksd is @p NULL
+ * @return the parent key (which may be @p NULL) OR @p NULL if @p ksd is @p NULL
  */
 const Key * elektraDiffGetParentKey (const ElektraDiff * ksd)
 {
@@ -362,8 +360,8 @@ KeySet * elektraDiffGetModifiedKeys (const ElektraDiff * ksd)
  * @param key
  * @return @p true if the value of the key was modified OR
  *         @p false if it hasn't been OR
- *         @p ksd is NULL OR
- *         @p key is NULL OR
+ *         @p ksd is @p NULL OR
+ *         @p key is @p NULL OR
  *         @p key is not contained in @p ksd
  */
 bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key)
@@ -390,8 +388,8 @@ bool elektraDiffKeyValueChanged (const ElektraDiff * ksd, Key * key)
  * @param key
  * @return @p true if the metadata of the key was modified OR
  *         @p false if it hasn't been OR
- *         @p ksd is NULL OR
- *         @p key is NULL OR
+ *         @p ksd is @p NULL OR
+ *         @p key is @p NULL OR
  *         @p key is not contained in @p ksd
  */
 bool elektraDiffKeyOnlyMetaChanged (const ElektraDiff * ksd, Key * key)
@@ -417,7 +415,7 @@ bool elektraDiffKeyOnlyMetaChanged (const ElektraDiff * ksd, Key * key)
  * @param ksd the ElektraDiff
  * @param key the key of which you want to get added metadata
  * @return a new KeySet that contains metadata added to the key OR
- *         @p NULL if @p ksd is NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
+ *         @p NULL if @p ksd is @p NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
  */
 KeySet * elektraDiffGetAddedMetaKeys (const ElektraDiff * ksd, Key * key)
 {
@@ -451,7 +449,7 @@ KeySet * elektraDiffGetAddedMetaKeys (const ElektraDiff * ksd, Key * key)
  * @param ksd the ElektraDiff
  * @param key the key of which you want to get removed metadata
  * @return a new KeySet that contains metadata removed from the key OR
- *         @p NULL if @p ksd is NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
+ *         @p NULL if @p ksd is @p NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
  */
 KeySet * elektraDiffGetRemovedMetaKeys (const ElektraDiff * ksd, Key * key)
 {
@@ -485,7 +483,7 @@ KeySet * elektraDiffGetRemovedMetaKeys (const ElektraDiff * ksd, Key * key)
  * @param ksd the ElektraDiff
  * @param key the key of which you want to get modified metadata
  * @return a new KeySet that contains modified metadata of the key OR
- *         @p NULL if @p ksd is NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
+ *         @p NULL if @p ksd is @p NULL OR @p key is @p NULL OR @p ksd does not contain @p key.
  */
 KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key)
 {
@@ -525,7 +523,7 @@ KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key)
  * @param ksd the ElektraDiff object whose reference counter should be increased
  *
  * @return the updated value of the reference counter
- * @retval UINT16_MAX on NULL pointer
+ * @retval UINT16_MAX on @p NULL pointer
  * @retval UINT16_MAX when the reference counter already was the maximum value `UINT16_MAX - 1`,
  *         the reference counter will not be modified in this case
  */
@@ -554,7 +552,7 @@ uint16_t elektraDiffIncRef (ElektraDiff * ksd)
  * @param ksd the ElektraDiff object whose reference counter should get decreased
  *
  * @return the updated value of the reference counter
- * @retval UINT16_MAX on NULL pointer
+ * @retval UINT16_MAX on @p NULL pointer
  * @retval 0 when the reference counter already was the minimum value 0,
  *         the reference counter will not be modified in this case
  */
@@ -580,7 +578,7 @@ uint16_t elektraDiffDecRef (ElektraDiff * ksd)
  * @param ksd the ElektraDiff object whose reference counter should get returned
  *
  * @return the value of the reference counter
- * @retval UINT16_MAX on NULL pointer
+ * @retval UINT16_MAX on @p NULL pointer
  */
 uint16_t elektraDiffGetRef (ElektraDiff * ksd)
 {
