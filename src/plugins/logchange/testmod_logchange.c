@@ -22,6 +22,8 @@ const ChangeTrackingContext * elektraChangeTrackingGetContextFromPlugin (ELEKTRA
 	return changeTrackingContext;
 }
 
+#ifdef __GLIBC__
+
 static void setChangeTrackingContextForTest (ChangeTrackingContext * context)
 {
 	if (changeTrackingContext != NULL)
@@ -32,8 +34,11 @@ static void setChangeTrackingContextForTest (ChangeTrackingContext * context)
 	changeTrackingContext = context;
 }
 
+#endif
+
 static void test_getWithLogGetSet (void)
 {
+#ifdef __GLIBC__
 	printf ("Testing %s\n", __func__);
 
 	// Arrange
@@ -75,11 +80,15 @@ static void test_getWithLogGetSet (void)
 	keyDel (parentKey);
 	ksDecRef (ksOriginal);
 	ksDel (ksOriginal);
+#else
+	printf ("Test %s disabled due to not using GLIBC\n", __func__);
+#endif
 }
 
 
 static void test_changeTracking (void)
 {
+#ifdef __GLIBC__
 	printf ("Testing %s\n", __func__);
 
 	// Arrange
@@ -141,6 +150,9 @@ static void test_changeTracking (void)
 	ksDecRef (ksOriginal);
 	ksDel (ksOriginal);
 	ksDel (ksModified);
+#else
+	printf ("Test %s disabled due to not using GLIBC\n", __func__);
+#endif
 }
 
 
