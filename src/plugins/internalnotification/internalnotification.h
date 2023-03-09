@@ -23,7 +23,6 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * errorKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 // Not exported by plugin; used for testing
-// void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet);
 void elektraInternalnotificationNotifyChangedKeys (Plugin * plugin, const ElektraDiff * diff);
 void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context);
 
