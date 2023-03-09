@@ -91,6 +91,11 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		Key * oldKey = ksAtCursor (old, iOld);
 		Key * newKey = ksAtCursor (new, iNew);
 
+		if (oldKey == NULL && newKey == NULL)
+		{
+			break;
+		}
+
 		if (newKey == NULL)
 		{
 			// No more keys in new --> must have been removed
