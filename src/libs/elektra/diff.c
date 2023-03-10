@@ -65,6 +65,8 @@ static inline bool keyValueDifferent (Key * new, Key * old)
 
 /**
  * Find the differences between two keysets
+ * Any of the out parameters (@p addedKeys, @p removedKey, @p modifiedKeys) may be @p NULL.
+ * They will then not be calculated.
  *
  * @param[in] new the new keyset
  * @param[in] old the old keyset
@@ -100,7 +102,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in new --> must have been removed
 
-			if (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey))
+			if (removedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
@@ -113,7 +115,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		{
 			// No more keys in old --> must have been added
 
-			if (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey))
+			if (addedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}
@@ -124,7 +126,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 
 		int cmpRes = keyCmp (oldKey, newKey);
 
-		if (cmpRes == 0)
+		if (modifiedKeys && cmpRes == 0)
 		{
 			// keys have the same name --> check if modified
 
@@ -174,10 +176,15 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 			iOld++;
 			iNew++;
 		}
+		else if (cmpRes == 0)
+		{
+			iOld++;
+			iNew++;
+		}
 		else if (cmpRes < 0)
 		{
 			// key is present in old but not in new
-			if (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey))
+			if (removedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, oldKey)))
 			{
 				ksAppendKey (removedKeys, oldKey);
 			}
@@ -187,7 +194,7 @@ static void findDifferences (KeySet * new, KeySet * old, KeySet * addedKeys, Key
 		else
 		{
 			// key is present in new but not in old
-			if (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey))
+			if (addedKeys && (parentKey == NULL || keyIsBelowOrSame (parentKey, newKey)))
 			{
 				ksAppendKey (addedKeys, newKey);
 			}
@@ -437,13 +444,8 @@ KeySet * elektraDiffGetAddedMetaKeys (const ElektraDiff * ksd, Key * key)
 	}
 
 	KeySet * addedKeys = ksNew (0, KS_END);
-	KeySet * removedKeys = ksNew (0, KS_END);
-	KeySet * modifiedKeys = ksNew (0, KS_END);
 
-	findDifferences (keyMeta (key), keyMeta (oldKey), addedKeys, removedKeys, modifiedKeys, NULL);
-
-	ksDel (removedKeys);
-	ksDel (modifiedKeys);
+	findDifferences (keyMeta (key), keyMeta (oldKey), addedKeys, NULL, NULL, NULL);
 
 	return addedKeys;
 }
@@ -470,14 +472,9 @@ KeySet * elektraDiffGetRemovedMetaKeys (const ElektraDiff * ksd, Key * key)
 		return NULL;
 	}
 
-	KeySet * addedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
-	KeySet * modifiedKeys = ksNew (0, KS_END);
 
-	findDifferences (keyMeta (key), keyMeta (oldKey), addedKeys, removedKeys, modifiedKeys, NULL);
-
-	ksDel (addedKeys);
-	ksDel (modifiedKeys);
+	findDifferences (keyMeta (key), keyMeta (oldKey), NULL, removedKeys, NULL, NULL);
 
 	return removedKeys;
 }
@@ -504,14 +501,9 @@ KeySet * elektraDiffGetModifiedMetaKeys (const ElektraDiff * ksd, Key * key)
 		return NULL;
 	}
 
-	KeySet * addedKeys = ksNew (0, KS_END);
-	KeySet * removedKeys = ksNew (0, KS_END);
 	KeySet * modifiedKeys = ksNew (0, KS_END);
 
-	findDifferences (keyMeta (key), keyMeta (oldKey), addedKeys, removedKeys, modifiedKeys, NULL);
-
-	ksDel (removedKeys);
-	ksDel (addedKeys);
+	findDifferences (keyMeta (key), keyMeta (oldKey), NULL, NULL, modifiedKeys, NULL);
 
 	return modifiedKeys;
 }
