@@ -174,3 +174,11 @@ elektra-core, rust implementation
 - email: e01227486@student.tuwien.ac.at
 - GitHub user: [lawli3t](https://github.com/lawli3t)
 - devel/test on: Arch Linux / Debian Docker
+
+## Hannes Laimer
+
+KDB CLI rewrite C++ -> C
+
+- email: hannes.laimer@tuwien.ac.at
+- GitHub user: [hannes99](https://github.com/hannes99)
+- devel/test on: Arch
