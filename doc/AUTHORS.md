@@ -174,3 +174,11 @@ elektra-core, rust implementation
 - email: e01227486@student.tuwien.ac.at
 - GitHub user: [lawli3t](https://github.com/lawli3t)
 - devel/test on: Arch Linux / Debian Docker
+
+## Tomislav Makar
+
+spec plugin, go-elektra, web-api
+
+- email: tmakar23@gmail.com
+- GitHub user: [tmakar](https://github.com/tmakar)
+- devel/test on: macOS
