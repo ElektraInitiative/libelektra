@@ -70,9 +70,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### counter
 
-- <<TODO>>
+- Move `static` variables into functions to avoid global variables _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 
