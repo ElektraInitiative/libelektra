@@ -88,9 +88,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### yajl
 
-- <<TODO>>
+- The `itKs` global variable workaround, which was used to replace the now removed internal `KeySet` cursor, was replaced with a custom context struct. _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 
