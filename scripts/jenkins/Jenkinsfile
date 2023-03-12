@@ -323,6 +323,13 @@ def dockerInit() {
       "./scripts/docker/ubuntu/jammy/Dockerfile"
     )
 
+    /* Ubuntu Kinetic Kudu image*/
+    DOCKER_IMAGES.kinetic = dockerUtils.createDockerImageDesc(
+      "kinetic", dockerUtils.&idTesting,
+      "./scripts/docker/ubuntu/kinetic",
+      "./scripts/docker/ubuntu/kinetic/Dockerfile"
+    )
+
     /* Fedora 36 image*/
     DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
       "fedora-36", dockerUtils.&idTesting,
@@ -410,6 +417,14 @@ def dockerInit() {
       "ubuntu-jammy-installed", dockerUtils.&idArtifact,
       "./build/package",
       "./scripts/docker/ubuntu/jammy/release.Dockerfile",
+      false
+    )
+
+    /* Ubuntu Kinetic Kudu image used to install previously built packages */
+    DOCKER_IMAGES.kinetic_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-kinetic-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/ubuntu/kinetic/release.Dockerfile",
       false
     )
 
@@ -654,6 +669,14 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "ubuntu-jammy",
     DOCKER_IMAGES.jammy,
+    CMAKE_FLAGS_BUILD_ALL,
+    [TEST.ALL]
+  )
+
+  // Build Elektra on Ubuntu Kinetic Kudu
+  tasks << buildAndTest(
+    "ubuntu-kinetic",
+    DOCKER_IMAGES.kinetic,
     CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL]
   )
@@ -1152,6 +1175,15 @@ def generateArtifactStages() {
     "jammy-unstable",
     "jammy",
     DOCKER_IMAGES.jammy_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/ubuntu/kinetic",
+    DOCKER_IMAGES.kinetic,
+    "kinetic-unstable",
+    "kinetic",
+    DOCKER_IMAGES.kinetic_installed,
     release.&publishDebPackages,
     this.&updateDebianChangelog
   )
