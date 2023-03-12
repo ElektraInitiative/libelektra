@@ -201,6 +201,12 @@ def dockerInit() {
       './scripts/docker/ubuntu/jammy/Dockerfile'
     )
 
+    DOCKER_IMAGES.kinetic = dockerUtils.createDockerImageDesc(
+      'ubuntu-kinetic, dockerUtils.&idTesting,
+      './scripts/docker/ubuntu/kinetic',
+      './scripts/docker/ubuntu/kinetic/Dockerfile'
+    )
+
     DOCKER_IMAGES.fedora_36 = dockerUtils.createDockerImageDesc(
       'fedora-36', dockerUtils.&idTesting,
       './scripts/docker/fedora/36',
@@ -245,6 +251,13 @@ def dockerInit() {
       'ubuntu-jammy-installed', dockerUtils.&idArtifact,
       './release-artifact/*/package/jammy/',
       './scripts/docker/ubuntu/jammy/package.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.kinetic_installed = dockerUtils.createDockerImageDesc(
+      'ubuntu-kinetic-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/package/kinetic/',
+      './scripts/docker/ubuntu/kinetic/package.Dockerfile',
       false
     )
 
@@ -296,6 +309,13 @@ def dockerInit() {
       'elektra/elektra',
       './release-artifact/*/package/jammy/',
       './scripts/docker/ubuntu/jammy/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.kinetic_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/package/kinetic/',
+      './scripts/docker/ubuntu/kinetic/release.Dockerfile',
       false
     )
 
@@ -398,6 +418,12 @@ def generateReleaseStages() {
   )
 
   tasks << buildRelease(
+    'ubuntu-kinetic',
+    DOCKER_IMAGES.kinetic,
+    params.ubuntu_revision
+  )
+
+  tasks << buildRelease(
     'fedora-36',
     DOCKER_IMAGES.fedora_36,
     params.fedora_revision,
@@ -442,6 +468,10 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     'ubuntu-jammy'
   )
   tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.kinetic_installed,
+    'ubuntu-kinetic'
+  )
+  tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.fedora_36_installed,
     'fedora-36'
   )
@@ -480,6 +510,10 @@ def generateInstalledPackagesTestStages() {
   tasks << testInstalledPackage(
     'ubuntu-jammy-installed',
     DOCKER_IMAGES.jammy_installed
+  )
+  tasks << testInstalledPackage(
+    'ubuntu-kinetic-installed',
+    DOCKER_IMAGES.kinetic_installed
   )
   tasks << testInstalledPackage(
     'fedora-36-installed',
@@ -572,6 +606,15 @@ def generateDebPackagePublishStages() {
     'jammy',
     'jammy',
     'jammy',
+    release.&publishDebPackages,
+    params.ubuntu_revision
+  )
+
+  tasks << publish(
+    'ubuntu-kinetic',
+    'kinetic',
+    'kinetic',
+    'kinetic',
     release.&publishDebPackages,
     params.ubuntu_revision
   )
@@ -724,6 +767,12 @@ def generateImageUploadStages() {
     'ubuntu-jammy',
     ubuntu_revision,
     'jammy'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.kinetic_release,
+    'ubuntu-kinetic',
+    ubuntu_revision,
+    'kinetic'
   )
   tasks << publishImage(
     DOCKER_IMAGES.fedora_36_release,
