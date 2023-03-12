@@ -96,7 +96,7 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 - Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
 
-### logchange
+### length
 
 - Add Florian Lindner as maintainer _(Florian Lindner @flo91)_
 

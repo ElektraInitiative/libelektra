@@ -1,5 +1,6 @@
 - infos = Information about the len plugin is in keys below
 - infos/author = Philipp Oppel <philipp.oppel@tuwien.ac.at>
+- infos/maintainer = Florian Lindner <florian.lindner@student.tuwien.ac.at>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = check
