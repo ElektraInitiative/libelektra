@@ -94,9 +94,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### toml
 
-- <<TODO>>
+- The `flex` lexer and `bison` parser are now fully reentrant and therefore thread-safe. _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 

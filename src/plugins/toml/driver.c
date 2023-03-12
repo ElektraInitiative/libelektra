@@ -26,10 +26,10 @@
 #include "parser.h"
 #include "utility.h"
 
-extern int yyparse (Driver * driver);
-extern int yylineno;
-extern void initializeLexer (FILE * file);
-extern void clearLexer (void);
+extern int yyparse (Driver * driver, yyscan_t yyscanner);
+extern int yyget_lineno (yyscan_t yyscanner);
+extern void initializeLexer (FILE * file, yyscan_t yyscanner);
+extern void clearLexer (yyscan_t yyscanner);
 
 static Driver * createDriver (Key * parent, KeySet * keys);
 static void destroyDriver (Driver * driver);
@@ -128,9 +128,12 @@ static int driverParse (Driver * driver)
 		ELEKTRA_SET_RESOURCE_ERROR (driver->root, keyString (driver->root));
 		return 1;
 	}
-	initializeLexer (file);
-	int yyResult = yyparse (driver);
-	clearLexer ();
+
+	yyscan_t scanner;
+
+	initializeLexer (file, &scanner);
+	int yyResult = yyparse (driver, scanner);
+	clearLexer (scanner);
 	fclose (file);
 	return driver->errorSet == true || yyResult != 0;
 }
@@ -973,9 +976,10 @@ static void driverClearLastScalar (Driver * driver)
 	driver->lastScalar = NULL;
 }
 
-int yyerror (Driver * driver, const char * msg)
+int yyerror (YYLTYPE * lloc, Driver * driver, ELEKTRA_UNUSED yyscan_t yyscanner, const char * msg)
 {
-	driverError (driver, ERROR_SYNTACTIC, yylineno, "%s", msg);
+	driverError (driver, ERROR_SYNTACTIC, yyget_lineno (yyscanner), "(%d:%d-%d:%d): %s", lloc->first_line, lloc->first_column,
+		     lloc->last_line, lloc->last_column - 1, msg);
 	return 0;
 }
 
@@ -998,20 +1002,16 @@ void driverError (Driver * driver, int err, int lineno, const char * format, ...
 	switch (err)
 	{
 	case ERROR_INTERNAL:
-		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line, yylloc.first_column,
-					     yylloc.last_line, yylloc.last_column - 1, msg);
+		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "Line %d~%s", lineno, msg);
 		break;
 	case ERROR_SYNTACTIC:
-		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line,
-							 yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, msg);
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (driver->root, "Line %d~%s", lineno, msg);
 		break;
 	case ERROR_SEMANTIC:
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line,
-							yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, msg);
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (driver->root, "Line %d~%s", lineno, msg);
 		break;
 	default:
-		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line, yylloc.first_column,
-					     yylloc.last_line, yylloc.last_column - 1, msg);
+		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "Line %d~%s", lineno, msg);
 		break;
 	}
 

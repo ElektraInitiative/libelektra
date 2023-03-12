@@ -35,30 +35,18 @@
 #define YY_NO_INPUT
 #define YY_NO_UNPUT
 
-static int curr_line = 1;
-static int curr_col  = 1;
-
-static void update_loc (void){
-	yylloc.first_line   = curr_line;
-	yylloc.first_column = curr_col;
-
-	char * s;
-	for (s = yytext; *s != '\0'; s++) {
-		if (*s == '\n') {
-			curr_line++;
-			curr_col = 1;
-		}
-		else
-		{
-			curr_col++;
-		}
-	}
-
-	yylloc.last_line   = curr_line;
-	yylloc.last_column = curr_col;
-}
-
-#define YY_USER_ACTION update_loc();
+#define YY_USER_ACTION \
+    yylloc->first_line = yylloc->last_line; \
+    yylloc->first_column = yylloc->last_column; \
+    for(int i = 0; yytext[i] != '\0'; i++) { \
+        if(yytext[i] == '\n') { \
+            yylloc->last_line++; \
+            yylloc->last_column = 0; \
+        } \
+        else { \
+            yylloc->last_column++; \
+        } \
+    }
 
 typedef struct
 {
@@ -67,11 +55,16 @@ typedef struct
 	size_t size;
 } Buffer;
 
-static Buffer * stringBuffer = NULL;
-static Buffer * origBuffer = NULL;
+typedef struct
+{
+	Buffer * stringBuffer;
+	Buffer * origBuffer;
+} ExtraData;
+
+#define YY_EXTRA_TYPE ExtraData *
 
 static Buffer * bufferNew (const char * initial, size_t initialSize, Driver * driver);
-static char * bufferConsume (Buffer * buffer, Driver * driver);
+static char * bufferConsume (Buffer * buffer, int lineno, Driver * driver);
 static void bufferAddChar (Buffer * buffer, char c, Driver * driver);
 static void bufferAddString (Buffer * buffer, const char * string, size_t stringLen, Driver * driver);
 static void bufferAddEscaped (Buffer * buffer, char escapeCode, Driver * driver);
@@ -83,14 +76,16 @@ static void bufferAddUnicode (Buffer * buffer, const char * hexCode, int codeLen
 #define printDebug(...)
 #endif
 
-#define YY_PUSH(x) printDebug("(%d:%d-%d:%d) PUSH %d->%d %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, YYSTATE, x, yytext); yy_push_state(x)
-#define YY_POP() printDebug("(%d:%d-%d:%d) POP %d->%d %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, YYSTATE, yy_top_state(), yytext); yy_pop_state(); 
+#define YY_PUSH(x, scanner) printDebug("(%d:%d-%d:%d) PUSH %d->%d %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, YYSTATE, x, yytext); yy_push_state(x, scanner)
+#define YY_POP(scanner) printDebug("(%d:%d-%d:%d) POP %d->%d %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, YYSTATE, yy_top_state(scanner), yytext); yy_pop_state(scanner); 
 
 %}
 
-%option yylineno
 %option noyywrap
 %option stack
+%option reentrant
+%option bison-bridge
+%option bison-locations
 
 %s MODE_VALUE
 %s MODE_INLINE_TABLE
@@ -152,54 +147,66 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %%
 
-"="			{ YY_PUSH(MODE_VALUE); return EQUAL; }
+"="			{ YY_PUSH(MODE_VALUE, yyscanner); return EQUAL; }
 "."			return DOT;
 <MODE_VALUE>","		{
-	YY_POP();
+	YY_POP(yyscanner);
 	if (YYSTATE == MODE_ARRAY)
 	{
-		YY_PUSH(MODE_VALUE);
+		YY_PUSH(MODE_VALUE, yyscanner);
 	}
 	return COMMA;
 }
-<MODE_VALUE>"["		{ YY_PUSH(MODE_ARRAY); YY_PUSH(MODE_VALUE); return BRACKETS_OPEN; }
+<MODE_VALUE>"["		{ YY_PUSH(MODE_ARRAY, yyscanner); YY_PUSH(MODE_VALUE, yyscanner); return BRACKETS_OPEN; }
 <INITIAL>"["		return BRACKETS_OPEN;
-<MODE_VALUE>"]"		{ YY_POP(); YY_POP(); return BRACKETS_CLOSE; }
+<MODE_VALUE>"]"		{ YY_POP(yyscanner); YY_POP(yyscanner); return BRACKETS_CLOSE; }
 <INITIAL>"]"		return BRACKETS_CLOSE;
-<MODE_VALUE>"{"		{ YY_PUSH(MODE_INLINE_TABLE); return CURLY_OPEN; }
-<MODE_VALUE>"}"		{ YY_POP(); YY_POP(); return CURLY_CLOSE; }
-<MODE_INLINE_TABLE>"}"	{ YY_POP(); return CURLY_CLOSE; }
+<MODE_VALUE>"{"		{ YY_PUSH(MODE_INLINE_TABLE, yyscanner); return CURLY_OPEN; }
+<MODE_VALUE>"}"		{ YY_POP(yyscanner); YY_POP(yyscanner); return CURLY_CLOSE; }
+<MODE_INLINE_TABLE>"}"	{ YY_POP(yyscanner); return CURLY_CLOSE; }
 {newline}		{
-	if (YYSTATE != INITIAL && yy_top_state() != MODE_ARRAY)
+	if (YYSTATE != INITIAL && yy_top_state(yyscanner) != MODE_ARRAY)
 	{
-		YY_POP();
+		YY_POP(yyscanner);
 	}
 	return NEWLINE;
 }
 
 {double_quote}{basic_unescaped}*	{
 	/* a new buffer for the string and switch to string mode */
-	stringBuffer = bufferNew(yytext + 1, yyleng - 1, driver);
-	origBuffer = bufferNew(yytext + 1, yyleng - 1, driver);
-	YY_PUSH (MODE_BASIC_STRING);
+	elektraFree (yyget_extra(yyscanner));
+	ExtraData * extra = elektraMalloc (sizeof(ExtraData));
+	extra->stringBuffer = bufferNew(yytext + 1, yyleng - 1, driver);
+	extra->origBuffer = bufferNew(yytext + 1, yyleng - 1, driver);
+	yyset_extra (extra, yyscanner);
+	YY_PUSH (MODE_BASIC_STRING, yyscanner);
 }
 
 <MODE_BASIC_STRING>{
 	{basic_unescaped}+		{
-		bufferAddString (stringBuffer, yytext, yyleng, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{basic_escaped}			{
-		bufferAddEscaped (stringBuffer, yytext[1], driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddEscaped (extra->stringBuffer, yytext[1], driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{uni4_escape}|{uni8_escape}	{
-		bufferAddUnicode (stringBuffer, yytext + 2, yyleng - 2, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddUnicode (extra->stringBuffer, yytext + 2, yyleng - 2, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}			{
-		yylval.scalar = createScalar (SCALAR_STRING_BASIC, bufferConsume(stringBuffer, driver), bufferConsume(origBuffer, driver), yylineno);
-		YY_POP();
+		ExtraData * extra = yyget_extra (yyscanner);
+		lval->scalar = createScalar (
+			SCALAR_STRING_BASIC,
+			bufferConsume(extra->stringBuffer, yylineno, driver),
+			bufferConsume(extra->origBuffer, yylineno, driver),
+			yylineno
+		);
+		YY_POP(yyscanner);
 		return BASIC_STRING;
 	}
 	{newline}			{
@@ -212,105 +219,136 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	}
 
 	.|\n {
-		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state());
+		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state(yyscanner));
 	}
 }
 
 {double_quote}{3}{newline}?		{
 	/* a new buffer for the string and switch to string mode */
-	stringBuffer = bufferNew("", 0, driver);
-	origBuffer = bufferNew(yytext + 3, yyleng - 3, driver);
-	YY_PUSH (MODE_ML_BASIC_STRING);
+	elektraFree (yyget_extra(yyscanner));
+	ExtraData * extra = elektraMalloc (sizeof(ExtraData));
+	extra->stringBuffer = bufferNew("", 0, driver);
+	extra->origBuffer = bufferNew(yytext + 3, yyleng - 3, driver);
+	yyset_extra (extra, yyscanner);
+	YY_PUSH (MODE_ML_BASIC_STRING, yyscanner);
 }
 
 <MODE_ML_BASIC_STRING>{
 	({basic_unescaped}|{newline})+		{
-		bufferAddString (stringBuffer, yytext, yyleng, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{basic_escaped}				{
-		bufferAddEscaped (stringBuffer, yytext[1], driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddEscaped (extra->stringBuffer, yytext[1], driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{uni4_escape}|{uni8_escape}		{
-		bufferAddUnicode (stringBuffer, yytext + 2, yyleng - 2, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddUnicode (extra->stringBuffer, yytext + 2, yyleng - 2, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{1,2}({basic_unescaped})	{
-		bufferAddString (stringBuffer, yytext, yyleng, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{1,2}({basic_escaped})	{
-		bufferAddString (stringBuffer, yytext, yyleng - 2, driver);
-		bufferAddEscaped (stringBuffer, yytext[yyleng - 2], driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng - 2, driver);
+		bufferAddEscaped (extra->stringBuffer, yytext[yyleng - 2], driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{1,2}({uni4_escape})	{
-		bufferAddString (stringBuffer, yytext, yyleng - 6, driver);
-		bufferAddUnicode (stringBuffer, yytext + yyleng - 4, 4, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng - 6, driver);
+		bufferAddUnicode (extra->stringBuffer, yytext + yyleng - 4, 4, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{1,2}({uni8_escape})	{
-		bufferAddString (stringBuffer, yytext, yyleng - 10, driver);
-		bufferAddUnicode (stringBuffer, yytext + yyleng - 8, 8, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng - 10, driver);
+		bufferAddUnicode (extra->stringBuffer, yytext + yyleng - 8, 8, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{1,2}({newline})		{
-		bufferAddString (stringBuffer, yytext, yyleng - 10, driver);
-		bufferAddChar (stringBuffer, '\n', driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng - 10, driver);
+		bufferAddChar (extra->stringBuffer, '\n', driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}({mlb_escaped_nl})	{
-		bufferAddChar (stringBuffer, '"', driver);
-		bufferAddChar (stringBuffer, ' ', driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddChar (extra->stringBuffer, '"', driver);
+		bufferAddChar (extra->stringBuffer, ' ', driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{2}({mlb_escaped_nl})	{
-		bufferAddChar (stringBuffer, '"', driver);
-		bufferAddChar (stringBuffer, '"', driver);
-		bufferAddChar (stringBuffer, ' ', driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddChar (extra->stringBuffer, '"', driver);
+		bufferAddChar (extra->stringBuffer, '"', driver);
+		bufferAddChar (extra->stringBuffer, ' ', driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{mlb_escaped_nl}			{
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{3}			{
-		yylval.scalar = createScalar (SCALAR_STRING_ML_BASIC, bufferConsume(stringBuffer, driver), bufferConsume(origBuffer, driver), yylineno);
-		YY_POP();
+		ExtraData * extra = yyget_extra (yyscanner);
+		lval->scalar = createScalar (
+			SCALAR_STRING_ML_BASIC,
+			bufferConsume(extra->stringBuffer, yylineno, driver),
+			bufferConsume(extra->origBuffer, yylineno, driver),
+			yylineno
+		);
+		YY_POP(yyscanner);
 		return MULTI_BASIC_STRING;
 	}
 	<<EOF>>					{
 		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Found unterminated string at end of file.");
 	}
 	.|\n {
-		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state());
+		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state(yyscanner));
 	}
 }
 
 {single_quote}{literal_char}*{single_quote}	{
-	yylval.scalar = createScalar (SCALAR_STRING_LITERAL, strndup (yytext + 1, yyleng - 2), strndup (yytext + 1, yyleng - 2), yylineno);
+	lval->scalar = createScalar (SCALAR_STRING_LITERAL, strndup (yytext + 1, yyleng - 2), strndup (yytext + 1, yyleng - 2), yylineno);
 	return LITERAL_STRING;
 }
 
 {single_quote}{3}{newline}?	{
 	/* a new buffer for the string and switch to string mode */
-	stringBuffer = bufferNew("", 0, driver);
-	origBuffer = bufferNew(yytext + 3, yyleng - 3, driver);
-	YY_PUSH (MODE_ML_LITERAL_STRING);
+	elektraFree (yyget_extra(yyscanner));
+	ExtraData * extra = elektraMalloc (sizeof(ExtraData));
+	extra->stringBuffer = bufferNew("", 0, driver);
+	extra->origBuffer = bufferNew(yytext + 3, yyleng - 3, driver);
+	yyset_extra (extra, yyscanner);
+	YY_PUSH (MODE_ML_LITERAL_STRING, yyscanner);
 }
 
 <MODE_ML_LITERAL_STRING>{
 	({literal_char}|{newline})+			{
-		bufferAddString (stringBuffer, yytext, yyleng, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{single_quote}{1,2}({literal_char}|{newline})	{
-		bufferAddString (stringBuffer, yytext, yyleng, driver);
-		bufferAddString (origBuffer, yytext, yyleng, driver);
+		ExtraData * extra = yyget_extra (yyscanner);
+		bufferAddString (extra->stringBuffer, yytext, yyleng, driver);
+		bufferAddString (extra->origBuffer, yytext, yyleng, driver);
 	}
 	{single_quote}{3}				{
-		yylval.scalar = createScalar (SCALAR_STRING_ML_LITERAL, bufferConsume(stringBuffer, driver), bufferConsume(origBuffer, driver),yylineno);
-		YY_POP();
+		ExtraData * extra = yyget_extra (yyscanner);
+		lval->scalar = createScalar (
+			SCALAR_STRING_ML_LITERAL,
+			bufferConsume(extra->stringBuffer, yylineno, driver),
+			bufferConsume(extra->origBuffer, yylineno, driver),
+			yylineno
+		);
+		YY_POP(yyscanner);
 		return MULTI_LITERAL_STRING;
 	}
 	<<EOF>>						{
@@ -318,45 +356,45 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	}
 
 	.|\n {
-		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state());
+		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state(yyscanner));
 	}
 }
 
 {whitespace}"#"([\t\x20-\xFF])* {
-	yylval.scalar = createScalarDup (SCALAR_STRING_COMMENT, strchr(yytext, '#') + 1, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_STRING_COMMENT, strchr(yytext, '#') + 1, yytext, yylineno);
 	return COMMENT;
 }
 
 <INITIAL,MODE_INLINE_TABLE>{bare_char}+ {
-	yylval.scalar = createScalarDup (SCALAR_STRING_BARE, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_STRING_BARE, yytext, yytext, yylineno);
 	return BARE_STRING;
 }
 
 {offset_datetime} {
-	yylval.scalar = createScalarDup (SCALAR_DATE_OFFSET_DATETIME, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_DATE_OFFSET_DATETIME, yytext, yytext, yylineno);
 	return OFFSET_DATETIME;
 }
 {local_datetime} {
-	yylval.scalar = createScalarDup (SCALAR_DATE_LOCAL_DATETIME, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_DATE_LOCAL_DATETIME, yytext, yytext, yylineno);
 	return LOCAL_DATETIME;
 }
 {local_date} {
-	yylval.scalar = createScalarDup (SCALAR_DATE_LOCAL_DATE, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_DATE_LOCAL_DATE, yytext, yytext, yylineno);
 	return LOCAL_DATE;
 }
 {local_time} {
-	yylval.scalar = createScalarDup (SCALAR_DATE_LOCAL_TIME, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_DATE_LOCAL_TIME, yytext, yytext, yylineno);
 	return LOCAL_TIME;
 }
 
 {decimal_pm} {
 	if (isValidInteger (yytext, 10))
 	{
-		yylval.scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yytext, yylineno);
+		lval->scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yytext, yylineno);
 	}
 	else
 	{
-		yylval.scalar = NULL;
+		lval->scalar = NULL;
 		driverError (driver, ERROR_SEMANTIC, yylineno,
 			"Found decimal number that is too big or small, must be in range [%lld, %lld], but found %s", LLONG_MIN,
 			LLONG_MAX, yytext);
@@ -365,18 +403,18 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 
 ("+"|"-")?"0" {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yytext, yylineno);
 	return DECIMAL;
 }
 
 "0x"{hex_char}("_"?{hex_char})* {
 	if (isValidInteger (yytext, 16))
 	{
-		yylval.scalar = createScalarDup (SCALAR_INTEGER_HEX, yytext, yytext, yylineno);
+		lval->scalar = createScalarDup (SCALAR_INTEGER_HEX, yytext, yytext, yylineno);
 	}
 	else
 	{
-		yylval.scalar = NULL;
+		lval->scalar = NULL;
 		driverError (driver, ERROR_SEMANTIC, yylineno, "Found hexadecimal number that is too big, maximum is 0x%llX, but found %s", ULLONG_MAX, yytext);
 	}
 	return HEXADECIMAL;
@@ -385,11 +423,11 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 "0o"{oct_char}("_"?{oct_char})* {
 	if (isValidInteger (yytext, 8))
 	{
-		yylval.scalar = createScalarDup (SCALAR_INTEGER_OCT, yytext, yytext, yylineno);
+		lval->scalar = createScalarDup (SCALAR_INTEGER_OCT, yytext, yytext, yylineno);
 	}
 	else
 	{
-		yylval.scalar = NULL;
+		lval->scalar = NULL;
 		driverError (driver, ERROR_SEMANTIC, yylineno, "Found octal number that is too big, maximum is 0o%llo, but found %s", ULLONG_MAX, yytext);
 	}
 	return OCTAL;
@@ -398,88 +436,84 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 "0b"{bin_char}("_"?{bin_char})* {
 	if (isValidInteger (yytext, 2))
 	{
-		yylval.scalar = createScalarDup (SCALAR_INTEGER_BIN, yytext, yytext, yylineno);
+		lval->scalar = createScalarDup (SCALAR_INTEGER_BIN, yytext, yytext, yylineno);
 	}
 	else
 	{
-		yylval.scalar = NULL;
+		lval->scalar = NULL;
 		driverError (driver, ERROR_SEMANTIC, yylineno, "Found binary number that is too big, maximum is 64 bits, but found %s", yytext);
 	}
 	return BINARY;
 }
 
 <MODE_VALUE>{decimal_pm}("."{decimal_leading_zeros})?([eE]{decimal_pm_leading_zeros})?  {
-	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
 	return FLOAT;
 }
 
 <MODE_VALUE>("+"|"-")?"0"("."{decimal_leading_zeros})?([eE]{decimal_pm_leading_zeros})?  {
-	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
 	return FLOAT;
 }
 
 ("+"|"-")?"inf" {
-	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
 	switch (yytext[0])
 	{
 	case '+':
-		yylval.scalar->type = SCALAR_FLOAT_POS_INF;
+		lval->scalar->type = SCALAR_FLOAT_POS_INF;
 		break;
 	case '-':
-		yylval.scalar->type = SCALAR_FLOAT_NEG_INF;
+		lval->scalar->type = SCALAR_FLOAT_NEG_INF;
 		break;
 	default:
-		yylval.scalar->type = SCALAR_FLOAT_INF;
+		lval->scalar->type = SCALAR_FLOAT_INF;
 		break;
 	}
 	return FLOAT;
 }
 
 ("+"|"-")?"nan" {
-	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yytext, yylineno);
 	switch (yytext[0])
 	{
 	case '+':
-		yylval.scalar->type = SCALAR_FLOAT_POS_NAN;
+		lval->scalar->type = SCALAR_FLOAT_POS_NAN;
 		break;
 	case '-':
-		yylval.scalar->type = SCALAR_FLOAT_NEG_NAN;
+		lval->scalar->type = SCALAR_FLOAT_NEG_NAN;
 		break;
 	default:
-		yylval.scalar->type = SCALAR_FLOAT_NAN;
+		lval->scalar->type = SCALAR_FLOAT_NAN;
 		break;
 	}
 	return FLOAT;
 }
 
 "true"|"false" {
-	yylval.scalar = createScalarDup (SCALAR_BOOLEAN, yytext, yytext, yylineno);
+	lval->scalar = createScalarDup (SCALAR_BOOLEAN, yytext, yytext, yylineno);
 	return BOOLEAN;
 }
 
 {whitespace} {}
 
 .|\n {
-	driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state());
+	driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: Unexpected sequence: '%s' %d", yytext, yy_top_state(yyscanner));
 }
 
 %%
 
-void initializeLexer (FILE * file)
+void initializeLexer (FILE * file, yyscan_t * scanner)
 {
-	yylineno = 1;
-	curr_line = 1;
-	curr_col  = 1;
-	YY_PUSH (INITIAL);
-	yyrestart (file);
-	// yy_flush_buffer(YY_CURRENT_BUFFER);
-	// yyin = file;
+	yylex_init_extra (NULL, scanner);
+	YY_PUSH (INITIAL, *scanner);
+	yyrestart (file, *scanner);
 }
 
-void clearLexer (void)
+void clearLexer (yyscan_t scanner)
 {
-	// yy_delete_buffer(YY_CURRENT_BUFFER);
-	yylex_destroy ();
+	elektraFree (yyget_extra (scanner));
+	yylex_destroy (scanner);
 }
 
 static Buffer * bufferNew (const char * initial, size_t initialLen, Driver * driver)
@@ -507,7 +541,7 @@ static Buffer * bufferNew (const char * initial, size_t initialLen, Driver * dri
 	return buffer;
 }
 
-static char * bufferConsume (Buffer * buffer, Driver * driver)
+static char * bufferConsume (Buffer * buffer, int lineno, Driver * driver)
 {
 	if (buffer != NULL)
 	{
@@ -520,7 +554,7 @@ static char * bufferConsume (Buffer * buffer, Driver * driver)
 
 		if (!isValidUtf8 ((uint8_t*) data, size))
 		{
-			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Detected invalid UTF-8.");
+			driverError (driver, ERROR_SYNTACTIC, lineno, "Malformed Input: Detected invalid UTF-8.");
 			elektraFree (data);
 			return NULL;
 		}
