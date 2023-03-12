@@ -10,64 +10,51 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbhelper.h>
-
 #include <stdio.h>
 #include <string.h>
 
 #include "counter.h"
 
-typedef struct
-{
-	int open;
-	int close;
-} Counter;
+typedef int Counter;
 #define COUNTER_FMT "%d"
+
+static Counter elektraCountOpen = 0;
 
 int elektraCounterOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	Counter * data = elektraPluginGetData (handle);
-
-	if (data == NULL)
-	{
-		data = elektraMalloc (sizeof (Counter));
-		elektraPluginSetData (handle, data);
-	}
-
-	data->open += 1;
-
+	elektraCountOpen += 1;
 	KeySet * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n", (void *) handle, data->open);
+			printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n", (void *) handle, elektraCountOpen);
 		}
 	}
 	else
 	{
-		printf ("%p elektraCounterOpen           called " COUNTER_FMT " times\n", (void *) handle, data->open);
+		printf ("%p elektraCounterOpen           called " COUNTER_FMT " times\n", (void *) handle, elektraCountOpen);
 	}
 
 	return 1; /* success */
 }
 
+static Counter elektraCountClose = 0;
+
 int elektraCounterClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	Counter * data = elektraPluginGetData (handle);
-	data->close += 1;
-
+	elektraCountClose += 1;
 	KeySet * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n", (void *) handle, data->close);
+			printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n", (void *) handle, elektraCountClose);
 		}
 	}
 	else
 	{
-		printf ("%p elektraCounterClose          called " COUNTER_FMT " times\n", (void *) handle, data->close);
+		printf ("%p elektraCounterClose          called " COUNTER_FMT " times\n", (void *) handle, elektraCountClose);
 	}
 
 	return 1; /* success */
