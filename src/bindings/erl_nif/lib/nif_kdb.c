@@ -1862,7 +1862,7 @@ static ERL_NIF_TERM ks_search (ErlNifEnv * env, int argc, const ERL_NIF_TERM arg
 }
 
 // clang-format off
-static const ErlNifFunc funcs[] = {
+static ErlNifFunc funcs[] = {
 	{"kdb_open", 2, kdb_open, 0},
 	{"kdb_close", 2, kdb_close, 0},
 	{"kdb_get", 3, kdb_get, 0},
