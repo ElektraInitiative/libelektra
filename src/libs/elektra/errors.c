@@ -115,8 +115,8 @@ static void setError (Key * key, const char * code, const char * name, const cha
 }
 
 #define DEFINE_ERROR_AND_WARNING(cname)                                                                                                    \
-	const char * ELEKTRA_ERROR_##cname = ELEKTRA_ERROR_CODE_##cname;                                                                   \
-	const char * ELEKTRA_WARNING_##cname = ELEKTRA_ERROR_CODE_##cname;                                                                 \
+	const char * const ELEKTRA_ERROR_##cname = ELEKTRA_ERROR_CODE_##cname;                                                             \
+	const char * const ELEKTRA_WARNING_##cname = ELEKTRA_ERROR_CODE_##cname;                                                           \
                                                                                                                                            \
 	void elektraSetError##cname (Key * key, const char * file, const char * line, const char * module, const char * reason, ...)       \
 	{                                                                                                                                  \

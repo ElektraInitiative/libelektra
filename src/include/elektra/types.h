@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-typedef const char * KDBType;
+typedef const char * const KDBType;
 
 extern KDBType KDB_TYPE_STRING;
 extern KDBType KDB_TYPE_BOOLEAN;

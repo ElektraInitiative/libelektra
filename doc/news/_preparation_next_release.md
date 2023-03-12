@@ -466,6 +466,10 @@ The website is generated from the repository, so all information about plugins, 
 - <<TODO>>
 - <<TODO>>
 
+## Miscellaneous
+
+- Many global variables that where used as constants have been made fully `const` _(@kodebach)_
+
 ## Outlook
 
 We are currently working on following topics:

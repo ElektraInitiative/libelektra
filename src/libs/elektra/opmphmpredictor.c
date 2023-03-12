@@ -26,7 +26,7 @@ const size_t opmphmPredictorActionLimit = 599;
  * state 0 and 1 are not worth using the OPMPHM
  * state 2 and 3 are worth using the OPMPHM
  */
-static uint8_t predictionAutomata[4][2] = {
+static const uint8_t predictionAutomata[4][2] = {
 	// state/0v1	 0 1
 	// clang-format off
 	/* 0 */		{0,1},

@@ -18,10 +18,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-static const char * CONVERT_METANAME = "convert/metaname";
-static const char * CONVERT_TARGET = "convert/to";
-static const char * CONVERT_APPEND_SAMELEVEL = "convert/append/samelevel";
-static const char * CONVERT_APPENDMODE = "convert/append";
+static const char * const CONVERT_METANAME = "convert/metaname";
+static const char * const CONVERT_TARGET = "convert/to";
+static const char * const CONVERT_APPEND_SAMELEVEL = "convert/append/samelevel";
+static const char * const CONVERT_APPENDMODE = "convert/append";
 
 /*
  * Wrapper for the function comparing by order metadata. As
