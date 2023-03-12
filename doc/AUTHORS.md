@@ -189,3 +189,11 @@ spec plugin, [go-elektra](https://github.com/ElektraInitiative/go-elektra), elek
 - email: tmakar23@gmail.com
 - GitHub user: [tmakar](https://github.com/tmakar)
 - devel/test on: macOS
+
+## Florian Lindner
+
+mounting library, [unixODBC](https://www.unixodbc.org) backend
+
+- email: florian.lindner@student.tuwien.ac.at
+- GitHub user: [flo91](https://github.com/flo91)
+- devel/test on: Gentoo Linux
