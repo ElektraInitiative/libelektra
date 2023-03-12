@@ -100,6 +100,35 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### mmapstorage
+
+> **Note**: The plugin is currently disabled, because it is not yet compatible with the COW data structures.
+
+TODO: remove above note, when COW support is added.
+
+- The magic data structures are now fully compile-time constants.
+  The magic number to detect endianness is generated in CMake instead of at runtime. _(@kodebach)_
+- <<TODO>>
+- <<TODO>>
+
+### <<Plugin>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
