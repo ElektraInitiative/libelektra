@@ -10,51 +10,64 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdbhelper.h>
+
 #include <stdio.h>
 #include <string.h>
 
 #include "counter.h"
 
-typedef int Counter;
+typedef struct
+{
+	int open;
+	int close;
+} Counter;
 #define COUNTER_FMT "%d"
-
-static Counter elektraCountOpen = 0;
 
 int elektraCounterOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	elektraCountOpen += 1;
+	Counter * data = elektraPluginGetData (handle);
+
+	if (data == NULL)
+	{
+		data = elektraMalloc (sizeof (Counter));
+		elektraPluginSetData (handle, data);
+	}
+
+	data->open += 1;
+
 	KeySet * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n", (void *) handle, elektraCountOpen);
+			printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n", (void *) handle, data->open);
 		}
 	}
 	else
 	{
-		printf ("%p elektraCounterOpen           called " COUNTER_FMT " times\n", (void *) handle, elektraCountOpen);
+		printf ("%p elektraCounterOpen           called " COUNTER_FMT " times\n", (void *) handle, data->open);
 	}
 
 	return 1; /* success */
 }
 
-static Counter elektraCountClose = 0;
-
 int elektraCounterClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	elektraCountClose += 1;
+	Counter * data = elektraPluginGetData (handle);
+	data->close += 1;
+
 	KeySet * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n", (void *) handle, elektraCountClose);
+			printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n", (void *) handle, data->close);
 		}
 	}
 	else
 	{
-		printf ("%p elektraCounterClose          called " COUNTER_FMT " times\n", (void *) handle, elektraCountClose);
+		printf ("%p elektraCounterClose          called " COUNTER_FMT " times\n", (void *) handle, data->close);
 	}
 
 	return 1; /* success */

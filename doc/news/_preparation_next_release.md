@@ -70,9 +70,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### counter
 
-- <<TODO>>
+- Global variable replaced with `elektraPluginSetData()` _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 
