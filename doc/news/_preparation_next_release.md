@@ -415,6 +415,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - Add decision for [copy-on-write](../decisions/6_implemented/copy_on_write.md) and provide implementation suggestions. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - Added explanation on why we wanted to migrate from Maven to Gradle for Java-related build facilities. _(Michael Tucek @tucek)_
+- Added explanation on why we wanted to migrate from Maven to Gradle for Java-related build facilities.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
