@@ -270,6 +270,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Add Stefan Hanreich to AUTHORS.md _(Stefan Hanreich @lawli3t)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
