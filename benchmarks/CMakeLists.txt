@@ -27,6 +27,7 @@ do_benchmark (createkeys)
 do_benchmark (memoryleak)
 do_benchmark (deepdup)
 do_benchmark (diff)
+do_benchmark (changetracking)
 
 # exclude storage and KDB benchmark from mingw
 if (NOT WIN32)
@@ -57,3 +58,4 @@ add_executable (benchmark_plugingetset plugingetset.c)
 target_link_elektra (benchmark_plugingetset elektra-core elektra-kdb)
 
 target_link_elektra (benchmark_diff elektra-kdb)
+target_link_elektra (benchmark_changetracking elektra-kdb)
