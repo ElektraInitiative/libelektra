@@ -1,5 +1,6 @@
 - infos = Information about the dbus plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
+- infos/maintainer = Maximilian Irlinger <max@maxirlinger.at>
 - infos/licence = BSD
 - infos/provides = notification
 - infos/needs =

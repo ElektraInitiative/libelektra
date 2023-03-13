@@ -1,5 +1,6 @@
 - infos = Plugin for internal notification
 - infos/author = Thomas Wahringer <waht@libelektra.org>
+- infos/maintainer = Maximilian Irlinger <max@maxirlinger.at>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
