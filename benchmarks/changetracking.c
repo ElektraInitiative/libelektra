@@ -1,15 +1,20 @@
 #include <benchmarks.h>
 #include <getopt.h>
+#include <stdbool.h>
 
 size_t keys = 50000;
 char * keyNameFormat = "user:/test/key%zu";
 char * keyValueFormat = "value%zu";
 char * keyValueModifiedFormat = "value-modified%zu";
 
+bool verbose = false;
+bool harmonizeKeys = false;
+
 void processCommandLineArguments (int argc, char ** argv)
 {
 	struct option long_options[] = { { "key-count", required_argument, 0, 'c' },
 					 { "harmonize-names", no_argument, 0, 'h' },
+					 { "verbose", no_argument, 0, 'v' },
 					 { 0, 0, 0, 0 } };
 
 	while (1)
@@ -27,7 +32,11 @@ void processCommandLineArguments (int argc, char ** argv)
 		case 'c':
 			keys = atoi (optarg);
 			break;
+		case 'v':
+			verbose = true;
+			break;
 		case 'h':
+			harmonizeKeys = true;
 			keyNameFormat = "user:/test/key%08zu";
 			keyValueFormat = "value%08zu";
 			keyValueModifiedFormat = "value-modified%08zu";
@@ -41,6 +50,12 @@ void processCommandLineArguments (int argc, char ** argv)
 int main (int argc, char ** argv)
 {
 	processCommandLineArguments (argc, argv);
+
+	if (verbose)
+	{
+		printf ("Number of keys: %zu\n", keys);
+		printf ("Harmonize key names: %s\n", harmonizeKeys ? "true" : "false");
+	}
 
 	Key * parentKey = keyNew ("user:/test", KEY_END);
 	KeySet * contract = ksNew (0, KS_END);
@@ -78,6 +93,13 @@ int main (int argc, char ** argv)
 	timeInit ();
 	kdbSet (kdb, ks, parentKey);
 	int modifyTime = timeGetDiffMicroseconds ();
+
+	if (verbose)
+	{
+		printf ("Modified keys: %zu\n", modified);
+		printf ("\n");
+		printf ("Insert Time (us); Modification Time (us)\n");
+	}
 
 	printf ("%d;%d\n", insertingTime, modifyTime);
 
