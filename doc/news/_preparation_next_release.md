@@ -78,13 +78,13 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 
 ### logchange
 
-- <<TODO>>
 - Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 
 ### <<Plugin>>
 
 - <<TODO>>
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -120,10 +120,12 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 ### dbus
 
 - Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
 
 ### internalnotifications
 
 - Utilize new changetracking API _(Maximilian Irlinger @atmaxinger)_
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
 
 ## Libraries
 
