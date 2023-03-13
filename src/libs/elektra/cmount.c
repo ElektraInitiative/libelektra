@@ -142,6 +142,14 @@ enum PluginStatus
 	missing
 };
 
+enum PluginType
+{
+	pluginTypeGet,
+	pluginTypeSet,
+	pluginTypeError,
+	pluginTypeCommit
+};
+
 
 /* Read mount configuration from the KDB
  * Make sure to ksDel(...) the returned KeySet */
@@ -2641,9 +2649,266 @@ void backendSetMountpoint (Key * keyMountPoint, KeySet * ksMountConf)
 }
 
 
-// C++ backendbuilder.cpp[604-612] - void MountBackendBuilder::serialize (kdb::KeySet & ret)
-void serialize (KeySet * mountConf, struct PluginSpecNode * toAdd, KeySet * ksInfo, KeySet * ksSymbols)
+// C++: from backends.cpp[138-144]
+/* make sure to free the returned buffer! */
+char * getBasePath (const char * mp)
 {
+	Key * k = keyNew (DEFAULT_MOUNTPOINTS_PATH, KEY_END);
+
+	/* canonify name */
+	Key * kmp = keyNew (mp, KEY_END);
+
+	/* escape name */
+	keyAddBaseName (k, keyName(kmp));
+	kmp ? keyDel (kmp) : 0;
+
+	char * outBuf = elektraMalloc (keyGetNameSize (k));
+	if (keyGetName (k, outBuf, keyGetNameSize (k)) > 0)
+	{
+		k ? keyDel(k) : 0;
+		return outBuf;
+	}
+	else
+	{
+		/* TODO: Handle error */
+		outBuf ? elektraFree (outBuf) : (void) NULL;
+		k ? keyDel(k) : 0;
+		return NULL;
+	}
+}
+
+// C++: from plugins.cpp[394-411]
+void pluginsSerializeConfig (const char * name, const KeySet * ksSrc, KeySet * ksDest)
+{
+	if (ksGetSize (ksSrc) <= 0) return;
+
+	Key * oldParentKey = keyNew ("user:/", KEY_END);
+
+	size_t newParentNameSize = elektraStrLen (name) + elektraStrLen ("/config") - 1;
+	char * newParentName = elektraMalloc (newParentNameSize);
+	strcpy (newParentName, name);
+	strcat (newParentName, "/config");
+	Key * newParentKey = keyNew (newParentName, KEY_END);
+	elektraFree (newParentName);
+
+	ksAppendKey (ksDest, newParentKey);
+
+	for (elektraCursor i = 0; i < ksGetSize (ksSrc); i++)
+	{
+		Key * curKey = ksAtCursor (ksSrc, i);
+
+		if (keyGetNamespace (curKey) == KEY_NS_USER)
+		{
+			curKey = keyDup (curKey, KEY_CP_ALL);
+			keyReplacePrefix (curKey, oldParentKey, newParentKey);
+			ksAppendKey (ksDest, curKey);
+		}
+	}
+
+	keyDel (oldParentKey);
+	keyDel (newParentKey);
+}
+
+// C++: from plugins.cpp[415-606]
+void serializePlugins (const Key * baseKey, KeySet * ksMountConf, struct PluginSpecsSlotNode * pssn, enum PluginType pluginType)
+{
+	for (; pssn; pssn = pssn->next)
+	{
+		/* TODO: Check if "commit" should be replaced instead of "get" (maybe an error in the c++ code) */
+		/* remove "get" from string */
+		size_t oldRoleLen = elektraStrLen (pssn->slot);
+		char * roleName = elektraMalloc (oldRoleLen);
+		strcpy (roleName, pssn->slot);
+
+		/* don't remove name parts from error plugins */
+		for (size_t i = 0; pluginType != pluginTypeError && i < oldRoleLen - 1; i++)
+		{
+			/* check for "get" */
+			if (roleName[i] == (pluginType == pluginTypeSet ? 's' : 'g') && roleName[i+1] == 'e' && roleName[i+2] == 't')
+			{
+				/* move remaining part of string forward */
+				size_t j;
+				for (j = i + 3; j < oldRoleLen - 1; j++)
+				{
+					roleName[j-3] = roleName[j];
+				}
+				roleName[oldRoleLen-1] = roleName[oldRoleLen-2] = roleName[oldRoleLen-3] = '\0';
+				oldRoleLen -= 3;
+			}
+		}
+
+		for (struct PluginSpecNode * psn = pssn->plugins; psn; psn = psn->next)
+		{
+			size_t refKeyNameSize = keyGetNameSize (baseKey) + elektraStrLen ("/plugins/") + elektraStrLen (psn->ps.refname) - 2;
+			char * refKeyName = elektraMalloc (refKeyNameSize);
+			keyGetName (baseKey, refKeyName, refKeyNameSize);
+			strcat (refKeyName, "/plugins/");
+			strcat (refKeyName, psn->ps.refname);
+			Key * refKey = keyNew (refKeyName, KEY_END);
+
+			if (!ksLookup (ksMountConf, refKey, KDB_O_NONE))
+			{
+				ksAppendKey (ksMountConf, refKey);
+
+				size_t refKeyNameNameSize = keyGetNameSize (refKey) + elektraStrLen ("/name") - 1;
+				char * refKeyNameName = elektraMalloc (refKeyNameNameSize);
+				keyGetName (refKey, refKeyNameName, refKeyNameNameSize);
+				keyDel (refKey);
+				strcat (refKeyNameName, "/name");
+
+
+				refKey = keyNew (refKeyNameName, KEY_VALUE, psn->ps.name, KEY_END);
+				elektraFree (refKeyNameName);
+				ksAppendKey (ksMountConf, refKey);
+
+				pluginsSerializeConfig (refKeyName, psn->ps.config, ksMountConf);
+			}
+			keyDel (refKey);
+			elektraFree (refKeyName);
+
+			size_t positionKeyNameSize = keyGetNameSize (baseKey) + elektraStrLen ("/definition/positions/set/")
+				+ elektraStrLen (roleName) + 1; /* we have 3 bytes for storing "/#0" */
+			char * positionKeyName = elektraMalloc (positionKeyNameSize);
+			keyGetName (baseKey, positionKeyName, positionKeyNameSize);
+
+			bool multiplePluginsAllowed;
+			switch (pluginType)
+			{
+			case pluginTypeGet:
+				multiplePluginsAllowed = (elektraStrCmp (roleName, "prestorage") == 0 || elektraStrCmp (roleName, "poststorage") == 0);
+				strcat (positionKeyName, "/definition/positions/get/");
+				break;
+			case pluginTypeSet: /* fall through */
+			case pluginTypeError:
+				multiplePluginsAllowed = (elektraStrCmp (roleName, "prestorage") == 0 || elektraStrCmp (roleName, "poststorage") == 0);
+				strcat (positionKeyName, "/definition/positions/set/");
+				break;
+			case pluginTypeCommit:
+				multiplePluginsAllowed = (elektraStrCmp (roleName, "precommit") == 0 || elektraStrCmp (roleName, "postcommit") == 0);
+				strcat (positionKeyName, "/definition/positions/set/");
+				break;
+			default:
+				multiplePluginsAllowed = false;
+			}
+
+			strcat (positionKeyName, roleName);
+
+			if (multiplePluginsAllowed)
+			{
+				strcat (positionKeyName, "/#0");
+				Key * positionKey = keyNew (positionKeyName, KEY_VALUE, psn->ps.refname, KEY_END);
+				elektraFree (positionKeyName);
+
+				while (ksLookup (ksMountConf, positionKey, KDB_O_NONE))
+				{
+					elektraArrayIncName (positionKey);
+				}
+				ksAppendKey (ksMountConf, positionKey);
+			}
+			else
+			{
+				Key * positionKey = keyNew (positionKeyName, KEY_VALUE, psn->ps.refname, KEY_END);
+				elektraFree (positionKeyName);
+
+				if (ksLookup (ksMountConf, positionKey, KDB_O_NONE))
+				{
+					 /* TODO: Handle error */
+					 fprintf (stderr, "Too many plugins! Position %s/%s can only contain a single plugin.",
+					 	pluginType == pluginTypeGet ? "get" : "set", roleName);
+					 elektraFree (roleName);
+					 keyDel (positionKey);
+					 return;
+				}
+				ksAppendKey (ksMountConf, positionKey);
+			}
+		}
+		elektraFree (roleName);
+	}
+}
+
+
+
+// C++ backendbuilder.cpp[604-612] - void MountBackendBuilder::serialize (kdb::KeySet & ret)
+/* returns mountConf KeySet */
+void serialize (KeySet * ksMountConf, struct PluginSpecNode * toAdd, KeySet * ksInfo, KeySet * ksSymbols, const char * mp, KeySet * ksConfig)
+{
+	// C++ backend.cpp[398]
+	//TODO: assert (mp && *mp);
+
+	char * mpBasePath = getBasePath (mp);
+
+	if (!mpBasePath || !(*mpBasePath))
+	{
+		/* TODO: Handle error */
+		return;
+	}
+
+	if (ksLookupByName (ksMountConf, mpBasePath, KDB_O_NONE))
+	{
+		fprintf (stderr, "Mountpoint already in use!\n");
+		elektraFree (mpBasePath);
+		return;
+	}
+
+
+	Key * backendRootKey = keyNew (mpBasePath, KEY_END);
+
+	/* TODO: serialize plugins (commit, error, get, set) */
+	serializePlugins (backendRootKey, ksMountConf, NULL, pluginTypeCommit);
+	serializePlugins (backendRootKey, ksMountConf, NULL, pluginTypeError);
+	serializePlugins (backendRootKey, ksMountConf, NULL, pluginTypeGet);
+	serializePlugins (backendRootKey, ksMountConf, NULL, pluginTypeSet);
+
+	/* Append additional keys to the mountConf */
+	size_t nameBufSize = elektraStrLen (mpBasePath);
+	if (keyGetNameSize(backendRootKey) > nameBufSize)
+	{
+		nameBufSize = keyGetNameSize (backendRootKey);
+	}
+	nameBufSize += elektraStrLen ("/plugins/backend/name") - 1; /* do not include size for \0 a 2nd time */
+
+	char * nameBuf = elektraMalloc (nameBufSize);
+	char * baseEnd = stpcpy (nameBuf, mpBasePath);
+
+	strcpy (baseEnd, "/plugins/backend");
+	Key * backendKey = keyNew (nameBuf, KEY_END);
+	ksAppendKey (ksMountConf, backendKey);
+
+	strcpy (baseEnd, "/plugins/backend/name");
+	Key * backendNameKey = keyNew (nameBuf, KEY_VALUE, "backend", KEY_END);
+	ksAppendKey (ksMountConf, backendNameKey);
+
+	keyGetName (backendRootKey, nameBuf, nameBufSize);
+	strcat (nameBuf, "/definition/path");
+	Key * pathKey = keyNew (nameBuf, KEY_VALUE, NULL);
+	ksAppendKey (ksMountConf, pathKey);
+
+	strcpy (nameBuf, mpBasePath);
+	strcpy (baseEnd, "/config");
+	Key * configKey = keyNew (nameBuf, KEY_END);
+	ksAppendKey (ksMountConf, configKey);
+
+
+	Key * oldParentKey = keyNew ("system:/", KEY_END);
+	Key * newParentKey = keyNew (nameBuf, KEY_END);
+	elektraFree (nameBuf);
+
+	for (elektraCursor i = 0; i < ksGetSize (ksConfig); i++)
+	{
+		Key * curKey = keyDup (ksAtCursor (ksConfig, i), KEY_CP_ALL);
+
+		/* TODO: Check return value for error */
+		keyReplacePrefix (curKey, oldParentKey, newParentKey);
+
+		ksAppendKey (ksMountConf, curKey);
+	}
+
+	ksAppendKey (ksMountConf, backendRootKey);
+
+
+
+
+
 	unsigned int nrResolverPlugins = 0;
 	unsigned int nrStoragePlugins = 0;
 
@@ -2652,7 +2917,7 @@ void serialize (KeySet * mountConf, struct PluginSpecNode * toAdd, KeySet * ksIn
 	for (; toAdd; toAdd = toAdd->next)
 	{
 		// C++: b.addPlugin (plugin);
-		backendAddPlugin (toAdd->ps, ksSymbols, &nrResolverPlugins, &nrStoragePlugins, NULL, ksInfo, mountConf);
+		backendAddPlugin (toAdd->ps, ksSymbols, &nrResolverPlugins, &nrStoragePlugins, NULL, ksInfo, ksMountConf);
 	}
 
 	// C++: mbi->setMountpoint (mountpoint, mountConf);
