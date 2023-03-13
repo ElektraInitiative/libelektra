@@ -38,7 +38,7 @@ void processCommandLineArguments (int argc, char ** argv)
 	}
 }
 
-int main (int argc, char **argv)
+int main (int argc, char ** argv)
 {
 	processCommandLineArguments (argc, argv);
 
@@ -49,8 +49,8 @@ int main (int argc, char **argv)
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 
-	char nameBuffer [1024] = "";
-	char valueBuffer [1024] = "";
+	char nameBuffer[1024] = "";
+	char valueBuffer[1024] = "";
 
 	for (size_t i = 0; i < keys; i++)
 	{
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 	kdbGet (kdb, ks, parentKey);
 
 	size_t modified = 0;
-	for (size_t i = keys/2; i < keys; i++)
+	for (size_t i = keys / 2; i < keys; i++)
 	{
 		snprintf (nameBuffer, 1023, keyNameFormat, i);
 		snprintf (valueBuffer, 1023, keyValueModifiedFormat, i);
