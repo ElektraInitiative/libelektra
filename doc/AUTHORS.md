@@ -161,7 +161,7 @@ notification system, I/O bindings
 
 ## Maximilian Irlinger
 
-documentation, Python bindings for elektraMerge, copy-on-write functionality of Key and KeySet
+documentation, elektraMerge including its Python bindings, copy-on-write functionality of Key and KeySet, generic changetracking implementation
 
 - email: max@maxirlinger.at
 - GitHub user: [atmaxinger](https://github.com/atmaxinger)

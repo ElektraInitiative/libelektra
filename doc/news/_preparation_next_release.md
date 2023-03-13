@@ -82,23 +82,29 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
+### internalnotifications
+
+- <<TODO>>
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+
+### logchange
+
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
+- <<TODO>>
+- <<TODO>>
+
 ### <<Plugin>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### dbus
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-
-### <<Plugin>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add Maximilian Irlinger as maintainer _(Maximilian Irlinger @atmaxinger)_
 
 ## Libraries
 
@@ -146,10 +152,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library>>
+### merge
 
 - <<TODO>>
-- <<TODO>>
+- Add Maximilian Irlinger as maintainer _(Maximilian Irilnger @atmaxinger)_
 - <<TODO>>
 
 ### <<Library>>
@@ -406,7 +412,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Add `infos/maintainer` in plugins. _(Maximilian Irlinger @atmaxinger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
