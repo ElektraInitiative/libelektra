@@ -1,29 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please always update this file within **every PR**:
-
-1. write what changed
-2. use links pointing to your change (See [Documentation Guidelines](/doc/contrib/documentation.md))
-3. add your name at the end of the line **Syntax:** _(your name)_
-
-For example, Max would write:
-
-```
-- Added a new [doc plugin](https://www.libelektra.org/plugins/doc) _(Max)_
-```
-
-Pick a random line to write your changes to minimize the chances of conflicts in this file.
-
-For non-trivial changes, you can choose to be part of the highlighted changes.
-Please write a highlight section in this case.
-
-After the horizontal line the release notes for the next version starts.
-
----
-
-<<`scripts/generate-news-entry`>>
+- guid: e8fd116d-12ab-4281-aaf3-b6441056dd63
+- author: Mihael Pranjić
+- pubDate: Tue, 14 Mar 2023 10:05:11 +0100
+- shortDesc: Bugfix, Ubuntu Packages
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -44,15 +24,9 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
-- <<HIGHLIGHT>>
-
-### <<HIGHLIGHT>>
-
-### <<HIGHLIGHT>>
-
-### <<HIGHLIGHT>>
+- The main purpose of this bugfix release is to fix a regression ([#4859](https://github.com/ElektraInitiative/libelektra/issues/4859)) introduced in Elektra 0.9.12.
+- We added fresh Ubuntu Jammy Jellyfish (22.04 LTS) and Kinetic Kudu (22.10) packages.
+- Please refer to the [Elektra 0.9.12](https://www.libelektra.org/news/0.9.12-release) release notes for a complete list of changes. Due to breaking changes since 0.9.11 we highly recommend to read the upgrade instructions.
 
 ## Plugins
 
