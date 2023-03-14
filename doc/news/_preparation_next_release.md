@@ -94,9 +94,9 @@ The following text lists news about the [plugins](https://www.libelektra.org/plu
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin>>
+### tracer
 
-- <<TODO>>
+- Use separate symbols for `set` and `commit` functions to satisfy `kdb plugin-check` _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 
