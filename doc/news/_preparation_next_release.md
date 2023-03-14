@@ -343,7 +343,7 @@ This section keeps you up-to-date with the multi-language support provided by El
 
 ## Tests
 
-- <<TODO>>
+- Enable more `kdb plugin-check` tests _(@kodebach)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
